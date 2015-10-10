@@ -1,0 +1,47 @@
+Below is a list of SA-MP natives LVP changes which you will need to comment out of any new include files
+if ever upgrading (i.e. for a new SA-MP version):
+
+a_samp.inc:
+
+// Util
+//native SendClientMessage(playerid, color, const message[]);
+//native SendClientMessageToAll(color, const message[]);
+
+// Game
+//native SetWeather(weatherid);
+
+// Admin
+//native Ban(playerid);
+//native BanEx(playerid, const reason[]);
+
+
+// Text Draw
+// ALL TEXTDRAW NATIVES
+
+a_players.inc:
+
+// Player Info
+//native GetPlayerTeam(playerid);
+//native GivePlayerWeapon(playerid, weaponid, ammo);
+//native ResetPlayerWeapons(playerid);
+//native GivePlayerMoney(playerid,money);
+//native SetPlayerHealth(playerid, Float:health);
+//native SetPlayerPos(playerid, Float:x, Float:y, Float:z);
+
+// Stunt bonuses
+//native EnableStuntBonusForPlayer(playerid, enable);
+
+a_vehicles.inc
+
+// Vehicles
+//native DestroyVehicle(vehicleid);
+//native SetVehicleParamsForPlayer(vehicleid,playerid,objective,doorslocked);
+//native SetVehiclePos(vehicleid, Float:x, Float:y, Float:z);
+
+
+
+
+Have fun!
+
+Jay
+07/12/2010 - SA-MP 0.3c RC Stage

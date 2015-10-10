@@ -1,0 +1,380 @@
+# This file contains information about the Ammunation venues.
+{
+    "weapons": [
+        {
+            "gta_id": 1,
+            "name": "Brass Knuckles",
+            "ammunitions": 1,
+            "is_spawn_weapon": false,
+            "is_melee": true,
+            "base_price": 4000
+        },
+        {
+            "gta_id": 2,
+            "name": "Golf Club",
+            "ammunitions": 1,
+            "is_spawn_weapon": false,
+            "is_melee": true,
+            "base_price": 6000
+        },
+        {
+            "gta_id": 3,
+            "name": "Nightstick",
+            "ammunitions": 1,
+            "is_spawn_weapon": false,
+            "is_melee": true,
+            "base_price": 6500
+        },
+        {
+            "gta_id": 4,
+            "name": "Knife",
+            "ammunitions": 1,
+            "is_spawn_weapon": false,
+            "is_melee": true,
+            "base_price": 50000
+        },
+        {
+            "gta_id": 5,
+            "name": "Baseball Bat",
+            "ammunitions": 1,
+            "is_spawn_weapon": false,
+            "is_melee": true,
+            "base_price": 6500
+        },
+        {
+            "gta_id": 6,
+            "name": "Shovel",
+            "ammunitions": 1,
+            "is_spawn_weapon": false,
+            "is_melee": true,
+            "base_price": 5500
+        },
+        {
+            "gta_id": 7,
+            "name": "Pool Cue",
+            "ammunitions": 1,
+            "is_spawn_weapon": false,
+            "is_melee": true,
+            "base_price": 5000
+        },
+        {
+            "gta_id": 8,
+            "name": "Samurai Sword",
+            "ammunitions": 1,
+            "is_spawn_weapon": true,
+            "is_melee": true,
+            "base_price": 90000
+        },
+        {
+            "gta_id": 9,
+            "name": "Chainsaw",
+            "ammunitions": 1,
+            "is_spawn_weapon": true,
+            "is_melee": true,
+            "base_price": 600000
+        },
+        {
+            "gta_id": 10,
+            "name": "Double-ended Dildo",
+            "ammunitions": 1,
+            "is_spawn_weapon": false,
+            "is_melee": true,
+            "base_price": 10000
+        },
+        {
+            "gta_id": 11,
+            "name": "Dildo",
+            "ammunitions": 1,
+            "is_spawn_weapon": false,
+            "is_melee": true,
+            "base_price": 8000
+        },
+        {
+            "gta_id": 12,
+            "name": "Vibrator",
+            "ammunitions": 1,
+            "is_spawn_weapon": false,
+            "is_melee": true,
+            "base_price": 9000
+        },
+        {
+            "gta_id": 13,
+            "name": "Silver vibrator",
+            "ammunitions": 1,
+            "is_spawn_weapon": false,
+            "is_melee": true,
+            "base_price": 12000
+        },
+        {
+            "gta_id": 14,
+            "name": "Flowers",
+            "ammunitions": 1,
+            "is_spawn_weapon": false,
+            "is_melee": true,
+            "base_price": 1000
+        },
+        {
+            "gta_id": 15,
+            "name": "Cane",
+            "ammunitions": 1,
+            "is_spawn_weapon": false,
+            "is_melee": true,
+            "base_price": 3500
+        },
+        {
+            "gta_id": 16,
+            "name": "Grenade",
+            "ammunitions": 5,
+            "is_spawn_weapon": true,
+            "is_melee": false,
+            "base_price": 16000
+        },
+        {
+            "gta_id": 17,
+            "name": "Tear Gas",
+            "ammunitions": 5,
+            "is_spawn_weapon": false,
+            "is_melee": false,
+            "base_price": 5000
+        },
+        {
+            "gta_id": 18,
+            "name": "Molotov Cocktail",
+            "ammunitions": 5,
+            "is_spawn_weapon": false,
+            "is_melee": false,
+            "base_price": 8000
+        },
+        {
+            "gta_id": 22,
+            "name": "9mm",
+            "ammunitions": 100,
+            "is_spawn_weapon": true,
+            "is_melee": false,
+            "base_price": 5000
+        },
+        {
+            "gta_id": 23,
+            "name": "Silenced 9mm",
+            "ammunitions": 100,
+            "is_spawn_weapon": true,
+            "is_melee": false,
+            "base_price": 6000
+        },
+        {
+            "gta_id": 24,
+            "name": "Desert Eagle",
+            "ammunitions": 100,
+            "is_spawn_weapon": true,
+            "is_melee": false,
+            "base_price": 9000
+        },
+        {
+            "gta_id": 25,
+            "name": "Shotgun",
+            "ammunitions": 50,
+            "is_spawn_weapon": true,
+            "is_melee": false,
+            "base_price": 7000
+        },
+        {
+            "gta_id": 26,
+            "name": "Sawnoff Shotgun",
+            "ammunitions": 200,
+            "is_spawn_weapon": true,
+            "is_melee": false,
+            "base_price": 15000
+        },
+        {
+            "gta_id": 27,
+            "name": "Combat Shotgun",
+            "ammunitions": 150,
+            "is_spawn_weapon": true,
+            "is_melee": false,
+            "base_price": 7000
+        },
+        {
+            "gta_id": 28,
+            "name": "Micro Uzi",
+            "ammunitions": 250,
+            "is_spawn_weapon": true,
+            "is_melee": false,
+            "base_price": 11000
+        },
+        {
+            "gta_id": 29,
+            "name": "MP5",
+            "ammunitions": 250,
+            "is_spawn_weapon": true,
+            "is_melee": false,
+            "base_price": 6800
+        },
+        {
+            "gta_id": 30,
+            "name": "AK-47",
+            "ammunitions": 200,
+            "is_spawn_weapon": true,
+            "is_melee": false,
+            "base_price": 9600
+        },
+        {
+            "gta_id": 31,
+            "name": "M4",
+            "ammunitions": 200,
+            "is_spawn_weapon": true,
+            "is_melee": false,
+            "base_price": 21000
+        },
+        {
+            "gta_id": 32,
+            "name": "Tec-9",
+            "ammunitions": 250,
+            "is_spawn_weapon": true,
+            "is_melee": false,
+            "base_price": 8400
+        },
+        {
+            "gta_id": 33,
+            "name": "Country Rifle",
+            "ammunitions": 50,
+            "is_spawn_weapon": true,
+            "is_melee": false,
+            "base_price": 6400
+        },
+        {
+            "gta_id": 34,
+            "name": "Sniper Rifle",
+            "ammunitions": 50,
+            "is_spawn_weapon": true,
+            "is_melee": false,
+            "base_price": 30000
+        },
+        {
+            "gta_id": 35,
+            "name": "RPG",
+            "ammunitions": 2,
+            "is_spawn_weapon": false,
+            "is_melee": false,
+            "base_price": 200000
+        },
+        {
+            "gta_id": 36,
+            "name": "Heat-Seeker Launcher",
+            "ammunitions": 2,
+            "is_spawn_weapon": false,
+            "is_melee": false,
+            "base_price": 250000
+        },
+        {
+            "gta_id": 37,
+            "name": "Flamethrower",
+            "ammunitions": 150,
+            "is_spawn_weapon": false,
+            "is_melee": false,
+            "base_price": 180000
+        },
+        {
+            "gta_id": 38,
+            "name": "Minigun",
+            "ammunitions": 50,
+            "is_spawn_weapon": false,
+            "is_melee": false,
+            "base_price": 1000000
+        },
+        {
+            "gta_id": 39,
+            "name": "Satchel Charge",
+            "ammunitions": 1,
+            "is_spawn_weapon": true,
+            "is_melee": false,
+            "base_price": 1000000
+        },
+        {
+            "gta_id": 41,
+            "name": "Spraycan",
+            "ammunitions": 500,
+            "is_spawn_weapon": true,
+            "is_melee": false,
+            "base_price": 15000
+        },
+        {
+            "gta_id": 42,
+            "name": "Fire Extinguisher",
+            "ammunitions": 500,
+            "is_spawn_weapon": false,
+            "is_melee": false,
+            "base_price": 12000
+        },
+        {
+            "gta_id": 43,
+            "name": "Camera",
+            "ammunitions": 20,
+            "is_spawn_weapon": false,
+            "is_melee": false,
+            "base_price": 25000
+        },
+        {
+            "gta_id": 46,
+            "name": "Parachute",
+            "ammunitions": 1,
+            "is_spawn_weapon": true,
+            "is_melee": true,
+            "base_price": 1000000
+        }
+    ],
+    "stores": [
+        # Shared interior for Ammu-Nation outlets in Las Venturas, Palomino Creek and Blueberry.
+        {
+            "name": "Las Venturas Ammunation",
+            "location": [287.2459, -79.7132, 1001.5156, 269.6591, 4],
+            "spawnweapon_pickup_location": [290.3257, -84.0386, 1001.5156],
+            "price_modifier": 1.0,
+            "guards": [
+                [ "Gustav", "ammunation_gustav", 121, 31, 12.0, 22.0, 30.0, 1 ],
+                [ "Anton", "ammunation_anton", 121, 31, 8.0, 18.0, 30.0, 1 ]
+            ],
+            "weapons": [1, 5, 8, 9, 14, 16, 22, 24, 25, 26, 27, 28, 31, 32, 34, 39, 46],
+            "armour_price": 50000
+        },
+        # Shared interior for Ammu-Nation outlets in Willowfield, Angel Pine, Fort Carson and 
+        # East Bone County, the only interior with no shooting range.
+        {
+            "name": "Country Ammunation",
+            "location": [296.6769, -109.8456, 1001.5156, 357.1361, 6],
+            "spawnweapon_pickup_location": [292.9196, -106.9464, 1001.5156],
+            "price_modifier": 1.0,
+            "guards": [
+                [ "Gustav", "ammunation_gustav", 121, 31, 12.0, 22.0, 30.0, 1 ],
+                [ "Anton", "ammunation_anton", 121, 31, 8.0, 18.0, 30.0, 1 ]
+            ],
+            "weapons": [1, 2, 6, 7, 11, 22, 25, 27, 30, 33, 46],
+            "armour_price": 40000
+        },
+        # Shared interior for Ammu-Nation outlets in Downtown Los Santos and Queens.
+        {
+            "name": "Downtown Ammunation",
+            "location": [286.2470, -39.3816, 1001.5156, 358.0200, 1],
+            "spawnweapon_pickup_location": [293.2163, -37.7215, 1001.5156],
+            "price_modifier": 1.0,
+            "guards": [
+                [ "Gustav", "ammunation_gustav", 121, 31, 12.0, 22.0, 30.0, 1 ],
+                [ "Anton", "ammunation_anton", 121, 31, 8.0, 18.0, 30.0, 1 ]
+            ],
+            "weapons": [3, 5, 8, 14, 16, 22, 24, 25, 26, 27, 28, 31, 32, 34, 46],
+            "armour_price": 50000
+        },
+		# The Ammu-Nation-interior in El Quebrados in North-West San Andreas.
+        {
+            "name": "El Quebrados Ammunation",
+            "location": [316.524994, -167.706985, 999.661987, 300.0000, 6],
+            "spawnweapon_pickup_location": [317.1313, -165.7944, 999.6010],
+            "price_modifier": 1.0,
+            "guards": [
+                [ "Gustav", "ammunation_gustav", 121, 31, 12.0, 22.0, 30.0, 1 ],
+                [ "Anton", "ammunation_anton", 121, 31, 8.0, 18.0, 30.0, 1 ]
+            ],
+            "weapons": [1, 2, 6, 7, 11, 22, 25, 27, 30, 33, 46],
+            "armour_price": 40000
+        }
+    ]
+}

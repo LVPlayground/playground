@@ -1,0 +1,55 @@
+# Data for the skin selection feature on Las Venturas Playground. Selecting a
+# skin now requires a group to be chosen first, which is a little bit fancier
+# than the old per-skin massive iteration system.
+{
+    # Base environment in which the selection will take place.
+    "environment": {
+        "world": 314159,
+        "interior": 0,
+
+        "weather": 18,
+        "time": [17, 00],
+
+        # Position at which the player will stand for group selection (which
+        # shouldn"t be visible in any of the camera viewports, but close enough.
+        "position": [2137.0, 1486.0, 31.17]
+    }
+    
+    # The skins are divided among several groups, each which has their own
+    # configuration in terms of positioning, objects, base skin and music. The
+    # player can navigate through them.
+    "groups": [
+        {
+            # Group 1 (Id: 0): --need name--
+            # Looking at the Pirate Ship.
+            "position": [2091.4, 1512.4, 35.484, 0.0],
+            
+            "camera_position": [0.0, 0.0, 0.0],
+            "camera_look_at": [0.0, 0.0, 0.0]
+        },
+        {
+            # Group 2 (Id: 1): --need name--
+            # Looking southbound on The Strip.
+            "position": [2091.4, 1453.4, 35.484, 0.0],
+            
+            "camera_position": [0.0, 0.0, 0.0],
+            "camera_look_at": [0.0, 0.0, 0.0]
+        },
+        {
+            # Group 3 (Id: 2): --need name--
+            # Looking at the Pyramid and the statues in front of it.
+            "position": [2175.4, 1452.4, 35.484, 0.0],
+            
+            "camera_position": [0.0, 0.0, 0.0],
+            "camera_look_at": [0.0, 0.0, 0.0]
+        },
+        {
+            # Group 4 (Id: 3): --need name--
+            # Looking northbound on The Strip.
+            "position": [2174.4, 1513.4, 35.484, 0.0],
+            
+            "camera_position": [0.0, 0.0, 0.0],
+            "camera_look_at": [0.0, 0.0, 0.0]
+        },
+    ]
+}

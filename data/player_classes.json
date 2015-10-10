@@ -1,0 +1,289 @@
+[
+    3, # Andre
+    4, # Barry "Big Bear" Thorne [Thin]
+    5, # Barry "Big Bear" Thorne [Big]
+    6, # Emmet
+    7, # Taxi Driver/Train Driver
+    8, # Janitor
+    9, # Normal Ped
+    10, # Old Woman
+    11, # Casino croupier
+    12, # Rich Woman
+    13, # Street Girl
+    14, # Normal Ped
+    15, # Mr.Whittaker (RS Haul Owner)
+    16, # Airport Ground Worker
+    17, # Buisnessman
+    18, # Beach Visitor
+    19, # DJ
+    20, # Rich Guy (Madd Dogg's Manager)
+    21, # Normal Ped
+    22, # Normal Ped
+    23, # BMXer
+    24, # Madd Dogg Bodyguard
+    25, # Madd Dogg Bodyguard
+    26, # Backpacker
+    27, # Construction Worker
+    28, # Drug Dealer
+    29, # Drug Dealer
+    30, # Drug Dealer
+    31, # Farm-Town inhabitant
+    32, # Farm-Town inhabitant
+    33, # Farm-Town inhabitant
+    34, # Farm-Town inhabitant
+    35, # Gardener
+    36, # Golfer
+    37, # Golfer
+    38, # Normal Ped
+    39, # Normal Ped
+    40, # Normal Ped
+    41, # Normal Ped
+    42, # Jethro
+    43, # Normal Ped
+    44, # Normal Ped
+    45, # Beach Visitor
+    46, # Normal Ped
+    47, # Normal Ped
+    48, # Normal Ped
+    49, # Snakehead (Da Nang)
+    50, # Mechanic
+    51, # Mountain Biker
+    52, # Mountain Biker
+    53, # Unknown
+    54, # Normal Ped
+    55, # Normal Ped
+    56, # Normal Ped
+    57, # Feds
+    58, # Normal Ped
+    59, # Normal Ped
+    60, # Normal Ped
+    61, # Pilot
+    62, # Colonel Fuhrberger
+    63, # Prostitute
+    64, # Prostitute
+    65, # Kendl Johnson
+    66, # Pool Player
+    67, # Pool Player
+    68, # Priest/Preacher
+    69, # Normal Ped
+    70, # Scientist
+    71, # Security Guard
+    72, # Hippy
+    73, # Hippy
+    75, # Prostitute
+    76, # Normal Ped
+    77, # Homeless
+    78, # Homeless
+    79, # Homeless
+    80, # Boxer
+    81, # Boxer
+    82, # Black Elvis
+    83, # White Elvis
+    84, # Blue Elvis
+    85, # Prostitute
+    86, # Ryder with robbery mask
+    87, # Stripper
+    88, # Normal Ped
+    89, # Normal Ped
+    90, # Jogger
+    91, # Rich Woman
+    92, # Rollerskater
+    93, # Normal Ped
+    94, # Normal Ped
+    95, # Normal Ped
+    96, # Jogger
+    97, # Lifeguard
+    98, # Normal Ped
+    99, # Rollerskater
+    100, # Biker
+    101, # Normal Ped
+    102, # Balla
+    103, # Balla
+    104, # Balla
+    105, # Grove Street Families
+    106, # Grove Street Families
+    107, # Grove Street Families
+    108, # Los Santos Vagos
+    109, # Los Santos Vagos
+    110, # Los Santos Vagos
+    111, # The Russian Mafia
+    112, # The Russian Mafia
+    113, # The Russian Mafia
+    114, # Varios Los Aztecas
+    115, # Varios Los Aztecas
+    116, # Varios Los Aztecas
+    117, # Triad
+    118, # Triad
+    199, # Farm-Town inhabitant
+    120, # Triad Boss
+    121, # Da Nang Boy
+    122, # Da Nang Boy
+    123, # Da Nang Boy
+    124, # The Mafia
+    125, # The Mafia
+    126, # The Mafia
+    127, # The Mafia
+    128, # Farm Inhabitant
+    129, # Farm Inhabitant
+    130, # Farm Inhabitant
+    131, # Farm Inhabitant
+    132, # Farm Inhabitant
+    133, # Farm Inhabitant
+    134, # Homeless
+    135, # Homeless
+    136, # Normal Ped
+    137, # Homeless
+    138, # Beach Visitor
+    139, # Beach Visitor
+    140, # Beach Visitor
+    141, # Buisnesswoman
+    142, # Taxi Driver
+    143, # Crack Maker
+    144, # Crack Maker
+    145, # Crack Maker
+    146, # Crack Maker
+    147, # Buisnessman
+    148, # Buisnesswoman
+    149, # Big Smoke Armored
+    150, # Buisnesswoman
+    151, # Normal Ped
+    152, # Prostitute
+    153, # Construction Worker
+    154, # Beach Visitor
+    155, # Well Stacked Pizza Worker
+    156, # Barber
+    157, # Hillbilly
+    158, # Farmer
+    159, # Hillbilly
+    160, # Hillbilly
+    161, # Farmer
+    162, # Hillbilly
+    163, # Black Bouncer
+    164, # White Bouncer
+    165, # White MIB agent
+    166, # Black MIB agent
+    167, # Cluckin' Bell Worker
+    168, # Hotdog/Chilli Dog Vendor
+    169, # Normal Ped
+    170, # Normal Ped
+    171, # Blackjack Dealer
+    172, # Casino croupier
+    173, # San Fierro Rifa
+    174, # San Fierro Rifa
+    175, # San Fierro Rifa
+    176, # Barber
+    177, # Barber
+    178, # Whore
+    179, # Ammunation Salesman
+    180, # Tattoo Artist
+    181, # Punk
+    182, # Cab Driver
+    183, # Normal Ped
+    184, # Normal Ped
+    185, # Normal Ped
+    186, # Normal Ped
+    187, # Buisnessman
+    188, # Normal Ped
+    189, # Valet
+    190, # Barbara Schternvart
+    191, # Helena Wankstein
+    192, # Michelle Cannes
+    193, # Katie Zhan
+    194, # Millie Perkins
+    195, # Denise Robinson
+    196, # Farm-Town inhabitant
+    197, # Hillbilly
+    198, # Farm-Town inhabitant
+    199, # Farm-Town inhabitant
+    200, # Hillbilly
+    201, # Farmer
+    202, # Farmer
+    203, # Karate Teacher
+    204, # Karate Teacher
+    205, # Burger Shot Cashier
+    206, # Cab Driver
+    207, # Prostitute
+    208, # Su Xi Mu (Suzie)
+    209, # Noodle stand vendor
+    210, # Boater
+    211, # Clothes shop staff
+    212, # Homeless
+    213, # Weird old man
+    214, # Waitress (Maria Latore)
+    215, # Normal Ped
+    216, # Normal Ped
+    218, # Normal Ped
+    219, # Rich Woman
+    220, # Cab Driver
+    221, # Normal Ped
+    222, # Normal Ped
+    223, # Normal Ped
+    224, # Normal Ped
+    225, # Normal Ped
+    226, # Normal Ped
+    227, # Buisnessman
+    228, # Normal Ped
+    229, # Normal Ped
+    230, # Homeless
+    231, # Normal Ped
+    232, # Normal Ped
+    233, # Normal Ped
+    234, # Cab Driver
+    235, # Normal Ped
+    236, # Normal Ped
+    237, # Prostitute
+    238, # Prostitute
+    239, # Homeless
+    240, # The D.A
+    241, # Afro-American
+    242, # Mexican
+    243, # Prostitute
+    244, # Stripper
+    245, # Prostitute
+    246, # Stripper
+    247, # Biker
+    248, # Biker
+    249, # Pimp
+    250, # Normal Ped
+    251, # Lifeguard
+    252, # Naked Valet
+    253, # Bus Driver
+    254, # Biker Drug Dealer
+    255, # Chauffeur (Limo Driver)
+    256, # Stripper
+    257, # Stripper
+    258, # Heckler
+    259, # Heckler
+    260, # Construction Worker
+    261, # Cab driver
+    262, # Cab driver
+    263, # Normal Ped
+    264, # Clown
+    273, # T-Bone Mendez
+    274, # Paramedic (Emergency Medical Technician)
+    275, # Paramedic (Emergency Medical Technician
+    276, # Paramedic (Emergency Medical Technician
+    277, # Firefighter
+    278, # Firefighter
+    279, # Firefighter
+    280, # Los Santos Police Officer
+    281, # San Fierro Police Officer
+    282, # Las Venturas Police Officer
+    283, # County Sheriff
+    284, # LSPD Motorbike Cop
+    285, # S.W.A.T Special Forces
+    286, # Federal Agent
+    287, # San Andreas Army
+    288, # Desert Sheriff
+    289, # Zero
+    290, # Ken Rosenberg
+    291, # Kent Paul
+    292, # Cesar Vialpando
+    293, # Jeffery "OG Loc" Martin/Cross
+    294, # Wu Zi Mu (Woozie)
+    295, # Michael Toreno
+    296, # Jizzy B.
+    297, # Madd Dogg
+    298, # Catalina
+    299, # Claude Speed
+]

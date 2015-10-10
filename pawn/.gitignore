@@ -1,0 +1,6 @@
+AUTHOR
+*.amx
+*.ppd
+config-release.pwn
+config-staging.pwn
+out.pwn

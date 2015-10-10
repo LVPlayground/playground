@@ -140,6 +140,9 @@
     <DiskObject>\Features\Christmas\</DiskObject>
     <DiskObject>\Features\Christmas\ChristmasDecorations.pwn</DiskObject>
     <DiskObject>\Features\Christmas\GiftHunting.pwn</DiskObject>
+    <DiskObject>\Features\Communication\</DiskObject>
+    <DiskObject>\Features\Communication\SpamTracker.pwn</DiskObject>
+    <DiskObject>\Features\Communication\SpamTrackerTest.pwn</DiskObject>
     <DiskObject>\Features\Deathmatch.pwn</DiskObject>
     <DiskObject>\Features\Deathmatch\</DiskObject>
     <DiskObject>\Features\Deathmatch\Ammunation\</DiskObject>
@@ -496,9 +499,6 @@
     <DiskObject>\Resources\Minigames\Race\Race7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race9.pwn</DiskObject>
-    <DiskObject>\Features\Communication\</DiskObject>
-    <DiskObject>\Features\Communication\SpamTracker.pwn</DiskObject>
-    <DiskObject>\Features\Communication\SpamTrackerTest.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>
@@ -506,7 +506,7 @@
     <Setting name="documentation_file">\lvp.ppd</Setting>
     <Setting name="unique_id">42f86672-d1ab-45e8-b9f9-012742b7a821</Setting>
     <Setting name="copyright_start">2006</Setting>
-    <Setting name="copyright_end">2013</Setting>
-    <Setting name="license">General Public License v3</Setting>
+    <Setting name="copyright_end">2015</Setting>
+    <Setting name="license">General Public License v2</Setting>
   </Settings>
 </Project>

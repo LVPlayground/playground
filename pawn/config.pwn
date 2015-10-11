@@ -131,13 +131,6 @@ class Feature {
     public const EnableDeathmatchMinigames = 0;
 
     /** **************************************************************************************** **/
-    /// Environment
-
-    // Enables natural time progression across San Andreas. Rather than having one global time which
-    // applies to everyone, a player's world time will depend on where in San Andreas they are.
-    public const EnableTimeProgression = 0;
-
-    /** **************************************************************************************** **/
     /// Gameplay
 
     // The Map Zone Manager will rewrite the ancient zoneHandler.pwn file, and will take care of

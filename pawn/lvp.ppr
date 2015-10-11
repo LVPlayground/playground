@@ -177,10 +177,6 @@
     <DiskObject>\Features\Environment\Area\</DiskObject>
     <DiskObject>\Features\Environment\Area\CasinoArea.pwn</DiskObject>
     <DiskObject>\Features\Environment\Area\PayAndSprayShops.pwn</DiskObject>
-    <DiskObject>\Features\Environment\Environment.pwn</DiskObject>
-    <DiskObject>\Features\Environment\EnvironmentPlayer.pwn</DiskObject>
-    <DiskObject>\Features\Environment\EnvironmentSettings.pwn</DiskObject>
-    <DiskObject>\Features\Environment\EnvironmentTile.pwn</DiskObject>
     <DiskObject>\Features\Environment\InformationBeaconController.pwn</DiskObject>
     <DiskObject>\Features\Environment\Services\</DiskObject>
     <DiskObject>\Features\Environment\Services\Gunther.pwn</DiskObject>
@@ -191,13 +187,6 @@
     <DiskObject>\Features\Environment\Services\TrainDriver.pwn</DiskObject>
     <DiskObject>\Features\Environment\Time\</DiskObject>
     <DiskObject>\Features\Environment\Time\TimeController.pwn</DiskObject>
-    <DiskObject>\Features\Environment\Weather.pwn</DiskObject>
-    <DiskObject>\Features\Environment\Weather\</DiskObject>
-    <DiskObject>\Features\Environment\Weather\HumidityGrid.pwn</DiskObject>
-    <DiskObject>\Features\Environment\Weather\TemperatureGrid.pwn</DiskObject>
-    <DiskObject>\Features\Environment\Weather\Weather.pwn</DiskObject>
-    <DiskObject>\Features\Environment\Weather\WeatherController.pwn</DiskObject>
-    <DiskObject>\Features\Environment\Weather\WeatherPrinter.pwn</DiskObject>
     <DiskObject>\Features\External.pwn</DiskObject>
     <DiskObject>\Features\External\</DiskObject>
     <DiskObject>\Features\External\IRC.pwn</DiskObject>

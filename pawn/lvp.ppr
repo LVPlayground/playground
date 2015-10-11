@@ -218,7 +218,6 @@
     <DiskObject>\Features\Gameplay\Jail\</DiskObject>
     <DiskObject>\Features\Gameplay\Jail\JailCommands.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Jail\JailController.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\MapZoneManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\ShipManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\SpawnManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Statistics.pwn</DiskObject>
@@ -247,7 +246,6 @@
     <DiskObject>\Features\Visual\News\NewsController.pwn</DiskObject>
     <DiskObject>\Features\Visual\News\NewsMessage.pwn</DiskObject>
     <DiskObject>\Features\Visual\PlayerStatisticsInterface.pwn</DiskObject>
-    <DiskObject>\Features\Visual\ZoneIndicator.pwn</DiskObject>
     <DiskObject>\Framework\</DiskObject>
     <DiskObject>\Framework\Annotations.pwn</DiskObject>
     <DiskObject>\Framework\Debug.pwn</DiskObject>

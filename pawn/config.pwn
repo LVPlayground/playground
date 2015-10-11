@@ -120,13 +120,6 @@ class Feature {
     public const EnableFightClub = 0;
 
     /** **************************************************************************************** **/
-    /// Gameplay
-
-    // The Map Zone Manager will rewrite the ancient zoneHandler.pwn file, and will take care of
-    // keeping track where a player is, including names and the visual indicators.
-    public const EnableMapZoneManager = 0;
-
-    /** **************************************************************************************** **/
     /// Christmas
 
     // Christmas-themed decoration objects are placed throughout Las Venturas; they include a tree

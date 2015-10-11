@@ -15,12 +15,6 @@
 #include "Features/Visual/News/NewsController.pwn"
 #include "Features/Visual/News/NewsMessage.pwn"
 
-// When a player enters or leaves a certain area of San Andreas, we'd like to display this to them
-// in the bottom-right corner of their screen. This is called the Zone Indicator.
-#if Feature::EnableMapZoneManager == 1
-    #include "Features/Visual/ZoneIndicator.pwn"
-#endif
-
 // When a player receives money or actually spends money, we show the amount in either green (for
 // increases) or red (for decreases) text under their HUD in the top-right of the window.
 #include "Features/Visual/MoneyIndicator.pwn"

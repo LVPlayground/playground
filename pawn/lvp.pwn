@@ -214,10 +214,7 @@
 // Put these down at the end of the includes because everything prior to these should cover everything required IN these
 // Note, their order IS important (functions requires areaHandler, specifically)
 #include Interface/timers.pwn
-
-#if Feature::EnableMapZoneManager == 0
-    #include Elements/Player/zoneHandler.pwn
-#endif
+#include Elements/Player/zoneHandler.pwn
 
 #include Interface/functions.pwn
 

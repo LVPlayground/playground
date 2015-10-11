@@ -8,12 +8,6 @@
 #include "Features/Gameplay/ClassManager.pwn"
 #include "Features/Gameplay/SpawnManager.pwn"
 
-// San Andreas is split up in a large number of individual zones. We'd like to track which city each
-// player is in, together with which part of each city the player is in.
-#if Feature::EnableMapZoneManager == 1
-    #include "Features/Gameplay/MapZoneManager.pwn"
-#endif
-
 // Each player has got a nickname color, which might change throughout the game session. The
 // Color Manager's duty is to set the right nickname colors and to keep track of previous ones.
 // The Color Picker is available for VIPs to change their nickname color and preserve this.

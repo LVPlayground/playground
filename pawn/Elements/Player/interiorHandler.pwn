@@ -10,7 +10,7 @@
 
 new iTimeEnteredGym[MAX_PLAYERS];
 
-stock CheckGymEntry(playerid)
+CheckGymEntry(playerid)
 {
     if(iTimeEnteredGym[playerid] == 0)
         return;
@@ -209,7 +209,7 @@ Nr          SpawnX, MinX, MaxX                     SpawnY, MinY, MaxY           
     {10,     420.484985,400.9158,460.9158,       2535.589844,2533.2849,2547.9688,    10.020289,9.0000,14.9063,          45.000,     "Plane School"}
 };
 
-stock GetPlayerInteriorNr ( playerid )
+GetPlayerInteriorNr ( playerid )
 {
     new Float: x;
     new Float: y;
@@ -224,21 +224,21 @@ stock GetPlayerInteriorNr ( playerid )
     return -1;
 }
 
-stock EnablePlayerInteriorWeapons(playerid,interiorid)
+EnablePlayerInteriorWeapons(playerid,interiorid)
 {
     if(!Player(playerid)->isConnected()) return 0;
     g_AllowWeapons[interiorid][playerid] = true;
     return 1;
 }
 
-stock DisablePlayerInteriorWeapons(playerid,interiorid)
+DisablePlayerInteriorWeapons(playerid,interiorid)
 {
     if(!Player(playerid)->isConnected()) return 0;
     g_AllowWeapons[interiorid][playerid] = false;
     return 1;
 }
 
-stock ResetPlayerInteriorQuit( iPlayerID )
+ResetPlayerInteriorQuit( iPlayerID )
 {
     new timeDiff = Time->currentTime() - playerLastQuitInterior[iPlayerID];
     if(timeDiff == 3 && GetPlayerInterior(iPlayerID) == 0 && LegacyIsPlayerInVipRoom(iPlayerID) == false)

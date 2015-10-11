@@ -348,7 +348,6 @@ ShowServerMessage() {
     lvp_show(GetPlayerId("Gunther"), serverMessageCommands[random(8)]);
 }
 
-forward UpdateTime(playerId);
 UpdateTime(playerId) {
     if (Player(playerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter() == true)
         return 0;
@@ -378,7 +377,6 @@ UpdateTime(playerId) {
     return 1;
 }
 
-forward renewtimestuff();
 renewtimestuff() {
     KillTimer(cmTimer);
 
@@ -390,7 +388,6 @@ renewtimestuff() {
     return 1;
 }
 
-forward renewtimestuff2();
 renewtimestuff2() {
     KillTimer(cmTimer);
 
@@ -403,7 +400,6 @@ renewtimestuff2() {
     return 1;
 }
 
-forward renewtimestuff3();
 renewtimestuff3() {
     KillTimer(cmTimer);
     setrandomtime();
@@ -412,7 +408,7 @@ renewtimestuff3() {
 }
 
 forward realtime();
-realtime() {
+public realtime() {
     new m, s;
     gettime(gHour, m, s);
     cmTimer = SetTimer("setrealtime", 3600000, 1);
@@ -458,7 +454,6 @@ ResetWorldBounds(playerId) {
     return 1;
 }
 
-forward TaxUpdate();
 TaxUpdate() {
     new notice[128], totalInterest, interest;
 
@@ -657,7 +652,6 @@ IsNumeric(const string[]) {
     return 1;
 }
 
-forward Float: GetXYInFrontOfPlayer(playerId, &Float: x, &Float: y, Float: distance);
 Float: GetXYInFrontOfPlayer(playerId, &Float: x, &Float: y, Float: distance) {
     new Float: a;
     GetPlayerPos(playerId, x, y, a);
@@ -922,9 +916,10 @@ AntiDeAMX() {
 SpawnNPCs(playerId) {
     new name[MAX_PLAYER_NAME];
     Player(playerId)->nickname(name, sizeof(name));
-    #if ReleaseSettings::CreateMerchant == 1
-        CTheft__CheckNPCSpawn(playerId, name);
-    #endif
+
+#if ReleaseSettings::CreateMerchant == 1
+    CTheft__CheckNPCSpawn(playerId, name);
+#endif
 
     return 1;
 }

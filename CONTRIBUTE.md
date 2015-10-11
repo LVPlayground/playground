@@ -8,6 +8,8 @@ about how to clone repositories, read [GitHub's guide]
 (https://help.github.com/articles/cloning-a-repository/) first. You may also be interested in
 [GitHub Desktop](https://help.github.com/desktop/guides/getting-started/installing-github-desktop/).
 
+Note that you must have installed [git-lfs](https://git-lfs.github.com/) as well.
+
 1. Create a directory for the LVP-related repositories on your computer.
 2. Clone [LVPlayground/playground](https://github.com/LVPlayground/playground) in that directory.
 3. Clone [LVPlayground/server-staging](https://github.com/LVPlayground/server-staging) in that directory.

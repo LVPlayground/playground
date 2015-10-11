@@ -277,65 +277,6 @@ class SpawnManager <playerId (MAX_PLAYERS)> {
     }
 
     /**
-     * Stores information about the player's current location in Grand Theft Auto when we want
-     * their location information to be serialized. This stores enough information for them to be
-     * moved back to the exact position where they were.
-     *
-     * @param playerId Id of the player whose data is being serialized.
-     * @param serializationId Id of the serialization slot to which we'll be writing data.
-     * @param level Level of serialization being applied to this player.
-     */
-    @list(OnSerializePlayer)
-    public onSerializePlayer(serializationId, SerializationLevel: level) {
-        if (!(level & LocationSerialization))
-            return; // we handle location data for the serialization.
-
-        new virtualWorld = GetPlayerVirtualWorld(playerId);
-        if (virtualWorld != World::MainWorld)
-            return; // only handle players in the main world, disregarding minigames and all.
-
-        new Float: position[3], Float: rotation;
-        new interiorId = GetPlayerInterior(playerId);
-        GetPlayerPos(playerId, position[0], position[1], position[2]);
-        GetPlayerFacingAngle(playerId, rotation);
-
-        SerializationData(serializationId)->writeInteger("virtual_world", virtualWorld);
-        SerializationData(serializationId)->writeInteger("interior_id", interiorId);
-        SerializationData(serializationId)->writeFloat("position_x", position[0]);
-        SerializationData(serializationId)->writeFloat("position_y", position[1]);
-        SerializationData(serializationId)->writeFloat("position_z", position[2] + 1.0);
-        SerializationData(serializationId)->writeFloat("rotation", rotation);
-    }
-
-    /**
-     * Restores the location of this player. If they have been spawned in the main world then we'll
-     * move them immediately, otherwise we'll wait for them to spawn before updating their position.
-     *
-     * @param playerId Id of the player whose data is being restored.
-     * @param serializationId Id of the serialization slot which contains their data.
-     * @param level Level of serialization which has been applied.
-     */
-    @list(OnRestorePlayer)
-    public onRestorePlayer(serializationId, SerializationLevel: level) {
-        if (_: (level & LocationSerialization) == 0)
-            return; // we handle location data for the serialization.
-
-        new virtualWorld = SerializationData(serializationId)->readInteger("virtual_world");
-        if (virtualWorld != World::MainWorld)
-            return; // either -1 (no data) or >0 (non-main world), which we don't want to restore.
-
-        m_spawnInterior = SerializationData(serializationId)->readInteger("interior_id");
-        m_spawnPosition[0] = SerializationData(serializationId)->readFloat("position_x");
-        m_spawnPosition[1] = SerializationData(serializationId)->readFloat("position_y");
-        m_spawnPosition[2] = SerializationData(serializationId)->readFloat("position_z");
-        m_spawnRotation = SerializationData(serializationId)->readFloat("rotation");
-
-        new playerState = GetPlayerState(playerId);
-        if (playerState >= PLAYER_STATE_ONFOOT && playerState <= PLAYER_STATE_PASSENGER && m_hasSeenFirstSpawn)
-            this->restoreLocationOnSpawn();
-    }
-
-    /**
      * If we have a fixed spawn position in mind for the player, then let's be sure to spawn them
      * there instead of at a random position in the Grand Theft Auto world.
      */

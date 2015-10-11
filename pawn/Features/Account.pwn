@@ -92,9 +92,6 @@
  * @author Russell Krupke <russell@sa-mp.nl>
  */
 
-#include "Features/Account/SerializationData.pwn"
-#include "Features/Account/SerializationManager.pwn"
-
 /**
  * There are several types of password requests. The most common one will be initial authentication,
  * but in order to prevent abuse of certain low-level features, such as gaining rcon access, we

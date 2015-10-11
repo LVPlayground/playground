@@ -133,8 +133,6 @@
     <DiskObject>\Features\Account\Selection\SkinSelectionEnvironment.pwn</DiskObject>
     <DiskObject>\Features\Account\Selection\SkinSelectionGroup.pwn</DiskObject>
     <DiskObject>\Features\Account\Selection\SkinSelector.pwn</DiskObject>
-    <DiskObject>\Features\Account\SerializationData.pwn</DiskObject>
-    <DiskObject>\Features\Account\SerializationManager.pwn</DiskObject>
     <DiskObject>\Features\Account\UndercoverAdministrator.pwn</DiskObject>
     <DiskObject>\Features\Christmas.pwn</DiskObject>
     <DiskObject>\Features\Christmas\</DiskObject>

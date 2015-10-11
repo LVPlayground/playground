@@ -50,7 +50,7 @@ enum mapinfoenum
     Float:Map_Race_Cp_Y[MAX_MAP_RACE_CHECKPOINTS],      // Y
     Float:Map_Race_Cp_Z[MAX_MAP_RACE_CHECKPOINTS],      // Z
     Map_Race_Countdown,                               // Stores current number of remaining countdown seconds for a map zone race
-    Map_Race_Primary_CP,                                 // Store the ID of the primary checkpoint ID too ofc
+    DynamicRaceCP: Map_Race_Primary_CP,               // Store the ID of the primary checkpoint ID too ofc
     Map_Player_In_Race[MAX_PLAYERS],                           // Bool to determine if a player is in a race
     Map_Player_CP_Count[MAX_PLAYERS],                          // Number of checkpoints a player has.
     Text:Map_Player_Display_Pos[MAX_PLAYERS],                      // Pos textdraw
@@ -329,7 +329,7 @@ stock OnPlayerEnterPrimaryMapZoneCheckpoint(playerid, iMapID)
 // This function is called from OnPlayerEnterDynamicRaceCheckpoint
 // and checks for when a player enters the first initial race checkpoint.
 // When they do, we prompt for them to start the race.
-stock CheckMapZoneDynamicCheckpoint(playerid, checkpointid)
+CheckMapZoneDynamicCheckpoint(playerid, DynamicRaceCP: checkpointid)
 {
     for(new iMapID = 0; iMapID < g_MapCount; iMapID++)
     {
@@ -495,7 +495,7 @@ ProcessMapZoneRaces()
                 // Start the race! woo
                 format(szGameMsg, 128, "~g~GO!");
                 DestroyDynamicRaceCP(Map_Zone[iMapID][Map_Race_Primary_CP]);
-                Map_Zone[iMapID][Map_Race_Primary_CP] = -1;
+                Map_Zone[iMapID][Map_Race_Primary_CP] = DynamicRaceCP: -1;
             }
 
             // Alright show the game text msg for all players.
@@ -654,7 +654,7 @@ RemovePlayerFromMapZoneRace(playerid, bool:check_end = true)
 // This function resets all relevant map zone data
 ResetMapZoneRaceData(iMapID)
 {
-    DestroyDynamicCP(Map_Zone[iMapID][Map_Race_Primary_CP]);
+    DestroyDynamicRaceCP(Map_Zone[iMapID][Map_Race_Primary_CP]);
     // recreate the primary cp
     Map_Zone[iMapID][Map_Race_Primary_CP] = CreateDynamicRaceCP(1, Map_Zone[iMapID][Map_Race_Cp_X][0], Map_Zone[iMapID][Map_Race_Cp_Y][0], Map_Zone[iMapID][Map_Race_Cp_Z][0], 0, 0, 0, 20.0, iMapID, 0);
 
@@ -702,12 +702,12 @@ stock GetMapZoneModelCount(n_MapID)
 // Function: AddMapZoneObject
 // Add an object to the map zone. This is useful to determine which
 // object models are in place for preloading objects later (to bypass a SA-MP bug)
-stock AddMapZoneObject(n_MapID, n_Model, Float:fPosX, Float:fPosY, Float:fPosZ, Float:fRX, Float:fRY, Float:fRZ)
+DynamicObject: AddMapZoneObject(n_MapID, n_Model, Float:fPosX, Float:fPosY, Float:fPosZ, Float:fRX, Float:fRY, Float:fRZ)
 {
     if(n_MapID < 0 || n_MapID > MAX_MAP_AREAS)
     {
         printf("[Map Zones] Error adding object to map %d (Map ID limit breach)", n_MapID);
-        return -1;
+        return DynamicObject: -1;
     }
 
     // First of all store how many different object models are in this map zone
@@ -732,7 +732,7 @@ stock AddMapZoneObject(n_MapID, n_Model, Float:fPosX, Float:fPosY, Float:fPosZ, 
                 if(Map_Zone[n_MapID][Map_Model_Count] >= MAX_MAP_MODELS)
                 {
                     printf("[Map Zones] Error adding map object %d for map %d: Object Models Breached.", n_Model, n_MapID);
-                    return -1;
+                    return DynamicObject: -1;
                 }
 
                 Map_Zone[n_MapID] [Map_Object_Models] [n_ModelCount] = n_Model;
@@ -782,51 +782,6 @@ stock MoveMapZoneObject(n_ObjectID, Float:fPosX, Float:fPosY, Float:fPosZ, Float
     return 1;
 }
 
-// Function: OnMapDynamicObjectMoved
-// Called from OnDynamicObjectMoved to check for looping objects
-// from map zones.
-OnMapDynamicObjectMoved(objectid)
-{
-    if(!IsValidDynamicObject(objectid))
-        return; // :S
-/*
-    // Check if this is a map zone moving object on a loop.
-    if(n_ObjectMoveLoop[objectid])
-    {
-
-        // Now we need to check if we need to move this object to the primary
-        // position or the secondary.
-
-        new
-            Float:fPosX,
-            Float:fPosY,
-            Float:fPosZ,
-            n_ObjectID;
-
-        n_ObjectID = objectid; // Lazy
-
-        GetDynamicObjectPos(objectid, fPosX, fPosY, fPosZ);
-
-        if(fPosX == n_ObjectMoveData[n_ObjectID][0] && fPosY == n_ObjectMoveData[n_ObjectID][1] && fPosZ == n_ObjectMoveData[n_ObjectID][2])
-        {
-            // Object is at secondary position. Move it to Primary position
-
-            fPosX = n_ObjectMoveData[n_ObjectID][3];
-            fPosY = n_ObjectMoveData[n_ObjectID][4];
-            fPosZ = n_ObjectMoveData[n_ObjectID][5];
-
-        }
-        else
-        {
-            // Object is at primary posistion - move to secondary position
-            fPosX = n_ObjectMoveData[n_ObjectID][0];
-            fPosY = n_ObjectMoveData[n_ObjectID][1];
-            fPosZ = n_ObjectMoveData[n_ObjectID][2];
-        }
-        // And wollah!
-        MoveDynamicObject(objectid, fPosX, fPosY, fPosZ, n_ObjectMoveData[n_ObjectID][6]);
-    }*/
-}
 
 // Function: TeleportPlayerToMapZone
 // Physically teleports the player to the map zone, putting them in their vehicle

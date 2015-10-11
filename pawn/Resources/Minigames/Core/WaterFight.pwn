@@ -45,7 +45,7 @@ static  waterFightCountdown = 5;        // The remaining seconds of the countdow
 static  waterFightStartTime;            // Stores the time the minigame started.
 
 // Store all object IDs used in the handler
-static  waterFightObject[WATER_FIGHT_MAX_OBJECTS];
+static  DynamicObject: waterFightObject[WATER_FIGHT_MAX_OBJECTS];
 
 // Credits to iMonkey for his Getwet minigame
 static Float:waterFightObjectCoords[WATER_FIGHT_MAX_OBJECTS][7] = {
@@ -166,7 +166,7 @@ stock waterFightDestroyObjects()
     for(new i = 0; i < WATER_FIGHT_MAX_OBJECTS; i++)
     {
         DestroyDynamicObject(waterFightObject[i]);
-        waterFightObject[i] = INVALID_OBJECT_ID;
+        waterFightObject[i] = DynamicObject: INVALID_OBJECT_ID;
     }
 }
 

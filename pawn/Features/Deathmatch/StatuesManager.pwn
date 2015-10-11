@@ -45,17 +45,17 @@ class StatuesManager {
         Float: posZ, /* z-position of the statue */
         sModelId, /* pickup model Id */
         iconId, /* map icon Id */
-        mapId, /* unique Id for created map icon by CreateDynamicMapIcon() */
+        DynamicMapIcon: mapId, /* unique Id for created map icon by CreateDynamicMapIcon() */
         statueId /* unique Id for created pickup by PickupController->createPickup() */
     }
 
     // Gather all the statues info in one array.
     new m_statueInfo[4][statueDetails] = {
-        //    posX        posY     posZ  sModelId  iconId  mapId  statueId
-        {2845.6782, -2410.4414, 19.1922,     1254,      6,     0,       -1}, // Ammo Statue
-        { -689.293,   1538.472,  82.685,     1242,     30,     0,       -1}, // Armour Statue
-        {-2870.233,   2803.545, 250.589,     1240,     22,     0,       -1}, // Health Statue
-        {-2611.399,  -2851.273,   2.863,     1274,     23,     0,       -1}  // Money Statue
+        //    posX        posY     posZ  sModelId  iconId                  mapId   statueId
+        {2845.6782, -2410.4414, 19.1922,     1254,      6,     DynamicMapIcon: 0,        -1}, // Ammo Statue
+        { -689.293,   1538.472,  82.685,     1242,     30,     DynamicMapIcon: 0,        -1}, // Armour Statue
+        {-2870.233,   2803.545, 250.589,     1240,     22,     DynamicMapIcon: 0,        -1}, // Health Statue
+        {-2611.399,  -2851.273,   2.863,     1274,     23,     DynamicMapIcon: 0,        -1}  // Money Statue
     };
 
     /**

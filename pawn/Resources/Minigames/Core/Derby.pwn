@@ -240,7 +240,7 @@ enum E_DERBY_OBJECT
     Float:derbyObjPos[7],
     Float:derbyObjMovePos[7],
     derbyObjModel,
-    derbyObj,
+    DynamicObject: derbyObj,
     derbyObjMoving
 }
 
@@ -1761,7 +1761,7 @@ CDerby__InitializeMap(iDerbyID)
 {
     for(new i = 0; i < MAX_DERBY_OBJECTS; i++)
     {
-        derbyObject[iDerbyID][i][derbyObj] = INVALID_OBJECT_ID;
+        derbyObject[iDerbyID][i][derbyObj] = DynamicObject: INVALID_OBJECT_ID;
     }
 }
 
@@ -1784,20 +1784,20 @@ CDerby__LoadDerbyMap(iDerbyID)
 
     for(new i = 0; i < CDerby__GetObjectCount(iDerbyID); i++)
     {
-        if(derbyObject[iDerbyID][i][derbyObj] != INVALID_OBJECT_ID)
+        if(derbyObject[iDerbyID][i][derbyObj] != DynamicObject: INVALID_OBJECT_ID)
         {
             DestroyDynamicObject(derbyObject[iDerbyID][i][derbyObj]);
         }
 
         derbyObject[iDerbyID][i][derbyObj] = CreateDynamicObject(
-        derbyObject[iDerbyID][i][derbyObjModel],
-        derbyObject[iDerbyID][i][derbyObjPos][0],
-        derbyObject[iDerbyID][i][derbyObjPos][1],
-        derbyObject[iDerbyID][i][derbyObjPos][2],
-        derbyObject[iDerbyID][i][derbyObjPos][3],
-        derbyObject[iDerbyID][i][derbyObjPos][4],
-        derbyObject[iDerbyID][i][derbyObjPos][5],
-        iDerbyID, CDerby__GetInterior(iDerbyID));
+            derbyObject[iDerbyID][i][derbyObjModel],
+            derbyObject[iDerbyID][i][derbyObjPos][0],
+            derbyObject[iDerbyID][i][derbyObjPos][1],
+            derbyObject[iDerbyID][i][derbyObjPos][2],
+            derbyObject[iDerbyID][i][derbyObjPos][3],
+            derbyObject[iDerbyID][i][derbyObjPos][4],
+            derbyObject[iDerbyID][i][derbyObjPos][5],
+            iDerbyID, CDerby__GetInterior(iDerbyID));
     }
 
 }
@@ -1813,13 +1813,13 @@ CDerby__UnloadDerbyMap(iDerbyID)
 
     for(new i = 0; i < CDerby__GetObjectCount(iDerbyID); i++)
     {
-        if(derbyObject[iDerbyID][i][derbyObj] == INVALID_OBJECT_ID)
+        if(derbyObject[iDerbyID][i][derbyObj] == DynamicObject: INVALID_OBJECT_ID)
         {
             continue;
         }
 
         DestroyDynamicObject(derbyObject[iDerbyID][i][derbyObj]);
-        derbyObject[iDerbyID][i][derbyObj] = INVALID_OBJECT_ID;
+        derbyObject[iDerbyID][i][derbyObj] = DynamicObject: INVALID_OBJECT_ID;
     }
 
 }

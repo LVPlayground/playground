@@ -40,8 +40,8 @@
 // Vars used within the class
 static CalcChange[4];
 static Hay_Matrix[HAY_LENGTH_X][HAY_WIDTH_Y][HAY_HEIGHT_Z];
-static g_Hay_Object[2][HAY_OBJECT_COUNT];
-static Hay_Offset;
+static DynamicObject: g_Hay_Object[2][HAY_OBJECT_COUNT];
+static DynamicObject: Hay_Offset;
 static Random_Hay_Calc[HAY_OBJECT_COUNT];
 
 static  Hay_Timer;
@@ -127,7 +127,7 @@ CHay__Destroy()
         }
 
         DestroyDynamicObject(g_Hay_Object[0][i]);
-        g_Hay_Object[0][i] = INVALID_OBJECT_ID;
+        g_Hay_Object[0][i] = DynamicObject: INVALID_OBJECT_ID;
     }
 
 
@@ -135,7 +135,7 @@ CHay__Destroy()
     if(IsValidDynamicObject(Hay_Offset))
     {
         DestroyDynamicObject(Hay_Offset);
-        Hay_Offset = INVALID_OBJECT_ID;
+        Hay_Offset = DynamicObject: INVALID_OBJECT_ID;
     }
 
 
@@ -148,7 +148,7 @@ CHay__Destroy()
         }
 
         DestroyDynamicObject(g_Hay_Object[1][i]);
-        g_Hay_Object[1][i] = INVALID_OBJECT_ID;
+        g_Hay_Object[1][i] = DynamicObject: INVALID_OBJECT_ID;
     }
 
     KillTimer(Hay_Timer);
@@ -164,7 +164,7 @@ CHay__Process()
 {
     new
         rand,
-        g_RandomHay,
+        DynamicObject: g_RandomHay,
         g_HayMovement,
         x, y, z,
         Float:x2,

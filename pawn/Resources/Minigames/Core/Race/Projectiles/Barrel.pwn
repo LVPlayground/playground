@@ -45,7 +45,7 @@ enum    E_VEHICLE_BARREL
     eBarrelsDropped,                // Stores the total number of barrels dropped by a vehicles
     eBarrelsTempDropped,            // Stores the current number of active barrels by a vehicle (resets after eBarrelsDroped = MAX_BARRELS_PER_VEHICLE)
     eBarrelAmmo,
-    eBarrelObjectID[MAX_BARRELS_PER_VEHICLE]
+    DynamicObject: eBarrelObjectID[MAX_BARRELS_PER_VEHICLE]
 }
 
 static  eRaceVehicleBarrel[MAX_VEHICLES][E_VEHICLE_BARREL];
@@ -160,7 +160,7 @@ stock ResetVehicleBarrelData(vehicleid)
         if(IsValidDynamicObject(eRaceVehicleBarrel[vehicleid][eBarrelObjectID][i]))
         {
             DestroyDynamicObject(eRaceVehicleBarrel[vehicleid][eBarrelObjectID][i]);
-            eRaceVehicleBarrel[vehicleid][eBarrelObjectID][i] = INVALID_OBJECT_ID;
+            eRaceVehicleBarrel[vehicleid][eBarrelObjectID][i] = DynamicObject: -1;
         }
     }
 

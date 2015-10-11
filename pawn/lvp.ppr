@@ -307,7 +307,6 @@
     <DiskObject>\Interface\JSON.pwn</DiskObject>
     <DiskObject>\Interface\main\</DiskObject>
     <DiskObject>\Interface\main\LVP.pwn</DiskObject>
-    <DiskObject>\Interface\main\streamer.pwn</DiskObject>
     <DiskObject>\Interface\Math.pwn</DiskObject>
     <DiskObject>\Interface\menus.pwn</DiskObject>
     <DiskObject>\Interface\MySQL.pwn</DiskObject>
@@ -499,6 +498,7 @@
     <DiskObject>\Resources\Minigames\Race\Race7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race9.pwn</DiskObject>
+    <DiskObject>\Interface\Server\a_streamer.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

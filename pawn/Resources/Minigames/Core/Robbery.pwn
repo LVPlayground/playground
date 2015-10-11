@@ -83,8 +83,8 @@ static casinoData[enumCasino];
 static teamCount[2];
 static casinoCars[20];
 static casinoSignupCount;
-static vaultObject;
-static doorObject;
+static DynamicObject: vaultObject;
+static DynamicObject: doorObject;
 
 // CRobbery__Initialize
 // This is run at the start of the game, to get things going.

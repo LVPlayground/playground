@@ -65,7 +65,7 @@ new _RaceLoaded[MAX_RACES];
 // Inline these getters for performance reasons, they are hot on profiling.
 #define CRace__GetObjectModelCount(%0) g_RaceData[%0][25]
 #define CRace__GetObjectCount(%0) g_RaceData[%0][23]
-#define CRace__GetDynamicCheckpointID(%0) g_RaceData[%0][38]
+#define CRace__GetDynamicCheckpointID(%0) DynamicCP: g_RaceData[(%0)][38]
 
 // Include the races which are available;
 #include "Resources/Minigames/Race/Race1.pwn"
@@ -190,7 +190,7 @@ enum E_RACE_OBJECT
     Float:g_RaceObjectPos[6],           // X, Y, Z, RX, RY, RZ Pos data
     RaceObjectModel,                    // Model ID
     g_RaceObjectID,                     // Object ID for deletion later
-    g_RacePreloadObjectID[MAX_PLAYERS]        // Preloaded object ID for the player
+    DynamicObject: g_RacePreloadObjectID[MAX_PLAYERS]        // Preloaded object ID for the player
 }
 
 new g_RaceObject[ MAX_RACES ][ MAX_RACE_OBJECTS ][ E_RACE_OBJECT ];
@@ -273,7 +273,7 @@ CRace__Initialize( )
 
                 CreateDynamicMapIcon(fPosX, fPosY, fPosZ, 53, 0, 0, 0);
 
-                g_RaceData[ i ][ 38 ] = CreateDynamicCP(fPosX, fPosY, fPosZ, 2.0, 0);
+                g_RaceData[ i ][ 38 ] = _: CreateDynamicCP(fPosX, fPosY, fPosZ, 2.0, 0);
             }
         }
     }
@@ -546,7 +546,7 @@ CRace__ProcessLoadDisplay()
 // in the main world for generic races and allows the player to start a race from
 // that position. If it is a race dynamic checkpoint they're entering, it calls
 // CRace__PlayerEnterWorldCP(playerid, raceid)
-CRace__CheckDynamicCP(playerid, checkpointid)
+CRace__CheckDynamicCP(playerid, DynamicCP: checkpointid)
 {
     for(new iRaceID = 0; iRaceID < g_RacesLoaded; iRaceID++)
     {
@@ -555,7 +555,7 @@ CRace__CheckDynamicCP(playerid, checkpointid)
             continue;
         }
 
-        if(checkpointid == g_RaceData[ iRaceID ][ 38 ])
+        if(checkpointid == DynamicCP: g_RaceData[ iRaceID ][ 38 ])
         {
             CRace__PlayerEnterWorldCP(playerid, iRaceID);
             return;
@@ -2639,7 +2639,7 @@ CRace__LoadObjects(iRaceID)
         {
             if(g_RaceData[ iRaceID ][ 32 ] == 0)
             {
-                DestroyDynamicObject(g_RaceObject[iRaceID][i][g_RaceObjectID]);
+                DestroyDynamicObject(DynamicObject: g_RaceObject[iRaceID][i][g_RaceObjectID]);
             }
             else
             {
@@ -2651,7 +2651,7 @@ CRace__LoadObjects(iRaceID)
         {
             // Alright now just create the physical object and we're done here.
             g_RaceObject[iRaceID][i][g_RaceObjectID] =
-            CreateDynamicObject(g_RaceObject[iRaceID][i][RaceObjectModel],
+            _: CreateDynamicObject(g_RaceObject[iRaceID][i][RaceObjectModel],
                 g_RaceObject[iRaceID][i][g_RaceObjectPos][0],
                 g_RaceObject[iRaceID][i][g_RaceObjectPos][1],
                 g_RaceObject[iRaceID][i][g_RaceObjectPos][2],
@@ -2704,9 +2704,9 @@ CRace__UnloadObjects(iRaceID)
     {
         if(g_RaceData[iRaceID][32] == 0)
         {
-            if(IsValidDynamicObject(g_RaceObject[iRaceID][i][g_RaceObjectID]))
+            if(IsValidDynamicObject(DynamicObject: g_RaceObject[iRaceID][i][g_RaceObjectID]))
             {
-                DestroyDynamicObject(g_RaceObject[iRaceID][i][g_RaceObjectID]);
+                DestroyDynamicObject(DynamicObject: g_RaceObject[iRaceID][i][g_RaceObjectID]);
                 g_RaceObject[iRaceID][i][g_RaceObjectID] = INVALID_OBJECT_ID;
             }
         }
@@ -2871,15 +2871,15 @@ CRace__PreloadObjectsForPlayer(playerid, iRaceID, Float:fPosX, Float:fPosY, Floa
             if(!IsValidDynamicObject(g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ]))
             {
                 #if BETA_TEST == 1
-                    format(szMsg, 128, "Error: Unable to delete preloaded race object ID %d (Does not exist!) #2214", g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ]);
+                    format(szMsg, 128, "Error: Unable to delete preloaded race object ID %d (Does not exist!) #2214", _: g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ]);
                     SendClientMessage(playerid, COLOR_RED, szMsg);
                 #endif
-                g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ] = INVALID_OBJECT_ID;
+                g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ] = DynamicObject: INVALID_OBJECT_ID;
                 continue;
             }
 
             DestroyDynamicObject(g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ]);
-            g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ] = INVALID_OBJECT_ID;
+            g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ] = DynamicObject: INVALID_OBJECT_ID;
         }
 
 
@@ -2893,10 +2893,10 @@ CRace__PreloadObjectsForPlayer(playerid, iRaceID, Float:fPosX, Float:fPosY, Floa
                 DestroyDynamicObject(g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ]);
 
                 #if BETA_TEST == 1
-                    format(szMsg, 128, "Error: Bad object model found: %d. Deleted - #2235.", g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ]);
+                    format(szMsg, 128, "Error: Bad object model found: %d. Deleted - #2235.", _: g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ]);
                     SendClientMessage(playerid, COLOR_RED, szMsg);
                 #endif
-                g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ] = INVALID_OBJECT_ID;
+                g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ] = DynamicObject: INVALID_OBJECT_ID;
 
             }
             g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ] = CreateDynamicObject(g_RaceObjectModel[iRaceID][i], fPosX, fPosY, fPosZ, 0, 0, 0, iWorldID, iInteriorID, playerid);
@@ -2917,7 +2917,7 @@ CRace__ResetPreloadData/*ForPlayer*/(playerid, iRaceID)
 {
     for(new i = 0, total = CRace__GetObjectModelCount(iRaceID); i < total; ++i)
     {
-        if(g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ] == INVALID_OBJECT_ID)
+        if(g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ] == DynamicObject: INVALID_OBJECT_ID)
         {
             continue;
         }
@@ -2925,7 +2925,7 @@ CRace__ResetPreloadData/*ForPlayer*/(playerid, iRaceID)
         if(IsValidDynamicObject(g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ]))
         {
             DestroyDynamicObject(g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ]);
-            g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ] = INVALID_OBJECT_ID;
+            g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ] = DynamicObject: INVALID_OBJECT_ID;
         }
     }
 }
@@ -2945,7 +2945,7 @@ CRace__FinishPreloadForPlayer(playerid, iRaceID)
     // Ok usual deal. Loop through and destroy the objects and we're done.
     for(new i = 0, total = CRace__GetObjectModelCount(iRaceID); i < total; ++i)
     {
-        if(g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ] == INVALID_OBJECT_ID)
+        if(g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ] == DynamicObject: INVALID_OBJECT_ID)
         {
             continue;
         }
@@ -2953,7 +2953,7 @@ CRace__FinishPreloadForPlayer(playerid, iRaceID)
         if(IsValidDynamicObject(g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ]))
         {
             DestroyDynamicObject(g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ]);
-            g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ] = INVALID_OBJECT_ID;
+            g_RaceObject[ iRaceID ][ i ][ g_RacePreloadObjectID ][ playerid ] = DynamicObject: INVALID_OBJECT_ID;
         }
     }
 }

@@ -80,7 +80,7 @@ enum    E_RW_PLAYER_DATA
 static  rwPlayerData[MAX_PLAYERS][E_RW_PLAYER_DATA];
 
 static  n_RwMap[2] = {INVALID_OBJECT_ID, ...};              // Store the data for the RW map objects
-static  n_RwDynamicMap[2] = {INVALID_OBJECT_ID, ...};       // Because of a SA:MP bug we have to also create the map using Dynamic objects
+static  DynamicObject: n_RwDynamicMap[2] = {DynamicObject: INVALID_OBJECT_ID, ...};       // Because of a SA:MP bug we have to also create the map using Dynamic objects
 
 static  n_TeamAssignment;                           // Team balancer.
 
@@ -375,21 +375,17 @@ rwDestroyMap()
         return;
     }
 
-    for(new i = n_RwMap[0]; i < n_RwMap[1]; i++)
-    {
-        DestroyObject(i);
-    }
-
-    for(new i = n_RwDynamicMap[0]; i < n_RwDynamicMap[1]; i++)
-    {
-        DestroyDynamicObject(i);
-    }
+    DestroyObject(n_RwMap[0]);
+    DestroyObject(n_RwMap[1]);
 
     n_RwMap[0] = INVALID_OBJECT_ID;
     n_RwMap[1] = INVALID_OBJECT_ID;
 
-    n_RwDynamicMap[0] = INVALID_OBJECT_ID;
-    n_RwDynamicMap[0] = INVALID_OBJECT_ID;
+    DestroyDynamicObject(n_RwDynamicMap[0]);
+    DestroyDynamicObject(n_RwDynamicMap[1]);
+
+    n_RwDynamicMap[0] = DynamicObject: INVALID_OBJECT_ID;
+    n_RwDynamicMap[1] = DynamicObject: INVALID_OBJECT_ID;
 }
 
 

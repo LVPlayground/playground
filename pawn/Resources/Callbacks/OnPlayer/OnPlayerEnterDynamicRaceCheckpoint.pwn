@@ -8,7 +8,7 @@
  * @param playerid Id of the player who entered the race checkpoint.
  * @param checkpointid Id of the race checkpoint.
  */
-public OnPlayerEnterDynamicRaceCP(playerid, checkpointid) {
+public OnPlayerEnterDynamicRaceCP(playerid, DynamicRaceCP: checkpointid) {
     CheckMapZoneDynamicCheckpoint(playerid, checkpointid);
 
     return 1;

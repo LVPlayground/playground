@@ -21,7 +21,7 @@
 #define     DEFAULT_RAMP_TYPE               5
 
 new iPlayerRampTime [MAX_PLAYERS];
-new rampid[MAX_PLAYERS] = {-1, ...};
+new DynamicObject: rampid[MAX_PLAYERS] = {DynamicObject: -1, ...};
 
 new ramptypes[] = {
     1503,1660,
@@ -181,10 +181,10 @@ OnPlayerPressRampKey(playerid)
 
     iPlayerRampTime[playerid] = Time->currentTime();
 
-    if(rampid[playerid] != -1)
+    if(rampid[playerid] != DynamicObject: -1)
     {
         DestroyDynamicObject(rampid[playerid]);
-        rampid[playerid] = -1;
+        rampid[playerid] = DynamicObject: -1;
     }
 
     if (aprilsfools == 1)
@@ -235,10 +235,10 @@ stock Float:GetOptimumRampDistance(playerid)
 
 stock RemoveRamp(playerid)
 {
-    if (rampid[playerid] != -1)
+    if (rampid[playerid] != DynamicObject: -1)
     {
         DestroyDynamicObject(rampid[playerid]);
-        rampid[playerid] = -1;
+        rampid[playerid] = DynamicObject: -1;
         iPlayerRampTime[playerid] = 0;
     }
 }

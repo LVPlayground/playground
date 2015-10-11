@@ -51,13 +51,13 @@ new Float:BriefLoc[17] [ 3 ] =
 
 new signedUpCount;
 new briefCasePlayer;
-new BriefCase;
+new DynamicObject: BriefCase;
 new iBriefColor[MAX_PLAYERS];
 new iBriefStart;
 
 new briefSpawnedVehicles[BRIEF_VEHICLE_COUNT + 8 /** idiocracy overflow protection **/];
 
-new  briefMapIcons[2];           // Map icons for the helicopter and minigun pickup
+new  DynamicMapIcon: briefMapIcons[2];           // Map icons for the helicopter and minigun pickup
 new  briefPickups[3] = {-1, ...};            // Information pickup and Minigun pickup
 
 #define     BRIEF_ELEMENT_MINIGUN   0
@@ -652,7 +652,7 @@ briefInitializeElements(bool:init = true)
     for(new i = 0; i < 2; i++)
     {
         DestroyDynamicMapIcon(briefMapIcons[i]);
-        briefMapIcons[i] = -1;
+        briefMapIcons[i] = DynamicMapIcon: -1;
     }
 
     // Pickups \o

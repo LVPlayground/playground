@@ -97,13 +97,12 @@ stock TextDrawDestroyHook(Text: textDrawId) {
 
 // -------------------------------------------------------------------------------------------------
 
+#define STREAMER_ENABLE_TAGS
+
 // Consider moving these elsewhere:
 #include "Interface/Server/a_mysql.pwn"
-
-// The Las Venturas Playground zone manager.
 #include "Interface/Server/a_zones.pwn"
-
-#include "Interface/main/streamer.pwn" // to be unforked
+#include "Interface/Server/a_streamer.pwn"
 
 // TODO: Move this elsewhere (maybe a_additional or something?)
 stock strncpy(destination[], source[], maximumCount = sizeof(destination)) {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-public OnDynamicObjectMoved(objectid) {
+public OnDynamicObjectMoved(DynamicObject: objectid) {
     if (CheckHotAirBalloonMovement(objectid))
         return 1;
 
@@ -10,8 +10,6 @@ public OnDynamicObjectMoved(objectid) {
         if (!isGateOpen) isGateOpen = true;
         else if (isGateOpen) isGateOpen = false;
     }
-
-    OnMapDynamicObjectMoved(objectid);
 
     return 1;
 }

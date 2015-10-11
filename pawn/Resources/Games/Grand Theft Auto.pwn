@@ -19,11 +19,13 @@
 #define MINUTES_TO_DELIVER 15        // How long does everyone get to deliver it?
 #define COLOR_GTA 0x33FF33AA      // The color used throughout this minigame
 
+#define INVALID_GTA_MAP_ICON (DynamicMapIcon: -1)
+
 new    GTA_Vehicle;                 // The current wanted vehicle.
 static GTA_Value;                   // The value the vehicle is worth
 static GTA_Time;                    // How long has the game been running for?
 new    GTA_Vparams[MAX_PLAYERS];          // Is the GTA Vehicle params showing for the player?
-new    GTA_MapIcon = -1;        	 // Stores the map icon ID
+new    DynamicMapIcon: GTA_MapIcon = INVALID_GTA_MAP_ICON; // Stores the map icon ID
 new    GTA_NPCID = Player::InvalidId;   // NPC player id
 new    GTA_EndTime = -1;                     // Stores the time the game ended so we can destroy the NPC 15 seconds after
 
@@ -159,7 +161,7 @@ CTheft__End(sendmsg = 1, reason[])
 	GTA_Vehicle = -1;
 	SetVehicleToRespawn(iTempVehID);
 
-	if(GTA_MapIcon != -1)
+	if(GTA_MapIcon != INVALID_GTA_MAP_ICON)
 	{
 	    DestroyDynamicMapIcon(GTA_MapIcon);
 	}
@@ -201,7 +203,7 @@ CTheft__Process(i)
 		// Right then we may need to update the position of the map icon, or even create it.
 		if(GTA_Vparams[i])
 		{
-			if(GTA_MapIcon != -1)
+			if(GTA_MapIcon != INVALID_GTA_MAP_ICON)
 			{
 				Streamer_SetFloatData(STREAMER_TYPE_MAP_ICON, GTA_MapIcon, E_STREAMER_X, x);
 				Streamer_SetFloatData(STREAMER_TYPE_MAP_ICON, GTA_MapIcon, E_STREAMER_Y, y);
@@ -325,7 +327,7 @@ CTheft__SetParams(playerid,bool:show)
 	    	GTA_Vparams[playerid] = false;
 	    	SetVehicleParamsForPlayer(GTA_Vehicle,playerid,false,false);
 			DestroyDynamicMapIcon(GTA_MapIcon);
-			GTA_MapIcon = -1;
+			GTA_MapIcon = INVALID_GTA_MAP_ICON;
 		}
 	}
 	return 1;

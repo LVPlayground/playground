@@ -53,7 +53,7 @@ enum    E_SPRAY_TAG
     Float:fSprayRotX,
     Float:fSprayRotY,
     Float:fSprayRotZ,
-    fSprayObjectID[MAX_PLAYERS]
+    DynamicObject: fSprayObjectID[MAX_PLAYERS]
 
 }
 static sprayTag[MAX_SPRAY_TAGS][E_SPRAY_TAG];
@@ -274,7 +274,7 @@ sprayTagResetData(playerid)
     {
         n_PlayerTagsSprayed[playerid][i] = 0;
         DestroyDynamicObject(sprayTag[i][fSprayObjectID][playerid]);
-        sprayTag[i][fSprayObjectID][playerid] = INVALID_OBJECT_ID;
+        sprayTag[i][fSprayObjectID][playerid] = DynamicObject: INVALID_OBJECT_ID;
     }
 
     n_TagsPlayerSprayed[playerid] = 0;

@@ -48,7 +48,7 @@ class ShipManager {
     new bool: m_playerHealthSpawnWeaponsSaved[MAX_PLAYERS];
 
     // All of the back- and frontshiprailobjects so they can be en- and disabled.
-    new m_shipRailObjects[MAX_RAIL_OBJECTS];
+    new DynamicObject: m_shipRailObjects[MAX_RAIL_OBJECTS];
 
     // We set their health and armour when they join the ship to infinite for protection. Ofcourse
     // at leaving they need to be set back so we have to remember that.

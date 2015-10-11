@@ -7,7 +7,7 @@
     SA-MP 0.3d RC7 adds a new Hot Air Balloon object to the game.
     Using this, this file creates a hot air balloon on LVP above the ship
     and periodically moves it very slowly in random directions around the area.
-    
+
     Author: James "Jay" Wilkinson
     29th October 2011
 
@@ -24,7 +24,7 @@
 #define     MAX_HOT_AIR_BALLOON_DISTANCE_FROM_SPAWN     120         // Maximum distance from the default spawn point the balloon can travel
 #define     MAX_HOT_AIR_BALLOON_SPEED                   3           // Max speed the balloon can travel
 
-static      iHotAirBalloonObjectID = INVALID_OBJECT_ID;
+static      DynamicObject: iHotAirBalloonObjectID = DynamicObject: INVALID_OBJECT_ID;
 
 // Spawn co-ords for the Balloon
 // If you no longer wish the balloon to be above the ship change these co-ords.
@@ -35,11 +35,11 @@ static      Float:fHotAirBalloonSpawn[3] = {2046.49, 1550.25, 62.67};
 stock InitHotAirBalloon()
 {
     // Check if one already exists and destroy it if so
-    if(iHotAirBalloonObjectID != INVALID_OBJECT_ID)
+    if(iHotAirBalloonObjectID != DynamicObject: INVALID_OBJECT_ID)
     {
         DestroyDynamicObject(iHotAirBalloonObjectID);
     }
-    
+
     iHotAirBalloonObjectID = CreateDynamicObject(19332, fHotAirBalloonSpawn[0], fHotAirBalloonSpawn[1], fHotAirBalloonSpawn[2], 0.00, 0.00, 0.00);
     MoveHotAirBalloon();
 }
@@ -71,7 +71,7 @@ stock MoveHotAirBalloon()
             Float:MoveY,
             Float:MoveZ,
             Float:MoveSpeed;
-        
+
         if(random(2) == 1)
         {
             MoveX = fHotAirBalloonSpawn[0] + random( floatround( MAX_HOT_AIR_BALLOON_DISTANCE_FROM_SPAWN / 3));
@@ -92,7 +92,7 @@ stock MoveHotAirBalloon()
         {
             MoveSpeed = 0.5;
         }
-        
+
         // Move the balloon to a random position in the ship area
         MoveDynamicObject(iHotAirBalloonObjectID, MoveX, MoveY, MoveZ, MoveSpeed);
     }
@@ -119,7 +119,7 @@ stock GlideHotAirBalloon()
 
 // This function is wrapped from OnObjectMoved
 // and checks to see if it's the hot air balloon object ID that's finished moving.
-stock CheckHotAirBalloonMovement(objectid)
+stock CheckHotAirBalloonMovement(DynamicObject: objectid)
 {
     if(objectid == iHotAirBalloonObjectID)
     {

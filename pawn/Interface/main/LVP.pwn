@@ -19,11 +19,6 @@ GetMainWorldWeatherId() {
     return g_iSavedWeatherID;
 }
 
-SetMainWorldWeatherId(weatherId) {
-    g_iSavedWeatherID = weatherId;
-    return 1;
-}
-
 strval2(const string[]) {
     if (strlen(string) >= 50)
         return cellmax;

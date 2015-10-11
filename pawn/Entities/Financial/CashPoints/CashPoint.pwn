@@ -14,10 +14,10 @@
 class CashPoint <pointId (CashPointCount)>
 {
     // Resource Id of the dynamic map icon.
-    new m_mapIconId;
+    new DynamicMapIcon: m_mapIconId;
 
     // Resource Id of the object for the point.
-    new m_objectId;
+    new DynamicObject: m_objectId;
 
     /**
      * Initialize this cash-point with the data as supplied to the method. It will be created

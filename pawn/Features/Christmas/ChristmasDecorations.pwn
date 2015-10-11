@@ -21,7 +21,8 @@ class ChristmasDecorations {
         // Environment
         TimeController->setTime(0, 0);
         SetWeather(1);
-        SetMainWorldWeatherId(1);
+
+        g_iSavedWeatherID = 1;
 
         // Christmas tree and a few boxes around The Ship
         CreateDynamicObject(19076, 2057.189208, 1534.157836, 9.651865, 0.0, 0.0, -92.699958);

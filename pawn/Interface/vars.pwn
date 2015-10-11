@@ -107,7 +107,7 @@ new gameplayseconds[MAX_PLAYERS];
 new gameplayminutes[MAX_PLAYERS];
 new gameplayhours[MAX_PLAYERS];
 new canMoney[MAX_PLAYERS];
-new AirportGate;
+new DynamicObject: AirportGate;
 new diveHistory[MAX_PLAYERS];
 new iLoan[MAX_PLAYERS];
 new iLoanPercent[MAX_PLAYERS];

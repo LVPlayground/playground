@@ -8,7 +8,7 @@
  * @param playerid Id of the player who entered the checkpoint.
  * @param checkpointid Id of the checkpoint.
  */
-public OnPlayerEnterDynamicCP(playerid, checkpointid) {
+public OnPlayerEnterDynamicCP(playerid, DynamicCP: checkpointid) {
     CRace__CheckDynamicCP(playerid, checkpointid);
 
     return 1;

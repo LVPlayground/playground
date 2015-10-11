@@ -120,17 +120,6 @@ class Feature {
     public const EnableFightClub = 0;
 
     /** **************************************************************************************** **/
-    /// Minigames
-
-    // Toggles availability of the new race system. Most of the code will always be compiled in,
-    // but the user-facing commands and more intuitive interfaces will be hidden.
-    public const EnableRaceSystem = 0;
-
-    // Enables the rewrite of the deathmatch minigames in the class-based architecture, using the
-    // unified registration, player state and environment handlers.
-    public const EnableDeathmatchMinigames = 0;
-
-    /** **************************************************************************************** **/
     /// Gameplay
 
     // The Map Zone Manager will rewrite the ancient zoneHandler.pwn file, and will take care of

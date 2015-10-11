@@ -104,7 +104,7 @@
 #include "Features/Environment.pwn"
 #include "Features/External.pwn"
 #include "Features/Gameplay.pwn"
-#include "Features/Minigames.pwn"
+#include "Features/Minigames/MinigameType.pwn"
 #include "Features/Visual.pwn"
 #include "Features/Debug.pwn"
 

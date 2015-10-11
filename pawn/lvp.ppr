@@ -235,28 +235,8 @@
     <DiskObject>\Features\Gameplay\VIP\</DiskObject>
     <DiskObject>\Features\Gameplay\VIP\VeryImportantPlayersCommands.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\VIP\VeryImportantPlayersManager.pwn</DiskObject>
-    <DiskObject>\Features\Minigames.pwn</DiskObject>
     <DiskObject>\Features\Minigames\</DiskObject>
-    <DiskObject>\Features\Minigames\Deathmatch\</DiskObject>
-    <DiskObject>\Features\Minigames\Deathmatch\DeathmatchController.pwn</DiskObject>
-    <DiskObject>\Features\Minigames\Deathmatch\Games\</DiskObject>
-    <DiskObject>\Features\Minigames\Deathmatch\Games\MinigunMadness.pwn</DiskObject>
-    <DiskObject>\Features\Minigames\Deathmatch\Games\SniperMadness.pwn</DiskObject>
-    <DiskObject>\Features\Minigames\MinigameController.pwn</DiskObject>
-    <DiskObject>\Features\Minigames\MinigameSignup.pwn</DiskObject>
-    <DiskObject>\Features\Minigames\MinigameState.pwn</DiskObject>
     <DiskObject>\Features\Minigames\MinigameType.pwn</DiskObject>
-    <DiskObject>\Features\Minigames\PlayerMinigameState.pwn</DiskObject>
-    <DiskObject>\Features\Minigames\Races\</DiskObject>
-    <DiskObject>\Features\Minigames\Races\RaceCommands.pwn</DiskObject>
-    <DiskObject>\Features\Minigames\Races\RaceController.pwn</DiskObject>
-    <DiskObject>\Features\Minigames\Races\RaceDifficulty.pwn</DiskObject>
-    <DiskObject>\Features\Minigames\Races\RaceParticipant.pwn</DiskObject>
-    <DiskObject>\Features\Minigames\Races\RaceScoreboard.pwn</DiskObject>
-    <DiskObject>\Features\Minigames\Races\RaceSettings.pwn</DiskObject>
-    <DiskObject>\Features\Minigames\Races\RaceTrack.pwn</DiskObject>
-    <DiskObject>\Features\Minigames\Races\RaceTrackLoader.pwn</DiskObject>
-    <DiskObject>\Features\Minigames\Races\RaceUserInterface.pwn</DiskObject>
     <DiskObject>\Features\Visual.pwn</DiskObject>
     <DiskObject>\Features\Visual\</DiskObject>
     <DiskObject>\Features\Visual\Countdown.pwn</DiskObject>

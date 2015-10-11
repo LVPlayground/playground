@@ -101,9 +101,7 @@ class LegacyAccountBridge {
 
         /// @todo: Load achievements of this player.
 
-#if Feature::EnableSerializationController == 0
         CSave__BeginLoad(playerId);
-#endif
 
         firstJoin[playerId] = 1;
     }

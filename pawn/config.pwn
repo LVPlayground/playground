@@ -140,12 +140,6 @@ class Feature {
     /** **************************************************************************************** **/
     /// Gameplay
 
-    // The serialization controller completely replaces the old "savehandler" system, used to take
-    // a snapshot of a player's state for a limited amount of time. The system will both deal with
-    // players who disconnect from the server and reconnect shortly after, as well as temporary
-    // situations such as a player standing on the ship, or participating in a minigame.
-    public const EnableSerializationController = 0;
-
     // The Map Zone Manager will rewrite the ancient zoneHandler.pwn file, and will take care of
     // keeping track where a player is, including names and the visual indicators.
     public const EnableMapZoneManager = 0;

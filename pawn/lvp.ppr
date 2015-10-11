@@ -320,7 +320,6 @@
     <DiskObject>\Interface\Server\a_mysql.pwn</DiskObject>
     <DiskObject>\Interface\Server\a_objects.pwn</DiskObject>
     <DiskObject>\Interface\Server\a_players.pwn</DiskObject>
-    <DiskObject>\Interface\Server\a_playground.pwn</DiskObject>
     <DiskObject>\Interface\Server\a_samp.pwn</DiskObject>
     <DiskObject>\Interface\Server\a_vehicles.pwn</DiskObject>
     <DiskObject>\Interface\Server\a_zones.pwn</DiskObject>

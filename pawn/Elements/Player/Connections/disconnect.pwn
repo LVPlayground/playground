@@ -3,10 +3,8 @@
 // be found in the LICENSE file.
 
 OnPlayerLVPDisconnect(playerId, reason) {
-#if Feature::EnableSerializationController == 0
     if (reason != 2)
         CSave__OnPlayerDisconnect(playerId, reason);
-#endif
 
     CHideGame__onPlayerDisconnect(playerId);    // Hide & Seek
     CDrink__Disconnect(playerId);               // Drinking handler

@@ -162,10 +162,7 @@
 #include Elements/Player/SprayTags.pwn
 
 // Player connections
-#if Feature::EnableSerializationController == 0
-    #include Elements/Player/Connections/Saveinfo.pwn
-#endif
-
+#include Elements/Player/Connections/Saveinfo.pwn
 #include Elements/Player/Connections/connect.pwn
 #include Elements/Player/Connections/disconnect.pwn
 

@@ -88,10 +88,7 @@ class DeprecatedTimerRuntime {
             }
 
             CTheft__Process (playerId);
-
-#if Feature::EnableSerializationController == 0
             CSave__Process(playerId);
-#endif
 
             CBomb__CheckPlayer (playerId);
             CDerby__PlayerProcess (playerId);

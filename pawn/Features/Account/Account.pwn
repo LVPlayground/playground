@@ -47,27 +47,6 @@ class Account <playerId (MAX_PLAYERS)> {
         if (Player(playerId)->isNonPlayerCharacter() == true)
             return; // don't do any processing for NPCs.
 
-#if Feature::EnableSerializationController == 1
-        // See if we can restore the player's state from an earlier session. If we can, then it may
-        // be possible that we can completely by-pass the authentication system.
-        new serializationId = player_serializable_state_find(Player(playerId)->nicknameString(),
-            Player(playerId)->ipAddressString());
-        if (serializationId != SerializationData::InvalidId) {
-            new userId = SerializationData(serializationId)->readInteger("user_id"),
-                skinId = SerializationData(serializationId)->readInteger("skin_id");
-
-            // Instrument that we were able to restore their state.
-            Instrumentation->recordActivity(PlayerStateRestoredActivity);
-
-            // We recognized the user's information, so log them in automatically.
-            this->onRegisteredRequestComplete(true, userId, skinId, true);
-
-            // Unserialize all information we stored regarding their account.
-            SerializationManager->restorePlayer(playerId, serializationId);
-            return;
-        }
-#endif
-
         // Fire off a request to see whether they have registered with Las Venturas Playground.
         PlayerRegisteredRequest->createForNickname(playerId, Player(playerId)->nicknameString());
     }
@@ -80,23 +59,6 @@ class Account <playerId (MAX_PLAYERS)> {
     public onPlayerDisconnect() {
         if (m_userId == 0)
             return; // the user has not logged in.
-
-#if Feature::EnableSerializationController == 1
-        new serializationId = SerializationManager->serializePlayer(playerId, CompleteSerialization);
-
-        new skinId = SpawnManager(playerId)->skinId();
-        if (skinId == /** invalid skin **/ -1)
-            skinId = GetPlayerSkin(playerId);
-
-        // Manually append the user_id and skin_id fields to the serialization, because these are
-        // owned by us and are needed to automatically log the player in.
-        SerializationData(serializationId)->writeInteger("user_id", m_userId);
-        SerializationData(serializationId)->writeInteger("skin_id", skinId);
-
-        // Store the serialized data for the player with this nickname/ip address combination.
-        player_serializable_state_set(Player(playerId)->nicknameString(), Player(playerId)->ipAddressString(),
-            serializationId, SessionRestoreTimeSeconds);
-#endif
     }
 
     /**

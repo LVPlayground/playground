@@ -4,10 +4,6 @@
 
 #include "Interface/Server/a_samp.pwn"
 
-#if Feature::EnableSerializationController == 1
-#include "Interface/Server/a_playground.pwn"
-#endif
-
 // -------------------------------------------------------------------------------------------------
 // We override the GivePlayerMoney native as it's used to record intentional changes in a player's
 // on-hand cash without being very intrusive to the rest of the gamemode. For similar reasons, the

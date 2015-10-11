@@ -9,10 +9,8 @@ stock SetPlayerSpawnPos(playerId) {
     if (PlayerSyncHandler->isSyncing(playerId) == true)
         return 0;
 
-#if Feature::EnableSerializationController == 0
     if (CSave__OnPlayerSpawn(playerId))
         return 0;
-#endif
 
     // Reset various variables.
     LastShot[playerId] = false;
@@ -47,10 +45,8 @@ stock OriginalOnPlayerSpawn(playerId) {
     }
 
     // Handle restoring of saveinfo data if needed.
-#if Feature::EnableSerializationController == 0
     if (CSave__OnPlayerSpawn(playerId))
         return 0;
-#endif
 
     // Handle minigame spawning.
     if (CHideGame__GetPlayerState(playerId) == HS_STATE_PLAYING) {

@@ -105,14 +105,6 @@ class AccountData <playerId (MAX_PLAYERS)> {
         m_developer = !!DatabaseResult(resultId)->readInteger("is_developer");
         Player(playerId)->setIsDeveloper(m_developer);
 
-#if Feature::EnableSerializationController == 1
-        // The serialization controller will restore the player's skin from the memory cache in
-        // order to speed up loading. Verify that the cached data hasn't changed in the database.
-        new skinId = DatabaseResult(resultId)->readInteger("skin_id");
-        if (skinId != SpawnManager(playerId)->skinId())
-            SpawnManager(playerId)->setSkinId(skinId);
-#endif
-
         // The player's level is stored as an enumeration in the database.
         new level[16];
         DatabaseResult(resultId)->readString("level", level);

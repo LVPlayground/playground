@@ -126,20 +126,6 @@ class SpawnManager <playerId (MAX_PLAYERS)> {
     public bool: onRequestClass(classId) {
         m_beforeInitialClassSelection = false;
 
-#if Feature::EnableSerializationController == 1
-        new bool: wasBeforeInitialClassSelection = m_beforeInitialClassSelection;
-
-        // This trick is in place to make sure that the player doesn't end up in class selection
-        // when we force-spawn them as part of the player restore feature.
-        if (wasBeforeInitialClassSelection && Player(playerId)->isRegistered() && Player(playerId)->isLoggedIn()) {
-            if (m_skinId != SpawnManager::InvalidSkinId)
-                SetSpawnInfo(playerId, 0, m_skinId, 1346.17, 2807.06, 10.82, 320.0, 0, 0, 0, 0, 0, 0);
-
-            SpawnPlayer(playerId);
-            return true;
-        }
-#endif
-
         if (Player(playerId)->isRegistered() && !Player(playerId)->isLoggedIn()) {
             if (m_skinId != SpawnManager::InvalidSkinId) {
                 SetSpawnInfo(playerId, 0, m_skinId, 1346.17, 2807.06, 10.82, 320.0, 0, 0, 0, 0, 0, 0);

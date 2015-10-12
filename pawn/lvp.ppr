@@ -127,12 +127,6 @@
     <DiskObject>\Features\Account\ForcedGuestDialog.pwn</DiskObject>
     <DiskObject>\Features\Account\LegacyAccountBridge.pwn</DiskObject>
     <DiskObject>\Features\Account\NicknameGenerator.pwn</DiskObject>
-    <DiskObject>\Features\Account\Selection\</DiskObject>
-    <DiskObject>\Features\Account\Selection\SkinGroupSelector.pwn</DiskObject>
-    <DiskObject>\Features\Account\Selection\SkinSelectionController.pwn</DiskObject>
-    <DiskObject>\Features\Account\Selection\SkinSelectionEnvironment.pwn</DiskObject>
-    <DiskObject>\Features\Account\Selection\SkinSelectionGroup.pwn</DiskObject>
-    <DiskObject>\Features\Account\Selection\SkinSelector.pwn</DiskObject>
     <DiskObject>\Features\Account\UndercoverAdministrator.pwn</DiskObject>
     <DiskObject>\Features\Christmas.pwn</DiskObject>
     <DiskObject>\Features\Christmas\</DiskObject>
@@ -247,9 +241,7 @@
     <DiskObject>\Framework\</DiskObject>
     <DiskObject>\Framework\Annotations.pwn</DiskObject>
     <DiskObject>\Framework\Debug.pwn</DiskObject>
-    <DiskObject>\Framework\Log.pwn</DiskObject>
     <DiskObject>\Framework\Tests.pwn</DiskObject>
-    <DiskObject>\Framework\Tracing.pwn</DiskObject>
     <DiskObject>\Interface\</DiskObject>
     <DiskObject>\Interface\Cell.pwn</DiskObject>
     <DiskObject>\Interface\Cell.tests.pwn</DiskObject>

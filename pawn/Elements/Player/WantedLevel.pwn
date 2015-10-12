@@ -12,7 +12,7 @@
  *                                                                             *
  *******************************************************************************/
 
-stock OnPlayerDeathWantedLevel (playerid, killerid)
+OnPlayerDeathWantedLevel (playerid, killerid)
 {
     // First, we reset the wanted level for the player that has died.
     //  SetPlayerWantedLevel(playerid,0);
@@ -21,7 +21,7 @@ stock OnPlayerDeathWantedLevel (playerid, killerid)
 
     // Now, if the killer isn't connected or in a minigame, we don't need to do anything more.
     if(!Player(killerid)->isConnected() || IsPlayerInMinigame(killerid))
-    return 0;
+        return 0;
 
 
     // Create some vars to store wanted level data in...

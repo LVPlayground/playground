@@ -32,7 +32,7 @@ static      Float:fHotAirBalloonSpawn[3] = {2046.49, 1550.25, 62.67};
 
 // Create (or re-create) the hot air balloon object.
 // Called when the gamemode initializes
-stock InitHotAirBalloon()
+InitHotAirBalloon()
 {
     // Check if one already exists and destroy it if so
     if(iHotAirBalloonObjectID != DynamicObject: INVALID_OBJECT_ID)
@@ -46,7 +46,7 @@ stock InitHotAirBalloon()
 
 // Move the hot air balloon every so often
 // to a new destination within the spawns radius at a random but slow speed
-stock MoveHotAirBalloon()
+MoveHotAirBalloon()
 {
     // Error checking - if the balloon has somehow been destroyed re-create it
     if(!IsValidDynamicObject(iHotAirBalloonObjectID))
@@ -100,7 +100,7 @@ stock MoveHotAirBalloon()
 
 // When the balloon is idle, this function "glides" it through the wind
 // by moving it incredibly slowly to a new random destination very close to the current one
-stock GlideHotAirBalloon()
+GlideHotAirBalloon()
 {
     if(!IsValidDynamicObject(iHotAirBalloonObjectID))
     {
@@ -119,7 +119,7 @@ stock GlideHotAirBalloon()
 
 // This function is wrapped from OnObjectMoved
 // and checks to see if it's the hot air balloon object ID that's finished moving.
-stock CheckHotAirBalloonMovement(DynamicObject: objectid)
+CheckHotAirBalloonMovement(DynamicObject: objectid)
 {
     if(objectid == iHotAirBalloonObjectID)
     {
@@ -139,7 +139,7 @@ stock CheckHotAirBalloonMovement(DynamicObject: objectid)
 
 // Return the current distance of the Hot Air Balloon object
 // from the spawn
-stock GetHotAirBalloonDistanceFromSpawn()
+GetHotAirBalloonDistanceFromSpawn()
 {
     new
         Float:fPosX,

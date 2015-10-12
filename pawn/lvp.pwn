@@ -60,7 +60,6 @@
 // gamemode. Then include other backend systems which may be required for other features.
 #include "Framework/Annotations.pwn"
 #include "Framework/Tests.pwn"
-#include "Framework/Tracing.pwn"
 
 // Interface features without dependencies.
 #include "Interface/Cell.pwn"

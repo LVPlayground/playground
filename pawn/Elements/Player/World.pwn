@@ -179,7 +179,7 @@ OnPlayerWorldCommand(playerId, params[]) {
     return 1;
 }
 
-stock l_GotoWorld(playerId, worldId) {
+l_GotoWorld(playerId, worldId) {
     new message[128], vehicleId, trailerId;
 
     if (IsPlayerInAnyVehicle(playerId) && GetPlayerState(playerId) == PLAYER_STATE_DRIVER) {

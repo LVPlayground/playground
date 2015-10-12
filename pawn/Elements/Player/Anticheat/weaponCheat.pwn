@@ -51,8 +51,7 @@ WeaponCheat(i) {
     return 1;
 }
 
-forward GiveWeapon(playerId, weaponId, ammo);
-public GiveWeapon(playerId, weaponId, ammo) {
+GiveWeapon(playerId, weaponId, ammo) {
     if (weaponId == 0)
         return 0;
 
@@ -76,7 +75,7 @@ public GiveWeapon(playerId, weaponId, ammo) {
     return 1;
 }
 
-stock ClearSafeWeapons(playerId) {
+ClearSafeWeapons(playerId) {
     for (new weaponId; weaponId <= WeaponUtilities::HighestWeaponId; weaponId++)
         g_PlayerWeapon[playerId][weaponId] = 0;
 }

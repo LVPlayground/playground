@@ -32,7 +32,7 @@ new m_playerSaveInfo[MAX_SAVE_SLOTS][saveData];
 new bool: m_loadPlayerData[MAX_PLAYERS];
 new m_loadBeginTime[MAX_PLAYERS];
 
-stock CSave__FindSlot(playerId = Player::InvalidId) {
+CSave__FindSlot(playerId = Player::InvalidId) {
     // Find an empty slot.
     if (playerId == Player::InvalidId) {
         for (new slotId = 0; slotId < MAX_SAVE_SLOTS; slotId++) {
@@ -198,15 +198,17 @@ CSave__SaveInfo(playerId) {
 }
 
 // Retrieve time of slot creation.
-stock CSave__GetSavedTime(slotId)
+CSave__GetSavedTime(slotId) {
     return m_playerSaveInfo[slotId][disconnectionTime];
+}
 
 // Retrieve adler32 of player name corresponding to a certain slot.
-stock CSave__GetAdler32(slotId)
+CSave__GetAdler32(slotId) {
     return m_playerSaveInfo[slotId][nameAdler];
+}
 
 // Show the 'loading data' textdraw and freeze the player.
-stock CSave__BeginLoad(playerId) {
+CSave__BeginLoad(playerId) {
     if (Player(playerId)->isNonPlayerCharacter() == true)
         return 0;
 
@@ -223,7 +225,7 @@ stock CSave__BeginLoad(playerId) {
 }
 
 // Timer check to see if the player's data should be loaded yet.
-stock CSave__Process(playerId) {
+CSave__Process(playerId) {
     if (m_loadBeginTime[playerId] == 0)
         return 0;
 

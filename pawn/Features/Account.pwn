@@ -115,15 +115,3 @@ enum PasswordRequestType {
 #include "Features/Account/Bans/BanManager.pwn"
 
 #include "Features/Account/AccountCommands.pwn"
-
-/**
- * There is a project on-going to completely re-implement the class selection to be based on groups
- * rather than individual skins, which will make that much nicer for first-time players. For people
- * returning to the server, this will be by-passed and we'll immediately show the player's skin.
- */
-#include "Features/Account/Selection/SkinSelectionEnvironment.pwn"
-#include "Features/Account/Selection/SkinSelectionGroup.pwn"
-#include "Features/Account/Selection/SkinGroupSelector.pwn"
-#include "Features/Account/Selection/SkinSelector.pwn"
-
-#include "Features/Account/Selection/SkinSelectionController.pwn"

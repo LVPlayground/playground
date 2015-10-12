@@ -36,7 +36,6 @@ static calculation;
 
 // CReaction__Initialize
 // We initalize the reactiontest, and set the first timers.
-forward CReaction__Initialize();
 CReaction__Initialize()
 {
     CReaction__Rebuild();
@@ -153,7 +152,7 @@ CReaction__Rebuild()
 
 // CReaction__OnText
 // When someone types something.. this is called.
-stock CReaction__OnText(playerid, text[])
+CReaction__OnText(playerid, text[])
 {
     // Now we need to finish the reactiontest. There are two, but there's no
     // need to have all code two times. So just combine them into one!
@@ -240,7 +239,7 @@ CReaction__Win(playerid)
     return 1;
 }
 
-stock CReaction__GenerateRandom()
+CReaction__GenerateRandom()
 {
     new word[11];
     new chars[] = "ABCDEFGHJKLMNPQRSTUVWXYZ123456798ABCDEFGHJKLMNPQRSTUVWXYZ";
@@ -253,7 +252,7 @@ stock CReaction__GenerateRandom()
     return word;
 }
 
-stock CReaction__RandomNumbers(bool:equationMultiply = false)
+CReaction__RandomNumbers(bool:equationMultiply = false)
 {
     if(equationMultiply == false)
     {
@@ -273,7 +272,7 @@ stock CReaction__RandomNumbers(bool:equationMultiply = false)
 }
 
 
-stock CReaction__RandomSymbol()
+CReaction__RandomSymbol()
 {
     new symbol;
 
@@ -290,7 +289,7 @@ stock CReaction__RandomSymbol()
 }
 
 
-stock CReaction__GenerateCombi()
+CReaction__GenerateCombi()
 {
     new line[256];
     new val1, val2, val3, sym1, sym2;
@@ -341,8 +340,7 @@ stock CReaction__GenerateCombi()
     return line;
 }
 
-forward CReaction__ReactionExpire();
-public CReaction__ReactionExpire()
+CReaction__ReactionExpire()
 {
 
     if (reactionData[expire] > 2)

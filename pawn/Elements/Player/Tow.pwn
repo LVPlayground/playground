@@ -65,36 +65,37 @@ new towNames[NumberOfTowLocations][] =
 // This is the code called when the player uses the /tow command.
 lvp_tow(playerid, params[])
 {
-    // Lets see if the player has the money required for a tow!
-    if(GetPlayerMoney(playerid)<45000 && Player(playerid)->isModerator() == false)
-    {
-        SendClientMessage(playerid, COLOR_RED, "Using a tow will cost you $45,000!");
-        return 1;
-    }
+    // If the player is a moderator, the following checks do not matter. Using an empty if-statement
+    // because the following else-ifs are nicely structured.
+    if (Player(playerid)->isModerator()) {}
 
-   // Secondly, some checks... Let's see if the player has already used tow a while ago!
-    if(!CanPlayerUseTow(playerid))
+    // Does the player have enough money to start a tow?
+    else if (GetPlayerMoney(playerid) < 45000)
+        return SendClientMessage(playerid, COLOR_RED, "Using a tow will cost you $45,000!");
+
+    // Secondly, some checks... Let's see if the player has already used tow a while ago!
+    else if (!CanPlayerUseTow(playerid))
         return SendClientMessage(playerid, COLOR_RED, "You already used /tow less than 3 minutes ago! You must wait a bit more.");
 
     // What if player is on foot?
-    else if(!IsPlayerInAnyVehicle(playerid))
+    else if (!IsPlayerInAnyVehicle(playerid))
         return SendClientMessage(playerid, COLOR_RED, "Looks like you're on foot... Use /taxi instead!");
 
     // And what if he's just a passenger?
-    else if(GetPlayerVehicleSeat(playerid) > 0)
+    else if (GetPlayerVehicleSeat(playerid) > 0)
         return SendClientMessage(playerid, COLOR_RED, "You have to be driving the vehicle to use this command!");
 
     // We should also check if he's in a Rhino, it can cause a SA:MP bug.
-    else if(GetVehicleModel(GetPlayerVehicleID(playerid)) == 432)
+    else if (GetVehicleModel(GetPlayerVehicleID(playerid)) == 432)
         return SendClientMessage(playerid, COLOR_RED, "You can't tow a Rhino!");
 
     // Lets also block town for vortexes to prevent the annoying driveby's with it.
-    else if(GetVehicleModel(GetPlayerVehicleID(playerid)) == 539)
+    else if (GetVehicleModel(GetPlayerVehicleID(playerid)) == 539)
         return SendClientMessage(playerid, COLOR_RED, "You can't teleport a Vortex!");
 
     new location = Command->integerParameter(params, 0);
 
-    if(Command->parameterCount(params) < 1)
+    if (Command->parameterCount(params) < 1)
     {
         new list[256];
         for(new i = 0; i < NumberOfTowLocations; ++i)
@@ -102,7 +103,6 @@ lvp_tow(playerid, params[])
 
         ShowPlayerDialog(playerid, DIALOG_TOW_COMMAND, DIALOG_STYLE_LIST, "Where do you want to go?", list, "Tow!", "Cancel");
     }
-
     else
     {
         // Is the ID valid?

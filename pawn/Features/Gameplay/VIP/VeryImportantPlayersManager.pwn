@@ -28,10 +28,10 @@ class VeryImportantPlayersManager {
             SetPlayerWeather(playerId, 11);
             TimeController->setPlayerOverrideTime(playerId, 12, 0);
         } else if (strcmp(weatherType, "storm", true) == 0) {
-            SetPlayerWeather(playerId, 08);
+            SetPlayerWeather(playerId, 8);
             TimeController->setPlayerOverrideTime(playerId, 12, 0);
         } else if (strcmp(weatherType, "foggy", true) == 0) {
-            SetPlayerWeather(playerId, 09);
+            SetPlayerWeather(playerId, 9);
             TimeController->setPlayerOverrideTime(playerId, 12, 0);
         } else if (strcmp(weatherType, "drugs", true) == 0) {
             SetPlayerWeather(playerId, -66);

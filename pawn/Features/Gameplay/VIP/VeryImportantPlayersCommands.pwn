@@ -129,7 +129,45 @@ class VeryImportantPlayersCommands {
             return 1;
         }
 
-        VeryImportantPlayersManager->changeVipWeather(playerId, params[0]);
+        if (VeryImportantPlayersManager->changeVipWeather(playerId, params[0]))
+            SendClientMessage(playerId, Color::Success, "The weather has been changed for you!");
+
+        return 1;
+    }
+
+    /**
+     * Like weather, VIPs are also allowed to change their in-game time. We allow them to do this
+     * on a per-hour granularity, i.e. values [0, 23]. The given time will be reset when they either
+     * change the weather, or when they respawn.
+     *
+     * @param playerId Id of the player who executed this command.
+     * @param subjectId Id of the player who this command should be applied to.
+     * @command /my time [0-23]
+     */
+    @switch(PlayerCommand, "time")
+    public onPlayerTimeCommand(playerId, subjectId, params[]) {
+        if (playerId != subjectId)
+            return 0; /* VIPs don't need admins to change their time for them */
+
+        if (Player(playerId)->isVip() == false && Player(playerId)->isModerator() == false) {
+            SendClientMessage(playerId, Color::Error, "This is a VIP only command. For more information, check out \"/donate\"!");
+            return 1;
+        }
+
+        if (Command->parameterCount(params) != 1) {
+            SendClientMessage(playerId, Color::Information, "Usage: /my time [0-23]");
+            return 1;
+        }
+
+        new hour = Command->integerParameter(params, 0);
+        if (Command->parameterCount(params) != 1) {
+            SendClientMessage(playerId, Color::Information, "Usage: /my time [0-23]");
+            return 1;
+        }
+
+        TimeController->setPlayerOverrideTime(playerId, hour, 0);
+
+        SendClientMessage(playerId, Color::Success, "The time has been changed for you!");
 
         return 1;
     }
@@ -138,6 +176,7 @@ class VeryImportantPlayersCommands {
      * Ingame player colours can be persistently changed by VIPs. Alias for /my colour.
      * 
      * @param playerId Id of the player who is changing their colour.
+     * @param subjectId Id of the player who this command should be applied to.
      * @param params Any further text that the player passed to the command. Unused.
      * @command /my color
      */

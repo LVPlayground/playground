@@ -38,6 +38,9 @@ class SpawnWeaponManager <playerId (MAX_PLAYERS)> {
         new weaponId;
         for (new weaponSlot = 0; weaponSlot < WeaponSlots; ++weaponSlot) {
             weaponId = m_spawnWeaponId[weaponSlot];
+            if (weaponId == 0)
+                continue;
+
             GiveWeapon(playerId, weaponId, AmmunationWeapon(weaponId)->ammunition()
                 * m_spawnWeaponAmmo[weaponSlot]);
         }

@@ -8,7 +8,7 @@
 
 enum saveData {
     nameAdler,
-    savedIpAddress[16],
+    savedIpAddress[17],
     Float: positionX,
     Float: positionY,
     Float: positionZ,
@@ -246,6 +246,9 @@ CSave__LoadInfo(playerId) {
 
     // Find the slot and restore the player's data.
     new slotId = CSave__FindSlot(playerId);
+    if (slotId == INVALID_SAVE_INFO_SLOT)
+        return 0;
+
     if (m_playerSaveInfo[slotId][respawn] == false) {
         SetPlayerPos(playerId, m_playerSaveInfo[slotId][positionX], m_playerSaveInfo[slotId][positionY],
             m_playerSaveInfo[slotId][positionZ]);
@@ -278,13 +281,14 @@ CSave__LoadInfo(playerId) {
         if (m_playerSaveInfo[slotId][savedWeaponId][weaponSlot] == 0)
             continue;
 
-        if (m_playerSaveInfo[slotId][spawnWeapon][weaponSlot] == true)
+        if (m_playerSaveInfo[slotId][spawnWeapon][weaponSlot] == true) {
             SpawnWeaponManager(playerId)->giveSpawnWeapon(
                 m_playerSaveInfo[slotId][savedWeaponId][weaponSlot],
                 m_playerSaveInfo[slotId][savedAmmo][weaponSlot]);
-        else
+        } else {
             GiveWeapon(playerId, m_playerSaveInfo[slotId][savedWeaponId][weaponSlot],
                 m_playerSaveInfo[slotId][savedAmmo][weaponSlot]);
+        }
     }
 
     m_playerSaveInfo[slotId][nameAdler] = 0;

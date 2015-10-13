@@ -1194,7 +1194,11 @@ MinigameHelp:
     {
         GetPlayerPos( playerid, SavedPos2[ playerid ][ 0 ], SavedPos2[ playerid ][ 1 ], SavedPos2[ playerid ][ 2 ] );
         SavedPos2[ playerid ][ 3 ] = GetPlayerInterior( playerid );
-        GetPlayerFacingAngle ( playerid, SavedPos2[ playerid ][ 4 ] );
+
+        if (IsPlayerInAnyVehicle(playerid))
+            GetVehicleZAngle ( GetPlayerVehicleID ( playerid ), SavedPos2[ playerid ][ 4 ] );
+        else
+            GetPlayerFacingAngle ( playerid, SavedPos2[ playerid ][ 4 ] );
 
         SendClientMessage( playerid, COLOR_GREEN, "This position has been saved successfully." );
         return 1;

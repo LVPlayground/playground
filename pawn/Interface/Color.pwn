@@ -26,6 +26,7 @@ class Color {
     // issued by the gamemode should be as consistent as possible.
     public const MinigameAnnouncement = 0xCCD782FF;
     public const MinigameAnnouncementHighlight = 0x838F31FF;
+    public const PropertyTycoonAnnouncement = 0xFFFF00AA;
 
     // =============================================================================================
     //                                       ~~~~~~~~~~~~~~~~

@@ -11,7 +11,10 @@ enum AnnouncementType {
     ConnectionMessageAnnouncement,
 
     // Announcements about minigames which can be signed up for.
-    MinigameSignupAnnouncement
+    MinigameSignupAnnouncement,
+
+    // Announcement about a new Property Tycoon having risen.
+    PropertyTycoonAnnouncement,
 };
 
 /**
@@ -146,5 +149,18 @@ class Announcements {
             colorBuffer[1], name, typeString, colorBuffer[0], colorBuffer[1], command, colorBuffer[0], formatPrice(price));
 
         this->distributeAnnouncement(MinigameSignupAnnouncement, Color::MinigameAnnouncement, m_formatBuffer, excludePlayerId);
+    }
+
+    /**
+     * Announces that |playerId| is now the property tycoon, earning |earnings| every payment cycle.
+     *
+     * @param playerId Id of the player who is the property tycoon.
+     * @param earnings Amount of money they receive every payment cycle.
+     */
+    public announcePropertyTycoon(playerId, earnings) {
+        format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) is the Property Tycoon, earning $%s every 3 minutes!",
+            Player(playerId)->nicknameString(), playerId, formatPrice(earnings));
+
+        this->distributeAnnouncement(PropertyTycoonAnnouncement, Color::PropertyTycoonAnnouncement, m_formatBuffer, Player::InvalidId);
     }
 };

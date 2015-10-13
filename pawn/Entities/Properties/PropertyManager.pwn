@@ -25,6 +25,9 @@ class PropertyManager {
 
     // After how many seconds should the owners of properties get paid for owning them? We process
     // all properties at once, so it's possible that owners get paid right after buying it.
+    //
+    // NOTE: Please update the announcement in Announcements::announcePropertyTycoon if you change
+    // this value, as it refers to duration in the message.
     const PropertyPayoutCycleDuration = 180;
 
     // How many properties can a normal player own at the same time?
@@ -41,6 +44,12 @@ class PropertyManager {
 
     // Keep track of the page number a player requested when using /properties.
     new m_propertyListPage[MAX_PLAYERS] = 0;
+
+    // Id of the player who currently is the Property Tycoon.
+    new m_propertyTycoonId = INVALID_PLAYER_ID;
+
+    // The amount of money they made in a single payment-cycle whilst being Property Tycoon.
+    new m_propertyTycoonAmount = 0;
 
     // ---- MAIN FUNCTIONS REGARDING PROPERTY MANAGEMENT -------------------------------------------
 
@@ -183,6 +192,11 @@ class PropertyManager {
     public onPlayerDisconnect(playerId) {
         m_propertyForPlayer[playerId] = Property::InvalidId;
 
+        if (m_propertyTycoonId == playerId) {
+            m_propertyTycoonId = INVALID_PLAYER_ID;
+            m_propertyTycoonAmount = 0;
+        }
+
         new propertiesOwnedByPlayer[MAX_PROPERTIES];
         if (this->getPropertiesForPlayer(playerId, propertiesOwnedByPlayer, sizeof(propertiesOwnedByPlayer)) == 0)
             return; // this player doesn't have properties, there's nothing to store.
@@ -229,12 +243,22 @@ class PropertyManager {
         if (needPayoutCycle == false)
             return 0;
 
+        // The Property Tycoon is the player who is benefiting most from the property system. Their
+        // name will be announced if it changes from the last pay-out cycle.
+        new tycoonId = INVALID_PLAYER_ID,
+            tycoonAmount = 0;
+
         new message[128];
 
         // Now iterate through all the players and give them their money if they're entitled to any.
         for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
             if (payoutAmount[playerId] == 0)
                 continue; // this player doesn't own any properties.
+
+            if (payoutAmount[playerId] > tycoonAmount) {
+                tycoonId = playerId;
+                tycoonAmount = payoutAmount[playerId];
+            }
 
             // Players with a normal bank account, or who disabled receiving earnings in their bank
             // account, will receive the earnings in cash.
@@ -277,6 +301,17 @@ class PropertyManager {
                 SendClientMessage(playerId, Color::Information, message);
                 SendClientMessage(playerId, Color::Information,
                     "but your account does not allow for thus sum to be stored. You've received it in cash instead.");
+            }
+        }
+
+        if (m_propertyTycoonAmount < tycoonAmount) {
+            m_propertyTycoonAmount = tycoonAmount;
+
+            if (m_propertyTycoonId != tycoonId) {
+                m_propertyTycoonId = tycoonId;
+
+                // Announce the new property tycoon to all other players.
+                Announcements->announcePropertyTycoon(tycoonId, tycoonAmount);
             }
         }
 

@@ -209,36 +209,6 @@ lvp_Settings( playerid, params[] )
         return 1;
     }
 
-    // Money decrease messages, just a nice idea and all
-    if (strcmp( szOption, "decrease", true, 7 ) == 0)
-    {
-        // Get the way how we want to toggle;
-        param_shift( szToggle );
-
-        if (!strlen(szToggle))
-        {
-            SendClientMessage( playerid, COLOR_WHITE, "Usage: /settings decrease [on/off]" );
-        }
-
-        else if (strcmp( szToggle, "off", true ) == 0)
-        {
-            g_ShowMessages[ playerid ][ 1 ] = 0;
-            SendClientMessage( playerid, COLOR_GREEN, "Money decrease-messages have been disabled!" );
-        }
-
-        else if (strcmp( szToggle, "on", true ) == 0)
-        {
-            g_ShowMessages[ playerid ][ 1 ] = 1;
-            SendClientMessage( playerid, COLOR_GREEN, "Money decrease-messages will be shown again!" );
-        }
-
-        else
-        {
-            SendClientMessage( playerid, COLOR_WHITE, "Usage: /settings decrease [on/off]" );
-        }
-        return 1;
-    }
-
     // Let's also do /showmessages
     if (strcmp( szOption, "showmsg", true, 7 ) == 0)
     {
@@ -252,13 +222,13 @@ lvp_Settings( playerid, params[] )
 
         else if (strcmp( szToggle, "off", true ) == 0)
         {
-            g_ShowMessages[ playerid ][ 2 ] = 0;
+            g_ShowMessages[ playerid ][ 1 ] = 0;
             SendClientMessage( playerid, COLOR_GREEN, "Showmessages have been disabled!" );
         }
 
         else if (strcmp( szToggle, "on", true ) == 0)
         {
-            g_ShowMessages[ playerid ][ 2 ] = 1;
+            g_ShowMessages[ playerid ][ 1 ] = 1;
             SendClientMessage( playerid, COLOR_GREEN, "Showmessages are visible again!" );
         }
 

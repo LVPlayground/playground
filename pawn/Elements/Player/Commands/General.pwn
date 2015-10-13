@@ -852,7 +852,7 @@ lvp_showmessage(playerid,params[])
             continue;
         }
 
-        if(!g_ShowMessages[ j ][ 2 ])
+        if(!g_ShowMessages[ j ][ 1 ])
         {
             continue;
         }

@@ -179,6 +179,12 @@ class TeleportationManager {
             return false;
         }
 
+        // Don't teleport to players who are currently spectating somebody.
+        if (PlayerSpectateHandler->isSpectating(subjectId)) {
+            SendClientMessage(playerId, Color::Error, "Sorry, that player is unavailable right now!");
+            return false;
+        }
+
         // However, for /stp different rules apply. /stp is available for crew members to check out
         // a player anywhere at any moment. That's why we allow them to teleport even when the player
         // is in a minigame or something.

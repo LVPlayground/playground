@@ -361,7 +361,7 @@ class PlayerSpectateHandler {
      * @param playerId Id of the player to check the spectating situation for.
      * @return boolean Is the player currently spectating?
      */
-    public inline bool: isSpectating(playerId) {
-        return (m_isSpectating[playerId]);
+    public bool: isSpectating(playerId) {
+        return m_isSpectating[playerId];
     }
 };

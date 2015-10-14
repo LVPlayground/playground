@@ -31,7 +31,7 @@ static  Text:radioDisplay [ 2 ] = { Text:INVALID_TEXT_DRAW, ...};
 // This function is called when the gamemode is initialized and creates
 // the LVP Radio textdraw effects. These textdraws are exact replicas of the
 // ingame default radio textdraws
-stock radioInitializeDisplay()
+radioInitializeDisplay()
 {
     // Grey colour shown when radio is idle
     radioDisplay[ 0 ] = TextDrawCreate(271.000000, 21.000000, "LVP RADIO"); // Grey colour
@@ -54,7 +54,7 @@ stock radioInitializeDisplay()
 
 // This function is called every second from LVP's main timer
 // to check to hide or update the Race Radio textdraws.
-stock radioProcess(playerid)
+radioProcess(playerid)
 {
     if(iRadioPlayerTuneInTime[playerid] == 0)
     {
@@ -80,7 +80,7 @@ stock radioProcess(playerid)
 // This function is called when a player enters a vehicle
 // If the player has LVP Radio enabled in his/her preferences, stream
 // the audio for them
-stock radioPlayerEnterVehicle(playerid)
+radioPlayerEnterVehicle(playerid)
 {
     if(iRadioEnabledForPlayer[playerid] == true)
     {
@@ -90,7 +90,7 @@ stock radioPlayerEnterVehicle(playerid)
 
 // This is called when a player leaves a vehicle and stops the stream accordingly
 // to simulate a radio station.
-stock radioPlayerExitVehicle(playerid)
+radioPlayerExitVehicle(playerid)
 {
     if(iRadioPlayingForPlayer[playerid] == true)
     {
@@ -101,7 +101,7 @@ stock radioPlayerExitVehicle(playerid)
 // Enable/Disable the audio stream for a player
 // depending on his/her preferences. They may want to hear
 // the normal radio when they enter their vehicle!
-stock radioToggleForPlayer(playerid, bool:toggle)
+radioToggleForPlayer(playerid, bool:toggle)
 {
     iRadioEnabledForPlayer[playerid] = toggle;
 
@@ -123,7 +123,7 @@ stock radioToggleForPlayer(playerid, bool:toggle)
 }
 
 // Reset radio data which determines if the player has the stream enabled or not
-stock radioStreamResetData(playerid)
+radioStreamResetData(playerid)
 {
     iRadioEnabledForPlayer[playerid] = true;
     iRadioPlayingForPlayer[playerid] = false;
@@ -133,7 +133,7 @@ stock radioStreamResetData(playerid)
 
 // Begin streaming LVP Radio for the player
 // But only if they have it enabled
-stock radioStreamForPlayer(playerid)
+radioStreamForPlayer(playerid)
 {
     if(iRadioEnabledForPlayer[playerid] == false)
     {
@@ -155,7 +155,7 @@ stock radioStreamForPlayer(playerid)
 // It checks first of all if LVP Radio is indeed streaming in case
 // it may be another stream that is stopping, when it shouldn't (e.g. the dance
 // radio stream in the night club)
-stock radioStopStreamForPlayer(playerid)
+radioStopStreamForPlayer(playerid)
 {
     if(iRadioPlayingForPlayer[playerid] == true)
     {

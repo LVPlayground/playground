@@ -4,21 +4,25 @@
 
 require('base/timers.js');
 
-require('entities/player.js');
+let Player = require('entities/player.js');
+
+let Menu = require('components/menu/menu.js'),
+    menu = new Menu('Hello, world!');
+
+menu.addItem('foo', player => {
+  console.log(player.name + ' clicked!');
+});
 
 self.addEventListener('playerconnect', event => {
   let player = new Player(event.playerid);
-  player.name = 'YourNewName';
   
-  wait(1500).then(() =>
-      console.log('Hello, ' + player.name + '!'));
-
-  wait(2500).then(() =>
-      self.commands.triggerCommand(player, '/test hello'));
+  wait(10000).then(() => menu.displayForPlayer(player));
 });
 
 let counter = 0;
 self.addEventListener('frame', event => {
-  if (++counter % 100 == 0)
-    console.log('Time: ' + event.now);
+  if (++counter % 100 != 0)
+    return;
+
+  console.log('Time: ' + event.now);
 });

@@ -96,4 +96,4 @@ global.clearInterval = TimerManager.prototype.RemoveTimer.bind(instance);
 
 // Expose a global wait(ms) function, that waits for a certain amount of time and then resolves
 // the promise it returned. Useful for timeouts with Promise.race().
-global.wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+global.wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));

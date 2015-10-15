@@ -2,9 +2,25 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+let players = {};
+
 class Player {
   constructor(playerId) {
     this.playerId = playerId;
+
+    // TODO(Russell): Keep track of disconnecting players.
+    players[playerId] = this;
+  }
+
+  static get(playerId) {
+    if (!players.hasOwnProperty(playerId))
+      return null;
+
+    return players[playerId];
+  }
+
+  get id() {
+    return this.playerId;
   }
 
   get name() {
@@ -28,4 +44,4 @@ class Player {
 };
 
 // Expose the Player object globally since it will be commonly used.
-global.Player = Player;
+exports = Player;

@@ -18,19 +18,23 @@ interface Menu {
   void addItem(string firstTitle, string secondTitle, optional function listener = null);
 
   // Displays or hides the menu for |player|.
-  void showForPlayer(Player player);
+  void displayForPlayer(Player player);
   void closeForPlayer(Player player);
   
-  // Event handler invoked when a player closes the menu without choosing.
-  attribute EventHandler onplayerclose;
+  // Event handlers invoked when the menu is opened or closed for a player.
+  event onshow;
+  event onclose;
   
-  // Event handler invoked when a player selects an item.
-  attribute EventHandler onplayerselectitem;
+  // Event handler invoked when a player has selected an item from the menu.
+  event onselect;
 };
 ```
 
 When passing an array of `columns` to the constructor, each entry must be an object having a `title`
 and a `width`. The `width` must be a number between in the range of `[0, 640]`, inclusive.
+
+Menus will become immutable once they have been presented to a player for the first time. This is
+what allows the menu allocation system to work reliably.
 
 ## Example: Picking your favorite animal
 The following code will enable the player to select their favorite animal.
@@ -64,8 +68,8 @@ tuningMenu.addItem('Wheel Arch Angels', 'San Fierro');
 tuningMenu.addItem('TransFender', 'San Fierro');
 tuningMenu.addItem('TransFender', 'Las Venturas');
 
-tuningMenu.addEventListener('playerselectitem', event => {
-  console.log(event.player + ' wants to go to ' + event.item[0]);
+tuningMenu.addEventListener('select', event => {
+  console.log(event.player + ' wants to go to ' + event.secondTitle);
 });
 ```
 

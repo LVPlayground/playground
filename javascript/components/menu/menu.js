@@ -2,145 +2,79 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let EventTarget = require('base/event_target.js'),
-    MenuManager = require('components/menu/menu_manager.js');
+let Dialog = require('components/dialogs/dialog.js');
 
-let manager = new MenuManager();
+let MenuBuilder = require('components/menu/menu_builder.js');
 
-// The menu class represents a user-visible menu with up to two columns and twelve items. Each item
-// should have an associated event listener that will be called when a player selects the row.
+// The menu class represents a user-visible dialog from which they can choose an option. Optionally,
+// the menu can have up to four columns, each of which must have a set header. The width of columns
+// will be decided by SA-MP.
 //
-// Creating a menu is simple. Instantiate a new instance of this class with the menu's title and,
-// optionally, the column configuration. The menu will always be centered horizontally and
-// vertically on the player's screen.
+// Each item added to the menu either should have an associated event listener, or the user's
+// selection should be observed by waiting for the promise to displayForPlayer() to settle.
 //
-// Menu's can be presented to a player by calling showForPlayer(), and closed again by calling
-// closeForPlayer(). Players can close the menu themselves either by dismissing it, or by selecting
-// a menu item, for which the 'onclose' event is available.
-class Menu extends EventTarget {
+// There is no limit to the number of items that can be added to a menu, as this component will
+// automatically split a dialog up in multiple dialogs when it doesn't fit in a single box. However,
+// keep in mind that this does not provide a great user experience.
+class Menu {
   constructor(title, columns = []) {
-    super();
-
-    if (!Array.isArray(columns) || columns.length > 2)
-      throw new Error('The column configuration for a menu must be an array with at most two entries.');
-
-    // Verify that each column has at least a title (the width is optional).
-    columns.forEach(column => {
-      if (!column.hasOwnProperty('title'))
-        throw new Error('Each column must have been assigned a title.');
-    });
+    if (!Array.isArray(columns) || columns.length > Menu.MAX_COLUMN_COUNT)
+      throw new Error('Columns must be defined in an array with no more than ' + MAX_COLUMN_COUNT + ' entries.');
 
     this.title_ = title;
     this.columns_ = columns;
     this.items_ = [];
-
-    // Number of players whom are currently being presented the native menu. Should only be modified
-    // by the MenuManager when displaying or hiding menus for players.
-    this.native_player_count_ = 0;
-
-    // Menus will be immutable once they have been presented to a player for the first time.
-    this.immutable_ = false;
   }
 
   // -----------------------------------------------------------------------------------------------
 
-  // Adds a new item to the menu. This method is overloaded with two signatures:
-  //     addItem(title[, listener])
-  //     addItem(firstTitle, secondTitle[, listener])
-  //
-  // The intended function will be chosen based on the number of arguments, as well as the types of
-  // the arguments (in case of the listener). Note that a menu will be considered immutable after
-  // it has been presented to a player.
+  // Adds a new item to the menu. One argument must be passed for each of the columns in the menu,
+  // and optionally one more for the event listener associated with this menu item.
   addItem() {
-    if (this.immutable_)
-      throw new Error('The menu is immutable, it has already been presented to a player.');
+    let columnCount = Math.max(1, this.columns_.length);
+    if (arguments.length < columnCount)
+      throw new Error('Expected ' + columnCount + ' labels, got ' + arguments.length);
 
-    if (this.items_.length >= Menu.MAX_MENU_ITEMS)
-      throw new Error('A menu must not have more than ' + Menu.MAX_MENU_ITEMS + ' items.');
+    let listener = null;
+    if (arguments.length >= columnCount && typeof arguments[columnCount] == 'function')
+      listener = arguments[columnCount];
 
-    if (arguments.length == 0)
-      throw new Error('At least one argument must be passed when adding an item.');
-
-    let item = { firstTitle: arguments[0], secondTitle: '', listener: null };
-
-    if (arguments.length == 2 && typeof arguments[1] != 'function') {
-      item.secondTitle = arguments[1];
-    } else if (arguments.length == 2) {
-      item.listener = arguments[1];
-    } else if (arguments.length > 2 && typeof arguments[2] == 'function') {
-      item.secondTitle = arguments[1];
-      item.listener = arguments[2];
-    }
-
-    this.items_.push(item);
-  }
-
-  // Displays the menu to |player|. Other JavaScript-owned menus will be closed.
-  displayForPlayer(player) {
-    if (!(player instanceof Player))
-      throw new Error('The first argument to showForPlayer() must be a player.');
-
-    // Mark the menu as being immutable.
-    this.immutable_ = true;
-
-    manager.displayMenuForPlayer(this, player);
-  }
-
-  // Closes the menu for |player| if this menu is currently being displayed to them.
-  closeForPlayer(player) {
-    if (!(player instanceof Player))
-      throw new Error('The first argument to showForPlayer() must be a player.');
-
-    manager.closeMenuForPlayer(this, player);
+    this.items_.push({
+      labels: Array.prototype.slice.call(arguments, 0, columnCount),
+      listener: listener
+    });
   }
 
   // -----------------------------------------------------------------------------------------------
 
-  // Dispatches the "show" event to listeners for that type on this menu.
-  OnShow(player) {
-    this.dispatchEvent('show', {
-      player: player,
-      menu: this
-    });
-  }
+  // Displays the menu to |player|. A promise will be returned that will resolve when the dialog
+  // has dismissed from their screen (even when they didn't make a selection). The promise will be
+  // rejected when the |player| is not connected, or disconnects during the lifetime of the menu.
+  displayForPlayer(player) {
+    return new Promise(resolve => {
+      let builder = new MenuBuilder(this),
+          menu = Dialog.displayMenu(player, builder.isList(), builder.buildCaption(), builder.buildContent(), 'Select', 'Cancel');
 
-  // Dispatches the "close" event to listeners for that type on this menu.
-  OnClose(player) {
-    this.dispatchEvent('close', {
-      player: player,
-      menu: this
-    });
-  }
+      // TODO(Russell): Handle pagination of menus.
 
-  // Dispatches the "select" event to listeners for that type on this menu. If the selected item has
-  // a listener of its own, that will be selected first.
-  OnSelect(player, itemId) {
-    if (itemId < 0 || itemId >= this.items_.length)
-      throw new Error('Received an out-of-bounds item id for this menu.');
+      resolve(menu.then(result => {
+        if (result.response != Dialog.PRIMARY_BUTTON)
+          return null;
 
-    let item = this.items_[itemId];
+        if (result.item < 0 || result.item >= this.items_.length)
+          throw new Error('An out-of-bounds menu item has been selected by the player.');
 
-    if (typeof item.listener == 'function')
-      item.listener(player);
+        let item = this.items_[result.item];
+        if (item.listener)
+          item.listener(player);
 
-    this.dispatchEvent('select', {
-      player: player,
-      menu: this,
-
-      title: item.firstTitle,
-      firstTitle: item.firstTitle,
-      secondTitle: item.secondTitle
+        return { player: player, item: item.labels };
+      }));
     });
   }
 };
 
-// The Id that will be used to represent invalid menus.
-Menu.INVALID_ID = 0xFF;
-
-// Maximum number of menus that can be created on the server.
-Menu.MAX_MENU_COUNT = 128;
-
-// Maximum number of items that can be added to a single menu.
-Menu.MAX_MENU_ITEMS = 12;
+// Maximum number of columns that can be added to a menu.
+Menu.MAX_COLUMN_COUNT = 4;
 
 exports = Menu;

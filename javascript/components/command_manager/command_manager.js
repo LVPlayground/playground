@@ -16,12 +16,14 @@ class CommandManager {
   }
 
   // Registers |command| as a new command that will result in |listener| being invoked when executed
-  // by an in-game player.
+  // by an in-game player. The instance of the command manager will be returned again to enable
+  // builder-like call chaining when registering commands.
   registerCommand(command, listener) {
     // TODO(Russell): Support command parameter parsing.
     // TODO(Russell): Disallow registering the same command multiple times.
 
     this.commands_[command] = listener;
+    return this;
   }
 
   // Called when a player executes an in-game command. Will prevent the event from being executed in

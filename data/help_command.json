@@ -1,0 +1,56 @@
+{
+    "An Introduction of Las Venturas Playground": [
+        "LVP is a freeroam server, there are lots of cool features!",
+        "Check out:",
+        "- /race",
+        "- /jump",
+        "- /properties",
+        "- /teles",
+        "- /derby",
+        "- /minigames",
+        "If you need help, see /help and /commands.",
+        "If you need an admin to help you, send them a message by typing in the chat:",
+        "@message"
+    ],
+    "How to earn money": [
+        "Export vehicles - see /export",
+        "Invest in properties. Check out the green house icons around LV (/properties)",
+        "Crush vehicles for a scrap value. - Check out the scrap yard north of the stadium",
+        "Win minigames - see /minigames",
+        "Take out a loan - check out /borrow",
+        "Complete the delivery mission - see /deliver"
+    ],
+    "How to contact LVP and the Staff of LVP": [
+        "If you got questions or comments, you can use",
+        "the following ways of contacting the LVP staff.",
+        "IRC: irc.gtanet.com #lvp",
+        "E-mail: info@sa-mp.nl",
+        "Website: www.sa-mp.nl",
+        "Forum: forum.sa-mp.nl"
+    ],
+    "Information about cruises": [
+        "Cruises are recognizable by a lot of (tuned) vehicles,",
+        "mostly starting at the airport, driving around through all cities.",
+        "Cruise members have a special status on this server:",
+        "They may not be shot! Don't ruin a cruise!"
+    ],
+    "Information about communication": [
+        "Apart from the main chat, there are three other ways to communicate with players: PM, phone call and gang chat.",
+        "Usage: /pm [player] message.",
+        "Usage: /call [player]. The other person needs to type /answer.",
+        "After that you can use the call function as normal chat. End the call with /hangup.",
+        "Gang chat usage: !text. All text starting with ! is only readable by your gang."
+    ],
+    "Information about vehicles": [
+        "Vehicles are marked on your radar with small grey squares.",
+        "To modify a vehicle drive to one of the garages or by using /tune.",
+        "Vehicles can be spawned at all times by Crew members, and VIP members only during the cruise (/cruisecar).",
+        "Regular players are able to spawn an infernus (/inf) once they have sprayed 100 tags."
+    ],
+    "Learn about upgrading your bank account": [
+        "Go to the LVP Main bank (marked with a red dollar sign",
+        "on your radar) to upgrade your bank account.",
+        "Walk into the red marker inside the building and type",
+        "'/account' to get started."
+    ],
+}

@@ -10,5 +10,4 @@ let Playground = require('playground.js');
 // object if there are any test failures. We need some kind of directory
 // scanning functionality for this (**/*.test.js).
 
-// Make the Playground instance available on the global object.
-self.playground = new Playground();
+new Playground();  // instantiate the world

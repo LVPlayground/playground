@@ -21,7 +21,7 @@ let manager = new DialogManager();
 // server. You should not use this class directly, instead consider using one of the high-level
 // abstractions for dialogs:
 //
-// DIALOG_STYLE_MSGBOX          - [[NOT IMPLEMENTED]]
+// DIALOG_STYLE_MSGBOX          - //components/dialogs/message.js (Message)
 // DIALOG_STYLE_INPUT           - [[NOT IMPLEMENTED]]
 // DIALOG_STYLE_PASSWORD        - [[NOT IMPLEMENTED]]
 // DIALOG_STYLE_LIST            - //components/menu/menu.js (Menu)
@@ -33,10 +33,19 @@ class Dialog {
   // Do not allow this class to be instantiated. Instead, use the static methods below.
   constructor() { throw new Error('The Dialog class must not be instantiated.'); }
 
+  // Displays a message box to |player|. The |rightButton| will be hidden when its label is set to
+  // an empty string. This method returns a promise that will resolve with the clicked-on button
+  // (|response|), or reject when the player disconnects while it's being shown.
+  static displayMessage(player, caption, message, leftButton, rightButton) {
+    return manager.displayForPlayer(player, DIALOG_STYLE_MSGBOX, caption, message, leftButton, rightButton).then(result => {
+      return { response: result.response };
+    });
+  }
+
   // Displays a tab list dialog with headers to |player|. The |rightButton| will be hidden when its
   // label is set to an empty string. This method will return a promise that will resolve with the
   // clicked-on button (|response|) and the selected item (|item|).
-  static displayMenu(player, isList, caption, content, leftButton, rightButton = '') {
+  static displayMenu(player, isList, caption, content, leftButton, rightButton) {
     let style = isList ? DIALOG_STYLE_LIST
                        : DIALOG_STYLE_TABLIST_HEADERS;
 

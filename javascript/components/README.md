@@ -9,6 +9,9 @@ functionality that may be used by several features.
 ## List of components
 The following components are available in Las Venturas Playground.
 
+  - **[Command Manager component](command_manager/)**
+    - [CommandManager](command_manager/command_manager.js): Registry and dispatcher of available in-game commands.
+
   - **[Dialogs component](dialogs/)**
     - [Message](dialogs/message.js): Displays a simple message box to the player.
 

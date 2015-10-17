@@ -1,78 +1,68 @@
 # Component: Menu
-The menu component provides a idiomatic JavaScript interface to SA-MP's menu system. It enables you
-to create menus with up to 12 items, optionally having two columns. Because the SA-MP server imposes
-a limit on having no more than 128 menus at any given time, this component will intelligently create
-and dispose of menus as it sees fit.
+The menu component provides the ability to a menu that can be visually presented to a player. The
+menu can either be a list (a single unnamed column), or between one and four named columns in which
+the data will be presented in an organized manner.
 
-## Interface documentation
-The exported `Menu` class has the following interface:
+Menus are implemented using SA-MP's [dialog feature](http://wiki.sa-mp.com/wiki/ShowPlayerDialog),
+but remove many of the limitations and complexity by doing this for you.
 
-```webidl
-interface Menu {
-  constructor(string title);
-  constructor(string title, object columns[]);
+## Interface: Menu
+The `Menu` interface is defined in [menu.js](menu.js) and provides the sole entry point.
 
-  // Adds an item to the menu, either just for the first (only?) column, or for
-  // both columns. Per-item event listeners may be attached.
-  void addItem(string title, optional function listener = null);
-  void addItem(string firstTitle, string secondTitle, optional function listener = null);
+You must construct a menu with at least a title, and optionally an array of column names.
 
-  // Displays or hides the menu for |player|.
-  void displayForPlayer(Player player);
-  void closeForPlayer(Player player);
-  
-  // Event handlers invoked when the menu is opened or closed for a player.
-  event onshow;
-  event onclose;
-  
-  // Event handler invoked when a player has selected an item from the menu.
-  event onselect;
-};
-```
+Once constructed, you can add any number of items to the menu by calling `addItem()` on the Menu
+instance. You pass one argument per column, and optionally a JavaScript function that will be called
+when a user has selected that item.
 
-When passing an array of `columns` to the constructor, each entry must be an object having a `title`
-and a `width`. The `width` must be a number between in the range of `[0, 640]`, inclusive.
-
-Menus will become immutable once they have been presented to a player for the first time. This is
-what allows the menu allocation system to work reliably.
+In order to display the menu to a player, you can call the `displayForPlayer()` method. This returns
+a Promise that will be resolved when the player has either made a choice, or has dismissed the menu.
 
 ## Example: Picking your favorite animal
-The following code will enable the player to select their favorite animal.
+The following example will present a list of animals to the player, and will output a message to the
+console once they've selected their favorite.
 
 ```javascript
-let animalMenu = new Menu('What is your favorite animal?');
-animalMenu.addItem('Cats', player => {
-  console.log(player.name + ' prefers cats!');
-});
+let menu = new Menu('What is your favorite animal?');
+menu.addItem('Cats');
+menu.addItem('Dogs');
+menu.addItem('Pigeons');
 
-animalMenu.addItem('Dogs', player => {
-  console.log(player.name + ' prefers dogs over cats!');
-});
-
-animalMenu.showForPlayer(myPlayer);
-```
-
-## Example: Picking a tuning shop in a specific city.
-The following code will create a menu with two columns, one for the shop's name, one for the city
-it's located in.
-
-```javascript
-let tuningMenu = new Menu('Which tuning shop do you want to go to?', [
-  { title: 'Tuning shop', width: 150 },
-  { title: 'City', width: 80 }
-]);
-
-tuningMenu.addItem('Loco Low Co.', 'Los Santos');
-tuningMenu.addItem('TransFender', 'Los Santos');
-tuningMenu.addItem('Wheel Arch Angels', 'San Fierro');
-tuningMenu.addItem('TransFender', 'San Fierro');
-tuningMenu.addItem('TransFender', 'Las Venturas');
-
-tuningMenu.addEventListener('select', event => {
-  console.log(event.player + ' wants to go to ' + event.secondTitle);
+menu.displayForPlayer(player).then(result => {
+  console.log(player.name + ' prefers ' + result.item[0]);
 });
 ```
 
-## References
-- [SA-MP Wiki: Creating a simple menu](http://wiki.sa-mp.com/wiki/Creating_a_simple_Menu)
-- [SA-MP Wiki: CreateMenu](http://wiki.sa-mp.com/wiki/CreateMenu)
+## Example: Determining how greedy the player is
+The following example will present a list of choices to the player, having a column for their
+greedyness and a column for the reward associated with that greedyness.
+
+```javascript
+let menu = new Menu('How greedy are you?', [ 'Greedyness', 'Reward' ]);
+menu.addItem('Not very...', '$100');
+menu.addItem('Quite greedy!', '$500');
+menu.addItem('Very greedy!', '$1000');
+
+menu.displayForPlayer(player).then(result => {
+  console.log(player.name + ' is ' + result.item[0] + ' and wants ' + result.item[1]);
+});
+```
+
+Note that up to four columns are supported for the Menu class.
+
+## Example: List of other menus that should be opened
+The following example will display a list of options to the player, each of which will open a
+different menu relevant to the selected menu item.
+
+```javascript
+let menu = new Menu('How can we help you?');
+menu.addItem('How do I get money?', player => {
+  moneyMenu.displayForPlayer(player);
+});
+
+menu.addItem('How do I get a vehicle?', player => {
+  vehicleMenu.displayForPlayer(player);
+});
+
+menu.displayForPlayer(player);
+```

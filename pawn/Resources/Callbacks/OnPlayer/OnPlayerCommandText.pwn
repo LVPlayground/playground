@@ -525,8 +525,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(World,          5, PlayerLevel);
 
     // General player commands:
-    lvp_command(Help,           4, PlayerLevel);
-    lvp_command(Rules,          5, PlayerLevel);
     lvp_command(Commands,       8, PlayerLevel);
     lvp_command(cmds,           4, PlayerLevel);
     lvp_command(Minigames,      9, PlayerLevel);
@@ -553,7 +551,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(Robbery,        7, PlayerLevel);
     lvp_command(Wwtw,           4, PlayerLevel);
     lvp_command(Rwtw,           4, PlayerLevel);
-    lvp_command(irc,            3, PlayerLevel);
     lvp_command(minigaming,    10, PlayerLevel);
 
     // Commands for  moderators:

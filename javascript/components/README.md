@@ -15,6 +15,10 @@ The following components are available in Las Venturas Playground.
   - **[Dialogs component](dialogs/)**
     - [Message](dialogs/message.js): Displays a simple message box to the player.
 
+  - **[Feature Manager component](feature_manager/)**
+    - [Feature](feature_manager/feature.js): Base class for all JavaScript-powered features.
+    - [FeatureManager][feature_manager/feature_manager.js): Registry for all available features.
+
   - **[Menu component](menu/)**
     - [Menu](menu/menu.js): Creates either simple or complicated multiple-choice menu dialogs.
 

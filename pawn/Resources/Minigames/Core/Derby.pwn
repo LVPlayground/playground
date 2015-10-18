@@ -1131,75 +1131,39 @@ CDerby__Disconnect(iPlayerID)
 // managing signups, and showing a 10 second countdown for a player to get
 // back in their derby vehicle.
 
-CDerby__Process()
-{
-    for(new iDerbyID = 0; iDerbyID < CDerby__GetCount(); iDerbyID++)
-    {
-        // In-case the specified derby ID is no longer valid by means
-        // of it being deleted in game extra error checking is necessary
-        // because if an invalid  ID is passed it may be possible for all players
-        // to be teleported to the derby start point.
-        if(!CDerby__IsValid(iDerbyID))
+CDerby__Process() {
+    for (new iDerbyID = 0; iDerbyID < g_DerbiesLoaded; iDerbyID++) {
+        if (g_DerbyData[iDerbyID][0] /* is valid */ == 0)
             continue;
 
-        // First of all, we check if there are any derbies which
-        // we need to start....
-        if(CDerby__GetState(iDerbyID) == DERBY_STATE_SIGNUP)
-        {
-            // 20 seconds have passed, we can start this derby!
-            if(Time->currentTime() - g_DerbyData[iDerbyID][6] >= DERBY_SIGNUP_TIME)
-            {
+        new derbyState = g_DerbyData[iDerbyID][1];
+        if (derbyState == DERBY_STATE_SIGNUP) {
+            new signupTime = Time->currentTime() - g_DerbyData[iDerbyID][6] /* start time */; 
+            if (signupTime >= DERBY_SIGNUP_TIME ||
+                g_DerbyData[iDerbyID][2] /* player count */ == CDerby__GetMaxPlayers(iDerbyID)) {
                 CDerby__Start(iDerbyID);
                 continue;
             }
         }
 
-        // If a derby is in its signup process, and every player has signed up, we
-        // can start it.
-
-        if(CDerby__GetState(iDerbyID) == DERBY_STATE_SIGNUP
-        && CDerby__GetPlayerCount(iDerbyID) == CDerby__GetMaxPlayers(iDerbyID))
-        {
-            CDerby__Start(iDerbyID);
-            continue;
-        }
-
-
-        // Now we have to handle the derby countdown...
-        if(CDerby__GetState(iDerbyID) == DERBY_STATE_COUNTDOWN)
-        {
-            if(CDerby__IsCountDownEnabled(iDerbyID))
-            {
+        else if (derbyState == DERBY_STATE_COUNTDOWN) {
+            if (!g_DerbyData[iDerbyID][9] /* countdown enabled */) {
                 new str[128];
                 format(str,128,"~w~%d",g_DerbyData[iDerbyID][7]);
 
                 new iSpawnID;
 
-                for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-                {
-                    if(!Player(i)->isConnected())
-                    {
+                for (new i = 0; i <= PlayerManager->highestPlayerId(); i++) {
+                    if (!Player(i)->isConnected() || g_DerbyPlayer[i][2] != iDerbyID)
                         continue;
-                    }
 
-                    if(CDerby__GetPlayerDerby(i) != iDerbyID)
-                    {
-                        continue;
-                    }
-
-                    if(g_DerbyData[iDerbyID][7] == 4)
-                    {
+                    if (g_DerbyData[iDerbyID][7] /* current countdown */ == 4) {
                         CDerby__PlayerVehicle(i, iDerbyID, iSpawnID);
                         iSpawnID++;
                     }
 
-                    // The countdown is up! Start the derby yey
-                    if(g_DerbyData[iDerbyID][7] <= 0)
-                    {
-                        // First of all though just make sure the son of a bitch
-                        // is still in their car
-                        if(!IsPlayerInAnyVehicle(i))
-                        {
+                    if (g_DerbyData[iDerbyID][7] /* current countdown */ <= 0) {
+                        if (!IsPlayerInAnyVehicle(i)) {
                             CDerby__PlayerExit(i, ONFOOT);
                             continue;
                         }
@@ -1210,86 +1174,62 @@ CDerby__Process()
                         CDerby__SetPlayerState(i, DERBY_STATE_RUNNING);
                         TogglePlayerControllable(i, true);
 
-
-                        if(CDerby__GetCountdownMode(iDerbyID) == DERBY_COUNTDOWN_ENGINE)
-                        {
-                            if(GetVehicleModel(g_DerbyPlayer[i][1]) != 0)
-                            {
+                        if (CDerby__GetCountdownMode(iDerbyID) == DERBY_COUNTDOWN_ENGINE) {
+                            if (GetVehicleModel(g_DerbyPlayer[i][1]) != 0) {
                                 SetVehicleParamsEx(g_DerbyPlayer[i][1], 1, 1, 0, 1, 0, 0, 0);
-                            }
-                            else
-                            {
+                            } else {
                                 CDerby__PlayerExit(i, ONFOOT);
                                 SendClientMessage(i, COLOR_RED, "* An error occured and your vehicle was destroyed.");
                             }
                         }
                         continue;
                     }
+
                     GameTextForPlayer(i, str, 1000, 6);
                     PlayerPlaySound(i, 1058, 0, 0, 0);
                 }
 
-                g_DerbyData[iDerbyID][7]--;
-            }
-            else
-            {
-                for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-                {
-                    if(!Player(i)->isConnected() || CDerby__GetPlayerDerby(i) != iDerbyID)
-                    {
+                g_DerbyData[iDerbyID][7]--; /* current countdown */
+
+            } else {
+                for (new i = 0; i <= PlayerManager->highestPlayerId(); i++) {
+                    if (!Player(i)->isConnected() || g_DerbyPlayer[i][2] != iDerbyID)
                         continue;
-                    }
+
                     GameTextForPlayer(i,"~g~Go for it!",1000,6);
                     PlayerPlaySound(i,1057,0,0,0);
                     CDerby__SetState(iDerbyID,DERBY_STATE_RUNNING);
                     CDerby__SetPlayerState(i,DERBY_STATE_RUNNING);
 
-
                     // Don't forget to enable the engine or unfreeze the player!
-                    if(CDerby__GetCountdownMode(iDerbyID) == DERBY_COUNTDOWN_ENGINE)
-                    {
-                        if(GetVehicleModel(g_DerbyPlayer[i][1]) != 0)
-                        {
+                    if (CDerby__GetCountdownMode(iDerbyID) == DERBY_COUNTDOWN_ENGINE) {
+                        if (GetVehicleModel(g_DerbyPlayer[i][1]) != 0) {
                             SetVehicleParamsEx(g_DerbyPlayer[i][1], 1, 1, 0, 1, 0, 0, 0);
-                        }
-                        else
-                        {
+                        } else {
                             CDerby__PlayerExit(i, ONFOOT);
                             SendClientMessage(i, COLOR_RED, "* An error occured and your vehicle was destroyed.");
                         }
                     }
-                    else if(CDerby__GetCountdownMode(iDerbyID) == DERBY_COUNTDOWN_FREEZE)
-                    {
+                    else if (CDerby__GetCountdownMode(iDerbyID) == DERBY_COUNTDOWN_FREEZE) {
                         TogglePlayerControllable(i, true);
                     }
                 }
             }
         }
 
+        else if (derbyState == DERBY_STATE_RUNNING) {
 
-        // If a derby has a timelimit active, we have to handle
-        // and update the derby countdown textdraw accordingly.
-        if(CDerby__GetState(iDerbyID) == DERBY_STATE_RUNNING && CDerby__IsTimeLimitActive(iDerbyID))
-        {
 
-            if(g_DerbyData[iDerbyID][17] <= 0)
-            {
+            if (g_DerbyData[iDerbyID][11]   /* time limit */ > 0 &&
+                g_DerbyData[iDerbyID][17]-- /* time remaining **/ <= 0) {
                 CDerby__End(iDerbyID, true);
-            }
-            else
-            {
-                g_DerbyData[iDerbyID][17]--;
+            } else {
+                CDerby__UpdateTextdraw(iDerbyID);
+                CDerby__CheckPickupRespawns(iDerbyID);
             }
         }
-
-        // Now check to update the derby textdraw(s)
-        CDerby__UpdateTextdraw(iDerbyID);
-
-        // Check to respawn any derby pickups too
-        CDerby__CheckPickupRespawns(iDerbyID);
     }
 }
-
 
 // CDerby__PlayerProcess
 // Similar to CDerby__Process, this function is called every second.
@@ -1500,7 +1440,7 @@ CDerby__SetState(iDerbyID,iState)
 // Returns 1 if a derby is valid, 0 if it isn't.
 // Update for 2.94.5: Added an additional check if iDerbyID
 // Parameter is below 0 as this function is often checked against this scenario.
-stock CDerby__IsValid(iDerbyID)
+CDerby__IsValid(iDerbyID)
 {
     // Prevent a buffer overflow
     if(iDerbyID < 0 || iDerbyID > MAX_DERBIES)

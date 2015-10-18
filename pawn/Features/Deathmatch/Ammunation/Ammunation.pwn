@@ -191,16 +191,6 @@ class Ammunation <shopId (AmmunationManager::MaximumAmmunationShops)> {
     }
 
     /// @todo(Russell): Fix the PreCompiler so the following methods can be defined as inline.
-    /**
-     * Expose the pickup Id for the skull icon, which the player can walk in to in order to start
-     * buying weapons. We need this in order to determine the instance Id for the
-     * onPlayerPickUpAmmunationPickup event, as there's no way of linking a pickup to a store.
-     *
-     * @return integer The Id of the skull icon that's used for this ammunation.
-     */
-    public pickupId() {
-        return (m_pickupId);
-    }
 
     /**
      * Retrieve the number of regular weapons available in this Ammunation.

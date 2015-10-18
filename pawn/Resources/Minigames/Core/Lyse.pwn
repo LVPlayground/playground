@@ -426,18 +426,6 @@ CLyse__VehicleDeath(vehicleid) {
     }
 }
 
-// Returns 1 if a player is taking part in lyse.
-// 0 otherwise. Used for the userbar to establish how many people are
-// actually taking part. Also allows for signup
-stock CLyse__IsPlaying(playerid)
-{
-    if(CLyse__GetPlayerState(playerid) >= LYSE_STATE_SIGNUP)
-    {
-        return 1;
-    }
-    return 0;
-}
-
 // CLyse__SignPlayerUp
 // Sign a player up for the minigame whilst it's in it's signup state.
 stock CLyse__SignPlayerUp(playerid)

@@ -98,23 +98,6 @@ class NicknameGenerator {
     }
 
     /**
-     * Create a random seed which will be used for generating the nickname, ensuring that we'll end
-     * up with a new nickname upon every invocation. This is good when you need temporary names for,
-     * for example, a minigame.
-     *
-     * @param nickname Array to store the generated nickname in.
-     * @param nicknameLength Maximum length of this buffer.
-     * @return integer Length of the generated nickname.
-     */
-    public generateRandom(nickname[], nicknameLength) {
-        new seedBuffer[RandomSeedEntropy + 1];
-        for (new index = 0; index < RandomSeedEntropy; ++index)
-            seedBuffer[index] = random(0, 0xFF);
-
-        return this->generate(seedBuffer, nickname, nicknameLength);
-    }
-
-    /**
      * The ugly guts for the nickname generator. Based on the given seed, it will select a random
      * first and last name, put them together and return them through the nickname parameter.
      *
@@ -141,24 +124,6 @@ class NicknameGenerator {
             }
         }
 
-        return strlen(nickname);
-    }
-
-    /**
-     * The random nickname generator is based on the first and last names of characters which appear
-     * in Grand Theft Auto, which are stored in order. Therefore, by providing an index, we can get
-     * the full name of any of the characters we support.
-     *
-     * @param index Index of the nickname to retrieve the name for.
-     * @param nickname Array to store the generated nickname in.
-     * @param nicknameLength Maximum length of this buffer.
-     * @return integer Length of the generated nickname.
-     */
-    public getNicknameByIndex(index, nickname[], nicknameLength) {
-        if (index < 0 || index >= NicknameGeneratorNameSets)
-            return 0;
-
-        format(nickname, nicknameLength, "%s_%s", g_nicknameGeneratorFirstNames[index], g_nicknameGeneratorLastNames[index]);
         return strlen(nickname);
     }
 };

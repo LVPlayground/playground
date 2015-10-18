@@ -390,7 +390,6 @@ new ZoneInfo[375][ZoneInfoEnum] = {
     {1507.51, 1582.55, -1385.21, -1325.31, 110.916, 335.916, "Downtown Los Santos"}
     };
 
-forward isPlayerInArea(cplayerID, Float:data[4]);
 stock isPlayerInAreaEx(playerid, Float:mX1, Float:mX2, Float:mY1, Float:mY2)
 {
     new Float:x,Float:y,Float:z;

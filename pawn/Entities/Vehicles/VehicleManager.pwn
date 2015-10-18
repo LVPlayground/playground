@@ -116,27 +116,6 @@ class VehicleManager {
     }
 
     /**
-     * Determines the most popular vehicle model in Las Venturas Playground. This method will
-     * iterate through all possible model Ids [400, 611] to find the one which is used most often.
-     *
-     * @return integer Model Id of the vehicle which has been created most often.
-     */
-    public mostPopularVehicleModel() {
-        new popularModelId = 400,
-            popularModelVehicleCount = 0;
-
-        for (new modelId = VehicleModel::LowestModelId; modelId <= VehicleModel::HighestModelId; ++modelId) {
-            if (popularModelVehicleCount >= VehicleModel(modelId)->vehicleCount())
-                continue;
-
-            popularModelVehicleCount = VehicleModel(modelId)->vehicleCount();
-            popularModelId = modelId;
-        }
-
-        return popularModelId;
-    }
-
-    /**
      * Retrieve the amount of vehicles that have been created in Las Venturas Playground. This
      * includes private vehicles and vehicles used by minigames.
      *

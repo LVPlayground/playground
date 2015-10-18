@@ -744,10 +744,6 @@ stock CHideGame__CreateMaps()
 
     // FiXeR's Sheep Farm by xBluexFoxx
 
-/*    AddStaticVehicle(541,-77.66712952,15.31319141,3.66047454,0.00000000,-1,126); //Bullet
-    AddStaticVehicle(411,-42.67994690,137.50997925,2.91718721,0.00000000,-1,-1); //Infernus
-    AddStaticVehicle(411,-39.30957031,136.23535156,2.91718721,0.00000000,-1,-1); //Infernus
-*/
     CreateDynamicObject(8148,-18.80701065,118.14262390,5.21062708,0.00000000,0.00000000,60.00000000, HS_VIRTUAL_WORLD); //object(vgsselecfence02) (1)
     CreateDynamicObject(8148,-155.81542969,-27.49316406,5.21821451,0.00000000,0.00000000,339.99938965, HS_VIRTUAL_WORLD); //object(vgsselecfence02) (2)
     CreateDynamicObject(8148,-115.52343750,82.54394531,5.21821451,0.00000000,0.00000000,339.99938965, HS_VIRTUAL_WORLD); //object(vgsselecfence02) (3)
@@ -1547,18 +1543,6 @@ stock CHideGame__GetPlayerState( iPlayerID )
 stock CHideGame__GetState()
 {
     return iHideGameState;
-}
-
-// Function: CHideGame__IsPlaying
-// Determines if a player is taking part on the minigame used for the
-// userbar Interface.
-stock CHideGame__IsPlaying( iPlayerID )
-{
-    if(CHideGame__GetPlayerState(iPlayerID) >= HS_STATE_SIGNING_UP)
-    {
-        return 1;
-    }
-    return 0;
 }
 
 // Function: CHideGame__Start

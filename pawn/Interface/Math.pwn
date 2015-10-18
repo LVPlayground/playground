@@ -190,26 +190,4 @@ class Math {
     public inline Float: frandom(Float: minimum, Float: maximum) {
         return (floatdiv(floatround(minimum * 100.0) + random(floatround((maximum - minimum) * 100.0)), 100.0));
     }
-
-    /**
-     * Retrieve the smallest of the two given float arguments.
-     *
-     * @param left The first value which should be checked for its value.
-     * @param right The second value which should be checked for its value.
-     * @return Float The smallest value of the two given parameters.
-     */
-    public Float: fmin(Float: left, Float: right) {
-        return floatcmp(left, right) < 0 ? left : right;
-    }
-
-    /**
-     * Retrieve the biggest of the two given float arguments.
-     *
-     * @param left The first value which should be checked for its value.
-     * @param right The second value which should be checked for its value.
-     * @return Float The biggest value of the two given parameters.
-     */
-    public Float: fmax(Float: left, Float: right) {
-        return floatcmp(left, right) > 0 ? left : right;
-    }
 };

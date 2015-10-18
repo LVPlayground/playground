@@ -196,17 +196,6 @@ class Player <playerId (MAX_PLAYERS)> {
         SetTimerEx("DelayedKick", 750, 0, "i", playerId);
     }
 
-    /**
-     * Records a message which will be added to the player's permanent log. The message will be
-     * stored in their profile, and is limited to 128 characters of text.
-     *
-     * @param message The message to be recorded in the player's log.
-     * @param administratorId Id of the administrator who logged this message (optional).
-     */
-    public log(message[], administratorId = Player::InvalidId) {
-        BanManager->recordLogEntry(playerId, administratorId, message);
-    }
-
     // ---- GETTERS FOR NORMAL DATA MEMBERS --------------------------------------------------------
 
     /**

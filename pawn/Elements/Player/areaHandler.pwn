@@ -191,18 +191,6 @@ AirportGateCheck(i)
 
 // Functions to declare whether a player is in an area:
 
-stock IsPlayerInArea(playerid, Float:x1, Float:y1, Float:x2, Float:y2)
-{
-    new Float:X, Float:Y, Float:Z;
-
-    GetPlayerPos(playerid, X, Y, Z);
-    if(X >= x1 && X <= x2 && Y >= y1 && Y <= y2)
-    {
-        return 1;
-    }
-    return 0;
-}
-
 isPlayerInArea(cplayerID, Float:data[4])
 {
     new Float:X, Float:Y, Float:Z;

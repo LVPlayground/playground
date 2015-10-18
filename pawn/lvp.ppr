@@ -278,6 +278,7 @@
     <DiskObject>\Interface\Server\a_objects.pwn</DiskObject>
     <DiskObject>\Interface\Server\a_players.pwn</DiskObject>
     <DiskObject>\Interface\Server\a_samp.pwn</DiskObject>
+    <DiskObject>\Interface\Server\a_streamer.pwn</DiskObject>
     <DiskObject>\Interface\Server\a_vehicles.pwn</DiskObject>
     <DiskObject>\Interface\Server\a_zones.pwn</DiskObject>
     <DiskObject>\Interface\Time.pwn</DiskObject>
@@ -377,7 +378,6 @@
     <DiskObject>\Resources\Minigames\Core\Race\core.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\Race\Drift.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\Race\Projectiles\</DiskObject>
-    <DiskObject>\Resources\Minigames\Core\Race\Projectiles\Barrel.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\Race\Projectiles\Rocket.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\Rivershell.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\Robbery.pwn</DiskObject>
@@ -454,7 +454,6 @@
     <DiskObject>\Resources\Minigames\Race\Race7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race9.pwn</DiskObject>
-    <DiskObject>\Interface\Server\a_streamer.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

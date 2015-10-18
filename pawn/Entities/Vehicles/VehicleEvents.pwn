@@ -105,7 +105,6 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
             return 1;
         }
 
-        OnBarrelVehicleRespawn(vehicleId);
         sprayTagOnVehicleSpawn(vehicleId);
         CBomb__ResetVehicleData(vehicleId);
         CCrush__Reset(vehicleId);

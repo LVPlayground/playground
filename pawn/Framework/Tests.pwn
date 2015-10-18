@@ -159,13 +159,6 @@ class TestManager {
     }
 
     /**
-     * Closes the active test-suite by wiping out the suite's name.
-     */
-    stock test_suite_close() {
-        activeTestSuiteName[0] = 0;
-    }
-
-    /**
      * Returns whether a test suite is currently active.
      */
     stock bool: is_running_test() {
@@ -286,7 +279,6 @@ class TestManager {
         sure that code using one of the asserts will not break. **/
 
     #define test_suite_name(%0); {}
-    #define test_suite_close(); {}
     #define display_integer_test_result(%0,%1,%2); {}
 
     #define assert_equals(%0,%1,%2); {}

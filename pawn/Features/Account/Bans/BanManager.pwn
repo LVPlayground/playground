@@ -201,18 +201,6 @@ class BanManager {
     }
 
     /**
-     * Records a log entry in the database for the given player. Log entries are always tied to both
-     * a player and an administrator. The log entries are visible on the website.
-     *
-     * @param playerId Id of the player who the entry should be recorded for.
-     * @param administratorId Id of the administrator who's recording this entry.
-     * @param message The message which should be recorded for the player.
-     */
-    public recordLogEntry(playerId, administratorId, message[]) {
-        this->createDatabaseEntry("log", administratorId, playerId, message);
-    }
-
-    /**
      * Records a kick entry in the database for the given player. Kicks may be automated by features
      * so the administratorId field may be set to Player::InvalidId, but the playerId id required.
      *

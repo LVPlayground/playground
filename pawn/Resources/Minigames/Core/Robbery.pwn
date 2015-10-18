@@ -1156,17 +1156,6 @@ stock CRobbery__GetPlayerTeam(playerid)
     return playerCasinoData[playerid][team];
 }
 
-// CRobbery__IsPlaying
-// Determines if a player is taking part in the robbery or not. Also allows for signups
-stock CRobbery__IsPlaying(playerid)
-{
-    if(CRobbery__GetPlayerStatus(playerid) >=  ROBSTATUS_SIGNUP)
-    {
-        return 1;
-    }
-    return 0;
-}
-
 // CRobbery__TeamMsg
 // This sends a message to a team
 CRobbery__TeamMsg(teamid, colorHEX, msg[])

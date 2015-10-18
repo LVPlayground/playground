@@ -75,37 +75,6 @@ class Color {
     public const NonPlayerCharacterColor = 0xFFFFFFAA;
 
     /**
-     * Converts a simple 0xRRGGBB numerical color value to the RGBA format which is expected by
-     * San Andreas: Multiplayer. We store colors in RGB format in the database. An alpha of 0xAA is
-     * automatically appended, which matches what we'd like for most colors, but this can be amended
-     * by passing an alternative alpha value as the [alpha] parameter.
-     *
-     * @param color The simple numeric color assigned for this player.
-     * @param alpha Optional parameter indicating which alpha level this color should have.
-     * @return integer The same color, but in 0xRRGGBBAA format with the given alpha.
-     */
-    public fromRGB(color, alpha = 0xAA) {
-        new red = (color >> 16) & 0xFF,
-            green = (color >> 8) & 0xFF,
-            blue = color & 0xFF;
-
-        return red << 24 | green << 16 | blue << 8 | alpha;
-    }
-
-    /**
-     * Convert a RGBA color to a hexadecimal color (SA-MP standard).
-     * 
-     * @param red Red channel's value.
-     * @param green Green channel's value.
-     * @param blue Blue channel's value.
-     * @param alpha Alpha channel's value.
-     * @return integer Standard hexadecimal color.
-     */
-    public fromRGBA(red, green, blue, alpha) {
-        return red << 24 | green << 16 | blue << 8 | alpha;
-    }
-
-    /**
      * Converts a integer-based color to a RRGGBB string representation, for more convenient usage
      * in format() and similar functions.
      *
@@ -119,27 +88,5 @@ class Color {
             blue = (color >> 8) & 0xFF;
 
         format(buffer, bufferSize, "%02x%02x%02x", red, green, blue);
-    }
-
-    /**
-     * Convert a string containing a hex color to it's integer.
-     * Source: http://wiki.sa-mp.com/wiki/Colors.
-     * 
-     * @param string The string containing the hex color.
-     * @return integer Integer of the color.
-     */
-    public fromHexToInt(string[]) {
-        if (string[0] == 0)
-            return 0;
-
-        new cur = 1, int = 0;
-        for (new i = strlen(string); i > 0; i--) {
-            if (string[i - 1] < 58)
-                int = int + cur * (string[i - 1] - 48);
-            else
-                int = int + cur * (string[i - 1] - 65 + 10);
-            cur = cur * 16;
-        }
-        return int;
     }
 };

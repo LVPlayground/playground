@@ -506,13 +506,6 @@ CDrift__UpdateTextDraw( iPlayer, iScore, iColor, Float:fSpeed = 0.0 )
     }
 }
 
-// Function: CDrift__IsPlayerDriftingEnabled
-// Get whether drifting is enabled for a player.
-stock CDrift__IsPlayerDriftingEnabled( iPlayer )
-{
-    return CDrift__Data[ iPlayer ][ Enabled ];
-}
-
 // Function: CDrift__GetPlayerScore
 // Get the total drifting score for a player.
 stock CDrift__GetPlayerScore( iPlayer )

@@ -59,6 +59,8 @@ class TimerController {
     // Ticker to manage invocation interval for ten-second timers.
     new m_tenSecondTimerTicker = 1;
 
+#if Debug::EnableTimerDebugging
+
     // Resource Id of the High Resolution timer.
     new m_highResolutionTimer = 0;
 
@@ -67,8 +69,6 @@ class TimerController {
 
     // Resource Id of the timer which runs at a minute's interval.
     new m_minuteTimer = 0;
-
-#if Debug::EnableTimerDebugging
 
     // Start time, in server ticks, of the current timer.
     new m_currentTimerStart = 0;
@@ -83,9 +83,15 @@ class TimerController {
      * within the gamemode.
      */
     public __construct() {
+#if Debug::EnableTimerDebugging
         m_highResolutionTimer = SetTimer("OnHighResolutionTimerTick", 250, 1);
         m_secondTimer = SetTimer("OnSecondTimerTick", 1000, 1);
         m_minuteTimer = SetTimer("OnMinuteTimerTick", 60 * 1000 + 500, 1);
+#else
+        SetTimer("OnHighResolutionTimerTick", 250, 1);
+        SetTimer("OnSecondTimerTick", 1000, 1);
+        SetTimer("OnMinuteTimerTick", 60 * 1000 + 500, 1);
+#endif
     }
 
     /**
@@ -183,6 +189,8 @@ class TimerController {
 #endif
     }
 
+#if Debug::EnableTimerDebugging
+
     /**
      * Reset all the timers by re-creating them. It is possible for other parts of the gamemode, or
      * filterscripts, to destroy timer instances they do not control, as the timer system within
@@ -203,4 +211,7 @@ class TimerController {
         m_fiveSecondTimerTicker = 0;
         m_tenSecondTimerTicker = 0;
     }
+
+#endif
+
 };

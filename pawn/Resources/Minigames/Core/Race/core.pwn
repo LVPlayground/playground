@@ -4,7 +4,6 @@
 
 #include Resources/Minigames/Core/Race/Drift.pwn
 #include Resources/Minigames/Core/Race/Projectiles/Rocket.pwn
-#include Resources/Minigames/Core/Race/Projectiles/Barrel.pwn
 
 #define MAX_RACES              36
 #define MAX_CHECKPOINTS        40
@@ -2378,8 +2377,7 @@ CRace__CheckRaceEnd( iRaceID, playerid )
 }
 
 // Run every minute to make sure unused race variables are emptied.
-forward CRace__OpenRaces();
-public CRace__OpenRaces() {
+CRace__OpenRaces() {
     new races[MAX_RACES];
 
     for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
@@ -2601,7 +2599,7 @@ CRace__AddObject( iRaceID, iObjectModel, Float:fPosX, Float:fPosY, Float:fPosZ, 
 
 // CRace__SetObjectDrawDistance
 // Sets the object draw distance for the specified race (optional)
-stock CRace__SetObjectDrawDistance(iRaceID, Float:fDrawDistance)
+CRace__SetObjectDrawDistance(iRaceID, Float:fDrawDistance)
 {
     g_RaceData[ iRaceID][ 27 ] = floatround(fDrawDistance);
 }

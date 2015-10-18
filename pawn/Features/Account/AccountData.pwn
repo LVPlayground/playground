@@ -123,16 +123,6 @@ class AccountData <playerId (MAX_PLAYERS)> {
                 JailController->jailPlayer(playerId, remainingJailTime);
         }
 
-        // Reads the persistent gang_id from the users_gangs table. If the player is member of a
-        // gang, ask the GangManager to initialize said gang and add the player to it.
-        new gangId = DatabaseResult(resultId)->readInteger("gang_id");
-        if (gangId != /** database invalid Id **/ 0) {
-            DatabaseResult(resultId)->readString("role", level);
-
-            // Either make the player join their gang or initialize it from the database.
-            GangManager->onGangMemberJoined(playerId, gangId, this->stringToGangRole(level));
-        }
-
         // Mutable information will be stored by the respective sub-systems, which will be handled
         // by a separate (private) method in this class.
         this->applyMutableData(resultId);

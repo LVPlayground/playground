@@ -19,9 +19,6 @@ class Gang <gangId (MAX_GANGS)> {
     // What is the name of this gang?
     new m_name[Gang::MaximumNameLength+1];
 
-    // What is the persistent Id of this gang in the database, if any?
-    new m_persistentGangId;
-
     // How many members are currently part of this gang?
     new m_playerCount;
 
@@ -35,7 +32,6 @@ class Gang <gangId (MAX_GANGS)> {
     public onCreateTemporaryGang(playerId, name[]) {
         format(m_name, sizeof(m_name), "%s", name);
         m_playerCount = 1;
-        m_persistentGangId = Gang::InvalidId;
 
         GangPlayer(playerId)->onJoinedGang(gangId, GangLeaderRole);
 
@@ -49,26 +45,6 @@ class Gang <gangId (MAX_GANGS)> {
 
         // Instrument how often a gang gets created on Las Venturas Playground.
         Instrumentation->recordActivity(GangCreatedActivity);
-    }
-
-    /**
-     * Initializes this gang to hold a persistent gang, the Id of which indicated by the first
-     * argument and any settings specified in the additional arguments.
-     *
-     * @param persistentGangId Id of this gang as stored in the database.
-     * @param name Name of the gang which we'll be dealing with.
-     * @param color Color of the gang as it has to be set up.
-     */
-    public onCreatePersistentGang(persistentGangId, name[], color) {
-        format(m_name, sizeof(m_name), "%s", name);
-        m_playerCount = 0; /** the player will join the gang later **/
-        m_persistentGangId = persistentGangId;
-
-        // Initialize the gang's settings based on what the database told us.
-        GangSettings(gangId)->setColor(color);
-
-        // Instrument how often we're creating gangs which are persistently stored.
-        Instrumentation->recordActivity(GangCreatedPersistentActivity);
     }
 
     /**
@@ -100,8 +76,7 @@ class Gang <gangId (MAX_GANGS)> {
             Player(memberId)->nicknameString(), memberId, m_name);
 
         // Instrument how often a player joins a gang on the server.
-        Instrumentation->recordActivity(m_persistentGangId == Gang::InvalidId ?
-            /** temporary gang **/ GangJoinedActivity : /** persistent gang **/ GangJoinedPersistentActivity);
+        Instrumentation->recordActivity(/** temporary gang **/ GangJoinedActivity);
 
         // Now inform all other members of the gang about this player joining it.
         this->sendMessageToMembers(Color::Information, message);
@@ -186,7 +161,7 @@ class Gang <gangId (MAX_GANGS)> {
 
         // If this member used to own the gang, we need to find the person who joined the gang after
         // them so they can transition to be the gang's leader.
-        if (previousRole == GangLeaderRole && m_persistentGangId == Gang::InvalidId) {
+        if (previousRole == GangLeaderRole) {
             new oldestMember = Player::InvalidId,
                 memberJoinTime = Time->currentTime();
 
@@ -253,27 +228,6 @@ class Gang <gangId (MAX_GANGS)> {
      */
     public inline bool: isAvailable() {
         return (m_playerCount <= 0);
-    }
-
-    /**
-     * Returns whether this is a persistent gang. Persistent gangs are stored in the database and
-     * will persist between playing sessions. Temporary gangs can be created in-game, but obviously
-     * don't have any of their state shared between sessions.
-     *
-     * @return boolean Whether this gang is persistent (true) or temporary (false).
-     */
-    public inline bool: isPersistent() {
-        return (m_persistentGangId != Gang::InvalidId);
-    }
-
-    /**
-     * Returns the persistent Id of this gang, as it has been assigned to them in the database. If
-     * the value of this property is equal to Gang::InvalidId, then the gang is a temporary one.
-     *
-     * @return integer The persistent Id of this gang.
-     */
-    public inline persistentGangId() {
-        return (persistentGangId);
     }
 
     /**

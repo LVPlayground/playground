@@ -179,12 +179,6 @@ class GangCommands {
             inviteeGangId = GangPlayer(inviteeId)->gangId(),
             message[128];
 
-        if (Gang(gangId)->isPersistent() == true) {
-            SendClientMessage(playerId, Color::Error, "You cannot invite others to a persistent gang in-game. Please visit www.sa-mp.nl and");
-            SendClientMessage(playerId, Color::Error, "visit the gang panel to formally invite them to join your gang.");
-            return 1;
-        }
-
         if (inviteeGangId != Gang::InvalidId) {
             format(message, sizeof(message), "The player %s (%d) can't be invited as they're already in a gang: %s.",
             Player(inviteeId)->nicknameString(), inviteeId, Gang(inviteeGangId)->nameString());
@@ -285,12 +279,6 @@ class GangCommands {
             return 1;
         }
 
-        if (Gang(gangId)->isPersistent() == true) {
-            SendClientMessage(playerId, Color::Error, "You cannot kick players from persistent gangs in-game. Please visit www.sa-mp.nl and");
-            SendClientMessage(playerId, Color::Error, "visit the gang panel to remove this player from the gang.");
-            return 1;
-        }
-
         new kickeeId = Command->playerParameter(params, 0, playerId);
         if (kickeeId == Player::InvalidId)
             return 1;
@@ -330,11 +318,6 @@ class GangCommands {
         }
 
         new gangId = GangPlayer(playerId)->gangId(), message[128];
-        if (Gang(gangId)->isPersistent() == true) {
-            SendClientMessage(playerId, Color::Error, "You cannot leave from a persistent gang in-game. Please visit www.sa-mp.nl and");
-            SendClientMessage(playerId, Color::Error, "visit the gang panel to formally leave the gang.");
-            return 1;
-        }
 
         format(message, sizeof(message), "You have left the gang %s.", Gang(gangId)->nameString());
         SendClientMessage(playerId, Color::Information, message);

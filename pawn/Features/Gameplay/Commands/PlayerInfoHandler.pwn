@@ -56,6 +56,9 @@ class PlayerInfoHandler {
      * @param subjectId If of the player who's playerinfo is being shown to an other player.
      */
     private destroyPlayerInfoLabel(playerId, subjectId) {
+        if (m_playerInfoLabelId[playerId][subjectId] == PlayerText3D: INVALID_3DTEXT_ID)
+            return 0;
+
         DeletePlayer3DTextLabel(playerId, m_playerInfoLabelId[playerId][subjectId]);
         m_playerInfoLabelId[playerId][subjectId] = PlayerText3D: INVALID_3DTEXT_ID;
 

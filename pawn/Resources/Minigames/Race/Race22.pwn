@@ -13,8 +13,8 @@ race_start(RACE22)
 {
 
     race_set_id( RACE22 );
-    
-    race_set_name( "A taste of things to come" );
+
+    race_set_name( "Taste of Things To Come" );
 
     race_set_maxtime( 1000 );
     race_set_vehicle( 411 );

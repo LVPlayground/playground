@@ -6,11 +6,11 @@
 #include Resources/Minigames/Core/Race/Projectiles/Rocket.pwn
 #include Resources/Minigames/Core/Race/Projectiles/Barrel.pwn
 
-#define MAX_RACES              40
-#define MAX_CHECKPOINTS        50
-#define MAX_SPAWNPOINTS        16
-#define MAX_RACE_NAME          64
-#define MAX_RACE_OBJECTS       700
+#define MAX_RACES              36
+#define MAX_CHECKPOINTS        40
+#define MAX_SPAWNPOINTS        8
+#define MAX_RACE_NAME          25
+#define MAX_RACE_OBJECTS       650
 #define MAX_RACE_OBJECT_MODELS 100
 
 #define DEFAULT_RACE_OBJECT_DRAW_DISTANCE 300
@@ -193,7 +193,7 @@ enum E_RACE_OBJECT
     DynamicObject: g_RacePreloadObjectID[MAX_PLAYERS]        // Preloaded object ID for the player
 }
 
-new g_RaceObject[ MAX_RACES ][ MAX_RACE_OBJECTS ][ E_RACE_OBJECT ];
+new g_RaceObject[ MAX_RACES ][ MAX_RACE_OBJECTS ][ E_RACE_OBJECT ]; 
 
 
 // Object model data for preloading

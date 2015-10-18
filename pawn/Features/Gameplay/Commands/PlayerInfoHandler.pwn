@@ -27,7 +27,7 @@ class PlayerInfoHandler {
     public __construct() {
         for (new playerId = 0; playerId < MAX_PLAYERS; playerId++) {
             for (new subjectId = 0; subjectId < MAX_PLAYERS; subjectId++)
-                this->destroyPlayerInfoLabel(playerId, subjectId);
+                m_playerInfoLabelId[playerId][subjectId] = PlayerText3D: INVALID_3DTEXT_ID;
         }
     }
 

@@ -243,6 +243,6 @@ lvp_Settings( playerid, params[] )
     // what to do next, by simply sending the function description.
     l_Explain:
 
-    SendClientMessage( playerid, COLOR_WHITE, "Usage: /settings [newsmsg/showmsg/decrease] [on/off]" );
+    SendClientMessage( playerid, COLOR_WHITE, "Usage: /settings [newsmsg/showmsg] [on/off]" );
     return 1;
 }

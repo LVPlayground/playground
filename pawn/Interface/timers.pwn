@@ -58,7 +58,6 @@ class DeprecatedTimerRuntime {
         rwProcess();
 
         hayProcess();
-        CHay__Process();
         ProcessMapZoneRaces();
 #if Feature::EnableFightClub == 0
         CFightClub__Process();

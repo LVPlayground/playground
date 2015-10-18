@@ -24,11 +24,6 @@
 
 *******************************************************************************/
 
-#define     HAY_STATE_IDLE          0
-#define     HAY_STATE_SIGNUP        1
-#define     HAY_STATE_OBJECTIVE     2
-#define     HAY_STATE_RUNNING       3
-
 #define     HAY_MINIMUM_SIGN_UPS    2       // How many people must there be before the minigame can start?
 
 #define     HAY_SIGNUP_TIME         20      // How long should the signup phase last for (in seconds)

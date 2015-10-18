@@ -24,7 +24,10 @@
 
 ********************************************************************************/
 
-
+#define     HAY_STATE_IDLE          0
+#define     HAY_STATE_SIGNUP        1
+#define     HAY_STATE_OBJECTIVE     2
+#define     HAY_STATE_RUNNING       3
 
 // some defines to determine our basic settings & configuration
 #define HAY_LENGTH_X            4
@@ -162,6 +165,9 @@ CHay__Destroy()
 
 CHay__Process()
 {
+    if (hayGetState() != HAY_STATE_RUNNING)
+        return;
+
     new
         rand,
         DynamicObject: g_RandomHay,

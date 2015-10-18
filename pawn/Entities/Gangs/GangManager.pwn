@@ -33,11 +33,19 @@ class GangManager {
      * @return integer Id of the gang when found, otherwise Gang::InvalidId.
      */
     public findGangByName(name[]) {
+        new nameLength = strlen(name);
+        if (nameLength == 0)
+            return Gang::InvalidId;
+
         for (new gangId = 0; gangId < MAX_GANGS; ++gangId) {
-            if (Gang(gangId)->isAvailable() == true || strcmp(Gang(gangId)->nameString(), name, true))
+            if (Gang(gangId)->isAvailable())
                 continue;
 
-            return gangId;
+            if (strlen(Gang(gangId)->nameString()) != nameLength)
+                continue;
+
+            if (!strcmp(name, Gang(gangId)->nameString(), true))
+                return gangId;
         }
 
         return Gang::InvalidId;

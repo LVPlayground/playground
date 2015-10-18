@@ -59,7 +59,7 @@ class GangCommands {
             return 1;
         }
 
-        if (strlen(params) > Gang::MaximumNameLength) {
+        if (strlen(params) >= Gang::MaximumNameLength) {
             new message[128];
             format(message, sizeof(message), "Since your gang-name is %d characters, the name is too long. It can't be", strlen(params));
             SendClientMessage(playerId, Color::Error, message);

@@ -111,14 +111,7 @@ TeleportCheatProcess(playerid)
 
     if(fTeleDistance >= 350)
     {
-
-        // Check the last time the players position data was updated.
-        // If it was more than .1 seconds ago this is probably lag and not a cheat at all
-        if ((GetTickCount() - Player(playerid)->lastUpdate()) > 150)
-            return;
-
         iTeleCheatDetectionCount[playerid]++;
-
 
         if(IsPlayerInRangeOfCheatPosition(playerid, 3.0))
         {

@@ -53,19 +53,6 @@ class PlayerEvents <playerId (MAX_PLAYERS)> {
     }
 
     /**
-     * Called up to fifty times per second for every player in the game. This is a very hot function
-     * so please don't randomly add your code in here. Critical functionality should be optimized as
-     * much as you can, as this historically shows up in profiles.
-     */
-    public onPlayerUpdate() {
-        // Mark when we received the last update for this player, so that we can monitor whether
-        // they've minimized their Grand Theft Auto game or not.
-        Player(playerId)->setLastUpdate(Time->currentHighResolutionTime());
-
-        return 1;
-    }
-
-    /**
      * Invoked when the player right-clicks anywhere on the San Andreas map, through the option
      * available to them in GTA's menu.
      *
@@ -109,6 +96,5 @@ class PlayerEvents <playerId (MAX_PLAYERS)> {
  */
 public OnPlayerConnect(playerid) { return PlayerEvents(playerid)->onPlayerConnect(); }
 public OnPlayerDisconnect(playerid, reason) { return PlayerEvents(playerid)->onPlayerDisconnect(reason); }
-public OnPlayerUpdate(playerid) { return PlayerEvents(playerid)->onPlayerUpdate(); }
 public OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ) { PlayerEvents(playerid)->onPlayerClickMap(fX, fY, fZ); return 1; }
 public OnPlayerClickTextDraw(playerid, Text:clickedid) { return PlayerEvents(playerid)->onPlayerClickTextDraw(clickedid); }

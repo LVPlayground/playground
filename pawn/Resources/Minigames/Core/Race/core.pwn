@@ -2721,58 +2721,46 @@ CRace__UnloadObjects(iRaceID)
     }
 }
 
-// By Ryder, see http://forum.sa-mp.com/showpost.php?p=1085586&postcount=1737
-stock quickSort(array[], left, right) {
-    new tempLeft = left,
-        tempRight = right,
-        pivot = array[(left + right) / 2],
-        tempVar;
+DetermineNumberOfModelsForRace(raceId) {
+    new objectCount = g_RaceData[raceId][23],
+        modelCount = 0;
 
-    while(tempLeft <= tempRight) {
-        while(array[tempLeft] < pivot) tempLeft++;
-        while(array[tempRight] > pivot) tempRight--;
-
-        if(tempLeft <= tempRight) {
-            tempVar = array[tempLeft], array[tempLeft] = array[tempRight], array[tempRight] = tempVar;
-            tempLeft++, tempRight--;
-        }
-    }
-    if(left < tempRight) quickSort(array, left, tempRight);
-    if(tempLeft < right) quickSort(array, tempLeft, right);
-}
-
-stock DetermineNumberOfModelsForRace(raceId) {
-    new sortedModels[MAX_RACE_OBJECTS],
-        objectCount = g_RaceData[raceId][23],
-        uniqueModelCount = 0;
-
-    // Unlikely case, but we need to handle it nonetheless.
     if (objectCount == 0)
         return 0;
 
-    // Insert the objects in their current order, being unsorted.
-    for (new objectId = 0; objectId < objectCount; ++objectId)
-        sortedModels[objectId] = g_RaceObject[raceId][objectId][RaceObjectModel];
+    // This implementation used to copy all of the race's objects to another array, apply quick sort
+    // and then iterate over the array to produce a final count. While this, from a computer science
+    // point of view, is a valid solution, Pawn is rather slow and applying quick sort on 700 items
+    // for each race that has objects ended up costing ~8% of our gamemode startup performance.
+    //
+    // Instead, we go for a solution that's theoretically slower, but in reality will be *a lot*
+    // faster. Store all of the models in an array, and iterate over that array for each new model
+    // we see. This ends up being four orders of magnitude lower in regards to comparison count.
 
-    // Now sort the array using a quick sort algorithm, as is defined above.
-    quickSort(sortedModels, 0, objectCount);
-
-    // Iterate over the sorted object list and use look-back filtering.
-    g_RaceObjectModel[raceId][uniqueModelCount++] = sortedModels[0];
+    new seenModels[MAX_RACE_OBJECT_MODELS];
     for (new objectId = 1; objectId < objectCount; ++objectId) {
-        if (sortedModels[objectId] == sortedModels[objectId - 1])
-            continue;
+        new modelId = g_RaceObject[raceId][objectId][RaceObjectModel],
+            bool: seen = false;
 
-        // Did we pass the maximum model limit? We don't want to overflow the array.
-        if (uniqueModelCount >= MAX_RACE_OBJECT_MODELS) {
-            printf("[Race] Error: Race %d exceeds the object model limit (%d) by registering more models.", raceId, MAX_RACE_OBJECT_MODELS);
-            return uniqueModelCount;
+        for (new modelIndex = 0; modelIndex < modelCount; ++modelIndex) {
+            if (seenModels[modelIndex] != modelId)
+                continue;
+
+            seen = true;
+            break;
         }
 
-        g_RaceObjectModel[raceId][uniqueModelCount++] = sortedModels[objectId];
+        if (seen)
+            continue;
+
+        seenModels[modelCount++] = modelId;
+        if (modelCount >= MAX_RACE_OBJECT_MODELS) {
+            printf("[Race] Error: Race %d exceeds the object model limit (%d) by registering more models.", raceId, MAX_RACE_OBJECT_MODELS);
+            return modelCount;
+        }
     }
 
-    return uniqueModelCount;
+    return modelCount;
 }
 
 // CRace__PreloadObjectsForPlayer

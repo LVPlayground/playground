@@ -36,8 +36,10 @@ class VeryImportantPlayersManager {
         } else if (strcmp(weatherType, "drugs", true) == 0) {
             SetPlayerWeather(playerId, -66);
             TimeController->setPlayerOverrideTime(playerId, 12, 0);
-        } else
+        } else {
             SendClientMessage(playerId, Color::Information, "Usage: /my weather [day/evening/hot/storm/foggy/drugs]");
+            return 0;
+        }
 
         return 1;
     }

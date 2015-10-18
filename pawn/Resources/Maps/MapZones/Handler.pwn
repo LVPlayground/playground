@@ -10,7 +10,6 @@
 #define map_enable_bunnytrack()                         ToggleMapZoneBunnyTrack(nMapID)
 #define map_set_max_players(%1)                         SetMapZoneMaxPlayers(nMapID, %1)
 #define map_add_object(%1,%2,%3,%4,%5,%6,%7)            AddMapZoneObject(nMapID, %1, %2, %3, %4, %5, %6, %7)
-#define map_move_object(%1,%2,%3,%4)                    MoveMapZoneObject(%1, %2, %3, %4)
 #define map_add_vehicle(%1,%2,%3,%4,%5,%6,%7,%8)        AddMapVehicle(nMapID, %1, %2, %3, %4, %5, %6, %7, %8)
 #define map_add_race_checkpoint(%1,%2,%3)               AddMapZoneCheckpoint(nMapID, %1, %2, %3)
 #define map_add_checkpoint(%1,%2,%3)                    AddMapZoneCheckpoint(nMapID, %1, %2, %3)
@@ -79,7 +78,7 @@ InitializeMapZoneTextDrawsForPlayer(playerId) {
 
 // AddMapZoneCheckpoint - Add a race checkpoint to the current map zone
 // which allows users to progress in the map zone race.
-stock AddMapZoneCheckpoint(n_MapID, Float:fPosX, Float:fPosY, Float:fPosZ)
+AddMapZoneCheckpoint(n_MapID, Float:fPosX, Float:fPosY, Float:fPosZ)
 {
     if(n_MapID < 0 || n_MapID > MAX_MAP_AREAS)
     {
@@ -115,7 +114,7 @@ stock AddMapZoneCheckpoint(n_MapID, Float:fPosX, Float:fPosY, Float:fPosZ)
 }
 
 // Return the current number of checkpoints used in a map zone.
-stock GetNumberOfMapZoneCheckpoints(n_MapID)
+GetNumberOfMapZoneCheckpoints(n_MapID)
 {
     if(n_MapID < 0 || n_MapID > MAX_MAP_AREAS)
     {
@@ -127,7 +126,7 @@ stock GetNumberOfMapZoneCheckpoints(n_MapID)
 
 
 // Returns 1 if a map zone has an associated race otherwise 0
-stock IsMapZoneRaceEnabled(n_MapID)
+IsMapZoneRaceEnabled(n_MapID)
 {
     if(n_MapID < 0 || n_MapID > g_MapCount)
     {
@@ -148,7 +147,7 @@ stock IsMapZoneRaceEnabled(n_MapID)
 // during the course of the map zone race. It calculates the position based
 // on the amount of checkpoints the player has passed. If it's the same as another player
 // it will base it on the distance to the finish line.
-stock GetPlayerMapZoneRaceRank(playerid, iMapID)
+GetPlayerMapZoneRaceRank(playerid, iMapID)
 {
     new iPosition = 1;
     new iPlayerMapID;
@@ -219,7 +218,7 @@ UpdateMapZoneRaceDisplay(playerid, iMapID)
 
 // Create all the textdraws for the map race
 // Called when the race starts for the player
-stock InitializePlayerMapRaceTextdraws(playerid, iMapID)
+InitializePlayerMapRaceTextdraws(playerid, iMapID)
 {
     // Position display
     Map_Zone[iMapID][Map_Player_Display_Pos][playerid] = TextDrawCreate(563, 364, "1");
@@ -258,7 +257,7 @@ stock InitializePlayerMapRaceTextdraws(playerid, iMapID)
 
 // Destroy all associated textdraw displays for a map race
 // Called when the player finishes the map race
-stock DestroyPlayerMapRaceTextdraws(playerid, iMapID)
+DestroyPlayerMapRaceTextdraws(playerid, iMapID)
 {
     TextDrawDestroy(Map_Zone[iMapID][Map_Player_Display_Pos][playerid]);
     TextDrawDestroy(Map_Zone[iMapID][Map_Player_Display_Pos_Ordinal][playerid]);
@@ -270,13 +269,13 @@ stock DestroyPlayerMapRaceTextdraws(playerid, iMapID)
 }
 
 // Returns 1 if a player is in any map zone race otherwise 0.
-stock IsPlayerInAnyMapZoneRace(playerid)
+IsPlayerInAnyMapZoneRace(playerid)
 {
     return GetPVarInt(playerid, "iPlayerInAnyMapZoneRace");
 }
 
 // Returns 1 if a map zone race is in progress otherwise 0.
-stock IsMapZoneRaceInProgress(iMapID)
+IsMapZoneRaceInProgress(iMapID)
 {
     // Is the primary checkpoint is valid then it can't be in progress.
     if(IsValidDynamicRaceCP(Map_Zone[iMapID][Map_Race_Primary_CP]))
@@ -286,7 +285,7 @@ stock IsMapZoneRaceInProgress(iMapID)
 }
 
 // returns 1 if a map zone race is in the countdown phase otherwise 0
-stock IsMapZoneRaceInCountdownPhase(iMapID)
+IsMapZoneRaceInCountdownPhase(iMapID)
 {
     if(Map_Zone[iMapID][Map_Race_Countdown] == -1)
         return 0;
@@ -296,7 +295,7 @@ stock IsMapZoneRaceInCountdownPhase(iMapID)
 
 // This function is called when a player enters the primary map zone
 // checkpoint. It prompts them to initially start the race.
-stock OnPlayerEnterPrimaryMapZoneCheckpoint(playerid, iMapID)
+OnPlayerEnterPrimaryMapZoneCheckpoint(playerid, iMapID)
 {
     // Player is already in a race, no need to send a msg.
     if(IsPlayerInAnyMapZoneRace(playerid))
@@ -346,7 +345,7 @@ CheckMapZoneDynamicCheckpoint(playerid, DynamicRaceCP: checkpointid)
 
 // This is called when a player enters a race checkpoint during
 // a map zone race
-stock CheckMapZoneRaceCheckpoint(playerid, iMapID)
+CheckMapZoneRaceCheckpoint(playerid, iMapID)
 {
     // If the race is in progress it could be the dynamic race checkpoint so we don't process.
     if(!IsMapZoneRaceInProgress(iMapID))
@@ -689,16 +688,6 @@ GetNumberOfPlayersInMapZoneRace(iMapID)
     return iCount;
 }
 
-// Function: GetMapZoneModelCount
-// Returns the amount of object models present in a map zone.
-stock GetMapZoneModelCount(n_MapID)
-{
-    if(n_MapID < 0 || n_MapID > MAX_MAP_AREAS)
-        return -1;
-
-    return Map_Zone[n_MapID][Map_Model_Count];
-}
-
 // Function: AddMapZoneObject
 // Add an object to the map zone. This is useful to determine which
 // object models are in place for preloading objects later (to bypass a SA-MP bug)
@@ -751,61 +740,11 @@ DynamicObject: AddMapZoneObject(n_MapID, n_Model, Float:fPosX, Float:fPosY, Floa
     return CreateDynamicObject(n_Model, fPosX, fPosY, fPosZ, fRX, fRY, fRZ, n_WorldID, -1, -1, 14500);
 }
 
-// Function: MoveMapZoneObject
-// This function moves a map object to the specified co-ords, then loops it.
-stock MoveMapZoneObject(n_ObjectID, Float:fPosX, Float:fPosY, Float:fPosZ, Float:fSpeed)
-{
-    if(!IsValidDynamicObject(n_ObjectID))
-        return; // yey, good start
-
-    // We have some data to store first to handle the looping later
-    new
-        Float:fObjX,
-        Float:fObjY,
-        Float:fObjZ;
-
-    GetDynamicObjectPos(n_ObjectID, fObjX, fObjY, fObjZ);
-
-    n_ObjectMoveData[n_ObjectID][0] = fObjX;
-    n_ObjectMoveData[n_ObjectID][1] = fObjY;
-    n_ObjectMoveData[n_ObjectID][2] = fObjZ;
-
-    n_ObjectMoveData[n_ObjectID][3] = fPosX;
-    n_ObjectMoveData[n_ObjectID][4] = fPosY;
-    n_ObjectMoveData[n_ObjectID][5] = fPosZ;
-
-    n_ObjectMoveData[n_ObjectID][6] = fSpeed;
-
-    // Okay we move the object and update the flag to determine it's a moving fucker
-    MoveDynamicObject(n_ObjectID, fPosX, fPosY, fPosZ, fSpeed);
-    n_ObjectMoveLoop[n_ObjectID] = 1;
-    return 1;
-}
-
-
-// Function: TeleportPlayerToMapZone
-// Physically teleports the player to the map zone, putting them in their vehicle
-// and placing them in position to begin the map
-// @param playerid
-// @author Jay
-stock TeleportPlayerToMapZone(playerid)
-{
-    Streamer_Update(playerid);
-    TogglePlayerControllable(playerid, true);
-
-    new mapzid = GetPlayerMapZone(playerid);
-
-    // Now we get the time they teleported so we can work out how long it took
-    // them to complete the map zone, get there position so we can restore it later,
-    // set them to the pos and increase the player count thats in that map area.
-    g_MapSeconds[playerid] = Time->currentTime();
-}
-
 // Function: SetMapZoneName
 // Sets the name of the map zone
 // @parameter int TheMap
 // @parameter string TheName
-stock SetMapZoneName(n_MapID, szName[])
+SetMapZoneName(n_MapID, szName[])
 {
     if(n_MapID < 0 || n_MapID > MAX_MAP_AREAS)
         return;
@@ -816,7 +755,7 @@ stock SetMapZoneName(n_MapID, szName[])
 // Function: SetMapZoneSpawn
 // Set the spawn position of the map zone.
 // @parameter float X, Y, Z, Angle
-stock SetMapZoneSpawn(n_MapID, Float:fPosX, Float:fPosY, Float:fPosZ, Float:fAng)
+SetMapZoneSpawn(n_MapID, Float:fPosX, Float:fPosY, Float:fPosZ, Float:fAng)
 {
     if(n_MapID < 0 || n_MapID > MAX_MAP_AREAS)
         return;
@@ -831,7 +770,7 @@ stock SetMapZoneSpawn(n_MapID, Float:fPosX, Float:fPosY, Float:fPosZ, Float:fAng
 // Function: SetMapZoneCheckpoint
 // Set the checkpoint position
 // @parameter float X, Y, Z
-stock SetMapZoneCheckpoint(n_MapID, Float:fPosX, Float:fPosY, Float:fPosZ)
+SetMapZoneCheckpoint(n_MapID, Float:fPosX, Float:fPosY, Float:fPosZ)
 {
     if(n_MapID < 0 || n_MapID > MAX_MAP_AREAS)
         return;
@@ -841,22 +780,11 @@ stock SetMapZoneCheckpoint(n_MapID, Float:fPosX, Float:fPosY, Float:fPosZ)
     Map_Zone[n_MapID][Map_cpZ] = fPosZ;
 }
 
-// Function: ToggleMapZoneBunnytrack
-// Set the map zone as a bunnytrack map
-// @parameter int TheMap
-stock ToggleMapZoneBunnyTrack(n_MapID)
-{
-    if(n_MapID < 0 || n_MapID > MAX_MAP_AREAS)
-        return;
-
-    Map_Zone[n_MapID][Map_Bunnytrack] = true;
-}
-
 // Function: SetMapMaxPlayer
 // Set the maximum amount of players in a map zone
 // @parameter int TheMap
 // @parameter int MaxPlayers
-stock SetMapZoneMaxPlayers(n_MapZone, n_MaxPlayers)
+SetMapZoneMaxPlayers(n_MapZone, n_MaxPlayers)
 {
     if(n_MapZone < 0 || n_MapZone > MAX_MAP_AREAS)
     {
@@ -868,7 +796,7 @@ stock SetMapZoneMaxPlayers(n_MapZone, n_MaxPlayers)
 
 // Function: IsPlayerInMapZone(playerid)
 // Returns 1 if the player is in a map zone, and 0 if there not.
-stock IsPlayerInMapZone(playerid)
+IsPlayerInMapZone(playerid)
 {
     // Is the player connected?
     if(!Player(playerid)->isConnected())
@@ -887,7 +815,7 @@ stock IsPlayerInMapZone(playerid)
 
 // Function: GetPlayerMapZone
 // Returns the map zone a player is in
-stock GetPlayerMapZone(playerid)
+GetPlayerMapZone(playerid)
 {
     return g_MapZone[playerid];
 }
@@ -928,7 +856,7 @@ CMap__VehicleDeath(vehicleId) {
 
 // Function: OnPlayerEnterMapZone
 // Gets called when a player enters a map zone.
-stock OnPlayerEnterMapZone(playerid,mapzid)
+OnPlayerEnterMapZone(playerid,mapzid)
 {
     // Is the player connected?
 
@@ -1041,7 +969,7 @@ stock OnPlayerEnterMapZone(playerid,mapzid)
 }
 // Function: OnPlayerLeaveMapZone
 // Gets called when a player leaves a map zone and handles everything.
-stock OnPlayerLeaveMapZone(playerid, mapzid)
+OnPlayerLeaveMapZone(playerid, mapzid)
 {
     // Are they in a map zone?
 
@@ -1097,11 +1025,12 @@ stock OnPlayerLeaveMapZone(playerid, mapzid)
     TogglePlayerControllable(playerid, true);
     return 1;
 }
+
 // Function: MapZoneCheckpointUpdate
 // this gets called from OnPlayerEnterCheckpoint, and manages
 // map zones for when a player enters the checkpoint, in other words
 // when they have completed it.
-stock MapZoneCheckpointUpdate(playerid)
+MapZoneCheckpointUpdate(playerid)
 {
     // Are they in a mapped area?
     if(!IsPlayerInMapZone(playerid))
@@ -1156,8 +1085,7 @@ stock MapZoneCheckpointUpdate(playerid)
 // Function: LoadMaps
 // Called from OnGameModeInit, this simply loads
 // all the map zones. Quite important.
-
-stock LoadMaps()
+LoadMaps()
 {
     new szFunc[128];
     new szDisplay[128];
@@ -1193,7 +1121,7 @@ stock LoadMaps()
 
 // Function: SetPlayerMapZone
 // Sets the player to a new map zone id.
-stock SetPlayerMapZone(playerid, mapid)
+SetPlayerMapZone(playerid, mapid)
 {
     // is the player connected?
     if(!Player(playerid)->isConnected())
@@ -1220,22 +1148,10 @@ stock SetPlayerMapZone(playerid, mapid)
 
 // Function: OnMapConnect
 // Called from OnPlayerConnect & sets a few vars and things.
-stock OnMapConnect(playerid)
+OnMapConnect(playerid)
 {
     g_MapZone[playerid] = -1;
     g_HSpeedCount[playerid] = 0;
-}
-
-// Function: SetBunnyTrackMap
-// This sets a map zone to a bunny track so
-// teleporting to it in vehicles doesn't work.
-stock SetBunnyTrackMap(mapid)
-{
-    if(mapid < 0 || mapid > g_MapCount)
-        return 0;
-
-    Map_Zone[mapid][Map_Bunnytrack] = true;
-    return 1;
 }
 
 new  iMapZoneJumpDialogID[MAX_MAP_AREAS];
@@ -1243,7 +1159,7 @@ new  iMapZoneJumpDialogItems = 0;
 new  szMapZoneRaceDialog[512];
 
 // Shows a dialog listing all the map zones with jump zone races on them
-stock ShowMapZoneJumpRaceDialog(playerid)
+ShowMapZoneJumpRaceDialog(playerid)
 {
     // Right, are any jump races stored? If not
     // we'll create a list of em all to show them in a dialog later.

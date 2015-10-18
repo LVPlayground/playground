@@ -9,50 +9,30 @@
 *   areas, etc. This file has been organised by Jay.                           *
 *******************************************************************************/
 
-// Main area timer
-stock CheckPlayerArea(playerid)
-{
-    // Check that the player is valid to proceed with the area check
-    if(!Player(playerid)->isConnected()) return 0;
-    if(PlayerSpectateHandler->isSpectating(playerid) == true) return 1;
+CheckPlayerArea(playerId) {
+    if (PlayerSpectateHandler->isSpectating(playerId))
+        return;
 
-    if(GetPlayerState(playerid) == PLAYER_STATE_WASTED) return 1;
-    new i = playerid;
+    if (GetPlayerState(playerId) == PLAYER_STATE_WASTED)
+        return;
 
-    // Now, check if the player is in a checkpoint area.
-    CheckpointProcess(i);
+    CheckpointProcess(playerId);
+    AirportGateCheck(playerId);
 
-    // What if the player is near the airport? If so, we manage custom tax and stuff.
-    AirportGateCheck(i);            
-
-    if(IsPlayerInMinigame(i))
-    {
-        // Now that we have checked for casino areas and stuff, we have to check
-        // for pro admin areas and the ShipTDM minigame:
-        new
-            Float:x,
-            Float:y,
-            Float:z;
-
-        // right if the player is in the pro admin area, and there not a pro admin,
-        // we have to set them outside.
-        GetPlayerPos(i, x, y, z);
-
-        // If there in the knockout minigame and they leave the boxring,
-        // we have to set them back inside it!
-        if ( isPlayerInArea ( i, inKnockout )  == 0 && PlayerInfo[i][PlayerStatus] == STATUS_KNOCKOUT)
-        {
-            new Float:Xko = 764.64 + float ( random ( 5 )  ) ;
-            new Float:Yko = -70.91 + float ( random ( 6 )  ) ;
-            SetPlayerInterior ( i, 7 ) ;
-            SetPlayerPos ( i,Xko,Yko,1001 ) ;
-            SendClientMessage ( i, COLOR_RED, "Stay in the Boxring!" ) ;
-            GameTextForPlayer ( i, "~r~Stay in the Boxring!", 3000, 5 ) ;
-        }
+    if (PlayerInfo[playerId][PlayerStatus] != STATUS_KNOCKOUT ||
+        !IsPlayerInMinigame(playerId) ||
+        !isPlayerInArea(playerId, inKnockout)) {
+        return;
     }
 
-    // and thats the end of our checks, for now.
-    return 1;
+    new Float: Xko = 764.64 + float(random(5));
+    new Float: Yko = -70.91 + float(random(6));
+
+    SetPlayerInterior(playerId, 7) ;
+    SetPlayerPos(playerId, Xko, Yko, 1001) ;
+
+    SendClientMessage(playerId, COLOR_RED, "Stay in the Boxring!");
+    GameTextForPlayer(playerId, "~r~Stay in the Boxring!", 3000, 5);
 }
 
 // Function: CheckpointProcess

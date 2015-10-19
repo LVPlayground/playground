@@ -114,4 +114,6 @@ enum PasswordRequestType {
 #include "Features/Account/Bans/BanCommands.pwn"
 #include "Features/Account/Bans/BanManager.pwn"
 
+#include "Features/Account/GpciLogger.pwn"
+
 #include "Features/Account/AccountCommands.pwn"

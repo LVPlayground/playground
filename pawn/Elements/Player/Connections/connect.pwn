@@ -2,8 +2,7 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-forward OnPlayerLVPConnect(playerid);
-public OnPlayerLVPConnect(playerid) {
+OnPlayerLVPConnect(playerid) {
     ResetDeathFloodCountForPlayer(playerid);
 
     if (playerid >= MAX_PLAYERS) {

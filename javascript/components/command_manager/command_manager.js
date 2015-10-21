@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let Player = require('entities/player.js');
-
 // The command manager maintains a registry of available in-game commands and provides the ability
 // to parse and dispatch commands to their associated handlers.
 class CommandManager {
@@ -11,7 +9,7 @@ class CommandManager {
     this.commands_ = {};
 
     // Attach the global event listeners which we need to reliably handle commands.
-    // TODO(Russell): We need a weak event binding model for events like these.
+    // TODO(Russell): We need a weak, safe event binding model for events like these.
     global.addEventListener('playercommandtext', CommandManager.prototype.onPlayerCommandText.bind(this));
   }
 
@@ -29,6 +27,10 @@ class CommandManager {
   // Called when a player executes an in-game command. Will prevent the event from being executed in
   // the Pawn portion of the gamemode when the command can be handled here.
   onPlayerCommandText(event) {
+    let player = Player.get(event.playerid);
+    if (!player)
+      return;
+
     let commandText = event.cmdtext,
         commandNameEnd = commandText.indexOf(' ');
 
@@ -45,9 +47,6 @@ class CommandManager {
 
     // We can handle the event, so no need for Pawn to handle the event as well.
     event.preventDefault();
-
-    // TODO(Russell): Actually start using the player pool.
-    let player = new Player(event.playerid);
 
     // TODO(Russell): Parse the |commandParams| based on the |command|.
     let parameters = null;

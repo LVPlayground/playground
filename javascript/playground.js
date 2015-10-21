@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 let CommandManager = require('components/command_manager/command_manager.js'),
+    Database = require('components/database/database.js'),
     FeatureManager = require('components/feature_manager/feature_manager.js');
 
 // The Playground class is the main runtime of the JavaScript implementation of the server. It owns
@@ -11,8 +12,9 @@ let CommandManager = require('components/command_manager/command_manager.js'),
 class Playground {
   constructor() {
     this.commandManager_ = new CommandManager();
-    this.featureManager_ = new FeatureManager();
+    this.database_ = new Database();
 
+    this.featureManager_ = new FeatureManager();
     this.featureManager_.load(this, {
       introduction: require('features/introduction/introduction.js')
     });
@@ -21,6 +23,11 @@ class Playground {
   // Returns the instance of the command manager.
   get commandManager() {
     return this.commandManager_;
+  }
+
+  // Returns the (established) MySQL database connection.
+  get database() {
+    return this.database_;
   }
 
   // Returns the instance of the feature manager.

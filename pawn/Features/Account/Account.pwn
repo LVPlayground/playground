@@ -174,6 +174,10 @@ class Account <playerId (MAX_PLAYERS)> {
             Instrumentation->recordActivity(PlayerVipLoginActivity);
 
         Annotation::ExpandList<OnPlayerLogin>(playerId);
+
+        // Broadcast an OnPlayerLogin callback that can be intercepted by other scripts.
+        CallRemoteFunction("OnPlayerLogin", "ii", playerId, m_userId);
+
         sprayTagLoadSprayedTags(playerId);
     }
 
@@ -245,6 +249,8 @@ class Account <playerId (MAX_PLAYERS)> {
         Admin(playerId, notice);
 
         Annotation::ExpandList<OnPlayerModLogin>(playerId);
+
+        // TODO(Russell): Should this broadcast an event similar to OnPlayerLogin as well?
     }
 
     /**
@@ -267,3 +273,6 @@ class Account <playerId (MAX_PLAYERS)> {
         return ((m_verified == true) ? (m_userId) : (0));
     }
 };
+
+forward OnPlayerLogin(playerid, userid);
+public OnPlayerLogin(playerid, userid) {}

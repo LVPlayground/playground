@@ -6,6 +6,6 @@ let PriorityQueue = require('base/priority_queue.js');
 
 describe('PriorityQueue', it => {
   it('should be constructable', assert => {
-    assert.equals(42, 43);
+    assert.equal(42, 43);
   });
 });

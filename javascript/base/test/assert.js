@@ -6,6 +6,9 @@ let AssertionFailedError = require('base/test/assertion_failed_error.js');
 
 // This library provides a series of asserts that can be used for validating assumptions in unit
 // tests. Failing asserts will create clear and useful error messages.
+//
+// This library implements the Chai assertion API, as documented here:
+//     http://chaijs.com/api/assert/
 class Assert {
   constructor(suite, description) {
     this.suite_ = suite;
@@ -15,7 +18,7 @@ class Assert {
   // -----------------------------------------------------------------------------------------------
 
   // Asserts |expected| == |actual|.
-  equals(expected, actual) {
+  equal(expected, actual) {
     if (expected == actual)
       return;
 

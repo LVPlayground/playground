@@ -2,7 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let Assert = require('base/test/assert.js');
+let Assert = require('base/test/assert.js'),
+    AssertionFailedError = require('base/test/assertion_failed_error.js'),
+    UnexpectedExceptionError = require('base/test/unexpected_exception_error.js');
 
 // A test suite represents a series of one or more individual tests. The test suite not only
 // registers individual tests and suite capabilities, but also provides the required functionality
@@ -46,6 +48,18 @@ class TestSuite {
         // (2) Execute the test case itself. This will be considered asynchronous if it returns a
         // promise. A new Assert instance will be created for each test.
         return test.fn(new Assert(this, test.description));
+      }).catch(error => {
+        // (2b) If the test threw an exception that's different from an AssertionFailedError, it's
+        // a problem outside of the test framework that should be displayed consistently.
+        if (!(error instanceof AssertionFailedError)) {
+          error = new UnexpectedExceptionError({ suiteDescription: this.description_,
+                                                 testDescription: test.description,
+                                                 innerError: error });
+        }
+
+        // Re-throw the error since it should still count as a failure.
+        throw error;
+
       }).then(() => {
         // (3) Execute the afterEach function, which, as the other steps, will be considered
         // asynchronous when it returns a promise.

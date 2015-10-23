@@ -8,7 +8,18 @@ class TestError extends Error {
   constructor(context) {
     super();
 
-    this.context_ = context;
+    let stackTrace = context.innerError.stack.split('\n'),
+        stackLength = stackTrace.length;
+
+    // Determine the location of the error based on the second-final entry in the stack trace.
+    let [_, filename, line] = stackTrace[stackLength - 2].match(/.*\(([^:]+):(\d+):.*/);
+
+    this.context_ = {
+      suiteDescription: context.suiteDescription,
+      testDescription: context.testDescription,
+      filename: filename,
+      line: line
+    };
 
     this.name = new.target.name;
     this.message = '';

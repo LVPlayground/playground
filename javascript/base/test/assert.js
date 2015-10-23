@@ -28,16 +28,11 @@ class Assert {
   // -----------------------------------------------------------------------------------------------
 
   // Reports |failure| by throwing an AssertionFailedError. This method should only be called by
-  // methods within this class, tests should use the exposed assertions instead. It will determine
-  // the filename and the line of the test that threw the error, and include it for the exception.
+  // methods within this class, tests should use the exposed assertions instead.
   reportFailure(message) {
-    let stackTrace = new Error().stack.split('\n'),
-        [_, filename, line] = stackTrace[3].match(/.*\(([^:]+):(\d+):.*/);
-
     throw new AssertionFailedError({ suiteDescription: this.suite_.description,
                                      testDescription: this.description_,
-                                     filename: filename,
-                                     line: line },
+                                     innerError: new Error() },
                                    message);
   }
 };

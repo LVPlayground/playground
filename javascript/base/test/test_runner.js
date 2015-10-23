@@ -117,6 +117,7 @@ class TestRunner {
     // plugin, which doesn't exist yet.
     {
       require('base/priority_queue.test.js');
+      require('base/test/assert.test.js');
     }
 
     // Remove the `describe` method from the global scope again.

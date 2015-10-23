@@ -9,20 +9,81 @@ describe('Assert', it => {
   // TODO: assert.fail(actual, expected, [message], [operator])
   // TODO: assert.ok(object, [message])
   // TODO: assert.notOk(object, [message])
-  // TODO: assert.equal(actual, expected, [message])
-  // TODO: assert.notEqual(actual, expected, [message])
-  // TODO: assert.strictEqual(actual, expected, [message])
-  // TODO: assert.notStrictEqual(actual, expected, [message])
+
+  it('equal', assert => {
+    let fn = () => 0;
+
+    assert.equal(null, null);
+    assert.equal(undefined, undefined);
+    assert.equal(0, -0);
+    assert.equal(42, 42);
+    assert.equal(42, "42");
+    assert.equal("lvp", "lvp");
+    assert.equal(fn, fn);
+  });
+
+  it('notEqual', assert => {
+    assert.notEqual(100, -100);
+    assert.notEqual("lvp", "samp");
+    assert.notEqual(true, false);
+    assert.notEqual([1, 2, 3], [1, 2, 3]);
+    assert.notEqual({ a: true }, { a: true });
+  });
+
+  it('strictEqual', assert => {
+    let fn = () => 0;
+
+    assert.strictEqual(0, -0);
+    assert.strictEqual(100, 100);
+    assert.strictEqual("lvp", "lvp");
+    assert.strictEqual(fn, fn);
+  });
+
+  it('notStrictEqual', assert => {
+    assert.notStrictEqual(42, "42");
+  });
+
   // TODO: assert.deepEqual(actual, expected, [message])
   // TODO: assert.notDeepEqual(actual, expected, [message])
-  // TODO: assert.isTrue(value, [message])
+  
+  it('isTrue', assert => {
+    assert.isTrue(true);
+    assert.isTrue(1);
+    assert.isTrue([]);
+    assert.isTrue({});
+  });
+
   // TODO: assert.isAbove(valueToCheck, valueToBeAbove, [message])
   // TODO: assert.isBelow(valueToCheck, valueToBeBelow, [message])
-  // TODO: assert.isFalse(value, [message])
-  // TODO: assert.isNull(value, [message])
-  // TODO: assert.isNotNull(value, [message])
-  // TODO: assert.isUndefined(value, [message])
-  // TODO: assert.isDefined(value, [message])
+  
+  it('isFalse', assert => {
+    assert.isFalse(false);
+    assert.isFalse(0);
+    assert.isFalse(null);
+    assert.isFalse(undefined);
+  });
+
+  it('isNull', assert => {
+    assert.isNull(null);
+  });
+
+  it('isNotNull', assert => {
+    assert.isNotNull(undefined);
+    assert.isNotNull(false);
+    assert.isNotNull({});
+  });
+
+  it('isUndefined', assert => {
+    assert.isUndefined(undefined);
+    assert.isUndefined();
+  });
+
+  it('isDefined', assert => {
+    assert.isDefined(null);
+    assert.isDefined(false);
+    assert.isDefined({});
+  });
+
   // TODO: assert.isFunction(value, [message])
   // TODO: assert.isNotFunction(value, [message])
   // TODO: assert.isObject(value, [message])

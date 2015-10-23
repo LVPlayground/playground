@@ -19,13 +19,90 @@ class Assert {
 
   // Asserts |actual| == |expected|.
   equal(actual, expected) {
-    if (expected == actual)
+    if (actual == expected)
       return;
 
-    this.reportFailure('expected "' + expected + '", but got "' + actual + '"');
+    this.reportFailure('expected ' + this.toString(expected) + ', but got ' + this.toString(actual));
+  }
+
+  // Asserts |actual| != |expected|.
+  notEqual(actual, expected) {
+    if (actual != expected)
+      return;
+
+    this.reportFailure('unexpectedly equals ' + this.toString(expected));
+  }
+
+  // Asserts |actual| === |expected|.
+  strictEqual(actual, expected) {
+    if (actual === expected)
+      return;
+
+    this.reportFailure('expected ' + this.toString(expected) + ', but got ' + this.toString(actual));
+  }
+
+  // Asserts |actual| !== |expected|.
+  notStrictEqual(actual, expected) {
+    if (actual !== expected)
+      return;
+
+    this.reportFailure('unexpectedly equals ' + this.toString(expected));
+  }
+
+  // Asserts |value| == true.
+  isTrue(value) {
+    if (value)
+      return;
+
+    this.reportFailure('evaluates to false');
+  }
+
+  // Asserts |value| == false.
+  isFalse(value) {
+    if (!value)
+      return;
+
+    this.reportFailure('evaluates to true');
+  }
+
+  // Asserts |value| === null
+  isNull(value) {
+    if (value === null)
+      return;
+
+    this.reportFailure('expected NULL, but got ' + this.toString(value));
+  }
+
+  // Asserts |value| !== null
+  isNotNull(value) {
+    if (value !== null)
+      return;
+
+    this.reportFailure('evaluates to NULL');
+  }
+
+  // Asserts |value| === undefined
+  isUndefined(value) {
+    if (value === undefined)
+      return;
+
+    this.reportFailure('expected undefined, but got ' + this.toString(value));
+  }
+
+  // Asserts |value| !== undefined
+  isDefined(value) {
+    if (value !== undefined)
+      return;
+
+    this.reportFailure('evaluates to undefined');
   }
 
   // -----------------------------------------------------------------------------------------------
+
+  // Coerces |value| to a string. 
+  toString(value) {
+    return value.toString();
+  }
 
   // Reports |failure| by throwing an AssertionFailedError. This method should only be called by
   // methods within this class, tests should use the exposed assertions instead.

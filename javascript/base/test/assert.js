@@ -65,7 +65,7 @@ class Assert {
     this.reportFailure('evaluates to true');
   }
 
-  // Asserts |value| === null
+  // Asserts |value| === null.
   isNull(value) {
     if (value === null)
       return;
@@ -73,7 +73,7 @@ class Assert {
     this.reportFailure('expected NULL, but got ' + this.toString(value));
   }
 
-  // Asserts |value| !== null
+  // Asserts |value| !== null.
   isNotNull(value) {
     if (value !== null)
       return;
@@ -81,7 +81,7 @@ class Assert {
     this.reportFailure('evaluates to NULL');
   }
 
-  // Asserts |value| === undefined
+  // Asserts |value| === undefined.
   isUndefined(value) {
     if (value === undefined)
       return;
@@ -89,12 +89,108 @@ class Assert {
     this.reportFailure('expected undefined, but got ' + this.toString(value));
   }
 
-  // Asserts |value| !== undefined
+  // Asserts |value| !== undefined.
   isDefined(value) {
     if (value !== undefined)
       return;
 
     this.reportFailure('evaluates to undefined');
+  }
+
+  // Asserts typeof |value| === "function".
+  isFunction(value) {
+    if (typeof value === "function")
+      return;
+
+    this.reportFailure('expected a function, but got ' + this.toString(value));
+  }
+
+  // Asserts typeof |value| !== "function".
+  isNotFunction(value) {
+    if (typeof value !== "function")
+      return;
+
+    this.reportFailure('evaluates to a function');
+  }
+
+  // Asserts typeof |value| === "object" && !Array.isArray(|value|).
+  isObject(value) {
+    if (typeof value === "object" && !Array.isArray(value))
+      return;
+
+    this.reportFailure('expected an object, but got ' + this.toString(value));
+  }
+
+  // Asserts typeof |value| !== "function".
+  isNotObject(value) {
+    if (typeof value !== "object" || Array.isArray(value))
+      return;
+
+    this.reportFailure('evaluates to an object');
+  }
+
+  // Asserts Array.isArray(value).
+  isArray(value) {
+    if (Array.isArray(value))
+      return;
+
+    this.reportFailure('expected an array, but got ' + this.toString(value));
+  }
+
+  // !Asserts Array.isArray(value).
+  isNotArray(value) {
+    if (!Array.isArray(value))
+      return;
+
+    this.reportFailure('evaluates to an array');
+  }
+
+  // Asserts typeof |value| === "string".
+  isString(value) {
+    if (typeof value === "string")
+      return;
+
+    this.reportFailure('expected a string, but got ' + this.toString(value));
+  }
+
+  // Asserts typeof |value| !== "string".
+  isNotString(value) {
+    if (typeof value !== "string")
+      return;
+
+    this.reportFailure('evaluates to a string');
+  }
+
+  // Asserts typeof |value| === "number".
+  isNumber(value) {
+    if (typeof value === "number")
+      return;
+
+    this.reportFailure('expected a number, but got ' + this.toString(value));
+  }
+
+  // Asserts typeof |value| !== "number".
+  isNotNumber(value) {
+    if (typeof value !== "number")
+      return;
+
+    this.reportFailure('evaluates to a number');
+  }
+
+  // Asserts typeof |value| === "boolean".
+  isBoolean(value) {
+    if (typeof value === "boolean")
+      return;
+
+    this.reportFailure('expected a boolean, but got ' + this.toString(value));
+  }
+
+  // Asserts typeof |value| !== "boolean".
+  isNotBoolean(value) {
+    if (typeof value !== "boolean")
+      return;
+
+    this.reportFailure('evaluates to a boolean');
   }
 
   // -----------------------------------------------------------------------------------------------

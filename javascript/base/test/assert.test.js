@@ -84,18 +84,78 @@ describe('Assert', it => {
     assert.isDefined({});
   });
 
-  // TODO: assert.isFunction(value, [message])
-  // TODO: assert.isNotFunction(value, [message])
-  // TODO: assert.isObject(value, [message])
-  // TODO: assert.isNotObject(value, [message])
-  // TODO: assert.isArray(value, [message])
-  // TODO: assert.isNotArray(value, [message])
-  // TODO: assert.isString(value, [message])
-  // TODO: assert.isNotString(value, [message])
-  // TODO: assert.isNumber(value, [message])
-  // TODO: assert.isNotNumber(value, [message])
-  // TODO: assert.isBoolean(value, [message])
-  // TODO: assert.isNotBoolean(value, [message])
+  it('isFunction', assert => {
+    function fn() {}
+
+    assert.isFunction(() => 0);
+    assert.isFunction(assert.isFunction);
+    assert.isFunction(fn);
+    assert.isFunction(class Foo {});
+  });
+
+  it('isNotFunction', assert => {
+    assert.isNotFunction(null);
+    assert.isNotFunction(undefined);
+    assert.isNotFunction("lvp");
+  });
+
+  it('isObject', assert => {
+    assert.isObject({ a: 'foo' });
+    assert.isObject(Assert.prototype);
+  });
+
+  it('isNotObject', assert => {
+    assert.isNotObject("lvp");
+    assert.isNotObject([1, 2, 3]);
+    assert.isNotObject(false);
+  });
+
+  it('isArray', assert => {
+    assert.isArray(Array.prototype);
+    assert.isArray([1, 2, 3]);
+  });
+
+  it('isNotArray', assert => {
+    assert.isNotArray("lvp");
+    assert.isNotArray({ [Symbol.iterator]() { return 1; }});
+    assert.isNotArray(true);
+  });
+
+  it('isString', assert => {
+    assert.isString("lvp");
+    assert.isString("lvp".toString());
+  });
+
+  it('isNotString', assert => {
+    assert.isNotString(true);
+    assert.isNotString([ 'l', 'v', 'p']);
+  });
+
+  it('isNumber', assert => {
+    assert.isNumber(42);
+    assert.isNumber(42.24);
+    assert.isNumber(-1337);
+  });
+
+  it('isNotNumber', assert => {
+    assert.isNotNumber(!!0);
+    assert.isNotNumber(Math.NaN);
+    assert.isNotNumber("42");
+  });
+
+  it('isBoolean', assert => {
+    assert.isBoolean(true);
+    assert.isBoolean(!!"lvp");
+    assert.isBoolean(!!"0");
+    assert.isBoolean(true !== false);
+  });
+
+  it ('isNotBoolean', assert => {
+    assert.isNotBoolean("true");
+    assert.isNotBoolean({ true: 1 });
+    assert.isNotBoolean("1");
+  });
+
   // TODO: assert.typeOf(value, name, [message])
   // TODO: assert.notTypeOf(value, name, [message])
   // TODO: assert.instanceOf(object, constructor, [message])

@@ -16,8 +16,8 @@ testRunner.run('**/*.test.js').then(() => {
 
   new Playground();
 
-}, error => {
+}, failures => {
   // One or more tests have failed. Refuse to start the gamemode.
   console.log('[PlaygroundJS] There were one or more test failures. Please fix them before starting the server!');
-  console.log(error);
+  console.log(failures);
 });

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let Assert = require('base/test/assert.js');
+let TestSuite = require('base/test/test_suite.js');
 
 // The test runner class manages execution of tests before the gamemode starts.
 //
@@ -13,17 +13,20 @@ let Assert = require('base/test/assert.js');
 //
 // A typical test suite could look like the following:
 //
-// describe('MyFeature', it => {
+// describe('MyFeature', (it, beforeEach, afterEach) => {
+//   let controller = null;
+//
+//   beforeEach(() => controller = new MyFeature());
+//   afterEach(() => { controller.close(); controller = null });
+//
 //   it('Should be the answer to life the universe and everything.', assert => {
-//     assert.equals(42, calculateTheAnswer());
+//     assert.equal(controller.answer(), 42);
 //   });
 //
 //   it('Should also be larger than fourty one.', assert => {
-//     assert.greater
+//     assert.isAbove(controller.answer(), 41);
 //   });
 // });
-//
-// TODO(Russell): Support setUp and tearDown methods for test suites.
 //
 // Asynchronous tests are supported by returning a promise from the test function passed to it().
 // Tests returning anything that's not a promise will be considered synchronous.
@@ -33,58 +36,82 @@ let Assert = require('base/test/assert.js');
 // unexpected results, and major inconvenience for players.
 class TestRunner {
   constructor() {
-    this.testCount_ = 0;
     this.testSuites_ = [];
   }
 
   // Returns the number of tests that have been executed by the test runner.
-  get testCount() { return this.testCount_; }
+  get testCount() {
+    let count = 0;
+    this.testSuites_.forEach(suite =>
+        count += suite.testCount);
+
+    return count;
+  }
 
   // Requires all files that match |pattern| so that tests defined in them can be created, and then
   // executed. Returns a promise that will be resolved when all tests pass, or rejected when one or
   // more failures are observed.
   run(pattern) {
     this.loadTestSuites(pattern);
-    
-    let testSuitePromises = [];
-    this.testSuites_.forEach(suite =>
-        testSuitePromises.push(this.executeSuite(suite)));
-    
-    return Promise.all(testSuitePromises);
+
+    return new Promise((resolve, reject) => {
+      let currentSuiteIndex = 0,
+          failures = [];
+
+      let runNextSuite = () => {
+        if (currentSuiteIndex >= this.testSuites_.length) {
+          failures.length > 0 ? reject(failures)
+                              : resolve();
+          return;
+        }
+
+        // Execute the test suite. Append all failures to the |failures| array, after which the
+        // next suite may be executed by calling the runNextSuite() method again.
+        this.executeTestSuite(this.testSuites_[currentSuiteIndex++])
+            .catch(suiteFailures => failures.push(...suiteFailures))
+            .then(() => runNextSuite());
+      };
+
+      runNextSuite();
+    });
   }
 
-  // Registers the test suite |fn| described by |description|.
-  createSuite(description, fn) {
-    this.testSuites_.push({ description, fn });
+  // Executes all tests in |suite| sequentially. Returns a promise that will be resolved when all
+  // tests in the suite have passed, or rejected when one or more tests failed.
+  executeTestSuite(suite) {
+    return new Promise((resolve, reject) => {
+      let generator = suite.executeTestGenerator(),
+          failures = [];
+
+      let runNextTest = () => {
+        let test = generator.next();
+        if (test.done) {
+          failures.length > 0 ? reject(failures)
+                              : resolve();
+          return;
+        }
+
+        // Catch failures, but make them resolve the promise in either case so that the next test
+        // can continue to run. Otherwise we'd abort at the first test failure.
+        test.value.catch(error => failures.push(error))
+                  .then(() => runNextTest());
+      };
+
+      runNextTest();
+    });
   }
 
-  // Executes |suite|, and returns a promise that will be resolved when execution of the test suite
-  // is complete. Failures will cause it to reject, which will cascade all the way down.
-  executeSuite(suite) {
-    let testCases = [];
-
-    // Collect the test cases available in the |suite|. In the future we'll want to pass further
-    // utility methods here such as setUp() and tearDown() methods.
-    suite.fn(
-        /** it: **/ (description, test) => this.executeTest(suite, description, test));
-
-    return Promise.all(testCases);
-  }
-
-  // Executes |test| that's part of |suite|, described by |description|. Returns a promise that will
-  // resolve once the test is done executing, or reject is an assertion failed.
-  executeTest(suite, description, test) {
-    let assert = new Assert(suite, description);
-    this.testCount_++;
-
-    return new Promise(resolve => resolve(test(assert)));
+  // Registers the test suite |fn| described by |description|. The suite will be immediately
+  // initialized by executing |fn| and registering the test cases part of it.
+  registerSuite(description, fn) {
+    this.testSuites_.push(new TestSuite(description, fn));
   }
 
   // Loads all the test suites that match |pattern|. A global function called `describe` will be
   // made available to these files, enabling them to register their test suite(s).
   loadTestSuites(pattern) {
     // Install the global `describe` function on the global.
-    global.describe = TestRunner.prototype.createSuite.bind(this);
+    global.describe = TestRunner.prototype.registerSuite.bind(this);
 
     // TODO(Russell): Actually use |pattern|. This requires file globbing functionality within the
     // plugin, which doesn't exist yet.

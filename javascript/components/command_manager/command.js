@@ -4,17 +4,14 @@
 
 let StringParser = require('base/string_parser.js');
 
-// Represents a command that can be executed by players. Each command has at least a name and a
-// listener, and will most likely also have one or more parameters that the player can use to
-// customize behavior of the listener.
+// Represents a command that can be executed by players. Each command has at least one prototype
+// that has 
 //
 // Read the online documentation for more information on the parameter syntax:
 //   https://github.com/LVPlayground/playground/tree/master/javascript/components/command_manager
 class Command {
-  constructor(name, parameters, listener) {
+  constructor(name, prototypes) {
     this.name_ = name;
-    this.listener_ = listener;
-    this.parameters_ = [];
 
     // ...
   }

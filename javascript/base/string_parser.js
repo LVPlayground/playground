@@ -16,7 +16,7 @@ let wordMatch = /^\s*(.+?)(?!\S)/;
 // to - JavaScript numbers have a 53-bit mantissa.
 //
 // The parser will be tested as part of the Command test suite in the parent directory.
-function NumberParser(argumentString, player) {
+function NumberParser(argumentString) {
   let result = numberMatch.exec(argumentString);
   if (result === null)
     return [argumentString, null];
@@ -26,7 +26,7 @@ function NumberParser(argumentString, player) {
 
 // Parameter parser for words. Any sequence of tokens is allowed until the next whitespace.
 // The parser will be tested as part of the Command test suite in the parent directory.
-function WordParser(argumentString, player) {
+function WordParser(argumentString) {
   let result = wordMatch.exec(argumentString);
   if (result === null)
     return [argumentString, null];
@@ -35,7 +35,7 @@ function WordParser(argumentString, player) {
 }
 
 // Parameter parser for sentences. A trimmed version of the argument string will be returned.
-function SentenceParser(argumentString, player) {
+function SentenceParser(argumentString) {
   // TODO(Russell): Should we normalize multiple spaces to a single space?
   let result = argumentString.trim();
 
@@ -57,10 +57,6 @@ function SentenceParser(argumentString, player) {
 // StringParser.PARAM_TYPE_NUMBER   - Will parse a number. This can be either an integer (-100, 100)
 //                                    or a decimal (10.25) number.
 //
-// StringParser.PARAM_TYPE_PLAYER   - Will parse either a number (player id) or a word (nickname).
-//                                    When a nickname has been passed, a match will be sought based
-//                                    on the online players.
-//
 // StringParser.PARAM_TYPE_WORD     - Will parse a single word, accepting anything until a space.
 //
 // StringParser.PARAM_TYPE_SENTENCE - Will parse the remainder of the parameter string.
@@ -68,9 +64,9 @@ function SentenceParser(argumentString, player) {
 // StringParser.PARAM_TYPE_CUSTOM   - Will use a custom parser (included in the `parser` property of
 //                                    the parameter object) to parse the parameter.
 //
-// After creating the parser, the `parse` function may be used with the input string (and optionally
-// a Player instance as context) to apply the parsing rules to said string. Failures will cause
-// NULL to be returned, otherwise an array with the parsed properties will be returned.
+// After creating the parser, the `parse` function may be used with the input string to apply the
+// parsing rules to said string. Failures will cause NULL to be returned, otherwise an array with
+// the parsed properties will be returned.
 class StringParser {
   constructor(parameters) {
     this.parameters_ = [];
@@ -108,8 +104,6 @@ class StringParser {
         case StringParser.PARAM_TYPE_NUMBER:
           parser = NumberParser;
           break;
-        case StringParser.PARAM_TYPE_PLAYER:
-          // not yet implemented.
         case StringParser.PARAM_TYPE_WORD:
           parser = WordParser;
           break;
@@ -136,18 +130,18 @@ class StringParser {
     });
   }
 
-  // Parses |string| according to the parsing rules. Optionally, |player| may be specified to
-  // provide additional context of the person whom this is being parsed for.
-  parse(string, player = null) {
-    let values = [];
-
+  // Parses |string| according to the parsing rules. An array with the values will be returned when
+  // parsing was successful. Otherwise, NULL will be returned instead.
+  parse(string) {
     if (!string)
       return null;
+
+    let values = [];
 
     // Iterate over each of the registered parameters and attempt to parse them using the associated
     // parser. If this fails, and the parameter is not optional, bail out.
     for (let parameter of this.parameters_) {
-      let [remainder, value] = parameter.parser(string, player);
+      let [remainder, value] = parameter.parser(string);
       if (value === null) {
         if (parameter.required)
           return null;

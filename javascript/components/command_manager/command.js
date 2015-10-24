@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let StringParser = require('components/command_manager/string_parser.js');
+let StringParser = require('base/string_parser.js');
 
 // Represents a command that can be executed by players. Each command has at least a name and a
 // listener, and will most likely also have one or more parameters that the player can use to

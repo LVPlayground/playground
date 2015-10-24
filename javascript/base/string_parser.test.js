@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let StringParser = require('components/command_manager/string_parser.js');
+let StringParser = require('base/string_parser.js');
 
 describe('StringParser', it => {
   let wordMatch = /^\s*(.+?)(?!\S)/;
@@ -71,8 +71,6 @@ describe('StringParser', it => {
     assert.isNull(parser.parse('50 word'));
     assert.isNull(parser.parse('word 50'));
   });
-
-  // TODO: PLAYER parameters.
 
   it('validates and parses word parameters', assert => {
     let parser = null;

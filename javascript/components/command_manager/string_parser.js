@@ -88,6 +88,9 @@ class StringParser {
       if (hadSentenceParameter)
         throw new Error('No parameter can follow a sentence once - it will swallow everything.');
 
+      if (typeof parameter === 'number')
+        parameter = { type: parameter };
+
       if (!parameter.hasOwnProperty('type'))
         throw new Error('Each parameter must have at least a type.');
 

@@ -30,10 +30,8 @@ describe('Command', it => {
   });
 
   it('validates and parses number parameters', assert => {
-    let command = null,
-        value = null;
-
-    command = new Command('foo', [
+    let value = null;
+    let command = new Command('foo', [
         { name: 'value', type: Command.PARAM_TYPE_NUMBER }
     ], (player, argValue) => {
       value = argValue;
@@ -66,7 +64,7 @@ describe('Command', it => {
       second = secondArg
     });
 
-    command.dispatch(null /* player */, '50 62');
+    command.dispatch(null /* player */, '50 62 trailing text');
     assert.strictEqual(first, 50);
     assert.strictEqual(second, 62);
 
@@ -77,6 +75,85 @@ describe('Command', it => {
     command.dispatch(null /* player */, ' 80.12  -52.12 ');
     assert.strictEqual(first, 80.12);
     assert.strictEqual(second, -52.12);
+  });
+
+  // TODO: PLAYER parameters.
+
+  it('validates and parses word parameters', assert => {
+    let value = null;
+    let command = new Command('foo', [
+        { name: 'value', type: Command.PARAM_TYPE_WORD }
+    ], (player, argValue) => {
+      value = argValue;
+    });
+
+    command.dispatch(null /* player */, 'Hello world!');
+    assert.strictEqual(value, 'Hello');
+
+    command.dispatch(null /* player */, 'ლ,ᔑ•ﺪ͟͠•ᔐ.ლ');
+    assert.strictEqual(value, 'ლ,ᔑ•ﺪ͟͠•ᔐ.ლ');
+
+    command.dispatch(null /* player */, '42');
+    assert.strictEqual(value, '42');
+
+    // Push a second argument to test parsing of subsequent word parameters.
+    let first, second;
+
+    command = new Command('foo', [
+        { name: 'value', type: Command.PARAM_TYPE_WORD },
+        { name: 'second', type: Command.PARAM_TYPE_WORD }
+    ], (player, firstArg, secondArg) => {
+      first = firstArg;
+      second = secondArg
+    });
+
+    command.dispatch(null /* player */, 'Hello world!');
+    assert.strictEqual(first, 'Hello');
+    assert.strictEqual(second, 'world!');
+
+    command.dispatch(null /* player */, '     Las    Venturas ');
+    assert.strictEqual(first, 'Las');
+    assert.strictEqual(second, 'Venturas');
+  });
+
+  it('validates and parses sentence parameters', assert => {
+    let value = null;
+    let command = new Command('foo', [
+        { name: 'value', type: Command.PARAM_TYPE_SENTENCE }
+    ], (player, argValue) => {
+      value = argValue;
+    });
+
+    command.dispatch(null /* player */, 'Las Venturas Playground');
+    assert.strictEqual(value, 'Las Venturas Playground');
+
+    command.dispatch(null /* player */, '   Some Padding   ');
+    assert.strictEqual(value, 'Some Padding');
+  });
+
+  it('validates and parses custom parameters', assert => {
+    let wordMatch = /^\s*(.+?)(?!\S)/;
+
+    // Parser that returns the length of the passed argument.
+    let wordLengthParser = argumentString => {
+      let result = wordMatch.exec(argumentString);
+      assert.isNotNull(result);
+
+      return [argumentString.substr(result[0].length), result[1].length];
+    };
+
+    let value = null;
+    let command = new Command('foo', [
+        { name: 'value', type: Command.PARAM_TYPE_CUSTOM, parser: wordLengthParser }
+    ], (player, argValue) => {
+      value = argValue;
+    });
+
+    command.dispatch(null /* player */, 'Russell');
+    assert.strictEqual(value, 7);
+
+    command.dispatch(null /* player */, '  Venturas   ');
+    assert.strictEqual(value, 8);
   });
 
   it('creates a string representation', assert => {

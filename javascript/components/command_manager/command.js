@@ -2,7 +2,43 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let NumberParser = require('components/command_manager/parser/number_parser.js');
+let numberMatch = /^\s*(\-?\d+(\.\d+)?)(?!\S)/;
+let wordMatch = /^\s*(.+?)(?!\S)/;
+
+// Parameter parser for numbers. The following notations for numbers are supported:
+//
+// "42"        Positive integral number.
+// "-42"       Negative integral number.
+// "42.50"     Positive decimal numbers.
+// "-42.50"    Negative decimal numbers.
+//
+// Note that the numbers will not be limited to the signed 32-bit integer range that Pawn is limited
+// to - JavaScript numbers have a 53-bit mantissa.
+//
+// The parser will be tested as part of the Command test suite in the parent directory.
+function NumberParser(argumentString, player) {
+  let result = numberMatch.exec(argumentString);
+  if (result === null)
+    return [argumentString, null];
+
+  return [argumentString.substr(result[0].length), parseFloat(result[1])];
+}
+
+// Parameter parser for words. Any sequence of tokens is allowed until the next whitespace.
+// The parser will be tested as part of the Command test suite in the parent directory.
+function WordParser(argumentString, player) {
+  let result = wordMatch.exec(argumentString);
+  if (result === null)
+    return [argumentString, null];
+
+  return [argumentString.substr(result[0].length), result[1]];
+}
+
+// Parameter parser for sentences. A trimmed version of the argument string will be returned.
+function SentenceParser(argumentString, player) {
+  // TODO(Russell): Should we normalize multiple spaces to a single space?
+  return ['', argumentString.trim()];
+}
 
 // Represents a command that can be executed by players. Each command has at least a name and a
 // listener, and will most likely also have one or more parameters that the player can use to
@@ -70,13 +106,13 @@ class Command {
           parser = NumberParser;
           break;
         case Command.PARAM_TYPE_PLAYER:
-        case Command.PARAM_TYPE_WORD:
           // not yet implemented.
+        case Command.PARAM_TYPE_WORD:
+          parser = WordParser;
           break;
         case Command.PARAM_TYPE_SENTENCE:
-          // not yet implemented.
-
           hadSentenceParameter = true;
+          parser = SentenceParser;
           break;
         case Command.PARAM_TYPE_CUSTOM:
           if (!parameter.hasOwnProperty('parser'))

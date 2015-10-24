@@ -291,9 +291,12 @@ class Player <playerId (MAX_PLAYERS)> {
      * Change the player's level with the one as indicated. This should generally only be set by the
      * Account system, but can also be used for temporary moderators and administrators.
      *
+     * Mutations to a player's levle will be broadcasted to JavaScript as well.
+     *
      * @param level The level this player should be updated to.
      */
-    public inline setLevel(PlayerAccessLevel: level) {
+    public setLevel(PlayerAccessLevel: level) {
+        CallRemoteFunction("OnPlayerLevelChange", "ii", playerId, _: level);
         m_level = level;
     }
 
@@ -484,6 +487,9 @@ public LVP_BanPlayer(playerId, reason[]) {
     Player(playerId)->ban(reason);
     return 1;
 }
+
+forward OnPlayerLevelChange(playerid, newlevel);
+public OnPlayerLevelChange(playerid, newlevel) {}
 
 // Include the test-suite for the Player class.
 #include "Entities/Players/Player.tests.pwn"

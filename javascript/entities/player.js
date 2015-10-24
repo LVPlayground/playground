@@ -25,6 +25,7 @@ class Player {
     this.id_ = playerId;
     this.name_ = pawnInvoke('GetPlayerName', 'iS', playerId);
     this.ipAddress_ = pawnInvoke('GetPlayerIp', 'iS', playerId);
+    this.level_ = Player.LEVEL_PLAYER;
   }
 
   // Returns the id of this player. This attribute is read-only.
@@ -37,12 +38,26 @@ class Player {
 
   // Returns the IP address of this player. This attribute is read-only.
   get ipAddress() { return this.ipAddress_; }
+
+  // Returns the level of this player. Synchronized with the gamemode using the `levelchange` event.
+  get level() { return this.level_; }
 };
+
+// The level of a  player. Can be accessed using the `level` property on a Player instance.
+Player.LEVEL_PLAYER = 0;
+Player.LEVEL_ADMINISTRATOR = 1;
+Player.LEVEL_MANAGEMENT = 2;
 
 // Called when a player connects to Las Venturas Playground. Registers the player as being in-game
 // and initializes the Player instance for them.
 self.addEventListener('playerconnect', event =>
   players[event.playerid] = new Player(playerCreateSymbol, event.playerid));
+
+// Called when the level of a player changes. This event is custom to Las Venturas Playground.
+self.addEventListener('playerlevelchange', event => {
+  if (players.hasOwnProperty(event.playerid))
+    players[event.playerid].level_ = event.level;
+});
 
 // Called when a player disconnects from the server. Removes the player from our registry.
 self.addEventListener('playerdisconnect', event =>

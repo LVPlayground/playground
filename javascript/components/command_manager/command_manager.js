@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+let Command = require('components/command_manager/command.js');
+
 // The command manager maintains a registry of available in-game commands and provides the ability
 // to parse and dispatch commands to their associated handlers.
 class CommandManager {
@@ -13,14 +15,23 @@ class CommandManager {
     global.addEventListener('playercommandtext', CommandManager.prototype.onPlayerCommandText.bind(this));
   }
 
-  // Registers |command| as a new command that will result in |listener| being invoked when executed
-  // by an in-game player. The instance of the command manager will be returned again to enable
-  // builder-like call chaining when registering commands.
-  registerCommand(command, listener) {
-    // TODO(Russell): Support command parameter parsing.
-    // TODO(Russell): Disallow registering the same command multiple times.
+  // Removes this instance from listening to the playercommandtext event.
+  // TODO(russell): This should be handled by some event binding model class as well.
+  disposeForTests() {
+    global.removeEventListener('playercommandtext', CommandManager.prototype.onPlayerCommandText.bind(this));
+  }
 
-    this.commands_[command] = listener;
+  // Registers |commandName| as a new command that will result in |listener| being invoked when
+  // executed by an in-game player. The instance of the command manager will be returned again to
+  // enable builder-like call chaining when registering commands.
+  //
+  // Read the online documentation for more information on the |parameters| syntax:
+  //   https://github.com/LVPlayground/playground/tree/master/javascript/components/command_manager
+  registerCommand(commandName, parameters, listener) {
+    if (this.commands_.hasOwnProperty(commandName))
+      throw new Error('The command /' + commandName + ' has already been registered.');
+
+    this.commands_[commandName] = new Command(commandName, parameters, listener);
     return this;
   }
 
@@ -49,9 +60,9 @@ class CommandManager {
     event.preventDefault();
 
     // TODO(Russell): Parse the |commandParams| based on the |command|.
-    let parameters = null;
+    let args = null;
 
-    this.commands_[commandName](player, parameters);
+    //this.commands_[commandName].listener(player, args);
 
 
   }

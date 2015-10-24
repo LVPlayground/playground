@@ -118,6 +118,8 @@ class TestRunner {
     {
       require('base/priority_queue.test.js');
       require('base/test/assert.test.js');
+      require('components/command_manager/command.test.js');
+      require('components/command_manager/command_manager.test.js');
     }
 
     // Remove the `describe` method from the global scope again.

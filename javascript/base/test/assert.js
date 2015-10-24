@@ -361,6 +361,11 @@ class Assert {
 
   // Coerces |value| to a string. 
   toString(value) {
+    if (value === null)
+      return 'null';
+    else if (Number.isNaN(value))
+      return 'NaN';
+    
     return value.toString();
   }
 

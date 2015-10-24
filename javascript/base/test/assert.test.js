@@ -298,4 +298,11 @@ describe('Assert', it => {
   // TODO: assert.doesNotIncrease(function, object, property)
   // TODO: assert.decreases(function, object, property)
   // TODO: assert.doesNotDecrease(function, object, property)
+
+  it('can stringify types', assert => {
+    assert.strictEqual('42', assert.toString(42));
+    assert.strictEqual('-42', assert.toString(-42));
+    assert.strictEqual('null', assert.toString(null));
+    assert.strictEqual('NaN', assert.toString(Number.NaN));
+  });
 });

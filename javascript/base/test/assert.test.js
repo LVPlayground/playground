@@ -2,13 +2,25 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let Assert = require('base/test/assert.js');
+let Assert = require('base/test/assert.js'),
+    AssertionFailedError = require('base/test/assertion_failed_error.js');
 
 describe('Assert', it => {
   // TODO: assert(expression, message)
   // TODO: assert.fail(actual, expected, [message], [operator])
-  // TODO: assert.ok(object, [message])
-  // TODO: assert.notOk(object, [message])
+
+  it('ok', assert => {
+    assert.ok(true);
+    assert.ok(42);
+    assert.ok([1]);
+  });
+
+  it('notOk', assert => {
+    assert.notOk(false);
+    assert.notOk(undefined);
+    assert.notOk(null);
+    assert.notOk(!42);
+  });
 
   it('equal', assert => {
     let fn = () => 0;
@@ -43,8 +55,19 @@ describe('Assert', it => {
     assert.notStrictEqual(42, "42");
   });
 
-  // TODO: assert.deepEqual(actual, expected, [message])
-  // TODO: assert.notDeepEqual(actual, expected, [message])
+  it('deepEqual', assert => {
+    assert.deepEqual([1, 2, 3], [1, 2, 3]);
+    assert.deepEqual({ foo: 'bar' }, { foo: 'bar' });
+    assert.deepEqual([ { bar: 'foo' } ], [ { bar: 'foo' } ]);
+    assert.deepEqual(Assert.prototype, Assert.prototype);
+    assert.deepEqual(assert, assert);
+  });
+
+  it('notDeepEqual', assert => {
+    assert.notDeepEqual([1, 2, 3], [1, 2, 3, 4]);
+    assert.notDeepEqual({ foo: 'bar' }, { bar: 'foo' });
+    assert.notDeepEqual({ foo: 'bar' }, { foo: 'bar', bar: 'baz' });
+  });
   
   it('isTrue', assert => {
     assert.isTrue(true);
@@ -53,9 +76,38 @@ describe('Assert', it => {
     assert.isTrue({});
   });
 
-  // TODO: assert.isAbove(valueToCheck, valueToBeAbove, [message])
-  // TODO: assert.isBelow(valueToCheck, valueToBeBelow, [message])
-  
+  it('isAbove', assert => {
+    assert.isAbove(42, 40);
+    assert.isAbove(-10, -20);
+    assert.isAbove("b", "a");
+    assert.isAbove([1], [0]);
+  });
+
+  it('isAboveOrEqual', assert => {
+    assert.isAboveOrEqual(42, 40);
+    assert.isAboveOrEqual(42, 42);
+    assert.isAboveOrEqual("b", "a");
+    assert.isAboveOrEqual("b", "b");
+    assert.isAboveOrEqual([1], [0]);
+    assert.isAboveOrEqual([1], [1]);
+  });
+
+  it('isBelow', assert => {
+    assert.isBelow(40, 42);
+    assert.isBelow(-20, -10);
+    assert.isBelow("a", "b");
+    assert.isBelow([0], [1]);
+  });
+
+  it('isBelowOrEqual', assert => {
+    assert.isBelowOrEqual(40, 42);
+    assert.isBelowOrEqual(42, 42);
+    assert.isBelowOrEqual("a", "b");
+    assert.isBelowOrEqual("b", "b");
+    assert.isBelowOrEqual([0], [1]);
+    assert.isBelowOrEqual([1], [1]);
+  });
+
   it('isFalse', assert => {
     assert.isFalse(false);
     assert.isFalse(0);
@@ -150,18 +202,56 @@ describe('Assert', it => {
     assert.isBoolean(true !== false);
   });
 
-  it ('isNotBoolean', assert => {
+  it('isNotBoolean', assert => {
     assert.isNotBoolean("true");
     assert.isNotBoolean({ true: 1 });
     assert.isNotBoolean("1");
   });
 
-  // TODO: assert.typeOf(value, name, [message])
-  // TODO: assert.notTypeOf(value, name, [message])
-  // TODO: assert.instanceOf(object, constructor, [message])
-  // TODO: assert.notInstanceOf(object, constructor, [message])
-  // TODO: assert.include(haystack, needle, [message])
-  // TODO: assert.notInclude(haystack, needle, [message])
+  it('typeOf', assert => {
+    assert.typeOf(1, 'number');
+    assert.typeOf(() => 0, 'function');
+    assert.typeOf(false, 'boolean');
+    assert.typeOf({}, 'object');
+    assert.typeOf([], 'object');
+  });
+
+  it('notTypeOf', assert => {
+    assert.notTypeOf(1, 'boolean');
+    assert.notTypeOf([], 'array');
+    assert.notTypeOf(() => 0, 'object');
+    assert.notTypeOf(class Foo {}, 'class');
+  });
+
+  it('instanceOf', assert => {
+    class Foo {};
+    class Bar extends Foo {};
+
+    assert.instanceOf(new Foo(), Foo);
+    assert.instanceOf(new Bar(), Foo);
+    assert.instanceOf(new Bar(), Bar);
+  });
+
+  it('notInstanceOf', assert => {
+    class Foo {};
+    class Bar {};
+
+    assert.notInstanceOf(new Foo(), Bar);
+    assert.notInstanceOf(new Bar(), Foo);
+    assert.notInstanceOf({}, Foo);
+    assert.notInstanceOf(Object.create(Bar), Bar);
+  });
+
+  it('include', assert => {
+    assert.include([1, 2, 3], 1);
+    assert.include(['foo', 'bar', 'baz'], 'bar');
+  });
+
+  it('notInclude', assert => {
+    assert.notInclude([1, 2, 3], 4);
+    assert.notInclude(['foo', 'bar', 'baz'], 'booze');
+  });
+
   // TODO: assert.match(value, regexp, [message])
   // TODO: assert.notMatch(value, regexp, [message])
   // TODO: assert.property(object, property, [message])
@@ -173,10 +263,32 @@ describe('Assert', it => {
   // TODO: assert.deepPropertyVal(object, property, value, [message])
   // TODO: assert.deepPropertyNotVal(object, property, value, [message])
   // TODO: assert.lengthOf(object, length, [message])
-  // TODO: assert.throws(function, [constructor/string/regexp], [string/regexp], [message])
-  // TODO: assert.doesNotThrow(function, [constructor/regexp], [message])
+
+  it('throws', assert => {
+    assert.throws(() => { throw new Error }, 'Error');
+    assert.throws(() => { throw new Error }, Error);
+    assert.throws(() => { assert.throws(() => { /* no exception */ }, 'TypeError') }, 'AssertionFailedError');
+    assert.throws(() => { assert.throws(() => { throw new Error }, 'WrongError') }, 'AssertionFailedError');
+  });
+
+  it('doesNotThrow', assert => {
+    assert.doesNotThrow(() => {});
+    assert.doesNotThrow(() => {
+      try { throw new Error }
+      catch (e) { }
+    });
+  });
+
   // TODO: assert.operator(val1, operator, val2, [message])
-  // TODO: assert.closeTo(actual, expected, delta, [message])
+
+  it('closeTo', assert => {
+    assert.closeTo(5, 10, 20);
+    assert.closeTo(42, 40, 10000);
+    assert.closeTo(42, 42, 1);
+    assert.closeTo(42, 42, 0);
+    assert.closeTo(12.50, 12.75, 0.50);
+  });
+
   // TODO: assert.sameMembers(set1, set2, [message])
   // TODO: assert.sameDeepMembers(set1, set2, [message])
   // TODO: assert.includeMembers(superset, subset, [message])

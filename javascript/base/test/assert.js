@@ -17,6 +17,22 @@ class Assert {
 
   // -----------------------------------------------------------------------------------------------
 
+  // Asserts |object|
+  ok(object) {
+    if (object)
+      return;
+
+    this.reportFailure('is not ok');
+  }
+
+  // Asserts !|object|
+  notOk(object) {
+    if (!object)
+      return;
+
+    this.reportFailure('is ok');
+  }
+
   // Asserts |actual| == |expected|.
   equal(actual, expected) {
     if (actual == expected)
@@ -49,12 +65,64 @@ class Assert {
     this.reportFailure('unexpectedly equals ' + this.toString(expected));
   }
 
+  // Asserts that |actual| is deep equal to |expected|.
+  deepEqual(actual, expected) {
+    if (angularEquals(actual, expected))
+      return;
+
+    // TODO(Russell): Improve this error message.
+    this.reportFailure('is not deep equal to ' + this.toString(expected));
+  }
+
+  // Asserts that |actual| is not deep equal to |expected|.
+  notDeepEqual(actual, expected) {
+    if (!angularEquals(actual, expected))
+      return;
+
+    // TODO(Russell): Improve this error message.
+    this.reportFailure('is deep equal to ' + this.toString(expected));
+  }
+
   // Asserts |value| == true.
   isTrue(value) {
     if (value)
       return;
 
     this.reportFailure('evaluates to false');
+  }
+
+  // Asserts valueToCheck > valueToBeAbove
+  isAbove(valueToCheck, valueToBeAbove) {
+    if (valueToCheck > valueToBeAbove)
+      return;
+
+    this.reportFailure('expected ' + this.toString(valueToCheck) + ' to be above ' + this.toString(valueToBeAbove));
+  }
+
+  // Asserts valueToCheck >= valueToBeAboveOrEqual
+  // This is an addition for Las Venturas Playground.
+  isAboveOrEqual(valueToCheck, valueToBeAboveOrEqual) {
+    if (valueToCheck >= valueToBeAboveOrEqual)
+      return;
+
+    this.reportFailure('expected ' + this.toString(valueToCheck) + ' to be equal to or above ' + this.toString(valueToBeAboveOrEqual));
+  }
+
+  // Asserts valueToCheck < valueToBeBelow
+  isBelow(valueToCheck, valueToBeBelow) {
+    if (valueToCheck < valueToBeBelow)
+      return;
+
+    this.reportFailure('expected ' + this.toString(valueToCheck) + ' to be below ' + this.toString(valueToBeBelow));
+  }
+
+  // Asserts valueToCheck <= valueToBeBelowOrEqual
+  // This is an addition for Las Venturas Playground.
+  isBelowOrEqual(valueToCheck, valueToBeBelowOrEqual) {
+    if (valueToCheck <= valueToBeBelowOrEqual)
+      return;
+
+    this.reportFailure('expected ' + this.toString(valueToCheck) + ' to be equal to or below ' + this.toString(valueToBeBelowOrEqual));
   }
 
   // Asserts |value| == false.
@@ -193,6 +261,102 @@ class Assert {
     this.reportFailure('evaluates to a boolean');
   }
 
+  // Asserts typeof value === name
+  typeOf(value, name) {
+    if (typeof value === name)
+      return;
+
+    this.reportFailure('expected type ' + this.toString(name) + ', but got ' + this.toString(value));
+  }
+
+  // Asserts typeof value !== name
+  notTypeOf(value, name) {
+    if (typeof value !== name)
+      return;
+
+    this.reportFailure('has type ' + this.toString(name));
+  }
+
+  // Asserts (object instanceof constructor)
+  instanceOf(object, constructor) {
+    if (object instanceof constructor)
+      return;
+
+    this.reportFailure('expected ' + this.toString(name) + ' to be instance of ' + constructor.name);
+  }
+
+  // Asserts !(object instanceof constructor)
+  notInstanceOf(object, constructor) {
+    if (!(object instanceof constructor))
+      return;
+
+    this.reportFailure('is instance of ' + constructor.name);
+  }
+
+  // Asserts that |needle| is in |haystack|.
+  include(haystack, needle) {
+    if (haystack.includes(needle))
+      return;
+
+    this.reportFailure('expected ' + this.toString(needle) + ' to be included');
+  }
+
+  // Asserts that |needle| is not in |haystack|.
+  notInclude(haystack, needle) {
+    if (!haystack.includes(needle))
+      return;
+
+    this.reportFailure('expected ' + this.toString(needle) + ' not to be included');
+  }
+
+  // Asserts that executing |fn| throws an exception of |type|.
+  // TODO(Russell): Also allow asserting on the exception's message.
+  throws(fn, type) {
+    if (typeof fn !== 'function')
+      this.reportFailure('|fn| must be a function');
+
+    let threw = true;
+    try {
+      fn();
+      threw = false;
+    } catch (e) {
+      if (typeof type === 'undefined')
+        return;
+
+      if ((typeof type === 'function' && e instanceof type) ||
+          (typeof type === 'string' && e.name == type))
+        return;
+
+      let textualType = typeof type == 'string' ? type
+                                                : this.toString(type);
+
+      this.reportFailure('expected ' + textualType + ' exception, but got ' + e.name);
+    }
+
+    if (!threw)
+      this.reportFailure('did not throw');
+  }
+
+  // Asserts that executing |fn| does not throw an exception.
+  doesNotThrow(fn) {
+    if (typeof fn !== 'function')
+      this.reportFailure('|fn| must be a function');
+
+    try {
+      fn();
+    } catch (e) {
+      this.reportFailure('threw a ' + e.name + ' (' + e.message + ')');
+    }
+  }
+
+  // Asserts Math.abs(actual - expected) <= delta
+  closeTo(actual, expected, delta) {
+    if (Math.abs(actual - expected) <= delta)
+      return;
+
+    this.reportFailure('expected ' + this.toString(actual) + ' to be close (~' + delta + ') to ' + this.toString(expected));
+  }
+
   // -----------------------------------------------------------------------------------------------
 
   // Coerces |value| to a string. 
@@ -209,5 +373,47 @@ class Assert {
                                    message);
   }
 };
+
+// equals() method taken from Angular:
+// https://github.com/angular/angular.js/blob/6c59e770084912d2345e7f83f983092a2d305ae3/src/Angular.js#L670
+function angularEquals(o1, o2) {
+  if (o1 === o2) return true;
+  if (o1 === null || o2 === null) return false;
+  if (o1 !== o1 && o2 !== o2) return true; // NaN === NaN
+  var t1 = typeof o1, t2 = typeof o2, length, key, keySet;
+  if (t1 == t2) {
+    if (t1 == 'object') {
+      if (Array.isArray(o1)) {
+        if (!Array.isArray(o2)) return false;
+        if ((length = o1.length) == o2.length) {
+          for(key=0; key<length; key++) {
+            if (!angularEquals(o1[key], o2[key])) return false;
+          }
+          return true;
+        }
+      } else if (toString.apply(o1) == '[object Date]') {
+        return toString.apply(o2) == '[object Date]' && o1.getTime() == o2.getTime();
+      } else if (toString.apply(o1) == '[object RegExp]' && toString.apply(o2) == '[object RegExp]') {
+        return o1.toString() == o2.toString();
+      } else {
+        if (Array.isArray(o2)) return false;
+        keySet = {};
+        for(key in o1) {
+          if (key.charAt(0) === '$' || typeof o1[key] === 'function') continue;
+          if (!angularEquals(o1[key], o2[key])) return false;
+          keySet[key] = true;
+        }
+        for(key in o2) {
+          if (!keySet.hasOwnProperty(key) &&
+              key.charAt(0) !== '$' &&
+              o2[key] !== undefined &&
+              !(typeof o2[key] === 'function')) return false;
+        }
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 exports = Assert;

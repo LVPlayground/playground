@@ -99,6 +99,28 @@ describe('StringParser', it => {
     assert.isNull(parser.parse('word'));
   });
 
+  it('validates and parses exact word matches', assert => {
+    let parser = null;
+
+    parser = new StringParser([ 'hello' ]);
+
+    assert.deepEqual(parser.parse('hello'), []);
+    assert.deepEqual(parser.parse('  hello world'), []);
+
+    assert.isNull(parser.parse());
+    assert.isNull(parser.parse('hi hello'));
+    assert.isNull(parser.parse('hellow'));
+
+    parser = new StringParser([ 'hello', StringParser.PARAM_TYPE_WORD ]);
+
+    assert.deepEqual(parser.parse('hello world'), ['world']);
+    assert.deepEqual(parser.parse('  hello   world  '), ['world']);
+
+    assert.isNull(parser.parse(null));
+    assert.isNull(parser.parse('hellow world'));
+    assert.isNull(parser.parse(' hello '));
+  });
+
   it('validates and parses sentence parameters', assert => {
     let parser = null;
 

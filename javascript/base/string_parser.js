@@ -31,7 +31,25 @@ function WordParser(argumentString) {
   if (result === null)
     return [argumentString, null];
 
+  let word = result[1].trim();
+  if (word.length == 0)
+    return [argumentString, null];
+
   return [argumentString.substr(result[0].length), result[1]];
+}
+
+// Parser for matching |value| at the beginning of |argumentString|. The matching will be done in
+// a case sensitive manner. Anything that doesn't match |value| will be considered a failure.
+function WordMatchParser(argumentString, value) {
+  let trimmedArgumentString = argumentString.trimLeft();
+  if (!trimmedArgumentString.startsWith(value))
+    return [argumentString, null];
+
+  let remainder = trimmedArgumentString.substr(value.length);
+  if (remainder.length > 0 && remainder[0] != ' ')
+    return [remainder, null];
+
+  return [remainder, value];
 }
 
 // Parameter parser for sentences. A trimmed version of the argument string will be returned.
@@ -64,6 +82,9 @@ function SentenceParser(argumentString) {
 // StringParser.PARAM_TYPE_CUSTOM   - Will use a custom parser (included in the `parser` property of
 //                                    the parameter object) to parse the parameter.
 //
+// Additionally a string may be passed which means that a strict, case-sensitive match will be done
+// on the existence of that string in the input data.
+//
 // After creating the parser, the `parse` function may be used with the input string to apply the
 // parsing rules to said string. Failures will cause NULL to be returned, otherwise an array with
 // the parsed properties will be returned.
@@ -87,6 +108,9 @@ class StringParser {
       if (typeof parameter === 'number')
         parameter = { type: parameter };
 
+      if (typeof parameter === 'string')
+        parameter = { type: StringParser.PARAM_TYPE_WORD_MATCH, value: parameter };
+
       if (!parameter.hasOwnProperty('type'))
         throw new Error('Each parameter must have at least a type.');
 
@@ -97,6 +121,7 @@ class StringParser {
 
       hadOptionalParameter |= !required;
 
+      let value = parameter.hasOwnProperty('value') ? parameter.value : null;
       let parser = null;
 
       // Iterate over the |type| to determine the parser appropriate for this parameter.
@@ -106,6 +131,9 @@ class StringParser {
           break;
         case StringParser.PARAM_TYPE_WORD:
           parser = WordParser;
+          break;
+        case StringParser.PARAM_TYPE_WORD_MATCH:
+          parser = WordMatchParser;
           break;
         case StringParser.PARAM_TYPE_SENTENCE:
           hadSentenceParameter = true;
@@ -125,7 +153,8 @@ class StringParser {
       // Push the sanitized parameter information to the local state.
       this.parameters_.push({
         required: required,
-        parser: parser
+        parser: parser,
+        value: value
       });
     });
   }
@@ -141,16 +170,17 @@ class StringParser {
     // Iterate over each of the registered parameters and attempt to parse them using the associated
     // parser. If this fails, and the parameter is not optional, bail out.
     for (let parameter of this.parameters_) {
-      let [remainder, value] = parameter.parser(string);
-      if (value === null) {
-        if (parameter.required)
-          return null;
+      let [remainder, value] = parameter.parser(string, parameter.value);
+      if (value !== null) {
+        if (parameter.value === null)
+          values.push(value);
 
+        string = remainder;
         continue;
       }
 
-      string = remainder;
-      values.push(value);
+      if (parameter.required)
+        return null;
     }
 
     return values;
@@ -161,7 +191,8 @@ class StringParser {
 StringParser.PARAM_TYPE_NUMBER = 0;
 StringParser.PARAM_TYPE_PLAYER = 1;
 StringParser.PARAM_TYPE_WORD = 2;
-StringParser.PARAM_TYPE_SENTENCE = 3;
-StringParser.PARAM_TYPE_CUSTOM = 4;
+StringParser.PARAM_TYPE_WORD_MATCH = 3;
+StringParser.PARAM_TYPE_SENTENCE = 4;
+StringParser.PARAM_TYPE_CUSTOM = 5;
 
 exports = StringParser;

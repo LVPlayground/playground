@@ -18,35 +18,34 @@ describe('StringParser', it => {
 
   it('validates the parameters', assert => {
     assert.throws(() => new StringParser({}));
-    assert.throws(() => new StringParser([{ noName: true, type: 0 }]));
-    assert.throws(() => new StringParser([{ name: 'foo', noType: true }]));
+    assert.throws(() => new StringParser([{ noType: true }]));
 
     assert.doesNotThrow(() => new StringParser(null));
     assert.doesNotThrow(() => new StringParser([]));
-    assert.doesNotThrow(() => new StringParser([{ name: 'bar', type: StringParser.PARAM_TYPE_NUMBER }]));
+    assert.doesNotThrow(() => new StringParser([{ type: StringParser.PARAM_TYPE_NUMBER }]));
 
     // Using an invalid parameter type should throw an exception.
-    assert.throws(() => new StringParser([{ name: 'foo', type: 42 }]));
+    assert.throws(() => new StringParser([{ type: 42 }]));
 
     // Using a custom parameter type requires a `parser` constructor to be set.
-    assert.throws(() => new StringParser([{ name: 'bar', type: StringParser.PARAM_TYPE_CUSTOM }]));
+    assert.throws(() => new StringParser([{ type: StringParser.PARAM_TYPE_CUSTOM }]));
     assert.doesNotThrow(() =>
-        new StringParser([{ name: 'bar', type: StringParser.PARAM_TYPE_CUSTOM, parser: function MyParser() {} }]));
+        new StringParser([{ type: StringParser.PARAM_TYPE_CUSTOM, parser: function MyParser() {} }]));
 
     // It's not allowed for there to be any parameters after a SENTENCE one.
-    assert.throws(() => new StringParser([{ name: 'bar', type: StringParser.PARAM_TYPE_SENTENCE },
-                                          { name: 'baz', type: StringParser.PARAM_TYPE_NUMBER }]));
+    assert.throws(() => new StringParser([{ type: StringParser.PARAM_TYPE_SENTENCE },
+                                          { type: StringParser.PARAM_TYPE_NUMBER }]));
 
     // It's not allowed for required parameters to follow optional ones.
-    assert.throws(() => new StringParser([{ name: 'foo', type: StringParser.PARAM_TYPE_NUMBER, required: false },
-                                          { name: 'bar', type: StringParser.PARAM_TYPE_NUMBER }]));
+    assert.throws(() => new StringParser([{ type: StringParser.PARAM_TYPE_NUMBER, required: false },
+                                          { type: StringParser.PARAM_TYPE_NUMBER }]));
   });
 
   it('validates and parses number parameters', assert => {
     let parser = null;
     
     parser = new StringParser([
-        { name: 'value', type: StringParser.PARAM_TYPE_NUMBER }
+        { type: StringParser.PARAM_TYPE_NUMBER }
     ]);
 
     assert.deepEqual(parser.parse('42'), [42]);
@@ -63,8 +62,8 @@ describe('StringParser', it => {
     assert.isNull(parser.parse('fifty'));
 
     parser = new StringParser([
-        { name: 'first', type: StringParser.PARAM_TYPE_NUMBER },
-        { name: 'second', type: StringParser.PARAM_TYPE_NUMBER }
+        { type: StringParser.PARAM_TYPE_NUMBER },
+        { type: StringParser.PARAM_TYPE_NUMBER }
     ]);
 
     assert.deepEqual(parser.parse('50 62'), [50, 62]);
@@ -83,7 +82,7 @@ describe('StringParser', it => {
     let parser = null;
 
     parser = new StringParser([
-        { name: 'value', type: StringParser.PARAM_TYPE_WORD }
+        { type: StringParser.PARAM_TYPE_WORD }
     ]);
 
     assert.deepEqual(parser.parse('Hello world!'), ['Hello']);
@@ -98,8 +97,8 @@ describe('StringParser', it => {
     assert.isNull(parser.parse(''));
 
     parser = new StringParser([
-        { name: 'first', type: StringParser.PARAM_TYPE_WORD },
-        { name: 'second', type: StringParser.PARAM_TYPE_WORD }
+        { type: StringParser.PARAM_TYPE_WORD },
+        { type: StringParser.PARAM_TYPE_WORD }
     ]);
 
     assert.deepEqual(parser.parse('Hello world!'), ['Hello', 'world!']);
@@ -114,7 +113,7 @@ describe('StringParser', it => {
     let parser = null;
 
     parser = new StringParser([
-        { name: 'value', type: StringParser.PARAM_TYPE_SENTENCE }
+        { type: StringParser.PARAM_TYPE_SENTENCE }
     ]);
 
     assert.deepEqual(parser.parse('Las'), ['Las']);
@@ -130,7 +129,7 @@ describe('StringParser', it => {
     let parser = null;
 
     parser = new StringParser([
-        { name: 'value', type: StringParser.PARAM_TYPE_CUSTOM, parser: wordLengthParser }
+        { type: StringParser.PARAM_TYPE_CUSTOM, parser: wordLengthParser }
     ]);
 
     assert.deepEqual(parser.parse('foo'), [3]);
@@ -146,10 +145,10 @@ describe('StringParser', it => {
     let parser = null;
 
     parser = new StringParser([
-        { name: 'number', type: StringParser.PARAM_TYPE_NUMBER },
-        { name: 'string', type: StringParser.PARAM_TYPE_WORD },
-        { name: 'value', type: StringParser.PARAM_TYPE_CUSTOM, parser: wordLengthParser },
-        { name: 'sentence', type: StringParser.PARAM_TYPE_SENTENCE }
+        { type: StringParser.PARAM_TYPE_NUMBER },
+        { type: StringParser.PARAM_TYPE_WORD },
+        { type: StringParser.PARAM_TYPE_CUSTOM, parser: wordLengthParser },
+        { type: StringParser.PARAM_TYPE_SENTENCE }
     ]);
 
     assert.deepEqual(parser.parse('42 word value more text'), [42, 'word', 5, 'more text']);
@@ -166,8 +165,8 @@ describe('StringParser', it => {
     let parser = null;
 
     parser = new StringParser([
-        { name: 'number', type: StringParser.PARAM_TYPE_NUMBER },
-        { name: 'text', type: StringParser.PARAM_TYPE_SENTENCE, required: false }
+        { type: StringParser.PARAM_TYPE_NUMBER },
+        { type: StringParser.PARAM_TYPE_SENTENCE, required: false }
     ]);
 
     assert.deepEqual(parser.parse('42 foo'), [42, 'foo']);

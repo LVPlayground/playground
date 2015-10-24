@@ -50,7 +50,7 @@ function SentenceParser(argumentString, player) {
 // parser, after which the parser can be used any number of times.
 //
 // When creating a parser, the |format| is expected to be an array with zero or more parameter
-// definitions, each of which is an object that has at least a `name` and a `type`.
+// definitions, each of which is an object that has at least a `type`.
 //
 // The following parameter `types` are available:
 //
@@ -85,11 +85,11 @@ class StringParser {
     let hadOptionalParameter = false;
 
     parameters.forEach(parameter => {
-      if (!parameter.hasOwnProperty('name') || !parameter.hasOwnProperty('type'))
-        throw new Error('Each parameter must have at least a name and a type.');
-
       if (hadSentenceParameter)
         throw new Error('No parameter can follow a sentence once - it will swallow everything.');
+
+      if (!parameter.hasOwnProperty('type'))
+        throw new Error('Each parameter must have at least a type.');
 
       // Whether the parameter is required for the command to execute.
       let required = parameter.hasOwnProperty('required') ? !!parameter.required : true;
@@ -127,7 +127,6 @@ class StringParser {
 
       // Push the sanitized parameter information to the local state.
       this.parameters_.push({
-        name: parameter.name,
         required: required,
         parser: parser
       });

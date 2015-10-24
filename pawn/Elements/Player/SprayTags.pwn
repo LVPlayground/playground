@@ -461,23 +461,38 @@ sprayTagOnVehicleCommand(playerid, params[])
 {
     #pragma unused params
 
-    if(!sprayTagHasPlayerSprayedAll(playerid))
-    {
-        SendClientMessage(playerid, COLOR_RED, "* You have not unlocked this command.");
-        return 1;
-    }
+    if (!Player(playerid)->isModerator()) {
+        if(!sprayTagHasPlayerSprayedAll(playerid))
+        {
+            SendClientMessage(playerid, COLOR_RED, "* You have not unlocked this command.");
+            return 1;
+        }
 
-    // Has the player used /inf in the past 3 minutes?
-    if((Time->currentTime() - g_iTimeInfCommandLastUsed[playerid]) < 3 * 60)
-    {
-        SendClientMessage(playerid, COLOR_RED, "You may only use /inf once every 3 minutes.");
-        return 1;
-    }
+        // Has the player used /inf in the past 3 minutes?
+        if((Time->currentTime() - g_iTimeInfCommandLastUsed[playerid]) < 3 * 60)
+        {
+            SendClientMessage(playerid, COLOR_RED, "You may only use /inf once every 3 minutes.");
+            return 1;
+        }
 
-    if(IsPlayerFighting(playerid))
-    {
-        SendClientMessage(playerid, COLOR_RED, "* You cannot spawn an infernus because you've recently been in a gunfight.");
-        return 1;
+        if(IsPlayerFighting(playerid))
+        {
+            SendClientMessage(playerid, COLOR_RED, "* You cannot spawn an infernus because you've recently been in a gunfight.");
+            return 1;
+        }
+
+        if(ShipManager->isPlayerWalkingOnShip(playerid))
+        {
+            SendClientMessage(playerid, COLOR_RED, "* You cannot spawn vehicles on the ship!");
+            return 1;
+        }
+
+        //Check if the player has recently been in a gun fight.
+        if(IsPlayerFighting(playerid))
+        {
+            SendClientMessage(playerid, COLOR_RED, "* You cannot spawn an infernus because you have recently been in a gun fight.");
+            return 1;
+        }
     }
 
     if(GetPlayerVirtualWorld(playerid) != 0)
@@ -492,21 +507,9 @@ sprayTagOnVehicleCommand(playerid, params[])
         return 1;
     }
 
-        if(iPlayerInVipRoom[playerid])
-        {
-            SendClientMessage(playerid, COLOR_RED, "* You must be outside to use this command.");
-            return 1;
-        }
-
-    if(ShipManager->isPlayerWalkingOnShip(playerid))
+    if(iPlayerInVipRoom[playerid])
     {
-        SendClientMessage(playerid, COLOR_RED, "* You cannot spawn vehicles on the ship!");
-        return 1;
-    }
-    //Check if the player has recently been in a gun fight.
-    if(IsPlayerFighting(playerid))
-    {
-        SendClientMessage(playerid, COLOR_RED, "* You cannot spawn an infernus because you have recently been in a gun fight.");
+        SendClientMessage(playerid, COLOR_RED, "* You must be outside to use this command.");
         return 1;
     }
 

@@ -55,8 +55,20 @@ self.addEventListener('playerconnect', event =>
 
 // Called when the level of a player changes. This event is custom to Las Venturas Playground.
 self.addEventListener('playerlevelchange', event => {
-  if (players.hasOwnProperty(event.playerid))
-    players[event.playerid].level_ = event.level;
+  if (!players.hasOwnProperty(event.playerid))
+    return;
+
+  switch(event.newlevel) {
+    case 2:  // AdministratorLevel
+      players[event.playerid].level_ = Player.LEVEL_ADMINISTRATOR;
+      break;
+    case 3:  // ManagementLevel
+      players[event.playerid].level_ = Player.LEVEL_MANAGEMENT;
+      break;
+    default:
+      players[event.playerid].level_ = Player.LEVEL_PLAYER;
+      break;
+  }
 });
 
 // Called when a player disconnects from the server. Removes the player from our registry.

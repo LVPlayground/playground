@@ -363,6 +363,8 @@ class Assert {
   toString(value) {
     if (value === null)
       return 'null';
+    else if (value === undefined)
+      return 'undefined';
     else if (Number.isNaN(value))
       return 'NaN';
     

@@ -49,24 +49,20 @@ class CommandManager {
       commandNameEnd = commandText.length;
 
     let commandName = commandText.substr(1, commandNameEnd - 1),
-        commandParams = commandText.substr(commandNameEnd + 1).trim();
+        commandArguments = commandText.substr(commandNameEnd + 1).trim();
 
     // If the command is not known to the command manager, it's likely to be implemented in the Pawn
     // part of Las Venturas Playground. Just ignore the command for now.
     if (!this.commands_.hasOwnProperty(commandName))
       return;
 
+    // Dispatch the event via the Command class, which will also display any applicable errors to
+    // the player when there's a problem with the command they tried to execute.
+    this.commands_[command].dispatch(player, commandArguments);
+
     // We can handle the event, so no need for Pawn to handle the event as well.
     event.preventDefault();
-
-    // TODO(Russell): Parse the |commandParams| based on the |command|.
-    let args = null;
-
-    //this.commands_[commandName].listener(player, args);
-
-
   }
-
 };
 
 exports = CommandManager;

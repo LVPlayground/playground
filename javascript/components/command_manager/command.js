@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+let NumberParser = require('components/command_manager/parser/number_parser.js');
+
 // Represents a command that can be executed by players. Each command has at least a name and a
 // listener, and will most likely also have one or more parameters that the player can use to
 // customize behavior of the listener.
@@ -65,6 +67,8 @@ class Command {
       // Iterate over the |type| to determine the parser appropriate for this parameter.
       switch (parameter.type) {
         case Command.PARAM_TYPE_NUMBER:
+          parser = NumberParser;
+          break;
         case Command.PARAM_TYPE_PLAYER:
         case Command.PARAM_TYPE_WORD:
           // not yet implemented.
@@ -78,7 +82,7 @@ class Command {
           if (!parameter.hasOwnProperty('parser'))
             throw new Error('Custom parameter types need to have a `parser` defined.');
 
-          parser = new parameter.parser(this);
+          parser = parameter.parser;
           break;
       }
 
@@ -89,6 +93,29 @@ class Command {
         parser: parser
       });
     });
+  }
+
+  // Dispatches the command to the listener when the passed arguments are valid, or displays an
+  // error message to the player when a problem has been found.
+  dispatch(player, args) {
+    let inputArguments = args + ' ',
+        parsedArguments = [];
+
+    // Iterate over each of the registered parameters and attempt to parse them using the associated
+    // parser. If this fails, and the parameter is not optional, bail out.
+    for (let parameter of this.parameters_) {
+      let [argumentRemainder, value] = parameter.parser(args, player);
+      if (value === null && parameter.required) {
+        console.log('Unable to execute command');  // TODO: inform the player of the problem.
+        return;
+      }
+
+      args = argumentRemainder;
+      parsedArguments.push(value);
+    }
+
+    // Invoke the attached listener with the player, as well as all the passed arguments.
+    this.listener_(player, ...parsedArguments);
   }
 
   // Converts the command back to a string. This string can be displayed to players to give them

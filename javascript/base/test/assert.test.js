@@ -304,5 +304,6 @@ describe('Assert', it => {
     assert.strictEqual('-42', assert.toString(-42));
     assert.strictEqual('null', assert.toString(null));
     assert.strictEqual('NaN', assert.toString(Number.NaN));
+    assert.strictEqual('undefined', assert.toString(undefined));
   });
 });

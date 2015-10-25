@@ -67,7 +67,7 @@ lvp_tow(playerid, params[])
 {
     // If the player is a moderator, the following checks do not matter. Using an empty if-statement
     // because the following else-ifs are nicely structured.
-    if (Player(playerid)->isModerator()) {}
+    if (Player(playerid)->isModerator() && IsPlayerInAnyVehicle(playerid)) {}
 
     // Does the player have enough money to start a tow?
     else if (GetPlayerMoney(playerid) < 45000)

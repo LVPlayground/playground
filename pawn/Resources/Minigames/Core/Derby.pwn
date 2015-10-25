@@ -576,7 +576,7 @@ CDerby__PlayerExit(iPlayerID, iReason)
 
     if(iReason != SIGNOUT && iReason != DISCONNECT)
     {
-        CDerby__ResetPlayerBounds(iPlayerID);
+        ResetWorldBounds(iPlayerID);
     }
 
     // Now we handle the messages;
@@ -708,7 +708,8 @@ CDerby__RemovePlayerFromDerby(iPlayerID, bool:n_LoadData = false)
     CDerby__SetPlayerBlip(iPlayerID);
     g_DerbyPlayer[iPlayerID][3] = 0;
 
-    CDerby__ResetPlayerBounds(iPlayerID);
+    ResetWorldBounds(iPlayerID);
+
     CDerby__DestroyPlayerVehicle(iPlayerID);
     g_DerbyPlayer[iPlayerID][4] = 0;
 
@@ -1872,14 +1873,6 @@ CDerby__SetBounds(iDerbyID, Float:fxmax,Float:fxmin,Float:fymax,Float:fymin)
     g_DerbyWorldBounds[iDerbyID][3] = fymin;
     g_DerbyData[iDerbyID][8] = true;
 }
-
-// CDerby__ResetPlayerBounds
-// This function resets the world boundires for a player.
-CDerby__ResetPlayerBounds(iPlayerID)
-{
-    SetPlayerWorldBounds(iPlayerID, 10000, -10000, 10000, -10000);
-}
-
 
 // CDerby__DisableCountdown
 // This function disables a countdown for a derby - useful for derbies

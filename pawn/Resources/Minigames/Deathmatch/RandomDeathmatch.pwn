@@ -26,11 +26,6 @@ static Float:RandomSpawns[19][4] =
     {1419.50, 2880.94, 10.82, 268.60}
 };
 
-static Float:WorldBounds[1][4] =
-{
-    {1540.8296, 1418.2867, 2882.7183, 2788.8674}
-};
-
 static RandomWeapons[15][2] =
 {
     {31, 32}, {29, 26}, {25, 23}, {22, 27}, {24, 26},
@@ -54,6 +49,6 @@ stock SetPlayerUpForRandomDeathmatch(playerid)
     SendClientMessage(playerid, COLOR_WHITE, "* Last man standing! Takeout your enemies. Do not die.");
 
     SetPlayerVirtualWorld(playerid, 865);
-    SetPlayerWorldBounds(playerid, WorldBounds[0][0], WorldBounds[0][1], WorldBounds[0][2], WorldBounds[0][3]);
+    SetPlayerWorldBounds(playerid, 1540.8296, 1418.2867, 2882.7183, 2788.8674);
     return true;
 }

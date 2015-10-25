@@ -107,13 +107,6 @@
 #include "Features/Visual.pwn"
 #include "Features/Debug.pwn"
 
-// There is a side-project active for which we aim to document the San Andreas: Multiplayer natives
-// in a more consistent and convenient manner. The source of this documentation is, of course, part
-// of the actual gamemode, and displayed on the website on http://development.sa-mp.nl/natives/.
-#if defined(INCLUDE_SAMP_DOCUMENTATION)
-    #include "documentation.pwn"
-#endif
-
 /* *********************************************************************************************** */
 
 #pragma dynamic                         18000       // fix stack warnings

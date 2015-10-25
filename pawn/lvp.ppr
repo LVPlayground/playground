@@ -2,7 +2,6 @@
 <Project>
   <FileList>
     <DiskObject>\config.pwn</DiskObject>
-    <DiskObject>\documentation.pwn</DiskObject>
     <DiskObject>\Elements\</DiskObject>
     <DiskObject>\Elements\AdministratorCommands.pwn</DiskObject>
     <DiskObject>\Elements\Player\</DiskObject>
@@ -125,6 +124,7 @@
     <DiskObject>\Features\Account\Bans\BanManager.pwn</DiskObject>
     <DiskObject>\Features\Account\EnterPasswordDialog.pwn</DiskObject>
     <DiskObject>\Features\Account\ForcedGuestDialog.pwn</DiskObject>
+    <DiskObject>\Features\Account\GpciLogger.pwn</DiskObject>
     <DiskObject>\Features\Account\LegacyAccountBridge.pwn</DiskObject>
     <DiskObject>\Features\Account\NicknameGenerator.pwn</DiskObject>
     <DiskObject>\Features\Account\UndercoverAdministrator.pwn</DiskObject>
@@ -454,7 +454,6 @@
     <DiskObject>\Resources\Minigames\Race\Race7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race9.pwn</DiskObject>
-    <DiskObject>\Features\Account\GpciLogger.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

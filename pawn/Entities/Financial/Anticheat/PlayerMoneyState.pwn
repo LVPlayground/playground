@@ -113,8 +113,6 @@ class PlayerMoneyState <playerId (MAX_PLAYERS)> {
                 continue;
             }
 
-            printf("[MoneyCheat] Expected: %d | Actual: %d | Difference: %d", expected, money, difference);
-
             // Only consider finding exceptions if the increase (or decrease) is within reason. Then
             // check with the various exception systems if they are able to justify the difference.
             if (absoluteDifference < MaximumLegitimateMoneyIncrease) {

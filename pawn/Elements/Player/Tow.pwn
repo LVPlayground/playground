@@ -69,6 +69,10 @@ lvp_tow(playerid, params[])
     // because the following else-ifs are nicely structured.
     if (Player(playerid)->isModerator() && IsPlayerInAnyVehicle(playerid)) {}
 
+    // What if player is on foot?
+    else if (!IsPlayerInAnyVehicle(playerid))
+        return SendClientMessage(playerid, COLOR_RED, "Looks like you're on foot... Use /taxi instead!");
+
     // Does the player have enough money to start a tow?
     else if (GetPlayerMoney(playerid) < 45000)
         return SendClientMessage(playerid, COLOR_RED, "Using a tow will cost you $45,000!");
@@ -76,10 +80,6 @@ lvp_tow(playerid, params[])
     // Secondly, some checks... Let's see if the player has already used tow a while ago!
     else if (!CanPlayerUseTow(playerid))
         return SendClientMessage(playerid, COLOR_RED, "You already used /tow less than 3 minutes ago! You must wait a bit more.");
-
-    // What if player is on foot?
-    else if (!IsPlayerInAnyVehicle(playerid))
-        return SendClientMessage(playerid, COLOR_RED, "Looks like you're on foot... Use /taxi instead!");
 
     // And what if he's just a passenger?
     else if (GetPlayerVehicleSeat(playerid) > 0)

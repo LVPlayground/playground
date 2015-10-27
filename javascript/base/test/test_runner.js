@@ -60,6 +60,10 @@ class TestRunner {
 
       let runNextSuite = () => {
         if (currentSuiteIndex >= this.testSuites_.length) {
+          // Report to the test runner that running the tests has finished.
+          reportTestsFinished(this.testCount, failures.length);
+
+          // Either resolve or reject the promise based on the number of failing tests.
           failures.length > 0 ? reject(failures)
                               : resolve();
           return;
@@ -119,8 +123,8 @@ class TestRunner {
       require('base/priority_queue.test.js');
       require('base/string_parser.test.js');
       require('base/test/assert.test.js');
-      require('components/command_manager/command.test.js');
       require('components/command_manager/command_manager.test.js');
+      require('features/gangs/gang_commands.test.js');
     }
 
     // Remove the `describe` method from the global scope again.

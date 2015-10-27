@@ -124,7 +124,6 @@ class TestRunner {
       require('base/string_parser.test.js');
       require('base/test/assert.test.js');
       require('components/command_manager/command_manager.test.js');
-      require('features/gangs/gang_commands.test.js');
     }
 
     // Remove the `describe` method from the global scope again.

@@ -1,16 +1,17 @@
 {
     "An Introduction of Las Venturas Playground": [
-        "LVP is a freeroam server, there are lots of cool features!",
-        "Check out:",
+        "LVP is a freeroam server, there are lots of cool features, such as:",
+        "",
         "- /race",
         "- /jump",
         "- /properties",
         "- /teles",
         "- /derby",
         "- /minigames",
-        "If you need help, see /help and /commands.",
-        "If you need an admin to help you, send them a message by typing in the chat:",
-        "@message"
+        "",
+        "Make sure to check out: /help, /cmds and /rules",
+        "",
+        "To contact an admin, use @ before your message. E.g: @how do I...?"
     ],
     "How to earn money": [
         "Export vehicles - see /export",

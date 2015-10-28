@@ -61,9 +61,9 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
         .build();
 
     assert.isNotNull(listener);
-    //listener(player, 'option foobar');
+    listener(player, 'option foobar');
 
-    //assert.isTrue(listenerCalled);
+    assert.isTrue(listenerCalled);
   });
 
   it('should check for ambiguity of sub-commands', assert => {

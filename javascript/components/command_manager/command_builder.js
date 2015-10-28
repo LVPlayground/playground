@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+let StringParser = require('base/string_parser.js');
+
 // The command builder provides a convenient interface to build commands on, together with all the
 // options that are possible to have for commands. A variety of checks will be done to ensure that
 // the command will work consistently and reliably.
@@ -86,6 +88,20 @@ class CommandBuilder {
   // same pattern of 
   createListener() {
     return (player, args) => {
+      // Determine if there is a sub-command that we should delegate to. Word matching is used for
+      // string values (which will be the common case for delegating commands.)
+      for (let { builder, listener } of this.subCommands_) {
+        if (typeof builder.command_ == 'string') {
+          let commandLength = builder.command_.length;
+          if (!args.startsWith(builder.command_) || (args.length != commandLength && args[commandLength] != ' '))
+            continue;
+
+          return listener(player, args.substr(commandLength + 1));
+        }
+
+        // TODO: Implement matching for the CommandManager.*_PARAMETER types.
+      }
+
       if (this.listener_)
         this.listener_(player, args);
     };

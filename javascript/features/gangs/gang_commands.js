@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let Command = require('components/command_manager/command.js');
+let CommandBuilder = require('components/command_manager/command_builder.js');
 
 // This class owns and handles the commands that provide an interface to the gang manager for
 // players. It allows them to create, destroy and manage their, and others' gangs.
@@ -12,26 +12,26 @@ class GangCommands {
 
     commandManager.buildCommand('pgang')
         // /pgang create [name]
-        .sub('create').parameters({ name: 'name', type: Command.SENTENCE_PARAMETER })
+        .sub('create').parameters({ name: 'name', type: CommandBuilder.SENTENCE_PARAMETER })
                       .build(GangCommands.prototype.gangCreate.bind(this))
 
         // /pgang invite [player]
-        .sub('invite').parameters({ name: 'player', type: Command.PLAYER_PARAMETER })
+        .sub('invite').parameters({ name: 'player', type: CommandBuilder.PLAYER_PARAMETER })
                       .build(GangCommands.prototype.gangInvite.bind(this))
 
         // /pgang join [id]?
-        .sub('join').parameters({ name: 'id', type: Command.NUMBER_PARAMETER, optional: true })
+        .sub('join').parameters({ name: 'id', type: CommandBuilder.NUMBER_PARAMETER, optional: true })
                     .build(GangCommands.prototype.gangJoin.bind(this))
 
         // /pgang kick [player]
-        .sub('kick').parameters({ name: 'player', type: Command.PLAYER_PARAMETER })
+        .sub('kick').parameters({ name: 'player', type: CommandBuilder.PLAYER_PARAMETER })
                     .build(GangCommands.prototype.gangKick.bind(this))
 
         // /pgang leave
         .sub('leave').build(GangCommands.prototype.gangLeave.bind(this))
 
         // /pgang [id]? [color/info]
-        .sub(Command.NUMBER_PARAMETER, player => this.getCurrentGangId(player))
+        .sub(CommandBuilder.NUMBER_PARAMETER, player => this.getCurrentGangId(player))
 
             // /pgang [id]? color
             .sub('color').build(GangCommands.prototype.gangColor.bind(this))

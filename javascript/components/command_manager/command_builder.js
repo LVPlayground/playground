@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let Command = require('components/command_manager/command.js');
-
 // The command builder provides a convenient interface to build commands on, together with all the
 // options that are possible to have for commands. A variety of checks will be done to ensure that
 // the command will work consistently and reliably.
@@ -22,38 +20,45 @@ class CommandBuilder {
   // Creates a new sub-command for the current command builder. The |subCommand| must be unique and,
   // when |defaultValue| is used, unambiguous from any of the other registered commands.
   sub(subCommand, defaultValue = null) {
-    // TODO: Check for ambiguity with the currently known commands.
-
     return new CommandBuilder(CommandBuilder.SUB_COMMAND, this, subCommand, defaultValue);
   }
 
-  // Internal API for adding |subCommand| to the list of known sub-commands.
-  addSub(subCommand, listener) {
+  // Internal API for adding |subCommand| to the list of known sub-commands. The |listener| will be
+  // invoked when the |subCommand| is executed by the user.
+  registerSubCommand(subCommand, defaultValue, listener) {
+    // TODO: Check for ambiguity with the currently known commands.
 
+    this.subCommands_.push({
+      command: subCommand,
+      defaultValue: defaultValue,
+
+      listener: listener
+    });
   }
 
-  // Builds the command constructed by this builder, invoking |listener| when it got executed. Top-
-  // level commands will be registered with the command manager, whereas sub-commands will be
+  // Builds the command constructed by this builder, invoking |commandListener| when it gets used.
+  // Top-level commands will be registered with the command manager, whereas sub-commands will be
   // registered with their parent command.
-  build(listener) {
-    this.listener_ = listener || null;
+  build(commandListener) {
+    this.listener_ = commandListener || null;
 
-    // TODO: Should probably split out separate methods for (sub)command building.
-    if (this.level_ == CommandBuilder.SUB_COMMAND) {
-      // TODO: Flatten all known information for the current CommandBuilder instance.
-      // TODO: Create a dynamic listener that does the routing for us.
-      // TODO: Consider default values for the |this.command_| if it's an option parameter.
-      this.parent_.addSub(this.command_, this.listener_);
-      return this.parent_;
-    }
+    // Builds the listener function that handles dispatching for the current command.
+    let listener = this.createListener();
 
-    let command = new Command(this.command_, this.listener_);
+    this.level_ == CommandBuilder.SUB_COMMAND
+        ? this.parent_.registerSubCommand(this.command_, this.defaultValue_, listener)
+        : this.parent_.registerCommand(this.command_, listener);
 
-    // TODO: Apply all settings for this command to |command|.
-    // TODO: Expand this.subCommands_ 
+    return this.parent_;
+  }
 
-    this.parent_.registerCommand(this.command_, (player, args) => command.invoke(player, args));
-    return null;
+  // Internal implementation for creating the listener function. Each listener function follows the
+  // same pattern of 
+  createListener() {
+    return (player, args) => {
+      if (this.listener_)
+        this.listener_(player, args);
+    };
   }
 };
 

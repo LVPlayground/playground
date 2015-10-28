@@ -4,6 +4,8 @@
 
 require('base/timers.js');
 
+require('entities/player.js');
+
 let Playground = require('playground.js'),
     TestRunner = require('base/test/test_runner.js');
 

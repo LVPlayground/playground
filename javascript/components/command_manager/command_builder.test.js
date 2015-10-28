@@ -4,12 +4,22 @@
 
 let CommandBuilder = require('components/command_manager/command_builder.js');
 
-describe('CommandBuilder', (it, beforeEach) => {
+describe('CommandBuilder', (it, beforeEach, afterEach) => {
   let command = null,
       listener = null;
 
-  // Reset the |command| variable before each test.
-  beforeEach(() => { command = null; listener = null; });
+  let player = null;
+
+  // Reset the |command| variable before each test. We also create a new player for the purposes of
+  // testing, that will automatically be disconnected after the test.
+  beforeEach(() => {
+    player = Player.createForTest(),
+    command = null;
+    listener = null;
+  });
+
+  // Disconnect the player created for the purposes of running this test.
+  afterEach(() => Player.destroyForTest(player));
 
   // Can be used as the |parent| argument for a top-level command builder. Will write the command
   // and its associated listener to respectively |command| and |listener| when build.
@@ -34,9 +44,26 @@ describe('CommandBuilder', (it, beforeEach) => {
     let listenerCalled = false;
 
     builder('testcommand').build(() => listenerCalled = true);
-    assert.isNotNull(listener);
 
-    listener();
+    assert.isNotNull(listener);
+    listener(player, '');
+
+    assert.isTrue(listenerCalled);
+  });
+
+  it('should call the listener for sub-commands', assert => {
+    let listenerCalled = false;
+
+    builder('testcommand')
+        .sub('option')
+            .sub('foobar').build(() => listenerCalled = true)
+            .build()
+        .build();
+
+    assert.isNotNull(listener);
+    //listener(player, 'option foobar');
+
+    //assert.isTrue(listenerCalled);
   });
 
 });

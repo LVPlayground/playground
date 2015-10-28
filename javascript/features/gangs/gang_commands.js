@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+let Command = require('components/command_manager/command.js');
+
 // This class owns and handles the commands that provide an interface to the gang manager for
 // players. It allows them to create, destroy and manage their, and others' gangs.
 class GangCommands {

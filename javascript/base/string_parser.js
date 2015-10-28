@@ -189,10 +189,9 @@ class StringParser {
 
 // Parameter types. See the StringParser class for documentation on their behaviour.
 StringParser.PARAM_TYPE_NUMBER = 0;
-StringParser.PARAM_TYPE_PLAYER = 1;
-StringParser.PARAM_TYPE_WORD = 2;
-StringParser.PARAM_TYPE_WORD_MATCH = 3;
-StringParser.PARAM_TYPE_SENTENCE = 4;
-StringParser.PARAM_TYPE_CUSTOM = 5;
+StringParser.PARAM_TYPE_WORD = 1;
+StringParser.PARAM_TYPE_WORD_MATCH = 2;
+StringParser.PARAM_TYPE_SENTENCE = 3;
+StringParser.PARAM_TYPE_CUSTOM = 4;
 
 exports = StringParser;

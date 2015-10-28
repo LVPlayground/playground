@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+let Command = require('components/command_manager/command.js');
+
 // The command builder provides a convenient interface to build commands on, together with all the
 // options that are possible to have for commands. A variety of checks will be done to ensure that
 // the command will work consistently and reliably.
@@ -25,9 +27,10 @@ class CommandBuilder {
       return this.parent_;
     }
 
-    // TODO: Create a command listener.
+    let command = new Command(this.command_, this.listener_);
+    // TODO: Apply all settings for this command to |command|.
 
-    this.parent_.registerCommand(this.command_, null);
+    this.parent_.registerCommand(this.command_, (player, args) => command.invoke(player, args));
     return null;
   }
 };

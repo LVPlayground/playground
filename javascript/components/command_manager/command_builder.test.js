@@ -19,10 +19,24 @@ describe('CommandBuilder', (it, beforeEach) => {
       listener = listenerArg;
     }
   };
+
+  // Utility function to create a new builder using |testParent| as the parent.
+  let builder = (command) => new CommandBuilder(CommandBuilder.COMMAND, testParent, command);
   
   it('should keep track of the command name', assert => {
-    new CommandBuilder(CommandBuilder.COMMAND, testParent, 'testcommand').build();
+    builder('testcommand').build();
+
     assert.equal(command, 'testcommand');
+    assert.isNotNull(listener);
+  });
+
+  it('should call the listener', assert => {
+    let listenerCalled = false;
+
+    builder('testcommand').build(() => listenerCalled = true);
+    assert.isNotNull(listener);
+
+    listener();
   });
 
 });

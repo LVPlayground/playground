@@ -2,9 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let numberMatch = /^\s*(\-?\d+(\.\d+)?)(?!\S)/;
-let wordMatch = /^\s*(.+?)(?!\S)/;
-
 // Parameter parser for numbers. The following notations for numbers are supported:
 //
 // "42"        Positive integral number.
@@ -17,7 +14,7 @@ let wordMatch = /^\s*(.+?)(?!\S)/;
 //
 // The parser will be tested as part of the Command test suite in the parent directory.
 function NumberParser(argumentString) {
-  let result = numberMatch.exec(argumentString);
+  let result = StringParser.NUMBER_MATCH.exec(argumentString);
   if (result === null)
     return [argumentString, null];
 
@@ -27,7 +24,7 @@ function NumberParser(argumentString) {
 // Parameter parser for words. Any sequence of tokens is allowed until the next whitespace.
 // The parser will be tested as part of the Command test suite in the parent directory.
 function WordParser(argumentString) {
-  let result = wordMatch.exec(argumentString);
+  let result = StringParser.WORD_MATCH.exec(argumentString);
   if (result === null)
     return [argumentString, null];
 
@@ -186,6 +183,10 @@ class StringParser {
     return values;
   }
 };
+
+// Regular expressions used to detect different kinds of parameters.
+StringParser.NUMBER_MATCH = /^\s*(\-?\d+(\.\d+)?)(?!\S)/;
+StringParser.WORD_MATCH = /^\s*(.+?)(?!\S)/;
 
 // Parameter types. See the StringParser class for documentation on their behaviour.
 StringParser.PARAM_TYPE_NUMBER = 0;

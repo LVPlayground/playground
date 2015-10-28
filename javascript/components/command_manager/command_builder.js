@@ -17,37 +17,52 @@ class CommandBuilder {
     this.subCommands_ = [];
   }
 
+  // Returns a human readable name of the command that's currently in process of being build.
+  get name() {
+    // TODO: Improve name generation in the command builder.
+    return this.command_;
+  }
+
   // Creates a new sub-command for the current command builder. The |subCommand| must be unique and,
   // when |defaultValue| is used, unambiguous from any of the other registered commands.
   sub(subCommand, defaultValue = null) {
+    if (defaultValue !== null) {
+      if (typeof subCommand != 'number' || subCommand < 0 || subCommand > 3)
+        throw new Error('Default sub-command values only make sense with one of the CommandBuilder.*_PARAMETER values.');
+
+      if (typeof defaultValue != 'function')
+        throw new Error('Default values must be provided through a function that takes a player.');
+    }
+
     return new CommandBuilder(CommandBuilder.SUB_COMMAND, this, subCommand, defaultValue);
   }
 
   // Internal API for adding |subCommand| to the list of known sub-commands. The |listener| will be
   // invoked when the |subCommand| is executed by the user.
   registerSubCommand(builder, listener) {
-    let subCommand = {
-      command: builder.command_,
-      defaultValue: builder.defaultValue_,
-
-      listener: listener
-    };
-
     // Ensures that |subCommand| is unambiguous in context of |this|. Will throw an exception if the
     // command cannot be resolved unambiguously.
-    this.ensureUnambiguous(this, subCommand);
+    this.ensureUnambiguous(this, builder);
 
-    this.subCommands_.push(subCommand);
+    // If |builder| has a default value *and* sub-commands, we also need to verify that each of the
+    // sub-commands are not ambiguous with commands already known in this builder.
+    if (builder.defaultValue_ !== null) {
+      builder.subCommands_.forEach(subCommand =>
+          this.ensureUnambiguous(this, subCommand.builder));
+    }
+
+    this.subCommands_.push({ builder, listener });
   }
 
   // Verifies that |command| is unambiguous with any other command registered in the |builder|. Will
   // check recursively for parameters that have a default value.
   ensureUnambiguous(builder, newCommand) {
     for (let subCommand of builder.subCommands_) {
-      if (subCommand.command == newCommand.command)
-        throw new Error('The command is ambiguous.');  // TODO: Improve the error message.
+      if (subCommand.builder.defaultValue_ !== null)
+        ensureUnambiguous(subCommand.builder, newCommand);
 
-      // TODO: Check for ambiguity of commands with default parameters.
+      if (subCommand.builder.command_ == newCommand.command_)
+        throw new Error('"' + newCommand.name + '" is ambiguous with "' + subCommand.builder.name + '".');
     }
   }
 

@@ -70,6 +70,28 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
     assert.throws(() => builder('testcommand').sub('option').build()
                                               .sub('option').build()
                                               .build());
+
+    assert.throws(() => {
+      builder('testcommand').sub(CommandBuilder.NUMBER_PARAMETER, () => 42)
+                                .sub('option').build()
+                                .build()
+                            .sub('option')
+                            .build();
+    });
+
+    assert.throws(() => {
+      builder('testcommand').sub('option').build()
+                            .sub(CommandBuilder.NUMBER_PARAMETER, () => 42)
+                                .sub('option').build()
+                                .build()
+                            .build();
+    });
+  });
+
+  if('should validate and apply default values', assert => {
+    assert.throws(() => builder('testcommand').sub('option', () => 42));
+    assert.throws(() => builder('testcommand').sub(CommandBuilder.NUMBER_PARAMETER, 42));
+
   });
 
 });

@@ -35,7 +35,8 @@ class TestSuite {
   // decrease confusion and issues when people write tests.
   *executeTestGenerator() {
     for (let i = 0; i < this.tests_.length; ++i) {
-      let test = this.tests_[i];
+      let test = this.tests_[i],
+          carriedException = null;
 
       yield new Promise(resolve => {
         // (1) Execute the beforeEach function, which will be considered asynchronous if it returns
@@ -57,14 +58,26 @@ class TestSuite {
                                                  innerError: error });
         }
 
-        // Re-throw the error since it should still count as a failure.
-        throw error;
+        // Re-throw the error after executing afterEach(), since it should still count as a failure.
+        carriedException = error;
 
       }).then(() => {
         // (3) Execute the afterEach function, which, as the other steps, will be considered
         // asynchronous when it returns a promise.
         if (this.afterEach_)
           return this.afterEach_();
+
+      }).catch(error => {
+        // (4) If the afterEach() method threw an exception, store this in |carriedException| unless
+        // the test body itself already threw an exception as well.
+        if (carriedException === null)
+          carriedException = error;
+
+      }).then(() => {
+        // (5) If an exception was thrown, either in the test body, or in the afterEach() method,
+        // rethrow it now so that this test will be marked as flaky.
+        if (carriedException !== null)
+          throw carriedException;
       });
     }
   }

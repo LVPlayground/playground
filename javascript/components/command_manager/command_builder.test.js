@@ -64,6 +64,46 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
     listener(player, 'option foobar');
 
     assert.isTrue(listenerCalled);
+    listenerCalled = false;
+
+    listener(player, 'option  foobar');
+
+    assert.isTrue(listenerCalled);
+  });
+
+  it('should propagate variable input of sub-commands', assert => {
+    let parameterValue = null;
+
+    builder('testcommand')
+        .sub(CommandBuilder.NUMBER_PARAMETER).build((player, value) => parameterValue = value)
+        .build();
+
+    assert.isNotNull(listener);
+    listener(player, '42');
+
+    assert.strictEqual(parameterValue, 42);
+
+    let parameterValues = null;
+
+    builder('testcommand')
+        .sub(CommandBuilder.NUMBER_PARAMETER)
+            .sub('foobar')
+                .sub(CommandBuilder.NUMBER_PARAMETER).build((player, first, second) => parameterValues = [first, second])
+                .build()
+            .sub('double')
+                .sub(CommandBuilder.NUMBER_PARAMETER).build((player, first, second) => parameterValues = [first * 2, second * 2])
+                .build()
+            .build()
+        .build();
+
+    listener(player, 'foobar');
+    assert.isNull(parameterValues);
+
+    listener(player, '42 foobar 58');
+    assert.deepEqual(parameterValues, [42, 58]);
+
+    listener(player, '12 double 24');
+    assert.deepEqual(parameterValues, [24, 48]);
   });
 
   it('should check for ambiguity of sub-commands', assert => {

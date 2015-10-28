@@ -87,23 +87,47 @@ class CommandBuilder {
   // Internal implementation for creating the listener function. Each listener function follows the
   // same pattern of 
   createListener() {
-    return (player, args) => {
+    return (player, argumentString, carriedArguments = []) => {
+      // Make sure that any leading padding is removed from |args|.
+      argumentString = argumentString.trimLeft();
+
       // Determine if there is a sub-command that we should delegate to. Word matching is used for
       // string values (which will be the common case for delegating commands.)
       for (let { builder, listener } of this.subCommands_) {
         if (typeof builder.command_ == 'string') {
           let commandLength = builder.command_.length;
-          if (!args.startsWith(builder.command_) || (args.length != commandLength && args[commandLength] != ' '))
+          if (!argumentString.startsWith(builder.command_) || (argumentString.length != commandLength && argumentString[commandLength] != ' '))
             continue;
 
-          return listener(player, args.substr(commandLength + 1));
+          return listener(player, argumentString.substr(commandLength), carriedArguments);
         }
 
-        // TODO: Implement matching for the CommandManager.*_PARAMETER types.
+        switch (builder.command_) {
+          case CommandBuilder.NUMBER_PARAMETER:
+            let result = StringParser.NUMBER_MATCH.exec(argumentString);
+            if (result !== null)
+              return listener(player, argumentString.substr(result[0].length), [ ...carriedArguments, parseFloat(result[0]) ]);
+
+            break;
+
+          case CommandBuilder.WORD_PARAMETER:
+            // TODO: Implement support for WORD parameters.
+            break;
+
+          case CommandBuilder.SENTENCE_PARAMETER:
+            // TODO: Implement support for SENTENCE parameters.
+            break;
+
+          case CommandBuilder.PLAYER_PARAMETER:
+            // TODO: Implement support for PLAYER parameters.
+            break;
+        }
+
+        // TODO: Implement matching parameters with a default value.
       }
 
       if (this.listener_)
-        this.listener_(player, args);
+        this.listener_(player, ...carriedArguments);
     };
   }
 };

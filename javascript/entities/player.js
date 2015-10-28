@@ -13,10 +13,31 @@ class Player {
   // Returns the Player instance for the player with id |playerId|. If the player is not connected
   // to Las Venturas Playground, NULL will be returned instead.
   static get(playerId) {
+    if (typeof playerId != 'number')
+      throw new Error('Player.get() takes a number argument, ' + typeof playerid + ' given.');
+
     if (!players.hasOwnProperty(playerId))
       return null;
 
     return players[playerId];
+  }
+
+  // Finds a player either by name or by id, as contained in |identifier|. Player ids will be given
+  // precedent when in doubt, for example when a player named "110" is online.
+  static find(identifier) {
+    if (!Number.isNaN(parseFloat(identifier)) && Number.isFinite(identifier)) {
+      let playerId = parseFloat(identifier);
+      if (players.hasOwnProperty(playerId))
+        return players[playerId];
+    }
+
+    for (let player of players) {
+      // TODO: Do case-insensitive matching?
+      if (player.name == identifier)
+        return player;
+    }
+
+    return null;
   }
 
   // Creates a new instance of the Player class for |playerId|. This method must only be used by

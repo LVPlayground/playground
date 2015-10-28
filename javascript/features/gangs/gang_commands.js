@@ -6,54 +6,44 @@
 // players. It allows them to create, destroy and manage their, and others' gangs.
 class GangCommands {
   constructor(commandManager, gangManager) {
-    commandManager.registerCommand('pgang', [
-      // /gang create [name]
-      { level: Player.LEVEL_PLAYER,
-        parameters: [ 'create', Command.STRING_PARAMETER ],
-        listener: GangCommands.prototype.gangCreate.bind(this) },
-
-      // /gang info
-      // /gang [id] info
-      { level: Player.LEVEL_PLAYER,
-        parameters: [ 'info' ],
-        listener: GangCommands.prototype.displayInfo.bind(this) },
-
-      { level: Player.LEVEL_PLAYER,
-        parameters: [ Command.NUMBER_PARAMETER, 'info' ],
-        listener: GangCommands.prototype.displayInfo.bind(this) },
-
-      // /gang leave
-      { level: Player.LEVEL_PLAYER,
-        parameters: [ 'leave' ],
-        listener: GangCommands.prototype.gangLeave.bind(this) },
-
-      // /gang
-      { level: Player.LEVEL_PLAYER,
-        parameters: null,
-        listener: GangCommands.prototype.gang.bind(this) }
-    ]);
+    // /pgang
+    // /pgang create [name]
+    // /pgang invite [player]
+    // /pgang join [id]?
+    // /pgang kick [player]
+    // /pgang leave
+    // /pgang [id]? info
+    // /pgang [id]? color
+    // /pgangs
   }
 
-  // Creates a new gang called |name|. The player must not be in a gang already.
-  gangCreate(player, name) {
-    console.log('/gang create ' + name);
-  }
+  //
+  gang(player) { }
 
-  // Displays information about the gang identified by |id| to the player, or about the gang the
-  // player is currently part of if the |id| parameter was omitted.
-  gangInfo(player, id) {
-    console.log('/gang ' + id + ' info');
-  }
+  //
+  gangCreate(player, name) { }
 
-  // Allows |player| to leave the gang they're currently part of.
-  gangLeave(player) {
-    console.log('/gang leave');
-  }
+  //
+  gangInvite(player, invitee) { }
 
-  // Sends information about using the commands to |player|.
-  gang(player) {
-    console.log('/gang');
-  }
+  //
+  gangJoin(player, id) { }
+
+  //
+  gangKick(player, kickee) { }
+
+  //
+  gangLeave(player) { }
+
+  //
+  gangInfo(player, id) { }
+
+  //
+  gangColor(player, id, color) { }
+
+  //
+  gangs(player) { }
+
 };
 
 exports = GangCommands;

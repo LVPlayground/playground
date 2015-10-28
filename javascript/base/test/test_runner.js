@@ -123,6 +123,7 @@ class TestRunner {
       require('base/priority_queue.test.js');
       require('base/string_parser.test.js');
       require('base/test/assert.test.js');
+      require('components/command_manager/command_builder.test.js');
     }
 
     // Remove the `describe` method from the global scope again.

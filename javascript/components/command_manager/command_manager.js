@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+let CommandBuilder = require('components/command_manager/command_builder.js');
+
 // The command manager maintains a registry of available in-game commands and provides the ability
 // to parse and dispatch commands to their associated handlers.
 class CommandManager {
@@ -14,7 +16,7 @@ class CommandManager {
       global.addEventListener('playercommandtext', CommandManager.prototype.onPlayerCommandText.bind(this));
   }
 
-  // Registers |command| as a new command.
+  // Registers |command| as a new command, which will invoke |listener| when used.
   //
   // Read the online documentation for more information on the |parameters| syntax:
   //   https://github.com/LVPlayground/playground/tree/master/javascript/components/command_manager
@@ -23,6 +25,18 @@ class CommandManager {
       throw new Error('The command /' + command + ' has already been registered.');
 
     this.commands_[command] = listener;
+  }
+
+  // Creates a command builder for the command named |command|. The |build()| method must be called
+  // on the returned builder in order for the command to become registered.
+  //
+  // Read the online documentation for more information on command builders:
+  //   https://github.com/LVPlayground/playground/tree/master/javascript/components/command_manager
+  buildCommand(command) {
+    if (this.commands_.hasOwnProperty(command))
+      throw new Error('The command /' + command + ' has already been registered.');
+
+    return new CommandBuilder(CommandBuilder.COMMAND, command, this);
   }
 
   // Called when a player executes an in-game command. Will prevent the event from being executed in

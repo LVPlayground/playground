@@ -25,16 +25,14 @@ class Player {
   // Finds a player either by name or by id, as contained in |identifier|. Player ids will be given
   // precedent when in doubt, for example when a player named "110" is online.
   static find(identifier) {
-    if (!Number.isNaN(parseFloat(identifier)) && Number.isFinite(identifier)) {
-      let playerId = parseFloat(identifier);
-      if (players.hasOwnProperty(playerId))
-        return players[playerId];
-    }
+    let parsedPlayerId = parseFloat(identifier);
+    if (!Number.isNaN(parsedPlayerId) && Number.isFinite(parsedPlayerId) && players.hasOwnProperty(parsedPlayerId))
+      return players[parsedPlayerId];
 
-    for (let player of players) {
+    for (let playerId of Object.keys(players)) {
       // TODO: Do case-insensitive matching?
-      if (player.name == identifier)
-        return player;
+      if (players[playerId].name == identifier)
+        return players[playerId];
     }
 
     return null;

@@ -16,7 +16,9 @@ class CommandBuilder {
     this.defaultValue_ = defaultValue;
 
     this.listener_ = null;
+
     this.subCommands_ = [];
+    this.hasWordSubcommand_ = false;
   }
 
   // Returns a human readable name of the command that's currently in process of being build.
@@ -28,8 +30,11 @@ class CommandBuilder {
   // Creates a new sub-command for the current command builder. The |subCommand| must be unique and,
   // when |defaultValue| is used, unambiguous from any of the other registered commands.
   sub(subCommand, defaultValue = null) {
+    if (typeof subCommand == 'number' && !CommandBuilder.ALLOWED_SUBCOMMANDS.includes(subCommand))
+      throw new Error('Invalid sub-command type passed (only NUMBER, WORD and PLAYER are allowed).');
+
     if (defaultValue !== null) {
-      if (typeof subCommand != 'number' || subCommand < 0 || subCommand > 3)
+      if (typeof subCommand != 'number')
         throw new Error('Default sub-command values only make sense with one of the CommandBuilder.*_PARAMETER values.');
 
       if (typeof defaultValue != 'function')
@@ -53,12 +58,20 @@ class CommandBuilder {
           this.ensureUnambiguous(this, subCommand.builder));
     }
 
+    // No further parameters may be added if the command represented by |builder| is a catch-all
+    // word parameter, because that causes ambiguity in the execution order.
+    if (builder.command_ == CommandBuilder.WORD_PARAMETER)
+      this.hasWordSubcommand_ = true;
+
     this.subCommands_.push({ builder, listener });
   }
 
   // Verifies that |command| is unambiguous with any other command registered in the |builder|. Will
   // check recursively for parameters that have a default value.
   ensureUnambiguous(builder, newCommand) {
+    if (builder.hasWordSubcommand_)
+      throw new Error('"' + newCommand.name + '" must be defined before the WORD_PARAMETER command.');
+
     for (let subCommand of builder.subCommands_) {
       if (subCommand.builder.defaultValue_ !== null)
         ensureUnambiguous(subCommand.builder, newCommand);
@@ -89,7 +102,7 @@ class CommandBuilder {
   createListener() {
     return (player, argumentString, carriedArguments = []) => {
       // Make sure that any leading padding is removed from |args|.
-      argumentString = argumentString.trimLeft();
+      argumentString = argumentString.trim();
 
       // Determine if there is a sub-command that we should delegate to. Word matching is used for
       // string values (which will be the common case for delegating commands.)
@@ -102,29 +115,38 @@ class CommandBuilder {
           return listener(player, argumentString.substr(commandLength), carriedArguments);
         }
 
+        let result = null;
         switch (builder.command_) {
           case CommandBuilder.NUMBER_PARAMETER:
-            let result = StringParser.NUMBER_MATCH.exec(argumentString);
-            if (result !== null)
-              return listener(player, argumentString.substr(result[0].length), [ ...carriedArguments, parseFloat(result[0]) ]);
+            result = StringParser.NUMBER_MATCH.exec(argumentString);
+            if (result === null)
+              break;
 
-            break;
+            return listener(player, argumentString.substr(result[0].length), [ ...carriedArguments, parseFloat(result[0]) ]);
 
           case CommandBuilder.WORD_PARAMETER:
-            // TODO: Implement support for WORD parameters.
-            break;
+            result = StringParser.WORD_MATCH.exec(argumentString);
+            if (result === null)
+              break;
 
-          case CommandBuilder.SENTENCE_PARAMETER:
-            // TODO: Implement support for SENTENCE parameters.
-            break;
+            return listener(player, argumentString.substr(result[0].length), [ ...carriedArguments, result[0] ]);
 
           case CommandBuilder.PLAYER_PARAMETER:
-            // TODO: Implement support for PLAYER parameters.
-            break;
+            result = StringParser.WORD_MATCH.exec(argumentString);
+            if (result === null)
+              break;
+
+            let subject = Player.find(result[0]);
+            if (subject === null)
+              break;
+
+            return listener(player, argumentString.substr(result[0].length), [ ...carriedArguments, subject ]);
         }
 
         // TODO: Implement matching parameters with a default value.
       }
+
+      // TODO: Parse the parameters associated with this command.
 
       if (this.listener_)
         this.listener_(player, ...carriedArguments);
@@ -144,5 +166,11 @@ CommandBuilder.WORD_PARAMETER = 1;
 CommandBuilder.SENTENCE_PARAMETER = 2;
 CommandBuilder.PLAYER_PARAMETER = 3;
 
+// Allowed argument types for sub-command identification. Sentences are not
+// allowed here because they don't make sense as a sub-command - they should be
+// parameters to a given command instead.
+CommandBuilder.ALLOWED_SUBCOMMANDS = [CommandBuilder.NUMBER_PARAMETER,
+                                      CommandBuilder.WORD_PARAMETER,
+                                      CommandBuilder.PLAYER_PARAMETER];
 
 exports = CommandBuilder;

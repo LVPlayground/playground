@@ -71,7 +71,7 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
     assert.isTrue(listenerCalled);
   });
 
-  it('should propagate variable input of sub-commands', assert => {
+  it('should propagate number parameters', assert => {
     let parameterValue = null;
 
     builder('testcommand')
@@ -106,7 +106,72 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
     assert.deepEqual(parameterValues, [24, 48]);
   });
 
+  it('should propagate word parameters', assert => {
+    let parameterValues = null;
+
+    builder('testcommand')
+        .sub('foobar')
+            .sub(CommandBuilder.WORD_PARAMETER)
+                .sub(CommandBuilder.NUMBER_PARAMETER)
+                    .build((player, value, multiplier) => parameterValues = [value, multiplier])
+                .build((player, value) => parameterValues = [value])
+            .build()
+        .sub(CommandBuilder.WORD_PARAMETER).build((player, value) => parameterValues = [value])
+        .build();
+
+    listener(player, 'foobar');
+    assert.isNull(parameterValues);
+
+    listener(player, 'foobar baz');
+    assert.deepEqual(parameterValues, ['baz']);
+
+    listener(player, 'foo');
+    assert.deepEqual(parameterValues, ['foo']);
+
+    listener(player, 'foobar 42');
+    assert.deepEqual(parameterValues, ['42']);
+
+    listener(player, 'foobar baz 42');
+    assert.deepEqual(parameterValues, ['baz', 42]);
+  });
+
+  it('should propagate player parameters', assert => {
+    let parameterSubject = null;
+
+    builder('testcommand')
+        .sub(CommandBuilder.PLAYER_PARAMETER).build((player, subject) => parameterSubject = subject)
+        .sub(CommandBuilder.NUMBER_PARAMETER)
+            .sub(CommandBuilder.PLAYER_PARAMETER).build((player, value, subject) => parameterSubject = subject)
+            .build()
+        .sub(CommandBuilder.WORD_PARAMETER)
+            .sub(CommandBuilder.PLAYER_PARAMETER).build((player, value, subject) => parameterSubject = subject)
+            .build()
+        .build();
+
+    listener(player, '0');
+    assert.equal(parameterSubject, player);
+
+    parameterSubject = null;
+
+    listener(player, player.name);
+    assert.equal(parameterSubject, player);
+
+    parameterSubject = null;
+
+    assert.isNull(Player.get(42));
+    listener(player, '42 0');
+    assert.equal(parameterSubject, player);
+
+    parameterSubject = null;
+
+    assert.isNull(Player.find('foobar'));
+    listener(player, 'foobar ' + player.name);
+    assert.equal(parameterSubject, player);
+  });
+
   it('should check for ambiguity of sub-commands', assert => {
+    assert.throws(() => builder('testcommand').sub(CommandBuilder.SENTENCE_PARAMETER).build());
+
     assert.throws(() => builder('testcommand').sub('option').build()
                                               .sub('option').build()
                                               .build());
@@ -126,12 +191,16 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
                                 .build()
                             .build();
     });
+
+    assert.throws(() => {
+      builder('testcommand').sub(CommandBuilder.WORD_PARAMETER).build()
+                            .sub('foobar').build();
+    });
   });
 
   if('should validate and apply default values', assert => {
     assert.throws(() => builder('testcommand').sub('option', () => 42));
     assert.throws(() => builder('testcommand').sub(CommandBuilder.NUMBER_PARAMETER, 42));
-
   });
 
 });

@@ -24,4 +24,5 @@ testRunner.run('**/*.test.js').then(() => {
       console.log('  ' + failure.toString() + '\n'));
 
   console.log('===============================================================\n');
-});
+
+}).catch(error => console.log(error));

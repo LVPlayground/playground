@@ -6,19 +6,46 @@
 // players. It allows them to create, destroy and manage their, and others' gangs.
 class GangCommands {
   constructor(commandManager, gangManager) {
-    // /pgang
-    // /pgang create [name]
-    // /pgang invite [player]
-    // /pgang join [id]?
-    // /pgang kick [player]
-    // /pgang leave
-    // /pgang [id]? info
-    // /pgang [id]? color
-    // /pgangs
-  }
+    return;
 
-  //
-  gang(player) { }
+    commandManager.buildCommand('pgang')
+        // /pgang create [name]
+        .sub('create').parameters({ name: 'name', type: Command.SENTENCE_PARAMETER })
+                      .build(GangCommands.prototype.gangCreate.bind(this))
+
+        // /pgang invite [player]
+        .sub('invite').parameters({ name: 'player', type: Command.PLAYER_PARAMETER })
+                      .build(GangCommands.prototype.gangInvite.bind(this))
+
+        // /pgang join [id]?
+        .sub('join').parameters({ name: 'id', type: Command.NUMBER_PARAMETER, optional: true })
+                    .build(GangCommands.prototype.gangJoin.bind(this))
+
+        // /pgang kick [player]
+        .sub('kick').parameters({ name: 'player', type: Command.PLAYER_PARAMETER })
+                    .build(GangCommands.prototype.gangKick.bind(this))
+
+        // /pgang leave
+        .sub('leave').build(GangCommands.prototype.gangLeave.bind(this))
+
+        // /pgang [id]? [color/info]
+        .sub(Command.NUMBER_PARAMETER, player => this.getCurrentGangId(player))
+
+            // /pgang [id]? color
+            .sub('color').build(GangCommands.prototype.gangColor.bind(this))
+
+            // /pgang [id]? info
+            .sub('info').build(GangCommands.prototype.gangInfo.bind(this))
+
+            // /pgang [id]?
+            .build(GangCommands.prototype.gang.bind(this))
+
+        // pgang
+        .build(GangCommands.prototype.gang.bind(this));
+
+    // /pgangs
+    commandManager.registerCommand('pgangs', GangCommands.prototype.gangs.bind(this));
+  }
 
   //
   gangCreate(player, name) { }
@@ -36,13 +63,19 @@ class GangCommands {
   gangLeave(player) { }
 
   //
-  gangInfo(player, id) { }
-
-  //
   gangColor(player, id, color) { }
 
   //
+  gangInfo(player, id) { }
+
+  //
+  gang(player, id) { }
+
+  //
   gangs(player) { }
+
+  //
+  getCurrentGangId(player) { return null; }
 
 };
 

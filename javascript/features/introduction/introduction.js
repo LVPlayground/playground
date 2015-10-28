@@ -28,8 +28,8 @@ class Introduction extends Feature {
     // TODO(Russell): Include /commands in this.
 
     playground.commandManager.registerCommand('help', Introduction.prototype.onHelpCommand.bind(this))
-                             .registerCommand('irc', Introduction.prototype.onIrcCommand.bind(this))
-                             .registerCommand('rules', Introduction.prototype.onRulesCommand.bind(this));
+    playground.commandManager.registerCommand('irc', Introduction.prototype.onIrcCommand.bind(this))
+    playground.commandManager.registerCommand('rules', Introduction.prototype.onRulesCommand.bind(this));
   }
 
   // Loads |filename| as a JSON object and use it to compile a new Menu instance with the available

@@ -66,4 +66,10 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
     //assert.isTrue(listenerCalled);
   });
 
+  it('should check for ambiguity of sub-commands', assert => {
+    assert.throws(() => builder('testcommand').sub('option').build()
+                                              .sub('option').build()
+                                              .build());
+  });
+
 });

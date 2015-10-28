@@ -25,15 +25,30 @@ class CommandBuilder {
 
   // Internal API for adding |subCommand| to the list of known sub-commands. The |listener| will be
   // invoked when the |subCommand| is executed by the user.
-  registerSubCommand(subCommand, defaultValue, listener) {
-    // TODO: Check for ambiguity with the currently known commands.
-
-    this.subCommands_.push({
-      command: subCommand,
-      defaultValue: defaultValue,
+  registerSubCommand(builder, listener) {
+    let subCommand = {
+      command: builder.command_,
+      defaultValue: builder.defaultValue_,
 
       listener: listener
-    });
+    };
+
+    // Ensures that |subCommand| is unambiguous in context of |this|. Will throw an exception if the
+    // command cannot be resolved unambiguously.
+    this.ensureUnambiguous(this, subCommand);
+
+    this.subCommands_.push(subCommand);
+  }
+
+  // Verifies that |command| is unambiguous with any other command registered in the |builder|. Will
+  // check recursively for parameters that have a default value.
+  ensureUnambiguous(builder, newCommand) {
+    for (let subCommand of builder.subCommands_) {
+      if (subCommand.command == newCommand.command)
+        throw new Error('The command is ambiguous.');  // TODO: Improve the error message.
+
+      // TODO: Check for ambiguity of commands with default parameters.
+    }
   }
 
   // Builds the command constructed by this builder, invoking |commandListener| when it gets used.
@@ -46,7 +61,7 @@ class CommandBuilder {
     let listener = this.createListener();
 
     this.level_ == CommandBuilder.SUB_COMMAND
-        ? this.parent_.registerSubCommand(this.command_, this.defaultValue_, listener)
+        ? this.parent_.registerSubCommand(this, listener)
         : this.parent_.registerCommand(this.command_, listener);
 
     return this.parent_;
@@ -67,5 +82,12 @@ CommandBuilder.COMMAND = 0;
 
 // Used for sub-commands created using the command builder.
 CommandBuilder.SUB_COMMAND = 1;
+
+// The different kinds of dynamic arguments recognized by the command builder.
+CommandBuilder.NUMBER_PARAMETER = 0;
+CommandBuilder.WORD_PARAMETER = 1;
+CommandBuilder.SENTENCE_PARAMETER = 2;
+CommandBuilder.PLAYER_PARAMETER = 3;
+
 
 exports = CommandBuilder;

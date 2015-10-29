@@ -8,14 +8,19 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
   let command = null,
       listener = null;
 
-  let player = null;
+  let player = null,
+      lastMessage = null;
 
   // Reset the |command| variable before each test. We also create a new player for the purposes of
-  // testing, that will automatically be disconnected after the test.
+  // testing, that will automatically be disconnected after the test. Hijack the sendMessage
+  // command on this player so that we can store the last message send to them.
   beforeEach(() => {
-    player = Player.createForTest(),
+    player = Player.createForTest();
+    player.sendMessage = message => lastMessage = message;
+
     command = null;
     listener = null;
+    lastMessage = null;
   });
 
   // Disconnect the player created for the purposes of running this test.
@@ -284,10 +289,7 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
     listener(player, 'foobar baz');
     assert.equal(state, 1);
 
-    let lastMessage = null;
-
     player.level_ = Player.LEVEL_PLAYER;
-    player.sendMessage = message => lastMessage = message;
 
     builder('testcommand')
         .restrict(Player.LEVEL_MANAGEMENT)
@@ -302,6 +304,14 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
 
     listener(player, '');
     assert.equal(lastMessage, 'Sorry, this command is only available to administrators.');
+  });
+
+  it('should parse and apply parameters', assert => {
+    assert.throws(() => builder('testcommand').parameters(null));
+    assert.throws(() => builder('testcommand').parameters({}));
+    assert.throws(() => builder('testcommand').parameters([ 'hello' ]));
+    assert.throws(() => builder('testcommand').parameters([ {} ]));
+    assert.throws(() => builder('testcommand').parameters([ { name: 'foo', type: 1337 } ]));
   });
 
 });

@@ -158,7 +158,7 @@ class StringParser {
 
   // Parses |string| according to the parsing rules. An array with the values will be returned when
   // parsing was successful. Otherwise, NULL will be returned instead.
-  parse(string) {
+  parse(string, context = null) {
     if (!string)
       return null;
 
@@ -167,7 +167,7 @@ class StringParser {
     // Iterate over each of the registered parameters and attempt to parse them using the associated
     // parser. If this fails, and the parameter is not optional, bail out.
     for (let parameter of this.parameters_) {
-      let [remainder, value] = parameter.parser(string, parameter.value);
+      let [remainder, value] = parameter.parser(string, parameter.value, context);
       if (value !== null) {
         if (parameter.value === null)
           values.push(value);

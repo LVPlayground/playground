@@ -4,6 +4,11 @@
 
 let StringParser = require('base/string_parser.js');
 
+//
+function PlayerParser(argumentString, _, player) {
+  console.log('hello');
+}
+
 // The command builder provides a convenient interface to build commands on, together with all the
 // options that are possible to have for commands. A variety of checks will be done to ensure that
 // the command will work consistently and reliably.
@@ -14,7 +19,11 @@ class CommandBuilder {
 
     this.command_ = command;
     this.defaultValue_ = defaultValue;
+
     this.restrictLevel_ = Player.LEVEL_PLAYER;
+
+    this.parameters_ = [];
+    this.parameterParser_ = null;
 
     this.listener_ = null;
 
@@ -34,6 +43,45 @@ class CommandBuilder {
       throw new Error('Invalid player level supplied: ' + level);
 
     this.restrictLevel_ = level;
+    return this;
+  }
+
+  // Sets |parameters| as the parameters accepted by the command. The |parameters| need to be in the
+  // format accepted by the StringParser, although the accepted types are aliased to the command
+  // builder, and the PLAYER_PARAMETER is accepted as well.
+  parameters(parameters) {
+    if (!Array.isArray(parameters))
+      throw new Error('The list of parameters is expected to be an array.');
+
+    let format = [];
+
+    // Iterate over all passed parameters to validate their correctness, store its name and whether
+    // it's required in the local parameters array, and append their type to the format.
+    parameters.forEach(parameter => {
+      if (typeof parameter != 'object' || Array.isArray(parameter))
+        throw new Error('Individual parameters need to be objects.');
+
+      if (!parameter.hasOwnProperty('name') || !parameter.hasOwnProperty('type'))
+        throw new Error('Individual parameters need at least a name and a type.');
+
+      let optional = parameter.hasOwnProperty('optional') ? !!parameter.optional : false;
+      let type = parameter.type,
+          parser = null;
+
+      // If the type of this parameter is a player, pull in our own custom parser.
+      if (type == CommandBuilder.PLAYER_PARAMETER) {
+        type = CommandBuilder.CUSTOM_PARAMETER;
+        parser = PlayerParser;
+      }
+
+      // Store the formatting rule that will be used to construct the parser.
+      format.push({ type, parser, optional });
+
+      // Store the name and requiredness of this parameter locally for usage messages.
+      this.parameters_.push({ name: parameter.name, optional: optional });
+    });
+
+    this.parameterParser_ = new StringParser(format);
     return this;
   }
 
@@ -119,7 +167,7 @@ class CommandBuilder {
       if (this.restrictLevel_ > player.level) {
         // TODO: Use a Message class to make this look prettier than it currently does.
         player.sendMessage('Sorry, this command is only available to ' + playerLevelToString(this.restrictLevel_, true /* plural */) + '.');
-        return;
+        return true;
       }
 
       // Determine if there is a sub-command that we should delegate to. Word matching is used for
@@ -175,14 +223,13 @@ class CommandBuilder {
 
       // TODO: Parse the parameters associated with this command.
 
-      if (this.listener_) {
-        this.listener_(player, ...carriedArguments);
-        return true;
+      if (!this.listener_) {
+        // TODO: Create a sensible default handler for the command.
+        return false;
       }
 
-      // TODO: Create a sensible default handler for the command.
-
-      return false;
+      this.listener_(player, ...carriedArguments);
+      return true;
     };
   }
 };
@@ -193,11 +240,14 @@ CommandBuilder.COMMAND = 0;
 // Used for sub-commands created using the command builder.
 CommandBuilder.SUB_COMMAND = 1;
 
-// The different kinds of dynamic arguments recognized by the command builder.
-CommandBuilder.NUMBER_PARAMETER = 0;
-CommandBuilder.WORD_PARAMETER = 1;
-CommandBuilder.SENTENCE_PARAMETER = 2;
-CommandBuilder.PLAYER_PARAMETER = 3;
+// The different kinds of dynamic arguments recognized by the command builder. These mimic the
+// StringBuilder parameter types, except for the PLAYER type which uses a custom parser.
+CommandBuilder.NUMBER_PARAMETER = StringParser.PARAM_TYPE_NUMBER;
+CommandBuilder.WORD_PARAMETER = StringParser.PARAM_TYPE_WORD;
+CommandBuilder.WORD_MATCH_PARAMETER = StringParser.PARAM_TYPE_WORD_MATCH;
+CommandBuilder.SENTENCE_PARAMETER = StringParser.PARAM_TYPE_SENTENCE;
+CommandBuilder.CUSTOM_PARAMETER = StringParser.PARAM_TYPE_CUSTOM;
+CommandBuilder.PLAYER_PARAMETER = 42;
 
 // Allowed argument types for sub-command identification. Sentences are not
 // allowed here because they don't make sense as a sub-command - they should be

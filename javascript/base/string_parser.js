@@ -111,12 +111,12 @@ class StringParser {
       if (!parameter.hasOwnProperty('type'))
         throw new Error('Each parameter must have at least a type.');
 
-      // Whether the parameter is required for the command to execute.
-      let required = parameter.hasOwnProperty('required') ? !!parameter.required : true;
-      if (required && hadOptionalParameter)
+      // Whether the parameter is optional for the command to execute.
+      let optional = parameter.hasOwnProperty('optional') ? !!parameter.optional : false;
+      if (!optional && hadOptionalParameter)
         throw new Error('No required parameters may follow an optional parameter.');
 
-      hadOptionalParameter |= !required;
+      hadOptionalParameter |= optional;
 
       let value = parameter.hasOwnProperty('value') ? parameter.value : null;
       let parser = null;
@@ -149,7 +149,7 @@ class StringParser {
 
       // Push the sanitized parameter information to the local state.
       this.parameters_.push({
-        required: required,
+        optional: optional,
         parser: parser,
         value: value
       });
@@ -176,7 +176,7 @@ class StringParser {
         continue;
       }
 
-      if (parameter.required)
+      if (!parameter.optional)
         return null;
     }
 

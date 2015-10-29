@@ -37,7 +37,7 @@ describe('StringParser', it => {
                                            StringParser.PARAM_TYPE_NUMBER ]));
 
     // It's not allowed for required parameters to follow optional ones.
-    assert.throws(() => new StringParser([{ type: StringParser.PARAM_TYPE_NUMBER, required: false },
+    assert.throws(() => new StringParser([{ type: StringParser.PARAM_TYPE_NUMBER, optional: true },
                                           StringParser.PARAM_TYPE_NUMBER ]));
   });
 
@@ -176,7 +176,7 @@ describe('StringParser', it => {
 
     parser = new StringParser([
         { type: StringParser.PARAM_TYPE_NUMBER },
-        { type: StringParser.PARAM_TYPE_SENTENCE, required: false }
+        { type: StringParser.PARAM_TYPE_SENTENCE, optional: true }
     ]);
 
     assert.deepEqual(parser.parse('42 foo'), [42, 'foo']);

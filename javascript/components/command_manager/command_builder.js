@@ -33,8 +33,14 @@ class CommandBuilder {
 
   // Returns a human readable name of the command that's currently in process of being build.
   get name() {
-    // TODO: Improve name generation in the command builder.
-    return this.command_;
+    if (this.level_ == CommandBuilder.COMMAND)
+      return '/' + this.command_;
+
+    // TODO: Provide a name for *_PARAMETER values.
+    let name = this.command_;
+
+    // Append our name to the name of our parent.
+    return this.parent_.name + ' ' + name;
   }
 
   // Restricts usage of the command to the given player level.
@@ -247,8 +253,11 @@ class CommandBuilder {
   // Converts the command represented by this builder to a string that could be used to tell players
   // what the intended usage, or syntax of the command is.
   toString() {
-    // TODO: Append the parameters to |this.name| as well.
-    return this.name;
+    let description = this.name;
+    this.parameters_.forEach(parameter =>
+        description += ' [' + parameter.name + ']');
+
+    return description;
   }
 };
 

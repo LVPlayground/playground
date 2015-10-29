@@ -330,7 +330,7 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
     assert.strictEqual(parameterBar, 42);
 
     listener(player, 'foo');
-    assert.equal(lastMessage, 'Usage: foo');
+    assert.equal(lastMessage, 'Usage: /testcommand foo [bar]');
 
     lastMessage = null;
 
@@ -359,7 +359,7 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
     parameterFoo = null;
 
     listener(player, '');
-    assert.equal(lastMessage, 'Usage: testcommand');
+    assert.equal(lastMessage, 'Usage: /testcommand [foo]');
     assert.isNull(parameterFoo);
   });
 

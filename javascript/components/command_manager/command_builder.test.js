@@ -193,14 +193,48 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
     });
 
     assert.throws(() => {
+      builder('testcommand').sub(CommandBuilder.NUMBER_PARAMETER).build()
+                            .sub(CommandBuilder.NUMBER_PARAMETER).build()
+                            .build();
+    });
+
+    assert.throws(() => {
       builder('testcommand').sub(CommandBuilder.WORD_PARAMETER).build()
                             .sub('foobar').build();
     });
   });
 
-  if('should validate and apply default values', assert => {
+  it('should validate and apply default values', assert => {
     assert.throws(() => builder('testcommand').sub('option', () => 42));
     assert.throws(() => builder('testcommand').sub(CommandBuilder.NUMBER_PARAMETER, 42));
+
+    let numberValue = null;
+
+    builder('testcommand')
+        .sub(CommandBuilder.NUMBER_PARAMETER, () => 42)
+            .sub('foobar').build((player, number) => numberValue = number)
+            .build()
+        .build();
+
+    listener(player, 'foobar');
+    assert.strictEqual(numberValue, 42);
+
+    listener(player, '12 foobar');
+    assert.strictEqual(numberValue, 12);
+
+    let wordValues = null;
+
+    builder('testcommand')
+        .sub(CommandBuilder.WORD_PARAMETER)
+            .sub(CommandBuilder.WORD_PARAMETER, () => 'baz').build((player, first, second) => wordValues = [first, second])
+            .build()
+        .build();
+
+    listener(player, 'subcommand');
+    assert.deepEqual(wordValues, ['subcommand', 'baz']);
+
+    listener(player, 'hello subcommand');
+    assert.deepEqual(wordValues, ['hello', 'subcommand']);
   });
 
 });

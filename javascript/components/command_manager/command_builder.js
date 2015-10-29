@@ -74,7 +74,7 @@ class CommandBuilder {
 
     for (let subCommand of builder.subCommands_) {
       if (subCommand.builder.defaultValue_ !== null)
-        ensureUnambiguous(subCommand.builder, newCommand);
+        this.ensureUnambiguous(subCommand.builder, newCommand);
 
       if (subCommand.builder.command_ == newCommand.command_)
         throw new Error('"' + newCommand.name + '" is ambiguous with "' + subCommand.builder.name + '".');
@@ -143,13 +143,25 @@ class CommandBuilder {
             return listener(player, argumentString.substr(result[0].length), [ ...carriedArguments, subject ]);
         }
 
-        // TODO: Implement matching parameters with a default value.
+        // If the sub-command has a default value function defined, attempt to get its value by
+        // invoking it with |player|. Return values of NULL indicate that the value should not hit.
+        if (builder.defaultValue_ !== null) {
+          let value = builder.defaultValue_(player);
+          if (value !== null)
+            return listener(player, argumentString, [ ...carriedArguments, value ]);
+        }
       }
 
       // TODO: Parse the parameters associated with this command.
 
-      if (this.listener_)
+      if (this.listener_) {
         this.listener_(player, ...carriedArguments);
+        return true;
+      }
+
+      // TODO: Create a sensible default handler for the command.
+
+      return false;
     };
   }
 };

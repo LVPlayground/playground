@@ -312,6 +312,55 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
     assert.throws(() => builder('testcommand').parameters([ 'hello' ]));
     assert.throws(() => builder('testcommand').parameters([ {} ]));
     assert.throws(() => builder('testcommand').parameters([ { name: 'foo', type: 1337 } ]));
+
+    let parameterBar = null,
+        parameterBoo = null;
+
+    builder('testcommand')
+        .sub('foo')
+            .parameters([{ name: 'bar', type: CommandBuilder.NUMBER_PARAMETER }])
+            .build((player, bar) => parameterBar = bar)
+        .sub('baz')
+            .parameters([{ name: 'boo', type: CommandBuilder.SENTENCE_PARAMETER, optional: true }])
+            .build((player, boo) => parameterBoo = boo)
+        .build();
+
+    listener(player, 'foo 42');
+    assert.isNull(lastMessage);
+    assert.strictEqual(parameterBar, 42);
+
+    listener(player, 'foo');
+    assert.equal(lastMessage, 'Usage: foo');
+
+    lastMessage = null;
+
+    listener(player, 'baz 42');
+    assert.isNull(lastMessage);
+    assert.strictEqual(parameterBoo, '42');
+
+    listener(player, 'baz');
+    assert.isNull(lastMessage);
+    assert.isUndefined(parameterBoo);
+
+    let parameterFoo = null;
+
+    builder('testcommand')
+        .parameters([{ name: 'foo', type: CommandBuilder.WORD_PARAMETER }])
+        .build((player, foo) => parameterFoo = foo);
+
+    listener(player, 'bar');
+    assert.isNull(lastMessage);
+    assert.equal(parameterFoo, 'bar');
+
+    listener(player, 'baz hello');
+    assert.isNull(lastMessage);
+    assert.equal(parameterFoo, 'baz');
+
+    parameterFoo = null;
+
+    listener(player, '');
+    assert.equal(lastMessage, 'Usage: testcommand');
+    assert.isNull(parameterFoo);
   });
 
 });

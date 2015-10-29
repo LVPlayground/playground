@@ -221,7 +221,18 @@ class CommandBuilder {
         }
       }
 
-      // TODO: Parse the parameters associated with this command.
+      // Determine if parameters have been associated with this command. If that's the case, parse
+      // and validate them. A generic usage message will be displayed if parsing failed.
+      if (this.parameterParser_ !== null) {
+        let parameters = this.parameterParser_.parse(argumentString, player);
+        if (parameters === null) {
+          // TODO: Mark up this message using the Message class as well.
+          player.sendMessage('Usage: ' + this.toString())
+          return true;
+        }
+
+        carriedArguments = [ ...carriedArguments, ...parameters ];
+      }
 
       if (!this.listener_) {
         // TODO: Create a sensible default handler for the command.
@@ -231,6 +242,13 @@ class CommandBuilder {
       this.listener_(player, ...carriedArguments);
       return true;
     };
+  }
+
+  // Converts the command represented by this builder to a string that could be used to tell players
+  // what the intended usage, or syntax of the command is.
+  toString() {
+    // TODO: Append the parameters to |this.name| as well.
+    return this.name;
   }
 };
 

@@ -41,6 +41,16 @@ describe('StringParser', it => {
                                           StringParser.PARAM_TYPE_NUMBER ]));
   });
 
+  it('throws for non-string input values', assert => {
+    let parser = new StringParser([ StringParser.PARAM_TYPE_NUMBER ]);
+
+    assert.throws(() => parser.parse(null));
+    assert.throws(() => parser.parse(undefined));
+    assert.throws(() => parser.parse(42));
+    assert.throws(() => parser.parse({ a: 'yo' }));
+    assert.throws(() => parser.parse([ 'hello' ]));
+  });
+
   it('validates and parses number parameters', assert => {
     let parser = null;
     
@@ -53,8 +63,6 @@ describe('StringParser', it => {
     assert.deepEqual(parser.parse('   52   '), [52]);
     assert.deepEqual(parser.parse('0'), [0]);
 
-    assert.isNull(parser.parse());
-    assert.isNull(parser.parse(null));
     assert.isNull(parser.parse(''));
     assert.isNull(parser.parse('10w'));
     assert.isNull(parser.parse('fifty'));
@@ -84,8 +92,6 @@ describe('StringParser', it => {
     assert.deepEqual(parser.parse('52.12'), ['52.12']);
     assert.deepEqual(parser.parse('_'), ['_']);
 
-    assert.isNull(parser.parse());
-    assert.isNull(parser.parse(null));
     assert.isNull(parser.parse(''));
 
     parser = new StringParser([ StringParser.PARAM_TYPE_WORD,
@@ -107,7 +113,6 @@ describe('StringParser', it => {
     assert.deepEqual(parser.parse('hello'), []);
     assert.deepEqual(parser.parse('  hello world'), []);
 
-    assert.isNull(parser.parse());
     assert.isNull(parser.parse('hi hello'));
     assert.isNull(parser.parse('hellow'));
 
@@ -116,7 +121,6 @@ describe('StringParser', it => {
     assert.deepEqual(parser.parse('hello world'), ['world']);
     assert.deepEqual(parser.parse('  hello   world  '), ['world']);
 
-    assert.isNull(parser.parse(null));
     assert.isNull(parser.parse('hellow world'));
     assert.isNull(parser.parse(' hello '));
   });
@@ -130,8 +134,7 @@ describe('StringParser', it => {
     assert.deepEqual(parser.parse(' Las Venturas '), ['Las Venturas']);
     assert.deepEqual(parser.parse('  Las  Venturas  Playground  '), ['Las  Venturas  Playground']);
 
-    assert.isNull(parser.parse());
-    assert.isNull(parser.parse(null));
+    assert.isNull(parser.parse(''));
     assert.isNull(parser.parse(' '));
   });
 
@@ -146,8 +149,6 @@ describe('StringParser', it => {
     assert.deepEqual(parser.parse('Russell'), [7]);
     assert.deepEqual(parser.parse('Venturas Playground'), [8]);
 
-    assert.isNull(parser.parse());
-    assert.isNull(parser.parse(null));
     assert.isNull(parser.parse(''));
   });
 
@@ -165,7 +166,6 @@ describe('StringParser', it => {
     assert.deepEqual(parser.parse(' 24  text  Venturas  some more'), [24, 'text', 8, 'some more']);
     assert.deepEqual(parser.parse('-41.41  _  _  hi'), [-41.41, '_', 1, 'hi']);
 
-    assert.isNull(parser.parse());
     assert.isNull(parser.parse('text'));
     assert.isNull(parser.parse('42 41 40'));
     assert.isNull(parser.parse('text text text hello world'));

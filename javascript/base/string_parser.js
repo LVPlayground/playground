@@ -159,8 +159,8 @@ class StringParser {
   // Parses |string| according to the parsing rules. An array with the values will be returned when
   // parsing was successful. Otherwise, NULL will be returned instead.
   parse(string, context = null) {
-    if (!string)
-      return null;
+    if (typeof string != 'string')
+      throw new Error('Only strings can be parsed using the StringParser.');
 
     let values = [];
 

@@ -14,7 +14,7 @@ class CommandBuilder {
 
     this.command_ = command;
     this.defaultValue_ = defaultValue;
-    this.restrict_level_ = Player.LEVEL_PLAYER;
+    this.restrictLevel_ = Player.LEVEL_PLAYER;
 
     this.listener_ = null;
 
@@ -33,7 +33,7 @@ class CommandBuilder {
     if (typeof level != 'number' || level < Player.LEVEL_PLAYER || level > Player.LEVEL_MANAGEMENT)
       throw new Error('Invalid player level supplied: ' + level);
 
-    this.restrict_level_ = level;
+    this.restrictLevel_ = level;
     return this;
   }
 
@@ -116,15 +116,16 @@ class CommandBuilder {
 
       // When a level restriction is in effect for this command and the player does not meet the
       // required level, bail out immediately. This clause only hits for the main command.
-      if (this.restrict_level_ > player.level) {
-        // TODO: Inform the player that this command is not available.
+      if (this.restrictLevel_ > player.level) {
+        // TODO: Use a Message class to make this look prettier than it currently does.
+        player.sendMessage('Sorry, this command is only available to ' + playerLevelToString(this.restrictLevel_, true /* plural */) + '.');
         return;
       }
 
       // Determine if there is a sub-command that we should delegate to. Word matching is used for
       // string values (which will be the common case for delegating commands.)
       for (let { builder, listener } of this.subCommands_) {
-        if (builder.restrict_level_ > player.level)
+        if (builder.restrictLevel_ > player.level)
           continue;
 
         if (typeof builder.command_ == 'string') {

@@ -283,6 +283,25 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
 
     listener(player, 'foobar baz');
     assert.equal(state, 1);
+
+    let lastMessage = null;
+
+    player.level_ = Player.LEVEL_PLAYER;
+    player.sendMessage = message => lastMessage = message;
+
+    builder('testcommand')
+        .restrict(Player.LEVEL_MANAGEMENT)
+        .build();
+
+    listener(player, '');
+    assert.equal(lastMessage, 'Sorry, this command is only available to Management members.');
+
+    builder('testcommand')
+        .restrict(Player.LEVEL_ADMINISTRATOR)
+        .build();
+
+    listener(player, '');
+    assert.equal(lastMessage, 'Sorry, this command is only available to administrators.');
   });
 
 });

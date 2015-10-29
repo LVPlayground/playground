@@ -64,6 +64,16 @@ class Player {
   // Returns the level of this player. Synchronized with the gamemode using the `levelchange` event.
   get level() { return this.level_; }
 
+  // Sends |message| to the player. The |message| can either be a scalar JavaScript value or an
+  // instance of the Message class that exists in //base if you wish to use colors.
+  sendMessage(message) {
+    // TODO: Automatically split up messages that are >144 characters.
+    // TODO: Verify that any formatting used in |message| is valid.
+    // TODO: Support instances of the Message class when it exists.
+
+    pawnInvoke('SendClientMessage', 'iis', this.id_, 0x000000FF, message.toString());
+  }
+
   // -----------------------------------------------------------------------------------------------
   // The following methods are only meant for testing!
 
@@ -126,6 +136,20 @@ self.addEventListener('playerlevelchange', event => {
 // Called when a player disconnects from the server. Removes the player from our registry.
 self.addEventListener('playerdisconnect', event =>
     delete players[event.playerid]);
+
+// Utility function: convert a player's level to a string.
+global.playerLevelToString = (level, plural = false) => {
+  switch (level) {
+    case Player.LEVEL_PLAYER:
+      return plural ? 'players' : 'player';
+    case Player.LEVEL_ADMINISTRATOR:
+      return plural ? 'administrators' : 'administrator';
+    case Player.LEVEL_MANAGEMENT:
+      return plural ? 'Management members' : 'Management member';
+  }
+
+  throw new Error('Invalid player level supplied: ' + level);
+};
 
 // Expose the Player object globally since it will be commonly used.
 global.Player = Player;

@@ -14,6 +14,7 @@ class CommandBuilder {
 
     this.command_ = command;
     this.defaultValue_ = defaultValue;
+    this.restrict_level_ = Player.LEVEL_PLAYER;
 
     this.listener_ = null;
 
@@ -25,6 +26,15 @@ class CommandBuilder {
   get name() {
     // TODO: Improve name generation in the command builder.
     return this.command_;
+  }
+
+  // Restricts usage of the command to the given player level.
+  restrict(level) {
+    if (typeof level != 'number' || level < Player.LEVEL_PLAYER || level > Player.LEVEL_MANAGEMENT)
+      throw new Error('Invalid player level supplied: ' + level);
+
+    this.restrict_level_ = level;
+    return this;
   }
 
   // Creates a new sub-command for the current command builder. The |subCommand| must be unique and,
@@ -104,9 +114,19 @@ class CommandBuilder {
       // Make sure that any leading padding is removed from |args|.
       argumentString = argumentString.trim();
 
+      // When a level restriction is in effect for this command and the player does not meet the
+      // required level, bail out immediately. This clause only hits for the main command.
+      if (this.restrict_level_ > player.level) {
+        // TODO: Inform the player that this command is not available.
+        return;
+      }
+
       // Determine if there is a sub-command that we should delegate to. Word matching is used for
       // string values (which will be the common case for delegating commands.)
       for (let { builder, listener } of this.subCommands_) {
+        if (builder.restrict_level_ > player.level)
+          continue;
+
         if (typeof builder.command_ == 'string') {
           let commandLength = builder.command_.length;
           if (!argumentString.startsWith(builder.command_) || (argumentString.length != commandLength && argumentString[commandLength] != ' '))

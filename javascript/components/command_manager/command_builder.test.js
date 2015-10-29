@@ -237,4 +237,52 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
     assert.deepEqual(wordValues, ['hello', 'subcommand']);
   });
 
+  it('should restrict values to player levels', assert => {
+    let invoked = false;
+
+    builder('testcommand')
+        .restrict(Player.LEVEL_ADMINISTRATOR)
+        .build(player => invoked = true);
+
+    listener(player, '');
+    assert.isFalse(invoked);
+
+    player.level_ = Player.LEVEL_ADMINISTRATOR;
+
+    listener(player, '');
+    assert.isTrue(invoked);
+
+    player.level_ = Player.LEVEL_MANAGEMENT;
+    invoked = false;
+
+    listener(player, '');
+    assert.isTrue(invoked);
+
+    let state = null;
+
+    builder('testcommand')
+        .sub('foobar')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .sub('baz')
+                .restrict(Player.LEVEL_MANAGEMENT)
+                .build(() => state = 1)
+            .build(() => state = 2)
+        .build(() => state = 3);
+
+    player.level_ = Player.LEVEL_PLAYER;
+
+    listener(player, 'foobar baz');
+    assert.equal(state, 3);
+
+    player.level_ = Player.LEVEL_ADMINISTRATOR;
+
+    listener(player, 'foobar baz');
+    assert.equal(state, 2);
+
+    player.level_ = Player.LEVEL_MANAGEMENT;
+
+    listener(player, 'foobar baz');
+    assert.equal(state, 1);
+  });
+
 });

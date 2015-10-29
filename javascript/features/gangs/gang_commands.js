@@ -8,45 +8,43 @@ let CommandBuilder = require('components/command_manager/command_builder.js');
 // players. It allows them to create, destroy and manage their, and others' gangs.
 class GangCommands {
   constructor(commandManager, gangManager) {
-    return;
-
     commandManager.buildCommand('pgang')
         // /pgang create [name]
-        .sub('create').parameters({ name: 'name', type: CommandBuilder.SENTENCE_PARAMETER })
-                      .build(GangCommands.prototype.gangCreate.bind(this))
+        .sub('create').parameters([{ name: 'name', type: CommandBuilder.SENTENCE_PARAMETER }])
+                      .build(this.__proto__.gangCreate.bind(this))
 
         // /pgang invite [player]
-        .sub('invite').parameters({ name: 'player', type: CommandBuilder.PLAYER_PARAMETER })
-                      .build(GangCommands.prototype.gangInvite.bind(this))
+        .sub('invite').parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
+                      .build(this.__proto__.gangInvite.bind(this))
 
         // /pgang join [id]?
-        .sub('join').parameters({ name: 'id', type: CommandBuilder.NUMBER_PARAMETER, optional: true })
-                    .build(GangCommands.prototype.gangJoin.bind(this))
+        .sub('join').parameters([{ name: 'id', type: CommandBuilder.NUMBER_PARAMETER, optional: true }])
+                    .build(this.__proto__.gangJoin.bind(this))
 
         // /pgang kick [player]
-        .sub('kick').parameters({ name: 'player', type: CommandBuilder.PLAYER_PARAMETER })
-                    .build(GangCommands.prototype.gangKick.bind(this))
+        .sub('kick').parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
+                    .build(this.__proto__.gangKick.bind(this))
 
         // /pgang leave
-        .sub('leave').build(GangCommands.prototype.gangLeave.bind(this))
+        .sub('leave').build(this.__proto__.gangLeave.bind(this))
 
         // /pgang [id]? [color/info]
         .sub(CommandBuilder.NUMBER_PARAMETER, player => this.getCurrentGangId(player))
 
             // /pgang [id]? color
-            .sub('color').build(GangCommands.prototype.gangColor.bind(this))
+            .sub('color').build(this.__proto__.gangColor.bind(this))
 
             // /pgang [id]? info
-            .sub('info').build(GangCommands.prototype.gangInfo.bind(this))
+            .sub('info').build(this.__proto__.gangInfo.bind(this))
 
             // /pgang [id]?
-            .build(GangCommands.prototype.gang.bind(this))
+            .build()
 
         // pgang
-        .build(GangCommands.prototype.gang.bind(this));
+        .build();
 
     // /pgangs
-    commandManager.registerCommand('pgangs', GangCommands.prototype.gangs.bind(this));
+    commandManager.registerCommand('pgangs', this.__proto__.gangs.bind(this));
   }
 
   //
@@ -69,9 +67,6 @@ class GangCommands {
 
   //
   gangInfo(player, id) { }
-
-  //
-  gang(player, id) { }
 
   //
   gangs(player) { }

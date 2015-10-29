@@ -36,7 +36,7 @@ class CommandManager {
     if (this.commands_.hasOwnProperty(command))
       throw new Error('The command /' + command + ' has already been registered.');
 
-    return new CommandBuilder(CommandBuilder.COMMAND, command, this);
+    return new CommandBuilder(CommandBuilder.COMMAND, this, command);
   }
 
   // Called when a player executes an in-game command. Will prevent the event from being executed in
@@ -63,7 +63,7 @@ class CommandManager {
     // We can handle the event, so no need for Pawn to handle the event as well.
     event.preventDefault();
 
-    this.commands_[command](player, commandArguments);
+    this.commands_[commandName](player, commandArguments);
   }
 };
 

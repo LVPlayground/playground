@@ -4,9 +4,18 @@
 
 let StringParser = require('base/string_parser.js');
 
-//
-function PlayerParser(argumentString, _, player) {
-  console.log('hello');
+// Parses the first word in |argumentString| as either the id or the name of a player. Returns the
+// player when successful, or fails when the player is not connected to the server.
+function PlayerParser(argumentString) {
+  let result = StringParser.WORD_MATCH.exec(argumentString);
+  if (result === null)
+    return [argumentString, null];
+
+  let player = Player.find(result[0]);
+  if (player === null)
+    return [argumentString, null];
+
+  return [argumentString.substr(result[0].length), player];
 }
 
 // The command builder provides a convenient interface to build commands on, together with all the
@@ -241,7 +250,9 @@ class CommandBuilder {
       }
 
       if (!this.listener_) {
-        // TODO: Create a sensible default handler for the command.
+        // TODO: Create a sensible default handler for the command. List accessible usage for
+        // commands that have sub-commands, or display some sort of error message for commands with
+        // which we really cannot do anything at all.
         return false;
       }
 

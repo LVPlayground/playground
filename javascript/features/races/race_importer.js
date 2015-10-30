@@ -354,3 +354,5 @@ class RaceImporter {
     return value;
   }
 };
+
+exports = RaceImporter;

@@ -125,3 +125,5 @@ class Race {
     this.allowLeaveVehicle_ = value;
   }
 };
+
+exports = Race;

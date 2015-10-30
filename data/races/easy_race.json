@@ -1,5 +1,7 @@
 {
     "name": "Easy Race",
+    "id": 1,
+
     "time_limit": 600,
     "laps": 1,
 

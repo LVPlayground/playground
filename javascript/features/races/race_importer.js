@@ -88,6 +88,7 @@ class RaceImporter {
   // TRUE when the data has successfully been imported in the race.
   process() {
     // Process the required fields.
+    this.importId();
     this.importName();
     this.importSpawnPositions();
     this.importCheckpoints();
@@ -103,6 +104,17 @@ class RaceImporter {
     // Make sure that this race doesn't have too many objects.
     if (this.race_.objectModelCount() > MAX_OBJECT_MODELS)
       throw new Error('Races may not exceed ' + MAX_OBJECT_MODELS + ' unique object models.');
+  }
+
+  // Imports the id of this race. It must be a non-zero integer.
+  importId() {
+    if (!this.data_.hasOwnProperty('id'))
+      throw new Error('The `id` property of a race must be defined.');
+
+    if (typeof this.data_.id !== 'number' || this.data_.id < 1)
+      throw new Error('The `id` property of a race must be a number larger than zero.');
+
+    this.race_.id = this.data_.id;
   }
 
   // Imports the name of the race. It must be a non-zero-length string.

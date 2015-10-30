@@ -5,6 +5,21 @@
 let RaceImporter = require('features/races/race_importer.js');
 
 describe('RaceImporter', it => {
+  it('should require and validate the id', assert => {
+    let importId = data => {
+      let importer = RaceImporter.fromDataForTests(data);
+      importer.importId();
+      return importer.race;
+    };
+
+    assert.throws(() => importId({}));
+    assert.throws(() => importId({ id: null }));
+    assert.throws(() => importId({ id: 0 }));
+    assert.throws(() => importId({ id: -100 }));
+
+    assert.equal(importId({ id: 42 }).id, 42);
+  });
+
   it('should require and validate the name', assert => {
     let importName = data => {
       let importer = RaceImporter.fromDataForTests(data);

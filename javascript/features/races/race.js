@@ -6,6 +6,7 @@
 // for actually importing, loading or running a race, it only holds the associated data.
 class Race {
   constructor() {
+    this.id_ = 0;
     this.name_ = 'Unknown race';
 
     this.timeLimit_ = 0;
@@ -28,6 +29,12 @@ class Race {
     this.disableCheckpointMarkers_ = false;
     this.disableVehicleDamage_ = false;
     this.allowLeaveVehicle_ = false;
+  }
+
+  // Gets or sets the id of this race. It must be a non-zero integer.
+  get id() { return this.id_; }
+  set id(value) {
+    this.id_ = value;
   }
 
   // Gets or changes the name of this race. It must be an non-zero-length string.

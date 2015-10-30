@@ -1,0 +1,39 @@
+{
+    "name": "Easy Race",
+
+
+    "spawn_positions": [
+        {
+            "position": [ 2877.3500, -1586.1000, 10.6021 ],
+            "rotation": 341.0,
+            "vehicle": {
+                "model": 411,
+                "nos": 1
+            }
+        },
+        {
+            "position": [ 2882.2500, -1587.7000, 10.6035 ],
+            "rotation": 341.0,
+            "vehicle": {
+                "model": 411,
+                "nos": 1
+            }
+        },
+        {
+            "position": [ 2895.9500, -1592.1000, 10.6109 ],
+            "rotation": 341.0,
+            "vehicle": {
+                "model": 411,
+                "nos": 1
+            }
+        },
+        {
+            "position": [ 2900.8500, -1593.7000, 10.6021 ],
+            "rotation": 341.0,
+            "vehicle": {
+                "model": 411,
+                "nos": 1
+            }
+        }
+    ]
+}

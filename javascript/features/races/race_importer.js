@@ -285,6 +285,9 @@ class RaceImporter {
 
     if (settings.hasOwnProperty('disable_vehicle_damage'))
       this.race_.disableVehicleDamage = !!settings.disable_vehicle_damage;
+
+    if (settings.hasOwnProperty('allow_leave_vehicle'))
+      this.race_.allowLeaveVehicle = !!settings.allow_leave_vehicle;
   }
 
   // Creates a vector from |value| having {x, y, z} coordinates, each of which must be numbers.

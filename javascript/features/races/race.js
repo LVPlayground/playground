@@ -24,6 +24,7 @@ class Race {
     this.useAirplaneCheckpoints_ = false;
     this.disableCheckpointMarkers_ = false;
     this.disableVehicleDamage_ = false;
+    this.allowLeaveVehicle_ = false;
   }
 
   // Gets or changes the name of this race. It must be an non-zero-length string.
@@ -99,5 +100,12 @@ class Race {
   get disableVehicleDamage() { return this.disableVehicleDamage_; }
   set disableVehicleDamage(value) {
     this.disableVehicleDamage_ = value;
+  }
+
+  // Gets or sets whether players are allowed to leave their vehicles. This could be either by
+  // accident, for example falling off a motorcycle, or deliberately.
+  get allowLeaveVehicle() { return this.allowLeaveVehicle_; }
+  set allowLeaveVehicle(value) {
+    this.allowLeaveVehicle_ = value;
   }
 };

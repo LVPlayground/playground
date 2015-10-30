@@ -225,5 +225,8 @@ describe('RaceImporter', it => {
 
     assert.isFalse(defaults.disableVehicleDamage);
     assert.isTrue(importSetting('disable_vehicle_damage', true).disableVehicleDamage);
+
+    assert.isFalse(defaults.allowLeaveVehicle);
+    assert.isTrue(importSetting('allow_leave_vehicle', true).allowLeaveVehicle);
   });
 });

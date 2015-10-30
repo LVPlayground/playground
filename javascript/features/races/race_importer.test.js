@@ -219,5 +219,11 @@ describe('RaceImporter', it => {
 
     assert.isFalse(defaults.useAirplaneCheckpoints);
     assert.isTrue(importSetting('use_airplane_checkpoints', true).useAirplaneCheckpoints);
+
+    assert.isFalse(defaults.disableCheckpointMarkers);
+    assert.isTrue(importSetting('disable_checkpoint_markers', true).disableCheckpointMarkers);
+
+    assert.isFalse(defaults.disableVehicleDamage);
+    assert.isTrue(importSetting('disable_vehicle_damage', true).disableVehicleDamage);
   });
 });

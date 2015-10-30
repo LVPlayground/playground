@@ -38,8 +38,6 @@
 #define RACE_STATE_SPECTATING 6
 
 #define race_set_maydrop(%1)                CRace__MayDrop(_raceID,%1)
-#define race_disable_vehicle_damage()       CRace__DisableDamage(_raceID,1)
-#define race_disable_checkpoint_markers()   CRace__SetCheckpointType(_raceID,2)
 #define race_set_type(%1)                   CRace__SetType(_raceID,%1)
 #define race_set_unlimited_nos()            CRace__UnlimitedNitro(_raceID)
 #define race_add_object(%1,%2,%3,%4,%5,%6,%7)   CRace__AddObject(_raceID,%1,%2,%3,%4,%5,%6,%7)

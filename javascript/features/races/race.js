@@ -21,7 +21,9 @@ class Race {
     this.checkpoints_ = [];
 
     // Settings.
-    this.useAirplaneCheckpoints = false;
+    this.useAirplaneCheckpoints_ = false;
+    this.disableCheckpointMarkers_ = false;
+    this.disableVehicleDamage_ = false;
   }
 
   // Gets or changes the name of this race. It must be an non-zero-length string.
@@ -87,4 +89,15 @@ class Race {
     this.useAirplaneCheckpoints_ = value;
   }
 
+  // Gets or sets whether checkpoint markers on the map should be disabled.
+  get disableCheckpointMarkers() { return this.disableCheckpointMarkers_; }
+  set disableCheckpointMarkers(value) {
+    this.disableCheckpointMarkers_ = value;
+  }
+
+  // Gets or sets whether vehicle damage should be disabled for this race.
+  get disableVehicleDamage() { return this.disableVehicleDamage_; }
+  set disableVehicleDamage(value) {
+    this.disableVehicleDamage_ = value;
+  }
 };

@@ -279,6 +279,12 @@ class RaceImporter {
     let settings = this.data_.settings;
     if (settings.hasOwnProperty('use_airplane_checkpoints'))
       this.race_.useAirplaneCheckpoints = !!settings.use_airplane_checkpoints;
+
+    if (settings.hasOwnProperty('disable_checkpoint_markers'))
+      this.race_.disableCheckpointMarkers = !!settings.disable_checkpoint_markers;
+
+    if (settings.hasOwnProperty('disable_vehicle_damage'))
+      this.race_.disableVehicleDamage = !!settings.disable_vehicle_damage;
   }
 
   // Creates a vector from |value| having {x, y, z} coordinates, each of which must be numbers.

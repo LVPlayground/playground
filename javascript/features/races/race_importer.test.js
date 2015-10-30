@@ -200,4 +200,24 @@ describe('RaceImporter', it => {
     assert.deepEqual(race.challengeDesk.position, position);
     assert.equal(race.challengeDesk.rotation, rotation);
   });
+
+  it('should validate and apply settings', assert => {
+    let importSettings = data => {
+      let importer = RaceImporter.fromDataForTests(data);
+      importer.importSettings();
+      return importer.race;
+    };
+
+    let importSetting = (setting, value) => {
+      return importSettings({ settings: { [setting]: value }});
+    };
+
+    assert.throws(() => importSettings({ settings: false }));
+    assert.throws(() => importSettings({ settings: [] }));
+
+    let defaults = importSettings({});
+
+    assert.isFalse(defaults.useAirplaneCheckpoints);
+    assert.isTrue(importSetting('use_airplane_checkpoints', true).useAirplaneCheckpoints);
+  });
 });

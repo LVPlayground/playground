@@ -37,24 +37,11 @@
 #define RACE_STATE_RUNNING    4
 #define RACE_STATE_SPECTATING 6
 
-#define race_start(%1)                      forward CRace__Initialize__%1(); public CRace__Initialize__%1()
-#define race_set_id(%1)                     new _raceID = %1
-#define race_set_weather(%1)                CRace__SetWeather(_raceID,%1)
-#define race_set_time(%1,%2)                CRace__SetTime(_raceID,%1,%2)
-#define race_set_name(%1)                   CRace__SetName(_raceID,%1)
-#define race_set_maxtime(%1)                CRace__SetMaxTime(_raceID,%1)
-#define race_set_vehicle(%1)                CRace__SetVehicle(_raceID,%1)
 #define race_set_maydrop(%1)                CRace__MayDrop(_raceID,%1)
-#define race_set_laps(%1)                   CRace__SetLaps(_raceID,%1)
-#define race_set_airrace(%1)                CRace__SetAirRace(_raceID,%1)
-#define race_set_nos(%1)                    CRace__SetNOS(_raceID,%1)
-#define race_set_interior(%1)               CRace__SetInterior(_raceID,%1)
 #define race_disable_vehicle_damage()       CRace__DisableDamage(_raceID,1)
 #define race_disable_checkpoint_markers()   CRace__SetCheckpointType(_raceID,2)
 #define race_set_type(%1)                   CRace__SetType(_raceID,%1)
 #define race_set_unlimited_nos()            CRace__UnlimitedNitro(_raceID)
-#define race_add_checkpoint(%1,%2,%3,%4)        CRace__AddCheckpoint(_raceID,%1,%2,%3,%4)
-#define race_add_spawn(%1,%2,%3,%4,%5,%6)       CRace__AddSpawn(_raceID,%1,%2,%3,%4,%5,%6)
 #define race_add_object(%1,%2,%3,%4,%5,%6,%7)   CRace__AddObject(_raceID,%1,%2,%3,%4,%5,%6,%7)
 #define race_set_object_draw_distance(%1)       CRace__SetObjectDrawDistance(_raceID,%1)
 

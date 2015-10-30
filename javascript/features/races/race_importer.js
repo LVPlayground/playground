@@ -87,6 +87,7 @@ class RaceImporter {
     this.importLaps();
     this.importChallengeDesk();
     this.importEnvironment();
+    this.importSettings();
   }
 
   // Imports the name of the race. It must be a non-zero-length string.
@@ -264,6 +265,20 @@ class RaceImporter {
 
       this.race_.addCheckpoint(position, size);
     });
+  }
+
+  // Imports the misc settings that may apply to a race. These finetune the presentation of the race
+  // to players, or may affect behavior, for example the kind of checkpoint that's being used.
+  importSettings() {
+    if (!this.data_.hasOwnProperty('settings'))
+      return;  // this field is optional.
+
+    if (typeof this.data_.settings !== 'object' || Array.isArray(this.data_.settings))
+      throw new Error('The settings for a race must be an object.');
+
+    let settings = this.data_.settings;
+    if (settings.hasOwnProperty('use_airplane_checkpoints'))
+      this.race_.useAirplaneCheckpoints = !!settings.use_airplane_checkpoints;
   }
 
   // Creates a vector from |value| having {x, y, z} coordinates, each of which must be numbers.

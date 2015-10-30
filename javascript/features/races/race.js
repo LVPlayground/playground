@@ -19,6 +19,9 @@ class Race {
 
     this.spawnPositions_ = [];
     this.checkpoints_ = [];
+
+    // Settings.
+    this.useAirplaneCheckpoints = false;
   }
 
   // Gets or changes the name of this race. It must be an non-zero-length string.
@@ -76,6 +79,12 @@ class Race {
   // to a given race. Each checkpoint must have a position and a defined size.
   addCheckpoint(position, size) {
     this.checkpoints_.push({ position, size });
+  }
+
+  // Gets or sets whether the race should use airplane checkpoints rather than normal one.
+  get useAirplaneCheckpoints() { return this.useAirplaneCheckpoints_; }
+  set useAirplaneCheckpoints(value) {
+    this.useAirplaneCheckpoints_ = value;
   }
 
 };

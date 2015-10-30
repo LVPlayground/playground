@@ -28,11 +28,16 @@ const MAX_SIZE = 50.0;
 // Maximum number of laps for a race. This is a sensibility limitation as well.
 const MAX_LAPS = 25;
 
+// Maximum number of unique object models that may be used in a single race. Too many objects will
+// cause instability for the players attempting to play a race.
+const MAX_OBJECT_MODELS = 100;
+
 // Provides functionality to process a JSON file containing race information and create a new Race
 // instance out of it. Errors will lead to exceptions, so it's adviced to import all known races
 // while beginning to initialize the gamemode.
 //
-// Each race must have a defined name, at least a single spawning position and
+// Each race must have a defined name, at least a single spawning position and a checkpoint. Races
+// my be played by any number of players - even individual players.
 //
 // Races can contain any number of spawn positions, each of which must exist of a set of coordinates
 // and the position's rotation and information of the used vehicle, having at least a model, but
@@ -42,6 +47,11 @@ const MAX_LAPS = 25;
 // can be added to a game. Each checkpoint must have a position, and optionally also a defined size
 // in case it differs from the default (20.0).
 //
+// A race can also have a challenge desk, which will create an actor in the normal world together
+// with a checkpoint.
+//
+// Finally, there are lots of smaller settings and options available for races. Please see the wiki
+// page for the races system for full documentation on the system's abilities.
 class RaceImporter {
   constructor(privateSymbol, data) {
     if (privateSymbol != constructorSymbol)
@@ -87,7 +97,12 @@ class RaceImporter {
     this.importLaps();
     this.importChallengeDesk();
     this.importEnvironment();
+    this.importObjects();
     this.importSettings();
+
+    // Make sure that this race doesn't have too many objects.
+    if (this.race_.objectModelCount() > MAX_OBJECT_MODELS)
+      throw new Error('Races may not exceed ' + MAX_OBJECT_MODELS + ' unique object models.');
   }
 
   // Imports the name of the race. It must be a non-zero-length string.
@@ -264,6 +279,34 @@ class RaceImporter {
       }
 
       this.race_.addCheckpoint(position, size);
+    });
+  }
+
+  // Imports the objects associated with this race. Each entry must be an object with three entries:
+  // model (an integer) and position and rotation, both of which are 3D vectors.
+  importObjects() {
+    if (!this.data_.hasOwnProperty('objects'))
+      return;  // this field is optional.
+
+    if (!Array.isArray(this.data_.objects))
+      throw new Error('The `objects` associated with a race must be an array.');
+
+    this.data_.objects.forEach(object => {
+      if (typeof object !== 'object' || Array.isArray(object))
+        throw new Error('Each object associated with a race must be represented by an object.');
+
+      if (!object.hasOwnProperty('model') || !object.hasOwnProperty('position') ||
+          !object.hasOwnProperty('rotation'))
+        throw new Error('Each object must have a `model`, `position` and `rotation`.');
+
+      // TODO: Validate the model id of the object.
+      if (typeof object.model !== 'number')
+        throw new Error('The model id for an object must be a number.');
+
+      this.race_.addObject(
+          object.model,
+          this.createVector(object.position),
+          this.createVector(object.rotation));
     });
   }
 

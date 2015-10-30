@@ -6,7 +6,7 @@
 // for actually importing, loading or running a race, it only holds the associated data.
 class Race {
   constructor() {
-    this.name_ = 'Unnamed race';
+    this.name_ = 'Unknown race';
 
     this.timeLimit_ = 0;
     this.laps_ = 1;
@@ -19,6 +19,9 @@ class Race {
 
     this.spawnPositions_ = [];
     this.checkpoints_ = [];
+
+    this.objects_ = [];
+    this.objectModels_ = new Set();
 
     // Settings.
     this.useAirplaneCheckpoints_ = false;
@@ -82,6 +85,19 @@ class Race {
   // to a given race. Each checkpoint must have a position and a defined size.
   addCheckpoint(position, size) {
     this.checkpoints_.push({ position, size });
+  }
+
+  // Returns the objects that should be created for this race.
+  get objects() { return this.objects_; }
+
+  // Returns the number of unique object models that are required for the race.
+  get objectModelCount() { return this.objectModels_.length; }
+
+  // Registers a new object that's part of this race. The |model| must be the GTA model id used to
+  // describe the object, whereas |position| and |rotation| must be 3D vectors.
+  addObject(model, position, rotation) {
+    this.objects_.push({ model, position, rotation });
+    this.objectModels_.insert(model);
   }
 
   // Gets or sets whether the race should use airplane checkpoints rather than normal one.

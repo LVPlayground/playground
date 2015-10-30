@@ -229,4 +229,58 @@ describe('RaceImporter', it => {
     assert.isFalse(defaults.allowLeaveVehicle);
     assert.isTrue(importSetting('allow_leave_vehicle', true).allowLeaveVehicle);
   });
+
+  it('should validate and store the objects', assert => {
+    let importObjects = data => {
+      let importer = RaceImporter.fromDataForTests(data);
+      importer.importObjects();
+      return importer.race;
+    };
+
+    let defaults = importObjects({});
+
+    assert.deepEqual(defaults.objects, []);
+    assert.equal(defaults.objectModelCount, 0);
+
+    let position = [0, 0, 0];
+    let rotation = [0, 0, 0];
+
+    assert.throws(() => importObjects({ objects: 42 }));
+    assert.throws(() => importObjects({ objects: [ 42 ]}));
+    assert.throws(() => importObjects(
+        { objects: [ { model: 'fence', position, rotation } ] }));
+
+    assert.throws(() => importObjects(
+        { objects: [ { model: 411, position: true, rotation } ] }));
+
+    assert.throws(() => importObjects(
+        { objects: [ { model: 411, position, rotation: [ 0, 0 ] } ] }));
+
+    let race = importObjects({
+      objects: [
+        { model: 411, position, rotation },
+        { model: 412, [ 1, 2, 3 ], [ 4, 5, 6 ]}
+      ]
+    });
+
+    assert.deepEqual(race.objects, {
+      { model: 411, position, rotation },
+      { model: 412, [ 1, 2, 3 ], [ 4, 5, 6 ] }
+    });
+
+    assert.equal(race.objectModelCount, 2);
+  });
+
+  it('should count object models', assert => {
+    let objects = [];
+    for (let i = 0; i < 50; ++i) {
+      let model = i % 2 ? i : i + 1;
+      objects.push({ model: i, position: [0, 0, 0], rotation: [0, 0, 0]});
+    }
+
+    let importer = RaceImporter.fromDataForTests({ objects });
+    importer.importObjects();
+
+    assert.equal(importer.race.objectModelCount, 25);
+  });
 });

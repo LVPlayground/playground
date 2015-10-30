@@ -1,6 +1,13 @@
 {
     "name": "Easy Race",
+    "time_limit": 600,
     "laps": 1,
+
+    "challenge_desk": {
+        "actor_model": 121,
+        "position": [ 0, 0, 0 ],
+        "rotation": 0
+    },
 
     "environment": {
         "weather": 18,

@@ -8,6 +8,11 @@ let Race = require('features/races/race.js'),
 // Private symbol to prevent people from using the RaceImporter's constructor.
 let constructorSymbol = Symbol('Required for constructing the RaceImporter.');
 
+// Minimum and maximum time limits of a race. Limits less than 30 seconds don't make sense, whereas
+// limits more than 20 minutes also don't make sense (you don't have to impose a limit!).
+const MIN_TIME_LIMIT = 30;
+const MAX_TIME_LIMIT = 1200;
+
 // Coordinate boundary limits applied to all coordinates specified for races.
 const MIN_COORDINATE = -20000.0;
 const MAX_COORDINATE = 20000.0;
@@ -78,9 +83,10 @@ class RaceImporter {
     this.importCheckpoints();
 
     // Process the optional fields.
+    this.importTimeLimit();
     this.importLaps();
+    this.importChallengeDesk();
     this.importEnvironment();
-
   }
 
   // Imports the name of the race. It must be a non-zero-length string.
@@ -92,6 +98,18 @@ class RaceImporter {
       throw new Error('The `name` property of a race must contain a non-zero-length string.');
 
     this.race_.name = this.data_.name;
+  }
+
+  // Imports the time limit of this race. It must be in range of [MIN_TIME_LIMIT, MAX_TIME_LIMIT].
+  importTimeLimit() {
+    if (!this.data_.hasOwnProperty('time_limit'))
+      return;  // this field is optional.
+
+    let timeLimit = this.data_.time_limit;
+    if (typeof timeLimit !== 'number' || timeLimit < MIN_TIME_LIMIT || timeLimit > MAX_TIME_LIMIT)
+      throw new Error('The `time_limit` must be in the range [' + MIN_TIME_LIMIT + ', ' + MAX_TIME_LIMIT + '].');
+
+    this.race_.timeLimit = timeLimit;
   }
 
   // Imports the number of laps of a race. It must be an integer larger than zero.
@@ -108,11 +126,37 @@ class RaceImporter {
     this.race_.laps = this.data_.laps;
   }
 
+  // Imports the challenge desk location. An actor will be spawned at this location with the given
+  // model, with a checkpoint just in front of them through which the player can start a challenge
+  // to perform the race by themselves.
+  importChallengeDesk() {
+    if (!this.data_.hasOwnProperty('challenge_desk'))
+      return;  // this field is optional.
+
+    if (typeof this.data_.challenge_desk !== 'object' || Array.isArray(this.data_.challenge_desk))
+      throw new Error('The `challenge_desk` for a race must be an object.')
+
+    let challengeDesk = this.data_.challenge_desk;
+    if (!challengeDesk.hasOwnProperty('actor_model') || !challengeDesk.hasOwnProperty('position') ||
+        !challengeDesk.hasOwnProperty('rotation'))
+      throw new Error('The `challenge_desk` must have an `actor_model`, `position` and `rotation`.');
+
+    // TODO: Validate the model id of the actor that's being used.
+    let actorModel = challengeDesk.actor_model;
+    if (typeof actorModel !== 'number')
+      throw new Error('The `actor_model` for the challenge desk must be a valid model.');
+
+    let position = createVector(challengeDesk.position),
+        rotation = createRotation(challengeDesk.rotation);
+
+    this.race_.challengeDesk = { actorModel, position, rotation };
+  }
+
   // Imports the environmental settings for this race. Among them are the weather, time and interior
   // in which the time should take place.
   importEnvironment() {
     if (!this.data_.hasOwnProperty('environment'))
-      return;
+      return;  // this field is optional.
 
     if (typeof this.data_.environment !== 'object' || Array.isArray(this.data_.environment))
       throw new Error('The environmental data for a race must be an object.');

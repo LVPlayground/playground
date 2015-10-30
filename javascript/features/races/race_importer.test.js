@@ -142,4 +142,62 @@ describe('RaceImporter', it => {
     assert.deepEqual(customValues.time, [18, 42]);
     assert.equal(customValues.interior, 7);
   });
+
+  it('should validate and apply a time limit', assert => {
+    let importTimeLimit = data => {
+      let importer = RaceImporter.fromDataForTests(data);
+      importer.importTimeLimit();
+      return importer.race;
+    };
+
+    assert.equal(importTimeLimit({}).timeLimit, 0);
+
+    assert.throws(() => importTimeLimit({ time_limit: 'nevah' }));
+    assert.throws(() => importTimeLimit({ time_limit: -42 }));
+    assert.throws(() => importTimeLimit({ time_limit: 99999 }));
+
+    assert.equal(importTimeLimit({ time_limit: 300 }).timeLimit, 300);
+  });
+
+  it('should validate and apply the challenge desk', assert => {
+    let importChallengeDesk = data => {
+      let importer = RaceImporter.fromDataForTests(data);
+      importer.importChallengeDesk();
+      return importer.race;
+    };
+
+    assert.isNull(importChallengeDesk({}).challengeDesk);
+
+    assert.throws(() => importChallengeDesk({ challenge_desk: false }));
+    assert.throws(() => importChallengeDesk({ challenge_desk: [] }));
+    assert.throws(() => importChallengeDesk(
+        { challenge_desk: { /** actor_model **/, position: true, rotation: true } }));
+    assert.throws(() => importChallengeDesk(
+        { challenge_desk: { actor_model: true, /** position **/, rotation: true } }));
+    assert.throws(() => importChallengeDesk(
+        { challenge_desk: { actor_model: true, position: true, /** rotation **/ } }));
+
+    let actor_model = 121;
+    let position = [0, 0, 0];
+    let rotation = 180;
+
+    assert.throws(() => importChallengeDesk(
+        { challenge_desk: { actor_model: 'some_guy', position, rotation } }));
+    assert.throws(() => importChallengeDesk(
+        { challenge_desk: { actor_model, position: [ 42 ], rotation } }));
+    assert.throws(() => importChallengeDesk(
+        { challenge_desk: { actor_model, position, rotation: 9001 } }));
+
+    let race = importChallengeDesk({
+      challenge_desk: {
+        actor_model,
+        position,
+        rotation
+      }
+    });
+
+    assert.equal(race.challengeDesk.actorModel, actor_model);
+    assert.deepEqual(race.challengeDesk.position, position);
+    assert.equal(race.challengeDesk.rotation, rotation);
+  });
 });

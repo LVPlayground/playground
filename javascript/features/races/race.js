@@ -7,7 +7,11 @@
 class Race {
   constructor() {
     this.name_ = 'Unnamed race';
+
+    this.timeLimit_ = 0;
     this.laps_ = 1;
+
+    this.challengeDesk_ = null;
 
     this.weather_ = 7;
     this.time_ = [12, 00];
@@ -23,10 +27,24 @@ class Race {
     this.name_ = value;
   }
 
+  // Gets or sets the time limit for this game. A limit of zero implies that there is no limit.
+  get timeLimit() { return this.timeLimit_; }
+  set timeLimit(value) {
+    this.timeLimit_ = value;
+  }
+
   // Gets or sets the number of laps for this race. It must be an integer larger than zero.
   get laps() { return this.laps_; }
   set laps(value) {
     this.laps_ = value;
+  }
+
+  // Gets or sets the challenge desk location, which gives players the ability to perform the race
+  // by themselves, for a small fee, by talking to an actor at the given location. This is an object
+  // having an actorModel, position vector and rotation.
+  get challengeDesk() { return this.challengeDesk_; }
+  set challengeDesk(value) {
+    this.challengeDesk_ = value;
   }
 
   // Gets or sets the weather type for this race. It must be an interger.

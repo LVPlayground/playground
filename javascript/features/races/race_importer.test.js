@@ -59,4 +59,31 @@ describe('RaceImporter', it => {
 
     assert.equal(race.spawnPositions.length, 2);
   });
+
+  it('should require and validate checkpoints', assert => {
+    let importCheckpoints = data => {
+      let importer = RaceImporter.fromDataForTests(data);
+      importer.importCheckpoints();
+      return importer.race;
+    };
+
+    assert.throws(() => importCheckpoints({}));
+    assert.throws(() => importCheckpoints({ checkpoints: 42 }));
+    assert.throws(() => importCheckpoints({ checkpoints: [] }));
+
+    assert.throws(() => importCheckpoints({ checkpoints: [ { position: 42 } ] }));
+    assert.throws(() => importCheckpoints({ checkpoints: [ { position: [ 42 ] } ] }));
+    assert.throws(() => importCheckpoints({ checkpoints: [ { position: [ 42, 42 ] } ] });
+    assert.throws(() => importCheckpoints({ checkpoints: [ { position: [ 0, 0, 0 ], size: -100 } ] }));
+    assert.throws(() => importCheckpoints({ checkpoints: [ { position: [ 0, 0, 0 ], size: 9999 } ] }));
+
+    let race = importCheckpoints({
+      checkpoints: [
+        { position: [ 42, 42, 42 ] },
+        { position: [ 42, 42, 42 ], size: 10 }
+      ]
+    });
+
+    assert.equal(race.checkpoints.length, 2);
+  });
 });

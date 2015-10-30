@@ -8,6 +8,7 @@ class Race {
   constructor() {
     this.name_ = 'Unnamed race';
     this.spawnPositions_ = [];
+    this.checkpoints_ = [];
   }
 
   // Gets or changes the name of this race. It must be an non-zero-length string.
@@ -23,6 +24,15 @@ class Race {
   // positions that may be associated with a single race.
   addSpawnPosition(position, rotation, vehicle) {
     this.spawnPositions_.push({ position, rotation, vehicle });
+  }
+
+  // Returns the checkpoints available for this race.
+  get checkpoints() { return this.checkpoints_; }
+
+  // Registers a new checkpoint for the race. There is no limit to the amount of checkpoints added
+  // to a given race. Each checkpoint must have a position and a defined size.
+  addCheckpoint(position, size) {
+    this.checkpoints_.push({ position, size });
   }
 
 };

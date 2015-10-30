@@ -12,6 +12,14 @@ let constructorSymbol = Symbol('Required for constructing the RaceImporter.');
 const MIN_COORDINATE = -20000.0;
 const MAX_COORDINATE = 20000.0;
 
+// Default diameter of a race checkpoint, in game units.
+const DEFAULT_CHECKPOINT_SIZE = 20.0;
+
+// Minimum and maximum size of race checkpoints. These are not technical limits, but sensible limits
+// since anything outside this range would be rediculous.
+const MIN_SIZE = 5.0;
+const MAX_SIZE = 50.0;
+
 // Provides functionality to process a JSON file containing race information and create a new Race
 // instance out of it. Errors will lead to exceptions, so it's adviced to import all known races
 // while beginning to initialize the gamemode.
@@ -21,6 +29,10 @@ const MAX_COORDINATE = 20000.0;
 // Races can contain any number of spawn positions, each of which must exist of a set of coordinates
 // and the position's rotation and information of the used vehicle, having at least a model, but
 // optionally also the vehicle's colors and NOS.
+//
+// Races need to have one or more checkpoints. There is no limit to the amount of checkpoints that
+// can be added to a game. Each checkpoint must have a position, and optionally also a defined size
+// in case it differs from the default (20.0).
 //
 class RaceImporter {
   constructor(privateSymbol, data) {
@@ -60,6 +72,7 @@ class RaceImporter {
     // Process the required fields.
     this.importName();
     this.importSpawnPositions();
+    this.importCheckpoints();
 
   }
 
@@ -78,7 +91,7 @@ class RaceImporter {
   // exists of positional coordinates, rotation of the vehicle and the vehicle's model id.
   importSpawnPositions() {
     if (!Array.isArray(this.data_.spawn_positions) || this.data_.spawn_positions.length == 0)
-      throw new Error('At least a single entry must be defined in the `spawn_positions`.');
+      throw new Error('At least a single entry must be defined in the `spawn_positions` array.');
 
     this.data_.spawn_positions.forEach(spawnPosition => {
       if (typeof spawnPosition !== 'object')
@@ -123,6 +136,35 @@ class RaceImporter {
 
         vehicle.nos = vehicleData.nos;
       }
+
+      this.race_.addSpawnPosition(position, rotation, vehicle);
+    });
+  }
+
+  // Imports the checkpoints associated with a race. Each checkpoint must have a vectorial position,
+  // and optionally a defined size (diameter) in range of [MIN_SIZE, MAX_SIZE].
+  importCheckpoints() {
+    if (!Array.isArray(this.data_.checkpoints) || this.data_.checkpoints.length == 0)
+      throw new Error('At least a single entry must be defined in the `checkpoints` array.');
+
+    this.data_.checkpoints.forEach(checkpoint => {
+      if (typeof checkpoint !== 'object')
+        throw new Error('Every `checkpoint` for a race must be an object.');
+
+      if (!checkpoint.hasOwnProperty('property'))
+        throw new Error('Each checkpoint must have a defined `position`.');
+
+      let position = this.createVector(checkpoint.position);
+
+      let size = DEFAULT_CHECKPOINT_SIZE;
+      if (checkpoint.hasOwnProperty('size')) {
+        if (typeof checkpoint.size !== 'number' || checkpoint.size < MIN_SIZE || checkpoint.size > MAX_SIZE)
+          throw new Error('The `size` of a checkpoint must be in range of [' + MIN_SIZE + ', ' + MAX_SIZE + '].');
+
+        size = checkpoint.size;
+      }
+
+      this.race_.addCheckpoint(position, size);
     });
   }
 

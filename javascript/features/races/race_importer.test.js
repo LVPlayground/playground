@@ -86,4 +86,19 @@ describe('RaceImporter', it => {
 
     assert.equal(race.checkpoints.length, 2);
   });
+
+  it('should validate the number of laps', assert => {
+    let importLaps = data => {
+      let importer = RaceImporter.fromDataForTests(data);
+      importer.importLaps();
+      return importer.race;
+    };
+
+    assert.equal(importLaps({}).laps, 1);  // this field is optional
+    assert.equal(importLaps({ laps: 3 }).laps, 3);
+
+    assert.throws(() => importLaps({ laps: true }));
+    assert.throws(() => importLaps({ laps: -1 }));
+    assert.throws(() => importLaps({ laps: 9999 }));
+  });
 });

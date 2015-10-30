@@ -1,6 +1,6 @@
 {
     "name": "Easy Race",
-
+    "laps": 1,
 
     "spawn_positions": [
         {

@@ -7,6 +7,8 @@
 class Race {
   constructor() {
     this.name_ = 'Unnamed race';
+    this.laps_ = 1;
+
     this.spawnPositions_ = [];
     this.checkpoints_ = [];
   }
@@ -15,6 +17,12 @@ class Race {
   get name() { return this.name_; }
   set name(value) {
     this.name_ = value;
+  }
+
+  // Gets or sets the number of laps for this race. It must be an integer larger than zero.
+  get laps() { return this.laps_; }
+  set laps(value) {
+    this.laps_ = value;
   }
 
   // Returns the spawn positions available for this race.

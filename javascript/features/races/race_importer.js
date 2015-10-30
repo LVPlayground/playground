@@ -20,6 +20,9 @@ const DEFAULT_CHECKPOINT_SIZE = 20.0;
 const MIN_SIZE = 5.0;
 const MAX_SIZE = 50.0;
 
+// Maximum number of laps for a race. This is a sensibility limitation as well.
+const MAX_LAPS = 25;
+
 // Provides functionality to process a JSON file containing race information and create a new Race
 // instance out of it. Errors will lead to exceptions, so it's adviced to import all known races
 // while beginning to initialize the gamemode.
@@ -74,6 +77,9 @@ class RaceImporter {
     this.importSpawnPositions();
     this.importCheckpoints();
 
+    // Process the optional fields.
+    this.importLaps();
+
   }
 
   // Imports the name of the race. It must be a non-zero-length string.
@@ -85,6 +91,20 @@ class RaceImporter {
       throw new Error('The `name` property of a race must contain a non-zero-length string.');
 
     this.race_.name = this.data_.name;
+  }
+
+  // Imports the number of laps of a race. It must be an integer larger than zero.
+  importLaps() {
+    if (!this.data_.hasOwnProperty('laps'))
+      return;  // this field is optional
+
+    if (typeof this.data_.laps !== 'number')
+      throw new Error('The number of `laps` of a race must be a number.');
+
+    if (this.data_.laps < 1 || this.data_.laps > MAX_LAPS)
+      throw new Error('The number of `laps` of a race must be in range of [1, ' + MAX_LAPS + '].');
+
+    this.race_.laps = this.data_.laps;
   }
 
   // Imports the spawn positions for the race. There must be at least a single spawn position that

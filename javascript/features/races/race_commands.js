@@ -29,15 +29,28 @@ class RaceCommands {
   // Either starts or joins the race with |id|, depending on whether an instance of the race is
   // currently accepting sign-ups. If not, a new sign-up round will be started.
   raceStart(player, id) {
-    // TODO: Implement the ability to start a race.
+    // TODO: Check whether the player is engaged in an activity already.
+
+    if (!this.raceManager_.isValid(id)) {
+      // TODO: Message the player about |id| not being a valid race.
+      return;
+    }
+
+    // TODO: Withdraw the price of playing a race from the player's account.
+
+    this.raceManager_.startRace(player, id, false /* skipSignup */);
   }
 
   // Creates a dialog that provides an overview of the available races, together with their all-time
   // best times, and personalized best times if the player has logged in to their account. This
   // command is asynchronous because the personalized times may have to be read from the database.
   raceOverview(player) {
-    this.raceManager_.availableRacesForPlayer(player).then(races => {
+    this.raceManager_.listRacesForPlayer(player).then(races => {
       let menu = null;
+
+      // Bail out if there are no races, since there won't be anything to display.
+      if (!races.length)
+        return;
 
       // Include personalized best times if they're available in a three-column menu, otherwise
       // build a two-column menu only displaying the race's name and the general best time.

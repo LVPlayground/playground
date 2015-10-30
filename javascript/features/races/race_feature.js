@@ -11,8 +11,14 @@ class RaceFeature extends Feature {
   constructor(playground) {
     super(playground);
 
-    this.raceManager_ = new RaceManager();
+    this.raceManager_ = new RaceManager(playground.database);
     this.raceCommands_ = new RaceCommands(playground.commandManager, this.raceManager_);
+
+    // TODO: Import races using a glob() rather than manually.
+    [
+      'data/races/easy_race.json',
+
+    ].forEach(file => this.raceManager_.registerRace(RaceImporter.fromFile(file)));
   }
 };
 

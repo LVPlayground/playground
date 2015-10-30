@@ -79,6 +79,7 @@ class RaceImporter {
 
     // Process the optional fields.
     this.importLaps();
+    this.importEnvironment();
 
   }
 
@@ -105,6 +106,39 @@ class RaceImporter {
       throw new Error('The number of `laps` of a race must be in range of [1, ' + MAX_LAPS + '].');
 
     this.race_.laps = this.data_.laps;
+  }
+
+  // Imports the environmental settings for this race. Among them are the weather, time and interior
+  // in which the time should take place.
+  importEnvironment() {
+    if (!this.data_.hasOwnProperty('environment'))
+      return;
+
+    if (typeof this.data_.environment !== 'object' || Array.isArray(this.data_.environment))
+      throw new Error('The environmental data for a race must be an object.');
+
+    let environment = this.data_.environment;
+    if (environment.hasOwnProperty('weather')) {
+      if (typeof environment.weather !== 'number')
+        throw new Error('The weather type must be a number.');
+
+      this.race_.weather = environment.weather;
+    }
+
+    if (environment.hasOwnProperty('time')) {
+      if (!Array.isArray(environment.time) || environment.time.length < 2)
+        throw new Error('The time of a race must be an array having [hour, minutes].');
+
+      this.race_.time = [environment.time[0], environment.time[1]];
+    }
+
+    if (environment.hasOwnProperty('interior')) {
+      // TODO: Verify that these limits for the interior numbers make sense.
+      if (typeof environment.interior !== 'number' || environment.interior < 0 || environment.interior > 13)
+        throw new Error('The interior id of a race must be in the range of [0, 13].');
+
+      this.race_.interior = environment.interior;
+    }
   }
 
   // Imports the spawn positions for the race. There must be at least a single spawn position that

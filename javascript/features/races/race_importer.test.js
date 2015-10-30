@@ -101,4 +101,45 @@ describe('RaceImporter', it => {
     assert.throws(() => importLaps({ laps: -1 }));
     assert.throws(() => importLaps({ laps: 9999 }));
   });
+
+  it('should validate and apply the environment', assert => {
+    let importEnvironment = data => {
+      let importer = RaceImporter.fromDataForTests(data);
+      importer.importEnvironment();
+      return importer.race;
+    };
+
+    let defaultValues = importEnvironment({});
+    assert.isNotNull(defaultValues.weather);
+    assert.isNumber(defaultValues.weather);
+
+    assert.isNotNull(defaultValues.time);
+    assert.isArray(defaultValues.time);
+    assert.equal(defaultValues.time.length, 2);
+
+    assert.isNotNull(defaultValues.interior);
+    assert.isNumber(defaultValues.interior);
+
+    assert.throws(() => importEnvironment({ environment: false }));
+    assert.throws(() => importEnvironment({ environment: [] }));
+    assert.throws(() => importEnvironment({ environment: { weather: 'sunny' }}));
+    assert.throws(() => importEnvironment({ environment: { time: 42 }}));
+    assert.throws(() => importEnvironment({ environment: { time: 'midnight' }}));
+    assert.throws(() => importEnvironment({ environment: { time: [ 0 ] }}));
+    assert.throws(() => importEnvironment({ environment: { interior: 'inside' }}));
+    assert.throws(() => importEnvironment({ environment: { interior: -1 }}));
+    assert.throws(() => importEnvironment({ environment: { interior: 99 }}));
+
+    let customValues = importEnvironment({
+      environment: {
+        weather: 42,
+        time: [18, 42],
+        interior: 7
+      }
+    });
+
+    assert.equal(customValues.weather, 42);
+    assert.deepEqual(customValues.time, [18, 42]);
+    assert.equal(customValues.interior, 7);
+  });
 });

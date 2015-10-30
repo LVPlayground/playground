@@ -9,6 +9,10 @@ class Race {
     this.name_ = 'Unnamed race';
     this.laps_ = 1;
 
+    this.weather_ = 7;
+    this.time_ = [12, 00];
+    this.interior_ = 0;
+
     this.spawnPositions_ = [];
     this.checkpoints_ = [];
   }
@@ -23,6 +27,19 @@ class Race {
   get laps() { return this.laps_; }
   set laps(value) {
     this.laps_ = value;
+  }
+
+  // Gets or sets the weather type for this race. It must be an interger.
+  get weather() { return this.weather_; }
+  set weather(value) {
+    this.weather_ = value;
+  }
+
+  // Gets or sets the time at which this race will take place. Must be an array with two entries,
+  // one for the hour (24-hour based) and one for the minute.
+  get time() { return this.time_; }
+  set time(value) {
+    this.time_ = value;
   }
 
   // Returns the spawn positions available for this race.

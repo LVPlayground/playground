@@ -2,6 +2,12 @@
     "name": "Easy Race",
     "laps": 1,
 
+    "environment": {
+        "weather": 18,
+        "time": [12, 00],
+        "interior": 0
+    },
+
     "spawn_positions": [
         {
             "position": [ 2877.3500, -1586.1000, 10.6021 ],

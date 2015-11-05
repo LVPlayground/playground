@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+let Extendable = require('base/extendable.js');
+
 // Identifier, stored as an IP address, that can be used to detect players created for testing.
 const TEST_PLAYER_IDENTIFIER = '0.0.0.0';
 
@@ -9,7 +11,7 @@ const TEST_PLAYER_IDENTIFIER = '0.0.0.0';
 let playerCreateSymbol = Symbol('Private symbol to limit creation of Player instances.'),
     players = {};
 
-class Player {
+class Player extends Extendable {
   // Returns the Player instance for the player with id |playerId|. If the player is not connected
   // to Las Venturas Playground, NULL will be returned instead.
   static get(playerId) {
@@ -41,6 +43,8 @@ class Player {
   // Creates a new instance of the Player class for |playerId|. This method must only be used by
   // code in this file, hence the |privateSymbol| which is deliberately not exported.
   constructor(privateSymbol, playerId) {
+    super();
+
     if (privateSymbol != playerCreateSymbol)
       throw new Error('Please do not instantiate the Player class. Use Player.get(playerId) instead.');
 

@@ -16,6 +16,7 @@ class Playground {
 
     this.featureManager_ = new FeatureManager();
     this.featureManager_.load(this, {
+      account: require('features/account/account_feature.js'),
       gangs: require('features/gangs/feature.js'),
       introduction: require('features/introduction/introduction.js'),
       races: require('features/races/race_feature.js')

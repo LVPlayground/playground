@@ -10,9 +10,27 @@ class RaceDatabase {
     this.database_ = database;
   }
 
-  // Fetches the best times for each known race for |player|.
+  // Fetches the best times for each known race, together with the player who raced it.
+  fetchBestTimes() {
+    return Promise.resolve({
+      /** race Id **/ 0: {
+        time: 0,
+        name: 'nobody'
+      }
+    })
+  }
+
+  // Fetches the best times for each known race for |player|. A promise will be returned that will
+  // be fulfilled with an object having a mapping between race Id and personal best time in seconds.
+  //
+  // An empty object ("no high scores") will be used for unregistered players.
   fetchBestTimesForPlayer(player) {
-    return Promise.reject();
+    if (!player.isRegistered())
+      return Promise.resolve({});
+
+    return Promise.resolve({
+      /** race Id **/ 0: /** best time (sec) **/ 120,
+    });
   }
 };
 

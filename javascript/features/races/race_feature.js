@@ -19,6 +19,9 @@ class RaceFeature extends Feature {
       'data/races/easy_race.json',
 
     ].forEach(file => this.raceManager_.registerRace(RaceImporter.fromFile(file)));
+
+    // Load the best times for all races from the database.
+    this.raceManager_.loadBestTimes();
   }
 };
 

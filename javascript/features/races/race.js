@@ -29,6 +29,9 @@ class Race {
     this.disableCheckpointMarkers_ = false;
     this.disableVehicleDamage_ = false;
     this.allowLeaveVehicle_ = false;
+
+    // To be dynamically loaded by the race manager.
+    this.bestRace_ = null;
   }
 
   // Gets or sets the id of this race. It must be a non-zero integer.
@@ -130,6 +133,13 @@ class Race {
   get allowLeaveVehicle() { return this.allowLeaveVehicle_; }
   set allowLeaveVehicle(value) {
     this.allowLeaveVehicle_ = value;
+  }
+
+  // Gets or sets the best race raced for this race. It must be an object having two properties,
+  // `time` for the time in seconds, and `name` for the name of the player who performed it.
+  get bestRace() { return this.bestRace_; }
+  set bestRace(value) {
+    this.bestRace_ = value;
   }
 };
 

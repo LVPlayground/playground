@@ -28,6 +28,23 @@ class RaceManager {
     this.challengeDesks_[race.id] = new ChallengeDesk(this, race);
   }
 
+  // Asynchronously loads the best times for all known races from the database. They will be stored
+  // in the Race instance associated with the race.
+  loadBestTimes() {
+    this.database_.fetchBestTimes().then(bestTimes => {
+      Object.keys(this.races_).forEach(raceId => {
+        if (!bestTimes.hasOwnProperty(raceId))
+          return;
+
+        let bestTime = bestTimes[raceId];
+        this.races_[raceId].bestRace = {
+          time: bestTime.time,
+          name: bestTime.name
+        };
+      });
+    });
+  }
+
   // Returns if |id| represents a valid race that could be started by the player.
   isValid(id) {
     return this.races_.hasOwnProperty(id);
@@ -44,13 +61,24 @@ class RaceManager {
   // |player|, together with the all-time best time of registered players on the race. If |player|
   // is a registered player, their personal best time will be included in the overview as well.
   listRacesForPlayer(player) {
-    // TODO: Abort if there are no races.
-    // TODO: If the user is not registered, just return a list of available races w/ best times.
-    // TODO: If the user is registered, fetch their best times from the database.
+    if (!this.races_.length)
+      return Promise.resolve([]);
 
-    return Promise.resolve([
-      { id: 1, name: 'My Race', bestTime: 60, personalBestTime: 120 }
-    ]);
+    this.database_.fetchBestTimesForPlayer(player).then(bestTimes => {
+      let races = [];
+
+      Object.keys(this.races_).forEach(raceId => {
+        let personalBest = bestTimes.hasOwnProperty(raceId) ? bestTimes[raceId] : null,
+            race = this.races_[raceId];
+
+        races.push({ id: race.id,
+                     name: race.name,
+                     bestRace: race.bestRace,
+                     personalBestTime: personalBest });
+      });
+
+      return races;
+    });
   }
 };
 

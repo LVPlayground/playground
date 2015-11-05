@@ -8,6 +8,9 @@ let CommandBuilder = require('components/command_manager/command_builder.js'),
 // Title of the dialog that displays the available races.
 const DIALOG_TITLE = 'Racing on Las Venturas Playground';
 
+// Text to display when no time (either personal or global) can be dispalyed.
+const NO_TIME_AVAILABLE = '---';
+
 // The race commands class provides the interface between players' ability to execute commands, and
 // the ability to start or control races. It uses the command manager to do so.
 class RaceCommands {
@@ -46,25 +49,38 @@ class RaceCommands {
   // command is asynchronous because the personalized times may have to be read from the database.
   raceOverview(player) {
     this.raceManager_.listRacesForPlayer(player).then(races => {
-      let menu = null;
-
       // Bail out if there are no races, since there won't be anything to display.
       if (!races.length)
         return;
 
-      // Include personalized best times if they're available in a three-column menu, otherwise
-      // build a two-column menu only displaying the race's name and the general best time.
-      if (races[0].personalHighScore !== null) {
-        menu = new Menu(DIALOG_TITLE, ['Race', 'Best time', 'Your best time']);
-        races.forEach(race =>
-            menu.addItem(race.name, race.bestTime, race.personalBestTime,
-                         this.__proto__.raceStart.bind(player, race.id)));
+      // A player's personal best time will be displayed if they're registered.
+      let displayPersonalBest = player.isRegistered();
 
-      } else {
-        menu = new Menu(DIALOG_TITLE, ['Race', 'Best time']);
-        races.forEach(race =>
-            menu.addItem(race.name, race.bestTime, this.__proto__.raceStart.bind(player, race.id)));
-      }
+      let columns = ['Race', 'Best time'];
+      if (displayPersonalBest)
+        columns.push('Your best time');
+
+      let menu = new Menu(DIALOG_TITLE, columns);
+      races.forEach(race => {
+        let columnValues = [race.name];
+
+        // Append the best time on Las Venturas Playground to the values.
+        if (race.bestRace !== null)
+          columnValues.push(Message.formatTime(race.bestRace.time) + ' (' + race.bestRace.name + ')');
+        else
+          columnValues.push(NO_TIME_AVAILABLE);
+
+        // If the user has logged in, append their personal best to the values.
+        if (displayPersonalBest) {
+          if (race.personalBestTime !== null)
+            columnValues.push(Message.formatTime(race.personalBestTime));
+          else
+            columnValues.push(NO_TIME_AVAILABLE);
+        }
+
+        // Append the item, with a per-row listener to start the selected race.
+        menu.addItem(...columnValues, this.__proto__.raceStart.bind(player, race.id));
+      });
 
       // Display the created menu to the player. Per-entry listeners will start a race if needed.
       menu.displayForPlayer(player);

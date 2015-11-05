@@ -55,4 +55,6 @@ class Message {
 // Immediately load the messages from the primary message data file.
 Message.loadMessages(MESSAGE_DATA_FILE);
 
-exports = Message;
+// Expose the Message class on the global object, since it will be common practice for features to
+// format messages or deal with predefined ones.
+global.Message = exports = Message;

@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+require('base/message.js');
 require('base/timers.js');
 
 require('entities/player.js');

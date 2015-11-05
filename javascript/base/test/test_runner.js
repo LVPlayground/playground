@@ -120,6 +120,8 @@ class TestRunner {
     // TODO(Russell): Actually use |pattern|. This requires file globbing functionality within the
     // plugin, which doesn't exist yet.
     {
+      require('base/extendable.test.js');
+      require('base/message.test.js');
       require('base/priority_queue.test.js');
       require('base/string_parser.test.js');
       require('base/test/assert.test.js');

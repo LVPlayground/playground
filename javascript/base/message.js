@@ -27,6 +27,27 @@ class Message {
     return message;
   }
 
+  // Formats |time|. Anything under an hour will be formatted as MM:SS, whereas values over an hour
+  // will be formatted as HH:MM:SS instead. Non-numeric values will be returned as-is.
+  static formatTime(time) {
+    if (typeof time !== 'number')
+      return time;
+
+    let seconds = time % 60;
+    let minutes = Math.round(time / 60) % 60;
+    let hours = Math.round(time / 3600);
+
+    let representation = '';
+
+    if (hours > 0)
+      representation += (hours < 10 ? '0' : '') + hours + ':';
+
+    representation += (minutes < 10 ? '0' : '') + minutes + ':';
+    representation += (seconds < 10 ? '0' : '') + seconds;
+
+    return representation;
+  }
+
   // Loads messages from |file|. Unsafe messages will be considered as fatal errors.
   static loadMessages(file) {
     let messages = JSON.parse(readFile(file));

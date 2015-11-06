@@ -15,20 +15,29 @@ let extendedMethods = {};
 // of code using the extendables is prioritized over such potential colissions.
 class Extendable {
   constructor() {
-    if (!extendedProperties.hasOwnProperty(this.constructor.name))
-      return;
+    let target = new.target;
+    do {
+      let targetName = target.name;
+      if (!extendedProperties.hasOwnProperty(targetName))
+        return;
 
-    Object.defineProperties(this, extendedProperties[this.constructor.name]);
+      Object.defineProperties(this, extendedProperties[targetName]);
+      target = Object.getPrototypeOf(target);
+
+    } while (target !== null);
   }
 
   // Provides a property called |name| on the called object. The |getter| function will be invoked
   // when its value is requested, whereas the |setter|, when set, will be used for updating it.
   static provideProperty(name, getter, setter = null) {
     let extendableName = this.name;
+    if (this.hasOwnProperty(name))
+      throw new Error('A property named "' + name +'" already exists for "' + extendableName + '".');
+
     if (!extendedProperties.hasOwnProperty(extendableName))
       extendedProperties[extendableName] = {};
 
-    if (extendables[extendableName].hasOwnProperty(name))
+    if (extendedProperties[extendableName].hasOwnProperty(name))
       throw new Error('An extendable named "' + name + '" has already been created for "' + extendableName + '".');
 
     if (typeof getter !== 'function' || (setter !== null && typeof setter !== 'function'))
@@ -51,11 +60,11 @@ class Extendable {
   // instance of the extendable when the method is called.
   static provideMethod(name, fn) {
     let extendableName = this.name;
-    if (this.prototype.hasOwnProperty(name))
+    if (name in this.prototype)
       throw new Error('A method named "' + name + '" already exists for "' + extendableName + '".');
 
     if (!extendedMethods.hasOwnProperty(extendableName))
-      extendableMethods[extendableName] = {};
+      extendedMethods[extendableName] = {};
 
     if (extendedMethods[extendableName].hasOwnProperty(extendableName))
       throw new Error('An extendable named "' + name + '" has already been created for "' + extendableName + '".');
@@ -63,10 +72,10 @@ class Extendable {
     if (typeof fn !== 'function')
       throw new Error('The handler of an extendable method must be a function.');
 
-    extendableMethods[extendableName][name] = true;
+    extendedMethods[extendableName][name] = true;
 
-    this.prototype[name] = function(...arguments) {
-      return fn(this, ...arguments);
+    this.prototype[name] = function(...args) {
+      return fn(this, ...args);
     };
   }
 
@@ -76,13 +85,13 @@ class Extendable {
     let extendableName = this.name;
 
     delete extendedProperties[extendableName];
-    if (!extendableMethods.hasOwnProperty(extendableName))
+    if (!extendedMethods.hasOwnProperty(extendableName))
       return;
 
-    Object.keys(extendableMethods[extendableName]).forEach(method =>
-        delete this.prototype[method];
+    Object.keys(extendedMethods[extendableName]).forEach(method =>
+        delete this.prototype[method]);
 
-    delete extendableMethods[extendableName];
+    delete extendedMethods[extendableName];
   }
 };
 

@@ -3,6 +3,8 @@
 // be found in the LICENSE file.
 
 let Feature = require('components/feature_manager/feature.js'),
+    RaceCommands = require('features/races/race_commands.js'),
+    RaceImporter = require('features/races/race_importer.js'),
     RaceManager = require('features/races/race_manager.js');
 
 // This class represents the Feature that contains all racing functionality of Las Venturas

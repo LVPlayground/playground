@@ -2,7 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let RaceImporter = require('features/races/race_importer.js');
+let RaceImporter = require('features/races/race_importer.js'),
+    Vector = require('base/vector.js');
 
 describe('RaceImporter', it => {
   it('should require and validate the id', assert => {
@@ -31,7 +32,7 @@ describe('RaceImporter', it => {
     assert.throws(() => importName({ name: 42 }));
     assert.throws(() => importName({ name: '' }));
 
-    let race = importName({ name: 'MyRace' });
+    let race = importName({ name: 'My Race' });
     assert.equal(race.name, 'My Race');
   });
 
@@ -40,7 +41,7 @@ describe('RaceImporter', it => {
       let importer = RaceImporter.fromDataForTests(data);
       importer.importSpawnPositions();
       return importer.race;
-    });
+    };
 
     let position = [ 0, 0, 0 ];
     let rotation = 180;
@@ -88,7 +89,7 @@ describe('RaceImporter', it => {
 
     assert.throws(() => importCheckpoints({ checkpoints: [ { position: 42 } ] }));
     assert.throws(() => importCheckpoints({ checkpoints: [ { position: [ 42 ] } ] }));
-    assert.throws(() => importCheckpoints({ checkpoints: [ { position: [ 42, 42 ] } ] });
+    assert.throws(() => importCheckpoints({ checkpoints: [ { position: [ 42, 42 ] } ] }));
     assert.throws(() => importCheckpoints({ checkpoints: [ { position: [ 0, 0, 0 ], size: -100 } ] }));
     assert.throws(() => importCheckpoints({ checkpoints: [ { position: [ 0, 0, 0 ], size: 9999 } ] }));
 
@@ -186,11 +187,11 @@ describe('RaceImporter', it => {
     assert.throws(() => importChallengeDesk({ challenge_desk: false }));
     assert.throws(() => importChallengeDesk({ challenge_desk: [] }));
     assert.throws(() => importChallengeDesk(
-        { challenge_desk: { /** actor_model **/, position: true, rotation: true } }));
+        { challenge_desk: { /** actor_model, **/ position: true, rotation: true } }));
     assert.throws(() => importChallengeDesk(
-        { challenge_desk: { actor_model: true, /** position **/, rotation: true } }));
+        { challenge_desk: { actor_model: true, /** position, **/ rotation: true } }));
     assert.throws(() => importChallengeDesk(
-        { challenge_desk: { actor_model: true, position: true, /** rotation **/ } }));
+        { challenge_desk: { actor_model: true, position: true /**, rotation **/ } }));
 
     let actor_model = 121;
     let position = [0, 0, 0];
@@ -212,7 +213,7 @@ describe('RaceImporter', it => {
     });
 
     assert.equal(race.challengeDesk.actorModel, actor_model);
-    assert.deepEqual(race.challengeDesk.position, position);
+    assert.deepEqual(race.challengeDesk.position, new Vector(...position));
     assert.equal(race.challengeDesk.rotation, rotation);
   });
 
@@ -274,24 +275,22 @@ describe('RaceImporter', it => {
     let race = importObjects({
       objects: [
         { model: 411, position, rotation },
-        { model: 412, [ 1, 2, 3 ], [ 4, 5, 6 ]}
+        { model: 412, position: [ 1, 2, 3 ], rotation: [ 4, 5, 6 ] }
       ]
     });
 
-    assert.deepEqual(race.objects, {
-      { model: 411, position, rotation },
-      { model: 412, [ 1, 2, 3 ], [ 4, 5, 6 ] }
-    });
+    assert.deepEqual(race.objects, [
+      { model: 411, position: new Vector(...position), rotation: new Vector(...rotation) },
+      { model: 412, position: new Vector(1, 2, 3), rotation: new Vector(4, 5, 6) }
+    ]);
 
     assert.equal(race.objectModelCount, 2);
   });
 
   it('should count object models', assert => {
     let objects = [];
-    for (let i = 0; i < 50; ++i) {
-      let model = i % 2 ? i : i + 1;
-      objects.push({ model: i, position: [0, 0, 0], rotation: [0, 0, 0]});
-    }
+    for (let i = 1; i < 50; ++i)
+      objects.push({ model: Math.round(i / 2), position: [0, 0, 0], rotation: [0, 0, 0]});
 
     let importer = RaceImporter.fromDataForTests({ objects });
     importer.importObjects();

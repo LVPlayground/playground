@@ -15,7 +15,7 @@ class Race {
     this.challengeDesk_ = null;
 
     this.weather_ = 7;
-    this.time_ = [12, 00];
+    this.time_ = [12, 0];
     this.interior_ = 0;
 
     this.spawnPositions_ = [];
@@ -79,6 +79,12 @@ class Race {
     this.time_ = value;
   }
 
+  // Gets or sets the interior in which this race will take place.
+  get interior() { return this.interior_; }
+  set interior(value) {
+    this.interior_ = value;
+  }
+
   // Returns the spawn positions available for this race.
   get spawnPositions() { return this.spawnPositions_; }
 
@@ -101,13 +107,13 @@ class Race {
   get objects() { return this.objects_; }
 
   // Returns the number of unique object models that are required for the race.
-  get objectModelCount() { return this.objectModels_.length; }
+  get objectModelCount() { return this.objectModels_.size; }
 
   // Registers a new object that's part of this race. The |model| must be the GTA model id used to
   // describe the object, whereas |position| and |rotation| must be 3D vectors.
   addObject(model, position, rotation) {
     this.objects_.push({ model, position, rotation });
-    this.objectModels_.insert(model);
+    this.objectModels_.add(model);
   }
 
   // Gets or sets whether the race should use airplane checkpoints rather than normal one.

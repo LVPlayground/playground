@@ -31,7 +31,7 @@ class RaceManager {
   // Asynchronously loads the best times for all known races from the database. They will be stored
   // in the Race instance associated with the race.
   loadBestTimes() {
-    this.database_.fetchBestTimes().then(bestTimes => {
+    this.raceDatabase_.fetchBestTimes().then(bestTimes => {
       Object.keys(this.races_).forEach(raceId => {
         if (!bestTimes.hasOwnProperty(raceId))
           return;
@@ -64,7 +64,7 @@ class RaceManager {
     if (!this.races_.length)
       return Promise.resolve([]);
 
-    this.database_.fetchBestTimesForPlayer(player).then(bestTimes => {
+    this.raceDatabase_.fetchBestTimesForPlayer(player).then(bestTimes => {
       let races = [];
 
       Object.keys(this.races_).forEach(raceId => {

@@ -22,7 +22,7 @@ class Message {
   //   %%  - Literal percentage sign.
   //
   // Any other symbols followed by an percentage sign will be ignored.
-  static format(message, args...) {
+  static format(message, ...args) {
     // TODO: Return the formatted message.
     return message;
   }
@@ -34,8 +34,8 @@ class Message {
       return time;
 
     let seconds = time % 60;
-    let minutes = Math.round(time / 60) % 60;
-    let hours = Math.round(time / 3600);
+    let minutes = Math.floor(time / 60) % 60;
+    let hours = Math.floor(time / 3600);
 
     let representation = '';
 

@@ -69,10 +69,7 @@ class RaceImporter {
       throw new Error('Unable to import race data from file: ' + filename);
 
     let importer = new RaceImporter(constructorSymbol, data);
-    if (importer.process())
-      return importer.race;
-
-    return null;
+    return importer.race;
   }
 
   // Constructs a new Race object from |data|. Should generally only be used by tests. Will not
@@ -102,7 +99,7 @@ class RaceImporter {
     this.importSettings();
 
     // Make sure that this race doesn't have too many objects.
-    if (this.race_.objectModelCount() > MAX_OBJECT_MODELS)
+    if (this.race_.objectModelCount > MAX_OBJECT_MODELS)
       throw new Error('Races may not exceed ' + MAX_OBJECT_MODELS + ' unique object models.');
   }
 
@@ -174,8 +171,8 @@ class RaceImporter {
     if (typeof actorModel !== 'number')
       throw new Error('The `actor_model` for the challenge desk must be a valid model.');
 
-    let position = createVector(challengeDesk.position),
-        rotation = createRotation(challengeDesk.rotation);
+    let position = this.createVector(challengeDesk.position),
+        rotation = this.createRotation(challengeDesk.rotation);
 
     this.race_.challengeDesk = { actorModel, position, rotation };
   }
@@ -277,7 +274,7 @@ class RaceImporter {
       if (typeof checkpoint !== 'object')
         throw new Error('Every `checkpoint` for a race must be an object.');
 
-      if (!checkpoint.hasOwnProperty('property'))
+      if (!checkpoint.hasOwnProperty('position'))
         throw new Error('Each checkpoint must have a defined `position`.');
 
       let position = this.createVector(checkpoint.position);

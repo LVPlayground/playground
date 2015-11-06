@@ -35,16 +35,6 @@ describe('Extendable', (it, beforeEach, afterEach) => {
   });
 
   it('validates whether a property can be provided', assert => {
-    assert.throws(() => {
-      // Defined in the constructor ("private").
-      ExtendableUser.provideProperty('value_', () => false);
-    });
-
-    assert.throws(() => {
-      // Defined as a getter on the prototype.
-      ExtendableUser.provideProperty('value', () => false);
-    });
-
     // Defining the same property twice.
     assert.throws(() => {
       ExtendableUser.provideProperty('myProperty', () => false);
@@ -74,8 +64,7 @@ describe('Extendable', (it, beforeEach, afterEach) => {
     assert.isTrue(extendableUser.hasOwnProperty('double'));
     assert.equal(extendableUser.double, 24);
 
-    assert.isFalse(extendableSubUser.hasOwnProperty('double'));
-    assert.isTrue(extendableSubUser.__proto__.hasOwnProperty('double'));
+    assert.isTrue(extendableSubUser.hasOwnProperty('double'));
     assert.equal(extendableSubUser.double, 48);
 
     assert.isFalse(extendableUser.hasOwnProperty('triple'));
@@ -113,7 +102,7 @@ describe('Extendable', (it, beforeEach, afterEach) => {
 
   it('is able to provide methods', assert => {
     ExtendableUser.provideMethod('multiply', (instance, multiplier) => instance.value_ * multiplier);
-    ExtendableSubUser.provideMethod('divide', (instance, divisor) => instance.value_ / multiplier);
+    ExtendableSubUser.provideMethod('divide', (instance, divisor) => instance.value_ / divisor);
 
     let extendableUser = new ExtendableUser(),
         extendableSubUser = new ExtendableSubUser();
@@ -132,6 +121,6 @@ describe('Extendable', (it, beforeEach, afterEach) => {
 
     assert.throws(() => extendableUser.divide(2));
 
-    assert.equals(extendableSubUser.divide(2), 12);
+    assert.equal(extendableSubUser.divide(2), 12);
   });
 });

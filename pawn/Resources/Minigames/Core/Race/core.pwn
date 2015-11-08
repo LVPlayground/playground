@@ -1117,6 +1117,7 @@ CRace__StartRace( iRaceID )
     g_RaceData[ iRaceID ][ 20 ] = 0;
     g_RaceData[ iRaceID ][ 26 ] = Time->currentTime();
     g_RaceData[ iRaceID ][ 28 ] = 0;
+    g_RaceData[ iRaceID ][ 34 ] = 0;
 
 
     new iSignupID;

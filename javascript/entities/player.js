@@ -75,7 +75,8 @@ class Player extends Extendable {
   set activity(activity) {
     this.activity_ = activity;
 
-    // TODO: Propagate the change to Pawn.
+    // Inform the Pawn script of the activity change.
+    pawnInvoke('OnPlayerActivityChange', 'ii', this.id_, activity);
   }
 
   // Sends |message| to the player. The |message| can either be a scalar JavaScript value or an

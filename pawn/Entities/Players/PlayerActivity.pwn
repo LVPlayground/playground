@@ -49,5 +49,8 @@ class PlayerActivity <playerId (MAX_PLAYERS)> {
 
 forward OnPlayerActivityChange(playerid, activity);
 public OnPlayerActivityChange(playerid, activity) {
+    if (!IsPlayerConnected(playerid))
+        return;
+
     PlayerActivity(playerid)->silentSet(PlayerActivityType: activity);
 }

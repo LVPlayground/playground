@@ -180,8 +180,7 @@ class CommandBuilder {
       // When a level restriction is in effect for this command and the player does not meet the
       // required level, bail out immediately. This clause only hits for the main command.
       if (this.restrictLevel_ > player.level) {
-        // TODO: Use a Message class to make this look prettier than it currently does.
-        player.sendMessage('Sorry, this command is only available to ' + playerLevelToString(this.restrictLevel_, true /* plural */) + '.');
+        player.sendMessage(Message.format(Message.COMMAND_ERROR_INSUFFICIENT_RIGHTS, playerLevelToString(this.restrictLevel_, true /* plural */)));
         return true;
       }
 
@@ -241,8 +240,7 @@ class CommandBuilder {
       if (this.parameterParser_ !== null) {
         let parameters = this.parameterParser_.parse(argumentString, player);
         if (parameters === null) {
-          // TODO: Mark up this message using the Message class as well.
-          player.sendMessage('Usage: ' + this.toString())
+          player.sendMessage(Message.format(Message.COMMAND_USAGE, this.toString()));
           return true;
         }
 

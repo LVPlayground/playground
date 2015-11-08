@@ -296,14 +296,14 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
         .build();
 
     listener(player, '');
-    assert.equal(lastMessage, 'Sorry, this command is only available to Management members.');
+    assert.equal(Message.filter(lastMessage), 'Error: Sorry, this command is only available to Management members.');
 
     builder('testcommand')
         .restrict(Player.LEVEL_ADMINISTRATOR)
         .build();
 
     listener(player, '');
-    assert.equal(lastMessage, 'Sorry, this command is only available to administrators.');
+    assert.equal(Message.filter(lastMessage), 'Error: Sorry, this command is only available to administrators.');
   });
 
   it('should parse and apply parameters', assert => {
@@ -330,7 +330,7 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
     assert.strictEqual(parameterBar, 42);
 
     listener(player, 'foo');
-    assert.equal(lastMessage, 'Usage: /testcommand foo [bar]');
+    assert.equal(Message.filter(lastMessage), 'Usage: /testcommand foo [bar]');
 
     lastMessage = null;
 
@@ -359,7 +359,7 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
     parameterFoo = null;
 
     listener(player, '');
-    assert.equal(lastMessage, 'Usage: /testcommand [foo]');
+    assert.equal(Message.filter(lastMessage), 'Usage: /testcommand [foo]');
     assert.isNull(parameterFoo);
   });
 

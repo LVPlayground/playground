@@ -40,6 +40,11 @@ class Player extends Extendable {
     return null;
   }
 
+  // Returns the number of players that are currently online on Las Venturas Playground.
+  static count() {
+    return Object.keys(players).length;
+  }
+
   // Creates a new instance of the Player class for |playerId|. This method must only be used by
   // code in this file, hence the |privateSymbol| which is deliberately not exported.
   constructor(privateSymbol, playerId) {

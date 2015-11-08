@@ -2,6 +2,7 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
+#if Feature::DisableRaces == 0
 /**
  * Called when the player enters a checkpoint.
  *
@@ -13,3 +14,4 @@ public OnPlayerEnterDynamicCP(playerid, DynamicCP: checkpointid) {
 
     return 1;
 }
+#endif

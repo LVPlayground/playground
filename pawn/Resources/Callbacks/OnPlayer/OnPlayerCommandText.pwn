@@ -588,6 +588,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         return 1;
     }
 
+#if Feature::DisableRaces == 0
     if (strcmp(cmdtext, "/race", true, 5) == 0)
     {
 
@@ -620,6 +621,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         CRace__ShowPlayerDialog( playerid, RACE_TYPE_DRIFT);
         return 1;
     }
+#endif
 
     // There's plenty of people missing here?
     if(strcmp(cmd, "/credits", true) == 0) 

@@ -1887,7 +1887,7 @@ CRace__CheckpointForPlayer( playerid )
 }
 
 // CRace__CalcCheckpointTime
-// Thsi is used for drift races to calculate the time in which the player has to reach the next checkpoint
+// This is used for drift races to calculate the time in which the player has to reach the next checkpoint
 CRace__CalcCheckpointTime( playerid, iRaceID, iCheckpointID )
 {
 
@@ -2968,7 +2968,7 @@ CRace__AddCheckpoint( iRaceID, Float:fPosX, Float:fPosY, Float:fPosZ, Float:fSiz
 // CRace__UnlimitedNitro
 // This function enables unlimited nitro on a race,
 // useful for stunt races etc.
-stock CRace__UnlimitedNitro(iRaceID)
+CRace__UnlimitedNitro(iRaceID)
 {
     g_RaceData[ iRaceID ][ 36 ] = true;
 }
@@ -2987,29 +2987,4 @@ CRace__DisableDamage(iRaceID, iDisable)
 CRace__SetCheckpointType(iRaceID, iType)
 {
     g_RaceData[iRaceID][30] = iType;
-}
-
-// ordinal
-// Utility function to ordinalize a number; i.e. 1st, 2nd, 3rd, etc.
-stock ordinal( str[], iLen, iNumber )
-{
-    new szSuffix[3];
-    if ((iNumber % 100) / 10 == 1)
-    {
-        szSuffix = "th";
-    }
-    else
-    {
-        new iMod = iNumber % 10;
-        switch (iMod)
-        {
-            case 1:     szSuffix = "st";
-            case 2:     szSuffix = "nd";
-            case 3:     szSuffix = "rd";
-            default:    szSuffix = "th";
-        }
-    }
-
-    format( str, iLen, "%d%s", iNumber, szSuffix );
-    return 1;
 }

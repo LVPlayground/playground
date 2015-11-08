@@ -7,7 +7,11 @@ new DeathmatchTimer;
 #include Resources/Minigames/Core/MinigamesHandler.pwn
 #include Resources/Minigames/Core/DeathmatchHandler.pwn
 #include Resources/Minigames/Deliver/Deliver.pwn
+
+#if Feature::DisableRaces == 0
 #include Resources/Minigames/Core/Race/core.pwn
+#endif
+
 #include Resources/Minigames/Core/Brief.pwn
 #include Resources/Minigames/Core/Derby.pwn
 #include Resources/Minigames/Core/Robbery.pwn
@@ -21,8 +25,10 @@ new DeathmatchTimer;
 
 // Converts the type of minigame a player is playing to a MinigameType enumeration value.
 MinigameType: GetPlayerMinigameType(playerId) {
+#if Feature::DisableRaces == 0
     if (CRace__IsRacing(playerId) || CRace__HasPlayerSignedUp(playerId))
         return RaceMinigame;
+#endif
 
     if (IsPlayerInMapZone(playerId))
         return JumpMinigame;
@@ -74,10 +80,12 @@ stock GetPlayerMinigameName(playerId) {
         goto l_Success;
     }
 
+#if Feature::DisableRaces == 0
     if (CRace__IsRacing(playerId) || CRace__HasPlayerSignedUp(playerId)) {
         format(notice, sizeof(notice), "%s", g_RaceNames[g_RacePlayers[playerId][1]]);
         goto l_Success;
     }
+#endif
 
     if (g_RivershellPlayer[playerId]) {
         notice = "Rivershell";

@@ -53,7 +53,9 @@ class DeprecatedTimerRuntime {
         CChase__Process();
         CBrief__CheckEmpty();
         CShell__CheckStatus();
+#if Feature::DisableRaces == 0
         CRace__Process();
+#endif
 
         rwProcess();
 
@@ -153,7 +155,11 @@ class DeprecatedTimerRuntime {
         }
 
         TaxUpdate();
+
+#if Feature::DisableRaces == 0
         CRace__OpenRaces();
+#endif
+
         CReaction__ReactionExpire();
 
         if (++m_threeMinuteTicker == 3) {
@@ -190,7 +196,11 @@ stock StartTimers() {
 
 forward QuickTimer();
 public QuickTimer() {
+#if Feature::DisableRaces == 0
     CDrift__Update();
+#endif
     CHay__Process();
+#if Feature::DisableRaces == 0
     CRace__ProcessLoadDisplay();
+#endif
 }

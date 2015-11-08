@@ -35,7 +35,11 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 
     MinigameStateChange(playerid, newstate, oldstate);
     waterFightStateChange(playerid);
+
+#if Feature::DisableRaces == 0
     CDrift__Teleport(playerid);
+#endif
+
     CCrush__StateChange(playerid, newstate, oldstate);
 
     if (g_RivershellPlayer[playerid] && g_RivershellState == RIVERSHELL_STATE_RUNNING) {
@@ -58,10 +62,12 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
         return 1;
     }
 
+#if Feature::DisableRaces == 0
     if (CRace__IsRacing(playerid)) {
         CRace__OnStateChange(playerid, newstate, oldstate);
         return 1;
     }
+#endif
 
     if (CDerby__GetPlayerState(playerid) >= DERBY_STATE_COUNTDOWN) {
         CDerby__StateChange(playerid, newstate, oldstate);
@@ -73,7 +79,10 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 
         CTheft__EnterVehicle(playerid);
         CExport__EnterVehicle(playerid);
+
+#if Feature::DisableRaces == 0
         MissileCheckStateChange(playerid, oldstate, newstate, GetPlayerVehicleID(playerid));
+#endif
 
         for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
             if (Player(subjectId)->isConnected() == false || Player(subjectId)->isNonPlayerCharacter() == true)

@@ -87,8 +87,11 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
                     SendClientMessage(playerid, Color::Error, "You scared off the taxi driver because you're shooting!");
                 }
             }
-        } else if (GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
+        }
+#if Feature::DisableRaces == 0
+        else if (GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
             CheckVehicleMissileFire(playerid, GetPlayerVehicleID(playerid));
+#endif
     }
 
     // Other fighting style (punch + kick combo)

@@ -153,12 +153,16 @@ CSave__SaveInfo(playerId) {
         m_playerSaveInfo[slotId][savedAmmo][weaponSlot] = ammo;
     }
 
-    if (CRace__IsRacing(playerId)) {
+    if (false) {}
+#if Feature::DisableRaces == 0
+    else if (CRace__IsRacing(playerId)) {
         m_playerSaveInfo[slotId][positionX] = g_RacePlayerPos[playerId][0];
         m_playerSaveInfo[slotId][positionY] = g_RacePlayerPos[playerId][1];
         m_playerSaveInfo[slotId][positionZ] = g_RacePlayerPos[playerId][2];
         m_playerSaveInfo[slotId][angle] = playerAngle;
-    } else if (IsPlayerInMapZone(playerId)) {
+    }
+#endif
+    else if (IsPlayerInMapZone(playerId)) {
         m_playerSaveInfo[slotId][positionX] = g_PlayerPos[playerId][0];
         m_playerSaveInfo[slotId][positionY] = g_PlayerPos[playerId][1];
         m_playerSaveInfo[slotId][positionZ] = g_PlayerPos[playerId][2];

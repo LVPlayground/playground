@@ -55,6 +55,7 @@ RemovePlayerFromAnyGame(playerId) {
         return 1;
     }
 
+#if Feature::DisableRaces == 0
     if (g_RacePlayers[playerId][0] == RACE_STATE_SIGNUP) {
         CRace__EndForPlayer(playerId, SIGNOUT);
         return 1;
@@ -64,6 +65,7 @@ RemovePlayerFromAnyGame(playerId) {
         CRace__EndForPlayer(playerId, LEFT);
         return 1;
     }
+#endif
 
     if (IsPlayerInMapZone(playerId)) {
         SetPlayerMapZone(playerId, -1);
@@ -1052,5 +1054,30 @@ LegacyFixPlayer(playerId) {
         CFightClub__TerminateMatch(PlayerMatch[playerId]);
 #endif
 
+    return 1;
+}
+
+// ordinal
+// Utility function to ordinalize a number; i.e. 1st, 2nd, 3rd, etc.
+ordinal( str[], iLen, iNumber )
+{
+    new szSuffix[3];
+    if ((iNumber % 100) / 10 == 1)
+    {
+        szSuffix = "th";
+    }
+    else
+    {
+        new iMod = iNumber % 10;
+        switch (iMod)
+        {
+            case 1:     szSuffix = "st";
+            case 2:     szSuffix = "nd";
+            case 3:     szSuffix = "rd";
+            default:    szSuffix = "th";
+        }
+    }
+
+    format( str, iLen, "%d%s", iNumber, szSuffix );
     return 1;
 }

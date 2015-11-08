@@ -20,8 +20,12 @@ enum minigameInfo {
 
 new MinigameTypeInfo[minigameInfo];
 
+#if Feature::DisableRaces == 1
+CRace__GetPlayerStatus(playerId) { return playerId != 9001 ? 0 : 1; }
+#endif
+
 // Alright somebody has executed a minigame command (e.g. /sniper, /minigun). Let's see!
-stock MiniGamesSignup(playerId, minigame) {
+MiniGamesSignup(playerId, minigame) {
     new notice[256], minigameMaxPlayers = ReturnMinigameMaxPlayers(minigame);
 
     // Check if the player executing the commands is actually available for such an event.
@@ -313,11 +317,13 @@ stock IsPlayerMinigameFree(playerId) {
     if (IsPlayerStatusMinigame(playerId))
         return 0;
 
+#if Feature::DisableRaces == 0
     if (CRace__IsRacing(playerId))
         return 0;
 
     if (CRace__GetPlayerStatus(playerId) > 0)
         return 0;
+#endif
 
     if (g_RivershellPlayer[playerId])
         return 0;
@@ -368,8 +374,10 @@ stock IsPlayerInMinigame(playerId) {
     if (CLyse__GetPlayerState(playerId) > 1)
         return 1;
 
+#if Feature::DisableRaces == 0
     if (CRace__IsRacing(playerId))
         return 1;
+#endif
 
     if (CHideGame__GetPlayerState(playerId) == 2)
         return 1;

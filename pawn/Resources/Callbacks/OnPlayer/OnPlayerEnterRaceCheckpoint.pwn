@@ -13,9 +13,11 @@ public OnPlayerEnterRaceCheckpoint(playerid) {
     if (MapZoneCheckpointUpdate(playerid))
         return 1;
 
+#if Feature::DisableRaces == 0
     new raceId = g_RacePlayers[playerid][1];
     if (g_RacePlayers[playerid][0] == RACE_STATE_RUNNING)
         CRace__OnCheckpoint(playerid, raceId);
+#endif
 
     return 1;
 }

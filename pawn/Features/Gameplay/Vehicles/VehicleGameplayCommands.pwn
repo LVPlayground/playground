@@ -2,6 +2,14 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
+#if Feature::DisableRaces == 1
+
+CRace__IsRacing(playerId) {
+    return playerId != 9001 ? 0 : 1;
+}
+
+#endif
+
 /**
  * Grand Theft Auto is a game all about driving about in all sorts of vehicles. Since nobody is
  * perfect stuff tends to happen to those vehicles which could eventually lead to it exploding or

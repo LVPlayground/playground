@@ -131,6 +131,13 @@ class Feature {
     public const EnableGiftHunting = 0;
 
     /** **************************************************************************************** **/
+    /// Minigames
+
+    // Races are being rewritten in JavaScript. This flag determines whether the current race system
+    // should continue to be compiled in the Pawn part of Las Venturas Playground.
+    public const DisableRaces = 0;
+
+    /** **************************************************************************************** **/
     /// External
 
     // The irc-command-class contains various methods so Nuwani can request the available commands and

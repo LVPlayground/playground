@@ -37,11 +37,13 @@ lvp_minigaming(playerid, params[]) {
         if (!IsPlayerInMinigame(subjectId))
             continue;
 
+#if Feature::DisableRaces == 0
         if (CRace__IsRacing(subjectId)) {
             format(minigaming, sizeof(minigaming), "%s\r\n%s (Id:%d) - race", minigaming,
                 Player(subjectId)->nicknameString(), subjectId);
             continue;
         }
+#endif
 
         if (CDerby__GetPlayerState(subjectId) >= DERBY_STATE_COUNTDOWN) {
             format(minigaming, sizeof(minigaming), "%s\r\n%s (Id:%d) - derby", minigaming,
@@ -229,7 +231,11 @@ lvp_stats(playerid, params[])
     format(szStatMsg, 128, "Players Online: %d  Admins Online: %d   Mods Online: %d", iPlayersOnline, iAdminsOnline, iModsOnline);
     SendClientMessage(playerid, COLOR_GREEN, szStatMsg);
 
+#if Feature::DisableRaces == 0
     format(szStatMsg, 128, "Races: %d Achievements: %d NPCs: %d", g_RacesLoaded, TotalAchievements, iNPCSOnline);
+#else
+    format(szStatMsg, 128, "Achievements: %d NPCs: %d", TotalAchievements, iNPCSOnline);
+#endif
     SendClientMessage(playerid, COLOR_GREEN, szStatMsg);
 
     return 1;

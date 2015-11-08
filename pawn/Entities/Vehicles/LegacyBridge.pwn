@@ -11,11 +11,15 @@ AnyPlayerInVehicle(vehicleId) {
     #pragma unused vehicleId
 }
 
+#if Feature::DisableRaces == 0
+
 IsVehicleDrivingBackwards(vehicleId) {
     // TODO: Implement me.
     return 0;
     #pragma unused vehicleId
 }
+
+#endif
 
 // -----------------------------------------------
 // Feature: Locking a vehicle's doors.

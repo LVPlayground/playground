@@ -43,6 +43,8 @@ CheckpointProcess(i)
 {
     if(IsPlayerInMinigame(i))
         return 0;
+
+#if Feature::DisableRaces == 0
     if(IsPlayerInVehicle(i,GTA_Vehicle)) {
         for (new j = 0; j < MAX_RACES; j++) {
             TogglePlayerDynamicCP(i, CRace__GetDynamicCheckpointID(j), 0);
@@ -54,6 +56,8 @@ CheckpointProcess(i)
             TogglePlayerDynamicCP(i, CRace__GetDynamicCheckpointID(j), 1);
         }
     }
+#endif
+
     if(PlayerInfo[i][PlayerStatus] == STATUS_DELIVERY)
         return 0; // wait, if there in a mission, we can't have other checkpoints overriding aswell now can we o/
 

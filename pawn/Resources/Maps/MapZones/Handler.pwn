@@ -361,6 +361,8 @@ CheckMapZoneRaceCheckpoint(playerid, iMapID)
     ShowMapZoneCheckpointForPlayer(playerid, iMapID);
 }
 
+#if Feature::DisableRaces == 0
+
 // This function is called when a player types the /race command
 // And handles starting or joining of the race
 CheckMapZoneRaceCmd(playerid)
@@ -434,6 +436,8 @@ CheckMapZoneRaceCmd(playerid)
     }
     return 1;
 }
+
+#endif
 
 // This is called every second and repairs every players vehicle that is currently in a map zone
 ProcessMapZoneVehicleRepair(playerid)
@@ -1154,9 +1158,14 @@ OnMapConnect(playerid)
     g_HSpeedCount[playerid] = 0;
 }
 
-new  iMapZoneJumpDialogID[MAX_MAP_AREAS];
-new  iMapZoneJumpDialogItems = 0;
-new  szMapZoneRaceDialog[512];
+new iMapZoneJumpDialogID[MAX_MAP_AREAS];
+
+#if Feature::DisableRaces == 0
+new iMapZoneJumpDialogItems = 0;
+new szMapZoneRaceDialog[512];
+#endif
+
+#if Feature::DisableRaces == 0
 
 // Shows a dialog listing all the map zones with jump zone races on them
 ShowMapZoneJumpRaceDialog(playerid)
@@ -1201,6 +1210,8 @@ ShowMapZoneJumpRaceDialog(playerid)
         ShowPlayerDialog(playerid, DIALOG_JUMP_RACES, DIALOG_STYLE_LIST, "LVP Jump Races", szMapZoneRaceDialog, "Select", "Close");
     }
 }
+
+#endif
 
 // Called when a player presses a buttom in the above dialog ^
 OnMapZoneJumpDialogResponse(playerid, listitem)

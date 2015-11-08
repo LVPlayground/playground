@@ -4,7 +4,8 @@
 
 let ChallengeDesk = require('features/races/challenge_desk.js'),
     RaceDatabase = require('features/races/race_database.js'),
-    RunningRace = require('features/race/running_race.js');
+    RaceSettings = require('features/races/race_settings.js'),
+    RunningRace = require('features/races/running_race.js');
 
 // The race manager is responsible for keeping track of the available races, the in-progress races
 // and providing the ability to start or stop races when that's necessary.
@@ -95,7 +96,10 @@ class RaceManager {
   // Announces that |runningRace| has started and is now accepting sign-ups. Other players can join
   // for a given number of seconds before the race will automatically start.
   announceRace(runningRace) {
-    // TODO: Announce that the race can be joined by other players.
+    let message = Message.format(Message.ANNOUNCE_MINIGAME,
+        runningRace.race.name, '/race ' + runningRace.race.id, RaceSettings.RACE_SIGNUP_PRICE);
+
+    Player.forEach(player => player.sendMessage(message));
   }
 
   // Returns a promise that will be resolved with a personalized list of races available for the

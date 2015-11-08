@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 require('base/message.js');
-require('base/timers.js');
 
 require('entities/player.js');
 require('entities/vehicle.js');
@@ -28,5 +27,4 @@ testRunner.run('**/*.test.js').then(() => {
       console.log('  ' + failure.toString() + '\n'));
 
   console.log('===============================================================\n');
-
 });

@@ -53,8 +53,8 @@ class Database {
 
     // Announce the result of the connection attempt once its known.
     this.connection_.ready.then(
-      () => console.log('[Database] The connection with the database has been established.'),
-      error => console.log('[Database] Unable to connect to the database:', error));
+        () => console.log('[Database] The connection with the database has been established.'),
+        error => console.log('[Database] Unable to connect to the database:', error));
   }
 
   // Returns the total number of queries that have been executed on the connection.

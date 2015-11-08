@@ -122,7 +122,6 @@ class TestRunner {
     {
       require('base/extendable.test.js');
       require('base/message.test.js');
-      require('base/priority_queue.test.js');
       require('base/scoped_callbacks.test.js');
       require('base/string_parser.test.js');
       require('base/test/assert.test.js');

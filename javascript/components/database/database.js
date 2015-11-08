@@ -84,13 +84,14 @@ class Database {
       if (substitutionIndex >= parameters.length)
         throw new Error('Not enough substitution parameters were provided for this query.');
 
-      switch (typeof parameters[substitutionIndex]) {
+      let type = typeof parameters[substitutionIndex];
+      switch (type) {
         case 'number':
           return prefix + substituteNumber(parameters[substitutionIndex++]);
         case 'string':
           return prefix + '"' + substituteString(parameters[substitutionIndex++]) + '"';
         default:
-          throw new Error('Invalid type for substitution parameter ' + substitutionIndex);
+          throw new Error('Invalid type ("' + type + '"") for substitution parameter #' + substitutionIndex);
       }
 
       // We'll never hit this due to the `default` case in the switch.

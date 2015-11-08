@@ -34,10 +34,8 @@ class RaceCommands {
   raceStart(player, id) {
     // TODO: Check whether the player is engaged in an activity already.
 
-    if (!this.raceManager_.isValid(id)) {
-      // TODO: Message the player about |id| not being a valid race.
-      return;
-    }
+    if (!this.raceManager_.isValid(id))
+      return player.sendMessage(Message.RACE_ERROR_INVALID_RACE_ID);
 
     // TODO: Withdraw the price of playing a race from the player's account.
 
@@ -79,7 +77,7 @@ class RaceCommands {
         }
 
         // Append the item, with a per-row listener to start the selected race.
-        menu.addItem(...columnValues, this.__proto__.raceStart.bind(player, race.id));
+        menu.addItem(...columnValues, this.__proto__.raceStart.bind(this, player, race.id));
       });
 
       // Display the created menu to the player. Per-entry listeners will start a race if needed.

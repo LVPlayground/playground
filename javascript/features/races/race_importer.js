@@ -69,6 +69,8 @@ class RaceImporter {
       throw new Error('Unable to import race data from file: ' + filename);
 
     let importer = new RaceImporter(constructorSymbol, data);
+    importer.process();
+
     return importer.race;
   }
 

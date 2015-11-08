@@ -15,6 +15,11 @@ class RaceManager {
     this.challengeDesks_ = {};
   }
 
+  // Returns the number of races that have been created on the system.
+  get raceCount() {
+    return Object.keys(this.races_).length;
+  }
+
   // Registers |race| as a new race in the system. If the |race| has an associated challenge desk,
   // this will be created as well.
   registerRace(race) {
@@ -22,7 +27,7 @@ class RaceManager {
       throw new Error('A race with Id ' + race.id + ' already exists in the system.');
 
     this.races_[race.id] = race;
-    if (race.challengeDesk === null)
+    if (!race.challengeDesk)
       return;
 
     this.challengeDesks_[race.id] = new ChallengeDesk(this, race);
@@ -61,10 +66,10 @@ class RaceManager {
   // |player|, together with the all-time best time of registered players on the race. If |player|
   // is a registered player, their personal best time will be included in the overview as well.
   listRacesForPlayer(player) {
-    if (!this.races_.length)
+    if (!this.raceCount)
       return Promise.resolve([]);
 
-    this.raceDatabase_.fetchBestTimesForPlayer(player).then(bestTimes => {
+    return this.raceDatabase_.fetchBestTimesForPlayer(player).then(bestTimes => {
       let races = [];
 
       Object.keys(this.races_).forEach(raceId => {

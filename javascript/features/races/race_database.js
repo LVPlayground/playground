@@ -59,7 +59,7 @@ class RaceDatabase {
     if (!player.isRegistered())
       return Promise.resolve({});
 
-    return this.database_.query(FETCH_BEST_PLAYER_TIMES_QUERY, player.account.id).then(result => {
+    return this.database_.query(FETCH_BEST_PLAYER_TIMES_QUERY, player.account.userId).then(result => {
       let times = {};
 
       result.rows.forEach(row =>

@@ -7,6 +7,10 @@ exports = {
   // command to join a race, as well as for race challenge desks.
   RACE_SIGNUP_PRICE: 1000,
 
-  // Number of seconds that the sign-up period of a game will expire after.
-  RACE_SIGNUP_MAXIMUM_DURATION: 20
+  // Number of milliseconds to wait before races advance from the sign-up to the loading state. This
+  // could happen earlier if enough players have signed up for participating in the race.
+  RACE_SIGNUP_WAIT_DURATION: 20000,
+
+  // Number of milliseconds to wait before races advance from the loading to the countdown state.
+  RACE_LOADING_WAIT_DURATION: 1500,
 };

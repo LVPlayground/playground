@@ -7,6 +7,9 @@ require('base/timers.js');
 
 require('entities/player.js');
 
+// TODO: Move this to a Vehicle class of some kind.
+self.INVALID_VEHICLE_ID = 65535;
+
 let Playground = require('playground.js'),
     TestRunner = require('base/test/test_runner.js');
 

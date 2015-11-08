@@ -45,6 +45,11 @@ class Player extends Extendable {
     return Object.keys(players).length;
   }
 
+  // Executes |fn| for each player online on the server.
+  static forEach(fn) {
+    Object.keys(players).forEach(playerId => fn(players[playerId]));
+  }
+
   // Creates a new instance of the Player class for |playerId|. This method must only be used by
   // code in this file, hence the |privateSymbol| which is deliberately not exported.
   constructor(privateSymbol, playerId) {

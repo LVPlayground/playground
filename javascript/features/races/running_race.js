@@ -128,44 +128,38 @@ class RunningRace {
   // -----------------------------------------------------------------------------------------------
 
   createVehicles() {
-    let spawnPositions = this.race_.spawnPositions;
-    for (let i = 0; i < this.players_.length; ++i) {
-      let {position, rotation, vehicle} = spawnPositions[i];
+    let spawnPositions = this.race_.spawnPositions,
+        playerSpawnPositionIndex = 0;
 
-      let vehicleId = pawnInvoke('CreateVehicle', 'iffffiiii', vehicle.model, position.x, position.y,
-                                 position.z, rotation, vehicle.colors[0], vehicle.colors[1],
-                                 -1 /* respawn_delay */, 0 /* add_siren */);
+    this.players_.forEach(player => {
+      let spawn = spawnPositions[playerSpawnPositionIndex++];
+      let vehicle = new Vehicle({
+        modelId: spawn.vehicle.model,
+        position: spawn.position,
+        rotation: spawn.rotation,
+        colors: spawn.vehicle.colors
+      });
 
-      // If we were not able to create the vehicle for whatever reason, abort the entire race.
-      if (vehicleId == global.INVALID_VEHICLE_ID) {
-        console.log('Unable to create a vehicle for race [' + this.race_.name + ']. Aborting.');
-
-        this.advanceState(RunningRace.STATE_FINISHED);
-        return false;
-      }
-
-      // Link the vehicle to the race's virtual world.
-      pawnInvoke('SetVehicleVirtualWorld', 'ii', vehicleId, this.virtualWorld_);
-
-      // Link the vehicle to an interior if it's not the general world (0).
+      // Link the vehicle to the race's virtual world and interior (unless it's in the main world).
+      vehicle.virtualWorld = this.virtualWorld_;
       if (this.race_.interior != 0)
-        pawnInvoke('LinkVehicleToInterior', 'ii', vehicleId, this.race_.interior);
+        vehicle.interior = this.race_.interior;
 
       // If the vehicle should have nitrous oxide systems, make sure to create them.
-      switch (vehicle.nos) {
+      switch (spawn.vehicle.nos) {
         case 1:
-          pawnInvoke('AddVehicleComponent', 'ii', vehicleId, 1009 /* nto_b_s */);
+          vehicle.addComponent(Vehicle.COMPONENT_NOS_SINGLE_SHOT);
           break;
         case 5:
-          pawnInvoke('AddVehicleComponent', 'ii', vehicleId, 1008 /* nto_b_l */);
+          vehicle.addComponent(Vehicle.COMPONENT_NOS_FIVE_SHOTS);
           break;
         case 10:
-          pawnInvoke('AddVehicleComponent', 'ii', vehicleId, 1010 /* nto_b_tw */);
+          vehicle.addComponent(Vehicle.COMPONENT_NOS_TEN_SHOTS);
           break;
       }
 
-      this.vehicles_.push(vehicleId);
-    }
+      this.vehicles_.push(vehicle);
+    });
 
     return true;
   }
@@ -199,7 +193,7 @@ class RunningRace {
   finish() {
     this.callbacks_.dispose();
 
-    this.vehicles_.forEach(vehicleId => pawnInvoke('DestroyVehicle', 'i', vehicleId));
+    this.vehicles_.forEach(vehicle => vehicle.dispose());
     this.vehicles_ = [];
 
     // TODO: Remove all objects and state created by the race.

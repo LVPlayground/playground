@@ -115,8 +115,10 @@ class Player extends Extendable {
 
     if (typeof vehicle === 'number')
       pawnInvoke('PutPlayerInVehicle', 'iii', this.id_, vehicle, seat);
+    else if (vehicle instanceof Vehicle)
+      pawnInvoke('PutPlayerInVehicle', 'iii', this.id_, vehicle.id, seat);
     else
-      ; // TODO: Handle Vehicle instances for |vehicle|.
+      throw new Error('Unknown vehicle to put the player in: ' + vehicle);
   }
 
   // Returns or updates the activity of this player. Updating the activity will be propagated to

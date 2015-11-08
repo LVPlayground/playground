@@ -52,6 +52,7 @@ class Player extends Extendable {
     this.name_ = pawnInvoke('GetPlayerName', 'iS', playerId);
     this.ipAddress_ = pawnInvoke('GetPlayerIp', 'iS', playerId);
     this.level_ = Player.LEVEL_PLAYER;
+    this.activity_ = Player.PLAYER_ACTIVITY_NONE;
   }
 
   // Returns the id of this player. This attribute is read-only.
@@ -67,6 +68,15 @@ class Player extends Extendable {
 
   // Returns the level of this player. Synchronized with the gamemode using the `levelchange` event.
   get level() { return this.level_; }
+
+  // Returns or updates the activity of this player. Updating the activity will be propagated to
+  // the Pawn part of the gamemode as well.
+  get activity() { return this.activity_; }
+  set activity(activity) {
+    this.activity_ = activity;
+
+    // TODO: Propagate the change to Pawn.
+  }
 
   // Sends |message| to the player. The |message| can either be a scalar JavaScript value or an
   // instance of the Message class that exists in //base if you wish to use colors.
@@ -109,10 +119,13 @@ class Player extends Extendable {
   }
 };
 
-// The level of a  player. Can be accessed using the `level` property on a Player instance.
+// The level of a player. Can be accessed using the `level` property on a Player instance.
 Player.LEVEL_PLAYER = 0;
 Player.LEVEL_ADMINISTRATOR = 1;
 Player.LEVEL_MANAGEMENT = 2;
+
+// Loads the activities of a player and installs them on |Player|.
+require('entities/player_activities.js')(Player);
 
 // Called when a player connects to Las Venturas Playground. Registers the player as being in-game
 // and initializes the Player instance for them.

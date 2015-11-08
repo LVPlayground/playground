@@ -91,6 +91,7 @@ class Player <playerId (MAX_PLAYERS)> {
             this->enableFlag(IsNonPlayerCharacterFlag);
 
         PlayerState(playerId)->updateState(NormalPlayerState);
+        PlayerActivity(playerId)->silentSet(PlayerActivityNone);
 
         GetPlayerName(playerId, m_nickname, sizeof(m_nickname));
         GetPlayerIp(playerId, m_ipAddress, sizeof(m_ipAddress));

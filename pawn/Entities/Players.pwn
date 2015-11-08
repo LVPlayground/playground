@@ -2,6 +2,7 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
+#include "Entities/Players/PlayerActivity.pwn"
 #include "Entities/Players/PlayerFlags.pwn"
 #include "Entities/Players/PlayerState.pwn"
 #include "Entities/Players/Player.pwn"

@@ -3,7 +3,8 @@
 // be found in the LICENSE file.
 
 let RaceSettings = require('features/races/race_settings.js'),
-    ScopedCallbacks = require('base/scoped_callbacks.js');
+    ScopedCallbacks = require('base/scoped_callbacks.js'),
+    ScopedEntities = require('entities/scoped_entities.js');
 
 // This class defines the behavior of a race that is currently active, whereas active is defined by
 // being at least in the sign-up state.
@@ -33,6 +34,9 @@ class RunningRace {
       this.advanceState(RunningRace.STATE_LOADING);
     else
       wait(RaceSettings.RACE_SIGNUP_WAIT_DURATION).then(() => this.advanceState(RunningRace.STATE_LOADING));
+
+    // Scope all entities created by this race to the lifetime of the race.
+    this.entities_ = new ScopedEntities();
 
     // Listen to the required callbacks. Use a scoped callbacks object because this object is
     // ephemeral, and the listeners won't be necessary after the race has finished.
@@ -133,7 +137,7 @@ class RunningRace {
 
     this.players_.forEach(player => {
       let spawn = spawnPositions[playerSpawnPositionIndex++];
-      let vehicle = new Vehicle({
+      let vehicle = this.entities_.createVehicle({
         modelId: spawn.vehicle.model,
         position: spawn.position,
         rotation: spawn.rotation,
@@ -192,9 +196,7 @@ class RunningRace {
 
   finish() {
     this.callbacks_.dispose();
-
-    this.vehicles_.forEach(vehicle => vehicle.dispose());
-    this.vehicles_ = [];
+    this.entities_.dispose();
 
     // TODO: Remove all objects and state created by the race.
 

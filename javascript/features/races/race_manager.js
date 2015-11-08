@@ -3,13 +3,17 @@
 // be found in the LICENSE file.
 
 let ChallengeDesk = require('features/races/challenge_desk.js'),
-    RaceDatabase = require('features/races/race_database.js');
+    RaceDatabase = require('features/races/race_database.js'),
+    RunningRace = require('features/race/running_race.js');
 
 // The race manager is responsible for keeping track of the available races, the in-progress races
 // and providing the ability to start or stop races when that's necessary.
 class RaceManager {
   constructor(database) {
     this.raceDatabase_ = new RaceDatabase(database);
+
+    // An array of all races that are currently in-progress.
+    this.activeRaces_ = [];
 
     this.races_ = {};
     this.challengeDesks_ = {};
@@ -50,16 +54,48 @@ class RaceManager {
     });
   }
 
-  // Returns if |id| represents a valid race that could be started by the player.
-  isValid(id) {
-    return this.races_.hasOwnProperty(id);
+  // Returns if |race_id| represents a valid race that could be started by the player.
+  isValid(race_id) {
+    return this.races_.hasOwnProperty(race_id);
   }
 
-  // Starts the race |id| for |player|. When the |skipSignup| argument is set to TRUE, the sign-up
-  // phase will be skipped and the race will begin immediately.
-  startRace(player, id, skipSignup) {
-    // TODO: Either start the sign-up phase for the race, or start the race immediately if the
-    //       |skipSignup| argument is set to true.
+  // Starts the race |race_id| for |player|. When the |skipSignup| argument is set to TRUE, the
+  // sign-up phase will be skipped and the race will begin immediately.
+  startRace(player, race_id, skipSignup) {
+    let activeRace = null;
+
+    // If the sign-up phase does not have to be skipped (i.e. because it hasn't been started through
+    // a challenge desk, or because the player is the only person online), find other races of the
+    // same type that are currently in sign-up phase to join.
+    if (!skipSignup) {
+      this.activeRaces_.forEach(runningRace => {
+        if (runningRace.race.id != race_id || runningRace.state != RunningRace.STATE_SIGNUP)
+          return;
+
+        activeRace = runningRace;
+      });
+    }
+
+    // If there is an active race that can be joined, join it. Alternatively start a new race for
+    // the player. If |skipSignup| is true, the announcement phase will be skipped.
+    if (activeRace) {
+      activeRace.addPlayer(player);
+    } else {
+      activeRace = new RunningRace(this.races_[race_id], player, skipSignup);
+      activeRace.finished.then(() =>
+          this.activeRaces_ = this.activeRaces_.filter(runningRace => activeRace !== runningRace));
+
+      if (activeRace.state == RunningRace.STATE_SIGNUP)
+        this.announceRace(activeRace);
+
+      this.activeRaces_.push(activeRace);
+    }
+  }
+
+  // Announces that |runningRace| has started and is now accepting sign-ups. Other players can join
+  // for a given number of seconds before the race will automatically start.
+  announceRace(runningRace) {
+    // TODO: Announce that the race can be joined by other players.
   }
 
   // Returns a promise that will be resolved with a personalized list of races available for the

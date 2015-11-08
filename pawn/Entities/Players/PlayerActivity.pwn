@@ -9,7 +9,8 @@
  *     //javascript/entities/player_activities.js 
  */
 enum PlayerActivityType {
-    PlayerActivityNone = 0
+    PlayerActivityNone = 0,
+    PlayerActivityJsRace = 1,
 };
 
 /**

@@ -8,4 +8,5 @@
 //     //pawn/Entities/Players/PlayerActivity.pwn
 exports = (object) => {
   object.PLAYER_ACTIVITY_NONE = 0;
+  object.PLAYER_ACTIVITY_JS_RACE = 1;
 };

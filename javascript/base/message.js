@@ -8,7 +8,8 @@ const MESSAGE_DATA_FILE = 'data/messages.json';
 // Known message prefixes. These are substitutions for the most common contents of messages, for
 // example usage information or errors. In the message syntax, they are prepended by an at-sign.
 const MESSAGE_PREFIXES = {
-  error: '{DC143C}Error{FFFFFF}: '
+  error: '{DC143C}Error{FFFFFF}: ',
+  usage: '{FF9900}Usage{FFFFFF}: ',
 };
 
 // The message class will statically hold all defined messages, as well as provide utility functions
@@ -19,19 +20,47 @@ const MESSAGE_PREFIXES = {
 // directory, and made available as a static member of the Message class. While loading the messages
 // any unsafe messages will be considered to be a fatal error, as they might crash players.
 class Message {
-  // Formats |message| with |arguments|. The following formatting rules are available:
+  // Formats |message| with |parameters|. The following formatting rules are available:
   //
   //   %s  - String, will be passed in unmodified.
   //   %d  - Integer, will be passed in unmodified.
   //   %f  - Floating point. Will be passed in with two decimals.
   //   %p  - Player name. Accepts either Player instances, strings (names) or numbers (Ids).
   //   %$  - Money. Will be formatted as an amount in dollars.
+  //   %t  - Time. Will format minutes as MM:SS, hours as HH:MM:SS.
   //   %%  - Literal percentage sign.
   //
   // Any other symbols followed by an percentage sign will be ignored.
-  static format(message, ...args) {
-    // TODO: Return the formatted message.
-    return message;
+  static format(message, ...parameters) {
+    let substitutionIndex = 0;
+    return message.replace(/%([sdfp\$t%])/g, (_, rule) => {
+      if (rule == '%')
+        return '%';  // special case: %% (percentage-sign literal).
+
+      if (substitutionIndex >= parameters.length)
+        throw new Error('Not enough substitution parameters were provided for this query.');
+
+      let value = parameters[substitutionIndex++];
+      if (typeof value === 'undefined')
+        return '[undefined]';
+      else if (value === null)
+        return '[null]';
+
+      switch (rule) {
+        case 's':
+          return value.toString();
+        // TODO: %d
+        // TODO: %f
+        // TODO: %p
+        // TODO: %$
+        case 't':
+          return this.formatTime(value);
+      }
+
+      // All characters supported by the regular expression should be included in the switch above,
+      // so we should never actually reach this line of code.
+      return null;
+    });
   }
 
   // Formats |time|. Anything under an hour will be formatted as MM:SS, whereas values over an hour
@@ -53,6 +82,11 @@ class Message {
     representation += (seconds < 10 ? '0' : '') + seconds;
 
     return representation;
+  }
+
+  // Filters all colours from |message| and returns the remainder of the message.
+  static filter(message) {
+    return message.replace(/\{[0-9A-F]{6,8}\}/gi, '');
   }
 
   // Loads messages from |file|. Unsafe messages will be considered as fatal errors.

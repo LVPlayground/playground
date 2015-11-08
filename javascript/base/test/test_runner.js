@@ -126,6 +126,7 @@ class TestRunner {
       require('base/string_parser.test.js');
       require('base/test/assert.test.js');
       require('components/command_manager/command_builder.test.js');
+      require('components/database/database.test.js');
       require('features/gangs/gang_commands.test.js');
       require('features/races/race_importer.test.js');
     }

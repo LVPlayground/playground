@@ -20,6 +20,9 @@ class RunningRace {
     // The vehicles associated with the race for players to drive in.
     this.vehicles_ = [];
 
+    // Scope all entities created by this race to the lifetime of the race.
+    this.entities_ = new ScopedEntities();
+
     // Create a promise that is to be resolved when the race has finished.
     this.finishedPromise_ = new Promise(resolve =>
         this.resolveFinishedPromise_ = resolve);
@@ -34,9 +37,6 @@ class RunningRace {
       this.advanceState(RunningRace.STATE_LOADING);
     else
       wait(RaceSettings.RACE_SIGNUP_WAIT_DURATION).then(() => this.advanceState(RunningRace.STATE_LOADING));
-
-    // Scope all entities created by this race to the lifetime of the race.
-    this.entities_ = new ScopedEntities();
 
     // Listen to the required callbacks. Use a scoped callbacks object because this object is
     // ephemeral, and the listeners won't be necessary after the race has finished.
@@ -185,6 +185,10 @@ class RunningRace {
 
       // Freeze the player so that they can't begin racing yet.
       player.controllable = false;
+
+      // Apply the environmental settings for the race, i.e. the time and weather.
+      player.weather = this.race_.weather;
+      player.time = this.race_.time;
     });
 
     return true;

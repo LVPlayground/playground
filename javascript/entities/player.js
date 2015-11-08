@@ -88,6 +88,15 @@ class Player extends Extendable {
   get interior() { return pawnInvoke('GetPlayerInterior', 'i', this.id_); }
   set interior(value) { pawnInvoke('SetPlayerInterior', 'ii', this.id_, value); }
 
+  // Gets or sets the time for this player. It will be returned, and must be set, as an array having
+  // two entries: hours and minutes.
+  get time() { return pawnInvoke('GetPlayerTime', 'iII', this.id); }
+  set time(value) { pawnInvoke('SetPlayerTime', 'iii', this.id, value[0], value[1]); }
+
+  // Sets the player's weather. We cannot provide a getter for this, given that SA-MP does not
+  // expose whatever weather is current for the player. Silly.
+  set weather(value) { pawnInvoke('SetPlayerWeather', 'ii', this.id_, value); }
+
   // Sets whether the player should be controllable. We cannot provide a getter for this, given that
   // SA-MP does not expose an IsPlayerControllable native. Silly.
   set controllable(value) { pawnInvoke('TogglePlayerControllable', 'ii', this.id_, value ? 1 : 0); }

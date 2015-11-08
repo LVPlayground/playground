@@ -26,6 +26,41 @@ describe('Message', it => {
     assert.equal(Message.format('%s', ''), '');
   });
 
+  it('should format numbers', assert => {
+    assert.equal(Message.formatNumber(false), false);
+    assert.deepEqual(Message.formatNumber({}), {});
+
+    assert.equal(Message.formatNumber(42), '42');
+    assert.equal(Message.formatNumber(4200), '4,200');
+    assert.equal(Message.formatNumber(4200000), '4,200,000');
+
+    assert.equal(Message.formatNumber(-42), '-42');
+    assert.equal(Message.formatNumber(-4200), '-4,200');
+    assert.equal(Message.formatNumber(-4200000), '-4,200,000');
+
+    assert.equal(Message.formatNumber(42.12345), '42.12');
+    assert.equal(Message.formatNumber(42.12567), '42.13');
+
+    assert.equal(Message.formatNumber(-42.12345), '-42.12');
+    assert.equal(Message.formatNumber(-42.12567), '-42.13');
+
+    // The %d formatting rule of Message.format()
+    assert.equal(Message.format('[%d]', 1337.42), '[1,337.42]');
+  });
+
+  it('should format prices', assert => {
+    assert.equal(Message.formatPrice(false), '$0');
+    assert.equal(Message.formatPrice({}), '$0');
+
+    assert.equal(Message.formatPrice(2500), '$2,500');
+    assert.equal(Message.formatPrice(-1337.23), '-$1,337');
+    assert.equal(Message.formatPrice(42), '$42');
+    assert.equal(Message.formatPrice(1000000), '$1,000,000');
+
+    // The %$ formatting rule of Message.format()
+    assert.equal(Message.format('[%$]', -1337.23), '[-$1,337]');
+  });
+
   it('should format times', assert => {
     assert.equal(Message.formatTime(false), false);
     assert.equal(Message.formatTime('tomorrow'), 'tomorrow');

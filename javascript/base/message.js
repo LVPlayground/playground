@@ -49,10 +49,12 @@ class Message {
       switch (rule) {
         case 's':
           return value.toString();
-        // TODO: %d
+        case 'd':
+          return this.formatNumber(value);
         // TODO: %f
         // TODO: %p
-        // TODO: %$
+        case '$':
+          return this.formatPrice(value);
         case 't':
           return this.formatTime(value);
       }
@@ -61,6 +63,29 @@ class Message {
       // so we should never actually reach this line of code.
       return null;
     });
+  }
+
+  // Formats |value| as a number. Thousand separators will be inserted, and the number of decimals
+  // for floating point numbers will be limited to two.
+  static formatNumber(value) {
+    if (typeof value !== 'number')
+      return value;
+
+    let representation = Math.round(value * 100) / 100,
+        parts = representation.toString().split('.');
+
+    parts[0] = parts[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, ',');
+
+    return parts.join('.');
+  }
+
+  // Formats |value| as a price. Effectively the same as formatting a number, but removes all the
+  // decimals from the amount and requires it to be a valid number.
+  static formatPrice(value) {
+    if (typeof value !== 'number')
+      value = 0;
+
+    return (value < 0 ? '-' : '') + '$' + this.formatNumber(Math.abs(Math.round(value)));
   }
 
   // Formats |time|. Anything under an hour will be formatted as MM:SS, whereas values over an hour

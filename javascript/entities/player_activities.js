@@ -5,7 +5,7 @@
 // Install the player activity constants on |object|.
 //
 // DO NOT ADD NEW VALUES TO THIS ENUMERATION WITHOUT ALSO ADDING THEM TO PAWN.
-//   //pawn/Entities/Players/PlayerActivity.pwn
+//     //pawn/Entities/Players/PlayerActivity.pwn
 exports = (object) => {
   object.PLAYER_ACTIVITY_NONE = 0;
 };

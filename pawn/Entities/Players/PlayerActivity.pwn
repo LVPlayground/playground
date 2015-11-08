@@ -6,7 +6,7 @@
  * List of the available activity types on Las Venturas Playground.
  *
  * DO NOT ADD NEW VALUES TO THIS ENUMERATION WITHOUT ALSO ADDING THEM TO JAVASCRIPT.
- *   //javascript/entities/player_activities.js 
+ *     //javascript/entities/player_activities.js 
  */
 enum PlayerActivityType {
     PlayerActivityNone = 0
@@ -36,9 +36,7 @@ class PlayerActivity <playerId (MAX_PLAYERS)> {
      * the JavaScript version of the gamemode as well.
      */
     public set(PlayerActivityType: activity) {
-        m_activity = activity;
-
-        // TODO: Propagate the change to JavaScript.
+        CallLocalFunction("OnPlayerActivityChange", "dd", playerId, _: activity);
     }
 
     /**
@@ -48,3 +46,8 @@ class PlayerActivity <playerId (MAX_PLAYERS)> {
         m_activity = activity;
     }
 };
+
+forward OnPlayerActivityChange(playerid, activity);
+public OnPlayerActivityChange(playerid, activity) {
+    PlayerActivity(playerid)->silentSet(PlayerActivityType: activity);
+}

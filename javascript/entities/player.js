@@ -150,6 +150,14 @@ self.addEventListener('playerlevelchange', event => {
   }
 });
 
+// Called when a player's activity changes. This event is custom to Las Venturas Playground.
+self.addEventListener('playeractivitychange', event => {
+  if (!players.hasOwnProperty(event.playerid))
+    return;
+
+  player[event.playerid].activity_ = event.activity;
+});
+
 // Called when a player disconnects from the server. Removes the player from our registry.
 self.addEventListener('playerdisconnect', event =>
     delete players[event.playerid]);

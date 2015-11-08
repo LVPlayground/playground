@@ -71,13 +71,53 @@ class Player extends Extendable {
   // Returns or updates the name of this player. Changing the player's name is currently not
   // synchronized with the Pawn portion of the gamemode.
   get name() { return this.name_; }
-  set name(value) { this.name_ = value; pawnInvoke('SetPlayerName', 'is', this.playerId, value); }
+  set name(value) { this.name_ = value; pawnInvoke('SetPlayerName', 'is', this.id_, value); }
 
   // Returns the IP address of this player. This attribute is read-only.
   get ipAddress() { return this.ipAddress_; }
 
   // Returns the level of this player. Synchronized with the gamemode using the `levelchange` event.
   get level() { return this.level_; }
+
+  // Gets or sets the virtual world the player is part of.
+  get virtualWorld() { return pawnInvoke('GetPlayerVirtualWorld', 'i', this.id_); }
+  set virtualWorld(value) { pawnInvoke('SetPlayerVirtualWorld', 'ii', this.id_, value); }
+
+  // Gets or sets the interior the player is part of. Moving them to the wrong interior will mess up
+  // their visual state significantly, as all world objects may disappear.
+  get interior() { return pawnInvoke('GetPlayerInterior', 'i', this.id_); }
+  set interior(value) { pawnInvoke('SetPlayerInterior', 'ii', this.id_, value); }
+
+  // Sets whether the player should be controllable. We cannot provide a getter for this, given that
+  // SA-MP does not expose an IsPlayerControllable native. Silly.
+  set controllable(value) { pawnInvoke('TogglePlayerControllable', 'ii', this.id_, value ? 1 : 0); }
+
+  // Returns whether the player is in an vehicle. If |vehicle| is provided, this method will check
+  // whether the player is in that particular vehicle. Otherwise any vehicle will do.
+  isInVehicle(vehicle) {
+    if (typeof vehicle === 'number')
+      return pawnInvoke('GetPlayerVehicleID', 'i') == vehicle;
+
+    // TODO: Handle Vehicle instances for |vehicle|.
+
+    return pawnInvoke('IsPlayerInAnyVehicle', 'i', this.id_);
+  }
+
+  // Removes the player from the vehicle they're currently in.
+  removeFromVehicle() { pawnInvoke('RemovePlayerFromVehicle', 'i', this.id_); }
+
+  // Puts the player in |vehicle|, optionally defining |seat| as the seat they should sit in. If the
+  // player already is in a vehicle, they will be removed from that before being put in the other in
+  // order to work around a SA-MP bug where they may show up in the wrong vehicle for some players.
+  putInVehicle(vehicle, seat = 0) {
+    if (this.isInVehicle())
+      this.removeFromVehicle();
+
+    if (typeof vehicle === 'number')
+      pawnInvoke('PutPlayerInVehicle', 'iii', this.id_, vehicle, seat);
+    else
+      ; // TODO: Handle Vehicle instances for |vehicle|.
+  }
 
   // Returns or updates the activity of this player. Updating the activity will be propagated to
   // the Pawn part of the gamemode as well.

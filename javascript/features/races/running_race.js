@@ -176,23 +176,18 @@ class RunningRace {
   }
 
   preparePlayers() {
-    for (let i = 0; i < this.players_.length; ++i) {
-      let player = this.players_[i];
-      let vehicleId = this.vehicles_[i];
-
+    let playerVehicleIndex = 0;
+    this.players_.forEach(player => {
       // Move the player to the right virtual world and interior for the race.
-      pawnInvoke('SetPlayerVirtualWorld', 'ii', player.id, this.virtualWorld_);
-      pawnInvoke('SetPlayerInterior', 'ii', player.id, this.race_.interior);
+      player.virtualWorld = this.virtualWorld_;
+      player.interior = this.race_.interior;
 
-      // Place the player in the driver's seat of their vehicle.
-      if (pawnInvoke('IsPlayerInAnyVehicle', 'i', player.id))
-        pawnInvoke('RemovePlayerFromVehicle', 'i', player.id);
-
-      pawnInvoke('PutPlayerInVehicle', 'iii', player.id, vehicleId, 0 /* seatid */);
+      // Put the player in their designated 
+      player.putInVehicle(this.vehicles_[playerVehicleIndex++]);
 
       // Freeze the player so that they can't begin racing yet.
-      pawnInvoke('TogglePlayerControllable', 'ii', player.id, 0 /* toggle */);
-    }
+      player.controllable = false;
+    });
 
     return true;
   }

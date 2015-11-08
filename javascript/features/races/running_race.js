@@ -103,10 +103,25 @@ class RunningRace {
             this.advanceState(RunningRace.STATE_RUNNING));
         break;
 
+      // State in which the players are actually racing against each other. Provide timely score
+      // board updates and keep track of the player's positions.
       case RunningRace.STATE_RUNNING:
         this.startRace();
 
+        // If the race has a time limit set, advance to the out-of-time state after it passes.
+        if (this.race_.timeLimit != 0)
+          wait(this.race_.timeLimit * 1000).then(() => this.advanceState(RunningRace.STATE_OUT_OF_TIME));
+
         // TODO: Implement the rest of the running state.
+        break;
+
+      // State that occurs when one or more players are still racing, but the maximum time of the
+      // race has expired. They'll be shown a message, after which they'll forcefully drop out.
+      case RunningRace.STATE_OUT_OF_TIME:
+        this.displayOutOfTimeMessage();
+
+        // Automatically finish the race after letting the news sink in for some time.
+        wait(RaceSettings.RACE_OUT_OF_TIME_WAIT_DURATION).then(() => this.advanceState(RunningRace.STATE_FINISHED));
         break;
 
       // The race is finished. Finalize, then remove the race's state and announce accordingly.
@@ -233,6 +248,17 @@ class RunningRace {
   }
 
   // -----------------------------------------------------------------------------------------------
+  // State: RunningRace.STATE_OUT_OF_TIME
+  // -----------------------------------------------------------------------------------------------
+
+  displayOutOfTimeMessage() {
+    // TODO: Display the message using a text draw rather than a message like this.
+    // TODO: Block the players controls, make sure that checkpoint events are ignored.
+
+    this.players_.forEach(player => player.sendMessage('You ran out of time!'));
+  }
+
+  // -----------------------------------------------------------------------------------------------
   // State: RunningRace.STATE_FINISHED
   // -----------------------------------------------------------------------------------------------
 
@@ -249,6 +275,7 @@ RunningRace.STATE_SIGNUP = 0;
 RunningRace.STATE_LOADING = 1;
 RunningRace.STATE_COUNTDOWN = 2;
 RunningRace.STATE_RUNNING = 3;
-RunningRace.STATE_FINISHED = 4;
+RunningRace.STATE_OUT_OF_TIME = 4;
+RunningRace.STATE_FINISHED = 5;
 
 exports = RunningRace;

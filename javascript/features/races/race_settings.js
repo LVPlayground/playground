@@ -16,4 +16,8 @@ exports = {
 
   // Number of seconds the countdown of a race should last for.
   RACE_COUNTDOWN_SECONDS: 3,
+
+  // Number of milliseconds to wait before dismissing the "out of time" message and finishing the
+  // race, restoring the player's previous state before they started it at all.
+  RACE_OUT_OF_TIME_WAIT_DURATION: 3000
 };

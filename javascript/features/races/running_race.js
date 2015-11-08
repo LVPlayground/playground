@@ -96,13 +96,17 @@ class RunningRace {
         wait(RaceSettings.RACE_LOADING_WAIT_DURATION).then(() => this.advanceState(RunningRace.STATE_COUNTDOWN));
         break;
 
+      // Waits for a certain number of seconds before allowing the players to start racing. The
+      // countdown will be visible on the screens of all participants of the race.
       case RunningRace.STATE_COUNTDOWN:
-        // TODO: Implement the countdown state.
-        console.log('state: countdown');
+        this.createCountdown(RaceSettings.RACE_COUNTDOWN_SECONDS).then(() =>
+            this.advanceState(RunningRace.STATE_RUNNING));
         break;
 
       case RunningRace.STATE_RUNNING:
-        // TODO: Implement the running state.
+        this.startRace();
+
+        // TODO: Implement the rest of the running state.
         break;
 
       // The race is finished. Finalize, then remove the race's state and announce accordingly.
@@ -176,6 +180,8 @@ class RunningRace {
   preparePlayers() {
     let playerVehicleIndex = 0;
     this.players_.forEach(player => {
+      // TODO: Store the player's state so that it can be restored later.
+
       // Move the player to the right virtual world and interior for the race.
       player.virtualWorld = this.virtualWorld_;
       player.interior = this.race_.interior;
@@ -191,7 +197,39 @@ class RunningRace {
       player.time = this.race_.time;
     });
 
+    // TODO: Create the first checkpoint for the race.
+
     return true;
+  }
+
+  // -----------------------------------------------------------------------------------------------
+  // State: RunningRace.STATE_COUNTDOWN
+  // -----------------------------------------------------------------------------------------------
+
+  createCountdown(seconds) {
+    return new Promise(resolve => {
+      // TODO: Display the countdown using text draws instead (yay aesthetics).
+      // TODO: Display "Go" rather than zero.
+
+      let display = seconds => {
+        this.players_.forEach(player => player.sendMessage(seconds + '...'));
+        if (seconds > 0)
+          wait(1000).then(display.bind(null, seconds - 1));
+        else
+          resolve();
+      };
+
+      display(seconds);
+    });
+  }
+
+  // -----------------------------------------------------------------------------------------------
+  // State: RunningRace.STATE_RUNNING
+  // -----------------------------------------------------------------------------------------------
+
+  startRace() {
+    this.players_.forEach(player => player.controllable = true);
+    // TODO: Do other work here, start the counters, and so on.
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -201,8 +239,6 @@ class RunningRace {
   finish() {
     this.callbacks_.dispose();
     this.entities_.dispose();
-
-    // TODO: Remove all objects and state created by the race.
 
     this.resolveFinishedPromise_();
   }

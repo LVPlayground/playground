@@ -13,4 +13,7 @@ exports = {
 
   // Number of milliseconds to wait before races advance from the loading to the countdown state.
   RACE_LOADING_WAIT_DURATION: 1500,
+
+  // Number of seconds the countdown of a race should last for.
+  RACE_COUNTDOWN_SECONDS: 3,
 };

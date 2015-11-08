@@ -85,6 +85,9 @@ class Race {
     this.interior_ = value;
   }
 
+  // Returns the maximum number of players that can participate in this race.
+  get maxPlayers() { return this.spawnPositions_.length; }
+
   // Returns the spawn positions available for this race.
   get spawnPositions() { return this.spawnPositions_; }
 

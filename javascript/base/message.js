@@ -2,7 +2,14 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+// File in which the messages are stored. Must be in JSON format.
 const MESSAGE_DATA_FILE = 'data/messages.json';
+
+// Known message prefixes. These are substitutions for the most common contents of messages, for
+// example usage information or errors. In the message syntax, they are prepended by an at-sign.
+const MESSAGE_PREFIXES = {
+  error: '{DC143C}Error{FFFFFF}: '
+};
 
 // The message class will statically hold all defined messages, as well as provide utility functions
 // for validating whether a message is safe. It also provides common functionality for formatting
@@ -59,10 +66,26 @@ class Message {
       if (Message.hasOwnProperty(identifier))
         throw new Error('A message named "' + identifier + '" has already been created.');
 
+      message = Message.substitutePrefix(message, identifier);
+
       if (!Message.validate(message))
         throw new Error('The message named "' + identifier + '" is not safe for usage.');
 
       Message[identifier] = message;
+    });
+  }
+
+  // Substitutes any @-prefixes in |message| with the intended text. This will also affect the color
+  // of the remainder of the message when the prefix uses a color.
+  static substitutePrefix(message, identifier) {
+    if (!message.startsWith('@'))
+      return message;
+
+    return message.replace(/^@([^\s]+)\s*/, (_, prefixName) => {
+      if (!MESSAGE_PREFIXES.hasOwnProperty(prefixName))
+        throw new Error('The message named "' + identifier + '" uses an invalid prefix: @' + prefixName);
+
+      return MESSAGE_PREFIXES[prefixName];
     });
   }
 

@@ -51,7 +51,7 @@ class RaceCommands {
     this.raceManager_.listRacesForPlayer(player).then(races => {
       // Bail out if there are no races, since there won't be anything to display.
       if (!races.length)
-        return;
+        return player.sendMessage(Message.RACE_ERROR_NO_RACES_AVAILABLE);
 
       // A player's personal best time will be displayed if they're registered.
       let displayPersonalBest = player.isRegistered();

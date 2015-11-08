@@ -82,7 +82,5 @@ describe('Database', it => {
 
     assert.equal(substitute('INSERT INTO table (a, b) VALUES (?, ?)', 'Russell', 10000000000),
                  'INSERT INTO table (a, b) VALUES ("Russell", 10000000000)');
-
   });
-
 });

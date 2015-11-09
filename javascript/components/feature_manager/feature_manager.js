@@ -22,6 +22,19 @@ class FeatureManager {
       this.features_[feature] = instance;
     });
   }
+
+  // |feature|, an instance, defines a dependency on |dependency|, a feature's name. Throws an
+  // exception when |dependency| does not exist, or if |dependency| either directly or indirectly
+  // depends on |feature|, as circular dependencies are not allowed.
+  defineDependency(feature, dependency) {
+    // TODO: Maintain a dependency graph.
+    // TODO: Instantiate features if they haven't been loaded yet.
+
+    if (!this.features_.hasOwnProperty(dependency))
+      throw new Error('Unable to declare a dependency on "' + dependency + '": feature does not exist.');
+
+    return this.features_[dependency];
+  }
 };
 
 exports = FeatureManager;

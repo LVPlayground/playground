@@ -10,8 +10,9 @@ let ChallengeDesk = require('features/races/challenge_desk.js'),
 // The race manager is responsible for keeping track of the available races, the in-progress races
 // and providing the ability to start or stop races when that's necessary.
 class RaceManager {
-  constructor(database) {
+  constructor(database, deathFeed) {
     this.raceDatabase_ = new RaceDatabase(database);
+    this.deathFeed_ = deathFeed;
 
     // An array of all races that are currently in-progress.
     this.activeRaces_ = [];
@@ -76,6 +77,8 @@ class RaceManager {
         activeRace = runningRace;
       });
     }
+
+    // TODO: Show and hide the death feed when the player is about to join a race, or drops out.
 
     // If there is an active race that can be joined, join it. Alternatively start a new race for
     // the player. If |skipSignup| is true, the announcement phase will be skipped.

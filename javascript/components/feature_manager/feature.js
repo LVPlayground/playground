@@ -3,6 +3,17 @@
 // be found in the LICENSE file.
 
 // The Feature class must be the base class of all features.
-class Feature {};
+class Feature {
+  constructor(playground) {
+    this.playground_ = playground;
+  }
+
+  // Defines a dependency on |feature|. If |feature| cannot be found by the feature manager, an
+  // exception will be thrown as dependencies must be satisfyable. Furthermore, there may not be any
+  // circular dependencies in Las Venturas Playground.
+  defineDependency(feature) {
+    return this.playground_.featureManager.defineDependency(this, feature);
+  }
+};
 
 exports = Feature;

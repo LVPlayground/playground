@@ -13,7 +13,10 @@ class RaceFeature extends Feature {
   constructor(playground) {
     super(playground);
 
-    this.raceManager_ = new RaceManager(playground.database);
+    // Races depend on the death feed for disabling it during a race.
+    let deathFeed = this.defineDependency('death_feed');
+
+    this.raceManager_ = new RaceManager(playground.database, deathFeed);
     this.raceCommands_ = new RaceCommands(playground.commandManager, this.raceManager_);
 
     // TODO: Import races using a glob() rather than manually.

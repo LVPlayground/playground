@@ -36,7 +36,7 @@ class DeathFeedFeature extends Feature {
 
   // Disables the death feed for |player|. Five fake deaths will be send to their client to clear
   // the current state of the death screen on their screens, wiping it clean.
-  disableDeathFeedForPlayer(player) {
+  disableForPlayer(player) {
     this.disabledPlayers_.add(player.id);
 
     for (let fakeDeathIndex = 0; fakeDeathIndex < DEATH_FEED_VISIBLE_LENGTH; ++fakeDeathIndex)
@@ -45,10 +45,10 @@ class DeathFeedFeature extends Feature {
 
   // Enables the death feed for |player|. The five most recent deaths will be send to their client
   // so that it accurately resembles the current state of the world again.
-  enableDeathFeedForPlayer(player) {
+  enableForPlayer(player) {
     this.disabledPlayers_.delete(player.id);
     this.recentDeaths_.forEach(deathInfo =>
-        this.sendDeathMessage(player, deathinfo.killee, deathinfo.killee, deathinfo.reason));
+        this.sendDeathMessage(player, deathInfo.killee, deathInfo.killer, deathInfo.reason));
   }
 
   // Called when a player dies or gets killed. Will cause an update to the death feed for all online

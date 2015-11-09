@@ -2,6 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+// Id of the sound that should be played when a player enters a checkpoint.
+const CHECKPOINT_ENTER_SOUND_ID = 1058;
+
 // The checkpoint manager will generally exist twice, once for normal checkpoints and once for race
 // checkpoints. It keeps track of the current checkpoint for a player, and makes sure the associated
 // promise will resolve or reject as expected.
@@ -26,17 +29,19 @@ class CheckpointManager {
   // Displays the |checkpoint| for |player|. Returns a promise that will be resolved when the player
   // enters the checkpoint, or rejected when they disconnect whilst it's being shown.
   displayForPlayer(player, checkpoint) {
+    this.hideForPlayer();
+
     return new Promise((resolve, reject) => {
-      let {x, y, z} = checkpoint.position;
+      let position = checkpoint.position;
       let size = checkpoint.size;
 
       if (this.type_ == CheckpointManager.NORMAL_CHECKPOINTS) {
-        pawnInvoke('SetPlayerCheckpoint', 'iffff', player.id, x, y, z, size);
+        pawnInvoke('SetPlayerCheckpoint', 'iffff', player.id, position.x, position.y, position.z, size);
       } else {
-        let {nextX, nextY, nextZ} = checkpoint.nextPosition;
+        let next = checkpoint.nextPosition;
 
-        pawnInvoke('SetPlayerRaceCheckpoint', 'iifffffff', player.id, checkpoint.type, x, y, z,
-            nextX, nextY, nextZ, size);
+        pawnInvoke('SetPlayerRaceCheckpoint', 'iifffffff', player.id, checkpoint.type, position.x,
+            position.y, position.z, next.x, next.y, next.z, size);
       }
 
       this.playerMap_.set(player, { resolve, reject });
@@ -51,8 +56,10 @@ class CheckpointManager {
 
     pawnInvoke('DisablePlayerRaceCheckpoint', 'i', player.id);
 
-    this.playerMap_.get(player).reject();
+    let resolver = this.playerMap_.get(player);
     this.playerMap_.delete(player);
+
+    resolver.reject();
   }
 
   // Called when a player enters a checkpoint of |type_|. If we know about the checkpoint that is
@@ -62,10 +69,13 @@ class CheckpointManager {
     if (player === null || !this.playerMap_.has(player))
       return;
 
+    pawnInvoke('PlayerPlaySound', 'iifff', player.id, CHECKPOINT_ENTER_SOUND_ID, 0, 0, 0);
     pawnInvoke('DisablePlayerRaceCheckpoint', 'i', player.id);
 
-    this.playerMap_.get(player).resolve();
+    let resolver = this.playerMap_.get(player);
     this.playerMap_.delete(player);
+
+    resolver.resolve();
   }
 
   // Called when a player disconnects from the server. If a checkpoint is currently showing for them
@@ -75,8 +85,10 @@ class CheckpointManager {
     if (player === null || !this.playerMap_.has(player))
       return;
 
-    this.playerMap_.get(player).reject();
+    let resolver = this.playerMap_.get(player);
     this.playerMap_.delete(player);
+
+    resolver.reject();
   }
 };
 

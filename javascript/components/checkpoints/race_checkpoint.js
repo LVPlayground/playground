@@ -2,7 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let CheckpointManager = require('components/checkpoints/checkpoint_manager.js');
+let CheckpointManager = require('components/checkpoints/checkpoint_manager.js'),
+    Vector = require('base/vector.js');
 
 // Create an instance of the manager for race checkpoints.
 let manager = new CheckpointManager(CheckpointManager.RACE_CHECKPOINTS);
@@ -13,7 +14,7 @@ class RaceCheckpoint {
   constructor(type, position, nextPosition, size) {
     this.type_ = type;
     this.position_ = position;
-    this.nextPosition_ = nextPosition;
+    this.nextPosition_ = nextPosition || new Vector(0, 0, 0);
     this.size_ = size;
   }
 
@@ -23,7 +24,7 @@ class RaceCheckpoint {
   // Returns the position of the checkpoint.
   get position() { return this.position_; }
 
-  // Returns the position of the checkpoint that follows this one. May be NULL.
+  // Returns the position of the checkpoint that follows this one.
   get nextPosition() { return this.nextPosition_; }
 
   // Returns the size of the checkpoint, i.e. the diameter in game units.

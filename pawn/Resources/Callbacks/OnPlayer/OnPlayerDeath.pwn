@@ -173,7 +173,8 @@ public OnPlayerDeath(playerid, killerid, reason) {
 
     if (hiddenKill[playerid])
         hiddenKill[playerid] = 0;
-    else SendDeathMessage(killerid, playerid, reason);
+    else
+        CallLocalFunction("OnPlayerResolvedDeath", "iii", playerid, killerid, reason);  // SendDeathMessage through JavaScript.
 
     new message[256];
     if (killerid == Player::InvalidId) {
@@ -261,3 +262,6 @@ public OnPlayerDeath(playerid, killerid, reason) {
 
     return 1;
 }
+
+forward OnPlayerResolvedDeath(playerid, killerid, reason);
+public OnPlayerResolvedDeath(playerid, killerid, reason) {}

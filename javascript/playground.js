@@ -16,10 +16,11 @@ class Playground {
 
     this.featureManager_ = new FeatureManager();
     this.featureManager_.load(this, {
-      account: require('features/account/account_feature.js'),
-      gangs: require('features/gangs/feature.js'),
-      introduction: require('features/introduction/introduction.js'),
-      races: require('features/races/race_feature.js')
+      account:       require('features/account/account_feature.js'),
+      death_feed:    require('features/death_feed/death_feed_feature.js'),
+      gangs:         require('features/gangs/feature.js'),
+      introduction:  require('features/introduction/introduction.js'),
+      races:         require('features/races/race_feature.js')
     });
   }
 

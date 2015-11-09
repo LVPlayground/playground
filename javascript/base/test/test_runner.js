@@ -128,6 +128,7 @@ class TestRunner {
       require('components/command_manager/command_builder.test.js');
       require('components/database/database.test.js');
       require('entities/scoped_entities.test.js');
+      require('features/death_feed/death_feed_feature.test.js');
       require('features/gangs/gang_commands.test.js');
       require('features/races/race_importer.test.js');
     }

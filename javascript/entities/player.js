@@ -181,6 +181,9 @@ class Player extends Extendable {
   }
 };
 
+// Invalid player id. Must be equal to SA-MP's INVALID_PLAYER_ID definition.
+Player.INVALID_ID = 0xFFFF;
+
 // The level of a player. Can be accessed using the `level` property on a Player instance.
 Player.LEVEL_PLAYER = 0;
 Player.LEVEL_ADMINISTRATOR = 1;

@@ -23,6 +23,9 @@ class DeathFeedFeature extends Feature {
     // DEATH_FEED_VISIBLE_LENGTH. Used to restore the death feeds for players.
     this.recentDeaths_ = [];
 
+    // Bail out if this instance was created for tests.
+    if (!playground) return;
+
     // Listen to the events required for reliably providing this feature.
     global.addEventListener('playerresolveddeath', this.__proto__.onPlayerDeath.bind(this));
     global.addEventListener('playerdisconnect', this.__proto__.onPlayerDisconnect.bind(this));
@@ -37,7 +40,7 @@ class DeathFeedFeature extends Feature {
     this.disabledPlayers_.add(player.id);
 
     for (let fakeDeathIndex = 0; fakeDeathIndex < DEATH_FEED_VISIBLE_LENGTH; ++fakeDeathIndex)
-      sendDeathMessage(player, UNASSIGNED_PLAYER_ID, Player.INVALID_ID, 0);
+      this.sendDeathMessage(player, UNASSIGNED_PLAYER_ID, Player.INVALID_ID, 0);
   }
 
   // Enables the death feed for |player|. The five most recent deaths will be send to their client
@@ -45,7 +48,7 @@ class DeathFeedFeature extends Feature {
   enableDeathFeedForPlayer(player) {
     this.disabledPlayers_.delete(player.id);
     this.recentDeaths_.forEach(deathInfo =>
-        sendDeathMessage(player, deathinfo.killee, deathinfo.killee, deathinfo.reason));
+        this.sendDeathMessage(player, deathinfo.killee, deathinfo.killee, deathinfo.reason));
   }
 
   // Called when a player dies or gets killed. Will cause an update to the death feed for all online
@@ -60,13 +63,13 @@ class DeathFeedFeature extends Feature {
       if (this.disabledPlayers_.has(player.id))
         return;
 
-      sendDeathMessage(player, event.playerid, event.killerid, event.reason);
+      this.sendDeathMessage(player, event.playerid, event.killerid, event.reason);
     });
   }
 
   // Utility function to send a death message to |player|.
   sendDeathMessage(player, killee, killer, reason) {
-    pawnInvoke('SendDeathMessageToPlayer', 'iii', player.id, killer, killee, reason);
+    pawnInvoke('SendDeathMessageToPlayer', 'iiii', player.id, killer, killee, reason);
   }
 
   // Called when a player disconnects from the server. Re-enables the death feed for the player in

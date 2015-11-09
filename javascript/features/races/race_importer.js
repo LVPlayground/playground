@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 let Race = require('features/races/race.js'),
+    RaceCheckpoint = require('components/checkpoints/race_checkpoint.js'),
     Vector = require('base/vector.js');
 
 // Private symbol to prevent people from using the RaceImporter's constructor.
@@ -59,6 +60,9 @@ class RaceImporter {
 
     this.data_ = data;
     this.race_ = new Race();
+
+    this.useAirplaneCheckpoints_ = false;
+    this.disableCheckpointMarkers_ = false;
   }
 
   // Loads the contents of |filename| as JSON and uses it to construct a new Race instance based on
@@ -86,6 +90,9 @@ class RaceImporter {
   // Processes the |data_| and imports it in |race_|, providing all verification passes. Returns
   // TRUE when the data has successfully been imported in the race.
   process() {
+    // Process the settings. These may influence the rest of the importing process.
+    this.importSettings();
+
     // Process the required fields.
     this.importId();
     this.importName();
@@ -98,7 +105,6 @@ class RaceImporter {
     this.importChallengeDesk();
     this.importEnvironment();
     this.importObjects();
-    this.importSettings();
 
     // Make sure that this race doesn't have too many objects.
     if (this.race_.objectModelCount > MAX_OBJECT_MODELS)
@@ -272,6 +278,7 @@ class RaceImporter {
     if (!Array.isArray(this.data_.checkpoints) || this.data_.checkpoints.length == 0)
       throw new Error('At least a single entry must be defined in the `checkpoints` array.');
 
+    let checkpoints = [];
     this.data_.checkpoints.forEach(checkpoint => {
       if (typeof checkpoint !== 'object')
         throw new Error('Every `checkpoint` for a race must be an object.');
@@ -289,8 +296,28 @@ class RaceImporter {
         size = checkpoint.size;
       }
 
-      this.race_.addCheckpoint(position, size);
+      checkpoints.push({ position, size });
     });
+
+    for (let checkpointId = 0; checkpointId < checkpoints.length; ++checkpointId) {
+      let isFinalCheckpoint = checkpointId == checkpoints.length - 1,
+          checkpoint = checkpoints[checkpointId];
+
+      let type = null;
+      if (this.disableCheckpointMarkers_) {
+        type = RaceCheckpoint.NO_MARKER;
+      } else if (this.useAirplaneCheckpoints_) {
+        type = isFinalCheckpoint ? RaceCheckpoint.AIRBORNE_FINISH : RaceCheckpoint.AIRBORNE_NORMAL;
+      } else {
+        type = isFinalCheckpoint ? RaceCheckpoint.GROUND_FINISH : RaceCheckpoint.GROUND_NORMAL;
+      }
+
+      let nextPosition = isFinalCheckpoint ? null
+                                           : checkpoints[checkpointId + 1].position;
+
+      // Create the new RaceCheckpoint instance, and and add it to the race.
+      this.race_.addCheckpoint(new RaceCheckpoint(type, checkpoint.position, nextPosition, checkpoint.size));
+    }
   }
 
   // Imports the objects associated with this race. Each entry must be an object with three entries:
@@ -332,10 +359,10 @@ class RaceImporter {
 
     let settings = this.data_.settings;
     if (settings.hasOwnProperty('use_airplane_checkpoints'))
-      this.race_.useAirplaneCheckpoints = !!settings.use_airplane_checkpoints;
+      this.useAirplaneCheckpoints_ = !!settings.use_airplane_checkpoints;
 
     if (settings.hasOwnProperty('disable_checkpoint_markers'))
-      this.race_.disableCheckpointMarkers = !!settings.disable_checkpoint_markers;
+      this.disableCheckpointMarkers_ = !!settings.disable_checkpoint_markers;
 
     if (settings.hasOwnProperty('disable_vehicle_damage'))
       this.race_.disableVehicleDamage = !!settings.disable_vehicle_damage;

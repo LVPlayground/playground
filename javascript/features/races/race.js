@@ -25,8 +25,6 @@ class Race {
     this.objectModels_ = new Set();
 
     // Settings.
-    this.useAirplaneCheckpoints_ = false;
-    this.disableCheckpointMarkers_ = false;
     this.disableVehicleDamage_ = false;
     this.allowLeaveVehicle_ = false;
 
@@ -100,10 +98,10 @@ class Race {
   // Returns the checkpoints available for this race.
   get checkpoints() { return this.checkpoints_; }
 
-  // Registers a new checkpoint for the race. There is no limit to the amount of checkpoints added
-  // to a given race. Each checkpoint must have a position and a defined size.
-  addCheckpoint(position, size) {
-    this.checkpoints_.push({ position, size });
+  // Registers a new |checkpoint| for the race. There is no limit to the amount of checkpoints added
+  // to a given race. Each checkpoint must be an instance of the RaceCheckpoint class.
+  addCheckpoint(checkpoint) {
+    this.checkpoints_.push(checkpoint);
   }
 
   // Returns the objects that should be created for this race.
@@ -117,18 +115,6 @@ class Race {
   addObject(model, position, rotation) {
     this.objects_.push({ model, position, rotation });
     this.objectModels_.add(model);
-  }
-
-  // Gets or sets whether the race should use airplane checkpoints rather than normal one.
-  get useAirplaneCheckpoints() { return this.useAirplaneCheckpoints_; }
-  set useAirplaneCheckpoints(value) {
-    this.useAirplaneCheckpoints_ = value;
-  }
-
-  // Gets or sets whether checkpoint markers on the map should be disabled.
-  get disableCheckpointMarkers() { return this.disableCheckpointMarkers_; }
-  set disableCheckpointMarkers(value) {
-    this.disableCheckpointMarkers_ = value;
   }
 
   // Gets or sets whether vehicle damage should be disabled for this race.

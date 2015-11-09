@@ -217,7 +217,7 @@ describe('RaceImporter', it => {
     assert.equal(race.challengeDesk.rotation, rotation);
   });
 
-  it('should validate and apply settings', assert => {
+  it('should validate and apply race settings', assert => {
     let importSettings = data => {
       let importer = RaceImporter.fromDataForTests(data);
       importer.importSettings();
@@ -233,17 +233,51 @@ describe('RaceImporter', it => {
 
     let defaults = importSettings({});
 
-    assert.isFalse(defaults.useAirplaneCheckpoints);
-    assert.isTrue(importSetting('use_airplane_checkpoints', true).useAirplaneCheckpoints);
-
-    assert.isFalse(defaults.disableCheckpointMarkers);
-    assert.isTrue(importSetting('disable_checkpoint_markers', true).disableCheckpointMarkers);
-
     assert.isFalse(defaults.disableVehicleDamage);
     assert.isTrue(importSetting('disable_vehicle_damage', true).disableVehicleDamage);
 
     assert.isFalse(defaults.allowLeaveVehicle);
     assert.isTrue(importSetting('allow_leave_vehicle', true).allowLeaveVehicle);
+  });
+
+  it('should validate and apply import settings', assert => {
+    let importer = RaceImporter.fromDataForTests({
+      settings: {
+        use_airplane_checkpoints: true
+      },
+      checkpoints: [
+        { position: [ 42, 42, 42 ] },
+        { position: [ 42, 42, 42 ] }
+      ]
+    });
+
+    importer.importSettings();
+    importer.importCheckpoints();
+
+    let checkpoints = importer.race.checkpoints;
+    assert.equal(checkpoints.length, 2);
+
+    assert.equal(checkpoints[0].type, 3);
+    assert.equal(checkpoints[1].type, 4);
+
+    importer = RaceImporter.fromDataForTests({
+      settings: {
+        disable_checkpoint_markers: true
+      },
+      checkpoints: [
+        { position: [ 42, 42, 42 ] },
+        { position: [ 42, 42, 42 ] }
+      ]
+    });
+
+    importer.importSettings();
+    importer.importCheckpoints();
+
+    checkpoints = importer.race.checkpoints;
+    assert.equal(checkpoints.length, 2);
+
+    assert.equal(checkpoints[0].type, 2);
+    assert.equal(checkpoints[1].type, 2);
   });
 
   it('should validate and store the objects', assert => {

@@ -9,10 +9,11 @@ let RaceSettings = require('features/races/race_settings.js'),
 // This class defines the behavior of a race that is currently active, whereas active is defined by
 // being at least in the sign-up state.
 class RunningRace {
-  constructor(race, player, skipSignup) {
+  constructor(race, player, skipSignup, deathFeed) {
     this.players_ = [];
     this.race_ = race;
     this.state_ = RunningRace.STATE_SIGNUP;
+    this.deathFeed_ = deathFeed;
 
     // TODO: Have some sort of unique virtual world dispatcher.
     this.virtualWorld_ = 1007;
@@ -57,6 +58,12 @@ class RunningRace {
   // left anymore, the race will advance to the FINISHED state.
   removePlayer(player) {
     this.players_ = this.players_.filter(otherPlayer => otherPlayer != player);
+
+    if (this.state_ >= RunningRace.STATE_LOADING)
+      this.deathFeed_.enableForPlayer(player);
+
+    // Mark the player as being controllable again, so that they're not frozen for no reason.
+    player.controllable = true;
 
     // TODO: Restore the |player|'s state if |this.stage_| >= RunningRace.STATE_COUNTDOWN.
     // TODO: Hide the current checkpoint for the player.
@@ -198,6 +205,9 @@ class RunningRace {
     this.players_.forEach(player => {
       // TODO: Store the player's state so that it can be restored later.
 
+      // Disable the death feed for the player, we'll use that space for a scoreboard.
+      this.deathFeed_.disableForPlayer(player);
+
       // Move the player to the right virtual world and interior for the race.
       player.virtualWorld = this.virtualWorld_;
       player.interior = this.race_.interior;
@@ -273,6 +283,13 @@ class RunningRace {
 
   didFinish(player) {
     console.log(player.name + ' has finished the race!');
+
+    // Make the player uncontrollable - let them roll out for a few seconds.
+    player.controllable = false;
+
+    // Remove the player from the race after a few seconds have passed, let their result sink in.
+    wait(RaceSettings.RACE_FINISHED_WAIT_DURATION).then(() =>
+        this.removePlayer(player));
   }
 
   // -----------------------------------------------------------------------------------------------

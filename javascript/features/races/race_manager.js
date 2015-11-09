@@ -78,14 +78,12 @@ class RaceManager {
       });
     }
 
-    // TODO: Show and hide the death feed when the player is about to join a race, or drops out.
-
     // If there is an active race that can be joined, join it. Alternatively start a new race for
     // the player. If |skipSignup| is true, the announcement phase will be skipped.
     if (activeRace) {
       activeRace.addPlayer(player);
     } else {
-      activeRace = new RunningRace(this.races_[race_id], player, skipSignup);
+      activeRace = new RunningRace(this.races_[race_id], player, skipSignup, this.deathFeed_);
       activeRace.finished.then(() =>
           this.activeRaces_ = this.activeRaces_.filter(runningRace => activeRace !== runningRace));
 

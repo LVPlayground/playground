@@ -59,6 +59,7 @@ class RunningRace {
     this.players_ = this.players_.filter(otherPlayer => otherPlayer != player);
 
     // TODO: Restore the |player|'s state if |this.stage_| >= RunningRace.STATE_COUNTDOWN.
+    // TODO: Hide the current checkpoint for the player.
 
     if (!this.players_.length)
       this.advanceState(RunningRace.STATE_FINISHED);
@@ -210,9 +211,10 @@ class RunningRace {
       // Apply the environmental settings for the race, i.e. the time and weather.
       player.weather = this.race_.weather;
       player.time = this.race_.time;
-    });
 
-    // TODO: Create the first checkpoint for the race.
+      // Create the first checkpoint for the player. They won't be able to drive yet.
+      this.nextCheckpoint(player, null /** index **/);
+    });
 
     return true;
   }
@@ -245,6 +247,32 @@ class RunningRace {
   startRace() {
     this.players_.forEach(player => player.controllable = true);
     // TODO: Do other work here, start the counters, and so on.
+  }
+
+  nextCheckpoint(player, index) {
+    if (this.state_ != RunningRace.STATE_RUNNING && index !== null)
+      return;  // they must've unfreezed themselves.
+
+    // TODO: Store the player's checkpoint progress.
+    index = index || 0;
+
+    // If they reached the final checkpoint, mark them as having finished.
+    if (index >= this.race_.checkpoints.length) {
+      this.didFinish(player);
+      return;
+    }
+
+    // Otherwise, display the next checkpoint for them.
+    this.race_.checkpoints[index].displayForPlayer(player).then(() => {
+      this.nextCheckpoint(player, index + 1);
+    }, error => {
+      // They either disconnected from the server, or dropped out of the race for another reason.
+      // Nothing to worry about, so we discard the promise rejection.
+    });
+  }
+
+  didFinish(player) {
+    console.log(player.name + ' has finished the race!');
   }
 
   // -----------------------------------------------------------------------------------------------

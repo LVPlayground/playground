@@ -30,6 +30,9 @@ class TextDraw {
     this.text_ = ' ';
     this.font_ = null;
 
+    this.alignment_ = null;
+    this.proportional_ = null;
+
     this.textSize_ = null;
     this.letterSize_ = null;
 
@@ -47,7 +50,7 @@ class TextDraw {
       throw new Error('The options for a text draw must be an object.');
 
     // Walk through all available settings for the text-draw, then apply them using the setter.
-    ['position', 'text', 'font', 'textSize', 'letterSize', 'color', 'boxColor', 'shadowSize', 'shadowColor'].forEach(property => {
+    ['position', 'text', 'font', 'alignment', 'proportional', 'textSize', 'letterSize', 'color', 'boxColor', 'shadowSize', 'shadowColor'].forEach(property => {
       if (options.hasOwnProperty(property))
         this[property] = options[property];
     });
@@ -87,6 +90,26 @@ class TextDraw {
       throw new Error('The font of a text draw must be set using one of the TextDraw.FONT_* constants.');
 
     this.font_ = value;
+  }
+
+  // Gets or sets the alignment of the text. This must be one of the ALIGN_* constants defined on
+  // the TextDraw class. This may affect the positioning of the text draw itself.
+  get alignment() { return this.alignment_; }
+  set alignment(value) {
+    if (typeof value !== 'number' || value < 1 || value > TextDraw.ALIGN_RIGHT)
+      throw new Error('The alignment of a text draw must be set using one of the TextDraw.ALIGN_* constants.');
+
+    this.alignment_ = value;
+  }
+
+  // Gets or sets whether the text draw should scale text according to a proportional ratio. Must
+  // be a boolean value.
+  get proportional() { return this.proportional_; }
+  set proportional(value) {
+    if (typeof value !== 'boolean')
+      throw new Error('The proportionality of a text draw must be set using a boolean.');
+
+    this.proportional_ = value;
   }
 
   // Gets or sets the text size of the entire text draw. If a box is used for this draw, it will set
@@ -159,9 +182,11 @@ class TextDraw {
     if (this.font_ !== null)
       pawnInvoke('PlayerTextDrawFont', 'iii', player.id, textDrawId, this.font_);
 
-    // TODO: PlayerTextDrawAlignment: Set the alignment of a player-textdraw.
+    if (this.alignment_ !== null)
+      pawnInvoke('PlayerTextDrawAlignment', 'iii', player.id, textDrawId, this.alignment_);
 
-    // TODO: PlayerTextDrawSetProportional: Scale the text spacing in a player-textdraw to a proportional ratio.
+    if (this.proportional_ !== null)
+      pawnInvoke('PlayerTextDrawSetProportional', 'iii', player.id, textDrawId, this.proportional_ ? 1 : 0);
 
     // TODO: PlayerTextDrawUseBox: Toggle the box on a player-textdraw.
 
@@ -208,5 +233,10 @@ TextDraw.FONT_CLASSIC = 0;
 TextDraw.FONT_SANS_SERIF = 1;
 TextDraw.FONT_MONOSPACE = 2;
 TextDraw.FONT_PRICEDOWN = 3;
+
+// The alignment values that may be used with a text draw.
+TextDraw.ALIGN_LEFT = 1;
+TextDraw.ALIGN_CENTER = 2;
+TextDraw.ALIGN_RIGHT = 3;
 
 exports = TextDraw;

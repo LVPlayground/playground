@@ -53,6 +53,25 @@ describe('TextDraw', it => {
     assert.equal(textDraw.text, 'Hallo!');
   });
 
+  it('should verify and set proportionality', assert => {
+    let textDraw = new TextDraw();
+
+    assert.throws(() => textDraw.proportional = null);
+    assert.throws(() => textDraw.proportional = undefined);
+    assert.throws(() => textDraw.proportional = '');
+    assert.throws(() => textDraw.proportional = '     ');
+
+    assert.throws(() => new TextDraw({ proportional: null }));
+    assert.throws(() => new TextDraw({ proportional: '  ' }));
+
+    textDraw.proportional = true;
+
+    assert.equal(textDraw.proportional, true);
+
+    textDraw = new TextDraw({ proportional: false });
+    assert.equal(textDraw.proportional, false);
+  });
+
   it('should verify and set the font', assert => {
     let textDraw = new TextDraw();
 
@@ -71,6 +90,26 @@ describe('TextDraw', it => {
 
     textDraw = new TextDraw({ font: TextDraw.FONT_MONOSPACE });
     assert.equal(textDraw.font, TextDraw.FONT_MONOSPACE);
+  });
+
+  it('should verify and set the alignment', assert => {
+    let textDraw = new TextDraw();
+
+    assert.throws(() => textDraw.alignment = false);
+    assert.throws(() => textDraw.alignment = -7);
+    assert.throws(() => textDraw.alignment = 42);
+    assert.throws(() => textDraw.alignment = 'Impact');
+    assert.throws(() => textDraw.alignment = null);
+
+    assert.throws(() => new TextDraw({ alignment: 42 }));
+    assert.throws(() => new TextDraw({ alignment: 'Impact' }));
+
+    textDraw.alignment = TextDraw.ALIGN_RIGHT;
+
+    assert.equal(textDraw.alignment, TextDraw.ALIGN_RIGHT);
+
+    textDraw = new TextDraw({ alignment: TextDraw.ALIGN_CENTER });
+    assert.equal(textDraw.alignment, TextDraw.ALIGN_CENTER);
   });
 
   it('should verify and set colors', assert => {

@@ -27,6 +27,8 @@ class TextDraw {
   constructor(options) {
     this.position_ = [10, 10];
 
+    this.useBox_ = null;
+
     this.text_ = ' ';
     this.font_ = null;
 
@@ -39,6 +41,7 @@ class TextDraw {
     this.color_ = null;
     this.boxColor_ = null;
 
+    this.outlineSize_ = null;
     this.shadowSize_ = null;
     this.shadowColor_ = null;
 
@@ -50,7 +53,7 @@ class TextDraw {
       throw new Error('The options for a text draw must be an object.');
 
     // Walk through all available settings for the text-draw, then apply them using the setter.
-    ['position', 'text', 'font', 'alignment', 'proportional', 'textSize', 'letterSize', 'color', 'boxColor', 'shadowSize', 'shadowColor'].forEach(property => {
+    ['position', 'useBox', 'text', 'font', 'alignment', 'proportional', 'textSize', 'letterSize', 'color', 'boxColor', 'outlineSize', 'shadowSize', 'shadowColor'].forEach(property => {
       if (options.hasOwnProperty(property))
         this[property] = options[property];
     });
@@ -64,6 +67,16 @@ class TextDraw {
       throw new Error('The position must be an array having the [X, Y] coordinates.');
 
     this.position_ = value;
+  }
+
+  // Gets or sets whether a box should be used for displaying this text draw. When set, a background
+  // will be added to the size of the text draw.
+  get useBox() { return this.useBox_; }
+  set useBox(value) {
+    if (typeof value !== 'boolean')
+      throw new Error('The useBox of a text draw must be set using a boolean.');
+
+    this.useBox_ = value;
   }
 
   // Gets or sets the text of this text draw. The text must be at least a single character in length
@@ -152,6 +165,16 @@ class TextDraw {
     this.boxColor_ = value;
   }
 
+  // Gets or sets the outline size of the text draw. This must be a number between 0 (no outline)
+  // and MAXIMUM_SHADOW_SIZE. The outline's color can be changed using the shadowColor property.
+  get outlineSize() { return this.outlineSize_; }
+  set outlineSize(value) {
+    if (typeof value !== 'number' || value < 0 || value > MAXIMUM_SHADOW_SIZE)
+      throw new Error('The outline size of a text draw must be a number in range of [0, ' + MAXIMUM_SHADOW_SIZE + '].');
+
+    this.outlineSize_ = value;
+  }
+
   // Gets or sets the size of the shadow. This must be a number between 0 (invisible) and the
   // MAXIMUM_SHADOW_SIZE. The shadow may be cut off if it's too large for the containing box.
   get shadowSize() { return this.shadowSize_; }
@@ -188,7 +211,8 @@ class TextDraw {
     if (this.proportional_ !== null)
       pawnInvoke('PlayerTextDrawSetProportional', 'iii', player.id, textDrawId, this.proportional_ ? 1 : 0);
 
-    // TODO: PlayerTextDrawUseBox: Toggle the box on a player-textdraw.
+    if (this.useBox_ !== null)
+      pawnInvoke('PlayerTextDrawUseBox', 'iii', player.id, textDrawId, this.useBox_ ? 1 : 0);
 
     if (this.textSize_ !== null)
       pawnInvoke('PlayerTextDrawLetterSize', 'iiff', player.id, textDrawId, ...this.textSize_);
@@ -202,7 +226,8 @@ class TextDraw {
     if (this.boxColor_ !== null)
       pawnInvoke('PlayerTextDrawBoxColor', 'iii', player.id, textDrawId, this.boxColor_.asNumber());
 
-    // TODO: PlayerTextDrawSetOutline: Toggle the outline on a player-textdraw.
+    if (this.outlineSize_ !== null)
+      pawnInvoke('PlayerTextDrawSetOutline', 'iii', player.id, textDrawId, this.outlineSize_);
 
     if (this.shadowSize_ !== null)
       pawnInvoke('PlayerTextDrawSetShadow', 'iii', player.id, textDrawId, this.shadowSize_);

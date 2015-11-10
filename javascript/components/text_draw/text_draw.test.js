@@ -34,6 +34,25 @@ describe('TextDraw', it => {
     assert.deepEqual(textDraw.position, [30, 31]);
   });
 
+  it('should verify and set whether to use a box', assert => {
+    let textDraw = new TextDraw();
+
+    assert.throws(() => textDraw.useBox = null);
+    assert.throws(() => textDraw.useBox = undefined);
+    assert.throws(() => textDraw.useBox = '');
+    assert.throws(() => textDraw.useBox = '     ');
+
+    assert.throws(() => new TextDraw({ useBox: null }));
+    assert.throws(() => new TextDraw({ useBox: '  ' }));
+
+    textDraw.useBox = true;
+
+    assert.equal(textDraw.useBox, true);
+
+    textDraw = new TextDraw({ useBox: false });
+    assert.equal(textDraw.useBox, false);
+  });
+
   it('should verify and set the text', assert => {
     let textDraw = new TextDraw();
 
@@ -135,23 +154,25 @@ describe('TextDraw', it => {
   });
 
   it('should verify and set shadow sizes', assert => {
-    let textDraw = new TextDraw();
+    ['outlineSize', 'shadowSize'].forEach(property => {
+      let textDraw = new TextDraw();
 
-    assert.throws(() => textDraw.shadowSize = false);
-    assert.throws(() => textDraw.shadowSize = -7);
-    assert.throws(() => textDraw.shadowSize = 42);
-    assert.throws(() => textDraw.shadowSize = 'Impact');
-    assert.throws(() => textDraw.shadowSize = null);
+      assert.throws(() => textDraw[property] = false);
+      assert.throws(() => textDraw[property] = -7);
+      assert.throws(() => textDraw[property] = 42);
+      assert.throws(() => textDraw[property] = 'Impact');
+      assert.throws(() => textDraw[property] = null);
 
-    assert.throws(() => new TextDraw({ shadowSize: 42 }));
-    assert.throws(() => new TextDraw({ shadowSize: 'Impact' }));
+      assert.throws(() => new TextDraw({ [property]: 42 }));
+      assert.throws(() => new TextDraw({ [property]: 'Impact' }));
 
-    textDraw.shadowSize = 12;
+      textDraw[property] = 12;
 
-    assert.equal(textDraw.shadowSize, 12);
+      assert.equal(textDraw[property], 12);
 
-    textDraw = new TextDraw({ shadowSize: 9 });
-    assert.equal(textDraw.shadowSize, 9);
+      textDraw = new TextDraw({ [property]: 9 });
+      assert.equal(textDraw[property], 9);
+    });
   });
 
   it('should verify and set text and letter sizes', assert => {

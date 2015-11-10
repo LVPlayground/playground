@@ -21,6 +21,10 @@ class TextDraw {
     this.position_ = [10, 10];
     this.text_ = ' ';
 
+    this.color_ = null;
+    this.boxColor_ = null;
+    this.shadowColor_ = null;
+
     if (!options)
       return;
 
@@ -29,10 +33,10 @@ class TextDraw {
       throw new Error('The options for a text draw must be an object.');
 
     // Walk through all available settings for the text-draw, then apply them using the setter.
-    if (options.hasOwnProperty('position'))
-      this.position = options.position;
-    if (options.hasOwnProperty('text'))
-      this.text = options.text;
+    ['position', 'text', 'color', 'boxColor', 'shadowColor'].forEach(property => {
+      if (options.hasOwnProperty(property))
+        this[property] = options[property];
+    });
   }
 
   // Gets or sets the position of this text draw. It must be an array with two numbers that together
@@ -61,12 +65,51 @@ class TextDraw {
     this.text_ = value;
   }
 
+  // Gets or sets the color of a text draw. The value must be an instance of the Color class
+  // representing a certain, verified color.
+  get color() { return this.color_; }
+  set color(value) {
+    if (!(value instanceof Color))
+      throw new Error('The color of a text draw must be an instance of the Color class.');
+
+    this.color_ = value;
+  }
+
+  // Gets or sets the box color of a text draw. The value must be an instance of the Color class
+  // representing a certain, verified color.
+  get boxColor() { return this.boxColor_; }
+  set boxColor(value) {
+    if (!(value instanceof Color))
+      throw new Error('The box color of a text draw must be an instance of the Color class.');
+
+    this.boxColor_ = value;
+  }
+
+  // Gets or sets the shadow (background) color of a text draw. The value must be an instance of the
+  // Color class representing a certain, verified color.
+  get shadowColor() { return this.shadowColor_; }
+  set shadowColor(value) {
+    if (!(value instanceof Color))
+      throw new Error('The shadow color of a text draw must be an instance of the Color class.');
+
+    this.shadowColor_ = value;
+  }
+
   // Builds and displays the text draw to |player|. This method is a no-op if the text draw is
   // already being shown for the player.
   displayForPlayer(player) {
     let textDrawId = manager.createForPlayer(player, this);
     if (textDrawId === null)
       return true;  // |this| is already being displayed.
+
+    if (this.color_ !== null)
+      pawnInvoke('PlayerTextDrawColor', 'iii', player.id, textDrawId, this.color_.asNumber());
+
+    if (this.boxColor_ !== null)
+      pawnInvoke('PlayerTextDrawBoxColor', 'iii', player.id, textDrawId, this.boxColor_.asNumber());
+
+    if (this.shadowColor_ !== null)
+      pawnInvoke('PlayerTextDrawBackgroundColor', 'iii', player.id, textDrawId, this.shadowColor_.asNumber());
 
     // ...
 
@@ -81,3 +124,22 @@ class TextDraw {
 };
 
 exports = TextDraw;
+
+/***
+
+PlayerTextDrawAlignment: Set the alignment of a player-textdraw.
+PlayerTextDrawDestroy: Destroy a player-textdraw.
+PlayerTextDrawFont: Set the font of a player-textdraw.
+PlayerTextDrawLetterSize: Set the letter size of the text in a player-textdraw.
+PlayerTextDrawSetOutline: Toggle the outline on a player-textdraw.
+PlayerTextDrawSetProportional: Scale the text spacing in a player-textdraw to a proportional ratio.
+PlayerTextDrawSetShadow: Set the shadow on a player-textdraw.
+PlayerTextDrawSetString: Set the text of a player-textdraw.
+PlayerTextDrawTextSize: Set the size of a player-textdraw box (or clickable area for PlayerTextDrawSetSelectable).
+PlayerTextDrawUseBox: Toggle the box on a player-textdraw.
+PlayerTextDrawSetSelectable: Sets whether a player-textdraw is selectable through SelectTextDraw
+PlayerTextDrawSetPreviewModel: Set model ID of a 3D player textdraw preview.
+PlayerTextDrawSetPreviewRot: Set rotation of a 3D player textdraw preview.
+PlayerTextDrawSetPreviewVehCol: Set the colours of a vehicle in a 3D player textdraw preview.
+
+***/

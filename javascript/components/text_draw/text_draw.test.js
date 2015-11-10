@@ -52,4 +52,26 @@ describe('TextDraw', it => {
     textDraw = new TextDraw({ text: 'Hallo!' });
     assert.equal(textDraw.text, 'Hallo!');
   });
+
+  it('should verify and set colors', assert => {
+    ['color', 'boxColor', 'shadowColor'].forEach(property => {
+      let textDraw = new TextDraw();
+
+      assert.throws(() => textDraw[property] = null);
+      assert.throws(() => textDraw[property] = 42);
+      assert.throws(() => textDraw[property] = 'red');
+      assert.throws(() => textDraw[property] = 0xFF0000);
+      assert.throws(() => textDraw[property] = [0xFF, 0, 0]);
+
+      assert.throws(() => new TextDraw({ [property]: 42 }));
+      assert.throws(() => new TextDraw({ [property]: [255, 0, 0] }));
+
+      textDraw[property] = Color.RED;
+
+      assert.equal(textDraw[property], Color.RED);
+
+      textDraw = new TextDraw({ [property]: Color.GREEN });
+      assert.equal(textDraw[property], Color.GREEN);
+    });
+  });
 });

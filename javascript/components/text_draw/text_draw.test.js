@@ -115,4 +115,26 @@ describe('TextDraw', it => {
     assert.equal(textDraw.shadowSize, 9);
   });
 
+  it('should verify and set text and letter sizes', assert => {
+    ['textSize', 'letterSize'].forEach(property => {
+      let textDraw = new TextDraw();
+
+      assert.throws(() => textDraw[property] = null);
+      assert.throws(() => textDraw[property] = 42);
+      assert.throws(() => textDraw[property] = 'red');
+      assert.throws(() => textDraw[property] = 0xFF0000);
+      assert.throws(() => textDraw[property] = [0xFF, 0, 0]);
+
+      assert.throws(() => new TextDraw({ [property]: 42 }));
+      assert.throws(() => new TextDraw({ [property]: [255, 0, 0] }));
+
+      textDraw[property] = [2.0, 5.0];
+
+      assert.deepEqual(textDraw[property], [2.0, 5.0]);
+
+      textDraw = new TextDraw({ [property]: [10.0, 20.0] });
+      assert.deepEqual(textDraw[property], [10.0, 20.0]);
+    });
+  });
+
 });

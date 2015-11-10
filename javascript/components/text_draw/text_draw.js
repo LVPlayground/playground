@@ -215,10 +215,10 @@ class TextDraw {
       pawnInvoke('PlayerTextDrawUseBox', 'iii', player.id, textDrawId, this.useBox_ ? 1 : 0);
 
     if (this.textSize_ !== null)
-      pawnInvoke('PlayerTextDrawLetterSize', 'iiff', player.id, textDrawId, ...this.textSize_);
+      pawnInvoke('PlayerTextDrawTextSize', 'iiff', player.id, textDrawId, ...this.textSize_);
 
     if (this.letterSize_ !== null)
-      pawnInvoke('PlayerTextDrawLetterSize', 'iiff', player.id, textDraw, ...this.letterSize_);
+      pawnInvoke('PlayerTextDrawLetterSize', 'iiff', player.id, textDrawId, ...this.letterSize_);
 
     if (this.color_ !== null)
       pawnInvoke('PlayerTextDrawColor', 'iii', player.id, textDrawId, this.color_.asNumber());

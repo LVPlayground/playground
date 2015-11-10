@@ -94,4 +94,25 @@ describe('TextDraw', it => {
       assert.equal(textDraw[property], Color.GREEN);
     });
   });
+
+  it('should verify and set shadow sizes', assert => {
+    let textDraw = new TextDraw();
+
+    assert.throws(() => textDraw.shadowSize = false);
+    assert.throws(() => textDraw.shadowSize = -7);
+    assert.throws(() => textDraw.shadowSize = 42);
+    assert.throws(() => textDraw.shadowSize = 'Impact');
+    assert.throws(() => textDraw.shadowSize = null);
+
+    assert.throws(() => new TextDraw({ shadowSize: 42 }));
+    assert.throws(() => new TextDraw({ shadowSize: 'Impact' }));
+
+    textDraw.shadowSize = 12;
+
+    assert.equal(textDraw.shadowSize, 12);
+
+    textDraw = new TextDraw({ shadowSize: 9 });
+    assert.equal(textDraw.shadowSize, 9);
+  });
+
 });

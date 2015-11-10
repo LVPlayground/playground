@@ -4,6 +4,9 @@
 
 let TextDrawManager = require('components/text_draw/text_draw_manager.js');
 
+// Sensible maximum shadow size that may be used for a text draw.
+const MAXIMUM_SHADOW_SIZE = 24;
+
 // Create an instance of the text draw manager that will do our bookkeeping.
 let manager = new TextDrawManager();
 
@@ -25,6 +28,8 @@ class TextDraw {
 
     this.color_ = null;
     this.boxColor_ = null;
+
+    this.shadowSize_ = null;
     this.shadowColor_ = null;
 
     if (!options)
@@ -35,7 +40,7 @@ class TextDraw {
       throw new Error('The options for a text draw must be an object.');
 
     // Walk through all available settings for the text-draw, then apply them using the setter.
-    ['position', 'text', 'font', 'color', 'boxColor', 'shadowColor'].forEach(property => {
+    ['position', 'text', 'font', 'color', 'boxColor', 'shadowSize', 'shadowColor'].forEach(property => {
       if (options.hasOwnProperty(property))
         this[property] = options[property];
     });
@@ -97,6 +102,16 @@ class TextDraw {
     this.boxColor_ = value;
   }
 
+  // Gets or sets the size of the shadow. This must be a number between 0 (invisible) and the
+  // MAXIMUM_SHADOW_SIZE. The shadow may be cut off if it's too large for the containing box.
+  get shadowSize() { return this.shadowSize_; }
+  set shadowSize(value) {
+    if (typeof value !== 'number' || value < 0 || value > MAXIMUM_SHADOW_SIZE)
+      throw new Error('The shadow size of a text draw must be a number in range of [0, ' + MAXIMUM_SHADOW_SIZE + '].');
+
+    this.shadowSize_ = value;
+  }
+
   // Gets or sets the shadow (background) color of a text draw. The value must be an instance of the
   // Color class representing a certain, verified color.
   get shadowColor() { return this.shadowColor_; }
@@ -123,6 +138,9 @@ class TextDraw {
     if (this.boxColor_ !== null)
       pawnInvoke('PlayerTextDrawBoxColor', 'iii', player.id, textDrawId, this.boxColor_.asNumber());
 
+    if (this.shadowSize_ !== null)
+      pawnInvoke('PlayerTextDrawSetShadow', 'iii', player.id, textDrawId, this.shadowSize_);
+
     if (this.shadowColor_ !== null)
       pawnInvoke('PlayerTextDrawBackgroundColor', 'iii', player.id, textDrawId, this.shadowColor_.asNumber());
 
@@ -148,13 +166,17 @@ exports = TextDraw;
 
 /***
 
-PlayerTextDrawAlignment: Set the alignment of a player-textdraw.
 PlayerTextDrawLetterSize: Set the letter size of the text in a player-textdraw.
-PlayerTextDrawSetOutline: Toggle the outline on a player-textdraw.
-PlayerTextDrawSetProportional: Scale the text spacing in a player-textdraw to a proportional ratio.
-PlayerTextDrawSetShadow: Set the shadow on a player-textdraw.
 PlayerTextDrawTextSize: Set the size of a player-textdraw box (or clickable area for PlayerTextDrawSetSelectable).
+
+PlayerTextDrawSetProportional: Scale the text spacing in a player-textdraw to a proportional ratio.
+
+PlayerTextDrawAlignment: Set the alignment of a player-textdraw.
+
+PlayerTextDrawSetOutline: Toggle the outline on a player-textdraw.
+
 PlayerTextDrawUseBox: Toggle the box on a player-textdraw.
+
 PlayerTextDrawSetSelectable: Sets whether a player-textdraw is selectable through SelectTextDraw
 PlayerTextDrawSetPreviewModel: Set model ID of a 3D player textdraw preview.
 PlayerTextDrawSetPreviewRot: Set rotation of a 3D player textdraw preview.

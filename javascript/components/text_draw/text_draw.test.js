@@ -53,6 +53,26 @@ describe('TextDraw', it => {
     assert.equal(textDraw.text, 'Hallo!');
   });
 
+  it('should verify and set the font', assert => {
+    let textDraw = new TextDraw();
+
+    assert.throws(() => textDraw.font = false);
+    assert.throws(() => textDraw.font = -7);
+    assert.throws(() => textDraw.font = 42);
+    assert.throws(() => textDraw.font = 'Impact');
+    assert.throws(() => textDraw.font = null);
+
+    assert.throws(() => new TextDraw({ font: 42 }));
+    assert.throws(() => new TextDraw({ font: 'Impact' }));
+
+    textDraw.font = TextDraw.FONT_PRICEDOWN;
+
+    assert.equal(textDraw.font, TextDraw.FONT_PRICEDOWN);
+
+    textDraw = new TextDraw({ font: TextDraw.FONT_MONOSPACE });
+    assert.equal(textDraw.font, TextDraw.FONT_MONOSPACE);
+  });
+
   it('should verify and set colors', assert => {
     ['color', 'boxColor', 'shadowColor'].forEach(property => {
       let textDraw = new TextDraw();

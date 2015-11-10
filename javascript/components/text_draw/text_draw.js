@@ -19,7 +19,9 @@ let manager = new TextDrawManager();
 class TextDraw {
   constructor(options) {
     this.position_ = [10, 10];
+
     this.text_ = ' ';
+    this.font_ = null;
 
     this.color_ = null;
     this.boxColor_ = null;
@@ -33,7 +35,7 @@ class TextDraw {
       throw new Error('The options for a text draw must be an object.');
 
     // Walk through all available settings for the text-draw, then apply them using the setter.
-    ['position', 'text', 'color', 'boxColor', 'shadowColor'].forEach(property => {
+    ['position', 'text', 'font', 'color', 'boxColor', 'shadowColor'].forEach(property => {
       if (options.hasOwnProperty(property))
         this[property] = options[property];
     });
@@ -63,6 +65,16 @@ class TextDraw {
       throw new Error('The text of a text draw must not be empty.');
 
     this.text_ = value;
+  }
+
+  // Gets or sets the font of a text draw. The value must be one of the FONT_* constants defined on
+  // the TextDraw class. Custom fonts are not possible.
+  get font() { return this.font_; }
+  set font(value) {
+    if (typeof value !== 'number' || value < 0 || value > TextDraw.FONT_PRICEDOWN)
+      throw new Error('The font of a text draw must be set using one of the TextDraw.FONT_* constants.');
+
+    this.font_ = value;
   }
 
   // Gets or sets the color of a text draw. The value must be an instance of the Color class
@@ -102,6 +114,9 @@ class TextDraw {
     if (textDrawId === null)
       return true;  // |this| is already being displayed.
 
+    if (this.font_ !== null)
+      pawnInvoke('PlayerTextDrawFont', 'iii', player.id, textDrawId, this.font_);
+
     if (this.color_ !== null)
       pawnInvoke('PlayerTextDrawColor', 'iii', player.id, textDrawId, this.color_.asNumber());
 
@@ -123,18 +138,21 @@ class TextDraw {
   }
 };
 
+// The fonts that may be used with a text draw.
+TextDraw.FONT_CLASSIC = 0;
+TextDraw.FONT_SANS_SERIF = 1;
+TextDraw.FONT_MONOSPACE = 2;
+TextDraw.FONT_PRICEDOWN = 3;
+
 exports = TextDraw;
 
 /***
 
 PlayerTextDrawAlignment: Set the alignment of a player-textdraw.
-PlayerTextDrawDestroy: Destroy a player-textdraw.
-PlayerTextDrawFont: Set the font of a player-textdraw.
 PlayerTextDrawLetterSize: Set the letter size of the text in a player-textdraw.
 PlayerTextDrawSetOutline: Toggle the outline on a player-textdraw.
 PlayerTextDrawSetProportional: Scale the text spacing in a player-textdraw to a proportional ratio.
 PlayerTextDrawSetShadow: Set the shadow on a player-textdraw.
-PlayerTextDrawSetString: Set the text of a player-textdraw.
 PlayerTextDrawTextSize: Set the size of a player-textdraw box (or clickable area for PlayerTextDrawSetSelectable).
 PlayerTextDrawUseBox: Toggle the box on a player-textdraw.
 PlayerTextDrawSetSelectable: Sets whether a player-textdraw is selectable through SelectTextDraw

@@ -29,21 +29,28 @@ class TextDrawManager {
     return textDrawId;
   }
 
+  // Returns the id of |textDraw| when it is being presented to |player|.
+  getForPlayer(player, textDraw) {
+    let playerId = player.id;
+    if (!this.players_.hasOwnProperty(playerId))
+      return null;
+
+    if (!this.players_[playerId].has(textDraw))
+      return null;
+
+    return this.players_[playerId].get(textDraw);
+  }
+
   // Hides |textDraw| from |player| if it's being displayed. Returns whether the |textDraw| was
   // visible for them, and it was removed from their screen successfully.
   hideForPlayer(player, textDraw) {
-    let playerId = player.id;
-    if (!this.players_.hasOwnProperty(playerId))
-      return false;
+    let textDrawId = this.getForPlayer(player, textDraw);
+    if (textDrawId === null)
+      return true;
 
-    if (!this.players_[playerId].has(textDraw))
-      return false;
+    pawnInvoke('PlayerTextDrawDestroy', 'ii', player.id, textDrawId);
 
-    let textDrawId = this.players_[playerId].get(textDraw);
-
-    pawnInvoke('PlayerTextDrawDestroy', 'ii', playerId, textDrawId);
-
-    this.players_[playerId].delete(textDraw);
+    this.players_[player.id].delete(textDraw);
     return true;
   }
 

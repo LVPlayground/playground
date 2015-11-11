@@ -95,6 +95,14 @@ class TextDraw {
     this.text_ = value;
   }
 
+  // Updates the text of the text draw to |value|. If the text draw is being displayed to |player|,
+  // the visible state on their screen will be updated as well.
+  updateTextForPlayer(player, text) {
+    let textDrawId = manager.getForPlayer(player, this);
+    if (textDrawId !== null)
+      pawnInvoke('PlayerTextDrawSetString', 'iis', player.id, textDrawId, text);
+  }
+
   // Gets or sets the font of a text draw. The value must be one of the FONT_* constants defined on
   // the TextDraw class. Custom fonts are not possible.
   get font() { return this.font_; }

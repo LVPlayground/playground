@@ -71,7 +71,7 @@ class RunningRace {
       this.deathFeed_.enableForPlayer(player);
 
       // Dispose of their score board, and remove it from the local state.
-      this.scoreBoards_[player.id].dispose();
+      this.scoreBoards_[player.id].hideForPlayer();
       delete this.scoreBoards_[player.id];
     }
 
@@ -239,6 +239,7 @@ class RunningRace {
       // Create the score board for the player. This will visually render the current status of the
       // race on their screen, like the current time and contestants.
       this.scoreBoards_[player.id] = new ScoreBoard(player, this.players_);
+      this.scoreBoards_[player.id].displayForPlayer();
 
       // Create the first checkpoint for the player. They won't be able to drive yet.
       this.nextCheckpoint(player, null /** index **/);

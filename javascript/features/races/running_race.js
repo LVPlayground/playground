@@ -57,10 +57,12 @@ class RunningRace {
   // Returns the Race instance which this running race will host.
   get race() { return this.race_; }
 
-  // Removes |player| from the group of players participating in this race. If there are no players
-  // left anymore, the race will advance to the FINISHED state.
-  removePlayer(player) {
-    this.participants_.advancePlayer(player, RaceParticipant.STATE_DROP_OUT);
+  // Removes |participant| from the group of players participating in this race. If there are no
+  // players left anymore, the race will advance to the FINISHED state.
+  removeParticipant(participant) {
+    participant.advance(RaceParticipant.STATE_DROP_OUT);
+
+    let player = participant.player;
 
     // Destroy the created state for the player when they leave the race.
     if (this.state_ >= RunningRace.STATE_LOADING) {
@@ -85,10 +87,14 @@ class RunningRace {
   // then we need to mark them as having dropped out, and possibly stop the race altogether.
   onPlayerDisconnect(event) {
     let player = Player.get(event.playerid);
-    if (player === null || !this.participants_.isRacingParticipant(player))
+    if (player === null)
       return;
 
-    this.removePlayer(player);
+    let participant = this.participants_.participantForPlayer(player);
+    if (participant === null)
+      return;
+
+    this.removeParticipant(participant);
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -154,7 +160,8 @@ class RunningRace {
   // -----------------------------------------------------------------------------------------------
 
   addPlayer(player) {
-    if (this.state_ != RunningRace.STATE_SIGNUP || this.participants_.isRacingParticipant(player))
+    let participant = this.participants_.participantForPlayer(player);
+    if (this.state_ != RunningRace.STATE_SIGNUP || participant !== null)
       return;  // this should never happen.
 
     this.participants_.addPlayer(player);
@@ -241,7 +248,7 @@ class RunningRace {
       this.scoreBoards_[player.id].displayForPlayer();
 
       // Create the first checkpoint for the player. They won't be able to drive yet.
-      this.nextCheckpoint(player, null /** index **/);
+      this.nextCheckpoint(participant, 0 /* first checkpoint */);
     }
 
     return true;
@@ -298,40 +305,48 @@ class RunningRace {
     wait(RaceSettings.RACE_SCORE_BOARD_UPDATE_TIME).then(() => this.updateScoreBoard());
   }
 
-  nextCheckpoint(player, index) {
-    if (this.state_ != RunningRace.STATE_RUNNING && index !== null)
+  nextCheckpoint(participant, index) {
+    if (this.state_ != RunningRace.STATE_RUNNING && index !== 0)
       return;  // they must've unfreezed themselves.
 
-    // TODO: Store the player's checkpoint progress.
-    index = index || 0;
+    // TODO: Support multiple laps.
 
-    // If they reached the final checkpoint, mark them as having finished.
+    // If the participant just passed the final checkpoint, mark them as having finished the game.
+    // Their state will be advanced by the didFinish method, no need to record the time.
     if (index >= this.race_.checkpoints.length) {
-      this.didFinish(player);
+      this.didFinish(participant);
       return;
     }
 
-    // Otherwise, display the next checkpoint for them.
-    this.race_.checkpoints[index].displayForPlayer(player).then(() => {
-      this.nextCheckpoint(player, index + 1);
+    // Record the time at which they passed a checkpoint. This does not apply to the very first
+    // checkpoint that's being shown, given that they actually have to pass one.
+    if (index > 0)
+      participant.recordCheckpointTime(index - 1, highResolutionTime());
+
+    // TODO: Cause the score boards for all participants to update.
+
+    // Display the next check point for the participant - they can continue.
+    this.race_.checkpoints[index].displayForPlayer(participant.player).then(() => {
+      this.nextCheckpoint(participant, index + 1);
+
     }, error => {
       // They either disconnected from the server, or dropped out of the race for another reason.
       // Nothing to worry about, so we discard the promise rejection.
     });
   }
 
-  didFinish(player) {
-    this.participants_.advancePlayer(player, RaceParticipant.STATE_FINISHED, highResolutionTime());
+  didFinish(participant) {
+    participant.advance(RaceParticipant.STATE_FINISHED, highResolutionTime());
 
     // TODO: Display some visual banner to congratulate them with their win.
-    console.log(player.name + ' has finished the race!');
+    console.log(participant.playerName + ' has finished the race!');
 
     // Make the player uncontrollable - let them roll out for a few seconds.
-    player.controllable = false;
+    participant.player.controllable = false;
 
     // Remove the player from the race after a few seconds have passed, let their result sink in.
     wait(RaceSettings.RACE_FINISHED_WAIT_DURATION).then(() =>
-        this.removePlayer(player));
+        this.removeParticipant(participant));
   }
 
   // -----------------------------------------------------------------------------------------------

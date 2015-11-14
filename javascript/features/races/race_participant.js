@@ -17,7 +17,10 @@ class RaceParticipant {
     this.state_ = RaceParticipant.STATE_SIGNUP;
 
     this.startTime_ = null;
-    this.finishTime_ = null;
+    this.totalTime_ = null;
+
+    this.checkpointIndex_ = null;
+    this.checkpointTimes_ = [];
   }
 
   // Returns the Id of the player this participant represents.
@@ -49,6 +52,12 @@ class RaceParticipant {
            this.playerName_ === player.name;
   }
 
+  // Records |time| as the moment at which the player passed the checkpoint at |checkpointIndex|.
+  recordCheckpointTime(checkpointIndex, time) {
+    this.checkpointIndex_ = checkpointIndex;
+    this.checkpointTimes_.push(time - this.startTime_);
+  }
+
   // Advances the player to |state|. If the current state is already past |state|, this call will
   // silently be ignored (don't demote players from having finished to having dropped out). The
   // |param| must be set when advancing to STATE_RACING or STATE_FINISHED.
@@ -63,7 +72,7 @@ class RaceParticipant {
         break;
 
       case RaceParticipant.STATE_FINISHED:
-        this.finishTime_ = param;
+        this.totalTime_ = param - this.startTime_;
         break;
     }
   }

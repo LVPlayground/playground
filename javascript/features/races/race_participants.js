@@ -19,25 +19,24 @@ class RaceParticipants {
 
   // Advances the |player| to |state|. If the player is already at a later state, the advancement
   // will silently fail (for example, drop-out versus finished). 
-  advancePlayer(player, state, param = null) {
+  advancePlayer(player, state) {
     for (let participantId = 0; participantId < this.participants_.length; ++participantId) {
       if (!this.participants_[participantId].isPlayer(player))
         continue;
 
-      this.participants_[participantId].advance(state, param);
+      this.participants_[participantId].advance(state);
       return;
     }
   }
 
-  // Determines whether |player| is racing participant. This method is O(n) for the number of
-  // participants to the current race.
-  isRacingParticipant(player) {
+  // Returns the participant associated with |player|, or NULL when there is none.
+  participantForPlayer(player) {
     for (let participant of this.racingPlayers()) {
       if (participant.isPlayer(player))
-        return true;
+        return participant;
     }
 
-    return false;
+    return null;
   }
 
   // Returns the number of players who are currently still racing.

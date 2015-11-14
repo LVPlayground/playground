@@ -84,13 +84,27 @@ class RaceManager {
       activeRace.addPlayer(player);
     } else {
       activeRace = new RunningRace(this.races_[race_id], player, skipSignup, this.deathFeed_);
-      activeRace.finished.then(() =>
-          this.activeRaces_ = this.activeRaces_.filter(runningRace => activeRace !== runningRace));
+      activeRace.finished.then(finishedParticipants => {
+        this.onRaceFinished(activeRace, finishedParticipants);
+      });
 
       if (activeRace.state == RunningRace.STATE_SIGNUP)
         this.announceRace(activeRace);
 
       this.activeRaces_.push(activeRace);
+    }
+  }
+
+  // Called when |runningRace| has finished. The |finishedParticipants| argument contains a
+  // generator that will yield for each participant that has successfully finished the race.
+  onRaceFinished(runningRace, finishedParticipants) {
+    console.log('Race finished!');
+    this.activeRaces_ = this.activeRaces_.filter(activeRace => activeRace !== runningRace);
+
+    // Store the result for each of the finished participants in the database.
+    for (let participant of finishedParticipants) {
+      this.raceDatabase_.storeRaceResult(
+          runningRace.race.id, participant.userId, participant.rank, participant.totalTime, participant.checkpointTimes);
     }
   }
 

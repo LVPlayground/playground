@@ -91,7 +91,7 @@ class Database {
         case 'string':
           return prefix + '"' + substituteString(parameters[substitutionIndex++]) + '"';
         default:
-          throw new Error('Invalid type ("' + type + '"") for substitution parameter #' + substitutionIndex);
+          throw new Error('Invalid type ("' + type + '") for substitution parameter #' + substitutionIndex);
       }
 
       // We'll never hit this due to the `default` case in the switch.

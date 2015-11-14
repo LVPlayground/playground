@@ -28,6 +28,21 @@ const FETCH_BEST_PLAYER_TIMES_QUERY = `
     GROUP BY
       race_results.race_id`;
 
+// MySQL query for storing the high-level result of a race done by the player.
+const STORE_RACE_RESULT_QUERY = `
+    INSERT INTO
+      race_results
+      (race_id, race_date, race_result_rank, race_result_time, user_id)
+    VALUES
+      (?, NOW(), ?, ?, ?)`;
+
+// MySQL query for storing the results of the individual checkpoints for a race result.
+const STORE_RACE_CHECKPOINT_RESULT_QUERY = `
+    INSERT INTO
+      race_results_checkpoints
+      (result_checkpoint_index, result_time)
+    VALUES `;
+
 // The race database class provides a bridge between the race manager and the MySQL database that
 // is backing Las Venturas Playground. It's primarily used to store and retrieve the best times of
 // players on each of the games.
@@ -66,6 +81,30 @@ class RaceDatabase {
           times[row.race_id] = row.race_result_time);
 
       return times;
+    });
+  }
+
+  // Stores the result as driven by |userId| on the |raceId| race. It took them |totalTime|
+  // milliseconds to finish the race. |checkpointTimes| is an array with the number of milliseconds
+  // at which they passed through each of the checkpoints of the race.
+  storeRaceResult(raceId, userId, rank, totalTime, checkpointTimes) {
+    return this.database_.query(STORE_RACE_RESULT_QUERY, raceId, rank, totalTime, userId).then(result => {
+      if (!result.insertId)
+        return;  // the result couldn't be written.
+
+      if (!checkpointTimes.length)
+        return;  // races with a single checkpoint don't have intermediary times.
+
+      let checkpointId = 0,
+          parameters = [],
+          values = [];
+
+      checkpointTimes.forEach(time => {
+        parameters.push(checkpointId++, time);
+        values.push('(?, ?)');
+      });
+
+      return this.database_.query(STORE_RACE_CHECKPOINT_RESULT_QUERY + values.join(', '), ...parameters);
     });
   }
 };

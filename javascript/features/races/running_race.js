@@ -14,6 +14,7 @@ let RaceParticipant = require('features/races/race_participant.js'),
 class RunningRace {
   constructor(race, player, skipSignup, deathFeed) {
     this.participants_ = new RaceParticipants();
+    this.finishedCount_ = 0;
     this.race_ = race;
     this.state_ = RunningRace.STATE_SIGNUP;
     this.deathFeed_ = deathFeed;
@@ -179,7 +180,7 @@ class RunningRace {
     let spawnPositions = this.race_.spawnPositions,
         playerSpawnPositionIndex = 0;
 
-    for (let participant of this.participants_.racingPlayers()) {
+    for (let participant of this.participants_.racingParticipants()) {
       let spawn = spawnPositions[playerSpawnPositionIndex++];
       let vehicle = this.entities_.createVehicle({
         modelId: spawn.vehicle.model,
@@ -220,7 +221,7 @@ class RunningRace {
   preparePlayers() {
     let playerVehicleIndex = 0;
 
-    for (let participant of this.participants_.racingPlayers()) {
+    for (let participant of this.participants_.racingParticipants()) {
       let player = participant.player;
 
       // TODO: Store the player's state so that it can be restored later.
@@ -264,7 +265,7 @@ class RunningRace {
       // TODO: Display "Go" rather than zero.
 
       let display = seconds => {
-        for (let participant of this.participants_.racingPlayers())
+        for (let participant of this.participants_.racingParticipants())
           participant.player.sendMessage(seconds + '...');
 
         if (seconds > 0)
@@ -284,7 +285,7 @@ class RunningRace {
   startRace() {
     let startTime = highResolutionTime();
 
-    for (let participant of this.participants_.racingPlayers()) {
+    for (let participant of this.participants_.racingParticipants()) {
       participant.advance(RaceParticipant.STATE_RACING, startTime);
       participant.player.controllable = true;
     }
@@ -337,6 +338,7 @@ class RunningRace {
 
   didFinish(participant) {
     participant.advance(RaceParticipant.STATE_FINISHED, highResolutionTime());
+    participant.rank = ++this.finishedCount_;
 
     // TODO: Display some visual banner to congratulate them with their win.
     console.log(participant.playerName + ' has finished the race!');
@@ -357,7 +359,7 @@ class RunningRace {
     // TODO: Display the message using a text draw rather than a message like this.
     // TODO: Block the players controls, make sure that checkpoint events are ignored.
 
-    for (let participant of this.participants_.racingPlayers())
+    for (let participant of this.participants_.racingParticipants())
       participant.player.sendMessage('You ran out of time!');
   }
 
@@ -369,7 +371,7 @@ class RunningRace {
     this.callbacks_.dispose();
     this.entities_.dispose();
 
-    this.resolveFinishedPromise_();
+    this.resolveFinishedPromise_(this.participants_.finishedParticipants());
   }
 };
 

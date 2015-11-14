@@ -31,7 +31,7 @@ class RaceParticipants {
 
   // Returns the participant associated with |player|, or NULL when there is none.
   participantForPlayer(player) {
-    for (let participant of this.racingPlayers()) {
+    for (let participant of this.racingParticipants()) {
       if (participant.isPlayer(player))
         return participant;
     }
@@ -50,11 +50,23 @@ class RaceParticipants {
     return count;
   }
 
-  // Returns a generator that will yield for each of the racing players in the race.
-  *racingPlayers() {
+  // Returns a generator that will yield for each of the racing participants in the race.
+  *racingParticipants() {
     for (let participantId = 0; participantId < this.participants_.length; ++participantId) {
       let participant = this.participants_[participantId];
       if (participant.state > RaceParticipant.STATE_RACING)
+        continue;
+
+      yield participant;
+    }
+  }
+
+  // Returns a generator that will yield for each of the participants who finished the race. The
+  // ordering of the yielded players should be considered random.
+  *finishedParticipants() {
+    for (let participantId = 0; participantId < this.participants_.length; ++participantId) {
+      let participant = this.participants_[participantId];
+      if (participant.state != RaceParticipant.STATE_FINISHED)
         continue;
 
       yield participant;

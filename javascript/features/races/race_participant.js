@@ -18,6 +18,7 @@ class RaceParticipant {
 
     this.startTime_ = null;
     this.totalTime_ = null;
+    this.rank_ = 0;
 
     this.checkpointIndex_ = null;
     this.checkpointTimes_ = [];
@@ -42,8 +43,24 @@ class RaceParticipant {
   // Returns the user Id of the account that belongs to this participant.
   get userId() { return this.userId_; }
 
+  // Returns the state of this participant.
+  get state() { return this.state_; }
+
   // Returns the time at which the participant started racing.
   get startTime() { return this.startTime_; }
+
+  // Returns the total time this participant took for finishing the race.
+  get totalTime() { return this.totalTime_; }
+
+  // Returns or updates the participant's rank on this race. Will only be set after they finish it.
+  get rank() { return this.rank_; }
+  set rank(value) { this.rank_ = value; }
+
+  // Returns the participant's current checkpoint index. May be NULL if they haven't passed one yet.
+  get checkpointIndex() { return this.checkpointIndex_; }
+
+  // Returns an array with the times at which the player passed each of the checkpoints.
+  get checkpointTimes() { return this.checkpointTimes_; }
 
   // Determines whether |player| represents the player this instance represents. We can't rely on
   // the equality operator because the player for this participant may have disconnected since.

@@ -19,12 +19,12 @@ class RaceParticipants {
 
   // Advances the |player| to |state|. If the player is already at a later state, the advancement
   // will silently fail (for example, drop-out versus finished). 
-  advancePlayer(player, state) {
+  advancePlayer(player, state, param = null) {
     for (let participantId = 0; participantId < this.participants_.length; ++participantId) {
       if (!this.participants_[participantId].isPlayer(player))
         continue;
 
-      this.participants_[participantId].advance(state);
+      this.participants_[participantId].advance(state, param);
       return;
     }
   }

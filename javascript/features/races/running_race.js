@@ -27,9 +27,6 @@ class RunningRace {
     // Mapping of a player id to the score board visible on their screen.
     this.scoreBoards_ = {};
 
-    // Time at which the race started.
-    this.startTime_ = null;
-
     // Scope all entities created by this race to the lifetime of the race.
     this.entities_ = new ScopedEntities();
 
@@ -240,7 +237,7 @@ class RunningRace {
 
       // Create the score board for the player. This will visually render the current status of the
       // race on their screen, like the current time and contestants.
-      this.scoreBoards_[player.id] = new ScoreBoard(player, this.participants_);
+      this.scoreBoards_[player.id] = new ScoreBoard(participant, this.participants_);
       this.scoreBoards_[player.id].displayForPlayer();
 
       // Create the first checkpoint for the player. They won't be able to drive yet.
@@ -278,10 +275,10 @@ class RunningRace {
   // -----------------------------------------------------------------------------------------------
 
   startRace() {
-    this.startTime_ = highResolutionTime();
+    let startTime = highResolutionTime();
 
     for (let participant of this.participants_.racingPlayers()) {
-      participant.advance(RaceParticipant.STATE_RACING);
+      participant.advance(RaceParticipant.STATE_RACING, startTime);
       participant.player.controllable = true;
     }
 
@@ -292,9 +289,10 @@ class RunningRace {
     if (this.state_ != RunningRace.STATE_RUNNING)
       return;  // no need to update the score board when the race has finished.
 
-    let runningTime = highResolutionTime() - this.startTime_;
-    Object.keys(this.scoreBoards_).forEach(playerId =>
-        this.scoreBoards_[playerId].update(runningTime));
+    let currentTime = highResolutionTime();
+    Object.keys(this.scoreBoards_).forEach(playerId => {
+      this.scoreBoards_[playerId].update(currentTime);
+    });
 
     // Schedule another update of the score board after a given amount of milliseconds.
     wait(RaceSettings.RACE_SCORE_BOARD_UPDATE_TIME).then(() => this.updateScoreBoard());
@@ -323,7 +321,7 @@ class RunningRace {
   }
 
   didFinish(player) {
-    this.participants_.advancePlayer(player, RaceParticipant.STATE_FINISHED);
+    this.participants_.advancePlayer(player, RaceParticipant.STATE_FINISHED, highResolutionTime());
 
     // TODO: Display some visual banner to congratulate them with their win.
     console.log(player.name + ' has finished the race!');

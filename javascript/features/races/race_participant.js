@@ -15,6 +15,9 @@ class RaceParticipant {
       this.userId_ = player.account.userId;
 
     this.state_ = RaceParticipant.STATE_SIGNUP;
+
+    this.startTime_ = null;
+    this.finishTime_ = null;
   }
 
   // Returns the Id of the player this participant represents.
@@ -36,6 +39,9 @@ class RaceParticipant {
   // Returns the user Id of the account that belongs to this participant.
   get userId() { return this.userId_; }
 
+  // Returns the time at which the participant started racing.
+  get startTime() { return this.startTime_; }
+
   // Determines whether |player| represents the player this instance represents. We can't rely on
   // the equality operator because the player for this participant may have disconnected since.
   isPlayer(player) {
@@ -44,12 +50,22 @@ class RaceParticipant {
   }
 
   // Advances the player to |state|. If the current state is already past |state|, this call will
-  // silently be ignored (don't demote players from having finished to having dropped out).
-  advance(state) {
+  // silently be ignored (don't demote players from having finished to having dropped out). The
+  // |param| must be set when advancing to STATE_RACING or STATE_FINISHED.
+  advance(state, param = null) {
     if (this.state_ >= state)
       return;
 
     this.state_ = state;
+    switch (this.state_) {
+      case RaceParticipant.STATE_RACING:
+        this.startTime_ = param;
+        break;
+
+      case RaceParticipant.STATE_FINISHED:
+        this.finishTime_ = param;
+        break;
+    }
   }
 };
 

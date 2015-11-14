@@ -38,8 +38,9 @@ const BACKGROUND_COLOR = new Color(0, 0, 0, 100);
 // between them and other players, positive values are good (they're ahead of them!) This may be
 // confusing for new players, at least initially, but I do think it makes sense.
 class ScoreBoard {
-  constructor(player, participants) {
-    this.player_ = player;
+  constructor(participant, participants) {
+    this.participant_ = participant;
+    this.player_ = participant.player;
 
     // TODO: Calculate the height of the background area based on the number of participants.
     this.background_ = new Rectangle(500, 140, 106, 200, BACKGROUND_COLOR);
@@ -141,10 +142,11 @@ class ScoreBoard {
     this.background_.hideForPlayer(this.player_);
   }
 
-  // Called every few hundred milliseconds while the race is active. Gives us the opportunity to
-  // update the running counter on a player's screen.
-  update(runningTime) {
-    this.timeValue_.updateTextForPlayer(this.player_, ScoreBoard.formatTime(runningTime, true));
+  // Called every ~hundred milliseconds while the race is active. Only update the high-resolution
+  // race-duration counter on the player's screen.
+  update(currentTime) {
+    this.timeValue_.updateTextForPlayer(
+        this.player_, ScoreBoard.formatTime(currentTime - this.participant_.startTime, true));
   }
 
   // -----------------------------------------------------------------------------------------------

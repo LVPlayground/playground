@@ -2,7 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let RaceSettings = require('features/races/race_settings.js'),
+let RaceParticipant = require('features/races/race_participant.js'),
+    RaceParticipants = require('features/races/race_participants.js'),
+    RaceSettings = require('features/races/race_settings.js'),
     ScopedCallbacks = require('base/scoped_callbacks.js'),
     ScopedEntities = require('entities/scoped_entities.js'),
     ScoreBoard = require('features/races/score_board.js');
@@ -11,7 +13,7 @@ let RaceSettings = require('features/races/race_settings.js'),
 // being at least in the sign-up state.
 class RunningRace {
   constructor(race, player, skipSignup, deathFeed) {
-    this.players_ = [];
+    this.participants_ = new RaceParticipants();
     this.race_ = race;
     this.state_ = RunningRace.STATE_SIGNUP;
     this.deathFeed_ = deathFeed;
@@ -58,13 +60,10 @@ class RunningRace {
   // Returns the Race instance which this running race will host.
   get race() { return this.race_; }
 
-  // Returns the state of the running race. Must be one of the constants defined later in this file.
-  get state() { return this.state_; }
-
   // Removes |player| from the group of players participating in this race. If there are no players
   // left anymore, the race will advance to the FINISHED state.
   removePlayer(player) {
-    this.players_ = this.players_.filter(otherPlayer => otherPlayer != player);
+    this.participants_.advancePlayer(player, RaceParticipant.STATE_DROP_OUT);
 
     // Destroy the created state for the player when they leave the race.
     if (this.state_ >= RunningRace.STATE_LOADING) {
@@ -81,7 +80,7 @@ class RunningRace {
     // TODO: Restore the |player|'s state if |this.stage_| >= RunningRace.STATE_COUNTDOWN.
     // TODO: Hide the current checkpoint for the player.
 
-    if (!this.players_.length)
+    if (!this.participants_.racingPlayerCount())
       this.advanceState(RunningRace.STATE_FINISHED);
   }
 
@@ -89,7 +88,7 @@ class RunningRace {
   // then we need to mark them as having dropped out, and possibly stop the race altogether.
   onPlayerDisconnect(event) {
     let player = Player.get(event.playerid);
-    if (player === null || !this.players_.includes(player))
+    if (player === null || !this.participants_.isRacingParticipant(player))
       return;
 
     this.removePlayer(player);
@@ -158,13 +157,13 @@ class RunningRace {
   // -----------------------------------------------------------------------------------------------
 
   addPlayer(player) {
-    if (this.state_ != RunningRace.STATE_SIGNUP || this.players_.includes(player))
+    if (this.state_ != RunningRace.STATE_SIGNUP || this.participants_.isRacingParticipant(player))
       return;  // this should never happen.
 
-    this.players_.push(player);
+    this.participants_.addPlayer(player);
 
     // Advance to the loading state if the race is full.
-    if (this.race_.maxPlayers == this.players_.length)
+    if (this.race_.maxPlayers == this.participants_.racingPlayerCount())
       this.advanceState(RunningRace.STATE_LOADING);
   }
 
@@ -176,7 +175,7 @@ class RunningRace {
     let spawnPositions = this.race_.spawnPositions,
         playerSpawnPositionIndex = 0;
 
-    this.players_.forEach(player => {
+    for (let participant of this.participants_.racingPlayers()) {
       let spawn = spawnPositions[playerSpawnPositionIndex++];
       let vehicle = this.entities_.createVehicle({
         modelId: spawn.vehicle.model,
@@ -203,8 +202,8 @@ class RunningRace {
           break;
       }
 
-      this.vehicles_[player.id] = vehicle;
-    });
+      this.vehicles_[participant.playerId] = vehicle;
+    }
 
     return true;
   }
@@ -216,7 +215,10 @@ class RunningRace {
 
   preparePlayers() {
     let playerVehicleIndex = 0;
-    this.players_.forEach(player => {
+
+    for (let participant of this.participants_.racingPlayers()) {
+      let player = participant.player;
+
       // TODO: Store the player's state so that it can be restored later.
 
       // Disable the death feed for the player, we'll use that space for a scoreboard.
@@ -238,12 +240,12 @@ class RunningRace {
 
       // Create the score board for the player. This will visually render the current status of the
       // race on their screen, like the current time and contestants.
-      this.scoreBoards_[player.id] = new ScoreBoard(player, this.players_);
+      this.scoreBoards_[player.id] = new ScoreBoard(player, this.participants_);
       this.scoreBoards_[player.id].displayForPlayer();
 
       // Create the first checkpoint for the player. They won't be able to drive yet.
       this.nextCheckpoint(player, null /** index **/);
-    });
+    }
 
     return true;
   }
@@ -258,7 +260,9 @@ class RunningRace {
       // TODO: Display "Go" rather than zero.
 
       let display = seconds => {
-        this.players_.forEach(player => player.sendMessage(seconds + '...'));
+        for (let participant of this.participants_.racingPlayers())
+          participant.player.sendMessage(seconds + '...');
+
         if (seconds > 0)
           wait(1000).then(display.bind(null, seconds - 1));
         else
@@ -276,7 +280,11 @@ class RunningRace {
   startRace() {
     this.startTime_ = highResolutionTime();
 
-    this.players_.forEach(player => player.controllable = true);
+    for (let participant of this.participants_.racingPlayers()) {
+      participant.advance(RaceParticipant.STATE_RACING);
+      participant.player.controllable = true;
+    }
+
     // TODO: Do other work here, start the counters, and so on.
   }
 
@@ -315,6 +323,9 @@ class RunningRace {
   }
 
   didFinish(player) {
+    this.participants_.advancePlayer(player, RaceParticipant.STATE_FINISHED);
+
+    // TODO: Display some visual banner to congratulate them with their win.
     console.log(player.name + ' has finished the race!');
 
     // Make the player uncontrollable - let them roll out for a few seconds.
@@ -333,7 +344,8 @@ class RunningRace {
     // TODO: Display the message using a text draw rather than a message like this.
     // TODO: Block the players controls, make sure that checkpoint events are ignored.
 
-    this.players_.forEach(player => player.sendMessage('You ran out of time!'));
+    for (let participant of this.participants_.racingPlayers())
+      participant.player.sendMessage('You ran out of time!');
   }
 
   // -----------------------------------------------------------------------------------------------

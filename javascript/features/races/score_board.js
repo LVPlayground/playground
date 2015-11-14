@@ -38,7 +38,7 @@ const BACKGROUND_COLOR = new Color(0, 0, 0, 100);
 // between them and other players, positive values are good (they're ahead of them!) This may be
 // confusing for new players, at least initially, but I do think it makes sense.
 class ScoreBoard {
-  constructor(player, contestants) {
+  constructor(player, participants) {
     this.player_ = player;
 
     // TODO: Calculate the height of the background area based on the number of participants.

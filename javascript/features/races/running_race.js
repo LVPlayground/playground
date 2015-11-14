@@ -6,8 +6,7 @@ let RaceParticipant = require('features/races/race_participant.js'),
     RaceParticipants = require('features/races/race_participants.js'),
     RaceSettings = require('features/races/race_settings.js'),
     ScopedCallbacks = require('base/scoped_callbacks.js'),
-    ScopedEntities = require('entities/scoped_entities.js'),
-    ScoreBoard = require('features/races/score_board.js');
+    ScopedEntities = require('entities/scoped_entities.js');
 
 // This class defines the behavior of a race that is currently active, whereas active is defined by
 // being at least in the sign-up state.
@@ -24,9 +23,6 @@ class RunningRace {
 
     // Mapping of a player id to the vehicle they will be driving in.
     this.vehicles_ = {};
-
-    // Mapping of a player id to the score board visible on their screen.
-    this.scoreBoards_ = {};
 
     // Scope all entities created by this race to the lifetime of the race.
     this.entities_ = new ScopedEntities();
@@ -68,10 +64,7 @@ class RunningRace {
     // Destroy the created state for the player when they leave the race.
     if (this.state_ >= RunningRace.STATE_LOADING) {
       this.deathFeed_.enableForPlayer(player);
-
-      // Dispose of their score board, and remove it from the local state.
-      this.scoreBoards_[player.id].hideForPlayer();
-      delete this.scoreBoards_[player.id];
+      participant.scoreBoard.hideForPlayer();
     }
 
     // Mark the player as being controllable again, so that they're not frozen for no reason.
@@ -245,8 +238,7 @@ class RunningRace {
 
       // Create the score board for the player. This will visually render the current status of the
       // race on their screen, like the current time and contestants.
-      this.scoreBoards_[player.id] = new ScoreBoard(participant, this.participants_);
-      this.scoreBoards_[player.id].displayForPlayer();
+      participant.scoreBoard.displayForPlayer();
 
       // Create the first checkpoint for the player. They won't be able to drive yet.
       this.nextCheckpoint(participant, 0 /* first checkpoint */);
@@ -298,9 +290,12 @@ class RunningRace {
       return;  // no need to update the score board when the race has finished.
 
     let currentTime = highResolutionTime();
-    Object.keys(this.scoreBoards_).forEach(playerId => {
-      this.scoreBoards_[playerId].update(currentTime);
-    });
+    for (let participant of this.participants_.racingParticipants()) {
+      if (participant.state != RaceParticipant.STATE_RACING)
+        continue;
+
+      participant.scoreBoard.update(currentTime);
+    }
 
     // Schedule another update of the score board after a given amount of milliseconds.
     wait(RaceSettings.RACE_SCORE_BOARD_UPDATE_TIME).then(() => this.updateScoreBoard());

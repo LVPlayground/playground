@@ -22,6 +22,8 @@ class RaceParticipant {
 
     this.checkpointIndex_ = null;
     this.checkpointTimes_ = [];
+
+    this.scoreBoard_ = null;
   }
 
   // Returns the Id of the player this participant represents.
@@ -61,6 +63,10 @@ class RaceParticipant {
 
   // Returns an array with the times at which the player passed each of the checkpoints.
   get checkpointTimes() { return this.checkpointTimes_; }
+
+  // Gets or sets the score board for this participant.
+  get scoreBoard() { return this.scoreBoard_; }
+  set scoreBoard(value) { this.scoreBoard_ = value; }
 
   // Determines whether |player| represents the player this instance represents. We can't rely on
   // the equality operator because the player for this participant may have disconnected since.

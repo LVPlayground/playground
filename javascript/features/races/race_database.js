@@ -40,7 +40,7 @@ const STORE_RACE_RESULT_QUERY = `
 const STORE_RACE_CHECKPOINT_RESULT_QUERY = `
     INSERT INTO
       race_results_checkpoints
-      (result_checkpoint_index, result_time)
+      (result_id, result_checkpoint_index, result_time)
     VALUES `;
 
 // The race database class provides a bridge between the race manager and the MySQL database that
@@ -58,7 +58,7 @@ class RaceDatabase {
       let times = {};
 
       result.rows.forEach(row =>
-          times[row.race_id] = { time: row.race_result_time,
+          times[row.race_id] = { time: Math.round(row.race_result_time / 1000),
                                  name: row.username });
 
       return times;
@@ -78,7 +78,7 @@ class RaceDatabase {
       let times = {};
 
       result.rows.forEach(row =>
-          times[row.race_id] = row.race_result_time);
+          times[row.race_id] = Math.round(row.race_result_time / 1000));
 
       return times;
     });
@@ -100,8 +100,8 @@ class RaceDatabase {
           values = [];
 
       checkpointTimes.forEach(time => {
-        parameters.push(checkpointId++, time);
-        values.push('(?, ?)');
+        parameters.push(result.insertId, checkpointId++, time);
+        values.push('(?, ?, ?)');
       });
 
       return this.database_.query(STORE_RACE_CHECKPOINT_RESULT_QUERY + values.join(', '), ...parameters);

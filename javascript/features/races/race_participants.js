@@ -2,7 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let RaceParticipant = require('features/races/race_participant.js');
+let RaceParticipant = require('features/races/race_participant.js'),
+    ScoreBoard = require('features/races/score_board.js');
 
 // Keeps track of all current and former participants of a race, and allows their individual states
 // to be tracked and compared against one another. The participants of a race may not be connected
@@ -14,7 +15,10 @@ class RaceParticipants {
 
   // Adds |player| to the list of the race's participants. They will be in the sign-up state.
   addPlayer(player) {
-    this.participants_.push(new RaceParticipant(player));
+    let participant = new RaceParticipant(player);
+    participant.scoreBoard = new ScoreBoard(participant, this);
+
+    this.participants_.push(participant);
   }
 
   // Advances the |player| to |state|. If the player is already at a later state, the advancement

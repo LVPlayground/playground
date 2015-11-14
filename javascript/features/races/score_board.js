@@ -136,7 +136,7 @@ class ScoreBoard {
     this.personalRecordValue_.hideForPlayer(this.player_);
     this.personalRecordLabel_.hideForPlayer(this.player_);
     this.timeValue_.hideForPlayer(this.player_);
-    this.positionSuffix_.displayForPlayer(this.player_);
+    this.positionSuffix_.hideForPlayer(this.player_);
     this.positionValue_.hideForPlayer(this.player_);
 
     this.background_.hideForPlayer(this.player_);

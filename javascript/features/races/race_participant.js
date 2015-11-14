@@ -22,6 +22,7 @@ class RaceParticipant {
 
     this.checkpointIndex_ = null;
     this.checkpointTimes_ = [];
+    this.bestCheckpointTimes_ = [];
 
     this.scoreBoard_ = null;
   }
@@ -73,6 +74,13 @@ class RaceParticipant {
   isPlayer(player) {
     return this.playerId_ === player.id &&
            this.playerName_ === player.name;
+  }
+
+  // Imports the best results this participant ever scored on the race. Used to update the score
+  // board of the player with the absolute and relative performance compared to their best.
+  importBestResults(results) {
+    this.scoreBoard_.setBestTime(results.totalTime);
+    this.bestCheckpointTimes_ = results.checkpointTimes;
   }
 
   // Records |time| as the moment at which the player passed the checkpoint at |checkpointIndex|.

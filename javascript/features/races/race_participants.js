@@ -21,6 +21,26 @@ class RaceParticipants {
     this.participants_.push(participant);
   }
 
+  // Loads the data for all participants from |database|. Returns a promise that will be resolved
+  // once all information has been successfully fetched from the database.
+  loadParticipantData(raceId, database) {
+    let users = {};
+
+    this.participants_.forEach(participant => {
+      if (participant.state > RaceParticipant.STATE_RACING)
+        return;
+
+      let participantUserId = participant.userId;
+      if (participantUserId === null)
+        return;
+
+      users[participantUserId] = participant;
+    });
+
+    return database.fetchBestRaceResult(raceId, Object.keys(users)).then(results =>
+        Object.keys(results).forEach(userId => users[userId].importBestResults(results[userId])));
+  }
+
   // Advances the |player| to |state|. If the player is already at a later state, the advancement
   // will silently fail (for example, drop-out versus finished). 
   advancePlayer(player, state) {

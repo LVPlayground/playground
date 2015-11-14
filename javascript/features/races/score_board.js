@@ -46,6 +46,9 @@ class ScoreBoard {
     this.participant_ = participant;
     this.player_ = participant.player;
 
+    this.hasPersonalRecords_ = false;
+    this.displaying_ = false;
+
     this.positionBackground_ = new Rectangle(500, 140, 106, 36.8, BACKGROUND_COLOR);
 
     // Section (1): Position, current time and difference from the player's personal best.
@@ -56,7 +59,8 @@ class ScoreBoard {
       text: '1',
       font: TextDraw.FONT_PRICEDOWN,
       letterSize: [0.582, 2.446],
-      shadowSize: 0
+      shadowSize: 0,
+      proportional: false
     });
 
     this.positionSuffix_ = new TextDraw({
@@ -76,7 +80,8 @@ class ScoreBoard {
       font: TextDraw.FONT_PRICEDOWN,
       letterSize: [0.249, 1.135],
       shadowSize: 0,
-      alignment: TextDraw.ALIGN_RIGHT
+      alignment: TextDraw.ALIGN_RIGHT,
+      proportional: false
     });
 
     this.timeValue_ = new TextDraw({
@@ -122,8 +127,13 @@ class ScoreBoard {
     this.positionSuffix_.displayForPlayer(this.player_);
     this.participantsValue_.displayForPlayer(this.player_);
     this.timeValue_.displayForPlayer(this.player_);
-    this.personalRecordLabel_.displayForPlayer(this.player_);
-    this.personalRecordValue_.displayForPlayer(this.player_);
+
+    if (this.hasPersonalRecords_) {
+      this.personalRecordLabel_.displayForPlayer(this.player_);
+      this.personalRecordValue_.displayForPlayer(this.player_);
+    }
+
+    this.displaying_ = true;
   }
 
   // Hides all the text draws that are part of this score board for the player. Generally done when
@@ -137,6 +147,18 @@ class ScoreBoard {
     this.positionValue_.hideForPlayer(this.player_);
 
     this.positionBackground_.hideForPlayer(this.player_);
+  }
+
+  // Called when the player's best time has been loaded from the database. It will be displayed on
+  // the score board until relative times based on their performance are known.
+  setBestTime(time) {
+    this.hasPersonalRecords_ = true;
+    this.personalRecordValue_.text = ScoreBoard.formatTime(time, true);
+
+    if (this.displaying_) {
+      this.personalRecordLabel_.displayForPlayer(this.player_);
+      this.personalRecordValue_.displayForPlayer(this.player_);
+    }
   }
 
   // Called every ~hundred milliseconds while the race is active. Only update the high-resolution

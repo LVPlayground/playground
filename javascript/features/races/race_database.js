@@ -6,7 +6,7 @@
 const FETCH_BEST_TIMES_QUERY = `
     SELECT
       race_results.race_id,
-      MAX(race_results.race_result_time) AS race_result_time,
+      MIN(race_results.result_time) AS result_time,
       users.username
     FROM
       race_results
@@ -20,7 +20,7 @@ const FETCH_BEST_TIMES_QUERY = `
 const FETCH_BEST_PLAYER_TIMES_QUERY = `
     SELECT
       race_results.race_id,
-      MAX(race_results.race_result_time) AS race_result_time
+      MIN(race_results.result_time) AS result_time
     FROM
       race_results
     WHERE
@@ -28,19 +28,40 @@ const FETCH_BEST_PLAYER_TIMES_QUERY = `
     GROUP BY
       race_results.race_id`;
 
+// MySQL query to fetch the best race results for a given number of players.
+const FETCH_BEST_RACE_RESULTS_QUERY = `
+    SELECT
+      best_time_per_player.user_id,
+      race_results.result_time,
+      race_checkpoint_results.checkpoint_time AS checkpoint_time
+    FROM
+      (SELECT
+         user_id, MIN(result_time) AS result_time
+       FROM
+         race_results
+       WHERE
+         user_id IN (?)
+       GROUP BY
+         user_id) AS best_time_per_player
+    LEFT JOIN
+      race_results ON race_results.user_id = best_time_per_player.user_id AND
+                      race_results.result_time = best_time_per_player.result_time
+    LEFT JOIN
+      race_checkpoint_results ON race_checkpoint_results.result_id = race_results.result_id`;
+
 // MySQL query for storing the high-level result of a race done by the player.
 const STORE_RACE_RESULT_QUERY = `
     INSERT INTO
       race_results
-      (race_id, race_date, race_result_rank, race_result_time, user_id)
+      (user_id, race_id, race_date, result_rank, result_time)
     VALUES
-      (?, NOW(), ?, ?, ?)`;
+      (?, ?, NOW(), ?, ?)`;
 
 // MySQL query for storing the results of the individual checkpoints for a race result.
 const STORE_RACE_CHECKPOINT_RESULT_QUERY = `
     INSERT INTO
-      race_results_checkpoints
-      (result_id, result_checkpoint_index, result_time)
+      race_checkpoint_results
+      (result_id, checkpoint_index, checkpoint_time)
     VALUES `;
 
 // The race database class provides a bridge between the race manager and the MySQL database that
@@ -58,7 +79,7 @@ class RaceDatabase {
       let times = {};
 
       result.rows.forEach(row =>
-          times[row.race_id] = { time: Math.round(row.race_result_time / 1000),
+          times[row.race_id] = { time: Math.round(row.result_time / 1000),
                                  name: row.username });
 
       return times;
@@ -78,9 +99,30 @@ class RaceDatabase {
       let times = {};
 
       result.rows.forEach(row =>
-          times[row.race_id] = Math.round(row.race_result_time / 1000));
+          times[row.race_id] = Math.round(row.result_time / 1000));
 
       return times;
+    });
+  }
+
+  // Fetches detailed statistics about the best races for all |userIds| on |raceId|. A promise will
+  // be returned that will be resolved the best times, and the per-checkpoint times for all users.
+  fetchBestRaceResult(raceId, userIds) {
+    return this.database_.query(FETCH_BEST_RACE_RESULTS_QUERY, userIds.join(', ')).then(result => {
+      if (!result.rows.length)
+        return {};
+
+      let userResults = {};
+      result.rows.forEach(resultRow => {
+        if (!userResults.hasOwnProperty(resultRow.user_id)) {
+          userResults[resultRow.user_id] = { totalTime: resultRow.result_time,
+                                             checkpointTimes: [] };
+        }
+
+        userResults[resultRow.user_id].checkpointTimes.push(resultRow.checkpoint_time);
+      });
+
+      return userResults;
     });
   }
 
@@ -88,7 +130,7 @@ class RaceDatabase {
   // milliseconds to finish the race. |checkpointTimes| is an array with the number of milliseconds
   // at which they passed through each of the checkpoints of the race.
   storeRaceResult(raceId, userId, rank, totalTime, checkpointTimes) {
-    return this.database_.query(STORE_RACE_RESULT_QUERY, raceId, rank, totalTime, userId).then(result => {
+    return this.database_.query(STORE_RACE_RESULT_QUERY, userId, raceId, rank, totalTime).then(result => {
       if (!result.insertId)
         return;  // the result couldn't be written.
 

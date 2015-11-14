@@ -11,12 +11,12 @@ let RaceParticipant = require('features/races/race_participant.js'),
 // This class defines the behavior of a race that is currently active, whereas active is defined by
 // being at least in the sign-up state.
 class RunningRace {
-  constructor(race, player, skipSignup, deathFeed) {
+  constructor(race, player, skipSignup, manager) {
     this.participants_ = new RaceParticipants();
     this.finishedCount_ = 0;
     this.race_ = race;
     this.state_ = RunningRace.STATE_SIGNUP;
-    this.deathFeed_ = deathFeed;
+    this.manager_ = manager;
 
     // TODO: Have some sort of unique virtual world dispatcher.
     this.virtualWorld_ = 1007;
@@ -63,7 +63,7 @@ class RunningRace {
 
     // Destroy the created state for the player when they leave the race.
     if (this.state_ >= RunningRace.STATE_LOADING) {
-      this.deathFeed_.enableForPlayer(player);
+      this.manager_.deathFeed.enableForPlayer(player);
       participant.scoreBoard.hideForPlayer();
     }
 
@@ -110,7 +110,11 @@ class RunningRace {
           break;
 
         // Automatically advance the race's state to countdown after a short period of time.
-        wait(RaceSettings.RACE_LOADING_WAIT_DURATION).then(() => this.advanceState(RunningRace.STATE_COUNTDOWN));
+        Promise.all([
+          this.participants_.loadParticipantData(this.race.id, this.manager_.database),
+          wait(RaceSettings.RACE_LOADING_WAIT_DURATION)
+
+        ]).then(() => this.advanceState(RunningRace.STATE_COUNTDOWN));
         break;
 
       // Waits for a certain number of seconds before allowing the players to start racing. The
@@ -220,7 +224,7 @@ class RunningRace {
       // TODO: Store the player's state so that it can be restored later.
 
       // Disable the death feed for the player, we'll use that space for a scoreboard.
-      this.deathFeed_.disableForPlayer(player);
+      this.manager_.deathFeed.disableForPlayer(player);
 
       // Move the player to the right virtual world and interior for the race.
       player.virtualWorld = this.virtualWorld_;
@@ -334,6 +338,16 @@ class RunningRace {
   didFinish(participant) {
     participant.advance(RaceParticipant.STATE_FINISHED, highResolutionTime());
     participant.rank = ++this.finishedCount_;
+
+    let raceTimeSeconds = Math.round(participant.totalTime / 1000);
+
+    // If this participant beat the current high-score of the race, update the cached performance.
+    if (this.race.bestRace === null || this.race.bestRace.time > raceTimeSeconds) {
+      this.race.bestRace = {
+        time: raceTimeSeconds,
+        name: participant.playerName
+      };
+    }
 
     // TODO: Display some visual banner to congratulate them with their win.
     console.log(participant.playerName + ' has finished the race!');

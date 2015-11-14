@@ -21,6 +21,12 @@ class RaceManager {
     this.challengeDesks_ = {};
   }
 
+  // Returns the database interface that can be used for races.
+  get database() { return this.raceDatabase_; }
+
+  // Returns the death feed object, which races may have to disable.
+  get deathFeed() { return this.deathFeed_; }
+
   // Returns the number of races that have been created on the system.
   get raceCount() {
     return Object.keys(this.races_).length;
@@ -83,7 +89,7 @@ class RaceManager {
     if (activeRace) {
       activeRace.addPlayer(player);
     } else {
-      activeRace = new RunningRace(this.races_[race_id], player, skipSignup, this.deathFeed_);
+      activeRace = new RunningRace(this.races_[race_id], player, skipSignup, this);
       activeRace.finished.then(finishedParticipants => {
         this.onRaceFinished(activeRace, finishedParticipants);
       });

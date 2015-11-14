@@ -8,6 +8,9 @@ let Rectangle = require('components/text_draw/rectangle.js'),
 // Background color of the score board. Should be semi-transparent.
 const BACKGROUND_COLOR = new Color(0, 0, 0, 100);
 
+// Color of the text indicating the number of players. Should be white-ish.
+const PLAYER_COUNT_COLOR = new Color(255, 255, 255, 120);
+
 // Powers the visual score board on the right-hand side of a player's screen. It displays data about
 // the current race, for example the time and distances to the other player, but also time based on
 // the player's previous best time when available.
@@ -39,11 +42,11 @@ const BACKGROUND_COLOR = new Color(0, 0, 0, 100);
 // confusing for new players, at least initially, but I do think it makes sense.
 class ScoreBoard {
   constructor(participant, participants) {
+    this.participants_ = participants;
     this.participant_ = participant;
     this.player_ = participant.player;
 
-    // TODO: Calculate the height of the background area based on the number of participants.
-    this.background_ = new Rectangle(500, 140, 106, 200, BACKGROUND_COLOR);
+    this.positionBackground_ = new Rectangle(500, 140, 106, 36.8, BACKGROUND_COLOR);
 
     // Section (1): Position, current time and difference from the player's personal best.
 
@@ -63,6 +66,17 @@ class ScoreBoard {
       font: TextDraw.FONT_MONOSPACE,
       letterSize: [0.177, 0.97],
       shadowSize: 0
+    });
+
+    this.participantsValue_ = new TextDraw({
+      position: [524.73, 153.796],
+      color: PLAYER_COUNT_COLOR,
+
+      text: '_',  // to be filled in on start
+      font: TextDraw.FONT_PRICEDOWN,
+      letterSize: [0.249, 1.135],
+      shadowSize: 0,
+      alignment: TextDraw.ALIGN_RIGHT
     });
 
     this.timeValue_ = new TextDraw({
@@ -87,59 +101,42 @@ class ScoreBoard {
     this.personalRecordValue_ = new TextDraw({
       position: [599.9, 154.726],
 
-      text: '+ 00:00.000',
+      text: '00:00.000',
       font: TextDraw.FONT_PRICEDOWN,
       letterSize: [0.263, 1.036],
       shadowSize: 0,
       alignment: TextDraw.ALIGN_RIGHT
     });
 
-    // Section (2): Positions and time differences for up to three other players.
-
-    // TODO: Figure these out from |contestants|.
-    let playerNames = [
-      'Luka_Bulum',
-      '[MVP]_Nikola_',
-      'T_Bone_Johnson'
-    ];
-
-    this.rankingNames_ = new TextDraw({
-      position: [505, 178],
-
-      text: '1. ' + playerNames.join('~n~~n~~n~2. '),
-      font: TextDraw.FONT_SANS_SERIF,
-      letterSize: [0.16, 0.887],
-      shadowSize: 0
-    });
+    // TODO: Display the current ranks and distances between the players.
   }
 
-  // Displays the score board for the player. All (initial) values for the texts should've been set.
+  // Displays the score board for the player. All (initial) values for the texts should've been set,
+  // except for the number of participants which will only be available now.
   displayForPlayer() {
-    this.background_.displayForPlayer(this.player_);
+    this.participantsValue_.text = '/' + this.participants_.racingPlayerCount();
+
+    this.positionBackground_.displayForPlayer(this.player_);
 
     this.positionValue_.displayForPlayer(this.player_);
     this.positionSuffix_.displayForPlayer(this.player_);
+    this.participantsValue_.displayForPlayer(this.player_);
     this.timeValue_.displayForPlayer(this.player_);
     this.personalRecordLabel_.displayForPlayer(this.player_);
     this.personalRecordValue_.displayForPlayer(this.player_);
-
-    this.rankingNames_.displayForPlayer(this.player_);
-    // TODO: Show text draws that are part of section (2).
   }
 
   // Hides all the text draws that are part of this score board for the player. Generally done when
   // the race ends for them. Garbage collection will take care of deleting the objects.
   hideForPlayer() {
-    // TODO: Hide text draws that are part of section (2).
-    this.rankingNames_.hideForPlayer(this.player_);
-
     this.personalRecordValue_.hideForPlayer(this.player_);
     this.personalRecordLabel_.hideForPlayer(this.player_);
     this.timeValue_.hideForPlayer(this.player_);
+    this.participantsValue_.hideForPlayer(this.player_);
     this.positionSuffix_.hideForPlayer(this.player_);
     this.positionValue_.hideForPlayer(this.player_);
 
-    this.background_.hideForPlayer(this.player_);
+    this.positionBackground_.hideForPlayer(this.player_);
   }
 
   // Called every ~hundred milliseconds while the race is active. Only update the high-resolution

@@ -2,7 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let RaceParticipant = require('features/races/race_participant.js'),
+let Countdown = require('features/races/ui/countdown.js'),
+    RaceParticipant = require('features/races/race_participant.js'),
     RaceParticipants = require('features/races/race_participants.js'),
     RaceSettings = require('features/races/race_settings.js'),
     ScopedCallbacks = require('base/scoped_callbacks.js'),
@@ -125,7 +126,7 @@ class RunningRace {
       // Waits for a certain number of seconds before allowing the players to start racing. The
       // countdown will be visible on the screens of all participants of the race.
       case RunningRace.STATE_COUNTDOWN:
-        this.createCountdown(RaceSettings.RACE_COUNTDOWN_SECONDS).then(() =>
+        Countdown.startForParticipants(RaceSettings.RACE_COUNTDOWN_SECONDS, this.participants_).then(() =>
             this.advanceState(RunningRace.STATE_RUNNING));
         break;
 
@@ -139,7 +140,6 @@ class RunningRace {
         if (this.race_.timeLimit != 0)
           wait(this.race_.timeLimit * 1000).then(() => this.advanceState(RunningRace.STATE_OUT_OF_TIME));
 
-        // TODO: Implement the rest of the running state.
         break;
 
       // State that occurs when one or more players are still racing, but the maximum time of the
@@ -257,29 +257,6 @@ class RunningRace {
   }
 
   // -----------------------------------------------------------------------------------------------
-  // State: RunningRace.STATE_COUNTDOWN
-  // -----------------------------------------------------------------------------------------------
-
-  createCountdown(seconds) {
-    return new Promise(resolve => {
-      // TODO: Display the countdown using text draws instead (yay aesthetics).
-      // TODO: Display "Go" rather than zero.
-
-      let display = seconds => {
-        for (let participant of this.participants_.racingParticipants())
-          participant.player.sendMessage(seconds + '...');
-
-        if (seconds > 0)
-          wait(1000).then(display.bind(null, seconds - 1));
-        else
-          resolve();
-      };
-
-      display(seconds);
-    });
-  }
-
-  // -----------------------------------------------------------------------------------------------
   // State: RunningRace.STATE_RUNNING
   // -----------------------------------------------------------------------------------------------
 
@@ -290,8 +267,6 @@ class RunningRace {
       participant.advance(RaceParticipant.STATE_RACING, startTime);
       participant.player.controllable = true;
     }
-
-    // TODO: Do other work here, start the counters, and so on.
   }
 
   updateScoreBoard() {

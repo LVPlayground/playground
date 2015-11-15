@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 let RaceParticipant = require('features/races/race_participant.js'),
-    ScoreBoard = require('features/races/score_board.js');
+    ScoreBoard = require('features/races/ui/score_board.js');
 
 // Keeps track of all current and former participants of a race, and allows their individual states
 // to be tracked and compared against one another. The participants of a race may not be connected

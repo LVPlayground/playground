@@ -11,6 +11,12 @@ const BACKGROUND_COLOR = new Color(0, 0, 0, 100);
 // Color of the text indicating the number of players. Should be white-ish.
 const PLAYER_COUNT_COLOR = new Color(255, 255, 255, 100);
 
+// Color to use when a relative time should be displayed as a positive thing.
+const TIME_AHEAD_COLOR = Color.GREEN;
+
+// Color to use when a relative time should be displayed as a negative thing.
+const TIME_BEHIND_COLOR = Color.RED;
+
 // Powers the visual score board on the right-hand side of a player's screen. It displays data about
 // the current race, for example the time and distances to the other player, but also time based on
 // the player's previous best time when available.
@@ -157,13 +163,13 @@ class ScoreBoard {
       this.personalRecordLabel_.hideForPlayer(this.player_);
 
       this.personalRecordValue_ = new RelativeTimeView(...this.personalRecordValue_.position);
-      this.personalRecordValue_.setTime(time);
+      this.personalRecordValue_.setTime(this.player_, time);
 
       this.personalRecordValue_.displayForPlayer(this.player_);
       return;
     }
 
-    this.personalRecordValue_.setTime(time);
+    this.personalRecordValue_.setTime(this.player_, time);
   }
 
   // Called every ~hundred milliseconds while the race is active. Only update the high-resolution
@@ -227,11 +233,7 @@ class AbsoluteTimeView {
   get position() { return this.position_; }
 
   setTime(player, time) {
-    let [minutes, seconds, milliseconds] = distillTime(time);
-
-    let minuteValue = ((minutes < 10) ? '0' : '') + minutes,
-        secondValue = ((seconds < 10) ? '0' : '') + seconds,
-        millisecondValue = (milliseconds < 100 ? (milliseconds < 10 ? '00' : '0') : '') + milliseconds;
+    let [minuteValue, secondValue, millisecondValue] = distillTimeForDisplay(time);
 
     // Update the local values if the absolute time view isn't being displayed yet, because there is
     // nothing to update for the player(s) it is being shown to.
@@ -277,26 +279,132 @@ class AbsoluteTimeView {
 // respectively indicate that the participant is doing worse or better.
 class RelativeTimeView {
   constructor(x, y) {
+    this.position_ = [x, y];
+    this.color_ = null;
+
+    this.minuteValue_ = '00';
+    this.minuteView_ = null;
+
+    this.secondValue_ = '00';
+    this.secondView_ = null;
+
+    this.millisecondValue_ = '000';
+    this.millisecondView_ = null;
 
     this.displaying_ = false;
   }
 
-  setTime(player, time) {
+  buildViews() {
+    let [x, y] = this.position_;
 
+    let displayMinutes = this.minuteValue_ !== '00';
+    if (displayMinutes) {
+      this.minuteView_ = new TextDraw({
+        position: [x + 5.4, y],
+
+        text: this.minuteValue_,
+        font: TextDraw.FONT_PRICEDOWN,
+        color: this.color_,
+        alignment: TextDraw.ALIGN_CENTER,
+        letterSize: [0.272, 1.007],
+        shadowSize: 0
+      });
+    }
+
+    this.secondView_ = new TextDraw({
+      position: [x + 14.033 + 5.4, y],
+
+      text: this.secondValue_,
+      font: TextDraw.FONT_PRICEDOWN,
+      color: this.color_,
+      alignment: TextDraw.ALIGN_CENTER,
+      letterSize: [0.272, 1.007],
+      shadowSize: 0
+    });
+
+    this.millisecondView_ = new TextDraw({
+      position: [x + 26.8, y],
+
+      text: this.millisecondValue_,
+      font: TextDraw.FONT_PRICEDOWN,
+      color: this.color_,
+      letterSize: [0.272, 1.007],
+      shadowSize: 0
+    });
+
+    // TODO: Separator.
+  }
+
+  setTime(player, time) {
+    console.log('Update relative time: ' + time);
+
+    let [minuteValue, secondValue, millisecondValue] = distillTimeForDisplay(Math.abs(time), false);
+    let color = time < 0 ? TIME_AHEAD_COLOR
+                         : TIME_BEHIND_COLOR;
+
+    let displaying = this.displaying_;
+    if (displaying && this.color_ != color) {
+      this.hideForPlayer(player);
+
+      // Remove references to the current views, so that they'll be removed.
+      this.minuteView_ = null;
+      this.secondView_ = null;
+      this.millisecondView_ = null;
+    }
+
+    this.minuteValue_ = minuteValue;
+    this.secondValue_ = secondValue;
+    this.millisecondValue_ = millisecondValue;
+
+    this.color_ = color;
+
+    // If the views were displaying, determine whether we can update their values or whether they
+    // have to be created from scratch again, for example because of a color change.
+    if (displaying) {
+      if (!this.secondView_)
+        this.displayForPlayer(player);
+      else
+        this.updateForPlayer(player);
+    }
   }
 
   displayForPlayer(player) {
+    if (!this.secondView_)
+      this.buildViews();
+
+    // The minute view is optional (omitted when the relative time is less than a minute).
+    if (this.minuteView_)
+      this.minuteView_.displayForPlayer(player);
+
+    this.secondView_.displayForPlayer(player);
+    this.millisecondView_.displayForPlayer(player);
+
     this.displaying_ = true;
+  }
+
+  updateForPlayer(player) {
+    if (this.minuteView_)
+      this.minuteView_.updateTextForPlayer(player, this.minuteValue_);
+
+    this.secondView_.updateTextForPlayer(player, this.secondValue_);
+    this.millisecondView_.updateTextForPlayer(player, this.millisecondValue_);
   }
 
   hideForPlayer(player) {
     this.displaying_ = false;
+
+    if (this.minuteView_)
+      this.minuteView_.hideForPlayer(player);
+    if (this.secondView_)
+      this.secondView_.hideForPlayer(player);
+    if (this.millisecondView_)
+      this.millisecondView_.hideForPlayer(player);
   }
 };
 
 // Splits up |time|, which should be in milliseconds, to a rounded number of minutes, seconds and
 // milliseconds which could be used for presentation.
-function distillTime(time) {
+function distillTimeForDisplay(time, forceDoubleDigit = true) {
   let decimalSeconds = time / 1000;
 
   let seconds = Math.floor(decimalSeconds);
@@ -306,7 +414,14 @@ function distillTime(time) {
   if (minutes > 0)
     seconds -= minutes * 60;
 
-  return [minutes, seconds, milliseconds];
+  let fixMinuteDigits = forceDoubleDigit,
+      fixSecondDigits = forceDoubleDigit || minutes > 0;
+
+  let minuteValue = ((fixMinuteDigits && minutes < 10) ? '0' : '') + minutes,
+      secondValue = ((fixSecondDigits && seconds < 10) ? '0' : '') + seconds,
+      millisecondValue = (milliseconds < 100 ? (milliseconds < 10 ? '00' : '0') : '') + milliseconds;
+
+  return [minuteValue, secondValue, millisecondValue];
 }
 
 // Only the ScoreBoard class is public, the other views are private to the implementation.

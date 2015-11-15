@@ -95,7 +95,7 @@ class RaceParticipant {
       return;
 
     this.scoreBoard_.setPersonalRecordRelativeTime(
-        this.bestCheckpointTimes_[checkpointIndex] - currentTime);
+        currentTime - this.bestCheckpointTimes_[checkpointIndex]);
   }
 
   // Advances the player to |state|. If the current state is already past |state|, this call will

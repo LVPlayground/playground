@@ -21,7 +21,7 @@ class RelativeTimeView extends TimeView {
   setTime(player, time) {
     console.log('Update relative time: ' + time);
 
-    this.updateTextForPlayer(player, ...TimeView.distillTimeForDisplay(time));
+    this.updateTextForPlayer(player, ...TimeView.distillTimeForDisplay(Math.abs(time)));
   }
 };
 

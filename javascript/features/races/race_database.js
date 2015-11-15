@@ -40,6 +40,7 @@ const FETCH_BEST_RACE_RESULTS_QUERY = `
        FROM
          race_results
        WHERE
+         race_id = ? AND
          user_id IN (?)
        GROUP BY
          user_id) AS best_time_per_player
@@ -108,7 +109,7 @@ class RaceDatabase {
   // Fetches detailed statistics about the best races for all |userIds| on |raceId|. A promise will
   // be returned that will be resolved the best times, and the per-checkpoint times for all users.
   fetchBestRaceResult(raceId, userIds) {
-    return this.database_.query(FETCH_BEST_RACE_RESULTS_QUERY, userIds.join(', ')).then(result => {
+    return this.database_.query(FETCH_BEST_RACE_RESULTS_QUERY, raceId, userIds.join(', ')).then(result => {
       if (!result.rows.length)
         return {};
 

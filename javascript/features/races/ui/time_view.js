@@ -127,6 +127,9 @@ class TimeView {
 
   // Hides the time view for |player|.
   hideForPlayer(player) {
+    if (!this.displaying_)
+      return;
+
     this.displaying_ = false;
 
     this.separatorView_.hideForPlayer(player);

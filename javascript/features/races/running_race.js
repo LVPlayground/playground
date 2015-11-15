@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 let Countdown = require('features/races/ui/countdown.js'),
+    RaceExpired = require('features/races/ui/race_expired.js'),
     RaceParticipant = require('features/races/race_participant.js'),
     RaceParticipants = require('features/races/race_participants.js'),
     RaceSettings = require('features/races/race_settings.js'),
@@ -145,10 +146,8 @@ class RunningRace {
       // State that occurs when one or more players are still racing, but the maximum time of the
       // race has expired. They'll be shown a message, after which they'll forcefully drop out.
       case RunningRace.STATE_OUT_OF_TIME:
-        this.displayOutOfTimeMessage();
-
-        // Automatically finish the race after letting the news sink in for some time.
-        wait(RaceSettings.RACE_OUT_OF_TIME_WAIT_DURATION).then(() => this.advanceState(RunningRace.STATE_FINISHED));
+        RaceExpired.displayForParticipants(RaceSettings.RACE_OUT_OF_TIME_WAIT_DURATION, this.participants_).then(() =>
+            this.advanceState(RunningRace.STATE_FINISHED));
         break;
 
       // The race is finished. Finalize, then remove the race's state and announce accordingly.
@@ -345,22 +344,17 @@ class RunningRace {
   }
 
   // -----------------------------------------------------------------------------------------------
-  // State: RunningRace.STATE_OUT_OF_TIME
-  // -----------------------------------------------------------------------------------------------
-
-  displayOutOfTimeMessage() {
-    // TODO: Display the message using a text draw rather than a message like this.
-    // TODO: Block the players controls, make sure that checkpoint events are ignored.
-
-    for (let participant of this.participants_.racingParticipants())
-      participant.player.sendMessage('You ran out of time!');
-  }
-
-  // -----------------------------------------------------------------------------------------------
   // State: RunningRace.STATE_FINISHED
   // -----------------------------------------------------------------------------------------------
 
   finish() {
+    for (let participant of this.participants_.racingParticipants()) {
+      participant.advance(RaceParticipant.STATE_DROP_OUT);
+
+      // Forcefully remove them from the race.
+      this.removeParticipant(participant);
+    }
+
     this.callbacks_.dispose();
     this.entities_.dispose();
 

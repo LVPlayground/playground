@@ -13,6 +13,9 @@ const BACKGROUND_COLOR = new Color(0, 0, 0, 100);
 // Color of the text indicating the number of players. Should be white-ish.
 const PLAYER_COUNT_COLOR = new Color(255, 255, 255, 100);
 
+// Color in which the player's personal record will be displayed.
+const PERSONAL_RECORD_COLOR = new Color(255, 255, 0, 255);
+
 // Powers the visual score board on the right-hand side of a player's screen. It displays data about
 // the current race, for example the time and distances to the other player, but also time based on
 // the player's previous best time when available.
@@ -78,30 +81,28 @@ class ScoreBoard {
     });
 
     this.participantsValue_ = new TextDraw({
-      position: [524.9, 153.796],
+      position: [515.667, 151.634],
       color: PLAYER_COUNT_COLOR,
 
       text: '_',  // to be filled in on start
       font: TextDraw.FONT_PRICEDOWN,
-      letterSize: [0.249, 1.135],
-      shadowSize: 0,
-      alignment: TextDraw.ALIGN_RIGHT,
-      proportional: false
+      letterSize: [0.366, 1.388],
+      shadowSize: 0
     });
-
 
     // Section (2): Running time in the current race, personal record and relative offset of that.
     // ---------------------------------------------------------------------------------------------
 
     this.timeValue_ = new AbsoluteTimeView(556.5, 145.5);
 
-    this.personalRecordValue_ = new AbsoluteTimeView(556.5, 154.726);
+    this.personalRecordValue_ = new AbsoluteTimeView(556.5, 154.726, PERSONAL_RECORD_COLOR);
     this.personalRecordLabel_ = new TextDraw({
-      position: [543, 153.5],
+      position: [542.467, 154.841],
 
-      text: 'pr',
-      font: TextDraw.FONT_MONOSPACE,
-      letterSize: [0.205, 1.235],
+      text: 'PR',
+      font: TextDraw.FONT_PRICEDOWN,
+      color: PERSONAL_RECORD_COLOR,
+      letterSize: [0.314, 0.969],
       shadowSize: 0
     });
   }

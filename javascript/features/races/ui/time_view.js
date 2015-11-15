@@ -7,9 +7,9 @@ let TextDraw = require('components/text_draw/text_draw.js');
 // This is a time view that can be used to draw time in the format of [00:00.000] with consistent
 // spacing regardless of the value and without having to rely on ugly proportional text rendering.
 class TimeView {
-  constructor(x, y, trim) {
+  constructor(x, y, color, trim) {
     this.position_ = [x, y];
-    this.color_ = null;
+    this.color_ = color;
     this.trim_ = trim;
 
     this.displaying_ = false;
@@ -56,7 +56,7 @@ class TimeView {
     this.millisecondView_ = this.buildDigitView(x + 26.8, y, this.millisecondValue_);
 
     let separatorOptions = {
-      position: [x + 10.8 + (displayMinutes ? 0 : .1), y - 0.15],
+      position: [x + 10.8 + (displayMinutes ? 0 : .15), y - 0.15],
 
       text: displayMinutes ? ':____.' : '_____.',
       font: TextDraw.FONT_PRICEDOWN,

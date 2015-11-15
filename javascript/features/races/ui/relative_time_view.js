@@ -16,7 +16,7 @@ const TIME_BEHIND_COLOR = Color.RED;
 // respectively indicate that the participant is doing worse or better.
 class RelativeTimeView extends TimeView {
   constructor(x, y) {
-    super(x, y, true /* trim */);
+    super(x, y, null /* color */, true /* trim */);
 
     this.isPositive_ = true;
 

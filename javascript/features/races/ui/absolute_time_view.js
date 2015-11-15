@@ -7,8 +7,8 @@ let TimeView = require('features/races/ui/time_view.js');
 // This is a time view that can be used to draw time in the format of [00:00.000] with consistent
 // spacing regardless of the value and without having to rely on ugly proportional text rendering.
 class AbsoluteTimeView extends TimeView {
-  constructor(x, y) {
-    super(x, y, false /* trim */);
+  constructor(x, y, color = null) {
+    super(x, y, color, false /* trim */);
   }
 
   setTime(player, time) {

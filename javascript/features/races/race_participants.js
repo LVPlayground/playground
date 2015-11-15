@@ -41,6 +41,12 @@ class RaceParticipants {
         Object.keys(results).forEach(userId => users[userId].importBestResults(results[userId])));
   }
 
+  // Called when the positions of the participants, or the distance between them, might have changed
+  // because one of them either finished or crossed a checkpoint.
+  updateParticipantPositions() {
+    // TODO: Implement this method.
+  }
+
   // Advances the |player| to |state|. If the player is already at a later state, the advancement
   // will silently fail (for example, drop-out versus finished). 
   advancePlayer(player, state) {

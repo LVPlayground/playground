@@ -71,8 +71,13 @@ class RunningRace {
     player.controllable = true;
 
     // TODO: Restore the |player|'s state if |this.stage_| >= RunningRace.STATE_COUNTDOWN.
-    // TODO: Hide the current checkpoint for the player.
+    
+    // Hide the next checkpoint if it's still being displayed for |participant|.
+    let lastCheckpoint = participant.checkpointIndex;
+    if (lastCheckpoint !== null && lastCheckpoint < this.race_.checkpoints.length - 1)
+      this.race_.checkpoints[lastCheckpoint + 1].hideForPlayer(player);
 
+    // Finish the race if there are no more racing participants left.
     if (!this.participants_.racingPlayerCount())
       this.advanceState(RunningRace.STATE_FINISHED);
   }
@@ -309,8 +314,6 @@ class RunningRace {
     if (this.state_ != RunningRace.STATE_RUNNING && index !== 0)
       return;  // they must've unfreezed themselves.
 
-    // TODO: Support multiple laps.
-
     // If the participant just passed the final checkpoint, mark them as having finished the game.
     // Their state will be advanced by the didFinish method, no need to record the time.
     if (index >= this.race_.checkpoints.length) {
@@ -323,7 +326,10 @@ class RunningRace {
     if (index > 0)
       participant.recordCheckpointTime(index - 1, highResolutionTime());
 
-    // TODO: Cause the score boards for all participants to update.
+    // Trigger a score board update for calculating the positions between the players, unless the
+    // race has not started yet (i.e. this is the first checkpoint).
+    if (index > 0)
+      this.participants_.updateParticipantPositions();
 
     // Display the next check point for the participant - they can continue.
     this.race_.checkpoints[index].displayForPlayer(participant.player).then(() => {
@@ -338,6 +344,9 @@ class RunningRace {
   didFinish(participant) {
     participant.advance(RaceParticipant.STATE_FINISHED, highResolutionTime());
     participant.rank = ++this.finishedCount_;
+
+    // Trigger a score board update for calculating the positions between the players.
+    this.participants_.updateParticipantPositions();
 
     let raceTimeSeconds = Math.round(participant.totalTime / 1000);
 

@@ -104,6 +104,7 @@ class RaceParticipant {
 
       case RaceParticipant.STATE_FINISHED:
         this.totalTime_ = param - this.startTime_;
+        this.scoreBoard_.update(param);
         break;
     }
   }

@@ -2,7 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let TimeView = require('features/races/ui/time_view.js');
+let TextDraw = require('components/text_draw/text_draw.js'),
+    TimeView = require('features/races/ui/time_view.js');
 
 // Color to use when a relative time should be displayed as a positive thing.
 const TIME_AHEAD_COLOR = Color.GREEN;
@@ -16,12 +17,40 @@ const TIME_BEHIND_COLOR = Color.RED;
 class RelativeTimeView extends TimeView {
   constructor(x, y) {
     super(x, y);
+
+    this.isPositive_ = true;
+
+    // The + character that might be prepended to a relative time.
+    this.positiveMark_ = new TextDraw({
+      position: [x - 1.632, y - 0.236],
+      alignment: TextDraw.ALIGN_RIGHT,
+
+      text: '+',
+      font: TextDraw.FONT_SANS_SERIF,
+      color: TIME_BEHIND_COLOR,
+      letterSize: [0.227, 1.08],
+      shadowSize: 0
+    });
+
+    // The - character that might be prepended to a relative time.
+    this.negativeMark_ = new TextDraw({
+      position: [x - 1.232, y - 0.73],
+      alignment: TextDraw.ALIGN_RIGHT,
+
+      text: '-',
+      font: TextDraw.FONT_CLASSIC,
+      letterSize: [0.274, 1.144],
+      color: TIME_AHEAD_COLOR,
+      shadowSize: 0
+    });
   }
 
   setTime(player, time) {
     let displaying = this.displaying;
 
-    let timeColor = time < 0 ? TIME_AHEAD_COLOR : TIME_BEHIND_COLOR;
+    this.isPositive_ = time >= 0;
+
+    let timeColor = this.isPositive_ ? TIME_BEHIND_COLOR : TIME_AHEAD_COLOR;
     if (timeColor != this.color && displaying) {
       this.hideForPlayer(player);
 
@@ -36,6 +65,22 @@ class RelativeTimeView extends TimeView {
     this.updateTextForPlayer(player, ...TimeView.distillTimeForDisplay(Math.abs(time)));
     if (displaying)
       this.displayForPlayer(player);
+  }
+
+  displayForPlayer(player) {
+    super.displayForPlayer(player);
+
+    if (this.isPositive_)
+      this.positiveMark_.displayForPlayer(player);
+    else
+      this.negativeMark_.displayForPlayer(player);
+  }
+
+  hideForPlayer(player) {
+    super.hideForPlayer(player);
+
+    this.positiveMark_.hideForPlayer(player);
+    this.negativeMark_.hideForPlayer(player);
   }
 };
 

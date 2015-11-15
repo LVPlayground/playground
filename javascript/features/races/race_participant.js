@@ -119,7 +119,7 @@ class RaceParticipant {
 
         this.scoreBoard_.update(param);
         if (this.bestTime_ !== null)
-          this.scoreBoard_.setPersonalRecordRelativeTime(param - this.bestTime_);
+          this.scoreBoard_.setPersonalRecordRelativeTime(this.totalTime_ - this.bestTime_);
     }
   }
 };

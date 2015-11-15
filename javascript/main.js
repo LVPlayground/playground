@@ -7,6 +7,7 @@ require('base/message.js');
 
 require('entities/player.js');
 require('entities/vehicle.js');
+require('entities/virtual_world.js');
 
 let Playground = require('playground.js'),
     TestRunner = require('base/test/test_runner.js');

@@ -19,8 +19,8 @@ class RunningRace {
     this.state_ = RunningRace.STATE_SIGNUP;
     this.manager_ = manager;
 
-    // TODO: Have some sort of unique virtual world dispatcher.
-    this.virtualWorld_ = 1007;
+    // Acquire a unique virtual world for this race to take place in.
+    this.virtualWorld_ = VirtualWorld.acquire('RunningRace (' + race.id + ')');
 
     // Mapping of a player id to the vehicle they will be driving in.
     this.vehicles_ = {};
@@ -363,6 +363,8 @@ class RunningRace {
   finish() {
     this.callbacks_.dispose();
     this.entities_.dispose();
+
+    VirtualWorld.release(this.virtualWorld_);
 
     this.resolveFinishedPromise_(this.participants_.finishedParticipants());
   }

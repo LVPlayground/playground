@@ -23,6 +23,7 @@ class RaceParticipant {
     this.checkpointIndex_ = null;
     this.checkpointTimes_ = [];
     this.bestCheckpointTimes_ = [];
+    this.bestTime_ = null;
 
     this.scoreBoard_ = null;
   }
@@ -80,7 +81,9 @@ class RaceParticipant {
   // board of the player with the absolute and relative performance compared to their best.
   importBestResults(results) {
     this.scoreBoard_.setBestTime(results.totalTime);
+
     this.bestCheckpointTimes_ = results.checkpointTimes;
+    this.bestTime_ = results.totalTime;
   }
 
   // Records |time| as the moment at which the player passed the checkpoint at |checkpointIndex|. If
@@ -113,8 +116,10 @@ class RaceParticipant {
 
       case RaceParticipant.STATE_FINISHED:
         this.totalTime_ = param - this.startTime_;
+
         this.scoreBoard_.update(param);
-        break;
+        if (this.bestTime_ !== null)
+          this.scoreBoard_.setPersonalRecordRelativeTime(param - this.bestTime_);
     }
   }
 };

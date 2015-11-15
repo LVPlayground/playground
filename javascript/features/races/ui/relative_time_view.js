@@ -19,9 +19,23 @@ class RelativeTimeView extends TimeView {
   }
 
   setTime(player, time) {
-    console.log('Update relative time: ' + time);
+    let displaying = this.displaying;
+
+    let timeColor = time < 0 ? TIME_AHEAD_COLOR : TIME_BEHIND_COLOR;
+    if (timeColor != this.color && displaying) {
+      this.hideForPlayer(player);
+
+      this.minuteView_ = null;
+      this.secondView_ = null;
+      this.millisecondView_ = null;
+      this.separatorView_ = null;
+    }
+
+    this.color = timeColor;
 
     this.updateTextForPlayer(player, ...TimeView.distillTimeForDisplay(Math.abs(time)));
+    if (displaying)
+      this.displayForPlayer(player);
   }
 };
 

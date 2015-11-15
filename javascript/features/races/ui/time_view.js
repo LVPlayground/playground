@@ -46,14 +46,19 @@ class TimeView {
     this.secondView_ = this.buildDigitView(x + 14.033 + 10.7, y, this.secondValue_, TextDraw.ALIGN_RIGHT);
     this.millisecondView_ = this.buildDigitView(x + 26.8, y, this.millisecondValue_);
 
-    this.separatorView_ = new TextDraw({
+    let separatorOptions = {
       position: [x + 10.8, y - 0.15],
 
       text: ':____.',
       font: TextDraw.FONT_PRICEDOWN,
       letterSize: [0.185, 1.007],
       shadowSize: 0
-    });
+    };
+
+    if (this.color_ !== null)
+      separatorOptions.color = this.color_;
+
+    this.separatorView_ = new TextDraw(separatorOptions);
   }
 
   // Builds an individual digit view at position [x, y] and returns the created view.

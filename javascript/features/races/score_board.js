@@ -39,10 +39,9 @@ const PLAYER_COUNT_COLOR = new Color(255, 255, 255, 100);
 // updated when they pass through the next checkpoint. The position of all players, including the
 // times between them, will be updated when any of the participants passes a checkpoint.
 //
-// Colors will be applied to times to clarify whether it's a good thing or a bad thing. For the
-// player's personal record, negative values are good (they're beating it!), whereas for the times
-// between them and other players, positive values are good (they're ahead of them!) This may be
-// confusing for new players, at least initially, but I do think it makes sense.
+// Colors will be applied to times to clarify whether it's a good thing or a bad thing. Negative
+// time values will be displayed in green (they're doing better than the other time), whereas
+// positive values will be displayed in red (they're doing worse than the other time).
 class ScoreBoard {
   constructor(participant, participants) {
     this.participants_ = participants;
@@ -150,41 +149,36 @@ class ScoreBoard {
     }
   }
 
+  // Updates the relative time the player is currently driving at. If the personal record value
+  // still is an absolute time (as it is at the beginning of the race), re-create the view.
+  setPersonalRecordRelativeTime(time) {
+    if (this.personalRecordValue_ instanceof AbsoluteTimeView) {
+      this.personalRecordValue_.hideForPlayer(this.player_);
+      this.personalRecordLabel_.hideForPlayer(this.player_);
+
+      this.personalRecordValue_ = new RelativeTimeView(...this.personalRecordValue_.position);
+      this.personalRecordValue_.setTime(time);
+
+      this.personalRecordValue_.displayForPlayer(this.player_);
+      return;
+    }
+
+    this.personalRecordValue_.setTime(time);
+  }
+
   // Called every ~hundred milliseconds while the race is active. Only update the high-resolution
   // race-duration counter on the player's screen.
   update(currentTime) {
     this.timeValue_.setTime(this.player_, currentTime - this.participant_.startTime);
   }
-
-  // -----------------------------------------------------------------------------------------------
-
-  // Formats |time|, in milliseconds, as a human readable value formatted as MM:SS.XXX. The minute
-  // counter will be omitted when zero, unless |alwaysShowMinuteCounter| is set.
-  static formatTime(time, alwaysShowMinuteCounter) {
-    let decimalSeconds = time / 1000;
-
-    let seconds = Math.floor(decimalSeconds);
-    let milliseconds = Math.floor((decimalSeconds - seconds) * 1000);
-
-    let minutes = Math.floor(seconds / 60);
-    if (minutes > 0)
-      seconds -= minutes * 60;
-
-    let representation = '';
-    if (minutes > 0 || alwaysShowMinuteCounter)
-      representation += (minutes < 10 ? '0' : '') + minutes + ':';
-
-    representation += (seconds < 10 ? '0' : '') + Math.floor(seconds) + '.';
-    representation += (milliseconds < 10 ? '00' : (milliseconds < 100 ? '0' : '')) + milliseconds;
-
-    return representation;
-  }
 };
 
-// The TimeView is a view that can be used to draw time in the format of [00:00.000] with consistent
+// This is a time view that can be used to draw time in the format of [00:00.000] with consistent
 // spacing regardless of the value and without having to rely on ugly proportional text rendering.
 class AbsoluteTimeView {
   constructor(x, y) {
+    this.position_ = [x, y];
+
     this.minuteValue_ = '00';
     this.minuteView_ = new TextDraw({
       position: [x + 5.4, y],
@@ -229,15 +223,11 @@ class AbsoluteTimeView {
     this.displaying_ = false;
   }
 
+  // Returns the [x, y] position of the absolute time view.
+  get position() { return this.position_; }
+
   setTime(player, time) {
-    let decimalSeconds = time / 1000;
-
-    let seconds = Math.floor(decimalSeconds);
-    let milliseconds = Math.floor((decimalSeconds - seconds) * 1000);
-
-    let minutes = Math.floor(seconds / 60);
-    if (minutes > 0)
-      seconds -= minutes * 60;
+    let [minutes, seconds, milliseconds] = distillTime(time);
 
     let minuteValue = ((minutes < 10) ? '0' : '') + minutes,
         secondValue = ((seconds < 10) ? '0' : '') + seconds,
@@ -281,6 +271,43 @@ class AbsoluteTimeView {
     this.minuteView_.hideForPlayer(player);
   }
 };
+
+// This is a view for displaying relative times, for example [+00.000] or [-00:00.000]. Positive
+// times will be displayed in red, whereas negative times will be displayed in green, because they
+// respectively indicate that the participant is doing worse or better.
+class RelativeTimeView {
+  constructor(x, y) {
+
+    this.displaying_ = false;
+  }
+
+  setTime(player, time) {
+
+  }
+
+  displayForPlayer(player) {
+    this.displaying_ = true;
+  }
+
+  hideForPlayer(player) {
+    this.displaying_ = false;
+  }
+};
+
+// Splits up |time|, which should be in milliseconds, to a rounded number of minutes, seconds and
+// milliseconds which could be used for presentation.
+function distillTime(time) {
+  let decimalSeconds = time / 1000;
+
+  let seconds = Math.floor(decimalSeconds);
+  let milliseconds = Math.floor((decimalSeconds - seconds) * 1000);
+
+  let minutes = Math.floor(seconds / 60);
+  if (minutes > 0)
+    seconds -= minutes * 60;
+
+  return [minutes, seconds, milliseconds];
+}
 
 // Only the ScoreBoard class is public, the other views are private to the implementation.
 exports = ScoreBoard;

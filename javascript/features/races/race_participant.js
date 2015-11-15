@@ -83,10 +83,19 @@ class RaceParticipant {
     this.bestCheckpointTimes_ = results.checkpointTimes;
   }
 
-  // Records |time| as the moment at which the player passed the checkpoint at |checkpointIndex|.
+  // Records |time| as the moment at which the player passed the checkpoint at |checkpointIndex|. If
+  // the best time of the player at this checkpoint is known, update the scoreboard to display it.
   recordCheckpointTime(checkpointIndex, time) {
+    let currentTime = time - this.startTime_;
+
     this.checkpointIndex_ = checkpointIndex;
-    this.checkpointTimes_.push(time - this.startTime_);
+    this.checkpointTimes_.push(currentTime);
+
+    if (this.bestCheckpointTimes_ === null || this.bestCheckpointTimes_.length <= checkpointIndex)
+      return;
+
+    this.scoreBoard_.setPersonalRecordRelativeTime(
+        this.bestCheckpointTimes_[checkpointIndex] - currentTime);
   }
 
   // Advances the player to |state|. If the current state is already past |state|, this call will

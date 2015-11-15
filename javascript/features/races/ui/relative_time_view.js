@@ -43,22 +43,33 @@ class RelativeTimeView extends TimeView {
       color: TIME_AHEAD_COLOR,
       shadowSize: 0
     });
+
+    this.positiveMarkOffset_ = -1.632;
+    this.negativeMarkOffset_ = -1.232;
+    this.markOffset_ = 0;
   }
 
+  // Updates the time displayed by the relative time view to |time|. This may cause all views to be
+  // recreated in certain circumstances.
   setTime(player, time) {
     let displaying = this.displaying;
 
     this.isPositive_ = time >= 0;
 
     let [minuteValue, secondValue, millisecondValue] = TimeView.distillTimeForDisplay(Math.abs(time));
-    if (minuteValue == '00' && secondValue.startsWith('0'))
+    if (minuteValue.startsWith('0'))
+      minuteValue = minuteValue.substr(1);
+
+    if (minuteValue === '0' && secondValue.startsWith('0'))
       secondValue = secondValue.substr(1);
+
+    let markOffset = this.determineMarkOffset(minuteValue, secondValue);
 
     let timeColor = this.isPositive_ ? TIME_BEHIND_COLOR : TIME_AHEAD_COLOR;
     let needsRefresh =
         displaying && ((timeColor != this.color) ||
-                       (minuteValue != '00' && !this.displayingMinutes) ||
-                       (minuteValue == '00' && this.displayingMinutes));
+                       (minuteValue !== '0' && !this.displayingMinutes) ||
+                       (minuteValue === '0' && this.displayingMinutes));
 
     if (needsRefresh) {
       this.hideForPlayer(player);
@@ -69,6 +80,27 @@ class RelativeTimeView extends TimeView {
       this.separatorView_ = null;
     }
 
+    if (this.markOffset_ != markOffset) {
+      if (!needsRefresh) {
+        this.positiveMark_.hideForPlayer(player);
+        this.negativeMark_.hideForPlayer(player);
+      }
+
+      this.markOffset_ = markOffset;
+      this.positiveMark_.position = [ this.position_[0] + markOffset + this.positiveMarkOffset_,
+                                      this.positiveMark_.position[1] ];
+
+      this.negativeMark_.position = [ this.position_[0] + markOffset + this.negativeMarkOffset_,
+                                      this.negativeMark_.position[1] ];
+
+      if (!needsRefresh) {
+        if (this.isPositive_)
+          this.positiveMark_.displayForPlayer(player);
+        else
+          this.negativeMark_.displayForPlayer(player);
+      }
+    }
+
     this.color = timeColor;
 
     this.updateTextForPlayer(player, minuteValue, secondValue, millisecondValue);
@@ -77,6 +109,23 @@ class RelativeTimeView extends TimeView {
       this.displayForPlayer(player);
   }
 
+  // Determines the x-offset for the marker depending on |minuteValue| and |secondValue|. It needs
+  // to closely prepend the first digit of the rendered time value.
+  determineMarkOffset(minuteValue, secondValue) {
+    if (minuteValue === '0') {
+      if (secondValue.length == 1)
+        return 19.595;  // 0.000
+
+      return 14.496;  // 00.000
+    }
+
+    if (minuteValue.length == 1)
+      return 6.065;  // 0:00.000
+
+    return 0;  // 00:00.000
+  }
+
+  // Displays all elements belonging to this relative time view to |player|.
   displayForPlayer(player) {
     super.displayForPlayer(player);
 
@@ -86,6 +135,7 @@ class RelativeTimeView extends TimeView {
       this.negativeMark_.displayForPlayer(player);
   }
 
+  // Hides the relative time view and all owned elements from the player.
   hideForPlayer(player) {
     super.hideForPlayer(player);
 

@@ -46,7 +46,7 @@ class TimeView {
 
   // Builds the views required to display the time.
   buildViews() {
-    let displayMinutes = !this.trim_ || this.minuteValue_ != '00';
+    let displayMinutes = !this.trim_ || (this.minuteValue_ != '00' && this.minuteValue_ != '0');
     let [x, y] = this.position_;
 
     if (displayMinutes)

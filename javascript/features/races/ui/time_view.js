@@ -7,10 +7,13 @@ let TextDraw = require('components/text_draw/text_draw.js');
 // This is a time view that can be used to draw time in the format of [00:00.000] with consistent
 // spacing regardless of the value and without having to rely on ugly proportional text rendering.
 class TimeView {
-  constructor(x, y) {
+  constructor(x, y, trim) {
     this.position_ = [x, y];
     this.color_ = null;
+    this.trim_ = trim;
+
     this.displaying_ = false;
+    this.displayingMinutes_ = false;
 
     this.minuteValue_ = '00';
     this.minuteView_ = null;
@@ -34,22 +37,28 @@ class TimeView {
   // Returns whether the time view is currently being displayed.
   get displaying() { return this.displaying_; }
 
+  // Returns whether minutes are currently being displayed on the board.
+  get displayingMinutes() { return this.displayingMinutes_; }
+
   // Returns whether the required views exists. Check the second field as the minute field may be
   // optional when certain flags were supplied.
   hasViews() { return this.secondView_ !== null; }
 
   // Builds the views required to display the time.
   buildViews() {
+    let displayMinutes = !this.trim_ || this.minuteValue_ != '00';
     let [x, y] = this.position_;
 
-    this.minuteView_ = this.buildDigitView(x + 10.7, y, this.minuteValue_, TextDraw.ALIGN_RIGHT);
-    this.secondView_ = this.buildDigitView(x + 14.033 + 10.7, y, this.secondValue_, TextDraw.ALIGN_RIGHT);
+    if (displayMinutes)
+      this.minuteView_ = this.buildDigitView(x + 10.7, y, this.minuteValue_, TextDraw.ALIGN_RIGHT);
+
+    this.secondView_ = this.buildDigitView(x + 24.733, y, this.secondValue_, TextDraw.ALIGN_RIGHT);
     this.millisecondView_ = this.buildDigitView(x + 26.8, y, this.millisecondValue_);
 
     let separatorOptions = {
-      position: [x + 10.8, y - 0.15],
+      position: [x + 10.8 + (displayMinutes ? 0 : .1), y - 0.15],
 
-      text: ':____.',
+      text: displayMinutes ? ':____.' : '_____.',
       font: TextDraw.FONT_PRICEDOWN,
       letterSize: [0.185, 1.007],
       shadowSize: 0
@@ -59,6 +68,7 @@ class TimeView {
       separatorOptions.color = this.color_;
 
     this.separatorView_ = new TextDraw(separatorOptions);
+    this.displayingMinutes_ = displayMinutes;
   }
 
   // Builds an individual digit view at position [x, y] and returns the created view.
@@ -88,7 +98,9 @@ class TimeView {
     if (!this.hasViews())
       this.buildViews();
 
-    this.minuteView_.displayForPlayer(player);
+    if (this.minuteView_)
+      this.minuteView_.displayForPlayer(player);
+
     this.secondView_.displayForPlayer(player);
     this.millisecondView_.displayForPlayer(player);
 
@@ -105,7 +117,9 @@ class TimeView {
     this.millisecondValue_ = millisecondValue;
 
     if (this.displaying_) {
-      this.minuteView_.updateTextForPlayer(player, minuteValue);
+      if (this.minuteView_)
+        this.minuteView_.updateTextForPlayer(player, minuteValue);
+
       this.secondView_.updateTextForPlayer(player, secondValue);
       this.millisecondView_.updateTextForPlayer(player, millisecondValue);
     }
@@ -119,7 +133,9 @@ class TimeView {
 
     this.millisecondView_.hideForPlayer(player);
     this.secondView_.hideForPlayer(player);
-    this.minuteView_.hideForPlayer(player);
+
+    if (this.minuteView_)
+      this.minuteView_.hideForPlayer(player);
   }
 
   // Splits up |time|, which should be in milliseconds, to a rounded number of minutes, seconds and

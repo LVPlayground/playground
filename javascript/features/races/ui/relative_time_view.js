@@ -16,7 +16,7 @@ const TIME_BEHIND_COLOR = Color.RED;
 // respectively indicate that the participant is doing worse or better.
 class RelativeTimeView extends TimeView {
   constructor(x, y) {
-    super(x, y);
+    super(x, y, true /* trim */);
 
     this.isPositive_ = true;
 
@@ -50,8 +50,17 @@ class RelativeTimeView extends TimeView {
 
     this.isPositive_ = time >= 0;
 
+    let [minuteValue, secondValue, millisecondValue] = TimeView.distillTimeForDisplay(Math.abs(time));
+    if (minuteValue == '00' && secondValue.startsWith('0'))
+      secondValue = secondValue.substr(1);
+
     let timeColor = this.isPositive_ ? TIME_BEHIND_COLOR : TIME_AHEAD_COLOR;
-    if (timeColor != this.color && displaying) {
+    let needsRefresh =
+        displaying && ((timeColor != this.color) ||
+                       (minuteValue != '00' && !this.displayingMinutes) ||
+                       (minuteValue == '00' && this.displayingMinutes));
+
+    if (needsRefresh) {
       this.hideForPlayer(player);
 
       this.minuteView_ = null;
@@ -62,8 +71,9 @@ class RelativeTimeView extends TimeView {
 
     this.color = timeColor;
 
-    this.updateTextForPlayer(player, ...TimeView.distillTimeForDisplay(Math.abs(time)));
-    if (displaying)
+    this.updateTextForPlayer(player, minuteValue, secondValue, millisecondValue);
+
+    if (needsRefresh)
       this.displayForPlayer(player);
   }
 

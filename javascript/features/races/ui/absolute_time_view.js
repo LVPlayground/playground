@@ -8,7 +8,7 @@ let TimeView = require('features/races/ui/time_view.js');
 // spacing regardless of the value and without having to rely on ugly proportional text rendering.
 class AbsoluteTimeView extends TimeView {
   constructor(x, y) {
-    super(x, y);
+    super(x, y, false /* trim */);
   }
 
   setTime(player, time) {

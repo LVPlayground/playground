@@ -5,7 +5,7 @@
 let MessageView = require('features/races/ui/message_view.js');
 
 // The message that should be displayed when a participant finishes the race.
-const MESSAGE = 'Congratulations! You have completed the race!';
+const MESSAGE = 'Congratulations!';
 
 // Displays a message to a specific player that they have finished the race. This is not very
 // insightful, but they can look at the scoreboard to the right to figure out how they did.

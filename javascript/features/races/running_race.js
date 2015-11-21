@@ -102,7 +102,8 @@ class RunningRace {
     if (participant === null)
       return;
 
-    this.removeParticipant(participant);
+    if (participant.markAsFinishing())
+      this.removeParticipant(participant);
   }
 
   // Called when a player's state changes. Used to determine whether the player has left their
@@ -138,6 +139,11 @@ class RunningRace {
       // TODO: Do we need a maximum amount of time a player is allowed to be off their vehicle?
       return;
     }
+
+    // Mark the player as finishing. If they were already marked as such, it's possible that they
+    // fell off after crossing the finish line, for example.
+    if (!participant.markAsFinishing())
+      return;
 
     LeaveVehicle.displayForParticipant(participant, RaceSettings.RACE_DIALOG_WAIT_DURATION).then(() =>
         this.removeParticipant(participant));
@@ -384,6 +390,11 @@ class RunningRace {
         name: participant.playerName
       };
     }
+
+    // Mark the participant as finishing. If they already were marked as such due to another reason,
+    // bail out because something is already being displayed on their screen.
+    if (!participant.markAsFinishing())
+      return;
 
     // TODO: Display some visual banner to congratulate them with their win.
     console.log(participant.playerName + ' has finished the race!');

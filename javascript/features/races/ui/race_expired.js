@@ -18,8 +18,10 @@ class RaceExpired extends MessageView {
 
   getTargetPlayers() {
     let players = [];
-    for (let participant of this.participants_.racingParticipants())
-      players.push(participant.player);
+    for (let participant of this.participants_.racingParticipants()) {
+      if (participant.markAsFinishing())
+        players.push(participant.player);
+    }
 
     return players;
   }

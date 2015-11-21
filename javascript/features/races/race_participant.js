@@ -25,6 +25,8 @@ class RaceParticipant {
     this.bestCheckpointTimes_ = [];
     this.bestTime_ = null;
 
+    this.finishing_ = false;
+
     this.scoreBoard_ = null;
   }
 
@@ -72,6 +74,16 @@ class RaceParticipant {
 
   // Returns an array with the times at which the player passed each of the checkpoints.
   get checkpointTimes() { return this.checkpointTimes_; }
+
+  // Marks the player as finishing. Returns true if the player wasn't marked as such yet, or false
+  // when they were. This helps prevent race conditions (race as in threading races).
+  markAsFinishing() {
+    if (this.finishing_)
+      return false;
+
+    this.finishing_ = true;
+    return true;
+  }
 
   // Gets or sets the score board for this participant.
   get scoreBoard() { return this.scoreBoard_; }

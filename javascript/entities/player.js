@@ -151,6 +151,15 @@ class Player extends Extendable {
   }
 
   // -----------------------------------------------------------------------------------------------
+  // TODO: The following methods should not be on the common Player object, but rather provided by
+  // a feature of sorts.
+
+  updateStreamer(position, virtualWorld, interiorId, type) {
+    pawnInvoke('Streamer_UpdateEx', 'ifffiii', this.id_, position.x, position.y, position.z,
+               virtualWorld, interiorId, type);
+  }
+
+  // -----------------------------------------------------------------------------------------------
   // The following methods are only meant for testing!
 
   // Simulates connecting of a player optionally identified by id |name| for the purposes of tests.

@@ -266,6 +266,9 @@ class RunningRace {
   }
 
   createObjects() {
+    if (!this.race_.objects.length)
+      return;  // no objects have been associated with this race
+
     let players = [];
     for (let participant of this.participants_.racingParticipants())
       players.push(participant.playerId);
@@ -284,8 +287,7 @@ class RunningRace {
   }
 
   preparePlayers() {
-    let playerVehicleIndex = 0;
-
+    let playerIndex = 0;
     for (let participant of this.participants_.racingParticipants()) {
       let player = participant.player;
 
@@ -297,6 +299,12 @@ class RunningRace {
       // Move the player to the right virtual world and interior for the race.
       player.virtualWorld = this.virtualWorld_;
       player.interior = this.race_.interior;
+
+      // If this race features objects, force a streamer update on their new position for them.
+      if (this.race_.objects.length) {
+        player.updateStreamer(this.race_.spawnPositions[playerIndex].position, this.virtualWorld_,
+                              this.race_.interior, 0 /* STREAMER_TYPE_OBJECT */);
+      }
 
       // Put the player in their designated 
       player.putInVehicle(this.vehicles_[player.id]);
@@ -314,6 +322,8 @@ class RunningRace {
 
       // Create the first checkpoint for the player. They won't be able to drive yet.
       this.nextCheckpoint(participant, 0 /* first checkpoint */);
+
+      ++playerIndex;
     }
 
     return true;

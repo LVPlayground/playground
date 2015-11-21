@@ -60,6 +60,16 @@ class Vehicle extends Extendable {
     this.interior_ = value;
   }
 
+  // Gets or sets the health of the vehicle. This is a floating point number generally between a
+  // zero (exploded) and a thousand (in perfect condition). Does not reflect the damage state of
+  // the vehicle, which has to be maintained separately.
+  get health() { return pawnInvoke('GetVehicleHealth', 'iF', this.id_); }
+  set health(value) { pawnInvoke('SetVehicleHealth', 'ii', this.id_, value); }
+
+  // Repairs the vehicle. This sets the health of the vehicle to its maximum, and reset and visual
+  // damage that may have been done to the vehicle since the last repair.
+  repair() { pawnInvoke('RepairVehicle', 'i', this.id_); }
+
   // Adds |componentId| to this vehicle. No verification will be done on whether the component is
   // valid for this vehicle. Components can be added multiple times.
   addComponent(componentId) {

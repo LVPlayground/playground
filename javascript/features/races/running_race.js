@@ -20,6 +20,8 @@ class RunningRace {
     this.state_ = RunningRace.STATE_SIGNUP;
     this.manager_ = manager;
 
+    this.resetVehicleDamageCounter_ = 0;
+
     // Acquire a unique virtual world for this race to take place in.
     this.virtualWorld_ = VirtualWorld.acquire('RunningRace (' + race.id + ')');
 
@@ -275,10 +277,18 @@ class RunningRace {
     if (this.state_ != RunningRace.STATE_RUNNING)
       return;  // no need to update the score board when the race has finished.
 
+    // Repair a vehicle once every ten score board updates if so desired by the race's settings.
+    // This makes the vehicle they're driving in pretty much invincible.
+    let repairVehicles = this.race_.disableVehicleDamage &&
+                         this.resetVehicleDamageCounter_++ % 10 == 0;
+
     let currentTime = highResolutionTime();
     for (let participant of this.participants_.racingParticipants()) {
       if (participant.state != RaceParticipant.STATE_RACING)
         continue;
+
+      if (repairVehicles)
+        this.vehicles_[participant.playerId].repair();
 
       participant.scoreBoard.update(currentTime);
     }

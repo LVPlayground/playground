@@ -47,7 +47,8 @@ class RunningRace {
     // Listen to the required callbacks. Use a scoped callbacks object because this object is
     // ephemeral, and the listeners won't be necessary after the race has finished.
     this.callbacks_ = new ScopedCallbacks();
-    this.callbacks_.addEventListener('playerdisconnect', this.__proto__.onPlayerDisconnect.bind(this));
+    this.callbacks_.addEventListener('playerdeath', this.__proto__.onPlayerDeathOrDisconnect.bind(this));
+    this.callbacks_.addEventListener('playerdisconnect', this.__proto__.onPlayerDeathOrDisconnect.bind(this));
   }
 
   // Returns a promise that will be resolved when the race has finished.
@@ -84,9 +85,11 @@ class RunningRace {
       this.advanceState(RunningRace.STATE_FINISHED);
   }
 
-  // Called when a player has disconnected from the server. If the player was engaged in this race
-  // then we need to mark them as having dropped out, and possibly stop the race altogether.
-  onPlayerDisconnect(event) {
+  // -----------------------------------------------------------------------------------------------
+
+  // Called when a player either dies or disconnects from the server. In both cases, they will be
+  // removed from the race if they were a participant of it.
+  onPlayerDeathOrDisconnect(event) {
     let player = Player.get(event.playerid);
     if (player === null)
       return;

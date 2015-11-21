@@ -223,9 +223,11 @@ self.addEventListener('playeractivitychange', event => {
   player[event.playerid].activity_ = event.activity;
 });
 
-// Called when a player disconnects from the server. Removes the player from our registry.
+// Called when a player disconnects from the server. Removes the player from our registry. The
+// removal will be done at the end of the event loop, to make sure that the other playerdisconnect
+// listeners will still be able to retrieve the Player object.
 self.addEventListener('playerdisconnect', event =>
-    delete players[event.playerid]);
+    wait(0).then(() => delete players[event.playerid]));
 
 // Utility function: convert a player's level to a string.
 global.playerLevelToString = (level, plural = false) => {

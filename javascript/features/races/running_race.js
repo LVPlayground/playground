@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 let Countdown = require('features/races/ui/countdown.js'),
+    LeaveVehicle = require('features/races/ui/leave_vehicle.js'),
     RaceExpired = require('features/races/ui/race_expired.js'),
     RaceParticipant = require('features/races/race_participant.js'),
     RaceParticipants = require('features/races/race_participants.js'),
@@ -51,6 +52,7 @@ class RunningRace {
     this.callbacks_ = new ScopedCallbacks();
     this.callbacks_.addEventListener('playerdeath', this.__proto__.onPlayerDeathOrDisconnect.bind(this));
     this.callbacks_.addEventListener('playerdisconnect', this.__proto__.onPlayerDeathOrDisconnect.bind(this));
+    this.callbacks_.addEventListener('playerstatechange', this.__proto__.onPlayerStateChange.bind(this));
   }
 
   // Returns a promise that will be resolved when the race has finished.
@@ -103,6 +105,44 @@ class RunningRace {
     this.removeParticipant(participant);
   }
 
+  // Called when a player's state changes. Used to determine whether the player has left their
+  // vehicle, or, when that previously happened, has continued driving their vehicle again.
+  onPlayerStateChange(event) {
+    let player = Player.get(event.playerid);
+    if (player === null)
+      return;
+
+    let participant = this.participants_.participantForPlayer(player);
+    if (participant === null)
+      return;
+
+    if (participant.state != RaceParticipant.STATE_RACING)
+      return;  // don't care about what players do when they're not racing
+
+    if (event.newstate == Player.STATE_DRIVER)
+      this.onParticipantEnterVehicle(participant);
+    else if (event.oldstate == Player.STATE_DRIVER)
+      this.onParticipantExitVehicle(participant);
+  }
+
+  // Called when |participant| enters a vehicle. 
+  onParticipantEnterVehicle(participant) {
+    // TODO: Verify that they got on *their* vehicle, and not another vehicle.
+    // TODO: Remove any showing "get back on" dialogs from their screen.
+  }
+
+  // Called when |participant| leaves the vehicle they're in. This could be either because they left
+  // it deliberately, or because they fell off (from a motorcycle, for example).
+  onParticipantExitVehicle(participant) {
+    if (this.race_.allowLeaveVehicle) {
+      // TODO: Do we need a maximum amount of time a player is allowed to be off their vehicle?
+      return;
+    }
+
+    LeaveVehicle.displayForParticipant(participant, RaceSettings.RACE_DIALOG_WAIT_DURATION).then(() =>
+        this.removeParticipant(participant));
+  }
+
   // -----------------------------------------------------------------------------------------------
 
   // Advances the running race to |state|. The state of the race can only advance, it can never be
@@ -151,7 +191,7 @@ class RunningRace {
       // State that occurs when one or more players are still racing, but the maximum time of the
       // race has expired. They'll be shown a message, after which they'll forcefully drop out.
       case RunningRace.STATE_OUT_OF_TIME:
-        RaceExpired.displayForParticipants(RaceSettings.RACE_OUT_OF_TIME_WAIT_DURATION, this.participants_).then(() =>
+        RaceExpired.displayForParticipants(RaceSettings.RACE_DIALOG_WAIT_DURATION, this.participants_).then(() =>
             this.advanceState(RunningRace.STATE_FINISHED));
         break;
 

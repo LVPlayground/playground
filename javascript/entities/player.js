@@ -189,6 +189,18 @@ Player.LEVEL_PLAYER = 0;
 Player.LEVEL_ADMINISTRATOR = 1;
 Player.LEVEL_MANAGEMENT = 2;
 
+// The states a player can be in. Used by Player.state and `playerstatechange` events.
+Player.STATE_NONE = 0;
+Player.STATE_ON_FOOT = 1;
+Player.STATE_DRIVER = 2;
+Player.STATE_PASSENGER = 3;
+Player.STATE_EXIT_VEHICLE = 4;
+Player.STATE_ENTER_VEHICLE_DRIVER = 5;
+Player.STATE_ENTER_VEHICLE_PASSENGER = 6;
+Player.STATE_WASTED = 7;
+Player.STATE_SPAWNED = 8;
+Player.STATE_SPECTATING = 9;
+
 // Loads the activities of a player and installs them on |Player|.
 require('entities/player_activities.js')(Player);
 

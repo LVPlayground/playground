@@ -58,6 +58,9 @@ class ScoreBoard {
 
     this.positionBackground_ = new Rectangle(500, 140, 106, 36.8, BACKGROUND_COLOR);
 
+    this.position_ = 1;
+    this.participantCount_ = null;
+
     // Section (1): Position compared to the other players in the current race
     // ---------------------------------------------------------------------------------------------
 
@@ -110,7 +113,8 @@ class ScoreBoard {
   // Displays the score board for the player. All (initial) values for the texts should've been set,
   // except for the number of participants which will only be available now.
   displayForPlayer() {
-    this.participantsValue_.text = '/' + this.participants_.racingPlayerCount();
+    this.participantCount_ = this.participants_.racingPlayerCount();
+    this.participantsValue_.text = '/' + this.participantCount_;
 
     this.positionBackground_.displayForPlayer(this.player_);
 
@@ -173,6 +177,43 @@ class ScoreBoard {
   // race-duration counter on the player's screen.
   update(currentTime) {
     this.timeValue_.setTime(this.player_, currentTime - this.participant_.startTime);
+  }
+
+  // Updates the position display 
+  updatePositionIfNeeded(position, participantCount) {
+    if (position != this.position_) {
+      this.positionValue_.updateTextForPlayer(this.player_, position);
+      if (position <= 3 || this.position_ <= 3) {
+        let positionSuffixes = ['st', 'nd', 'rd', 'th'];
+
+        this.positionSuffix_.updateTextForPlayer(this.player_,
+                                                 positionSuffixes[Math.min(3, position - 1)]);
+      }
+
+      this.position_ = position;
+    }
+
+    if (participantCount != this.participantCount_) {
+      this.participantsValue_.updateTextForPlayer(this.player_, '/' + participantCount);
+      this.participantCount_ = participantCount;
+    }
+  }
+
+  // Called when the rankings between players have changed. The |participantRanking| object contains
+  // information about the performance of the current participant, whereas |rankings| contains all
+  // participating players sorted by their current performance.
+  updateRankings(participantRanking, rankings) {
+    let position = 0;
+
+    rankings.forEach(participant => {
+      ++position;
+
+      if (participant === participantRanking)
+        this.updatePositionIfNeeded(position, rankings.length);
+
+      // TODO: Render a score board with the top 4 players, and the difference in time between their
+      // performance and the performance of |this.participant_|.
+    });
   }
 };
 

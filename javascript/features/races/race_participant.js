@@ -63,6 +63,13 @@ class RaceParticipant {
   // Returns the participant's current checkpoint index. May be NULL if they haven't passed one yet.
   get checkpointIndex() { return this.checkpointIndex_; }
 
+  // Returns the most recent time at which the player passed through a checkpoint, or NULL if they
+  // haven't passed one yet. (checkpointIndex will be NULL too.)
+  get lastCheckpointTime() {
+    return this.checkpointTimes_.length ? this.checkpointTimes_[this.checkpointTimes_.length - 1]
+                                        : null;
+  }
+
   // Returns an array with the times at which the player passed each of the checkpoints.
   get checkpointTimes() { return this.checkpointTimes_; }
 

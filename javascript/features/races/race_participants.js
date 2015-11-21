@@ -42,9 +42,39 @@ class RaceParticipants {
   }
 
   // Called when the positions of the participants, or the distance between them, might have changed
-  // because one of them either finished or crossed a checkpoint.
+  // because one of them either finished or crossed a checkpoint. This method will be called once
+  // for each checkpoint for each player per race, and may trigger UI updates.
   updateParticipantPositions() {
-    // TODO: Implement this method.
+    let participantInfo = {};
+    let sortedParticipants = [];
+
+    this.participants_.forEach((participant, participantId) => {
+      if (participant.state == RaceParticipant.STATE_DROP_OUT)
+        return null;
+
+      sortedParticipants.push(participantInfo[participantId] = {
+        playerName: participant.playerName,
+        checkpointIndex: participant.checkpointIndex,
+        checkpointTime: participant.lastCheckpointTime
+      });
+    });
+
+    sortedParticipants.sort((lhs, rhs) => {
+      if (lhs.checkpointIndex != rhs.checkpointIndex)
+        return lhs.checkpointIndex > rhs.checkpointIndex ? 1 : -1;
+      
+      if (lhs.checkpointIndex == null)
+        return 0;  // neither player has passed a checkpoint yet
+
+      return lhs.checkpointTime > rhs.checkpointTime ? 1 : -1;
+    });
+
+    this.participants_.forEach((participant, participantIndex) => {
+      if (!participantInfo.hasOwnProperty(participantIndex))
+        return;  // they may have been excluded from the rankings
+
+      participant.scoreBoard.updateRankings(participantInfo[participantIndex], sortedParticipants);
+    });
   }
 
   // Advances the |player| to |state|. If the player is already at a later state, the advancement

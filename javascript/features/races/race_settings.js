@@ -22,9 +22,5 @@ exports = {
 
   // Number of milliseconds to wait before dismissing game over messages from their screen, and
   // finishing the race, restoring the player's previous state before they started it at all.
-  RACE_DIALOG_WAIT_DURATION: 3000,
-
-  // Number of milliseconds for the player to watch the result screen before they'll be returned to
-  // the normal world. They won't be able to control themselves during this time.
-  RACE_FINISHED_WAIT_DURATION: 4000
+  RACE_DIALOG_WAIT_DURATION: 3000
 };

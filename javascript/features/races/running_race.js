@@ -3,8 +3,9 @@
 // be found in the LICENSE file.
 
 let Countdown = require('features/races/ui/countdown.js'),
-    LeaveVehicle = require('features/races/ui/leave_vehicle.js'),
-    RaceExpired = require('features/races/ui/race_expired.js'),
+    FinishedMessage = require('features/races/ui/finished_message.js'),
+    LeaveVehicleMessage = require('features/races/ui/leave_vehicle_message.js'),
+    RaceExpiredMessage = require('features/races/ui/race_expired_message.js'),
     RaceParticipant = require('features/races/race_participant.js'),
     RaceParticipants = require('features/races/race_participants.js'),
     RaceSettings = require('features/races/race_settings.js'),
@@ -145,7 +146,7 @@ class RunningRace {
     if (!participant.markAsFinishing())
       return;
 
-    LeaveVehicle.displayForParticipant(participant, RaceSettings.RACE_DIALOG_WAIT_DURATION).then(() =>
+    LeaveVehicleMessage.displayForParticipant(participant, RaceSettings.RACE_DIALOG_WAIT_DURATION).then(() =>
         this.removeParticipant(participant));
   }
 
@@ -197,7 +198,7 @@ class RunningRace {
       // State that occurs when one or more players are still racing, but the maximum time of the
       // race has expired. They'll be shown a message, after which they'll forcefully drop out.
       case RunningRace.STATE_OUT_OF_TIME:
-        RaceExpired.displayForParticipants(RaceSettings.RACE_DIALOG_WAIT_DURATION, this.participants_).then(() =>
+        RaceExpiredMessage.displayForParticipants(RaceSettings.RACE_DIALOG_WAIT_DURATION, this.participants_).then(() =>
             this.advanceState(RunningRace.STATE_FINISHED));
         break;
 
@@ -396,14 +397,9 @@ class RunningRace {
     if (!participant.markAsFinishing())
       return;
 
-    // TODO: Display some visual banner to congratulate them with their win.
-    console.log(participant.playerName + ' has finished the race!');
-
-    // Make the player uncontrollable - let them roll out for a few seconds.
-    participant.player.controllable = false;
-
-    // Remove the player from the race after a few seconds have passed, let their result sink in.
-    wait(RaceSettings.RACE_FINISHED_WAIT_DURATION).then(() =>
+    // Display a message about having finished the race to the player, and then remove them from
+    // the participating players. This will end the race if they were the final one to finish.
+    FinishedMessage.displayForParticipant(participant, RaceSettings.RACE_DIALOG_WAIT_DURATION).then(() =>
         this.removeParticipant(participant));
   }
 

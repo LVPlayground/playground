@@ -238,6 +238,9 @@ describe('RaceImporter', it => {
 
     assert.isFalse(defaults.allowLeaveVehicle);
     assert.isTrue(importSetting('allow_leave_vehicle', true).allowLeaveVehicle);
+
+    assert.isFalse(defaults.unlimitedNos);
+    assert.isTrue(importSetting('unlimited_nos', true).unlimitedNos);
   });
 
   it('should validate and apply import settings', assert => {

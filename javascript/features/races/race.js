@@ -27,6 +27,7 @@ class Race {
     // Settings.
     this.disableVehicleDamage_ = false;
     this.allowLeaveVehicle_ = false;
+    this.unlimitedNos_ = false;
 
     // To be dynamically loaded by the race manager.
     this.bestRace_ = null;
@@ -128,6 +129,13 @@ class Race {
   get allowLeaveVehicle() { return this.allowLeaveVehicle_; }
   set allowLeaveVehicle(value) {
     this.allowLeaveVehicle_ = value;
+  }
+
+  // Gets or sets whether players should get unlimited NOS during the race. This will trigger their
+  // NOS to be replaced with a new component every so often, skipping waiting times.
+  get unlimitedNos() { return this.unlimitedNos_; }
+  set unlimitedNos(value) {
+    this.unlimitedNos_ = value;
   }
 
   // Gets or sets the best race raced for this race. It must be an object having two properties,

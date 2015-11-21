@@ -11,7 +11,8 @@
     },
 
     "settings": {
-        "disable_vehicle_damage": true
+        "disable_vehicle_damage": true,
+        "unlimited_nos": true
     },
 
     "spawn_positions": [
@@ -19,32 +20,28 @@
             "position": [ 1361.8164, 614.7378, 661.7851 ],
             "rotation": 83.5086,
             "vehicle": {
-                "model": 411,
-                "nos": 10
+                "model": 411
             }
         },
         {
             "position": [ 1361.1617, 609.2221, 661.7851 ],
             "rotation": 81.2882,
             "vehicle": {
-                "model": 411,
-                "nos": 10
+                "model": 411
             }
         },
         {
             "position": [ 1360.1363, 601.6345, 661.7850 ],
             "rotation": 81.1657,
             "vehicle": {
-                "model": 411,
-                "nos": 10
+                "model": 411
             }
         },
         {
             "position": [ 1362.9353, 622.9225, 661.7850 ],
             "rotation": 80.8530,
             "vehicle": {
-                "model": 411,
-                "nos": 10
+                "model": 411
             }
         }
     ],

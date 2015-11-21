@@ -369,6 +369,9 @@ class RaceImporter {
 
     if (settings.hasOwnProperty('allow_leave_vehicle'))
       this.race_.allowLeaveVehicle = !!settings.allow_leave_vehicle;
+
+    if (settings.hasOwnProperty('unlimited_nos'))
+      this.race_.unlimitedNos = !!settings.unlimited_nos;
   }
 
   // Creates a vector from |value| having {x, y, z} coordinates, each of which must be numbers.

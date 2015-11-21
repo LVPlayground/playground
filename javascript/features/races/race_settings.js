@@ -20,6 +20,10 @@ exports = {
   // Number of milliseconds between score board updates for active races.
   RACE_SCORE_BOARD_UPDATE_TIME: 73,
 
+  // Number of milliseconds between replacing the NOS in race vehicles when the unlimited NOS
+  // setting has been enabled for a race.
+  RACE_UNLIMITED_NOS_UPDATE_TIME: 20000,
+
   // Number of milliseconds to wait before dismissing game over messages from their screen, and
   // finishing the race, restoring the player's previous state before they started it at all.
   RACE_DIALOG_WAIT_DURATION: 3000

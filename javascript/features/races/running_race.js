@@ -186,6 +186,7 @@ class RunningRace {
       // board updates and keep track of the player's positions.
       case RunningRace.STATE_RUNNING:
         this.updateScoreBoard();
+        this.updateUnlimitedNos();
         this.startRace();
 
         // If the race has a time limit set, advance to the out-of-time state after it passes.
@@ -364,6 +365,17 @@ class RunningRace {
 
     // Schedule another update of the score board after a given amount of milliseconds.
     wait(RaceSettings.RACE_SCORE_BOARD_UPDATE_TIME).then(() => this.updateScoreBoard());
+  }
+
+  updateUnlimitedNos() {
+    if (this.state_ != RunningRace.STATE_RUNNING)
+      return;  // no need to update NOS when the race has finished.
+
+    for (let participant of this.participants_.racingParticipants())
+      this.vehicles_[participant.playerId].addComponent(Vehicle.COMPONENT_NOS_SINGLE_SHOT);
+
+    // Schedule another round of NOS component updates after a given amount of milliseconds.
+    wait(RaceSettings.RACE_UNLIMITED_NOS_UPDATE_TIME).then(() => this.updateUnlimitedNos());
   }
 
   nextCheckpoint(participant, index) {

@@ -163,10 +163,9 @@ class RunningRace {
       // Load the race's state - create the required vehicles and objects, move players to the
       // virtual world, and apply environmental settings of the race.
       case RunningRace.STATE_LOADING:
-        if (!this.createVehicles() ||
-            !this.createObjects() ||
-            !this.preparePlayers())
-          break;
+        this.createVehicles();
+        this.createObjects();
+        this.preparePlayers();
 
         // Automatically advance the race's state to countdown after a short period of time.
         Promise.all([
@@ -267,7 +266,20 @@ class RunningRace {
   }
 
   createObjects() {
-    // TODO: Create the objects required for the race.
+    let players = [];
+    for (let participant of this.participants_.racingParticipants())
+      players.push(participant.playerId);
+
+    this.race_.objects.forEach(object => {
+      this.entities_.createObject({
+        modelId: object.model,
+        position: object.position,
+        rotation: object.rotation,
+        worldId: this.virtualWorld_,
+        players: players
+      });
+    });
+
     return true;
   }
 

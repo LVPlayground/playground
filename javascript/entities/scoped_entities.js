@@ -7,7 +7,19 @@
 // method. 
 class ScopedEntities {
   constructor() {
+    this.objects_ = [];
     this.vehicles_ = [];
+  }
+
+  // Creates an object with |parameters|. The object will be removed automatically when this
+  // instance is being disposed of.
+  createObject(...parameters) {
+    let object = new GameObject(...parameters);
+    if (object === null)
+      return null;
+
+    this.objects_.push(object);
+    return object;
   }
 
   // Creates a vehicle with |parameters|. The vehicle will be removed automatically when this
@@ -24,6 +36,7 @@ class ScopedEntities {
   // Disposes of all entities that were created by this ScopedEntities instance. Any remaining
   // references will become invalid and may not work as expected anymore.
   dispose() {
+    this.objects_.forEach(object => object.dispose());
     this.vehicles_.forEach(vehicle => vehicle.dispose());
   }
 };

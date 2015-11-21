@@ -5,6 +5,7 @@
 require('base/color.js');
 require('base/message.js');
 
+require('entities/game_object.js');
 require('entities/player.js');
 require('entities/vehicle.js');
 require('entities/virtual_world.js');

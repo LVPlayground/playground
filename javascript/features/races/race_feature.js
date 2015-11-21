@@ -23,6 +23,7 @@ class RaceFeature extends Feature {
     [
       'data/races/easy_race.json',
       'data/races/hard_race.json',
+      'data/races/mountain_valleyside.json',
       'data/races/normal_race.json',
       'data/races/taste_of_things_to_come.json',
 

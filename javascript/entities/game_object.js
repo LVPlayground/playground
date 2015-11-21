@@ -20,13 +20,19 @@ class GameObject extends Extendable {
       let streamDistance = options.streamDistance || 300.0 /* STREAMER_OBJECT_SD */;
       let drawDistance = options.drawDistance || 0.0 /* STREAMER_OBJECT_DD */;
 
-      let worlds = options.worlds || [ (options.worldId || -1 ) ];
-      let interiors = options.interiors || [ (options.interiorId || -1 ) ];
-      let players = options.players || [ (options.playerId || -1 ) ];
+      let worlds = options.worlds || [ (typeof options.worldId !== 'undefined' ? options.worldId : -1 ) ];
+      let interiors = options.interiors || [ (typeof options.interiorId !== 'undefined' ? options.interiorId : -1 ) ];
+      let players = options.players || [ (typeof options.playerId !== 'undefined' ? options.playerId : -1 ) ];
+
+      // NOTE: The native function definition of CreateDynamicObjectEx notes that the drawDistance
+      // parameter comes *after* the streamDistance, as is the case with CreateDynamicObject.
+      // However, the implementation expects them in this order.
+      //
+      // https://github.com/samp-incognito/samp-streamer-plugin/blob/master/src/natives/extended.cpp
 
       this.id_ = pawnInvoke('CreateDynamicObjectEx', 'iffffffffaaaiii', modelId, position.x,
                             position.y, position.z, rotation.x, rotation.y, rotation.z,
-                            streamDistance, drawDistance, worlds, interiors, players, worlds.length,
+                            drawDistance, streamDistance, worlds, interiors, players, worlds.length,
                             interiors.length, players.length);
 
       if (this.id_ == GameObject.INVALID_ID)

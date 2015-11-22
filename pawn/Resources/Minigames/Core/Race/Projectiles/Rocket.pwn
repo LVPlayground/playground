@@ -73,7 +73,7 @@ InitializeRaceRocket()
 }
 
 // Fire a missile from a vehicle at the stated co-ords
-stock FireMissileVehicle(vehicleid, Float:fDestX, Float:fDestY, Float:fDestZ)
+FireMissileVehicle(vehicleid, Float:fDestX, Float:fDestY, Float:fDestZ)
 {
     // Is there any ammo in the vehicle
     if(GetVehicleMissileAmmo(vehicleid) <= 0)

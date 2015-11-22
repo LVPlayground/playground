@@ -10,8 +10,6 @@
 //
 // Author: Pugwipe
 
-#define DRIFT_INTERVAL 100 // Drift timer should be called every this often
-
 #define X2_MULTIPLYER   8200    // How many points does a player need prior to getting a x2 multiplyer of points?
 
 //forward CDrift__Update();
@@ -221,7 +219,7 @@ CDrift__UpdateForPlayer( iPlayer, iDiff )
         new Float: fDiff = float( iDiff ); // Ticks, converted to a float
         new Float: fZ = floatdiv( fDiffZ, floatdiv( fDiff, 1000.0 ) );
 
-        if(!IsVehicleDrivingBackwards( iVeh ) &&  fAngle > 10.0 && fSpeed > floatdiv( fDiff, 80.0 ) &&  fZ < 10.0)
+        if(fAngle > 10.0 && fSpeed > floatdiv( fDiff, 80.0 ) &&  fZ < 10.0)
         {
              // Player is technically drifting; calculate the number of points he gains
             new iScore = CDrift__CalcScore( iDiff, fSpeed, fAngle );

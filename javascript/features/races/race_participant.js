@@ -15,6 +15,7 @@ class RaceParticipant {
       this.userId_ = player.account.userId;
 
     this.state_ = RaceParticipant.STATE_SIGNUP;
+    this.vehicle_ = null;
 
     this.startTime_ = null;
     this.totalTime_ = null;
@@ -51,6 +52,16 @@ class RaceParticipant {
 
   // Returns the state of this participant.
   get state() { return this.state_; }
+
+  // Gets or sets the vehicle associated with this participant. The vehicle is not guaranteed to
+  // exist when the state of the participant moves past STATE_RACING.
+  get vehicle() { return this.vehicle_; }
+  set vehicle(value) {
+    if (value !== null && !(value instanceof Vehicle))
+      throw new Error('Vehicles must be either NULL or a Vehicle instance.');
+
+    this.vehicle_ = value;
+  }
 
   // Returns the time at which the participant started racing.
   get startTime() { return this.startTime_; }

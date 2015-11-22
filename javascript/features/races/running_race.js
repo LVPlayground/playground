@@ -27,9 +27,6 @@ class RunningRace {
     // Acquire a unique virtual world for this race to take place in.
     this.virtualWorld_ = VirtualWorld.acquire('RunningRace (' + race.id + ')');
 
-    // Mapping of a player id to the vehicle they will be driving in.
-    this.vehicles_ = {};
-
     // Scope all entities created by this race to the lifetime of the race.
     this.entities_ = new ScopedEntities();
 
@@ -260,7 +257,7 @@ class RunningRace {
           break;
       }
 
-      this.vehicles_[participant.playerId] = vehicle;
+      participant.vehicle = vehicle;
     }
 
     return true;
@@ -308,7 +305,7 @@ class RunningRace {
       }
 
       // Put the player in their designated 
-      player.putInVehicle(this.vehicles_[player.id]);
+      player.putInVehicle(participant.vehicle);
 
       // Freeze the player so that they can't begin racing yet.
       player.controllable = false;
@@ -358,7 +355,7 @@ class RunningRace {
         continue;
 
       if (repairVehicles)
-        this.vehicles_[participant.playerId].repair();
+        participant.vehicle.repair();
 
       participant.scoreBoard.update(currentTime);
     }
@@ -372,7 +369,7 @@ class RunningRace {
       return;  // no need to update NOS when the race has finished.
 
     for (let participant of this.participants_.racingParticipants())
-      this.vehicles_[participant.playerId].addComponent(Vehicle.COMPONENT_NOS_SINGLE_SHOT);
+      participant.vehicle.addComponent(Vehicle.COMPONENT_NOS_SINGLE_SHOT);
 
     // Schedule another round of NOS component updates after a given amount of milliseconds.
     wait(RaceSettings.RACE_UNLIMITED_NOS_UPDATE_TIME).then(() => this.updateUnlimitedNos());

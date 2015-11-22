@@ -19,14 +19,37 @@
 #define RACE_PRICE                        250
 #define RACE_SIGNUP_TIME                  20
 
+// -------------------------------------------------------------------------------------------------
+
+// Races are considered to be generic by default. A checkpoint and map icon will be created at the
+// first spawn position of the race.
 #define RACE_TYPE_GENERIC   0
+
+// Circuit races only exist for the purposes of having a custom menu.
 #define RACE_TYPE_CIRCUIT   1
+
+// Knockout races only exist for the purposes of having a custom menu.
 #define RACE_TYPE_KNOCKOUT  2
+
+// Drift races calculate position based on drifting points (through the Drift handler) rather than
+// through racing time. It imposes a maximum time between two checkpoints. A top 4 position screen
+// is displayed to all participants, and a "FINISHED" game text is presented to players when they
+// finish a drift. Drifts do not allow players to leave their vehicles. We have five of these.
 #define RACE_TYPE_DRIFT     3
+
+// Stunt races exist for the purposes of having a custom menu, and promoting the /flip command.
 #define RACE_TYPE_STUNT     4
+
+// Air races only exist for the purposes of having a custom menu.
 #define RACE_TYPE_AIR       5
+
+// Boat races only exist for the purposes of having a custom menu.
 #define RACE_TYPE_BOAT      6
+
+// Jump zone races only exist for displaying a "Map Zone" entry in the primary race menu.
 #define RACE_TYPE_JUMP_ZONE 7
+
+// -------------------------------------------------------------------------------------------------
 
 #define RACE_ALLOW_SINGLE 1
 
@@ -35,7 +58,6 @@
 #define RACE_STATE_SIGNUP     2
 #define RACE_STATE_COUNTDOWN  3
 #define RACE_STATE_RUNNING    4
-#define RACE_STATE_SPECTATING 6
 
 #define race_start(%1)                      forward CRace__Initialize__%1(); public CRace__Initialize__%1()
 #define race_set_id(%1)                     new _raceID = %1

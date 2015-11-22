@@ -508,7 +508,7 @@ CDrift__UpdateTextDraw( iPlayer, iScore, iColor, Float:fSpeed = 0.0 )
 
 // Function: CDrift__GetPlayerScore
 // Get the total drifting score for a player.
-stock CDrift__GetPlayerScore( iPlayer )
+CDrift__GetPlayerScore( iPlayer )
 {
     return CDrift__Data[ iPlayer ][ TotalScore ];
 }

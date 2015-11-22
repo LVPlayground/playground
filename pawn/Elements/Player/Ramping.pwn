@@ -89,7 +89,7 @@ OnPlayerPressRampKey(playerid)
         return;
 
     // Is the player in a minigame?
-    if(IsPlayerInMinigame(playerid))
+    if(IsPlayerInMinigame(playerid) || PlayerActivity(playerid)->get() != PlayerActivityNone)
         return;
 
     // Or map zone, too

@@ -182,7 +182,7 @@ class RunningRace {
       // State in which the players are actually racing against each other. Provide timely score
       // board updates and keep track of the player's positions.
       case RunningRace.STATE_RUNNING:
-        this.updateScoreBoard();
+        this.updateRaceState();
         this.updateUnlimitedNos();
         this.startRace();
 
@@ -340,9 +340,9 @@ class RunningRace {
     }
   }
 
-  updateScoreBoard() {
+  updateRaceState() {
     if (this.state_ != RunningRace.STATE_RUNNING)
-      return;  // no need to update the score board when the race has finished.
+      return;  // no need to update the race's state when it has finished.
 
     // Repair a vehicle once every ten score board updates if so desired by the race's settings.
     // This makes the vehicle they're driving in pretty much invincible.
@@ -357,11 +357,12 @@ class RunningRace {
       if (repairVehicles)
         participant.vehicle.repair();
 
+      participant.driftTracker.update(currentTime);
       participant.scoreBoard.update(currentTime);
     }
 
-    // Schedule another update of the score board after a given amount of milliseconds.
-    wait(RaceSettings.RACE_SCORE_BOARD_UPDATE_TIME).then(() => this.updateScoreBoard());
+    // Schedule another update of the race's state after a given amount of milliseconds.
+    wait(RaceSettings.RACE_STATE_UPDATE_TIME).then(() => this.updateRaceState());
   }
 
   updateUnlimitedNos() {

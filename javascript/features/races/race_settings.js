@@ -17,8 +17,8 @@ exports = {
   // Number of seconds the countdown of a race should last for.
   RACE_COUNTDOWN_SECONDS: 3,
 
-  // Number of milliseconds between score board updates for active races.
-  RACE_SCORE_BOARD_UPDATE_TIME: 73,
+  // Number of milliseconds between state updates for active races.
+  RACE_STATE_UPDATE_TIME: 73,
 
   // Number of milliseconds between replacing the NOS in race vehicles when the unlimited NOS
   // setting has been enabled for a race.

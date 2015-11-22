@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+let DriftTracker = require('features/races/drift_tracker.js');
+
 // Represents an individual participant in a race. This class may be used to represent participants
 // who are no longer connected to Las Venturas Playground, so be careful to not rely on the
 // availability of the Player object used to represent them.
@@ -15,7 +17,9 @@ class RaceParticipant {
       this.userId_ = player.account.userId;
 
     this.state_ = RaceParticipant.STATE_SIGNUP;
+
     this.vehicle_ = null;
+    this.driftTracker_ = null;
 
     this.startTime_ = null;
     this.totalTime_ = null;
@@ -60,8 +64,12 @@ class RaceParticipant {
     if (value !== null && !(value instanceof Vehicle))
       throw new Error('Vehicles must be either NULL or a Vehicle instance.');
 
+    this.driftTracker_ = new DriftTracker(value);
     this.vehicle_ = value;
   }
+
+  // Returns the drift tracker associated with this participant.
+  get driftTracker() { return this.driftTracker_; }
 
   // Returns the time at which the participant started racing.
   get startTime() { return this.startTime_; }

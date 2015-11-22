@@ -125,6 +125,7 @@ class TestRunner {
       require('base/scoped_callbacks.test.js');
       require('base/string_parser.test.js');
       require('base/test/assert.test.js');
+      require('base/vector.test.js');
       require('components/command_manager/command_builder.test.js');
       require('components/database/database.test.js');
       require('components/text_draw/text_draw.test.js');

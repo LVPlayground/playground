@@ -19,8 +19,27 @@ class Vector {
   }
 
   // Calculates the 3-dimensional magnitude of the vector per the Pythagoras theorem.
-  get magnitude3D() {
+  get magnitude() {
     return Math.sqrt(Math.pow(this.x_, 2) + Math.pow(this.y_, 2) + Math.pow(this.z_, 2));
+  }
+
+  // Returns a new vector with the X/Y coordinates normalized over the 2-dimensional magnitude. The
+  // Z coordinate of the vector will always be set to zero.
+  get normalized2D() {
+    let magnitude = this.magnitude2D;
+    if (magnitude === 0)
+      return new Vector(0, 0, 0);
+
+    return new Vector(this.x_ / magnitude, this.y_ / magnitude, 0);
+  }
+
+  // Returns a new vector with all coordinates normalized over the 3-dimensional magnitude.
+  get normalized() {
+    let magnitude = this.magnitude;
+    if (magnitude === 0)
+      return new Vector(0, 0, 0);
+
+    return new Vector(this.x_ / magnitude, this.y_ / magnitude, this.z_ / magnitude);
   }
 };
 

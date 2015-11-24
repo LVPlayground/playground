@@ -132,6 +132,7 @@ class TestRunner {
       require('entities/scoped_entities.test.js');
       require('features/death_feed/death_feed_feature.test.js');
       require('features/gangs/gang_commands.test.js');
+      require('features/races/drift_tracker.test.js');
       require('features/races/race_importer.test.js');
     }
 

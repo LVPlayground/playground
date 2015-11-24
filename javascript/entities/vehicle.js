@@ -66,6 +66,21 @@ class Vehicle extends Extendable {
   get health() { return pawnInvoke('GetVehicleHealth', 'iF', this.id_); }
   set health(value) { pawnInvoke('SetVehicleHealth', 'ii', this.id_, value); }
 
+  // Gets or sets the facing angle (among the Z-axis) of the vehicle.
+  get angle() { return pawnInvoke('GetVehicleZAngle', 'iF', this.id_); }
+  set angle(value) { pawnInvoke('SetVehicleZAngle', 'if', this.id_, value); }
+
+  // Gets the rotation of the vehicle as a quaternion. The order of the quaternion returned by the
+  // San Andreas: Multiplayer server is incorrect - it gives us {w, x, z, y}. Compensate for this.
+  get rotationQuat() {
+    let quat = pawnInvoke('GetVehicleRotationQuat', 'iFFFF', this.id_);
+    return [quat[0], quat[1], quat[3], quat[2]];
+  }
+
+  // Gets or sets the velocity of the vehicle. These must be instances of the Vector class.
+  get velocity() { return new Vector(...pawnInvoke('GetVehicleVelocity', 'iFFF', this.id_)); }
+  set velocity(value) { pawnInvoke('SetVehicleVelocity', 'ifff', this.id_, value.x, value.y, value.z); }
+
   // Repairs the vehicle. This sets the health of the vehicle to its maximum, and reset and visual
   // damage that may have been done to the vehicle since the last repair.
   repair() { pawnInvoke('RepairVehicle', 'i', this.id_); }

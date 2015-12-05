@@ -54,6 +54,11 @@ describe('Database', it => {
     assert.throws(() => substitute('?', Number.POSITIVE_INFINITY));
     assert.throws(() => substitute('?', Number.NaN));
 
+    // Number array substitutions.
+    assert.equal(substitute('[?]', [1, 42]), '[1, 42]');
+    assert.equal(substitute('[?]', [2, 42.31415, 2]), '[2, 42.31415, 2]');
+    assert.equal(substitute('[?]', [-42, 3]), '[-42, 3]');
+
     // String substitutions.
     assert.equal(substitute('[?]', '\b'), '["\\b"]');
     assert.equal(substitute('[?]', '\t'), '["\\t"]');

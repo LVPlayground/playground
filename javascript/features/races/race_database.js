@@ -109,7 +109,7 @@ class RaceDatabase {
   // Fetches detailed statistics about the best races for all |userIds| on |raceId|. A promise will
   // be returned that will be resolved the best times, and the per-checkpoint times for all users.
   fetchBestRaceResult(raceId, userIds) {
-    return this.database_.query(FETCH_BEST_RACE_RESULTS_QUERY, raceId, userIds.join(', ')).then(result => {
+    return this.database_.query(FETCH_BEST_RACE_RESULTS_QUERY, raceId, userIds).then(result => {
       if (!result.rows.length)
         return {};
 

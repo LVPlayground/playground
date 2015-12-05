@@ -37,6 +37,22 @@ function substituteString(string) {
   });
 }
 
+// Substitutes the |value|. Arrays will be treated as multiple values that will each have to be
+// substituted individually, e.g. [25, 26, 27] => "25, 26, 27".
+function substituteValue(prefix, value, index) {
+  if (Array.isArray(value) && value.length)
+    return prefix + value.map(entry => substituteValue('', entry, index)).join(', ');
+
+  switch (typeof value) {
+    case 'number':
+      return prefix + substituteNumber(value);
+    case 'string':
+      return prefix + '"' + substituteString(value) + '"';
+    default:
+      throw new Error('Invalid type ("' + typeof value + '") for substitution parameter #' + index);
+  }
+}
+
 // The Database class provides access to the MySQL database which contains all information that
 // Las Venturas Playground persists. The access details are stored in the data/database.json.
 //
@@ -84,18 +100,7 @@ class Database {
       if (substitutionIndex >= parameters.length)
         throw new Error('Not enough substitution parameters were provided for this query.');
 
-      let type = typeof parameters[substitutionIndex];
-      switch (type) {
-        case 'number':
-          return prefix + substituteNumber(parameters[substitutionIndex++]);
-        case 'string':
-          return prefix + '"' + substituteString(parameters[substitutionIndex++]) + '"';
-        default:
-          throw new Error('Invalid type ("' + type + '") for substitution parameter #' + substitutionIndex);
-      }
-
-      // We'll never hit this due to the `default` case in the switch.
-      return null;
+      return substituteValue(prefix, parameters[substitutionIndex], substitutionIndex++);
     }));
   }
 };

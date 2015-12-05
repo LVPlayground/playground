@@ -62,6 +62,17 @@ class RunningRace {
   // Returns the state this race currently is in.
   get state() { return this.state_; }
 
+  // Removes |player| from the race if they are participating in it. Returns whether the |player|
+  // could be removed from the race successfully.
+  removePlayer(player) {
+    let participant = this.participants_.participantForPlayer(player);
+    if (participant === null)
+      return false;
+
+    this.removeParticipant(participant);
+    return true;
+  }
+
   // Removes |participant| from the group of players participating in this race. If there are no
   // players left anymore, the race will advance to the FINISHED state.
   removeParticipant(participant) {

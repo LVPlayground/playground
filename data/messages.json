@@ -8,5 +8,7 @@
 
     "RACE_ERROR_NO_RACES_AVAILABLE": "@error Sorry, there are no races available right now.",
     "RACE_ERROR_INVALID_RACE_ID": "@error Sorry, that is not a known race. Type /race for an overview!",
-    "RACE_ERROR_ALREADY_ENGAGED": "@error Sorry, you can't start a race while you're already engaged in something."
+    "RACE_ERROR_ALREADY_ENGAGED": "@error Sorry, you can't start a race while you're already engaged in something.",
+
+    "RACE_COMMAND_LEFT": "You have left the race you were participating in."
 }

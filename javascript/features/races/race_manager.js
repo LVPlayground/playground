@@ -104,6 +104,16 @@ class RaceManager {
     }
   }
 
+  // Makes |player| leave any race they are participating in. Returns a boolean to indicate
+  // whether the |player| was removed from any race at all.
+  leaveRace(player) {
+    let leftRace = false;
+    this.activeRaces_.forEach(runningRace =>
+        leftRace |= runningRace.removePlayer(player));
+
+    return leftRace;
+  }
+
   // Called when |runningRace| has finished. The |finishedParticipants| argument contains a
   // generator that will yield for each participant that has successfully finished the race.
   onRaceFinished(runningRace, finishedParticipants) {

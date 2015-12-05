@@ -17,16 +17,17 @@ class RaceCommands {
   constructor(commandManager, raceManager) {
     this.raceManager_ = raceManager;
 
-    // Register the /prace command, currently limited to administrators because it's experimental.
-    commandManager.buildCommand('prace')
-        .restrict(Player.LEVEL_ADMINISTRATOR)
-
-        // /prace [id]
+    // Register the /race command, currently limited to administrators because it's experimental.
+    commandManager.buildCommand('race')
+        // /race [id]
         .sub(CommandBuilder.NUMBER_PARAMETER)
             .build(this.__proto__.raceStart.bind(this))
 
-        // /prace
+        // /race
         .build(this.__proto__.raceOverview.bind(this));
+
+    // TODO: Remove this.
+    global.addEventListener('playercommandtext', this.__proto__.onPlayerCommandText.bind(this));
   }
 
   // Either starts or joins the race with |id|, depending on whether an instance of the race is
@@ -87,6 +88,23 @@ class RaceCommands {
       // Display the created menu to the player. Per-entry listeners will start a race if needed.
       menu.displayForPlayer(player);
     });
+  }
+
+  // TODO: This is a hack because races exist here, while everything else for /leave exists in
+  // Pawn. We still need to be able to remove a player from a race though.
+  onPlayerCommandText(event) {
+    let player = Player.get(event.playerid);
+    if (!player)
+      return;
+
+    if (!event.cmdtext.startsWith('/leave'))
+      return;
+
+    if (!this.raceManager_.leaveRace(player))
+      return;
+
+    player.sendMessage(Message.RACE_COMMAND_LEFT);
+    event.preventDefault();
   }
 };
 

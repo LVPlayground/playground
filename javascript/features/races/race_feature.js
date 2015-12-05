@@ -21,10 +21,14 @@ class RaceFeature extends Feature {
 
     // TODO: Import races using a glob() rather than manually.
     [
+      'data/races/desert_race.json',
+      'data/races/dirty_race.json',
       'data/races/easy_race.json',
       'data/races/hard_race.json',
       'data/races/mountain_valleyside.json',
       'data/races/normal_race.json',
+      'data/races/quad_race.json',
+
       //'data/races/taste_of_things_to_come.json',
 
     ].forEach(file => this.raceManager_.registerRace(RaceImporter.fromFile(file)));

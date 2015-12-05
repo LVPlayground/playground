@@ -2,6 +2,12 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
+// -------------------------------------------------------------------------------------------------
+//
+// Converted: desert_race.json
+//
+// -------------------------------------------------------------------------------------------------
+
 //
 // Las Venturas Playground: Race 1: Coast Takedown
 //

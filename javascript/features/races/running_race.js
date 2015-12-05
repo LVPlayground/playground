@@ -59,6 +59,9 @@ class RunningRace {
   // Returns the Race instance which this running race will host.
   get race() { return this.race_; }
 
+  // Returns the state this race currently is in.
+  get state() { return this.state_; }
+
   // Removes |participant| from the group of players participating in this race. If there are no
   // players left anymore, the race will advance to the FINISHED state.
   removeParticipant(participant) {

@@ -28,6 +28,7 @@ class RaceFeature extends Feature {
       'data/races/mountain_valleyside.json',
       'data/races/normal_race.json',
       'data/races/quad_race.json',
+      'data/races/stunters_xpress.json',
 
       //'data/races/taste_of_things_to_come.json',
 

@@ -25,7 +25,7 @@ class RaceFeature extends Feature {
       'data/races/hard_race.json',
       'data/races/mountain_valleyside.json',
       'data/races/normal_race.json',
-      'data/races/taste_of_things_to_come.json',
+      //'data/races/taste_of_things_to_come.json',
 
     ].forEach(file => this.raceManager_.registerRace(RaceImporter.fromFile(file)));
 

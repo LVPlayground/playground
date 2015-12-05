@@ -2,6 +2,12 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
+// -------------------------------------------------------------------------------------------------
+//
+// Converted: mountain_valleyside.json
+//
+// -------------------------------------------------------------------------------------------------
+
 // Las Venturas Playground v2.94.0 - Race 35 (Mountain Valleyside) 
 // This race was created ingame on 19/11/2011.
 // Copyright(c) Las Venturas Playground 2011 - www.sa-mp.nl
@@ -24,7 +30,7 @@ race_start(RACE35)
     race_set_laps( 1 );
     race_set_interior( 0 ); 
     race_set_nos( 1 ); 
-    
+
     race_set_type( RACE_TYPE_DRIFT );
 
     race_add_spawn( 4212.312988, -903.719848, 42.139392, 359.202056, -1, -1 );

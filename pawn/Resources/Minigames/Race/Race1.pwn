@@ -2,6 +2,12 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
+// -------------------------------------------------------------------------------------------------
+//
+// Converted: easy_race.json
+//
+// -------------------------------------------------------------------------------------------------
+
 //
 // Las Venturas Playground: Race 1: Coast Takedown
 //
@@ -20,7 +26,7 @@ race_start(RACE1)
 {
     // Set the race's ID number, used internally
     race_set_id( RACE1 );
-    
+
     // What is the name of this race? Which vehicle do we drive in? What should
     // the weather and time be like? Those variables are being set here;
     race_set_name( "Easy" );

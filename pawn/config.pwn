@@ -124,7 +124,7 @@ class Feature {
 
     // Christmas-themed decoration objects are placed throughout Las Venturas; they include a tree
     // near The Ship and a few vehicles.
-    public const EnableChristmasDecorations = 0;
+    public const EnableChristmasDecorations = 1;
 
     // A present is dropped somewhere in Las Venturas; when a player picks it up, he receives a 
     // random gift.

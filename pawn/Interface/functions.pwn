@@ -30,10 +30,12 @@ RemovePlayerFromAnyGame(playerId) {
         return 1;
     }
 
+#if Feature::DisableHay == 0
     if (hayHasPlayerSignedUp(playerId)) {
         hayRemovePlayer(playerId);
         return 1;
     }
+#endif
 
     if (waterFightIsPlayerSignedUp(playerId)) {
         waterFightRemovePlayer(playerId);
@@ -179,7 +181,9 @@ ResetPlayerStats(playerId) {
     iPlayerSesDeaths[playerId] = 0;
     waterFightOnDisconnect(playerId);
     iPlayerSesKills[playerId] = 0;
+#if Feature::DisableHay == 0
     hayResetPlayerData(playerId);
+#endif
     rwRemovePlayerFromMinigame(playerId);
     DestroyPlayerBox(playerId);
     mayTax[playerId]=0;

@@ -136,7 +136,9 @@ stock deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputt
                     case 6: CLyse__MenuActivate(playerid);
                     case 7: CWWTW__MenuActivate(playerid);
                     case 8: rwMenuActivate(playerid);
+#if Feature::DisableHay == 0
                     case 9: hayMenuActivate(playerid);
+#endif
                     case 10: OnWaterFightCmdText(playerid);
                 }
             }

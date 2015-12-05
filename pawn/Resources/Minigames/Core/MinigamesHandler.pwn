@@ -352,8 +352,10 @@ stock IsPlayerMinigameFree(playerId) {
     if (waterFightIsPlayerSignedUp(playerId))
         return 0;
 
+#if Feature::DisableHay == 0
     if (hayHasPlayerSignedUp(playerId))
         return 0;
+#endif
 
     return 1;
 }
@@ -368,8 +370,10 @@ stock IsPlayerInMinigame(playerId) {
     if (rwIsPlayerSignedUp(playerId) && rwGetState() > 1)
         return 1;
 
+#if Feature::DisableHay == 0
     if (hayHasPlayerSignedUp(playerId) && hayGetState() > 1)
         return 1;
+#endif
 
     if (CLyse__GetPlayerState(playerId) > 1)
         return 1;

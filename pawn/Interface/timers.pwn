@@ -59,7 +59,10 @@ class DeprecatedTimerRuntime {
 
         rwProcess();
 
+#if Feature::DisableHay == 0
         hayProcess();
+#endif
+
         ProcessMapZoneRaces();
 #if Feature::EnableFightClub == 0
         CFightClub__Process();
@@ -93,7 +96,9 @@ class DeprecatedTimerRuntime {
 
             CBomb__CheckPlayer (playerId);
             CDerby__PlayerProcess (playerId);
+#if Feature::DisableHay == 0
             hayPlayerProcess(playerId);
+#endif
             TeleportCheatProcess(playerId);
             ProcessPlayerBox(playerId);
             CheckPlayerClubAudioStream(playerId);
@@ -198,9 +203,9 @@ forward QuickTimer();
 public QuickTimer() {
 #if Feature::DisableRaces == 0
     CDrift__Update();
-#endif
-    CHay__Process();
-#if Feature::DisableRaces == 0
     CRace__ProcessLoadDisplay();
+#endif
+#if Feature::DisableHay == 0
+    CHay__Process();
 #endif
 }

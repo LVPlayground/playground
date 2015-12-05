@@ -21,7 +21,10 @@ new DeathmatchTimer;
 #include Resources/Minigames/Core/Lyse.pwn
 #include Resources/Minigames/Core/HideGame.pwn
 #include Resources/Minigames/Core/WaterFight.pwn
+
+#if Feature::DisableHay == 0
 #include Resources/Minigames/Core/HayStack/Core.pwn
+#endif
 
 // Converts the type of minigame a player is playing to a MinigameType enumeration value.
 MinigameType: GetPlayerMinigameType(playerId) {
@@ -39,8 +42,10 @@ MinigameType: GetPlayerMinigameType(playerId) {
     if (waterFightIsPlayerPlaying(playerId) || waterFightIsPlayerSignedUp(playerId))
         return WaterFightMinigame;
 
+#if Feature::DisableHay == 0
     if (hayHasPlayerSignedUp(playerId))
         return HayStackMinigame;
+#endif
 
     if (isPlayerBrief[playerId])
         return CaptureBriefcaseMinigame;
@@ -122,10 +127,12 @@ stock GetPlayerMinigameName(playerId) {
         goto l_Success;
     }
 
+#if Feature::DisableHay == 0
     if (hayHasPlayerSignedUp(playerId)) {
         notice = "HayStack";
         goto l_Success;
     }
+#endif
 
     if (IsPlayerInMapZone(playerId)) {
         format(notice, sizeof(notice), "%s", Map_Zone[GetPlayerMapZone(playerId)][Map_Name]);

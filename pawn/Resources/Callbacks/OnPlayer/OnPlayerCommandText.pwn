@@ -794,10 +794,12 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         return 1;
     }
 
+#if Feature::DisableHay == 0
     if(!strcmp(cmd, "/haystack", true))
     {
         return hayOnCommand(playerid);
     }
+#endif
 
     if(strcmp(cmd, "/ramping", true) == 0){
 

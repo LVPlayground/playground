@@ -89,11 +89,13 @@ lvp_minigaming(playerid, params[]) {
             continue;
         }
 
+#if Feature::DisableHay == 0
         if (hayHasPlayerSignedUp(subjectId)) {
             format(minigaming, sizeof(minigaming), "%s\r\n%s (Id:%d) - haystack", minigaming,
                 Player(subjectId)->nicknameString(), subjectId);
             continue;
         }
+#endif
 
         if (CLyse__GetPlayerState(subjectId) != LYSE_STATE_NONE) {
             format(minigaming, sizeof(minigaming), "%s\r\n%s (Id:%d) - lyse", minigaming,

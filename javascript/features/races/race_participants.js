@@ -61,7 +61,7 @@ class RaceParticipants {
 
     sortedParticipants.sort((lhs, rhs) => {
       if (lhs.checkpointIndex != rhs.checkpointIndex)
-        return lhs.checkpointIndex > rhs.checkpointIndex ? 1 : -1;
+        return lhs.checkpointIndex > rhs.checkpointIndex ? -1 : 1;
       
       if (lhs.checkpointIndex == null)
         return 0;  // neither player has passed a checkpoint yet

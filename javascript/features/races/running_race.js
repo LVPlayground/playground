@@ -294,8 +294,7 @@ class RunningRace {
         modelId: object.model,
         position: object.position,
         rotation: object.rotation,
-        worldId: this.virtualWorld_,
-        players: players
+        worldId: this.virtualWorld_
       });
     });
 

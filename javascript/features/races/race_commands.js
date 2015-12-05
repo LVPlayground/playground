@@ -100,11 +100,8 @@ class RaceCommands {
     if (!event.cmdtext.startsWith('/leave'))
       return;
 
-    if (!this.raceManager_.leaveRace(player))
-      return;
-
-    player.sendMessage(Message.RACE_COMMAND_LEFT);
-    event.preventDefault();
+    if (this.raceManager_.leaveRace(player))
+      event.preventDefault();
   }
 };
 

@@ -87,6 +87,9 @@ class RaceManager {
     // Mark the player as being engaged in a race.
     player.activity = Player.PLAYER_ACTIVITY_JS_RACE;
 
+    // Announce to the player that they have signed up for the given race.
+    player.sendMessage(Message.format(Message.RACE_COMMAND_JOIN, runningRace.race.name));
+
     // If there is an active race that can be joined, join it. Alternatively start a new race for
     // the player. If |skipSignup| is true, the announcement phase will be skipped.
     if (activeRace) {
@@ -108,8 +111,13 @@ class RaceManager {
   // whether the |player| was removed from any race at all.
   leaveRace(player) {
     let leftRace = false;
-    this.activeRaces_.forEach(runningRace =>
-        leftRace |= runningRace.removePlayer(player));
+    this.activeRaces_.forEach(runningRace => {
+      if (!runningRace.removePlayer(player))
+        return;
+
+      player.sendMessage(Message.format(Message.RACE_COMMAND_LEFT, runningRace.race.name));
+      leftRace = true;          
+    });
 
     return leftRace;
   }

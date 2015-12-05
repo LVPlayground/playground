@@ -2,7 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let RaceImporter = require('features/races/race_importer.js'),
+let RaceCheckpoint = require('components/checkpoints/race_checkpoint.js'),
+    RaceImporter = require('features/races/race_importer.js'),
     Vector = require('base/vector.js');
 
 describe('RaceImporter', it => {
@@ -116,6 +117,27 @@ describe('RaceImporter', it => {
     assert.throws(() => importLaps({ laps: true }));
     assert.throws(() => importLaps({ laps: -1 }));
     assert.throws(() => importLaps({ laps: 9999 }));
+
+    let importer = RaceImporter.fromDataForTests({
+      laps: 2,
+      checkpoints: [
+        { position: [ 42, 42, 42 ] },
+        { position: [ 24, 24, 24 ] }
+      ]
+    });
+
+    importer.importLaps();
+    importer.importCheckpoints();
+
+    let race = importer.race;
+    assert.equal(race.laps, 2);
+    assert.equal(race.checkpoints.length, 4);
+
+    assert.deepEqual(race.checkpoints[0].position, new Vector(42, 42, 42));
+    assert.deepEqual(race.checkpoints[1].position, new Vector(24, 24, 24));
+    assert.deepEqual(race.checkpoints[2].position, new Vector(42, 42, 42));
+    assert.deepEqual(race.checkpoints[3].position, new Vector(24, 24, 24));
+    assert.equal(race.checkpoints[3].type, RaceCheckpoint.GROUND_FINISH);
   });
 
   it('should validate and apply the environment', assert => {

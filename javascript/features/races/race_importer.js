@@ -92,6 +92,7 @@ class RaceImporter {
   process() {
     // Process the settings. These may influence the rest of the importing process.
     this.importSettings();
+    this.importLaps();
 
     // Process the required fields.
     this.importId();
@@ -101,7 +102,6 @@ class RaceImporter {
 
     // Process the optional fields.
     this.importTimeLimit();
-    this.importLaps();
     this.importChallengeDesk();
     this.importEnvironment();
     this.importObjects();
@@ -299,9 +299,12 @@ class RaceImporter {
       checkpoints.push({ position, size });
     });
 
-    for (let checkpointId = 0; checkpointId < checkpoints.length; ++checkpointId) {
-      let isFinalCheckpoint = checkpointId == checkpoints.length - 1,
-          checkpoint = checkpoints[checkpointId];
+    let lapCheckpointCount = checkpoints.length,
+        totalCheckpointCount = lapCheckpointCount * this.race_.laps;
+
+    for (let checkpointId = 0; checkpointId < totalCheckpointCount; ++checkpointId) {
+      let isFinalCheckpoint = checkpointId == totalCheckpointCount - 1,
+          checkpoint = checkpoints[checkpointId % lapCheckpointCount];
 
       let type = null;
       if (this.disableCheckpointMarkers_) {
@@ -313,7 +316,7 @@ class RaceImporter {
       }
 
       let nextPosition = isFinalCheckpoint ? null
-                                           : checkpoints[checkpointId + 1].position;
+                                           : checkpoints[(checkpointId + 1) % lapCheckpointCount].position;
 
       // Create the new RaceCheckpoint instance, and and add it to the race.
       this.race_.addCheckpoint(new RaceCheckpoint(type, checkpoint.position, nextPosition, checkpoint.size));

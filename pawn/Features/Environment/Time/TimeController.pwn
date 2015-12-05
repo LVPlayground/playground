@@ -98,9 +98,10 @@ class TimeController {
      * @param hours Number of hours in the day, which should be in the range of [0, 23].
      * @param minutes Number of minutes in the hour, which should be in the range of [0, 59].
      */
-    public setPlayerOverrideTime(playerId, hours, minutes) {
+    public setPlayerOverrideTime(playerId, hours, minutes, bool: set = true) {
         this->m_playerOverrideTime[playerId] = this->toTimestamp(hours, minutes);
-        SetPlayerTimePrivate(playerId, hours, minutes);
+        if (set)
+            SetPlayerTimePrivate(playerId, hours, minutes);
     }
 
     /**

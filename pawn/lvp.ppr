@@ -78,6 +78,7 @@
     <DiskObject>\Entities\Players\</DiskObject>
     <DiskObject>\Entities\Players\Player.pwn</DiskObject>
     <DiskObject>\Entities\Players\Player.tests.pwn</DiskObject>
+    <DiskObject>\Entities\Players\PlayerActivity.pwn</DiskObject>
     <DiskObject>\Entities\Players\PlayerEvents.pwn</DiskObject>
     <DiskObject>\Entities\Players\PlayerFlags.pwn</DiskObject>
     <DiskObject>\Entities\Players\PlayerManager.pwn</DiskObject>
@@ -454,7 +455,7 @@
     <DiskObject>\Resources\Minigames\Race\Race7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race9.pwn</DiskObject>
-    <DiskObject>\Entities\Players\PlayerActivity.pwn</DiskObject>
+    <DiskObject>\Interface\JavaScriptBridge.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

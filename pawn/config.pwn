@@ -42,7 +42,7 @@ class Debug {
 };
 
 // Set this to 1 if you'd like to build Las Venturas Playground in release mode (lead devs only).
-#define BuildGamemodeInReleaseMode 0
+#define BuildGamemodeInReleaseMode 1
 
 // Try to include one of the private configuration files. These are necessary to connect to the
 // MySQL database and distribute echo to the right location, among other things.
@@ -135,7 +135,7 @@ class Feature {
 
     // Races are being rewritten in JavaScript. This flag determines whether the current race system
     // should continue to be compiled in the Pawn part of Las Venturas Playground.
-    public const DisableRaces = 0;
+    public const DisableRaces = 1;
 
     /** **************************************************************************************** **/
     /// External

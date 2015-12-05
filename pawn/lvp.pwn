@@ -238,6 +238,8 @@
 // TODO: Remove me once all pickups have been converted to the new pickup system.
 #include "Entities/Pickups/LegacyProcessing.pwn"
 
+#include "Interface/JavaScriptBridge.pwn"
+
 main() {
     /// @todo Move these calls elsewhere. We do need them, though :/
     CompilerDebug->beforePublicFunction('m', 'a', 'i', 'n');

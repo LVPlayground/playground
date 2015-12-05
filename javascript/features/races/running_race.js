@@ -360,7 +360,8 @@ class RunningRace {
       if (repairVehicles)
         participant.vehicle.repair();
 
-      participant.driftTracker.update(currentTime);
+      // TODO: Enable the drift tracker and drift races.
+      //participant.driftTracker.update(currentTime);
       participant.scoreBoard.update(currentTime);
     }
 

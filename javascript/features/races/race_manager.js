@@ -84,6 +84,9 @@ class RaceManager {
       });
     }
 
+    // Mark the player as being engaged in a race.
+    player.activity = Player.PLAYER_ACTIVITY_JS_RACE;
+
     // If there is an active race that can be joined, join it. Alternatively start a new race for
     // the player. If |skipSignup| is true, the announcement phase will be skipped.
     if (activeRace) {

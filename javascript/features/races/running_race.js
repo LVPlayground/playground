@@ -78,6 +78,9 @@ class RunningRace {
     // Mark the player as being controllable again, so that they're not frozen for no reason.
     player.controllable = true;
 
+    // Mark the player as being idle again. The will be able to start other activities again.
+    player.activity = Player.PLAYER_ACTIVITY_NONE;
+
     // TODO: Restore the |player|'s state if |this.stage_| >= RunningRace.STATE_COUNTDOWN.
     
     // Hide the next checkpoint if it's still being displayed for |participant|.

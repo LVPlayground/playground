@@ -195,8 +195,10 @@ class DeprecatedTimerRuntime {
     }
 };
 
-stock StartTimers() {
+StartTimers() {
+#if Feature::DisableRaces == 0 || Feature::DisableHay == 0
     SetTimer("QuickTimer", 100, 1);
+#endif
 }
 
 forward QuickTimer();

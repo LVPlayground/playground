@@ -88,7 +88,7 @@ class RaceManager {
     player.activity = Player.PLAYER_ACTIVITY_JS_RACE;
 
     // Announce to the player that they have signed up for the given race.
-    player.sendMessage(Message.format(Message.RACE_COMMAND_JOIN, runningRace.race.name));
+    player.sendMessage(Message.format(Message.RACE_COMMAND_JOIN, this.races_[race_id].name));
 
     // If there is an active race that can be joined, join it. Alternatively start a new race for
     // the player. If |skipSignup| is true, the announcement phase will be skipped.

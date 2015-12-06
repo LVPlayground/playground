@@ -138,7 +138,7 @@ class Feature {
     public const DisableRaces = 1;
 
     // The Hay minigame is a very nice-to-have game, but it hogs CPU.
-    public const DisableHay = 1;
+    public const DisableHay = 0;
 
     /** **************************************************************************************** **/
     /// External

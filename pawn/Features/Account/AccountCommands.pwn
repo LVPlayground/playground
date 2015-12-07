@@ -72,7 +72,7 @@ class AccountCommands {
      */
     @command("reconnect")
     public onReconnectCommand(playerId, params[]) {
-        if (Player(playerId)->isAdministrator() == false)
+        if (Player(playerId)->isModerator() == false)
             return 0;
 
         if (!strlen(params)) {

@@ -130,6 +130,9 @@ class RaceManager {
 
     // Store the result for each of the finished participants in the database.
     for (let participant of finishedParticipants) {
+      if (participant.userId === null)
+        continue;
+
       this.raceDatabase_.storeRaceResult(
           runningRace.race.id, participant.userId, participant.rank, participant.totalTime, participant.checkpointTimes);
     }

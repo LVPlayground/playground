@@ -435,11 +435,14 @@ class RunningRace {
     let raceTimeSeconds = Math.round(participant.totalTime / 1000);
 
     // If this participant beat the current high-score of the race, update the cached performance.
-    if (this.race.bestRace === null || this.race.bestRace.time > raceTimeSeconds) {
-      this.race.bestRace = {
-        time: raceTimeSeconds,
-        name: participant.playerName
-      };
+    // We do require the participant to be registered in order for their score to show up.
+    if (participant.userId !== null) {
+      if (this.race.bestRace === null || this.race.bestRace.time > raceTimeSeconds) {
+        this.race.bestRace = {
+          time: raceTimeSeconds,
+          name: participant.playerName
+        };
+      }
     }
 
     // Mark the participant as finishing. If they already were marked as such due to another reason,

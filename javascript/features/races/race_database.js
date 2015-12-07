@@ -4,16 +4,23 @@
 
 // MySQL query for fetching the best times for each individual race.
 const FETCH_BEST_TIMES_QUERY = `
-    SELECT
-      race_results.race_id,
-      MIN(race_results.result_time) AS result_time,
-      users.username
-    FROM
-      race_results
-    LEFT JOIN
-      users ON users.user_id = race_results.user_id
-    GROUP BY
-      race_results.race_id`;
+  SELECT
+    race_results.race_id,
+    race_results.result_time,
+    users.username
+  FROM
+    (SELECT
+       inner_race_results.race_id,
+       MIN(inner_race_results.result_time) AS result_time
+     FROM
+       race_results AS inner_race_results
+     GROUP BY
+       inner_race_results.race_id) AS inner_race_results
+  LEFT JOIN
+    race_results ON race_results.race_id = inner_race_results.race_id AND
+                    race_results.result_time = inner_race_results.result_time
+  LEFT JOIN
+    users ON users.user_id = race_results.user_id`;
 
 // MySQL query for fetching the best times for an individual player. This query takes one parameter:
 // the account id of the player for whom to fetch best times.

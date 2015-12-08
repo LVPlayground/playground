@@ -125,16 +125,18 @@ class RaceParticipants {
     }
   }
 
-  // Returns a generator that will yield for each of the participants who finished the race. The
-  // ordering of the yielded players should be considered random.
-  *finishedParticipants() {
+  // Returns an array with the participants that have finished the race. The ordering of the
+  // included participants is random, and they may not be connected to the server anymore.
+  finishedParticipants() {
+    let participants = [];
+
     for (let participantId = 0; participantId < this.participants_.length; ++participantId) {
       let participant = this.participants_[participantId];
-      if (participant.state != RaceParticipant.STATE_FINISHED)
-        continue;
-
-      yield participant;
+      if (participant.state == RaceParticipant.STATE_FINISHED)
+        participants.push(participant);
     }
+
+    return participants;
   }
 };
 

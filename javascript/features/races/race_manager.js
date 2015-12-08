@@ -96,9 +96,8 @@ class RaceManager {
       activeRace.addPlayer(player);
     } else {
       activeRace = new RunningRace(this.races_[race_id], player, skipSignup, this);
-      activeRace.finished.then(finishedParticipants => {
-        this.onRaceFinished(activeRace, finishedParticipants);
-      });
+      activeRace.finished.then(finishedParticipants =>
+          this.onRaceFinished(activeRace, finishedParticipants));
 
       if (activeRace.state == RunningRace.STATE_SIGNUP)
         this.announceRace(activeRace);
@@ -129,15 +128,15 @@ class RaceManager {
     this.activeRaces_ = this.activeRaces_.filter(activeRace => activeRace !== runningRace);
 
     // Store the result for each of the finished participants in the database.
-    for (let participant of finishedParticipants) {
-      if (participant.userId === null)
-        continue;
+    finishedParticipants.forEach(participant => {
+      if (!participant.userId)
+        return;
 
-      console.log('-- storing 2 (uid: ' + participant.userId + ')');
       this.raceDatabase_.storeRaceResult(
           runningRace.race.id, participant.userId, participant.rank, participant.totalTime, participant.checkpointTimes);
-      console.log('-- stored 3 (uid: ' + participant.userId + ')');
-    }
+    });
+
+    console.log('Race finished! (2)');
   }
 
   // Announces that |runningRace| has started and is now accepting sign-ups. Other players can join

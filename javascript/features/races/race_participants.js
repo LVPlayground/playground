@@ -24,7 +24,7 @@ class RaceParticipants {
   // Loads the data for all participants from |database|. Returns a promise that will be resolved
   // once all information has been successfully fetched from the database.
   loadParticipantData(raceId, database) {
-    let users = {};
+    let users = [];
 
     this.participants_.forEach(participant => {
       if (participant.state > RaceParticipant.STATE_RACING)

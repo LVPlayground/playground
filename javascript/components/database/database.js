@@ -96,12 +96,20 @@ class Database {
   // safely, in order, reducing the possibility of running unwanted queries by accident.
   query(query, ...parameters) {
     let substitutionIndex = 0;
-    return this.connection_.query(query.replace(/(^|[^\?])\?(?!\?)/g, (_, prefix) => {
+
+    let q = query.replace(/(^|[^\?])\?(?!\?)/g, (_, prefix) => {
       if (substitutionIndex >= parameters.length)
         throw new Error('Not enough substitution parameters were provided for this query.');
 
       return substituteValue(prefix, parameters[substitutionIndex], substitutionIndex++);
-    }));
+    });
+
+    console.log(q);
+
+    return this.connection_.query(q).then(result => {
+      console.log('-- result');
+      return result;
+    });
   }
 };
 

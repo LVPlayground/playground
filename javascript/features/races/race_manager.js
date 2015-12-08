@@ -128,14 +128,20 @@ class RaceManager {
     console.log('Race finished!');
     this.activeRaces_ = this.activeRaces_.filter(activeRace => activeRace !== runningRace);
 
+    console.log('--1');
+
     // Store the result for each of the finished participants in the database.
     for (let participant of finishedParticipants) {
       if (participant.userId === null)
         continue;
 
+      console.log('--2 (uid: ' + participant.userId + ')');
       this.raceDatabase_.storeRaceResult(
           runningRace.race.id, participant.userId, participant.rank, participant.totalTime, participant.checkpointTimes);
+      console.log('--3 (uid: ' + participant.userId + ')');
     }
+
+    console.log('--4');
   }
 
   // Announces that |runningRace| has started and is now accepting sign-ups. Other players can join

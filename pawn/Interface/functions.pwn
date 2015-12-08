@@ -444,7 +444,7 @@ Admin(senderId, text[]) {
     format(notice, sizeof(notice), "* Admin notice: {FFFFFF}%s", text);
 
     for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); playerId++) {
-        if (Player(playerId)->isModerator() == true && playerId != senderId)
+        if (Player(playerId)->isAdministrator() == true && playerId != senderId)
             SendClientMessage(playerId, Color::AdministratorColor, notice);
     }
 
@@ -735,7 +735,7 @@ SavePlayerGuns(playerId) {
         return 0;
 
     for (new weaponSlot = 0; weaponSlot < WeaponSlots; weaponSlot++) {
-        if (weaponSlot == 7 && Player(playerId)->isModerator() == false)
+        if (weaponSlot == 7 && Player(playerId)->isAdministrator() == false)
             continue;
 
         GetPlayerWeaponData(playerId, weaponSlot, sPlayerWeapons[playerId][weaponSlot][0],
@@ -760,7 +760,7 @@ LoadPlayerGuns(playerId) {
     bPlayerWeaponStored[playerId] = 0;
 
     for (new weaponSlot = 0; weaponSlot < WeaponSlots; weaponSlot++) {
-        if (weaponSlot == 7 && Player(playerId)->isModerator() == false)
+        if (weaponSlot == 7 && Player(playerId)->isAdministrator() == false)
             continue;
 
         if (sPlayerWeapons[playerId][weaponSlot][0] != 0)

@@ -36,7 +36,7 @@ class BanCommands {
      */
     @command("ban")
     public onBanCommand(playerId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         if (Command->parameterCount(params) < 2) {
@@ -53,27 +53,11 @@ class BanCommands {
             return 1;
         }
 
-        if (Player(subjectId)->isModerator() == true && Player(playerId)->isManagement() == false) {
+        if (Player(subjectId)->isAdministrator() == true && Player(playerId)->isManagement() == false) {
             SendClientMessage(playerId, Color::Error, "You can't ban a crew member!");
             return 1;
         }
-/*
-        // Do they perhaps own the property with health and/or armourfeature
-        if (m_specialHealthArmourWarning[playerId] == 0) {
-            new healthPropertyId// = Property::InvalidId
-               ,armourPropertyId;// = Property::InvalidId;
-            healthPropertyId = PropertyManager->propertyForSpecialFeature(HealthFeature);
-            armourPropertyId = PropertyManager->propertyForSpecialFeature(ArmourFeature);
 
-            if ((healthPropertyId != Property::InvalidId && Property(healthPropertyId)->ownerId() == subjectId)
-             || (armourPropertyId != Property::InvalidId && Property(armourPropertyId)->ownerId() == subjectId))
-            {
-                SendClientMessage(playerId, Color::Warning, "This player owns a refilling property. Re-enter the command to ban this player.");
-                m_specialHealthArmourWarning[playerId] = 2;
-                return 1;
-            }
-        }
-*/
         new subject[MAX_PLAYER_NAME+1], parameterOffset = 0;
         Command->stringParameter(params, 0, subject, sizeof(subject));
         parameterOffset = min(strlen(params), Command->startingIndexForParameter(params, 0)
@@ -104,7 +88,7 @@ class BanCommands {
      */
     @command("kick")
     public onKickCommand(playerId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         if (Command->parameterCount(params) < 2) {
@@ -121,7 +105,7 @@ class BanCommands {
             return 1;
         }
 
-        if (Player(subjectId)->isModerator() == true && Player(playerId)->isManagement() == false) {
+        if (Player(subjectId)->isAdministrator() == true && Player(playerId)->isManagement() == false) {
             SendClientMessage(playerId, Color::Error, "You can't kick a crew member!");
             return 1;
         }

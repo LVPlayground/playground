@@ -244,8 +244,7 @@ class Account <playerId (MAX_PLAYERS)> {
         new notice[128];
         format(notice, sizeof(notice), "%s (Id:%d) has logged in as %s (%s) using /modlogin.",
             Player(playerId)->nicknameString(), playerId, originalUsername,
-            (level == ManagementLevel ? "manager" : level == AdministratorLevel ? "administrator"
-            : "moderator"));
+            (level == ManagementLevel ? "manager" : "administrator"));
         Admin(playerId, notice);
 
         Annotation::ExpandList<OnPlayerModLogin>(playerId);

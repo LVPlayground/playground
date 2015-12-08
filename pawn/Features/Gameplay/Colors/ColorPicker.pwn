@@ -135,12 +135,9 @@ class ColorPicker {
             color = this->colorForColorPickerCell(cellIndex);
             TextDrawBoxColor(m_localColorPickerTextDraw[cellIndex], color);
 
-            // For mods/admins, we'll color the first box with their special color. This way, they
+            // For administrators, we'll color the first box with their special color. This way, they
             // can always fall back on their status color.
             if (cellIndex == 0 && m_colorPickerTarget[playerId] != GangColor) {
-                if (Player(playerId)->isModerator() == true)
-                    TextDrawBoxColor(m_localColorPickerTextDraw[cellIndex], Color::ModeratorColor);
-
                 if (Player(playerId)->isAdministrator() == true)
                     TextDrawBoxColor(m_localColorPickerTextDraw[cellIndex], Color::AdministratorColor);
             }
@@ -202,9 +199,6 @@ class ColorPicker {
 
             // Set the correct color when a crew member picks their special color.
             if (cellIndex == 0 && m_colorPickerTarget[playerId] != GangColor) {
-                if (Player(playerId)->isModerator() == true)
-                    color = Color::ModeratorColor;
-
                 if (Player(playerId)->isAdministrator() == true)
                     color = Color::AdministratorColor;
             }
@@ -223,7 +217,7 @@ class ColorPicker {
 
                 case PlayerColor: {
                     // TODO: Move all of this to Player::OnColorChanged.
-                    if (Player(playerId)->isModerator() == false)
+                    if (Player(playerId)->isAdministrator() == false)
                         GivePlayerMoney(playerId, -10000000);
 
                     ColorManager->setPlayerCustomColor(playerId, color);

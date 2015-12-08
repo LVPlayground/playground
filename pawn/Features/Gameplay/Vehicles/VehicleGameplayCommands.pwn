@@ -19,8 +19,8 @@ CRace__IsRacing(playerId) {
  */
 class VehicleGameplayCommands {
     /**
-     * Allowes Moderators, participants of cruises or players in a map zone to fix their vehicle.
-     * Moderators are allowed to pass a player parameter to fix their vehicle.
+     * Allowes administrators, participants of cruises or players in a map zone to fix their vehicle.
+     * Administrators are allowed to pass a player parameter to fix their vehicle.
      *
      * @param playerId Id of the player who executed this command.
      * @param player Name or Id of a player to fix the car for. Optional.
@@ -31,7 +31,7 @@ class VehicleGameplayCommands {
         new targetPlayerId = playerId,
             targetVehicleId = Vehicle::InvalidId;
 
-        if (Command->parameterCount(params) >= 1 && Player(playerId)->isModerator() == true) {
+        if (Command->parameterCount(params) >= 1 && Player(playerId)->isAdministrator() == true) {
             targetPlayerId = Command->playerParameter(params, 0, playerId);
             if (targetPlayerId == Player::InvalidId)
                 return 1;
@@ -48,7 +48,7 @@ class VehicleGameplayCommands {
         }
 
         targetVehicleId = GetPlayerVehicleID(targetPlayerId);
-        if (Player(playerId)->isModerator() == false) {
+        if (Player(playerId)->isAdministrator() == false) {
             if (!CRace__IsRacing(targetPlayerId) && CruiseController->isCruiseActive() == false && !IsPlayerInMapZone(targetPlayerId)) {
                 ShowBoxForPlayer(playerId, "You are only allowed to repair your vehicle during cruises, races or in map zones.");
                 return 1;
@@ -76,8 +76,8 @@ class VehicleGameplayCommands {
         return 1;
     }
     /**
-     * Allowes Moderators, participants of cruises or player in a map zone to flip their vehicle.
-     * Moderators and above are allowed to pass a player name/Id to flip someones vehicle.
+     * Allowes administrators, participants of cruises or player in a map zone to flip their vehicle.
+     * Administrators and above are allowed to pass a player name/Id to flip someones vehicle.
      *
      * @param playerId Id of the player who executed this command.
      * @param player Name or Id of a player to flip the car for. Optional.
@@ -88,7 +88,7 @@ class VehicleGameplayCommands {
         new targetPlayerId = playerId,
             targetVehicleId = GetPlayerVehicleID(targetPlayerId);
 
-        if (Command->parameterCount(params) >= 1 && Player(playerId)->isModerator() == true) {
+        if (Command->parameterCount(params) >= 1 && Player(playerId)->isAdministrator() == true) {
             targetPlayerId = Command->playerParameter(params, 0, playerId);
             if (targetPlayerId == Player::InvalidId)
                 return 1;
@@ -105,7 +105,7 @@ class VehicleGameplayCommands {
         }
 
         targetVehicleId = GetPlayerVehicleID(targetPlayerId);
-        if (Player(playerId)->isModerator() == false) {
+        if (Player(playerId)->isAdministrator() == false) {
             if (!CRace__IsRacing(targetPlayerId) && !IsPlayerInMapZone(targetPlayerId) && CruiseController->isCruiseActive() == false) {
                 ShowBoxForPlayer(playerId, "You are only allowed to flip your vehicle during cruises, races or in map zones.");
                 return 1;

@@ -199,7 +199,6 @@ lvp_stats(playerid, params[])
     szStatMsg[128],
     iPlayersOnline,
     iAdminsOnline,
-    iModsOnline,
     iNPCSOnline;
 
     for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
@@ -215,11 +214,6 @@ lvp_stats(playerid, params[])
 
         iPlayersOnline++;
 
-        if(Player(i)->isModerator() == true && Player(i)->isAdministrator() == false)
-        {
-            iModsOnline++;
-            continue;
-        }
         if(Player(i)->isAdministrator() == true && UndercoverAdministrator(i)->isUndercoverAdministrator() == false)
         {
             iAdminsOnline++;
@@ -230,7 +224,7 @@ lvp_stats(playerid, params[])
     format(szStatMsg, 128, "Las Venturas Playground v%d.%d build %d.", Version::Major, Version::Minor, __BUILD__);
     SendClientMessage(playerid, COLOR_YELLOW, szStatMsg);
 
-    format(szStatMsg, 128, "Players Online: %d  Admins Online: %d   Mods Online: %d", iPlayersOnline, iAdminsOnline, iModsOnline);
+    format(szStatMsg, 128, "Players Online: %d  Admins Online: %d", iPlayersOnline, iAdminsOnline);
     SendClientMessage(playerid, COLOR_GREEN, szStatMsg);
 
 #if Feature::DisableRaces == 0
@@ -250,7 +244,7 @@ lvp_stats(playerid, params[])
 // Author: Jay
 lvp_slap(playerid, params[])
 {
-    if(Time->currentTime() - canSlap[playerid] < 10 && Player(playerid)->isModerator() == false)
+    if(Time->currentTime() - canSlap[playerid] < 10 && Player(playerid)->isAdministrator() == false)
     {
         SendClientMessage(playerid, COLOR_RED, "* You can only slap every 10 seconds.");
         return 1;
@@ -500,12 +494,10 @@ lvp_locate(playerid,params[])
     {
         format(szMessage, sizeof(szMessage), "%sThis player is in the main world.", szMessage);
     }else{
-        if (Player(playerid)->isModerator())
-        {
+        if (Player(playerid)->isAdministrator())
             format(szMessage, 128, "%sThis player is in world %d.", szMessage, g_VirtualWorld[iPlayerID]);
-        }else {
+        else
             format(szMessage, 128, "%sThis player is in a virtual world.", szMessage);
-        }
     }
 
     SendClientMessage(playerid, COLOR_ORANGE, szMessage);
@@ -535,7 +527,7 @@ lvp_tune(playerid,params[])
         return 1;
     }
 
-    if(Time->currentTime() - iTuneTime[playerid] < 3*60 && Player(playerid)->isModerator() == false)
+    if(Time->currentTime() - iTuneTime[playerid] < 3*60 && Player(playerid)->isAdministrator() == false)
     {
         ShowBoxForPlayer(playerid, "You can only teleport to a tune shop every 3 minutes.");
         return 1;
@@ -543,7 +535,7 @@ lvp_tune(playerid,params[])
 
     if(!params[0]) goto l_Tune;
 
-    if(Player(playerid)->isModerator() == false)
+    if(Player(playerid)->isAdministrator() == false)
     {
         if(GetPlayerMoney(playerid) < 10000)
         {
@@ -578,7 +570,7 @@ lvp_tune(playerid,params[])
         Admin(playerid, szMessage);
         SendClientMessage(playerid,COLOR_GREEN,"You have been teleported to the tune shop. Use /back to go back to L.V.");
 
-        if (Player(playerid)->isModerator() == false)
+        if (Player(playerid)->isAdministrator() == false)
             GivePlayerMoney(playerid, -10000);
 
         iTuneTime[playerid] = Time->currentTime();
@@ -648,7 +640,7 @@ lvp_showmessage(playerid,params[])
     }
 
     // Has the player got enough money?
-    if(GetPlayerMoney(playerid) < 2000000 && Player(playerid)->isModerator() == false)
+    if(GetPlayerMoney(playerid) < 2000000 && Player(playerid)->isAdministrator() == false)
     {
         ShowBoxForPlayer(playerid, "Showmessages cost $2,000,000.");
         return 1;
@@ -746,7 +738,7 @@ lvp_showmessage(playerid,params[])
 
     lastShowmsg = Time->currentTime();
 
-    if (Player(playerid)->isModerator() == false)
+    if (Player(playerid)->isAdministrator() == false)
         GivePlayerMoney(playerid, -2000000);
 
     return 1;
@@ -1324,7 +1316,7 @@ MyHelp:
     if (Player(playerid)->isAdministrator() || UndercoverAdministrator(playerid)->isUndercoverAdministrator()) {
         SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[allchat/armor/bank/cash/color/health/hide/(goto/save)loc/look/maptp]");
         SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[messagelevel/resetspawnweapons/spawnweapons/weapon/weather]");
-    } else if (Player(playerid)->isModerator())
+    } else if (Player(playerid)->isAdministrator())
         SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[color/look/resetspawnweapons/teleport/weather]");
     else if (Player(playerid)->isVip())
         SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[color/look/teleport/weather]");

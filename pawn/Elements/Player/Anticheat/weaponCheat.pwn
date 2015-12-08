@@ -6,7 +6,7 @@ WeaponCheat(i) {
     if (Player(i)->isConnected() == false || Player(i)->isNonPlayerCharacter() == true)
         return 0;
 
-    if (Player(i)->isModerator() == true)
+    if (Player(i)->isAdministrator() == true)
         return 0;
 
     if (IsPlayerInMinigame(i))

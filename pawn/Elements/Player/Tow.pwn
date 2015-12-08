@@ -65,9 +65,9 @@ new towNames[NumberOfTowLocations][] =
 // This is the code called when the player uses the /tow command.
 lvp_tow(playerid, params[])
 {
-    // If the player is a moderator, the following checks do not matter. Using an empty if-statement
+    // If the player is an administrator, the following checks do not matter. Using an empty if-statement
     // because the following else-ifs are nicely structured.
-    if (Player(playerid)->isModerator() && IsPlayerInAnyVehicle(playerid)) {}
+    if (Player(playerid)->isAdministrator() && IsPlayerInAnyVehicle(playerid)) {}
 
     // What if player is on foot?
     else if (!IsPlayerInAnyVehicle(playerid))
@@ -109,8 +109,8 @@ lvp_tow(playerid, params[])
         if(location < 0 || location >= NumberOfTowLocations)
             return SendClientMessage(playerid, COLOR_RED, "You entered an invalid location ID!");
 
-        //Lets take their money and tow them!
-        if (Player(playerid)->isModerator() == false)
+        // Lets take their money and tow them!
+        if (Player(playerid)->isAdministrator() == false)
             GivePlayerMoney(playerid, -45000);
 
         TowPlayer(playerid, location);

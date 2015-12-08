@@ -81,7 +81,7 @@ public KillTimeRun() {
         }
 
         for (new player = 0; player <= PlayerManager->highestPlayerId(); player++) {
-            if (Player(player)->isConnected() == false || Player(player)->isModerator() == true)
+            if (Player(player)->isConnected() == false || Player(player)->isAdministrator() == true)
                 continue;
 
             new weaponId, ammo;

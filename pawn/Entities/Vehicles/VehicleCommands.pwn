@@ -365,7 +365,7 @@ class VehicleCommands {
     }
 
     /**
-     * Allows moderators to change the colors of a vehicle. Valid colors are in the range of 0 - 255.
+     * Allows administrators to change the colors of a vehicle. Valid colors are in the range of 0 - 255.
      *
      * @param playerId Id of the player who wants to manage the vehicle's colors.
      * @param vehicleId Id of the vehicle they'd like to manage the colors about.
@@ -420,7 +420,7 @@ class VehicleCommands {
     }
 
     /**
-     * Allows moderators to change the paintjob of a vehicle. Valid paintjobs are in the range of
+     * Allows administrators to change the paintjob of a vehicle. Valid paintjobs are in the range of
      * 0-2, whereas the number "3" can be used to remove a previously set paintjob.
      *
      * @param playerId Id of the player who wants to manage a vehicle's paintjob.
@@ -463,7 +463,7 @@ class VehicleCommands {
     }
 
     /**
-     * Allows moderators to retrieve or change the health applying to a vehicle. The valid range for
+     * Allows administrators to retrieve or change the health applying to a vehicle. The valid range for
      * the health is [0, 1000], in which 0 will make the vehicle explode immediately. The vehicle's
      * visible status will not be restored as part of this command.
      *
@@ -607,7 +607,7 @@ class VehicleCommands {
      */
     @command("fixvehicles")
     public onFixVehiclesCommand(playerId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         for (new vehicleId = 1; vehicleId <= MAX_VEHICLES; vehicleId++) {

@@ -47,7 +47,7 @@ class TeleportationManager {
             ownerId = propertyId == Property::InvalidId ? Player::InvalidId : Property(propertyId)->ownerId(),
             price = teleportType == DefaultTeleport ? DefaultTeleportPrice : CarTeleportPrice;
 
-        if (Player(playerId)->isModerator() == false && playerId != ownerId && subjectId != CruiseController->getCruiseLeaderId())
+        if (Player(playerId)->isAdministrator() == false && playerId != ownerId && subjectId != CruiseController->getCruiseLeaderId())
             GivePlayerMoney(playerId, -price);
 
         // By saving the current time in a member variable we're able to check later on if the user
@@ -148,7 +148,7 @@ class TeleportationManager {
         // Carteleporting to the cruise is allowed once per minute, except for crew members.
         if (subjectId == CruiseController->getCruiseLeaderId()
             && Time->currentTime() - m_playerTeleportTime[playerId] < CarTeleportToCruiseDelay
-            && Player(playerId)->isModerator() == false) {
+            && Player(playerId)->isAdministrator() == false) {
             format(message, sizeof(message), "You may only %s to the cruise once every %d minute(s).",
                 (teleportType == DefaultTeleport ? "teleport" : "carteleport"),
                 CarTeleportToCruiseDelay / 60);
@@ -159,7 +159,7 @@ class TeleportationManager {
 
         // Both teleport and carteleport is limited in use to avoid abuse, except for crew members.
         if (subjectId != CruiseController->getCruiseLeaderId() &&
-            Time->currentTime() - m_playerTeleportTime[playerId] < delay && Player(playerId)->isModerator() == false) {
+            Time->currentTime() - m_playerTeleportTime[playerId] < delay && Player(playerId)->isAdministrator() == false) {
             format(message, sizeof(message), "You may only %s once every %d minute(s).",
             (teleportType == DefaultTeleport ? "teleport" : "carteleport"),
             (teleportType == DefaultTeleport ? DefaultTeleportDelay / 60 : CarTeleportDelay / 60));
@@ -276,7 +276,7 @@ class TeleportationManager {
             ownerId = propertyId == Property::InvalidId ? Player::InvalidId : Property(propertyId)->ownerId(),
             price = teleportType == DefaultTeleport ? DefaultTeleportPrice : CarTeleportPrice, teleportPrice[12];
 
-        if (Player(playerId)->isModerator() == false && GetPlayerMoney(playerId) < price && playerId != ownerId
+        if (Player(playerId)->isAdministrator() == false && GetPlayerMoney(playerId) < price && playerId != ownerId
             && subjectId != CruiseController->getCruiseLeaderId()) {
             FinancialUtilities->formatPrice(price, teleportPrice, sizeof(teleportPrice));
             format(message, sizeof(message),

@@ -45,14 +45,12 @@ stock PlayerTestSuite() {
     Player(50)->setIsInClassSelection(false);
     assert_equals(Player(50)->isInClassSelection(), false, "Player 0 should not be in the class selection.");
 
-    // Make sure that the is{Administrator,Management,Moderator} methods work as they should.
+    // Make sure that the is{Administrator,Management} methods work as they should.
     Player(50)->onConnect();
-    assert_equals(Player(50)->isModerator(), false, "Player 50 should not be a moderator.");
     assert_equals(Player(50)->isAdministrator(), false, "Player 50 should not be an administrator.");
     assert_equals(Player(50)->isManagement(), false, "Player 50 should not be a management member.");
 
     Player(50)->setLevel(AdministratorLevel);
-    assert_equals(Player(50)->isModerator(), true, "Player 50 should be a moderator.");
     assert_equals(Player(50)->isAdministrator(), true, "Player 50 should be an administrator.");
     assert_equals(Player(50)->isManagement(), false, "Player 50 should not be a management member.");
 

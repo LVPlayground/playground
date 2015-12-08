@@ -42,7 +42,7 @@ class Debug {
 };
 
 // Set this to 1 if you'd like to build Las Venturas Playground in release mode (lead devs only).
-#define BuildGamemodeInReleaseMode 1
+#define BuildGamemodeInReleaseMode 0
 
 // Try to include one of the private configuration files. These are necessary to connect to the
 // MySQL database and distribute echo to the right location, among other things.

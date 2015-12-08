@@ -1257,7 +1257,7 @@ lvp_jump(playerid, params[]) {
     if (!IsPlayerMinigameFree(playerid))
         return ShowBoxForPlayer(playerid, "You're currently signed up for a minigame, use /leave first!");
 
-    if (Time->currentTime() - g_MapTP[playerid] < 5 && !IsPlayerInMapZone(playerid) && Player(playerid)->isModerator() == false)
+    if (Time->currentTime() - g_MapTP[playerid] < 5 && !IsPlayerInMapZone(playerid) && Player(playerid)->isAdministrator() == false)
         return ShowBoxForPlayer(playerid, "You can only teleport to a jumpzone every 5 seconds!");
 
     if (!IsPlayerInAnyVehicle(playerid))

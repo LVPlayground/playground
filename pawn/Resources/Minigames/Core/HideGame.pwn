@@ -945,7 +945,7 @@ stock CHideGame__onStartCommand( iPlayerID, params[] )
 
     if( CHideGame__GetState() == HS_STATE_NONE)
     {
-        if(Player(iPlayerID)->isModerator())
+        if(Player(iPlayerID)->isAdministrator())
         {
             // We need someone to seek!
             if(!strlen( params )) return SendClientMessage( iPlayerID, COLOR_WHITE, "* Usage: /has [seeker id]");

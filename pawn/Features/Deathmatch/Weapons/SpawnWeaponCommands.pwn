@@ -33,7 +33,7 @@ class SpawnWeaponCommands {
         if (Player(playerId)->isAdministrator() == false)
             return 0;
 
-        if (Player(subjectId)->isModerator() == true && playerId != subjectId) {
+        if (Player(subjectId)->isAdministrator() == true && playerId != subjectId) {
             SendClientMessage(playerId, Color::Error, "The selected player is a crew member!");
             return 1;
         }
@@ -201,10 +201,10 @@ class SpawnWeaponCommands {
      */
     @switch(PlayerCommand, "resetspawnweapons")
         public onPlayerResetSpawnWeaponsCommand(playerId, subjectId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
-        if (Player(subjectId)->isModerator() == true && playerId != subjectId) {
+        if (Player(subjectId)->isAdministrator() == true && playerId != subjectId) {
             SendClientMessage(playerId, Color::Error, "The selected player is a crew member!");
             return 1;
         }

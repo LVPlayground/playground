@@ -13,7 +13,7 @@
  * @author Xander "Xanland" Hoogland <home@xanland.nl>
  */
 class UndercoverAdministrator <playerId (MAX_PLAYERS)> {
-    // How many times has the user tried to login as a moderator using /modlogin?
+    // How many times has the user tried to login as an administrator using /modlogin?
     new m_undercoverLoginAttemptCount;
 
     // Is the player secretly logged in to an administrator account?

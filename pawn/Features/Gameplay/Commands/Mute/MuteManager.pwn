@@ -3,9 +3,8 @@
 // be found in the LICENSE file.
 
 /**
- * Administrators and moderators should have the ability to mute certain players. Reasons
- * for muting can vary from spamming to advertising. We offer two mute variations: permanent and
- * specified mute.
+ * Administrators should have the ability to mute certain players. Reasons for muting can vary
+ * from spamming to advertising. We offer two mute variations: permanent and specified mute.
  *
  * @author Max "Cake" Blokker <cake@sa-mp.nl>
  */

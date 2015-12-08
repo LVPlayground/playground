@@ -89,7 +89,7 @@ class AdminVehicleAccessManager {
      */
     @command("vallowed")
     public onVallowedCommand(playerId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         SendClientMessage(playerId, Color::Information, "Current players with admin vehicle access:");
@@ -131,7 +131,7 @@ class AdminVehicleAccessManager {
 
         // Does the killer have access to admin vehicles, and isn't part of the crew?
         if (PlayerSettings(killerId)->isAdminVehicleAccessDisabled() == false
-            && (Player(killerId)->isVip() == true && Player(killerId)->isModerator() == false
+            && (Player(killerId)->isVip() == true && Player(killerId)->isAdministrator() == false
             && IsPlayerInAnyVehicle(killerId))) {
             // Get the killer's current vehicle and check if it's either an hydra or hunter.
             // Also, check if the reason is either a death from minigun or explosion.

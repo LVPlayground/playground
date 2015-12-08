@@ -103,7 +103,7 @@ class TeleportationCommands {
      */
     @command("stp")
     public onSecretTeleportCommand(playerId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         if (Command->parameterCount(params) == 0) {

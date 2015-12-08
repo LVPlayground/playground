@@ -23,7 +23,7 @@ class AccountData <playerId (MAX_PLAYERS)> {
     /**
      * Returns the set player access level. For most people this will be Player, but Administrators
      * and Management members have their own levels to. For history's sake the level Moderator is
-     * included, but this should be considered deprecated.
+     * included, but it will equal the rights of normal players.
      *
      * @return PlayerAccessLevel The level this player has on Las Venturas Playground.
      */
@@ -69,7 +69,7 @@ class AccountData <playerId (MAX_PLAYERS)> {
      */
     public static PlayerAccessLevel: stringToPlayerLevel(level[]) {
         if (!strcmp(level, "Moderator"))
-            return ModeratorLevel;
+            return PlayerLevel;  // DEPRECATED, must no longer be used. Deliberately bug it.
         else if (!strcmp(level, "Administrator"))
             return AdministratorLevel;
         else if (!strcmp(level, "Management"))

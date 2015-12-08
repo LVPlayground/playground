@@ -13,7 +13,7 @@ OnPlayerWorldCommand(playerId, params[]) {
     }
 
     if (Command->parameterCount(params) == 0) {
-        if (Player(playerId)->isModerator() == true)
+        if (Player(playerId)->isAdministrator() == true)
             SendClientMessage(playerId, Color::Information, "Usage: /world [0-99/invite/join/kick/set]");
         else
             SendClientMessage(playerId, Color::Information, "Usage: /world [0-99/invite/join]");
@@ -88,7 +88,7 @@ OnPlayerWorldCommand(playerId, params[]) {
     }
 
     if (strcmp(worldCommand, "kick", true, 4) == 0) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         if (Command->parameterCount(params) != 2) {
@@ -106,7 +106,7 @@ OnPlayerWorldCommand(playerId, params[]) {
             return 1;
         }
 
-        if (Player(subjectId)->isModerator() == true) {
+        if (Player(subjectId)->isAdministrator() == true) {
             SendClientMessage(playerId, Color::Error, "This player is a crew member.");
             return 1;
         }
@@ -143,7 +143,7 @@ OnPlayerWorldCommand(playerId, params[]) {
     }
 
     if (strcmp(worldCommand, "set", true, 3) == 0) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         if (Command->parameterCount(params) != 3) {

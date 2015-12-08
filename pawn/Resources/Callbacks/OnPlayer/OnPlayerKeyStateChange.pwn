@@ -72,7 +72,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             // Anti-ship fighting
             if (ShipManager->isPlayerWalkingOnShip(playerid)) {
                 if (!sKillTime && (GetPlayerVirtualWorld(playerid) == 0)
-                    && !IsPlayerInMinigame(playerid) && Player(playerid)->isModerator() == false
+                    && !IsPlayerInMinigame(playerid) && Player(playerid)->isAdministrator() == false
                     && !iPlayerAnimation[playerid] && 
                     ((GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_NONE) || (GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_DUCK)))
                     ClearAnimations(playerid, 0);
@@ -99,7 +99,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
     // Other fighting style (punch + kick combo)
     if (PRESSED(KEY_SHIP_FIGHT) && ShipManager->isPlayerWalkingOnShip(playerid)) {
         if (!sKillTime && (GetPlayerVirtualWorld(playerid) == 0)
-            && !IsPlayerInMinigame(playerid) && Player(playerid)->isModerator() == false
+            && !IsPlayerInMinigame(playerid) && Player(playerid)->isAdministrator() == false
             && !iPlayerAnimation[playerid] && GetPlayerSpecialAction(playerid) == 0) {
             iPlayerAnimation[playerid] = 0;
             ClearAnimations(playerid, 0);
@@ -114,7 +114,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
     // Player sync
     if ((newkeys & (KEY_HANDBRAKE | KEY_JUMP)) == (KEY_HANDBRAKE | KEY_JUMP)
         && (oldkeys & (KEY_HANDBRAKE | KEY_JUMP)) != (KEY_HANDBRAKE | KEY_JUMP)) {
-        if (Player(playerid)->isModerator() == true && GetPlayerWeapon(playerid) == 0 && !IsPlayerInAnyVehicle(playerid))
+        if (Player(playerid)->isAdministrator() == true && GetPlayerWeapon(playerid) == 0 && !IsPlayerInAnyVehicle(playerid))
             PlayerSyncHandler->syncPlayer(playerid);
 
         return 1;

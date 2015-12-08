@@ -68,7 +68,7 @@ class HitmanCommands {
         }
 
         if (Time->currentTime() - HitmanTracker(playerId)->lastHitmanUsageTime() < 15
-            && Player(playerId)->isModerator() == false) {
+            && Player(playerId)->isAdministrator() == false) {
             SendClientMessage(playerId, Color::Error, "You can only place a bounty every 15 seconds.");
             return 1;
         }

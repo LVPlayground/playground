@@ -149,8 +149,6 @@ class Statistics {
             format(m_playerLevel[playerId], sizeof(m_playerLevel), "Very Important Player");
         if (Player(playerId)->isDeveloper() == true)
             format(m_playerLevel[playerId], sizeof(m_playerLevel), "LVP Developer");
-        if (Player(playerId)->isModerator() == true && UndercoverAdministrator(playerId)->isUndercoverAdministrator() == false)
-            format(m_playerLevel[playerId], sizeof(m_playerLevel), "LVP Moderator");
         if (Player(playerId)->isAdministrator() == true && UndercoverAdministrator(playerId)->isUndercoverAdministrator() == false)
             format(m_playerLevel[playerId], sizeof(m_playerLevel), "LVP Administrator");
         if (Player(playerId)->isManagement() == true && UndercoverAdministrator(playerId)->isUndercoverAdministrator() == false)

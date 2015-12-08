@@ -20,7 +20,7 @@
  *
  *     - Sending more than 5 messages per 10 seconds is considered spam.
  *
- * Note that players of level moderator and up are exempt from the spam policies, although sanity
+ * Note that players of level administrator and up are exempt from the spam policies, although sanity
  * checks (i.e. message length checks) will still be done.
  *
  * @author Russell Krupke <russell@sa-mp.nl>
@@ -67,7 +67,7 @@ class SpamTracker {
             return;
         }
 
-        if (Player(playerId)->isModerator())
+        if (Player(playerId)->isAdministrator())
             return;
 
         for (new index = SpamTracker::INTERVAL_HISTORY_SIZE - 1; index > 0; --index)

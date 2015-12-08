@@ -35,7 +35,7 @@ class PropertyCommands {
      */
     @command("property")
     public onPropertyCommand(playerId, params[]) {
-        if (Command->parameterCount(params) == 0 && Player(playerId)->isModerator() == false) {
+        if (Command->parameterCount(params) == 0 && Player(playerId)->isAdministrator() == false) {
             SendClientMessage(playerId, Color::Information, "Usage: /property search [name/Id]");
             return 1;
         }
@@ -613,7 +613,7 @@ class PropertyCommands {
      */
     @switch(PlayerCommand, "properties")
     public onPlayerPropertiesCommand(playerId, subjectId, params[]) {
-        if (subjectId != playerId && Player(playerId)->isModerator() == false) 
+        if (subjectId != playerId && Player(playerId)->isAdministrator() == false) 
             return 0;
 
         new properties[MAX_PROPERTIES], dialogCaption[64], dialogMessage[3000], payout[16];

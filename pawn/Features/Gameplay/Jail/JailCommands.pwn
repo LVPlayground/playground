@@ -10,7 +10,7 @@
  */
 class JailCommands {
     /**
-     * Players can be joined by moderators and higher through the /jail command, with at least the
+     * Players can be joined by administrators and higher through the /jail command, with at least the
      * offending player as a parameter. Staff will be informed about this action.
      *
      * @param playerId Id of the player who sent this command.
@@ -20,7 +20,7 @@ class JailCommands {
      */
     @command("jail")
     public onJailCommand(playerId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         new parameterCount = Command->parameterCount(params);
@@ -49,7 +49,7 @@ class JailCommands {
         Time->formatRemainingTime(JailController->remainingJailTimeForPlayer(offenderId), durationText,
             sizeof(durationText), /** force minutes **/ true);
 
-        // Distribute a message to the moderator who executed this command.
+        // Distribute a message to the administrator who executed this command.
         format(message, sizeof(message), "The player %s (Id:%d) will be in jail for another %s minutes.",
             Player(offenderId)->nicknameString(), offenderId, durationText);
         SendClientMessage(playerId, Color::Success, message);
@@ -84,7 +84,7 @@ class JailCommands {
      */
     @command("unjail")
     public onUnjailCommand(playerId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         if (Command->parameterCount(params) == 0) {
@@ -106,7 +106,7 @@ class JailCommands {
 
         JailController->unjailPlayer(offenderId);
 
-        // Distribute a message to the moderator who executed this command.
+        // Distribute a message to the administrator who executed this command.
         format(message, sizeof(message), "%s (Id:%d) has been released from jail.",
             Player(offenderId)->nicknameString(), offenderId);
         SendClientMessage(playerId, Color::Success, message);
@@ -130,7 +130,7 @@ class JailCommands {
     }
 
     /**
-     * It's possible for moderators to get an overview of the players who currently are in jail by
+     * It's possible for administrators to get an overview of the players who currently are in jail by
      * typing the /jailed command, which gives them a clear overview.
      *
      * @param playerId Id of the player who sent this command.
@@ -139,7 +139,7 @@ class JailCommands {
      */
     @command("jailed")
     public onJailedCommand(playerId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         SendClientMessage(playerId, Color::Information, "The current players are currently in jail:");

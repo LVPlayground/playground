@@ -122,7 +122,7 @@ class LegacyAccountBridge {
         new customColor = 0;
         if (Player(playerId)->isVip() == true) {
             // We first need to release any previously set custom color. This operation will only
-            // do something if the player has temporary moderator or administrator rights.
+            // do something if the player has temporary administrator rights.
             ColorManager->restorePreviousPlayerCustomColor(playerId);
 
             // Now return the color as it has been set by the player itself.

@@ -152,7 +152,7 @@ class ColorManager {
 
     /**
      * Stores a copy of the current player's custom color in a local buffer. This is necessary
-     * because giving a player temporary moderator or administrator rights shouldn't override the
+     * because giving a player temporary administrator rights shouldn't override the
      * custom color we store for them in the database.
      *
      * @param playerId Id of the player to store the existing custom color for.

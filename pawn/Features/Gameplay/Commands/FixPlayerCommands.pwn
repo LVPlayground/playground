@@ -33,7 +33,7 @@ class FixPlayerCommands {
      */
     @command("fix")
     public onFixCommand(playerId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         if (Command->parameterCount(params) != 1) {
@@ -80,7 +80,7 @@ class FixPlayerCommands {
      */
     @command("sfix")
     public onSecretFixCommand(playerId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         if (Command->parameterCount(params) != 1) {
@@ -156,7 +156,7 @@ class FixPlayerCommands {
         // member, since this slot handles miniguns, rockets etc.
         new weaponId, ammo;
         for (new weaponSlot = 0; weaponSlot < WeaponSlots; ++weaponSlot) {
-            if (weaponSlot == 7 && Player(playerId)->isModerator() == false)
+            if (weaponSlot == 7 && Player(playerId)->isAdministrator() == false)
                 continue;
 
             if (SpawnWeaponManager(playerId)->spawnWeaponId(weaponSlot) != 0) {

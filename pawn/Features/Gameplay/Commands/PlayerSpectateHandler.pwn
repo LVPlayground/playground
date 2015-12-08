@@ -154,7 +154,7 @@ class PlayerSpectateHandler {
      */
     @command("watch")
     public onWatchCommand(playerId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         if (Command->parameterCount(params) != 1) {
@@ -195,7 +195,7 @@ class PlayerSpectateHandler {
      */
     @command("stopwatch")
     public onStopwatchCommand(playerId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         if (m_isSpectating[playerId] == false) {

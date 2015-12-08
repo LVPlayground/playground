@@ -21,7 +21,7 @@ class VeryImportantPlayersCommands {
      */
     @command("ircpm")
     public onIrcpmCommand(playerId, params[]) {
-        if (Player(playerId)->isVip() == false && Player(playerId)->isModerator() == false) {
+        if (Player(playerId)->isVip() == false && Player(playerId)->isAdministrator() == false) {
             SendClientMessage(playerId, Color::Error, "This is a VIP only command. For more information, check out \"/donate\"!");
             return 1;
         }
@@ -53,7 +53,7 @@ class VeryImportantPlayersCommands {
      */
     @command("vip")
     public onVipCommand(playerId, params[]) {
-        if (Player(playerId)->isVip() == false && Player(playerId)->isModerator() == false) {
+        if (Player(playerId)->isVip() == false && Player(playerId)->isAdministrator() == false) {
             SendClientMessage(playerId, Color::Error, "This is a VIP only command. For more information, check out \"/donate\"!");
             return 1;
         }
@@ -77,7 +77,7 @@ class VeryImportantPlayersCommands {
      * @command #[message]
      */
     public onVipChatCommand(playerId, message[]) {
-        if (Player(playerId)->isVip() == false && Player(playerId)->isModerator() == false) {
+        if (Player(playerId)->isVip() == false && Player(playerId)->isAdministrator() == false) {
             SendClientMessage(playerId, Color::Error, "This is a VIP only command. For more information, check out \"/donate\"!");
             return 1;
         }
@@ -89,7 +89,7 @@ class VeryImportantPlayersCommands {
 
         for (new player = 0; player <= PlayerManager->highestPlayerId(); ++player) {
             if (Player(player)->isConnected() == false || (Player(player)->isVip() == false
-                && Player(player)->isModerator() == false))
+                && Player(player)->isAdministrator() == false))
                 continue; /* either not connected or not VIP/crew */
 
             if (LegacyIsPlayerIgnored(player, playerId) == true)
@@ -119,7 +119,7 @@ class VeryImportantPlayersCommands {
         if (playerId != subjectId)
             return 0; /* VIPs don't need admins to change their weather for them */
 
-        if (Player(playerId)->isVip() == false && Player(playerId)->isModerator() == false) {
+        if (Player(playerId)->isVip() == false && Player(playerId)->isAdministrator() == false) {
             SendClientMessage(playerId, Color::Error, "This is a VIP only command. For more information, check out \"/donate\"!");
             return 1;
         }
@@ -149,7 +149,7 @@ class VeryImportantPlayersCommands {
         if (playerId != subjectId)
             return 0; /* VIPs don't need admins to change their time for them */
 
-        if (Player(playerId)->isVip() == false && Player(playerId)->isModerator() == false) {
+        if (Player(playerId)->isVip() == false && Player(playerId)->isAdministrator() == false) {
             SendClientMessage(playerId, Color::Error, "This is a VIP only command. For more information, check out \"/donate\"!");
             return 1;
         }
@@ -199,13 +199,13 @@ class VeryImportantPlayersCommands {
         if (playerId != subjectId)
             return 0; /* VIPs don't need admins to change their color for them */
 
-        if (Player(playerId)->isVip() == false && Player(playerId)->isModerator() == false) {
+        if (Player(playerId)->isVip() == false && Player(playerId)->isAdministrator() == false) {
             SendClientMessage(playerId, Color::Error, "This is a VIP only command. For more information, check out \"/donate\"!");
             return 1;
         }
 
         // We charge VIPs 10 mil on every player color change, except for crew.
-        if (Player(playerId)->isModerator() == false && GetPlayerMoney(playerId) < 10000000) {
+        if (Player(playerId)->isAdministrator() == false && GetPlayerMoney(playerId) < 10000000) {
             SendClientMessage(playerId, Color::Information, "You'll need {40CCFF}$10,000,000{FFFFFF} to change your colour.");
             return 1;
         }
@@ -231,7 +231,7 @@ class VeryImportantPlayersCommands {
         if (playerId != subjectId)
             return 0; /* VIPs don't need admins to change their looks for them */
 
-        if (Player(playerId)->isVip() == false && Player(playerId)->isModerator() == false) {
+        if (Player(playerId)->isVip() == false && Player(playerId)->isAdministrator() == false) {
             SendClientMessage(playerId, Color::Error, "This is a VIP only command. For more information, check out \"/donate\"!");
             return 1;
         }
@@ -356,7 +356,7 @@ class VeryImportantPlayersCommands {
 
         for (new player = 0; player <= PlayerManager->highestPlayerId(); ++player) {
             if (Player(player)->isConnected() == false || (Player(player)->isVip() == false
-                && Player(player)->isModerator() == false))
+                && Player(player)->isAdministrator() == false))
                 continue; /* either not connected or not VIP/crew */
 
             SendClientMessage(player, Color::VipChat, notice);
@@ -395,7 +395,7 @@ class VeryImportantPlayersCommands {
 
         for (new player = 0; player <= PlayerManager->highestPlayerId(); ++player) {
             if (Player(player)->isConnected() == false || (Player(player)->isRegular() == false
-                && Player(player)->isModerator() == false))
+                && Player(player)->isAdministrator() == false))
                 continue; /* either not connected or not regular/crew */
 
             SendClientMessage(player, Color::RegularChat, notice);

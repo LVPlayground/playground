@@ -7,7 +7,7 @@
 *                                                                              *
 *   This file contains commands which are currently in testing, or are not     *
 *   enabled. Genereally, the commands are for players, but some of which could *
-*   be for admins / mods / management.                                         *
+*   be for admins / management.                                                *
 *                                                                              *
 *                   Date: 14/02/2009                                           *
 *                   Author: Various                                            *

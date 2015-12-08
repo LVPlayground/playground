@@ -290,7 +290,7 @@ class Player <playerId (MAX_PLAYERS)> {
 
     /**
      * Change the player's level with the one as indicated. This should generally only be set by the
-     * Account system, but can also be used for temporary moderators and administrators.
+     * Account system, but can also be used for temporary administrators.
      *
      * Mutations to a player's levle will be broadcasted to JavaScript as well.
      *
@@ -375,15 +375,6 @@ class Player <playerId (MAX_PLAYERS)> {
      */
     public bool: isVip() {
         return this->hasFlag(IsVeryImportantPlayer);
-    }
-
-    /**
-     * Returns whether this player has moderator rights on Las Venturas Playground.
-     *
-     * @return boolean Is this player a moderator on the server?
-     */
-    public inline bool: isModerator() {
-        return (m_level >= ModeratorLevel);
     }
 
     /**
@@ -482,7 +473,7 @@ public LVP_IsPlayerAdmin(playerId) {
  */
 public LVP_BanPlayer(playerId, reason[]) {
     if (Player(playerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter() == true
-        || Player(playerId)->isModerator() == true)
+        || Player(playerId)->isAdministrator() == true)
         return 0;
 
     Player(playerId)->ban(reason);

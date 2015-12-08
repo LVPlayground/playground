@@ -37,8 +37,8 @@ class Gang <gangId (MAX_GANGS)> {
 
         // Set the gang color to the player's default color if the player is currently having the
         // admin/mod color.
-        new adminColor = Color::AdministratorColor, modColor = Color::ModeratorColor;
-        if (ColorManager->playerColor(playerId) == adminColor || ColorManager->playerColor(playerId) == modColor)
+        new adminColor = Color::AdministratorColor;
+        if (ColorManager->playerColor(playerId) == adminColor)
             Gang(gangId)->setColor(ColorManager->defaultColorForPlayerId(playerId));
         else
             Gang(gangId)->setColor(ColorManager->playerColor(playerId));

@@ -45,52 +45,6 @@ RunDeprecatedIrcCommand(line[]) {
         return 1;
     }
 
-
-    // Jay: Ok, since Dennis has not stopped going ON AND ON AT ME TO MAKE THIS DAMN COMMAND
-    // I guess I have has to make it. !givetempmod !givetempadmin
-    if(strcmp(cmd,"givetempmod",true) == 0)
-    {
-        new tmp[256], szName [256];
-        tmp = strtok(line, idx);
-        if(!tmp[0]) return AddEcho("Correct Usage: !givetempmod <playerid>");
-
-        format(szName, 256, "%s", tmp);
-        tmp = strtok(line, idx);
-
-        new pid = strval(tmp);
-        // Right, make sure they are typning the nd propery, and assign the playerid to a variable.
-        if(!Player(pid)->isConnected()) // is the player connected?
-        {
-            format(string,sizeof(string),"[notconnected] %d",pid);
-            AddEcho(string);
-            return 1;
-        }
-
-        if(Player(pid)->isModerator())
-        {
-            AddEcho("[error] That player is a moderator already!");
-        }
-
-        new str[256];
-        format(str,256,"%s (IRC) has granted temp. mod rights to %s (Id:%d).", szName, PlayerName (pid), pid);
-        Admin(Player::InvalidId, str); // Tell the ingame admins.
-
-        Player(pid)->setIsVip(true);
-        Player(pid)->setLevel(ModeratorLevel);
-
-        ColorManager->storeExistingPlayerCustomColor(pid);
-        ColorManager->setPlayerCustomColor(pid, Color::ModeratorColor);
-        VehicleAccessManager->synchronizePlayerVehicleAccess(pid);
-
-        tempLevel[pid] = 1; // Set his/her temp level to 1
-        format(UserTemped[pid], sizeof(UserTemped[]), "%s", szName);
-        format(str,256,"%s is now a moderator.",PlayerName(pid));
-        AddEcho(str); // tell the people on irc,
-        SendClientMessage(pid,COLOR_GREEN,"You have been granted moderator rights.");
-        // And tell the player.
-        return 1;
-    }
-
     if(strcmp(cmd,"givetempadmin",true) == 0)
     {
         new tmp[256], szName [256];
@@ -159,37 +113,6 @@ RunDeprecatedIrcCommand(line[]) {
         UserTemped [pid] = "";
         format(str,256,"%s is no longer an administrator.",PlayerName(pid));
         AddEcho(str); 
-        return 1;
-    }
-
-    if(strcmp(cmd,"taketempmod",true) == 0)
-    {
-        new tmp[256], szName [256];
-        tmp = strtok(line, idx);
-        if(!tmp[0]) return AddEcho("Correct Usage: !taketempmod <playerid>");
-
-        format(szName, 256, "%s", tmp);
-        tmp = strtok(line, idx);
-
-        new pid = strval(tmp);
-        if(!Player(pid)->isConnected())
-        {
-            format(string,sizeof(string),"[notconnected] %d",pid);
-            AddEcho(string);
-            return 1;
-        }
-        new str[256];
-        format(str,256,"%s (IRC) has taken mod rights from %s (Id:%d).", szName, PlayerName (pid), pid);
-        Admin(Player::InvalidId, str);
-
-        Player(pid)->setLevel(PlayerLevel);
-        ColorManager->restorePreviousPlayerCustomColor(pid);
-        VehicleAccessManager->synchronizePlayerVehicleAccess(pid);
-
-        tempLevel[pid] = 0;
-        UserTemped [pid] = "";
-        format(str,256,"%s is no longer a mod",PlayerName(pid));
-        AddEcho(str);
         return 1;
     }
 
@@ -484,7 +407,7 @@ RunDeprecatedIrcCommand(line[]) {
 
         for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
         {
-            if( IsPlayerConnected( i ) && Player(i)->isModerator())
+            if( IsPlayerConnected( i ) && Player(i)->isAdministrator())
                 SendClientMessage(i, COLOR_YELLOW, string);
         }
 

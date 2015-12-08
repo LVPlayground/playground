@@ -572,7 +572,7 @@ stock deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputt
 
         case DIALOG_TOW_COMMAND: {
             if (response) {
-                if (Player(playerid)->isModerator() == false)
+                if (Player(playerid)->isAdministrator() == false)
                     GivePlayerMoney(playerid, -45000);
 
                 TowPlayer(playerid, listitem);

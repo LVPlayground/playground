@@ -71,7 +71,6 @@ class Color {
 
     // Colors related to statuses of special players.
     public const AdministratorColor = 0xFFFF00AA;
-    public const ModeratorColor = 0xFF8C13FF;
     public const NonPlayerCharacterColor = 0xFFFFFFAA;
 
     /**

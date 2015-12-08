@@ -134,7 +134,7 @@ class ShipManager {
             this->respawnPlayerVehicle(playerId);
 
             if (!LegacyIsKillTimeActivated()) {
-                if (IsPlayerFighting(playerId) && !Player(playerId)->isModerator()) {
+                if (IsPlayerFighting(playerId) && !Player(playerId)->isAdministrator()) {
                     SetPlayerPos(playerId, 2034.85, 1545.15, 10.82);
                     SetPlayerFacingAngle(playerId, 275.44);
 
@@ -171,7 +171,7 @@ class ShipManager {
             new Float: position[3];
             GetPlayerPos(playerId, position[0], position[1], position[2]);
 
-            if (position[2] >= 13 && Player(playerId)->isModerator() == false) {
+            if (position[2] >= 13 && Player(playerId)->isAdministrator() == false) {
                 SetPlayerPos(playerId, position[0] + 2, position[1], 10.84);
                 SendClientMessage(playerId, Color::Error, "You cannot stand on the ship-poles.");
             }
@@ -187,7 +187,7 @@ class ShipManager {
      * @param playerId Id of the player to temporarily save and remove the weapons from.
      */
     public storeSpawnWeapons(playerId) {
-        if (Player(playerId)->isModerator() == true)
+        if (Player(playerId)->isAdministrator() == true)
             return 0;
 
         for (new weaponSlot = 0; weaponSlot < WeaponSlots; ++weaponSlot)
@@ -207,7 +207,7 @@ class ShipManager {
      * @param playerId Id of the player to give the weapons back to.
      */
     public restoreSpawnWeapons(playerId) {
-        if (Player(playerId)->isModerator() == true)
+        if (Player(playerId)->isAdministrator() == true)
             return 0;
 
         ResetPlayerWeapons(playerId);
@@ -234,7 +234,7 @@ class ShipManager {
         new vehicleId = GetPlayerVehicleID(playerId),
             modelId = GetVehicleModel(vehicleId);
 
-        if (GetPlayerState(playerId) == PLAYER_STATE_DRIVER && Player(playerId)->isModerator() == false) {
+        if (GetPlayerState(playerId) == PLAYER_STATE_DRIVER && Player(playerId)->isAdministrator() == false) {
             if (VehicleModel->isAirplane(modelId) == true || VehicleModel->isHelicopter(modelId) == true)
                 SendClientMessage(playerId, Color::Error, "Flyable vehicles are not allowed around the ship!");
             else
@@ -287,7 +287,7 @@ class ShipManager {
         } else if (m_activityOfPlayerOnShip[playerId] == Walking) {
             this->issueMoneyToPlayer(playerId);
 
-            if (Player(playerId)->isModerator() == false) {
+            if (Player(playerId)->isAdministrator() == false) {
                 if (!LegacyIsKillTimeActivated()) {
                     ResetPlayerWeapons(playerId);
                     if (m_playerHealthSpawnWeaponsSaved[playerId] == false) {

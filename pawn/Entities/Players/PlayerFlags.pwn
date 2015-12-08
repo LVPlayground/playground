@@ -9,7 +9,7 @@
  */
 enum PlayerAccessLevel {
     PlayerLevel,
-    ModeratorLevel,
+    ModeratorLevel,  // DEPRECATED, should not be used.
     AdministratorLevel,
     ManagementLevel
 };

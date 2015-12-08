@@ -10,7 +10,7 @@
  */
 class MuteCommands {
     /**
-     * Administrators and moderators can use /mute to mute players. They can specify a certain
+     * Administrators can use /mute to mute players. They can specify a certain
      * amount of minutes, or just go for the permanent mute. Both the player and
      * staff is informed about this action.
      * 
@@ -21,7 +21,7 @@ class MuteCommands {
      */
     @command("mute")
     public onMuteCommand(playerId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         if (Command->parameterCount(params) == 0) {
@@ -77,7 +77,7 @@ class MuteCommands {
      */
     @command("unmute")
     public onUnmuteCommand(playerId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         if (Command->parameterCount(params) != 1) {
@@ -110,7 +110,7 @@ class MuteCommands {
     }
 
     /**
-     * To list all muted players, admins/mods can use /muted.
+     * To list all muted players, administrators can use /muted.
      * 
      * @param playerId Id of the player who typed the command.
      * @param params Any further text that the player passed to the command. Unused.
@@ -118,7 +118,7 @@ class MuteCommands {
      */
     @command("muted")
     public onMutedCommand(playerId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         SendClientMessage(playerId, Color::Information, "Current muted players:");

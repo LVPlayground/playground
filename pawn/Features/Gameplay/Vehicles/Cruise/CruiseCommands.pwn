@@ -35,7 +35,7 @@ class CruiseCommands {
                 return 1;
         }
 
-        if (Player(playerId)->isModerator() == true) {
+        if (Player(playerId)->isAdministrator() == true) {
             SendClientMessage(playerId, Color::Information, "Usage: /cruise [car/start/stop/switch]");
             if (CruiseController->isCruiseActive() == true) {
                 new cruiseLeaderId = CruiseController->getCruiseLeaderId();
@@ -73,7 +73,7 @@ class CruiseCommands {
      */
     @switch(CruiseCommand, "start")
     public onCruiseStartCommand(playerId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         if (CruiseController->isCruiseActive() == true) {
@@ -124,7 +124,7 @@ class CruiseCommands {
      */
     @switch(CruiseCommand, "switch")
     public onCruiseSwitchCommand(playerId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         if (CruiseController->isCruiseActive() == false) {
@@ -178,7 +178,7 @@ class CruiseCommands {
      */
     @switch(CruiseCommand, "stop")
     public onCruiseStopCommand(playerId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         if (CruiseController->isCruiseActive() == false) {
@@ -214,7 +214,7 @@ class CruiseCommands {
      */
     @switch(CruiseCommand, "car")
     public onCruiseCarCommand(playerId, params[]) {
-        if (Player(playerId)->isVip() == false && Player(playerId)->isModerator() == false) {
+        if (Player(playerId)->isVip() == false && Player(playerId)->isAdministrator() == false) {
             SendClientMessage(playerId, Color::Error, "This is a VIP only command. For more information, check out \"/donate\"!");
             return 1;
         }

@@ -72,7 +72,7 @@ class AccountCommands {
      */
     @command("reconnect")
     public onReconnectCommand(playerId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         if (!strlen(params)) {
@@ -89,7 +89,7 @@ class AccountCommands {
             return 1;
         }
 
-        if (Player(victimId)->isModerator()) {
+        if (Player(victimId)->isAdministrator()) {
             SendClientMessage(playerId, Color::Error, "You can't force a crew member to reconnect!");
             return 1;
         }

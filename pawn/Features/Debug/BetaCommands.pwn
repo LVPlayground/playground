@@ -105,9 +105,9 @@ class BetaCommands {
 
     /**
      * Makes it possible for the player to switch level for testing purposes.
-     * available levels: PlayerLevel, ModeratorLevel, AdministratorLevel, ManagementLevel
+     * available levels: PlayerLevel, AdministratorLevel, ManagementLevel
      *
-     * @command /setlevel [moderator/administrator/undercover/manager]
+     * @command /setlevel [administrator/undercover/manager]
      */
     @command("setlevel")
     public onSetLevelCommand(playerId, params[]) {
@@ -120,13 +120,6 @@ class BetaCommands {
                 AccountData(playerId)->applyPlayerLevel(PlayerLevel);
 
                 SendClientMessage(playerId, Color::Information, "You are now a regular Player.");
-                return 1;
-            }
-            else if (strcmp( levelName, "mod", true, 3) == 0) {
-                AccountData(playerId)->applyPlayerLevel(ModeratorLevel);
-                UndercoverAdministrator(playerId)->setIsUndercoverAdministrator(false);
-
-                SendClientMessage(playerId, Color::Information, "You are now a Moderator.");
                 return 1;
             }
             else if (strcmp( levelName, "admin", true, 5) == 0) {
@@ -152,7 +145,7 @@ class BetaCommands {
             }
         }
 
-        SendClientMessage(playerId, Color::Information, "Usage: /setlevel [player/mod/admin/undercover/manager]");
+        SendClientMessage(playerId, Color::Information, "Usage: /setlevel [player/admin/undercover/manager]");
 
         return 1;
     }

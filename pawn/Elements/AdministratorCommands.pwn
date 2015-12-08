@@ -981,7 +981,7 @@ lvp_p(playerId, params[]) {
         return 1;
     }
 
-    if (!strcmp(playerParameter, "health", true, 6) && Player(playerId)->isModerator() == true) {
+    if (!strcmp(playerParameter, "health", true, 6) && Player(playerId)->isAdministrator() == true) {
         new healthAmount = Command->integerParameter(params, 2), Float: health;
         GetPlayerHealth(subjectId, health);
 
@@ -1010,7 +1010,7 @@ lvp_p(playerId, params[]) {
     }
 
     if ((!strcmp(playerParameter, "armor", true, 6) || !strcmp(playerParameter, "armour", true, 7)) 
-        && Player(playerId)->isModerator() == true) {
+        && Player(playerId)->isAdministrator() == true) {
         new armourAmount = Command->integerParameter(params, 2), Float: armour;
         GetPlayerArmour(subjectId, armour);
 
@@ -1190,79 +1190,14 @@ lvp_p(playerId, params[]) {
         return 1;
     }
 
-    if (!strcmp(playerParameter, "givemod", true, 7) && Player(playerId)->isAdministrator() == true) {
-        if (Player(subjectId)->isModerator() == true) {
-            SendClientMessage(playerId, Color::Error, "The selected player is already mod.");
-            return 1;
-        }
-
-        if (tempLevel[playerId] == 2) {
-            SendClientMessage(playerId, Color::Error, "You can't temp-mod others as a temp-admin.");
-            return 1;
-        }
-
-        Player(subjectId)->setIsVip(true);
-        Player(subjectId)->setLevel(ModeratorLevel);
-
-        tempLevel[subjectId] = 1;
-        format(UserTemped[subjectId], sizeof(UserTemped[]), "%s", Player(playerId)->nicknameString());
-
-        ColorManager->storeExistingPlayerCustomColor(subjectId);
-        ColorManager->setPlayerCustomColor(subjectId, Color::ModeratorColor);
-        VehicleAccessManager->synchronizePlayerVehicleAccess(subjectId);
-
-        SendClientMessage(subjectId, Color::Success, "An administrator has granted you moderator rights!");
-
-        format(g_message, sizeof(g_message), "%s (Id:%d) is now temp. mod.",
-            Player(subjectId)->nicknameString(), subjectId);
-        SendClientMessage(playerId, Color::Success, g_message);
-
-        format(g_message, sizeof(g_message), "%s (Id:%d) has granted temp. mod rights to %s (Id:%d).",
-            Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId);
-        Admin(playerId, g_message);
-
-        return 1;
-    }
-
-    if (!strcmp(playerParameter, "takemod", true, 7) && Player(playerId)->isAdministrator() == true) {
-        if (Player(subjectId)->isModerator() == false) {
-            SendClientMessage(playerId, Color::Error, "The selected player isn't a moderator.");
-            return 1;
-        }
-
-        if (tempLevel[playerId] == 2 && playerId != subjectId) {
-            SendClientMessage(playerId, Color::Error, "You can't take someone else's mod rights as temp-admin.");
-            return 1;
-        }
-
-        Player(subjectId)->setLevel(PlayerLevel);
-        UndercoverAdministrator(subjectId)->setIsUndercoverAdministrator(false);
-
-        tempLevel[subjectId] = 0;
-        UserTemped[subjectId] = "";
-
-        ColorManager->restorePreviousPlayerCustomColor(subjectId);
-        VehicleAccessManager->synchronizePlayerVehicleAccess(subjectId);
-
-        format(g_message, sizeof(g_message), "%s (Id:%d) is no moderator anymore.",
-            Player(subjectId)->nicknameString(), subjectId);
-        SendClientMessage(playerId, Color::Success, g_message);
-
-        format(g_message, sizeof(g_message), "%s (Id:%d) has taken mod rights from %s (Id:%d).",
-            Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId);
-        Admin(playerId, g_message);
-
-        return 1;
-    }
-
     PlayerHelp:
     SendClientMessage(playerId, Color::Information, "Usage: /p [player] [command]:");
 
     if (Player(playerId)->isAdministrator() == true) {
         SendClientMessage(playerId, Color::Information, " achievements, armor, bank, burn, (un)cage, cash, deathmessage, gang, (give/take)admin");
-        SendClientMessage(playerId, Color::Information, " (give/take)mod, (un)freeze, god, handofgod, health, hide, kill, maptp, nocaps, nuke");
+        SendClientMessage(playerId, Color::Information, " (un)freeze, god, handofgod, health, hide, kill, maptp, nocaps, nuke, weapon, weaponinfo");
         SendClientMessage(playerId, Color::Information, " properties, removeweapon, resetspawnweapons, resetweapons, skin, spawnweapons, teleport");
-        SendClientMessage(playerId, Color::Information, " vallow, weapon, weaponinfo");
+        SendClientMessage(playerId, Color::Information, " vallow");
     } else {
         SendClientMessage(playerId, Color::Information, " armor, burn, gang, (un)freeze, handofgod, health, nocaps, properties");
         SendClientMessage(playerId, Color::Information, " removeweapon, resetspawnweapons, resetweapons, skin, teleport, weaponinfo");

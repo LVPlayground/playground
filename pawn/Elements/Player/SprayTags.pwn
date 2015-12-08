@@ -461,7 +461,7 @@ sprayTagOnVehicleCommand(playerid, params[])
 {
     #pragma unused params
 
-    if (!Player(playerid)->isModerator()) {
+    if (!Player(playerid)->isAdministrator()) {
         if(!sprayTagHasPlayerSprayedAll(playerid))
         {
             SendClientMessage(playerid, COLOR_RED, "* You have not unlocked this command.");

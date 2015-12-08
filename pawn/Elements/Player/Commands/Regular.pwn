@@ -15,7 +15,7 @@ lvp_Ignore( playerid, params[] )
     Instrumentation->recordActivity(IgnorePlayerActivity);
 
     // A new command which enables regulars to ignore other players, for
-    // whatever purpose that might be. Moderators and Admins excluded offcourse.
+    // whatever purpose that might be. Administrators are excluded of course.
     if (Player(playerid)->isRegular() == false && Player(playerid)->isAdministrator() == false) {
         SendClientMessage( playerid, COLOR_RED, "You can only use this command as a regular!" );
         return 1;
@@ -42,10 +42,10 @@ lvp_Ignore( playerid, params[] )
         return 1;
     }
 
-    // We cannot allow ignoring moderators and/or administrators.
-    if (Player(ignoreID)->isModerator()) 
+    // We cannot allow ignoring administrators.
+    if (Player(ignoreID)->isAdministrator()) 
     {
-        SendClientMessage( playerid, COLOR_RED, "You cannot ignore moderators/admins!" );
+        SendClientMessage( playerid, COLOR_RED, "You cannot ignore administrators!" );
         return 1;
     }
 
@@ -110,9 +110,9 @@ lvp_Unignore( playerid, params[] )
 lvp_Ignored( playerid, params[] )
 {
     // The Ignored command simply returns a list of people this player
-    // currently has ignored. Moderators can pass on an extra argument.
+    // currently has ignored. Administrators can pass on an extra argument.
     new iCount, iCheckForPlayer = playerid, szName[ 24 ], szMessage[ 256 ],iRequestID ;
-    if (Player(playerid)->isModerator() && params[0]) {
+    if (Player(playerid)->isAdministrator() && params[0]) {
         param_shift( tempVar );
         iRequestID = SelectPlayer(tempVar);
         if (IsPlayerConnected( iRequestID )) {

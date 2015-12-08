@@ -111,7 +111,7 @@ OnPlayerPressRampKey(playerid)
 
     // We also have to check for anti ramp abuse...
 
-    if(Player(playerid)->isModerator() == false)
+    if(Player(playerid)->isAdministrator() == false)
     {
         for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
         {

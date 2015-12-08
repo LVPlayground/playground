@@ -91,7 +91,7 @@ class WeaponUtilities {
      */
     @command("weapons")
     public onWeaponsCommand(playerId, params[]) {
-        if (Player(playerId)->isModerator() == false)
+        if (Player(playerId)->isAdministrator() == false)
             return 0;
 
         new dialogCaption[32], dialogMessage[900], weaponName[32];

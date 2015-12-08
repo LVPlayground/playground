@@ -214,7 +214,7 @@ class GangCommands {
 
         // If a parameter has been given, it might be an administrator forcefully joining a gang.
         if (Command->parameterCount(params) != 0) {
-            if (Player(playerId)->isModerator() == false) {
+            if (Player(playerId)->isAdministrator() == false) {
                 SendClientMessage(playerId, Color::Information, "Usage: /gang join");
                 return 1;
             }
@@ -436,7 +436,7 @@ class GangCommands {
      */
     @switch(PlayerCommand, "gang")
     public onPlayerGangCommand(playerId, subjectId, params[]) {
-        if (playerId == subjectId || Player(playerId)->isModerator() == false)
+        if (playerId == subjectId || Player(playerId)->isAdministrator() == false)
             return 0;
 
         new message[128], gangId = GangPlayer(subjectId)->gangId();

@@ -21,7 +21,7 @@ public OnPlayerText(playerid, text[]) {
 
     CReaction__OnText(playerid, text);
 
-    // A muted player can't chat unless it's the admins/mods he wants to chat with.
+    // A muted player can't chat unless it's the admins he wants to chat with.
     if (MuteManager->isMuted(playerid) && text[0] != '@') {
         if (MuteManager->muteDuration(playerid) == -1)
             SendClientMessage(playerid, Color::Error, "You're permanently muted and won't be able to chat.");
@@ -64,7 +64,7 @@ public OnPlayerText(playerid, text[]) {
     if (text[0] == ';' && strlen(text) > 1) {
         format(message, sizeof(message), "** [%d] %s: %s", playerid, Player(playerid)->nicknameString(), text[1]);
 
-        if (gameplayhours[playerid] < 48 && Player(playerid)->isModerator() == false) {
+        if (gameplayhours[playerid] < 48 && Player(playerid)->isAdministrator() == false) {
             SendClientMessage(playerid, Color::Error, "You have to be online for at least 48 hours to use the regular-chat, and you have to be registered.");
             return 0;
         }
@@ -73,7 +73,7 @@ public OnPlayerText(playerid, text[]) {
             if (LegacyIsPlayerIgnored(subjectId, playerid) == true)
                 continue;
 
-            if (gameplayhours[subjectId] >= 48 || Player(subjectId)->isModerator() == true)
+            if (gameplayhours[subjectId] >= 48 || Player(subjectId)->isAdministrator() == true)
                 SendClientMessage(subjectId, Color::RegularChat, message);
         }
 
@@ -85,20 +85,27 @@ public OnPlayerText(playerid, text[]) {
 
     // Crew chat (@).
     if (text[0] == '@' && strlen(text) > 1) {
-        format(message, sizeof(message), "* %s %s (Id:%d): %s",
-            (Player(playerid)->isManagement() == true ? "Manager" :
-            Player(playerid)->isAdministrator() == true ? "Admin" :
-            Player(playerid)->isModerator() == true ? "Mod" : "Message from"),
+        new prefix[MAX_PLAYER_NAME];
+        if (!strcmp(Player(playerid)->nicknameString(), "Luce"))
+            format(prefix, sizeof(prefix), "Lady");
+        else if (Player(playerid)->isManagement() == true)
+            format(prefix, sizeof(prefix), "Manager");
+        else if (Player(playerid)->isAdministrator() == true)
+            format(prefix, sizeof(prefix), "Admin");
+        else
+            format(prefix, sizeof(prefix), "Message from");
+
+        format(message, sizeof(message), "* %s %s (Id:%d): %s", prefix,
             Player(playerid)->nicknameString(), playerid, text[1]);
 
         for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
-            if (Player(subjectId)->isConnected() == false || Player(subjectId)->isModerator() == false)
+            if (Player(subjectId)->isConnected() == false || Player(subjectId)->isAdministrator() == false)
                 continue;
 
             SendClientMessage(subjectId, Color::AdministratorColor, message);
         }
 
-        if (Player(playerid)->isModerator() == false) {
+        if (Player(playerid)->isAdministrator() == false) {
             format(message, sizeof(message), "Your message has been sent to the crew: {FFFFFF}%s", text[1]);
             SendClientMessage(playerid, Color::Success, message);
         }

@@ -25,7 +25,6 @@
 
 // Note: When adding more minigames, you have to edit the loop
 // in MinigamesHandler.pwn line: 437 so IsPlayerStatusMinigame properly works.
-// Also update the /dming command in Elements/Moderator/Commands.pwn
 // And don't forget to add an option to the /minigames menu!
 // - Jay
 

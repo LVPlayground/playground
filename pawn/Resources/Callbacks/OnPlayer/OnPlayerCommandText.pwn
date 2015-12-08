@@ -51,7 +51,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
     // If functionality is limited for this player then we need to check with the command whitelist
     // to see if they can execute the requested command. Otherwise we block it.
-    if (PlayerState(playerid)->hasLimitedFunctionality() && Player(playerid)->isModerator() == false &&
+    if (PlayerState(playerid)->hasLimitedFunctionality() && Player(playerid)->isAdministrator() == false &&
         IsCommandAvailableForLimitedFunctionality(cmd) == false) {
 
         switch (PlayerState(playerid)->currentState()) {
@@ -158,7 +158,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         return 1;
     }
 
-    if(CHideGame__GetPlayerState(playerid) == HS_STATE_PLAYING && Player(playerid)->isModerator() == false)
+    if(CHideGame__GetPlayerState(playerid) == HS_STATE_PLAYING && Player(playerid)->isAdministrator() == false)
     {
         if(strcmp(cmd, "/leave", true) != 0 && strcmp(cmd, "/lay", true) !=0 && strcmp(cmd, "/sit", true) !=0 && strcmp(cmd, "/find", true) !=0
         && strcmp(cmd, "/pm", true) !=0 && strcmp(cmd, "/r", true) !=0)
@@ -228,7 +228,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     }
 
 
-    if(PlayerInfo[playerid][PlayerStatus] == STATUS_DELIVERY && Player(playerid)->isModerator() == false)
+    if(PlayerInfo[playerid][PlayerStatus] == STATUS_DELIVERY && Player(playerid)->isAdministrator() == false)
     {
         ShowBoxForPlayer(playerid, "You're currently on the delivery mission! Get out of the truck to cancel the mission.");
         return 1;
@@ -444,7 +444,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 #if Feature::EnableDeathmatchCommands == 0
     if(strcmp(cmd, "/kill", true) == 0)
     {
-        if(IsPlayerInMinigame(playerid) && Player(playerid)->isModerator() == false)
+        if(IsPlayerInMinigame(playerid) && Player(playerid)->isAdministrator() == false)
         {
             ShowBoxForPlayer(playerid, "You can't kill yourself in a minigame! Are you stuck? Ask an admin! Type /leave to leave the minigame.");
             return 1;
@@ -553,15 +553,14 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(Rwtw,           4, PlayerLevel);
     lvp_command(minigaming,    10, PlayerLevel);
 
-    // Commands for  moderators:
-    lvp_command(clear,          5, ModeratorLevel);
-    lvp_command(crew,           4, ModeratorLevel);
-    lvp_command(show,           4, ModeratorLevel);
-    lvp_command(p,              1, ModeratorLevel);
-    lvp_command(t,              1, ModeratorLevel);
-    lvp_command(announce,       8, ModeratorLevel);
+    // Commands for  administrators:
+    lvp_command(clear,          5, AdministratorLevel);
+    lvp_command(crew,           4, AdministratorLevel);
+    lvp_command(show,           4, AdministratorLevel);
+    lvp_command(p,              1, AdministratorLevel);
+    lvp_command(t,              1, AdministratorLevel);
+    lvp_command(announce,       8, AdministratorLevel);
 
-    // Commands for administrators;
 #if Feature::EnableFightClub == 0
     lvp_command(resetfc,        7, AdministratorLevel);
     lvp_command(resetmatch,    10, AdministratorLevel);
@@ -569,13 +568,13 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(asay,           4, AdministratorLevel);
     lvp_command(reactiontest,  12, AdministratorLevel);
     lvp_command(fakeact,        7, AdministratorLevel);
-    lvp_command(chase,          5, ModeratorLevel);
-    lvp_command(fetch,          5, ModeratorLevel);
-    lvp_command(killtime,       8, ModeratorLevel);
+    lvp_command(chase,          5, AdministratorLevel);
+    lvp_command(fetch,          5, AdministratorLevel);
+    lvp_command(killtime,       8, AdministratorLevel);
     lvp_command(up,             2, AdministratorLevel);
     lvp_command(forward,        7, AdministratorLevel);
-    lvp_command(stopchase,      9, ModeratorLevel);
-    lvp_command(set,            3, ModeratorLevel);
+    lvp_command(stopchase,      9, AdministratorLevel);
+    lvp_command(set,            3, AdministratorLevel);
 
     // Commands for management
     lvp_command(man,            3, ManagementLevel);
@@ -966,7 +965,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             new Target, tName[2][MAX_PLAYER_NAME+1], Float:tCoord[3], sNear[MAX_PLAYERS];
 
             if(GetPlayerMoney(playerid) < 15000) return ShowBoxForPlayer(playerid, "This animation costs $15000." );
-            if(Time->currentTime() - canSlap[playerid] < 10 && Player(playerid)->isModerator() == false)
+            if(Time->currentTime() - canSlap[playerid] < 10 && Player(playerid)->isAdministrator() == false)
             {
                 ShowBoxForPlayer(playerid, "You can only slap every 10 seconds." );
                 return 1;
@@ -1272,12 +1271,9 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         new message[128], crewCount = 0, playerLevel[30];
         for (new player = 0; player <= PlayerManager->highestPlayerId(); player++) {
             if (Player(player)->isConnected() == false) continue;
-            if (Player(player)->isModerator() == false) continue;
+            if (Player(player)->isAdministrator() == false) continue;
 
-            if (Player(player)->isModerator() == true && Player(player)->isAdministrator() == false
-                && Player(player)->isManagement() == false)
-                format(playerLevel, sizeof(playerLevel), "Moderator");
-            else if (Player(player)->isAdministrator() == true && Player(player)->isManagement() == false)
+            if (Player(player)->isAdministrator() == true && Player(player)->isManagement() == false)
                 format(playerLevel, sizeof(playerLevel), "Administrator");
             else if (Player(player)->isManagement() == true)
                 format(playerLevel, sizeof(playerLevel), "Manager");
@@ -1299,8 +1295,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
                     new originalUsername[MAX_PLAYER_NAME+1];
                     UndercoverAdministrator(player)->getOriginalUsername(originalUsername, sizeof(originalUsername));
                     format(playerLevel, sizeof(playerLevel), "Undercover %s",
-                        (Player(player)->isManagement() ? "Manager" : Player(player)->isAdministrator() ? 
-                        "Administrator" : "Moderator"));
+                        (Player(player)->isManagement() ? "Manager" : "Administrator"));
 
                     format(message, sizeof(message), " %s {CCCCCC}(%s){FFFFFF} (Id:%d) - {FF8E02}%s",
                         Player(player)->nicknameString(), originalUsername, player, playerLevel);
@@ -1318,7 +1313,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     }
 
     if(strcmp(cmd, "/dev", false) == 0) {
-        if (Player(playerid)->isDeveloper() == true || Player(playerid)->isModerator() == true) {
+        if (Player(playerid)->isDeveloper() == true || Player(playerid)->isAdministrator() == true) {
             if (strlen(cmdtext) <= 5) {
                 SendClientMessage(playerid, Color::Information, "This command sends a message to #LVP.Dev.");
                 SendClientMessage(playerid, Color::Information, " Usage: /dev [message]");
@@ -1370,7 +1365,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if( GetPlayerMoney( playerid ) > 9999 || Player(playerid)->isModerator()){
+        if( GetPlayerMoney( playerid ) > 9999 || Player(playerid)->isAdministrator()){
 
             new Float:x;
             new Float:y;
@@ -1395,7 +1390,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
                 }
             }
 
-            if(Time->currentTime() - iDiveTime[playerid] > 1*60 || Player(playerid)->isModerator())
+            if(Time->currentTime() - iDiveTime[playerid] > 1*60 || Player(playerid)->isAdministrator())
             {
 
                 if(IsPlayerInAnyVehicle(pid) == 1)
@@ -1407,7 +1402,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
                         return 1;
                     }
 
-                    if (Player(playerid)->isModerator() == false)
+                    if (Player(playerid)->isAdministrator() == false)
                         GivePlayerMoney( playerid, -10000 );
 
                     new vehicleID;
@@ -1488,13 +1483,13 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if( GetPlayerMoney( playerid ) < 7499 && Player(playerid)->isModerator() == false)
+        if( GetPlayerMoney( playerid ) < 7499 && Player(playerid)->isAdministrator() == false)
         {
             SendClientMessage(playerid,COLOR_RED, "You don't have enough cash (7500 dollar)");
             return 1;
         }
 
-        if( Time->currentTime() - iDiveTime[playerid] < 1*60 && Player(playerid)->isModerator() == false)
+        if( Time->currentTime() - iDiveTime[playerid] < 1*60 && Player(playerid)->isAdministrator() == false)
         {
             SendClientMessage(playerid,COLOR_RED, "You can dive only once per 3 minutes");
             return 1;

@@ -22,7 +22,8 @@ class RaceParticipants {
   }
 
   // Loads the data for all participants from |database|. Returns a promise that will be resolved
-  // once all information has been successfully fetched from the database.
+  // once all information has been successfully fetched from the database. It's possible that no
+  // data has to be fetched if none of the participants are registered with us.
   loadParticipantData(raceId, database) {
     let users = [];
 
@@ -36,6 +37,9 @@ class RaceParticipants {
 
       users[participantUserId] = participant;
     });
+
+    if (!users.length)
+      return Promise.resolve();
 
     return database.fetchBestRaceResult(raceId, Object.keys(users)).then(results =>
         Object.keys(results).forEach(userId => users[userId].importBestResults(results[userId])));

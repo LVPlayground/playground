@@ -1314,7 +1314,7 @@ MyHelp:
     SendClientMessage(playerid, COLOR_WHITE, "Usage: /my [achievements/deathmessage/minigame/playerinfo/properties/ramp/skin/spawnmoney/stats]");
 
     if (Player(playerid)->isAdministrator() || UndercoverAdministrator(playerid)->isUndercoverAdministrator()) {
-        SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[allchat/armor/bank/cash/color/health/hide/(goto/save)loc/look/maptp]");
+        SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[allchat/armour/bank/cash/color/health/hide/(goto/save)loc/look/maptp]");
         SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[messagelevel/resetspawnweapons/spawnweapons/weapon/weather]");
     } else if (Player(playerid)->isAdministrator())
         SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[color/look/resetspawnweapons/teleport/weather]");

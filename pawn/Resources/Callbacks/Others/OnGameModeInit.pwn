@@ -83,8 +83,6 @@ public OnGameModeInit() {
 
     UsePlayerPedAnims();                        // Enables CJ running on all peds.
 
-    Streamer_VisibleItems(STREAMER_TYPE_OBJECT, 300);   // Restrict the maximum amount of visible objects to 50 less than the object limit just to be safe
-
     // Chainsaw pickup
     CreatePickup(341,3,2095.8220,1284.8751,10.8203);
 

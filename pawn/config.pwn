@@ -15,7 +15,7 @@
  */
 class Version {
     public const Major = 25;
-    public const Minor = 1;
+    public const Minor = 2;
 };
 
 /**
@@ -52,13 +52,6 @@ class Debug {
 // In case no database credentials have been supplied by earlier, private configuration files yet,
 // create the default settings. The same goes for the echo settings.
 #if !defined DatabaseCredentialsSupplied
-    #define DatabaseHostname    "127.0.0.1"
-    #define DatabasePort        3306
-
-    #define DatabaseUsername    "my_username"
-    #define DatabasePassword    "my_password"
-    #define DatabaseName        "my_database"
-
     #define PasswordSalt        "my_salt"
 
     #define BETA_TEST           1
@@ -77,21 +70,6 @@ class Debug {
  * @author Russell Krupke <russell@sa-mp.nl>
  */
 class Configuration {
-    // Hostname of the database server which the gamemode should be connecting with.
-    public const DatabaseHostname = DatabaseHostname;
-
-    // Port number that should be used to connect to the database.
-    public const DatabasePort = DatabasePort;
-
-    // Username that should be used when connecting to the database server.
-    public const DatabaseUsername = DatabaseUsername;
-
-    // Password that should be used when connecting to the database server.
-    public const DatabasePassword = DatabasePassword;
-
-    // Name of the database that information will be read from.
-    public const DatabaseName = DatabaseName;
-
     // What is the salt used to hash passwords more securely?
     public const PasswordSalt = PasswordSalt;
 

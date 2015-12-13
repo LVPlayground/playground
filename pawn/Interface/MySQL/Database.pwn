@@ -64,6 +64,10 @@ public OnQueryError(connectionId, query[], callback[], errno, error[]) {
  * @author Russell Krupke <russell@sa-mp.nl>
  */
 class Database {
+    // In which file has the MySQL connection information been stored? The file must contain an
+    // object with five keys: {hostname, username, password, database, port}.
+    const DatabaseConfigFile = "database.json";
+
     // The connection Id which the gamemode uses for the database.
     new m_connectionId = -1;
 
@@ -76,9 +80,38 @@ class Database {
         if (m_connectionId != -1)
             mysql_close(m_connectionId);
 
+        new Node: databaseConfig = JSON->parse(DatabaseConfigFile);
+        if (databaseConfig == JSON::InvalidNode) {
+            printf("[Database] ERROR: Unable to read the database configuration file.");
+            return;
+        }
+
+        new Node: hostnameNode = JSON->find(databaseConfig, "hostname"),
+            Node: usernameNode = JSON->find(databaseConfig, "username"),
+            Node: passwordNode = JSON->find(databaseConfig, "password"),
+            Node: databaseNode = JSON->find(databaseConfig, "database"),
+            Node: portNode = JSON->find(databaseConfig, "port");
+
+        if (hostnameNode == JSON::InvalidNode || JSON->getType(hostnameNode) != JSONString ||
+            usernameNode == JSON::InvalidNode || JSON->getType(usernameNode) != JSONString ||
+            passwordNode == JSON::InvalidNode || JSON->getType(passwordNode) != JSONString ||
+            databaseNode == JSON::InvalidNode || JSON->getType(databaseNode) != JSONString ||
+            portNode == JSON::InvalidNode || JSON->getType(portNode) != JSONInteger) {
+            printf("[Database] ERROR: The database configuration file is incomplete.");
+            return;
+        }
+
+        new hostname[64], username[64], password[64], database[64];
+        JSON->readString(hostnameNode, hostname, sizeof(hostname));
+        JSON->readString(usernameNode, username, sizeof(username));
+        JSON->readString(passwordNode, password, sizeof(password));
+        JSON->readString(databaseNode, database, sizeof(database));
+
+        new port = 3336;
+        JSON->readInteger(portNode, port);
+
         mysql_debug(Debug::EnableDatabaseLogging);
-        m_connectionId = mysql_connect(Configuration::DatabaseHostname, Configuration::DatabaseUsername,
-            Configuration::DatabasePassword, Configuration::DatabaseName, Configuration::DatabasePort);
+        m_connectionId = mysql_connect(hostname, username, password, database, port);
     }
 
     /**

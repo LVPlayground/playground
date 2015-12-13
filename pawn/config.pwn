@@ -104,6 +104,10 @@ class Feature {
     // near The Ship and a few vehicles.
     public const EnableChristmasDecorations = 1;
 
+    // Grants temporary VIP rights to all registered players during the festive period. The rights
+    // will not persist between sessions, and the user should be tempted to donate.
+    public const TemporaryVip = 1;
+
     // A present is dropped somewhere in Las Venturas; when a player picks it up, he receives a 
     // random gift.
     public const EnableGiftHunting = 0;

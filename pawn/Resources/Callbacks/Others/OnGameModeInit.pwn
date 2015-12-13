@@ -23,10 +23,6 @@ public OnGameModeInit() {
         return 1;
     }
 
-    // Increase the tickrate for the streamer plugin
-    // See http://wiki.sa-mp.com/wiki/Streamer_Plugin#Settings for more information around this function
-    Streamer_TickRate(150);
-
     // Initalize the Las Venturas Playground handlers - Note that the Gang base
     // handler is loaded at the end of the callback due to a textdraw issue.
 

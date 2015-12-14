@@ -280,7 +280,7 @@ lvp_slap(playerid, params[])
 
     new szSlapMsg[256];
 
-    new rand = random(28);
+    new rand = random(29);
 
     switch(rand)
     {
@@ -312,6 +312,7 @@ lvp_slap(playerid, params[])
     case 25: szSlapMsg = "motherfucking twat";
     case 26: szSlapMsg = "penis";
     case 27: szSlapMsg = "woman";
+    case 28: szSlapMsg = "Luce";
     default: szSlapMsg = "trout";
 
     }
@@ -1125,19 +1126,6 @@ MinigameHelp:
             return 1;
         }
 
-        param_shift_int(iAmount);
-        if(iAmount > 5000000)
-        {
-            SendClientMessage(playerid,COLOR_RED,"You cannot give yourself more than $5,000,000. This is to prevent abuse. Sorry :)");
-            return 1;
-        }
-
-        if(GetPlayerMoney(playerid) > 10000000)
-        {
-            SendClientMessage(playerid, COLOR_RED, "* To prevent abuse you cannot give yourself anymore money.");
-            return 1;
-        }
-
         GivePlayerMoney(playerid, iAmount);
         SendClientMessage(playerid,COLOR_GREEN, "* Done!");
         return 1;
@@ -1315,11 +1303,11 @@ MyHelp:
 
     if (Player(playerid)->isAdministrator() || UndercoverAdministrator(playerid)->isUndercoverAdministrator()) {
         SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[allchat/armour/bank/cash/color/health/hide/(goto/save)loc/look/maptp]");
-        SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[messagelevel/resetspawnweapons/spawnweapons/weapon/weather]");
+        SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[messagelevel/resetspawnweapons/spawnweapons/weapon/weather/time]");
     } else if (Player(playerid)->isAdministrator())
-        SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[color/look/resetspawnweapons/teleport/weather]");
+        SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[color/look/resetspawnweapons/teleport/weather/time]");
     else if (Player(playerid)->isVip())
-        SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[color/look/teleport/weather]");
+        SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[color/look/teleport/weather/time]");
 
     return 1;
 }

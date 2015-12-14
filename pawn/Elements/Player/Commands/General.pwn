@@ -1125,6 +1125,8 @@ MinigameHelp:
             SendClientMessage(playerid,COLOR_WHITE,"Usage: /my cash [amount]");
             return 1;
         }
+        
+        param_shift_int(iAmount);
 
         GivePlayerMoney(playerid, iAmount);
         SendClientMessage(playerid,COLOR_GREEN, "* Done!");

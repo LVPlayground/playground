@@ -999,7 +999,7 @@ charHelp:
 
         param_shift_int(amount);
         if (amount < MIN_START_MONEY || amount > MAX_START_MONEY) {
-            format(message, sizeof(message), "The amount must be between $%s and %$s.",
+            format(message, sizeof(message), "The amount must be between $%s and $%s.",
                 formatPrice(MIN_START_MONEY), formatPrice(MAX_START_MONEY));
 
             SendClientMessage(playerid, Color::Error, message);
@@ -1131,7 +1131,7 @@ MinigameHelp:
             SendClientMessage(playerid,COLOR_WHITE,"Usage: /my cash [amount]");
             return 1;
         }
-        
+
         param_shift_int(iAmount);
 
         GivePlayerMoney(playerid, iAmount);

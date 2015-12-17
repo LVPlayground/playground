@@ -145,20 +145,20 @@ static RandPickupLoc[RANDOM_MONEY_LOCATIONS][E_RAND_MONEY_BAG] = {
 	{1126.7863,2761.3123,10.1615,"Putting some holes"}, // LV golfcourse (gangbase)
 	{1867.3710,2865.7578,10.8359,"Nadal is no match for me"}, // LV Tenniscourts
     {1778.379028, -1942.235839, 13.567399, "Follow the damn train, CJ!"},
-    {-127.241584, 2258.672363, 28.366134, "Rest In Pieces"},
+    {-127.241584, 2258.672363, 28.366134, "Rest In Pieces"},// El Castillo del diablo 
     {885.105468, -1077.394653, 24.294555, "Big Devil, Little Devil"},
     {2503.900634, -1380.009033, 28.531250, "Cousin Mary"},
     {2776.443115, -2407.833007, 13.646309, "Weekend Soldiers"},
-    {2490.601806, -1668.930419, 13.335947, "G-Spot"},// Grovr Street
-    {2173.313964, 1285.673950, 24.475412, "Dark Horse"},
-    {-2431.113525, -1619.667114, 526.241149, "King's Last Speech"}, Top Of Mount Chiliad
+    {2490.601806, -1668.930419, 13.335947, "G-Spot"},// Grove Street
+    {2173.313964, 1285.673950, 24.475412, "Dark Horse"},// The Camel's Toe 
+    {-2431.113525, -1619.667114, 526.241149, "King's Last Speech"}, //Top Of Mount Chiliad
     {1124.901000, -1133.657958, 23.828125, "Fallen Stars"},
     {-2060.226562, 253.433715, 37.489437, "Seagulls and Heavy Machinery"},
     {-2203.042968, -2261.087646, 30.625000, "Tenpenny's Bong Hit"},
     {380.756652, -2020.669921, 10.250000, "Ferris Bueller's Day Off"},
     {1699.614257, 1450.929565, 10.790941, "Road to Liberty"},
     {2855.230957, 855.887573, 9.934514, "Export Memories"},
-    {2098.905273, -1648.859252, 13.526919, "Tagging Up Turf"},The First Spray you Have Spray In Offline [Not in Mulitiplayer]
+    {2098.905273, -1648.859252, 13.526919, "Tagging Up Turf"},//The First Spray you Have Spray In Offline [Not in Mulitiplayer]
     {1383.719604, 2184.903564, 11.023437, "My Babe's name is Ruth"},
     {1608.248535, 2778.006591, 12.531224, "Pandora's Box"}
 	};

@@ -6,6 +6,11 @@
     "COMMAND_ERROR_INSUFFICIENT_RIGHTS": "@error Sorry, this command is only available to %s.",
     "COMMAND_USAGE": "@usage %s",
 
+    "DEBUG_FRAME_COUNTER": "{33AA33}The server averaged %d FPS in the last %d seconds.",
+    "DEBUG_TRACE_INVALID_TIME": "@error A trace must last between 0 and 300 seconds.",
+    "DEBUG_TRACE_STARTED": "{33AA33}The trace you requested is now being recorded.",
+    "DEBUG_TRACE_FINISHED": "{33AA33}The trace you requested has finished recording.",
+
     "RACE_ERROR_NO_RACES_AVAILABLE": "@error Sorry, there are no races available right now.",
     "RACE_ERROR_INVALID_RACE_ID": "@error Sorry, that is not a known race. Type /race for an overview!",
     "RACE_ERROR_ALREADY_ENGAGED": "@error Sorry, you can't start a race while you're already engaged in something.",

@@ -262,6 +262,7 @@
     <DiskObject>\Interface\Enumerations.pwn</DiskObject>
     <DiskObject>\Interface\functions.pwn</DiskObject>
     <DiskObject>\Interface\Instrumentation.pwn</DiskObject>
+    <DiskObject>\Interface\JavaScriptBridge.pwn</DiskObject>
     <DiskObject>\Interface\JSON.pwn</DiskObject>
     <DiskObject>\Interface\main\</DiskObject>
     <DiskObject>\Interface\main\LVP.pwn</DiskObject>
@@ -455,7 +456,6 @@
     <DiskObject>\Resources\Minigames\Race\Race7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race9.pwn</DiskObject>
-    <DiskObject>\Interface\JavaScriptBridge.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

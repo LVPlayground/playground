@@ -59,6 +59,7 @@ class Player extends Extendable {
       throw new Error('Please do not instantiate the Player class. Use Player.get(playerId) instead.');
 
     this.id_ = playerId;
+    this.connected_ = true;
     this.name_ = pawnInvoke('GetPlayerName', 'iS', playerId);
     this.ipAddress_ = pawnInvoke('GetPlayerIp', 'iS', playerId);
     this.level_ = Player.LEVEL_PLAYER;
@@ -67,6 +68,14 @@ class Player extends Extendable {
 
   // Returns the id of this player. This attribute is read-only.
   get id() { return this.id_; }
+
+  // Returns whether the player is still connected to the server.
+  get connected() { return this.connected_; }
+
+  // Marks the player as having disconnected from the server.
+  markAsDisconnected() {
+    this.connected_ = false;
+  }
 
   // Returns or updates the name of this player. Changing the player's name is currently not
   // synchronized with the Pawn portion of the gamemode.
@@ -186,6 +195,7 @@ class Player extends Extendable {
     if (player.ipAddress != TEST_PLAYER_IDENTIFIER)
       throw new Error('The player with this id was not created by a test.');
 
+    players[player.id].markAsDisconnected();
     delete players[player.id];
   }
 };
@@ -247,8 +257,15 @@ self.addEventListener('playeractivitychange', event => {
 // Called when a player disconnects from the server. Removes the player from our registry. The
 // removal will be done at the end of the event loop, to make sure that the other playerdisconnect
 // listeners will still be able to retrieve the Player object.
-self.addEventListener('playerdisconnect', event =>
-    wait(0).then(() => delete players[event.playerid]));
+self.addEventListener('playerdisconnect', event => {
+  wait(0).then(() => {
+    if (!players.hasOwnProperty(event.playerid))
+      return;
+
+    players[event.playerid].markAsDisconnected();
+    delete players[event.playerid];
+  });
+});
 
 // Utility function: convert a player's level to a string.
 global.playerLevelToString = (level, plural = false) => {

@@ -404,11 +404,6 @@ lvp_set(playerId, params[]) {
         return 1;
 
     if (!strcmp(setParameter, "weather", true, 7)) {
-        if (Feature::EnableChristmasDecorations == 1) {
-            SendClientMessage(playerId, Color::Error, "* Christmas decorations have been enabled, overriding this setting.");
-            return 1;
-        }
-
         new weatherId = Command->integerParameter(params, 1);
         if (weatherId < 0 || (weatherId > 19 && weatherId != 150 && weatherId != 206)) {
             SendClientMessage(playerId, Color::Information, "Usage: /set weather [0-19/150/206]");
@@ -432,11 +427,6 @@ lvp_set(playerId, params[]) {
     }
 
     if (!strcmp(setParameter, "time", true, 4)) {
-        if (Feature::EnableChristmasDecorations == 1) {
-            SendClientMessage(playerId, Color::Error, "* Christmas decorations have been enabled, overriding this setting.");
-            return 1;
-        }
-
         if (Command->parameterCount(params) < 2)
             goto TimeHelp;
 

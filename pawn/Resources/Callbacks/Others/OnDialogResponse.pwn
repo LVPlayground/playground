@@ -256,7 +256,6 @@ stock deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputt
                     case 13: { Matches[matchId][gun1] = 35; } // Rocket Launcher
                     case 14: { Matches[matchId][gun1] = 37; } // Flamethrower
                     case 15: { Matches[matchId][gun1] = 38; } // Minigun
-                    case 16: { Matches[matchId][gun1] = FC_WEAPON_SATCHELS; } // Satchel + Detonator
                 }
 
                 CFightClub__ShowDialog(playerid, DIALOG_FIGHTCLUB_DUEL_WEAPONS_2);

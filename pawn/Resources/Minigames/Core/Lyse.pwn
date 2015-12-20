@@ -667,8 +667,6 @@ stock CLyse__SpawnPlayer(iPlayerID)
     GiveWeapon(iPlayerID, 31, 400);
     GiveWeapon(iPlayerID, 34, 20);
     GiveWeapon(iPlayerID, WEAPON_SHOTGUN, 40);
-    GiveWeapon(iPlayerID, WEAPON_SATCHEL, 1);
-    GiveWeapon(iPlayerID, WEAPON_BOMB,    1);
 
     SetPlayerArmour(iPlayerID, 0);
     SetPlayerHealth(iPlayerID, 100);

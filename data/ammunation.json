@@ -333,7 +333,7 @@
                 [ "Gustav", "ammunation_gustav", 121, 31, 12.0, 22.0, 30.0, 1 ],
                 [ "Anton", "ammunation_anton", 121, 31, 8.0, 18.0, 30.0, 1 ]
             ],
-            "weapons": [1, 5, 8, 9, 14, 16, 22, 24, 25, 26, 27, 28, 31, 32, 34, 39, 46],
+            "weapons": [1, 5, 8, 9, 14, 16, 22, 24, 25, 26, 27, 28, 31, 32, 34, 46],
             "armour_price": 50000
         },
         # Shared interior for Ammu-Nation outlets in Willowfield, Angel Pine, Fort Carson and 

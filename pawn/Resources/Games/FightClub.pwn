@@ -54,7 +54,6 @@ Original Author: Mattias Kristiansson (iou)
 #define FC_MIN_LOCATIONS        1
 
 #define FC_WEAPON_NONE          0
-#define FC_WEAPON_SATCHELS      39
 #define FC_WEAPON_AMMO          999999
 
 #define FC_MSG_MATCHES          2
@@ -278,8 +277,7 @@ CFightClub__Initialize()
     Sniper Rifle\n\
     Rocket Launcher\n\
     Flamethrower\n\
-    Minigun\n\
-    Satchel Charge + Detonator";
+    Minigun";
 
     FightClubWeaponString2 = // Weaponstring for Weapon Dialog 2-5
     "> None <\n\
@@ -298,8 +296,7 @@ CFightClub__Initialize()
     Sniper Rifle\n\
     Rocket Launcher\n\
     Flamethrower\n\
-    Minigun\n\
-    Satchel Charge + Detonator";
+    Minigun";
 
     FightClubLocationString = // Location string for Location Dialog
     "LV FightClub\n\
@@ -490,16 +487,11 @@ CFightClub__OnInvite(playerid, inviteid)
     format(string, sizeof(string), "You've been invited by %s to the FightClub. (Rounds: %d | Location: %s)", PlayerName(playerid), Matches[matchid][rounds], CFightClub__GetLocationName(Matches[matchid][location]));
     SendClientMessage(inviteid, COLOR_YELLOW, string);
 
-    if(Matches[matchid][gun1] != FC_WEAPON_NONE && Matches[matchid][gun1] != FC_WEAPON_SATCHELS) GetWeaponName(Matches[matchid][gun1], fcWeapon[0], 50);
-    else if(Matches[matchid][gun1] == FC_WEAPON_SATCHELS) fcWeapon[0] = "Satchels";
-    if(Matches[matchid][gun2] != FC_WEAPON_NONE && Matches[matchid][gun2] != FC_WEAPON_SATCHELS) GetWeaponName(Matches[matchid][gun2], fcWeapon[1], 50);
-    else if(Matches[matchid][gun2] == FC_WEAPON_SATCHELS) fcWeapon[1] = "Satchels";
-    if(Matches[matchid][gun3] != FC_WEAPON_NONE && Matches[matchid][gun3] != FC_WEAPON_SATCHELS) GetWeaponName(Matches[matchid][gun3], fcWeapon[2], 50);
-    else if(Matches[matchid][gun3] == FC_WEAPON_SATCHELS) fcWeapon[2] = "Satchels";
-    if(Matches[matchid][gun4] != FC_WEAPON_NONE && Matches[matchid][gun4] != FC_WEAPON_SATCHELS) GetWeaponName(Matches[matchid][gun4], fcWeapon[3], 50);
-    else if(Matches[matchid][gun4] == FC_WEAPON_SATCHELS) fcWeapon[3] = "Satchels";
-    if(Matches[matchid][gun5] != FC_WEAPON_NONE && Matches[matchid][gun5] != FC_WEAPON_SATCHELS) GetWeaponName(Matches[matchid][gun5], fcWeapon[4], 50);
-    else if(Matches[matchid][gun5] == FC_WEAPON_SATCHELS) fcWeapon[4] = "Satchels";
+    if(Matches[matchid][gun1] != FC_WEAPON_NONE) GetWeaponName(Matches[matchid][gun1], fcWeapon[0], 50);
+    if(Matches[matchid][gun2] != FC_WEAPON_NONE) GetWeaponName(Matches[matchid][gun2], fcWeapon[1], 50);
+    if(Matches[matchid][gun3] != FC_WEAPON_NONE) GetWeaponName(Matches[matchid][gun3], fcWeapon[2], 50);
+    if(Matches[matchid][gun4] != FC_WEAPON_NONE) GetWeaponName(Matches[matchid][gun4], fcWeapon[3], 50);
+    if(Matches[matchid][gun5] != FC_WEAPON_NONE) GetWeaponName(Matches[matchid][gun5], fcWeapon[4], 50);
 
     for(new i = 0; i < 5; i++)
     {
@@ -1454,7 +1446,6 @@ CFightClub__GiveMatchWeapons(matchid)
 {
     new iPlayer1 = Matches[matchid][player1];
     new iPlayer2 = Matches[matchid][player2];
-    new IsSatchels;
     new gGun[5];
     gGun[0] = Matches[matchid][gun1];
     gGun[1] = Matches[matchid][gun2];
@@ -1464,24 +1455,11 @@ CFightClub__GiveMatchWeapons(matchid)
 
     for(new i = 0; i < 5; i++)
     {
-        if(gGun[i] == FC_WEAPON_SATCHELS) // If player has chosen satchels somewhere, tell the script to add it last (fixes the "satchels removes weapons that comes after" bug)
-        {
-            IsSatchels = 1;
-            continue;
-        }
         if(gGun[i] != FC_WEAPON_NONE)
         {
             GiveWeapon(iPlayer1, gGun[i], FC_WEAPON_AMMO);
             GiveWeapon(iPlayer2, gGun[i], FC_WEAPON_AMMO);
         }
-    }
-
-    if(IsSatchels) // Gives satchels after they've gotten all other weapons
-    {
-        GiveWeapon(iPlayer1, FC_WEAPON_SATCHELS, FC_WEAPON_AMMO);
-        GiveWeapon(iPlayer2, FC_WEAPON_SATCHELS, FC_WEAPON_AMMO);
-        GiveWeapon(iPlayer1, 364, 1);
-        GiveWeapon(iPlayer2, 364, 1);
     }
 
     return 1;
@@ -1560,7 +1538,6 @@ CFightClub__GetPickedWeapon(listitem)
         case 14: { return 35; } // Rocket Launcher
         case 15: { return 37; } // Flamethrower
         case 16: { return 38; } // Minigun
-        case 17: { return FC_WEAPON_SATCHELS; } // Satchel + Detonator
     }
     return FC_WEAPON_NONE;
 }

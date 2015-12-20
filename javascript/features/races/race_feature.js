@@ -14,7 +14,7 @@ class RaceFeature extends Feature {
     super(playground);
 
     // Races depend on the death feed for disabling it during a race.
-    let deathFeed = this.defineDependency('death_feed');
+    let deathFeed = this.defineDependency('deathFeed');
 
     this.raceManager_ = new RaceManager(playground.database, deathFeed);
     this.raceCommands_ = new RaceCommands(playground.commandManager, this.raceManager_);

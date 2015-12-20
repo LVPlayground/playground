@@ -6,13 +6,19 @@
 class Feature {
   constructor(playground) {
     this.playground_ = playground;
+    this.dependencies_ = {};
   }
 
-  // Defines a dependency on |feature|. If |feature| cannot be found by the feature manager, an
-  // exception will be thrown as dependencies must be satisfyable. Furthermore, there may not be any
-  // circular dependencies in Las Venturas Playground.
-  defineDependency(feature) {
-    return this.playground_.featureManager.defineDependency(this, feature);
+  // Defines a dependency on |featureName|. An exception will be thrown if the dependency could not
+  // be declared. There may not be any circular dependencies in Las Venturas Playground. The created
+  // dependency will be returned. This method is safe to be called any number of times.
+  defineDependency(featureName) {
+    if (!this.dependencies_.hasOwnProperty(featureName)) {
+      this.dependencies_[featureName] =
+          this.playground_.featureManager.defineDependency(this, featureName);
+    }
+
+    return this.dependencies_[featureName];
   }
 };
 

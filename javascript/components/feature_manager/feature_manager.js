@@ -2,38 +2,62 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let Feature = require('components/feature_manager/feature.js');
+let DependencyGraph = require('components/feature_manager/dependency_graph.js'),
+    Feature = require('components/feature_manager/feature.js');
 
 // The feature manager owns all the features available in the JavaScript implementation of the
 // server, provides cross-feature interfaces and access to many of the shared objects.
 class FeatureManager {
-  constructor() {
+  constructor(playground) {
+    this.playground_ = playground;
+    this.dependencyGraph_ = new DependencyGraph();
+    this.registeredFeatures_ = null;
     this.features_ = {};
   }
 
-  // Loads all the |features|. The |features| parameter is expected to be an object where the key
-  // maps to the feature's name, and the value to the function to be instantiated for the feature.
-  load(playground, features) {
-    Object.keys(features).forEach(feature => {
-      let instance = new features[feature](playground);
-      if (!(instance instanceof Feature))
-        throw new Error('All features must extend the Feature class (failed for "' + feature + '").');
+  // Loads all the |features|. The |features| will first be registered, then loaded in random order
+  // (per JavaScript map semantics). When a feature defines a dependency on another feature that has
+  // not been loaded yet, it will be loaded automatically.
+  load(features) {
+    this.registeredFeatures_ = features;
 
-      this.features_[feature] = instance;
-    });
+    Object.keys(features).forEach(feature => this.ensureLoadFeature(feature));
   }
 
-  // |feature|, an instance, defines a dependency on |dependency|, a feature's name. Throws an
-  // exception when |dependency| does not exist, or if |dependency| either directly or indirectly
-  // depends on |feature|, as circular dependencies are not allowed.
-  defineDependency(feature, dependency) {
-    // TODO: Maintain a dependency graph.
-    // TODO: Instantiate features if they haven't been loaded yet.
+  // Returns whether |feature| is a registered feature in this manager.
+  hasFeature(feature) {
+    return this.registeredFeatures_.hasOwnProperty(feature);
+  }
 
-    if (!this.features_.hasOwnProperty(dependency))
-      throw new Error('Unable to declare a dependency on "' + dependency + '": feature does not exist.');
+  // Lazily loads the |feature| - returns the existing instance if it already had been initialized
+  // in the past, or will create and initialize a new instance otherwise.
+  ensureLoadFeature(feature) {
+    if (this.features_.hasOwnProperty(feature))
+      return this.features_[feature];
 
-    return this.features_[dependency];
+    if (!this.hasFeature(feature))
+      throw new Error('No feature named "' + feature + '" is known. Did you define it in playground.js?');
+
+    let instance = new this.registeredFeatures_[feature](this.playground_);
+    if (!(instance instanceof Feature))
+      throw new Error('All features must extend the Feature class (failed for "' + feature + '").');
+
+    this.features_[feature] = instance;
+    return instance;
+  }
+
+  // Defines a dependency from |feature| (instance) to |dependencyName|. Throws an exception when
+  // the dependency does not exist, or a circular dependency is being created.
+  defineDependency(feature, dependencyName) {
+    if (!this.hasFeature(dependencyName))
+      throw new Error('Unable to declare a dependency on "' + dependencyName + '": feature does not exist.');
+
+    let dependency = this.ensureLoadFeature(dependencyName);
+    if (this.dependencyGraph_.isCircularDependency(feature, dependency))
+      throw new Error('Unable to declare a dependency on "' + dependencyName + '": this would create a circular dependency.');
+
+    this.dependencyGraph_.createDependencyEdge(feature, dependency);
+    return dependency;
   }
 };
 

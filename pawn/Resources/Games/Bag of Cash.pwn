@@ -57,7 +57,7 @@ static RandPickupLoc[RANDOM_MONEY_LOCATIONS][E_RAND_MONEY_BAG] = {
 	{2102.4160,-104.2844,2.2747,"Wheelchair"}, // In a small town, just after crossing the export point.
 	{389.3819,-2028.5193,34.4802,"Round she goes!"}, // Ferris Wheel in LS
 	{654.6223,866.2914,-33.8961,"Explosive situation"}, // Hunter Quarry, near the Blackfield Chapel
-	{-418.2117,1363.3513,12.6237,"Cave"}, // Somewhere in Fort Carson.
+	{-418.2117,1363.3513,12.6237,"The Cave"}, // Somewhere in Fort Carson.
 	{-2888.0156,2435.5051,201.6494,"Golden Gate"}, // Gant Bridge, SF. The bag is located somewhere on top of the hill
 	{-824.9183,532.8306,1357.0803,"Liberty City"}, // Liberty City
 	{-1600.9792,-2666.6938,59.6395,"Fire extinguisher"}, // Whetstone, near Mt. Chilliad, where there's a gas station and a fire extinguisher pickup
@@ -132,7 +132,7 @@ static RandPickupLoc[RANDOM_MONEY_LOCATIONS][E_RAND_MONEY_BAG] = {
 	{-814.2324,1815.1835,7.0000,"Hooverdam Power Plant"}, // This dam depicts a real existing dam in Nevada named 'Hoover dam' The desert around this are depicts the Mojave desert.
 	{1786.1646,-1305.1372,13.6168,"Los Santos Business Center"}, // LS Business center
 	{2173.4187,-1996.9084,19.7871,"Tired?"}, // Referring to the tires
-	{773.3044,3.6847,1000.7162,"Do you even lift?"}, // Ganton gym
+	{773.3044,3.6847,1000.7162,"Do you even Know lift?"}, // Ganton gym
 	{2450.3057,2117.9614,20.5502,"Follow the Rainbow"}, // Under the rainbow colored arrow, LV around casino's
 	{2522.9819,2814.9714,25.6570,"Sniper"}, // KACC 1
 	{2819.0784,1296.0344,10.9609,"Linden's location"}, // In a bush at Linden station
@@ -145,20 +145,20 @@ static RandPickupLoc[RANDOM_MONEY_LOCATIONS][E_RAND_MONEY_BAG] = {
 	{1126.7863,2761.3123,10.1615,"Putting some holes"}, // LV golfcourse (gangbase)
 	{1867.3710,2865.7578,10.8359,"Nadal is no match for me"}, // LV Tenniscourts
     {1778.379028, -1942.235839, 13.567399, "Follow the damn train, CJ!"},
-    {-127.241584, 2258.672363, 28.366134, "Rest In Pieces"},
+    {-127.241584, 2258.672363, 28.366134, "Rest In Pieces"},// El Castillo del diablo 
     {885.105468, -1077.394653, 24.294555, "Big Devil, Little Devil"},
     {2503.900634, -1380.009033, 28.531250, "Cousin Mary"},
     {2776.443115, -2407.833007, 13.646309, "Weekend Soldiers"},
-    {2490.601806, -1668.930419, 13.335947, "G-Spot"},
-    {2173.313964, 1285.673950, 24.475412, "Dark Horse"},
-    {-2431.113525, -1619.667114, 526.241149, "King's Last Speech"},
+    {2490.601806, -1668.930419, 13.335947, "G-Spot"},// Grove Street
+    {2173.313964, 1285.673950, 24.475412, "Dark Horse"},// The Camel's Toe 
+    {-2431.113525, -1619.667114, 526.241149, "King's Last Speech"}, //Top Of Mount Chiliad
     {1124.901000, -1133.657958, 23.828125, "Fallen Stars"},
     {-2060.226562, 253.433715, 37.489437, "Seagulls and Heavy Machinery"},
     {-2203.042968, -2261.087646, 30.625000, "Tenpenny's Bong Hit"},
     {380.756652, -2020.669921, 10.250000, "Ferris Bueller's Day Off"},
     {1699.614257, 1450.929565, 10.790941, "Road to Liberty"},
     {2855.230957, 855.887573, 9.934514, "Export Memories"},
-    {2098.905273, -1648.859252, 13.526919, "Tagging Up Turf"},
+    {2098.905273, -1648.859252, 13.526919, "Tagging Up Turf"},//The First Spray you Have Spray In Offline [Not in Mulitiplayer]
     {1383.719604, 2184.903564, 11.023437, "My Babe's name is Ruth"},
     {1608.248535, 2778.006591, 12.531224, "Pandora's Box"}
 	};

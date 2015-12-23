@@ -1230,7 +1230,7 @@ lvp_show(playerId, params[]) {
 
     if (!strcmp(showParameter, "beg", true, 3)) {
         showInfo = true;
-        format(g_message, sizeof(g_message), "Do not beg for money! Earn your own! Read /help 2.");
+        format(g_message, sizeof(g_message), "Do not beg for money! Earn your own! Read /help");
     }
 
     if (!strcmp(showParameter, "rules", true, 5)) {

@@ -215,8 +215,8 @@ class PlayerStatisticsInterface {
         PlayerTextDrawSetString(playerId, m_playerStatisticsTextDraw[3][playerId], statisticString);
 
         // Packetloss percentage
-        format(statisticString, sizeof(statisticString), "%.1f%", NetStats_PacketLossPercent(playerId));
-        PlayerTextDrawSetString(playerId, m_playerStatisticsTextDraw[4][playerId], statisticString);
+        //format(statisticString, sizeof(statisticString), "%.1f%", NetStats_PacketLossPercent(playerId));
+        //PlayerTextDrawSetString(playerId, m_playerStatisticsTextDraw[4][playerId], statisticString);
 
         // Kills
         format(statisticString, sizeof(statisticString), "%d", iPlayerSesKills[playerId]);

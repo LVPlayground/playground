@@ -209,7 +209,10 @@ class BanManager {
      * @param reason The reason for which the player is being kicked.
      */
     public recordKickEntry(playerId, administratorId, reason[]) {
-        this->createDatabaseEntry("kick", administratorId, playerId, reason);
+        new banIpAddress[16];
+        format(banIpAddress, sizeof(banIpAddress), Player(playerId)->ipAddressString());
+
+        this->createDatabaseEntry("kick", administratorId, playerId, reason, banIpAddress);
     }
 
     /**

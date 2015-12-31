@@ -146,7 +146,7 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
     public onVehicleStreamIn(playerId) {
         CLyse__OnVehicleStreamIn(vehicleId, playerId);
 
-        new bool: vehicleOccupied = false, bool: isTrailerAndAttached = false;
+        new bool: vehicleOccupied = false;
         for (new otherPlayerId = 0; otherPlayerId <= PlayerManager->highestPlayerId(); ++otherPlayerId) {
             if (Player(otherPlayerId)->isConnected() == false)
                 continue; // the player isn't connected to the server.
@@ -157,9 +157,10 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
             }
         }
 
-        new vehicleModelId = GetVehicleModel(vehicleId);
+        new vehicleModelId = GetVehicleModel(vehicleId), vehiclePoolSize = GetVehiclePoolSize(),
+            bool: isTrailerAndAttached = false;
         if (VehicleModel->isTrailer(vehicleModelId)) {
-            for (new otherVehicleId = 0; otherVehicleId <= GetVehiclePoolSize(); ++otherVehicleId) {
+            for (new otherVehicleId = 0; otherVehicleId <= vehiclePoolSize; ++otherVehicleId) {
                 if (GetVehicleTrailer(otherVehicleId) == vehicleId) {
                     isTrailerAndAttached = true;
                     break;

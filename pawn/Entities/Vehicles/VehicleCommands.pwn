@@ -610,20 +610,47 @@ class VehicleCommands {
         if (Player(playerId)->isAdministrator() == false)
             return 0;
 
-        for (new vehicleId = 1; vehicleId <= MAX_VEHICLES; vehicleId++) {
-            if (LegacyGetGtaVehicleId() == vehicleId)
+        new vehiclePoolSize = GetVehiclePoolSize();
+        for (new vehicleId = 1; vehicleId <= vehiclePoolSize; vehicleId++) {
+            if (LegacyGetGtaVehicleId() == vehicleId || Vehicle(vehicleId)->isValid() == false) {
                 continue;
-
-            new bool: vehicleOccupied = false;
-            for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
-                if (IsPlayerInVehicle(subjectId, vehicleId)) {
-                    vehicleOccupied = true;
-                    break;
-                }
             }
 
-            if (vehicleOccupied == false)
-                SetVehicleToRespawn(vehicleId);
+            if (VehicleModel->isTrailer(GetVehicleModel(vehicleId))) {
+                new bool: isThisTrailerInUse = false, otherVehicleId = 1;
+                for (otherVehicleId = 1; otherVehicleId <= vehiclePoolSize; otherVehicleId++) {
+                    if (GetVehicleTrailer(otherVehicleId) == vehicleId) {
+                        isThisTrailerInUse = true;
+                        break;
+                    }
+                }
+
+                if (isThisTrailerInUse == true) {
+                    for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
+                        if (!IsPlayerInVehicle(subjectId, otherVehicleId)) {
+                            SetVehicleToRespawn(vehicleId);
+                            SetVehicleToRespawn(otherVehicleId);
+                            break;
+                        }
+                    }
+                }
+                else {
+                    SetVehicleToRespawn(vehicleId);
+                }
+            }
+            else {
+                new bool: vehicleOccupied = false;
+                for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
+                    if (IsPlayerInVehicle(subjectId, vehicleId)) {
+                        vehicleOccupied = true;
+                        break;
+                    }
+                }
+
+                if (vehicleOccupied == false && GetVehicleTrailer(vehicleId) == 0) {
+                    SetVehicleToRespawn(vehicleId);
+                }
+            }
         }
 
         new message[128];

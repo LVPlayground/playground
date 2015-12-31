@@ -146,23 +146,40 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
     public onVehicleStreamIn(playerId) {
         CLyse__OnVehicleStreamIn(vehicleId, playerId);
 
-        new bool: vehicleOccupied = false;
+        new bool: vehicleOccupied = false, bool: isTrailerAndAttached = false;
         for (new otherPlayerId = 0; otherPlayerId <= PlayerManager->highestPlayerId(); ++otherPlayerId) {
             if (Player(otherPlayerId)->isConnected() == false)
                 continue; // the player isn't connected to the server.
 
-            if (!IsPlayerInVehicle(otherPlayerId, vehicleId))
-                continue; // the player isn't driving the vehicle closest to us.
-
-            vehicleOccupied = true;
-            break;
+            if (IsPlayerInVehicle(otherPlayerId, vehicleId)) {
+                vehicleOccupied = true;
+                break;
+            }
         }
 
-        if (vehicleOccupied == false) {
-            new Float: savedPosition[4];
-            Vehicle(vehicleId)->getPositionAndRotation(savedPosition[0], savedPosition[1],
-                savedPosition[2], savedPosition[3]);
-            SetVehicleZAngle(vehicleId, savedPosition[3]);
+        new vehicleModelId = GetVehicleModel(vehicleId);
+        if (VehicleModel->isTrailer(vehicleModelId)) {
+            for (new otherVehicleId = 0; otherVehicleId <= GetVehiclePoolSize(); ++otherVehicleId) {
+                if (GetVehicleTrailer(otherVehicleId) == vehicleId) {
+                    isTrailerAndAttached = true;
+                    break;
+                }
+            }            
+        }
+
+        new Float: vehicleSpawnPosition[4], Float: vehicleCurrentZAngle;
+        Vehicle(vehicleId)->getPositionAndRotation(vehicleSpawnPosition[0], vehicleSpawnPosition[1],
+            vehicleSpawnPosition[2], vehicleSpawnPosition[3]);
+        GetVehicleZAngle(vehicleId, vehicleCurrentZAngle);
+
+        // Check if empty vehicle is within 5 meter(?) of his spawnposition
+        if (GetVehicleDistanceFromPoint(vehicleId, vehicleSpawnPosition[0],
+                vehicleSpawnPosition[1],
+                vehicleSpawnPosition[2]) <= 5.0 &&
+            vehicleCurrentZAngle != vehicleSpawnPosition[3] &&
+            (vehicleOccupied == false || GetVehicleTrailer(vehicleId) == 0) && 
+            isTrailerAndAttached == false) {
+            SetVehicleZAngle(vehicleId, vehicleSpawnPosition[3]);
         }
 
         // If a player does not have access to enter a vehicle, lock its doors.

@@ -81,8 +81,8 @@ class PlayerStatisticsInterface {
         PlayerTextDrawTextSize(playerId, m_playerStatisticsTextDraw[0][playerId], 0.0, 95.0);
 
         // The 'Ping/FPS/Loss' string textdraw.
-        m_playerStatisticsTextDraw[1][playerId] = CreatePlayerTextDraw(playerId, 512.0, 373.0,
-            "PING            FPS           LOSS");
+        m_playerStatisticsTextDraw[1][playerId] = CreatePlayerTextDraw(playerId, 532.0, 373.0,
+            "PING            FPS");//           LOSS");
 
         PlayerTextDrawBackgroundColor(playerId, m_playerStatisticsTextDraw[1][playerId], -1);
         PlayerTextDrawFont(playerId, m_playerStatisticsTextDraw[1][playerId], 2);
@@ -93,7 +93,7 @@ class PlayerStatisticsInterface {
         PlayerTextDrawSetShadow(playerId, m_playerStatisticsTextDraw[1][playerId], 0);
 
         // The 'Ping' value textdraw.
-        m_playerStatisticsTextDraw[2][playerId] = CreatePlayerTextDraw(playerId, 520.0, 381.0, "_");
+        m_playerStatisticsTextDraw[2][playerId] = CreatePlayerTextDraw(playerId, 540.0, 381.0, "_");
 
         PlayerTextDrawAlignment(playerId, m_playerStatisticsTextDraw[2][playerId], 2);
         PlayerTextDrawBackgroundColor(playerId, m_playerStatisticsTextDraw[2][playerId], 255);
@@ -104,7 +104,7 @@ class PlayerStatisticsInterface {
         PlayerTextDrawSetProportional(playerId, m_playerStatisticsTextDraw[2][playerId], 1);
 
         // The 'FPS' value textdraw.
-        m_playerStatisticsTextDraw[3][playerId] = CreatePlayerTextDraw(playerId, 553.0, 381.0, "_");
+        m_playerStatisticsTextDraw[3][playerId] = CreatePlayerTextDraw(playerId, 573.0, 381.0, "_");
 
         PlayerTextDrawAlignment(playerId, m_playerStatisticsTextDraw[3][playerId], 2);
         PlayerTextDrawBackgroundColor(playerId, m_playerStatisticsTextDraw[3][playerId], 255);
@@ -115,15 +115,15 @@ class PlayerStatisticsInterface {
         PlayerTextDrawSetProportional(playerId, m_playerStatisticsTextDraw[3][playerId], 1);
 
         // The 'Packetloss percentage' value textdraw.
-        m_playerStatisticsTextDraw[4][playerId] = CreatePlayerTextDraw(playerId, 590.0, 381.0, "_");
+        //m_playerStatisticsTextDraw[4][playerId] = CreatePlayerTextDraw(playerId, 590.0, 381.0, "_");
 
-        PlayerTextDrawAlignment(playerId, m_playerStatisticsTextDraw[4][playerId], 2);
-        PlayerTextDrawBackgroundColor(playerId, m_playerStatisticsTextDraw[4][playerId], 255);
-        PlayerTextDrawFont(playerId, m_playerStatisticsTextDraw[4][playerId], 3);
-        PlayerTextDrawLetterSize(playerId, m_playerStatisticsTextDraw[4][playerId], 0.349999, 1.1);
-        PlayerTextDrawColor(playerId, m_playerStatisticsTextDraw[4][playerId], Color::PlayerStatistics);
-        PlayerTextDrawSetOutline(playerId, m_playerStatisticsTextDraw[4][playerId], 1);
-        PlayerTextDrawSetProportional(playerId, m_playerStatisticsTextDraw[4][playerId], 1);
+        //PlayerTextDrawAlignment(playerId, m_playerStatisticsTextDraw[4][playerId], 2);
+        //PlayerTextDrawBackgroundColor(playerId, m_playerStatisticsTextDraw[4][playerId], 255);
+        //PlayerTextDrawFont(playerId, m_playerStatisticsTextDraw[4][playerId], 3);
+        //PlayerTextDrawLetterSize(playerId, m_playerStatisticsTextDraw[4][playerId], 0.349999, 1.1);
+        //PlayerTextDrawColor(playerId, m_playerStatisticsTextDraw[4][playerId], Color::PlayerStatistics);
+        //PlayerTextDrawSetOutline(playerId, m_playerStatisticsTextDraw[4][playerId], 1);
+        //PlayerTextDrawSetProportional(playerId, m_playerStatisticsTextDraw[4][playerId], 1);
 
         // The 'Kills/Deaths/Ratio' string textdraw.
         m_playerStatisticsTextDraw[5][playerId] = CreatePlayerTextDraw(playerId, 513.0, 409.0,

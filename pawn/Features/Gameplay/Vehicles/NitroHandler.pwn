@@ -11,7 +11,7 @@
  */
 class NitroHandler {
     // Keeps track whether the specific vehicle has infite nos attached.
-    new bool: m_vehicleHasInfiniteNosAttached[MAX_VEHICLES];
+    new bool: m_vehicleHasInfiniteNosAttached[MAX_VEHICLES] = false;
 
     /**
      * To attach nitro to a vehicle, players can use /nos to attach. When no params are used then it will
@@ -47,7 +47,7 @@ class NitroHandler {
         }
 
         // Set to a high amount so we can easier check if the player wants to buy infinite nitro
-        if (!strcmp(parameterValue, "inf", false) || !strcmp(parameterValue, "infinite", false)) {
+        if (!strcmp(parameterValue, "inf", true, 3)) {
             amountOfNitro = 999;
         }
 
@@ -96,8 +96,7 @@ class NitroHandler {
                 }
             }
 
-            default:
-            {
+            default: {
                 return SendClientMessage(playerId, Color::Information, "Usage: /nos [2/5/10/inf(inite)]");
             }
         }

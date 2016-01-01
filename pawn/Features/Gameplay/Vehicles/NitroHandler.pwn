@@ -47,7 +47,7 @@ class NitroHandler {
         }
 
         // Set to a high amount so we can easier check if the player wants to buy infinite nitro
-        if (!strcmp(parameterValue, "inf", true, 3)) {
+        if (!strcmp(parameterValue, "inf", true) || !strcmp(parameterValue, "infinite", true)) {
             amountOfNitro = 999;
         }
 

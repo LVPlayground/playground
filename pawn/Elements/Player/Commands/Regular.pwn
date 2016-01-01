@@ -173,10 +173,19 @@ lvp_Settings( playerid, params[] )
         return 1;
     }
 
-    // Do we have any parameters passed on?
-    if (!strlen(params)) goto l_Explain;
-    param_shift( szOption );
+    param_shift(szOption);
 
+    // Do we have any parameters passed on?
+    if (!strlen(szOption)) goto l_Explain;
+
+    // First check whether any /settings command has been registered by individual features, as this
+    // takes precedence over anything defined in the if/else list that follows. Syntax for any
+    // methods listening to this switch is: onSettingsFooCommand(playerId, params[]).
+    new result = Annotation::ExpandSwitch<SettingsCommand>(szOption, playerid, params);
+    if (result != -1) // it can still either be 0 or 1, but something handled it.
+        return result;
+
+    /*
     // Aight, first off, toggling of the news messages for this user.
     if (strcmp( szOption, "newsmsg", true, 7 ) == 0) 
     {
@@ -208,6 +217,7 @@ lvp_Settings( playerid, params[] )
         }
         return 1;
     }
+    */
 
     // Let's also do /showmessages
     if (strcmp( szOption, "showmsg", true, 7 ) == 0)

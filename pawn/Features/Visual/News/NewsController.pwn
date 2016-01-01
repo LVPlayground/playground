@@ -31,6 +31,9 @@ class NewsController {
     // Are news messages currently hidden from view for a certain player?
     new bool: m_messagesDisabledForPlayer[MAX_PLAYERS];
 
+    // Disable the newsmessage for the specified player. This is the trigger to flip it!
+    new bool: m_disableMessageForPlayer[MAX_PLAYERS];
+
     /**
      * Display a news message for all connected players. The display will be cycled through the
      * available message slots, resetting to the first one once the last has been reached.
@@ -54,6 +57,9 @@ class NewsController {
      */
     private bool: shouldDisableMessages(playerId) {
         if (IsPlayerInMinigame(playerId))
+            return true;
+
+        if (m_disableMessageForPlayer[playerId])
             return true;
 
         return false;
@@ -88,11 +94,11 @@ class NewsController {
         }
     }
 
-     /**
-    * When a player joins the server make sure to remove the settings of the previous player
-    * and re-instate the default settings for this new player, which is to keep the news messages
-    * enabled and showing.
-    **/
+    /**
+     * When a player joins the server make sure to remove the settings of the previous player
+     * and re-instate the default settings for this new player, which is to keep the news messages
+     * enabled and showing.
+     */
     @list(OnPlayerConnect)
     public onPlayerConnect(playerId) {
 
@@ -104,5 +110,34 @@ class NewsController {
         }
 
         m_messagesDisabledForPlayer[playerId] = false;
+    }
+
+    /**
+     * Regulars can disable messages with the /settings newsmsg-commands. The functionality
+     * underneath implements the use of the specified param.
+     */
+    @switch(SettingsCommand, "newsmsg")
+    public onSettingsNewsmsgCommand(playerId, params[]) {
+        new message[128];
+
+        if (Command->parameterCount(params) == 0) {
+            format(message, sizeof(message), "Showing newsmessages to you currently is %s{FFFFFF}.",
+                (m_messagesDisabledForPlayer[playerId] ?
+                    "{DC143C}disabled" :
+                    "{33AA33}enabled"));
+            SendClientMessage(playerId, Color::Information, message);
+            SendClientMessage(playerId, Color::Information, "Usage: /settings newsmsg [on/off]" );
+            return 1;
+        }
+
+        m_disableMessageForPlayer[playerId] = !Command->booleanParameter(params, 0);
+
+        format(message, sizeof(message), "Showing newsmessages to you is now %s{33AA33}.",
+            (m_disableMessageForPlayer[playerId] ?
+                "{DC143C}disabled" :
+                "{33AA33}enabled"));
+        SendClientMessage(playerId, Color::Success, message);
+
+        return 1;
     }
 }

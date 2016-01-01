@@ -51,7 +51,7 @@ new g_TrainPickup_1;
 new g_TrainPickup_2;
 new g_TrainPickup_3;
 new g_TrainPickup_4;
-new g_ShowMessages[MAX_PLAYERS][2];
+new g_ShowMessages[MAX_PLAYERS];
 new Text: TaxiArrival[MAX_PLAYERS] = {Text:INVALID_TEXT_DRAW, ...};
 new playerTaxi[MAX_PLAYERS][6];
 new Float: g_TaxiPOS[MAX_PLAYERS][3];

@@ -185,41 +185,7 @@ lvp_Settings( playerid, params[] )
     if (result != -1) // it can still either be 0 or 1, but something handled it.
         return result;
 
-    /*
-    // Aight, first off, toggling of the news messages for this user.
-    if (strcmp( szOption, "newsmsg", true, 7 ) == 0) 
-    {
-        // Get the way how we want to toggle;
-
-        param_shift( szToggle );
-
-        if (!strlen(szToggle))
-        {
-            SendClientMessage( playerid, COLOR_WHITE, "Usage: /settings newsmsg [on/off]" );
-        }
-
-        else if (strcmp( szToggle, "off", true ) == 0)
-        {
-            g_ShowMessages[ playerid ][ 0 ] = 0;
-            SendClientMessage( playerid, COLOR_GREEN, "News messages will be disabled shortly." );
-        }
-
-        else if (strcmp( szToggle, "on", true ) == 0)
-        {
-            g_ShowMessages[ playerid ][ 0 ] = 1;
-            SendClientMessage( playerid, COLOR_GREEN, "News messages will become visible again." );
-        }
-
-
-        else
-        {
-            SendClientMessage( playerid, COLOR_WHITE, "Usage: /settings newsmsg [on/off]" );
-        }
-        return 1;
-    }
-    */
-
-    // Let's also do /showmessages
+    // For /showmessages
     if (strcmp( szOption, "showmsg", true, 7 ) == 0)
     {
         // Get the way how we want to toggle;

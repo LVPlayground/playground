@@ -198,13 +198,13 @@ lvp_Settings( playerid, params[] )
 
         else if (strcmp( szToggle, "off", true ) == 0)
         {
-            g_ShowMessages[ playerid ][ 1 ] = 0;
+            g_ShowMessages[ playerid ] = 0;
             SendClientMessage( playerid, COLOR_GREEN, "Showmessages have been disabled!" );
         }
 
         else if (strcmp( szToggle, "on", true ) == 0)
         {
-            g_ShowMessages[ playerid ][ 1 ] = 1;
+            g_ShowMessages[ playerid ] = 1;
             SendClientMessage( playerid, COLOR_GREEN, "Showmessages are visible again!" );
         }
 

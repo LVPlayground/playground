@@ -13,6 +13,12 @@ stock PlayerTestSuite() {
     assert_equals(Player(playerId = -500)->isConnected(), false, "Player -500 should not be connected.");
 
     // Test that isConnected works correctly, considering the gamemode will already rely on this.
+    assert_equals(Player(0)->isConnected(), false, "Player 0 should not be connected yet.");
+    Player(0)->onConnect();
+    assert_equals(Player(0)->isConnected(), true, "Player 0 should now be connected.");
+    Player(0)->onDisconnect();
+    assert_equals(Player(0)->isConnected(), false, "Player 0 should be disconnected again.");
+
     assert_equals(Player(50)->isConnected(), false, "Player 50 should not be connected yet.");
     Player(50)->onConnect();
     assert_equals(Player(50)->isConnected(), true, "Player 50 should now be connected.");

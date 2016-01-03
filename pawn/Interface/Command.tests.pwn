@@ -52,7 +52,7 @@ stock CommandTestSuite() {
     assert_equals(Command->floatParameter("  25.5   124 01", 1), 124.0, "Retrieving numbers without decimals should work.");
     assert_equals(Command->floatParameter("25.5 124 01", 5), -1.0, "Retrieving out of bound floating point numbers should work.");
 
-    // Computing hashes of more popular strings should work. Without this much of the commands will
+    // Computing hashes of more popular strings should work. Without this many of the commands will
     // be broken, so it's quite critical that this works correctly.
     assert_equals(Command->hash("hello"), 918389611, "The text \"hello\" hashes correctly.");
     assert_equals(Command->hash("login"), 1507583491, "The text \"login\" hashes correctly.");

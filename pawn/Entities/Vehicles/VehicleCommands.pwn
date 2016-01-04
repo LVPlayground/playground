@@ -612,33 +612,35 @@ class VehicleCommands {
 
         new vehiclePoolSize = GetVehiclePoolSize();
         for (new vehicleId = 1; vehicleId <= vehiclePoolSize; vehicleId++) {
-            if (LegacyGetGtaVehicleId() == vehicleId || Vehicle(vehicleId)->isValid() == false) {
+            if (LegacyGetGtaVehicleId() == vehicleId || Vehicle(vehicleId)->isValid() == false)
                 continue;
-            }
 
             if (VehicleModel->isTrailer(GetVehicleModel(vehicleId))) {
-                new bool: isThisTrailerInUse = false, otherVehicleId = 1;
+                new bool: attached = false, otherVehicleId;
                 for (otherVehicleId = 1; otherVehicleId <= vehiclePoolSize; otherVehicleId++) {
                     if (GetVehicleTrailer(otherVehicleId) == vehicleId) {
-                        isThisTrailerInUse = true;
+                        attached = true;
                         break;
                     }
                 }
 
-                if (isThisTrailerInUse == true) {
+                if (attached) {
+                    new bool: otherVehicleInUse = false;
                     for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
-                        if (!IsPlayerInVehicle(subjectId, otherVehicleId)) {
-                            SetVehicleToRespawn(vehicleId);
-                            SetVehicleToRespawn(otherVehicleId);
+                        if (IsPlayerInVehicle(subjectId, otherVehicleId)) {
+                            otherVehicleInUse = true;
                             break;
                         }
                     }
-                }
-                else {
+
+                    if (!otherVehicleInUse) {
+                        SetVehicleToRespawn(vehicleId);
+                        SetVehicleToRespawn(otherVehicleId);
+                    }
+                } else {
                     SetVehicleToRespawn(vehicleId);
                 }
-            }
-            else {
+            } else {
                 new bool: vehicleOccupied = false;
                 for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
                     if (IsPlayerInVehicle(subjectId, vehicleId)) {

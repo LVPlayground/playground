@@ -410,7 +410,7 @@ lvp_set(playerId, params[]) {
             return 1;
         }
 
-        g_iSavedWeatherID = weatherId;
+        SetMainWorldWeatherId(weatherId);
         SetWeather(weatherId);
 
         if (weatherId == 206)

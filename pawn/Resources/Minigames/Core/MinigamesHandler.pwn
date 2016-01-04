@@ -214,6 +214,8 @@ stock PlayerLigtUitMiniGame(playerId, reason) {
     // hasn't been prepared for the minigame. If we spawn a player, be sure to load theri saved guns.
     if (reason != DISCONNECT && reason != KILLED && reason != LONELY) {
         SpawnPlayer(playerId);
+
+        ResetPlayerWeapons(playerId);
         LoadPlayerGuns(playerId);
     }
 

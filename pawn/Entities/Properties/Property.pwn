@@ -211,8 +211,16 @@ class Property <propertyId (MAX_PROPERTIES)> {
      * @param playerId Id of the player to teleport.
      */
     public teleportPlayerToProperty(playerId) {
-        SetPlayerInterior(playerId, m_interiorId);
-        SetPlayerPos(playerId, m_positionVector[0], m_positionVector[1], m_positionVector[2]);
+        new vehicleId = GetPlayerVehicleID(playerId);
+        if (vehicleId == 0) {
+            SetPlayerInterior(playerId, m_interiorId);
+            SetPlayerPos(playerId, m_positionVector[0], m_positionVector[1], m_positionVector[2]);
+            SetPlayerVirtualWorld(playerId, 0);
+        } else {
+            LinkVehicleToInterior(vehicleId, m_interiorId);
+            SetVehiclePos(vehicleId, m_positionVector[0], m_positionVector[1], m_positionVector[2]);
+            SetVehicleVirtualWorld(vehicleId, 0);
+        }
 
         SendClientMessage(playerId, Color::Success, "You've been teleported!");
     }

@@ -459,8 +459,8 @@ class BankCommands {
         }
 
         SendClientMessage(playerId, Color::Error, "Sorry, unless you've got a {FFFFFF}Premier{DC143C} account you need to be at a cash");
-        SendClientMessage(playerId, Color::Error, "point to use this command. Upgrade your account at the bank's branch near the");
-        SendClientMessage(playerId, Color::Error, "Planning Department building in Las Venturas.");
+        SendClientMessage(playerId, Color::Error, "point to use this command. Your account can be upgraded at the LV Main Bank.");
+        SendClientMessage(playerId, Color::Error, "You can use /taxi 10 on foot or /tow 10 in a vehicle to teleport there.");
 
         return false;
     }

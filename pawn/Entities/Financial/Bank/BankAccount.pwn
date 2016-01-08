@@ -182,7 +182,7 @@ class BankAccount <playerId (MAX_PLAYERS)> {
         m_inBank = true;
 
         // Announce the options to them in an information box.
-        ShowBoxForPlayer(playerId, "Welcome at Las Venturas Playground Central Bank. Please type ~r~/account~w~ to get started.");
+        ShowBoxForPlayer(playerId, "Welcome to the Las Venturas Playground Main Bank. Please type ~r~/account~w~ to get started.");
         #pragma unused pickupId, extraId
     }
 

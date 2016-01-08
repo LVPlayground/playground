@@ -621,9 +621,9 @@ class PropertyCommands {
 
         if (properties[0] == Property::InvalidId) {
             if (subjectId != playerId)
-                SendClientMessage(playerId, Color::Error, "This player doesn't own any property!");
+                SendClientMessage(playerId, Color::Error, "This player doesn't own any properties.");
             else
-                SendClientMessage(playerId, Color::Error, "You don't own any property!");
+                SendClientMessage(playerId, Color::Error, "You don't own any properties.");
             return 1;
         }
 

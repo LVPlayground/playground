@@ -176,7 +176,7 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
         // Check if empty vehicle is within 5 meter(?) of his spawnposition
         if (GetVehicleDistanceFromPoint(vehicleId, vehicleSpawnPosition[0],
                 vehicleSpawnPosition[1],
-                vehicleSpawnPosition[2]) <= 5.0 &&
+                vehicleSpawnPosition[2]) <= 2.0 &&
             vehicleCurrentZAngle != vehicleSpawnPosition[3] &&
             (vehicleOccupied == false || GetVehicleTrailer(vehicleId) == 0) && 
             isTrailerAndAttached == false) {

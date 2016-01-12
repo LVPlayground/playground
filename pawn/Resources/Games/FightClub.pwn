@@ -1572,7 +1572,6 @@ CFightClub__ShowDialog(playerid, dialogid)
         }
     }
 
-    TogglePlayerControllable(playerid, 0);
     FightClubDialog[playerid] = 1;
     return 1;
 }

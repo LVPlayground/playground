@@ -199,7 +199,8 @@ lvp_stats(playerid, params[])
     szStatMsg[128],
     iPlayersOnline,
     iAdminsOnline,
-    iNPCSOnline;
+    iNPCSOnline,
+    iProperties;
 
     for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
     {
@@ -221,6 +222,11 @@ lvp_stats(playerid, params[])
         }
     }
 
+    for (new propertyId = 0; propertyId < MAX_PROPERTIES; ++propertyId) {
+        if (Property(propertyId)->isPropertySlotInUse())
+            iProperties++;
+    }
+
     format(szStatMsg, 128, "Las Venturas Playground v%d.%d build %d.", Version::Major, Version::Minor, __BUILD__);
     SendClientMessage(playerid, COLOR_YELLOW, szStatMsg);
 
@@ -232,6 +238,12 @@ lvp_stats(playerid, params[])
 #else
     format(szStatMsg, 128, "Achievements: %d NPCs: %d", TotalAchievements, iNPCSOnline);
 #endif
+    SendClientMessage(playerid, COLOR_GREEN, szStatMsg);
+
+    format(szStatMsg, 128, "Vehicles: %d Properties: %d", VehicleManager->vehicleCount(), iProperties);
+    SendClientMessage(playerid, COLOR_GREEN, szStatMsg);
+
+    format(szStatMsg, 128, "ATMs: %d", CashPointController->count());
     SendClientMessage(playerid, COLOR_GREEN, szStatMsg);
 
     return 1;

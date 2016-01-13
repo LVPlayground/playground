@@ -223,10 +223,6 @@ stock CExport__OnEnterCheckpoint( playerid )
 
                 Instrumentation->recordActivity(VehicleExportActivity, playerVehicleModel);
 
-                // Inform the crew
-                format( string, sizeof( string ), "%s (Id:%d) has exported a %s, and earned $%s.", PlayerName(playerid), playerid, name, formatPrice(iPlayerReward) );
-                Admin(playerid, string );
-
                 // Somebody has the export prop, let's give him some money too.
                 new propertyId = PropertyManager->propertyForSpecialFeature(ExportFeature),
                     endid = propertyId == Property::InvalidId ? Player::InvalidId : Property(propertyId)->ownerId();

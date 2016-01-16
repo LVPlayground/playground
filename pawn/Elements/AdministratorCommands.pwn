@@ -230,21 +230,21 @@ lvp_killtime(playerId, params[]) {
         if (KTTimer != -1)
             KillTimer(KTTimer);
 
-        GameTextForAllEx("~r~It's KillTime!~n~~w~Go on a killing spree!" ,5000, 1);
+        GameTextForAllEx("~r~It's KillTime!~n~~w~Go on a killing spree!" ,5000, 1, World::MainWorld);
         sKillTime = true;
         KillTimeStart(duration);
 
         ShipManager->enableShiprail(false);
 
-        format(g_message, sizeof(g_message), "%s (Id:%d) has started a #%d minute KillTime.",
-            Player(playerId)->nicknameString(), playerId, duration);
+        format(g_message, sizeof(g_message), "%s (Id:%d) has started a #%d minute KillTime in the mainworld (WorldId:%d).",
+            Player(playerId)->nicknameString(), playerId, duration, World::MainWorld);
         Admin(playerId, g_message);
     } else if (sKillTime) {
         sKillTime = false;
         KillTimer(KTTimer);
         KTTimer = -1;
 
-        GameTextForAllEx("~r~KillTime is over!", 5000, 1);
+        GameTextForAllEx("~r~KillTime is over!", 5000, 1, World::MainWorld);
 
         ShipManager->enableShiprail();
 

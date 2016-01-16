@@ -190,11 +190,11 @@ public OnPlayerDeath(playerid, killerid, reason) {
 
     // Killtime
     if (killerid == Player::InvalidId || Player(killerid)->isConnected() == false) {
-        if (KTTimer > -1)
+        if (KTTimer > -1 && (GetPlayerVirtualWorld(killerid) == World::MainWorld && GetPlayerVirtualWorld(playerid) == World::MainWorld))
             KTDeaths[playerid]++;
         MyDeaths[playerid]++;
     } else {
-        if (KTTimer > -1) {
+        if (KTTimer > -1 && (GetPlayerVirtualWorld(killerid) == World::MainWorld && GetPlayerVirtualWorld(playerid) == World::MainWorld))
             KTKills[killerid]++;
             KTDeaths[playerid]++;
         }

@@ -1161,6 +1161,7 @@ lvp_p(playerId, params[]) {
         }
 
         Player(subjectId)->setLevel(PlayerLevel);
+        Player(subjectId)->setIsVip(false);
         UndercoverAdministrator(subjectId)->setIsUndercoverAdministrator(false);
 
         tempLevel[subjectId] = 0;

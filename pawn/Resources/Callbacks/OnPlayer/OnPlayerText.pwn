@@ -60,11 +60,11 @@ public OnPlayerText(playerid, text[]) {
         return 0;
     }
 
-    // Regular chat (; - requires 48 ingame hours).
+    // Regular chat (; - requires 50 ingame hours).
     if (text[0] == ';' && strlen(text) > 1) {
         format(message, sizeof(message), "** [%d] %s: %s", playerid, Player(playerid)->nicknameString(), text[1]);
 
-        if (gameplayhours[playerid] < 48 && Player(playerid)->isAdministrator() == false) {
+        if (gameplayhours[playerid] < Player::RegularHours && Player(playerid)->isAdministrator() == false) {
             SendClientMessage(playerid, Color::Error, "You have to be online for at least 48 hours to use the regular-chat, and you have to be registered.");
             return 0;
         }
@@ -73,7 +73,7 @@ public OnPlayerText(playerid, text[]) {
             if (LegacyIsPlayerIgnored(subjectId, playerid) == true)
                 continue;
 
-            if (gameplayhours[subjectId] >= 48 || Player(subjectId)->isAdministrator() == true)
+            if (gameplayhours[subjectId] >= Player::RegularHours || Player(subjectId)->isAdministrator() == true)
                 SendClientMessage(subjectId, Color::RegularChat, message);
         }
 

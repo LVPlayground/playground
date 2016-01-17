@@ -848,10 +848,10 @@ IsPlayerFighting(playerId) {
     return 0;
 }
 
-GameTextForAllEx(const message[], time, style, worldId = -1) {
+GameTextForAllEx(const message[], time, style, playerWorldId = -1) {
     for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
         if (Player(playerId)->isConnected() == true && !IsPlayerInMinigame(playerId) && g_ShowMessages[playerId]) {
-            if ((worldId != -1 && worldId == GetPlayerVirtualWorld(playerId)) || worldId == -1)
+            if ((playerWorldId != -1 && playerWorldId == GetPlayerVirtualWorld(playerId)) || playerWorldId == -1)
                 GameTextForPlayer(playerId, message, time, style);
         }
 

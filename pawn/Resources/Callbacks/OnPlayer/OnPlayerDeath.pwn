@@ -194,7 +194,7 @@ public OnPlayerDeath(playerid, killerid, reason) {
             KTDeaths[playerid]++;
         MyDeaths[playerid]++;
     } else {
-        if (KTTimer > -1 && (GetPlayerVirtualWorld(killerid) == World::MainWorld && GetPlayerVirtualWorld(playerid) == World::MainWorld))
+        if (KTTimer > -1 && (GetPlayerVirtualWorld(killerid) == World::MainWorld && GetPlayerVirtualWorld(playerid) == World::MainWorld)) {
             KTKills[killerid]++;
             KTDeaths[playerid]++;
         }

@@ -145,7 +145,7 @@ class CashPointController {
         SendClientMessage(playerId, Color::Red, "/balance{FFFFFF} - Get information on the balance currently available in your account.");
 
         if (BankAccount(playerId)->type() != PremierBankAccount)
-            SendClientMessage(playerId, Color::Information, "Tired of having to use ATM machines? Upgrade your account at our branch near the Planning Department.");
+            SendClientMessage(playerId, Color::Information, "Tired of using ATM machines? Upgrade your account at the LV Main Bank (/taxi 10 on foot or /tow 10 in a vehicle)");
 
         #pragma unused zoneId
     }

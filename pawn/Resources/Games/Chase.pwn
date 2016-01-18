@@ -15,8 +15,15 @@ static Text:chaseTD_text[3] = {Text:INVALID_TEXT_DRAW, ...};
 bool: LegacyIsPlayerChased(playerId) {
     if (chaseData[1] == playerId)
         return true;
-    else
+
+    return false;
+}
+
+bool: LegacyIsChaseRunning() {
+    if (!chaseData[0])
         return false;
+
+    return true;
 }
 
 // CChase__Initialize
@@ -362,5 +369,13 @@ CChase__ReleaseColorForPlayer() {
     for (new player = 0; player <= PlayerManager->highestPlayerId(); ++player) {
         if (Player(player)->isNonPlayerCharacter() == false)
             ColorManager->releasePlayerOverrideColor(player);
+    }
+}
+
+class Chase {
+    @list(OnPlayerConnect)
+    public onPlayerConnect(playerId) {
+        if(LegacyIsChaseRunning())
+            ColorManager->setPlayerOverrideColor(playerId, Color::NonPlayerCharacterColor);
     }
 }

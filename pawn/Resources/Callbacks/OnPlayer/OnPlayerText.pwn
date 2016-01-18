@@ -65,7 +65,8 @@ public OnPlayerText(playerid, text[]) {
         format(message, sizeof(message), "** [%d] %s: %s", playerid, Player(playerid)->nicknameString(), text[1]);
 
         if (gameplayhours[playerid] < Player::RegularHours && Player(playerid)->isAdministrator() == false) {
-            SendClientMessage(playerid, Color::Error, "You have to be online for at least 48 hours to use the regular-chat, and you have to be registered.");
+            format(message, sizeof(message), "Regular chat is only available for registered players whom have been playing for at least %d hours.", Player::RegularHours);
+            SendClientMessage(playerid, Color::Error, message);
             return 0;
         }
 

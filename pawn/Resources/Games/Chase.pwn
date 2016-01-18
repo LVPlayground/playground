@@ -372,7 +372,19 @@ CChase__ReleaseColorForPlayer() {
     }
 }
 
+/**
+ * A small class to be able to add functionality to other parts of LVP without having to place them
+ * outside this file.
+ *
+ * @author Xander "Xanland" Hoogland <home@xanland.nl>
+ */
 class Chase {
+    /**
+     * Sets the color of a player joining the server to white when there is a chase actually
+     * running.
+     *
+     * @param playerId Id of the player who just connected to the server.
+     */
     @list(OnPlayerConnect)
     public onPlayerConnect(playerId) {
         if(LegacyIsChaseRunning())

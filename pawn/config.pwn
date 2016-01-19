@@ -56,7 +56,7 @@ class Debug {
 #endif
 
 #if !defined EchoSettingsSupplied
-    #define EchoHostname        DatabaseHostname
+    #define EchoHostname        "127.0.0.1"
     #define EchoPort            26669
 #endif
 

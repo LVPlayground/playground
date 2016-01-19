@@ -44,22 +44,20 @@ class Debug {
 // Set this to 1 if you'd like to build Las Venturas Playground in release mode (lead devs only).
 #define BuildGamemodeInReleaseMode 0
 
-// Try to include one of the private configuration files. These are necessary to connect to the
-// MySQL database and distribute echo to the right location, among other things.
+// Try to include the private release configuration file. This are necessary to authenticate with
+// the MySQL database and distribute echo to the right location, among other things.
 #tryinclude "config-release.pwn"
-#tryinclude "config-staging.pwn"
 
 // In case no database credentials have been supplied by earlier, private configuration files yet,
 // create the default settings. The same goes for the echo settings.
 #if !defined DatabaseCredentialsSupplied
-    #define PasswordSalt        "my_salt"
-
+    #define PasswordSalt        "^&lvp__@"
     #define BETA_TEST           1
 #endif
 
 #if !defined EchoSettingsSupplied
     #define EchoHostname        DatabaseHostname
-    #define EchoPort            1337
+    #define EchoPort            26669
 #endif
 
 /**

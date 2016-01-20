@@ -1267,14 +1267,6 @@ MinigameHelp:
             PlayerInfo[playerid][playerIsHidden] = 1;
             ColorManager->setPlayerMarkerHidden(playerid, true);
 
-            for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-            {
-                if( IsPlayerConnected( i ) )
-                {
-                    ShowPlayerNameTagForPlayer( i, playerid, 0 );
-                }
-            }
-
             new nickname[32], notification[128];
             GetPlayerName(playerid, nickname, sizeof(nickname));
 
@@ -1295,13 +1287,6 @@ MinigameHelp:
 
             PlayerInfo[playerid][playerIsHidden] = 0;
             ColorManager->setPlayerMarkerHidden(playerid, false);
-
-            for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-            {
-                if( IsPlayerConnected( i ) ){
-                    ShowPlayerNameTagForPlayer( i, playerid, 1 );
-                }
-            }
 
             new nickname[32], notification[128];
             GetPlayerName(playerid, nickname, sizeof(nickname));

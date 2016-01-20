@@ -294,9 +294,17 @@ class ColorManager {
 
         new color = m_playerColorStack[playerId][m_playerColorIndex[playerId]];
         if (m_playerMarkerHidden[playerId] == true)
-            color &= 0x333333FF;
+            color &= 0xFFFFFF00;
 
         SetPlayerColor(playerId, color);
+
+        for (new forPlayerId = 0; forPlayerId <= PlayerManager->highestPlayerId(); forPlayerId++) {
+            if (Player(forPlayerId)->isConnected() == false || Player(forPlayerId)->isNonPlayerCharacter() == true)
+                continue;
+
+            SetPlayerMarkerForPlayer(forPlayerId, playerId, color);
+            ShowPlayerNameTagForPlayer(forPlayerId, playerId, !m_playerMarkerHidden[playerId]);
+        }
     }
 
     /**

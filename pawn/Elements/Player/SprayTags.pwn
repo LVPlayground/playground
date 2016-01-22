@@ -335,9 +335,6 @@ sprayTagOnPlayerSpray(playerid, tagid)
         format(szNewsMsg, 128, "~r~~h~%s~w~ has sprayed all ~y~%d~w~ spraytags and unlocked a secret command",
             Player(playerid)->nicknameString(), sprayTagGetCount());
         NewsController->show(szNewsMsg);
-
-        format(szNewsMsg, 128, "[dev] LVP %s has sprayed every spray tag!", PlayerName(playerid));
-        AddEcho(szNewsMsg);
     }
 
 

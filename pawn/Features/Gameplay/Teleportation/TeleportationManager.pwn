@@ -149,7 +149,7 @@ class TeleportationManager {
         if (subjectId == CruiseController->getCruiseLeaderId()
             && Time->currentTime() - m_playerTeleportTime[playerId] < CarTeleportToCruiseDelay
             && Player(playerId)->isAdministrator() == false) {
-            format(message, sizeof(message), "You may only %s to the cruise once every %d minute(s).",
+            format(message, sizeof(message), "You may only %s to the cruise once per minute.",
                 (teleportType == DefaultTeleport ? "teleport" : "carteleport"),
                 CarTeleportToCruiseDelay / 60);
 
@@ -160,7 +160,7 @@ class TeleportationManager {
         // Both teleport and carteleport is limited in use to avoid abuse, except for crew members.
         if (subjectId != CruiseController->getCruiseLeaderId() &&
             Time->currentTime() - m_playerTeleportTime[playerId] < delay && Player(playerId)->isAdministrator() == false) {
-            format(message, sizeof(message), "You may only %s once every %d minute(s).",
+            format(message, sizeof(message), "You may only %s once every %d minutes.",
             (teleportType == DefaultTeleport ? "teleport" : "carteleport"),
             (teleportType == DefaultTeleport ? DefaultTeleportDelay / 60 : CarTeleportDelay / 60));
 

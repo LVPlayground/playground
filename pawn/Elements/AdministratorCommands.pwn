@@ -1188,9 +1188,10 @@ lvp_p(playerId, params[]) {
         SendClientMessage(playerId, Color::Information, " achievements, armor, bank, burn, (un)cage, cash, deathmessage, gang, (give/take)admin, (un)freeze,");
         SendClientMessage(playerId, Color::Information, " god, handofgod, health, hide, kill, maptp, nocaps, nuke, weapon, weaponinfo, properties, removeweapon,");
         SendClientMessage(playerId, Color::Information, " resetspawnweapons, resetweapons, skin, spawnweapons, teleport, vallow");
-
-        return 1;
     }
+
+    return 1;
+}
 
 lvp_show(playerId, params[]) {
     if (Command->parameterCount(params) != 1)

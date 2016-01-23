@@ -545,48 +545,11 @@ lvp_set(playerId, params[]) {
         return 1;
     }
 
-    if (!strcmp(setParameter, "aprilsfools", true, 11)) {
-        if (Command->parameterCount(params) < 2)
-            goto AprilHelp;
-
-        new aprilBoolean[4];
-        Command->stringParameter(params, 1, aprilBoolean, sizeof(aprilBoolean));
-
-        if (!strcmp(aprilBoolean, "on", true, 2)) {
-            aprilsfools = 1;
-            SendClientMessage(playerId, Color::Success, "April's Fools has been enabled.");
-
-            format(g_message, sizeof(g_message), "%s (Id:%d) has enabled April's Fools.",
-                Player(playerId)->nicknameString(), playerId);
-            Admin(playerId, g_message);
-
-            return 1;
-        }
-
-        if (!strcmp(aprilBoolean, "off", true, 3)) {
-            aprilsfools = 0;
-            SendClientMessage(playerId, Color::Success, "April's Fools has been disabled.");
-
-            format(g_message, sizeof(g_message), "%s (Id:%d) has disabled April's Fools.",
-                Player(playerId)->nicknameString(), playerId);
-            Admin(playerId, g_message);
-
-            return 1;
-        }
-
-        AprilHelp:
-        SendClientMessage(playerId, Color::Information, "Usage: /set aprilsfools [on/off]");
-
-        return 1;
-    }
-
     SetHelp:
     if (Player(playerId)->isManagement() == true)
-        SendClientMessage(playerId, Color::Information, "Usage: /set [aprilsfools/gravity/ramping/shiprail/time/weather]");
+        SendClientMessage(playerId, Color::Information, "Usage: /set [gravity/ramping/shiprail/time/weather]");
     else if (Player(playerId)->isAdministrator() == true)
         SendClientMessage(playerId, Color::Information, "Usage: /set [ramping/shiprail/time/weather]");
-    else
-        SendClientMessage(playerId, Color::Information, "Usage: /set [time/weather]");
 
     return 1;
 }

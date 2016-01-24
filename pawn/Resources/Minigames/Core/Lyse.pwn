@@ -372,14 +372,11 @@ stock CLyse__ResetData()
 // Sets the vehicle params up for when a player respawns.
 stock CLyse__SetVehicleParams(iPlayerID)
 {
-
     new iTeam = CLyse__GetPlayerTeam(iPlayerID);
-
-    if(iTeam == TEAM_GREEN)
-    {
+    if(iTeam == TEAM_GREEN) {
         SetVehicleParamsForPlayer(lyseGreenTeamVehicleId, iPlayerID, 1, 1);
         SetVehicleParamsForPlayer(lyseBlueTeamVehicleId, iPlayerID, 1, 0);
-    }else{
+    } else{
         SetVehicleParamsForPlayer(lyseBlueTeamVehicleId, iPlayerID, 1, 1);
         SetVehicleParamsForPlayer(lyseGreenTeamVehicleId, iPlayerID, 1, 0);
     }
@@ -387,10 +384,10 @@ stock CLyse__SetVehicleParams(iPlayerID)
 
 // CLyse__OnVehicleStreamIn
 // Called from OnVehicleStreamIn, resets vehicle params.
-CLyse__OnVehicleStreamIn(vehicleid, forplayerid)
+stock CLyse__OnVehicleStreamIn(vehicleid, forplayerid)
 {
     if(vehicleid == lyseGreenTeamVehicleId || vehicleid == lyseBlueTeamVehicleId)
-    CLyse__SetVehicleParams(forplayerid);
+        CLyse__SetVehicleParams(forplayerid);
 }
 
 // CLyse__VehicleSpawn

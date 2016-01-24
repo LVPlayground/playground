@@ -146,7 +146,7 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
     public onVehicleStreamIn(playerId) {
         CLyse__OnVehicleStreamIn(vehicleId, playerId);
 
-        /*new bool: vehicleOccupied = false;
+        new bool: vehicleOccupied = false;
         for (new otherPlayerId = 0; otherPlayerId <= PlayerManager->highestPlayerId(); ++otherPlayerId) {
             if (Player(otherPlayerId)->isConnected() == false)
                 continue; // the player isn't connected to the server.
@@ -181,7 +181,7 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
             (vehicleOccupied == false || GetVehicleTrailer(vehicleId) == 0) && 
             isTrailerAndAttached == false) {
             SetVehicleZAngle(vehicleId, vehicleSpawnPosition[3]);
-        }*/
+        }
 
         // If a player does not have access to enter a vehicle, lock its doors.
         if (VehicleAccessManager->isPlayerAllowedInVehicle(playerId, vehicleId) == false)
@@ -273,6 +273,7 @@ public OnVehicleSpawn(vehicleid) {
     return 1;
 }
 
+#if Feature::VehicleStreamInFunctionality == 1
 public OnVehicleStreamIn(vehicleid, forplayerid) {
     if (Player(forplayerid)->isConnected() == false || Player(forplayerid)->isNonPlayerCharacter() == true
         || Vehicle(vehicleid)->isValid() == false)
@@ -281,6 +282,7 @@ public OnVehicleStreamIn(vehicleid, forplayerid) {
     VehicleEvents(vehicleid)->onVehicleStreamIn(forplayerid);
     return 1;
 }
+#endif
 
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
     if (Player(playerid)->isConnected() == false || Player(playerid)->isNonPlayerCharacter() == true

@@ -19,7 +19,7 @@ class ChristmasDecorations {
     @list(OnGameModeInit)
     public initializeMappedObjects() {
         // Environment
-        TimeController->setTime(0, 0);
+        TimeController->setTime(0);
         SetWeather(1);
 
         SetMainWorldWeatherId(1);
@@ -699,7 +699,7 @@ class ChristmasDecorations {
     @list(MinuteTimer)
     public setChristmasTime() {
         if (++m_thirtyMinuteTicker == 30) {
-            TimeController->setTime(0, 0);
+            TimeController->setTime(0);
 
             m_thirtyMinuteTicker = 0;
         }

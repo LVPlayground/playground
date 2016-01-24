@@ -103,7 +103,7 @@ class TimeController {
         for (new hour = 0; hour < 24; ++hour)
             m_totalDayDuration += this->resolveParabolaForHour(hour);
 
-        this->setTime(InitialGameHour, 0);
+        this->setTime(InitialGameHour);
     }
 
     /**
@@ -121,14 +121,14 @@ class TimeController {
      * characters and who don't have an override time set will be considered for this. The next
      * time update will automatically be scheduled.
      *
-     * @todo Remove the |minutes| parameter, we should either support it completely or have magic
-     *       take care of that. I'm inclined towards magic for simplicity for now.
-     *
-     * @param hours The hour count which the server should be updated to.
-     * @param minutes The minute count which the server should be updated to.
+     * @param hour The hour count which the server should be updated to. It will be clamped to the
+     *             range of [0, 23] to ensure having a valid value.
      */
-    public setTime(hours, minutes) {
-        m_globalTime = this->toTimestamp(hours, minutes);
+    public setTime(hour) {
+        if (hour < 0) hour = 0;
+        if (hour > 23) hour = 23;
+
+        m_globalTime = this->toTimestamp(hour, 0);
         for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
             if (Player(playerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter())
                 continue; // the player isn't connected, or is a NPC.
@@ -136,13 +136,13 @@ class TimeController {
             if (m_playerOverrideTime[playerId] != InvalidTime)
                 continue; // the player has a custom override time set.
 
-            SetPlayerTimePrivate(playerId, hours, minutes);
+            SetPlayerTimePrivate(playerId, hour, 0);
         }
 
         KillTimer(m_updateTimer);
 
-        new updateIntervalMs = this->resolveDurationForHour(hours) * 1000,
-            updateHour = (hours + 1) % 24;
+        new updateIntervalMs = this->resolveDurationForHour(hour) * 1000,
+            updateHour = (hour + 1) % 24;
 
         m_updateTimer = SetTimerEx("OnProgressiveTimeUpdate", updateIntervalMs, 0, "i", updateHour);
     }
@@ -179,7 +179,7 @@ class TimeController {
 // Public function used to update the progressive in-game clock.
 forward OnProgressiveTimeUpdate(hour);
 public OnProgressiveTimeUpdate(hour) {
-    TimeController->setTime(hour, 0);
+    TimeController->setTime(hour);
 }
 
 // Include the test-suite for the TimeController class.

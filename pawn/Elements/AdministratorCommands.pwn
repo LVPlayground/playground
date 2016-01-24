@@ -414,7 +414,7 @@ lvp_set(playerId, params[]) {
         SetWeather(weatherId);
 
         if (weatherId == 206)
-            TimeController->setTime(12, 0);
+            TimeController->setTime(12);
 
         format(g_message, sizeof(g_message), "Weather Id changed to #%d.", weatherId);
         SendClientMessage(playerId, Color::Success, g_message);
@@ -432,7 +432,7 @@ lvp_set(playerId, params[]) {
 
         new timeHour = Command->integerParameter(params, 1);
         if (timeHour >= 0 && timeHour < 24) {
-            TimeController->setTime(timeHour, 0);
+            TimeController->setTime(timeHour);
             SendClientMessage(playerId, Color::Success, "Done!");
 
             format(g_message , sizeof(g_message), "%s (Id:%d) has changed the time to #%d o'clock.",

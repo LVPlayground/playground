@@ -72,6 +72,7 @@ class DeprecatedTimerRuntime {
             if (Player(playerId)->isConnected() == false)
                 continue;
 
+            UpdatePlayerIngameTime(playerId);
             ResetPlayerInteriorQuit(playerId);
             CBomb__Countdown (playerId);
             CheckPlayerArea (playerId);
@@ -151,7 +152,6 @@ class DeprecatedTimerRuntime {
             if (Player(playerId)->isConnected() == false)
                 continue;
 
-            UpdateTime(playerId);
             CAchieve__CheckIngameHours(playerId);
             if (banWarning[playerId] >= 1)
                 banWarning[playerId] --;

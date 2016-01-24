@@ -352,7 +352,7 @@ ShowServerMessage() {
     lvp_show(GetPlayerId("Gunther"), serverMessageCommands[random(8)]);
 }
 
-UpdateTime(playerId) {
+UpdatePlayerIngameTime(playerId) {
     if (Player(playerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter() == true)
         return 0;
 

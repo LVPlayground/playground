@@ -432,7 +432,6 @@ lvp_set(playerId, params[]) {
 
         new timeHour = Command->integerParameter(params, 1);
         if (timeHour >= 0 && timeHour < 24) {
-            KillTimer(cmTimer);
             TimeController->setTime(timeHour, 0);
             SendClientMessage(playerId, Color::Success, "Done!");
 

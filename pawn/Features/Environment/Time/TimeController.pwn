@@ -6,11 +6,38 @@
  * Controlling time on Las Venturas Playground should be done through the Time controller, which
  * keeps track of what the active time is in the main world and for certain players.
  *
+ * The time will be updated throughout an in-game day (the duration of which is defined in the
+ * DayCycleDuration constant) using a parabola formula, because players prefer the light provided by
+ * the day-time hours over the darkness of the night.
+ *
+ * Considering the current formula of -0.17(h-12)^2+27, day time will last for 78.6% whereas night
+ * time will last for 21.4%. Assuming a cyclic duration of 60 minutes, this maps to 47 minutes of
+ * day time, and 13 minutes of night time.
+ *
+ * Thanks to Martijn for asking Wolfram Alpha for a more optimized formula :-).
+ *
+ * @todo It would be grand if we could, instead of updating once per hour, update once per ten
+ *       minutes or so to enable a more smooth progression of time.
+ *
  * @author Russell Krupke <russell@sa-mp.nl>
  */
 class TimeController {
+    // Number of seconds a single in-game day will last for. This will be an approximation, a few
+    // seconds could be lost or gained due to the calculation we use. Public for testing.
+    public const DayCycleDuration = 3600.0;
+
     // Constant used to identify invalid time values.
     const InvalidTime = -1;
+
+    // In-game hour that will apply when the gamemode is loaded.
+    const InitialGameHour = 10;
+
+    // Total duration of all hours in a day. Used to be able to convert the Y coordinates of the
+    // parabola to a number of seconds for which the hour should last.
+    new Float: m_totalDayDuration = 0.0;
+
+    // The update timer, which will take care of updating the in-game time when necessary.
+    new m_updateTimer = -1;
 
     // The current time in the main world applying to all players.
     new m_globalTime;
@@ -43,11 +70,40 @@ class TimeController {
     }
 
     /**
-     * Initializes the global world time to 5pm. That's a nice near-sunset time which creates a
-     * great looking scenario for players who immediately connect.
+     * Resolves the parabola function of -0.17(h-12)^2+27 for |hour|. An optimized implementation
+     * has been used to avoid the use of pow().
+     * 
+     * When updating this function, please be sure to also update this command and the class-level
+     * comment of the TimeController class, to make sure they stay in sync.
+     *
+     * @param hour The hour for which to resolve the parabola.
+     * @return float The resolved value in the function.
+     */
+    private inline Float: resolveParabolaForHour(hour) {
+        return -0.17 * (float(hour) - 24.6025) * (float(hour) + 0.602521);
+    }
+
+    /**
+     * Resolves the time duration for |hour|. This method will only work as expected after the
+     * constructor has finished executing, since it depends on the cached total day duration.
+     * This method is public for testing purposes.
+     *
+     * @param hour The hour for which to resolve the in-game duration.
+     * @return integer Number of seconds the current value should last for.
+     */
+    public inline resolveDurationForHour(hour) {
+        return floatround((this->resolveParabolaForHour(hour) / m_totalDayDuration) * TimeController::DayCycleDuration);
+    }
+
+    /**
+     * Determines the total day duration per the parabola function and initializes both the current
+     * time and the next progression timer to their expected values.
      */
     public __construct() {
-        m_globalTime = this->toTimestamp(17, 00);
+        for (new hour = 0; hour < 24; ++hour)
+            m_totalDayDuration += this->resolveParabolaForHour(hour);
+
+        this->setTime(InitialGameHour, 0);
     }
 
     /**
@@ -62,7 +118,11 @@ class TimeController {
 
     /**
      * Update the server's time with a new value. All connected players who are not non-player
-     * characters and who don't have an override time set will be considered for this.
+     * characters and who don't have an override time set will be considered for this. The next
+     * time update will automatically be scheduled.
+     *
+     * @todo Remove the |minutes| parameter, we should either support it completely or have magic
+     *       take care of that. I'm inclined towards magic for simplicity for now.
      *
      * @param hours The hour count which the server should be updated to.
      * @param minutes The minute count which the server should be updated to.
@@ -78,16 +138,13 @@ class TimeController {
 
             SetPlayerTimePrivate(playerId, hours, minutes);
         }
-    }
 
-    /**
-     * Returns the current global time on the server in separate hour and minute variables.
-     *
-     * @param hours Variable to store the server's current hour on.
-     * @param minutes Variable to store the server's current minutes on.
-     */
-    public inline getTime(&hours, &minutes) {
-        this->fromTimestamp(m_globalTime, hours, minutes);
+        KillTimer(m_updateTimer);
+
+        new updateIntervalMs = this->resolveDurationForHour(hours) * 1000,
+            updateHour = (hours + 1) % 24;
+
+        m_updateTimer = SetTimerEx("OnProgressiveTimeUpdate", updateIntervalMs, 0, "i", updateHour);
     }
 
     /**
@@ -114,7 +171,16 @@ class TimeController {
         new hours, minutes;
         this->m_playerOverrideTime[playerId] = InvalidTime;
 
-        this->getTime(hours, minutes);
+        this->fromTimestamp(m_globalTime, hours, minutes);
         SetPlayerTimePrivate(playerId, hours, minutes);
     }
 };
+
+// Public function used to update the progressive in-game clock.
+forward OnProgressiveTimeUpdate(hour);
+public OnProgressiveTimeUpdate(hour) {
+    TimeController->setTime(hour, 0);
+}
+
+// Include the test-suite for the TimeController class.
+#include "Features/Environment/Time/TimeController.tests.pwn"

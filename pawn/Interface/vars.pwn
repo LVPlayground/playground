@@ -84,7 +84,6 @@ new g_AirportPickup[4];
 new Menu:AirportMenu[4];
 new AirTime[MAX_PLAYERS];
 new firstJoin[MAX_PLAYERS];
-new cmTimer;
 #if Feature::EnableFightClub == 0
 new FCPickup;
 new FCDPickup;

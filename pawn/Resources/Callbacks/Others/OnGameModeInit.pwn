@@ -75,7 +75,6 @@ public OnGameModeInit() {
     SetEchoDestination(Configuration::EchoHostname, Configuration::EchoPort); // Sets the echo bot.
     AllowInteriorWeapons(0);                    // Enables the usage of interior weapons.
     StartTimers();                              // Starts the LVP timers
-    realtime();                                 // Manages the time for regular clocks.
     LoadMaps();                                 // Loads the mapped areas.
     SetMapIcons();                              // Map icons - Interface/functions.pwn
     CExport__NewWantedVehicle();                // Inits the export

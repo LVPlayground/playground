@@ -76,7 +76,6 @@ new canSlap[MAX_PLAYERS];
 new taxiPrijs = 200;
 new bankRente = 4;
 new Float: SavedPos2[MAX_PLAYERS][5];
-new gHour = 0;
 new douane = 1500;
 new isCaged[MAX_PLAYERS];
 new casinoHunter;

@@ -443,45 +443,8 @@ lvp_set(playerId, params[]) {
             return 1;
         }
 
-        new timeCmd[8];
-        Command->stringParameter(params, 1, timeCmd, sizeof(timeCmd));
-
-        if (!strcmp(timeCmd, "real", true, 4)) {
-            renewtimestuff();
-            SendClientMessage(playerId, Color::Success, "Done!");
-
-            format(g_message, sizeof(g_message), "%s (Id:%d) has changed the time mode: realtime.",
-                Player(playerId)->nicknameString(), playerId);
-            Admin(playerId, g_message);
-
-            return 1;
-        }
-
-        if (!strcmp(timeCmd, "fast", true, 4)) {
-            renewtimestuff2();
-            SendClientMessage(playerId, Color::Success, "Done!");
-
-            format(g_message, sizeof(g_message), "%s (Id:%d) has changed the time mode: fasttime.",
-                Player(playerId)->nicknameString(), playerId);
-            Admin(playerId, g_message);
-
-            return 1;
-        }
-
-        if (!strcmp(timeCmd, "random", true, 6)) {
-            renewtimestuff3();
-            SendClientMessage(playerId, Color::Success, "Done!");
-
-            format(g_message, sizeof(g_message), "%s (Id:%d) has changed the time mode: random.",
-                Player(playerId)->nicknameString(), playerId);
-            Admin(playerId, g_message);
-
-            return 1;
-        }
-
-        TimeHelp:
-        SendClientMessage(playerId, Color::Information, "Usage: /set time [real/random/fast/0-24]");
-
+TimeHelp:
+        SendClientMessage(playerId, Color::Information, "Usage: /set time [0-24]");
         return 1;
     }
 

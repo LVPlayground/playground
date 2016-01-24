@@ -381,63 +381,6 @@ UpdatePlayerIngameTime(playerId) {
     return 1;
 }
 
-renewtimestuff() {
-    KillTimer(cmTimer);
-
-    new m, s;
-    gettime(gHour, m, s);
-    cmTimer = SetTimer("realtime", (3600 - (m * 60) - s) * 1000, 0);
-
-    TimeController->setTime(gHour, 0);
-    return 1;
-}
-
-renewtimestuff2() {
-    KillTimer(cmTimer);
-
-    new h, m, s;
-    gettime(h, m, s);
-    gHour = floatround(m / 2.5);
-    cmTimer = SetTimer("setrealtime", 150000, 1);
-
-    TimeController->setTime(gHour, 0);
-    return 1;
-}
-
-renewtimestuff3() {
-    KillTimer(cmTimer);
-    setrandomtime();
-    cmTimer = SetTimer("setrandomtime", 120000, 1);
-    return 1;
-}
-
-forward realtime();
-public realtime() {
-    new m, s;
-    gettime(gHour, m, s);
-    cmTimer = SetTimer("setrealtime", 3600000, 1);
-
-    TimeController->setTime(gHour, 0);
-    return 1;
-}
-
-forward setrandomtime();
-public setrandomtime() {
-    new hour = random(23);
-    TimeController->setTime(hour, 0);
-    return 1;
-}
-
-forward setrealtime();
-public setrealtime() {
-    gHour++;
-    if (gHour > 23)
-        gHour = 0;
-
-    TimeController->setTime(gHour, 0);
-    return 1;
-}
-
 Admin(senderId, text[]) {
     new notice[256];
     format(notice, sizeof(notice), "* Admin notice: {FFFFFF}%s", text);

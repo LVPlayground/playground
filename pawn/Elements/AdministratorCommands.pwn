@@ -431,7 +431,7 @@ lvp_set(playerId, params[]) {
             goto TimeHelp;
 
         new timeHour = Command->integerParameter(params, 1);
-        if (timeHour > -1 && timeHour < 25) {
+        if (timeHour >= 0 && timeHour < 24) {
             KillTimer(cmTimer);
             TimeController->setTime(timeHour, 0);
             SendClientMessage(playerId, Color::Success, "Done!");
@@ -444,7 +444,7 @@ lvp_set(playerId, params[]) {
         }
 
 TimeHelp:
-        SendClientMessage(playerId, Color::Information, "Usage: /set time [0-24]");
+        SendClientMessage(playerId, Color::Information, "Usage: /set time [0-23]");
         return 1;
     }
 

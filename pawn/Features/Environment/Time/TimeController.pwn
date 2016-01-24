@@ -16,8 +16,9 @@
  *
  * Thanks to Martijn for asking Wolfram Alpha for a more optimized formula :-).
  *
- * @todo It would be grand if we could, instead of updating once per hour, update once per ten
- *       minutes or so to enable a more smooth progression of time.
+ * Time updates will be distributed to all players whose times are not overridden every ten in-game
+ * minutes. This will enable a smooth progression of the time, even during the hours where the
+ * updates are significant (5 - 7 o'clock in the morning).
  *
  * @author Russell Krupke <russell@sa-mp.nl>
  */
@@ -123,12 +124,13 @@ class TimeController {
      *
      * @param hour The hour count which the server should be updated to. It will be clamped to the
      *             range of [0, 23] to ensure having a valid value.
+     * @param minute The minutes to update the server's time to. Optional, defaults to zero.
      */
-    public setTime(hour) {
+    public setTime(hour, minute = 0) {
         if (hour < 0) hour = 0;
         if (hour > 23) hour = 23;
 
-        m_globalTime = this->toTimestamp(hour, 0);
+        m_globalTime = this->toTimestamp(hour, minute);
         for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
             if (Player(playerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter())
                 continue; // the player isn't connected, or is a NPC.
@@ -136,15 +138,40 @@ class TimeController {
             if (m_playerOverrideTime[playerId] != InvalidTime)
                 continue; // the player has a custom override time set.
 
-            SetPlayerTimePrivate(playerId, hour, 0);
+            SetPlayerTimePrivate(playerId, hour, minute);
         }
 
+        this->scheduleNextUpdate(hour, minute);
+    }
+
+    /**
+     * Schedules the next in-game time update. Updates are done every ten in-game minutes to make
+     * sure that time progresses smoothly, even in the hours where visual change rapidly.
+     *
+     * @param hour The current hour of the server's in-game time.
+     * @param minute The current minute of the server's in-game time.
+     */
+    private scheduleNextUpdate(hour, minute) {
         KillTimer(m_updateTimer);
 
-        new updateIntervalMs = this->resolveDurationForHour(hour) * 1000,
-            updateHour = (hour + 1) % 24;
+        // Determine the hourly update duration for the current |hour|.
+        new hourlyUpdateIntervalMs = this->resolveDurationForHour(hour) * 1000;
 
-        m_updateTimer = SetTimerEx("OnProgressiveTimeUpdate", updateIntervalMs, 0, "i", updateHour);
+        // Attempt to update to ten minutes in the future, but never more than the exact moment the
+        // next in-game hour will start because it will depend on different durations.
+        new updateGameMinutes = min(10, 60 - minute),
+            updateInterval = floatround((hourlyUpdateIntervalMs / 60) * updateGameMinutes);
+
+        // Determine the in-game time at the next update.
+        new nextMinute = minute + updateGameMinutes,
+            nextHour = hour;
+
+        if (nextMinute >= 60) {
+            nextMinute = 0;
+            nextHour = (hour + 1) % 24;
+        }
+
+        m_updateTimer = SetTimerEx("OnProgressiveTimeUpdate", updateInterval, 0, "ii", nextHour, nextMinute);
     }
 
     /**
@@ -177,9 +204,9 @@ class TimeController {
 };
 
 // Public function used to update the progressive in-game clock.
-forward OnProgressiveTimeUpdate(hour);
-public OnProgressiveTimeUpdate(hour) {
-    TimeController->setTime(hour);
+forward OnProgressiveTimeUpdate(hour, minutes);
+public OnProgressiveTimeUpdate(hour, minutes) {
+    TimeController->setTime(hour, minutes);
 }
 
 // Include the test-suite for the TimeController class.

@@ -119,7 +119,7 @@ class PrivateMessagingManager {
         SendClientMessage(receiverId, Color::PrivateMessageReceived, notice);
 
         // Play a sound for the receiver to indicate they received a message.
-        PlaySoundForPlayer(receiverId, 1058, 0.0, 0.0, 0.0);
+        PlayerPlaySound(receiverId, 1058, 0.0, 0.0, 0.0);
 
         // Only show the /r or /reply message to people who haven't played on LVP a lot yet.
         if (Player(receiverId)->isRegular() == false)

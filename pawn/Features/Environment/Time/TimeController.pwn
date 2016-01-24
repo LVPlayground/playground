@@ -48,25 +48,25 @@ class TimeController {
 
     /**
      * Converts separate hour and minute values to a single timestamp value, which can be stored in
-     * any of the class variables part of this class.
+     * any of the class variables part of this class. Public for testing.
      *
      * @param hours The number of hours to convert in the timestamp.
      * @param minutes The number of minutes to convert in the timestamp.
      * @return integer The created timestamp from the separate hour and minute components.
      */
-    private inline toTimestamp(hours, minutes) {
-        return ((hours * 100) + minutes);
+    public inline toTimestamp(hours, minutes) {
+        return ((hours * 60) + minutes);
     }
 
     /**
      * Converts a compressed timestamp to separate hour and minute variables, allowing them to
-     * be used in the SetPlayerTime() method, as well as in other areas.
+     * be used in the SetPlayerTime() method, as well as in other areas. Public for testing.
      *
      * @param timestamp The timestamp to convert to separate fields.
      * @param Variable to store the timestamp's hour in.
      * @param minutes Variable to store the timestamp's minutes in.
      */
-    private inline fromTimestamp(timestamp, &hours, &minutes) {
+    public inline fromTimestamp(timestamp, &hours, &minutes) {
         hours = Math->floor(timestamp / 60), minutes = timestamp % 60;
     }
 
@@ -92,8 +92,8 @@ class TimeController {
      * @param hour The hour for which to resolve the in-game duration.
      * @return integer Number of seconds the current value should last for.
      */
-    public inline resolveDurationForHour(hour) {
-        return floatround((this->resolveParabolaForHour(hour) / m_totalDayDuration) * TimeController::DayCycleDuration);
+    public inline Float: resolveDurationForHour(hour) {
+        return (this->resolveParabolaForHour(hour) / m_totalDayDuration) * TimeController::DayCycleDuration;
     }
 
     /**
@@ -155,12 +155,12 @@ class TimeController {
         KillTimer(m_updateTimer);
 
         // Determine the hourly update duration for the current |hour|.
-        new hourlyUpdateIntervalMs = this->resolveDurationForHour(hour) * 1000;
+        new Float: hourlyUpdateIntervalMs = this->resolveDurationForHour(hour) * 1000;
 
         // Attempt to update to ten minutes in the future, but never more than the exact moment the
         // next in-game hour will start because it will depend on different durations.
         new updateGameMinutes = min(10, 60 - minute),
-            updateInterval = floatround((hourlyUpdateIntervalMs / 60) * updateGameMinutes);
+            updateInterval = floatround((hourlyUpdateIntervalMs / 60.0) * updateGameMinutes);
 
         // Determine the in-game time at the next update.
         new nextMinute = minute + updateGameMinutes,
@@ -196,10 +196,11 @@ class TimeController {
      */
     public releasePlayerOverrideTime(playerId) {
         new hours, minutes;
-        this->m_playerOverrideTime[playerId] = InvalidTime;
-
         this->fromTimestamp(m_globalTime, hours, minutes);
+
         SetPlayerTimePrivate(playerId, hours, minutes);
+
+        this->m_playerOverrideTime[playerId] = InvalidTime;
     }
 };
 

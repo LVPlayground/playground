@@ -187,39 +187,33 @@ OnPlayerPressRampKey(playerid)
         rampid[playerid] = DynamicObject: -1;
     }
 
-    if (aprilsfools == 1)
+    if(playerramptypes[playerid] == 12)
     {
-        rampid[playerid] = CreateDynamicObject(616, fPosX, fPosY, fPosZ - 0.5, 0.0, 0.0, fAngle, GetPlayerVirtualWorld(playerid));
+        if(Player(playerid)->isAdministrator() == false)
+        {
+            SendClientMessage(playerid, COLOR_RED, "* You have to be an admin to spawn this ramp! Change your ramp using /my ramp.");
+            return;
+        }
+
+        GetVehiclePos(GetPlayerVehicleID(playerid), fPosX, fPosY, fPosZ);
+        rampid[playerid] = CreateDynamicObject(ramptypes[playerramptypes[playerid]], fPosX, fPosY, fPosZ - 0.5, 0.0, 0.0, fAngle, GetPlayerVirtualWorld(playerid));
     }
     else
     {
-        if(playerramptypes[playerid] == 12)
-        {
-            if(Player(playerid)->isAdministrator() == false)
-            {
-                SendClientMessage(playerid, COLOR_RED, "* You have to be an admin to spawn this ramp! Change your ramp using /my ramp.");
-                return;
-            }
 
-            GetVehiclePos(GetPlayerVehicleID(playerid), fPosX, fPosY, fPosZ);
-            rampid[playerid] = CreateDynamicObject(ramptypes[playerramptypes[playerid]], fPosX, fPosY, fPosZ - 0.5, 0.0, 0.0, fAngle, GetPlayerVirtualWorld(playerid));
-        }
-        else
-        {
-
-            switch(playerramptypes[playerid])           {
-                case 2:     rampid[playerid] = CreateDynamicObject(ramptypes[playerramptypes[playerid]], fPosX-1, fPosY, fPosZ - 0.5, 0.0, 0.0, fAngle, GetPlayerVirtualWorld(playerid)); // fixes a bug with it spawning slightly to the left!
-                case 6:     rampid[playerid] = CreateDynamicObject(ramptypes[playerramptypes[playerid]],fPosX, fPosY, fPosZ, 0.0, 0.0, fAngle, GetPlayerVirtualWorld(playerid));
-                case 7:     rampid[playerid] = CreateDynamicObject(ramptypes[playerramptypes[playerid]],  fPosX, fPosY, fPosZ, 0.0, 0.0, fAngle);
-                case 8:     rampid[playerid] = CreateDynamicObject(ramptypes[playerramptypes[playerid]],  fPosX, fPosY, fPosZ - 0.5, 0.0, 0.0, fAngle+180, GetPlayerVirtualWorld(playerid));
-                case 9:     rampid[playerid] = CreateDynamicObject(ramptypes[playerramptypes[playerid]],  fPosX, fPosY, fPosZ + 0.7, 0.0, 0.0, fAngle, GetPlayerVirtualWorld(playerid));
-                case 10:    rampid[playerid] = CreateDynamicObject(ramptypes[playerramptypes[playerid]],  fPosX, fPosY, fPosZ, 0.0, 0.0, fAngle+90, GetPlayerVirtualWorld(playerid));
-                case 11:    rampid[playerid] = CreateDynamicObject(ramptypes[playerramptypes[playerid]],  fPosX, fPosY, fPosZ, 0.0, 0.0, fAngle+15, GetPlayerVirtualWorld(playerid));
-                case 12:    rampid[playerid] = CreateDynamicObject(ramptypes[playerramptypes[playerid]],  fPosX, fPosY, fPosZ + 1.4, 0.0, 0.0, fAngle+90, GetPlayerVirtualWorld(playerid));
-                default:    rampid[playerid] = CreateDynamicObject(ramptypes[playerramptypes[playerid]], fPosX, fPosY, fPosZ - 0.5, 0.0, 0.0, fAngle, GetPlayerVirtualWorld(playerid));
-            }
+        switch(playerramptypes[playerid])           {
+            case 2:     rampid[playerid] = CreateDynamicObject(ramptypes[playerramptypes[playerid]], fPosX-1, fPosY, fPosZ - 0.5, 0.0, 0.0, fAngle, GetPlayerVirtualWorld(playerid)); // fixes a bug with it spawning slightly to the left!
+            case 6:     rampid[playerid] = CreateDynamicObject(ramptypes[playerramptypes[playerid]],fPosX, fPosY, fPosZ, 0.0, 0.0, fAngle, GetPlayerVirtualWorld(playerid));
+            case 7:     rampid[playerid] = CreateDynamicObject(ramptypes[playerramptypes[playerid]],  fPosX, fPosY, fPosZ, 0.0, 0.0, fAngle);
+            case 8:     rampid[playerid] = CreateDynamicObject(ramptypes[playerramptypes[playerid]],  fPosX, fPosY, fPosZ - 0.5, 0.0, 0.0, fAngle+180, GetPlayerVirtualWorld(playerid));
+            case 9:     rampid[playerid] = CreateDynamicObject(ramptypes[playerramptypes[playerid]],  fPosX, fPosY, fPosZ + 0.7, 0.0, 0.0, fAngle, GetPlayerVirtualWorld(playerid));
+            case 10:    rampid[playerid] = CreateDynamicObject(ramptypes[playerramptypes[playerid]],  fPosX, fPosY, fPosZ, 0.0, 0.0, fAngle+90, GetPlayerVirtualWorld(playerid));
+            case 11:    rampid[playerid] = CreateDynamicObject(ramptypes[playerramptypes[playerid]],  fPosX, fPosY, fPosZ, 0.0, 0.0, fAngle+15, GetPlayerVirtualWorld(playerid));
+            case 12:    rampid[playerid] = CreateDynamicObject(ramptypes[playerramptypes[playerid]],  fPosX, fPosY, fPosZ + 1.4, 0.0, 0.0, fAngle+90, GetPlayerVirtualWorld(playerid));
+            default:    rampid[playerid] = CreateDynamicObject(ramptypes[playerramptypes[playerid]], fPosX, fPosY, fPosZ - 0.5, 0.0, 0.0, fAngle, GetPlayerVirtualWorld(playerid));
         }
     }
+
     Streamer_Update(playerid);
 }
 

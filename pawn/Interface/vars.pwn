@@ -56,7 +56,6 @@ new Text: TaxiArrival[MAX_PLAYERS] = {Text:INVALID_TEXT_DRAW, ...};
 new playerTaxi[MAX_PLAYERS][6];
 new Float: g_TaxiPOS[MAX_PLAYERS][3];
 new isGateOpen;
-new aprilsfools = 0;
 new g_AllowWeapons[MAX_INTERIORS][MAX_PLAYERS];
 new g_FlagTime[MAX_PLAYERS][5];
 new PlayerInPointTax[MAX_PLAYERS];

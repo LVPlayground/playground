@@ -856,7 +856,7 @@ lvp_countdown(playerid,params[])
     }
 
     if(iSec > Countdown::MaximumDuration) {
-        ShowBoxForPlayer(playerid, "No. Just fuck off.");
+        ShowBoxForPlayer(playerid, "The countdown cannot be more than 300 seconds.");
         return 1;
     }
 

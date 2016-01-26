@@ -82,6 +82,14 @@ class ShipManager {
                 shipRelatedAreas[coords][1], shipRelatedAreas[coords][3], 45.0 /* height */);
 
         // Create the shiprail objects.
+        this->initializeObjects();
+    }
+
+    /**
+     * Initializes the objects required for the ship manager. This will automatically mark the objects
+     * as having been enabled, as they'll be visible to all players.
+     */
+    public initializeObjects() {
         m_shipRailObjects[0]  = CreateDynamicObject(3524, 2024.34375, 1540.39063, 10.28570,   0.00000,   0.00000,  84.02000);
         m_shipRailObjects[1]  = CreateDynamicObject(3524, 2025.82813, 1550.33594, 10.28570,   0.00000,   0.00000,  84.02000);
         m_shipRailObjects[2]  = CreateDynamicObject(3524, 2024.31055, 1541.67578, 10.70153,   0.00000,   0.00000,  91.00000);
@@ -130,6 +138,8 @@ class ShipManager {
      */
     @switch(OnPlayerEnterZone, ShipManager::ShipLayerId)
     public onPlayerEnterShip(playerId, zoneId) {
+        if (MapObjects->isActive()) return 1;
+
         if (zoneId < 2) {
             this->respawnPlayerVehicle(playerId);
 
@@ -256,6 +266,8 @@ class ShipManager {
      */
     @switch(OnPlayerLeaveZone, ShipManager::ShipLayerId)
     public onPlayerLeaveShip(playerId, zoneId) {
+        if (MapObjects->isActive()) return 1;
+
         m_activityOfPlayerOnShip[playerId] = JustLeft;
 
         return 1;
@@ -379,6 +391,8 @@ class ShipManager {
      * @param enable Whether the shiprail should be enabled.
      */
     public enableShiprail(bool: enable = true) {
+        if (MapObjects->isActive()) return 1;
+
         new Float: sroX, Float: sroY, Float: sroZ;
 
         if (enable == true) {
@@ -400,6 +414,20 @@ class ShipManager {
         }
 
         return 1;
+    }
+
+    /**
+     * Toggles functionality of the ship manager depending on whether the map objects experiment has
+     * been |enabled|. This may result in destruction of a number of objects.
+     */
+    public toggleMapObjects(bool: enabled) {
+        if (!enabled) {
+            this->initializeObjects();
+            return;
+        }
+
+        for (new shipRailObject = 0; shipRailObject < MAX_RAIL_OBJECTS; ++shipRailObject)
+            DestroyDynamicObject(m_shipRailObjects[shipRailObject]);
     }
 
     /** 

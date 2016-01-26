@@ -360,7 +360,7 @@ class ShipManager {
             Command->stringParameter(params, 0, setShiprailToState, sizeof(setShiprailToState));
 
             if (strcmp(setShiprailToState, "on", false) == 0 && m_isTheShiprailEnabled == false) {
-                this->enableShiprail();
+                this->enableShiprail(true);
 
                 SendClientMessage(playerId, Color::Success, "Shiprail enabled.");
 
@@ -395,7 +395,10 @@ class ShipManager {
 
         new Float: sroX, Float: sroY, Float: sroZ;
 
-        if (enable == true) {
+        if (enable) {
+            if (m_isTheShiprailEnabled)
+                return 0;
+
             for (new shipRailObject = 0; shipRailObject < MAX_RAIL_OBJECTS; ++shipRailObject) {
                 GetDynamicObjectPos(m_shipRailObjects[shipRailObject], sroX, sroY, sroZ);
                 MoveDynamicObject(m_shipRailObjects[shipRailObject], sroX - 1.0, sroY, sroZ + 5.4, 3);
@@ -405,6 +408,9 @@ class ShipManager {
         }
 
         else {
+            if (!m_isTheShiprailEnabled)
+                return 0;
+
             for (new shipRailObject = 0; shipRailObject < MAX_RAIL_OBJECTS; ++shipRailObject) {
                 GetDynamicObjectPos(m_shipRailObjects[shipRailObject], sroX, sroY, sroZ);
                 MoveDynamicObject(m_shipRailObjects[shipRailObject], sroX + 1.0, sroY, sroZ - 5.4, 3);

@@ -61,9 +61,22 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
     // Carbombs
     CBomb__DetonateCheck(playerid, newkeys);
 
+    new playerState = GetPlayerState(playerid),
+        playerWeapon = GetPlayerWeapon(playerid);
+
+    if (playerState == PLAYER_STATE_ONFOOT && WEAPON_COLT45 <= playerWeapon <= WEAPON_CAMERA) {
+        if (PRESSED(KEY_HANDBRAKE) && !g_isAiming[playerid]) {
+            VeryImportantPlayersManager->suspendPlayerLook(playerid);
+            g_isAiming[playerid] = true;
+        } else if (RELEASED(KEY_HANDBRAKE) && g_isAiming[playerid]) {
+            VeryImportantPlayersManager->applyPlayerLook(playerid);
+            g_isAiming[playerid] = false;
+        }
+    }
+
     // Player presses FIRE (LMB, LCTRL)
     if (PRESSED(KEY_FIRE) || (PRESSED(KEY_FIRE) && PRESSED(KEY_SECONDARY_ATTACK))) {
-        if (GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) {
+        if (playerState == PLAYER_STATE_ONFOOT) {
             if (CHideGame__GetPlayerState(playerid) == HS_STATE_PLAYING) {
                 CHideGame__onPlayerPunch(playerid);
                 return 1;
@@ -91,7 +104,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             }
         }
 #if Feature::DisableRaces == 0
-        else if (GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
+        else if (playerState == PLAYER_STATE_DRIVER)
             CheckVehicleMissileFire(playerid, GetPlayerVehicleID(playerid));
 #endif
     }

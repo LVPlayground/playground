@@ -55,6 +55,7 @@ new g_ShowMessages[MAX_PLAYERS];
 new Text: TaxiArrival[MAX_PLAYERS] = {Text:INVALID_TEXT_DRAW, ...};
 new playerTaxi[MAX_PLAYERS][6];
 new Float: g_TaxiPOS[MAX_PLAYERS][3];
+new bool: g_isAiming[MAX_PLAYERS];
 new isGateOpen;
 new g_AllowWeapons[MAX_INTERIORS][MAX_PLAYERS];
 new g_FlagTime[MAX_PLAYERS][5];

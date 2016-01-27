@@ -37,7 +37,7 @@ stock SetPlayerSpawnPos(playerId) {
     return 1;
 }
 
-stock OriginalOnPlayerSpawn(playerId) {
+OriginalOnPlayerSpawn(playerId) {
     // Since this is the last method in the default spawn functions, reset the sync boolean if needed.
     if (PlayerSyncHandler->isSyncing(playerId) == true) {
         PlayerSyncHandler->setIsSyncing(playerId, false);
@@ -118,6 +118,8 @@ stock OriginalOnPlayerSpawn(playerId) {
     // Set the global time and weather for the spawning player.
     SetPlayerWeather(playerId, g_iSavedWeatherID);
     TimeController->releasePlayerOverrideTime(playerId);
+
+    g_isAiming[playerId] = false;
 
     // Handle spawnmoney.
     if (!firstJoin[playerId] && GetPlayerMoney(playerId) > -1) {

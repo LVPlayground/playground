@@ -112,6 +112,5 @@ class AccountSaver {
     @list(OnPlayerLogin)
     public onPlayerLogin(playerId) {
         m_playerLastSaveTime[playerId] = Time->highResolution();
-        m_playerJoinTime[playerId] = 0;
     }
 };

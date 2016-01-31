@@ -518,7 +518,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(Ignore,         6, PlayerLevel);
     lvp_command(Unignore,       8, PlayerLevel);
     lvp_command(Ignored,        7, PlayerLevel);
-    lvp_command(Settings,       8, PlayerLevel);
+    lvp_command(settings,       8, PlayerLevel);
 
     // Popular, large, commands:
     lvp_command(cd,             2, PlayerLevel);

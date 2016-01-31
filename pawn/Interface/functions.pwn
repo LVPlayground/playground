@@ -223,7 +223,7 @@ ResetPlayerStats(playerId) {
     g_PlayerMenu[playerId] = 0;
     g_NoCaps[playerId] = false;
     bPlayerWeaponStored[playerId] = 0;
-    g_ShowMessages[playerId] = 1;
+    showMessagesEnabled[playerId] = true;
     g_PlayerMenu[playerId] = 0;
     playerTaxi[playerId][0] = -1;
     playerTaxi[playerId][5] = false;
@@ -793,7 +793,7 @@ IsPlayerFighting(playerId) {
 
 GameTextForAllEx(const message[], time, style, playerWorldId = -1) {
     for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
-        if (Player(playerId)->isConnected() == true && !IsPlayerInMinigame(playerId) && g_ShowMessages[playerId]) {
+        if (Player(playerId)->isConnected() == true && !IsPlayerInMinigame(playerId) && showMessagesEnabled[playerId]) {
             if ((playerWorldId != -1 && playerWorldId == GetPlayerVirtualWorld(playerId)) || playerWorldId == -1)
                 GameTextForPlayer(playerId, message, time, style);
         }

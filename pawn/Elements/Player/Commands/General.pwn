@@ -730,7 +730,7 @@ lvp_showmessage(playerid,params[])
             continue;
         }
 
-        if(!g_ShowMessages[ j ])
+        if(!showMessagesEnabled[j])
         {
             continue;
         }

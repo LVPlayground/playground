@@ -52,8 +52,6 @@ class NewsController {
      *
      * @param playerId Id of the player to check the conditions against.
      * @return boolean Should news messages be hidden?
-     *
-     * @todo Make /settings showmessage command compatible here (g_ShowMessages represents this, but the variable is not accessible from this file)
      */
     private bool: shouldDisableMessages(playerId) {
         if (IsPlayerInMinigame(playerId))

@@ -163,62 +163,59 @@ lvp_Ignored( playerid, params[] )
 // Command: /settings
 // Parameters: [setting] [value]
 // Creator: Peter
-lvp_Settings( playerid, params[] )
+lvp_settings(playerId, params[])
 {
     // Since this version, regular players have the ability to modify a bunch of
     // their own settings. They can decide whether they want to see join/news
     // messages, etcetera. This function provides toggling capabilities.
-    if (Player(playerid)->isRegular() == false && Player(playerid)->isAdministrator() == false) {
-        SendClientMessage( playerid, COLOR_RED, "This function is only available for regulars!" );
+    if (Player(playerId)->isRegular() == false && Player(playerId)->isAdministrator() == false) {
+        SendClientMessage(playerId, Color::Error, "This function is only available for regulars!" );
         return 1;
     }
 
-    param_shift(szOption);
+    param_shift(paramOption);
 
     // Do we have any parameters passed on?
-    if (!strlen(szOption)) goto l_Explain;
+    if (!strlen(paramOption)) {
+        SendClientMessage(playerId, Color::Information, "Usage: /settings [newsmsg/showmsg] [on/off]");
+        return 1;
+    }
 
     // First check whether any /settings command has been registered by individual features, as this
     // takes precedence over anything defined in the if/else list that follows. Syntax for any
     // methods listening to this switch is: onSettingsFooCommand(playerId, params[]).
-    new result = Annotation::ExpandSwitch<SettingsCommand>(szOption, playerid, params);
+    new result = Annotation::ExpandSwitch<SettingsCommand>(paramOption, playerId, params);
     if (result != -1) // it can still either be 0 or 1, but something handled it.
         return result;
 
     // For /showmessages
-    if (strcmp( szOption, "showmsg", true, 7 ) == 0)
+    if (!strcmp(paramOption, "showmsg", true, 7))
     {
         // Get the way how we want to toggle;
-        param_shift( szToggle );
+        param_shift(optionToggle);
 
-        if (!strlen(szToggle))
-        {
-            SendClientMessage( playerid, COLOR_WHITE, "Usage: /settings showmsg [on/off]" );
+        new message[128];
+
+        if (Command->parameterCount(optionToggle) == 0) {
+            format(message, sizeof(message), "Showing showmessages to you currently is %s{FFFFFF}.",
+                (!showMessagesEnabled[playerId] ?
+                    "{DC143C}disabled" :
+                    "{33AA33}enabled"));
+            SendClientMessage(playerId, Color::Information, message);
+            SendClientMessage(playerId, Color::Information, "Usage: /settings showmsg [on/off]" );
+            return 1;
         }
 
-        else if (strcmp( szToggle, "off", true ) == 0)
-        {
-            g_ShowMessages[ playerid ] = 0;
-            SendClientMessage( playerid, COLOR_GREEN, "Showmessages have been disabled!" );
-        }
+        showMessagesEnabled[playerId] = Command->booleanParameter(optionToggle, 0);
 
-        else if (strcmp( szToggle, "on", true ) == 0)
-        {
-            g_ShowMessages[ playerid ] = 1;
-            SendClientMessage( playerid, COLOR_GREEN, "Showmessages are visible again!" );
-        }
+        format(message, sizeof(message), "Showing showmessages to you is now %s{33AA33}.",
+            (!showMessagesEnabled[playerId] ?
+                "{DC143C}disabled" :
+                "{33AA33}enabled"));
+        SendClientMessage(playerId, Color::Success, message);
 
-        else
-        {
-            SendClientMessage( playerid, COLOR_WHITE, "Usage: /settings showmsg [on/off]" );
-        }
         return 1;
     }
 
-    // Finally, if the request hasn't been handled we can easily figure out
-    // what to do next, by simply sending the function description.
-    l_Explain:
-
-    SendClientMessage( playerid, COLOR_WHITE, "Usage: /settings [newsmsg/showmsg] [on/off]" );
     return 1;
 }

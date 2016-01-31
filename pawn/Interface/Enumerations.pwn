@@ -20,12 +20,13 @@ enum IrcMessageType {
     PhoneIrcMessage, // [playerName] [playerId] [calleeName] [calleeId] [message]
     RegularIrcMessage, // [playerName] [playerId] [message]
     JoinIrcMessage, // [playerId] [playerName]
-    JoinIpIrcMessage, // playerId] [playerIp] [playerName]
+    JoinIpIrcMessage, // [playerId] [playerIp] [playerName]
     LeaveIrcMessage, // [playerId] [playerName] [reason]
     DeathIrcMessage, // [playerName]
     KillIrcMessage, // [playerName] [playerId] [killerName] [killerId] [reason]
     NotConnectedIrcMessage, // [playerId]
-    AddCommandIrcMessage // [trigger] [paramTypes] [userRight] [params] 
+    AddCommandIrcMessage, // [trigger] [paramTypes] [userRight] [params] 
+    ReportIrcMessage // [playerName] [playerId] [suspectedPlayer] [cheatReason]
 };
 
 /**
@@ -55,7 +56,7 @@ enum Casino {
    // The Caligula's, the famous big casino just to the north of the Pirate Ship.
    CaligulasCasino,
 
-   // The small private casino, which we also use for the VIP room.
+   // The small private casino, west of the Pay 'n Spray in north LV.
    PrivateCasino,
 
    // Indicates that there is no active casino right now.

@@ -84,3 +84,6 @@
 
 // A sync function for administrator can offer help in catching aimbot users.
 #include "Features/Gameplay/Commands/PlayerSyncHandler.pwn"
+
+// Add back the (in)famous /report-command to report players
+#include "Features/Gameplay/Commands/ReportHandler.pwn"

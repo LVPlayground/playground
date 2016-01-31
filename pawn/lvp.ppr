@@ -171,6 +171,7 @@
     <DiskObject>\Features\Environment\Area\CasinoArea.pwn</DiskObject>
     <DiskObject>\Features\Environment\Area\PayAndSprayShops.pwn</DiskObject>
     <DiskObject>\Features\Environment\InformationBeaconController.pwn</DiskObject>
+    <DiskObject>\Features\Environment\MapObjects.pwn</DiskObject>
     <DiskObject>\Features\Environment\Services\</DiskObject>
     <DiskObject>\Features\Environment\Services\Gunther.pwn</DiskObject>
     <DiskObject>\Features\Environment\Services\PlanePilot.pwn</DiskObject>
@@ -180,6 +181,7 @@
     <DiskObject>\Features\Environment\Services\TrainDriver.pwn</DiskObject>
     <DiskObject>\Features\Environment\Time\</DiskObject>
     <DiskObject>\Features\Environment\Time\TimeController.pwn</DiskObject>
+    <DiskObject>\Features\Environment\Time\TimeController.tests.pwn</DiskObject>
     <DiskObject>\Features\External.pwn</DiskObject>
     <DiskObject>\Features\External\</DiskObject>
     <DiskObject>\Features\External\IRC.pwn</DiskObject>
@@ -201,6 +203,7 @@
     <DiskObject>\Features\Gameplay\Commands\PlayerInfoHandler.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\PlayerSpectateHandler.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\PlayerSyncHandler.pwn</DiskObject>
+    <DiskObject>\Features\Gameplay\Commands\ReportHandler.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\Announcements.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\CallCommands.pwn</DiskObject>
@@ -456,8 +459,6 @@
     <DiskObject>\Resources\Minigames\Race\Race7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race9.pwn</DiskObject>
-    <DiskObject>\Features\Environment\Time\TimeController.tests.pwn</DiskObject>
-    <DiskObject>\Features\Environment\MapObjects.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

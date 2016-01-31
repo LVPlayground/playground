@@ -269,6 +269,8 @@ public OnVehicleSpawn(vehicleid) {
     if (Vehicle(vehicleid)->isValid() == false)
         return 0; // don't handle invalid vehicles.
 
+    Annotation::ExpandList<OnVehicleSpawn>(vehicleid);
+
     VehicleEvents(vehicleid)->onVehicleSpawn();
     return 1;
 }

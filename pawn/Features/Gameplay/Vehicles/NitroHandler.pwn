@@ -88,8 +88,7 @@ class NitroHandler {
             case 999: {
                 if (GetPlayerMoney(playerId) >= 250000) {
                     GivePlayerMoney(playerId, -250000);
-                    m_vehicleHasInfiniteNosAttached[playerVehicleId] = true;
-                    AddVehicleComponent(playerVehicleId, 1008);
+                    this->enableAndAddInfiniteNos(playerVehicleId);
                 } else {
                     SendClientMessage(playerId, Color::Error, "You do need $250,000 to attach infinite nos to your vehicle.");
                     return 1;
@@ -130,18 +129,57 @@ class NitroHandler {
     }
 
     /**
-     * In the case the vehicle is destroyed we have to let our handler now this vehicle has no
-     * infinite nos anymore.
+     * Flips the boolean for remembering if this vehicle has infinite nos and attaches the fake in-
+     * finite nos-component.
+     *
+     * @param vehicleId Id of the vehicle who needs to have infinite nos.
+     */
+    public enableAndAddInfiniteNos(vehicleId) {
+        if (!m_vehicleHasInfiniteNosAttached[vehicleId]) {
+            m_vehicleHasInfiniteNosAttached[vehicleId] = true;
+            AddVehicleComponent(vehicleId, 1008);
+        }
+
+        return 1;
+    }
+
+    /**
+     * In some cases we need to reset the infinite nos of a vehicle, since it is a bit different nos
+     * then the others.
+     *
+     * @param vehicleId Id of the vehicle containing infinite nos.
+     */
+    public disableAndRemoveInfiniteNos(vehicleId) {
+        if (m_vehicleHasInfiniteNosAttached[vehicleId]) {
+            RemoveVehicleComponent(vehicleId, 1008);
+            m_vehicleHasInfiniteNosAttached[vehicleId] = false;
+        }
+
+        return 1;
+    }
+
+    /**
+     * In the case the vehicle is destroyed we have to let our handler know this vehicle has no in-
+     * finite nos anymore.
      *
      * @param vehicleId Id of the vehicle containing infinite nos.
      **/
     @list(OnVehicleDeath)
     public OnVehicleDeath(vehicleId) {
-        // Check for a very specific state
-        if (m_vehicleHasInfiniteNosAttached[vehicleId]) {
-            RemoveVehicleComponent(vehicleId, 1008);
-            m_vehicleHasInfiniteNosAttached[vehicleId] = false;
-        }
+        this->disableAndRemoveInfiniteNos(vehicleId);
+
+        return 1;
+    }
+
+    /**
+     * In the case the vehicle is spawned we have to let our handler know this vehicle has no infi-
+     * nite nos anymore.
+     *
+     * @param vehicleId Id of the vehicle containing infinite nos.
+     **/
+    @list(OnVehicleSpawn)
+    public OnVehicleSpawn(vehicleId) {
+        this->disableAndRemoveInfiniteNos(vehicleId);
 
         return 1;
     }

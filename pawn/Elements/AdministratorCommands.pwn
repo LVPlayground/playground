@@ -1142,7 +1142,7 @@ lvp_show(playerId, params[]) {
 
     if (!strcmp(showParameter, "report", true, 6)) {
         showInfo = true;
-        format(g_message, sizeof(g_message), "Report cheaters using @report [id/name] [presumed cheat]");
+        format(g_message, sizeof(g_message), "Report cheaters using /report [suspected id/name] [cheat/reason]");
     }
 
     if (!strcmp(showParameter, "caps", true, 4)) {

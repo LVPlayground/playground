@@ -27,8 +27,8 @@ class Introduction extends Feature {
 
     // TODO(Russell): Include /commands in this.
 
-    playground.commandManager.registerCommand('help', Introduction.prototype.onHelpCommand.bind(this))
-    playground.commandManager.registerCommand('irc', Introduction.prototype.onIrcCommand.bind(this))
+    playground.commandManager.registerCommand('help', Introduction.prototype.onHelpCommand.bind(this));
+    playground.commandManager.registerCommand('irc', Introduction.prototype.onIrcCommand.bind(this));
     playground.commandManager.registerCommand('rules', Introduction.prototype.onRulesCommand.bind(this));
   }
 

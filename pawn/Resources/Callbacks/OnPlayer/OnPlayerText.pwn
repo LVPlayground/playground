@@ -61,7 +61,7 @@ public OnPlayerText(playerid, text[]) {
     }
 
     // Regular chat (; - requires 50 ingame hours).
-    if (text[0] == ';' && strlen(text) > 1) {
+    if (text[0] == ';' && strlen(text) > 2) { // Length of 2 so only smileys are still displayed to everyone
         format(message, sizeof(message), "** [%d] %s: %s", playerid, Player(playerid)->nicknameString(), text[1]);
 
         if (gameplayhours[playerid] < Player::RegularHours && Player(playerid)->isAdministrator() == false) {

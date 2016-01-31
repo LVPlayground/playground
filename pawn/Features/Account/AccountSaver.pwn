@@ -20,8 +20,28 @@ class AccountSaver {
     // When is the last time that we saved a certain player's account?
     new m_playerLastSaveTime[MAX_PLAYERS];
 
+    // Time, in seconds, at which each player joined the server.
+    new m_playerJoinTime[MAX_PLAYERS];
+
     // What's the player Id we checked in the current run?
     new m_incrementalPlayerId;
+
+    // Query ID used for recording in-game playing sessions.
+    new m_recordSessionQuery;
+
+    /**
+     * Creates the query used for recording in-game playing sessions of registered players.
+     */
+    public __construct() {
+        if (!QueryBuilder->create("INSERT INTO " ...
+                                  "    users_sessions " ...
+                                  "    (user_id, session_end, session_duration) " ...
+                                  "VALUES " ...
+                                  "    (%0, NOW(), %1)", "ii", m_recordSessionQuery))
+        {
+            printf("[Loading] AccountSaver: Unable to initialize the session query.");
+        }
+    }
 
     /**
      * Incrementally iterates through the online players when a number of conditionals succeed. A
@@ -51,6 +71,16 @@ class AccountSaver {
     }
 
     /**
+     * Called when a player connects to the server. Stores the time of their connection.
+     *
+     * @param playerId Id of the player that connected to the server.
+     */
+    @list(OnPlayerConnect)
+    public onPlayerConnect(playerId) {
+        m_playerJoinTime[playerId] = Time->currentTime();
+    }
+
+    /**
      * We want to save a player's data when they're disconnecting from the server, regardless of
      * when their last save was.
      *
@@ -58,8 +88,19 @@ class AccountSaver {
      */
     @list(OnPlayerDisconnect)
     public onPlayerDisconnect(playerId) {
-        if (Player(playerId)->isLoggedIn())
-            AccountData(playerId)->save();
+        if (!Player(playerId)->isLoggedIn())
+            return;
+
+        AccountData(playerId)->save();
+        if (m_playerJoinTime[playerId] != 0) {
+            new accountId = Account(playerId)->userId(),
+                sessionDuration = Time->currentTime() - m_playerJoinTime[playerId],
+                queryString[1024];
+
+            QueryBuilder(m_recordSessionQuery)->apply(queryString, sizeof(queryString), accountId, sessionDuration);
+            if (strlen(queryString))
+                Database->query(queryString, "", 0);
+        }
     }
 
     /**
@@ -71,5 +112,6 @@ class AccountSaver {
     @list(OnPlayerLogin)
     public onPlayerLogin(playerId) {
         m_playerLastSaveTime[playerId] = Time->highResolution();
+        m_playerJoinTime[playerId] = 0;
     }
 };

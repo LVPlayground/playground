@@ -52,16 +52,6 @@ class Account <playerId (MAX_PLAYERS)> {
     }
 
     /**
-     * One feature we offer to registered players is storing their state on disconnection, fully
-     * restoring it when they connect again within a certain period of time. That is handled here.
-     */
-    @list(OnPlayerDisconnect)
-    public onPlayerDisconnect() {
-        if (m_userId == 0)
-            return; // the user has not logged in.
-    }
-
-    /**
      * After the database has given us information about whether the player is registered or not, we
      * fire off a request for the Ban Manager to check whether they're allowed to play and, if the
      * player is registered, set their player data up in an appropriate way.

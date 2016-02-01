@@ -172,7 +172,6 @@ ResetPlayerGameStateVariables(playerId) {
 ResetPlayerStats(playerId) {
     for (new i = 0; i < MAX_PLAYERS; i++) g_Ignore[playerId][i] = false;
     g_VirtualWorld[playerId] = 0;
-    iPlayerEnterShipTime[playerId] = 0;
 #if Feature::EnableFightClub == 0
     IsPlayerWatchingFC[playerId] = false;
 #endif

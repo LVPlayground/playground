@@ -1415,7 +1415,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
                     ClearPlayerMenus(playerid);
 
                     GameTextForPlayer(pid, "Jump!!!", 2000, 5 );
-                    diveHistory[playerid] = 1;
 
                     new name[24];
                     if(pid != playerid)
@@ -1503,7 +1502,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         if( (fZ+500) > 650 )
         fZ = 0;
         ClearPlayerMenus(playerid);
-        diveHistory[playerid] = 1;
         SetPlayerPos(playerid, fX, fY, fZ+500);
 
         GameTextForPlayer(playerid, "Jump!!!", 2000, 5 );

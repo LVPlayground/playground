@@ -21,7 +21,8 @@ class ActivityLog extends Feature {
     const toEventName = name => name.slice(2).toLowerCase();
 
     [
-      'OnPlayerResolvedDeath'  // { playerid, killerid, reason }
+      'OnPlayerResolvedDeath',  // { playerid, killerid, reason }
+      'OnVehicleDeath'          // { vehicleid }
 
     ].forEach(name =>
         this.callbacks_.addEventListener(toEventName(name), this.__proto__[toMethodName(name)].bind(this)));
@@ -42,6 +43,18 @@ class ActivityLog extends Feature {
       this.recorder_.writeDeath(userId, position, event.reason);
     else
       this.recorder_.writeKill(userId, killer.isRegistered() ? killer.account.userId : null, position, event.reason);
+  }
+
+  // Called when a vehicle has died. The |event| contains the { vehicleid }.
+  onVehicleDeath(event) {
+    const vehicle = new Vehicle(event.vehicleid);
+    if (!vehicle)
+      return;
+
+    const modelId = vehicle.modelId;
+    const position = vehicle.position;
+
+    this.recorder_.writeVehicleDeath(modelId, position);
   }
 };
 

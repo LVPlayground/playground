@@ -18,6 +18,16 @@ const ACTIVITY_LOG_KILLS_INSERT = `
     VALUES
       (?, ?, NOW(), ?, ?, ?, ?)`;
 
+// Query to insert a new row in the `activity_log_vehicle_deaths` table.
+const ACTIVITY_LOG_VEHICLE_DEATHS = `
+    INSERT INTO
+      activity_log_vehicle_deaths
+      (model_id, activity_timestamp, activity_position_x, activity_position_y, activity_position_z)
+    VALUES
+      (? NOW(), ?, ?, ?)`;
+
+// -------------------------------------------------------------------------------------------------
+
 // The activity recorder is responsible for actually recording the events that took place in-game,
 // in a more generalized fashion so that they can be written to the database.
 class ActivityRecorder {
@@ -35,6 +45,11 @@ class ActivityRecorder {
   // |killerId| (may be NULL) at |position| for the given |reason|.
   writeKill(userId, killerId, position, reason) {
     this.database_.query(ACTIVITY_LOG_KILLS_INSERT, userId, killerId, position.x, position.y, position.z, reason);
+  }
+
+  // Writes the death of a vehicle of |modelId| at |position| to the database.
+  writeVehicleDeath(modelId, position) {
+    this.database_.query(ACTIVITY_LOG_VEHICLE_DEATHS, modelId, position.x, position.y, position.z);
   }
 };
 

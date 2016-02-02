@@ -60,6 +60,9 @@ class Vehicle extends Extendable {
     this.interior_ = value;
   }
 
+  // Gets the model Id of this vehicle.
+  get modelId() { return pawnInvoke('GetVehicleModel', 'i', this.id_); }
+
   // Gets or sets the position of the vehicle. Both must be used with a 3D vector.
   get position() { return new Vector(...pawnInvoke('GetVehiclePos', 'iFFF', this.id_)); }
   set position(value) { pawnInvoke('SetVehiclePos', 'ifff', this.id_, value.x, value.y, value.z); }

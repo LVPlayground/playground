@@ -1,4 +1,4 @@
-// Copyright 2015 Las Venturas Playground. All rights reserved.
+// Copyright 2016 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
@@ -13,10 +13,35 @@ class ActivityLog extends Feature {
   constructor(playground) {
     super(playground);
 
-    this.recorder_ = new ActivityRecorder();
-
     this.callbacks_ = new ScopedCallbacks();
-    // TODO: Listen to N relevant callbacks.
+    this.recorder_ = new ActivityRecorder(playground.database);
+    
+    // Translates OnPawnEventName to respectively `onPawnEventName` or `pawneventname`.
+    const toMethodName = name => name.charAt(0).toLowerCase() + name.slice(1);
+    const toEventName = name => name.slice(2).toLowerCase();
+
+    [
+      'OnPlayerResolvedDeath'  // { playerid, killerid, reason }
+
+    ].forEach(name =>
+        this.callbacks_.addEventListener(toEventName(name), this.__proto__[toMethodName(name)].bind(this)));
+  }
+
+  // Called when a confirmed death has happened with the corrected Id of the killer, if any. The
+  // |event| contains the { playerid, killerid, reason } about the death.
+  onPlayerResolvedDeath(event) {
+    const player = Player.get(event.playerid);
+    if (!player)
+      return;
+
+    const userId = player.isRegistered() ? player.account.userId : null;
+    const position = player.position;
+
+    const killer = Player.get(event.killerid);
+    if (!killer)
+      this.recorder_.writeDeath(userId, position, event.reason);
+    else
+      this.recorder_.writeKill(userId, killer.isRegistered() ? killer.account.userId : null, position, event.reason);
   }
 };
 

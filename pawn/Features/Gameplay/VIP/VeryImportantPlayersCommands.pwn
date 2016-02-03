@@ -237,8 +237,7 @@ class VeryImportantPlayersCommands {
         }
 
         if (Command->parameterCount(params) != 1) {
-            SendClientMessage(playerId, Color::Information, "Usage: /my look [assassin/bastard/maniac/ninja/punk/riot]");
-            SendClientMessage(playerId, Color::Information, "  The look will be reverted after respawn.");
+            SendClientMessage(playerId, Color::Information, "Usage: /my look {DC143C}[reset] {FFFFFF}[assassin/bastard/maniac/ninja/punk/riot]");
             return 1;
         }
 

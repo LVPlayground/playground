@@ -17,7 +17,7 @@ enum VeryImportantPlayerLook {
  * Our important players support LVP by donating. In return, we offer them various extras regular
  * players won't/partially have. This class manages such bonusses.
  *
- * @author Max "Cake" Blokker <cake@sa-mp.nl
+ * @author Max "Cake" Blokker <cake@sa-mp.nl>
  */
 class VeryImportantPlayersManager {
     /**
@@ -70,13 +70,24 @@ class VeryImportantPlayersManager {
      * @param subjectId Id of the player who we want to change the look for.
      * @param lookType The look that we're gonna apply to the player.
      */
-    public changeVipLook(playerId, lookType[]) {
+    public changeVipLook(playerId, lookType[], VeryImportantPlayerLook: lookEnumType = DEFAULT_LOOK) {
         if (GetPlayerVehicleSeat(playerId) != -1)
             RemovePlayerFromVehicle(playerId);
 
         TogglePlayerControllable(playerId, 0);
 
-        if (strcmp(lookType, "maniac", true) == 0) {
+        if (strcmp(lookType, "reset", true) == 0) {
+            new skinId = SpawnManager(playerId)->skinId();
+            if (skinId != SpawnManager::InvalidSkinId) {
+                SetPlayerSpecialAction(playerId, 0);
+                SetPlayerSkinEx(playerId, skinId);
+            }
+
+            this->suspendPlayerLook(playerId);
+            m_playerLooks[playerId] = DEFAULT_LOOK;
+        }
+
+        else if (strcmp(lookType, "maniac", true) == 0 || lookEnumType == MANIAC_LOOK) {
             SetPlayerSpecialAction(playerId, 0);
             SetPlayerSkinEx(playerId, 49);
 
@@ -86,7 +97,7 @@ class VeryImportantPlayersManager {
             GiveWeapon(playerId, 9, 1);
         }
 
-        else if (strcmp(lookType, "punk", true) == 0) {
+        else if (strcmp(lookType, "punk", true) == 0 || lookEnumType == PUNK_LOOK) {
             SetPlayerSpecialAction(playerId, 0);
             SetPlayerSkinEx(playerId, 75);
 
@@ -99,7 +110,7 @@ class VeryImportantPlayersManager {
                 RemovePlayerAttachedObject(playerId, 1);
         }
 
-        else if (strcmp(lookType, "riot", true) == 0) {
+        else if (strcmp(lookType, "riot", true) == 0 || lookEnumType == RIOT_LOOK) {
             SetPlayerSpecialAction(playerId, 0);
             SetPlayerSkinEx(playerId, 292);
 
@@ -112,7 +123,7 @@ class VeryImportantPlayersManager {
                 RemovePlayerAttachedObject(playerId, 1);
         }
 
-        else if (strcmp(lookType, "assassin", true) == 0) {
+        else if (strcmp(lookType, "assassin", true) == 0 || lookEnumType == ASSASSIN_LOOK) {
             SetPlayerSpecialAction(playerId, 0);
             SetPlayerSkinEx(playerId, 120);
 
@@ -122,7 +133,7 @@ class VeryImportantPlayersManager {
             GiveWeapon(playerId, 23, 1337);
         }
 
-        else if (strcmp(lookType, "ninja", true) == 0) {
+        else if (strcmp(lookType, "ninja", true) == 0 || lookEnumType == NINJA_LOOK) {
             SetPlayerSpecialAction(playerId, 0);
             SetPlayerSkinEx(playerId, 294);
 
@@ -135,7 +146,7 @@ class VeryImportantPlayersManager {
                 RemovePlayerAttachedObject(playerId, 1);
         }
 
-        else if (strcmp(lookType, "bastard", true) == 0) {
+        else if (strcmp(lookType, "bastard", true) == 0 || lookEnumType == BASTARD_LOOK) {
             SetPlayerSpecialAction(playerId, 0);
             SetPlayerSkinEx(playerId, 213);
 
@@ -149,7 +160,7 @@ class VeryImportantPlayersManager {
         }
 
         else
-            SendClientMessage(playerId, Color::Information, "Usage: /my look [assassin/bastard/maniac/ninja/punk/riot]");
+            SendClientMessage(playerId, Color::Information, "Usage: /my look {DC143C}[reset] {FFFFFF}[assassin/bastard/maniac/ninja/punk/riot]");
 
         TogglePlayerControllable(playerId, 1);
         return 1;
@@ -204,10 +215,11 @@ class VeryImportantPlayersManager {
      */
     @list(OnPlayerSpawn)
     public onVipSpawn(playerId) {
-        m_playerLooks[playerId] = DEFAULT_LOOK;
-
         if (Player(playerId)->isVip() == false)
             return 0;
+
+        if (m_playerLooks[playerId] != DEFAULT_LOOK)
+            this->changeVipLook(playerId, "_", m_playerLooks[playerId]);
 
         SetPlayerArmour(playerId, 100);
         return 1;

@@ -21,7 +21,6 @@
     <DiskObject>\Elements\Player\Connections\disconnect.pwn</DiskObject>
     <DiskObject>\Elements\Player\Connections\SaveInfo.pwn</DiskObject>
     <DiskObject>\Elements\Player\Drink.pwn</DiskObject>
-    <DiskObject>\Elements\Player\Hint.pwn</DiskObject>
     <DiskObject>\Elements\Player\interiorHandler.pwn</DiskObject>
     <DiskObject>\Elements\Player\LVPRadio.pwn</DiskObject>
     <DiskObject>\Elements\Player\PlayerDisplay.pwn</DiskObject>

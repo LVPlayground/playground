@@ -45,3 +45,6 @@
     #include "Features/Deathmatch/FightClub/FightClubCommands.pwn"
     #include "Features/Deathmatch/FightClub/FightClubScoreBoard.pwn"
 #endif
+
+// The DamageManager makes sure proper damage is dealt when needed.
+#include "Features/Deathmatch/DamageManager.pwn"

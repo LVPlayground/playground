@@ -448,7 +448,7 @@ class ShipManager {
      *
      * @param playerId Id of the player who could be on the ship
      */
-    public isPlayerWalkingOnShip(playerId) {
+    public bool: isPlayerWalkingOnShip(playerId) {
         if (Player(playerId)->isConnected() == false)
             return false;
 

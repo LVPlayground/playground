@@ -226,8 +226,6 @@
 #include Resources/Callbacks/OnPlayer/OnPlayerKeyStateChange.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerText.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerStateChange.pwn
-#include Resources/Callbacks/OnPlayer/OnPlayerGiveDamage.pwn
-#include Resources/Callbacks/OnPlayer/OnPlayerTakeDamage.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerInteriorChange.pwn
 #include Resources/Callbacks/Others/OnGameModeInit.pwn
 #include Resources/Callbacks/Others/OnRconLoginAttempt.pwn

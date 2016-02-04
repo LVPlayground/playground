@@ -9,6 +9,18 @@ bool: LegacyIsPlayerInVipRoom(playerId) {
         return false;
 }
 
+bool: LegacyPlayerHasGodMode(playerId) {
+    if (g_bPlayerGodmode[playerId])
+        return true;
+    else
+        return false;
+}
+
+LegacySetValidKillerVariables(forPlayerId, killerId, reasonId) {
+    validKillerId[forPlayerId] = killerId;
+    validReasonId[forPlayerId] = reasonId;
+}
+
 bool: LegacyIsPlayerIgnored(playerId, subjectId) {
     if (g_Ignore[playerId][subjectId])
         return true;

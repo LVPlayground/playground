@@ -304,7 +304,6 @@
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerEnterDynamicRaceCheckpoint.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerEnterRaceCheckpoint.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerExitedMenu.pwn</DiskObject>
-    <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerGiveDamage.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerInteriorChange.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerKeyStateChange.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerLeaveCheckpoint.pwn</DiskObject>
@@ -313,7 +312,6 @@
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStateChange.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStreamIn.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStreamOut.pwn</DiskObject>
-    <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerTakeDamage.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerText.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\OnDialogResponse.pwn</DiskObject>
@@ -458,6 +456,7 @@
     <DiskObject>\Resources\Minigames\Race\Race7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race9.pwn</DiskObject>
+    <DiskObject>\Features\Deathmatch\DamageManager.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

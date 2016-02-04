@@ -4,9 +4,9 @@
 
 /**
  * You're either a freeroamer or a figher, but in both situations you'd like to have some basic
- * information available about yourself and other players. Information like FPS, ping and packetloss
- * percentage, which can greatly help improving everyone's experience. Commands are available to
- * either hide or show this info.
+ * information available about yourself and other players. Information like FPS and ping percentage,
+ * which can greatly help improving everyone's experience. Commands are available to either hide or
+ * show this info.
  *
  * @author Max "Cake" Blokker <cake@sa-mp.nl>
  */
@@ -44,7 +44,7 @@ class PlayerInfoHandler {
         // Create and attach the 3D textlabel to our subject.
         m_playerInfoLabelId[playerId][subjectId] = CreatePlayer3DTextLabel(playerId, "_",
             Color::White, 0.0 /* offset X */, 0.0 /* offset Y */, -1.0 /* offset Z */,
-            40.0 /* draw distance */, subjectId, Vehicle::InvalidId, 1);
+            50.0 /* draw distance */, subjectId, Vehicle::InvalidId, 1);
 
         return 1;
     }
@@ -82,9 +82,8 @@ class PlayerInfoHandler {
         }
 
         new labelText[128];
-        format(labelText, sizeof(labelText),
-            "{B4CCE8}Ping: {FF8E02}%d - {B4CCE8}FPS: {FF8E02}%d\r\n{B4CCE8}Packetloss: {FF8E02}%.1f\%",
-            GetPlayerPing(subjectId), PlayerManager->framesPerSecond(subjectId), NetStats_PacketLossPercent(subjectId));
+        format(labelText, sizeof(labelText), "{B4CCE8}Ping: {FF8E02}%d - {B4CCE8}FPS: {FF8E02}%d",
+            GetPlayerPing(subjectId), PlayerManager->framesPerSecond(subjectId));
 
         UpdatePlayer3DTextLabelText(playerId, m_playerInfoLabelId[playerId][subjectId], Color::White, labelText);
 
@@ -214,7 +213,7 @@ class PlayerInfoHandler {
 
     /**
      * Supporting command to let players change their setting regarding the playerinfo textlabels,
-     * showing a player's FPS, ping and packetloss percentage. This setting is saved for registered
+     * showing a player's FPS and ping percentage. This setting is saved for registered
      * players.
      *
      * @param playerId Id of the player who executed this command.
@@ -229,7 +228,7 @@ class PlayerInfoHandler {
 
         new message[128];
         if (Command->parameterCount(params) == 0) {
-            format(message, sizeof(message), "The Player Info feature (FPS/ping/packetloss) currently is %s{FFFFFF} for you.",
+            format(message, sizeof(message), "The Player Info feature (FPS/ping) currently is %s{FFFFFF} for you.",
                 (PlayerSettings(subjectId)->isPlayerInfoEnabled() ?
                     "{33AA33}enabled" : "{DC143C}disabled"));
 

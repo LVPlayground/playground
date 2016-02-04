@@ -120,10 +120,9 @@ class PlayerSpectateHandler {
             GetVehicleHealth(vehicleId, vehicleHealth);
 
             format(labelText, sizeof(labelText),
-                "{B4CCE8}Armour: {FF8E02}%.1f{B4CCE8} - Health: {FF8E02}%.1f{B4CCE8}\r\nPing: {FF8E02}%d{B4CCE8} - FPS: {FF8E02}%d{B4CCE8}\r\nPacketloss: {FF8E02}%.1f\%\%{B4CCE8}\r\nVehicle: {FF8E02}%s{B4CCE8} (%.1f)\r\nWorld: {FF8E02}%d",
+                "{B4CCE8}Armour: {FF8E02}%.1f{B4CCE8} - Health: {FF8E02}%.1f{B4CCE8}\r\nPing: {FF8E02}%d{B4CCE8} - FPS: {FF8E02}%d{B4CCE8}\r\nVehicle: {FF8E02}%s{B4CCE8} (%.1f)\r\nWorld: {FF8E02}%d",
                 armour, playerHealth, GetPlayerPing(subjectId), PlayerManager->framesPerSecond(subjectId),
-                NetStats_PacketLossPercent(subjectId), VehicleModel(GetVehicleModel(vehicleId))->nameString(),
-                vehicleHealth, worldId);
+                VehicleModel(GetVehicleModel(vehicleId))->nameString(), vehicleHealth, worldId);
 
             // Create and attach the 3D textlabel to our subject.
             m_playerLabelId[subjectId] = CreatePlayer3DTextLabel(playerId, labelText, Color::White, 0.0 /* offset X */,
@@ -133,9 +132,8 @@ class PlayerSpectateHandler {
                 PlayerSpectatePlayer(playerId, subjectId); /* default spectate mode */
 
             format(labelText, sizeof(labelText),
-                "{B4CCE8}Armour: {FF8E02}%.1f{B4CCE8} - Health: {FF8E02}%.1f{B4CCE8}\r\nPing: {FF8E02}%d{B4CCE8} - FPS: {FF8E02}%d{B4CCE8}\r\nPacketloss: {FF8E02}%.1f\%\%{B4CCE8}\r\nVehicle: {FF8E02}none{B4CCE8}\r\nWorld: {FF8E02}%d",
-                armour, playerHealth, GetPlayerPing(subjectId), PlayerManager->framesPerSecond(subjectId),
-                NetStats_PacketLossPercent(subjectId), worldId);
+                "{B4CCE8}Armour: {FF8E02}%.1f{B4CCE8} - Health: {FF8E02}%.1f{B4CCE8}\r\nPing: {FF8E02}%d{B4CCE8} - FPS: {FF8E02}%d{B4CCE8}\r\nVehicle: {FF8E02}none{B4CCE8}\r\nWorld: {FF8E02}%d",
+                armour, playerHealth, GetPlayerPing(subjectId), PlayerManager->framesPerSecond(subjectId), worldId);
 
             // Create and attach the 3D textlabel to our subject.
             m_playerLabelId[subjectId] = CreatePlayer3DTextLabel(playerId, labelText, Color::White, 0.0 /* offset X */,

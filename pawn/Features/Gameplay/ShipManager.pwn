@@ -139,6 +139,7 @@ class ShipManager {
     @switch(OnPlayerEnterZone, ShipManager::ShipLayerId)
     public onPlayerEnterShip(playerId, zoneId) {
         if (MapObjects->isActive()) return 1;
+        if (GetPlayerVirtualWorld(playerId) != 0) return 1;
 
         if (zoneId < 2) {
             this->respawnPlayerVehicle(playerId);
@@ -267,6 +268,7 @@ class ShipManager {
     @switch(OnPlayerLeaveZone, ShipManager::ShipLayerId)
     public onPlayerLeaveShip(playerId, zoneId) {
         if (MapObjects->isActive()) return 1;
+        if (GetPlayerVirtualWorld(playerId) != 0) return 1;
 
         m_activityOfPlayerOnShip[playerId] = JustLeft;
 
@@ -297,6 +299,11 @@ class ShipManager {
             m_activityOfPlayerOnShip[playerId] = Nothing;
 
         } else if (m_activityOfPlayerOnShip[playerId] == Walking) {
+            if (GetPlayerVirtualWorld(playerId) != 0) {
+                m_activityOfPlayerOnShip[playerId] = JustLeft;
+                return 1;
+            }
+
             this->issueMoneyToPlayer(playerId);
 
             if (Player(playerId)->isAdministrator() == false) {

@@ -31,6 +31,9 @@ class Player <playerId (MAX_PLAYERS)> {
     // Store their nickname in a string, as we could be needing this a lot.
     new m_nickname[MAX_PLAYER_NAME+1];
 
+    // What is the timestamp at which this player last send an update to the game?
+    new m_lastUpdate;
+
     // When did this player connect to the server? Useful for measuring in-game time.
     new m_connectionTime;
 
@@ -84,6 +87,7 @@ class Player <playerId (MAX_PLAYERS)> {
     public onConnect() {
         m_flags = 0;
         m_level = PlayerLevel;
+        m_lastUpdate = Time->currentHighResolutionTime();
         m_connectionTime = Time->currentTime();
 
         this->enableFlag(IsConnectedPlayerFlag);
@@ -232,13 +236,13 @@ class Player <playerId (MAX_PLAYERS)> {
     }
 
     /**
-     * Returns false. This method used to return whether the player was minimized, but the cost of
-     * keeping track of this outweighed its benefits. 
+     * Returns whether the player currently has minimized their Grand Theft Auto game. Certain
+     * timers and countdowns can be stopped when this is the case, and we may want to pause them.
      *
      * @return boolean Is this player currently minimized?
      */
     public inline bool: isMinimized() {
-        return false;
+        return ((Time->currentHighResolutionTime() - m_lastUpdate) >= DetectAsMinimizedThresholdMilliseconds);
     }
 
     /**
@@ -249,6 +253,16 @@ class Player <playerId (MAX_PLAYERS)> {
      */
     public inline bool: isRegular() {
         return (GetPlayerIngameHours(playerId) >= Player::RegularHours);
+    }
+
+    /**
+     * Returns the timestamp at which we last received an update from this player's game. It can be
+     * used for detecting lag from a player, or a possible timeout.
+     *
+     * @return integer Time at which we received the last update.
+     */
+    public inline lastUpdate() {
+        return (m_lastUpdate);
     }
 
     /**
@@ -299,6 +313,15 @@ class Player <playerId (MAX_PLAYERS)> {
     public setLevel(PlayerAccessLevel: level) {
         CallRemoteFunction("OnPlayerLevelChange", "ii", playerId, _: level);
         m_level = level;
+    }
+
+    /**
+     * Updates the time we last received an update from this player with the given value.
+     *
+     * @param time The last update time an update was received.
+     */
+    public inline setLastUpdate(time) {
+        m_lastUpdate = time;
     }
 
     // ---- GETTERS FOR IMMUTABLE FLAGS ------------------------------------------------------------

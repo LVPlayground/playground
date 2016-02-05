@@ -17,6 +17,10 @@ class Time {
     // done exercising the time system.
     new m_currentTimeIncrementForTests;
 
+    // What is the current time in high resolution numbers? The data is cached and may be lagging
+    // .25 seconds behind, but that still gives you decent granularity.
+    new m_currentHighResolutionTime;
+
     /**
      * Retrieve a high resolution representation of the current moment, in this implementation
      * expressed as the tick count since the server started, with a tick per millisecond.
@@ -35,6 +39,16 @@ class Time {
      */
     public inline currentTime() {
         return (m_currentTime + m_currentTimeIncrementForTests);
+    }
+
+    /**
+     * Returns the current time on the server in milliseconds. This data may be lagging up to .25
+     * seconds behind, so it's not the best fit for high quality comparisons.
+     *
+     * @return integer The current time in .25 second granularity.
+     */
+    public inline currentHighResolutionTime() {
+        return (m_currentHighResolutionTime);
     }
 
     /**
@@ -64,6 +78,7 @@ class Time {
     @list(HighResolutionTimer)
     public updateCurrentTimeCache() {
         m_currentTime = gettime();
+        m_currentHighResolutionTime = GetTickCount();
     }
 
     /**

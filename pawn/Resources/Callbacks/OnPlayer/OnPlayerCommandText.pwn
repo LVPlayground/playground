@@ -1139,8 +1139,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         new name[24];
         GetPlayerName(playerid, name, 24);
-        format(string,sizeof(string),"%s (Id:%d) borrowed $%d (a %d percent).", name, playerid, moneys, bankRente);
-        Admin(playerid, string);
 
         format(string, sizeof(string), "You have borrowed $%d at this moment,", iLoan[playerid]);
         SendClientMessage(playerid, COLOR_RED, string );

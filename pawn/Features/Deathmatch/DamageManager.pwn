@@ -18,7 +18,7 @@
  * The purpose of a DM server is to eventually rack up kills rather than deaths. That set aside,
  * damage done to players should be regulated in order to avoid buggy or abusive behaviour, but also
  * to provide unique features.
- * For example: headshots deal 100 damage. But also: pauzed players should not take any damage.
+ * For example: headshots deal 100 damage, or: pauzed players should not take any damage.
  *
  * Several SA:MP callbacks will be scripted in this class to achive the above.
  *
@@ -31,7 +31,7 @@ class DamageManager <playerId (MAX_PLAYERS)> {
     // The amount of damage a sniper headshot does, is different from default.
     const SniperHeadShotDamage = 100;
 
-    // Is the player currently fighting? Fighting is defined as either being hit or dealing damage.
+    // Is the player currently fighting? Fighting is defined as shooting or being shot at.
     new m_fighting;
 
     /**

@@ -5,10 +5,6 @@
 stock SetPlayerSpawnPos(playerId) {
     TeleportCheatAddException(playerId);
 
-    // If the player is currently in a sync-spawn, we do not want to change his location.
-    if (PlayerSyncHandler->isSyncing(playerId) == true)
-        return 0;
-
     if (CSave__OnPlayerSpawn(playerId))
         return 0;
 
@@ -38,12 +34,6 @@ stock SetPlayerSpawnPos(playerId) {
 }
 
 OriginalOnPlayerSpawn(playerId) {
-    // Since this is the last method in the default spawn functions, reset the sync boolean if needed.
-    if (PlayerSyncHandler->isSyncing(playerId) == true) {
-        PlayerSyncHandler->setIsSyncing(playerId, false);
-        return 0;
-    }
-
     // Handle restoring of saveinfo data if needed.
     if (CSave__OnPlayerSpawn(playerId))
         return 0;

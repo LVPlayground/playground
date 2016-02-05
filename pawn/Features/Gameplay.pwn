@@ -82,8 +82,5 @@
 // If ever needed, crew should be able to fix a player.
 #include "Features/Gameplay/Commands/FixPlayerCommands.pwn"
 
-// A sync function for administrator can offer help in catching aimbot users.
-#include "Features/Gameplay/Commands/PlayerSyncHandler.pwn"
-
-// Add back the (in)famous /report-command to report players
+// Add the (in)famous /report-command to report players.
 #include "Features/Gameplay/Commands/ReportHandler.pwn"

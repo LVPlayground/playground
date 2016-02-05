@@ -65,7 +65,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
         playerWeapon = GetPlayerWeapon(playerid);
 
     if (playerState == PLAYER_STATE_ONFOOT && WEAPON_COLT45 <= playerWeapon <= WEAPON_CAMERA) {
-        if (PRESSED(KEY_HANDBRAKE) && !g_isAiming[playerid]) {
+        if (PRESSED(KEY_HANDBRAKE) && !g_isAiming[playerid] && GetPlayerCameraMode(playerid) == 7) {
             VeryImportantPlayersManager->suspendPlayerLook(playerid);
             g_isAiming[playerid] = true;
         } else if (RELEASED(KEY_HANDBRAKE) && g_isAiming[playerid]) {
@@ -122,15 +122,6 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             CHideGame__onPlayerPunch(playerid);
             return 1;
         }
-    }
-
-    // Player sync
-    if ((newkeys & (KEY_HANDBRAKE | KEY_JUMP)) == (KEY_HANDBRAKE | KEY_JUMP)
-        && (oldkeys & (KEY_HANDBRAKE | KEY_JUMP)) != (KEY_HANDBRAKE | KEY_JUMP)) {
-        if (Player(playerid)->isAdministrator() == true && GetPlayerWeapon(playerid) == 0 && !IsPlayerInAnyVehicle(playerid))
-            PlayerSyncHandler->syncPlayer(playerid);
-
-        return 1;
     }
 
     return 1;

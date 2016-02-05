@@ -46,7 +46,7 @@ class PropertyManager {
     new m_propertyListPage[MAX_PLAYERS] = 0;
 
     // Id of the player who currently is the Property Tycoon.
-    new m_propertyTycoonId = INVALID_PLAYER_ID;
+    new m_propertyTycoonId = Player::InvalidId;
 
     // The amount of money they made in a single payment-cycle whilst being Property Tycoon.
     new m_propertyTycoonAmount = 0;
@@ -193,7 +193,7 @@ class PropertyManager {
         m_propertyForPlayer[playerId] = Property::InvalidId;
 
         if (m_propertyTycoonId == playerId) {
-            m_propertyTycoonId = INVALID_PLAYER_ID;
+            m_propertyTycoonId = Player::InvalidId;
             m_propertyTycoonAmount = 0;
         }
 
@@ -245,7 +245,7 @@ class PropertyManager {
 
         // The Property Tycoon is the player who is benefiting most from the property system. Their
         // name will be announced if it changes from the last pay-out cycle.
-        new tycoonId = INVALID_PLAYER_ID,
+        new tycoonId = Player::InvalidId,
             tycoonAmount = 0;
 
         new message[128];

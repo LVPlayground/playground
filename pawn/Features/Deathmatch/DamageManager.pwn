@@ -18,7 +18,7 @@
  * The purpose of a DM server is to eventually rack up kills rather than deaths. That set aside,
  * damage done to players should be regulated in order to avoid buggy or abusive behaviour, but also
  * to provide unique features.
- * For example: headshots deal 100 damage, or: pauzed players should not take any damage.
+ * For example: headshots deal 100 damage, or: paused players should not take any damage.
  *
  * Several SA:MP callbacks will be scripted in this class to achive the above.
  *
@@ -88,7 +88,7 @@ class DamageManager <playerId (MAX_PLAYERS)> {
     }
 
     /**
-     * Reset the player's fighting timer upon joining.
+     * Reset some variables upon player joining.
      */
     @list(OnPlayerConnect)
     public onPlayerConnect() {
@@ -118,7 +118,7 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: 
         if (Player(hitid)->isConnected() == false || Player(hitid)->isNonPlayerCharacter() == true)
             return 0;
 
-        // A pauzed player should not be able to take damage.
+        // A paused player should not be able to take damage.
         if (Player(hitid)->isMinimized() == true)
             return 0;
 

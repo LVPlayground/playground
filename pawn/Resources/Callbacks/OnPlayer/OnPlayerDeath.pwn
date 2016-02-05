@@ -112,7 +112,7 @@ public OnPlayerDeath(playerid, killerid, reason) {
     iPlayerDied[playerid] = false;
     CancelTaxi(playerid);
     playerTaxi[playerid][4] = 0;
-    LastShot[playerid] = false;
+    DamageManager(playerid)->setFighting(0);
     ClearPlayerMenus(playerid);
     iPlayerSesDeaths[playerid]++;
 

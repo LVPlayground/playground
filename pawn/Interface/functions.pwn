@@ -269,7 +269,7 @@ ResetPlayerStats(playerId) {
     g_InExportVeh[playerId] = false;
     OnMapConnect(playerId);
     ResetPlayerWeapons(playerId);
-    LastShot[playerId] = 0;
+    DamageManager(playerId)->setFighting(0);
     GTA_Vparams[playerId] = false;
     iBriefColor[playerId] = -1;
     iPlayerInVipRoom[playerId] = false;
@@ -790,16 +790,6 @@ SendClientMessageToAllEx(color, message[]) {
     }
 
     return 1;
-}
-
-IsPlayerFighting(playerId) {
-    if (Player(playerId)->isConnected() == false || Player(playerId)->isAdministrator() == true)
-        return 0;
-
-    if (Time->currentTime() - LastShot[playerId] < 10)
-        return 1;
-
-    return 0;
 }
 
 GameTextForAllEx(const message[], time, style, playerWorldId = -1) {

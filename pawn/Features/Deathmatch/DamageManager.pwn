@@ -86,6 +86,14 @@ class DamageManager <playerId (MAX_PLAYERS)> {
 
         return false;
     }
+
+    /**
+     * Reset the player's fighting timer upon joining.
+     */
+    @list(OnPlayerConnect)
+    public onPlayerConnect() {
+        m_fighting = 0;
+    }
 };
 
 /**
@@ -101,6 +109,9 @@ class DamageManager <playerId (MAX_PLAYERS)> {
  * @param fZ The Z coordinate that the shot hit.
  */
 public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: fY, Float: fZ) {
+    // Set the player who fired the bullets as currently fighting.
+    DamageManager(playerid)->setFighting(Time->currentTime());
+
     // Some exceptions take place when it is a player being shot at.
     if (hittype == BULLET_HIT_TYPE_PLAYER) {
         // Checking for out of bound possibilities.

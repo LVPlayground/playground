@@ -46,7 +46,8 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
     {
         if(!FightClubDialogEnabled) return false;
         if(FightClubDialog[playerid]) return false;
-        if(IsPlayerFighting(playerid)) return SendClientMessage(playerid, COLOR_RED, "* You were recently in a gunfight, thus this is inaccessible.");
+        if(DamageManager(playerid)->isPlayerFighting() == true)
+            return SendClientMessage(playerid, COLOR_RED, "* You were recently in a gunfight, thus this is inaccessible.");
         if(IsPlayerWatchingFC[playerid]) return false;
 
         CFightClub__ShowDialog(playerid, DIALOG_FIGHTCLUB);

@@ -108,7 +108,6 @@ new DynamicObject: AirportGate;
 new iLoan[MAX_PLAYERS];
 new iLoanPercent[MAX_PLAYERS];
 new hiddenKill[MAX_PLAYERS];
-new LastShot[MAX_PLAYERS];
 new tempLevel[MAX_PLAYERS];
 new Float: playerArmour[MAX_PLAYERS];
 new iAchievements[MAX_PLAYERS][TotalAchievements];

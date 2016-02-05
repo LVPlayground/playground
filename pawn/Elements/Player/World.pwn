@@ -28,7 +28,7 @@ OnPlayerWorldCommand(playerId, params[]) {
     }
 
     if (worldId != -1 && World->isWorldValid(worldId) == true) {
-        if (IsPlayerFighting(playerId) && Player(playerId)->isAdministrator() == false) {
+        if (DamageManager(playerId)->isPlayerFighting() == true && Player(playerId)->isAdministrator() == false) {
             SendClientMessage(playerId, Color::Error, "You can't change worlds while you are fighting.");
             return 1;
         }

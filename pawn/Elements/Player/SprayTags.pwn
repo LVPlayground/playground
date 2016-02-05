@@ -472,7 +472,7 @@ sprayTagOnVehicleCommand(playerid, params[])
             return 1;
         }
 
-        if(IsPlayerFighting(playerid))
+        if(DamageManager(playerid)->isPlayerFighting() == true)
         {
             SendClientMessage(playerid, COLOR_RED, "* You cannot spawn an infernus because you've recently been in a gunfight.");
             return 1;
@@ -485,7 +485,7 @@ sprayTagOnVehicleCommand(playerid, params[])
         }
 
         //Check if the player has recently been in a gun fight.
-        if(IsPlayerFighting(playerid))
+        if(DamageManager(playerid)->isPlayerFighting() == true)
         {
             SendClientMessage(playerid, COLOR_RED, "* You cannot spawn an infernus because you have recently been in a gun fight.");
             return 1;

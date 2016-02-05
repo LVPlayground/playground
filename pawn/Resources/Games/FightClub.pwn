@@ -314,7 +314,7 @@ CFightClub__Initialize()
 //------------ ON~ FUNCTIONS   --------------
 //==============================================
 CFightClub__OnCommand(playerid, params[]) {
-    if (IsPlayerFighting(playerid)) {
+    if (DamageManager(playerid)->isPlayerFighting() == true) {
         ShowBoxForPlayer(playerid, "You were recently in a gunfight, thus this is inaccessible.");
         return 1;
     }

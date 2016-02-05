@@ -145,7 +145,7 @@ class ShipManager {
             this->respawnPlayerVehicle(playerId);
 
             if (!LegacyIsKillTimeActivated()) {
-                if (IsPlayerFighting(playerId) && !Player(playerId)->isAdministrator()) {
+                if (DamageManager(playerId)->isPlayerFighting() == true && !Player(playerId)->isAdministrator()) {
                     SetPlayerPos(playerId, 2034.85, 1545.15, 10.82);
                     SetPlayerFacingAngle(playerId, 275.44);
 

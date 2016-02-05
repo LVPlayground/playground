@@ -87,7 +87,7 @@ class PrivateMessagingManager {
             SendClientMessage(senderId, Color::Information, notice);
         }
 
-        if (IsPlayerFighting(receiverId)) {
+        if (DamageManager(receiverId)->isPlayerFighting() == true) {
             format(notice, sizeof(notice), "%s is currently fighting, and might not respond for a while!",
                 receiver);
             SendClientMessage(senderId, Color::Information, notice);

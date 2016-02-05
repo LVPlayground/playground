@@ -450,7 +450,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if(IsPlayerFighting(playerid))
+        if(DamageManager(playerid)->isPlayerFighting() == true)
         {
             ShowBoxForPlayer(playerid, "You are currently in a gunfight and therefore cannot /kill yourself.");
             return 1;
@@ -884,7 +884,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) { // To make sure they can do the anim
         if(strcmp(cmd, "/dance", true) == 0) {
 
-            if(IsPlayerFighting(playerid))
+            if(DamageManager(playerid)->isPlayerFighting() == true)
             {
                 SendClientMessage(playerid, COLOR_RED, "* You cannot use this command at the moment because you have recently been in a gun fight.");
                 return 1;
@@ -1359,7 +1359,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
     if(strcmp(cmd, "/cardive", true) == 0 )
     {
-        if(IsPlayerFighting(playerid))
+        if(DamageManager(playerid)->isPlayerFighting() == true)
         {
             SendClientMessage(playerid,COLOR_RED,"You cannot teleport at the moment because you have recently been in a gun fight.");
             return 1;
@@ -1455,7 +1455,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
     if(strcmp(cmd, "/dive", true) == 0 )
     {
-        if(IsPlayerFighting(playerid))
+        if(DamageManager(playerid)->isPlayerFighting() == true)
         {
             SendClientMessage(playerid, COLOR_RED, "You cannot dive at the moment because you have recently been in a gun fight.");
             return 1;

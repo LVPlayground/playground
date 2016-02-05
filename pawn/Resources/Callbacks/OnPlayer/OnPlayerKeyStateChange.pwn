@@ -95,7 +95,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
                 iPlayerAnimation[playerid] = 0;
 
             if (GetPlayerWeapon(playerid) >= 16) {
-                LastShot[playerid] = Time->currentTime();
+                DamageManager(playerid)->setFighting(Time->currentTime());
 
                 if (playerTaxi[playerid][0] > -1 && playerTaxi[playerid][1] < 5) {
                     CancelTaxi(playerid);

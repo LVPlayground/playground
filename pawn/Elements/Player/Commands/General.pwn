@@ -7,7 +7,7 @@
 // Author: Kase
 lvp_Minigames(playerid, params[])
 {
-    if(IsPlayerFighting(playerid))
+    if(DamageManager(playerid)->isPlayerFighting() == true)
     {
         ShowBoxForPlayer(playerid, "You can't bring up the minigames menu when you are fighting.");
         return 1;
@@ -523,7 +523,7 @@ lvp_locate(playerid,params[])
 // Author: Jay
 lvp_tune(playerid,params[])
 {
-    if(IsPlayerFighting(playerid))
+    if(DamageManager(playerid)->isPlayerFighting() == true)
     {
         ShowBoxForPlayer(playerid, "You cannot use this command because you have recently been in a gun fight.");
         return 1;
@@ -906,7 +906,7 @@ lvp_My( playerid, params[] )
 
     if(!strcmp(szParameter, "skin", true, 4))
     {
-        if(IsPlayerFighting(playerid))
+        if(DamageManager(playerid)->isPlayerFighting() == true)
         {
             SendClientMessage(playerid, COLOR_RED, "* You cannot use this command at the moment because you have recently been in a gun fight.");
             return 1;

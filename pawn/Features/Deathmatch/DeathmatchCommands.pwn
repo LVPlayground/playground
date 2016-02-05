@@ -22,7 +22,7 @@ class DeathmatchCommands {
             return 1;
         }
 
-        if (IsPlayerFighting(playerId)) {
+        if (DamageManager(playerId)->isPlayerFighting() == true) {
             SendClientMessage(playerId, Color::Error, "You can't use this while fighting.");
             return 1;
         }

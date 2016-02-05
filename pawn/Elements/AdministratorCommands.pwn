@@ -182,7 +182,7 @@ lvp_fetch(playerId, params[]) {
         LinkVehicleToInterior(GetPlayerVehicleID(subjectId), GetPlayerInterior(playerId));
     } else {
         if (ShipManager->isPlayerWalkingOnShip(playerId))
-            LastShot[subjectId] = Time->currentTime() - 11;
+            DamageManager(subjectId)->setFighting(Time->currentTime() - 11);
 
         SetPlayerPos(subjectId, position[0] + 3, position[1], position[2]);
     }

@@ -247,12 +247,12 @@ class VeryImportantPlayersCommands {
             return 1;
         }
 
-        if (IsPlayerFighting(playerId)) {
+        if (DamageManager(playerId)->isPlayerFighting() == true) {
             SendClientMessage(playerId, Color::Error, "You can't change your look while fighting.");
             return 1;
         }
 
-        if (ShipManager->isPlayerWalkingOnShip(playerId)) {            
+        if (ShipManager->isPlayerWalkingOnShip(playerId)) {
             SendClientMessage(playerId, Color::Error, "You can't change your look while on the ship.");
             return 1;
         }

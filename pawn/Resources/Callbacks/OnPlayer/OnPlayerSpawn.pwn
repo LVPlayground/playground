@@ -13,7 +13,7 @@ stock SetPlayerSpawnPos(playerId) {
         return 0;
 
     // Reset various variables.
-    LastShot[playerId] = false;
+    DamageManager(playerId)->setFighting(0);
     ClearPlayerMenus(playerId);
     ClearAnimations(playerId);
     PlayerHandOfGod[playerId] = false;

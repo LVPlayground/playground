@@ -48,6 +48,11 @@ function substituteValue(prefix, value, index) {
       return prefix + substituteNumber(value);
     case 'string':
       return prefix + '"' + substituteString(value) + '"';
+    case 'object':
+      if (value === null)
+        return prefix + 'NULL';
+
+      /** deliberate fall-through for non-null values **/
     default:
       throw new Error('Invalid type ("' + typeof value + '") for substitution parameter #' + index);
   }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let Extendable = require('base/extendable.js'),
-    Vector = require('base/vector.js');
+const Extendable = require('base/extendable.js'),
+      Vector = require('base/vector.js');
 
 class Vehicle extends Extendable {
   constructor(options) {
@@ -59,6 +59,13 @@ class Vehicle extends Extendable {
     pawnInvoke('LinkVehicleToInterior', 'ii', this.id_, value);
     this.interior_ = value;
   }
+
+  // Gets the model Id of this vehicle.
+  get modelId() { return pawnInvoke('GetVehicleModel', 'i', this.id_); }
+
+  // Gets or sets the position of the vehicle. Both must be used with a 3D vector.
+  get position() { return new Vector(...pawnInvoke('GetVehiclePos', 'iFFF', this.id_)); }
+  set position(value) { pawnInvoke('SetVehiclePos', 'ifff', this.id_, value.x, value.y, value.z); }
 
   // Gets or sets the health of the vehicle. This is a floating point number generally between a
   // zero (exploded) and a thousand (in perfect condition). Does not reflect the damage state of

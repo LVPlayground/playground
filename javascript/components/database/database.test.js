@@ -70,9 +70,11 @@ describe('Database', it => {
     assert.equal(substitute('[?]', '\\'), '["\\\\"]');
     assert.equal(substitute('[?]', '%'), '["\\%"]');
 
+    // NULL value substitution
+    assert.equal(substitute('[?]', null), '[NULL]');
+
     // Other substitution types.
     assert.throws(() => substitute('?', undefined));
-    assert.throws(() => substitute('?', null));
     assert.throws(() => substitute('?', {}));
     assert.throws(() => substitute('?', []));
     assert.throws(() => substitute('?', () => false));

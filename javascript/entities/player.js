@@ -2,7 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let Extendable = require('base/extendable.js');
+const Extendable = require('base/extendable.js'),
+      Vector = require('base/vector.js');
 
 // Identifier, stored as an IP address, that can be used to detect players created for testing.
 const TEST_PLAYER_IDENTIFIER = '0.0.0.0';
@@ -96,6 +97,10 @@ class Player extends Extendable {
   // their visual state significantly, as all world objects may disappear.
   get interior() { return pawnInvoke('GetPlayerInterior', 'i', this.id_); }
   set interior(value) { pawnInvoke('SetPlayerInterior', 'ii', this.id_, value); }
+
+  // Gets or sets the position of the player. Both must be used with a 3D vector.
+  get position() { return new Vector(...pawnInvoke('GetPlayerPos', 'iFFF', this.id_)); }
+  set position(value) { pawnInvoke('SetPlayerPos', 'ifff', this.id_, value.x, value.y, value.z); }
 
   // Gets or sets the time for this player. It will be returned, and must be set, as an array having
   // two entries: hours and minutes.

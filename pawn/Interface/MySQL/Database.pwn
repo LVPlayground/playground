@@ -48,13 +48,7 @@ public OnConnectionAttempt(connectionId, bool: succeeded, server[], username[], 
  * @param errno Error number that the MySQL server ran in to when executing this query.
  * @param error Textual representation of the error if the query couldn't be executed.
  */
-public OnQueryError(connectionId, query[], callback[], errno, error[]) {
-    new message[512];
-    format(message, sizeof(message), "Failed MySQL query (%s (%d)): %s", error, errno, query);
-
-    //IRC->broadcast(DeveloperIrcMessage, message);
-    printf("[MySQL] Failed MySQL query (%s (%d)): %s", error, errno, query);
-}
+public OnQueryError(connectionId, query[], callback[], errno, error[]) {}
 
 /**
  * The database class provides the non-result specific interface to communicating with the database.

@@ -1,5 +1,3 @@
-# These are the Map Zones in San Andreas. We'll show the name of the zone in the bottom-
-# right corner of the player's screen through the ZoneIndicator class.
 [
     [-2353.17, -2153.17, 2275.79, 2475.79, 200.0, "Bayside Marina"],
     [-2741.07, -2353.17, 2175.15, 2722.79, 200.0, "Bayside"],

@@ -4,7 +4,8 @@
 
 const ActivityRecorder = require('features/activity_log/activity_recorder.js'),
       Feature = require('components/feature_manager/feature.js'),
-      ScopedCallbacks = require('base/scoped_callbacks.js');
+      ScopedCallbacks = require('base/scoped_callbacks.js'),
+      Vector = require('base/vector.js');
 
 // The activity log feature keeps track of many in-game events and logs them to the database. This
 // is part of an effort to gather more information with Las Venturas Playground, enabling analysis
@@ -22,6 +23,7 @@ class ActivityLog extends Feature {
 
     [
       'OnPlayerResolvedDeath',  // { playerid, killerid, reason }
+      'OnPlayerWeaponShot',     // { playerid, weaponid, hittype, hitid, fX, fY, fZ }
       'OnVehicleDeath'          // { vehicleid }
 
     ].forEach(name =>
@@ -43,6 +45,35 @@ class ActivityLog extends Feature {
       this.recorder_.writeDeath(userId, position, event.reason);
     else
       this.recorder_.writeKill(userId, killer.isRegistered() ? killer.account.userId : null, position, event.reason);
+  }
+
+  // Called when a player has fired from a weapon. Only |event|s that hit a player or a vehicle will
+  // be recorded, with all available information and the distance of the shot.
+  onPlayerWeaponShot(event) {
+    if (event.hittype != 1 /* BULLET_HIT_TYPE_PLAYER */ &&
+        event.hittype != 2 /* BULLET_HIT_TYPE_VEHICLE */)
+      return;
+
+    const player = Player.get(event.playerid);
+    if (!player)
+      return;
+
+    const userId = player.isRegistered() ? player.account.userId : null;
+    const position = player.position;
+
+    let targetUserId = null;
+    if (event.hittype == 1 /* BULLET_HIT_TYPE_PLAYER */) {
+      const targetPlayer = Player.get(event.hitid);
+      if (targetPlayer && targetPlayer.isRegistered())
+        targetUserId = targetPlayer.account.userId;
+    }
+
+    // TODO(Russell): It would be great if we could consider the driver of the vehicle that's being
+    // hit here as well, but iterating over all players for every shot would be too expensive :/.
+
+    const targetDistance = new Vector(event.fX, event.fY, event.fZ).magnitude;
+
+    this.recorder_.writeHit(userId, targetUserId, targetDistance, event.weaponid, position);
   }
 
   // Called when a vehicle has died. The |event| contains the { vehicleid }.

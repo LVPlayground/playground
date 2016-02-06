@@ -10,6 +10,14 @@ const ACTIVITY_LOG_DEATHS_INSERT = `
     VALUES
       (?, NOW(), ?, ?, ?, ?)`;
 
+// Query to insert a new row in the `activity_log_hits` table.
+const ACTIVITY_LOG_HITS_INSERT = `
+    INSERT INTO
+      activity_log_hits
+      (user_id, target_id, target_distance, weapon_id, activity_timestamp, activity_position_x, activity_position_y, activity_position_z)
+    VALUES
+      (?, ?, ?, ?, NOW(), ?, ?, ?)`;
+
 // Query to insert a new row in the `activity_log_kills` table.
 const ACTIVITY_LOG_KILLS_INSERT = `
     INSERT INTO
@@ -39,6 +47,13 @@ class ActivityRecorder {
   // for the given |reason|.
   writeDeath(userId, position, reason) {
     this.database_.query(ACTIVITY_LOG_DEATHS_INSERT, userId, position.x, position.y, position.z, reason);
+  }
+
+  // Writes the hit to the database, indicating that |userId| (may be NULL) has hit |targetId| (may
+  // be NULL) with a |weaponId| at a distance of |targetDistance|.
+  writeHit(userId, targetId, targetDistance, weaponId, position) {
+    this.database_.query(ACTIVITY_LOG_HITS_INSERT, userId, targetId, targetDistance, weaponId,
+                         position.x, position.y, position.z);
   }
 
   // Writes a kill to the database, indicating that |userId| (may be NULL) has been killed by

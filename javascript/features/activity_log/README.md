@@ -13,3 +13,5 @@ simulate what the effects are of features based on heuristics, for example an ec
 
 - Deaths, including their position and reason, associated with player accounts if possible.
 - Kills, including their position and reasons, associated with player accounts where possible.
+- Successful shots, including their distance, position and used weapon, associated with player
+  accounts where possible.

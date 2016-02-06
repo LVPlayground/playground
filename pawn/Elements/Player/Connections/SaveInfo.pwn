@@ -279,7 +279,7 @@ CSave__LoadInfo(playerId) {
     GiveWeapon(playerId, 24, 150);
     GiveWeapon(playerId, 26, 200);
     GiveWeapon(playerId, 28, 600);
-    GiveWeapon(playerId, 41, 2000);
+    GiveWeapon(playerId, 41, 5000);
 
     for (new weaponSlot = 0; weaponSlot < WeaponSlots; weaponSlot++) {
         if (m_playerSaveInfo[slotId][savedWeaponId][weaponSlot] == 0)

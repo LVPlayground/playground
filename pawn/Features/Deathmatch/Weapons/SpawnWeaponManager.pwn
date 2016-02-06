@@ -33,7 +33,7 @@ class SpawnWeaponManager <playerId (MAX_PLAYERS)> {
         GiveWeapon(playerId, 24, 150); // Desert Eagle
         GiveWeapon(playerId, 26, 200); // Sawnoff Shotgun
         GiveWeapon(playerId, 28, 600); // Micro Uzi
-        GiveWeapon(playerId, 41, 2000); // Spraycan
+        GiveWeapon(playerId, 41, 5000); // Spraycan
 
         new weaponId;
         for (new weaponSlot = 0; weaponSlot < WeaponSlots; ++weaponSlot) {

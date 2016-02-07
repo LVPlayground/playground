@@ -60,9 +60,9 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
       boundingBox: [ 0, 0, 26, 25 ],
       height: 2,
       children: [
-        { boundingBox: [ 0, 0, 26, 25 ], height: 1, children: [ [ 0, 0, 5, 5 ], [ 20, 20, 25, 25 ], [ 0, 0, 5, 10 ] ] },
+        { boundingBox: [ 0, 0, 25, 25 ], height: 1, children: [ [ 0, 0, 5, 5 ], [ 20, 20, 25, 25 ], [ 0, 0, 5, 10 ] ] },
         { boundingBox: [ 0, 0, 10, 10 ], height: 1, children: [ [ 5, 5, 10, 10 ], [ 0, 0, 10, 5 ] ] },
-        [ 25, 20, 26, 25 ], [ 10, 0, 11, 10 ]
+        { boundingBox: [ 10, 0, 26, 25 ], height: 1, children: [ [ 25, 20, 26, 25 ], [ 10, 0, 11, 10 ] ] }
       ]
     });
 

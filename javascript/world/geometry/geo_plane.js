@@ -29,7 +29,6 @@ function extendedBoundingBoxArea(...boundingBoxes) {
 // http://www-db.deis.unibo.it/courses/SI-LS/papers/Gut84.pdf
 // https://en.wikipedia.org/wiki/R-tree
 //
-// TODO: Explain more about the implementation as I make it up along the way.
 // TODO: Enable objects to be removed from the tree.
 class GeoPlane {
   constructor() {
@@ -51,7 +50,7 @@ class GeoPlane {
   insert(obj) {
     const insertionPath = [];
     const parentNode = this.determineInsertionPath(obj.boundingBox(), insertionPath);
-    const newNode = this.root_.addChild(obj);
+    const newNode = parentNode.addChild(obj);
 
     let level = this.root_.height - 1;
 

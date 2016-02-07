@@ -35,6 +35,15 @@ describe('GeoRectangle', it => {
     assert.deepEqual(new GeoRectangle(15, 10, 50, 20).center(), [40, 20]);
   });
 
+  it('should be able to combine rectangles', assert => {
+    const rectangle1 = new GeoRectangle(0, 0, 10, 10),
+          rectangle2 = new GeoRectangle(0, 10, 10, 10),
+          rectangle3 = new GeoRectangle(5, 5, 10, 10);
+
+    assert.equal(rectangle1.combine(rectangle2).area(), rectangle1.area() + rectangle2.area());
+    assert.equal(rectangle1.combine(rectangle3).area(), 225);
+  });
+
   it('should be able to determine containment', assert => {
     const rectangle = new GeoRectangle(10, 15, 20, 20);
 

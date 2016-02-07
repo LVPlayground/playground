@@ -34,6 +34,16 @@ class GeoRectangle extends GeoObject {
     return [ this.x_ + this.w_ / 2, this.y_ + this.h_ / 2 ];
   }
 
+  // Combines this rectangle with |rectangle| and returns a new rectangle.
+  combine(rectangle) {
+    const x = Math.min(this.x_, rectangle.x),
+          y = Math.min(this.y_, rectangle.y);
+
+    return new GeoRectangle(x, y,
+                            Math.max(this.x_ + this.w_, rectangle.x + rectangle.w) - x,
+                            Math.max(this.y_ + this.h_, rectangle.y + rectangle.h) - y);
+  }
+
   contains(x, y) {
     return x >= this.x_ && x < this.x_ + this.w_ &&
            y >= this.y_ && y < this.y_ + this.h_;

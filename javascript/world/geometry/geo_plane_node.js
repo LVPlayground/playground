@@ -8,10 +8,14 @@ const INVALID_BOUNDING_BOX = [ Number.POSITIVE_INFINITY, Number.POSITIVE_INFINIT
 
 // Node representing an entry in the R-tree backing the GeoPlane implementation.
 class GeoPlaneNode {
-  constructor(value) {
+  constructor(value, children, height) {
     this.boundingBox_ = value ? value.boundingBox() : INVALID_BOUNDING_BOX;
-    this.children_ = [];
+    this.children_ = children || [];
+    this.height_ = height || 1;
     this.value_ = value;
+
+    if (!value && this.children_.length)
+      this.recalculateBoundingBox();
   }
 
   // Gets the bounding box encapsulating this node and all its children.
@@ -19,6 +23,9 @@ class GeoPlaneNode {
 
   // Gets the children of this node in the plane.
   get children() { return this.children_; }
+
+  // Gets the height of the tree from this node downwards.
+  get height() { return this.height_; }
 
   // Gets the value of this node, i.e. the object it's holding.
   get value() { return this.value_; }
@@ -34,6 +41,19 @@ class GeoPlaneNode {
     this.boundingBox_[3] = Math.max(this.boundingBox_[3], node.boundingBox[3]);
 
     this.children_.push(node);
+  }
+
+  // Recalculates the bounding box of this node based on the bounding boxes of all the children
+  // contained within this node. Has a time complexity of O(n).
+  recalculateBoundingBox() {
+    this.boundingBox_ = INVALID_BOUNDING_BOX;
+    this.children.forEach(child => {
+      this.boundingBox_[0] = Math.min(this.boundingBox_[0], child.boundingBox[0]);
+      this.boundingBox_[1] = Math.min(this.boundingBox_[1], child.boundingBox[1]);
+
+      this.boundingBox_[2] = Math.max(this.boundingBox_[2], child.boundingBox[2]);
+      this.boundingBox_[3] = Math.max(this.boundingBox_[3], child.boundingBox[3]);
+    });
   }
 };
 

@@ -32,7 +32,7 @@ class GeoPlaneNode {
 
   // Adds |obj| as a child to this node. The bounding box of the node will be extended if needed.
   addChild(obj) {
-    const node = new GeoPlaneNode(obj);
+    const node = obj instanceof GeoPlaneNode ? obj : new GeoPlaneNode(obj);
 
     this.boundingBox_[0] = Math.min(this.boundingBox_[0], node.boundingBox[0]);
     this.boundingBox_[1] = Math.min(this.boundingBox_[1], node.boundingBox[1]);
@@ -41,6 +41,15 @@ class GeoPlaneNode {
     this.boundingBox_[3] = Math.max(this.boundingBox_[3], node.boundingBox[3]);
 
     this.children_.push(node);
+  }
+
+  // Splits this node at |index|, returning the removed child nodes and recalculating the new
+  // bounding box that applies to the reduced set of children immediately.
+  splitAt(index) {
+    const children = this.children_.splice(index);
+
+    this.recalculateBoundingBox();
+    return children;
   }
 
   // Recalculates the bounding box of this node based on the bounding boxes of all the children

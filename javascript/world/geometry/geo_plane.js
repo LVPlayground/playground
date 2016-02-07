@@ -39,25 +39,26 @@ class GeoPlane {
       if (node.children.length <= GeoPlane.MAX_ENTRIES)
         break;
 
-      this.splitNode(node, level ? path[level - 1] : null)
+      const newNode = this.splitNode(node);
+
+      // Split the root to accomodate |newNode| if |node| has no parent. Otherwise, add to parent.
+      if (!level) {
+        this.root_ = new GeoPlaneNode(null /* value */, [ node, newNode ], node.height + 1);
+        break;
+      }
+
+      path[level - 1].addChild(newNode);
     }
   }
 
-  // Splits |node| in two new nodes, both of which will be added to the |parentNode|.
-  splitNode(node, parentNode) {
+  // Splits |node| in two new nodes.
+  splitNode(node) {
     // TODO: Sort the children in |node| by the X-coordinate if the margin on that axis is larger.
     // TODO: Choose the index to split at. The R-tree structure prefers distribution with minimum
     //       overlap, then distribution with minimum area.
     const splitIndex = Math.ceil(node.children.length / 2);
 
-    const splitNode = new GeoPlaneNode(null /* value */, node.children.splice(splitIndex), node.height);
-
-    node.recalculateBoundingBox();
-
-    if (parentNode)
-      parentNode.children.push(splitNode);
-    else
-      this.root_ = new GeoPlaneNode(null /* value */, [ node, splitNode ], node.height + 1);
+    return new GeoPlaneNode(null /* value */, node.splitAt(splitIndex), node.height);
   }
 
 };

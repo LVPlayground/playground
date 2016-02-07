@@ -26,6 +26,7 @@ function extendedBoundingBoxArea(...boundingBoxes) {
 // and queried. It is implemented as an optimized R-tree that accepts any object of geometric nature
 // to allow for additional complexity and ease-of-use.
 //
+// http://www-db.deis.unibo.it/courses/SI-LS/papers/Gut84.pdf
 // https://en.wikipedia.org/wiki/R-tree
 //
 // TODO: Explain more about the implementation as I make it up along the way.
@@ -44,6 +45,9 @@ class GeoPlane {
   // Inserts |obj| on the plane. The |obj| must be an instance of one of the geometric objects that
   // derive from the GeoObject base class, as availability of that interface will be assumed. The
   // insertion can cause the tree to rebalance itself.
+  //
+  // This method implements the Insert and AdjustTree algorithms from the paper, and calls through
+  // to the SplitNode algorithm in case of overflows in the insertion path.
   insert(obj) {
     const insertionPath = [];
     const parentNode = this.determineInsertionPath(obj.boundingBox(), insertionPath);
@@ -76,6 +80,8 @@ class GeoPlane {
 
   // Determines the ideal insertion path for an object having |boundingBox| in the tree. Nodes will
   // be preferred based on minimizing their area enlargement, then on having the smallest area.
+  //
+  // This is an implementation of the ChooseLeaf algorithm in the paper.
   determineInsertionPath(boundingBox, insertionPath) {
     let node = this.root_;
 
@@ -111,6 +117,12 @@ class GeoPlane {
   }
 
   // Splits |node| in two new nodes.
+  //
+  // TODO: Actually implement the SplitNode algorithm.
+  //
+  // This method implements the SplitNode algorithm from the paper. The linear cost algorithm
+  // LinearPickSeeds has been used for splitting, since we care more about insertion performance
+  // than about raw lookup time performance. (Which can be optimized by using several trees.)
   splitNode(node) {
     // TODO: Sort the children in |node| by the X-coordinate if the margin on that axis is larger.
     // TODO: Choose the index to split at. The R-tree structure prefers distribution with minimum
@@ -127,7 +139,7 @@ class GeoPlane {
     if (node.isLeaf)
       return node.boundingBox;
 
-    let entry = { boundingBox: node.boundingBox, children: [] };
+    let entry = { boundingBox: node.boundingBox, height: node.height, children: [] };
     node.children.forEach(child =>
         entry.children.push(this.exportBoundingBoxTreeForTesting(child)));
 

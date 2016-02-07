@@ -3,13 +3,13 @@
 // be found in the LICENSE file.
 
 // Invalid bounding box where the [xy]2 coordinates are larger than [xy]1.
-const INVALID_BOUNDING_BOX = [ Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY,
-                               Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY ];
+const invalidBoundingBox = () => [ Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY,
+                                   Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY ];
 
 // Node representing an entry in the R-tree backing the GeoPlane implementation.
 class GeoPlaneNode {
   constructor(value, children, height) {
-    this.boundingBox_ = value ? value.boundingBox() : INVALID_BOUNDING_BOX;
+    this.boundingBox_ = value ? value.boundingBox() : invalidBoundingBox();
     this.children_ = children || [];
     this.height_ = height || 1;
     this.value_ = value;
@@ -27,8 +27,16 @@ class GeoPlaneNode {
   // Gets the height of the tree from this node downwards.
   get height() { return this.height_; }
 
+  // Gets whether this node is a leaf in the tree (i.e. has no children).
+  get isLeaf() { return !this.children_.length; }
+
   // Gets the value of this node, i.e. the object it's holding.
   get value() { return this.value_; }
+
+  // Calculates the area of the bounding box of this node.
+  boundingBoxArea() {
+    return (this.boundingBox_[2] - this.boundingBox_[0]) * (this.boundingBox_[3] - this.boundingBox_[1]);
+  }
 
   // Adds |obj| as a child to this node. The bounding box of the node will be extended if needed.
   addChild(obj) {
@@ -52,7 +60,7 @@ class GeoPlaneNode {
   // Recalculates the bounding box of this node based on the bounding boxes of all the children
   // contained within this node. Has a time complexity of O(n).
   recalculateBoundingBox() {
-    this.boundingBox_ = INVALID_BOUNDING_BOX;
+    this.boundingBox_ = invalidBoundingBox();
     this.children.forEach(child =>
         this.extendBoundingBox(child));
   }

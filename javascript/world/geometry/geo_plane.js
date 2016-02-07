@@ -5,6 +5,23 @@
 const GeoObject = require('world/geometry/geo_object.js'),
       GeoPlaneNode = require('world/geometry/geo_plane_node.js');
 
+// Computes the combined bounding box of the |boundingBox|es and returns the total area.
+function extendedBoundingBoxArea(...boundingBoxes) {
+  let combinedBoundingBox = [ Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY,
+                              Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY ];
+
+  boundingBoxes.forEach(boundingBox => {
+    combinedBoundingBox[0] = Math.min(combinedBoundingBox[0], boundingBox[0]);
+    combinedBoundingBox[1] = Math.min(combinedBoundingBox[1], boundingBox[1]);
+
+    combinedBoundingBox[2] = Math.max(combinedBoundingBox[2], boundingBox[2]);
+    combinedBoundingBox[3] = Math.max(combinedBoundingBox[3], boundingBox[3]);
+  });
+
+  return (combinedBoundingBox[2] - combinedBoundingBox[0]) *
+             (combinedBoundingBox[3] - combinedBoundingBox[1]);
+}
+
 // The GeoPlane class expresses a 2D plane on which geometric objects can efficiently be represented
 // and queried. It is implemented as an optimized R-tree that accepts any object of geometric nature
 // to allow for additional complexity and ease-of-use.
@@ -28,8 +45,8 @@ class GeoPlane {
   // derive from the GeoObject base class, as availability of that interface will be assumed. The
   // insertion can cause the tree to rebalance itself.
   insert(obj) {
-    // TODO: Find the best node once this actually is a tree.
-    const path = [this.root_];
+    const insertionPath = [];
+    const parentNode = this.determineInsertionPath(obj.boundingBox(), insertionPath);
     const newNode = this.root_.addChild(obj);
 
     let level = this.root_.height - 1;
@@ -37,7 +54,7 @@ class GeoPlane {
     // Determine if the insertion node has to be split. If it has to, chances are that further nodes
     // down the tree have to be split as well, as the modification could cause them to overflow.
     for (; level >= 0; --level) {
-      const node = path[level];
+      const node = insertionPath[level];
       if (node.children.length <= GeoPlane.MAX_ENTRIES)
         break;
 
@@ -49,12 +66,48 @@ class GeoPlane {
         continue;
       }
 
-      path[level - 1].addChild(splitNode);
+      insertionPath[level - 1].addChild(splitNode);
     }
 
     // Extend the boundary boxes of all nodes upwards of |level| with that of |newNode|.
     for (; level >= 0; --level)
-      path[level].extendBoundingBox(newNode);
+      insertionPath[level].extendBoundingBox(newNode);
+  }
+
+  // Determines the ideal insertion path for an object having |boundingBox| in the tree. Nodes will
+  // be preferred based on minimizing their area enlargement, then on having the smallest area.
+  determineInsertionPath(boundingBox, insertionPath) {
+    let node = this.root_;
+
+    while (true) {
+      insertionPath.push(node);
+      if (node.isLeaf || insertionPath.length == this.height)
+        break;
+
+      let minimumEnlargement = Number.POSITIVE_INFINITY,
+          minimumArea = Number.POSITIVE_INFINITY,
+          target = null;
+
+      node.children.forEach(child => {
+        const area = child.boundingBoxArea(),
+              enlargement = extendedBoundingBoxArea(boundingBox, child.boundingBox) - area;
+
+        if (enlargement < minimumEnlargement) {
+          minimumEnlargement = enlargement;
+          minimumArea = Math.min(minimumArea, area);
+          target = child;
+        }
+
+        else if (enlargement === minimumEnlargement && area < minimumArea) {
+          minimumArea = area;
+          target = child;
+        }
+      });
+
+      node = target;
+    }
+
+    return node;
   }
 
   // Splits |node| in two new nodes.
@@ -65,6 +118,20 @@ class GeoPlane {
     const splitIndex = Math.ceil(node.children.length / 2);
 
     return new GeoPlaneNode(null /* value */, node.splitAt(splitIndex), node.height);
+  }
+
+  // Exports the current tree as a bounding box tree for the purposes of testing. Leaf nodes will
+  // only be identified by their bounding box, internal nodes by their bounding box and children.
+  exportBoundingBoxTreeForTesting(node) {
+    node = node || this.root_;
+    if (node.isLeaf)
+      return node.boundingBox;
+
+    let entry = { boundingBox: node.boundingBox, children: [] };
+    node.children.forEach(child =>
+        entry.children.push(this.exportBoundingBoxTreeForTesting(child)));
+
+    return entry;
   }
 
 };

@@ -30,25 +30,31 @@ class GeoPlane {
   insert(obj) {
     // TODO: Find the best node once this actually is a tree.
     const path = [this.root_];
-    this.root_.addChild(obj);
+    const newNode = this.root_.addChild(obj);
+
+    let level = this.root_.height - 1;
 
     // Determine if the insertion node has to be split. If it has to, chances are that further nodes
     // down the tree have to be split as well, as the modification could cause them to overflow.
-    for (let level = this.height - 1; level >= 0; --level) {
+    for (; level >= 0; --level) {
       const node = path[level];
       if (node.children.length <= GeoPlane.MAX_ENTRIES)
         break;
 
-      const newNode = this.splitNode(node);
+      const splitNode = this.splitNode(node);
 
-      // Split the root to accomodate |newNode| if |node| has no parent. Otherwise, add to parent.
+      // Split the root to accomodate |splitNode| if |node| has no parent. Otherwise, add to parent.
       if (!level) {
-        this.root_ = new GeoPlaneNode(null /* value */, [ node, newNode ], node.height + 1);
-        break;
+        this.root_ = new GeoPlaneNode(null /* value */, [ node, splitNode ], node.height + 1);
+        continue;
       }
 
-      path[level - 1].addChild(newNode);
+      path[level - 1].addChild(splitNode);
     }
+
+    // Extend the boundary boxes of all nodes upwards of |level| with that of |newNode|.
+    for (; level >= 0; --level)
+      path[level].extendBoundingBox(newNode);
   }
 
   // Splits |node| in two new nodes.

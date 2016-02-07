@@ -34,13 +34,10 @@ class GeoPlaneNode {
   addChild(obj) {
     const node = obj instanceof GeoPlaneNode ? obj : new GeoPlaneNode(obj);
 
-    this.boundingBox_[0] = Math.min(this.boundingBox_[0], node.boundingBox[0]);
-    this.boundingBox_[1] = Math.min(this.boundingBox_[1], node.boundingBox[1]);
-
-    this.boundingBox_[2] = Math.max(this.boundingBox_[2], node.boundingBox[2]);
-    this.boundingBox_[3] = Math.max(this.boundingBox_[3], node.boundingBox[3]);
+    this.extendBoundingBox(node);
 
     this.children_.push(node);
+    return node;
   }
 
   // Splits this node at |index|, returning the removed child nodes and recalculating the new
@@ -56,13 +53,17 @@ class GeoPlaneNode {
   // contained within this node. Has a time complexity of O(n).
   recalculateBoundingBox() {
     this.boundingBox_ = INVALID_BOUNDING_BOX;
-    this.children.forEach(child => {
-      this.boundingBox_[0] = Math.min(this.boundingBox_[0], child.boundingBox[0]);
-      this.boundingBox_[1] = Math.min(this.boundingBox_[1], child.boundingBox[1]);
+    this.children.forEach(child =>
+        this.extendBoundingBox(child));
+  }
 
-      this.boundingBox_[2] = Math.max(this.boundingBox_[2], child.boundingBox[2]);
-      this.boundingBox_[3] = Math.max(this.boundingBox_[3], child.boundingBox[3]);
-    });
+  // Extends the boundary box of this node with that of |node|.
+  extendBoundingBox(node) {
+    this.boundingBox_[0] = Math.min(this.boundingBox_[0], node.boundingBox[0]);
+    this.boundingBox_[1] = Math.min(this.boundingBox_[1], node.boundingBox[1]);
+
+    this.boundingBox_[2] = Math.max(this.boundingBox_[2], node.boundingBox[2]);
+    this.boundingBox_[3] = Math.max(this.boundingBox_[3], node.boundingBox[3]);
   }
 };
 

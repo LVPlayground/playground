@@ -42,13 +42,6 @@ lvp_Ignore( playerid, params[] )
         return 1;
     }
 
-    // We cannot allow ignoring administrators.
-    if (Player(ignoreID)->isAdministrator()) 
-    {
-        SendClientMessage( playerid, COLOR_RED, "You cannot ignore administrators!" );
-        return 1;
-    }
-
     // Now just toggle our magical and powerfull switch.
     g_Ignore[ playerid ][ ignoreID ] = true;
 

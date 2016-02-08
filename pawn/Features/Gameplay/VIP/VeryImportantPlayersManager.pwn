@@ -224,4 +224,14 @@ class VeryImportantPlayersManager {
         SetPlayerArmour(playerId, 100);
         return 1;
     }
+
+    /**
+     * Reset various variables for connecting players.
+     *
+     * @param playerId Id of the player who just connected to the server.
+     */
+    @list(OnPlayerConnect)
+    public onPlayerConnect(playerId) {
+        m_playerLooks[playerId] = DEFAULT_LOOK;
+    }
 };

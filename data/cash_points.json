@@ -1,6 +1,4 @@
 [
-  # Cash points located in Las Venturas. Expected format:
-  # positionX,  positionY, positionZ, rotationZ, interiorId
   [ 2356.8999, 1009.70001, 10.5, 270, 0 ],
   [ 2173.7998, 1416.19922, 10.7, 270, 0 ],
   [ 2000.69995, 1525.19995, 14.3, 178, 0 ],

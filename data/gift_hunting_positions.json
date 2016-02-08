@@ -1,6 +1,3 @@
-# This file contains a list of coordinates which Gift Hunting presents will spawn at.
 {
-    "gifts": [
-        # Yeah, I bet you were hoping for more.
-    ]
+    "gifts": []
 }

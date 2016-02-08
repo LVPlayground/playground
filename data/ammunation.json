@@ -1,4 +1,3 @@
-# This file contains information about the Ammunation venues.
 {
     "weapons": [
         {
@@ -323,7 +322,6 @@
         }
     ],
     "stores": [
-        # Shared interior for Ammu-Nation outlets in Las Venturas, Palomino Creek and Blueberry.
         {
             "name": "Las Venturas Ammunation",
             "location": [287.2459, -79.7132, 1001.5156, 269.6591, 4],
@@ -336,8 +334,6 @@
             "weapons": [1, 5, 8, 9, 14, 16, 22, 24, 25, 26, 27, 28, 31, 32, 34, 46],
             "armour_price": 40000
         },
-        # Shared interior for Ammu-Nation outlets in Willowfield, Angel Pine, Fort Carson and 
-        # East Bone County, the only interior with no shooting range.
         {
             "name": "Country Ammunation",
             "location": [296.6769, -109.8456, 1001.5156, 357.1361, 6],
@@ -350,7 +346,6 @@
             "weapons": [1, 2, 6, 7, 11, 22, 25, 27, 30, 33, 46],
             "armour_price": 40000
         },
-        # Shared interior for Ammu-Nation outlets in Downtown Los Santos and Queens.
         {
             "name": "Downtown Ammunation",
             "location": [286.2470, -39.3816, 1001.5156, 358.0200, 1],
@@ -363,7 +358,6 @@
             "weapons": [3, 5, 8, 14, 16, 22, 24, 25, 26, 27, 28, 31, 32, 34, 46],
             "armour_price": 40000
         },
-		# The Ammu-Nation-interior in El Quebrados in North-West San Andreas.
         {
             "name": "El Quebrados Ammunation",
             "location": [316.524994, -167.706985, 999.661987, 300.0000, 6],

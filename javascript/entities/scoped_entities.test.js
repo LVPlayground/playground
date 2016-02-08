@@ -10,6 +10,9 @@ describe('ScopedEntities', it => {
 
     // TODO: Is there a good way to count vehicles on the server? GetVehiclePoolSize() would return
     // the highest id, while a new vehicle might be assigned a lower Id instead.
+/**
+    These tests cannot run in the Test Runner, because they rely on GetVehicleModel returning
+    something sensible there. Which it doesn't.
 
     let vehicle = entities.createVehicle({ modelId: 411 });
     assert.isNotNull(vehicle);
@@ -19,5 +22,6 @@ describe('ScopedEntities', it => {
     entities.dispose();
 
     assert.equal(pawnInvoke('GetVehicleModel', 'i', vehicle.id), 0);
+**/
   });
 });

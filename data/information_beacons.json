@@ -1,7 +1,5 @@
-# This file contains information about the Information Beacons spread across San Andreas.
 {
     "beacons": [
-        # Information beacon regarding the ship -safe- zone in front of the ship.
         {
             "title": "SAFE-ZONE: The Pirate Ship",
             "location": [2033.66, 1545.58, 10.82],

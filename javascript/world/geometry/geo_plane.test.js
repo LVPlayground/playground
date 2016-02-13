@@ -12,18 +12,6 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
   const createRectangle = () => new GeoRectangle(createRandomCoord(), createRandomCoord(),
                                                  createRandomCoord(), createRandomCoord());
 
-  const originalMaxEntries = GeoPlane.MAX_ENTRIES,
-        originalMinEntries = GeoPlane.MIN_ENTRIES;
-
-  // Utility method for reducing the maximum number of child nodes any node can have. Useful for
-  // reference testing where we don't want to have to insert 6+ nodes every time.
-  const reducePlaneLimitForTesting = (limit) => { GeoPlane.MAX_ENTRIES = limit;
-                                                  GeoPlane.MIN_ENTRIES = Math.ceil(limit * 0.4); };
-
-  // Automatically restore the limit after each test to its original value.
-  afterEach(() => { GeoPlane.MAX_ENTRIES = originalMaxEntries;
-                    GeoPlane.MIN_ENTRIES = originalMinEntries; });
-
   it('should adjust the bounding box on object modification', assert => {
     const plane = new GeoPlane();
 
@@ -34,35 +22,63 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
     assert.deepEqual(plane.boundingBox, [5, 5, 20, 25]);
   });
 
-  it('should split the tree when reaching the maximum number of entries in a node', assert => {
+  it('should store appropriate maximum and minimum number of children', assert => {
+    const defaultPlane = new GeoPlane();
+    assert.equal(defaultPlane.maxChildren, 6);
+    assert.equal(defaultPlane.minChildren, 3);
+
+    const customMaximumPlane = new GeoPlane({ maxChildren: 100 });
+    assert.equal(customMaximumPlane.maxChildren, 100);
+    assert.equal(customMaximumPlane.minChildren, 40);
+
+    const customPlane = new GeoPlane({ maxChildren: 10, minChildren: 2 });
+    assert.equal(customPlane.maxChildren, 10);
+    assert.equal(customPlane.minChildren, 2);
+  });
+
+  it('should split the tree when reaching the maximum number of children in a node', assert => {
     const plane = new GeoPlane();
-    for (let i = 0; i < GeoPlane.MAX_ENTRIES + 1; ++i)
+    for (let i = 0; i < plane.maxChildren + 1; ++i)
       plane.insert(createRectangle());
 
     assert.equal(plane.height, 2);
   });
 
   it('should choose an insertion node based on minimizing enlargement, then area', assert => {
-    const plane = new GeoPlane(),
-          rectangles = [];
-
-    reducePlaneLimitForTesting(4);
+    const firstPlane = new GeoPlane({ maxChildren: 4 });
 
     [
       [ 0, 0, 5, 5 ], [ 20, 20, 5, 5 ], [ 0, 0, 5, 10 ], [ 5, 5, 5, 5 ],
       [ 0, 0, 10, 5 ], [ 25, 20, 1, 5 ], [ 10, 0, 1, 10 ]
 
-    ].forEach(rectangle => plane.insert(new GeoRectangle(...rectangle)));
+    ].forEach(rectangle => firstPlane.insert(new GeoRectangle(...rectangle)));
 
     // Note that this is not correct yet - balancing has yet to be implemented, as well as reduction
     // of the bounding box on changes to the children.
-    assert.deepEqual(plane.exportBoundingBoxTreeForTesting(), {
+    assert.deepEqual(firstPlane.exportBoundingBoxTreeForTesting(), {
       boundingBox: [ 0, 0, 26, 25 ],
       height: 2,
       children: [
         { boundingBox: [ 0, 0, 25, 25 ], height: 1, children: [ [ 0, 0, 5, 5 ], [ 20, 20, 25, 25 ], [ 0, 0, 5, 10 ] ] },
         { boundingBox: [ 0, 0, 10, 10 ], height: 1, children: [ [ 5, 5, 10, 10 ], [ 0, 0, 10, 5 ] ] },
         { boundingBox: [ 10, 0, 26, 25 ], height: 1, children: [ [ 25, 20, 26, 25 ], [ 10, 0, 11, 10 ] ] }
+      ]
+    });
+
+    // Classical T-shape split representing Figure 3.1 from the paper.
+    const secondPlane = new GeoPlane({ maxChildren: 3 });
+
+    [
+      [ 30, 0, 10, 200 ], [ 50, 0, 10, 200 ], [ 0, 10, 40, 10 ], [ 50, 10, 40, 10 ]
+
+    ].forEach(rectangle => secondPlane.insert(new GeoRectangle(...rectangle)));
+
+    assert.deepEqual(secondPlane.exportBoundingBoxTreeForTesting(), {
+      boundingBox: [ 0, 0, 90, 200 ],
+      height: 2,
+      children: [
+        { boundingBox: [ 30, 0, 60, 200 ], height: 1, children: [ [ 30, 0, 40, 200 ], [ 50, 0, 60, 200 ] ] },
+        { boundingBox: [ 0, 10, 90, 20 ], height: 1, children: [ [ 0, 10, 40, 20 ], [ 50, 10, 90, 20 ] ] }
       ]
     });
 

@@ -5,6 +5,10 @@
 const GeoObject = require('world/geometry/geo_object.js'),
       GeoPlaneNode = require('world/geometry/geo_plane_node.js');
 
+// Default maximum number of children that a single node may contain. The minimum will, by default,
+// be set to ~40% of this number, as that load ratio offers the best performance for an R-tree.
+const DEFAULT_MAX_CHILDREN = 6;
+
 // Computes the combined bounding box of the |boundingBox|es and returns the total area.
 function extendedBoundingBoxArea(...boundingBoxes) {
   let combinedBoundingBox = [ Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY,
@@ -31,8 +35,10 @@ function extendedBoundingBoxArea(...boundingBoxes) {
 //
 // TODO: Enable objects to be removed from the tree.
 class GeoPlane {
-  constructor() {
+  constructor({ maxChildren = DEFAULT_MAX_CHILDREN, minChildren = Math.ceil(0.4 * maxChildren) } = {}) {
     this.root_ = new GeoPlaneNode(null /* value */);
+    this.maxChildren_ = maxChildren;
+    this.minChildren_ = minChildren;
   }
 
   // Gets the bounding box encapsulating all objects in the plane.
@@ -40,6 +46,10 @@ class GeoPlane {
 
   // Gets the current height of the internal R-tree.
   get height() { return this.root_.height; }
+
+  // Gets the maximum and minimum number of children a node in this tree may host.
+  get maxChildren() { return this.maxChildren_; }
+  get minChildren() { return this.minChildren_; }
 
   // Inserts |obj| on the plane. The |obj| must be an instance of one of the geometric objects that
   // derive from the GeoObject base class, as availability of that interface will be assumed. The
@@ -58,7 +68,7 @@ class GeoPlane {
     // down the tree have to be split as well, as the modification could cause them to overflow.
     for (; level >= 0; --level) {
       const node = insertionPath[level];
-      if (node.children.length <= GeoPlane.MAX_ENTRIES)
+      if (node.children.length <= this.maxChildren_)
         break;
 
       const splitNode = this.splitNode(node);
@@ -146,10 +156,5 @@ class GeoPlane {
   }
 
 };
-
-// Maximum and minimum number of entries in a single node. The minimum has been set to just over 40%
-// of the maximum, as that load ratio offers the best performance for an R-tree.
-GeoPlane.MAX_ENTRIES = 6;
-GeoPlane.MIN_ENTRIES = 3;
 
 exports = GeoPlane;

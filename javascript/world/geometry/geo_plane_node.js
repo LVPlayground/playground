@@ -48,6 +48,11 @@ class GeoPlaneNode {
     return node;
   }
 
+  // Sorts the children of this node using |compareFn|.
+  sortChildren(compareFn) {
+    this.children_.sort(compareFn);
+  }
+
   // Splits this node at |index|, returning the removed child nodes and recalculating the new
   // bounding box that applies to the reduced set of children immediately.
   splitAt(index) {

@@ -2,29 +2,13 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const GeoObject = require('world/geometry/geo_object.js'),
+const BoundingBoxUtil = require('world/geometry/bounding_box_util.js'),
+      GeoObject = require('world/geometry/geo_object.js'),
       GeoPlaneNode = require('world/geometry/geo_plane_node.js');
 
 // Default maximum number of children that a single node may contain. The minimum will, by default,
 // be set to ~40% of this number, as that load ratio offers the best performance for an R-tree.
 const DEFAULT_MAX_CHILDREN = 6;
-
-// Computes the combined bounding box of the |boundingBox|es and returns the total area.
-function extendedBoundingBoxArea(...boundingBoxes) {
-  let combinedBoundingBox = [ Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY,
-                              Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY ];
-
-  boundingBoxes.forEach(boundingBox => {
-    combinedBoundingBox[0] = Math.min(combinedBoundingBox[0], boundingBox[0]);
-    combinedBoundingBox[1] = Math.min(combinedBoundingBox[1], boundingBox[1]);
-
-    combinedBoundingBox[2] = Math.max(combinedBoundingBox[2], boundingBox[2]);
-    combinedBoundingBox[3] = Math.max(combinedBoundingBox[3], boundingBox[3]);
-  });
-
-  return (combinedBoundingBox[2] - combinedBoundingBox[0]) *
-             (combinedBoundingBox[3] - combinedBoundingBox[1]);
-}
 
 // The GeoPlane class expresses a 2D plane on which geometric objects can efficiently be represented
 // and queried. It is implemented as an optimized R-tree that accepts any object of geometric nature
@@ -106,7 +90,7 @@ class GeoPlane {
 
       node.children.forEach(child => {
         const area = child.boundingBoxArea(),
-              enlargement = extendedBoundingBoxArea(boundingBox, child.boundingBox) - area;
+              enlargement = BoundingBoxUtil.computeArea(boundingBox, child.boundingBox) - area;
 
         if (enlargement < minimumEnlargement) {
           minimumEnlargement = enlargement;
@@ -126,20 +110,58 @@ class GeoPlane {
     return node;
   }
 
-  // Splits |node| in two new nodes.
+  // Splits |node| in two new nodes. This is a naive splitting algorithm in which nodes will be
+  // sorted on the axis whose sum of the semi perimeters of potential splitting points is lowest.
   //
-  // TODO: Actually implement the SplitNode algorithm.
-  //
-  // This method implements the SplitNode algorithm from the paper. The linear cost algorithm
-  // LinearPickSeeds has been used for splitting, since we care more about insertion performance
-  // than about raw lookup time performance. (Which can be optimized by using several trees.)
+  // TODO: Actually implement the rest of the SplitNode algorithm.
   splitNode(node) {
-    // TODO: Sort the children in |node| by the X-coordinate if the margin on that axis is larger.
+    const semiPerimeterSumX = GeoPlane.sumPotentialSplitSemiPerimeters(node, GeoPlane.compareMinX),
+          semiPerimeterSumY = GeoPlane.sumPotentialSplitSemiPerimeters(node, GeoPlane.compareMinY);
+
+    if (semiPerimeterSumX < semiPerimeterSumY)
+      node.sortChildren(GeoPlane.compareMinX);
+
     // TODO: Choose the index to split at. The R-tree structure prefers distribution with minimum
     //       overlap, then distribution with minimum area.
     const splitIndex = Math.ceil(node.children.length / 2);
 
     return new GeoPlaneNode(null /* value */, node.splitAt(splitIndex), node.height);
+  }
+
+  // Comparison function for sorting by the minimum X-coordinate of a node's bounding box.
+  static compareMinX(lhs, rhs) {
+    return lhs.boundingBox[0] - rhs.boundingBox[0];
+  }
+
+  // Comparison function for sorting by the minimum Y-coordinate of a node's bounding box.
+  static compareMinY(lhs, rhs) {
+    return lhs.boundingBox[1] - rhs.boundingBox[1];
+  }
+
+  // Sorts the |node|'s children using |compareFn| and then computes the total semi-perimeter based
+  // on the available splitting points, which is the value that will be returned.
+  static sumPotentialSplitSemiPerimeters(node, compareFn) {
+    node.sortChildren(compareFn);
+
+    // Alias the utility methods to improve readability in this function.
+    const computeSemiPerimeter = BoundingBoxUtil.semiPerimeter;
+    const combine = BoundingBoxUtil.combine;
+
+    let leftBoundingBox = combine(...node.children.slice(0, this.minChildren_)),
+        rightBoundingBox = combine(...node.children.slice(this.maxChildren_ - this.minChildren_)),
+        semiPerimeter = computeSemiPerimeter(leftBoundingBox) + computeSemiPerimeter(rightBoundingBox);
+
+    for (let i = this.minChildren_; i < this.maxChildren_; ++i) {
+      leftBoundingBox = combine(leftBoundingBox, node.children[i].boundingBox);
+      semiPerimeter += computeSemiPerimeter(leftBoundingBox);
+    }
+
+    for (let i = this.maxChildren_ - this.minChildren_ - 1; i >= this.minChildren_; --i) {
+      rightBoundingBox = combine(rightBoundingBox, node.children[i].boundingBox);
+      semiPerimeter += computeSemiPerimeter(rightBoundingBox);
+    }
+
+    return semiPerimeter;
   }
 
   // Exports the current tree as a bounding box tree for the purposes of testing. Leaf nodes will

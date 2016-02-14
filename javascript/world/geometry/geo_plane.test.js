@@ -61,8 +61,8 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
       height: 2,
       children: [
         { boundingBox: [0, 0, 5, 10], height: 1, children: [ [0, 0, 5, 5], [0, 0, 5, 10] ] },
-        { boundingBox: [0, 0, 11, 10], height: 1, children: [ [0, 0, 10, 5], [10, 0, 11, 10] ] },
-        { boundingBox: [5, 5, 26, 25], height: 1, children: [ [5, 5, 10, 10], [20, 20, 25, 25], [25, 20, 26, 25] ] }
+        { boundingBox: [0, 0, 10, 10], height: 1, children: [ [0, 0, 10, 5], [5, 5, 10, 10] ] },
+        { boundingBox: [10, 0, 26, 25], height: 1, children: [ [10, 0, 11, 10], [20, 20, 25, 25], [25, 20, 26, 25] ] }
       ]
     });
 
@@ -78,11 +78,10 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
       boundingBox: [0, 0, 90, 200],
       height: 2,
       children: [
-        { boundingBox: [30, 0, 60, 200], height: 1, children: [ [30, 0, 40, 200], [50, 0, 60, 200] ] },
-        { boundingBox: [0, 10, 90, 20], height: 1, children: [ [0, 10, 40, 20], [50, 10, 90, 20] ] }
+        { boundingBox: [0, 0, 40, 200], height: 1, children: [ [0, 10, 40, 20], [30, 0, 40, 200] ] },
+        { boundingBox: [50, 0, 90, 200], height: 1, children: [ [50, 0, 60, 200], [50, 10, 90, 20] ] }
       ]
     });
-
   });
 
 });

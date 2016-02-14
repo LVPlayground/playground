@@ -159,21 +159,6 @@ class GeoPlane {
     return new GeoPlaneNode(null /* value */, node.splitAt(splitIndex), node.height);
   }
 
-  // Comparison function for sorting by the minimum X-coordinate of a node's bounding box.
-  static compareMinX(lhs, rhs) {
-    return lhs.boundingBox[0] - rhs.boundingBox[0];
-  }
-
-  // Comparison function for sorting by the minimum Y-coordinate of a node's bounding box.
-  static compareMinY(lhs, rhs) {
-    return lhs.boundingBox[1] - rhs.boundingBox[1];
-  }
-
-  // Combines the bounding boxes of all the |nodes| into a single, larger bounding box.
-  static combineNodes(nodes) {
-    return BoundingBoxUtil.combine(...nodes.map(node => node.boundingBox));
-  }
-
   // Sorts the |node|'s children using |compareFn| and then computes the total semi-perimeter based
   // on the available splitting points, which is the value that will be returned.
   sumPotentialSplitSemiPerimeters(node, compareFn) {
@@ -212,6 +197,16 @@ class GeoPlane {
       BoundingBoxUtil.combine(...leftChildren.map(node => node.boundingBox)),
       BoundingBoxUtil.combine(...rightChildren.map(node => node.boundingBox))
     ];
+  }
+
+  // Comparison function for sorting by the minimum X-coordinate of a node's bounding box.
+  static compareMinX(lhs, rhs) {
+    return lhs.boundingBox[0] - rhs.boundingBox[0];
+  }
+
+  // Comparison function for sorting by the minimum Y-coordinate of a node's bounding box.
+  static compareMinY(lhs, rhs) {
+    return lhs.boundingBox[1] - rhs.boundingBox[1];
   }
 
   // -----------------------------------------------------------------------------------------------

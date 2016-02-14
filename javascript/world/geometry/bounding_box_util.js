@@ -7,9 +7,8 @@
 class BoundingBoxUtil {
   constructor() { throw TypeError('This class must not be instantiated.'); }
 
-  // Computes the area of the |boundingBoxes|. If multiple arguments are passed, the total area of
-  // the passed bounding boxes will be computed.
-  static computeArea(...boundingBoxes) {
+  // Combines the |boundingBoxes| to create a new bounding box that encapsulates the total area.
+  static combine(...boundingBoxes) {
     let combinedBoundingBox = [ Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY,
                                 Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY ];
 
@@ -21,8 +20,20 @@ class BoundingBoxUtil {
       combinedBoundingBox[3] = Math.max(combinedBoundingBox[3], boundingBox[3]);
     });
 
+    return combinedBoundingBox;
+  }
+
+  // Computes the area of the |boundingBoxes|. If multiple arguments are passed, the total area of
+  // the passed bounding boxes will be computed.
+  static computeArea(...boundingBoxes) {
+    const combinedBoundingBox = BoundingBoxUtil.combine(...boundingBoxes);
     return (combinedBoundingBox[2] - combinedBoundingBox[0]) *
                (combinedBoundingBox[3] - combinedBoundingBox[1]);
+  }
+
+  // Computes the semi perimeter of the |boundingBox|, i.e. width plus height.
+  static semiPerimeter(boundingBox) {
+    return (boundingBox[2] - boundingBox[0]) + (boundingBox[3] - boundingBox[1]);
   }
 
 };

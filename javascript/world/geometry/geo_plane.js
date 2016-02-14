@@ -138,7 +138,7 @@ class GeoPlane {
         minimumArea = Number.POSITIVE_INFINITY,
         splitIndex = null;
 
-    for (let i = this.minChildren_; i <= this.maxChildren_ - this.minChildren_; ++i) {
+    for (let i = this.minChildren_; i <= node.children.length - this.minChildren_; ++i) {
       const [leftBoundingBox, rightBoundingBox] = this.partialBoundingBoxes(node, i, i);
 
       const overlap = computeArea(computeIntersection(leftBoundingBox, rightBoundingBox));
@@ -164,22 +164,24 @@ class GeoPlane {
   sumPotentialSplitSemiPerimeters(node, compareFn) {
     node.sortChildren(compareFn);
 
+    const childCount = node.children.length;
+
     // Alias the utility methods to improve readability in this function.
     const computeSemiPerimeter = BoundingBoxUtil.semiPerimeter;
     const combine = BoundingBoxUtil.combine;
 
     let [leftBoundingBox, rightBoundingBox] =
-        this.partialBoundingBoxes(node, this.minChildren_, this.maxChildren_ - this.minChildren_);
+        this.partialBoundingBoxes(node, this.minChildren_, childCount - this.minChildren_);
 
     let semiPerimeter = computeSemiPerimeter(leftBoundingBox) +
                         computeSemiPerimeter(rightBoundingBox);
 
-    for (let i = this.minChildren_; i < this.maxChildren_ - this.minChildren_; ++i) {
+    for (let i = this.minChildren_; i < childCount - this.minChildren_; ++i) {
       leftBoundingBox = combine(leftBoundingBox, node.children[i].boundingBox);
       semiPerimeter += computeSemiPerimeter(leftBoundingBox);
     }
 
-    for (let i = this.maxChildren_ - this.minChildren_ - 1; i >= this.minChildren_; --i) {
+    for (let i = childCount - this.minChildren_ - 1; i >= this.minChildren_; --i) {
       rightBoundingBox = combine(rightBoundingBox, node.children[i].boundingBox);
       semiPerimeter += computeSemiPerimeter(rightBoundingBox);
     }
@@ -191,7 +193,7 @@ class GeoPlane {
   // children of node right of |rightSplit|. The |node| will be unaffected by this operation.
   partialBoundingBoxes(node, leftSplit, rightSplit) {
     const leftChildren = node.children.slice(0, leftSplit),
-          rightChildren = node.children.slice(rightSplit, this.maxChildren_);
+          rightChildren = node.children.slice(rightSplit, node.children.length);
 
     return [
       BoundingBoxUtil.combine(...leftChildren.map(node => node.boundingBox)),

@@ -2,35 +2,30 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const GeoCircle = require('world/geometry/geo_circle.js');
+const GeoRectangle = require('world/geometry/geo_circle.js');
 
-// Floating point comparisons must allow for a margin of error, since not every number can be
-// expressed in the 53 bit accuracy given to JavaScript numbers.
-const CONTAINS_EPSILON = 0.01;
-
-// A geometric point effectively is a circle with a diameter of one unit, represented solely with
-// its X and Y coordinates on a 2D plane. Some methods have been overridden for simplification.
-class GeoPoint extends GeoCircle {
+// A geometric point effectively is a rectangle at a single point, having no explicit width and
+// height and thus represented solely with its X and Y coordinates.
+class GeoPoint extends GeoRectangle {
   constructor(x, y) {
-    super(x, y, 0.5);
+    super(x, y, 0, 0);
   }
 
-  get r() { return undefined; }
+  get w() { return undefined; }
+  get h() { return undefined; }
 
   area() {
-    return 1;
+    return 0;
   }
 
-  boundingBox() {
-    return [ Math.round(this.x_ - 0.5), Math.round(this.y_ - 0.5),
-             Math.round(this.x_ + 0.5), Math.round(this.y_ + 0.5) ];
-  }
+  // Inherits boundingBox().
 
-  // Inherits center().
+  center() {
+    return [ this.x_, this.y_ ];
+  }
 
   contains(x, y) {
-    return Math.abs(this.x_ - x) < CONTAINS_EPSILON &&
-           Math.abs(this.y_ - y) < CONTAINS_EPSILON;
+    return this.x_ == x && this.y_ == y;
   }
 
   // Inherits distance(obj).
@@ -38,7 +33,7 @@ class GeoPoint extends GeoCircle {
   // Inherits intersects(obj).
 
   perimeter() {
-    return 1;
+    return 0;
   }
 };
 

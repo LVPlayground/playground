@@ -10,18 +10,19 @@ describe('GeoPoint', it => {
 
     assert.equal(point.x, 10);
     assert.equal(point.y, 20);
-    assert.equal(point.r, undefined);
+    assert.equal(point.w, undefined);
+    assert.equal(point.h, undefined);
   });
 
-  it('should always have an area of one', assert => {
-    assert.closeTo(new GeoPoint(10, 10).area(), 1, 0.01);
-    assert.closeTo(new GeoPoint(20, 20).area(), 1, 0.01);
+  it('should never have an area', assert => {
+    assert.equal(new GeoPoint(10, 10).area(), 0);
+    assert.equal(new GeoPoint(20, 20).area(), 0);
   });
 
   it('should always have a defined bounding box', assert => {
-    assert.deepEqual(new GeoPoint(10, 10).boundingBox(), [10, 10, 11, 11]);
-    assert.deepEqual(new GeoPoint(-10, -10).boundingBox(), [-10, -10, -9, -9]);
-    assert.deepEqual(new GeoPoint(15, -10).boundingBox(), [15, -10, 16, -9]);
+    assert.deepEqual(new GeoPoint(10, 10).boundingBox(), [10, 10, 10, 10]);
+    assert.deepEqual(new GeoPoint(-10, -10).boundingBox(), [-10, -10, -10, -10]);
+    assert.deepEqual(new GeoPoint(15, -10).boundingBox(), [15, -10, 15, -10]);
   });
 
   it('should be able to reflect its center', assert => {
@@ -35,17 +36,15 @@ describe('GeoPoint', it => {
     const point = new GeoPoint(10, 5);
 
     assert.isTrue(point.contains(10, 5));
-    assert.isTrue(point.contains(9.999, 4.999));
-    assert.isTrue(point.contains(10.001, 5.001));
+    assert.isFalse(point.contains(9.999, 4.999));
+    assert.isFalse(point.contains(10.001, 5.001));
     assert.isFalse(point.contains(11, 5));
     assert.isFalse(point.contains(10, 4));
     assert.isFalse(point.contains(100, 100));
   });
 
-  it('should always have a perimeter of one', assert => {
-    assert.closeTo(new GeoPoint(10, 15).perimeter(), 1, 0.01);
-    assert.closeTo(new GeoPoint(20, 30).perimeter(), 1, 0.01);
-    assert.closeTo(new GeoPoint(10, 15).perimeter(), 1, 0.01);
-    assert.closeTo(new GeoPoint(10, 15).perimeter(), 1, 0.01);
+  it('should never have a perimeter', assert => {
+    assert.equal(new GeoPoint(10, 10).perimeter(), 0);
+    assert.equal(new GeoPoint(20, 20).perimeter(), 0);
   });
 });

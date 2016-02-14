@@ -51,20 +51,18 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
     const firstPlane = new GeoPlane({ maxChildren: 4 });
 
     [
-      [ 0, 0, 5, 5 ], [ 20, 20, 5, 5 ], [ 0, 0, 5, 10 ], [ 5, 5, 5, 5 ],
-      [ 0, 0, 10, 5 ], [ 25, 20, 1, 5 ], [ 10, 0, 1, 10 ]
+      [0, 0, 5, 5], [20, 20, 5, 5], [0, 0, 5, 10], [5, 5, 5, 5],
+      [0, 0, 10, 5], [25, 20, 1, 5], [10, 0, 1, 10]
 
     ].forEach(rectangle => firstPlane.insert(new GeoRectangle(...rectangle)));
 
-    // Note that this is not correct yet - balancing has yet to be implemented, as well as reduction
-    // of the bounding box on changes to the children.
     assert.deepEqual(firstPlane.exportBoundingBoxTreeForTesting(), {
-      boundingBox: [ 0, 0, 26, 25 ],
+      boundingBox: [0, 0, 26, 25],
       height: 2,
       children: [
-        { boundingBox: [ 0, 0, 5, 10 ], height: 1, children: [ [ 0, 0, 5, 5 ], [ 0, 0, 5, 10 ] ] },
-        { boundingBox: [ 0, 0, 11, 10 ], height: 1, children: [ [ 0, 0, 10, 5 ], [ 10, 0, 11, 10 ] ] },
-        { boundingBox: [ 5, 5, 26, 25 ], height: 1, children: [ [ 5, 5, 10, 10 ], [ 20, 20, 25, 25 ], [ 25, 20, 26, 25 ] ] }
+        { boundingBox: [0, 0, 5, 10], height: 1, children: [ [0, 0, 5, 5], [0, 0, 5, 10] ] },
+        { boundingBox: [0, 0, 11, 10], height: 1, children: [ [0, 0, 10, 5], [10, 0, 11, 10] ] },
+        { boundingBox: [5, 5, 26, 25], height: 1, children: [ [5, 5, 10, 10], [20, 20, 25, 25], [25, 20, 26, 25] ] }
       ]
     });
 
@@ -72,18 +70,16 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
     const secondPlane = new GeoPlane({ maxChildren: 3, minChildren: 1 });
 
     [
-      [ 0, 10, 40, 10 ], [ 30, 0, 10, 200 ], [ 50, 0, 10, 200 ], [ 50, 10, 40, 10 ]
+      [0, 10, 40, 10], [30, 0, 10, 200], [50, 0, 10, 200], [50, 10, 40, 10]
 
     ].forEach(rectangle => secondPlane.insert(new GeoRectangle(...rectangle)));
 
-    // This, also, is deliberately broken. Once the splitting algorithm has been implemented the
-    // results should match those reflected in Figure 3.1 in the paper.
     assert.deepEqual(secondPlane.exportBoundingBoxTreeForTesting(), {
-      boundingBox: [ 0, 0, 90, 200 ],
+      boundingBox: [0, 0, 90, 200],
       height: 2,
       children: [
-        { boundingBox: [ 30, 0, 60, 200 ], height: 1, children: [ [ 30, 0, 40, 200 ], [ 50, 0, 60, 200 ] ] },
-        { boundingBox: [ 0, 10, 90, 20 ], height: 1, children: [ [ 0, 10, 40, 20 ], [ 50, 10, 90, 20 ] ] }
+        { boundingBox: [30, 0, 60, 200], height: 1, children: [ [30, 0, 40, 200], [50, 0, 60, 200] ] },
+        { boundingBox: [0, 10, 90, 20], height: 1, children: [ [0, 10, 40, 20], [50, 10, 90, 20] ] }
       ]
     });
 

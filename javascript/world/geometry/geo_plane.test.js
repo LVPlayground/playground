@@ -8,6 +8,18 @@ const GeoCircle = require('world/geometry/geo_circle.js'),
       GeoRectangle = require('world/geometry/geo_rectangle.js');
 
 describe('GeoPlane', (it, beforeEach, afterEach) => {
+  // Reference points that can be used to verify correctness of our own implementation, as well as
+  // a base set of data for comparison against other implementations.
+  const referencePoints = [
+    [0, 0], [10, 10], [20, 20], [25, 0], [35, 10], [45, 20], [0, 25], [10, 35], [20, 45],
+    [25, 25], [35, 35], [45, 45], [50, 0], [60, 10], [70, 20], [75, 0], [85, 10], [95, 20],
+    [50, 25], [60, 35], [70, 45], [75, 25], [85, 35], [95, 45], [0, 50], [10, 60], [20, 70],
+    [25, 50], [35, 60], [45, 70], [0, 75], [10, 85], [20, 95], [25, 75], [35, 85], [45, 95],
+    [50, 50], [60, 60], [70, 70], [75, 50], [85, 60], [95, 70], [50, 75], [60, 85], [70, 95],
+    [75, 75], [85, 85], [95, 95]
+  ];
+
+
   // Utility function for generating a random rectangle.
   const createRandomCoord = () => Math.floor(Math.random() * 20);
   const createRectangle = () => new GeoRectangle(createRandomCoord(), createRandomCoord(),
@@ -61,9 +73,8 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
       boundingBox: [0, 0, 26, 25],
       height: 2,
       children: [
-        { boundingBox: [0, 0, 5, 10], height: 1, children: [ [0, 0, 5, 5], [0, 0, 5, 10] ] },
-        { boundingBox: [0, 0, 10, 10], height: 1, children: [ [0, 0, 10, 5], [5, 5, 10, 10] ] },
-        { boundingBox: [10, 0, 26, 25], height: 1, children: [ [10, 0, 11, 10], [20, 20, 25, 25], [25, 20, 26, 25] ] }
+        { boundingBox: [0, 0, 11, 10], height: 1, children: [ [0, 0, 5, 5], [0, 0, 5, 10], [0, 0, 10, 5], [10, 0, 11, 10] ] },
+        { boundingBox: [5, 5, 26, 25], height: 1, children: [ [5, 5, 10, 10], [20, 20, 25, 25], [25, 20, 26, 25] ] },
       ]
     });
 
@@ -83,24 +94,6 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
         { boundingBox: [50, 0, 90, 200], height: 1, children: [ [50, 0, 60, 200], [50, 10, 90, 20] ] }
       ]
     });
-  });
-
-  it('should properly insert larger amounts of data', assert => {
-    const referencePoints = [
-      [0, 0], [10, 10], [20, 20], [25, 0], [35, 10], [45, 20], [0, 25], [10, 35], [20, 45],
-      [25, 25], [35, 35], [45, 45], [50, 0], [60, 10], [70, 20], [75, 0], [85, 10], [95, 20],
-      [50, 25], [60, 35], [70, 45], [75, 25], [85, 35], [95, 45], [0, 50], [10, 60], [20, 70],
-      [25, 50], [35, 60], [45, 70], [0, 75], [10, 85], [20, 95], [25, 75], [35, 85], [45, 95],
-      [50, 50], [60, 60], [70, 70], [75, 50], [85, 60], [95, 70], [50, 75], [60, 85], [70, 95],
-      [75, 75], [85, 85], [95, 95]
-    ];
-
-    const plane = new GeoPlane({ maxChildren: 4 });
-    referencePoints.forEach(point =>
-        plane.insert(new GeoPoint(point[0], point[1])));
-
-    // The current state of |plane| can be used to verify against other implementations.
-    assert.ok(true);
   });
 
 });

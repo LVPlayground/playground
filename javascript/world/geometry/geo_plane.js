@@ -22,6 +22,10 @@ const DEFAULT_MAX_CHILDREN = 6;
 class GeoPlane {
   constructor({ maxChildren = DEFAULT_MAX_CHILDREN, minChildren = Math.ceil(0.4 * maxChildren) } = {}) {
     this.root_ = new GeoPlaneNode(null /* value */);
+
+    if (maxChildren - minChildren < minChildren)
+      throw new Error('Disbalance between minimum and maximum number of children.');
+
     this.maxChildren_ = maxChildren;
     this.minChildren_ = minChildren;
   }
@@ -98,7 +102,7 @@ class GeoPlane {
           target = child;
         }
 
-        else if (enlargement === minimumEnlargement && area < minimumArea) {
+        else if (enlargement === minimumEnlargement && minimumArea > area) {
           minimumArea = area;
           target = child;
         }
@@ -113,7 +117,12 @@ class GeoPlane {
   // Splits |node| in two new nodes. This is a naive splitting algorithm in which nodes will be
   // sorted on the axis whose sum of the semi perimeters of potential splitting points is lowest.
   //
-  // TODO: Actually implement the rest of the SplitNode algorithm.
+  // Then, within the available splitting points (children in the sorted list between the indices
+  // [minChildren, (maxChildren - minChildren)]) nodes will be preferred based on minimizing the
+  // overlap, then having the smallest total area, somewhat similar to choosing a leaf.
+  //
+  // This method will return a new GeoPlaneNode with the split children, and will modify the |node|
+  // removing all the children that now have a new parent.
   splitNode(node) {
     const semiPerimeterSumX = GeoPlane.sumPotentialSplitSemiPerimeters(node, GeoPlane.compareMinX),
           semiPerimeterSumY = GeoPlane.sumPotentialSplitSemiPerimeters(node, GeoPlane.compareMinY);
@@ -121,9 +130,32 @@ class GeoPlane {
     if (semiPerimeterSumX < semiPerimeterSumY)
       node.sortChildren(GeoPlane.compareMinX);
 
-    // TODO: Choose the index to split at. The R-tree structure prefers distribution with minimum
-    //       overlap, then distribution with minimum area.
-    const splitIndex = Math.ceil(node.children.length / 2);
+    // Alias the utility methods to improve readability in this function.
+    const computeArea = BoundingBoxUtil.computeArea;
+    const computeIntersection = BoundingBoxUtil.computeIntersection;
+
+    let minimumOverlap = Number.POSITIVE_INFINITY,
+        minimumArea = Number.POSITIVE_INFINITY,
+        splitIndex = null;
+
+    for (let i = this.minChildren_; i <= this.maxChildren_ - this.minChildren_; ++i) {
+      const leftBoundingBox = GeoPlane.combineNodes(node.children.slice(0, i)),
+            rightBoundingBox = GeoPlane.combineNodes(node.children.slice(i));
+
+      const overlap = computeArea(computeIntersection(leftBoundingBox, rightBoundingBox));
+      const area = computeArea(leftBoundingBox, rightBoundingBox);
+
+      if (overlap < minimumOverlap) {
+        minimumOverlap = overlap;
+        minimumArea = Math.min(minimumArea, area);
+        splitIndex = i;
+      }
+
+      else if (overlap === minimumOverlap && minimumArea > area) {
+        minimumArea = area;
+        splitIndex = i;
+      }
+    }
 
     return new GeoPlaneNode(null /* value */, node.splitAt(splitIndex), node.height);
   }
@@ -138,6 +170,11 @@ class GeoPlane {
     return lhs.boundingBox[1] - rhs.boundingBox[1];
   }
 
+  // Combines the bounding boxes of all the |nodes| into a single, larger bounding box.
+  static combineNodes(nodes) {
+    return BoundingBoxUtil.combine(...nodes.map(node => node.boundingBox));
+  }
+
   // Sorts the |node|'s children using |compareFn| and then computes the total semi-perimeter based
   // on the available splitting points, which is the value that will be returned.
   static sumPotentialSplitSemiPerimeters(node, compareFn) {
@@ -147,8 +184,8 @@ class GeoPlane {
     const computeSemiPerimeter = BoundingBoxUtil.semiPerimeter;
     const combine = BoundingBoxUtil.combine;
 
-    let leftBoundingBox = combine(...node.children.slice(0, this.minChildren_)),
-        rightBoundingBox = combine(...node.children.slice(this.maxChildren_ - this.minChildren_)),
+    let leftBoundingBox = GeoPlane.combineNodes(node.children.slice(0, this.minChildren_)),
+        rightBoundingBox = GeoPlane.combineNodes(node.children.slice(this.maxChildren_ - this.minChildren_)),
         semiPerimeter = computeSemiPerimeter(leftBoundingBox) + computeSemiPerimeter(rightBoundingBox);
 
     for (let i = this.minChildren_; i < this.maxChildren_; ++i) {
@@ -163,6 +200,8 @@ class GeoPlane {
 
     return semiPerimeter;
   }
+
+  // -----------------------------------------------------------------------------------------------
 
   // Exports the current tree as a bounding box tree for the purposes of testing. Leaf nodes will
   // only be identified by their bounding box, internal nodes by their bounding box and children.

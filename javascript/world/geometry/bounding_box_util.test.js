@@ -22,6 +22,11 @@ describe('BoundingBoxUtil', it => {
     assert.equal(BoundingBoxUtil.computeArea([10, 10, 15, 15], [15, 10, 20, 15]), 50);
   });
 
+  it('should be able to compute the intersection', assert => {
+    assert.deepEqual(BoundingBoxUtil.computeIntersection([0, 0, 30, 20], [20, 10, 40, 30]), [20, 10, 30, 20]);
+    assert.deepEqual(BoundingBoxUtil.computeIntersection([0, 0, 10, 10], [10, 10, 20, 20]), [0, 0, 0, 0]);
+  });
+
   it('should be able to calculate the semi-perimeter', assert => {
     assert.equal(BoundingBoxUtil.semiPerimeter([0, 0, 10, 10]), 20);
     assert.equal(BoundingBoxUtil.semiPerimeter([10, 10, 15, 20]), 15);

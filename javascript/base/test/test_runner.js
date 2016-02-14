@@ -139,6 +139,7 @@ class TestRunner {
       require('world/geometry/geo_circle.test.js');
       require('world/geometry/geo_object_util.test.js');
       require('world/geometry/geo_plane.test.js');
+      require('world/geometry/geo_point.test.js');
       require('world/geometry/geo_rectangle.test.js');
     }
 

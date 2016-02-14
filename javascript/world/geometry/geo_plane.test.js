@@ -36,9 +36,6 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
   });
 
   it('should store appropriate maximum and minimum number of children', assert => {
-    assert.throws(() => new GeoPlane({ maxChildren: 3 }));
-    assert.throws(() => new GeoPlane({ maxChildren: 10, minChildren: 20 }));
-
     const defaultPlane = new GeoPlane();
     assert.equal(defaultPlane.maxChildren, 6);
     assert.equal(defaultPlane.minChildren, 3);
@@ -79,7 +76,7 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
     });
 
     // Classical T-shape split representing Figure 3.1 from the paper.
-    const secondPlane = new GeoPlane({ maxChildren: 3, minChildren: 1 });
+    const secondPlane = new GeoPlane({ maxChildren: 3, minChildren: 2 });
 
     [
       [0, 10, 40, 10], [30, 0, 10, 200], [50, 0, 10, 200], [50, 10, 40, 10]
@@ -90,8 +87,8 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
       boundingBox: [0, 0, 90, 200],
       height: 2,
       children: [
-        { boundingBox: [0, 0, 40, 200], height: 1, children: [ [0, 10, 40, 20], [30, 0, 40, 200] ] },
-        { boundingBox: [50, 0, 90, 200], height: 1, children: [ [50, 0, 60, 200], [50, 10, 90, 20] ] }
+        { boundingBox: [30, 0, 60, 200], height: 1, children: [ [30, 0, 40, 200], [50, 0, 60, 200] ] },
+        { boundingBox: [0, 10, 90, 20], height: 1, children: [ [0, 10, 40, 20], [50, 10, 90, 20] ] }
       ]
     });
   });

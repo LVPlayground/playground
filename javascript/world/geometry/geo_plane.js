@@ -23,9 +23,6 @@ class GeoPlane {
   constructor({ maxChildren = DEFAULT_MAX_CHILDREN, minChildren = Math.ceil(0.4 * maxChildren) } = {}) {
     this.root_ = new GeoPlaneNode(null /* value */);
 
-    if (maxChildren - minChildren < minChildren)
-      throw new Error('Disbalance between minimum and maximum number of children.');
-
     this.maxChildren_ = maxChildren;
     this.minChildren_ = minChildren;
   }

@@ -30,6 +30,7 @@ function extendedBoundingBoxArea(...boundingBoxes) {
 // and queried. It is implemented as an optimized R-tree that accepts any object of geometric nature
 // to allow for additional complexity and ease-of-use.
 //
+// https://sa-mp.nl/tools/visualize-rtree/
 // http://www-db.deis.unibo.it/courses/SI-LS/papers/Gut84.pdf
 // https://en.wikipedia.org/wiki/R-tree
 //

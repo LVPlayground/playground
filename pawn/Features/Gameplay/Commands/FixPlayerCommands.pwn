@@ -224,6 +224,11 @@ class FixPlayerCommands {
     public onPlayerConnect(playerId) {
         m_resetPlayerVariables[playerId] = false;
 
+        for (new weaponSlot = 0; weaponSlot < WeaponSlots; ++weaponSlot) {
+            m_playerWeaponId[weaponSlot][playerId] = 0;
+            m_playerWeaponId[weaponSlot][playerId] = 0;
+        }
+
         return 1;
     }
 };

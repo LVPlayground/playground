@@ -11,7 +11,7 @@
  */
 class VehicleManager {
     // After how many seconds of no usage should a vehicle be respawned?
-    const VehicleRespawnDelayInSeconds = 120;
+    const VehicleRespawnDelayInSeconds = 300;
 
     // How many vehicle models exist in Grand Theft Auto: San Andreas?
     const VehicleModelCount = 611 /** highest vehicle Id **/ - 400 /** lowest vehicle Id **/;

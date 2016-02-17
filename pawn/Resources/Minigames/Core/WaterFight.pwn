@@ -393,6 +393,7 @@ stock waterFightRemovePlayer(playerid, bool:bLoadData = true)
 
     if(waterFightGetState() == WATER_FIGHT_STATE_RUNNING && bLoadData == true)
     {
+        SetPlayerTeam(playerid, NO_TEAM);
         waterFightLoadData(playerid);
     }
 }
@@ -435,6 +436,7 @@ stock waterFightSpawnPlayer(playerid)
 
     SetPlayerHealth(playerid, 100);
     SetPlayerArmour(playerid, 0);
+    SetPlayerTeam(playerid, 1);
 
     GiveWeapon(playerid, 25, 9000);
 

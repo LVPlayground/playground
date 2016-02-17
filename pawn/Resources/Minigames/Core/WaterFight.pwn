@@ -347,8 +347,8 @@ waterFightProcess()
                 }
 
                 new szEndMsg[128];
-                format(szEndMsg, 128, "* Water Fights has ended: %s (Id:%d) has won!", PlayerName(i), i);
-                SendClientMessageToAllEx(COLOR_PINK, szEndMsg);
+                format(szEndMsg, sizeof(szEndMsg), "~y~WaterFight~w~ has finished: ~r~~h~%s~w~ has won!", Player(i)->nicknameString());
+                NewsController->show(szEndMsg);
                 ShowBoxForPlayer(i, "You have won the WaterFight minigame!");
                 waterFightRemovePlayer(i);
                 WonMinigame[ i ]++;

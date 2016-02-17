@@ -841,10 +841,11 @@ CRobbery__Process()
 
     // Timer stuff for acutal minigame.
     casinoData[timer]--;
+    new notice[128];
     if(casinoData[timer] == 0) {
         // Defenders are winners!
-        CRobbery__TeamMsg(ROBBERY_TEAMATTACK, COLOR_GREEN, "EPIC FAIL! Enjoy the cops busting your ass.");
-        CRobbery__TeamMsg(ROBBERY_TEAMDEFEND, COLOR_RED, "EPIC WIN! You're promoted to non-slave.");
+        format(notice, sizeof(notice), "~y~Casino Robbery~w~ has finished: ~b~~h~The Defenders~w~ have won!");
+        NewsController->show(notice);
         casinoData[winners] = ROBBERY_TEAMDEFEND;
         CRobbery__End();
         return;
@@ -960,6 +961,7 @@ CRobbery__Process()
                     continue;
                 }
             } else if(CRobbery__GetPhase() == 4) {
+                new string[128];
                 if(Rx > 947.5884 && Rx < 996.1572 && Ry > 1704.7852 && Ry < 1766.5408) {
                     // We add a player to the 'completed' list
                     if(playerCasinoData[i][finished] == 1) continue; // #care
@@ -968,15 +970,14 @@ CRobbery__Process()
                     if(casinoData[finished] == teamCount[ROBBERY_TEAMATTACK])
                     {
                         // Win!
-                        CRobbery__TeamMsg(ROBBERY_TEAMATTACK, COLOR_GREEN, "EPIC WIN! Enjoy the cash.");
-                        CRobbery__TeamMsg(ROBBERY_TEAMDEFEND, COLOR_RED, "EPIC FAIL! You're fired.");
+                        format(string, sizeof(string), "~y~Casino Robbery~w~ has finished: ~r~~h~The Attackers~w~ have won!");
+                        NewsController->show(string);
                         casinoData[winners] = ROBBERY_TEAMATTACK;
                         CRobbery__End();
                         return;
                     } else {
                         // We have to simply tell them.
-                        new string[256];
-                        format(string, 256, "* %s has reached the base. %d attackers left to go!", PlayerName(i),  teamCount[ROBBERY_TEAMATTACK] - casinoData[finished]);
+                        format(string, 128, "* %s has reached the base. %d attackers left to go!", PlayerName(i),  teamCount[ROBBERY_TEAMATTACK] - casinoData[finished]);
                         CRobbery__TeamMsg(ROBBERY_TEAMATTACK, COLOR_PINK, string);
                     }
                 }

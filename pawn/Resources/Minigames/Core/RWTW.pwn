@@ -168,33 +168,19 @@ rwInitialize(n_MaxScore = 0)
     }
     else
     {
-        rwEnd("An Error occured.");
+        rwEnd();
     }
 }
 
 // End RWTW with the specified reason
-rwEnd(szEndReason[] = "")
+rwEnd()
 {
     if(rwGetState() == RW_STATE_NONE)
     {
         return;
     }
 
-    new
-        n_MostKills,
-        n_MostDeaths,
-        n_MostKillsID,
-        Float:ratio,
-        szEndMsg[128];
-
-    // Okay the minigame has ended
-    // Only show the end message however, if the minigame
-    // was running. Not if enough players haven't signed up etc, we handle
-    // that in a more personal message later.
-    if (strlen(szEndReason) > 0) {
-        format(szEndMsg,sizeof(szEndMsg),"* Run Weapons Team War has finished: {33AA33}%s",szEndReason);
-        SendClientMessageToAllEx(Color::Information, szEndMsg);
-    }
+    new Float:ratio, message[128];
 
     for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
     {
@@ -213,14 +199,6 @@ rwEnd(szEndReason[] = "")
 
         if(rwGetState() == RW_STATE_RUNNING)
         {
-            if(rwPlayerData[i][rwPlayerKills] > n_MostKills)
-            {
-                n_MostKills = rwPlayerData[i][rwPlayerKills];
-                n_MostDeaths = rwPlayerData[i][rwPlayerDeaths];
-                n_MostKillsID = i;
-
-            }
-
             if(rwPlayerData[i][rwPlayerDeaths] == 0)
             {
                 ratio = 1.0;
@@ -229,17 +207,11 @@ rwEnd(szEndReason[] = "")
             {
                 ratio = floatdiv(rwPlayerData[i][rwPlayerKills], rwPlayerData[i][rwPlayerDeaths]);
             }
-            format(szEndMsg, 128, "You killed %d people and died %d times (Ratio: %.2f) in RWTW.", rwPlayerData[i][rwPlayerKills], rwPlayerData[i][rwPlayerDeaths], ratio);
-            ShowBoxForPlayer(i, szEndMsg);
+            format(message, 128, "You killed %d people and died %d times (Ratio: %.2f) in RWTW.", rwPlayerData[i][rwPlayerKills], rwPlayerData[i][rwPlayerDeaths], ratio);
+            ShowBoxForPlayer(i, message);
         }
 
         rwRemovePlayerFromMinigame(i);
-    }
-
-    if(rwGetState() == RW_STATE_RUNNING)
-    {
-        format(szEndMsg, 128, "* RWTW: Most Kills: %s - %d Kills, %d Deaths.", PlayerName(n_MostKillsID), n_MostKills, n_MostDeaths);
-        SendClientMessageToAllEx(COLOR_WHITE, szEndMsg);
     }
 
     rwResetData();
@@ -657,13 +629,18 @@ rwOnPlayerDeath(playerid, killerid)
 
     if(n_Score + 1 == rwGetMaxScore())
     {
+        new notice[128];
         if(n_Team == RW_TEAM_BLUE)
         {
-            rwEnd("The Blue team have won!");
+            rwEnd();
+            format(notice, sizeof(notice), "~y~Run Weapons Team War~w~ has finished: ~b~~h~Blue Team~w~ have won!");
+            NewsController->show(notice);
         }
         else
         {
-            rwEnd("The Red team have won!");
+            rwEnd();
+            format(notice, sizeof(notice), "~y~Run Weapons Team War~w~ has finished: ~r~~h~Red Team~w~ have won!");
+            NewsController->show(notice);
         }
     }
 }

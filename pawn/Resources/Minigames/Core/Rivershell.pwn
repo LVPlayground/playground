@@ -170,10 +170,16 @@ CShell__SignPlayerOut(playerid)
 
         if(CShell__TeamCount[iTeam] <= 0)
         {
-            if(iTeam == TEAM_BLUE)
-            CShell__End("The blue team bottled out! Green wins.");
-            else
-            CShell__End("The green team bottled out! Blue wins.");
+            new notice[128];
+            if (iTeam == TEAM_BLUE) {
+                format(notice, sizeof(notice), "~y~Rivershell~w~ has finished: ~g~~h~Green Team~w~ have won!");
+                NewsController->show(notice);
+                CShell__End();
+            } else {
+                format(notice, sizeof(notice), "~y~Rivershell~w~ has finished: ~b~~h~Blue Team~w~ have won!");
+                NewsController->show(notice);
+                CShell__End();
+            }
         }
 
     }
@@ -194,19 +200,12 @@ CShell__CheckStatus()
 // CShell__End. This is called when the game is about to end, and manages
 // the process by settings relevant vars and sending an explination
 // message as to why it ended.
-CShell__End(reason[] = "")
+CShell__End()
 {
     CShell__Debug("CShell__End processing...");
     // is the game actually running?
     if(g_RivershellState == RIVERSHELL_STATE_NONE) return CShell__Debug("Error ending game - Not running.");
     // we set the new state as empty
-
-    // and explain to everyone why it ended.
-    if (strlen(reason) > 0) {
-        new str[128];
-        format(str,128,"* Rivershell has finished: {33AA33}%s",reason);
-        SendClientMessageToAllEx(Color::Information, str);
-    }
 
     // Now, we need to set the vehicles, whether they need destroying or w/e
     CShell__ProcessVehicles();
@@ -587,7 +586,11 @@ CShell__Checkpoint(playerid)
         gGreenTimesCapped++;
         CShell__TextdrawUpdate();
         SetVehicleToRespawn(playervehicleid);
-        if(gGreenTimesCapped == CAPS_TO_WIN) return CShell__End("The green team have won!");
+        if(gGreenTimesCapped == CAPS_TO_WIN) {
+            format(str, sizeof(str), "~y~Rivershell~w~ has finished: ~g~~h~Green Team~w~ have won!");
+            NewsController->show(str);
+            CShell__End();
+        }
     }
 
     else if(playervehicleid == rivershellGreenTeamVehicleId && p_Team[playerid] == TEAM_BLUE)
@@ -599,8 +602,11 @@ CShell__Checkpoint(playerid)
         gBlueTimesCapped++;
         CShell__TextdrawUpdate();
         SetVehicleToRespawn(playervehicleid);
-        if(gBlueTimesCapped == CAPS_TO_WIN) return CShell__End("The blue team have won!");
-
+        if (gBlueTimesCapped == CAPS_TO_WIN) {
+            format(str, sizeof(str), "~y~Rivershell~w~ has finished: ~b~~h~Blue Team~w~ have won!");
+            NewsController->show(str);
+            CShell__End();
+        }
     }
 
     CShell__CheckStatus();

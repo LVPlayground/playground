@@ -68,6 +68,9 @@ MinigameType: GetPlayerMinigameType(playerId) {
     if (CDerby__GetPlayerState(playerId) >= DERBY_STATE_SIGNUP)
         return DerbyMinigame;
 
+    if (CHideGame__GetPlayerState(playerId) >= HS_STATE_SIGNING_UP)
+        return HideAndSeekMinigame;
+
     return UnknownMinigame;
 }
 
@@ -141,6 +144,11 @@ stock GetPlayerMinigameName(playerId) {
 
     if (waterFightIsPlayerSignedUp(playerId)) {
         notice = "WaterFight";
+        goto l_Success;
+    }
+
+    if (CHideGame__GetPlayerState(playerId) >= HS_STATE_SIGNING_UP) {
+        notice = "Hide and Seek";
         goto l_Success;
     }
 

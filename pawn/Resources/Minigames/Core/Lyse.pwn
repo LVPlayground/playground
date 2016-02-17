@@ -474,11 +474,16 @@ CLyse__SignPlayerOut(playerid)
 
         if(CLyse__GetTeamCount(iTeam) <= 0)
         {
+            new notice[128];
             if(iTeam == TEAM_BLUE)
             {
-                CLyse__End("The blue team bottled out! Green wins.");
+                format(notice, sizeof(notice), "~y~Local Yocal Sports Edition~w~ has finished: ~g~~h~Green Team~w~ have won!");
+                NewsController->show(notice);
+                CLyse__End();
             }else{
-                CLyse__End("The green team bottled out! Blue wins.");
+                format(notice, sizeof(notice), "~y~Local Yocal Sports Edition~w~ has finished: ~b~~h~Blue Team~w~ have won!");
+                NewsController->show(notice);
+                CLyse__End();
             }
         }
 
@@ -572,18 +577,12 @@ CLyse__Start()
 // CLyse__End
 // Ends the minigame when there are either not enough players signed up
 // or everyone signs out. Or offcourse, somebody could have won.
-CLyse__End(reason[] = "")
+CLyse__End()
 {
 
     if(CLyse__GetState() == LYSE_STATE_NONE)
     {
         return;
-    }
-
-    if (strlen(reason) > 0) {
-        new str[128];
-        format(str,128,"* Local Yocal Sports Edition has finished: {33AA33}%s",reason);
-        SendClientMessageToAllEx(Color::Information, str);
     }
 
     CLyse__HandleVehicles();
@@ -963,10 +962,10 @@ CLyse__Checkpoint(playerid)
 
     if(CLyse__GetPlayerTeam(playerid) == TEAM_GREEN)
     {
-        format(str,256,"* %s has captured the blue team's vehicle!",PlayerName(playerid));
+        format(str,128,"* %s has captured the blue team's vehicle!",PlayerName(playerid));
         CLyse__TeamMsg(TEAM_GREEN,COLOR_GREEN,str);
 
-        format(str,256,"* %s has captured one of your teams vehicle!",PlayerName(playerid));
+        format(str,128,"* %s has captured one of your teams vehicle!",PlayerName(playerid));
         CLyse__TeamMsg(TEAM_BLUE,RIVERSHELL_BLUE,str);
 
         iTeamCaptures[TEAM_GREEN]++;
@@ -979,7 +978,9 @@ CLyse__Checkpoint(playerid)
 
         if(iTeamCaptures[TEAM_GREEN] == LYSE_CAPS_TO_WIN)
         {
-            CLyse__End("The green team have won");
+            format(str, sizeof(str), "~y~Local Yocal Sports Edition~w~ has finished: ~g~~h~Green Team~w~ have won!");
+            NewsController->show(str);
+            CLyse__End();
             return;
         }
     }
@@ -1002,7 +1003,9 @@ CLyse__Checkpoint(playerid)
 
         if(iTeamCaptures[TEAM_BLUE] == LYSE_CAPS_TO_WIN)
         {
-            CLyse__End("The blue team have won");
+            format(str, sizeof(str), "~y~Local Yocal Sports Edition~w~ has finished: ~b~~h~Blue Team~w~ have won!");
+            NewsController->show(str);
+            CLyse__End();
             return;
         }
 

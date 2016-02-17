@@ -299,7 +299,8 @@ hayCheckFinish(playerid)
         }
 
         hayRemovePlayer(playerid);
-        format(szMsg, 128, "~r~~h~%s~w~ has finished the ~y~Haystack~w~ in %.2f seconds!", PlayerName(playerid), floatdiv(GetTickCount() - hayData[hayStartTime], 1000 ));
+        format(szMsg, sizeof(szMsg), "~y~Haystack~w~ has finished: ~r~~h~%s~w~ has won in ~r~~h~%.2f seconds~w~!",
+            Player(playerid)->nicknameString(), floatdiv(GetTickCount() - hayData[hayStartTime], 1000));
         NewsController->show(szMsg);
         return;
     }

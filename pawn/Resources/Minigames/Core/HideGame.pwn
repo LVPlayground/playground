@@ -1154,12 +1154,13 @@ stock CHideGame__onLeaveCommand( iPlayerID )
         // If the seeker leaves, the minigame is over.
         if(iSeekerPlayer == iPlayerID)
         {
-            SendClientMessageToAllEx(COLOR_ORANGE, "* The minigame has been cancelled because the seeker has left the minigame.");
+            new notice[128];
+            format(notice, sizeof(notice), "~y~Hide and Seek~w~ has finished: ~r~~h~The Seeker~w~ left the minigame!");
+            NewsController->show(notice);
             CHideGame__ResetVariables();
         }
 
         aHidePlayerState[ iPlayerID ] = HS_STATE_NONE;
-        SendClientMessage( iPlayerID, COLOR_GREEN, "* You've been signed out for the Hide and Seek minigame.");
 
         // Give him his money back.
         GivePlayerMoney( iPlayerID, 250 );
@@ -1248,7 +1249,9 @@ stock CHideGame__onPlayerDisconnect( iPlayerID )
     {
         if(iSeekerPlayer == iPlayerID)
         {
-            SendClientMessageToAllEx(COLOR_ORANGE, "* The minigame has been cancelled because the seeker has left the minigame.");
+            new notice[128];
+            format(notice, sizeof(notice), "~y~Hide and Seek~w~ has finished: ~r~~h~The Seeker~w~ left the minigame!");
+            NewsController->show(notice);
             CHideGame__ResetVariables();
         }
 
@@ -1285,7 +1288,9 @@ stock CHideGame__ThrowOut( iPlayerID, iReason )
         }
 
         // Send them a message.
-        SendClientMessageToAllEx( COLOR_ORANGE, "* The minigame has been cancelled because the seeker has left it.");
+        new notice[128];
+        format(notice, sizeof(notice), "~y~Hide and Seek~w~ has finished: ~r~~h~The Seeker~w~ left the minigame!");
+        NewsController->show(notice);
         CHideGame__ResetVariables();
     }
     else
@@ -1306,8 +1311,8 @@ stock CHideGame__ThrowOut( iPlayerID, iReason )
                 case 5: sReason = "Constant punching";
             }
 
-            format( sMessage, sizeof( sMessage ), "*** %s (Id:%d) has left Hide&Seek (reason: %s).", PlayerName( iPlayerID ), iPlayerID, sReason );
-            SendClientMessageToAllEx( COLOR_ORANGE, sMessage );
+            format(sMessage, sizeof(sMessage), "~y~Hide and Seek~w~ update: ~r~~h~%s~w~ left the minigame (%s)!", Player(iPlayerID)->nicknameString(), sReason);
+            NewsController->show(sMessage);
 
             ColorManager->releasePlayerMinigameColor(iPlayerID);
 
@@ -1335,8 +1340,8 @@ stock CHideGame__ThrowOut( iPlayerID, iReason )
                 case 5: sReason = "Constant punching";
             }
 
-            format( sMessage, sizeof( sMessage ), "*** %s (Id:%d) has left Hide&Seek (reason: %s).", PlayerName( iPlayerID ), iPlayerID, sReason );
-            SendClientMessageToAllEx( COLOR_ORANGE, sMessage );
+            format(sMessage, sizeof(sMessage), "~y~Hide and Seek~w~ update: ~r~~h~%s~w~ left the minigame (%s)!", Player(iPlayerID)->nicknameString(), sReason);
+            NewsController->show(sMessage);
 
             ColorManager->releasePlayerMinigameColor(iPlayerID);
 
@@ -1378,8 +1383,8 @@ stock CHideGame__ThrowOut( iPlayerID, iReason )
 
             CHideGame__LoadPos( iSeekerPlayer );
 
-            format( sMessage, sizeof( sMessage ), "*** %s (Id:%d) has won Hide&Seek!", PlayerName( iWinner ), iWinner );
-            SendClientMessageToAllEx( COLOR_YELLOW, sMessage );
+            format(sMessage, sizeof(sMessage), "~y~Hide and Seek~w~ has finished: ~r~~h~%s~w~ has won the minigame!", Player(iWinner)->nicknameString());
+            NewsController->show(sMessage);
 
             CHideGame__ResetVariables();
             SendClientMessage( iWinner, COLOR_GREEN, "You've won the Hide&Seek minigame and you've received $500.000!");

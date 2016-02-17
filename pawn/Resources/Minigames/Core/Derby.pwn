@@ -587,12 +587,10 @@ CDerby__PlayerExit(iPlayerID, iReason)
         // Has the player won?
         if(g_DerbyData[iDerbyID][2] == 1)
         {
-            format(szMessage,128,"* %s has won the %s!",PlayerName(iPlayerID),CDerby__GetName(iDerbyID));
+            format(szMessage, sizeof(szMessage), "~y~%s~w~ has finished: ~r~~h~%s~w~ has won!", CDerby__GetName(iDerbyID), Player(iPlayerID)->nicknameString());
+            NewsController->show(szMessage);
             GivePlayerMoney(iPlayerID, 10000);
             SendClientMessage(iPlayerID,COLOR_GREEN,"* You won the derby and received $10.000!");
-
-            SendClientMessageToAllEx(COLOR_WHITE, szMessage);
-
             WonMinigame[iPlayerID]++;
         }
     }

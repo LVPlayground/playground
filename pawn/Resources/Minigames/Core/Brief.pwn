@@ -197,8 +197,9 @@ CBrief__Checkpoint(playerid)
             WonMinigame[playerid]++;
             GivePlayerMoney(playerid,2000000);
             SendClientMessage(playerid,COLOR_PINK,"You have successfully delivered the briefcase! Here is your $2,000,000.");           
-            format(str,128,"%s has delivered the briefcase. Minigame over!",PlayerName(playerid));
-            CBrief__Cancel(str);
+            format(str, sizeof(str), "~y~Capture the Briefcase~w~ has finished: ~r~~h~%s~w~ has deliverd the briefcase!", Player(playerid)->nicknameString());
+            NewsController->show(str);
+            CBrief__Cancel();
             return 1;
         }
 
@@ -351,7 +352,7 @@ CBrief__Initalize(playerid)
 // This function is called when the
 // brief minigame gets cancelled for
 // whatever reason.
-CBrief__Cancel(reason[] = "")
+CBrief__Cancel()
 {
     for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
     {
@@ -375,12 +376,6 @@ CBrief__Cancel(reason[] = "")
         }
 
         isPlayerBrief[i] = 0;
-    }
-
-    if (strlen(reason) > 0) {
-        new str[256];
-        format(str,256,"* Capture Briefcase has finished: {33AA33}%s",reason);
-        SendClientMessageToAllEx(Color::Information, str);
     }
 
     briefCasePlayer = -1;

@@ -58,6 +58,10 @@ enum MinigameType {
     // their vehicles in order to win.
     DerbyMinigame,
 
+    // Hide and Seek is a fun minigame where a seeker tries to find players who tried to hide in the
+    // environment of a certain map.
+    HideAndSeekMinigame,
+
     // If we cannot determine what kind of minigame the player is using, return Unknown.
     UnknownMinigame
 };

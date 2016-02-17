@@ -289,6 +289,7 @@ CWWTW__OnExit(playerid, iReason)
     new iTeamID = WWTW_PlayerData[playerid][iPlayerTeam];
     aTeamCount[ iTeamID ] --;
 
+    new notice[128];
     if(iReason == 1)
     {
         CWWTW__ReleaseMarkersForPlayer(playerid);
@@ -303,13 +304,15 @@ CWWTW__OnExit(playerid, iReason)
             // the team is empty! other team wins!
             if(iTeamID == WWTW_TEAMATTACK)
             {
-                SendClientMessageToAllEx(COLOR_YELLOW, "* No players left in the Attack Team, the defenders win the minigame!");
+                format(notice, sizeof(notice), "~y~Walkies Weapons Team War~w~ has finished: ~b~~h~The Defenders~w~ have won!");
+                NewsController->show(notice);
                 CWWTW__End(WWTW_TEAMDEFEND);
                 return 1;
             }
             else
             {
-                SendClientMessageToAllEx(COLOR_YELLOW, "* No players left in the Defend Team, the attackers win the minigame!");
+                format(notice, sizeof(notice), "~y~Walkies Weapons Team War~w~ has finished: ~r~~h~The Attackers~w~ have won!");
+                NewsController->show(notice);
                 CWWTW__End(WWTW_TEAMATTACK);
                 return 1;
             }
@@ -340,13 +343,15 @@ CWWTW__OnExit(playerid, iReason)
                 // the team is empty! other team wins!
                 if(iTeamID == WWTW_TEAMATTACK)
                 {
-                    SendClientMessageToAllEx(COLOR_YELLOW, "* No players left in the Attack Team, the defenders win the minigame!");
+                    format(notice, sizeof(notice), "~y~Walkies Weapons Team War~w~ has finished: ~b~~h~The Defenders~w~ have won!");
+                    NewsController->show(notice);
                     CWWTW__End(WWTW_TEAMDEFEND);
                     return 1;
                 }
                 else
                 {
-                    SendClientMessageToAllEx(COLOR_YELLOW, "* No players left in the Defend Team, the attackers win the minigame!");
+                    format(notice, sizeof(notice), "~y~Walkies Weapons Team War~w~ has finished: ~r~~h~The Attackers~w~ have won!");
+                    NewsController->show(notice);
                     CWWTW__End(WWTW_TEAMATTACK);
                     return 1;
                 }

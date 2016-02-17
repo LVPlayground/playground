@@ -270,9 +270,9 @@ stock PlayerLigtUitMiniGame(playerId, reason) {
                     // minigame variables, hand out the price money, raise their won minigames statistic
                     // and respawn them!
                     if (MinigameTypeInfo[Progress] > 1) {
-                        format(notice, sizeof(notice), "*** %s has won the %s!", Player(contestant)->nicknameString(),
-                            ReturnMinigameName(minigame));
-                        SendClientMessageToAllEx(COLOR_ORANGE, notice);
+                        format(notice, sizeof(notice), "~y~%s~w~ has finished: ~r~~h~%s~w~ has won!",
+                            ReturnMinigameName(minigame), Player(contestant)->nicknameString());
+                        NewsController->show(notice);
 
                         PlayerInfo[contestant][PlayerStatus] = STATUS_NONE;
                         MinigameTypeInfo[Players] = 0;

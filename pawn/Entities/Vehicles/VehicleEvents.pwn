@@ -105,13 +105,6 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
             return 1;
         }
 
-        sprayTagOnVehicleSpawn(vehicleId);
-        CBomb__ResetVehicleData(vehicleId);
-        CCrush__Reset(vehicleId);
-        CShell__VehicleSpawn(vehicleId);
-        CTheft__VehicleSpawn(vehicleId);
-        CLyse__VehicleSpawn(vehicleId);
-
         // If the vehicle had a nitrous oxide engine, we have to recreate it.
         if (Vehicle(vehicleId)->hasNitrousOxideEngine() == true)
             AddVehicleComponent(vehicleId, 1010);
@@ -132,6 +125,15 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
         // Place the vehicle in the correct interior and world.
         LinkVehicleToInterior(vehicleId, Vehicle(vehicleId)->interiorId());
         SetVehicleVirtualWorld(vehicleId, 0 /* World::MainWorld */);
+
+        // Further handling for other features.
+        sprayTagOnVehicleSpawn(vehicleId);
+        CBomb__ResetVehicleData(vehicleId);
+        CCrush__Reset(vehicleId);
+        CShell__VehicleSpawn(vehicleId);
+        CTheft__VehicleSpawn(vehicleId);
+        CLyse__VehicleSpawn(vehicleId);
+        CMap__VehicleSpawn(vehicleId);
 
         return 1;
     }

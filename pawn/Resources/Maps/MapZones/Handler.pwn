@@ -829,9 +829,8 @@ GetPlayerMapZone(playerid)
 // to the same virtual world to match the map
 AddMapVehicle(mapzid, vehicletype, Float:fPosX, Float:fPosY, Float:fPosZ, Float:fRot, color1 = -1, color2 = -1, respawn_delay = 125)
 {
-    new iVehicleID = VehicleManager->createVehicle(vehicletype, fPosX, fPosY, fPosZ, fRot, color1, color2);
     new n_WorldID = mapzid + 1000;
-    SetVehicleVirtualWorld(iVehicleID, n_WorldID);
+    new iVehicleID = VehicleManager->createVehicle(vehicletype, fPosX, fPosY, fPosZ, fRot, color1, color2, 0, n_WorldID);
 
     for (new i = 0; i < MAX_MAP_VEHICLES; i++) {
         if (Map_Zone[mapzid][Vehicle_Id][i] != 0) continue;
@@ -852,6 +851,17 @@ CMap__VehicleDeath(vehicleId) {
             if (Map_Zone[mapZoneId][Vehicle_Id][i] == vehicleId) {
                 new worldId = mapZoneId + 1000;
                 SetVehicleToRespawn(vehicleId);
+                SetVehicleVirtualWorld(vehicleId, worldId);
+            }
+        }
+    }
+}
+
+CMap__VehicleSpawn(vehicleId) {
+    for (new mapZoneId = 0; mapZoneId < MAX_MAP_AREAS; mapZoneId++) {
+        for (new i = 0; i < MAX_MAP_VEHICLES; i++) {
+            if (Map_Zone[mapZoneId][Vehicle_Id][i] == vehicleId) {
+                new worldId = mapZoneId + 1000;
                 SetVehicleVirtualWorld(vehicleId, worldId);
             }
         }

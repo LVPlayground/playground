@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const GeoRectangle = require('world/geometry/geo_circle.js');
+const GeoRectangle = require('world/geometry/geo_rectangle.js');
 
 // A geometric point effectively is a rectangle at a single point, having no explicit width and
 // height and thus represented solely with its X and Y coordinates.

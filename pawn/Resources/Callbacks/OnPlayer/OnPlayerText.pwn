@@ -158,14 +158,20 @@ public OnPlayerText(playerid, text[]) {
         if (g_Ignore[subjectId][playerid] == true)
             continue;
 
-        if (GetPlayerVirtualWorld(subjectId) != GetPlayerVirtualWorld(playerid)
-            && (PlayerSettings(subjectId)->isAllVirtualWorldChatEnabled() == false
-            || Player(subjectId)->isAdministrator() == false))
-            continue;
+        if (GetPlayerVirtualWorld(subjectId) == GetPlayerVirtualWorld(playerid)) {
+            format(message, sizeof(message), "{%06x}[%d] %s: {FFFFFF}%s",
+                ColorManager->playerColor(playerid) >>> 8, playerid, Player(playerid)->nicknameString(), text);
+            SendClientMessage(subjectId, Color::Information, message);
+        }
 
-        format(message, sizeof(message), "{%06x}[%d] %s: {FFFFFF}%s",
-            ColorManager->playerColor(playerid) >>> 8, playerid, Player(playerid)->nicknameString(), text);
-        SendClientMessage(subjectId, Color::Information, message);
+        else if (GetPlayerVirtualWorld(subjectId) != GetPlayerVirtualWorld(playerid)
+            && PlayerSettings(subjectId)->isAllVirtualWorldChatEnabled() == true
+            && Player(subjectId)->isAdministrator() == true) {
+            format(message, sizeof(message), "{%06x}[World:%d] [%d] %s: {FFFFFF}%s",
+                GetPlayerVirtualWorld(playerid), ColorManager->playerColor(playerid) >>> 8, playerid,
+                Player(playerid)->nicknameString(), text);
+            SendClientMessage(subjectId, Color::Information, message);
+        }
     }
 
     return 0;

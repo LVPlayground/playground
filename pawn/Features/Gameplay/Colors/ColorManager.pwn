@@ -16,7 +16,7 @@ enum _: PlayerColorIndex {
     // The color associated with the gang they have joined.
     GangColorIndex,
 
-    // The color which overrides all other values. Should be very sparsely used.
+    // The color which overrides all above values. Should be very sparsely used.
     OverrideColorIndex,
 
     // The color associated with the minigame they're playing.
@@ -63,18 +63,18 @@ new g_defaultPlayerColors[200] = {
  * - Default player color, based on his Id;
  * - Custom player color (e.g. VIP's nickname color);
  * - Gang color;
+ * - Override colors (e.g. the chase in main world);
  * - Minigame color (e.g. to distinguish two different teams).
- * - Override colors (e.g. the pause handler).
  *
  * @author Manuele "Kase" Macchia <kaseify@gmail.com>
  * @author Russell Krupke <russell@sa-mp.nl>
  */
 class ColorManager {
     // The value we use to identify unused slots in the player's color stack.
-    const InvalidColorId = -1;
+    const InvalidColorId = 0xFFFFFFFF;
 
     // A stack containing the colors which could apply to this user, in reversed order of priority
-    // (index [0] is their default color, whereas index[4] is their override color).
+    // (index [0] is their default color, whereas index[4] is their minigame color).
     new m_playerColorStack[MAX_PLAYERS][5];
 
     // The index in the player's color stack where they're currently at.

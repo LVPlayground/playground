@@ -23,9 +23,6 @@ class GeoPlane {
   constructor({ maxChildren = DEFAULT_MAX_CHILDREN, minChildren = Math.ceil(0.4 * maxChildren) } = {}) {
     this.root_ = new GeoPlaneNode(null /* value */);
 
-    if (maxChildren - minChildren < minChildren)
-      throw new Error('Disbalance between minimum and maximum number of children.');
-
     this.maxChildren_ = maxChildren;
     this.minChildren_ = minChildren;
   }
@@ -74,6 +71,48 @@ class GeoPlane {
     // Extend the boundary boxes of all nodes upwards of |level| with that of |newNode|.
     for (; level >= 0; --level)
       insertionPath[level].extendBoundingBox(newNode);
+  }
+
+  // Finds all nodes on the plane that intersect with |obj|, which must be a GeoObject. NULL will be
+  // returned if there are no nodes that intersect with |obj|.
+  find(obj) {
+    const boundingBox = obj.boundingBox();
+    if (!BoundingBoxUtil.intersects(boundingBox, this.root_.boundingBox))
+      return null;
+
+    let node = this.root_,
+        queue = [],
+        result = [];
+
+    do {
+      node.children.forEach(child => {
+        if (!BoundingBoxUtil.intersects(boundingBox, child.boundingBox))
+          return;
+
+        if (child.isLeaf) {
+          result.push(child.value);
+        } else if (BoundingBoxUtil.contains(boundingBox, child.boundingBox)) {
+          // |boundingBox| contains the |child| and all child-nodes. Iteratively add them to the
+          // |result| array because we know that all will apply.
+          let innerQueue = [],
+              innerNode = child;
+
+          do {
+            if (innerNode.isLeaf)
+              result.push(innerNode.value);
+            else
+              innerQueue.push(...innerNode.children);
+
+          } while (innerNode = innerQueue.pop());
+
+        } else {
+          queue.push(child);
+        }
+      });
+
+    } while (node = queue.pop());
+
+    return result.length ? result : null;
   }
 
   // Determines the ideal insertion path for an object having |boundingBox| in the tree. Nodes will

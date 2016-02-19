@@ -917,6 +917,7 @@ OnPlayerEnterMapZone(playerid,mapzid)
     g_MapPlayerCount[mapzid]++;
 
     SetPlayerInterior(playerid, 0);
+    g_MapSeconds[playerid] = Time->currentTime();
 
     SavePlayerGuns(playerid);
     ResetPlayerWeapons(playerid);
@@ -1086,7 +1087,7 @@ MapZoneCheckpointUpdate(playerid)
     SendClientMessage(playerid,COLOR_PINK,str);
 
     // Format the gametext
-    format(str,256,"~w~%s:~n~~y~Speed Bonus:$%d~n~~b~Time Taken: %d seconds~n~~g~Reward: $%d",
+    format(str,256,"~w~%s:~n~~y~Speed Bonus: $%d~n~~b~Time Taken: %d seconds~n~~g~Reward: $%d",
     Map_Zone[g_MapZone[playerid]][Map_Name],g_HSpeedCount[playerid]*10,timetaken,reward);
     ShowBoxForPlayer(playerid, str);
 

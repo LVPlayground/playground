@@ -364,7 +364,10 @@ stock IsPlayerMinigameFree(playerId) {
 
 stock IsPlayerInMinigame(playerId) {
     if (IsPlayerStatusMinigame(playerId) && MinigameTypeInfo[Progress] > 1)
-        return 1 ; 
+        return 1;
+
+    if (IsPlayerInMapZone(playerId))
+        return 1;
 
     if (waterFightIsPlayerPlaying(playerId))
         return 1;

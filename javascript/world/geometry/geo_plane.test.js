@@ -19,7 +19,6 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
     [75, 75], [85, 85], [95, 95]
   ];
 
-
   // Utility function for generating a random rectangle.
   const createRandomCoord = () => Math.floor(Math.random() * 20);
   const createRectangle = () => new GeoRectangle(createRandomCoord(), createRandomCoord(),
@@ -91,6 +90,106 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
         { boundingBox: [0, 10, 90, 20], height: 1, children: [ [0, 10, 40, 20], [50, 10, 90, 20] ] }
       ]
     });
+  });
+
+  it('should return NULL when no results could be found', assert => {
+    const plane = new GeoPlane({ maxChildren: 4 });
+    referencePoints.forEach(point => plane.insert(new GeoPoint(...point)));
+
+    assert.isNull(plane.find(new GeoRectangle(100, 100, 10, 10)));
+    assert.isNull(plane.find(new GeoRectangle(-10, -10, 0, 0)));
+    assert.isNull(plane.find(new GeoRectangle(51, 51, 1, 1)));
+  });
+
+  it('should be able to find points located within a rectangle', assert => {
+    const plane = new GeoPlane({ maxChildren: 4 }),
+          points = {};
+
+    referencePoints.forEach(position => {
+      const point = new GeoPoint(...position);
+
+      points[point.x] = points[point.x] || {};
+      points[point.x][point.y] = point;
+
+      plane.insert(point);
+    });
+
+    assert.deepEqual(plane.find(new GeoRectangle(40, 20, 40, 50)), [
+      points[70][70], points[45][70], points[60][60], points[75][25], points[70][20], points[50][25],
+      points[45][20], points[75][50], points[70][45], points[60][35], points[45][45], points[50][50]
+    ]);
+
+    assert.deepEqual(plane.find(new GeoRectangle(0, 0, 10, 100)), [
+      points[0][75], points[10][60], points[10][85], points[0][25], points[10][10],
+      points[0][0], points[10][35], points[0][50]
+    ]);
+
+    assert.deepEqual(plane.find(new GeoRectangle(60, 60, 15, 15)), [
+      points[70][70], points[75][75], points[60][60]
+    ]);
+  });
+
+  it('should be able to find rectangles for a given point', assert => {
+    const plane = new GeoPlane({ maxChildren: 4 }),
+          rectangles = {};
+
+    // Creates a rectangle with the given size, stores it in |points| and adds it to the |plane|.
+    const createRectangle = (x, y, w, h) => {
+      const rectangle = new GeoRectangle(x, y, w, h);
+
+      rectangles[rectangle.x] = rectangles[rectangle.x] || {};
+      rectangles[rectangle.x][rectangle.y] = rectangle;
+
+      plane.insert(rectangle);
+    };
+
+    for (let x = 0; x < 100; x += 10) {
+      for (let y = 0; y < 100; y += 10)
+        createRectangle(x, y, 10, 10);
+    }
+
+    for (let x = 1; x < 100; x += 15) {
+      for (let y = 1; y < 100; y += 15)
+        createRectangle(x, y, 15, 15);
+    }
+
+    for (let x = 2; x < 100; x += 20) {
+      for (let y = 2; y < 100; y += 20)
+        createRectangle(x, y, 20, 20);
+    }
+
+    // Utility function to sort an array of rectangles.
+    const sortRectangles = rectangles => {
+      return rectangles.sort((lhs, rhs) => {
+        if (lhs.x == rhs.x) return lhs.y < rhs.y ? -1 : 1;
+        return lhs.x < rhs.x ? -1 : 1;
+      });
+    }
+
+    // Test with a hundred random points, that also do a linear search over the registered |points|
+    // in order to figure out whether they're on the plane or not.
+    for (let attempt = 0; attempt < 100; ++attempt) {
+      const point = new GeoPoint(Math.floor(Math.random() * 100), Math.floor(Math.random() * 100)),
+            actual = plane.find(point),
+            expected = [];
+
+      for (let x in rectangles) {
+        for (let y in rectangles[x]) {
+          const boundingBox = rectangles[x][y].boundingBox();
+
+          if (point.x < boundingBox[0] || point.y < boundingBox[1] ||
+              point.x > boundingBox[2] || point.y > boundingBox[3])
+            continue;
+
+          expected.push(rectangles[x][y]);
+        }
+      }
+
+      // Sort both the |expected| array and the results of |plane.find()| to make sure that the
+      // deepEqual comparison is done on arrays of equal order.
+      assert.deepEqual(sortRectangles(actual), sortRectangles(expected));
+    }
+
   });
 
 });

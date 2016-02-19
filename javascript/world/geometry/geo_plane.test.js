@@ -199,7 +199,7 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
     const MAP_BOUNDARIES = [ -3000, -3000, 3000, 3000 ],
           FIND_ITERATIONS = 1000;
 
-    let plane = new GeoPlane(),
+    let plane = new GeoPlane({ maxChildren: 16 }),
         counter = 0;
 
     // Inserts a series of rectangles in |plane| of size [|width|, |height|].

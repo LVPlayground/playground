@@ -570,8 +570,9 @@ ShowMapZoneCheckpointForPlayer(playerid, iMapID)
         if(iPlayerRank == 1)
         {
             new szNews[128];
-            format(szNews, 128, "* %s has won the ~%s jump race!", PlayerName(playerid), Map_Zone[iMapID][Map_Name]);
-            SendClientMessageToAllEx(Color::Information, szNews);
+            format(szNews, sizeof(szNews), "~y~%s jump race~w~ has finished: ~r~~h~%s~w~ has won!",
+                Map_Zone[iMapID][Map_Name], Player(playerid)->nicknameString());
+            NewsController->show(szNews);
         }
 
         // Increase the number of players that have finished this race so we can calculate the position of other players accordingly
@@ -1083,8 +1084,9 @@ MapZoneCheckpointUpdate(playerid)
     // later by saving it and having a record system for each mapped zone.
 
     new str[256];
-    format(str,256,"* You have completed the %s map in %d seconds!",Map_Zone[g_MapZone[playerid]][Map_Name],timetaken);
-    SendClientMessage(playerid,COLOR_PINK,str);
+    format(str, sizeof(str), "~r~~h~%s~w~ has completed map ~y~%s~w~ in ~r~~h~%d seconds~w~!",
+        Player(playerid)->nicknameString(), Map_Zone[g_MapZone[playerid]][Map_Name], timetaken);
+    NewsController->show(str);
 
     // Format the gametext
     format(str,256,"~w~%s:~n~~y~Speed Bonus: $%d~n~~b~Time Taken: %d seconds~n~~g~Reward: $%d",

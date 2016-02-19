@@ -230,17 +230,19 @@ stock PlayerLigtUitMiniGame(playerId, reason) {
     else if (minigame == STATUS_SHIPTDM) {
         StopPlayerForShipTDM(playerId, reason);
 
-        new iHasSendMsg = 0;
+        new iHasSendMsg = 0, message[128];
         if (ShipTDM_CheckFinished()) {
             for (new contestant = 0; contestant <= PlayerManager->highestPlayerId(); ++contestant) {
                 if (PlayerInfo[contestant][PlayerStatus] == minigame) {
                     StopPlayerForShipTDM(contestant, FINISH);
 
                     if (ShipTDM_GetTeam(contestant) == 0 && !iHasSendMsg) {
-                        SendClientMessageToAllEx(COLOR_ORANGE, "The Da Nang Boys has won the Ship Team Deathmatch!");
+                        format(message, sizeof(message), "~y~Ship Team Deathmatch~w~ has finished: ~r~~h~The Da Nang Boys~w~ have won!");
+                        NewsController->show(message);
                         iHasSendMsg = 1;
                     } else if (iHasSendMsg == 0){
-                        SendClientMessageToAllEx(COLOR_ORANGE, "The Maffia has won the Ship Team Deathmatch!");
+                        format(message, sizeof(message), "~y~Ship Team Deathmatch~w~ has finished: ~r~~h~The Maffia~w~ have won!");
+                        NewsController->show(message);
                         iHasSendMsg = 1;
                     }
 

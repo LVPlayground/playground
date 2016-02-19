@@ -1095,7 +1095,8 @@ CRobbery__PlayerExit(playerid)
         if(casinoData[end] == 0)
         {
             format(iStr,128,"* %s has left the Casino Robbery.",PlayerName(playerid));
-            SendClientMessageToAllEx(COLOR_WHITE,iStr);
+            CRobbery__TeamMsg(ROBBERY_TEAMATTACK, COLOR_GREEN, iStr);
+            CRobbery__TeamMsg(ROBBERY_TEAMDEFEND, COLOR_GREEN, iStr);
 
             if(teamCount[casteam] == 0)
             {
@@ -1103,12 +1104,14 @@ CRobbery__PlayerExit(playerid)
                 if(casteam == 0)
                 {
                     casinoData[winners] = 1;
-                    SendClientMessageToAllEx(COLOR_YELLOW, "No players left in the Attack Team, the defenders win the robbery!");
+                    format(iStr, sizeof(iStr), "~y~Casino Robbery~w~ has finished: ~b~~h~The Defenders~w~ have won!");
+                    NewsController->show(iStr);
                 }
                 if(casteam == 1)
                 {
                     casinoData[winners] = 0;
-                    SendClientMessageToAllEx(COLOR_YELLOW, "No players left in the Defend Team, the attackers win the robbery!");
+                    format(iStr, sizeof(iStr), "~y~Casino Robbery~w~ has finished: ~r~~h~The Attackers~w~ have won!");
+                    NewsController->show(iStr);
                 }
 
                 CRobbery__End();

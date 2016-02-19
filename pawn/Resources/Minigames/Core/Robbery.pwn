@@ -844,7 +844,7 @@ CRobbery__Process()
     new notice[128];
     if(casinoData[timer] == 0) {
         // Defenders are winners!
-        format(notice, sizeof(notice), "~y~Casino Robbery~w~ has finished: ~b~~h~The Defenders~w~ have won!");
+        format(notice, sizeof(notice), "~y~Casino Robbery~w~ has finished: ~b~~h~Defenders~w~ have won!");
         NewsController->show(notice);
         casinoData[winners] = ROBBERY_TEAMDEFEND;
         CRobbery__End();
@@ -970,7 +970,7 @@ CRobbery__Process()
                     if(casinoData[finished] == teamCount[ROBBERY_TEAMATTACK])
                     {
                         // Win!
-                        format(string, sizeof(string), "~y~Casino Robbery~w~ has finished: ~r~~h~The Attackers~w~ have won!");
+                        format(string, sizeof(string), "~y~Casino Robbery~w~ has finished: ~r~~h~Attackers~w~ have won!");
                         NewsController->show(string);
                         casinoData[winners] = ROBBERY_TEAMATTACK;
                         CRobbery__End();
@@ -1104,13 +1104,13 @@ CRobbery__PlayerExit(playerid)
                 if(casteam == 0)
                 {
                     casinoData[winners] = 1;
-                    format(iStr, sizeof(iStr), "~y~Casino Robbery~w~ has finished: ~b~~h~The Defenders~w~ have won!");
+                    format(iStr, sizeof(iStr), "~y~Casino Robbery~w~ has finished: ~b~~h~Defenders~w~ have won!");
                     NewsController->show(iStr);
                 }
                 if(casteam == 1)
                 {
                     casinoData[winners] = 0;
-                    format(iStr, sizeof(iStr), "~y~Casino Robbery~w~ has finished: ~r~~h~The Attackers~w~ have won!");
+                    format(iStr, sizeof(iStr), "~y~Casino Robbery~w~ has finished: ~r~~h~Attackers~w~ have won!");
                     NewsController->show(iStr);
                 }
 

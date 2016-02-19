@@ -237,11 +237,11 @@ stock PlayerLigtUitMiniGame(playerId, reason) {
                     StopPlayerForShipTDM(contestant, FINISH);
 
                     if (ShipTDM_GetTeam(contestant) == 0 && !iHasSendMsg) {
-                        format(message, sizeof(message), "~y~Ship Team Deathmatch~w~ has finished: ~r~~h~The Da Nang Boys~w~ have won!");
+                        format(message, sizeof(message), "~y~Ship Team Deathmatch~w~ has finished: ~r~~h~Da Nang Boys~w~ have won!");
                         NewsController->show(message);
                         iHasSendMsg = 1;
                     } else if (iHasSendMsg == 0){
-                        format(message, sizeof(message), "~y~Ship Team Deathmatch~w~ has finished: ~r~~h~The Maffia~w~ have won!");
+                        format(message, sizeof(message), "~y~Ship Team Deathmatch~w~ has finished: ~r~~h~Maffia~w~ have won!");
                         NewsController->show(message);
                         iHasSendMsg = 1;
                     }

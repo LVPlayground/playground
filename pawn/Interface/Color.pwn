@@ -68,6 +68,7 @@ class Color {
     // Colors frequently used in minigames.
     public const MinigameTransparentRed = 0xDC143C00;
     public const MinigameTransparentBlue = 0x33CCFF00;
+    public const MinigameTransparentGreen = 0x33AA3300;
 
     // Colors related to statuses of special players.
     public const AdministratorColor = 0xFFFF00AA;

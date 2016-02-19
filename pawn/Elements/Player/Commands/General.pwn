@@ -28,7 +28,7 @@ lvp_Minigames(playerid, params[])
 // Command: minigaming
 // Desc: Shows the players that are currently in a minigame
 lvp_minigaming(playerid, params[]) {
-    new minigaming[1800];
+    new minigaming[1800], colorBuffer[2][Color::TextualColorLength];
 
     for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
         if (Player(subjectId)->isConnected() == false || Player(subjectId)->isNonPlayerCharacter() == true)
@@ -37,96 +37,147 @@ lvp_minigaming(playerid, params[]) {
         if (!IsPlayerInMinigame(subjectId))
             continue;
 
+        if (IsPlayerInMapZone(subjectId)) {
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s jump\t-", minigaming,
+                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerMinigameName(subjectId));
+            continue;
+        }
+
 #if Feature::DisableRaces == 0
         if (CRace__IsRacing(subjectId)) {
-            format(minigaming, sizeof(minigaming), "%s\r\n%s (Id:%d) - race", minigaming,
-                Player(subjectId)->nicknameString(), subjectId);
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s race\t-", minigaming,
+                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerMinigameName(subjectId));
             continue;
         }
 #endif
 
         if (CDerby__GetPlayerState(subjectId) >= DERBY_STATE_COUNTDOWN) {
-            format(minigaming, sizeof(minigaming), "%s\r\n%s (Id:%d) - derby", minigaming,
-                Player(subjectId)->nicknameString(), subjectId);
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s derby\t-", minigaming,
+                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerMinigameName(subjectId));
             continue;
         }
 
         if (PlayerInfo[subjectId][PlayerStatus] >= STATUS_BATFIGHT && PlayerInfo[subjectId][PlayerStatus] <= STATUS_ISLANDDM) {
-            format(minigaming, sizeof(minigaming), "%s\r\n%s (Id:%d) - deathmatch", minigaming,
-                Player(subjectId)->nicknameString(), subjectId);
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t-", minigaming,
+                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerMinigameName(subjectId));
             continue;
         }
 
         if (CHideGame__GetPlayerState(subjectId) == HS_STATE_PLAYING) {
-            format(minigaming, sizeof(minigaming), "%s\r\n%s (Id:%d) - has", minigaming,
-                Player(subjectId)->nicknameString(), subjectId);
+            Color->toString(Color::MinigameTransparentRed, colorBuffer[0], sizeof(colorBuffer[]));
+            Color->toString(Color::White, colorBuffer[1], sizeof(colorBuffer[]));
+
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t{%s}%s", minigaming,
+                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerMinigameName(subjectId),
+                CHideGame__SeekerId() == subjectId ? colorBuffer[0] : colorBuffer[1],
+                CHideGame__SeekerId() == subjectId ? "Seeker" : "Hider");
             continue;
         }
 
         if (CRobbery__GetPlayerStatus(subjectId) == ROBSTATUS_PLAYING) {
-            format(minigaming, sizeof(minigaming), "%s\r\n%s (Id:%d) - robbery", minigaming,
-                Player(subjectId)->nicknameString(), subjectId);
+            Color->toString(Color::MinigameTransparentRed, colorBuffer[0], sizeof(colorBuffer[]));
+            Color->toString(Color::MinigameTransparentBlue, colorBuffer[1], sizeof(colorBuffer[]));
+
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t{%s}%s", minigaming,
+                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerMinigameName(subjectId),
+                CRobbery__GetPlayerTeam(subjectId) == ROBBERY_TEAMATTACK ? colorBuffer[0] : colorBuffer[1],
+                CRobbery__GetPlayerTeam(subjectId) == ROBBERY_TEAMATTACK ? "Attackers" : "Defenders");
             continue;
         }
 
 #if Feature::EnableFightClub == 0
         if (CFightClub__IsPlayerFighting(subjectId)) {
-            format(minigaming, sizeof(minigaming), "%s\r\n%s (Id:%d) - fightclub", minigaming,
-                Player(subjectId)->nicknameString(), subjectId);
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t-", minigaming,
+                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerMinigameName(subjectId));
             continue;
         }
 #endif
 
         if (waterFightIsPlayerPlaying(subjectId)) {
-            format(minigaming, sizeof(minigaming), "%s\r\n%s (Id:%d) - waterfight", minigaming,
-                Player(subjectId)->nicknameString(), subjectId);
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t-", minigaming,
+                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerMinigameName(subjectId));
             continue;
         }
 
         if (rwIsPlayerSignedUp(subjectId) && rwGetState() == 3) {
-            format(minigaming, sizeof(minigaming), "%s\r\n%s (Id:%d) - rwtw", minigaming,
-                Player(subjectId)->nicknameString(), subjectId);
+            Color->toString(Color::MinigameTransparentRed, colorBuffer[0], sizeof(colorBuffer[]));
+            Color->toString(Color::MinigameTransparentBlue, colorBuffer[1], sizeof(colorBuffer[]));
+
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t{%s}%s", minigaming,
+                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerMinigameName(subjectId),
+                rwGetPlayerTeam(subjectId) == RW_TEAM_RED ? colorBuffer[0] : colorBuffer[1],
+                rwGetPlayerTeam(subjectId) == RW_TEAM_RED ? "Red Team" : "Blue Team");
             continue;
         }
 
 #if Feature::DisableHay == 0
         if (hayHasPlayerSignedUp(subjectId)) {
-            format(minigaming, sizeof(minigaming), "%s\r\n%s (Id:%d) - haystack", minigaming,
-                Player(subjectId)->nicknameString(), subjectId);
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t-", minigaming,
+                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerMinigameName(subjectId));
             continue;
         }
 #endif
 
         if (CLyse__GetPlayerState(subjectId) != LYSE_STATE_NONE) {
-            format(minigaming, sizeof(minigaming), "%s\r\n%s (Id:%d) - lyse", minigaming,
-                Player(subjectId)->nicknameString(), subjectId);
+            Color->toString(Color::MinigameTransparentBlue, colorBuffer[0], sizeof(colorBuffer[]));
+            Color->toString(Color::MinigameTransparentGreen, colorBuffer[1], sizeof(colorBuffer[]));
+
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t{%s}%s", minigaming,
+                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerMinigameName(subjectId),
+                CLyse__GetPlayerTeam(subjectId) == TEAM_BLUE ? colorBuffer[0] : colorBuffer[1],
+                CLyse__GetPlayerTeam(subjectId) == TEAM_BLUE ? "Blue Team" : "Green Team");
             continue;
         }
 
         if (isPlayerBrief[subjectId] && briefStatus == BRIEF_STATE_RUNNING) {
-            format(minigaming, sizeof(minigaming), "%s\r\n%s (Id:%d) - brief", minigaming,
-                Player(subjectId)->nicknameString(), subjectId);
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t-", minigaming,
+                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerMinigameName(subjectId));
             continue;
         }
 
         if (g_RivershellPlayer[subjectId] && g_RivershellState == RIVERSHELL_STATE_RUNNING) {
-            format(minigaming, sizeof(minigaming), "%s\r\n%s (Id:%d) - rivershell", minigaming,
-                Player(subjectId)->nicknameString(), subjectId);
+            Color->toString(Color::MinigameTransparentBlue, colorBuffer[0], sizeof(colorBuffer[]));
+            Color->toString(Color::MinigameTransparentGreen, colorBuffer[1], sizeof(colorBuffer[]));
+
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t{%s}%s", minigaming,
+                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerMinigameName(subjectId),
+                p_Team[subjectId] == TEAM_BLUE ? colorBuffer[0] : colorBuffer[1],
+                p_Team[subjectId] == TEAM_BLUE ? "Team Blue" : "Team Green");
             continue;
         }
 
         if (WWTW_PlayerData[subjectId][iStatus] == 2) {
-            format(minigaming, sizeof(minigaming), "%s\r\n%s (Id:%d) - wwtw", minigaming,
-                Player(subjectId)->nicknameString(), subjectId);
+            Color->toString(Color::MinigameTransparentRed, colorBuffer[0], sizeof(colorBuffer[]));
+            Color->toString(Color::MinigameTransparentBlue, colorBuffer[1], sizeof(colorBuffer[]));
+
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t{%s}%s", minigaming,
+                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerMinigameName(subjectId),
+                WWTW_PlayerData[subjectId][iPlayerTeam] == WWTW_TEAMATTACK ? colorBuffer[0] : colorBuffer[1],
+                WWTW_PlayerData[subjectId][iPlayerTeam] == WWTW_TEAMATTACK ? "Attackers" : "Defenders");
             continue;
         }
     }
 
     if (!strlen(minigaming))
-        SendClientMessage(playerid, Color::Error, "No player is currently in a minigame!");
+        SendClientMessage(playerid, Color::Error, "* No player is currently in a minigame.");
     else {
-        strdel(minigaming, 0, 2); /* strip the first \r\n */
-        ShowPlayerDialog(playerid, 30000, DIALOG_STYLE_MSGBOX, "Players minigaming", minigaming, "Okay", "");
+        strdel(minigaming, 0, 1); /* strip the first \n */
+        strins(minigaming, "Player\tMinigame\tTeam\n", 0); /* insert tab headers */
+        ShowPlayerDialog(playerid, 30000, DIALOG_STYLE_TABLIST_HEADERS, "Players in Minigames", minigaming, "Okay", "");
     }
 
     #pragma unused params

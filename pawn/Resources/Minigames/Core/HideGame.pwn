@@ -1746,3 +1746,7 @@ CHideGame__LoadPos(playerid)
     LoadPlayerGameState(playerid);
     return 1;
 }
+
+CHideGame__SeekerId() {
+    return iSeekerPlayer;
+}

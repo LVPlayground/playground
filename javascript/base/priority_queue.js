@@ -18,8 +18,13 @@ class PriorityQueue {
     });
   }
 
+  // Returns the top-most item from the priority queue, or NULL if the queue is empty.
+  peek() {
+    return this.items_[0];
+  }
+
   // Removes the top-most item from the priority queue. Returns the previously top-most item from
-  // the queue, or NULL in case the queue was empty.
+  // the queue, or NULL in case the queue is empty.
   pop() {
     return this.items_.shift();
   }

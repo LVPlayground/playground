@@ -17,21 +17,25 @@ describe('PriorityQueue', it => {
     const queue = new PriorityQueue((lhs, rhs) => lhs > rhs);
 
     [5, 10, 2, 1].forEach(value => queue.push(value));
-    [1, 2, 5, 10].forEach(expected => assert.equal(queue.pop(), expected));
+    [1, 2, 5, 10].forEach(expected => {
+      assert.equal(queue.peek(), expected);
+      assert.equal(queue.pop(), expected);
+    });
   });
 
   it('should prioritize the items with a descending comparator', assert => {
     const queue = new PriorityQueue((lhs, rhs) => lhs < rhs);
 
     [5, 10, 2, 1].forEach(value => queue.push(value));
-    [10, 5, 2, 1].forEach(expected => assert.equal(queue.pop(), expected));
+    [10, 5, 2, 1].forEach(expected => {
+      assert.equal(queue.peek(), expected);
+      assert.equal(queue.pop(), expected);
+    });
   });
 
   it('should prioritize items when inserted simultaneously', assert => {
     const queue = new PriorityQueue((lhs, rhs) => lhs > rhs);
     queue.push(5, 10, 2, 1);
-
-    console.log(queue.items_);
 
     [1, 2, 5, 10].forEach(expected => assert.equal(queue.pop(), expected));
   });

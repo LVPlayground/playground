@@ -192,4 +192,52 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
 
   });
 
+  it('should be able to perform rectangles-for-point operations quickly', assert => {
+    // This test acts as a performance test to measure how long insertion operations take for large
+    // numbers of rectangles, as well as find operations for finding intersecting rectangles for a
+    // given point. Note that finding rectangles for rectangles would be equally fast.
+    const MAP_BOUNDARIES = [ -3000, -3000, 3000, 3000 ],
+          FIND_ITERATIONS = 1000;
+
+    let plane = new GeoPlane(),
+        counter = 0;
+
+    // Inserts a series of rectangles in |plane| of size [|width|, |height|].
+    const insertRectangles = (width, height) => {
+      for (let x = MAP_BOUNDARIES[0]; x < MAP_BOUNDARIES[2]; x += width) {
+        for (let y = MAP_BOUNDARIES[1]; y < MAP_BOUNDARIES[3]; y += height) {
+          plane.insert(new GeoRectangle(x, y, width, height));
+          counter++;
+        }
+      }
+    };
+
+    const insertionStart = highResolutionTime();
+
+    insertRectangles(1000, 1000);  //   36
+    insertRectangles( 600,  600);  //  100
+    insertRectangles( 300,  300);  //  400
+    insertRectangles( 100,  100);  // 3600
+
+    const insertionEnd = highResolutionTime();
+    const findStart = highResolutionTime();
+
+    for (let iteration = 0; iteration < FIND_ITERATIONS; ++iteration) {
+      const x = Math.random() * MAP_BOUNDARIES[2] + MAP_BOUNDARIES[0];
+      const y = Math.random() * MAP_BOUNDARIES[3] + MAP_BOUNDARIES[1];
+
+      const point = new GeoPoint(x, y);
+
+      assert.equal(plane.find(point).length, 4);
+    }
+
+    const findEnd = highResolutionTime();
+
+    const insertionTotal = Math.round((insertionEnd - insertionStart) * 100) / 100,
+          findTotal = Math.round((findEnd - findStart) * 100) / 100;
+
+    console.log('[GeoPlane] Inserted ' + counter + ' nodes in ' + insertionTotal + 'ms, ' +
+        'found nodes for ' + FIND_ITERATIONS + ' points in ' + findTotal + 'ms.');
+  });
+
 });

@@ -189,7 +189,24 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
       // deepEqual comparison is done on arrays of equal order.
       assert.deepEqual(sortRectangles(actual), sortRectangles(expected));
     }
+  });
 
+  it('should be able to find the nearest neighbours to a point', assert => {
+    const plane = new GeoPlane({ maxChildren: 4 }),
+          points = {};
+
+    referencePoints.forEach(position => {
+      const point = new GeoPoint(...position);
+
+      points[point.x] = points[point.x] || {};
+      points[point.x][point.y] = point;
+
+      plane.insert(point);
+    });
+
+    assert.deepEqual(plane.nearest(new GeoPoint(50, 50), 5), [
+      points[50][50], points[45][45], points[35][35], points[60][60], points[60][35]
+    ]);
   });
 
   it('should be able to perform rectangles-for-point operations quickly', assert => {
@@ -197,13 +214,17 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
     // numbers of rectangles, as well as find operations for finding intersecting rectangles for a
     // given point. Note that finding rectangles for rectangles would be equally fast.
     const MAP_BOUNDARIES = [ -3000, -3000, 3000, 3000 ],
-          FIND_ITERATIONS = 1000;
+          FIND_ITERATIONS = 100000,
+          NEAREST_ITERATIONS = 1000,
+          NEAREST_COUNT = 100;
 
     let plane = new GeoPlane({ maxChildren: 16 }),
-        counter = 0;
+        counter = 0,
+        depth = 0;
 
     // Inserts a series of rectangles in |plane| of size [|width|, |height|].
     const insertRectangles = (width, height) => {
+      depth++;
       for (let x = MAP_BOUNDARIES[0]; x < MAP_BOUNDARIES[2]; x += width) {
         for (let y = MAP_BOUNDARIES[1]; y < MAP_BOUNDARIES[3]; y += height) {
           plane.insert(new GeoRectangle(x, y, width, height));
@@ -214,10 +235,12 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
 
     const insertionStart = highResolutionTime();
 
-    insertRectangles(1000, 1000);  //   36
-    insertRectangles( 600,  600);  //  100
-    insertRectangles( 300,  300);  //  400
-    insertRectangles( 100,  100);  // 3600
+    insertRectangles(1000, 1000);  //    36
+    insertRectangles( 600,  600);  //   100
+    insertRectangles( 300,  300);  //   400
+    insertRectangles( 100,  100);  //  3600
+    //insertRectangles(  50,   50);  // 14400
+    //insertRectangles(  25,   25);  // 57600
 
     const insertionEnd = highResolutionTime();
     const findStart = highResolutionTime();
@@ -228,16 +251,30 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
 
       const point = new GeoPoint(x, y);
 
-      assert.equal(plane.find(point).length, 4);
+      assert.equal(plane.find(point).length, depth);
     }
 
     const findEnd = highResolutionTime();
+    const nearestBegin = highResolutionTime();
+
+    for (let iteration = 0; iteration < NEAREST_ITERATIONS; ++iteration) {
+      const x = Math.random() * MAP_BOUNDARIES[2] + MAP_BOUNDARIES[0];
+      const y = Math.random() * MAP_BOUNDARIES[3] + MAP_BOUNDARIES[1];
+
+      const point = new GeoPoint(x, y);
+
+      assert.equal(plane.nearest(point, NEAREST_COUNT).length, NEAREST_COUNT);
+    }
+
+    const nearestEnd = highResolutionTime();
 
     const insertionTotal = Math.round((insertionEnd - insertionStart) * 100) / 100,
-          findTotal = Math.round((findEnd - findStart) * 100) / 100;
+          findTotal = Math.round((findEnd - findStart) * 100) / 100,
+          nearestTotal = Math.round((nearestEnd - nearestBegin) * 100) / 100;
 
-    console.log('[GeoPlane] Inserted ' + counter + ' nodes in ' + insertionTotal + 'ms, ' +
-        'found nodes for ' + FIND_ITERATIONS + ' points in ' + findTotal + 'ms.');
+    console.log('[GeoPlane] Insertion (' + counter + '): ' + insertionTotal + 'ms; find (' +
+        FIND_ITERATIONS + '): ' + findTotal + 'ms; nearest (' + NEAREST_ITERATIONS + ', ' +
+        NEAREST_COUNT + '): ' + nearestTotal + 'ms');
   });
 
 });

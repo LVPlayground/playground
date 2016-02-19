@@ -470,6 +470,10 @@ CLyse__SignPlayerOut(playerid)
     {
         new iTeam = CLyse__GetPlayerTeam(playerid);
 
+        CLyse__ResetPlayerData(playerid);
+        CLyse__LoadPlayerData(playerid);
+        g_LysePlayers--;
+
         iTeamCount[iTeam]--;
 
         if(CLyse__GetTeamCount(iTeam) <= 0)
@@ -479,20 +483,12 @@ CLyse__SignPlayerOut(playerid)
             {
                 format(notice, sizeof(notice), "~y~Local Yocal Sports Edition~w~ has finished: ~g~~h~Green Team~w~ have won!");
                 NewsController->show(notice);
-                CLyse__End();
             }else{
                 format(notice, sizeof(notice), "~y~Local Yocal Sports Edition~w~ has finished: ~b~~h~Blue Team~w~ have won!");
                 NewsController->show(notice);
-                CLyse__End();
             }
+            CLyse__End();
         }
-
-
-        CLyse__ResetPlayerData(playerid);
-
-        CLyse__LoadPlayerData(playerid);
-
-        g_LysePlayers--;
 
     }
     return 1;

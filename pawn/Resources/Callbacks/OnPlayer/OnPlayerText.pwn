@@ -167,7 +167,7 @@ public OnPlayerText(playerid, text[]) {
         else if (GetPlayerVirtualWorld(subjectId) != GetPlayerVirtualWorld(playerid)
             && PlayerSettings(subjectId)->isAllVirtualWorldChatEnabled() == true
             && Player(subjectId)->isAdministrator() == true) {
-            format(message, sizeof(message), "{%06x}[World:%d] [%d] %s: {FFFFFF}%s",
+            format(message, sizeof(message), "{FFFFFF}(World: %d) {%06x}[%d] %s: {FFFFFF}%s",
                 GetPlayerVirtualWorld(playerid), ColorManager->playerColor(playerid) >>> 8, playerid,
                 Player(playerid)->nicknameString(), text);
             SendClientMessage(subjectId, Color::Information, message);

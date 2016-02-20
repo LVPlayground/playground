@@ -1084,7 +1084,7 @@ MapZoneCheckpointUpdate(playerid)
     // later by saving it and having a record system for each mapped zone.
 
     new str[256];
-    format(str, sizeof(str), "~r~~h~%s~w~ has completed map ~y~%s~w~ in ~r~~h~%d seconds~w~!",
+    format(str, sizeof(str), "~r~~h~%s~w~ has completed map ~y~%s~w~ in ~p~%d seconds~w~!",
         Player(playerid)->nicknameString(), Map_Zone[g_MapZone[playerid]][Map_Name], timetaken);
     NewsController->show(str);
 

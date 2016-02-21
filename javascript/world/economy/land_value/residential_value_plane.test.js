@@ -20,6 +20,23 @@ describe('ResidentialValuePlane', it => {
         assert.equal(plane.getResidentialValueForLocation(...point), 0));
   });
 
+  it('assigns `3` values to the outskirts of the three big cities', assert => {
+    const outskirts = [
+      [1616, 2628],   // Las Venturas (1)
+      [2533, 1113],   // Las Ventuars (2)
+      [1667, 713],    // Las Ventuars (3)
+      [-2711, 40],    // San Fierro (1)
+      [-1625, 977],   // San Fierro (2)
+      [-2669, 1190],  // San Fierro (3)
+      [1294, -1192],  // Los Santos (1)
+      [2736, -1371],  // Los Santos (2)
+      [513, -1670]    // Los Santos (3)
+    ];
+
+    outskirts.forEach(point =>
+        assert.equal(plane.getResidentialValueForLocation(...point), 3));
+  });
+
   it('assigns `4` values to the centers of the three big cities', assert => {
     const cityCenters = [
       [2100, 1600],   // Las Venturas

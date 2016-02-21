@@ -33,5 +33,17 @@
   { "value": 4, "area": [937, -1746, 1531, -1286], "description": "Los Santos City Center" },
   { "value": 4, "area": [2100, -1890, 2507, -1422], "description": "Los Santos City Center" },
 
+  { "value": 3, "area": [-2932, -401, -1387, 1377], "description": "San Fierro outskirts" },
+  { "value": 3, "area": [1285, 849, 2745, 2568], "description": "Las Venturas outskirts" },
+  { "value": 3, "area": [886, 926, 1285, 2389], "description": "Las Venturas outskirts" },
+  { "value": 3, "area": [1336, 602, 2753, 858], "description": "Las Venturas outskirts" },
+  { "value": 3, "area": [2753, 806, 2898, 2611], "description": "Las Venturas outskirts" },
+  { "value": 3, "area": [1302, 2577, 2473, 2857], "description": "Las Venturas outskirts" },
+  { "value": 3, "area": [1090, 2585, 1302, 2832], "description": "Las Venturas outskirts" },
+  { "value": 3, "area": [106, -1984, 2957, -1150], "description": "Los Santos outskirts" },
+  { "value": 3, "area": [980, -2341, 2949, -1984], "description": "Los Santos outskirts" },
+  { "value": 3, "area": [1718, -1141, 2329, -963], "description": "Los Santos outskirts" },
+  { "value": 3, "area": [691, -1141, 1574, -980], "description": "Los Santos outskirts" },
+
   { "value": -1, "area": [0, 0, 0, 0], "description": "" }
 ]

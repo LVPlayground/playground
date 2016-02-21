@@ -31,27 +31,6 @@ class BoundingBoxUtil {
                (combinedBoundingBox[3] - combinedBoundingBox[1]);
   }
 
-  // Computes the intersection of the |boundingBoxes|. Returns an empty bounding box (not null) when
-  // the |boundingBoxes| do not intersect with each other.
-  static computeIntersection(...boundingBoxes) {
-    let intersectionBoundingBox = [ Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY,
-                                    Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY ];
-
-    boundingBoxes.forEach(boundingBox => {
-      intersectionBoundingBox[0] = Math.max(intersectionBoundingBox[0], boundingBox[0]);
-      intersectionBoundingBox[1] = Math.max(intersectionBoundingBox[1], boundingBox[1]);
-
-      intersectionBoundingBox[2] = Math.min(intersectionBoundingBox[2], boundingBox[2]);
-      intersectionBoundingBox[3] = Math.min(intersectionBoundingBox[3], boundingBox[3]);
-    });
-
-    if (intersectionBoundingBox[2] - intersectionBoundingBox[0] <= 0 ||
-        intersectionBoundingBox[3] - intersectionBoundingBox[1] <= 0)
-      return [0, 0, 0, 0];
-
-    return intersectionBoundingBox;
-  }
-
 };
 
 exports = BoundingBoxUtil;

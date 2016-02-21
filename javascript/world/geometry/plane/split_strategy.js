@@ -13,6 +13,24 @@ const compareMinimumX = (lhs, rhs) =>
 const compareMinimumY = (lhs, rhs) =>
     lhs.boundingBox[1] - rhs.boundingBox[1];
 
+// Computes the area of the intersection between |boundingBox| and |secondBoundingBox|.
+const computeIntersectionArea = (boundingBox, secondBoundingBox) => {
+  const intersectionBox = [
+    Math.max(boundingBox[0], secondBoundingBox[0]),
+    Math.max(boundingBox[1], secondBoundingBox[1]),
+    Math.min(boundingBox[2], secondBoundingBox[2]),
+    Math.min(boundingBox[3], secondBoundingBox[3]),
+  ];
+
+  const width = intersectionBox[2] - intersectionBox[0];
+  const height = intersectionBox[3] - intersectionBox[1];
+
+  if (width < 0 || height < 0)
+    return 0;
+
+  return width * height;
+};
+
 // Computes the semi perimeter of the |boundingBox|, i.e. width plus height.
 const computeSemiPerimeter = boundingBox =>
     (boundingBox[2] - boundingBox[0]) + (boundingBox[3] - boundingBox[1]);
@@ -53,7 +71,6 @@ class SplitStrategy {
 
     // Alias the utility methods to improve readability in this function.
     const computeArea = BoundingBoxUtil.computeArea;
-    const computeIntersection = BoundingBoxUtil.computeIntersection;
 
     let minimumOverlap = Number.POSITIVE_INFINITY,
         minimumArea = Number.POSITIVE_INFINITY,
@@ -62,7 +79,7 @@ class SplitStrategy {
     for (let i = this.minChildren_; i <= node.children.length - this.minChildren_; ++i) {
       const [leftBoundingBox, rightBoundingBox] = partialBoundingBoxes(node, i, i);
 
-      const overlap = computeArea(computeIntersection(leftBoundingBox, rightBoundingBox));
+      const overlap = computeIntersectionArea(leftBoundingBox, rightBoundingBox);
       const area = computeArea(leftBoundingBox) + computeArea(rightBoundingBox);
 
       if (overlap < minimumOverlap) {

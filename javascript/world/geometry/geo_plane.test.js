@@ -210,6 +210,8 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
   });
 
   it('should be able to perform rectangles-for-point operations quickly', assert => {
+    const IS_PERFORMANCE_TEST = false;
+
     // This test acts as a performance test to measure how long insertion operations take for large
     // numbers of rectangles, as well as find operations for finding intersecting rectangles for a
     // given point. Note that finding rectangles for rectangles would be equally fast.
@@ -239,8 +241,11 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
     insertRectangles( 600,  600);  //   100
     insertRectangles( 300,  300);  //   400
     insertRectangles( 100,  100);  //  3600
-    //insertRectangles(  50,   50);  // 14400
-    //insertRectangles(  25,   25);  // 57600
+
+    if (IS_PERFORMANCE_TEST) {
+      insertRectangles(  50,   50);  // 14400
+      insertRectangles(  25,   25);  // 57600
+    }
 
     const insertionEnd = highResolutionTime();
     const intersectBegin = highResolutionTime();

@@ -3,11 +3,11 @@
 // be found in the LICENSE file.
 
 const BoundingBoxUtil = require('world/geometry/bounding_box_util.js'),
-      GeoObject = require('world/geometry/geo_object.js'),
-      PlaneNode = require('world/geometry/plane/plane_node.js');
+      GeoObject = require('world/geometry/geo_object.js');
 
-const IntersectDepthFirstSearchStrategy = require('world/geometry/plane/intersect_dfs_strategy.js'),
-      NearestPriorityStrategy = require('world/geometry/plane/nearest_priority_strategy.js');
+const IntersectStrategy = require('world/geometry/plane/intersect_strategy.js'),
+      NearestStrategy = require('world/geometry/plane/nearest_strategy.js'),
+      Node = require('world/geometry/plane/node.js');
 
 // Default maximum number of children that a single node may contain. The minimum will, by default,
 // be set to ~40% of this number, as that load ratio offers the best performance for an R-tree.
@@ -24,10 +24,10 @@ const DEFAULT_MAX_CHILDREN = 6;
 // TODO: Enable objects to be removed from the tree.
 class GeoPlane {
   constructor({ maxChildren = DEFAULT_MAX_CHILDREN, minChildren = Math.ceil(0.4 * maxChildren) } = {}) {
-    this.root_ = new PlaneNode(null /* value */);
+    this.root_ = new Node(null /* value */);
 
-    this.intersectStrategy_ = new IntersectDepthFirstSearchStrategy();
-    this.nearestStrategy_ = new NearestPriorityStrategy();
+    this.intersectStrategy_ = new IntersectStrategy();
+    this.nearestStrategy_ = new NearestStrategy();
 
     this.maxChildren_ = maxChildren;
     this.minChildren_ = minChildren;
@@ -67,7 +67,7 @@ class GeoPlane {
 
       // Split the root to accomodate |splitNode| if |node| has no parent. Otherwise, add to parent.
       if (!level) {
-        this.root_ = new PlaneNode(null /* value */, [ node, splitNode ], node.height + 1);
+        this.root_ = new Node(null /* value */, [ node, splitNode ], node.height + 1);
         continue;
       }
 
@@ -136,8 +136,8 @@ class GeoPlane {
   // [minChildren, (maxChildren - minChildren)]) nodes will be preferred based on minimizing the
   // overlap, then having the smallest total area, somewhat similar to choosing a leaf.
   //
-  // This method will return a new PlaneNode with the split children, and will modify the |node|
-  // removing all the children that now have a new parent.
+  // This method will return a new Node with the split children, and will modify the |node| removing
+  // all the children that now have a new parent.
   splitNode(node) {
     const semiPerimeterSumX = this.sumPotentialSplitSemiPerimeters(node, GeoPlane.compareMinX),
           semiPerimeterSumY = this.sumPotentialSplitSemiPerimeters(node, GeoPlane.compareMinY);
@@ -171,7 +171,7 @@ class GeoPlane {
       }
     }
 
-    return new PlaneNode(null /* value */, node.splitAt(splitIndex), node.height);
+    return new Node(null /* value */, node.splitAt(splitIndex), node.height);
   }
 
   // Sorts the |node|'s children using |compareFn| and then computes the total semi-perimeter based

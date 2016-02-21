@@ -7,7 +7,7 @@ const invalidBoundingBox = () => [ Number.POSITIVE_INFINITY, Number.POSITIVE_INF
                                    Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY ];
 
 // Class representing a node on a GeoPlane, regardless of the strategies that are being used.
-class PlaneNode {
+class Node {
   constructor(value, children, height) {
     this.boundingBox_ = value ? value.boundingBox() : invalidBoundingBox();
     this.children_ = children || [];
@@ -40,7 +40,7 @@ class PlaneNode {
 
   // Adds |obj| as a child to this node. The bounding box of the node will be extended if needed.
   addChild(obj) {
-    const node = obj instanceof PlaneNode ? obj : new PlaneNode(obj);
+    const node = obj instanceof Node ? obj : new Node(obj);
 
     this.extendBoundingBox(node);
 
@@ -80,4 +80,4 @@ class PlaneNode {
   }
 };
 
-exports = PlaneNode;
+exports = Node;

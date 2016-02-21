@@ -7,7 +7,7 @@ const ResidentialValuePlane = require('world/economy/land_value/residential_valu
 describe('ResidentialValuePlane', it => {
   const plane = new ResidentialValuePlane();
 
-  it('assigns zero values to unpopulated areas', assert => {
+  it('assigns `0` values to unpopulated areas', assert => {
     const unpopulatedPoints = [
       [-2280, 1830],   // bay north of San Fierro
       [530, -2520],    // bay west of Los Santos
@@ -20,11 +20,23 @@ describe('ResidentialValuePlane', it => {
         assert.equal(plane.getResidentialValueForLocation(...point), 0));
   });
 
+
+  it('assigns `2` values to the richer and mid-size towns', assert => {
+    const towns = [
+      [-2400, 2350],  // Bayside
+      [0, 1050],      // Fort Carson
+      [2400, 0]       // Palomino Creek
+    ];
+
+    towns.forEach(point =>
+        assert.equal(plane.getResidentialValueForLocation(...point), 2));
+  });
+
   it('assigns `3` values to the outskirts of the three big cities', assert => {
     const outskirts = [
       [1616, 2628],   // Las Venturas (1)
-      [2533, 1113],   // Las Ventuars (2)
-      [1667, 713],    // Las Ventuars (3)
+      [2533, 1113],   // Las Venturas (2)
+      [1667, 713],    // Las Venturas (3)
       [-2711, 40],    // San Fierro (1)
       [-1625, 977],   // San Fierro (2)
       [-2669, 1190],  // San Fierro (3)

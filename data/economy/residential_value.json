@@ -45,5 +45,10 @@
   { "value": 3, "area": [1718, -1141, 2329, -963], "description": "Los Santos outskirts" },
   { "value": 3, "area": [691, -1141, 1574, -980], "description": "Los Santos outskirts" },
 
+  { "value": 2, "area": [-2635, 2168, -2159, 2500], "description": "Bayside" },
+  { "value": 2, "area": [2185, -146, 2567, 168], "description": "Fort Carson" },
+  { "value": 2, "area": [-360, 968, 140, 1232], "description": "Palomino Creek" },
+
   { "value": -1, "area": [0, 0, 0, 0], "description": "" }
 ]
+

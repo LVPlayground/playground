@@ -13,6 +13,10 @@ const compareMinimumX = (lhs, rhs) =>
 const compareMinimumY = (lhs, rhs) =>
     lhs.boundingBox[1] - rhs.boundingBox[1];
 
+// Computes the surface area of the |boundingBox|.
+const computeArea = boundingBox =>
+    (boundingBox[2] - boundingBox[0]) * (boundingBox[3] - boundingBox[1]);
+
 // Computes the area of the intersection between |boundingBox| and |secondBoundingBox|.
 const computeIntersectionArea = (boundingBox, secondBoundingBox) => {
   const intersectionBox = [
@@ -68,9 +72,6 @@ class SplitStrategy {
 
     if (semiPerimeterSumX < semiPerimeterSumY)
       node.sortChildren(compareMinimumX);
-
-    // Alias the utility methods to improve readability in this function.
-    const computeArea = BoundingBoxUtil.computeArea;
 
     let minimumOverlap = Number.POSITIVE_INFINITY,
         minimumArea = Number.POSITIVE_INFINITY,

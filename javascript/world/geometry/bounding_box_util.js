@@ -52,11 +52,6 @@ class BoundingBoxUtil {
     return intersectionBoundingBox;
   }
 
-  // Computes the semi perimeter of the |boundingBox|, i.e. width plus height.
-  static semiPerimeter(boundingBox) {
-    return (boundingBox[2] - boundingBox[0]) + (boundingBox[3] - boundingBox[1]);
-  }
-
 };
 
 exports = BoundingBoxUtil;

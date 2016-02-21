@@ -38,10 +38,8 @@ class Node {
     return (this.boundingBox_[2] - this.boundingBox_[0]) * (this.boundingBox_[3] - this.boundingBox_[1]);
   }
 
-  // Adds |obj| as a child to this node. The bounding box of the node will be extended if needed.
-  addChild(obj) {
-    const node = obj instanceof Node ? obj : new Node(obj);
-
+  // Adds |node| as a child to this node. The bounding box of the node will be extended if needed.
+  addChild(node) {
     this.extendBoundingBox(node);
 
     this.children_.push(node);

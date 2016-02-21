@@ -13,6 +13,10 @@ const compareMinimumX = (lhs, rhs) =>
 const compareMinimumY = (lhs, rhs) =>
     lhs.boundingBox[1] - rhs.boundingBox[1];
 
+// Computes the semi perimeter of the |boundingBox|, i.e. width plus height.
+const computeSemiPerimeter = boundingBox =>
+    (boundingBox[2] - boundingBox[0]) + (boundingBox[3] - boundingBox[1]);
+
 // Returns two bounding boxes: one for all children of |node| left of |leftSplit|, one for all
 // children of node right of |rightSplit|. The |node| will be unaffected by this operation.
 const partialBoundingBoxes = (node, leftSplit, rightSplit) => {
@@ -84,7 +88,6 @@ class SplitStrategy {
     const childCount = node.children.length;
 
     // Alias the utility methods to improve readability in this function.
-    const computeSemiPerimeter = BoundingBoxUtil.semiPerimeter;
     const combine = BoundingBoxUtil.combine;
 
     let [leftBoundingBox, rightBoundingBox] =

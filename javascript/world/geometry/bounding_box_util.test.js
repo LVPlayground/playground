@@ -27,8 +27,4 @@ describe('BoundingBoxUtil', it => {
     assert.deepEqual(BoundingBoxUtil.computeIntersection([0, 0, 10, 10], [10, 10, 20, 20]), [0, 0, 0, 0]);
   });
 
-  it('should be able to calculate the semi-perimeter', assert => {
-    assert.equal(BoundingBoxUtil.semiPerimeter([0, 0, 10, 10]), 20);
-    assert.equal(BoundingBoxUtil.semiPerimeter([10, 10, 15, 20]), 15);
-  });
 });

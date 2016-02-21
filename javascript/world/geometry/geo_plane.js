@@ -54,7 +54,7 @@ class GeoPlane {
   insert(obj) {
     const insertionPath = [];
     const parentNode = this.determineInsertionPath(obj.boundingBox(), insertionPath);
-    const newNode = parentNode.addChild(obj);
+    const newNode = parentNode.addChild(new Node(obj));
 
     let level = this.root_.height - 1;
 

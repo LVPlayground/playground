@@ -45,7 +45,7 @@ class NearestStrategy {
       node = queue.size() ? queue.pop().child : null;
     }
 
-    return result.length ? result : null;
+    return result;
   }
 };
 

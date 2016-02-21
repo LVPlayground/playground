@@ -21,7 +21,7 @@ class IntersectStrategy {
         result = [];
 
     if (!boundingBoxesIntersects(boundingBox, node.boundingBox))
-      return null;
+      return result;
 
     do {
       node.children.forEach(child => {
@@ -51,7 +51,7 @@ class IntersectStrategy {
 
     } while (node = queue.pop());
 
-    return result.length ? result : null;
+    return result;
   }
 };
 

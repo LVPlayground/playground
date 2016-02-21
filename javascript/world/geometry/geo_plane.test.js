@@ -92,15 +92,6 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
     });
   });
 
-  it('should return NULL when no results could be found', assert => {
-    const plane = new GeoPlane({ maxChildren: 4 });
-    referencePoints.forEach(point => plane.insert(new GeoPoint(...point)));
-
-    assert.isNull(plane.intersect(new GeoRectangle(100, 100, 10, 10)));
-    assert.isNull(plane.intersect(new GeoRectangle(-10, -10, 0, 0)));
-    assert.isNull(plane.intersect(new GeoRectangle(51, 51, 1, 1)));
-  });
-
   it('should be able to find points that intersect with a rectangle', assert => {
     const plane = new GeoPlane({ maxChildren: 4 }),
           points = {};
@@ -268,7 +259,7 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
 
       const point = new GeoPoint(x, y);
 
-      assert.equal(plane.nearest(point, NEAREST_COUNT).length, NEAREST_COUNT);
+      assert.equal(plane.nearest(point, NEAREST_COUNT).length, Math.min(counter, NEAREST_COUNT));
     }
 
     const nearestEnd = highResolutionTime();

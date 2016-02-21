@@ -2,9 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const NearestStrategy = require('world/geometry/plane/nearest_strategy.js');
-
-const PriorityQueue = require('base/priority_queue.js');
+const NearestStrategy = require('world/geometry/plane/nearest_strategy.js'),
+      PriorityQueue = require('base/priority_queue.js'); 
 
 // Returns the squared distance between the |point| and the nearest edge of the |boundingBox|.
 const distanceFromPointToBoundingBox = (point, boundingBox) => {

@@ -6,7 +6,8 @@ const BoundingBoxUtil = require('world/geometry/bounding_box_util.js'),
       GeoObject = require('world/geometry/geo_object.js'),
       GeoPlaneNode = require('world/geometry/geo_plane_node.js');
 
-const NearestPriorityStrategy = require('world/geometry/plane/nearest_priority_strategy.js');
+const IntersectDepthFirstSearchStrategy = require('world/geometry/plane/intersect_dfs_strategy.js'),
+      NearestPriorityStrategy = require('world/geometry/plane/nearest_priority_strategy.js');
 
 // Default maximum number of children that a single node may contain. The minimum will, by default,
 // be set to ~40% of this number, as that load ratio offers the best performance for an R-tree.
@@ -25,6 +26,7 @@ class GeoPlane {
   constructor({ maxChildren = DEFAULT_MAX_CHILDREN, minChildren = Math.ceil(0.4 * maxChildren) } = {}) {
     this.root_ = new GeoPlaneNode(null /* value */);
 
+    this.intersectStrategy_ = new IntersectDepthFirstSearchStrategy();
     this.nearestStrategy_ = new NearestPriorityStrategy();
 
     this.maxChildren_ = maxChildren;
@@ -77,50 +79,14 @@ class GeoPlane {
       insertionPath[level].extendBoundingBox(newNode);
   }
 
-  // Finds all nodes on the plane that intersect with |obj|, which must be a GeoObject. NULL will be
-  // returned if there are no nodes that intersect with |obj|.
-  find(obj) {
-    const boundingBox = obj.boundingBox();
-    if (!BoundingBoxUtil.intersects(boundingBox, this.root_.boundingBox))
-      return null;
-
-    let node = this.root_,
-        queue = [],
-        result = [];
-
-    do {
-      node.children.forEach(child => {
-        if (!BoundingBoxUtil.intersects(boundingBox, child.boundingBox))
-          return;
-
-        if (child.isLeaf) {
-          result.push(child.value);
-        } else if (BoundingBoxUtil.contains(boundingBox, child.boundingBox)) {
-          // |boundingBox| contains the |child| and all child-nodes. Iteratively add them to the
-          // |result| array because we know that all will apply.
-          let innerQueue = [],
-              innerNode = child;
-
-          do {
-            if (innerNode.isLeaf)
-              result.push(innerNode.value);
-            else
-              innerQueue.push(...innerNode.children);
-
-          } while (innerNode = innerQueue.pop());
-
-        } else {
-          queue.push(child);
-        }
-      });
-
-    } while (node = queue.pop());
-
-    return result.length ? result : null;
+  // Returns an array with all objects on the map that intersect with the bounding box of |obj|.
+  // When no objects could be found, null will be returned instead.
+  intersect(obj) {
+    return this.intersectStrategy_.intersect(this.root_, obj.boundingBox());
   }
 
-  // Finds the |count| nearest objects to the |obj|, which must be a GeoObject. NULL will be
-  // returned if the current plane is empty.
+  // Returns an array with the |count| nearest objects to the center of |obj|. When no objects could
+  // be found because the plane is empty, null will be returned instead.
   nearest(obj, count = 1) {
     return this.nearestStrategy_.nearest(this.root_, obj.center(), count);
   }

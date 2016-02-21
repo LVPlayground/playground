@@ -52,20 +52,6 @@ class BoundingBoxUtil {
     return intersectionBoundingBox;
   }
 
-  // Returns whether the bounding box |lhs| intersects with |rhs|.
-  static intersects(lhs, rhs) {
-    return !(rhs[0] > lhs[2] || rhs[2] < lhs[0] ||
-             rhs[1] > lhs[3] || rhs[3] < lhs[1]);
-  }
-
-  // Returns whether the bounding box |lhs| contains |rhs|.
-  static contains(lhs, rhs) {
-    return lhs[0] <= rhs[0] &&
-           lhs[1] <= rhs[1] &&
-           lhs[2] >= rhs[2] &&
-           lhs[3] >= rhs[3];
-  }
-
   // Computes the semi perimeter of the |boundingBox|, i.e. width plus height.
   static semiPerimeter(boundingBox) {
     return (boundingBox[2] - boundingBox[0]) + (boundingBox[3] - boundingBox[1]);

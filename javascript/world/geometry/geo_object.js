@@ -17,12 +17,6 @@ class GeoObject {
   // Returns whether the point at [x, y] is contained within this object.
   contains(x, y) {}
 
-  // Returns the distance between this object and |obj|.
-  distance(obj) {}
-
-  // Returns whether this object and |obj| intersect.
-  intersects(obj) {}
-
   // Returns the perimeter (or circumference) of this object.
   perimeter() {}
 };

@@ -3,11 +3,12 @@
 // be found in the LICENSE file.
 
 const BoundingBoxUtil = require('world/geometry/bounding_box_util.js'),
-      GeoObject = require('world/geometry/geo_object.js');
+      GeoObject = require('world/geometry/geo_object.js'),
+      Node = require('world/geometry/plane/node.js');
 
 const IntersectStrategy = require('world/geometry/plane/intersect_strategy.js'),
       NearestStrategy = require('world/geometry/plane/nearest_strategy.js'),
-      Node = require('world/geometry/plane/node.js');
+      SplitStrategy = require('world/geometry/plane/split_strategy.js');
 
 // Default maximum number of children that a single node may contain. The minimum will, by default,
 // be set to ~40% of this number, as that load ratio offers the best performance for an R-tree.
@@ -26,11 +27,12 @@ class GeoPlane {
   constructor({ maxChildren = DEFAULT_MAX_CHILDREN, minChildren = Math.ceil(0.4 * maxChildren) } = {}) {
     this.root_ = new Node(null /* value */);
 
+    this.minChildren_ = minChildren;
+    this.maxChildren_ = maxChildren;
+
     this.intersectStrategy_ = new IntersectStrategy();
     this.nearestStrategy_ = new NearestStrategy();
-
-    this.maxChildren_ = maxChildren;
-    this.minChildren_ = minChildren;
+    this.splitStrategy_ = new SplitStrategy(minChildren, maxChildren);
   }
 
   // Gets the bounding box encapsulating all objects in the plane.
@@ -63,7 +65,7 @@ class GeoPlane {
       if (node.children.length <= this.maxChildren_)
         break;
 
-      const splitNode = this.splitNode(node);
+      const splitNode = this.splitStrategy_.split(node);
 
       // Split the root to accomodate |splitNode| if |node| has no parent. Otherwise, add to parent.
       if (!level) {
@@ -127,103 +129,6 @@ class GeoPlane {
     }
 
     return node;
-  }
-
-  // Splits |node| in two new nodes. This is a naive splitting algorithm in which nodes will be
-  // sorted on the axis whose sum of the semi perimeters of potential splitting points is lowest.
-  //
-  // Then, within the available splitting points (children in the sorted list between the indices
-  // [minChildren, (maxChildren - minChildren)]) nodes will be preferred based on minimizing the
-  // overlap, then having the smallest total area, somewhat similar to choosing a leaf.
-  //
-  // This method will return a new Node with the split children, and will modify the |node| removing
-  // all the children that now have a new parent.
-  splitNode(node) {
-    const semiPerimeterSumX = this.sumPotentialSplitSemiPerimeters(node, GeoPlane.compareMinX),
-          semiPerimeterSumY = this.sumPotentialSplitSemiPerimeters(node, GeoPlane.compareMinY);
-
-    if (semiPerimeterSumX < semiPerimeterSumY)
-      node.sortChildren(GeoPlane.compareMinX);
-
-    // Alias the utility methods to improve readability in this function.
-    const computeArea = BoundingBoxUtil.computeArea;
-    const computeIntersection = BoundingBoxUtil.computeIntersection;
-
-    let minimumOverlap = Number.POSITIVE_INFINITY,
-        minimumArea = Number.POSITIVE_INFINITY,
-        splitIndex = null;
-
-    for (let i = this.minChildren_; i <= node.children.length - this.minChildren_; ++i) {
-      const [leftBoundingBox, rightBoundingBox] = this.partialBoundingBoxes(node, i, i);
-
-      const overlap = computeArea(computeIntersection(leftBoundingBox, rightBoundingBox));
-      const area = computeArea(leftBoundingBox) + computeArea(rightBoundingBox);
-
-      if (overlap < minimumOverlap) {
-        minimumOverlap = overlap;
-        minimumArea = Math.min(minimumArea, area);
-        splitIndex = i;
-      }
-
-      else if (overlap === minimumOverlap && minimumArea > area) {
-        minimumArea = area;
-        splitIndex = i;
-      }
-    }
-
-    return new Node(null /* value */, node.splitAt(splitIndex), node.height);
-  }
-
-  // Sorts the |node|'s children using |compareFn| and then computes the total semi-perimeter based
-  // on the available splitting points, which is the value that will be returned.
-  sumPotentialSplitSemiPerimeters(node, compareFn) {
-    node.sortChildren(compareFn);
-
-    const childCount = node.children.length;
-
-    // Alias the utility methods to improve readability in this function.
-    const computeSemiPerimeter = BoundingBoxUtil.semiPerimeter;
-    const combine = BoundingBoxUtil.combine;
-
-    let [leftBoundingBox, rightBoundingBox] =
-        this.partialBoundingBoxes(node, this.minChildren_, childCount - this.minChildren_);
-
-    let semiPerimeter = computeSemiPerimeter(leftBoundingBox) +
-                        computeSemiPerimeter(rightBoundingBox);
-
-    for (let i = this.minChildren_; i < childCount - this.minChildren_; ++i) {
-      leftBoundingBox = combine(leftBoundingBox, node.children[i].boundingBox);
-      semiPerimeter += computeSemiPerimeter(leftBoundingBox);
-    }
-
-    for (let i = childCount - this.minChildren_ - 1; i >= this.minChildren_; --i) {
-      rightBoundingBox = combine(rightBoundingBox, node.children[i].boundingBox);
-      semiPerimeter += computeSemiPerimeter(rightBoundingBox);
-    }
-
-    return semiPerimeter;
-  }
-
-  // Returns two bounding boxes: one for all children of |node| left of |leftSplit|, one for all
-  // children of node right of |rightSplit|. The |node| will be unaffected by this operation.
-  partialBoundingBoxes(node, leftSplit, rightSplit) {
-    const leftChildren = node.children.slice(0, leftSplit),
-          rightChildren = node.children.slice(rightSplit, node.children.length);
-
-    return [
-      BoundingBoxUtil.combine(...leftChildren.map(node => node.boundingBox)),
-      BoundingBoxUtil.combine(...rightChildren.map(node => node.boundingBox))
-    ];
-  }
-
-  // Comparison function for sorting by the minimum X-coordinate of a node's bounding box.
-  static compareMinX(lhs, rhs) {
-    return lhs.boundingBox[0] - rhs.boundingBox[0];
-  }
-
-  // Comparison function for sorting by the minimum Y-coordinate of a node's bounding box.
-  static compareMinY(lhs, rhs) {
-    return lhs.boundingBox[1] - rhs.boundingBox[1];
   }
 
   // -----------------------------------------------------------------------------------------------

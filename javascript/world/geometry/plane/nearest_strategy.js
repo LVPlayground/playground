@@ -29,12 +29,14 @@ class NearestStrategy {
         result = [];
 
     while (node) {
-      node.children.forEach(child => {
+      for (let i = 0; i < node.children.length; ++i) {
+        const child = node.children[i];
+
         queue.push({
           distance: distanceFromPointToBoundingBox(point, child.boundingBox),
           child: child
         });
-      });
+      }
 
       while (queue.size() && queue.peek().child.isLeaf) {
         result.push(queue.pop().child.value);
@@ -42,7 +44,10 @@ class NearestStrategy {
           return result;
       }
 
-      node = queue.size() ? queue.pop().child : null;
+      if (!queue.size())
+        break;
+
+      node = queue.pop().child;
     }
 
     return result;

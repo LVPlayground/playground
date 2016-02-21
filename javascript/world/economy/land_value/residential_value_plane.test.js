@@ -20,6 +20,17 @@ describe('ResidentialValuePlane', it => {
         assert.equal(plane.getResidentialValueForLocation(...point), 0));
   });
 
+  it('assigns `4` values to the centers of the three big cities', assert => {
+    const cityCenters = [
+      [2100, 1600],   // Las Venturas
+      [-2100, 500],   // San Fierro
+      [1300, -1500],  // Los Santos (1)
+      [2300, -1700]   // Los Santos (2)
+    ];
+
+    cityCenters.forEach(point =>
+        assert.equal(plane.getResidentialValueForLocation(...point), 4));
+  });
 
   it('assigns `5` values to airports and strategic places', assert => {
     const strategicPlaces = [
@@ -32,7 +43,7 @@ describe('ResidentialValuePlane', it => {
       [2474, -1690],   // Grove Street
       [-1420, 380],    // Millitary Base
       [200, 1845],     // Area 51
-      [2000, 1500],    // Pirate Ship
+      [2000, 1500]     // Pirate Ship
     ];
 
     strategicPlaces.forEach(point =>

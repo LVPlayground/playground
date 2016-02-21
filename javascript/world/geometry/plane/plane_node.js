@@ -2,12 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-// Invalid bounding box where the [xy]2 coordinates are larger than [xy]1.
+// Invalid bounding box that contains a negative area when recomputation is forced.
 const invalidBoundingBox = () => [ Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY,
                                    Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY ];
 
-// Node representing an entry in the R-tree backing the GeoPlane implementation.
-class GeoPlaneNode {
+// Class representing a node on a GeoPlane, regardless of the strategies that are being used.
+class PlaneNode {
   constructor(value, children, height) {
     this.boundingBox_ = value ? value.boundingBox() : invalidBoundingBox();
     this.children_ = children || [];
@@ -40,7 +40,7 @@ class GeoPlaneNode {
 
   // Adds |obj| as a child to this node. The bounding box of the node will be extended if needed.
   addChild(obj) {
-    const node = obj instanceof GeoPlaneNode ? obj : new GeoPlaneNode(obj);
+    const node = obj instanceof PlaneNode ? obj : new PlaneNode(obj);
 
     this.extendBoundingBox(node);
 
@@ -80,4 +80,4 @@ class GeoPlaneNode {
   }
 };
 
-exports = GeoPlaneNode;
+exports = PlaneNode;

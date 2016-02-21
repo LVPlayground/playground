@@ -4,7 +4,7 @@
 
 const BoundingBoxUtil = require('world/geometry/bounding_box_util.js'),
       GeoObject = require('world/geometry/geo_object.js'),
-      GeoPlaneNode = require('world/geometry/geo_plane_node.js');
+      PlaneNode = require('world/geometry/plane/plane_node.js');
 
 const IntersectDepthFirstSearchStrategy = require('world/geometry/plane/intersect_dfs_strategy.js'),
       NearestPriorityStrategy = require('world/geometry/plane/nearest_priority_strategy.js');
@@ -24,7 +24,7 @@ const DEFAULT_MAX_CHILDREN = 6;
 // TODO: Enable objects to be removed from the tree.
 class GeoPlane {
   constructor({ maxChildren = DEFAULT_MAX_CHILDREN, minChildren = Math.ceil(0.4 * maxChildren) } = {}) {
-    this.root_ = new GeoPlaneNode(null /* value */);
+    this.root_ = new PlaneNode(null /* value */);
 
     this.intersectStrategy_ = new IntersectDepthFirstSearchStrategy();
     this.nearestStrategy_ = new NearestPriorityStrategy();
@@ -67,7 +67,7 @@ class GeoPlane {
 
       // Split the root to accomodate |splitNode| if |node| has no parent. Otherwise, add to parent.
       if (!level) {
-        this.root_ = new GeoPlaneNode(null /* value */, [ node, splitNode ], node.height + 1);
+        this.root_ = new PlaneNode(null /* value */, [ node, splitNode ], node.height + 1);
         continue;
       }
 
@@ -136,7 +136,7 @@ class GeoPlane {
   // [minChildren, (maxChildren - minChildren)]) nodes will be preferred based on minimizing the
   // overlap, then having the smallest total area, somewhat similar to choosing a leaf.
   //
-  // This method will return a new GeoPlaneNode with the split children, and will modify the |node|
+  // This method will return a new PlaneNode with the split children, and will modify the |node|
   // removing all the children that now have a new parent.
   splitNode(node) {
     const semiPerimeterSumX = this.sumPotentialSplitSemiPerimeters(node, GeoPlane.compareMinX),
@@ -171,7 +171,7 @@ class GeoPlane {
       }
     }
 
-    return new GeoPlaneNode(null /* value */, node.splitAt(splitIndex), node.height);
+    return new PlaneNode(null /* value */, node.splitAt(splitIndex), node.height);
   }
 
   // Sorts the |node|'s children using |compareFn| and then computes the total semi-perimeter based

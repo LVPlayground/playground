@@ -86,10 +86,10 @@ class GeoPlane {
       insertionPath[level].extendBoundingBox(newNode);
   }
 
-  // Returns an array with all objects on the map that intersect with the bounding box of |obj|.
-  // When no objects could be found, null will be returned instead.
-  intersect(obj) {
-    return this.intersectStrategy_.intersect(this.root_, obj.boundingBox());
+  // Returns an array with all objects on the map that intersect with |boundingBox|. An empty array
+  // will be returned when no intersections could be found.
+  intersect(boundingBox) {
+    return this.intersectStrategy_.intersect(this.root_, boundingBox);
   }
 
   // Returns an array with the |count| nearest objects to |point|, which must be an array with a

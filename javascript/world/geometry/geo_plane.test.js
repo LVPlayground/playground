@@ -105,17 +105,17 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
       plane.insert(point);
     });
 
-    assert.deepEqual(plane.intersect(new GeoRectangle(40, 20, 40, 50)), [
+    assert.deepEqual(plane.intersect([40, 20, 80, 70]), [
       points[70][70], points[45][70], points[60][60], points[75][25], points[70][20], points[50][25],
       points[45][20], points[75][50], points[70][45], points[60][35], points[45][45], points[50][50]
     ]);
 
-    assert.deepEqual(plane.intersect(new GeoRectangle(0, 0, 10, 100)), [
+    assert.deepEqual(plane.intersect([0, 0, 10, 100]), [
       points[0][75], points[10][60], points[10][85], points[0][25], points[10][10],
       points[0][0], points[10][35], points[0][50]
     ]);
 
-    assert.deepEqual(plane.intersect(new GeoRectangle(60, 60, 15, 15)), [
+    assert.deepEqual(plane.intersect([60, 60, 75, 75]), [
       points[70][70], points[75][75], points[60][60]
     ]);
   });
@@ -161,7 +161,7 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
     // in order to figure out whether they're on the plane or not.
     for (let attempt = 0; attempt < 100; ++attempt) {
       const point = new GeoPoint(Math.floor(Math.random() * 100), Math.floor(Math.random() * 100)),
-            actual = plane.intersect(point),
+            actual = plane.intersect([point.x, point.y, point.x, point.y]),
             expected = [];
 
       for (let x in rectangles) {
@@ -245,9 +245,7 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
       const x = Math.random() * MAP_BOUNDARIES[2] + MAP_BOUNDARIES[0];
       const y = Math.random() * MAP_BOUNDARIES[3] + MAP_BOUNDARIES[1];
 
-      const point = new GeoPoint(x, y);
-
-      assert.equal(plane.intersect(point).length, depth);
+      assert.equal(plane.intersect([x, y, x, y]).length, depth);
     }
 
     const intersectEnd = highResolutionTime();

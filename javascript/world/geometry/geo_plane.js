@@ -110,17 +110,16 @@ class GeoPlane {
           target = null;
 
       node.children.forEach(child => {
-        const area = child.boundingBoxArea(),
-              enlargement = BoundingBoxUtil.computeArea(boundingBox, child.boundingBox) - area;
+        const enlargement = BoundingBoxUtil.computeArea(boundingBox, child.boundingBox) - child.area;
 
         if (enlargement < minimumEnlargement) {
           minimumEnlargement = enlargement;
-          minimumArea = Math.min(minimumArea, area);
+          minimumArea = Math.min(minimumArea, child.area);
           target = child;
         }
 
-        else if (enlargement === minimumEnlargement && minimumArea > area) {
-          minimumArea = area;
+        else if (enlargement === minimumEnlargement && minimumArea > child.area) {
+          minimumArea = child.area;
           target = child;
         }
       });

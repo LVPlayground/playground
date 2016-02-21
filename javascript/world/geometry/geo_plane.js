@@ -4,8 +4,9 @@
 
 const BoundingBoxUtil = require('world/geometry/bounding_box_util.js'),
       GeoObject = require('world/geometry/geo_object.js'),
-      GeoPlaneNode = require('world/geometry/geo_plane_node.js'),
-      PriorityQueue = require('base/priority_queue.js');
+      GeoPlaneNode = require('world/geometry/geo_plane_node.js');
+
+const NearestPriorityStrategy = require('world/geometry/plane/nearest_priority_strategy.js');
 
 // Default maximum number of children that a single node may contain. The minimum will, by default,
 // be set to ~40% of this number, as that load ratio offers the best performance for an R-tree.
@@ -23,6 +24,8 @@ const DEFAULT_MAX_CHILDREN = 6;
 class GeoPlane {
   constructor({ maxChildren = DEFAULT_MAX_CHILDREN, minChildren = Math.ceil(0.4 * maxChildren) } = {}) {
     this.root_ = new GeoPlaneNode(null /* value */);
+
+    this.nearestStrategy_ = new NearestPriorityStrategy();
 
     this.maxChildren_ = maxChildren;
     this.minChildren_ = minChildren;
@@ -119,29 +122,7 @@ class GeoPlane {
   // Finds the |count| nearest objects to the |obj|, which must be a GeoObject. NULL will be
   // returned if the current plane is empty.
   nearest(obj, count = 1) {
-    const queue = new PriorityQueue((lhs, rhs) => lhs.distance - rhs.distance);
-
-    let node = this.root_,
-        result = [];
-
-    while (node) {
-      node.children.forEach(child => {
-        queue.push({
-          distance: BoundingBoxUtil.distance(obj, child.boundingBox),
-          child: child
-        });
-      });
-
-      while (queue.size() && queue.peek().child.isLeaf) {
-        result.push(queue.pop().child.value);
-        if (result.length == count)
-          return result;
-      }
-
-      node = queue.size() ? queue.pop().child : null;
-    }
-
-    return result.length ? result : null;
+    return this.nearestStrategy_.nearest(this.root_, obj.center(), count);
   }
 
   // Determines the ideal insertion path for an object having |boundingBox| in the tree. Nodes will

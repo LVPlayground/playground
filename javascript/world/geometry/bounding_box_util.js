@@ -52,19 +52,6 @@ class BoundingBoxUtil {
     return intersectionBoundingBox;
   }
 
-  // Returns the distance between the |point| and the |boundingBox|.
-  static distance(point, boundingBox) {
-    const distanceX = point.x < boundingBox[0] ? boundingBox[0] - point.x
-                          : point.x <= boundingBox[2] ? 0
-                              : point.x - boundingBox[2];
-
-    const distanceY = point.y < boundingBox[1] ? boundingBox[1] - point.y
-                          : point.y <= boundingBox[3] ? 0
-                              : point.y - boundingBox[3];
-
-    return distanceX * distanceX + distanceY * distanceY;
-  }
-
   // Returns whether the bounding box |lhs| intersects with |rhs|.
   static intersects(lhs, rhs) {
     return !(rhs[0] > lhs[2] || rhs[2] < lhs[0] ||

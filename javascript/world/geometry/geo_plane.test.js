@@ -220,7 +220,7 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
           NEAREST_ITERATIONS = 1000,
           NEAREST_COUNT = 100;
 
-    let plane = new GeoPlane({ maxChildren: 16 }),
+    let plane = new GeoPlane(),
         counter = 0,
         depth = 0;
 

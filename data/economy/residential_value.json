@@ -49,6 +49,12 @@
   { "value": 2, "area": [2185, -146, 2567, 168], "description": "Fort Carson" },
   { "value": 2, "area": [-360, 968, 140, 1232], "description": "Palomino Creek" },
 
-  { "value": -1, "area": [0, 0, 0, 0], "description": "" }
+  { "value": 1, "area": [-1557, 2483, -1370, 2679], "description": "El Quebrados" },
+  { "value": 1, "area": [-377, 2534, -131, 2781], "description": "Las Payasadas" },
+  { "value": 1, "area": [-912, 1334, -598, 1615], "description": "Las Barrancas" },
+  { "value": 1, "area": [-471, 2134, -326, 2270], "description": "Las Brujas" },
+  { "value": 1, "area": [1141, 126, 1480, 449], "description": "Montgomery" },
+  { "value": 1, "area": [606, -648, 835, -444], "description": "Dillimore" },
+  { "value": 1, "area": [46, -307, 386, 58], "description": "Blueberry" },
+  { "value": 1, "area": [-2295, -2614, -1913, -2231], "description": "Angel Pine" }
 ]
-

@@ -20,6 +20,21 @@ describe('ResidentialValuePlane', it => {
         assert.equal(plane.getResidentialValueForLocation(...point), 0));
   });
 
+  it('assigns `1` values to the smaller and poorer towns', assert => {
+    const towns = [
+      [-1450, 2600],  // El Quebrados
+      [-300, 2700],  // Las Payasadas
+      [-800, 1500],  // Las Barrancas
+      [-400, 2200],  // Las Brujas
+      [1200, 300],  // Montgomery
+      [700, -500],  // Dillimore
+      [200, 0],  // Blueberry
+      [-2000, -2300],  // Angel Pine
+    ];
+
+    towns.forEach(point =>
+        assert.equal(plane.getResidentialValueForLocation(...point), 1));
+  });
 
   it('assigns `2` values to the richer and mid-size towns', assert => {
     const towns = [

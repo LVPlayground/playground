@@ -195,7 +195,7 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
       plane.insert(point);
     });
 
-    assert.deepEqual(plane.nearest(new GeoPoint(50, 50), 5), [
+    assert.deepEqual(plane.nearest([50, 50], 5), [
       points[50][50], points[45][45], points[35][35], points[60][60], points[60][35]
     ]);
   });
@@ -257,9 +257,7 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
       const x = Math.random() * MAP_BOUNDARIES[2] + MAP_BOUNDARIES[0];
       const y = Math.random() * MAP_BOUNDARIES[3] + MAP_BOUNDARIES[1];
 
-      const point = new GeoPoint(x, y);
-
-      assert.equal(plane.nearest(point, NEAREST_COUNT).length, Math.min(counter, NEAREST_COUNT));
+      assert.equal(plane.nearest([x, y], NEAREST_COUNT).length, Math.min(counter, NEAREST_COUNT));
     }
 
     const nearestEnd = highResolutionTime();

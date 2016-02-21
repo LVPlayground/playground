@@ -25,7 +25,7 @@ const DEFAULT_MAX_CHILDREN = 6;
 // TODO: Enable objects to be removed from the tree.
 class GeoPlane {
   constructor({ maxChildren = DEFAULT_MAX_CHILDREN, minChildren = Math.ceil(0.4 * maxChildren) } = {}) {
-    this.root_ = new Node(null /* value */);
+    this.clear();
 
     this.minChildren_ = minChildren;
     this.maxChildren_ = maxChildren;
@@ -44,6 +44,11 @@ class GeoPlane {
   // Gets the maximum and minimum number of children a node in this tree may host.
   get maxChildren() { return this.maxChildren_; }
   get minChildren() { return this.minChildren_; }
+
+  // Clears the state of the GeoPlane by removing all existing nodes from the plane.
+  clear() {
+    this.root_ = new Node(null /* value */);
+  }
 
   // Inserts |obj| on the plane. The |obj| must be an instance of one of the geometric objects that
   // derive from the GeoObject base class, as availability of that interface will be assumed. The
@@ -87,10 +92,10 @@ class GeoPlane {
     return this.intersectStrategy_.intersect(this.root_, obj.boundingBox());
   }
 
-  // Returns an array with the |count| nearest objects to the center of |obj|. When no objects could
-  // be found because the plane is empty, null will be returned instead.
-  nearest(obj, count = 1) {
-    return this.nearestStrategy_.nearest(this.root_, obj.center(), count);
+  // Returns an array with the |count| nearest objects to |point|, which must be an array with a
+  // [x, y] coordinates. When no objects could be found, null will be returned instead.
+  nearest(point, count = 1) {
+    return this.nearestStrategy_.nearest(this.root_, point, count);
   }
 
   // Determines the ideal insertion path for an object having |boundingBox| in the tree. Nodes will

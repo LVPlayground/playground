@@ -1,1 +1,38 @@
-[]
+[
+  { "value": 5, "area": [-1735, -716, -1217, -214], "description": "San Fierro Airport" },
+  { "value": 5, "area": [-1217, -571, -1124, 406], "description": "San Fierro Airport" },
+  { "value": 5, "area": [-1124, -452, -1039, -137], "description": "San Fierro Airport" },
+  { "value": 5, "area": [-1124, 270, -963, 492], "description": "San Fierro Airport" },
+  { "value": 5, "area": [-1701, -214, -1209, -120], "description": "San Fierro Airport" },
+  { "value": 5, "area": [-1633, -120, -1217, -44], "description": "San Fierro Airport" },
+  { "value": 5, "area": [-1540, -44, -1217, 41], "description": "San Fierro Airport" },
+  { "value": 5, "area": [-1472, 41, -1217, 151], "description": "San Fierro Airport" },
+  { "value": 5, "area": [-1353, 151, -1209, 296], "description": "San Fierro Airport" },
+
+  { "value": 5, "area": [-1531, 211, -1192, 492], "description": "San Fierro Military Base" },
+  { "value": 5, "area": [-1735, 219, -1531, 304], "description": "San Fierro Military Base" },
+  { "value": 5, "area": [-1625, 304, -1531, 381], "description": "San Fierro Military Base" },
+
+  { "value": 5, "area": [-2168, -1031, -1913, -741], "description": "Sillicon Valley" },
+
+  { "value": 5, "area": [-2414, -1788, -2202, -1567], "description": "Mount Chilliad Summit" },
+
+  { "value": 5, "area": [1345, -2733, 2142, -2409], "description": "Los Santos Airport" },
+  { "value": 5, "area": [1803, -2409, 2151, -2197], "description": "Los Santos Airport" },
+
+  { "value": 5, "area": [2422, -1746, 2524, -1652], "description": "Grove Street" },
+
+  { "value": 5, "area": [1217, 1189, 1633, 1657], "description": "Las Venturas Airport" },
+  { "value": 5, "area": [1319, 1657, 1557, 1828], "description": "Las Venturas Airport" },
+  { "value": 5, "area": [1243, 1666, 1328, 1768], "description": "Las Venturas Airport" },
+  { "value": 5, "area": [1429, 1113, 1642, 1198], "description": "Las Venturas Airport" },
+  { "value": 5, "area": [1226, 1172, 1429, 1189], "description": "Las Venturas Airport" },
+  { "value": 5, "area": [1633, 1257, 1769, 1666], "description": "Las Venturas Airport" },
+
+  { "value": 5, "area": [-106, 1700, 504, 2091], "description": "Area 51" },
+  { "value": 5, "area": [-89, 1547, 377, 1700], "description": "Area 51" },
+
+  { "value": 5, "area": [-80, 2389, 479, 2534], "description": "Desert Airport" },
+
+  { "value": 5, "area": [1956, 1402, 2074, 1555], "description": "Pirate Ship" }
+]

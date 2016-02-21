@@ -2,7 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const GeoPlane = require('world/geometry/geo_plane.js');
+const GeoPlane = require('world/geometry/geo_plane.js'),
+      ResidentialValueArea = require('world/economy/land_value/residential_value_area.js');
 
 // JSON file that contains the definitions for determining the residential value.
 const RESIDENTIAL_VALUE_DATA_FILE = 'data/economy/residential_value.json';
@@ -15,7 +16,7 @@ const RESIDENTIAL_VALUE_DATA_FILE = 'data/economy/residential_value.json';
 // 2  Small, richer towns; mid-size towns.
 // 3  Outskirts of Las Venturas, San Fierro and Los Santos.
 // 4  City centers of Las Venturas, San Fierro and Los Santos.
-// 5  Airports, military bases, silicon valey, otherwise strategic areas.
+// 5  Airports, military bases, silicon valley, otherwise strategic areas.
 //
 // This class does not define how residential values should influence aggregate land values.
 class ResidentialValuePlane {

@@ -253,7 +253,7 @@ class TeleportationManager {
         if (PlayerSettings(subjectId)->isTeleportationDisabled() == true && teleportType != SecretTeleport &&
             subjectId != CruiseController->getCruiseLeaderId()) {
             if (Player(playerId)->isAdministrator() == false) {
-                SendClientMessage(playerId, Color::Error, "This player has disallowed others from teleporting to them.");
+                SendClientMessage(playerId, Color::Error, "This player has disallowed others from teleporting to them using /my teleport off");
                 return false;
             }
 

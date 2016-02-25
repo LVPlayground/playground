@@ -2,8 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const GeoObject = require('world/geometry/geo_object.js'),
-      GeoObjectUtil = require('world/geometry/geo_object_util.js');
+const GeoObject = require('world/geometry/geo_object.js');
 
 // Class representing a rectangle that can be used in a 2D space. It has origin coordinates and a
 // defined width and height, which are immutable for the lifetime of the object.
@@ -49,20 +48,9 @@ class GeoRectangle extends GeoObject {
            y >= this.y_ && y < this.y_ + this.h_;
   }
 
-  distance(obj) {
-    return GeoObjectUtil.distance(obj, this);
-  }
-
-  intersects(obj) {
-    return GeoObjectUtil.intersects(obj, this);
-  }
-
   perimeter() {
     return this.w_ * 2 + this.h_ * 2;
   }
 };
-
-// Register the GeoRectangle type with the utility class.
-GeoObjectUtil.registerType(GeoRectangle);
 
 exports = GeoRectangle;

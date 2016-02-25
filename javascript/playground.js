@@ -18,10 +18,10 @@ class Playground {
     this.featureManager_.load({
       account:       require('features/account/account_feature.js'),
       activityLog:   require('features/activity_log/activity_log.js'),
+      commands:      require('features/commands/commands_feature.js'),
       deathFeed:     require('features/death_feed/death_feed_feature.js'),
       debug:         require('features/debug/debug_feature.js'),
       gangs:         require('features/gangs/feature.js'),
-      introduction:  require('features/introduction/introduction.js'),
       races:         require('features/races/race_feature.js')
     });
   }

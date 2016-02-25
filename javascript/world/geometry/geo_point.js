@@ -28,10 +28,6 @@ class GeoPoint extends GeoRectangle {
     return this.x_ == x && this.y_ == y;
   }
 
-  // Inherits distance(obj).
-
-  // Inherits intersects(obj).
-
   perimeter() {
     return 0;
   }

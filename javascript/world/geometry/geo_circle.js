@@ -2,8 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const GeoObject = require('world/geometry/geo_object.js'),
-      GeoObjectUtil = require('world/geometry/geo_object_util.js');
+const GeoObject = require('world/geometry/geo_object.js');
 
 // Class representing a circle that can be used in a 2D space. It has [x, y] origin coordinates and
 // a defined radius, from which the bounding box can be derived.
@@ -36,20 +35,9 @@ class GeoCircle extends GeoObject {
     return Math.pow(x - this.x_, 2) + Math.pow(y - this.y_, 2) < Math.pow(this.r_, 2);
   }
 
-  distance(obj) {
-    return GeoObjectUtil.distance(obj, this);
-  }
-
-  intersects(obj) {
-    return GeoObjectUtil.intersects(obj, this);
-  }
-
   perimeter() {
     return 2 * Math.PI * this.r_;
   }
 };
-
-// Register the GeoCircle type with the utility class.
-GeoObjectUtil.registerType(GeoCircle);
 
 exports = GeoCircle;

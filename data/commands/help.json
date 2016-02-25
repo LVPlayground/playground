@@ -1,59 +1,63 @@
 {
+  "type": "message-menu",
+  "title": "What can we help you with?",
+  "data": {
     "An Introduction of Las Venturas Playground": [
-        "LVP is a freeroam server, there are lots of cool features, such as:",
-        "",
-        "- /race",
-        "- /jump",
-        "- /properties",
-        "- /teles",
-        "- /derby",
-        "- /minigames",
-        "",
-        "Make sure to check out: /help, /cmds and /rules",
-        "",
-        "To contact an admin, use @ before your message. E.g: @how do I...?"
+      "LVP is a freeroam server, there are lots of cool features, such as:",
+      "",
+      "- /race",
+      "- /jump",
+      "- /properties",
+      "- /teles",
+      "- /derby",
+      "- /minigames",
+      "",
+      "Make sure to check out: /help, /cmds and /rules",
+      "",
+      "To contact an admin, use @ before your message. E.g: @how do I...?"
     ],
     "How to earn money": [
-        "- Invest in properties - see /properties",
-        "- Export vehicles - see /export",
-        "- Win minigames - see /minigames",
-        "- Complete delivery missions - see /deliver",
-        "- Crush vehicles at the scrap yard, north of the LV Stadium",
-        "- Find the Bag of Cash",
-        "- Take out a loan - see /borrow"
+      "- Invest in properties - see /properties",
+      "- Export vehicles - see /export",
+      "- Win minigames - see /minigames",
+      "- Complete delivery missions - see /deliver",
+      "- Crush vehicles at the scrap yard, north of the LV Stadium",
+      "- Find the Bag of Cash",
+      "- Take out a loan - see /borrow"
     ],
     "How to contact LVP and the Staff of LVP": [
-        "If you got questions or comments, you can use",
-        "the following ways of contacting the LVP staff.",
-        "",
-        "IRC: irc.gtanet.com #lvp",
-        "E-mail: info@sa-mp.nl",
-        "Website: www.sa-mp.nl",
-        "Forum: forum.sa-mp.nl"
+      "If you got questions or comments, you can use",
+      "the following ways of contacting the LVP staff.",
+      "",
+      "IRC: irc.gtanet.com #lvp",
+      "E-mail: info@sa-mp.nl",
+      "Website: www.sa-mp.nl",
+      "Forum: forum.sa-mp.nl"
     ],
     "Information about cruises": [
-        "Cruises are recognizable by a lot of (tuned) vehicles,",
-        "mostly starting at the airport, driving around through all cities.",
-        "Cruise members have a special status on this server:",
-        "They may not be shot! Don't ruin a cruise!"
+      "Cruises are recognizable by a lot of (tuned) vehicles,",
+      "mostly starting at the airport, driving around through all cities.",
+      "Cruise members have a special status on this server:",
+      "They may not be shot! Don't ruin a cruise!"
     ],
     "Information about communication": [
-        "Apart from the main chat, there are three other ways to communicate with players: PM, phone call and gang chat.",
-        "",
-        "Usage: /pm [player] message.",
-        "Usage: /call [player]. The other person needs to type /answer.",
-        "After that you can use the call function as normal chat. End the call with /hangup.",
-        "Gang chat usage: !text. All text starting with ! is only readable by your gang."
+      "Apart from the main chat, there are three other ways to communicate with players: PM, phone call and gang chat.",
+      "",
+      "Usage: /pm [player] message.",
+      "Usage: /call [player]. The other person needs to type /answer.",
+      "After that you can use the call function as normal chat. End the call with /hangup.",
+      "Gang chat usage: !text. All text starting with ! is only readable by your gang."
     ],
     "Information about vehicles": [
-        "Vehicles are marked on your radar with small grey squares.",
-        "To modify a vehicle drive to one of the garages or by using /tune.",
-        "Vehicles can be spawned at all times by Crew members, and VIP members only during the cruise (/cruisecar).",
-        "Regular players are able to spawn an infernus (/inf) once they have sprayed 100 tags."
+      "Vehicles are marked on your radar with small grey squares.",
+      "To modify a vehicle drive to one of the garages or by using /tune.",
+      "Vehicles can be spawned at all times by Crew members, and VIP members only during the cruise (/cruisecar).",
+      "Regular players are able to spawn an infernus (/inf) once they have sprayed 100 tags."
     ],
     "Learn about upgrading your bank account": [
-        "Go to the LV Main bank (/taxi 10 on foot or /tow 10 in a vehicle).",
-        "Walk into the red marker inside the building and type",
-        "'/account' to get started."
+      "Go to the LV Main bank (/taxi 10 on foot or /tow 10 in a vehicle).",
+      "Walk into the red marker inside the building and type",
+      "'/account' to get started."
     ]
+  }
 }

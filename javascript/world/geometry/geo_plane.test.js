@@ -92,16 +92,7 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
     });
   });
 
-  it('should return NULL when no results could be found', assert => {
-    const plane = new GeoPlane({ maxChildren: 4 });
-    referencePoints.forEach(point => plane.insert(new GeoPoint(...point)));
-
-    assert.isNull(plane.find(new GeoRectangle(100, 100, 10, 10)));
-    assert.isNull(plane.find(new GeoRectangle(-10, -10, 0, 0)));
-    assert.isNull(plane.find(new GeoRectangle(51, 51, 1, 1)));
-  });
-
-  it('should be able to find points located within a rectangle', assert => {
+  it('should be able to find points that intersect with a rectangle', assert => {
     const plane = new GeoPlane({ maxChildren: 4 }),
           points = {};
 
@@ -114,22 +105,22 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
       plane.insert(point);
     });
 
-    assert.deepEqual(plane.find(new GeoRectangle(40, 20, 40, 50)), [
+    assert.deepEqual(plane.intersect([40, 20, 80, 70]), [
       points[70][70], points[45][70], points[60][60], points[75][25], points[70][20], points[50][25],
       points[45][20], points[75][50], points[70][45], points[60][35], points[45][45], points[50][50]
     ]);
 
-    assert.deepEqual(plane.find(new GeoRectangle(0, 0, 10, 100)), [
+    assert.deepEqual(plane.intersect([0, 0, 10, 100]), [
       points[0][75], points[10][60], points[10][85], points[0][25], points[10][10],
       points[0][0], points[10][35], points[0][50]
     ]);
 
-    assert.deepEqual(plane.find(new GeoRectangle(60, 60, 15, 15)), [
+    assert.deepEqual(plane.intersect([60, 60, 75, 75]), [
       points[70][70], points[75][75], points[60][60]
     ]);
   });
 
-  it('should be able to find rectangles for a given point', assert => {
+  it('should be able to find rectangles that intersect with a given point', assert => {
     const plane = new GeoPlane({ maxChildren: 4 }),
           rectangles = {};
 
@@ -170,7 +161,7 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
     // in order to figure out whether they're on the plane or not.
     for (let attempt = 0; attempt < 100; ++attempt) {
       const point = new GeoPoint(Math.floor(Math.random() * 100), Math.floor(Math.random() * 100)),
-            actual = plane.find(point),
+            actual = plane.intersect([point.x, point.y, point.x, point.y]),
             expected = [];
 
       for (let x in rectangles) {
@@ -185,7 +176,7 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
         }
       }
 
-      // Sort both the |expected| array and the results of |plane.find()| to make sure that the
+      // Sort both the |expected| array and the results of |plane.intersect()| to make sure that the
       // deepEqual comparison is done on arrays of equal order.
       assert.deepEqual(sortRectangles(actual), sortRectangles(expected));
     }
@@ -204,21 +195,23 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
       plane.insert(point);
     });
 
-    assert.deepEqual(plane.nearest(new GeoPoint(50, 50), 5), [
+    assert.deepEqual(plane.nearest([50, 50], 5), [
       points[50][50], points[45][45], points[35][35], points[60][60], points[60][35]
     ]);
   });
 
   it('should be able to perform rectangles-for-point operations quickly', assert => {
+    const IS_PERFORMANCE_TEST = false;
+
     // This test acts as a performance test to measure how long insertion operations take for large
     // numbers of rectangles, as well as find operations for finding intersecting rectangles for a
     // given point. Note that finding rectangles for rectangles would be equally fast.
     const MAP_BOUNDARIES = [ -3000, -3000, 3000, 3000 ],
-          FIND_ITERATIONS = 100000,
+          INTERSECT_ITERATIONS = 100000,
           NEAREST_ITERATIONS = 1000,
           NEAREST_COUNT = 100;
 
-    let plane = new GeoPlane({ maxChildren: 16 }),
+    let plane = new GeoPlane(),
         counter = 0,
         depth = 0;
 
@@ -233,48 +226,47 @@ describe('GeoPlane', (it, beforeEach, afterEach) => {
       }
     };
 
-    const insertionStart = highResolutionTime();
+    const insertionBegin = highResolutionTime();
 
     insertRectangles(1000, 1000);  //    36
     insertRectangles( 600,  600);  //   100
     insertRectangles( 300,  300);  //   400
     insertRectangles( 100,  100);  //  3600
-    //insertRectangles(  50,   50);  // 14400
-    //insertRectangles(  25,   25);  // 57600
+
+    if (IS_PERFORMANCE_TEST) {
+      insertRectangles(  50,   50);  // 14400
+      insertRectangles(  25,   25);  // 57600
+    }
 
     const insertionEnd = highResolutionTime();
-    const findStart = highResolutionTime();
+    const intersectBegin = highResolutionTime();
 
-    for (let iteration = 0; iteration < FIND_ITERATIONS; ++iteration) {
+    for (let iteration = 0; iteration < INTERSECT_ITERATIONS; ++iteration) {
       const x = Math.random() * MAP_BOUNDARIES[2] + MAP_BOUNDARIES[0];
       const y = Math.random() * MAP_BOUNDARIES[3] + MAP_BOUNDARIES[1];
 
-      const point = new GeoPoint(x, y);
-
-      assert.equal(plane.find(point).length, depth);
+      assert.equal(plane.intersect([x, y, x, y]).length, depth);
     }
 
-    const findEnd = highResolutionTime();
+    const intersectEnd = highResolutionTime();
     const nearestBegin = highResolutionTime();
 
     for (let iteration = 0; iteration < NEAREST_ITERATIONS; ++iteration) {
       const x = Math.random() * MAP_BOUNDARIES[2] + MAP_BOUNDARIES[0];
       const y = Math.random() * MAP_BOUNDARIES[3] + MAP_BOUNDARIES[1];
 
-      const point = new GeoPoint(x, y);
-
-      assert.equal(plane.nearest(point, NEAREST_COUNT).length, NEAREST_COUNT);
+      assert.equal(plane.nearest([x, y], NEAREST_COUNT).length, Math.min(counter, NEAREST_COUNT));
     }
 
     const nearestEnd = highResolutionTime();
 
-    const insertionTotal = Math.round((insertionEnd - insertionStart) * 100) / 100,
-          findTotal = Math.round((findEnd - findStart) * 100) / 100,
-          nearestTotal = Math.round((nearestEnd - nearestBegin) * 100) / 100;
+    const insertionTime = Math.round((insertionEnd - insertionBegin) * 100) / 100,
+          intersectTime = Math.round((intersectEnd - intersectBegin) * 100) / 100,
+          nearestTime = Math.round((nearestEnd - nearestBegin) * 100) / 100;
 
-    console.log('[GeoPlane] Insertion (' + counter + '): ' + insertionTotal + 'ms; find (' +
-        FIND_ITERATIONS + '): ' + findTotal + 'ms; nearest (' + NEAREST_ITERATIONS + ', ' +
-        NEAREST_COUNT + '): ' + nearestTotal + 'ms');
+    console.log('[GeoPlane] Insertion (' + counter + '): ' + insertionTime + 'ms; intersect (' +
+        INTERSECT_ITERATIONS + '): ' + intersectTime + 'ms; nearest (' + NEAREST_ITERATIONS + ', ' +
+        NEAREST_COUNT + '): ' + nearestTime + 'ms');
   });
 
 });

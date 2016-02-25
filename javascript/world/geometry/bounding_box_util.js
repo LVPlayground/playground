@@ -31,59 +31,6 @@ class BoundingBoxUtil {
                (combinedBoundingBox[3] - combinedBoundingBox[1]);
   }
 
-  // Computes the intersection of the |boundingBoxes|. Returns an empty bounding box (not null) when
-  // the |boundingBoxes| do not intersect with each other.
-  static computeIntersection(...boundingBoxes) {
-    let intersectionBoundingBox = [ Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY,
-                                    Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY ];
-
-    boundingBoxes.forEach(boundingBox => {
-      intersectionBoundingBox[0] = Math.max(intersectionBoundingBox[0], boundingBox[0]);
-      intersectionBoundingBox[1] = Math.max(intersectionBoundingBox[1], boundingBox[1]);
-
-      intersectionBoundingBox[2] = Math.min(intersectionBoundingBox[2], boundingBox[2]);
-      intersectionBoundingBox[3] = Math.min(intersectionBoundingBox[3], boundingBox[3]);
-    });
-
-    if (intersectionBoundingBox[2] - intersectionBoundingBox[0] <= 0 ||
-        intersectionBoundingBox[3] - intersectionBoundingBox[1] <= 0)
-      return [0, 0, 0, 0];
-
-    return intersectionBoundingBox;
-  }
-
-  // Returns the distance between the |point| and the |boundingBox|.
-  static distance(point, boundingBox) {
-    const distanceX = point.x < boundingBox[0] ? boundingBox[0] - point.x
-                          : point.x <= boundingBox[2] ? 0
-                              : point.x - boundingBox[2];
-
-    const distanceY = point.y < boundingBox[1] ? boundingBox[1] - point.y
-                          : point.y <= boundingBox[3] ? 0
-                              : point.y - boundingBox[3];
-
-    return distanceX * distanceX + distanceY * distanceY;
-  }
-
-  // Returns whether the bounding box |lhs| intersects with |rhs|.
-  static intersects(lhs, rhs) {
-    return !(rhs[0] > lhs[2] || rhs[2] < lhs[0] ||
-             rhs[1] > lhs[3] || rhs[3] < lhs[1]);
-  }
-
-  // Returns whether the bounding box |lhs| contains |rhs|.
-  static contains(lhs, rhs) {
-    return lhs[0] <= rhs[0] &&
-           lhs[1] <= rhs[1] &&
-           lhs[2] >= rhs[2] &&
-           lhs[3] >= rhs[3];
-  }
-
-  // Computes the semi perimeter of the |boundingBox|, i.e. width plus height.
-  static semiPerimeter(boundingBox) {
-    return (boundingBox[2] - boundingBox[0]) + (boundingBox[3] - boundingBox[1]);
-  }
-
 };
 
 exports = BoundingBoxUtil;

@@ -1,4 +1,6 @@
-[
+{
+  "type": "message",
+  "data": [
     "{2566BA}- {A9C4E4}Cheats or mods which give you an advantage over other players are forbidden",
     "{2566BA}- {A9C4E4}No Swearing, flaming or racism",
     "{2566BA}- {A9C4E4}Avoid the use of constant CAPS whilst speaking in the main chat",
@@ -8,4 +10,5 @@
     "{2566BA}- {A9C4E4}Do not spam",
     "",
     "If you have questions, use {D67513}@<message> {A9C4E4}to contact the Las Venturas Playground staff. Have fun!"
-]
+  ]
+}

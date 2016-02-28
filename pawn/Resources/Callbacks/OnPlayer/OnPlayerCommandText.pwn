@@ -524,12 +524,16 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(cd,             2, PlayerLevel);
     lvp_command(World,          5, PlayerLevel);
 
+    // Spawn vehicle commands.
+    lvp_command(Ele,            3, PlayerLevel);
+    lvp_command(Inf,            3, PlayerLevel);
+    lvp_command(Nrg,            3, PlayerLevel);
+
     // General player commands:
     lvp_command(Commands,       8, PlayerLevel);
     lvp_command(cmds,           4, PlayerLevel);
     lvp_command(Minigames,      9, PlayerLevel);
     lvp_command(Teles,          5, PlayerLevel);
-    lvp_command(Inf,            3, PlayerLevel);
     lvp_command(Find,           4, PlayerLevel);
     lvp_command(Has,            3, PlayerLevel);
     lvp_command(Derby,          5, PlayerLevel);

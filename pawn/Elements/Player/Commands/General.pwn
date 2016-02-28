@@ -198,11 +198,25 @@ lvp_Teles(playerid, params[])
     return 1;
 }
 
+// Spawn an elegy. Only if players have sprayed all 100 tags.
+// This is handled in Elements/Player/SprayTags.pwn
+lvp_Ele(playerid, params[])
+{
+    return sprayTagOnVehicleCommand(playerid, params, SPRAY_TAG_ELEGY);
+}
+
 // Spawn an infernus. Only if players have sprayed all 100 tags.
 // This is handled in Elements/Player/SprayTags.pwn
 lvp_Inf(playerid, params[])
 {
-    return sprayTagOnVehicleCommand(playerid, params);
+    return sprayTagOnVehicleCommand(playerid, params, SPRAY_TAG_INFERNUS);
+}
+
+// Spawn an NRG. Only if players have sprayed all 100 tags.
+// This is handled in Elements/Player/SprayTags.pwn
+lvp_Nrg(playerid, params[])
+{
+    return sprayTagOnVehicleCommand(playerid, params, SPRAY_TAG_NRG);
 }
 
 // /cmds

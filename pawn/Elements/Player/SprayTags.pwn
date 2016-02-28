@@ -29,17 +29,15 @@
 
 #define     SPRAY_TAG_TABLE_NAME        "spraytags"             // MySQL table name
 
-#define     SPRAY_TAG_VEHICLE           411                     // Vehicle type reward for spray tags (Infernus)
+new      n_PlayerTagsSprayed[MAX_PLAYERS][MAX_SPRAY_TAGS]; // Flag to determine which player has sprayed which tag
 
-static      n_PlayerTagsSprayed[MAX_PLAYERS][MAX_SPRAY_TAGS]; // Flag to determine which player has sprayed which tag
+new      n_SprayTagCount;                            // How many spray tags are loaded
 
-static      n_SprayTagCount;                            // How many spray tags are loaded
+new      n_TagsPlayerSprayed[MAX_PLAYERS];                 // Number of tags a player has sprayed
 
-static      n_TagsPlayerSprayed[MAX_PLAYERS];                 // Number of tags a player has sprayed
+new      iSprayCanTime[MAX_PLAYERS];                       // Stores the time in which a player begins to spray and ends.
 
-static      iSprayCanTime[MAX_PLAYERS];                       // Stores the time in which a player begins to spray and ends.
-
-static      sprayTagPlayerVehicle[MAX_PLAYERS] = {Vehicle::InvalidId, ...};                // Stores the vehicle ID for the spawned vehicle, which is the reward a player gets for collecting all 100 tags.
+new      sprayTagPlayerVehicle[MAX_PLAYERS] = {Vehicle::InvalidId, ...};                // Stores the vehicle ID for the spawned vehicle, which is the reward a player gets for collecting all 100 tags.
 
 // This variable stores when the player has last used the inf command
 // We only allow players to spawn infernuses every 3 minutes to prevent abuse
@@ -56,9 +54,14 @@ enum    E_SPRAY_TAG
     DynamicObject: fSprayObjectID[MAX_PLAYERS]
 
 }
-static sprayTag[MAX_SPRAY_TAGS][E_SPRAY_TAG];
+new sprayTag[MAX_SPRAY_TAGS][E_SPRAY_TAG];
 
 
+enum SprayTagVehicle {
+    SPRAY_TAG_ELEGY,
+    SPRAY_TAG_INFERNUS,
+    SPRAY_TAG_NRG
+};
 
 //-------------------
 
@@ -452,9 +455,9 @@ public OnSprayTagPlayerDataAvailable(resultId, playerId) {
     DatabaseResult(resultId)->free();
 }
 
-// This function is called when a player types the /inf command,
+// This function is called when a player types the /inf or /nrg commands,
 // which is an unlockable command for players who spray all 100 tags.
-sprayTagOnVehicleCommand(playerid, params[])
+sprayTagOnVehicleCommand(playerid, params[], SprayTagVehicle: vehicleType)
 {
     #pragma unused params
 
@@ -468,26 +471,19 @@ sprayTagOnVehicleCommand(playerid, params[])
         // Has the player used /inf in the past 3 minutes?
         if((Time->currentTime() - g_iTimeInfCommandLastUsed[playerid]) < 3 * 60)
         {
-            SendClientMessage(playerid, COLOR_RED, "You may only use /inf once every 3 minutes.");
+            SendClientMessage(playerid, COLOR_RED, "You may only spawn a vehicle once every 3 minutes.");
             return 1;
         }
 
         if(DamageManager(playerid)->isPlayerFighting() == true)
         {
-            SendClientMessage(playerid, COLOR_RED, "* You cannot spawn an infernus because you've recently been in a gunfight.");
+            SendClientMessage(playerid, COLOR_RED, "* You cannot spawn an a vehicle because you've recently been in a gunfight.");
             return 1;
         }
 
         if(ShipManager->isPlayerWalkingOnShip(playerid))
         {
             SendClientMessage(playerid, COLOR_RED, "* You cannot spawn vehicles on the ship!");
-            return 1;
-        }
-
-        //Check if the player has recently been in a gun fight.
-        if(DamageManager(playerid)->isPlayerFighting() == true)
-        {
-            SendClientMessage(playerid, COLOR_RED, "* You cannot spawn an infernus because you have recently been in a gun fight.");
             return 1;
         }
     }
@@ -510,7 +506,7 @@ sprayTagOnVehicleCommand(playerid, params[])
         return 1;
     }
 
-    // Alright all good. Just some checks first - has the player already spawned an infernus?
+    // Alright all good. Just some checks first - has the player already spawned a vehicle?
     // Obviously, if so, we need to destroy it.
     if(sprayTagPlayerVehicle[playerid] != Vehicle::InvalidId)
     {
@@ -534,10 +530,22 @@ sprayTagOnVehicleCommand(playerid, params[])
     GetPlayerPos(playerid, fPosX, fPosY, fPosZ);
     GetPlayerFacingAngle(playerid, fAng);
 
+    new vehicleModelId = 0;
+    switch (vehicleType) {
+        case SPRAY_TAG_ELEGY:
+            vehicleModelId = 562;
+        case SPRAY_TAG_INFERNUS:
+            vehicleModelId = 411;
+        case SPRAY_TAG_NRG:
+            vehicleModelId = 522;
+        default:
+            return 0;  // invalid vehicle type supplied. nothing we can do really
+    }
+
     // Make the vehicle nice & sexy. Give it nos and stuff and a special number plate.
-    sprayTagPlayerVehicle[playerid] = VehicleManager->createVehicle(SPRAY_TAG_VEHICLE, fPosX, fPosY, fPosZ, fAng, -1, -1);
+    sprayTagPlayerVehicle[playerid] = VehicleManager->createVehicle(vehicleModelId, fPosX, fPosY, fPosZ, fAng, -1, -1);
     SetVehicleNumberPlate(sprayTagPlayerVehicle[playerid], PlayerName(playerid));   // Custom License Plate, matching the players name
-    NitroHandler->enableAndAddInfiniteNos(sprayTagPlayerVehicle[playerid]); // Give the vehicle Infinite Nos
+    NitroHandler->enableAndAddInfiniteNos(sprayTagPlayerVehicle[playerid]); // Give the vehicle vehicle Nos
 
     // Put the player in the newly created vehicle
     PutPlayerInVehicle(playerid, sprayTagPlayerVehicle[playerid], 0); // Now just warp the vehicle to the player.

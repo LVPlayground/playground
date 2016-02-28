@@ -34,6 +34,10 @@
 
 #define     WATER_FIGHT_MAX_RUNTIME         60      // Max time the minigame can run for.
 
+#define     WATER_FIGHT_MAX_HEALTH          50000 // Max Health in the minigame.
+
+#define     WATER_FIGHT_MIN_HEALTH          100 // Min Health in the minigame.
+
 static  bool:waterFightSignedUp[MAX_PLAYERS];
 static  waterFightPlayers;              // Number of players signed up.
 
@@ -385,6 +389,7 @@ stock waterFightRemovePlayer(playerid, bool:bLoadData = true)
     {
         return;
     }
+    SetPlayerHealth(playerid, WATER_FIGHT_MIN_HEALTH);
     waterFightPlayers--;
     waterFightSignedUp[playerid] = false;
 
@@ -434,7 +439,7 @@ stock waterFightSpawnPlayer(playerid)
     SetPlayerVirtualWorld(playerid, WATER_FIGHT_WORLD);
     ResetPlayerWeapons(playerid);
 
-    SetPlayerHealth(playerid, 100);
+    SetPlayerHealth(playerid, WATER_FIGHT_MAX_HEALTH);
     SetPlayerArmour(playerid, 0);
     SetPlayerTeam(playerid, 1);
 

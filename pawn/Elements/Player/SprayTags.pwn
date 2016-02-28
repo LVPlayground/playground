@@ -544,8 +544,10 @@ sprayTagOnVehicleCommand(playerid, params[], SprayTagVehicle: vehicleType)
 
     // Make the vehicle nice & sexy. Give it nos and stuff and a special number plate.
     sprayTagPlayerVehicle[playerid] = VehicleManager->createVehicle(vehicleModelId, fPosX, fPosY, fPosZ, fAng, -1, -1);
-    SetVehicleNumberPlate(sprayTagPlayerVehicle[playerid], PlayerName(playerid));   // Custom License Plate, matching the players name
-    NitroHandler->enableAndAddInfiniteNos(sprayTagPlayerVehicle[playerid]); // Give the vehicle vehicle Nos
+    SetVehicleNumberPlate(sprayTagPlayerVehicle[playerid], PlayerName(playerid));   // custom License Plate, matching the players name
+
+    if (VehicleModel(vehicleModelId)->isNitroInjectionAvailable())
+        NitroHandler->enableAndAddInfiniteNos(sprayTagPlayerVehicle[playerid]);  // give the vehicle vehicle Nos
 
     // Put the player in the newly created vehicle
     PutPlayerInVehicle(playerid, sprayTagPlayerVehicle[playerid], 0); // Now just warp the vehicle to the player.

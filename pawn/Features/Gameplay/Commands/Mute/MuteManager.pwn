@@ -91,10 +91,10 @@ class MuteManager {
     /**
      * Getter to hold the mute duration of a player when he/she is muted.
      *
-     * @return integer Duration in minutes.
+     * @return integer Duration in seconds.
      */
     public inline muteDuration(playerId) {
-        return (m_muteDuration[playerId]);
+        return ((m_muteDuration[playerId] * 60) - (Time->currentTime() - m_holdMuteTimestamp[playerId]));
     }
 
     /**

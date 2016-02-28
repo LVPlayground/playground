@@ -123,16 +123,19 @@ class MuteCommands {
 
         SendClientMessage(playerId, Color::Information, "Current muted players:");
 
-        new message[128], displayed = 0;
+        new message[128], displayed = 0, durationText[10];
         for (new player = 0; player <= PlayerManager->highestPlayerId(); player++) {
             if (Player(player)->isConnected() && !Player(player)->isNonPlayerCharacter()) {
                 if (MuteManager->isMuted(player) == true) {
                     if (MuteManager->muteDuration(player) == -1)
                         format(message, sizeof(message), " %s (Id:%d) - {33CCFF}pemanent{FFFFFF}.",
                             Player(player)->nicknameString(), player);
-                    else
-                        format(message, sizeof(message), " %s (Id:%d) - {33CCFF}%d minute(s) remaining{FFFFFF}.",
-                            Player(player)->nicknameString(), player, MuteManager->muteDuration(player));
+                    else {
+                        Time->formatRemainingTime(MuteManager->muteDuration(player), durationText,
+                            sizeof(durationText), /** force minutes **/ true);
+                        format(message, sizeof(message), " %s (Id:%d) - {33CCFF}%s minutes remaining{FFFFFF}.",
+                            Player(player)->nicknameString(), player, durationText);
+                    }
 
                     SendClientMessage(playerId, Color::Information, message);
                     ++displayed;

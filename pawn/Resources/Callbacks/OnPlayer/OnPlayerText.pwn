@@ -26,8 +26,11 @@ public OnPlayerText(playerid, text[]) {
         if (MuteManager->muteDuration(playerid) == -1)
             SendClientMessage(playerid, Color::Error, "You're permanently muted and won't be able to chat.");
         else {
-            format(message, sizeof(message), "You're muted for another %d minutes and won't be able to chat.",
-                MuteManager->muteDuration(playerid));
+            new durationText[10];
+            Time->formatRemainingTime(MuteManager->muteDuration(playerid), durationText,
+                sizeof(durationText), /** force minutes **/ true);
+            format(message, sizeof(message), "You're muted for another %s minutes and won't be able to chat.",
+                durationText);
             SendClientMessage(playerid, Color::Error, message);
         }
 

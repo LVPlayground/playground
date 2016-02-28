@@ -33,6 +33,23 @@ lvp_resetmatch(playerId, params[]) {
 }
 #endif
 
+lvp_fixminigames(playerId, params[]) {
+    new bool: success = ResetMinigameStatus();
+    if (!success) {
+        SendClientMessage(playerId, Color::Error, "Unable to reset the minigame status: games are in progress.");
+        return 1;
+    }
+
+    SendClientMessage(playerId, Color::Success, "The minigame status has been reset.");
+
+    format(g_message, sizeof(g_message), "%s (Id:%d) has reset the minigame status.",
+        Player(playerId)->nicknameString(), playerId);
+    Admin(playerId, g_message);
+
+    return 1;
+    #pragma unused params
+}
+
 lvp_crew(playerId, params[]) {
     if (Command->parameterCount(params) == 0) {
         SendClientMessage(playerId, Color::Success, "This command sends a message to #LVP.Crew.");

@@ -579,6 +579,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(forward,        7, AdministratorLevel);
     lvp_command(stopchase,      9, AdministratorLevel);
     lvp_command(set,            3, AdministratorLevel);
+    lvp_command(fixminigames,  12, AdministratorLevel);
 
     // Commands for management
     lvp_command(man,            3, ManagementLevel);

@@ -24,6 +24,25 @@ new MinigameTypeInfo[minigameInfo];
 CRace__GetPlayerStatus(playerId) { return playerId != 9001 ? 0 : 1; }
 #endif
 
+// Resets the minigame status in case one of the games reached an inconsistent state. Will verify
+// that it indeed is safe to reset the status by asserting that no players are engaged in a minigame
+// and will return a boolean indicating whether the state was reset.
+bool: ResetMinigameStatus() {
+    for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
+        if (!Player(playerId)->isConnected() || Player(playerId)->isNonPlayerCharacter())
+            continue;
+
+        if (IsPlayerInMinigame(playerId))
+            return false;
+    }
+
+    MinigameTypeInfo[CurrentMinigame] = STATUS_NONE;
+    MinigameTypeInfo[Progress] = 0;
+    MinigameTypeInfo[Players] = 0;
+    MinigameTypeInfo[CashForWinner] = 0;
+    return true;
+}
+
 // Alright somebody has executed a minigame command (e.g. /sniper, /minigun). Let's see!
 MiniGamesSignup(playerId, minigame) {
     new notice[256], minigameMaxPlayers = ReturnMinigameMaxPlayers(minigame);

@@ -137,23 +137,31 @@ class Player <playerId (MAX_PLAYERS)> {
      *
      * @param reason The reason for this ban, limited to 128 characters of text.
      * @param administratorId Id of the administrator who banned the player (optional).
-     * @param duration Duration of the ban, given in seconds (optional).
+     * @param duration Duration of the ban, given in days (optional).
      */
-    public ban(reason[], administratorId = Player::InvalidId, duration = 0) {
-        BanManager->recordBanEntry(playerId, administratorId, reason, duration);
+    public ban(reason[], administratorId = Player::InvalidId, duration = 3) {
+        BanManager->recordBanEntry(playerId, administratorId, reason, duration * 86400);
 
         new administratorNickname[24] = "an administrator";
         if (Player(administratorId)->isConnected() && UndercoverAdministrator(administratorId)->isUndercoverAdministrator() == false)
             GetPlayerName(administratorId, administratorNickname, sizeof(administratorNickname));
 
-        SendClientMessage(playerId, Color::Error, "You have been banned from Las Venturas Playground.");
+        for (new row = 1; row <= 20; row++)
+            SendClientMessage(playerId, 0, "\n");
+
+        SendClientMessage(playerId, Color::Warning, "You have been banned from Las Venturas Playground!");
 
         new message[128];
         format(message, sizeof(message), "You were banned by {33CCFF}%s{FFFFFF} for the following reason:", administratorNickname);
         SendClientMessage(playerId, Color::Information, message);
-        SendClientMessage(playerId, Color::Information, reason);
+        SendClientMessage(playerId, Color::GangChat, reason);
 
-        // TODO: Display the expiration time as well? Not sure how to format the date/time.
+        SendClientMessage(playerId, Color::Information, ""); // spacing.
+
+        format(message, sizeof(message), "For a duration of: {33CCFF}%d days{FFFFFF}.", duration);
+        SendClientMessage(playerId, Color::Information, message);
+
+        // TODO: Do date magic to show an accurate unban date & time.
 
         SendClientMessage(playerId, Color::Information, ""); // spacing.
 

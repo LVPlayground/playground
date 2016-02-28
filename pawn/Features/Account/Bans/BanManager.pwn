@@ -36,8 +36,8 @@ public DelayedKick(playerId) {
  */
 class BanManager {
     // If an administrator does not specify how long a ban should last for, what is the default
-    // duration we should apply to the ban? Specify this in number of seconds.
-    const DefaultBanDuration = 86400 * 31 /** 31 days **/;
+    // duration we should apply to the ban? Specify this in number of days.
+    public const DefaultBanDuration = 3;
 
     // The query we use to verify whether a player can play on LVP.
     new m_verifyQuery;
@@ -226,12 +226,9 @@ class BanManager {
      * @param reason The reason as to why the player is being banned.
      * @param duration The duration of the ban in number of seconds.
      */
-    public recordBanEntry(playerId, administratorId, reason[], duration = 0) {
+    public recordBanEntry(playerId, administratorId, reason[], duration) {
         if (administratorId != Player::InvalidId && Player(playerId)->isConnected() == false)
             return; // the player in question isn't connected to the server.
-
-        if (duration == 0)
-            duration = DefaultBanDuration;
 
         new banIpAddress[16], expirationTime = Time->currentTime() + duration;
         format(banIpAddress, sizeof(banIpAddress), Player(playerId)->ipAddressString());

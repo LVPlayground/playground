@@ -10,29 +10,13 @@
  * @author Max "Cake" Blokker <cake@sa-mp.nl>
  */
 class BanCommands {
-    // Since it is easy to make a mistake, we first check if the player isn't owner of a health- or
-    // armour prop, or the health or armour statue.
-    // new m_specialHealthArmourWarning[MAX_PLAYERS];
-
-    /**
-     * To keep track of a special feature a player can use, we have to set it to 0 upon connecting.
-     *
-     * @param playerId The id of the player who just connected.
-     */
-    /*
-    @list(OnPlayerConnect)
-    public onPlayerConnect(playerId) {
-        m_specialHealthArmourWarning[playerId] = 0;
-    }
-    */
-
     /**
      * A permanent removal of the player is in accordance with serious events like hacking and cheating.
      * The player is banned, and informed why, and won't be able to rejoin the server untill the crew
      * has unbanned the user or the ban expiration date has been reached.
      *
      * @param playerId Id of the player who typed the command.
-     * @command /ban [player] [reason]
+     * @command /ban [player] [days=3] [reason]
      */
     @command("ban")
     public onBanCommand(playerId, params[]) {
@@ -40,7 +24,7 @@ class BanCommands {
             return 0;
 
         if (Command->parameterCount(params) < 2) {
-            SendClientMessage(playerId, Color::Information, "Usage: /ban [player] [reason]");
+            SendClientMessage(playerId, Color::Information, "Usage: /ban [player] [days=3] [reason]");
             return 1;
         }
 
@@ -53,8 +37,15 @@ class BanCommands {
             return 1;
         }
 
-        if (Player(subjectId)->isAdministrator() == true && Player(playerId)->isManagement() == false) {
+        if (Player(subjectId)->isAdministrator() == true) {
             SendClientMessage(playerId, Color::Error, "You can't ban a crew member!");
+            return 1;
+        }
+
+        new durationLength[8], duration = (Command->integerParameter(params, 1) == -1) ?
+            BanManager::DefaultBanDuration : Command->integerParameter(params, 1);
+        if (duration < 1) {
+            SendClientMessage(playerId, Color::Error, "Please input a valid ban duration, or leave empty for default.");
             return 1;
         }
 
@@ -63,16 +54,25 @@ class BanCommands {
         parameterOffset = min(strlen(params), Command->startingIndexForParameter(params, 0)
             + strlen(subject) + 1);
 
-        Player(subjectId)->ban(params[parameterOffset], playerId);
-        // m_specialHealthArmourWarning[playerId] = 0;
+        if (Command->integerParameter(params, 1) != -1) {
+            Command->stringParameter(params, 1, durationLength, sizeof(durationLength));
+            parameterOffset += strlen(durationLength) + 1;
+        }
+
+        if (strlen(params[parameterOffset]) == 0) {
+            SendClientMessage(playerId, Color::Error, "Please input a valid ban reason.");
+            return 1;
+        }
+
+        Player(subjectId)->ban(params[parameterOffset], playerId, duration);
 
         new administrator[MAX_PLAYER_NAME+1], message[256];
         Player(playerId)->nickname(administrator, sizeof(administrator));
         if (UndercoverAdministrator(playerId)->isUndercoverAdministrator() == true)
             UndercoverAdministrator(playerId)->getOriginalUsername(administrator, sizeof(administrator));
 
-        format(message, sizeof(message), "%s (Id:%d) has been banned by %s (Id:%d): %s",
-            Player(subjectId)->nicknameString(), subjectId, administrator, playerId, params[parameterOffset]);
+        format(message, sizeof(message), "%s (Id:%d) has been banned by %s (Id:%d) for %d days: %s",
+            Player(subjectId)->nicknameString(), subjectId, administrator, playerId, duration, params[parameterOffset]);
         Admin(playerId, message);
 
         return 1;

@@ -119,7 +119,7 @@ stock CBomb__CheckPlayer(i)
 
             // Player using their /inf car can't add a bomb because of abuse
             if (GetPlayerVehicleID(i) == sprayTagGetPlayerVehicleid(i)) {
-                ShowBoxForPlayer(i, "Sorry, you can't add carbombs to /inf cars!");
+                ShowBoxForPlayer(i, "Sorry, you can't add carbombs to spawned vehicles!");
                 RemovePlayerFromBombShop(i);
                 return 1;
             }

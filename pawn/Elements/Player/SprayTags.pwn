@@ -329,13 +329,13 @@ sprayTagOnPlayerSpray(playerid, tagid)
         // Do the achievement first so the gametext message does not get in the way.
         CAchieve__SprayTag(playerid);
 
-        format(szGameTextMsg, 128, "~n~~g~%d/%d Tags Sprayed!~n~~n~~w~You have sprayed every tag. ~n~~b~You have access to a new command: ~y~/inf", n_TagsPlayerSprayed[playerid], sprayTagGetCount());
+        format(szGameTextMsg, 128, "~n~~g~%d/%d Tags Sprayed!~n~~n~~w~You have sprayed every tag. ~n~~b~You have access to spawn vehicles!", n_TagsPlayerSprayed[playerid], sprayTagGetCount());
         GameTextForPlayer(playerid, szGameTextMsg, 5000, 3);
 
-        SendClientMessage(playerid, COLOR_YELLOW, "* You can now use /inf to spawn a vehicle whenever you want!");
+        SendClientMessage(playerid, COLOR_YELLOW, "* You can now use /inf, /nrg and /ele to spawn a vehicle whenever you want!");
 
         new szNewsMsg[128];
-        format(szNewsMsg, 128, "~r~~h~%s~w~ has sprayed all ~y~%d~w~ spraytags and unlocked a secret command",
+        format(szNewsMsg, 128, "~r~~h~%s~w~ has sprayed all ~y~%d~w~ spraytags and unlocked ability to spawn vehicles!",
             Player(playerid)->nicknameString(), sprayTagGetCount());
         NewsController->show(szNewsMsg);
     }

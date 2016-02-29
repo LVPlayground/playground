@@ -40,7 +40,8 @@ class ReportHandler {
             return 1;
         }
 
-        new suspectedPlayer[MAX_PLAYER_NAME + 1], suspectedPlayerId = INVALID_PLAYER_ID, report[128], parameterOffset = 0;
+        new suspectedPlayer[MAX_PLAYER_NAME + 1], suspectedPlayerId = INVALID_PLAYER_ID,
+            report[128], ircReport[128], parameterOffset = 0;
         Command->stringParameter(params, 0, suspectedPlayer, sizeof(suspectedPlayer));
         parameterOffset = min(strlen(params), Command->startingIndexForParameter(params, 0)
             + strlen(suspectedPlayer) + 1);
@@ -57,9 +58,17 @@ class ReportHandler {
             format(report, sizeof(report), "* Report by %s (Id:%d): Suspected player: %s (Id:%d) - Cheat/reason: %s",
                 Player(playerId)->nicknameString(), playerId, Player(suspectedPlayerId)->nicknameString(),
                 suspectedPlayerId, params[parameterOffset]);
-        } else // Just report the initial mentioned player Id or name.
+
+            format(ircReport, sizeof(ircReport), "%s %d %s %d %s", Player(playerId)->nicknameString(),
+                playerId, Player(suspectedPlayerId)->nicknameString(), suspectedPlayerId,
+                params[parameterOffset]);
+        } else { // Just report the initial mentioned player Id or name.
             format(report, sizeof(report), "* Report by %s (Id:%d): Suspected player: %s - Cheat/reason: %s",
                 Player(playerId)->nicknameString(), playerId, suspectedPlayer, params[parameterOffset]);
+
+            format(ircReport, sizeof(ircReport), "%s %d %s %s", Player(playerId)->nicknameString(),
+                playerId, suspectedPlayer, params[parameterOffset]);
+        }
 
         for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
             if (Player(subjectId)->isConnected() == false || Player(subjectId)->isAdministrator() == false)
@@ -68,15 +77,13 @@ class ReportHandler {
             SendClientMessage(subjectId, Color::AdministratorColor, report);
         }
 
+        IRC->broadcast(ReportIrcMessage, ircReport);
+
         if (Player(playerId)->isAdministrator() == false) {
             format(report, sizeof(report), "Your report has been delivered to the crew: {FFFFFF}Suspected player: %s - Cheat/reason: %s",
                 suspectedPlayer, params[parameterOffset]);
             SendClientMessage(playerId, Color::Success, report);
         }
-
-        format(report, sizeof(report), "%s %d %s %s", Player(playerId)->nicknameString(),
-            playerId, suspectedPlayer, params[parameterOffset]);
-        IRC->broadcast(ReportIrcMessage, report);
 
         return 1;
     }

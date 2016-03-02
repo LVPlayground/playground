@@ -51,8 +51,8 @@
     "Information about vehicles": [
       "Vehicles are marked on your radar with small grey squares.",
       "To modify a vehicle drive to one of the garages or by using /tune.",
-      "Vehicles can be spawned at all times by Crew members, and VIP members only during the cruise (/cruisecar).",
-      "Regular players are able to spawn an infernus,nrg-500,Elegy(/inf,/nrg,/ele) once they have sprayed 100 tags."
+      "Vehicles can be spawned at all times by Crew and VIP members, but only during the cruise (/cruisecar).",
+      "Regular players are able to spawn an Infernus, NRG-500 or Elegy (/inf, /nrg or /ele) once they have sprayed 100 tags."
     ],
     "Learn about upgrading your bank account": [
       "Go to the LV Main bank (/taxi 10 on foot or /tow 10 in a vehicle).",

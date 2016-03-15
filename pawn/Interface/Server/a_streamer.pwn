@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-#include <a_samp>
-
 // Definitions
 
 #define STREAMER_TYPE_OBJECT (0)

@@ -1630,3 +1630,10 @@ CFightClub__ShowFCMessage(playerid, messageid)
     }
     return 1;
 }
+
+bool: LegacyIsPlayerWatchingFC(playerId) {
+    if (IsPlayerWatchingFC[playerId])
+        return true;
+
+    return false;
+}

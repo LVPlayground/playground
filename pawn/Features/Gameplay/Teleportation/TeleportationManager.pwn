@@ -204,6 +204,11 @@ class TeleportationManager {
                 SendClientMessage(playerId, Color::Error, "This player is currently in the Fightclub, use \"/fight watch\".");
                 return false;
             }
+
+            if (LegacyIsPlayerWatchingFC(subjectId)) {
+                SendClientMessage(playerId, Color::Error, "This player is watching someone in the Fightclub.");
+                return false;
+            }
 #endif
 
             if (JailController->isPlayerJailed(subjectId) == true) {

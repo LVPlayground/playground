@@ -27,8 +27,8 @@ Original Author: Mattias Kristiansson (iou)
 #define FC_COUNTDOWN_SOUND      1058
 
 #define FC_STATUS_NONE          0
-#define FC_STATUS_INVITED       1
-#define FC_STATUS_WAITING       2
+#define FC_STATUS_INVITED       1  // not used for Matches[][status]
+#define FC_STATUS_WAITING       2  // not used for Matches[][status]
 #define FC_STATUS_ACTIVE        3
 #define FC_STATUS_FIGHTING      4
 
@@ -632,92 +632,83 @@ CFightClub__OnConnect(playerid)
     return 1;
 }
 
-CFightClub__OnDisconnect(playerid)
+// To be called when a player disconnects from the server. Their fight club state will be cleaned up
+// if they were somehow engaged with the feature. Note that there is no reason to clean up them
+// watching fight club, as that only affects their local status.
+CFightClub__OnDisconnect(playerId)
 {
-    // Was player in any match or was/has he invited?
-    if(CFightClub__IsPlayerInAnyMatch(playerid))
-    {
-        new string[128];
-        new iPlayer1, iPlayer2, iPlayerStay;
-        for(new i = 0; i < FC_MAX_MATCHES; i++)
-        {
-            iPlayer1 = Matches[i][player1];
-            iPlayer2 = Matches[i][player2];
-            if(iPlayer1 == playerid || iPlayer2 == playerid)
-            {
-                if(Matches[i][status] == FC_STATUS_ACTIVE)
-                {
-                    CFightClub__SetKillCount(playerid, 0);
-                    CFightClub__SetDeathCount(playerid, 0);
+    for(new i = 0; i < FC_MAX_MATCHES; i++) {
+        new firstPlayer = Matches[i][player1];
+        new secondPlayer = Matches[i][player2];
 
-                    if(Matches[i][player1] == playerid)
-                    {
-                        iPlayerStay = iPlayer2;
-                        format(string, sizeof(string), "* %s has withdrawn the invite, because he/she left the server.", PlayerName(playerid));
-                        SendClientMessage(iPlayerStay, COLOR_RED, string);
+        if (firstPlayer != playerId && secondPlayer != playerId)
+            continue;
 
-                        CFightClub__ResetMatch(i);
+        // Whether this player was the one starting the match.
+        new bool: wasPrimaryPlayer = firstPlayer == playerId;
 
-                        CFightClub__ResetPlayerFCInfo(iPlayer1);
-                        CFightClub__ResetPlayerFCInfo(iPlayer2);
-                    }
-                    else if(Matches[i][player2] == playerid)
-                    {
-                        iPlayerStay = iPlayer1;
-                        format(string, sizeof(string), "* Your invite to %s has been canceled, because he/she left the server.", PlayerName(playerid));
-                        SendClientMessage(iPlayerStay, COLOR_RED, string);
+        // Id of the second player in the match.
+        new otherPlayer = firstPlayer != playerId ? firstPlayer : secondPlayer;
 
-                        CFightClub__ResetMatch(i);
+        switch (Matches[i][status]) {
+            // The match is inactive, yet the player is part of it. This should not happen. The
+            // state will be cleaned up as part of the ResetMatch() call later.
+            case FC_STATUS_NONE:
+                break;
 
-                        CFightClub__ResetPlayerFCInfo(iPlayer1);
-                        CFightClub__ResetPlayerFCInfo(iPlayer2);
-                    }
-                }
-                else if(Matches[i][status] == FC_STATUS_FIGHTING)
-                {
-                    CFightClub__SetKillCount(iPlayer1, 0);
-                    CFightClub__SetDeathCount(iPlayer1, 0);
-                    CFightClub__SetKillCount(iPlayer2, 0);
-                    CFightClub__SetDeathCount(iPlayer2, 0);
+            // The match has been created, but has not advanced to the actual fighting state. The
+            // invite of the match will be canceled by the ResetMatch() call later.
+            case FC_STATUS_ACTIVE: {
+                CFightClub__SetKillCount(playerId, 0);
+                CFightClub__SetDeathCount(playerId, 0);
 
-                    new sMessage[256];
-                    if(Matches[i][player1] == playerid)
-                    {
-                        iPlayerStay = Matches[i][player2];
-                    }
-                    else if(Matches[i][player2] == playerid)
-                    {
-                        iPlayerStay = Matches[i][player1];
-                        GivePlayerMoney(iPlayerStay, FC_MONEY);
-                    }
+                new message[128];
+                if (wasPrimaryPlayer)
+                    format(message, sizeof(message), "* %s has withdrawn their invite because they left the server.", PlayerName(playerId));
+                else
+                    format(message, sizeof(message), "* %s cannot accept your invite because they left the server.", PlayerName(playerId));
 
-                    format(string, sizeof(string), "* The fight has ended due to %s leaving the server.", PlayerName(playerid));
-                    SendClientMessage(iPlayerStay, COLOR_RED, string);
+                SendClientMessage(otherPlayer, COLOR_RED, message);
+                break;
+            }
 
-                    SpawnPlayer(iPlayerStay);
+            // The match has begun and the players are fighting each other.
+            case FC_STATUS_FIGHTING: {
+                CFightClub__SetKillCount(firstPlayer, 0);
+                CFightClub__SetDeathCount(firstPlayer, 0);
+                CFightClub__SetKillCount(secondPlayer, 0);
+                CFightClub__SetDeathCount(secondPlayer, 0);
 
-                    CFightClub__ResetMatch(i);
+                new message[128];
 
-                    CFightClub__ResetPlayerFCInfo(iPlayer1);
-                    CFightClub__ResetPlayerFCInfo(iPlayer2);
+                // Award the prize money when the other player initiated the match.
+                if (!wasPrimaryPlayer)
+                    GivePlayerMoney(otherPlayer, FC_MONEY);
 
-                    // Send news message late so that players who spectated has time to respawn on ResetMatch -> StopWatch
-                    format(sMessage, sizeof(sMessage), "The fight between ~r~~h~%s~w~ and ~r~~h~%s~w~ ended due to ~r~~h~%s~w~ leaving the server!",
-                        Player(iPlayerStay)->nicknameString(), Player(playerid)->nicknameString(), Player(playerid)->nicknameString());
-                    NewsController->show(sMessage);
-                }
+                format(message, sizeof(message), "* The fight has been concluded because %s has left the server.", PlayerName(playerId));
+                SendClientMessage(otherPlayer, COLOR_RED, message);
+
+                // Respawn the other player, now that they won't be part of the fight anymore.
+                SpawnPlayer(otherPlayer);
+
+                // Distribute a news message about the fight having ended.
+                format(message, sizeof(message), "The fight between ~r~~h~%s~w~ and ~r~~h~%s~w~ ended due to ~r~~h~%s~w~ leaving the server!",
+                    PlayerName(firstPlayer), PlayerName(secondPlayer), PlayerName(playerId));
+
+                NewsController->show(message);
+                break;
             }
         }
-    }
-    // Was player spectating?
-    if(IsPlayerWatchingFC[playerid])
-    {
-        CFightClub__StopWatch(playerid);
-    }
 
-    SetPlayerInterior(playerid, 0); // Either way, don't make SaveInfo save the interior.
-    return 1;
+        CFightClub__ResetMatch(i);
+
+        if (firstPlayer != -1)
+            CFightClub__ResetPlayerFCInfo(firstPlayer);
+        if (secondPlayer != -1)
+            CFightClub__ResetPlayerFCInfo(secondPlayer);
+    }
 }
+
 //==============================================
 //---------------   WATCH  ---------------------
 //==============================================

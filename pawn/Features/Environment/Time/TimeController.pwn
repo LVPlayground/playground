@@ -1,10 +1,23 @@
-// Copyright 2006-2015 Las Venturas Playground. All rights reserved.
+// Copyright 2006-2016 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
 /**
  * Controlling time on Las Venturas Playground should be done through the Time controller, which
  * keeps track of what the active time is in the main world and for certain players.
+ *
+ * This class maintains three kinds of times for each player:
+ *
+ *   (1) Global Time, current time of the San Andreas world. Updates automatically. This will be
+ *       used for the majority of players.
+ *
+ *   (2) Player Default Time. VIPs and beyond have the ability to set a custom default time, which
+ *       takes precedence over the global time. This allows them to always have their time set in
+ *       the evening, except when engaging in activities such as minigames.
+ *
+ *   (3) Player Override Time. Can be set for any player, and takes precedence over any other sort
+ *       of time. Used for creating an equal playing field for e.g. minigames.
+ *
  *
  * The time will be updated throughout an in-game day (the duration of which is defined in the
  * DayCycleDuration constant) using a parabola formula, because players prefer the light provided by
@@ -43,7 +56,11 @@ class TimeController {
     // The current time in the main world applying to all players.
     new m_globalTime;
 
-    // A player-specific time which should override the global time.
+    // A player-specific default time that should apply to them instead of the global time. This can
+    // still be overridden by the override time, which is important for e.g. minigames.
+    new m_playerDefaultTime[MAX_PLAYERS] = { InvalidTime, ... };
+
+    // A player-specific time which should override both the global and the player's default times.
     new m_playerOverrideTime[MAX_PLAYERS] = { InvalidTime, ... };
 
     /**
@@ -115,6 +132,7 @@ class TimeController {
     @list(OnPlayerConnect)
     public onPlayerConnect(playerId) {
         m_playerOverrideTime[playerId] = InvalidTime;
+        m_playerDefaultTime[playerId] = InvalidTime;
     }
 
     /**
@@ -134,6 +152,9 @@ class TimeController {
         for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
             if (Player(playerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter())
                 continue; // the player isn't connected, or is a NPC.
+
+            if (m_playerDefaultTime[playerId] != InvalidTime)
+                continue; // the player has a custom default time set.
 
             if (m_playerOverrideTime[playerId] != InvalidTime)
                 continue; // the player has a custom override time set.
@@ -175,12 +196,56 @@ class TimeController {
     }
 
     /**
+     * Resets the time for the |playerId| to whichever time definition takes most precedence.
+     *
+     * @param playerId Id of the player to reset the time for.
+     */
+    private resetTimeForPlayer(playerId) {
+        new hours, minutes;
+
+        if (m_playerOverrideTime[playerId] != InvalidTime)
+            this->fromTimestamp(m_playerOverrideTime[playerId], hours, minutes);
+        else if (m_playerDefaultTime[playerId] != InvalidTime)
+            this->fromTimestamp(m_playerDefaultTime[playerId], hours, minutes);
+        else
+            this->fromTimestamp(m_globalTime, hours, minutes);
+
+        SetPlayerTimePrivate(playerId, hours, minutes);
+    }
+
+    /**
+     * Sets a default time for this player. This will override the global time (and associated time
+     * updates) for them, but will not override explicit override times used for e.g. minigames and
+     * spawn selection.
+     *
+     * @param playerId Id of the player to set the default time for.
+     * @param hours Number of hours in the day, which should be in the range of [0, 23].
+     * @param minutes Number of minutes in the hour, which should be in the range of [0, 59].
+     */
+    public setPlayerDefaultTime(playerId, hours, minutes) {
+        this->m_playerDefaultTime[playerId] = this->toTimestamp(hours, minutes);
+        if (m_playerOverrideTime[playerId] == InvalidTime)
+            SetPlayerTimePrivate(playerId, hours, minutes);
+    }
+
+    /**
+     * Releases the player's default time, which means they will be subject to the global time.
+     *
+     * @param playerId Id of the player to reset default time for.
+     */
+    public releasePlayerDefaultTime(playerId) {
+        this->m_playerDefaultTime[playerId] = InvalidTime;
+        this->resetTimeForPlayer(playerId);
+    }
+
+    /**
      * Sets an override time for this player. Any global time updates will not be applied to them
      * anymore, and we'll instead stick to this time until it's released.
      *
      * @param playerId Id of the player to override the global time for.
      * @param hours Number of hours in the day, which should be in the range of [0, 23].
      * @param minutes Number of minutes in the hour, which should be in the range of [0, 59].
+     * @param set Whether to immediately apply the new override time.
      */
     public setPlayerOverrideTime(playerId, hours, minutes, bool: set = true) {
         this->m_playerOverrideTime[playerId] = this->toTimestamp(hours, minutes);
@@ -195,12 +260,8 @@ class TimeController {
      * @param playerId Id of the player to release the override time for.
      */
     public releasePlayerOverrideTime(playerId) {
-        new hours, minutes;
-        this->fromTimestamp(m_globalTime, hours, minutes);
-
-        SetPlayerTimePrivate(playerId, hours, minutes);
-
         this->m_playerOverrideTime[playerId] = InvalidTime;
+        this->resetTimeForPlayer(playerId);
     }
 };
 

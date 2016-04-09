@@ -142,7 +142,7 @@ class VeryImportantPlayersCommands {
      *
      * @param playerId Id of the player who executed this command.
      * @param subjectId Id of the player who this command should be applied to.
-     * @command /my time [0-23]
+     * @command /my time [off | 0-23]
      */
     @switch(PlayerCommand, "time")
     public onPlayerTimeCommand(playerId, subjectId, params[]) {
@@ -155,17 +155,26 @@ class VeryImportantPlayersCommands {
         }
 
         if (Command->parameterCount(params) != 1) {
-            SendClientMessage(playerId, Color::Information, "Usage: /my time [0-23]");
+            SendClientMessage(playerId, Color::Information, "Usage: /my time [off | 0-23]");
+            return 1;
+        }
+
+        new argument[32];
+        Command->stringParameter(params, 0, argument, sizeof(argument));
+
+        if (strcmp(argument, "off", true) == 0) {
+            TimeController->releasePlayerDefaultTime(playerId);
+            SendClientMessage(playerId, Color::Success, "The time has been released for you!");
             return 1;
         }
 
         new hour = Command->integerParameter(params, 0);
         if (Command->parameterCount(params) != 1) {
-            SendClientMessage(playerId, Color::Information, "Usage: /my time [0-23]");
+            SendClientMessage(playerId, Color::Information, "Usage: /my time [off | 0-23]");
             return 1;
         }
 
-        TimeController->setPlayerOverrideTime(playerId, hour, 0);
+        TimeController->setPlayerDefaultTime(playerId, hour, 0);
 
         SendClientMessage(playerId, Color::Success, "The time has been changed for you!");
 

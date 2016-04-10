@@ -33,8 +33,6 @@ class RaceCommands {
   // Either starts or joins the race with |id|, depending on whether an instance of the race is
   // currently accepting sign-ups. If not, a new sign-up round will be started.
   raceStart(player, id) {
-    return player.sendMessage(Message.RACE_ERROR_DISABLED);
-      
     if (player.activity != Player.PLAYER_ACTIVITY_NONE)
       return player.sendMessage(Message.RACE_ERROR_ALREADY_ENGAGED);
 
@@ -53,8 +51,6 @@ class RaceCommands {
   // best times, and personalized best times if the player has logged in to their account. This
   // command is asynchronous because the personalized times may have to be read from the database.
   raceOverview(player) {
-    return player.sendMessage(Message.RACE_ERROR_DISABLED);
-      
     this.raceManager_.listRacesForPlayer(player).then(races => {
       // Bail out if there are no races, since there won't be anything to display.
       if (!races.length)

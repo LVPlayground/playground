@@ -144,6 +144,11 @@ class Player extends Extendable {
       throw new Error('Unknown vehicle to put the player in: ' + vehicle);
   }
 
+  // Plays |soundId| for the player at their current position.
+  playSound(soundId) {
+    pawnInvoke('PlayerPlaySound', 'iifff', this.id_, soundId, 0, 0, 0);
+  }
+
   // Returns or updates the activity of this player. Updating the activity will be propagated to
   // the Pawn part of the gamemode as well.
   get activity() { return this.activity_; }

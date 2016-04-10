@@ -4,12 +4,22 @@
     "ANNOUNCE_MINIGAME": "{CCD782}Sign up for the {838F31}%s{CCD782}! Type {838F31}%s{CCD782} to join ({838F31}%${CCD782}).",
 
     "COMMAND_ERROR_INSUFFICIENT_RIGHTS": "@error Sorry, this command is only available to %s.",
+    "COMMAND_ERROR": "@error %s",
     "COMMAND_USAGE": "@usage %s",
 
     "DEBUG_FRAME_COUNTER": "{33AA33}The server averaged %d FPS in the last %d seconds.",
     "DEBUG_TRACE_INVALID_TIME": "@error A trace must last between 0 and 300 seconds.",
     "DEBUG_TRACE_STARTED": "{33AA33}The trace you requested is now being recorded.",
     "DEBUG_TRACE_FINISHED": "{33AA33}The trace you requested has finished recording.",
+
+    "FRIENDS_ADDED": "@success %s has been added to your friend list.",
+    "FRIENDS_EMPTY": "{FF9900}You haven't added any friends yet!",
+    "FRIENDS_ERROR_ADD_SELF": "@error As amazing as we're sure you are, you can't add yourself as a friend.",
+    "FRIENDS_ERROR_NOT_REGISTERED": "@error You need to register on https://sa-mp.nl/ to use this command.",
+    "FRIENDS_ERROR_FRIEND_NOT_REGISTERED": "@error %s needs to register on https://sa-mp.nl/ before you can add them as a friend.",
+    "FRIENDS_HEADER": "{FF9900}The following %d people are on your friends list:",
+    "FRIENDS_REMOVED": "@success %s has been removed from your friend list.",
+    "FRIENDS_USAGE": "{FFFFFF}Use `/friends add` to add a friend, or `/friends remove` to remove one.",
 
     "RACE_ERROR_NO_RACES_AVAILABLE": "@error Sorry, there are no races available right now.",
     "RACE_ERROR_INVALID_RACE_ID": "@error Sorry, that is not a known race. Type /race for an overview!",

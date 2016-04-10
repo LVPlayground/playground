@@ -90,8 +90,9 @@ public OnPlayerText(playerid, text[]) {
     // Crew chat (@).
     if (text[0] == '@' && strlen(text) > 1) {
         new prefix[MAX_PLAYER_NAME];
-        if (!strcmp(Player(playerid)->nicknameString(), "Luce"))
-            format(prefix, sizeof(prefix), "Lady");
+
+        if (Account(playerid)->userId() == 31797 /* Luce */)
+            format(prefix, sizeof(prefix), "The");
         else if (Player(playerid)->isManagement() == true)
             format(prefix, sizeof(prefix), "Manager");
         else if (Player(playerid)->isAdministrator() == true)

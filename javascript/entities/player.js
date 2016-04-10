@@ -156,10 +156,12 @@ class Player extends Extendable {
 
   // Sends |message| to the player. The |message| can either be a scalar JavaScript value or an
   // instance of the Message class that exists in //base if you wish to use colors.
-  sendMessage(message) {
+  sendMessage(message, ...args) {
     // TODO: Automatically split up messages that are >144 characters.
     // TODO: Verify that any formatting used in |message| is valid.
-    // TODO: Support instances of the Message class when it exists.
+
+    if (message instanceof Message)
+      message = Message.format(message, ...args);
 
     pawnInvoke('SendClientMessage', 'iis', this.id_, 0x000000FF, message.toString());
   }

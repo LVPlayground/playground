@@ -9,6 +9,7 @@ const MESSAGE_DATA_FILE = 'data/messages.json';
 // example usage information or errors. In the message syntax, they are prepended by an at-sign.
 const MESSAGE_PREFIXES = {
   error: '{DC143C}Error{FFFFFF}: ',
+  success: '{33AA33}Success{FFFFFF}: ',
   usage: '{FF9900}Usage{FFFFFF}: ',
 };
 
@@ -33,7 +34,7 @@ class Message {
   // Any other symbols followed by an percentage sign will be ignored.
   static format(message, ...parameters) {
     let substitutionIndex = 0;
-    return message.replace(/%([sdfp\$t%])/g, (_, rule) => {
+    return String(message).replace(/%([sdfp\$t%])/g, (_, rule) => {
       if (rule == '%')
         return '%';  // special case: %% (percentage-sign literal).
 
@@ -130,7 +131,7 @@ class Message {
       if (!Message.validate(message))
         throw new Error('The message named "' + identifier + '" is not safe for usage.');
 
-      Message[identifier] = message;
+      Message[identifier] = new Message(message);
     });
   }
 
@@ -152,6 +153,16 @@ class Message {
   static validate(message) {
     // TODO: Figure out and implement the appropriate safety rules.
     return true;
+  }
+
+  // Constructs a new Message object for |message|. Can be silently converted to a string.
+  constructor(message) {
+    this.message_ = message;
+  }
+
+  // Called when converting this class to a string, either implicitly or explicitly.
+  toString() {
+    return this.message_;
   }
 };
 

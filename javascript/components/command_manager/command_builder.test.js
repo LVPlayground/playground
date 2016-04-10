@@ -16,7 +16,12 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
   // command on this player so that we can store the last message send to them.
   beforeEach(() => {
     player = Player.createForTest();
-    player.sendMessage = message => lastMessage = message;
+    player.sendMessage = (message, ...args) => {
+      if (message instanceof Message)
+        lastMessage = Message.format(message, ...args);
+      else
+        lastMessage = message;
+    };
 
     command = null;
     listener = null;

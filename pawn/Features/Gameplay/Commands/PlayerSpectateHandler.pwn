@@ -374,7 +374,7 @@ class PlayerSpectateHandler {
     @list(OnPlayerKeyStateChange)
     public OnPlayerKeyStateChange(playerId, newkeys, oldkeys) {
         if (m_isSpectating[playerId]) {
-            new playerIdToWatchAsString[3];
+            new playerIdToWatchAsString[4];
 
             if (PRESSED(KEY_LEFT)) {
                 for (new playerIdToWatch = m_watchingPlayerId[playerId]; playerIdToWatch >= 0;) {
@@ -389,7 +389,7 @@ class PlayerSpectateHandler {
                     if (playerId == playerIdToWatch || m_isSpectating[playerIdToWatch] == true)
                         continue;
 
-                    format(playerIdToWatchAsString, sizeof(playerIdToWatchAsString), "%d", playerIdToWatch);
+                    valstr(playerIdToWatchAsString, playerIdToWatch);
                     this->onWatchCommand(playerId, playerIdToWatchAsString);
                     break;
                 }
@@ -408,7 +408,7 @@ class PlayerSpectateHandler {
                     if (playerId == playerIdToWatch || m_isSpectating[playerIdToWatch] == true)
                         continue;
 
-                    format(playerIdToWatchAsString, sizeof(playerIdToWatchAsString), "%d", playerIdToWatch);
+                    valstr(playerIdToWatchAsString, playerIdToWatch);
                     this->onWatchCommand(playerId, playerIdToWatchAsString);
                     break;
                 }

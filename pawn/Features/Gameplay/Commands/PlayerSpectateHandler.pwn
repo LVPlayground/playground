@@ -362,4 +362,57 @@ class PlayerSpectateHandler {
     public bool: isSpectating(playerId) {
         return m_isSpectating[playerId];
     }
+
+    /**
+     * A state change of the player's key requires us to detect if the player wants to go to the
+     * previous or next player to watch. This is done by checking the left and right arrow keys.
+     *
+     * @param playerId Id of the player changing their keys.
+     * @param newKeys The new key(s).
+     * @param oldKeys The old key(s).
+     **/
+    @list(OnPlayerKeyStateChange)
+    public OnPlayerKeyStateChange(playerId, newkeys, oldkeys) {
+        if (m_isSpectating[playerId]) {
+            new playerIdToWatchAsString[3];
+
+            if (PRESSED(KEY_LEFT)) {
+                for (new playerIdToWatch = m_watchingPlayerId[playerId]; playerIdToWatch >= 0;) {
+                    if (playerIdToWatch == 0)
+                        playerIdToWatch = PlayerManager->highestPlayerId();
+                    else
+                        playerIdToWatch--;
+
+                    if (Player(playerIdToWatch)->isConnected() == false)
+                        continue;
+
+                    if (playerId == playerIdToWatch || m_isSpectating[playerIdToWatch] == true)
+                        continue;
+
+                    format(playerIdToWatchAsString, sizeof(playerIdToWatchAsString), "%d", playerIdToWatch);
+                    this->onWatchCommand(playerId, playerIdToWatchAsString);
+                    break;
+                }
+            }
+
+            if (PRESSED(KEY_RIGHT)) {
+                for (new playerIdToWatch = m_watchingPlayerId[playerId]; playerIdToWatch <= PlayerManager->highestPlayerId();) {
+                    if (playerIdToWatch == PlayerManager->highestPlayerId())
+                        playerIdToWatch = 0;
+                    else
+                        playerIdToWatch++;
+
+                    if (Player(playerIdToWatch)->isConnected() == false)
+                        continue;
+
+                    if (playerId == playerIdToWatch || m_isSpectating[playerIdToWatch] == true)
+                        continue;
+
+                    format(playerIdToWatchAsString, sizeof(playerIdToWatchAsString), "%d", playerIdToWatch);
+                    this->onWatchCommand(playerId, playerIdToWatchAsString);
+                    break;
+                }
+            }
+        }
+    }
 };

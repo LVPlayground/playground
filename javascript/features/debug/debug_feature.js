@@ -26,6 +26,12 @@ class DebugFeature extends Feature {
         .restrict(Player.LEVEL_MANAGEMENT)
         .parameters([{ name: 'seconds', type: CommandBuilder.NUMBER_PARAMETER }])
         .build(this.__proto__.captureTrace.bind(this));
+
+    // /sound [id]
+    playground.commandManager.buildCommand('sound')
+        .restrict(Player.LEVEL_MANAGEMENT)
+        .parameters([{ name: 'sound', type: CommandBuilder.NUMBER_PARAMETER }])
+        .build(this.__proto__.playSound.bind(this));
   }
 
   // Displays the number of FPS the server was able to handle since the last call to this command.
@@ -60,6 +66,11 @@ class DebugFeature extends Feature {
     });
 
     player.sendMessage(Message.DEBUG_TRACE_STARTED);
+  }
+
+  // Plays |soundId| for all in-game players.
+  playSound(soundId) {
+    Player.forEach(player => player.playSound(soundId));
   }
 }
 

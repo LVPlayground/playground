@@ -34,23 +34,21 @@ class FriendsCommands {
   addFriend(player, friendPlayer) {
     if (!player.isRegistered()) {
       player.sendMessage(Message.FRIENDS_ERROR_NOT_REGISTERED);
-      return true;
+      return;
     }
 
     if (!friendPlayer.isRegistered()) {
       player.sendMessage(Message.FRIENDS_ERROR_FRIEND_NOT_REGISTERED, friendPlayer.name);
-      return true;
+      return;
     }
 
     if (player === friendPlayer) {
       player.sendMessage(Message.FRIENDS_ERROR_ADD_SELF);
-      return true;
+      return;
     }
 
     this.friendsManager_.addFriend(player, friendPlayer).then(() =>
         player.sendMessage(Message.FRIENDS_ADDED, friendPlayer.name));
-
-    return true;
   }
 
   // Lists the friends of |player|. Administrators can also list the friends of other players by
@@ -60,7 +58,7 @@ class FriendsCommands {
 
     if (!subjectPlayer.isRegistered()) {
       player.sendMessage(Message.FRIENDS_ERROR_NOT_REGISTERED);
-      return true;
+      return;
     }
 
     this.friendsManager_.getFriends(subjectPlayer).then(friends => {
@@ -87,22 +85,18 @@ class FriendsCommands {
 
       player.sendMessage(Message.FRIENDS_USAGE);
     });
-
-    return true;
   }
 
   // Removes |name| as a friend of |player|. This will persist between playing sessions.
   removeFriend(player, name) {
     if (!player.isRegistered()) {
       player.sendMessage(Message.FRIENDS_ERROR_NOT_REGISTERED);
-      return true;
+      return;
     }
 
     this.friendsManager_.removeFriend(player, name).then(
         name  => player.sendMessage(Message.FRIENDS_REMOVED, name),
         error => player.sendMessage(Message.COMMAND_ERROR, error.message));
-
-    return true;
   }
 }
 

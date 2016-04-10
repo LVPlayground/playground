@@ -22,8 +22,11 @@ class MyFeature extends Feature {
 }
 ```
 
+Components can also use the EventListener, but are expected to keep track of event lifetime
+themselves (i.e. by calling `dispose()` at an appropriate time.)
+
 The following events are supported on the `EventListener` class.
 
   * **playerconnect**: `onPlayerConnect(player : Player)`
-  * **playerdisconnect**: `onPlayerDisconnect(player : Player, reason)`
-  * **playerlogin**: `onPlayerLogin(player : Player, userId)`
+  * **playerdisconnect**: `onPlayerDisconnect(player : Player, reason : Number)`
+  * **playerlogin**: `onPlayerLogin(player : Player, userId : Number)`

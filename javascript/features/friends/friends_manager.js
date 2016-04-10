@@ -41,26 +41,22 @@ const REMOVE_QUERY = `
 // An object of last active times is being maintained by this class, containing a map from nicknames
 // to either |CurrentlyOnline| or a timestamp representing their most recent disconnection time.
 class FriendsManager {
-  constructor(database) {
+  constructor(database, eventListener) {
     this.database_ = database;
 
     this.friends_ = {};
     this.lastActive_ = {};
     this.loadPromises_ = {};
 
-    global.addEventListener('playerconnect', this.__proto__.onPlayerConnect.bind(this));
-    global.addEventListener('playerdisconnect', this.__proto__.onPlayerDisconnect.bind(this));
-    global.addEventListener('playerlogin', this.__proto__.onPlayerLogin.bind(this));
+    eventListener.addEventListener('playerconnect', this.__proto__.onPlayerConnect.bind(this));
+    eventListener.addEventListener('playerdisconnect', this.__proto__.onPlayerDisconnect.bind(this));
+    eventListener.addEventListener('playerlogin', this.__proto__.onPlayerLogin.bind(this));
   }
 
   // Called when a player connects to Las Venturas Playground. Players that added them to their
   // friend list will hear a sound informing them of their connection. Note that there are cases
   // where this could go wrong, for example when someone uses a registered name that's not theirs.
-  onPlayerConnect(event) {
-    const player = Player.get(event.playerid);
-    if (!player)
-      return;
-
+  onPlayerConnect(player) {
     const playerName = player.name;
     Object.keys(this.friends_).forEach(playerId => {
       if (!this.friends_[playerId].find(friend => friend.name == playerName))
@@ -73,11 +69,7 @@ class FriendsManager {
   }
 
   // Called when a player disconnects from Las Venturas Playground. Clears their friend list.
-  onPlayerDisconnect(event) {
-    const player = Player.get(event.playerid);
-    if (!player)
-      return;
-
+  onPlayerDisconnect(player, reason) {
     if (this.friends_.hasOwnProperty(player.id))
       delete this.friends_[player.id];
     if (this.loadPromises_.hasOwnProperty(player.id))
@@ -88,13 +80,7 @@ class FriendsManager {
   }
 
   // Called when a player logs in to their account. Will start loading their friends.
-  onPlayerLogin(event) {
-    const player = Player.get(event.playerid);
-    if (!player)
-      return;
-
-    const userId = event.userid;
-
+  onPlayerLogin(player, userId) {
     this.lastActive_[userId] = FriendsManager.CURRENTLY_ONLINE;
     this.loadPromises_[player.id] = this.database_.query(LOAD_QUERY, userId).then(results => {
       let friends = [];

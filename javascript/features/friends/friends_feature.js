@@ -13,7 +13,7 @@ class FriendsFeature extends Feature {
   constructor(playground) {
     super(playground);
 
-    this.friendsManager_ = new FriendsManager(playground.database);
+    this.friendsManager_ = new FriendsManager(playground.database, this.createEventListener());
     this.friendsCommands_ = new FriendsCommands(this.friendsManager_, playground.commandManager);
   }
 

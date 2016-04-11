@@ -376,7 +376,7 @@ class PlayerSpectateHandler {
         if (m_isSpectating[playerId]) {
             new playerIdToWatchAsString[4];
 
-            if (PRESSED(KEY_LEFT)) {
+            if (PRESSED(KEY_JUMP)) {
                 for (new playerIdToWatch = m_watchingPlayerId[playerId]; playerIdToWatch >= 0;) {
                     if (playerIdToWatch == 0)
                         playerIdToWatch = PlayerManager->highestPlayerId();
@@ -395,7 +395,7 @@ class PlayerSpectateHandler {
                 }
             }
 
-            if (PRESSED(KEY_RIGHT)) {
+            if (PRESSED(KEY_SPRINT)) {
                 for (new playerIdToWatch = m_watchingPlayerId[playerId]; playerIdToWatch <= PlayerManager->highestPlayerId();) {
                     if (playerIdToWatch == PlayerManager->highestPlayerId())
                         playerIdToWatch = 0;

@@ -155,9 +155,7 @@ class Account <playerId (MAX_PLAYERS)> {
         Player(playerId)->setIsLoggedIn(true);
         m_verified = true;
 
-        new message[32];
-        format(message, sizeof(message), "%d %s", playerId, Player(playerId)->nicknameString());
-        IRC->broadcast(LoginIrcMessage, message);
+        Announcements->announcePlayerLoggedin(playerId);
 
         Instrumentation->recordActivity(PlayerLoginActivity);
         if (Player(playerId)->isVip())

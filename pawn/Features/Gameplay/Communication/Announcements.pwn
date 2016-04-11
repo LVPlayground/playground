@@ -94,6 +94,23 @@ class Announcements {
     }
 
     /**
+     * Announces that a player has logged in to Las Venturas Playground.
+     *
+     * @param playerId Id of the player who logged in.
+     */
+    public announcePlayerLoggedin(playerId) {
+        // Announce that the player logged in
+        format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) has logged in to {A9C4E4}Las Venturas Playground{CCCCCC}.",
+            Player(playerId)->nicknameString(), playerId);
+
+        this->distributeAnnouncement(ConnectionMessageAnnouncement, Color::ConnectionMessage, m_formatBuffer);
+
+        // Announce the login of the player to the people on IRC
+        format(m_formatBuffer, sizeof(m_formatBuffer), "%d %s", playerId, Player(playerId)->nicknameString());
+        IRC->broadcast(LoginIrcMessage, m_formatBuffer);
+    }
+
+    /**
      * Announces that a player decided to play as guest on Las Venturas Playground.
      *
      * @param playerId Id of the player who decided to play as guest.

@@ -17,7 +17,7 @@
     "FRIENDS_ERROR_ADD_SELF": "@error As amazing as we're sure you are, you can't add yourself as a friend.",
     "FRIENDS_ERROR_NOT_REGISTERED": "@error You need to register on https://sa-mp.nl/ to use this command.",
     "FRIENDS_ERROR_FRIEND_NOT_REGISTERED": "@error %s needs to register on https://sa-mp.nl/ before you can add them as a friend.",
-    "FRIENDS_HEADER": "{FF9900}The following %d people are on your friends list:",
+    "FRIENDS_HEADER": "{FF9900}The following people are on your friends list:",
     "FRIENDS_REMOVED": "@success %s has been removed from your friends list.",
     "FRIENDS_USAGE": "{FFFFFF}Use '/friends add' to add a friend or '/friends remove' to remove one. It has to be the complete nickname of an in-game player.",
 

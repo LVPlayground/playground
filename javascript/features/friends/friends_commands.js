@@ -77,7 +77,10 @@ class FriendsCommands {
       friendList.push(...friends.offline);
 
       // Send a message whose content depends on whether the player has already added some friends.
-      //player.sendMessage(friendList.length ? Message.FRIENDS_HEADER : Message.FRIENDS_EMPTY)
+      if (friendList.length === 0)
+        player.sendMessage(Message.FRIENDS_EMPTY);
+      else
+        player.sendMessage(Message.FRIENDS_HEADER);
 
       // Split the |friendsList| array in sets of |friendsPerRow| friends.
       for (let i = 0; i < friendList.length; i += friendsPerRow)

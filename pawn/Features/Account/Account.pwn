@@ -177,21 +177,21 @@ class Account <playerId (MAX_PLAYERS)> {
      * guest. Their nickname will be changed, and they'll be treated as any unregistered player.
      */
     public changeNicknameAndPlayAsGuest() {
-        new randomNickname[32];
+        new randomNickname[32]
+           ,oldNickname[32];
         NicknameGenerator->generateForPlayerId(playerId, randomNickname, sizeof(randomNickname));
 
         // Instrument how many players decide to play as a guest.
         Instrumentation->recordActivity(PlayerLoginAsGuestActivity);
 
+        oldNickname = Player(playerId)->nicknameString();
         Player(playerId)->setNickname(randomNickname);
         Player(playerId)->setIsRegistered(false);
         Player(playerId)->setIsLoggedIn(false);
 
         m_userId = 0;
 
-        new message[32];
-        format(message, sizeof(message), "%d %s", playerId, Player(playerId)->nicknameString());
-        IRC->broadcast(GuestLoginIrcMessage, message);
+        Announcements->announcePlayerGuestPlay(playerId, oldNickname);
 
         Annotation::ExpandList<OnPlayerGuestLogin>(playerId);
     }

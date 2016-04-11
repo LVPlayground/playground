@@ -85,12 +85,30 @@ class Announcements {
         format(m_formatBuffer, sizeof(m_formatBuffer), "%d %s", playerId, Player(playerId)->nicknameString());
         IRC->broadcast(JoinIrcMessage, m_formatBuffer);
 
-        // Announce the connection of this player to Management members on IRC, including their
+        // Announce the connection of this player to crew members on IRC, including their
         // ID, nickname and their IP address. This is useful in case of flooders.
         new connectionMessage[128];
         format(connectionMessage, sizeof(connectionMessage), "%d %s %s", playerId,
             Player(playerId)->ipAddressString(), Player(playerId)->nicknameString());
         IRC->broadcast(JoinIpIrcMessage, connectionMessage);
+    }
+
+    /**
+     * Announces that a player decided to play as guest on Las Venturas Playground.
+     *
+     * @param playerId Id of the player who decided to play as guest.
+     * @param oldPlayerName 
+     */
+    public announcePlayerGuestPlay(playerId, oldNickname[]) {
+        // Announce that the player decided to play as guest in-game
+        format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) has decided to play as %s (guest) on {A9C4E4}Las Venturas Playground{CCCCCC}.",
+            oldNickname, playerId, Player(playerId)->nicknameString());
+
+        this->distributeAnnouncement(ConnectionMessageAnnouncement, Color::ConnectionMessage, m_formatBuffer);
+
+        // Announce the play as guest to the people on IRC
+        format(m_formatBuffer, sizeof(m_formatBuffer), "%d %s %s", playerId, oldNickname, Player(playerId)->nicknameString());
+        IRC->broadcast(GuestLoginIrcMessage, m_formatBuffer);
     }
 
     /**

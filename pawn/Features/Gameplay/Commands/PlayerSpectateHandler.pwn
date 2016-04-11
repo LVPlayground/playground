@@ -179,6 +179,8 @@ class PlayerSpectateHandler {
             return 1;
         }
 
+        SendClientMessage(playerId, Color::Information, "Use L-Shift to cycle upward and Spacebar to cycle downward through players.");
+
         this->startSpectating(playerId, subjectId);
 
         return 1;
@@ -374,8 +376,6 @@ class PlayerSpectateHandler {
     @list(OnPlayerKeyStateChange)
     public OnPlayerKeyStateChange(playerId, newkeys, oldkeys) {
         if (m_isSpectating[playerId]) {
-            new playerIdToWatchAsString[4];
-
             if (PRESSED(KEY_JUMP)) {
                 for (new playerIdToWatch = m_watchingPlayerId[playerId]; playerIdToWatch >= 0;) {
                     if (playerIdToWatch == 0)
@@ -389,8 +389,7 @@ class PlayerSpectateHandler {
                     if (playerId == playerIdToWatch || m_isSpectating[playerIdToWatch] == true)
                         continue;
 
-                    valstr(playerIdToWatchAsString, playerIdToWatch);
-                    this->onWatchCommand(playerId, playerIdToWatchAsString);
+                    this->startSpectating(playerId, playerIdToWatch);
                     break;
                 }
             }
@@ -408,8 +407,7 @@ class PlayerSpectateHandler {
                     if (playerId == playerIdToWatch || m_isSpectating[playerIdToWatch] == true)
                         continue;
 
-                    valstr(playerIdToWatchAsString, playerIdToWatch);
-                    this->onWatchCommand(playerId, playerIdToWatchAsString);
+                    this->startSpectating(playerId, playerIdToWatch);
                     break;
                 }
             }

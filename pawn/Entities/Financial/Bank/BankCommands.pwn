@@ -70,7 +70,7 @@ class BankCommands {
 
         // The player might want to withdraw all their funds from their account or just a certain
         // amount. Recognize "all" and numbers larger than zero.
-        if (strcmp(parameterValue, "all", false, 3) == 0)
+        if (strcmp(parameterValue, "all", true, 3) == 0)
             requestedAmount = BankAccount(playerId)->balance();
         else if (strval(parameterValue) > 0)
             requestedAmount = strval(parameterValue);
@@ -131,7 +131,7 @@ class BankCommands {
             return 1;
         }
 
-        if (strcmp(parameterValue, "all", false, 3) == 0)
+        if (strcmp(parameterValue, "all", true, 3) == 0)
             depositAmount = GetPlayerMoney(playerId);
         else if (strval(parameterValue) > 0)
             depositAmount = strval(parameterValue);

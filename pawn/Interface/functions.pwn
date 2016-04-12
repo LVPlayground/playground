@@ -590,12 +590,12 @@ adler32(buf[]) {
 }
 
 GetPlayerId(name[]) {
-    new lenght = strlen(name);
-    if (lenght < 3)
+    new length = strlen(name);
+    if (length < 3)
         return Player::InvalidId;
 
     for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
-        if (Player(playerId)->isConnected() == true && (strcmp(name, Player(playerId)->nicknameString(), true, lenght) == 0))
+        if (Player(playerId)->isConnected() == true && (strcmp(name, Player(playerId)->nicknameString(), true, length) == 0))
             return playerId;
     }
 

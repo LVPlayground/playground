@@ -762,7 +762,7 @@ class PropertyCommands {
         new message[128], earnings[16], parameterValue[4];
         Command->stringParameter(params, 0, parameterValue, sizeof(parameterValue));
 
-        if (strcmp(parameterValue, "all", false) == 0 && strlen(parameterValue) > 0) {
+        if (strcmp(parameterValue, "all", true) == 0 && strlen(parameterValue) > 0) {
             new playerProperties[MAX_PROPERTIES], overallPrice;
 
             PropertyManager->getPropertiesForPlayer(playerId, playerProperties, sizeof(playerProperties));

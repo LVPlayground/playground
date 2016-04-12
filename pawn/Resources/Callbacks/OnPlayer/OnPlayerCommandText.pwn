@@ -86,7 +86,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     new moneys;
 
     // commands for testing
-    if (!strcmp(cmdtext, "/pos")) {
+    if (!strcmp(cmdtext, "/pos", true)) {
         new message[64], Float: position[3], Float: rotation;
         GetPlayerPos(playerid, position[0], position[1], position[2]);
         GetPlayerFacingAngle(playerid, rotation);
@@ -98,7 +98,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     }
 
 #if BETA_TEST == 1
-        if(!strcmp(cmdtext, "/vehid"))
+        if(!strcmp(cmdtext, "/vehid", true))
         {
             new str[128];
             format(str, 128, "Vehicle ID: %d. Model: %d. Name: %s.",GetPlayerVehicleID(playerid), GetVehicleModel(GetPlayerVehicleID(playerid)), VehicleModel(GetVehicleModel(GetPlayerVehicleID(playerid)))->nameString());
@@ -145,7 +145,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     param_reset();
     new string[256];
 
-    if(!strcmp(cmdtext, "/radio"))
+    if(!strcmp(cmdtext, "/radio"), true)
     {
         if(iRadioEnabledForPlayer[playerid] == true)
         {
@@ -489,10 +489,10 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         // Check whether one of the following commands has been given by the user,
         // in which case they're fine to proceed, otherwise show a message that
         // commands are disabled while the player is in a minigame.
-        if (strcmp(cmd, "/sync") != 0 &&
-            strcmp(cmd, "/find") != 0 &&
-            strcmp(cmd, "/fight") != 0 &&
-            strcmp(tmp, "cancel")) // cancel a minigame-request
+        if (strcmp(cmd, "/sync", true) != 0 &&
+            strcmp(cmd, "/find", true) != 0 &&
+            strcmp(cmd, "/fight", true) != 0 &&
+            strcmp(tmp, "cancel", true)) // cancel a minigame-request
         {
             ShowBoxForPlayer(playerid, "You are taking part in a minigame - Use /leave first");
             return 1;
@@ -1315,7 +1315,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         return 1;
     }
 
-    if(strcmp(cmd, "/dev", false) == 0) {
+    if(strcmp(cmd, "/dev", true) == 0) {
         if (Player(playerid)->isDeveloper() == true || Player(playerid)->isAdministrator() == true) {
             if (strlen(cmdtext) <= 5) {
                 SendClientMessage(playerid, Color::Information, "This command sends a message to #LVP.Dev.");

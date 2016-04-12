@@ -145,7 +145,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     param_reset();
     new string[256];
 
-    if(!strcmp(cmdtext, "/radio"), true)
+    if(!strcmp(cmdtext, "/radio", true))
     {
         if(iRadioEnabledForPlayer[playerid] == true)
         {

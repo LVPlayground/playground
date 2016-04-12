@@ -52,7 +52,7 @@ class CommandManager {
     if (commandNameEnd == -1)
       commandNameEnd = commandText.length;
 
-    let commandName = commandText.substr(1, commandNameEnd - 1),
+    let commandName = commandText.substr(1, commandNameEnd - 1).toLowerCase(),
         commandArguments = commandText.substr(commandNameEnd + 1).trim();
 
     // If the command is not known to the command manager, it's likely to be implemented in the Pawn

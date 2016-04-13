@@ -232,6 +232,7 @@ stock PlayerLigtUitMiniGame(playerId, reason) {
     // We won't have to spawn a non-existing player, a killed player (spawned already) or someone who
     // hasn't been prepared for the minigame. If we spawn a player, be sure to load theri saved guns.
     if (reason != DISCONNECT && reason != KILLED && reason != LONELY) {
+        ResetWorldBounds(playerId);
         SpawnPlayer(playerId);
 
         ResetPlayerWeapons(playerId);
@@ -302,6 +303,7 @@ stock PlayerLigtUitMiniGame(playerId, reason) {
                         WonMinigame[contestant]++;
 
                         ColorManager->releasePlayerMinigameColor(contestant);
+                        ResetWorldBounds(playerId);
                         SpawnPlayer(contestant);
                         LoadPlayerGuns(contestant);
 

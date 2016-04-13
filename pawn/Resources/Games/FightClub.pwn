@@ -650,54 +650,51 @@ CFightClub__OnDisconnect(playerId)
         // Id of the second player in the match.
         new otherPlayer = firstPlayer != playerId ? firstPlayer : secondPlayer;
 
-        switch (Matches[i][status]) {
-            // The match is inactive, yet the player is part of it. This should not happen. The
-            // state will be cleaned up as part of the ResetMatch() call later.
-            case FC_STATUS_NONE:
-                break;
+        // The match is inactive, yet the player is part of it. This should not happen. The
+        // state will be cleaned up as part of the ResetMatch() call later.
+        if (Matches[i][status] == FC_STATUS_NONE) {
+            // Empty, see comment
+        }
 
-            // The match has been created, but has not advanced to the actual fighting state. The
-            // invite of the match will be canceled by the ResetMatch() call later.
-            case FC_STATUS_ACTIVE: {
-                CFightClub__SetKillCount(playerId, 0);
-                CFightClub__SetDeathCount(playerId, 0);
+        // The match has been created, but has not advanced to the actual fighting state. The
+        // invite of the match will be canceled by the ResetMatch() call later.
+        else if (Matches[i][status] == FC_STATUS_ACTIVE) {
+            CFightClub__SetKillCount(playerId, 0);
+            CFightClub__SetDeathCount(playerId, 0);
 
-                new message[128];
-                if (wasPrimaryPlayer)
-                    format(message, sizeof(message), "* %s has withdrawn their invite because they left the server.", PlayerName(playerId));
-                else
-                    format(message, sizeof(message), "* %s cannot accept your invite because they left the server.", PlayerName(playerId));
+            new message[128];
+            if (wasPrimaryPlayer)
+                format(message, sizeof(message), "* %s has withdrawn their invite because they left the server.", PlayerName(playerId));
+            else
+                format(message, sizeof(message), "* %s cannot accept your invite because they left the server.", PlayerName(playerId));
 
-                SendClientMessage(otherPlayer, COLOR_RED, message);
-                break;
-            }
+            SendClientMessage(otherPlayer, COLOR_RED, message);
+        }
 
-            // The match has begun and the players are fighting each other.
-            case FC_STATUS_FIGHTING: {
-                CFightClub__SetKillCount(firstPlayer, 0);
-                CFightClub__SetDeathCount(firstPlayer, 0);
-                CFightClub__SetKillCount(secondPlayer, 0);
-                CFightClub__SetDeathCount(secondPlayer, 0);
+        // The match has begun and the players are fighting each other.
+        else if (Matches[i][status] == FC_STATUS_FIGHTING) {
+            CFightClub__SetKillCount(firstPlayer, 0);
+            CFightClub__SetDeathCount(firstPlayer, 0);
+            CFightClub__SetKillCount(secondPlayer, 0);
+            CFightClub__SetDeathCount(secondPlayer, 0);
 
-                new message[128];
+            new message[128];
 
-                // Award the prize money when the other player initiated the match.
-                if (!wasPrimaryPlayer)
-                    GivePlayerMoney(otherPlayer, FC_MONEY);
+            // Award the prize money when the other player initiated the match.
+            if (!wasPrimaryPlayer)
+                GivePlayerMoney(otherPlayer, FC_MONEY);
 
-                format(message, sizeof(message), "* The fight has been concluded because %s has left the server.", PlayerName(playerId));
-                SendClientMessage(otherPlayer, COLOR_RED, message);
+            format(message, sizeof(message), "* The fight has been concluded because %s has left the server.", PlayerName(playerId));
+            SendClientMessage(otherPlayer, COLOR_RED, message);
 
-                // Respawn the other player, now that they won't be part of the fight anymore.
-                SpawnPlayer(otherPlayer);
+            // Respawn the other player, now that they won't be part of the fight anymore.
+            SpawnPlayer(otherPlayer);
 
-                // Distribute a news message about the fight having ended.
-                format(message, sizeof(message), "The fight between ~r~~h~%s~w~ and ~r~~h~%s~w~ ended due to ~r~~h~%s~w~ leaving the server!",
-                    PlayerName(firstPlayer), PlayerName(secondPlayer), PlayerName(playerId));
+            // Distribute a news message about the fight having ended.
+            format(message, sizeof(message), "The fight between ~r~~h~%s~w~ and ~r~~h~%s~w~ ended due to ~r~~h~%s~w~ leaving the server!",
+                PlayerName(firstPlayer), PlayerName(secondPlayer), PlayerName(playerId));
 
-                NewsController->show(message);
-                break;
-            }
+            NewsController->show(message);
         }
 
         CFightClub__ResetMatch(i);

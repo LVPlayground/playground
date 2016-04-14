@@ -139,11 +139,6 @@ new Float: TuningGarages[5][3] = {
     {-2707.4700, 218.6432, 3.7641}
 };
 
-new Float: inKnockout[4] = {
-    763.4322, -72.1279, 769.8801, -65.1865
-};
-#pragma unused inKnockout
-
 new Float: airports[4][3] = {
     {1691.0018, 1451.0864, 10.7659}, // LV
     {-1406.2073, -305.1451, 14.1484}, // SF

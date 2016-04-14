@@ -25,6 +25,15 @@ CheckPlayerArea(playerId) {
         !IsPlayerInArea (playerId, 764.0000, 769.0000, -77.0000, -66.0000)) {
         return;
     }
+
+    new Float: Xko = 764.64 + float (random (5));
+    new Float: Yko = -70.91 + float (random (6));
+
+    SetPlayerInterior (playerId, 7);
+    SetPlayerPos (playerId, Xko, Yko, 1001);
+
+    SendClientMessage (playerId, COLOR_RED, "Stay in the Boxring!");
+    GameTextForPlayer (playerId, "~r~Stay in the Boxring!", 3000, 5);
 }
 
 // Function: CheckpointProcess

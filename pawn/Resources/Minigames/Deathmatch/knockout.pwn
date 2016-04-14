@@ -8,7 +8,6 @@ stock SetPlayerUpForKnockout ( playerid )
     new Float:y = -70.91 + float ( random ( 6 )  ) ;
     SetPlayerInterior ( playerid, 7 ) ;
     SetPlayerPos ( playerid,x,y,1001 ) ;
-    SetPlayerWorldBounds (playerid, 769.0000, 764.0000, -77.0000, -66.0000);
     ResetPlayerWeapons ( playerid ) ;
     SendClientMessage ( playerid, COLOR_YELLOW, "Let's Fight!" ) ;
     GameTextForPlayer ( playerid, "~y~ Let's Fight!", 3000, 5 ) ;

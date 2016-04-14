@@ -131,7 +131,8 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: 
             return 0;
 
         // Players inside interiors (including VIP room), should not be hurt.
-        if (GetPlayerInterior(hitid) != 0 || LegacyIsPlayerInVipRoom(hitid) == true)
+        if ((GetPlayerInterior(hitid) != 0 || LegacyIsPlayerInVipRoom(hitid) == true)
+            && !CFightClub__IsPlayerFighting(playerid))
             return 0;
     }
 

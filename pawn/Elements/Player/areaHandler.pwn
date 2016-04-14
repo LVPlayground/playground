@@ -18,6 +18,13 @@ CheckPlayerArea(playerId) {
 
     CheckpointProcess(playerId);
     AirportGateCheck(playerId);
+
+    if (PlayerInfo[playerId][PlayerStatus] != STATUS_KNOCKOUT ||
+        !IsPlayerInMinigame (playerId) ||
+                  //Knockout-area: Xmin      Xmax      Ymin      Ymax
+        !IsPlayerInArea (playerId, 764.0000, 769.0000, -77.0000, -66.0000)) {
+        return;
+    }
 }
 
 // Function: CheckpointProcess
@@ -90,7 +97,7 @@ AirportGateCheck(i)
 
     GetPlayerPos(i,x,y,z);
 
-    if(isPlayerInAreaEx(i,1695.2847,1716.2305,1594.6019,1622.7753) && z < 16)
+    if(IsPlayerInArea (i, 1695.2847, 1716.2305, 1594.6019, 1622.7753) && z < 16)
     {
         new szMessage[256];
 
@@ -146,7 +153,7 @@ AirportGateCheck(i)
         }
     }
 
-    if(!isPlayerInAreaEx( i, 1695.2847, 1716.2305, 1594.6019, 1622.7753 ))
+    if(!IsPlayerInArea (i, 1695.2847, 1716.2305, 1594.6019, 1622.7753))
     {
         PlayerInPointTax[i] = false;
         if(isGateOpen)
@@ -157,23 +164,6 @@ AirportGateCheck(i)
 }
 
 // ------------------------------------------------------------------------------
-
-// Functions to declare whether a player is in an area:
-
-isPlayerInArea(cplayerID, Float:data[4])
-{
-    new Float:X, Float:Y, Float:Z;
-
-    GetPlayerPos(cplayerID, X, Y, Z);
-
-    if(X >= data[0] && X <= data[2] && Y >= data[1] && Y <= data[3]) {
-
-        return 1;
-    }
-    return 0;
-}
-
-#pragma unused isPlayerInArea
 
 // Airport gate functions:
 stock OpenAirportGate()

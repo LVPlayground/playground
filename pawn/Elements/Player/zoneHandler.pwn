@@ -10,7 +10,7 @@ enum ZoneInfoEnum {
     Float:zonePosz1,
     Float:zonePosz2,
     ZoneName[64]
-    }
+}
 
 new ZoneInfo[375][ZoneInfoEnum] = {
     {-2353.17, -2153.17, 2275.79, 2475.79, 0.0, 200.0, "Bayside Marina"},
@@ -390,14 +390,14 @@ new ZoneInfo[375][ZoneInfoEnum] = {
     {1507.51, 1582.55, -1385.21, -1325.31, 110.916, 335.916, "Downtown Los Santos"}
     };
 
-stock isPlayerInAreaEx(playerid, Float:mX1, Float:mX2, Float:mY1, Float:mY2)
+IsPlayerInArea (playerId, Float:minX, Float:maxX, Float:minY, Float:maxY)
 {
-    new Float:x,Float:y,Float:z;
-    GetPlayerPos(playerid, x, y, z);
+    new Float:x, Float:y, Float:z;
+    GetPlayerPos(playerId, x, y, z);
 
-    if(x > mX1 && x < mX2)
+    if(x > minX && x < maxX)
     {
-        if(y > mY1 && y < mY2)
+        if(y > minY && y < maxY)
         {
             return 1;
         }

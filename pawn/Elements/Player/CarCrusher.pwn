@@ -141,7 +141,7 @@ CCrush__InArea(playerid)
     if(z > 20)
         return 0;
 
-    if(isPlayerInAreaEx(playerid,1063.2418,1072.4828,1767.1273,1785.6494))
+    if(IsPlayerInArea (playerid, 1063.2418, 1072.4828, 1767.1273, 1785.6494))
         return 1;
 
     return 0;

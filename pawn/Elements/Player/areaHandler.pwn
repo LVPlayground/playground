@@ -18,21 +18,6 @@ CheckPlayerArea(playerId) {
 
     CheckpointProcess(playerId);
     AirportGateCheck(playerId);
-
-    if (PlayerInfo[playerId][PlayerStatus] != STATUS_KNOCKOUT ||
-        !IsPlayerInMinigame(playerId) ||
-        !isPlayerInArea(playerId, inKnockout)) {
-        return;
-    }
-
-    new Float: Xko = 764.64 + float(random(5));
-    new Float: Yko = -70.91 + float(random(6));
-
-    SetPlayerInterior(playerId, 7) ;
-    SetPlayerPos(playerId, Xko, Yko, 1001) ;
-
-    SendClientMessage(playerId, COLOR_RED, "Stay in the Boxring!");
-    GameTextForPlayer(playerId, "~r~Stay in the Boxring!", 3000, 5);
 }
 
 // Function: CheckpointProcess
@@ -187,6 +172,8 @@ isPlayerInArea(cplayerID, Float:data[4])
     }
     return 0;
 }
+
+#pragma unused isPlayerInArea
 
 // Airport gate functions:
 stock OpenAirportGate()

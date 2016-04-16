@@ -405,8 +405,8 @@ lvp_taxi(playerid,params[])
 
         if(locateid != 13)
         {
-            GetDistance(playerid, taxiLocaties[locateid]);
-            distance = floatround(xDistance/50);
+            new Float:playerToLocationDistance = GetDistanceEx(playerid, taxiLocaties[locateid][0], taxiLocaties[locateid][1], taxiLocaties[locateid][2]);
+            distance = floatround(playerToLocationDistance/50);
         }
 
         // Now, we calculate the fare based on the taxi price per KM, multiplyed by the distance.

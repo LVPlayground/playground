@@ -63,7 +63,6 @@ new Menu: Taxi;
 new Drivebyer[MAX_PLAYERS];
 new HeliKill[MAX_PLAYERS];
 new preventKillLamers[MAX_PLAYERS];
-new Float:xDistance;
 new playerVehExp[MAX_PLAYERS];
 new g_PlayerMenu[ MAX_PLAYERS ];
 new lastShowmsg;

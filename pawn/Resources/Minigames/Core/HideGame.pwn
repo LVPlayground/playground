@@ -1100,7 +1100,7 @@ stock CHideGame__onFindCommand( iPlayerID, params[] )
     GetPlayerPos( iFoundPlayer, fHideX, fHideY, fHideZ );
 
     // Get the distance between the two players.
-    new Float:fDistance = GetDistanceEx( iSeekerPlayer, fHideX, fHideY, fHideZ );
+    new Float:fDistance = GetDistance( iSeekerPlayer, fHideX, fHideY, fHideZ );
     if( fDistance > 5.0) return SendClientMessage( iPlayerID,  COLOR_RED, "* Error: You're not close to that player!");
 
     CHideGame__ThrowOut( iFoundPlayer, HS_THROWNOUT_GOTFOUND );
@@ -1183,7 +1183,7 @@ stock CHideGame__onInteriorChange( iPlayerID, iOldInteriorID )
         return 0;
     }
 
-    new Float:fDistance = GetDistanceEx( iPlayerID,  aLocationCoordinates[ iMapRunning ] [ 0 ], aLocationCoordinates[ iMapRunning ] [ 1 ], aLocationCoordinates[ iMapRunning ] [ 2 ] );
+    new Float:fDistance = GetDistance( iPlayerID,  aLocationCoordinates[ iMapRunning ] [ 0 ], aLocationCoordinates[ iMapRunning ] [ 1 ], aLocationCoordinates[ iMapRunning ] [ 2 ] );
 
     // Make sure the minigame has started already, otherwise we throw them out @ start.
     if(iOldInteriorID != 0 && fDistance < 100)
@@ -1202,7 +1202,7 @@ stock CHideGame__onPlayerSpawn( iPlayerID )
     // People spawned in the main world after the minigame started.
     if(CHideGame__GetPlayerState(iPlayerID) == HS_STATE_PLAYING)
     {
-        new Float:fDistance = GetDistanceEx( iPlayerID,  aLocationCoordinates[ iMapRunning ] [ 0 ], aLocationCoordinates[ iMapRunning ] [ 1 ], aLocationCoordinates[ iMapRunning ] [ 2 ] );
+        new Float:fDistance = GetDistance( iPlayerID,  aLocationCoordinates[ iMapRunning ] [ 0 ], aLocationCoordinates[ iMapRunning ] [ 1 ], aLocationCoordinates[ iMapRunning ] [ 2 ] );
 
         if(fDistance > 50.0)
         {
@@ -1705,7 +1705,7 @@ public CHideGame__SecondTimer()
         GetPlayerPos( iPlayerID, fHideX, fHideY, fHideZ );
 
         // Get the distance between the two players.
-        new Float:fDistance = GetDistanceEx(iSeekerPlayer, fHideX, fHideY, fHideZ);
+        new Float:fDistance = GetDistance(iSeekerPlayer, fHideX, fHideY, fHideZ);
 
         // He's frozen.
         if(bHideFrozen[ iPlayerID ] == 1)

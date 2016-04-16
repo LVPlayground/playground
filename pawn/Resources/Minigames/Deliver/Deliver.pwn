@@ -123,7 +123,7 @@ stock PrepareDelivery(playerid)
         TruckLocationY = TruckDeliveryLocations[iRandLoc][ypos];
         TruckLocationZ = TruckDeliveryLocations[iRandLoc][zpos];
         // get the distance from the player to the delivery location
-        playerToDeliveryLocationDistance = GetDistanceEx(playerid, TruckLocationX, TruckLocationY, TruckLocationZ);
+        playerToDeliveryLocationDistance = GetDistance(playerid, TruckLocationX, TruckLocationY, TruckLocationZ);
 
         TruckDeliveryPlayer[playerid][distn] = floatround(playerToDeliveryLocationDistance/50);
 

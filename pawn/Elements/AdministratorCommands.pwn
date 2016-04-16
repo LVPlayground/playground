@@ -656,7 +656,7 @@ lvp_p(playerId, params[]) {
             return 1;
         }
 
-        if (GetDistanceEx(subjectId, 2004.00, 1544.00, 14.00) < 38) {
+        if (GetDistance(subjectId, 2004.00, 1544.00, 14.00) < 38) {
             SendClientMessage(playerId, Color::Error, "This player is too close to the ship.");
             return 1;
         }
@@ -675,7 +675,7 @@ lvp_p(playerId, params[]) {
     }
 
     if (!strcmp(playerParameter, "nuke", true, 4) && Player(playerId)->isAdministrator() == true) {
-        if (GetDistanceEx(subjectId, 2004.00, 1544.00, 14.00) < 38 && !Player(playerId)->isManagement()) {
+        if (GetDistance(subjectId, 2004.00, 1544.00, 14.00) < 38 && !Player(playerId)->isManagement()) {
             SendClientMessage(playerId, Color::Error, "This player is too close to the ship.");
             return 1;
         }

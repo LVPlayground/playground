@@ -115,14 +115,17 @@ stock PrepareDelivery(playerid)
         iRandLoc = random(53);
 
         // assign the position to an array
-        new Float:TruckLocation[3];
-        TruckLocation[0] = TruckDeliveryLocations[iRandLoc][xpos];
-        TruckLocation[1] = TruckDeliveryLocations[iRandLoc][ypos];
-        TruckLocation[2] = TruckDeliveryLocations[iRandLoc][zpos];
+        new Float:TruckLocationX
+           ,Float:TruckLocationY
+           ,Float:TruckLocationZ
+           ,Float:playerToDeliveryLocationDistance;
+        TruckLocationX = TruckDeliveryLocations[iRandLoc][xpos];
+        TruckLocationY = TruckDeliveryLocations[iRandLoc][ypos];
+        TruckLocationZ = TruckDeliveryLocations[iRandLoc][zpos];
         // get the distance from the player to the delivery location
-        GetDistance(playerid, TruckLocation);
+        playerToDeliveryLocationDistance = GetDistanceEx(playerid, TruckLocationX, TruckLocationY, TruckLocationZ);
 
-        TruckDeliveryPlayer[playerid][distn] = floatround(xDistance/50);
+        TruckDeliveryPlayer[playerid][distn] = floatround(playerToDeliveryLocationDistance/50);
 
         TruckDeliveryPlayer[playerid][Time] = floatround(floatpower(TruckDeliveryPlayer[playerid][distn], 0.9)*4.5, floatround_round);
 
@@ -134,7 +137,7 @@ stock PrepareDelivery(playerid)
 
 
         DisablePlayerCheckpoint(playerid);
-        SetPlayerCheckpoint(playerid, TruckLocation[0], TruckLocation[1], TruckLocation[2], 5.0);
+        SetPlayerCheckpoint(playerid, TruckLocationZ, TruckLocationY, TruckLocationZ, 5.0);
         GameTextForPlayer(playerid,"~w~Delivery",5000,1);
     //  new str[256];
     //  format(str,256,"%s (ID:%d) has started the delivery minigame.",PlayerName(playerid),playerid);

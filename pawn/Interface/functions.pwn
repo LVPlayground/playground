@@ -1017,3 +1017,14 @@ ordinal( str[], iLen, iNumber )
     format( str, iLen, "%d%s", iNumber, szSuffix );
     return 1;
 }
+
+GetPlayerIngameHours(playerId) {
+    return gameplayhours[playerId];
+}
+
+GetPlayerIngameTime(playerId) {
+    if (playerId < 0 || playerId >= MAX_PLAYERS)
+        return 0;
+
+    return 3600 * gameplayhours[playerId] + 60 * gameplayminutes[playerId] + gameplayseconds[playerId];
+}

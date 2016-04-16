@@ -154,17 +154,6 @@ new Float: gArmorPickups[4][PickupSpawnInfo] = {
     {2088.6541, 1450.2456, 10.8203}
 };
 
-GetPlayerIngameHours(playerId) {
-    return gameplayhours[playerId];
-}
-
-GetPlayerIngameTime(playerId) {
-    if (playerId < 0 || playerId >= MAX_PLAYERS)
-        return 0;
-
-    return 3600 * gameplayhours[playerId] + 60 * gameplayminutes[playerId] + gameplayseconds[playerId];
-}
-
 enum gPlayerStats {
     ACdeaths,
     ACkills

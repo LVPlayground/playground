@@ -178,6 +178,8 @@ CRobbery__ResetPlayerVars(i)
 // Builds the minigame's stuff depending on which phase we're currently at.
 CRobbery__Build(phaseid)
 {
+    new casinoHunter;
+
     if(phaseid == 0) {
         // Currently, the attackers are going to the casino.
 

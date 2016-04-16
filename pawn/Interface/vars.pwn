@@ -89,7 +89,6 @@ new MyCarBombs[MAX_PLAYERS];
 new KTKills[MAX_PLAYERS];
 new KTDeaths[MAX_PLAYERS];
 new KTTimer;
-new KTTijd;
 new WantedLevel[MAX_PLAYERS];
 new gameplayseconds[MAX_PLAYERS];
 new gameplayminutes[MAX_PLAYERS];

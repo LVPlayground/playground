@@ -2,6 +2,8 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
+new KTTime;
+
 stock KillTimeStart(minutes = 5) {
     new string[256];
 
@@ -19,7 +21,7 @@ stock KillTimeStart(minutes = 5) {
     format(string, sizeof(string), "The winner gets $%s! Success!", formatPrice(2500000));
     SendClientMessageToAll(COLOR_WHITE, string);
 
-    KTTijd = minutes;
+    KTTime = minutes;
     sKillTime = true;
     KTTimer = SetTimer("KillTimeRun", 60000, 1);
 }
@@ -27,7 +29,7 @@ stock KillTimeStart(minutes = 5) {
 forward KillTimeRun();
 public KillTimeRun() {
     new lead = -1, leadKills = 0, string[256];
-    KTTijd--;
+    KTTime--;
 
     for (new player = 0; player <= PlayerManager->highestPlayerId(); player++) {
         if (Player(player)->isConnected() == false)
@@ -39,16 +41,16 @@ public KillTimeRun() {
         }
     }
 
-    if (KTTijd > 1) {
+    if (KTTime > 1) {
         if (lead > -1)
             format(string, sizeof(string), "KillTime: %d minutes to go! %s is leading with %d kills!",
-                KTTijd, Player(lead)->nicknameString(), leadKills);
+                KTTime, Player(lead)->nicknameString(), leadKills);
         else
-            format(string, sizeof(string), "KillTime: %d minutes to go! Nobody's leading yet!", KTTijd);
+            format(string, sizeof(string), "KillTime: %d minutes to go! Nobody's leading yet!", KTTime);
         SendClientMessageToAll(COLOR_YELLOW, string);
     }
 
-    else if (KTTijd == 1) {
+    else if (KTTime == 1) {
         format(string, sizeof(string), "KillTime: Last minute, who will win?!");
         SendClientMessageToAll(COLOR_YELLOW, string);
     }

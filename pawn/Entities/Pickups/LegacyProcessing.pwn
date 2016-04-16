@@ -4,7 +4,7 @@
 
 LegacyOnPlayerPickUpPickup(playerid, pickupid)
 {
-    new iPlayerVIPEntry[MAX_PLAYERS];
+    new playerVipRoomEntryTime[MAX_PLAYERS];
 
     // First of all check for derby pickups
     if(CDerby__CheckPlayerPickupPickup(playerid, pickupid) == 1)
@@ -90,15 +90,15 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
     if(pickupid == Vip) // if a player pickups the vip icon
     {
 
-        if(iPlayerVIPEntry[playerid] != 0)
+        if(playerVipRoomEntryTime[playerid] != 0)
         {
-            if(Time->currentTime() - iPlayerVIPEntry[playerid] < 5)
+            if(Time->currentTime() - playerVipRoomEntryTime[playerid] < 5)
             {
                 return 1;
             }
         }
 
-        iPlayerVIPEntry[playerid] = 0;
+        playerVipRoomEntryTime[playerid] = 0;
 
         // GivePlayerMoney(playerid,-1000); // When you pickup the $ icon, GTASA by default gives you $1000, so we need to take that away!
         if(chaseData[1] == playerid && chaseData[0] == 1)
@@ -117,7 +117,7 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
         }
 
         SetPlayerPos(playerid, 2127.3569, 2386.5317, 10.8378);
-        iPlayerVIPEntry[playerid] = Time->currentTime();
+        playerVipRoomEntryTime[playerid] = Time->currentTime();
         iPlayerInVipRoom[playerid] = true;
         SetPlayerTeam(playerid, 1);
         return 1;
@@ -126,16 +126,16 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
     // Player is leaving the VIP room so teleport them to the outside pickup position
     if(pickupid == VipExit)
     {
-        if(iPlayerVIPEntry[playerid] != 0)
+        if(playerVipRoomEntryTime[playerid] != 0)
         {
-            if(Time->currentTime() - iPlayerVIPEntry[playerid] < 5)
+            if(Time->currentTime() - playerVipRoomEntryTime[playerid] < 5)
             {
                 return 1;
             }
         }
 
         SetPlayerPos(playerid, 2127.4788,2370.5847,10.8203); // set em back to outside the pickup!
-        iPlayerVIPEntry[playerid] = Time->currentTime();
+        playerVipRoomEntryTime[playerid] = Time->currentTime();
         iPlayerInVipRoom[playerid] = false;
         SetPlayerTeam(playerid, NO_TEAM);
         return 1;

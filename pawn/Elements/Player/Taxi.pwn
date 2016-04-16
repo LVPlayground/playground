@@ -52,11 +52,11 @@ new taxiLocationName[NumberOfTaxiLocations][32] =
     "LV Fight Club"                      
 };
 
-new bool:isTaxiActive[MAX_PLAYERS];
-
-new Float:playerOrderedTaxiPositionX[MAX_PLAYERS]
+new bool:isTaxiActive[MAX_PLAYERS]
+   ,Float:playerOrderedTaxiPositionX[MAX_PLAYERS]
    ,Float:playerOrderedTaxiPositionY[MAX_PLAYERS]
-   ,Float:playerOrderedTaxiPositionZ[MAX_PLAYERS];
+   ,Float:playerOrderedTaxiPositionZ[MAX_PLAYERS]
+   ,taxiPrice = 200;;
 
 stock ShowTaxiDialog(playerid)
 {
@@ -172,7 +172,7 @@ stock TaxiArrived(playerid)
             {
                 format(str,256,"* Kaufman Cabs: Thank you for using our service! Your fare has come to $%d",fare);
                 SendClientMessage(playerid,COLOR_GREEN,str);
-                format(str,256,"* at a per kilometer price of $%d.",taxiPrijs);
+                format(str,256,"* at a per kilometer price of $%d.",taxiPrice);
                 SendClientMessage(playerid,COLOR_GREEN,str);
             }else{
                 SendClientMessage(playerid,COLOR_GREEN,"The taxi driver has dropped you off for free because you own the company.");
@@ -295,7 +295,7 @@ stock SendPlayerTaxi(playerid, locateid, fare)
 // return the km price of taxis based on the /taxiprice cmd
 stock GetTaxiKMPrice()
 {
-    return taxiPrijs;
+    return taxiPrice;
 }
 
 
@@ -477,7 +477,7 @@ lvp_taxiprice(playerid,params[])
     }
     // all clear, set the new price.
     g_FlagTime[playerid][1] = Time->currentTime();
-    taxiPrijs = taxiprice;
+    taxiPrice = taxiprice;
     format(str,256,"~r~~h~%s~w~ has set the taxi kilometer price as ~y~$%d~w~ (~p~/taxiprice~w~)",
         Player(playerid)->nicknameString(), taxiprice);
     NewsController->show(str);

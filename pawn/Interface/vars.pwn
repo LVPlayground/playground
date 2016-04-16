@@ -66,7 +66,6 @@ new g_bPlayerGodmode[ MAX_PLAYERS ];
 new banWarning[MAX_PLAYERS];
 new tpWarning[MAX_PLAYERS];
 new canSlap[MAX_PLAYERS];
-new taxiPrijs = 200;
 new bankRente = 4;
 new Float: SavedPos2[MAX_PLAYERS][5];
 new douane = 1500;

@@ -56,7 +56,7 @@ new bool:isTaxiActive[MAX_PLAYERS]
    ,Float:playerOrderedTaxiPositionX[MAX_PLAYERS]
    ,Float:playerOrderedTaxiPositionY[MAX_PLAYERS]
    ,Float:playerOrderedTaxiPositionZ[MAX_PLAYERS]
-   ,taxiPrice = 200;;
+   ,taxiPrice = 200;
 
 stock ShowTaxiDialog(playerid)
 {

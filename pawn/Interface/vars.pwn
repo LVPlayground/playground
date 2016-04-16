@@ -33,7 +33,6 @@ new PlayerJoins[MAX_PLAYERS][6];
 new g_PlayerCpVisible[MAX_PLAYERS];
 new Vip;
 new VipExit;
-new iPlayerVIPEntry[MAX_PLAYERS];
 new iPlayerInVipRoom[MAX_PLAYERS];
 new iInterestTime[MAX_PLAYERS];
 new sPlayerWeapons[MAX_PLAYERS][14][2];

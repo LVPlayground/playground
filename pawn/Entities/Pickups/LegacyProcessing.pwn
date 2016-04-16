@@ -4,6 +4,8 @@
 
 LegacyOnPlayerPickUpPickup(playerid, pickupid)
 {
+    new iPlayerVIPEntry[MAX_PLAYERS];
+
     // First of all check for derby pickups
     if(CDerby__CheckPlayerPickupPickup(playerid, pickupid) == 1)
     {

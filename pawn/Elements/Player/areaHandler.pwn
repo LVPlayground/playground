@@ -99,24 +99,23 @@ CheckpointProcess(i)
 // Author: Jay.
 AirportGateCheck(i)
 {
-    new
-        Float:x,
-        Float:y,
-        Float:z;
+    new Float:x
+       ,Float:y
+       ,Float:z
+       ,bool:isPlayerInTaxPoint[MAX_PLAYERS];
 
     GetPlayerPos(i,x,y,z);
 
     if(IsPlayerInArea (i, 1695.2847, 1716.2305, 1594.6019, 1622.7753) && z < 16)
     {
-        new szMessage[256];
-
-        new propertyId = PropertyManager->propertyForSpecialFeature(CustomTaxAirportFeature),
-            endid = propertyId == Property::InvalidId ? Player::InvalidId : Property(propertyId)->ownerId();
+        new szMessage[256]
+           ,propertyId = PropertyManager->propertyForSpecialFeature(CustomTaxAirportFeature)
+           ,endid = propertyId == Property::InvalidId ? Player::InvalidId : Property(propertyId)->ownerId();
 
         // if the player is near the tax pay-point, and hasn't already payed,
-        if(!PlayerInPointTax[i])
+        if(!isPlayerInTaxPoint[i])
         {
-            PlayerInPointTax[ i ] = true;
+            isPlayerInTaxPoint[ i ] = true;
             if(GetPlayerMoney(i) < douane && endid != i && !isGateOpen && !IsPlayerInMinigame(i) && GetPlayerState(i) == PLAYER_STATE_DRIVER)
             {
                 format(szMessage,sizeof(szMessage),"You need $%d to pay customs tax to enter/exit the airport.",douane);
@@ -164,7 +163,7 @@ AirportGateCheck(i)
 
     if(!IsPlayerInArea (i, 1695.2847, 1716.2305, 1594.6019, 1622.7753))
     {
-        PlayerInPointTax[i] = false;
+        isPlayerInTaxPoint[i] = false;
         if(isGateOpen)
         {
             CloseAirportGate();

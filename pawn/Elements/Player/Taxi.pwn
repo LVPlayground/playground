@@ -53,6 +53,7 @@ new taxilocationName[NumberOfTaxiLocations][32] =
     "LV Fight Club"
 };
 
+new iTaxiActive[MAX_PLAYERS];
 
 stock ShowTaxiDialog(playerid)
 {

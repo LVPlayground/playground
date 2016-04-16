@@ -18,7 +18,6 @@ new iRconLoginAttempts[MAX_PLAYERS];
 new iPlayerSawnoffWeapon[MAX_PLAYERS];
 new iWeaponCheatCount[MAX_PLAYERS];
 new iPlayerAnimation[MAX_PLAYERS];
-new iTaxiActive[MAX_PLAYERS];
 new iPlayerSesDeaths[MAX_PLAYERS];
 new iPlayerSesKills[MAX_PLAYERS];
 new iPlayerDied[MAX_PLAYERS];

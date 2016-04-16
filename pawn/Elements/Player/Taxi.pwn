@@ -18,25 +18,24 @@
 #define NumberOfTaxiLocations 13
 
 // define the taxi locations
-new Float:taxiLocaties[NumberOfTaxiLocations][3] =
+new Float:taxiLocations[NumberOfTaxiLocations][3] =
 {
-    {2016.5950,1545.0306,10.8308}, // boot
-    {2284.6868,2453.1343,10.8203}, // politiestation
-    {1648.0355,1607.7329,10.8203}, // LV airport
-    {-2233.3938,-1745.0369,480.8698}, // Mount Chilliad
-    {2536.0796,2085.4226,10.8203}, // Ammunation
-    {213.4851,1870.4987,17.6406}, // Area51
-    {421.0738,2530.8396,16.6170},  // Airstrip
-    {1570.8782,-1309.4750,17.1471}, // LS Basejumping
-    {-1219.5400,51.4527,14.1360}, // TEF's SF Airport
-    {1993.0626,-2362.4480,13.5469}, // TEF's LS Airport
-    {2419.7612,1124.1425,10.8203}, // The LV Bank department
-    {2851.3525,1290.5934,11.3906}, // Train station
-    //New Added. (LV FightClub)
-    {2105.8870,2190.4172,14.4965}
+    {2016.5950,1545.0306,10.8308}, // The Ship
+    {2284.6868,2453.1343,10.8203}, // Las Venturas Police Department
+    {1648.0355,1607.7329,10.8203}, // Las Venturas Airport
+    {-2233.3938,-1745.0369,480.8698}, // Mount Chiliad
+    {2536.0796,2085.4226,10.8203}, // Ammu-Nation
+    {213.4851,1870.4987,17.6406}, // Area 69
+    {421.0738,2530.8396,16.6170}, // Airstrip
+    {1570.8782,-1309.4750,17.1471}, // Los Santos Basejumping
+    {-1219.5400,51.4527,14.1360}, // San Fierro Airport
+    {1993.0626,-2362.4480,13.5469}, // Los Santos Airport
+    {2419.7612,1124.1425,10.8203}, // LVP Main Bank
+    {2851.3525,1290.5934,11.3906}, // LV Train Station
+    {2105.8870,2190.4172,14.4965} // LV Fight Club
 };
 
-new taxilocationName[NumberOfTaxiLocations][32] =
+new taxiLocationName[NumberOfTaxiLocations][32] =
 {
     "The Ship",
     "Las Venturas Police Department",
@@ -50,10 +49,14 @@ new taxilocationName[NumberOfTaxiLocations][32] =
     "Los Santos Airport",
     "LVP Main Bank",
     "LV Train Station",
-    "LV Fight Club"
+    "LV Fight Club"                      
 };
 
-new iTaxiActive[MAX_PLAYERS];
+new bool:isTaxiActive[MAX_PLAYERS];
+
+new Float:playerOrderedTaxiPositionX[MAX_PLAYERS]
+   ,Float:playerOrderedTaxiPositionY[MAX_PLAYERS]
+   ,Float:playerOrderedTaxiPositionZ[MAX_PLAYERS];
 
 stock ShowTaxiDialog(playerid)
 {
@@ -62,11 +65,11 @@ stock ShowTaxiDialog(playerid)
     {
         if(i == 0)
         {
-            format(szTaxiLocations, sizeof(szTaxiLocations), "%d: %s\r\n", i, taxilocationName[i]);
+            format(szTaxiLocations, sizeof(szTaxiLocations), "%d: %s\r\n", i, taxiLocationName[i]);
         }
         else
         {
-            format(szTaxiLocations, sizeof(szTaxiLocations), "%s%d: %s\r\n", szTaxiLocations, i, taxilocationName[i]);
+            format(szTaxiLocations, sizeof(szTaxiLocations), "%s%d: %s\r\n", szTaxiLocations, i, taxiLocationName[i]);
         }
     }
 
@@ -84,7 +87,7 @@ stock CancelTaxi(playerid)
     if(playerTaxi[playerid][0] == -1) return 0;
 
     playerTaxi[playerid][0] = -1;
-    iTaxiActive[playerid] = false;
+    isTaxiActive[playerid] = false;
 
     TextDrawHideForPlayer(playerid, TaxiArrival[playerid]);
 
@@ -102,8 +105,8 @@ stock TaxiArrived(playerid)
     if(!Player(playerid)->isConnected())
     return 0;
 
-    if(!iTaxiActive[playerid])
-    return 0;
+    if(!isTaxiActive[playerid])
+        return 0;
 
     if(playerTaxi[playerid][0] > -1)
     {
@@ -140,7 +143,7 @@ stock TaxiArrived(playerid)
                 return 1;
             }
             // Is the player in range of where he ordered the taxi?
-            if(!IsPlayerInRangeOfPoint(playerid, 850.0, g_TaxiPOS[playerid][0],g_TaxiPOS[playerid][1],g_TaxiPOS[playerid][2]) && endid != playerid)
+            if(!IsPlayerInRangeOfPoint(playerid, 850.0, playerOrderedTaxiPositionX[playerid],playerOrderedTaxiPositionY[playerid],playerOrderedTaxiPositionZ[playerid]) && endid != playerid)
             {
                 ShowBoxForPlayer(playerid, "The driver could not find you! Please stay in the area in future.");
                 CancelTaxi(playerid);
@@ -159,7 +162,7 @@ stock TaxiArrived(playerid)
             if(Player(endid)->isConnected() && endid != playerid && !IsPlayerInMinigame(endid))
             {
                 format(str,256,"* %s (Id:%d) took a taxi to {A9C4E4}%s{CCCCCC}, you earned {A9C4E4}$%d{CCCCCC}.",
-                    PlayerName(playerid), playerid,taxilocationName[locateid],playerTaxi[playerid][3]/10);
+                    PlayerName(playerid), playerid,taxiLocationName[locateid],playerTaxi[playerid][3]/10);
                 SendClientMessage(endid,Color::ConnectionMessage,str);
                 GivePlayerMoney(endid,playerTaxi[playerid][3]/10);
             }
@@ -179,17 +182,17 @@ stock TaxiArrived(playerid)
             {
 
                 SetPlayerInterior(playerid, 0);
-                SetPlayerPos(playerid, taxiLocaties[locateid][0], taxiLocaties[locateid][1], taxiLocaties[locateid][2]);
+                SetPlayerPos(playerid, taxiLocations[locateid][0], taxiLocations[locateid][1], taxiLocations[locateid][2]);
             }
 
             if(playerid != endid)
             GivePlayerMoney(playerid,-fare);
 
             mayTax[playerid] = 1;
-            format(str, 256,"%s (Id:%d) has /taxi'd to %s (#%d).",PlayerName(playerid),playerid, taxilocationName[locateid], locateid);
+            format(str, 256,"%s (Id:%d) has /taxi'd to %s (#%d).",PlayerName(playerid),playerid, taxiLocationName[locateid], locateid);
             Admin(playerid, str);
 
-            format(str,256,"~n~~n~~n~~n~~y~KaufMan Cabs:~w~ Dropped off at %s!",taxilocationName[locateid]);
+            format(str,256,"~n~~n~~n~~n~~y~KaufMan Cabs:~w~ Dropped off at %s!",taxiLocationName[locateid]);
 
             GameTextForPlayer(playerid,str,5000,5);
             CancelTaxi(playerid);
@@ -274,10 +277,10 @@ stock SendPlayerTaxi(playerid, locateid, fare)
     TextDrawSetString(TaxiArrival[playerid], time);
     TextDrawShowForPlayer(playerid, TaxiArrival[playerid]);
 
-    iTaxiActive[playerid] = true;
+    isTaxiActive[playerid] = true;
 
     // save the player pos so that we can check if they are in range of the taxi destination.
-    GetPlayerPos(playerid, g_TaxiPOS[playerid][0], g_TaxiPOS[playerid][1], g_TaxiPOS[playerid][2]);
+    GetPlayerPos(playerid, playerOrderedTaxiPositionX[playerid], playerOrderedTaxiPositionY[playerid], playerOrderedTaxiPositionZ[playerid]);
 
     // Now we need to save the time they taxi'd so we can calculate the taxi
     // arrival time in future, in other words, to check if they have taxi'd within the
@@ -406,7 +409,7 @@ lvp_taxi(playerid,params[])
 
         if(locateid != 13)
         {
-            new Float:playerToLocationDistance = GetDistance(playerid, taxiLocaties[locateid][0], taxiLocaties[locateid][1], taxiLocaties[locateid][2]);
+            new Float:playerToLocationDistance = GetDistance(playerid, taxiLocations[locateid][0], taxiLocations[locateid][1], taxiLocations[locateid][2]);
             distance = floatround(playerToLocationDistance/50);
         }
 

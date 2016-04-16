@@ -1519,21 +1519,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
     if(strcmp(cmd, "/wanted", true) == 0)
     {
-        new iStr[128];
-        SendClientMessage(playerid, COLOR_LIGHTBLUE, "Current wanted people:");
-
-        for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-        {
-            if(!Player(i)->isConnected()) continue;
-
-            if(GetWantedLevel(i,WantedLevel[i]) > 1)
-            {
-                format(iStr, sizeof(iStr), "%s (ID:%d) - %d stars", PlayerName(i),i,GetWantedLevel(i,WantedLevel[i]));
-                SendClientMessage(playerid, COLOR_WHITE, iStr);
-            }
-        }
-        format(iStr,128,"* Current Deathmatch Champion: %s with %d kills.",iRecordName,iServerKillRecord);
-        SendClientMessage(playerid,COLOR_WHITE,iStr);
+        WantedLevel__OnPlayerCommandText (playerid);
         return 1;
     }
 

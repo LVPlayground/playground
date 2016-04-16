@@ -12,8 +12,9 @@
  *                                                                             *
  *******************************************************************************/
 
-OnPlayerDeathWantedLevel (playerid, killerid)
-{
+new iServerKillRecord = 10;
+
+WantedLevel__OnPlayerDeath (playerid, killerid) {
     // First, we reset the wanted level for the player that has died.
     //  SetPlayerWantedLevel(playerid,0);
     //  WantedLevel[playerid] = 0;
@@ -100,4 +101,23 @@ OnPlayerDeathWantedLevel (playerid, killerid)
         SetPlayerWantedLevel(playerid,0);
     }
     return 1;
+}
+
+WantedLevel__OnPlayerCommandText(playerId) {
+    new message[128];
+    SendClientMessage(playerId, COLOR_LIGHTBLUE, "Currently wanted people:");
+
+    for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
+    {
+        if(Player(i)->isConnected() == false)
+            continue;
+
+        if(GetWantedLevel(i, WantedLevel[i]) > 1)
+        {
+            format(message, sizeof(message), "%s (Id:%d) - %d stars", PlayerName(i), i, GetWantedLevel(i, WantedLevel[i]));
+            SendClientMessage(playerId, Color::Information, message);
+        }
+    }
+    format(message, 128,"* Current Deathmatch Champion: %s with %d kills.", iRecordName, iServerKillRecord);
+    SendClientMessage(playerId, Color::Information, message);
 }

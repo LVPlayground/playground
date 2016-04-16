@@ -162,8 +162,8 @@ public OnPlayerDeath(playerid, killerid, reason) {
         iPlayerSesKills[killerid]++;
 
         // Handle wanted levels.
-        if (!IsPlayerInMinigame(killerid))
-            OnPlayerDeathWantedLevel(playerid, killerid);
+        if (!IsPlayerInMinigame (killerid))
+            WantedLevel__OnPlayerDeath (playerid, killerid);
 
         // Handle bonus time kills.
         BonusTime__CheckPlayer(killerid, 2);

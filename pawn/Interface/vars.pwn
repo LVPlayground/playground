@@ -12,7 +12,6 @@
 new sKillTime;
 new killTimeWeaponId = 0;
 new iServerChampion = Player::InvalidId;
-new iServerKillRecord = 10;
 new iRecordName[MAX_PLAYER_NAME+1] = "LVP";
 new playerLastQuitInterior[MAX_PLAYERS];
 new iRconLoginAttempts[MAX_PLAYERS];

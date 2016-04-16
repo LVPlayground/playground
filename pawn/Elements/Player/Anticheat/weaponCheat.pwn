@@ -2,6 +2,8 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
+new g_PlayerWeapon[MAX_PLAYERS][50];
+
 WeaponCheat(i) {
     if (Player(i)->isConnected() == false || Player(i)->isNonPlayerCharacter() == true)
         return 0;

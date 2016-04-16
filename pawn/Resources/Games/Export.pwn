@@ -12,6 +12,8 @@
 *                                                                               *
 ********************************************************************************/
 
+#define MAX_WANTEDVEH 20
+
 // Array with the wanted vehicles.
 new wantedVehicles[MAX_WANTEDVEH] =
 {
@@ -89,8 +91,8 @@ public CExport__NewWantedVehicle()
     }
 
     // // Format the last part, and send the message to everyone.
-    SendClientMessageToAllEx(COLOR_LIMEGREEN, szMessage );
-    SendClientMessageToAllEx(COLOR_LIMEGREEN, "* And remember, we don't take trashed cars! Check out /export.");
+    SendClientMessageToAllEx(Color::Green, szMessage );
+    SendClientMessageToAllEx(Color::Green, "* And remember, we don't take trashed cars! Check out /export.");
     // In about 6 or 7 minutes we need new wanted vehicles!
     return 1;
 }

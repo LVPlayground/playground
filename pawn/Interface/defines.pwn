@@ -16,8 +16,6 @@
 #define COLOR_ORANGE 0xFF9900AA
 #define COLOR_BROWN 0xA52A2AAA
 #define COLOR_PINK 0xFF66FFAA
-#define COLOR_LIMEGREEN 0x32CD32AA
-#define COLOR_AQUA 0x00E1E1FF
 
 #define ISLAND_DM_WORLD             4
 
@@ -46,8 +44,6 @@ new __iCMDIDX;
 #define param_shift(%1); new %1[ 128 ]; if(params[0]) { __iCMDIDX = 0; %1 = strtok(params,__iCMDIDX); str_shift(params,__iCMDIDX+1); }
 #define param_shift_int(%1); __szTmp[0] = '\0'; if(params[0]) { __iCMDIDX = 0; __szTmp = strtok(params,__iCMDIDX); str_shift(params,__iCMDIDX+1); } new %1 = strval(__szTmp);
 
-#define MAX_BARRELS                 10
-#define MAX_WANTEDVEH   20
 #define MAX_INTERIORS 114
 
 /**
@@ -104,4 +100,3 @@ new __iCMDIDX;
  */
 // These are required by something that is required by the vars.pwn so they need to come beforehand
 new bPlayerWeaponStored[MAX_PLAYERS];
-new g_PlayerWeapon[MAX_PLAYERS][50];

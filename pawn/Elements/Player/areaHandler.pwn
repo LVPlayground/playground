@@ -19,21 +19,22 @@ CheckPlayerArea(playerId) {
     CheckpointProcess(playerId);
     AirportGateCheck(playerId);
 
-    if (PlayerInfo[playerId][PlayerStatus] != STATUS_KNOCKOUT ||
-        !IsPlayerInMinigame (playerId) ||
-                  //Knockout-area: Xmin      Xmax      Ymin      Ymax
-        !IsPlayerInArea (playerId, 764.0000, 769.0000, -77.0000, -66.0000)) {
-        return;
+    if (PlayerInfo[playerId][PlayerStatus] == STATUS_KNOCKOUT && IsPlayerInMinigame (playerId)) {
+        new Float:knockoutAreaXmin = 763.2200
+           ,Float:knockoutAreaYmin = -72.2000;
+                     //Knockout-area: Xmin              Xmax      Ymin              Ymax
+        if (IsPlayerInArea (playerId, knockoutAreaXmin, 770.1500, knockoutAreaYmin, -65.1600))
+            return;
+
+        new Float: Xko = knockoutAreaXmin + 0.5000 + float (random (4));
+        new Float: Yko = knockoutAreaYmin + 0.5000 + float (random (4));
+
+        SetPlayerInterior (playerId, 7);
+        SetPlayerPos (playerId, Xko, Yko, 1001);
+
+        SendClientMessage (playerId, COLOR_RED, "Stay in the Boxring!");
+        GameTextForPlayer (playerId, "~r~Stay in the Boxring!", 3000, 5);
     }
-
-    new Float: Xko = 764.64 + float (random (5));
-    new Float: Yko = -70.91 + float (random (6));
-
-    SetPlayerInterior (playerId, 7);
-    SetPlayerPos (playerId, Xko, Yko, 1001);
-
-    SendClientMessage (playerId, COLOR_RED, "Stay in the Boxring!");
-    GameTextForPlayer (playerId, "~r~Stay in the Boxring!", 3000, 5);
 }
 
 // Function: CheckpointProcess

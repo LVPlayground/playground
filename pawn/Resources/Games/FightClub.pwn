@@ -659,9 +659,6 @@ CFightClub__OnDisconnect(playerId)
         // The match has been created, but has not advanced to the actual fighting state. The
         // invite of the match will be canceled by the ResetMatch() call later.
         else if (Matches[i][status] == FC_STATUS_ACTIVE) {
-            CFightClub__SetKillCount(playerId, 0);
-            CFightClub__SetDeathCount(playerId, 0);
-
             new message[128];
             if (wasPrimaryPlayer)
                 format(message, sizeof(message), "* %s has withdrawn their invite because they left the server.", PlayerName(playerId));
@@ -673,11 +670,6 @@ CFightClub__OnDisconnect(playerId)
 
         // The match has begun and the players are fighting each other.
         else if (Matches[i][status] == FC_STATUS_FIGHTING) {
-            CFightClub__SetKillCount(firstPlayer, 0);
-            CFightClub__SetDeathCount(firstPlayer, 0);
-            CFightClub__SetKillCount(secondPlayer, 0);
-            CFightClub__SetDeathCount(secondPlayer, 0);
-
             new message[128];
 
             // Award the prize money when the other player initiated the match.

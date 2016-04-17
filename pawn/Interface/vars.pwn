@@ -154,23 +154,6 @@ new Float: gArmorPickups[4][PickupSpawnInfo] = {
     {2088.6541, 1450.2456, 10.8203}
 };
 
-enum gPlayerStats {
-    ACdeaths,
-    ACkills
-};
-new iStatistics[MAX_PLAYERS][gPlayerStats];
-
-enum gGlobalStats {
-    ACreaction,
-    ACkills
-};
-
-enum gThingsToSave {
-    ACplayerid,
-    ACamount
-};
-new iGlobalStats[gGlobalStats][gThingsToSave];
-
 enum ePlayerInfo {
     iPlayerTeam,
     iStatus

@@ -306,9 +306,9 @@ lvp_stats(playerid, params[])
     SendClientMessage(playerid, COLOR_GREEN, szStatMsg);
 
 #if Feature::DisableRaces == 0
-    format(szStatMsg, 128, "Races: %d Achievements: %d NPCs: %d", g_RacesLoaded, TotalAchievements, iNPCSOnline);
+    format(szStatMsg, 128, "Races: %d Achievements: %d NPCs: %d", g_RacesLoaded, TotalAchievements-UnavailableTotalAchievements, iNPCSOnline);
 #else
-    format(szStatMsg, 128, "Achievements: %d NPCs: %d", TotalAchievements, iNPCSOnline);
+    format(szStatMsg, 128, "Achievements: %d NPCs: %d", TotalAchievements-UnavailableTotalAchievements, iNPCSOnline);
 #endif
     SendClientMessage(playerid, COLOR_GREEN, szStatMsg);
 

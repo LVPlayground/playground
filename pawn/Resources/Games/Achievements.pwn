@@ -401,7 +401,7 @@ CAchieve__Achieved(playerid, achievement, silentmsg = 0) {
         if (count == 1)
             SendClientMessage(playerid, COLOR_YELLOW, "You completed your first achievement! Congratulations!");
         else {
-            format(string, sizeof(string), "You completed %d of the %d achievements so far!", count, TotalAchievements);
+            format(string, sizeof(string), "You completed %d of the %d achievements so far!", count, TotalAchievements-UnavailableTotalAchievements);
             SendClientMessage(playerid, COLOR_YELLOW, string);
         }
 

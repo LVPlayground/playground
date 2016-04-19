@@ -4,6 +4,8 @@
 
 // How many achievements exist in total?
 #define TotalAchievements 66
+// How many of them are unavailable
+#define UnavailableTotalAchievements 13
 
 /**
  * Players can get achievements simply by playing on Las Venturas Playground - anything from paying

@@ -243,7 +243,7 @@ class Statistics {
 
         format(dialogMessage, sizeof(dialogMessage),
             "%s{B4CCE8}Achievements: {FF8E02}%d / %d\r\n{B4CCE8}Spraytags: {FF8E02}%d / %d\r\n{B4CCE8}Minigames won: {FF8E02}%d\r\n{B4CCE8}Exports: {FF8E02}%d\r\n{B4CCE8}Reactiontests: {FF8E02}%d\r\n",
-            dialogMessage, m_earnedAchievements[playerId], TotalAchievements, m_sprayedTags[playerId],
+            dialogMessage, m_earnedAchievements[playerId], TotalAchievements-UnavailableTotalAchievements, m_sprayedTags[playerId],
             n_SprayTagCount, m_wonMinigames[playerId], m_exportedCars[playerId], m_reactionTests[playerId]);
 
         format(dialogMessage, sizeof(dialogMessage),

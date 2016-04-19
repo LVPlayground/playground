@@ -187,7 +187,7 @@ public OnGameModeInit() {
     }
 
 
-    // Set some require variables:
+    // Set some required variables:
     KTTimer = -1;                                   // Disables the killtime timer.
 
     for (new playerid = 0; playerid < MAX_PLAYERS; playerid++)
@@ -204,8 +204,12 @@ public OnGameModeInit() {
 
     }
 
-    // Menus, Objects
+    CDrink__BuildMenus();
+
+    // Build ONLY the AirportMenu
     #include Interface/menus.pwn
+
+    // Objects
     #include Resources/Maps/main.pwn
 
     // Bombshop, countdown bomb Handlers/bombshop.pwn

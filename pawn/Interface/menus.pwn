@@ -4,9 +4,6 @@
 
     // Todo: they all need to be converted to dialogs (DIALOG_STYLE_LIST)
 
-    // Menus for the Drinks handler - commented out until build time
-    CDrink__BuildMenus();
-
     // LV AIRPORT:
     AirportMenu[0] = CreateMenu("LV Airport:", 2, 0.0, 200.0, 120.0, 250.0);
 

@@ -15,9 +15,6 @@ public OnPlayerSelectedMenuRow(playerid, row) {
     CBomb__ProcessMenu(playerid, row);
     CHideGame__onMenuSelection(playerid, row);
 
-    if (GetPlayerMenu(playerid) == Taxi)
-        return 1;
-
     new message[128];
     if (GetPlayerMenu(playerid) == AirportMenu[0]) { /* Las Venturas */
         if (GetPlayerMoney(playerid) < 250000) { 

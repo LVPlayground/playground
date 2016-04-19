@@ -4,19 +4,6 @@
 
     // Todo: they all need to be converted to dialogs (DIALOG_STYLE_LIST)
 
-
-
-    Taxi = CreateMenu("~y~Kaufman Cabs:", 1, 0.0, 200.0, 270.0, 250.0);
-    SetMenuColumnHeader(Taxi,0,"~p~Choose a destination");
-    AddMenuItem(Taxi,0,"Pirate Ship");
-    AddMenuItem(Taxi,0,"LV Police department");
-    AddMenuItem(Taxi,0,"LV Airport");
-    AddMenuItem(Taxi,0,"Mount Chilliad");
-    AddMenuItem(Taxi,0,"Ammunation");
-    AddMenuItem(Taxi,0,"Area 69");
-    AddMenuItem(Taxi,0,"Airstrip");
-    AddMenuItem(Taxi,0,"Basejumping");
-
     // Menus for the Drinks handler - commented out until build time
     CDrink__BuildMenus();
 

@@ -53,7 +53,6 @@ new bool: g_isAiming[MAX_PLAYERS];
 new isGateOpen;
 new g_AllowWeapons[MAX_INTERIORS][MAX_PLAYERS];
 new g_FlagTime[MAX_PLAYERS][5];
-new Menu: Taxi;
 new Drivebyer[MAX_PLAYERS];
 new HeliKill[MAX_PLAYERS];
 new preventKillLamers[MAX_PLAYERS];

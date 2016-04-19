@@ -234,11 +234,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         return 1;
     }
 
-    if (GetPlayerMenu( playerid ) == Taxi) {
-        HideMenuForPlayer( Taxi, playerid );
-        g_PlayerMenu[ playerid ] = 0;
-    }
-
     if(!strcmp(cmd, "/dm", true))
     {
         ShowDeathmatchDialog(playerid);

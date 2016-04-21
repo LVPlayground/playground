@@ -45,8 +45,7 @@ class ShipManager {
     new m_playerSpawnWeapons_ammo[MAX_PLAYERS][WeaponSlots+1];
 
     // Keeps track whether the weaponinventory is saved.
-    new bool: m_playerSpawnWeaponsSaved[MAX_PLAYERS];
-    new bool: m_playerHealthAndArmourSaved[MAX_PLAYERS];
+    new bool: m_playerHealthSpawnWeaponsSaved[MAX_PLAYERS];
 
     // All of the back- and frontshiprailobjects so they can be en- and disabled.
     new DynamicObject: m_shipRailObjects[MAX_RAIL_OBJECTS];
@@ -64,7 +63,7 @@ class ShipManager {
      * and the forbidden to fly-zones is/are. Also, the shiprail objects are initialized.
      */
     public __construct () {
-        new Float: shipRelatedAreas[9][4] = {
+        new Float: shipRelatedAreas[8][5] = {
             /* x1        y1         x2         y2       */
             { 1995.0000, 1516.0000, 2006.0000, 1569.0000 }, // Ship
             { 2005.0000, 1540.2500, 2024.0000, 1550.2500 }, // Shipramp
@@ -73,8 +72,7 @@ class ShipManager {
             { 2005.0000, 1550.0000, 2023.0000, 1569.0000 }, // Right-top
             { 1978.0000, 1500.0000, 1996.0000, 1569.0000 }, // Left-top, left, left-bottom
             { 1995.0000, 1500.0000, 2024.0000, 1516.0000 }, // Bottom, right-bottom
-            { 2006.0000, 1516.0000, 2033.0000, 1540.5000 }, // Right (cars- and bikes-place)
-            { 2033.0000, 1516.0000, 2055.0000, 1569.0000 }  // Sidewalk + road-side in front of ship
+            { 2006.0000, 1516.0000, 2024.0000, 1540.5000 }  // Right
         };
 
         // Create a layer and the area for the ship itself and for the ramp in front of the ship.
@@ -124,8 +122,7 @@ class ShipManager {
     @list(OnPlayerConnect)
     public onPlayerConnect(playerId) {
         m_activityOfPlayerOnShip[playerId] = Nothing;
-        m_playerSpawnWeaponsSaved[playerId] = false;
-        m_playerHealthAndArmourSaved[playerId] = false;
+        m_playerHealthSpawnWeaponsSaved[playerId] = false;
 
         // Remove two objects which are in the way.
         RemoveBuildingForPlayer(playerId, 3524, 2024.3438, 1540.3906, 11.3125, 0.25);
@@ -144,7 +141,7 @@ class ShipManager {
         if (MapObjects->isActive()) return 1;
         if (GetPlayerVirtualWorld(playerId) != 0) return 1;
 
-        if (zoneId <= 1) {
+        if (zoneId < 2) {
             this->respawnPlayerVehicle(playerId);
 
             if (!LegacyIsKillTimeActivated()) {
@@ -158,7 +155,7 @@ class ShipManager {
                     return 1;
                 }
 
-                if (m_playerSpawnWeaponsSaved[playerId] == false && m_playerHealthAndArmourSaved[playerId] == false) {
+                if (m_playerHealthSpawnWeaponsSaved[playerId] == false) {
                     this->storeSpawnWeapons(playerId);
 
                     new Float: health, Float: armour;
@@ -169,8 +166,7 @@ class ShipManager {
                     GetPlayerArmour(playerId, armour);
                     m_playerHealthAndArmour[playerId][1] = armour;
 
-                    m_playerSpawnWeaponsSaved[playerId] = true;
-                    m_playerHealthAndArmourSaved[playerId] = true;
+                    m_playerHealthSpawnWeaponsSaved[playerId] = true;
                 }
             }
 
@@ -179,10 +175,6 @@ class ShipManager {
 
         if (zoneId > 1) {
             this->respawnPlayerVehicle(playerId);
-            if (m_playerSpawnWeaponsSaved[playerId] == false && !LegacyIsKillTimeActivated()) {
-                this->storeSpawnWeapons(playerId);
-                m_playerSpawnWeaponsSaved[playerId] = true;
-            }
             m_activityOfPlayerOnShip[playerId] = JustLeft;
         }
 
@@ -250,13 +242,10 @@ class ShipManager {
      * @param playerId Id of the player to possibly respawn a vehicle for.
      */
     public respawnPlayerVehicle(playerId) {
-        if (Player(playerId)->isAdministrator() == true)
-            return 0;
-
         new vehicleId = GetPlayerVehicleID(playerId),
             modelId = GetVehicleModel(vehicleId);
 
-        if (GetPlayerState(playerId) == PLAYER_STATE_DRIVER) {
+        if (GetPlayerState(playerId) == PLAYER_STATE_DRIVER && Player(playerId)->isAdministrator() == false) {
             if (VehicleModel->isAirplane(modelId) == true || VehicleModel->isHelicopter(modelId) == true)
                 SendClientMessage(playerId, Color::Error, "Flyable vehicles are not allowed around the ship!");
             else
@@ -281,14 +270,10 @@ class ShipManager {
         if (MapObjects->isActive()) return 1;
         if (GetPlayerVirtualWorld(playerId) != 0) return 1;
 
-        if (m_playerSpawnWeaponsSaved[playerId] == true && zoneId > 1 && m_activityOfPlayerOnShip[playerId] == JustLeft) {
-            this->restoreSpawnWeapons(playerId);
-            m_playerSpawnWeaponsSaved[playerId] = false;
-        }
-
         m_activityOfPlayerOnShip[playerId] = JustLeft;
 
         return 1;
+        #pragma unused zoneId
     }
 
     /**
@@ -302,14 +287,13 @@ class ShipManager {
         if (m_activityOfPlayerOnShip[playerId] == Nothing)
             return 0;
 
-        if (m_activityOfPlayerOnShip[playerId] == JustLeft && (m_playerSpawnWeaponsSaved[playerId] == true && m_playerHealthAndArmourSaved[playerId] == true)) {
+        if (m_activityOfPlayerOnShip[playerId] == JustLeft && m_playerHealthSpawnWeaponsSaved[playerId] == true) {
             if (!LegacyIsKillTimeActivated() && !IsPlayerInMinigame(playerId)) {
                 this->restoreSpawnWeapons(playerId);
 
                 SetPlayerHealth(playerId, m_playerHealthAndArmour[playerId][0]);
                 SetPlayerArmour(playerId, m_playerHealthAndArmour[playerId][1]);
-                m_playerSpawnWeaponsSaved[playerId] = false;
-                m_playerHealthAndArmourSaved[playerId] = false;
+                m_playerHealthSpawnWeaponsSaved[playerId] = false;
             }
 
             m_activityOfPlayerOnShip[playerId] = Nothing;
@@ -325,7 +309,7 @@ class ShipManager {
             if (Player(playerId)->isAdministrator() == false) {
                 if (!LegacyIsKillTimeActivated()) {
                     ResetPlayerWeapons(playerId);
-                    if (m_playerSpawnWeaponsSaved[playerId] == false && m_playerHealthAndArmourSaved[playerId] == false) {
+                    if (m_playerHealthSpawnWeaponsSaved[playerId] == false) {
                         this->storeSpawnWeapons(playerId);
 
                         new Float: health, Float: armour;
@@ -336,17 +320,15 @@ class ShipManager {
                         GetPlayerArmour(playerId, armour);
                         m_playerHealthAndArmour[playerId][1] = armour;
 
-                        m_playerSpawnWeaponsSaved[playerId] = true;
-                        m_playerHealthAndArmourSaved[playerId] = true;
+                        m_playerHealthSpawnWeaponsSaved[playerId] = true;
                     }
                 } else {
-                    if (m_playerSpawnWeaponsSaved[playerId] == true && m_playerHealthAndArmourSaved[playerId] == true) {
+                    if (m_playerHealthSpawnWeaponsSaved[playerId] == true) {
                         this->restoreSpawnWeapons(playerId);
 
                         SetPlayerHealth(playerId, m_playerHealthAndArmour[playerId][0]);
                         SetPlayerArmour(playerId, m_playerHealthAndArmour[playerId][1]);
-                        m_playerSpawnWeaponsSaved[playerId] = false;
-                        m_playerHealthAndArmourSaved[playerId] = false;
+                        m_playerHealthSpawnWeaponsSaved[playerId] = false;
                     }
                 }
 

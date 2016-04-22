@@ -175,8 +175,8 @@ class Account <playerId (MAX_PLAYERS)> {
      * guest. Their nickname will be changed, and they'll be treated as any unregistered player.
      */
     public changeNicknameAndPlayAsGuest() {
-        new randomNickname[32]
-           ,oldNickname[32];
+        new randomNickname[MAX_PLAYER_NAME+1]
+           ,oldNickname[MAX_PLAYER_NAME+1];
         NicknameGenerator->generateForPlayerId(playerId, randomNickname, sizeof(randomNickname));
 
         // Instrument how many players decide to play as a guest.

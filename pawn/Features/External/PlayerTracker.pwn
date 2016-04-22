@@ -63,6 +63,28 @@ class PlayerTracker {
     }
 
     /**
+     * In the case that a player tried to play with an already registered name, he can choose to
+     * play as guest. We will generate and set a random nickname. Afterwards we have to change the
+     * username in the online-table so it is up to date with the new nickname and not the old nick-
+     * name.
+     *
+     * @param playerId Id of the player who wants to play as guest
+     */
+    @list(OnPlayerGuestLogin)
+    public onPlayerGuestLogin(playerId) {
+        new nickname[MAX_PLAYER_NAME+1];
+        GetPlayerName(playerId, nickname, sizeof(nickname));
+
+        format(m_queryBuffer, sizeof(m_queryBuffer),
+            "UPDATE online" ...
+            "SET nickname = \"%s\"" ...
+            "WHERE player_id = %d",
+            nickname, playerId);
+
+        Database->query(m_queryBuffer, "", 0);
+    }
+
+    /**
      * We update the player data in the database every second, to give the most accurate information
      * possible to listening services such as our website. The cost of this a query per 50 players.
      */

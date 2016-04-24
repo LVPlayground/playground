@@ -92,7 +92,7 @@ public OnPlayerText(playerid, text[]) {
         new prefix[MAX_PLAYER_NAME];
 
         if (Account(playerid)->userId() == 31797 /* Luce */)
-            format(prefix, sizeof(prefix), "The");
+            format(prefix, sizeof(prefix), "Lady");
         else if (Player(playerid)->isManagement() == true)
             format(prefix, sizeof(prefix), "Manager");
         else if (Player(playerid)->isAdministrator() == true)

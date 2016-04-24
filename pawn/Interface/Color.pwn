@@ -27,6 +27,7 @@ class Color {
     public const MinigameAnnouncement = 0xCCD782FF;
     public const MinigameAnnouncementHighlight = 0x838F31FF;
     public const PropertyTycoonAnnouncement = 0xFFFF00AA;
+    public const SlapAnnouncement = 0xB1FC17FF;
 
     // =============================================================================================
     //                                       ~~~~~~~~~~~~~~~~

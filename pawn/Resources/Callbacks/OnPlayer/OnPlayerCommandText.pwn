@@ -539,6 +539,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(taxi,           4, PlayerLevel);
     lvp_command(tow,            3, PlayerLevel);
     lvp_command(slap,           4, PlayerLevel);
+    lvp_command(slapb,          5, PlayerLevel);
+    lvp_command(slapback,       8, PlayerLevel);
     lvp_command(taxiprice,      9, PlayerLevel);
     lvp_command(countdown,      9, PlayerLevel);
     lvp_command(interest,       8, PlayerLevel);
@@ -966,7 +968,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             new Target, tName[2][MAX_PLAYER_NAME+1], Float:tCoord[3], sNear[MAX_PLAYERS];
 
             if(GetPlayerMoney(playerid) < 15000) return ShowBoxForPlayer(playerid, "This animation costs $15000." );
-            if(Time->currentTime() - canSlap[playerid] < 10 && Player(playerid)->isAdministrator() == false)
+            if(Time->currentTime() - g_LastSlapTime[playerid] < 10 && Player(playerid)->isAdministrator() == false)
             {
                 ShowBoxForPlayer(playerid, "You can only slap every 10 seconds." );
                 return 1;
@@ -998,7 +1000,9 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             SendClientMessageToAllEx(0x0099FFAA, string);
             GivePlayerMoney(playerid, -15000);
 
-            canSlap[playerid] = Time->currentTime();
+            g_LastSlapTime[playerid] = Time->currentTime();
+            g_LastSlappedBy[Target] = playerid;
+
             return 1;
         }
 

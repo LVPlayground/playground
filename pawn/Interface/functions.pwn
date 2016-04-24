@@ -248,7 +248,8 @@ ResetPlayerStats(playerId) {
     canMoney[playerId] = 0;
     UserTemped[playerId] = "";
     PlayerHandOfGod[playerId] = 0;
-    canSlap[playerId] = 0;
+    g_LastSlapTime[playerId] = 0;
+    g_LastSlappedBy[playerId] = INVALID_PLAYER_ID;
     WantedLevel[playerId] = 0;
     ResetPlayerRampingData(playerId);
     PlayerInfo[playerId][reactionTestWins] = 0;

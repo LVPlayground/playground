@@ -27,6 +27,11 @@ OnPlayerLVPDisconnect(playerId, reason) {
             SetVehicleLocked(GetPlayerVehicleID(playerId), false);
     }
 
+    for (new i = 0; i < MAX_PLAYERS; ++i) {
+        if (g_LastSlappedBy[i] == playerId)
+            g_LastSlappedBy[i] = INVALID_PLAYER_ID;
+    }  
+
     if (BanManager->wasAutomaticallyBanned(playerId) == false && Player(playerId)->isNonPlayerCharacter() == false)
         Announcements->announcePlayerDisconnected(playerId, reason);
 

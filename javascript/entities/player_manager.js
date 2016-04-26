@@ -12,6 +12,8 @@ class PlayerManager {
         this.players_ = {};
         this.playersByName_ = {};
 
+        this.highestId_ = 0;
+
         this.observers_ = new Set();
 
         this.callbacks_ = new ScopedCallbacks();
@@ -20,6 +22,9 @@ class PlayerManager {
         this.callbacks_.addEventListener(
             'playerdisconnect', PlayerManager.prototype.onPlayerDisconnect.bind(this));
     }
+
+    // Returns the highest ID assigned to a player connected to the server.
+    get highestId() { return this.highestId_; }
 
     // Returns the player whose ID is |playerId|, or NULL when they are not connected.
     getById(playerId) {
@@ -82,6 +87,8 @@ class PlayerManager {
         this.players_[playerId] = player;
         this.playersByName_[player.name] = player;
 
+        this.highestId_ = Math.max(this.highestId_, playerId);
+
         this.notifyPlayerConnected(player);
     }
 
@@ -101,6 +108,15 @@ class PlayerManager {
 
         delete this.players_[playerId];
         delete this.playersByName_[player.name];
+
+        if (playerId == this.highestId_) {
+            while (this.highestId_ > 0) {
+                if (this.players_.hasOwnProperty(this.highestId_))
+                    break;
+
+                this.highestId_--;
+            }
+        }
 
         this.notifyPlayerDisconnected(player, reason);
     }

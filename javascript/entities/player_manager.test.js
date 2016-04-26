@@ -72,4 +72,18 @@ describe('PlayerManager', it => {
 
         playerManager.dispose();
     });
+
+    it('should be able to find players by ID', assert => {
+        let playerManager = new PlayerManager();
+
+        assert.isNull(playerManager.getById(42));
+
+        playerManager.onPlayerConnect({ playerid: 42 });
+        assert.isNotNull(playerManager.getById(42));
+
+        playerManager.onPlayerDisconnect({ playerid: 42 });
+        assert.isNull(playerManager.getById(42));
+
+        playerManager.dispose();
+    });
 });

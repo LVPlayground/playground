@@ -21,6 +21,14 @@ class PlayerManager {
             'playerdisconnect', PlayerManager.prototype.onPlayerDisconnect.bind(this));
     }
 
+    // Returns the players whose ID is |playerId|, or NULL when they are not connected.
+    getById(playerId) {
+        if (this.players_.hasOwnProperty(playerId))
+            return this.players_[playerId];
+
+        return null;
+    }
+
     // Observes players connecting and disconnecting from the server. The |observer| must have two
     // methods on its prototype: onPlayerConnect and onPlayerDisconnect.
     addObserver(observer) {

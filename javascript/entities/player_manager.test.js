@@ -174,4 +174,29 @@ describe('PlayerManager', it => {
 
         playerManager.dispose();
     });
+
+    it('should be able to iterate over the connected players', assert => {
+        let playerManager = new PlayerManager();
+        let count = 0;
+
+        playerManager.forEach(player => ++count);
+        assert.equal(0, count);
+
+        playerManager.onPlayerConnect({ playerid: 42 });
+        playerManager.onPlayerConnect({ playerid: 10 });
+        playerManager.onPlayerConnect({ playerid: 5 });
+
+        playerManager.forEach(player => ++count);
+        assert.equal(3, count);
+
+        const expectedIds = [5, 10, 42];
+        let actualIds = [];
+
+        playerManager.forEach((player, playerId) => actualIds.push(playerId));
+
+        assert.equal(3, actualIds.length);
+        assert.deepEqual(actualIds, expectedIds);
+
+        playerManager.dispose();
+    });
 });

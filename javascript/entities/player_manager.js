@@ -63,6 +63,13 @@ class PlayerManager {
         return null;
     }
 
+    // Executes the |callback| once for each player connected to the server. The first argument to
+    // the |callback| will be the Player object, the second the player's ID.
+    forEach(callback, thisArg = null) {
+        Object.keys(this.players_).forEach(playerId =>
+            callback.call(thisArg, this.players_[playerId], parseInt(playerId, 10)));
+    }
+
     // Observes players connecting and disconnecting from the server. The |observer| must have two
     // methods on its prototype: onPlayerConnect and onPlayerDisconnect.
     addObserver(observer) {

@@ -20,6 +20,8 @@ testRunner.run('**/*.test.js').then(() => {
   // All tests passed, start the gamemode by instantiating the Playground object.
   console.log('Passed all ' + testRunner.testCount + ' tests!');
 
+  require('server.js');
+
   new Playground();
 
 }, failures => {

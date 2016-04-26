@@ -132,6 +132,7 @@ class TestRunner {
       require('components/feature_manager/dependency_graph.test.js');
       require('components/feature_manager/feature_manager.test.js');
       require('components/text_draw/text_draw.test.js');
+      require('entities/player_manager.test.js');
       require('entities/scoped_entities.test.js');
       require('features/death_feed/death_feed_feature.test.js');
       require('features/gangs/gang_commands.test.js');

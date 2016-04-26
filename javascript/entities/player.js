@@ -8,9 +8,7 @@ const Extendable = require('base/extendable.js'),
 // Identifier, stored as an IP address, that can be used to detect players created for testing.
 const TEST_PLAYER_IDENTIFIER = '0.0.0.0';
 
-// See https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Symbol
-let playerCreateSymbol = Symbol('Private symbol to limit creation of Player instances.'),
-    players = {};
+let players = {};
 
 class Player extends Extendable {
   // Returns the Player instance for the player with id |playerId|. If the player is not connected
@@ -51,13 +49,9 @@ class Player extends Extendable {
     Object.keys(players).forEach(playerId => fn(players[playerId]));
   }
 
-  // Creates a new instance of the Player class for |playerId|. This method must only be used by
-  // code in this file, hence the |privateSymbol| which is deliberately not exported.
-  constructor(privateSymbol, playerId) {
+  // Creates a new instance of the Player class for |playerId|.
+  constructor(playerId) {
     super();
-
-    if (privateSymbol != playerCreateSymbol)
-      throw new Error('Please do not instantiate the Player class. Use Player.get(playerId) instead.');
 
     this.id_ = playerId;
     this.connected_ = true;
@@ -191,7 +185,7 @@ class Player extends Extendable {
     if (players.hasOwnProperty(playerId))
       throw new Error('Unable to create a player for testing purposes, id ' + playerId + ' already taken.');
 
-    players[playerId] = new Player(playerCreateSymbol, playerId);
+    players[playerId] = new Player(playerId);
     players[playerId].name_ = nickname || 'TestPlayer';
     players[playerId].ipAddress_ = TEST_PLAYER_IDENTIFIER;
 
@@ -238,7 +232,7 @@ require('entities/player_activities.js')(Player);
 // Called when a player connects to Las Venturas Playground. Registers the player as being in-game
 // and initializes the Player instance for them.
 self.addEventListener('playerconnect', event =>
-    players[event.playerid] = new Player(playerCreateSymbol, event.playerid));
+    players[event.playerid] = new Player(event.playerid));
 
 // Called when the level of a player changes. This event is custom to Las Venturas Playground.
 self.addEventListener('playerlevelchange', event => {

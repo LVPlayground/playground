@@ -17,17 +17,17 @@ describe('PlayerManager', it => {
         playerManager.addObserver(myObserver);
         playerManager.notifyPlayerConnected(null);
 
-        assert.equal(1, counter);
+        assert.equal(counter, 1);
 
         playerManager.addObserver(myObserver);  // second add
         playerManager.notifyPlayerConnected(null);
 
-        assert.equal(2, counter);
+        assert.equal(counter, 2);
 
         playerManager.removeObserver(myObserver);
         playerManager.notifyPlayerConnected(null);
 
-        assert.equal(2, counter);
+        assert.equal(counter, 2);
 
         playerManager.dispose();
     });
@@ -46,13 +46,13 @@ describe('PlayerManager', it => {
         playerManager.addObserver(myObserver);
         playerManager.onPlayerConnect({ playerid: 42 });
 
-        assert.equal(1, connectionCount);
-        assert.equal(0, disconnectionCount);
+        assert.equal(connectionCount, 1);
+        assert.equal(disconnectionCount, 0);
 
         playerManager.onPlayerDisconnect({ playerid: 42, reason: 0 });
 
-        assert.equal(1, connectionCount);
-        assert.equal(1, disconnectionCount);
+        assert.equal(connectionCount, 1);
+        assert.equal(disconnectionCount, 1);
 
         let connectedPlayer = null;
 
@@ -66,9 +66,9 @@ describe('PlayerManager', it => {
         playerManager.onPlayerConnect({ playerid: 42 });
 
         assert.isNotNull(connectedPlayer);
-        assert.equal(2, connectionCount);
+        assert.equal(connectionCount, 2);
 
-        assert.equal(42, connectedPlayer.id);
+        assert.equal(connectedPlayer.id, 42);
 
         playerManager.dispose();
     });
@@ -126,19 +126,19 @@ describe('PlayerManager', it => {
     it('should know about the number of connected players', assert => {
         let playerManager = new PlayerManager();
 
-        assert.equal(0, playerManager.count);
+        assert.equal(playerManager.count, 0);
 
         playerManager.onPlayerConnect({ playerid: 42 });
         playerManager.onPlayerConnect({ playerid: 15 });
         playerManager.onPlayerConnect({ playerid: 0 });
 
-        assert.equal(3, playerManager.count);
+        assert.equal(playerManager.count, 3);
 
         playerManager.onPlayerDisconnect({ playerid: 15, reason: 0 });
-        assert.equal(2, playerManager.count);
+        assert.equal(playerManager.count, 2);
 
         playerManager.onPlayerDisconnect({ playerid: 0, reason: 0 });
-        assert.equal(1, playerManager.count);
+        assert.equal(playerManager.count, 1);
 
         playerManager.dispose();
     });
@@ -146,31 +146,31 @@ describe('PlayerManager', it => {
     it('should know about the highest connected player ID', assert => {
         let playerManager = new PlayerManager();
 
-        assert.equal(0, playerManager.highestId);
+        assert.equal(playerManager.highestId, 0);
 
         playerManager.onPlayerConnect({ playerid: 5 });
-        assert.equal(5, playerManager.highestId);
+        assert.equal(playerManager.highestId, 5);
 
         playerManager.onPlayerConnect({ playerid: 42 });
-        assert.equal(42, playerManager.highestId);
+        assert.equal(playerManager.highestId, 42);
 
         playerManager.onPlayerConnect({ playerid: 32 });
-        assert.equal(42, playerManager.highestId);
+        assert.equal(playerManager.highestId, 42);
 
         playerManager.onPlayerDisconnect({ playerid: 42, reason: 0 });
-        assert.equal(32, playerManager.highestId);
+        assert.equal(playerManager.highestId, 32);
 
         playerManager.onPlayerDisconnect({ playerid: 5, reason: 0 });
-        assert.equal(32, playerManager.highestId);
+        assert.equal(playerManager.highestId, 32);
 
         playerManager.onPlayerDisconnect({ playerid: 32, reason: 0 });
-        assert.equal(0, playerManager.highestId);
+        assert.equal(playerManager.highestId, 0);
 
         playerManager.onPlayerConnect({ playerid: 0 });
-        assert.equal(0, playerManager.highestId);
+        assert.equal(playerManager.highestId, 0);
 
         playerManager.onPlayerDisconnect({ playerid: 0, reason: 0 });
-        assert.equal(0, playerManager.highestId);
+        assert.equal(playerManager.highestId, 0);
 
         playerManager.dispose();
     });
@@ -180,21 +180,21 @@ describe('PlayerManager', it => {
         let count = 0;
 
         playerManager.forEach(player => ++count);
-        assert.equal(0, count);
+        assert.equal(count, 0);
 
         playerManager.onPlayerConnect({ playerid: 42 });
         playerManager.onPlayerConnect({ playerid: 10 });
         playerManager.onPlayerConnect({ playerid: 5 });
 
         playerManager.forEach(player => ++count);
-        assert.equal(3, count);
+        assert.equal(count, 3);
 
         const expectedIds = [5, 10, 42];
         let actualIds = [];
 
         playerManager.forEach((player, playerId) => actualIds.push(playerId));
 
-        assert.equal(3, actualIds.length);
+        assert.equal(actualIds.length, 3);
         assert.deepEqual(actualIds, expectedIds);
 
         playerManager.dispose();

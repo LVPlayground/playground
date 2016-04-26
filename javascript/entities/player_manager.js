@@ -12,6 +12,7 @@ class PlayerManager {
         this.players_ = {};
         this.playersByName_ = {};
 
+        this.count_ = 0;
         this.highestId_ = 0;
 
         this.observers_ = new Set();
@@ -23,7 +24,10 @@ class PlayerManager {
             'playerdisconnect', PlayerManager.prototype.onPlayerDisconnect.bind(this));
     }
 
-    // Returns the highest ID assigned to a player connected to the server.
+    // Gets the number of players currently connected to the server.
+    get count() { return this.count_; }
+
+    // Gets the highest ID assigned to a player connected to the server.
     get highestId() { return this.highestId_; }
 
     // Returns the player whose ID is |playerId|, or NULL when they are not connected.
@@ -87,6 +91,7 @@ class PlayerManager {
         this.players_[playerId] = player;
         this.playersByName_[player.name] = player;
 
+        this.count_++;
         this.highestId_ = Math.max(this.highestId_, playerId);
 
         this.notifyPlayerConnected(player);
@@ -108,6 +113,8 @@ class PlayerManager {
 
         delete this.players_[playerId];
         delete this.playersByName_[player.name];
+
+        this.count_--;
 
         if (playerId == this.highestId_) {
             while (this.highestId_ > 0) {

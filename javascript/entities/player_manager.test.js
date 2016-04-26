@@ -123,6 +123,26 @@ describe('PlayerManager', it => {
         playerManager.dispose();
     });
 
+    it('should know about the number of connected players', assert => {
+        let playerManager = new PlayerManager();
+
+        assert.equal(0, playerManager.count);
+
+        playerManager.onPlayerConnect({ playerid: 42 });
+        playerManager.onPlayerConnect({ playerid: 15 });
+        playerManager.onPlayerConnect({ playerid: 0 });
+
+        assert.equal(3, playerManager.count);
+
+        playerManager.onPlayerDisconnect({ playerid: 15, reason: 0 });
+        assert.equal(2, playerManager.count);
+
+        playerManager.onPlayerDisconnect({ playerid: 0, reason: 0 });
+        assert.equal(1, playerManager.count);
+
+        playerManager.dispose();
+    });
+
     it('should know about the highest connected player ID', assert => {
         let playerManager = new PlayerManager();
 

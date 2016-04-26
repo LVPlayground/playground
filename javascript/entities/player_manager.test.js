@@ -81,7 +81,43 @@ describe('PlayerManager', it => {
         playerManager.onPlayerConnect({ playerid: 42 });
         assert.isNotNull(playerManager.getById(42));
 
-        playerManager.onPlayerDisconnect({ playerid: 42 });
+        playerManager.onPlayerDisconnect({ playerid: 42, reason: 0 });
+        assert.isNull(playerManager.getById(42));
+
+        playerManager.dispose();
+    });
+
+    it('should be able to find players by name', assert => {
+        const playerMap = {
+            42: 'Russell'
+        }
+
+        let playerManager = new PlayerManager();
+        playerManager.createPlayer = function(playerId) {
+            if (!playerMap.hasOwnProperty(playerId))
+                throw new Error('Unexpected player connecting: ' + playerId);
+
+            return {
+                id: playerId,
+                name: playerMap[playerId]
+            };
+        };
+
+        assert.isNull(playerManager.getByName('Russell'));
+
+        playerManager.onPlayerConnect({ playerid: 42 });
+
+        assert.isNotNull(playerManager.getByName('Russell'));
+        assert.isNull(playerManager.getByName('RUSSELL'));
+        assert.isNull(playerManager.getByName('uSSel'));
+
+        assert.isNotNull(playerManager.getByName('Russell', true /* fuzzy */));
+        assert.isNotNull(playerManager.getByName('RUSSELL', true /* fuzzy */));
+        assert.isNotNull(playerManager.getByName('uSSel', true /* fuzzy */));
+
+        playerManager.onPlayerDisconnect({ playerid: 42, reason: 0 });
+
+        assert.isNull(playerManager.getByName('Russell'));
         assert.isNull(playerManager.getById(42));
 
         playerManager.dispose();

@@ -21,10 +21,35 @@ class PlayerManager {
             'playerdisconnect', PlayerManager.prototype.onPlayerDisconnect.bind(this));
     }
 
-    // Returns the players whose ID is |playerId|, or NULL when they are not connected.
+    // Returns the player whose ID is |playerId|, or NULL when they are not connected.
     getById(playerId) {
         if (this.players_.hasOwnProperty(playerId))
             return this.players_[playerId];
+
+        return null;
+    }
+
+    // Returns the player whose name is |name|, optionally |fuzzy| when set. NULL will be returned
+    // when there is no player with the |name|, or when a |fuzzy| match is requested and multiple
+    // players match the |name|. (In which case you'd want to use findPlayers().)
+    getByName(name, fuzzy = false) {
+        if (fuzzy) {
+            let matches = [];
+
+            const lowerCaseName = name.toLowerCase();
+            Object.values(this.players_).forEach(player => {
+                if (player.name.toLowerCase().includes(lowerCaseName))
+                    matches.push(player);
+            });
+
+            if (matches.length == 1)
+                return matches[0];
+
+            return null;
+        }
+
+        if (this.playersByName_.hasOwnProperty(name))
+            return this.playersByName_[name];
 
         return null;
     }
@@ -52,7 +77,7 @@ class PlayerManager {
             return;
         }
 
-        const player = new Player(playerId);
+        const player = this.createPlayer(playerId);
 
         this.players_[playerId] = player;
         this.playersByName_[player.name] = player;
@@ -78,6 +103,12 @@ class PlayerManager {
         delete this.playersByName_[player.name];
 
         this.notifyPlayerDisconnected(player, reason);
+    }
+
+    // Factory method for creating a Player instance for the player with Id |playerId|. May be
+    // overridden for tests in order to verify the functionality of this class.
+    createPlayer(playerId) {
+        return new Player(playerId);
     }
 
     // Notifies observers that the |player| has connected to Las Venturas Playground.

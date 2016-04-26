@@ -15,7 +15,7 @@ class ActivityLog extends Feature {
     super(playground);
 
     this.callbacks_ = new ScopedCallbacks();
-    this.recorder_ = new ActivityRecorder(playground.database);
+    this.recorder_ = new ActivityRecorder(server.database);
     
     // Translates OnPawnEventName to respectively `onPawnEventName` or `pawneventname`.
     const toMethodName = name => name.charAt(0).toLowerCase() + name.slice(1);

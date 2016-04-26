@@ -93,6 +93,12 @@ class Database {
     return this.connection_;
   }
 
+  // Closes the MySQL connection. Further use of the Database class will yield errors.
+  dispose() {
+    this.connection_.close();
+    this.connection_ = null;
+  }
+
   // Executes |query| on the MySQL connection. Returns a promise that will be resolved when the
   // query either has finished executing, or reject when the query cannot be executed.
   //

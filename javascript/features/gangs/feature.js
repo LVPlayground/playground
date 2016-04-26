@@ -13,7 +13,7 @@ class GangFeature extends Feature {
     super(playground);
 
     // Initialize the gang manager, which owns the actual gangs.
-    this.manager_ = new GangManager(playground.database);
+    this.manager_ = new GangManager(server.database);
 
     // Initialize the commands that provide the user interface for the gang feature to the players,
     // which depends on the global CommandManager and the gang manager.

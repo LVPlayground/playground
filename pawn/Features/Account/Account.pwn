@@ -164,7 +164,7 @@ class Account <playerId (MAX_PLAYERS)> {
         Annotation::ExpandList<OnPlayerLogin>(playerId);
 
         // Broadcast an OnPlayerLogin callback that can be intercepted by other scripts.
-        CallRemoteFunction("OnPlayerLogin", "ii", playerId, m_userId);
+        CallRemoteFunction("OnPlayerLogin", "iii", playerId, m_userId, AccountData(playerId)->gangId());
 
         sprayTagLoadSprayedTags(playerId);
     }

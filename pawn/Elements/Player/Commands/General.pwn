@@ -372,7 +372,7 @@ lvp_slap(playerId, params[]) {
     }
 
     new timeSinceLastSlap = Time->currentTime() - g_LastSlapTime[playerId];
-    if (timeSinceLastSlap < 10 /* seconds */ && Account(playerid)->userId() != 31797 /* Luce */) {
+    if (timeSinceLastSlap < 10 /* seconds */ && Account(playerId)->userId() != 31797 /* Luce */) {
         SendClientMessage(playerId, Color::Warning, "Error: You can only slap once per 10 seconds.");
         return 1;
     }

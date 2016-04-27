@@ -37,6 +37,9 @@ class AccountData <playerId (MAX_PLAYERS)> {
     // Is this player part of the development team?
     new bool: m_developer;
 
+    // Id of the persistent gang the player is part of. Consumed in JavaScript.
+    new m_gangId;
+
     /**
      * Returns the set player access level. For most people this will be Player, but Administrators
      * and Management members have their own levels to. For history's sake the level Moderator is
@@ -69,6 +72,16 @@ class AccountData <playerId (MAX_PLAYERS)> {
     }
 
     /**
+     * Returns the Id of the persistent gang this player is part of. Should only be read for passing
+     * the information on to the JavaScript code.
+     *
+     * @return integer Id of the persistent gang the player is part of, or zero.
+     */
+    public inline gangId() {
+        return m_gangId;
+    }
+
+    /**
      * Reset the values in the AccountData and all other Account*Data classes to their initial
      * value. This will be called when a user joins or leaves the server.
      */
@@ -76,6 +89,7 @@ class AccountData <playerId (MAX_PLAYERS)> {
         m_level = PlayerLevel;
         m_vip = false;
         m_developer = false;
+        m_gangId = 0;
     }
 
     /**
@@ -152,6 +166,9 @@ class AccountData <playerId (MAX_PLAYERS)> {
             } else
                 JailController->jailPlayer(playerId, remainingJailTime);
         }
+
+        // Read whether the player is part of a gang.
+        m_gangId = DatabaseResult(resultId)->readInteger("gang_id");
 
         // Mutable information will be stored by the respective sub-systems, which will be handled
         // by a separate (private) method in this class.

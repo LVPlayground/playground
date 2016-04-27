@@ -39,7 +39,7 @@ class Player extends Extendable {
 
   // Returns the level of this player. Synchronized with the gamemode using the `levelchange` event.
   get level() { return this.level_; }
-  set level(value) { this.level_ = level; }
+  set level(value) { this.level_ = value; }
 
   // Gets or sets the virtual world the player is part of.
   get virtualWorld() { return pawnInvoke('GetPlayerVirtualWorld', 'i', this.id_); }

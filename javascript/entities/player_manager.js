@@ -116,7 +116,7 @@ class PlayerManager {
         this.count_++;
         this.highestId_ = Math.max(this.highestId_, playerId);
 
-        this.notifyPlayerConnected(player);
+        this.notifyObservers('onPlayerConnect', player);
     }
 
     // Called when a player's level on the server changes, for example because they log in to their
@@ -140,6 +140,8 @@ class PlayerManager {
                 player.level = Player.LEVEL_PLAYER;
                 break;
         }
+
+        this.notifyObservers('onPlayerLevelChange', player);
     }
 
     // Called when a player has disconnected from Las Venturas Playground. The |event| may contain
@@ -172,7 +174,7 @@ class PlayerManager {
             }
         }
 
-        this.notifyPlayerDisconnected(player, reason);
+        this.notifyObservers('onPlayerDisconnect', player, reason);
     }
 
     // Factory method for creating a Player instance for the player with Id |playerId|. May be
@@ -181,17 +183,15 @@ class PlayerManager {
         return new Player(playerId);
     }
 
-    // Notifies observers that the |player| has connected to Las Venturas Playground.
-    notifyPlayerConnected(player) {
-        for (let observer of this.observers_)
-            observer.onPlayerConnect(player);
-    }
-
-    // Notifies observers that the |player| has disconnected from Las Venturas Playground due to
-    // |reason|, which must be one of the Player.DISCONNECT_REASON_* values.
-    notifyPlayerDisconnected(player, reason) {
-        for (let observer of this.observers_)
-            observer.onPlayerDisconnect(player, reason);
+    // Notifies observers about the |eventName|, passing |...args| as the argument to the method
+    // when it exists. The call will be bound to the observer's instance.
+    notifyObservers(eventName, ...args) {
+        for (let observer of this.observers_) {
+            if (observer.__proto__.hasOwnProperty(eventName))
+                observer.__proto__[eventName].call(observer, ...args);
+            else if (observer.hasOwnProperty(eventName))
+                observer[eventName].call(observer, ...args);
+        }
     }
 
     // Releases all references and state held by the player manager.

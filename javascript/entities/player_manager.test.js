@@ -11,23 +11,53 @@ describe('PlayerManager', it => {
 
         const myObserver = {
             onPlayerConnect: player => ++counter,
-            onPlayerDisconnect: player => ++counter
         };
 
         playerManager.addObserver(myObserver);
-        playerManager.notifyPlayerConnected(null);
+        playerManager.notifyObservers('onPlayerConnect');
 
         assert.equal(counter, 1);
 
         playerManager.addObserver(myObserver);  // second add
-        playerManager.notifyPlayerConnected(null);
+        playerManager.notifyObservers('onPlayerConnect');
 
         assert.equal(counter, 2);
 
         playerManager.removeObserver(myObserver);
-        playerManager.notifyPlayerConnected(null);
+        playerManager.notifyObservers('onPlayerConnect');
 
         assert.equal(counter, 2);
+
+        playerManager.dispose();
+    });
+
+    it('should invoke observer methods both on the object and on the prototype', assert => {
+        let playerManager = new PlayerManager();
+
+        let prototypalCounter = 0;
+        let propertyCounter = 0;
+
+        class PrototypalCounter {
+            onPlayerConnect(player) {
+                ++prototypalCounter;
+            }
+        }
+
+        const prototypalObserver = new PrototypalCounter();
+        const propertyObserver = {
+            onPlayerConnect: player => ++propertyCounter
+        };
+
+        const emptyObserver = {};
+
+        playerManager.addObserver(prototypalObserver);
+        playerManager.addObserver(propertyObserver);
+        playerManager.addObserver(emptyObserver);
+
+        playerManager.onPlayerConnect({ playerid: 42 });
+
+        assert.equal(prototypalCounter, 1);
+        assert.equal(propertyCounter, 1);
 
         playerManager.dispose();
     });
@@ -69,6 +99,24 @@ describe('PlayerManager', it => {
         assert.equal(connectionCount, 2);
 
         assert.equal(connectedPlayer.id, 42);
+
+        playerManager.dispose();
+    });
+
+    it('should inform observers of level changes', assert => {
+        let playerManager = new PlayerManager();
+        let counter = 0;
+
+        const myObserver = {
+            onPlayerLevelChange: player => ++counter
+        };
+
+        playerManager.onPlayerConnect({ playerid: 42 });
+
+        playerManager.addObserver(myObserver);
+        playerManager.onPlayerLevelChange({ playerid: 42 });
+
+        assert.equal(counter, 1);
 
         playerManager.dispose();
     });

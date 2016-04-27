@@ -131,6 +131,8 @@ class PlayerManager {
 
         const player = this.players_[playerId];
 
+        player.notifyDisconnected();
+
         delete this.players_[playerId];
         delete this.playersByName_[player.name];
 

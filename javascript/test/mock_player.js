@@ -16,7 +16,12 @@ class MockPlayer {
     }
 
     get id() { return this.id_; }
+
     get connected() { return this.connected_; }
+
+    notifyDisconnected() {
+        this.connected_ = false;
+    }
 
     get name() { return this.name_; }
     set name(value) { this.name_ = value; }

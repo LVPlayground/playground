@@ -25,7 +25,7 @@ class Player extends Extendable {
   get connected() { return this.connected_; }
 
   // Marks the player as having disconnected from the server.
-  markAsDisconnected() {
+  notifyDisconnected() {
     this.connected_ = false;
   }
 

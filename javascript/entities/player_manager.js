@@ -63,6 +63,19 @@ class PlayerManager {
         return null;
     }
 
+    // Finds one or more players that match the constraints given in the named parameters. Returns
+    // an array of players by default, or a Player instance when |returnPlayer| is set to true. In
+    // both cases NULL will be returned when no player has been selected.
+    find({ nameOrId = null, returnPlayer = false } = {}) {
+        // TODO(Russell): Implement this method properly.
+
+        let player = this.getById(nameOrId);
+        if (player)
+            return player;
+
+        return this.getByName(nameOrId);
+    }
+
     // Executes the |callback| once for each player connected to the server. The first argument to
     // the |callback| will be the Player object, the second the player's ID.
     forEach(callback, thisArg = null) {

@@ -33,14 +33,14 @@ class ActivityLog extends Feature {
   // Called when a confirmed death has happened with the corrected Id of the killer, if any. The
   // |event| contains the { playerid, killerid, reason } about the death.
   onPlayerResolvedDeath(event) {
-    const player = Player.get(event.playerid);
+    const player = server.playerManager.getById(event.playerid);
     if (!player)
       return;
 
     const userId = player.isRegistered() ? player.account.userId : null;
     const position = player.position;
 
-    const killer = Player.get(event.killerid);
+    const killer = server.playerManager.getById(event.killerid);
     if (!killer)
       this.recorder_.writeDeath(userId, position, event.reason);
     else
@@ -54,7 +54,7 @@ class ActivityLog extends Feature {
         event.hittype != 2 /* BULLET_HIT_TYPE_VEHICLE */)
       return;
 
-    const player = Player.get(event.playerid);
+    const player = server.playerManager.getById(event.playerid);
     if (!player)
       return;
 
@@ -63,7 +63,7 @@ class ActivityLog extends Feature {
 
     let targetUserId = null;
     if (event.hittype == 1 /* BULLET_HIT_TYPE_PLAYER */) {
-      const targetPlayer = Player.get(event.hitid);
+      const targetPlayer = server.playerManager.getById(event.hitid);
       if (targetPlayer && targetPlayer.isRegistered())
         targetUserId = targetPlayer.account.userId;
     }

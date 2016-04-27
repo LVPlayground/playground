@@ -163,13 +163,13 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
 
     parameterSubject = null;
 
-    assert.isNull(Player.get(42));
+    assert.isNull(server.playerManager.getById(42));
     listener(player, '42 0');
     assert.equal(parameterSubject, player);
 
     parameterSubject = null;
 
-    assert.isNull(Player.find('foobar'));
+    assert.isNull(server.playerManager.find({ nameOrId: 'foobar', returnPlayer: true }));
     listener(player, 'foobar ' + player.name);
     assert.equal(parameterSubject, player);
   });

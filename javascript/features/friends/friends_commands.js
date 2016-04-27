@@ -67,7 +67,7 @@ class FriendsCommands {
 
       let friendList = [];
       friends.online.forEach(friendName => {
-        const player = Player.find(friendName);
+        const player = server.playerManager.getByName(friendName);
         if (player != null)
           friendList.push('{B1FC17}' + friendName + '{FFFFFF} (Id: ' + player.id + ')');
         else

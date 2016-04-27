@@ -28,7 +28,7 @@ class GangFeature extends Feature {
   // Called when a player has logged in to their account. This is a Las Venturas Playground-specific
   // event, and will not work on other servers.
   onPlayerLogin(event) {
-    let player = Player.get(event.playerid);
+    let player = server.playerManager.getById(event.playerid);
     if (player)
       this.manager_.onPlayerLogin(player, event.userid);
   }
@@ -36,7 +36,7 @@ class GangFeature extends Feature {
   // Called when a player disconnects from the server. If they were part of a gang, the gang manager
   // has to be informed of their departure.
   onPlayerDisconnect(event) {
-    let player = Player.get(event.playerid);
+    let player = server.playerManager.getById(event.playerid);
     if (player)
       this.manager_.onPlayerDisconnect(player);
   }

@@ -42,7 +42,7 @@ class CommandManager {
   // Called when a player executes an in-game command. Will prevent the event from being executed in
   // the Pawn portion of the gamemode when the command can be handled here.
   onPlayerCommandText(event) {
-    let player = Player.get(event.playerid);
+    let player = server.playerManager.getById(event.playerid);
     if (!player)
       return;
 

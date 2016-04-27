@@ -70,7 +70,7 @@ class EventListener extends ScopedCallbacks {
               return false;  // the event doesn't know about the parameter.
 
             const parameterValue = event[parameterName];
-            const player = Player.get(parameterValue);
+            const player = server.playerManager.getById(parameterValue);
 
             if (!player)
               return false;  // the player indicated by the event doesn't exist.

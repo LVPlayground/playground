@@ -62,7 +62,7 @@ class FriendsManager {
       if (!this.friends_[playerId].find(friend => friend.name == playerName))
         return;
 
-      const targetPlayer = Player.get(playerId);
+      const targetPlayer = server.playerManager.getById(playerId);
       if (targetPlayer)
         targetPlayer.playSound(1083 /* SOUND_ROULETTE_ADD_CASH */);
     });
@@ -161,7 +161,7 @@ class FriendsManager {
 
     // Try to interpret |nickname| as a player Id when it's been given as a number.
     if (Number.isInteger(parseInt(nickname))) {
-      const targetPlayer = Player.get(parseInt(nickname));
+      const targetPlayer = server.playerManager.getById(parseInt(nickname));
       if (targetPlayer)
         nickname = targetPlayer.name;
     }

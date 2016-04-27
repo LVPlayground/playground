@@ -145,7 +145,7 @@ class RaceManager {
     let message = Message.format(Message.ANNOUNCE_MINIGAME,
         runningRace.race.name, '/race ' + runningRace.race.id, RaceSettings.RACE_SIGNUP_PRICE);
 
-    Player.forEach(player => player.sendMessage(message));
+    server.playerManager.forEach(player => player.sendMessage(message));
   }
 
   // Returns a promise that will be resolved with a personalized list of races available for the

@@ -42,7 +42,7 @@ class RaceCommands {
     // TODO: Withdraw the price of playing a race from the player's account.
 
     // Skip the sign-up phase if the player is the only person in-game.
-    let skipSignup = Player.count() == 1;
+    let skipSignup = server.playerManager.count == 1;
 
     this.raceManager_.startRace(player, id, skipSignup);
   }
@@ -93,7 +93,7 @@ class RaceCommands {
   // TODO: This is a hack because races exist here, while everything else for /leave exists in
   // Pawn. We still need to be able to remove a player from a race though.
   onPlayerCommandText(event) {
-    let player = Player.get(event.playerid);
+    let player = server.playerManager.getById(event.playerid);
     if (!player)
       return;
 

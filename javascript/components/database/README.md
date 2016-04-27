@@ -41,7 +41,7 @@ occurred and the data could not be retrieved.
 let database = new Database(...);
 
 self.addEventListener('connect', event => {
-    let player = Player.get(event.playerid);
+    let player = server.playerManager.getById(event.playerid);
 
     database.query('SELECT level FROM users WHERE nickname = ?', player.name).then(
         results => console.log(player.name + ' is a ' + results[0].level),

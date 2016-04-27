@@ -5,57 +5,7 @@
 const Extendable = require('base/extendable.js'),
       Vector = require('base/vector.js');
 
-// Identifier, stored as an IP address, that can be used to detect players created for testing.
-const TEST_PLAYER_IDENTIFIER = '0.0.0.0';
-
 class Player extends Extendable {
-
-  // -----------------------------------------------------------------------------------------------
-  // TODO(Russell): These methods have been superseded by the PlayerManager.
-
-  static get(playerId) { return server.playerManager.getById(playerId); }
-  static find(identifier) {
-    let parsedPlayerId = parseFloat(identifier);
-    if (!Number.isNaN(parsedPlayerId) && Number.isFinite(parsedPlayerId)) {
-      const player = server.playerManager.getById(parsedPlayerId);
-      if (player)
-        return player;
-    }
-
-    return server.playerManager.getByName(identifier);
-  }
-
-  static count() { return server.playerManager.count; }
-  static forEach(fn) { return server.playerManager.forEach(fn); }
-  static createForTest(playerId, nickname) {
-    playerId = playerId || 0;
-
-    if (server.playerManager.getById(playerId) !== null)
-      throw new Error('Unable to create a player for testing purposes, id ' + playerId + ' already taken.');
-
-    server.playerManager.onPlayerConnect({ playerid: playerId });
-
-    const player = server.playerManager.getById(playerId);
-    player.name = nickname || 'TestPlayer';
-    player.ipAddress_ = TEST_PLAYER_IDENTIFIER;
-
-    return player;
-  }
-
-  // Destroys the player instance of |playerId| for the purposes of testing. The associated player
-  // must have been created by a test as well, otherwise an exception will be thrown.
-  static destroyForTest(player) {
-    if (server.playerManager.getById(player.id) === null)
-      throw new Error('No player with this id has connected to the server.');
-
-    if (player.ipAddress != TEST_PLAYER_IDENTIFIER)
-      throw new Error('The player with this id was not created by a test.');
-
-    server.playerManager.onPlayerDisconnect({ playerid: player.id, reason: 0 });
-  }
-
-  // -----------------------------------------------------------------------------------------------
-
   // Creates a new instance of the Player class for |playerId|.
   constructor(playerId) {
     super();

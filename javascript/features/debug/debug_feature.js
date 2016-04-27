@@ -70,7 +70,7 @@ class DebugFeature extends Feature {
 
   // Plays |soundId| for all in-game players.
   playSound(player, soundId) {
-    Player.forEach(p => p.playSound(soundId));
+    server.playerManager.forEach(p => p.playSound(soundId));
   }
 }
 

@@ -110,7 +110,7 @@ class RunningRace {
   // Called when a player either dies or disconnects from the server. In both cases, they will be
   // removed from the race if they were a participant of it.
   onPlayerDeathOrDisconnect(event) {
-    let player = Player.get(event.playerid);
+    let player = server.playerManager.getById(event.playerid);
     if (player === null)
       return;
 
@@ -125,7 +125,7 @@ class RunningRace {
   // Called when a player's state changes. Used to determine whether the player has left their
   // vehicle, or, when that previously happened, has continued driving their vehicle again.
   onPlayerStateChange(event) {
-    let player = Player.get(event.playerid);
+    let player = server.playerManager.getById(event.playerid);
     if (player === null)
       return;
 

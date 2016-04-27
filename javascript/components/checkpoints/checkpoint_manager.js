@@ -65,7 +65,7 @@ class CheckpointManager {
   // Called when a player enters a checkpoint of |type_|. If we know about the checkpoint that is
   // current for the player, the associated promise will be resolved.
   onEnter(event) {
-    let player = Player.get(event.playerid);
+    let player = server.playerManager.getById(event.playerid);
     if (player === null || !this.playerMap_.has(player))
       return;
 
@@ -81,7 +81,7 @@ class CheckpointManager {
   // Called when a player disconnects from the server. If a checkpoint is currently showing for them
   // the associated promise will be rejected.
   onDisconnect(event) {
-    let player = Player.get(event.playerid);
+    let player = server.playerManager.getById(event.playerid);
     if (player === null || !this.playerMap_.has(player))
       return;
 

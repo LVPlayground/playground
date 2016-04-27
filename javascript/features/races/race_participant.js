@@ -44,7 +44,7 @@ class RaceParticipant {
   // Returns the player associated with this participant. If they are no longer connected to the
   // server, or the player id has been recycled since, an exception will be thrown.
   get player() {
-    let player = Player.get(this.playerId_);
+    let player = server.playerManager.getById(this.playerId_);
     if (player === null || !this.isPlayer(player))
       throw new Error('The player this participant once represented is no longer connected.');
 

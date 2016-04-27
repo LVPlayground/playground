@@ -59,7 +59,7 @@ class DeathFeedFeature extends Feature {
     this.recentDeaths_.unshift({ killee: event.playerid, killer: event.killerid, reason: event.reason });
     this.recentDeaths_ = this.recentDeaths_.slice(0, DEATH_FEED_VISIBLE_LENGTH);
 
-    Player.forEach(player => {
+    server.playerManager.forEach(player => {
       if (this.disabledPlayers_.has(player.id))
         return;
 

@@ -28,5 +28,8 @@ class Server {
     }
 }
 
-// The Server object is exposed on the global scope.
-global.server = new Server();
+exports = Server;
+
+// The Server object is exposed on the global scope. It must, however, be instantiated manually when
+// the test runner has finished verifying the state of the gamemode.
+global.server = null;

@@ -10,6 +10,8 @@ require('entities/player.js');
 require('entities/vehicle.js');
 require('entities/virtual_world.js');
 
+const Server = require('server.js');
+
 let Playground = require('playground.js'),
     TestRunner = require('base/test/test_runner.js');
 
@@ -20,7 +22,7 @@ testRunner.run('**/*.test.js').then(() => {
   // All tests passed, start the gamemode by instantiating the Playground object.
   console.log('Passed all ' + testRunner.testCount + ' tests!');
 
-  require('server.js');
+  server = new Server();
 
   new Playground();
 

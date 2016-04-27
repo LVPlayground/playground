@@ -2,9 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let DeathFeedFeature = require('features/death_feed/death_feed_feature.js');
+const DeathFeedFeature = require('features/death_feed/death_feed_feature.js');
+const MockServer = require('test/mock_server.js');
 
-describe('DeathFeedFeature', it => {
+describe('DeathFeedFeature', (it, beforeEach, afterEach) => {
+  MockServer.bindTo(beforeEach, afterEach);
+
   it('should track deaths in fifo order', assert => {
     let feature = new DeathFeedFeature(null);
 

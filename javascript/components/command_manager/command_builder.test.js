@@ -2,7 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let CommandBuilder = require('components/command_manager/command_builder.js');
+const CommandBuilder = require('components/command_manager/command_builder.js');
+const MockServer = require('test/mock_server.js');
 
 describe('CommandBuilder', (it, beforeEach, afterEach) => {
   let command = null,
@@ -11,11 +12,8 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
   let player = null,
       lastMessage = null;
 
-  // Reset the |command| variable before each test. We also create a new player for the purposes of
-  // testing, that will automatically be disconnected after the test. Hijack the sendMessage
-  // command on this player so that we can store the last message send to them.
-  beforeEach(() => {
-    player = Player.createForTest();
+  MockServer.bindTo(beforeEach, afterEach, server => {
+    player = server.playerManager.getById(0);
     player.sendMessage = (message, ...args) => {
       if (message instanceof Message)
         lastMessage = Message.format(message, ...args);
@@ -27,9 +25,6 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
     listener = null;
     lastMessage = null;
   });
-
-  // Disconnect the player created for the purposes of running this test.
-  afterEach(() => Player.destroyForTest(player));
 
   // Can be used as the |parent| argument for a top-level command builder. Will write the command
   // and its associated listener to respectively |command| and |listener| when build.
@@ -257,12 +252,12 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
     listener(player, '');
     assert.isFalse(invoked);
 
-    player.level_ = Player.LEVEL_ADMINISTRATOR;
+    player.level = Player.LEVEL_ADMINISTRATOR;
 
     listener(player, '');
     assert.isTrue(invoked);
 
-    player.level_ = Player.LEVEL_MANAGEMENT;
+    player.level = Player.LEVEL_MANAGEMENT;
     invoked = false;
 
     listener(player, '');
@@ -279,22 +274,22 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
             .build(() => state = 2)
         .build(() => state = 3);
 
-    player.level_ = Player.LEVEL_PLAYER;
+    player.level = Player.LEVEL_PLAYER;
 
     listener(player, 'foobar baz');
     assert.equal(state, 3);
 
-    player.level_ = Player.LEVEL_ADMINISTRATOR;
+    player.level = Player.LEVEL_ADMINISTRATOR;
 
     listener(player, 'foobar baz');
     assert.equal(state, 2);
 
-    player.level_ = Player.LEVEL_MANAGEMENT;
+    player.level = Player.LEVEL_MANAGEMENT;
 
     listener(player, 'foobar baz');
     assert.equal(state, 1);
 
-    player.level_ = Player.LEVEL_PLAYER;
+    player.level = Player.LEVEL_PLAYER;
 
     builder('testcommand')
         .restrict(Player.LEVEL_MANAGEMENT)

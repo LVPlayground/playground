@@ -2,14 +2,15 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let CommandManager = require('components/command_manager/command_manager.js'),
-    GangCommands = require('features/gangs/gang_commands.js');
+const CommandManager = require('components/command_manager/command_manager.js');
+const GangCommands = require('features/gangs/gang_commands.js');
+const MockServer = require('test/mock_server.js');
 
 describe('GangCommands', (it, beforeEach, afterEach) => {
   let player = null;
 
-  beforeEach(() => player = Player.createForTest());
-  afterEach(() => Player.destroyForTest(player));
+  MockServer.bindTo(beforeEach, afterEach, server =>
+      player = server.playerManager.getById(0));
 
   it('should parse the commands as expected', assert => {
     let createParams = null,

@@ -200,5 +200,3 @@ global.playerLevelToString = (level, plural = false) => {
 
 // Expose the Player object globally since it will be commonly used.
 global.Player = Player;
-
-exports = Player;

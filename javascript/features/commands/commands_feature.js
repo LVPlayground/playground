@@ -13,7 +13,7 @@ class CommandsFeature extends Feature {
   constructor(playground) {
     super(playground);
 
-    const commandManager = playground.commandManager;
+    const commandManager = server.commandManager;
 
     // Informational commands whose data will be loaded from a JSON file.
     commandManager.registerCommand('help', InfoDialogCommand.create('data/commands/help.json'));

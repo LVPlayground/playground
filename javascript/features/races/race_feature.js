@@ -17,7 +17,7 @@ class RaceFeature extends Feature {
     let deathFeed = this.defineDependency('deathFeed');
 
     this.raceManager_ = new RaceManager(server.database, deathFeed);
-    this.raceCommands_ = new RaceCommands(playground.commandManager, this.raceManager_);
+    this.raceCommands_ = new RaceCommands(server.commandManager, this.raceManager_);
 
     // TODO: Import races using a glob() rather than manually.
     [

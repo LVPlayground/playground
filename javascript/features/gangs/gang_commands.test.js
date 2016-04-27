@@ -2,7 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const CommandManager = require('components/command_manager/command_manager.js');
 const GangCommands = require('features/gangs/gang_commands.js');
 const MockServer = require('test/mock_server.js');
 
@@ -35,13 +34,12 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
       getCurrentGangId() { return 42; }
     };
 
-    let commandManager = new CommandManager(true /* isTest */),
-        gangCommands = new GangCommandsMock(commandManager, null);
+    let gangCommands = new GangCommandsMock(server.commandManager, null);
 
     let executeCommand = commandText => {
-      commandManager.onPlayerCommandText({ playerid: player.id,
-                                           cmdtext: commandText,
-                                           preventDefault: () => null });
+      server.commandManager.onPlayerCommandText({ playerid: player.id,
+                                                  cmdtext: commandText,
+                                                  preventDefault: () => null });
     };
 
     // /pgang create [name]

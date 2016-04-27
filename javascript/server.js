@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const CommandManager = require('components/command_manager/command_manager.js');
 const Database = require('components/database/database.js');
 const PlayerManager = require('entities/player_manager.js');
 
@@ -11,8 +12,12 @@ class Server {
     constructor() {
         this.database_ = new Database();
 
+        this.commandManager_ = new CommandManager();
         this.playerManager_ = new PlayerManager();
     }
+
+    // Gets the global command manager that owns all commands available to players.
+    get commandManager() { return this.commandManager_; }
 
     // Gets the global player manager that knows the details and whereabouts of all in-game players.
     get playerManager() { return this.playerManager_; }
@@ -23,6 +28,7 @@ class Server {
     // Disposes and uninitializes the server object and all objects owned by it.
     dispose() {
         this.playerManager_.dispose();
+        this.commandManager_.dispose();
 
         this.database_.dispose();
     }

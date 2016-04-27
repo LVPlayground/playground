@@ -17,7 +17,7 @@ class GangFeature extends Feature {
 
     // Initialize the commands that provide the user interface for the gang feature to the players,
     // which depends on the global CommandManager and the gang manager.
-    this.commands_ = new GangCommands(playground.commandManager, this.manager_);
+    this.commands_ = new GangCommands(server.commandManager, this.manager_);
 
     // Bind to the events important for the gang feature.
     // TODO(Russell): Use a weak binding system rather than fixed ones.

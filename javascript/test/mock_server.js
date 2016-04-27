@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const CommandManager = require('components/command_manager/command_manager.js');
 const MockPlayerManager = require('test/mock_player_manager.js');
 
 // Private symbol used to prevent MockServer from being instantiated.
@@ -42,6 +43,7 @@ class MockServer {
         // TODO(Russell): Create a mocked database.
         this.database_ = null;
 
+        this.commandManager_ = new CommandManager();
         this.playerManager_ = new MockPlayerManager();
 
         // Connect a series of fake players to the server.
@@ -52,6 +54,9 @@ class MockServer {
         ].forEach(event => this.playerManager_.onPlayerConnect(event));
     }
 
+    // Gets the command manager. This is a real instance.
+    get commandManager() { return this.commandManager_; }
+
     // Gets the mocked player manager.
     get playerManager() { return this.playerManager_; }
 
@@ -61,6 +66,7 @@ class MockServer {
     // Disposes the MockServer and uninitializes all owned objects.
     dispose() {
         this.playerManager_.dispose();
+        this.commandManager_.dispose();
     }
 }
 

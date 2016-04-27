@@ -17,18 +17,18 @@ class DebugFeature extends Feature {
     super(playground);
 
     // /serverfps
-    playground.commandManager.buildCommand('serverfps')
+    server.commandManager.buildCommand('serverfps')
         .restrict(Player.LEVEL_ADMINISTRATOR)
         .build(this.__proto__.serverFrameCounter.bind(this));
 
     // /trace [seconds]
-    playground.commandManager.buildCommand('trace')
+    server.commandManager.buildCommand('trace')
         .restrict(Player.LEVEL_MANAGEMENT)
         .parameters([{ name: 'seconds', type: CommandBuilder.NUMBER_PARAMETER }])
         .build(this.__proto__.captureTrace.bind(this));
 
     // /sound [id]
-    playground.commandManager.buildCommand('sound')
+    server.commandManager.buildCommand('sound')
         .restrict(Player.LEVEL_MANAGEMENT)
         .parameters([{ name: 'sound', type: CommandBuilder.NUMBER_PARAMETER }])
         .build(this.__proto__.playSound.bind(this));

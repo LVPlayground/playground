@@ -2,18 +2,19 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let CommandBuilder = require('components/command_manager/command_builder.js');
+const CommandBuilder = require('components/command_manager/command_builder.js');
+const ScopedCallbacks = require('base/scoped_callbacks.js');
 
 // The command manager maintains a registry of available in-game commands and provides the ability
 // to parse and dispatch commands to their associated handlers.
 class CommandManager {
-  constructor(isTest) {
+  constructor() {
     this.commands_ = {};
 
     // Attach the global event listeners which we need to reliably handle commands.
-    // TODO(Russell): We need a weak, safe event binding model for events like these.
-    if (!isTest)
-      global.addEventListener('playercommandtext', CommandManager.prototype.onPlayerCommandText.bind(this));
+    this.callbacks_ = new ScopedCallbacks();
+    this.callbacks_.addEventListener(
+        'playercommandtext', CommandManager.prototype.onPlayerCommandText.bind(this));
   }
 
   // Registers |command| as a new command, which will invoke |listener| when used.
@@ -64,6 +65,11 @@ class CommandManager {
     event.preventDefault();
 
     this.commands_[commandName](player, commandArguments);
+  }
+
+  // Disposes of the callbacks created as part of this class.
+  dispose() {
+    this.callbacks_.dispose();
   }
 };
 

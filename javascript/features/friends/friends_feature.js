@@ -14,7 +14,7 @@ class FriendsFeature extends Feature {
     super(playground);
 
     this.friendsManager_ = new FriendsManager(server.database, this.createEventListener());
-    this.friendsCommands_ = new FriendsCommands(this.friendsManager_, playground.commandManager);
+    this.friendsCommands_ = new FriendsCommands(this.friendsManager_, server.commandManager);
   }
 
   // Returns a promise that will be resolved with a boolean indicating whether |player| has added

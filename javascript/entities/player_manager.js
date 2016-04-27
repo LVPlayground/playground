@@ -159,7 +159,7 @@ class PlayerManager {
 
         player.userId_ = userId;
 
-        this.notifyObservers('onPlayerLogin', player);
+        this.notifyObservers('onPlayerLogin', player, event);
     }
 
     // Called when a player has disconnected from Las Venturas Playground. The |event| may contain

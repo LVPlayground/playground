@@ -14,7 +14,10 @@ class Player extends Extendable {
     this.connected_ = true;
     this.name_ = pawnInvoke('GetPlayerName', 'iS', playerId);
     this.ipAddress_ = pawnInvoke('GetPlayerIp', 'iS', playerId);
+
     this.level_ = Player.LEVEL_PLAYER;
+    this.userId_ = null;
+
     this.activity_ = Player.PLAYER_ACTIVITY_NONE;
   }
 
@@ -37,9 +40,14 @@ class Player extends Extendable {
   // Returns the IP address of this player. This attribute is read-only.
   get ipAddress() { return this.ipAddress_; }
 
-  // Returns the level of this player. Synchronized with the gamemode using the `levelchange` event.
+  // Gets the level of this player. Synchronized with the gamemode using the `levelchange` event.
   get level() { return this.level_; }
-  set level(value) { this.level_ = value; }
+
+  // Returns whether the player is registered and logged in to their account.
+  isRegistered() { return this.userId_ !== null; }
+
+  // Gets the user Id of the player's account if they have identified to it.
+  get userId() { return this.userId_; }
 
   // Gets or sets the virtual world the player is part of.
   get virtualWorld() { return pawnInvoke('GetPlayerVirtualWorld', 'i', this.id_); }

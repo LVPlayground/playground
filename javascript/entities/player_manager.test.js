@@ -121,6 +121,24 @@ describe('PlayerManager', it => {
         playerManager.dispose();
     });
 
+    it('should inform observers of logins', assert => {
+        let playerManager = new PlayerManager();
+        let counter = 0;
+
+        const myObserver = {
+            onPlayerLogin: player => ++counter
+        };
+
+        playerManager.onPlayerConnect({ playerid: 42 });
+
+        playerManager.addObserver(myObserver);
+        playerManager.onPlayerLogin({ playerid: 42, userid: 42 });
+
+        assert.equal(counter, 1);
+
+        playerManager.dispose();
+    });
+
     it('should be able to find players by ID', assert => {
         let playerManager = new PlayerManager();
 

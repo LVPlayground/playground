@@ -23,6 +23,8 @@ class PlayerManager {
         this.callbacks_.addEventListener(
             'playerlevelchange', PlayerManager.prototype.onPlayerLevelChange.bind(this));
         this.callbacks_.addEventListener(
+            'playerlogin', PlayerManager.prototype.onPlayerLogin.bind(this));
+        this.callbacks_.addEventListener(
             'playerdisconnect', PlayerManager.prototype.onPlayerDisconnect.bind(this));
     }
 
@@ -131,17 +133,33 @@ class PlayerManager {
 
         switch (event.newlevel) {
             case 3:  // Management
-                player.level = Player.LEVEL_MANAGEMENT;
+                player.level_ = Player.LEVEL_MANAGEMENT;
                 break;
             case 2:  // Administrator
-                player.level = Player.LEVEL_ADMINISTRATOR;
+                player.level_ = Player.LEVEL_ADMINISTRATOR;
                 break;
             default:
-                player.level = Player.LEVEL_PLAYER;
+                player.level_ = Player.LEVEL_PLAYER;
                 break;
         }
 
         this.notifyObservers('onPlayerLevelChange', player);
+    }
+
+    // Called when a player logs in to their account. This marks availability of their user data
+    // and the fact that their identity has been verified.
+    onPlayerLogin(event) {
+        const playerId = event.playerid;
+        const userId = event.userid;
+
+        if (!this.players_.hasOwnProperty(playerId))
+            return;  // the event has been received for an invalid player.
+
+        const player = this.players_[playerId];
+
+        player.userId_ = userId;
+
+        this.notifyObservers('onPlayerLogin', player);
     }
 
     // Called when a player has disconnected from Las Venturas Playground. The |event| may contain

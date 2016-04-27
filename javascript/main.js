@@ -24,13 +24,15 @@ testRunner.run('**/*.test.js').then(() => {
 
     server = new Server();
     server.featureManager.load({
-        account:       require('features/account/account_feature.js'),
+        /** V2 features **/
+        gangs:         require('features/gangs/gangs.js'),
+
+        /** V1 features **/
         activityLog:   require('features/activity_log/activity_log.js'),
         commands:      require('features/commands/commands_feature.js'),
         deathFeed:     require('features/death_feed/death_feed_feature.js'),
         debug:         require('features/debug/debug_feature.js'),
         friends:       require('features/friends/friends_feature.js'),
-        gangs:         require('features/gangs/feature.js'),
         races:         require('features/races/race_feature.js')
     });
 

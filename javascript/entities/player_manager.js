@@ -21,6 +21,8 @@ class PlayerManager {
         this.callbacks_.addEventListener(
             'playerconnect', PlayerManager.prototype.onPlayerConnect.bind(this));
         this.callbacks_.addEventListener(
+            'playerlevelchange', PlayerManager.prototype.onPlayerLevelChange.bind(this));
+        this.callbacks_.addEventListener(
             'playerdisconnect', PlayerManager.prototype.onPlayerDisconnect.bind(this));
     }
 
@@ -83,8 +85,8 @@ class PlayerManager {
             callback.call(thisArg, this.players_[playerId], parseInt(playerId, 10)));
     }
 
-    // Observes players connecting and disconnecting from the server. The |observer| must have two
-    // methods on its prototype: onPlayerConnect and onPlayerDisconnect.
+    // Observes players connecting and disconnecting from the server. The |observer| will receive
+    // calls to the following methods: onPlayerConnect, onPlayerDisconnect.
     addObserver(observer) {
         this.observers_.add(observer);
     }
@@ -115,6 +117,29 @@ class PlayerManager {
         this.highestId_ = Math.max(this.highestId_, playerId);
 
         this.notifyPlayerConnected(player);
+    }
+
+    // Called when a player's level on the server changes, for example because they log in to their
+    // account, they get temporary rights or take their own rights away.
+    onPlayerLevelChange(event) {
+        const playerId = event.playerid;
+
+        if (!this.players_.hasOwnProperty(playerId))
+            return;  // the event has been received for an invalid player.
+
+        const player = this.players_[playerId];
+
+        switch (event.newlevel) {
+            case 3:  // Management
+                player.level = Player.LEVEL_MANAGEMENT;
+                break;
+            case 2:  // Administrator
+                player.level = Player.LEVEL_ADMINISTRATOR;
+                break;
+            default:
+                player.level = Player.LEVEL_PLAYER;
+                break;
+        }
     }
 
     // Called when a player has disconnected from Las Venturas Playground. The |event| may contain

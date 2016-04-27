@@ -39,6 +39,7 @@ class Player extends Extendable {
 
   // Returns the level of this player. Synchronized with the gamemode using the `levelchange` event.
   get level() { return this.level_; }
+  set level(value) { this.level_ = level; }
 
   // Gets or sets the virtual world the player is part of.
   get virtualWorld() { return pawnInvoke('GetPlayerVirtualWorld', 'i', this.id_); }
@@ -155,25 +156,6 @@ Player.STATE_SPECTATING = 9;
 
 // Loads the activities of a player and installs them on |Player|.
 require('entities/player_activities.js')(Player);
-
-// Called when the level of a player changes. This event is custom to Las Venturas Playground.
-self.addEventListener('playerlevelchange', event => {
-  const player = server.playerManager.getById(event.playerid);
-  if (!player)
-    return;
-
-  switch(event.newlevel) {
-    case 2:  // AdministratorLevel
-      player.level_ = Player.LEVEL_ADMINISTRATOR;
-      break;
-    case 3:  // ManagementLevel
-      player.level_ = Player.LEVEL_MANAGEMENT;
-      break;
-    default:
-      player.level_ = Player.LEVEL_PLAYER;
-      break;
-  }
-});
 
 // Called when a player's activity changes. This event is custom to Las Venturas Playground.
 self.addEventListener('playeractivitychange', event => {

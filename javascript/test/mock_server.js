@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const CommandManager = require('components/command_manager/command_manager.js');
+const FeatureManager = require('components/feature_manager/feature_manager.js');
 const MockPlayerManager = require('test/mock_player_manager.js');
 
 // Private symbol used to prevent MockServer from being instantiated.
@@ -44,6 +45,7 @@ class MockServer {
         this.database_ = null;
 
         this.commandManager_ = new CommandManager();
+        this.featureManager_ = new FeatureManager();
         this.playerManager_ = new MockPlayerManager();
 
         // Connect a series of fake players to the server.
@@ -57,6 +59,9 @@ class MockServer {
     // Gets the command manager. This is a real instance.
     get commandManager() { return this.commandManager_; }
 
+    // Gets the feature manager. This is a real instance.
+    get featureManager() { return this.featureManager_; }
+
     // Gets the mocked player manager.
     get playerManager() { return this.playerManager_; }
 
@@ -66,6 +71,7 @@ class MockServer {
     // Disposes the MockServer and uninitializes all owned objects.
     dispose() {
         this.playerManager_.dispose();
+        this.featureManager_.dispose();
         this.commandManager_.dispose();
     }
 }

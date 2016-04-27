@@ -8,8 +8,7 @@ let DependencyGraph = require('components/feature_manager/dependency_graph.js'),
 // The feature manager owns all the features available in the JavaScript implementation of the
 // server, provides cross-feature interfaces and access to many of the shared objects.
 class FeatureManager {
-  constructor(playground) {
-    this.playground_ = playground;
+  constructor() {
     this.dependencyGraph_ = new DependencyGraph();
     this.registeredFeatures_ = null;
     this.features_ = {};
@@ -38,7 +37,7 @@ class FeatureManager {
     if (!this.hasFeature(feature))
       throw new Error('No feature named "' + feature + '" is known. Did you define it in playground.js?');
 
-    let instance = new this.registeredFeatures_[feature](this.playground_);
+    let instance = new this.registeredFeatures_[feature](server);
     if (!(instance instanceof Feature))
       throw new Error('All features must extend the Feature class (failed for "' + feature + '").');
 
@@ -58,6 +57,11 @@ class FeatureManager {
 
     this.dependencyGraph_.createDependencyEdge(feature, dependency);
     return dependency;
+  }
+
+  // Disposes the feature manager and all features owned by it.
+  dispose() {
+    Object.values(this.features_).forEach(feature => feature.dispose());
   }
 };
 

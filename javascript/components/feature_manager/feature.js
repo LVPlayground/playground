@@ -6,9 +6,7 @@ const EventListener = require('components/events/event_listener.js');
 
 // The Feature class must be the base class of all features.
 class Feature {
-  constructor(playground) {
-    this.playground_ = playground;
-
+  constructor() {
     this.dependencies_ = {};
     this.eventListeners_ = [];
   }
@@ -35,7 +33,7 @@ class Feature {
   defineDependency(featureName) {
     if (!this.dependencies_.hasOwnProperty(featureName)) {
       this.dependencies_[featureName] =
-          this.playground_.featureManager.defineDependency(this, featureName);
+          server.featureManager.defineDependency(this, featureName);
     }
 
     return this.dependencies_[featureName];

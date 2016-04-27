@@ -2,31 +2,25 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let Feature = require('components/feature_manager/feature.js'),
-    FeatureManager = require('components/feature_manager/feature_manager.js');
+const Feature = require('components/feature_manager/feature.js');
+const FeatureManager = require('components/feature_manager/feature_manager.js');
+const MockServer = require('test/mock_server.js');
 
-describe('FeatureManager', it => {
-  class FakePlayground {
-    constructor() {
-      this.featureManager = new FeatureManager(this);
-    }
-  };
+describe('FeatureManager', (it, beforeEach, afterEach) => {
+  MockServer.bindTo(beforeEach, afterEach);
 
   it('initializes the features', assert => {
     let counter = 0;
 
     class MySimpleFeature extends Feature {
-      constructor(playground) { super(playground); counter += 1; }
+      constructor() { super(); counter += 1; }
     };
 
     class MySecondFeature extends Feature {
-      constructor(playground) { super(playground); counter += 10; }
+      constructor() { super(); counter += 10; }
     };
 
-    let playground = new FakePlayground(),
-        manager = playground.featureManager;
-    
-    manager.load({
+    server.featureManager.load({
       simple: MySimpleFeature,
       second: MySecondFeature
     });
@@ -38,20 +32,14 @@ describe('FeatureManager', it => {
     let value = 0;
 
     class MySimpleFeature extends Feature {
-      constructor(playground) {
-        super(playground);
-        value = this.defineDependency('second').value;
-      }
+      constructor() { super(); value = this.defineDependency('second').value; }
     };
 
     class MySecondFeature extends Feature {
-      constructor(playground) { super(playground); this.value = 42; }
+      constructor() { super(); this.value = 42; }
     };
 
-    let playground = new FakePlayground(),
-        manager = playground.featureManager;
-    
-    manager.load({
+    server.featureManager.load({
       simple: MySimpleFeature,
       second: MySecondFeature
     });
@@ -61,40 +49,28 @@ describe('FeatureManager', it => {
 
   it('should throw on invalid dependencies', assert => {
     class MySimpleFeature extends Feature {
-      constructor(playground) {
-        super(playground);
+      constructor() {
+        super();
+
         this.defineDependency('fakeFeature');
       }
     };
 
-    let playground = new FakePlayground(),
-        manager = playground.featureManager;
-
     assert.throws(() =>
-        manager.load({ simple: MySimpleFeature }));
+        server.featureManager.load({ simple: MySimpleFeature }));
   });
-
 
   it('should throw on circular dependencies', assert => {
     class MySimpleFeature extends Feature {
-      constructor(playground) {
-        super(playground);
-        this.defineDependency('second');
-      }
+      constructor() { super(); this.defineDependency('second'); }
     };
 
     class MySecondFeature extends Feature {
-      constructor(playground) {
-        super(playground);
-        this.defineDependency('simple');
-      }
+      constructor() { super(); this.defineDependency('simple'); }
     };
 
-    let playground = new FakePlayground(),
-        manager = playground.featureManager;
-
     assert.throws(() => {
-      manager.load({
+      server.featureManager.load({
         simple: MySimpleFeature,
         second: MySecondFeature
       });

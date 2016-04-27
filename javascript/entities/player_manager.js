@@ -93,7 +93,7 @@ class PlayerManager {
             return;
         }
 
-        const player = this.createPlayer(playerId);
+        const player = this.createPlayer(playerId, event);
 
         this.players_[playerId] = player;
         this.playersByName_[player.name] = player;
@@ -137,7 +137,7 @@ class PlayerManager {
 
     // Factory method for creating a Player instance for the player with Id |playerId|. May be
     // overridden for tests in order to verify the functionality of this class.
-    createPlayer(playerId) {
+    createPlayer(playerId, event) {
         return new Player(playerId);
     }
 

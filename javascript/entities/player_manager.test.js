@@ -93,7 +93,7 @@ describe('PlayerManager', it => {
         }
 
         let playerManager = new PlayerManager();
-        playerManager.createPlayer = function(playerId) {
+        playerManager.createPlayer = function(playerId, event) {
             if (!playerMap.hasOwnProperty(playerId))
                 throw new Error('Unexpected player connecting: ' + playerId);
 

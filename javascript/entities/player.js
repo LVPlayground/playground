@@ -8,46 +8,53 @@ const Extendable = require('base/extendable.js'),
 // Identifier, stored as an IP address, that can be used to detect players created for testing.
 const TEST_PLAYER_IDENTIFIER = '0.0.0.0';
 
-let players = {};
-
 class Player extends Extendable {
-  // Returns the Player instance for the player with id |playerId|. If the player is not connected
-  // to Las Venturas Playground, NULL will be returned instead.
-  static get(playerId) {
-    if (typeof playerId != 'number')
-      throw new Error('Player.get() takes a number argument, ' + typeof playerid + ' given.');
 
-    if (!players.hasOwnProperty(playerId))
-      return null;
+  // -----------------------------------------------------------------------------------------------
+  // TODO(Russell): These methods have been superseded by the PlayerManager.
 
-    return players[playerId];
-  }
-
-  // Finds a player either by name or by id, as contained in |identifier|. Player ids will be given
-  // precedent when in doubt, for example when a player named "110" is online.
+  static get(playerId) { return server.playerManager.getById(playerId); }
   static find(identifier) {
     let parsedPlayerId = parseFloat(identifier);
-    if (!Number.isNaN(parsedPlayerId) && Number.isFinite(parsedPlayerId) && players.hasOwnProperty(parsedPlayerId))
-      return players[parsedPlayerId];
-
-    for (let playerId of Object.keys(players)) {
-      // TODO: Do case-insensitive matching?
-      if (players[playerId].name == identifier)
-        return players[playerId];
+    if (!Number.isNaN(parsedPlayerId) && Number.isFinite(parsedPlayerId)) {
+      const player = server.playerManager.getById(parsedPlayerId);
+      if (player)
+        return player;
     }
 
-    return null;
+    return server.playerManager.getByName(identifier);
   }
 
-  // Returns the number of players that are currently online on Las Venturas Playground.
-  static count() {
-    return Object.keys(players).length;
+  static count() { return server.playerManager.count; }
+  static forEach(fn) { return server.playerManager.forEach(fn); }
+  static createForTest(playerId, nickname) {
+    playerId = playerId || 0;
+
+    if (server.playerManager.getById(playerId) !== null)
+      throw new Error('Unable to create a player for testing purposes, id ' + playerId + ' already taken.');
+
+    server.playerManager.onPlayerConnect({ playerid: playerId });
+
+    const player = server.playerManager.getById(playerId);
+    player.name = nickname || 'TestPlayer';
+    player.ipAddress_ = TEST_PLAYER_IDENTIFIER;
+
+    return player;
   }
 
-  // Executes |fn| for each player online on the server.
-  static forEach(fn) {
-    Object.keys(players).forEach(playerId => fn(players[playerId]));
+  // Destroys the player instance of |playerId| for the purposes of testing. The associated player
+  // must have been created by a test as well, otherwise an exception will be thrown.
+  static destroyForTest(player) {
+    if (server.playerManager.getById(player.id) === null)
+      throw new Error('No player with this id has connected to the server.');
+
+    if (player.ipAddress != TEST_PLAYER_IDENTIFIER)
+      throw new Error('The player with this id was not created by a test.');
+
+    server.playerManager.onPlayerDisconnect({ playerid: player.id, reason: 0 });
   }
+
+  // -----------------------------------------------------------------------------------------------
 
   // Creates a new instance of the Player class for |playerId|.
   constructor(playerId) {
@@ -174,36 +181,6 @@ class Player extends Extendable {
                virtualWorld, interiorId, type);
   }
 
-  // -----------------------------------------------------------------------------------------------
-  // The following methods are only meant for testing!
-
-  // Simulates connecting of a player optionally identified by id |name| for the purposes of tests.
-  // Make sure to also call |destroyForTest| after the test is complete to remove the player again.
-  static createForTest(playerId, nickname) {
-    playerId = playerId || 0;
-
-    if (players.hasOwnProperty(playerId))
-      throw new Error('Unable to create a player for testing purposes, id ' + playerId + ' already taken.');
-
-    players[playerId] = new Player(playerId);
-    players[playerId].name_ = nickname || 'TestPlayer';
-    players[playerId].ipAddress_ = TEST_PLAYER_IDENTIFIER;
-
-    return players[playerId];
-  }
-
-  // Destroys the player instance of |playerId| for the purposes of testing. The associated player
-  // must have been created by a test as well, otherwise an exception will be thrown.
-  static destroyForTest(player) {
-    if (!players.hasOwnProperty(player.id))
-      throw new Error('No player with this id has connected to the server.');
-
-    if (player.ipAddress != TEST_PLAYER_IDENTIFIER)
-      throw new Error('The player with this id was not created by a test.');
-
-    players[player.id].markAsDisconnected();
-    delete players[player.id];
-  }
 };
 
 // Invalid player id. Must be equal to SA-MP's INVALID_PLAYER_ID definition.
@@ -229,48 +206,32 @@ Player.STATE_SPECTATING = 9;
 // Loads the activities of a player and installs them on |Player|.
 require('entities/player_activities.js')(Player);
 
-// Called when a player connects to Las Venturas Playground. Registers the player as being in-game
-// and initializes the Player instance for them.
-self.addEventListener('playerconnect', event =>
-    players[event.playerid] = new Player(event.playerid));
-
 // Called when the level of a player changes. This event is custom to Las Venturas Playground.
 self.addEventListener('playerlevelchange', event => {
-  if (!players.hasOwnProperty(event.playerid))
+  const player = server.playerManager.getById(event.playerid);
+  if (!player)
     return;
 
   switch(event.newlevel) {
     case 2:  // AdministratorLevel
-      players[event.playerid].level_ = Player.LEVEL_ADMINISTRATOR;
+      player.level_ = Player.LEVEL_ADMINISTRATOR;
       break;
     case 3:  // ManagementLevel
-      players[event.playerid].level_ = Player.LEVEL_MANAGEMENT;
+      player.level_ = Player.LEVEL_MANAGEMENT;
       break;
     default:
-      players[event.playerid].level_ = Player.LEVEL_PLAYER;
+      player.level_ = Player.LEVEL_PLAYER;
       break;
   }
 });
 
 // Called when a player's activity changes. This event is custom to Las Venturas Playground.
 self.addEventListener('playeractivitychange', event => {
-  if (!players.hasOwnProperty(event.playerid))
+  const player = server.playerManager.getById(event.playerid);
+  if (!player)
     return;
 
-  player[event.playerid].activity_ = event.activity;
-});
-
-// Called when a player disconnects from the server. Removes the player from our registry. The
-// removal will be done at the end of the event loop, to make sure that the other playerdisconnect
-// listeners will still be able to retrieve the Player object.
-self.addEventListener('playerdisconnect', event => {
-  wait(0).then(() => {
-    if (!players.hasOwnProperty(event.playerid))
-      return;
-
-    players[event.playerid].markAsDisconnected();
-    delete players[event.playerid];
-  });
+  player.activity_ = event.activity;
 });
 
 // Utility function: convert a player's level to a string.

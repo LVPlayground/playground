@@ -10,6 +10,7 @@ class MockPlayer {
 
         this.name_ = event.name || 'Player' + playerId;
         this.level_ = event.level || Player.LEVEL_PLAYER;
+        this.userId_ = null;
         this.ipAddress_ = event.ipAddress || '127.0.0.1';
 
         this.connected_ = true;
@@ -30,6 +31,10 @@ class MockPlayer {
 
     get level() { return this.level_; }
     set level(value) { this.level_ = value; }
+
+    isRegistered() { return this.userId_ == null; }
+
+    get userId() { return this.userId_; }
 
     sendMessage() {}
 

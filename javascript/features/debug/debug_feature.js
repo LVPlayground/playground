@@ -61,7 +61,7 @@ class DebugFeature extends Feature {
     wait(seconds * 1000).then(() => {
       global.stopTrace(filename);
 
-      if (player.connected)
+      if (player.isConnected())
         player.sendMessage(Message.DEBUG_TRACE_FINISHED);
     });
 

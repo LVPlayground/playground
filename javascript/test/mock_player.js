@@ -17,7 +17,7 @@ class MockPlayer {
 
     get id() { return this.id_; }
 
-    get connected() { return this.connected_; }
+    isConnected() { return this.connected_; }
 
     notifyDisconnected() {
         this.connected_ = false;
@@ -32,6 +32,23 @@ class MockPlayer {
     set level(value) { this.level_ = value; }
 
     sendMessage() {}
+
+    // Identifies the player to a fake account. The options can be specified optionally.
+    identify({ userId = 0, gangId = 0 } = {}) {
+        server.playerManager.onPlayerLogin({
+            playerid: this.id_,
+            userid: userId,
+            gangid: gangId
+        });
+    }
+
+    // Disconnects the player from the server. They will be removed from the PlayerManager too.
+    disconnect(reason = 0) {
+        server.playerManager.onPlayerDisconnect({
+            playerid: this.id_,
+            reason: reason
+        });
+    }
 
     // TODO: Add new getters and setters as required.
 }

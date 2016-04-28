@@ -77,7 +77,7 @@ class PlayerManager {
         if (player)
             return player;
 
-        return this.getByName(nameOrId);
+        return this.getByName(nameOrId, true /* fuzzy */);
     }
 
     // Executes the |callback| once for each player connected to the server. The first argument to

@@ -357,6 +357,16 @@ class Assert {
     this.reportFailure('expected ' + this.toString(actual) + ' to be close (~' + delta + ') to ' + this.toString(expected));
   }
 
+  // Creates a failure because of an unexpected promise resolution.
+  unexpectedResolution() {
+    this.reportFailure('promise was not expected to resolve');
+  }
+
+  // Creates a failure because of an unexpected promise rejection.
+  unexpectedRejection() {
+    this.reportFailure('promise was not expected to reject');
+  }
+
   // -----------------------------------------------------------------------------------------------
 
   // Coerces |value| to a string. 

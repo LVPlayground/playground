@@ -38,6 +38,11 @@ class Gang {
         this.members_.set(player, role);
     }
 
+    // Returns whether |player| is part of this gang.
+    hasPlayer(player) {
+        return this.members_.has(player);
+    }
+
     // Removes |player| from the list of members of this gang.
     removePlayer(player) {
         this.members_.delete(player);

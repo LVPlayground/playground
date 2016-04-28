@@ -31,6 +31,8 @@ describe('GangManager', (it, beforeEach, afterEach) => {
             assert.equal(gang.name, 'name');
             assert.equal(gang.goal, 'goal');
 
+            assert.isTrue(gang.hasPlayer(player));
+
             assert.equal(gang.memberCount, 1);
         });
     });
@@ -63,8 +65,11 @@ describe('GangManager', (it, beforeEach, afterEach) => {
             assert.isNotNull(gang);
             assert.equal(gang.tag, 'HKO');
 
+            assert.isTrue(gang.hasPlayer(player));
+
             player.disconnect();
 
+            assert.isFalse(gang.hasPlayer(player));
             assert.isNull(gangManager.gangForPlayer(player));
         });
     });

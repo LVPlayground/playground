@@ -6,10 +6,10 @@ let Rectangle = require('components/text_draw/rectangle.js'),
     TextDraw = require('components/text_draw/text_draw.js');
 
 // Background color of the countdown. Should be semi-transparent.
-const BACKGROUND_COLOR = new Color(0, 0, 0, 100);
+const BACKGROUND_COLOR = Color.fromRGBA(0, 0, 0, 100);
 
 // Text color of the counter that's actually counting down, and will shout "Go!"
-const COUNTDOWN_COUNTER_COLOR = new Color(255, 255, 0, 255);
+const COUNTDOWN_COUNTER_COLOR = Color.fromRGBA(255, 255, 0, 255);
 
 // This class implements the visual count down that will be presented to the player right before
 // they can start a race. This gives each player the chance to see the environment prior to starting

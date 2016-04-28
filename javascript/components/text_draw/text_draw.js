@@ -229,10 +229,10 @@ class TextDraw {
       pawnInvoke('PlayerTextDrawLetterSize', 'iiff', player.id, textDrawId, ...this.letterSize_);
 
     if (this.color_ !== null)
-      pawnInvoke('PlayerTextDrawColor', 'iii', player.id, textDrawId, this.color_.asNumber());
+      pawnInvoke('PlayerTextDrawColor', 'iii', player.id, textDrawId, this.color_.toNumberRGBA());
 
     if (this.boxColor_ !== null)
-      pawnInvoke('PlayerTextDrawBoxColor', 'iii', player.id, textDrawId, this.boxColor_.asNumber());
+      pawnInvoke('PlayerTextDrawBoxColor', 'iii', player.id, textDrawId, this.boxColor_.toNumberRGBA());
 
     if (this.outlineSize_ !== null)
       pawnInvoke('PlayerTextDrawSetOutline', 'iii', player.id, textDrawId, this.outlineSize_);
@@ -241,7 +241,7 @@ class TextDraw {
       pawnInvoke('PlayerTextDrawSetShadow', 'iii', player.id, textDrawId, this.shadowSize_);
 
     if (this.shadowColor_ !== null)
-      pawnInvoke('PlayerTextDrawBackgroundColor', 'iii', player.id, textDrawId, this.shadowColor_.asNumber());
+      pawnInvoke('PlayerTextDrawBackgroundColor', 'iii', player.id, textDrawId, this.shadowColor_.toNumberRGBA());
 
     // TODO: PlayerTextDrawSetSelectable: Sets whether a player-textdraw is selectable through SelectTextDraw
 

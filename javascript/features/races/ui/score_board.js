@@ -8,13 +8,13 @@ let AbsoluteTimeView = require('features/races/ui/absolute_time_view.js'),
     TextDraw = require('components/text_draw/text_draw.js');
 
 // Background color of the score board. Should be semi-transparent.
-const BACKGROUND_COLOR = new Color(0, 0, 0, 100);
+const BACKGROUND_COLOR = Color.fromRGBA(0, 0, 0, 100);
 
 // Color of the text indicating the number of players. Should be white-ish.
-const PLAYER_COUNT_COLOR = new Color(255, 255, 255, 100);
+const PLAYER_COUNT_COLOR = Color.fromRGBA(255, 255, 255, 100);
 
 // Color in which the player's personal record will be displayed.
-const PERSONAL_RECORD_COLOR = new Color(255, 255, 0, 255);
+const PERSONAL_RECORD_COLOR = Color.fromRGBA(255, 255, 0, 255);
 
 // Powers the visual score board on the right-hand side of a player's screen. It displays data about
 // the current race, for example the time and distances to the other player, but also time based on

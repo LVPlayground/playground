@@ -6,7 +6,7 @@ let Rectangle = require('components/text_draw/rectangle.js'),
     TextDraw = require('components/text_draw/text_draw.js');
 
 // Background color of the message. Should be semi-transparent.
-const BACKGROUND_COLOR = new Color(0, 0, 0, 100);
+const BACKGROUND_COLOR = Color.fromRGBA(0, 0, 0, 100);
 
 // Displays a message to all remaining participants. The participant will be frozen while the
 // message is being displayed on their screen.

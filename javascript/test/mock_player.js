@@ -13,6 +13,8 @@ class MockPlayer {
         this.userId_ = null;
         this.ipAddress_ = event.ipAddress || '127.0.0.1';
 
+        this.messages_ = [];
+
         this.connected_ = true;
     }
 
@@ -36,7 +38,20 @@ class MockPlayer {
 
     get userId() { return this.userId_; }
 
-    sendMessage() {}
+    // Sends |message| to the player. It will be stored in the local messages array and can be
+    // retrieved through the |messages| getter.
+    sendMessage(message, ...args) {
+        if (message instanceof Message)
+            message = Message.format(message, ...args);
+
+        this.messages_.push(message.toString());
+    }
+
+    // Clears the messages that have been sent to this player.
+    clearMessages() { this.messages_ = []; }
+
+    // Gets the messages that have been sent to this player.
+    get messages() { return this.messages_; }
 
     // Identifies the player to a fake account. The options can be specified optionally.
     identify({ userId = 0, gangId = 0 } = {}) {
@@ -45,6 +60,21 @@ class MockPlayer {
             userid: userId,
             gangid: gangId
         });
+    }
+
+    // Issues |commandText| as if it had been send by this player. Returns whether the event with
+    // which the command had been issued was prevented.
+    issueCommand(commandText) {
+        let defaultPrevented = false;
+
+        server.commandManager.onPlayerCommandText({
+            preventDefault: () => defaultPrevented = true,
+
+            playerid: this.id_,
+            cmdtext: commandText
+        });
+
+        return defaultPrevented;
     }
 
     // Disconnects the player from the server. They will be removed from the PlayerManager too.

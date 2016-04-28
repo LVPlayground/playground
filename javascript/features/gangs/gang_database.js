@@ -68,7 +68,7 @@ class GangDatabase {
                     tag: info.gang_tag,
                     name: info.gang_name,
                     goal: info.gang_goal,
-                    color: info.gang_color
+                    color: info.gang_color ? Color.fromNumberRGBA(info.gang_color) : null
                 }
             };
         });

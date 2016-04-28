@@ -40,6 +40,14 @@ class CommandManager {
     return new CommandBuilder(CommandBuilder.COMMAND, this, command);
   }
 
+  // Removes the |command| from the list of commands known and handled by this manager.
+  removeCommand(command) {
+    if (!this.commands_.hasOwnProperty(command))
+      throw new Error('The command /' + command + ' has not been registered.');
+
+    delete this.commands_[command];
+  }
+
   // Called when a player executes an in-game command. Will prevent the event from being executed in
   // the Pawn portion of the gamemode when the command can be handled here.
   onPlayerCommandText(event) {

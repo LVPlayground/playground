@@ -19,6 +19,9 @@ class GangManager {
         server.playerManager.addObserver(this);
     }
 
+    // Gets an array having the Gang instances for each of the gangs for in-game representation.
+    get gangs() { return Object.values(this.gangs_); }
+
     // Returns the Gang that |player| is part of. Returns NULL when they are not part of a gang.
     gangForPlayer(player) {
         return this.gangPlayers_.get(player) || null;

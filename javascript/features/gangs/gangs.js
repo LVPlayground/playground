@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const Feature = require('components/feature_manager/feature.js');
+const GangCommands = require('features/gangs/gang_commands.js');
 const GangManager = require('features/gangs/gang_manager.js');
 
 // Implementation of the gangs feature. A gang is a group of players that fight together under a
@@ -13,10 +14,12 @@ class Gangs extends Feature {
         super();
 
         this.manager_ = new GangManager(server.database);
+        this.commands_ = new GangCommands(this.manager_);
     }
 
     // Cleans up all routines and state stored as part of the gang feature.
     dispose() {
+        this.commands_.dispose();
         this.manager_.dispose();
     }
 }

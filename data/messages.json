@@ -21,6 +21,9 @@
     "FRIENDS_REMOVED": "@success %s has been removed from your friends list.",
     "FRIENDS_USAGE": "{FFFFFF}Use '/friends add' to add a friend or '/friends remove' to remove one.",
 
+    "GANG_INFO_1": "{FFFFFF}A gang is a group of players that have declared an alliance and fight",
+    "GANG_INFO_2": "{FFFFFF}together for their common benefit. Every player on Las Venturas",
+    "GANG_INFO_3": "{FFFFFF}Playground can create one, and they will be stored between playing sessions.",
     "GANGS_ONLINE": "{%s}[%s]{FFFFFF} - %s ({B1FC17}%d player%s{FFFFFF})",
     "GANGS_NONE_ONLINE": "{FFFFFF}There are no gang members on the server right now.",
     "GANGS_BEST_ADV": "{B1FC17}Type “/gangs top” to list the best gangs on Las Venturas Playground.",

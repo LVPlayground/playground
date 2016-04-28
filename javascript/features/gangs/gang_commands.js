@@ -8,12 +8,25 @@ class GangCommands {
     constructor(manager) {
         this.manager_ = manager;
 
+        server.commandManager.buildCommand('pgang')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .build(GangCommands.prototype.onGangCommand.bind(this));
+
         server.commandManager.buildCommand('pgangs')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('top')
                 .build(GangCommands.prototype.onGangsTopCommand.bind(this))
 
             .build(GangCommands.prototype.onGangsCommand.bind(this));
+    }
+
+    // Called when the player uses the `/gang` command without parameters. It will show information
+    // on the available sub commands, as well as the feature itself.
+    onGangCommand(player) {
+        player.sendMessage(Message.COMMAND_USAGE, '/gang [create]');
+        player.sendMessage(Message.GANG_INFO_1);
+        player.sendMessage(Message.GANG_INFO_2);
+        player.sendMessage(Message.GANG_INFO_3);
     }
 
     // Called when the player uses the `/gangs` command. It will, by default, list the gangs that

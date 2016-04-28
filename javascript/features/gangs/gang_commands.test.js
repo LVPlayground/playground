@@ -33,10 +33,27 @@ describe('GangManager', (it, beforeEach, afterEach) => {
 
         assert.equal(player.level, Player.LEVEL_PLAYER);
 
+        assert.isTrue(player.issueCommand('/pgang'));
+
+        assert.equal(player.messages.length, 1);
+        assert.isTrue(player.messages[0].includes('only available to administrators'));
+
+        player.clearMessages();
+
         assert.isTrue(player.issueCommand('/pgangs'));
 
         assert.equal(player.messages.length, 1);
         assert.isTrue(player.messages[0].includes('only available to administrators'));
+    });
+
+    it('should be able to display information about the gang command', assert => {
+        const player = server.playerManager.getById(0 /* Gunther */);
+        assert.isNotNull(player);
+
+        player.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isTrue(player.issueCommand('/pgang'));
+        assert.isAboveOrEqual(player.messages.length, 1);
     });
 
     it('should be able to list the local gangs on the server', assert => {

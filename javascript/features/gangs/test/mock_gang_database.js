@@ -28,10 +28,34 @@ class MockGangDatabase {
 
         return Promise.resolve(gangInfo);
     }
+
+    doesGangExists(tag, name) {
+        if (tag === 'HKO')
+            return Promise.reject({ available: false, tag: 'HKO', name: 'Hello Kitty Online '});
+
+        return Promise.resolve({ available: true });
+    }
+
+    createGangWithLeader(player, tag, name, goal) {
+        if (tag === 'CC') {
+            return Promise.resolve({
+                id: MockGangDatabase.CC_GANG_ID,
+                tag: tag,
+                name: name,
+                goal: goal,
+                color: null
+            });
+        }
+
+        return Promise.reject(new Error('No special behaviour implemented.'));
+    }
 }
 
 // Magic userId values that can be used by the database.
 MockGangDatabase.HKO_GANG_ID = 1337;
 MockGangDatabase.HKO_LEADER_USER_ID = 42;
+
+MockGangDatabase.CC_GANG_ID = 1000;
+MockGangDatabase.CC_LEADER_USER_ID = 50;
 
 exports = MockGangDatabase;

@@ -17,6 +17,35 @@ const LOAD_GANG_FOR_PLAYER_QUERY = `
         users_gangs.user_id = ? AND
         users_gangs.gang_id = ?`;
 
+// Query to determine whether any gang currently exists for a given name or tag.
+const GANG_EXISTS_QUERY = `
+    SELECT
+        gangs.gang_tag,
+        gangs.gang_name
+    FROM
+        gangs
+    WHERE
+        gangs.gang_deleted IS NULL AND
+        (LOWER(gangs.gang_tag) = ? OR LOWER(gangs.gang_name) = ?)
+    LIMIT
+        1`;
+
+// Query to actually create a gang in the database.
+const GANG_CREATE_QUERY = `
+    INSERT INTO
+        gangs
+        (gang_tag, gang_name, gang_goal)
+    VALUES
+        (?, ?, ?)`;
+
+// Query to add a member to a given gang in the database.
+const GANG_CREATE_MEMBER_QUERY = `
+    INSERT INTO
+        users_gangs
+        (user_id, gang_id, user_role, joined_gang)
+    VALUES
+        (?, ?, ?, NOW())`;
+
 // The gang database is responsible for interacting with the MySQL database for queries related to
 // gangs, e.g. loading, storing and updating the gang and player information.
 class GangDatabase {
@@ -41,6 +70,51 @@ class GangDatabase {
                     goal: info.gang_goal,
                     color: info.gang_color
                 }
+            };
+        });
+    }
+
+    // Returns a promise that will be resolved with an object indicating whether any gang exists
+    // having the |tag| or |name|. Both the tag and name will be lowercased.
+    doesGangExists(tag, name) {
+        tag = tag.toLowerCase();
+        name = name.toLowerCase();
+
+        return this.database_.query(GANG_EXISTS_QUERY, tag, name).then(results => {
+            if (results.rows.length === 0)
+                return { available: true };
+
+            const info = results.row[0];
+            return {
+                available: false,
+                tag: info.gang_tag,
+                name: info.gang_name
+            };
+        });
+    }
+
+    // Creates a gang having the |tag|, named |name| pursuing |goal|, and returns a promise that
+    // will be resolved with the gang's information when the operation has completed. The |player|
+    // shall be stored in the database as the gang's leader.
+    createGangWithLeader(player, tag, name, goal) {
+        let gangId = null;
+
+        return this.database_.query(GANG_CREATE_QUERY, tag, name, goal).then(results => {
+            if (results.insertId === null)
+                throw new Error('Unexpectedly got NULL as the inserted Id.');
+
+            gangId = result.insertId;
+
+            return this.database_.query(
+                GANG_CREATE_MEMBER_QUERY, player.userId, result.insertId, 'Leader');
+
+        }).then(results => {
+            return {
+                id: gangId,
+                tag: tag,
+                name: name,
+                goal: goal,
+                color: null
             };
         });
     }
@@ -73,5 +147,10 @@ class GangDatabase {
         }
     }
 }
+
+// Values that can be returned by the GangDatabase.doesGangExist() method.
+GangDatabase.EXISTS_AVAILABLE = 0;
+GangDatabase.EXISTS_TAG = 1;
+GangDatabase.EXISTS_NAME = 2;
 
 exports = GangDatabase;

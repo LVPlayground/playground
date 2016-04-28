@@ -32,7 +32,7 @@ class MockPlayer {
     get level() { return this.level_; }
     set level(value) { this.level_ = value; }
 
-    isRegistered() { return this.userId_ == null; }
+    isRegistered() { return this.userId_ != null; }
 
     get userId() { return this.userId_; }
 

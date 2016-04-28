@@ -24,6 +24,38 @@ class GangManager {
         return this.gangPlayers_.get(player) || null;
     }
 
+    // Creates a gang with |tag|, named |name| pursuing |goal| and stores it in the database. When
+    // successful, |player| will be added to the gang as its leader. Error messages thrown by this
+    // method *may* be presented to users in case of race conditions.
+    createGangForPlayer(player, tag, name, goal) {
+        if (!player.isRegistered())
+            return Promise.reject(new Error('You must be registered in order to create a gang.'));
+
+        if (this.gangPlayers_.has(player))
+            return Promise.reject(new Error('You are already part of a gang.'));
+
+        return this.database_.doesGangExists(tag, name).then(result => {
+            if (!result.available)
+                throw new Error('The gang is too similar to [' + result.tag + '] ' + result.name);
+
+            return this.database_.createGangWithLeader(player, tag, name, goal);
+
+        }).then(gangInfo => {
+            if (!player.isConnected())
+                return;  // the player is not connected to the server anymore
+
+            const gang = new Gang(gangInfo);
+
+            // Associate the |player| with the |gang| as its leader.
+            gang.addPlayer(player, Gang.ROLE_LEADER);
+
+            // Associate the |gang| with the |player|.
+            this.gangPlayers_.set(player, gang);
+
+            return gang;
+        });
+    }
+
     // Called when |player| has logged in to their Las Venturas Playground account. Will check with
     // the database to see if they should automatically join a gang.
     onPlayerLogin(player, eventData) {

@@ -19,6 +19,34 @@ describe('GangManager', (it, beforeEach, afterEach) => {
 
         }, () => gangManager.dispose());
 
+    it('should create a gang and make the player its leader', assert => {
+        const player = server.playerManager.getById(0 /* Gunther */);
+        assert.isNotNull(player);
+
+        player.identify({ userId: MockGangDatabase.CC_LEADER_USER_ID });
+
+        return gangManager.createGangForPlayer(player, 'CC', 'name', 'goal').then(gang => {
+            assert.equal(gang.id, MockGangDatabase.CC_GANG_ID);
+            assert.equal(gang.tag, 'CC');
+            assert.equal(gang.name, 'name');
+            assert.equal(gang.goal, 'goal');
+
+            assert.equal(gang.memberCount, 1);
+        });
+    });
+
+    it('should refuse to create a gang when it causes ambiguity', assert => {
+        const player = server.playerManager.getById(0 /* Gunther */);
+        assert.isNotNull(player);
+
+        player.identify({ userId: MockGangDatabase.CC_LEADER_USER_ID });
+
+        return gangManager.createGangForPlayer(player, 'HKO', 'name', 'goal').then(
+            () => assert.unexpectedResolution(),
+            () => true /* the promise rejected due to ambiguity */);
+
+    });
+
     it('should load and unload gang data on connectivity events', assert => {
         const player = server.playerManager.getById(0 /* Gunther */);
         assert.isNotNull(player);

@@ -84,7 +84,7 @@ class GangDatabase {
             if (results.rows.length === 0)
                 return { available: true };
 
-            const info = results.row[0];
+            const info = results.rows[0];
             return {
                 available: false,
                 tag: info.gang_tag,
@@ -103,10 +103,10 @@ class GangDatabase {
             if (results.insertId === null)
                 throw new Error('Unexpectedly got NULL as the inserted Id.');
 
-            gangId = result.insertId;
+            gangId = results.insertId;
 
             return this.database_.query(
-                GANG_CREATE_MEMBER_QUERY, player.userId, result.insertId, 'Leader');
+                GANG_CREATE_MEMBER_QUERY, player.userId, results.insertId, 'Leader');
 
         }).then(results => {
             return {

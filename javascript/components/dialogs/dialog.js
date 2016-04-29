@@ -18,12 +18,10 @@ const DIALOG_STYLE_TABLIST_HEADERS = 5;
 let manager = new DialogManager();
 
 // The dialog class provides a mid-level abstraction layer to the dialog features of the SA-MP
-// server. You should not use this class directly, instead consider using one of the high-level
-// abstractions for dialogs:
+// server. There are higher-level alternatives available to certain types of input dialogs that are
+// better suited than this class:
 //
 // DIALOG_STYLE_MSGBOX          - //components/dialogs/message.js (Message)
-// DIALOG_STYLE_INPUT           - [[NOT IMPLEMENTED]]
-// DIALOG_STYLE_PASSWORD        - [[NOT IMPLEMENTED]]
 // DIALOG_STYLE_LIST            - //components/menu/menu.js (Menu)
 // DIALOG_STYLE_TABLIST_HEADERS - //components/menu/menu.js (Menu)
 //
@@ -39,6 +37,16 @@ class Dialog {
   static displayMessage(player, caption, message, leftButton, rightButton) {
     return manager.displayForPlayer(player, DIALOG_STYLE_MSGBOX, caption, message, leftButton, rightButton).then(result => {
       return { response: result.response };
+    });
+  }
+
+  // Displays an input dialog that allows the player to enter textual information.
+  static displayInput({ caption, message, leftButton, rightButton = '', isPrivate = false } = {}) {
+    const type = isPrivate ? DIALOG_STYLE_PASSWORD
+                           : DIALOG_STYLE_INPUT;
+
+    return manager.displayForPlayer(player, type, caption, message, leftButton, rightButton).then(result => {
+      return { response: result.response, text: inputtext };
     });
   }
 

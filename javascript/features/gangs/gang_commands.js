@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const Dialog = require('components/dialogs/dialog.js');
+
 // Implements the commands available as part of the persistent gang feature. The primary ones are
 // /gang and /gangs, each of which has a number of sub-options available to them.
 class GangCommands {
@@ -39,7 +41,109 @@ class GangCommands {
             return;
         }
 
-        // TODO(Russell): Implement the dialog flow for creating a new gang.
+        // Constraints to apply during the gang creation wizard.
+        const nameConstraints = { min: 4, max: 32 };
+        const tagConstraints = { min: 1, max: 5 };
+        const goalConstraints = { min: 4, max: 64 };
+
+        // Options for asking the player what the gang's full name should be.
+        const nameDialogOptions = {
+            caption: 'Choose your gang\'s name',
+            message: 'What is the full name your gang will be known as? ' +
+                         '(' + nameConstraints.min + ' - ' + nameConstraints.max + ' characters)',
+            leftButton: 'Next',
+            rightButton: 'Cancel'
+        };
+
+        // Options for asking the player what the gang's tag should be.
+        const tagDialogOptions = {
+            caption: 'Choose your gang\'s tag',
+            message: 'What is the acronym to use as your gangs tag? ' +
+                         '(' + tagConstraints.min + ' - ' + tagConstraints.max + ' characters)',
+            leftButton: 'Next',
+            rightButton: 'Cancel'
+        };
+
+        // Options for asking the player what the gang's goal should be.
+        const goalDialogOptions = {
+            caption: 'Choose your gang\'s goal',
+            message: 'In one sentence, what is the purpose of your gang? ' +
+                         '(' + goalConstraints.min + ' - ' + goalConstraints.max + ' characters)',
+            leftButton: 'Next',
+            rightButton: 'Cancel'
+        };
+
+        // Gathered input from the user based on this flow.
+        let input = { name: null, tag: null, goal: null };
+
+        // (1) Ask the player to enter the name of their gang.
+        Dialog.displayInput(player, nameDialogOptions).then(result => {
+            if (!player.isConnected())
+                throw null;  // the player is not connected anymore
+
+            if (!result.response)
+                throw null;  // the player canceled the creation
+
+            if (result.text.length < nameConstraints.min ||
+                result.text.length > nameConstraints.max) {
+                player.sendMessage(Message.GANG_CREATE_INVALID_NAME);
+                throw null;
+            }
+
+            input.name = result.text;
+
+            return Dialog.displayInput(player, tagDialogOptions);
+
+        // (2) Ask the player to enter the tag of their gang. (With or without [].)
+        }).then(result => {
+            if (!player.isConnected())
+                throw null;  // the player is not connected anymore
+
+            if (!result.response)
+                throw null;  // the player canceled the creation
+
+            // Remove all non-alpha-numeric characters from the gang's tag.
+            result.text = result.text.replace(/[^a-z0-9]/gi, '');
+
+            if (result.text.length < tagConstraints.min ||
+                result.text.length > tagConstraints.max) {
+                player.sendMessage(Message.GANG_CREATE_INVALID_TAG);
+                throw null;
+            }
+
+            input.tag = result.text;
+
+            return Dialog.displayInput(player, goalDialogOptions);
+
+        }).then(result => {
+            if (!player.isConnected())
+                throw null;  // the player is not connected anymore
+
+            if (!result.response)
+                throw null;  // the player canceled the creation
+
+            if (result.text.length < goalDialogOptions.min ||
+                result.text.length > goalDialogOptions.max) {
+                player.sendMessage(Message.GANG_CREATE_INVALID_GOAL);
+                throw null;
+            }
+
+            input.goal = result.text;
+
+            return this.manager_.createGangForPlayer(player, input.tag, input.name, input.goal);
+
+        }).then(result => {
+            // TODO(Russell): Announce the gang's creation to administrators.
+            // TODO(Russell): Announce the gang's creation to other players.
+
+            player.sendMessage(Message.GANG_CREATED, result.name);
+
+        }).catch(error => {
+            if (!error)
+                return;  // used as a bail-out until I figure out something better
+
+            player.sendMessage(Message.COMMAND_ERROR, error.message);
+        })
     }
 
     // Called when the player uses the `/gang` command without parameters. It will show information

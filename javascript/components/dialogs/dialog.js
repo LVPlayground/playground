@@ -41,12 +41,12 @@ class Dialog {
   }
 
   // Displays an input dialog that allows the player to enter textual information.
-  static displayInput({ caption, message, leftButton, rightButton = '', isPrivate = false } = {}) {
+  static displayInput(player, { caption, message, leftButton, rightButton = '', isPrivate = false } = {}) {
     const type = isPrivate ? DIALOG_STYLE_PASSWORD
                            : DIALOG_STYLE_INPUT;
 
     return manager.displayForPlayer(player, type, caption, message, leftButton, rightButton).then(result => {
-      return { response: result.response, text: inputtext };
+      return { response: result.response, text: result.inputtext };
     });
   }
 

@@ -29,7 +29,7 @@ class GangManager {
 
     // Creates a gang with |tag|, named |name| pursuing |goal| and stores it in the database. When
     // successful, |player| will be added to the gang as its leader. Error messages thrown by this
-    // method *may* be presented to users in case of race conditions.
+    // method may be presented to users.
     createGangForPlayer(player, tag, name, goal) {
         if (!player.isRegistered())
             return Promise.reject(new Error('You must be registered in order to create a gang.'));

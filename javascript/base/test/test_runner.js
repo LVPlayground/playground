@@ -130,6 +130,7 @@ class TestRunner {
       require('base/vector.test.js');
       require('components/command_manager/command_builder.test.js');
       require('components/database/database.test.js');
+      require('components/dialogs/question.test.js');
       require('components/feature_manager/dependency_graph.test.js');
       require('components/feature_manager/feature_manager.test.js');
       require('components/text_draw/text_draw.test.js');

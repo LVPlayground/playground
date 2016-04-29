@@ -119,6 +119,12 @@ class Player extends Extendable {
     pawnInvoke('OnPlayerActivityChange', 'ii', this.id_, activity);
   }
 
+  // Displays the dialog for |caption| explained by |message| to the player.
+  showDialog(dialogId, style, caption, message, leftButton, rightButton) {
+    pawnInvoke('ShowPlayerDialog', 'iiissss', this.id_, dialogId, style, caption, message,
+               leftButton, rightButton);
+  }
+
   // Sends |message| to the player. The |message| can either be a scalar JavaScript value or an
   // instance of the Message class that exists in //base if you wish to use colors.
   sendMessage(message, ...args) {

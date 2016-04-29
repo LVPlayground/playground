@@ -24,17 +24,16 @@ class DialogManager {
   // Displays a dialog for |player|. This method will return a promise that will resolve when the
   // player responds to the dialog, and reject when the player disconnects while it's showing.
   displayForPlayer(player, style, caption, contents, leftButton, rightButton) {
-    if (!(player instanceof Player))
-      throw new Error('Dialogs can only be shown to instances of the Player object.');
-
     let dialogId = this.allocateDialogId(),
         playerId = player.id;
 
     this.playerDialogs_[playerId] = dialogId;
 
     return new Promise((resolve, reject) => {
-      if (!pawnInvoke('ShowPlayerDialog', 'iiissss', playerId, dialogId, style, caption, contents, leftButton, rightButton))
+      if (!player.isConnected())
         throw new Error('Unable to show the dialog on the SA-MP server.');
+
+      player.showDialog(dialogId, style, caption, contents, leftButton, rightButton);
 
       this.dialogs_[dialogId] = { resolve: resolve, reject: reject };
     });

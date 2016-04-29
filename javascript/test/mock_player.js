@@ -13,6 +13,14 @@ class MockPlayer {
         this.userId_ = null;
         this.ipAddress_ = event.ipAddress || '127.0.0.1';
 
+        this.dialogPromiseResolve_ = null;
+        this.dialogPromise_ = new Promise(resolve => {
+            this.dialogPromiseResolve_ = resolve;
+        });
+
+        this.lastDialogMessage_ = null;
+        this.lastDialogId_ = null;
+
         this.messages_ = [];
 
         this.connected_ = true;
@@ -37,6 +45,15 @@ class MockPlayer {
     isRegistered() { return this.userId_ != null; }
 
     get userId() { return this.userId_; }
+
+    // Fake implementation of the ShowPlayerDialog() native. Used to be able to mock responses to
+    // dialogs and make that entire sub-system testable as well.
+    showDialog(dialogId, style, caption, message, leftButton, rightButton) {
+        this.lastDialogId_ = dialogId;
+        this.lastDialogMessage_ = message;
+
+        this.dialogPromiseResolve_();
+    }
 
     // Sends |message| to the player. It will be stored in the local messages array and can be
     // retrieved through the |messages| getter.
@@ -75,6 +92,24 @@ class MockPlayer {
         });
 
         return defaultPrevented;
+    }
+
+    // Responds to an upcoming dialog with the given values. The dialog Id that has been shown
+    // for the player will be inserted automatically. Responses are forcefully asynchronous.
+    respondToDialog({ response = 1 /* left button */, listitem = 0, inputtext = '' } = {}) {
+        this.dialogPromise_.then(() => {
+            this.dialogPromise_ = new Promise(resolve => {
+                this.dialogPromiseResolve_ = resolve;
+            });
+
+            global.dispatchEvent('dialogresponse', {
+                playerid: this.id_,
+                dialogid: this.lastDialogId_,
+                response: response,
+                listitem: listitem,
+                inputtext: inputtext
+            });
+        });
     }
 
     // Disconnects the player from the server. They will be removed from the PlayerManager too.

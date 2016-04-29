@@ -22,6 +22,7 @@ let manager = new DialogManager();
 // better suited than this class:
 //
 // DIALOG_STYLE_MSGBOX          - //components/dialogs/message.js (Message)
+// DIALOG_STYLE_INPUT           - //components/dialogs/question.js (Question)
 // DIALOG_STYLE_LIST            - //components/menu/menu.js (Menu)
 // DIALOG_STYLE_TABLIST_HEADERS - //components/menu/menu.js (Menu)
 //

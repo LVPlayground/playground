@@ -16,6 +16,8 @@ class Server {
         this.commandManager_ = new CommandManager();
         this.featureManager_ = new FeatureManager();
         this.playerManager_ = new PlayerManager();
+
+        // TODO(Russell): The DialogManager should be owned by the Server instance.
     }
 
     // Gets the global command manager that owns all commands available to players.

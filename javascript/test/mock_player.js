@@ -54,7 +54,7 @@ class MockPlayer {
     get messages() { return this.messages_; }
 
     // Identifies the player to a fake account. The options can be specified optionally.
-    identify({ userId = 0, gangId = 0 } = {}) {
+    identify({ userId = 42, gangId = 0 } = {}) {
         server.playerManager.onPlayerLogin({
             playerid: this.id_,
             userid: userId,

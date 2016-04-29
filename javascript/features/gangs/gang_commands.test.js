@@ -26,6 +26,27 @@ describe('GangManager', (it, beforeEach, afterEach) => {
             gangManager.dispose();
         });
 
+    // Utility function to create a gang with the given information.
+    function createGang({ tag = 'HKO', name = 'Hello Kitty Online', color = null } = {}) {
+        const gangId = Math.floor(Math.random() * 1000000);
+
+        gangManager.gangs_[gangId] = new Gang({
+            id: gangId,
+            tag: tag,
+            name: name,
+            goal: 'Testing Gang',
+            color: color
+        });
+
+        return gangManager.gangs_[gangId];
+    }
+
+    // Utility function for adding a given player to a given gang.
+    function addPlayerToGang(player, gang) {
+        gangManager.gangPlayers_.set(player, gang);
+        gang.addPlayer(player);
+    }
+
     // Be sure to remove the LEVEL_ADMINISTRATOR overrides elsewhere when removing this.
     it('should only be available to administrators', assert => {
         const player = server.playerManager.getById(0 /* Gunther */);
@@ -44,6 +65,36 @@ describe('GangManager', (it, beforeEach, afterEach) => {
 
         assert.equal(player.messages.length, 1);
         assert.isTrue(player.messages[0].includes('only available to administrators'));
+    });
+
+    it('should allow players to create a new gang', assert => {
+        const player = server.playerManager.getById(0 /* Gunther */);
+        assert.isNotNull(player);
+
+        player.level = Player.LEVEL_ADMINISTRATOR;
+
+        // (1) An error should be presented when the player is not registered.
+        assert.isTrue(player.issueCommand('/pgang create'));
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.GANGS_NOT_REGISTERED);
+
+        player.identify();
+        player.clearMessages();
+
+        // (2) An error should be presented when the player is already part of a gang.
+        addPlayerToGang(player, createGang());
+
+        assert.isTrue(player.issueCommand('/pgang create'));
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.GANGS_ALREADY_SET);
+
+        player.clearMessages();
+
+        // (3) Follow the actual dialog flow when creating a gang.
+
+        // TODO(Russell): Implement this.
     });
 
     it('should be able to display information about the gang command', assert => {
@@ -71,10 +122,7 @@ describe('GangManager', (it, beforeEach, afterEach) => {
         player.clearMessages();
 
         const gangColor = Color.fromRGB(255, 13, 255);
-
-        gangManager.gangs_[42] = new Gang({
-            id: 42, tag: 'HKO', name: 'Hello Kitty Online', goal: '', color: gangColor
-        });
+        createGang({ color: gangColor });
 
         assert.equal(gangManager.gangs.length, 1);
 

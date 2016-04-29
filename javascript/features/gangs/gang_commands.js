@@ -8,10 +8,15 @@ class GangCommands {
     constructor(manager) {
         this.manager_ = manager;
 
+        // /pgang [create]
         server.commandManager.buildCommand('pgang')
             .restrict(Player.LEVEL_ADMINISTRATOR)
+            .sub('create')
+                .build(GangCommands.prototype.onGangCreateCommand.bind(this))
+
             .build(GangCommands.prototype.onGangCommand.bind(this));
 
+        // /pgangs [top]
         server.commandManager.buildCommand('pgangs')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('top')
@@ -20,13 +25,30 @@ class GangCommands {
             .build(GangCommands.prototype.onGangsCommand.bind(this));
     }
 
+    // Called when the player uses the `/gang create` command to create a new gang. If the player is
+    // eligible, it will start a wizard of dialog boxes requesting the necessary information from
+    // the player. All values must be unique among other gangs in the database.
+    onGangCreateCommand(player) {
+        if (!player.isRegistered()) {
+            player.sendMessage(Message.GANGS_NOT_REGISTERED);
+            return;
+        }
+
+        if (this.manager_.gangForPlayer(player) !== null) {
+            player.sendMessage(Message.GANGS_ALREADY_SET);
+            return;
+        }
+
+        // TODO(Russell): Implement the dialog flow for creating a new gang.
+    }
+
     // Called when the player uses the `/gang` command without parameters. It will show information
     // on the available sub commands, as well as the feature itself.
     onGangCommand(player) {
-        player.sendMessage(Message.COMMAND_USAGE, '/gang [create]');
+        player.sendMessage(Message.GANGS_HEADER);
         player.sendMessage(Message.GANG_INFO_1);
         player.sendMessage(Message.GANG_INFO_2);
-        player.sendMessage(Message.GANG_INFO_3);
+        player.sendMessage(Message.COMMAND_USAGE, '/gang [create]');
     }
 
     // Called when the player uses the `/gangs` command. It will, by default, list the gangs that

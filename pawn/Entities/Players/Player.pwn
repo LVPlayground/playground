@@ -264,16 +264,6 @@ class Player <playerId (MAX_PLAYERS)> {
     }
 
     /**
-     * Returns the timestamp at which we last received an update from this player's game. It can be
-     * used for detecting lag from a player, or a possible timeout.
-     *
-     * @return integer Time at which we received the last update.
-     */
-    public inline lastUpdate() {
-        return (m_lastUpdate);
-    }
-
-    /**
      * Returns a unix timestamp with the time when this player connected to Las Venturas Playground.
      * This can be used to determine how long they have been in game.
      *

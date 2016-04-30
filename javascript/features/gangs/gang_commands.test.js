@@ -178,6 +178,62 @@ describe('GangManager', (it, beforeEach, afterEach) => {
         });
     });
 
+    it('should allow leaders to leave their gang if they are the only member', assert => {
+        player.identify();
+
+        addPlayerToGang(player, createGang(), Gang.ROLE_LEADER);
+
+        const gang = gangManager.gangForPlayer(player);
+        assert.isNotNull(gang);
+
+        assert.isTrue(player.issueCommand('/pgang leave'));
+
+        player.respondToDialog({ response: 1 /* Yes */ });
+
+        return gangCommands.leavePromiseForTesting_.then(() => {
+            assert.isNull(gangManager.gangForPlayer(player));
+            assert.isFalse(gang.hasPlayer(player));
+        });
+    });
+
+    it('should allow leaders to leave their gang after confirming succession', assert => {
+        player.identify();
+
+        addPlayerToGang(player, createGang({ tag: 'CC' }), Gang.ROLE_LEADER);
+
+        const gang = gangManager.gangForPlayer(player);
+        assert.isNotNull(gang);
+
+        assert.isTrue(player.issueCommand('/pgang leave'));
+
+        player.respondToDialog({ response: 1 /* Yes */ });
+
+        return gangCommands.leavePromiseForTesting_.then(() => {
+            assert.isTrue(player.lastDialog.includes('MrNextLeader'));
+            assert.isTrue(player.lastDialog.includes('Manager'));
+
+            assert.isNull(gangManager.gangForPlayer(player));
+            assert.isFalse(gang.hasPlayer(player));
+        });
+    });
+
+    it('should allow leaders to cancel leaving their gang', assert => {
+        player.identify();
+
+        addPlayerToGang(player, createGang({ tag: 'CC' }), Gang.ROLE_LEADER);
+
+        const gang = gangManager.gangForPlayer(player);
+        assert.isNotNull(gang);
+
+        assert.isTrue(player.issueCommand('/pgang leave'));
+
+        player.respondToDialog({ response: 0 /* No */ });
+
+        return gangCommands.leavePromiseForTesting_.then(() => {
+            assert.strictEqual(gangManager.gangForPlayer(player), gang);
+        });
+    });
+
     it('should be able to display information about the gang command', assert => {
         assert.isTrue(player.issueCommand('/pgang'));
         assert.isAboveOrEqual(player.messages.length, 1);

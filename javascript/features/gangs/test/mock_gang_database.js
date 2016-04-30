@@ -55,10 +55,19 @@ class MockGangDatabase {
     }
 
     determineSuccessionAfterDeparture(player, gang) {
+        if (gang.tag === 'HKO')
+            return Promise.resolve(null /* the only member */);
+
+        if (gang.tag === 'CC')
+            return Promise.resolve({ userId: 42, username: 'MrNextLeader', role: 'Manager' });
+
         return Promise.reject(new Error('No special behaviour implemented.'));
     }
 
     updateRoleForUserId(userId, gang, role) {
+        if (gang.tag == 'CC' && userId == 42)
+            return Promise.resolve();  // `CC` case in determineSuccessionAfterDeparture().
+
         return Promise.reject(new Error('No special behaviour implemented.'));
     }
 }

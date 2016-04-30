@@ -55,6 +55,9 @@ class MockPlayer {
         this.dialogPromiseResolve_();
     }
 
+    // Gets the most recent message that has been displayed in a dialog to the player.
+    get lastDialog() { return this.lastDialogMessage_; }
+
     // Sends |message| to the player. It will be stored in the local messages array and can be
     // retrieved through the |messages| getter.
     sendMessage(message, ...args) {

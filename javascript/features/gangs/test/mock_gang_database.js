@@ -31,7 +31,7 @@ class MockGangDatabase {
 
     doesGangExists(tag, name) {
         if (tag === 'HKO')
-            return Promise.reject({ available: false, tag: 'HKO', name: 'Hello Kitty Online '});
+            return Promise.resolve({ available: false, tag: 'HKO', name: 'Hello Kitty Online' });
 
         return Promise.resolve({ available: true });
     }

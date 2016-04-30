@@ -11,6 +11,9 @@ class GangCommands {
     constructor(manager) {
         this.manager_ = manager;
 
+        // Promises that can be used for testing purposes.
+        this.createdPromiseForTesting_ = null;
+
         // /pgang [create]
         server.commandManager.buildCommand('pgang')
             .restrict(Player.LEVEL_ADMINISTRATOR)
@@ -32,6 +35,8 @@ class GangCommands {
     // eligible, it will start a wizard of dialog boxes requesting the necessary information from
     // the player. All values must be unique among other gangs in the database.
     onGangCreateCommand(player) {
+        let resolveForTests = null;
+
         if (!player.isRegistered()) {
             player.sendMessage(Message.GANGS_NOT_REGISTERED);
             return;
@@ -41,6 +46,9 @@ class GangCommands {
             player.sendMessage(Message.GANGS_ALREADY_SET);
             return;
         }
+
+        // Create a "gang has been created" promise that tests can use to observe progress.
+        this.createdPromiseForTesting_ = new Promise(resolve => resolveForTests = resolve);
 
         // Options for asking the player what the gang's full name should be.
         const nameQuestion = {
@@ -94,9 +102,10 @@ class GangCommands {
                 player.sendMessage(Message.GANG_CREATED, result.name);
 
             }, error => {
-                Dialog.displayMessage(
+                return Dialog.displayMessage(
                     player, 'Unable to create your gang', error.message, 'Close', '');
-            });
+
+            }).then(() => resolveForTests())
         });
     }
 

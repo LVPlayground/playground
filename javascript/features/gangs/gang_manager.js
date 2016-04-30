@@ -54,6 +54,7 @@ class GangManager {
 
             // Associate the |gang| with the |player|.
             this.gangPlayers_.set(player, gang);
+            this.gangs_[gang.id] = gang;
 
             return gang;
         });

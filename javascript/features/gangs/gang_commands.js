@@ -133,6 +133,8 @@ class GangCommands {
             return lhs.name.localeCompare(rhs.name);
         });
 
+        player.sendMessage(Message.GANGS_HEADER);
+
         // Display a line for each of the entries in |gangs|, that has now been sorted.
         gangs.forEach(gang => {
             const color = gang.color ? gang.color.toHexRGB() : 'FFFFFF';

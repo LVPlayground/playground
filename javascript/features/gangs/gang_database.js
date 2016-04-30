@@ -62,7 +62,7 @@ class GangDatabase {
 
             const info = results.rows[0];
             return {
-                role: toRoleValue(info.user_role),
+                role: GangDatabase.toRoleValue(info.user_role),
                 gang: {
                     id: info.gang_id,
                     tag: info.gang_tag,

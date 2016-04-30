@@ -7,9 +7,7 @@ Gangs have the following properties:
   - A **tag**, which is a one-to-five character identifier for the gang, for example _HKO_.
   - A **name**, which is the full name the gang is known by, for example _Hello Kitty Online_.
   - A **goal**, which is a single sentence defining what the gang intends to do.
-
-All three must be known when creating the gang, but can be changed at any time by the gang's leaders
-by using the `/gang set [option]` command.
+  - One or more **members** that represent the gang.
 
 Gangs have three levels of members available to them:
   - **Leaders**, who have full authority over the gang's settings, managers and settings.

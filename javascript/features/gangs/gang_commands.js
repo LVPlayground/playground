@@ -45,21 +45,32 @@ class GangCommands {
         const nameQuestion = {
             question: 'Choose your gang\'s name',
             message: 'What is the full name your gang will be known as?',
-            constraints: { min: 4, max: 32 }
+            constraints: {
+                min: 4, max: 32,
+                explanation: 'The name of your gang must be between 4 and 32 characters long.',
+            }
         };
 
         // Options for asking the player what the gang's tag should be.
         const tagQuestion = {
             question: 'Choose your gang\'s tag',
             message: 'What should we use as the gang\'s tag (without brackets)?',
-            constraints: { min: 1, max: 5 }
+            constraints: {
+                min: 1, max: 5,
+                explanation: 'The tag of your gang must be between 1 and 5 characters long, and ' +
+                             'does not have to contain brackets.'
+            }
         };
 
         // Options for asking the player what the gang's goal should be.
         const goalQuestion = {
             question: 'Choose your gang\'s goal',
             message: 'In one sentence, what is the purpose of your gang?',
-            constraints: { min: 4, max: 64 }
+            constraints: {
+                min: 4, max: 128,
+                explanation: 'The goal of your gang must be between 4 and 128 characters long, ' +
+                             'just a brief sentence.'
+            }
         };
 
         // Gathered input from the user based on this flow.

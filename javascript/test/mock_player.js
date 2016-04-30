@@ -97,17 +97,17 @@ class MockPlayer {
     // Responds to an upcoming dialog with the given values. The dialog Id that has been shown
     // for the player will be inserted automatically. Responses are forcefully asynchronous.
     respondToDialog({ response = 1 /* left button */, listitem = 0, inputtext = '' } = {}) {
-        this.dialogPromise_.then(() => {
-            this.dialogPromise_ = new Promise(resolve => {
-                this.dialogPromiseResolve_ = resolve;
-            });
-
+        return this.dialogPromise_.then(() => {
             global.dispatchEvent('dialogresponse', {
                 playerid: this.id_,
                 dialogid: this.lastDialogId_,
                 response: response,
                 listitem: listitem,
                 inputtext: inputtext
+            });
+
+            return this.dialogPromise_ = new Promise(resolve => {
+                this.dialogPromiseResolve_ = resolve;
             });
         });
     }

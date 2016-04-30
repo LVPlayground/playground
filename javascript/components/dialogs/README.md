@@ -16,6 +16,39 @@ message.displayForPlayer(player).then(() => {
 });
 ```
 
+## Interface: Question
+The `Question` class (defined in [question.js](question.js)) enables you to ask the user a question
+that they have to answer in an input box. The answer may be subject to a set of constraints. When
+the player enters an invalid answer, they will be showed an explanation. They can try up to three
+times before the question will be aborted.
+
+Example:
+```javascript
+const myQuestion = {
+    question: 'What is your favorite food?',
+    message: 'Having tasty food is important, what do you prefer?',
+    leftButton: 'Order',
+    constraints: {
+        // Minimum and maximum length of their answer.
+        min: 3,
+        max: 100,
+
+        // Message to display when they entered an invalid answer.
+        explanation: 'Come on! Your dish should be between 3 and 100 characters.',
+
+        // Message to display if they failed to answer three times.
+        abort: 'Sadness. Donuts it is!'
+    }
+};
+
+Question.ask(player, myQuestion).then(answer => {
+    if (answer)
+        console.log(player.name + ' answered: ' + answer);
+    else
+        console.log(player.name + ' did not answer');
+});
+```
+
 ## Appendix: Dialog interface
 The `Dialog` class defined in [dialog.js](dialog.js) is not meant to be used by feature code. Please
 use one of the more specific dialog-related classes instead, since that allows us to provide a

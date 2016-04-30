@@ -46,6 +46,17 @@ const GANG_CREATE_MEMBER_QUERY = `
     VALUES
         (?, ?, ?, NOW())`;
 
+// Query to remove a player from a given gang.
+const GANG_REMOVE_MEMBER_QUERY = `
+    UPDATE
+        users_gangs
+    SET
+        users_gangs.left_gang = NOW()
+    WHERE
+        users_gangs.user_id = ? AND
+        users_gangs.gang_id = ? AND
+        users_gangs.left_gang IS NULL`;
+
 // The gang database is responsible for interacting with the MySQL database for queries related to
 // gangs, e.g. loading, storing and updating the gang and player information.
 class GangDatabase {
@@ -116,6 +127,17 @@ class GangDatabase {
                 goal: goal,
                 color: null
             };
+        });
+    }
+
+    // Removes the |player| from the |gang|. Returns a promise that will be resolved with a boolean
+    // reflecting whether the information in the database has been updated.
+    removePlayerFromGang(player, gang) {
+        const userId = player.userId;
+        const gangId = gang.id;
+
+        return this.database_.query(GANG_REMOVE_MEMBER_QUERY, userId, gangId).then(results => {
+            return results.affectedRows >= 1;
         });
     }
 

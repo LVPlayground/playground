@@ -47,9 +47,9 @@ describe('GangManager', (it, beforeEach, afterEach) => {
     }
 
     // Utility function for adding a given player to a given gang.
-    function addPlayerToGang(player, gang) {
+    function addPlayerToGang(player, gang, role) {
         gangManager.gangPlayers_.set(player, gang);
-        gang.addPlayer(player);
+        gang.addPlayer(player, role);
     }
 
     // Utility function for removing a player from a given gang.
@@ -87,7 +87,7 @@ describe('GangManager', (it, beforeEach, afterEach) => {
     it('should not allow players already part of a gang to create a new one', assert => {
         player.identify();
 
-        addPlayerToGang(player, createGang());
+        addPlayerToGang(player, createGang(), Gang.ROLE_MEMBER);
 
         assert.isTrue(player.issueCommand('/pgang create'));
 
@@ -141,6 +141,21 @@ describe('GangManager', (it, beforeEach, afterEach) => {
 
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], Message.GANG_NOT_IN_GANG);
+    });
+
+    it('should allow players to leave the gang as members', assert => {
+        player.identify();
+
+        addPlayerToGang(player, createGang(), Gang.ROLE_MEMBER);
+
+        const gang = gangManager.gangForPlayer(player);
+        assert.isNotNull(gang);
+
+        assert.isTrue(player.issueCommand('/pgang leave'));
+        return gangCommands.leavePromiseForTesting_.then(() => {
+            assert.isNull(gangManager.gangForPlayer(player));
+            assert.isFalse(gang.hasPlayer(player));
+        });
     });
 
     it('should be able to display information about the gang command', assert => {

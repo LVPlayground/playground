@@ -49,6 +49,10 @@ class MockGangDatabase {
 
         return Promise.reject(new Error('No special behaviour implemented.'));
     }
+
+    removePlayerFromGang(player, gang) {
+        return Promise.resolve(true);
+    }
 }
 
 // Magic userId values that can be used by the database.

@@ -60,6 +60,30 @@ class GangManager {
         });
     }
 
+    // Removes |player| from the |gang|. This will also be reflected in the database. A promise will
+    // be returned that will be resolved when the removal has been completed.
+    removePlayerFromGang(player, gang) {
+        if (!gang.hasPlayer(player))
+            return Promise.reject(new Error('The |player| is not part of the |gang|.'));
+
+        return this.database_.removePlayerFromGang(player, gang).then(result => {
+            if (!result) {
+                // There is nothing we can do in this case, just output a warning to the log.
+                console.log('[GangManager] Failed to remove the affiliation of ' + player.name +
+                            ' with gang ' + gang.name + ' from the database.');
+            }
+
+            // Remove the association of |player| with the |gang|.
+            gang.removePlayer(player);
+
+            // Remove the association of the |gang| with the |player|.
+            this.gangPlayers_.delete(player);
+
+            if (!gang.memberCount)
+                delete this.gangs_[gang.id];
+        });
+    }
+
     // Called when |player| has logged in to their Las Venturas Playground account. Will check with
     // the database to see if they should automatically join a gang.
     onPlayerLogin(player, eventData) {

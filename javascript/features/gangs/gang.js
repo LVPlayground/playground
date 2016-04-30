@@ -38,6 +38,14 @@ class Gang {
         this.members_.set(player, role);
     }
 
+    // Returns the role |player| has in the gang, or NULL when they are not part of the gang.
+    getPlayerRole(player) {
+        if (!this.members_.has(player))
+            return null;
+
+        return this.members_.get(player);
+    }
+
     // Returns whether |player| is part of this gang.
     hasPlayer(player) {
         return this.members_.has(player);

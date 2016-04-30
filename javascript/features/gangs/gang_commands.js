@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const Dialog = require('components/dialogs/dialog.js');
+const Gang = require('features/gangs/gang.js');
 const QuestionSequence = require('components/dialogs/question_sequence.js');
 
 // Implements the commands available as part of the persistent gang feature. The primary ones are
@@ -13,16 +14,15 @@ class GangCommands {
 
         // Promises that can be used for testing purposes.
         this.createdPromiseForTesting_ = null;
+        this.leavePromiseForTesting_ = null;
 
         // /pgang [create]
         server.commandManager.buildCommand('pgang')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('create')
                 .build(GangCommands.prototype.onGangCreateCommand.bind(this))
-
             .sub('leave')
                 .build(GangCommands.prototype.onGangLeaveCommand.bind(this))
-
             .build(GangCommands.prototype.onGangCommand.bind(this));
 
         // /pgangs [top]
@@ -30,7 +30,6 @@ class GangCommands {
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('top')
                 .build(GangCommands.prototype.onGangsTopCommand.bind(this))
-
             .build(GangCommands.prototype.onGangsCommand.bind(this));
     }
 
@@ -100,9 +99,8 @@ class GangCommands {
                     return;  // the player disconnected from the server
 
                 // TODO(Russell): Announce the gang's creation to administrators.
-                // TODO(Russell): Announce the gang's creation to other players.
 
-                player.sendMessage(Message.GANG_CREATED, result.name);
+                player.sendMessage(Message.GANG_DID_CREATE, result.name);
 
             }, error => {
                 return Dialog.displayMessage(
@@ -116,16 +114,32 @@ class GangCommands {
     // informing them of the consequences of leaving the gang. This differs for Leaders and regular
     // members of a gang, because gangs cannot be left without a leader.
     onGangLeaveCommand(player) {
+        let resolveForTests = null;
+
         const gang = this.manager_.gangForPlayer(player);
         if (!gang) {
             player.sendMessage(Message.GANG_NOT_IN_GANG);
             return;
         }
 
-        // TODO(Russell): Get the role of the |player| in the |gang|.
-        //   -- If Member or Manager, just drop them from the gang.
-        //   -- If Leader, figure out who (if anyone) is going to succeed them.
+        // Create a "player has left" promise that tests can use to observe progress.
+        this.leavePromiseForTesting_ = new Promise(resolve => resolveForTests = resolve);
 
+        // Regular members and managers of a gang can leave without succession determination.
+        if (gang.getPlayerRole(player) != Gang.ROLE_LEADER) {
+            this.manager_.removePlayerFromGang(player, gang).then(() => {
+                player.sendMessage(Message.GANG_DID_LEAVE, gang.name);
+
+                // TODO(Russell): Announce the player's departure to administrators.
+                // TODO(Russell): Announce the player's departure to other gang members.
+
+                resolveForTests();
+            });
+
+            return;
+        }
+
+        // TODO(Russell): Figure out who (if anyone) is going to succeed them.
     }
 
     // Called when the player uses the `/gang` command without parameters. It will show information

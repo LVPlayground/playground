@@ -21,10 +21,11 @@
     "FRIENDS_REMOVED": "@success %s has been removed from your friends list.",
     "FRIENDS_USAGE": "{FFFFFF}Use '/friends add' to add a friend or '/friends remove' to remove one.",
 
-    "GANG_CREATED": "@success The %s gang has been created and you are its leader!",
     "GANG_CREATE_INVALID_GOAL": "@error You must enter a valid goal when creating a gang.",
     "GANG_CREATE_INVALID_NAME": "@error You must enter a valid name when creating a gang.",
     "GANG_CREATE_INVALID_TAG": "@error You must enter a valid tag when creating a gang.",
+    "GANG_DID_CREATE": "@success You have created the gang %s, and are now its leader!",
+    "GANG_DID_LEAVE": "@success You have left the gang %s.",
     "GANG_INFO_1": "{FFFFFF}Gangs are groups of players that have declared an alliance and fight",
     "GANG_INFO_2": "{FFFFFF}together. They will persist between different playing sessions.",
     "GANG_NOT_IN_GANG": "@error You need to be part of a gang in order to be able to leave it.",

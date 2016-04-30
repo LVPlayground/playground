@@ -72,7 +72,7 @@ const GANG_DETERMINE_NEXT_LEADER = `
         users_gangs.user_id != ? AND
         users_gangs.gang_id = ? AND
         users_gangs.user_role != 'Leader' AND
-        users.gangs_left_gang IS NULL
+        users_gangs.left_gang IS NULL
     ORDER BY
         users_gangs.user_role ASC,
         users_gangs.joined_gang ASC

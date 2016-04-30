@@ -176,13 +176,12 @@ class GangCommands {
                     this.manager_.updateRoleForUserId(successionUserId, gang, Gang.ROLE_LEADER));
             }
 
-            return Promise.all(actions);
+            return Promise.all(actions).then(() => {
+                player.sendMessage(Message.GANG_DID_LEAVE, gang.name);
 
-        }).then(() => {
-            player.sendMessage(Message.GANG_DID_LEAVE, gang.name);
-
-            // TODO(Russell): Announce the player's departure to administrators.
-            // TODO(Russell): Announce the player's departure to other gang members.
+                // TODO(Russell): Announce the player's departure to administrators.
+                // TODO(Russell): Announce the player's departure to other gang members.
+            });
 
         }).then(() => resolveForTests());
     }

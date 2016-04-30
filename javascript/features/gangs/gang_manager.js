@@ -45,7 +45,7 @@ class GangManager {
 
         }).then(gangInfo => {
             if (!player.isConnected())
-                return;  // the player is not connected to the server anymore
+                return null;  // the player is not connected to the server anymore
 
             const gang = new Gang(gangInfo);
 

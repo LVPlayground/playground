@@ -2,7 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Question = require('components/dialogs/question.js');
+const Dialog = require('components/dialogs/dialog.js');
+const QuestionSequence = require('components/dialogs/question_sequence.js');
 
 // Implements the commands available as part of the persistent gang feature. The primary ones are
 // /gang and /gangs, each of which has a number of sub-options available to them.
@@ -48,6 +49,7 @@ class GangCommands {
             constraints: {
                 min: 4, max: 32,
                 explanation: 'The name of your gang must be between 4 and 32 characters long.',
+                abort: 'Sorry, you cannot create a gang without a valid name!'
             }
         };
 
@@ -58,7 +60,8 @@ class GangCommands {
             constraints: {
                 min: 1, max: 5,
                 explanation: 'The tag of your gang must be between 1 and 5 characters long, and ' +
-                             'does not have to contain brackets.'
+                             'does not have to contain brackets.',
+                abort: 'Sorry, you cannot create a gang without a valid tag!'
             }
         };
 
@@ -69,50 +72,32 @@ class GangCommands {
             constraints: {
                 min: 4, max: 128,
                 explanation: 'The goal of your gang must be between 4 and 128 characters long, ' +
-                             'just a brief sentence.'
+                             'just a brief sentence.',
+                abort: 'Sorry, you cannot create a gang without a goal!'
             }
         };
 
-        // Gathered input from the user based on this flow.
-        let input = { name: null, tag: null, goal: null };
+        // Ask the questions to the player, and only proceed if they answered everything.
+        QuestionSequence.ask(player, [ nameQuestion, tagQuestion, goalQuestion ]).then(answers => {
+            if (!answers)
+                return;  // they clicked `cancel` or got a dialog with an explanation
 
-        // (1) Ask the player to enter the name of their gang.
-        Question.ask(player, nameQuestion).then(name => {
-            if (!name) throw null;
+            const [ name, tag, goal ] = answers;
 
-            input.name = name;
+            this.manager_.createGangForPlayer(player, tag, name, goal).then(result => {
+                if (!result)
+                    return;  // the player disconnected from the server
 
-            // (2) Ask the player to enter the tag of their gang. (Without [].)
-            return Question.ask(player, tagQuestion);
-        
-        }).then(tag => {
-            if (!tag) throw null;
+                // TODO(Russell): Announce the gang's creation to administrators.
+                // TODO(Russell): Announce the gang's creation to other players.
 
-            input.tag = tag;
+                player.sendMessage(Message.GANG_CREATED, result.name);
 
-            // (3) Ask the player to enter the goal of their gang.
-            return Question.ask(player, goalQuestion);
-
-        }).then(goal => {
-            if (!goal) throw null;
-
-            input.goal = goal;
-
-            // (4) Request the gang manager to create the persistent gang.
-            return this.manager_.createGangForPlayer(player, input.tag, input.name, input.goal);
-
-        }).then(result => {
-            // TODO(Russell): Announce the gang's creation to administrators.
-            // TODO(Russell): Announce the gang's creation to other players.
-
-            player.sendMessage(Message.GANG_CREATED, result.name);
-
-        }).catch(error => {
-            if (!error)
-                return;  // the wizard bailed out during one of the previous steps
-
-            player.sendMessage(Message.COMMAND_ERROR, error.message);
-        })
+            }, error => {
+                Dialog.displayMessage(
+                    player, 'Unable to create your gang', error.message, 'Close', '');
+            });
+        });
     }
 
     // Called when the player uses the `/gang` command without parameters. It will show information

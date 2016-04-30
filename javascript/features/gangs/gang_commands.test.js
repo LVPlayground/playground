@@ -152,9 +152,29 @@ describe('GangManager', (it, beforeEach, afterEach) => {
         assert.isNotNull(gang);
 
         assert.isTrue(player.issueCommand('/pgang leave'));
+
+        player.respondToDialog({ response: 1 /* Yes */ });
+
         return gangCommands.leavePromiseForTesting_.then(() => {
             assert.isNull(gangManager.gangForPlayer(player));
             assert.isFalse(gang.hasPlayer(player));
+        });
+    });
+
+    it('should allow players to abort leaving their gang if they change their mind', assert => {
+        player.identify();
+
+        addPlayerToGang(player, createGang(), Gang.ROLE_MEMBER);
+
+        const gang = gangManager.gangForPlayer(player);
+        assert.isNotNull(gang);
+
+        assert.isTrue(player.issueCommand('/pgang leave'));
+
+        player.respondToDialog({ response: 0 /* No */ });
+
+        return gangCommands.leavePromiseForTesting_.then(() => {
+            assert.strictEqual(gangManager.gangForPlayer(player), gang);
         });
     });
 

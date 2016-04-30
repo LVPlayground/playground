@@ -28,6 +28,7 @@
     "GANG_DID_LEAVE": "@success You have left the gang %s.",
     "GANG_INFO_1": "{FFFFFF}Gangs are groups of players that have declared an alliance and fight",
     "GANG_INFO_2": "{FFFFFF}together. They will persist between different playing sessions.",
+    "GANG_LEAVE_CONFIRMATION": "Are you sure that you want to leave the %s gang?",
     "GANG_NOT_IN_GANG": "@error You need to be part of a gang in order to be able to leave it.",
     "GANGS_ALREADY_SET": "@error You need to leave your current gang first by using /gang leave.",
     "GANGS_BEST_ADV": "{FFFFFF}Type `/gangs top` to list the best gangs on Las Venturas Playground.",

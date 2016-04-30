@@ -127,14 +127,20 @@ class GangCommands {
 
         // Regular members and managers of a gang can leave without succession determination.
         if (gang.getPlayerRole(player) != Gang.ROLE_LEADER) {
-            this.manager_.removePlayerFromGang(player, gang).then(() => {
-                player.sendMessage(Message.GANG_DID_LEAVE, gang.name);
+            const message = Message.format(Message.GANG_LEAVE_CONFIRMATION, gang.name);
 
-                // TODO(Russell): Announce the player's departure to administrators.
-                // TODO(Russell): Announce the player's departure to other gang members.
+            Dialog.displayMessage(player, 'Are you sure?', message, 'Yes', 'No').then(result => {
+                if (!result.response)
+                    return;  // the player changed their mind
 
-                resolveForTests();
-            });
+                return this.manager_.removePlayerFromGang(player, gang).then(() => {
+                    player.sendMessage(Message.GANG_DID_LEAVE, gang.name);
+
+                    // TODO(Russell): Announce the player's departure to administrators.
+                    // TODO(Russell): Announce the player's departure to other gang members.
+                });
+
+            }).then(() => resolveForTests());
 
             return;
         }

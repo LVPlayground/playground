@@ -20,6 +20,9 @@ class GangCommands {
             .sub('create')
                 .build(GangCommands.prototype.onGangCreateCommand.bind(this))
 
+            .sub('leave')
+                .build(GangCommands.prototype.onGangLeaveCommand.bind(this))
+
             .build(GangCommands.prototype.onGangCommand.bind(this));
 
         // /pgangs [top]
@@ -109,13 +112,29 @@ class GangCommands {
         });
     }
 
+    // Called when the player uses the `/gang leave` command. It will show a confirmation dialog
+    // informing them of the consequences of leaving the gang. This differs for Leaders and regular
+    // members of a gang, because gangs cannot be left without a leader.
+    onGangLeaveCommand(player) {
+        const gang = this.manager_.gangForPlayer(player);
+        if (!gang) {
+            player.sendMessage(Message.GANG_NOT_IN_GANG);
+            return;
+        }
+
+        // TODO(Russell): Get the role of the |player| in the |gang|.
+        //   -- If Member or Manager, just drop them from the gang.
+        //   -- If Leader, figure out who (if anyone) is going to succeed them.
+
+    }
+
     // Called when the player uses the `/gang` command without parameters. It will show information
     // on the available sub commands, as well as the feature itself.
     onGangCommand(player) {
         player.sendMessage(Message.GANGS_HEADER);
         player.sendMessage(Message.GANG_INFO_1);
         player.sendMessage(Message.GANG_INFO_2);
-        player.sendMessage(Message.COMMAND_USAGE, '/gang [create]');
+        player.sendMessage(Message.COMMAND_USAGE, '/gang [create/leave]');
     }
 
     // Called when the player uses the `/gangs` command. It will, by default, list the gangs that

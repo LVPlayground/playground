@@ -136,6 +136,13 @@ describe('GangManager', (it, beforeEach, afterEach) => {
         })
     });
 
+    it('should not allow players to leave a gang if they aren\'t in one', assert => {
+        assert.isTrue(player.issueCommand('/pgang leave'));
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.GANG_NOT_IN_GANG);
+    });
+
     it('should be able to display information about the gang command', assert => {
         assert.isTrue(player.issueCommand('/pgang'));
         assert.isAboveOrEqual(player.messages.length, 1);

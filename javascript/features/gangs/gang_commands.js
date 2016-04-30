@@ -137,7 +137,7 @@ class GangCommands {
 
         // Display a line for each of the entries in |gangs|, that has now been sorted.
         gangs.forEach(gang => {
-            const color = gang.color ? gang.color.toHexRGB() : 'FFFFFF';
+            const color = gang.color ? gang.color.toHexRGB() : 'B1FC17';
             const tag = gang.tag;
             const name = gang.name;
             const memberCount = gang.memberCount;

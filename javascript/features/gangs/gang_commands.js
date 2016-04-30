@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const CommandBuilder = require('components/command_manager/command_builder.js');
 const Dialog = require('components/dialogs/dialog.js');
 const Gang = require('features/gangs/gang.js');
 const QuestionSequence = require('components/dialogs/question_sequence.js');
@@ -12,15 +13,19 @@ class GangCommands {
     constructor(manager) {
         this.manager_ = manager;
 
-        // Promises that can be used for testing purposes.
-        this.createdPromiseForTesting_ = null;
-        this.leavePromiseForTesting_ = null;
+        // Map of players to the gangs they have been invited by.
+        this.invitations_ = new WeakMap();
 
         // /pgang [create]
         server.commandManager.buildCommand('pgang')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('create')
                 .build(GangCommands.prototype.onGangCreateCommand.bind(this))
+            .sub('invite')
+                .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
+                .build(GangCommands.prototype.onGangInviteCommand.bind(this))
+            .sub('join')
+                .build(GangCommands.prototype.onGangJoinCommand.bind(this))
             .sub('leave')
                 .build(GangCommands.prototype.onGangLeaveCommand.bind(this))
             .build(GangCommands.prototype.onGangCommand.bind(this));
@@ -31,6 +36,11 @@ class GangCommands {
             .sub('top')
                 .build(GangCommands.prototype.onGangsTopCommand.bind(this))
             .build(GangCommands.prototype.onGangsCommand.bind(this));
+
+        // Promises that can be used for testing purposes.
+        this.createdPromiseForTesting_ = null;
+        this.joinPromiseForTesting_ = null;
+        this.leavePromiseForTesting_ = null;
     }
 
     // Called when the player uses the `/gang create` command to create a new gang. If the player is
@@ -108,6 +118,72 @@ class GangCommands {
 
             }).then(() => resolveForTests())
         });
+    }
+
+    // Called when the player uses the `/gang invite` command to invite |invitee| in their gang. The
+    // invitation will be open until the |invitee| accepts, gets invited by another gang or leaves.
+    onGangInviteCommand(player, invitee) {
+        const gang = this.manager_.gangForPlayer(player);
+        if (!gang) {
+            player.sendMessage(Message.GANG_NOT_IN_GANG);
+            return;
+        }
+
+        // Only leaders and managers of a gang can invite new members.
+        if (![ Gang.ROLE_LEADER, Gang.ROLE_MANAGER ].includes(gang.getPlayerRole(player))) {
+            player.sendMessage(Message.GANG_INVITE_NO_MANAGER);
+            return;
+        }
+
+        // The invitee must be registered with Las Venturas Playground.
+        if (!invitee.isRegistered()) {
+            player.sendMessage(Message.GANG_INVITE_NOT_REGISTERED, invitee.name);
+            return;
+        }
+
+        this.invitations_.set(invitee, gang);
+
+        // TODO(Russell): Announce the invitation to administrators?
+        // TODO(Russell): Announce the invitation to other gang members.
+
+        player.sendMessage(Message.GANG_DID_INVITE, invitee.name, invitee.id);
+        invitee.sendMessage(Message.GANG_INVITED, player.name, player.id, gang.name);
+    }
+
+    // Called when the player uses the `/gang join` command to accept an earlier invitation. They
+    // must not be part of a gang when using this command.
+    onGangJoinCommand(player) {
+        let resolveForTests = null;
+
+        if (!this.invitations_.has(player)) {
+            player.sendMessage(Message.GANG_JOIN_NO_INVITATION);
+            return;
+        }
+
+        const currentGang = this.manager_.gangForPlayer(player);
+        const gang = this.invitations_.get(player);
+
+        if (currentGang !== null) {
+            player.sendMessage(Message.GANG_JOIN_IN_GANG, currentGang.name);
+            return;
+        }
+
+        // Create a "gang has been created" promise that tests can use to observe progress.
+        this.joinPromiseForTesting_ = new Promise(resolve => resolveForTests = resolve);
+
+        // Add the player to the gang they have been invited to.
+        this.manager_.addPlayerToGang(player, gang).then(gang => {
+            if (!gang)
+                return;  // the player has since disconnected from the server
+
+            player.sendMessage(Message.GANG_DID_JOIN, gang.name);
+
+            // TODO(Russell): Announce the join to administrators?
+            // TODO(Russell): Announce the join to other gang members.
+
+            this.invitations_.delete(player);
+
+        }).then(() => resolveForTests());
     }
 
     // Called when the player uses the `/gang leave` command. It will show a confirmation dialog
@@ -192,7 +268,7 @@ class GangCommands {
         player.sendMessage(Message.GANGS_HEADER);
         player.sendMessage(Message.GANG_INFO_1);
         player.sendMessage(Message.GANG_INFO_2);
-        player.sendMessage(Message.COMMAND_USAGE, '/gang [create/leave]');
+        player.sendMessage(Message.COMMAND_USAGE, '/gang [create/invite/join/leave]');
     }
 
     // Called when the player uses the `/gangs` command. It will, by default, list the gangs that

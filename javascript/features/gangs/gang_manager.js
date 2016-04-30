@@ -60,6 +60,29 @@ class GangManager {
         });
     }
 
+    // Adds |player| to the |gang|. This will also be reflected in the database. A promise will be
+    // returned that will be resolved when the removal has been completed.
+    addPlayerToGang(player, gang) {
+        if (!player.isRegistered())
+            return Promise.reject(new Error('The player must registered in order to join a gang.'));
+
+        if (this.gangPlayers_.has(player))
+            return Promise.reject(new Error('The player already is part of a gang.'));
+
+        return this.database_.addPlayerToGang(player, gang).then(result => {
+            if (!player.isConnected())
+                return null;  // the player is not connected to the server anymore
+
+            // Associate the |player| with the |gang| as its leader.
+            gang.addPlayer(player, Gang.ROLE_MEMBER);
+
+            // Associate the |gang| with the |player|.
+            this.gangPlayers_.set(player, gang);
+
+            return gang;
+        });
+    }
+
     // Removes |player| from the |gang|. This will also be reflected in the database. A promise will
     // be returned that will be resolved when the removal has been completed.
     removePlayerFromGang(player, gang) {

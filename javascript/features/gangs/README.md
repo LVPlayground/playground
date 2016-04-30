@@ -20,6 +20,8 @@ All levels have the ability to use collaborative features such as the gang chat.
 The following commands are available as part of the feature:
 
   - **/gang create**: Create a new gang.
+  - **/gang invite [player]**: Invite the player to your gang. They must be registered.
+  - **/gang join**: Join the gang of whom you received the most recent invitation.
   - **/gang leave**: Leave the gang that you're currently part of.
   - **/gangs**: Display the gangs currently represented on Las Venturas Playground.
 
@@ -42,11 +44,7 @@ The following list contains a number of items that have to be done before this f
 launched on the server. Items may be added or removed whenever appropriate.
 
   - Implement the **/gang members** command.
-  - Implement the **/gang invite** command.
   - Implement the **/gang kick** command.
-  - Implement the **/gang set tag** command.
-  - Implement the **/gang set name** command.
-  - Implement the **/gang set goal** command.
-  - Implement the **/gang set color** command.
+  - Implement the **/gang settings** command.
   - Implement the **/gangs top** command.
   - Implement support for gang chats based on the persistent gang system.

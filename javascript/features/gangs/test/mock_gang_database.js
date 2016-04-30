@@ -50,6 +50,10 @@ class MockGangDatabase {
         return Promise.reject(new Error('No special behaviour implemented.'));
     }
 
+    addPlayerToGang(player, gang) {
+        return Promise.resolve(true);
+    }
+
     removePlayerFromGang(player, gang) {
         return Promise.resolve(true);
     }

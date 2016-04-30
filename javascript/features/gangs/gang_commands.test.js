@@ -136,6 +136,96 @@ describe('GangManager', (it, beforeEach, afterEach) => {
         })
     });
 
+    it('should not allow invitations when the player is not in a gang', assert => {
+        player.identify();
+
+        assert.isTrue(player.issueCommand('/pgang invite Russell'));
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.GANG_NOT_IN_GANG);
+    });
+
+    it('should not allow invitations when the player is not a manager or up', assert => {
+        player.identify();
+
+        addPlayerToGang(player, createGang(), Gang.ROLE_MEMBER);
+
+        assert.isTrue(player.issueCommand('/pgang invite Russell'));
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.GANG_INVITE_NO_MANAGER);
+    });
+
+    it('should not allow invitations to unregistered players', assert => {
+        player.identify();
+
+        addPlayerToGang(player, createGang(), Gang.ROLE_MANAGER);
+
+        assert.isTrue(player.issueCommand('/pgang invite Russell'));
+        assert.equal(player.messages.length, 1);
+        assert.equal(
+            player.messages[0], Message.format(Message.GANG_INVITE_NOT_REGISTERED, 'Russell'));
+    });
+
+    it('should not allow players to join a gang uninvited', assert => {
+        assert.isTrue(player.issueCommand('/pgang join'));
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.GANG_JOIN_NO_INVITATION);
+    });
+
+    it('should not allow players who are part of a gang to accept an invitation', assert => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+        const russellGang = createGang();
+
+        russell.level = Player.LEVEL_ADMINISTRATOR;
+
+        player.identify();
+        russell.identify();
+
+        addPlayerToGang(player, createGang(), Gang.ROLE_MANAGER);
+        addPlayerToGang(russell, russellGang, Gang.ROLE_MEMBER);
+
+        assert.isTrue(player.issueCommand('/pgang invite Russell'));
+        assert.equal(russell.messages.length, 1);
+        assert.equal(player.messages.length, 1);
+        assert.equal(
+            player.messages[0], Message.format(Message.GANG_DID_INVITE, russell.name, russell.id));
+
+        russell.clearMessages();
+
+        assert.isTrue(russell.issueCommand('/pgang join'));
+        assert.equal(russell.messages.length, 1);
+        assert.equal(
+            russell.messages[0], Message.format(Message.GANG_JOIN_IN_GANG, russellGang.name));
+    });
+
+    it('should allow registered players not in a gang to accept an invitation', assert => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+        russell.level = Player.LEVEL_ADMINISTRATOR;
+
+        player.identify();
+        russell.identify();
+
+        addPlayerToGang(player, createGang(), Gang.ROLE_MANAGER);
+
+        assert.isTrue(player.issueCommand('/pgang invite Russell'));
+        assert.isAboveOrEqual(russell.messages.length, 1);
+        assert.isAboveOrEqual(player.messages.length, 1);
+
+        russell.clearMessages();
+
+        assert.isTrue(russell.issueCommand('/pgang join'));
+
+        return gangCommands.joinPromiseForTesting_.then(() => {
+            const gang = gangManager.gangForPlayer(russell);
+
+            assert.isNotNull(gang);
+            assert.isTrue(gang.hasPlayer(russell));
+            assert.isTrue(gang.hasPlayer(player));
+
+            assert.isAboveOrEqual(russell.messages.length, 1);
+            assert.equal(russell.messages[0], Message.format(Message.GANG_DID_JOIN, gang.name));
+        });
+    });
+
     it('should not allow players to leave a gang if they aren\'t in one', assert => {
         assert.isTrue(player.issueCommand('/pgang leave'));
 

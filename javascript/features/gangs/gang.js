@@ -29,6 +29,9 @@ class Gang {
     // Gets the color of members of this gang.
     get color() { return this.color_; }
 
+    // Gets an iterable of the members in this gang. Must be used with `for of`.
+    get members() { return this.members_.keys(); }
+
     // Gets the number of members that are currently in the gang.
     get memberCount() { return this.members_.size; }
 

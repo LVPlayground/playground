@@ -17,6 +17,22 @@ class Gangs extends Feature {
         this.commands_ = new GangCommands(this.manager_);
     }
 
+    // ---------------------------------------------------------------------------------------------
+    // Public API of the gangs feature.
+    // ---------------------------------------------------------------------------------------------
+
+    // Returns an array with the gangs that currently exist on Las Venturas Playground.
+    getGangs() {
+        return this.manager_.gangs;
+    }
+
+    // Returns the gang that the |player| is part of, or NULL otherwise.
+    getGangForPlayer(player) {
+        return this.manager_.gangForPlayer(player);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Cleans up all routines and state stored as part of the gang feature.
     dispose() {
         this.commands_.dispose();

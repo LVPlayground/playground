@@ -84,6 +84,36 @@ class GangManager {
         });
     }
 
+    // Determines which player should become the leader of the |gang| after |player| leaves, who
+    // currently is one of the gang's leader. The succession rules are as follows:
+    //     (1) Current leaders next to |player|.
+    //     (2) The manager with the longest tenure in the gang.
+    //     (3) The member with the longest tenure in the gang.
+    determineSuccessionAfterDeparture(player, gang) {
+        if (!gang.hasPlayer(player))
+            return Promise.reject(new Error('The |player| is not part of the |gang|.'));
+
+        if (gang.getPlayerRole(player) !== Gang.ROLE_LEADER)
+            return Promise.reject(new Error('The |player| is not a leader of the |gang|.'));
+
+        return this.database_.determineSuccessionAfterDeparture(player, gang);
+    }
+
+    // Updates the role of |userId| in |gang| to |role|. If the player with |userId| is currently
+    // part of the |gang|, they will be told about the change.
+    updateRoleForUserId(userId, gang, role) {
+        return this.database_.updateRoleForUserId(userId, gang, role).then(() => {
+            for (const player of gang.members) {
+                if (player.userId !== userId)
+                    continue;
+
+                // TODO(Russell): Inform |player| of their promotion.
+                console.log('--- found player to update');
+                return;
+            }
+        });
+    }
+
     // Called when |player| has logged in to their Las Venturas Playground account. Will check with
     // the database to see if they should automatically join a gang.
     onPlayerLogin(player, eventData) {

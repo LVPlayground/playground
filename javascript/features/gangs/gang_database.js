@@ -57,6 +57,39 @@ const GANG_REMOVE_MEMBER_QUERY = `
         users_gangs.gang_id = ? AND
         users_gangs.left_gang IS NULL`;
 
+// Query to determine the next person in the line of succession of the gang. We can rely on
+// ascending ordering here because [Leader, Manager, Member] happens to be alphabetically ordered.
+const GANG_DETERMINE_NEXT_LEADER = `
+    SELECT
+        users_gangs.user_id,
+        users_gangs.user_role,
+        users.username
+    FROM
+        users_gangs
+    LEFT JOIN
+        users ON users.user_id = users_gangs.user_id
+    WHERE
+        users_gangs.user_id != ? AND
+        users_gangs.gang_id = ? AND
+        users_gangs.user_role != 'Leader' AND
+        users.gangs_left_gang IS NULL
+    ORDER BY
+        users_gangs.user_role ASC,
+        users_gangs.joined_gang ASC
+    LIMIT
+        1`;
+
+// Query to update the role of a given player in a given gang to a given role.
+const GANG_UPDATE_ROLE_QUERY = `
+    UPDATE
+        users_gangs
+    SET
+        users_gangs.user_role = ?
+    WHERE
+        users_gangs.user_id = ? AND
+        users_gangs.gang_id = ? AND
+        users_gangs.left_gang IS NULL`;
+
 // The gang database is responsible for interacting with the MySQL database for queries related to
 // gangs, e.g. loading, storing and updating the gang and player information.
 class GangDatabase {
@@ -139,6 +172,32 @@ class GangDatabase {
         return this.database_.query(GANG_REMOVE_MEMBER_QUERY, userId, gangId).then(results => {
             return results.affectedRows >= 1;
         });
+    }
+
+    // Determines the best person to lead the |gang| after |player| has left. Returns a promise that
+    // will be resolved with the userId, name and current role of the newly suggested leader.
+    determineSuccessionAfterDeparture(player, gang) {
+        const userId = player.userId;
+        const gangId = gang.id;
+
+        return this.database_.query(GANG_DETERMINE_NEXT_LEADER, userId, gangId).then(results => {
+            if (results.rows.length === 0)
+                return null;
+
+            const successor = results.rows[0];
+            return {
+                userId: successor.user_id,
+                username: successor.username,
+                role: successor.user_role  // string used for presentation
+            };
+        });
+    }
+
+    // Updates the role of |userId| in |gang| to |role|. Returns a promise that will be resolved
+    // without value when this operation has completed.
+    updateRoleForUserId(userId, gang, role) {
+        return this.database_.query(GANG_UPDATE_ROLE_QUERY, GangDatabase.toRoleString(role),
+                                    userId, gang.id);
     }
 
     // Utility function for converting a role string to a Gang.ROLE_* value.

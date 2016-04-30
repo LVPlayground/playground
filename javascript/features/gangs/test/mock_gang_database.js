@@ -53,6 +53,14 @@ class MockGangDatabase {
     removePlayerFromGang(player, gang) {
         return Promise.resolve(true);
     }
+
+    determineSuccessionAfterDeparture(player, gang) {
+        return Promise.reject(new Error('No special behaviour implemented.'));
+    }
+
+    updateRoleForUserId(userId, gang, role) {
+        return Promise.reject(new Error('No special behaviour implemented.'));
+    }
 }
 
 // Magic userId values that can be used by the database.

@@ -125,11 +125,11 @@ class GangCommands {
         // Create a "player has left" promise that tests can use to observe progress.
         this.leavePromiseForTesting_ = new Promise(resolve => resolveForTests = resolve);
 
+        const commonMsg = Message.format(Message.GANG_LEAVE_CONFIRMATION, gang.name);
+
         // Regular members and managers of a gang can leave without succession determination.
         if (gang.getPlayerRole(player) != Gang.ROLE_LEADER) {
-            const message = Message.format(Message.GANG_LEAVE_CONFIRMATION, gang.name);
-
-            Dialog.displayMessage(player, 'Are you sure?', message, 'Yes', 'No').then(result => {
+            Dialog.displayMessage(player, 'Are you sure?', commonMsg, 'Yes', 'No').then(result => {
                 if (!result.response)
                     return;  // the player changed their mind
 
@@ -145,7 +145,46 @@ class GangCommands {
             return;
         }
 
-        // TODO(Russell): Figure out who (if anyone) is going to succeed them.
+        // The |player| is a leader of the gang, confirm the succession, if any, with them.
+        this.manager_.determineSuccessionAfterDeparture(player, gang).then(succession => {
+            // If there is no known succession, there either are no other members of the gang or the
+            // gang has multiple leaders, in which case succession is unnecessary.
+            if (!succession) {
+                return Promise.all([
+                    null /* successionUserId */,
+                    Dialog.displayMessage(player, 'Are you sure?', commonMsg, 'Yes', 'No')
+                ]);
+            }
+
+            // The confirmation message includes the player who is about to be promoted to leader.
+            const confirmationMsg = Message.format(Message.GANG_LEAVE_PROMO_CONFIRMATION, gang.name,
+                                                   succession.username, succession.role);
+
+            return Promise.all([
+                succession.userId,
+                Dialog.displayMessage(player, 'Are you sure?', confirmationMsg, 'Yes', 'No')
+            ]);
+
+        }).then(([successionUserId, result]) => {
+            if (!result.response)
+                return;  // the player changed their mind
+
+            // Remove |player| from the |gang| and promote |successionUserId| to leader when set.
+            let actions = [ this.manager_.removePlayerFromGang(player, gang) ];
+            if (successionUserId) {
+                actions.push(
+                    this.manager_.updateRoleForUserId(successionUserId, gang, Gang.ROLE_LEADER));
+            }
+
+            return Promise.all(actions);
+
+        }).then(() => {
+            player.sendMessage(Message.GANG_DID_LEAVE, gang.name);
+
+            // TODO(Russell): Announce the player's departure to administrators.
+            // TODO(Russell): Announce the player's departure to other gang members.
+
+        }).then(() => resolveForTests());
     }
 
     // Called when the player uses the `/gang` command without parameters. It will show information

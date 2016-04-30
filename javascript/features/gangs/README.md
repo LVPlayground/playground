@@ -25,11 +25,22 @@ The following commands are available as part of the feature:
 
 _This feature is still under development, these commands are currently only available to admins._
 
+## FAQ: What happens then the gang's leader leaves?
+Every gang must have at least one leader. When the leader leaves the gang by using the `/gang leave`
+command, the following line of succession will apply:
+
+  1. If there is more than one leader, we're good.
+  2. Otherwise, if there are managers, the manager with the longest tenure will be chosen.
+  3. Otherwise, if there are members, the member with the longest tenure will be chosen.
+
+Unless the leader is the only person in the gang, it is not possible to completely remove a gang
+through this command. Instead, one of the leaders should open a
+[help request](https://forum.sa-mp.nl/forumdisplay.php?fid=13) on the forums.
+
 ## TODO
 The following list contains a number of items that have to be done before this feature can be
 launched on the server. Items may be added or removed whenever appropriate.
 
-  - Implement the **/gang leave** command.
   - Implement the **/gang invite** command.
   - Implement the **/gang kick** command.
   - Implement the **/gang set tag** command.

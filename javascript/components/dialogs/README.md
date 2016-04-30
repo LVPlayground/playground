@@ -49,6 +49,26 @@ Question.ask(player, myQuestion).then(answer => {
 });
 ```
 
+## Interface: QuestionSequence
+The `QuestionSequence` class (defined in [question_sequence.js](question_sequence.js)) enables you
+to ask the player a sequence of questions, for example because they have to give certain information
+to create a group. A single promise is returned that will be resolved with all answers when given
+and correct, or `NULL` when they abort.
+
+Example:
+```javascript
+const myQuestion = { /* same as in the Question example */ };
+const herQuestion = { /* another question */ };
+const hisQuestion = { /* and yet another one */ };
+
+QuestionSequence.ask(player, [ myQuestion, herQuestion, hisQuesion ]).then(answers => {
+    if (answer)
+        console.log(player.name + ' answered: ' + answers.join(', '));
+    else
+        console.log(player.name + ' did not fully answer');
+});
+```
+
 ## Appendix: Dialog interface
 The `Dialog` class defined in [dialog.js](dialog.js) is not meant to be used by feature code. Please
 use one of the more specific dialog-related classes instead, since that allows us to provide a

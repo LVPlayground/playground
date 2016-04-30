@@ -26,7 +26,7 @@ class Question {
         const checkedConstraints = {
             min: constraints.min || null,
             max: constraints.max || null,
-            explanation: constraints.explanation || null
+            explanation: constraints.explanation || null,
             abort: constraints.abort || null
         };
 

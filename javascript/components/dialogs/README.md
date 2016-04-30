@@ -62,7 +62,7 @@ const herQuestion = { /* another question */ };
 const hisQuestion = { /* and yet another one */ };
 
 QuestionSequence.ask(player, [ myQuestion, herQuestion, hisQuesion ]).then(answers => {
-    if (answer)
+    if (answers)
         console.log(player.name + ' answered: ' + answers.join(', '));
     else
         console.log(player.name + ' did not fully answer');

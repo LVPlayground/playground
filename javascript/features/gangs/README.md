@@ -41,6 +41,7 @@ through this command. Instead, one of the leaders should open a
 The following list contains a number of items that have to be done before this feature can be
 launched on the server. Items may be added or removed whenever appropriate.
 
+  - Implement the **/gang members** command.
   - Implement the **/gang invite** command.
   - Implement the **/gang kick** command.
   - Implement the **/gang set tag** command.

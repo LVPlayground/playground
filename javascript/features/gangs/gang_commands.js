@@ -222,8 +222,8 @@ class GangCommands {
             return;
         }
 
-        // TODO(Russell): Allow |member| to be a player Id as well as a name?
         const lowerCaseMember = member.toLowerCase();
+        const maybeMemberId = parseInt(member, 10);
 
         // Create a "player has been kicked" promise that tests can use to observe progress.
         this.kickPromiseForTesting_ = new Promise(resolve => resolveForTests = resolve);
@@ -233,6 +233,14 @@ class GangCommands {
             let matchingMembers = [];
 
             for (let member of members) {
+                // Give matching gang members by their player Id (for online members) precedence.
+                if (member.player !== null && !Number.isNaN(maybeMemberId)) {
+                    if (member.player === server.playerManager.getById(maybeMemberId)) {
+                        matchingMembers = [ member ];
+                        break;
+                    }
+                }
+
                 if (!member.nickname.toLowerCase().includes(lowerCaseMember))
                     continue;
 

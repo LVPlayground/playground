@@ -305,6 +305,28 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         });
     });
 
+    it('should allow managers and leaders to kick online people by id from the gang', assert => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+        const gang = createGang({ tag: 'HKO2' });
+
+        player.identify();
+        russell.identify({ userId: 1337 });
+
+        addPlayerToGang(russell, gang, Gang.ROLE_LEADER);
+        addPlayerToGang(player, gang, Gang.ROLE_LEADER);
+
+        assert.isTrue(player.issueCommand('/gang kick ' + russell.id));
+        assert.equal(player.messages.length, 0);
+
+        return gangCommands.kickPromiseForTesting_.then(() => {
+            assert.equal(player.messages.length, 3);
+            assert.equal(player.messages[0],
+                         Message.format(Message.GANG_KICK_REMOVED, russell.name, gang.name));
+
+            assert.isFalse(gang.hasPlayer(russell));
+        });
+    });
+
     it('should allow managers and leaders to kick offline people from the gang', assert => {
         const gang = createGang({ tag: 'HKO3' });
 

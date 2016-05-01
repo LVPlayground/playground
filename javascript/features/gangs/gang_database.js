@@ -30,6 +30,23 @@ const GANG_EXISTS_QUERY = `
     LIMIT
         1`;
 
+// Query to read a full list of members from the database.
+const GANG_MEMBERS_QUERY = `
+    SELECT
+        users_gangs.user_id,
+        users_gangs.user_role,
+        users.username
+    FROM
+        users_gangs
+    LEFT JOIN
+        users ON users.user_id = users_gangs.user_id
+    WHERE
+        users_gangs.gang_id = ? AND
+        users_gangs.left_gang IS NULL
+    ORDER BY
+        users_gangs.user_role ASC,
+        users.username ASC`;
+
 // Query to actually create a gang in the database.
 const GANG_CREATE_QUERY = `
     INSERT INTO
@@ -160,6 +177,24 @@ class GangDatabase {
                 goal: goal,
                 color: null
             };
+        });
+    }
+
+    // Gets a full list of members for |gang|. Returns a promise that will be resolved with the
+    // members when the operation has completed.
+    getFullMemberList(gang) {
+        return this.database_.query(GANG_MEMBERS_QUERY, gang.id).then(results => {
+            let gangMembers = [];
+
+            results.rows.forEach(row => {
+                gangMembers.push({
+                    role: GangDatabase.toRoleValue(row.user_role),
+                    userId: row.user_id,
+                    username: row.username,
+                });
+            });
+
+            return gangMembers;
         });
     }
 

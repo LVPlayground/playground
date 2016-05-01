@@ -28,6 +28,8 @@ class GangCommands {
                 .build(GangCommands.prototype.onGangJoinCommand.bind(this))
             .sub('leave')
                 .build(GangCommands.prototype.onGangLeaveCommand.bind(this))
+            .sub('members')
+                .build(GangCommands.prototype.onGangMembersCommand.bind(this))
             .build(GangCommands.prototype.onGangCommand.bind(this));
 
         // /pgangs [top]
@@ -41,6 +43,7 @@ class GangCommands {
         this.createdPromiseForTesting_ = null;
         this.joinPromiseForTesting_ = null;
         this.leavePromiseForTesting_ = null;
+        this.membersPromiseForTesting_ = null;
     }
 
     // Called when the player uses the `/gang create` command to create a new gang. If the player is
@@ -262,13 +265,67 @@ class GangCommands {
         }).then(() => resolveForTests());
     }
 
+    // Called when the player uses the `/gang members` command. All members of their gang, whether
+    // they are logged in or not, will be displayed to them.
+    onGangMembersCommand(player) {
+        let resolveForTests = null;
+
+        const gang = this.manager_.gangForPlayer(player);
+        if (!gang) {
+            player.sendMessage(Message.GANG_NOT_IN_GANG);
+            return;
+        }
+
+        // Create a "gang has been created" promise that tests can use to observe progress.
+        this.membersPromiseForTesting_ = new Promise(resolve => resolveForTests = resolve);
+
+        // Retrieve the full memberlist of this gang, not those who are currently in-game.
+        this.manager_.getFullMemberList(gang, true /* groupByRole */).then(members => {
+            player.sendMessage(Message.GANG_MEMBERS_HEADER, gang.tag, gang.name);
+
+            // Formats messages for a particular group of members and sends them to the player when
+            // there is at least a single player in the group.
+            function formatAndSendGroup(label, members) {
+                if (!members.length)
+                    return;
+
+                const membersPerRow = 8;
+                for (let i = 0; i < members.length; i += membersPerRow) {
+                    const membersRow = members.slice(i, membersPerRow);
+
+                    let message = '';
+                    if (i == 0 /* first row */)
+                        message += '{B1FC17}' + label + '{FFFFFF}: ';
+
+                    // Format and append each member. Online members will visually stand out.
+                    membersRow.forEach(member => {
+                        const { nickname, player } = member;
+
+                        if (player)
+                            message += '{B1FC17}' + nickname + '{FFFFFF} (Id: ' + player.id + '), ';
+                        else
+                            message += nickname + ', ';
+                    });
+
+                    // Finally, send the message to the player.
+                    player.sendMessage(message.substr(0, message.length - 2));
+                }
+            }
+
+            formatAndSendGroup('Leaders', members.leaders);
+            formatAndSendGroup('Managers', members.managers);
+            formatAndSendGroup('Members', members.members);
+
+        }).then(() => resolveForTests());
+    }
+
     // Called when the player uses the `/gang` command without parameters. It will show information
     // on the available sub commands, as well as the feature itself.
     onGangCommand(player) {
         player.sendMessage(Message.GANGS_HEADER);
         player.sendMessage(Message.GANG_INFO_1);
         player.sendMessage(Message.GANG_INFO_2);
-        player.sendMessage(Message.COMMAND_USAGE, '/gang [create/invite/join/leave]');
+        player.sendMessage(Message.COMMAND_USAGE, '/gang [create/invite/join/leave/members]');
     }
 
     // Called when the player uses the `/gangs` command. It will, by default, list the gangs that

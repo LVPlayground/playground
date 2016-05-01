@@ -60,6 +60,53 @@ class GangManager {
         });
     }
 
+    // Gets a complete lisy of the |gang|'s members from the database, including this players who
+    // are not on the server right now. Those logged in will be annotated. Optionally, the players
+    // can be grouped by role by setting the |groupByRole| argument.
+    getFullMemberList(gang, groupByRole = false) {
+        return this.database_.getFullMemberList(gang).then(members => {
+            let gangPlayers = {};
+
+            let gangMembersUngrouped = [];
+            let gangMembers = {
+                leaders: [],
+                managers: [],
+                members: []
+            };
+            
+            for (let player of gang.members)
+                gangPlayers[player.userId] = player;
+
+            members.forEach(member => {
+                const nickname = member.username;
+                const player = gangPlayers[member.userId] || null;
+
+                // Add them to the single big array when not grouping by role.
+                if (!groupByRole) {
+                    gangMembersUngrouped.push({ nickname, player });
+                    return;
+                }
+
+                // Add them to the appropriate group otherwise.
+                switch (member.role) {
+                    case Gang.ROLE_LEADER:
+                        gangMembers.leaders.push({ nickname, player });
+                        break;
+                    case Gang.ROLE_MANAGER:
+                        gangMembers.managers.push({ nickname, player });
+                        break;
+                    case Gang.ROLE_MEMBER:
+                        gangMembers.members.push({ nickname, player });
+                        break;
+                    default:
+                        throw new Error('Invalid role: ' + members.role);
+                }
+            });
+
+            return groupByRole ? gangMembers : gangMembersUngrouped;
+        });
+    }
+
     // Adds |player| to the |gang|. This will also be reflected in the database. A promise will be
     // returned that will be resolved when the removal has been completed.
     addPlayerToGang(player, gang) {

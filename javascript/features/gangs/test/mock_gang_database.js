@@ -50,6 +50,19 @@ class MockGangDatabase {
         return Promise.reject(new Error('No special behaviour implemented.'));
     }
 
+    getFullMemberList(gang) {
+        if (gang.tag == 'CC') {
+            return Promise.resolve([
+                { role: Gang.ROLE_LEADER, userId: 42, username: 'Gunther' },
+                { role: Gang.ROLE_MEMBER, userId: 1338, username: 'Harry' },
+                { role: Gang.ROLE_MEMBER, userId: 1337, username: 'Russell' },
+                { role: Gang.ROLE_MEMBER, userId: 1339, username: 'Sander' }
+            ]);
+        }
+
+        return Promise.reject(new Error('No special behaviour implemented.'));
+    }
+
     addPlayerToGang(player, gang) {
         return Promise.resolve(true);
     }

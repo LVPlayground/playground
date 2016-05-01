@@ -324,6 +324,32 @@ describe('GangManager', (it, beforeEach, afterEach) => {
         });
     });
 
+    it('should enable players to list the members of their gang', assert => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+        const gang = createGang({ tag: 'CC' });
+
+        player.identify();
+        russell.identify({ userId: 1337 });
+
+        addPlayerToGang(player, gang, Gang.ROLE_LEADER);
+        addPlayerToGang(russell, gang, Gang.ROLE_MEMBER);
+
+        assert.isTrue(player.issueCommand('/pgang members'));
+
+        return gangCommands.membersPromiseForTesting_.then(() => {
+            assert.equal(player.messages.length, 3);
+
+            assert.isTrue(player.messages[0].includes(gang.tag));
+            assert.isTrue(player.messages[0].includes(gang.name));
+
+            assert.isTrue(player.messages[1].includes(player.name));
+            assert.isTrue(player.messages[1].includes('Id:')); /* Gunther is |player| */
+
+            assert.isTrue(player.messages[2].includes(russell.name));
+            assert.isTrue(player.messages[2].includes('Id:')); /* Russell is |russell| */
+        });
+    });
+
     it('should be able to display information about the gang command', assert => {
         assert.isTrue(player.issueCommand('/pgang'));
         assert.isAboveOrEqual(player.messages.length, 1);

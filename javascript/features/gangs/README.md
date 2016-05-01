@@ -23,6 +23,7 @@ The following commands are available as part of the feature:
   - **/gang invite [player]**: Invite the player to your gang. They must be registered.
   - **/gang join**: Join the gang of whom you received the most recent invitation.
   - **/gang leave**: Leave the gang that you're currently part of.
+  - **/gang members**: Display the gang's members, including those who aren't currently online.
   - **/gangs**: Display the gangs currently represented on Las Venturas Playground.
 
 _This feature is still under development, these commands are currently only available to admins._
@@ -43,7 +44,6 @@ through this command. Instead, one of the leaders should open a
 The following list contains a number of items that have to be done before this feature can be
 launched on the server. Items may be added or removed whenever appropriate.
 
-  - Implement the **/gang members** command.
   - Implement the **/gang kick** command.
   - Implement the **/gang settings** command.
   - Implement the **/gangs top** command.

@@ -65,21 +65,21 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         player.level = Player.LEVEL_PLAYER;
 
-        assert.isTrue(player.issueCommand('/pgang'));
+        assert.isTrue(player.issueCommand('/gang'));
 
         assert.equal(player.messages.length, 1);
         assert.isTrue(player.messages[0].includes('only available to administrators'));
 
         player.clearMessages();
 
-        assert.isTrue(player.issueCommand('/pgangs'));
+        assert.isTrue(player.issueCommand('/gangs'));
 
         assert.equal(player.messages.length, 1);
         assert.isTrue(player.messages[0].includes('only available to administrators'));
     });
 
     it('should only allow registered players to create a gang', assert => {
-        assert.isTrue(player.issueCommand('/pgang create'));
+        assert.isTrue(player.issueCommand('/gang create'));
 
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], Message.GANGS_NOT_REGISTERED);
@@ -90,7 +90,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         addPlayerToGang(player, createGang(), Gang.ROLE_MEMBER);
 
-        assert.isTrue(player.issueCommand('/pgang create'));
+        assert.isTrue(player.issueCommand('/gang create'));
 
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], Message.GANGS_ALREADY_SET);
@@ -99,7 +99,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
     it('should not allow players to create a gang that already exists', assert => {
         player.identify();
 
-        assert.isTrue(player.issueCommand('/pgang create'));
+        assert.isTrue(player.issueCommand('/gang create'));
         assert.equal(player.messages.length, 0);
 
         // Three questions will be asked: the name, tag and goal of the gang.
@@ -117,7 +117,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
     it('should allow players to create a new gang', assert => {
         player.identify();
 
-        assert.isTrue(player.issueCommand('/pgang create'));
+        assert.isTrue(player.issueCommand('/gang create'));
         assert.equal(player.messages.length, 0);
 
         // Three questions will be asked: the name, tag and goal of the gang.
@@ -140,7 +140,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
     it('should not allow invitations when the player is not in a gang', assert => {
         player.identify();
 
-        assert.isTrue(player.issueCommand('/pgang invite Russell'));
+        assert.isTrue(player.issueCommand('/gang invite Russell'));
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], Message.GANG_NOT_IN_GANG);
     });
@@ -150,7 +150,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         addPlayerToGang(player, createGang(), Gang.ROLE_MEMBER);
 
-        assert.isTrue(player.issueCommand('/pgang invite Russell'));
+        assert.isTrue(player.issueCommand('/gang invite Russell'));
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], Message.GANG_INVITE_NO_MANAGER);
     });
@@ -160,14 +160,14 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         addPlayerToGang(player, createGang(), Gang.ROLE_MANAGER);
 
-        assert.isTrue(player.issueCommand('/pgang invite Russell'));
+        assert.isTrue(player.issueCommand('/gang invite Russell'));
         assert.equal(player.messages.length, 1);
         assert.equal(
             player.messages[0], Message.format(Message.GANG_INVITE_NOT_REGISTERED, 'Russell'));
     });
 
     it('should not allow players to join a gang uninvited', assert => {
-        assert.isTrue(player.issueCommand('/pgang join'));
+        assert.isTrue(player.issueCommand('/gang join'));
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], Message.GANG_JOIN_NO_INVITATION);
     });
@@ -184,7 +184,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         addPlayerToGang(player, createGang(), Gang.ROLE_MANAGER);
         addPlayerToGang(russell, russellGang, Gang.ROLE_MEMBER);
 
-        assert.isTrue(player.issueCommand('/pgang invite Russell'));
+        assert.isTrue(player.issueCommand('/gang invite Russell'));
         assert.equal(russell.messages.length, 2);
         assert.equal(player.messages.length, 3);
         assert.equal(
@@ -192,7 +192,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         russell.clearMessages();
 
-        assert.isTrue(russell.issueCommand('/pgang join'));
+        assert.isTrue(russell.issueCommand('/gang join'));
         assert.equal(russell.messages.length, 1);
         assert.equal(
             russell.messages[0], Message.format(Message.GANG_JOIN_IN_GANG, russellGang.name));
@@ -207,13 +207,13 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         addPlayerToGang(player, createGang(), Gang.ROLE_MANAGER);
 
-        assert.isTrue(player.issueCommand('/pgang invite Russell'));
+        assert.isTrue(player.issueCommand('/gang invite Russell'));
         assert.isAboveOrEqual(russell.messages.length, 1);
         assert.isAboveOrEqual(player.messages.length, 1);
 
         russell.clearMessages();
 
-        assert.isTrue(russell.issueCommand('/pgang join'));
+        assert.isTrue(russell.issueCommand('/gang join'));
 
         return gangCommands.joinPromiseForTesting_.then(() => {
             const gang = gangManager.gangForPlayer(russell);
@@ -228,7 +228,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should not allow people not in a gang to kick people', assert => {
-        assert.isTrue(player.issueCommand('/pgang kick nickname'));
+        assert.isTrue(player.issueCommand('/gang kick nickname'));
 
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], Message.GANG_NOT_IN_GANG);
@@ -239,7 +239,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         addPlayerToGang(player, createGang(), Gang.ROLE_MEMBER);
 
-        assert.isTrue(player.issueCommand('/pgang kick nickname'));
+        assert.isTrue(player.issueCommand('/gang kick nickname'));
 
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], Message.GANG_KICK_NO_MANAGER);
@@ -254,7 +254,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         addPlayerToGang(russell, gang, Gang.ROLE_MANAGER);
         addPlayerToGang(player, gang, Gang.ROLE_MANAGER);
 
-        assert.isTrue(player.issueCommand('/pgang kick ' + russell.name));
+        assert.isTrue(player.issueCommand('/gang kick ' + russell.name));
         assert.equal(player.messages.length, 0);
 
         return gangCommands.kickPromiseForTesting_.then(() => {
@@ -272,7 +272,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
 
-        assert.isTrue(player.issueCommand('/pgang kick ' + player.name));
+        assert.isTrue(player.issueCommand('/gang kick ' + player.name));
         assert.equal(player.messages.length, 0);
 
         return gangCommands.kickPromiseForTesting_.then(() => {
@@ -293,7 +293,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         addPlayerToGang(russell, gang, Gang.ROLE_LEADER);
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
 
-        assert.isTrue(player.issueCommand('/pgang kick ' + russell.name));
+        assert.isTrue(player.issueCommand('/gang kick ' + russell.name));
         assert.equal(player.messages.length, 0);
 
         return gangCommands.kickPromiseForTesting_.then(() => {
@@ -312,7 +312,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
 
-        assert.isTrue(player.issueCommand('/pgang kick fflineplaye'));
+        assert.isTrue(player.issueCommand('/gang kick fflineplaye'));
         assert.equal(player.messages.length, 0);
 
         return gangCommands.kickPromiseForTesting_.then(() => {
@@ -323,7 +323,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should not allow players to leave a gang if they aren\'t in one', assert => {
-        assert.isTrue(player.issueCommand('/pgang leave'));
+        assert.isTrue(player.issueCommand('/gang leave'));
 
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], Message.GANG_NOT_IN_GANG);
@@ -337,7 +337,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         const gang = gangManager.gangForPlayer(player);
         assert.isNotNull(gang);
 
-        assert.isTrue(player.issueCommand('/pgang leave'));
+        assert.isTrue(player.issueCommand('/gang leave'));
 
         player.respondToDialog({ response: 1 /* Yes */ });
 
@@ -355,7 +355,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         const gang = gangManager.gangForPlayer(player);
         assert.isNotNull(gang);
 
-        assert.isTrue(player.issueCommand('/pgang leave'));
+        assert.isTrue(player.issueCommand('/gang leave'));
 
         player.respondToDialog({ response: 0 /* No */ });
 
@@ -372,7 +372,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         const gang = gangManager.gangForPlayer(player);
         assert.isNotNull(gang);
 
-        assert.isTrue(player.issueCommand('/pgang leave'));
+        assert.isTrue(player.issueCommand('/gang leave'));
 
         player.respondToDialog({ response: 1 /* Yes */ });
 
@@ -390,7 +390,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         const gang = gangManager.gangForPlayer(player);
         assert.isNotNull(gang);
 
-        assert.isTrue(player.issueCommand('/pgang leave'));
+        assert.isTrue(player.issueCommand('/gang leave'));
 
         player.respondToDialog({ response: 1 /* Yes */ });
 
@@ -411,7 +411,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         const gang = gangManager.gangForPlayer(player);
         assert.isNotNull(gang);
 
-        assert.isTrue(player.issueCommand('/pgang leave'));
+        assert.isTrue(player.issueCommand('/gang leave'));
 
         player.respondToDialog({ response: 0 /* No */ });
 
@@ -430,7 +430,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
         addPlayerToGang(russell, gang, Gang.ROLE_MEMBER);
 
-        assert.isTrue(player.issueCommand('/pgang members'));
+        assert.isTrue(player.issueCommand('/gang members'));
 
         return gangCommands.membersPromiseForTesting_.then(() => {
             assert.equal(player.messages.length, 3);
@@ -447,7 +447,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should only allow leaders to see and amend the gang settings', assert => {
-        assert.isTrue(player.issueCommand('/pgang settings'));
+        assert.isTrue(player.issueCommand('/gang settings'));
 
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], Message.GANG_NOT_IN_GANG);
@@ -456,7 +456,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         addPlayerToGang(player, createGang(), Gang.ROLE_MANAGER);
 
-        assert.isTrue(player.issueCommand('/pgang settings'));
+        assert.isTrue(player.issueCommand('/gang settings'));
 
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], Message.GANG_SETTINGS_NO_LEADER);
@@ -469,12 +469,12 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should be able to display information about the gang command', assert => {
-        assert.isTrue(player.issueCommand('/pgang'));
+        assert.isTrue(player.issueCommand('/gang'));
         assert.isAboveOrEqual(player.messages.length, 1);
     });
 
     it('should be able to list the local gangs on the server', assert => {
-        assert.isTrue(player.issueCommand('/pgangs'));
+        assert.isTrue(player.issueCommand('/gangs'));
 
         assert.equal(player.messages.length, 3);
         assert.equal(player.messages[1], Message.GANGS_NONE_ONLINE);
@@ -486,7 +486,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         assert.equal(gangManager.gangs.length, 1);
 
-        assert.isTrue(player.issueCommand('/pgangs'));
+        assert.isTrue(player.issueCommand('/gangs'));
 
         assert.equal(player.messages.length, 3);
         assert.isTrue(player.messages[1].includes(gangColor.toHexRGB()));

@@ -18,8 +18,8 @@ class GangCommands {
         // Map of players to the gangs they have been invited by.
         this.invitations_ = new WeakMap();
 
-        // /pgang [create]
-        server.commandManager.buildCommand('pgang')
+        // Command: /gang
+        server.commandManager.buildCommand('gang')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('create')
                 .build(GangCommands.prototype.onGangCreateCommand.bind(this))
@@ -39,8 +39,8 @@ class GangCommands {
                 .build(GangCommands.prototype.onGangSettingsCommand.bind(this))
             .build(GangCommands.prototype.onGangCommand.bind(this));
 
-        // /pgangs [top]
-        server.commandManager.buildCommand('pgangs')
+        // Command: /gangs
+        server.commandManager.buildCommand('gangs')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .build(GangCommands.prototype.onGangsCommand.bind(this));
 
@@ -507,7 +507,8 @@ class GangCommands {
 
     // Cleans up the state created by this class, i.e. unregisters the commands.
     dispose() {
-        server.commandManager.removeCommand('pgangs');
+        server.commandManager.removeCommand('gang');
+        server.commandManager.removeCommand('gangs');
     }
 }
 

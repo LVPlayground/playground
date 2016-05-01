@@ -30,7 +30,7 @@ The following commands are available as part of the feature:
 
 _This feature is still under development, these commands are currently only available to admins._
 
-## FAQ: Do players have to be online in order to be kicked from a gang?
+## FAQ: Can I only kick online players from my gang?
 No. As the leader or manager of a gang, you can kick any member of the gang regardless of whether
 they are online or offline. You can see a full list of your gang's members by using the
 `/gang members` command.

@@ -52,5 +52,4 @@ The following list contains a number of items that have to be done before this f
 launched on the server. Items may be added or removed whenever appropriate.
 
   - Finish the **/gang settings** command.
-  - Make sure that the player's color will be set to the gang color when joined.
   - Implement support for gang chats based on the persistent gang system.

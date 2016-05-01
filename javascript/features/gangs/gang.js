@@ -39,6 +39,9 @@ class Gang {
     // on the function object of this class.
     addPlayer(player, role) {
         this.members_.set(player, role);
+
+        if (!server.isTest() && this.color_ !== null)
+            pawnInvoke('OnUpdatePlayerGangColor', 'ii', player.id, this.color_);
     }
 
     // Returns the role |player| has in the gang, or NULL when they are not part of the gang.
@@ -57,6 +60,9 @@ class Gang {
     // Removes |player| from the list of members of this gang.
     removePlayer(player) {
         this.members_.delete(player);
+
+        if (!server.isTest())
+            pawnInvoke('OnUpdatePlayerGangColor', 'ii', player.id, 0 /* reset */);
     }
 }
 

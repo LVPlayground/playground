@@ -11,8 +11,9 @@ const QuestionSequence = require('components/dialogs/question_sequence.js');
 // Implements the commands available as part of the persistent gang feature. The primary ones are
 // /gang and /gangs, each of which has a number of sub-options available to them.
 class GangCommands {
-    constructor(manager) {
+    constructor(manager, announce) {
         this.manager_ = manager;
+        this.announce_ = announce;
 
         // Map of players to the gangs they have been invited by.
         this.invitations_ = new WeakMap();
@@ -117,7 +118,7 @@ class GangCommands {
                 if (!result)
                     return;  // the player disconnected from the server
 
-                // TODO(Russell): Announce the gang's creation to administrators.
+                this.announce_.announceToPlayers(Message.GANG_ANNOUNCE_CREATED, player.name, name);
 
                 player.sendMessage(Message.GANG_DID_CREATE, result.name);
 
@@ -152,7 +153,10 @@ class GangCommands {
 
         this.invitations_.set(invitee, gang);
 
-        // TODO(Russell): Announce the invitation to administrators?
+        this.announce_.announceToAdministrators(
+            Message.GANG_ANNOUNCE_INVITATION, player.name, player.id, invitee.name, invitee.name,
+            gang.name);
+
         // TODO(Russell): Announce the invitation to other gang members.
 
         player.sendMessage(Message.GANG_DID_INVITE, invitee.name, invitee.id);
@@ -187,8 +191,8 @@ class GangCommands {
 
             player.sendMessage(Message.GANG_DID_JOIN, gang.name);
 
-            // TODO(Russell): Announce the join to administrators?
             // TODO(Russell): Announce the join to other gang members.
+            this.announce_.announceToPlayers(Message.GANG_ANNOUNCE_JOINED, player.name, gang.name);
 
             this.invitations_.delete(player);
 
@@ -266,8 +270,10 @@ class GangCommands {
             return promise.then(() => {
                 player.sendMessage(Message.GANG_KICK_REMOVED, memberToKick.nickname, gang.name);
 
-                // TODO(Russell): Announce the change to the administrators.
                 // TODO(Russell): Announce the change to the online gang members.
+                this.announce_.announceToAdministrators(
+                    Message.GANG_ANNOUNCE_KICKED, player.name, player.id, memberToKick.nickname,
+                    gang.name);
             });
 
         }).then(() => resolveForTests());
@@ -299,8 +305,9 @@ class GangCommands {
                 return this.manager_.removePlayerFromGang(player, gang).then(() => {
                     player.sendMessage(Message.GANG_DID_LEAVE, gang.name);
 
-                    // TODO(Russell): Announce the player's departure to administrators.
                     // TODO(Russell): Announce the player's departure to other gang members.
+                    this.announce_.announceToPlayers(Message.GANG_ANNOUNCE_LEFT,
+                        player.name, gang.name);
                 });
 
             }).then(() => resolveForTests());
@@ -342,8 +349,9 @@ class GangCommands {
             return Promise.all(actions).then(() => {
                 player.sendMessage(Message.GANG_DID_LEAVE, gang.name);
 
-                // TODO(Russell): Announce the player's departure to administrators.
                 // TODO(Russell): Announce the player's departure to other gang members.
+                this.announce_.announceToPlayers(Message.GANG_ANNOUNCE_LEFT,
+                        player.name, gang.name);
             });
 
         }).then(() => resolveForTests());

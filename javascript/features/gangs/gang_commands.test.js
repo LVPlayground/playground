@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const Announce = require('features/announce/announce.js');
 const Gang = require('features/gangs/gang.js');
 const GangCommands = require('features/gangs/gang_commands.js');
 const GangDatabase = require('features/gangs/gang_database.js');
@@ -24,7 +25,7 @@ describe('GangManager', (it, beforeEach, afterEach) => {
             gangManager = new GangManager(null /* database */);
             gangManager.database_ = new MockGangDatabase();
 
-            gangCommands = new GangCommands(gangManager);
+            gangCommands = new GangCommands(gangManager, new Announce());
 
         }, () => {
             gangCommands.dispose();
@@ -184,10 +185,10 @@ describe('GangManager', (it, beforeEach, afterEach) => {
         addPlayerToGang(russell, russellGang, Gang.ROLE_MEMBER);
 
         assert.isTrue(player.issueCommand('/pgang invite Russell'));
-        assert.equal(russell.messages.length, 1);
-        assert.equal(player.messages.length, 1);
+        assert.equal(russell.messages.length, 2);
+        assert.equal(player.messages.length, 2);
         assert.equal(
-            player.messages[0], Message.format(Message.GANG_DID_INVITE, russell.name, russell.id));
+            player.messages[1], Message.format(Message.GANG_DID_INVITE, russell.name, russell.id));
 
         russell.clearMessages();
 
@@ -296,7 +297,7 @@ describe('GangManager', (it, beforeEach, afterEach) => {
         assert.equal(player.messages.length, 0);
 
         return gangCommands.kickPromiseForTesting_.then(() => {
-            assert.equal(player.messages.length, 1);
+            assert.equal(player.messages.length, 2);
             assert.equal(player.messages[0],
                          Message.format(Message.GANG_KICK_REMOVED, russell.name, gang.name));
 
@@ -315,7 +316,7 @@ describe('GangManager', (it, beforeEach, afterEach) => {
         assert.equal(player.messages.length, 0);
 
         return gangCommands.kickPromiseForTesting_.then(() => {
-            assert.equal(player.messages.length, 1);
+            assert.equal(player.messages.length, 2);
             assert.equal(player.messages[0],
                          Message.format(Message.GANG_KICK_REMOVED, 'OfflinePlayer', gang.name));
         });

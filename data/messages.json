@@ -23,6 +23,11 @@
     "FRIENDS_REMOVED": "@success %s has been removed from your friends list.",
     "FRIENDS_USAGE": "{FFFFFF}Use '/friends add' to add a friend or '/friends remove' to remove one.",
 
+    "GANG_ANNOUNCE_CREATED": "%s has just founded the %s gang!",
+    "GANG_ANNOUNCE_INVITATION": "%s (Id: %d) has invited %s (Id: %d) to join the %s gang.",
+    "GANG_ANNOUNCE_JOINED": "%s has joined the %s gang!",
+    "GANG_ANNOUNCE_KICKED": "%s (Id: %d) has kicked %s from the %s gang.",
+    "GANG_ANNOUNCE_LEFT": "%s has left the %s gang!",
     "GANG_CREATE_INVALID_GOAL": "@error You must enter a valid goal when creating a gang.",
     "GANG_CREATE_INVALID_NAME": "@error You must enter a valid name when creating a gang.",
     "GANG_CREATE_INVALID_TAG": "@error You must enter a valid tag when creating a gang.",

@@ -78,25 +78,29 @@ class GangManager {
                 gangPlayers[player.userId] = player;
 
             members.forEach(member => {
-                const nickname = member.username;
-                const player = gangPlayers[member.userId] || null;
+                const memberInfo = {
+                    nickname: member.username,
+                    player: gangPlayers[member.userId] || null,
+                    role: member.role,
+                    userId: member.userId
+                };
 
                 // Add them to the single big array when not grouping by role.
                 if (!groupByRole) {
-                    gangMembersUngrouped.push({ nickname, player });
+                    gangMembersUngrouped.push(memberInfo);
                     return;
                 }
 
                 // Add them to the appropriate group otherwise.
                 switch (member.role) {
                     case Gang.ROLE_LEADER:
-                        gangMembers.leaders.push({ nickname, player });
+                        gangMembers.leaders.push(memberInfo);
                         break;
                     case Gang.ROLE_MANAGER:
-                        gangMembers.managers.push({ nickname, player });
+                        gangMembers.managers.push(memberInfo);
                         break;
                     case Gang.ROLE_MEMBER:
-                        gangMembers.members.push({ nickname, player });
+                        gangMembers.members.push(memberInfo);
                         break;
                     default:
                         throw new Error('Invalid role: ' + members.role);
@@ -136,7 +140,7 @@ class GangManager {
         if (!gang.hasPlayer(player))
             return Promise.reject(new Error('The |player| is not part of the |gang|.'));
 
-        return this.database_.removePlayerFromGang(player, gang).then(result => {
+        return this.database_.removePlayerFromGang(player.userId, gang).then(result => {
             if (!result) {
                 // There is nothing we can do in this case, just output a warning to the log.
                 console.log('[GangManager] Failed to remove the affiliation of ' + player.name +
@@ -152,6 +156,12 @@ class GangManager {
             if (!gang.memberCount)
                 delete this.gangs_[gang.id];
         });
+    }
+
+    // Removes the member with |userId| from the |gang|. This method should be used if the player
+    // is not currently in-game, but does have to be removed from the gang.
+    removeMemberFromGang(userId, gang) {
+        return this.database_.removePlayerFromGang(userId, gang);
     }
 
     // Determines which player should become the leader of the |gang| after |player| leaves, who

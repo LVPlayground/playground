@@ -51,12 +51,33 @@ class MockGangDatabase {
     }
 
     getFullMemberList(gang) {
-        if (gang.tag == 'CC') {
+        if (gang.tag === 'CC') {
             return Promise.resolve([
                 { role: Gang.ROLE_LEADER, userId: 42, username: 'Gunther' },
                 { role: Gang.ROLE_MEMBER, userId: 1338, username: 'Harry' },
                 { role: Gang.ROLE_MEMBER, userId: 1337, username: 'Russell' },
                 { role: Gang.ROLE_MEMBER, userId: 1339, username: 'Sander' }
+            ]);
+        }
+
+        if (gang.tag === 'HKO') {
+            return Promise.resolve([
+                { role: Gang.ROLE_MANAGER, userId: 42, username: 'Gunther' },
+                { role: Gang.ROLE_MANAGER, userId: 1337, username: 'Russell' }
+            ]);
+        }
+
+        if (gang.tag === 'HKO2') {
+            return Promise.resolve([
+                { role: Gang.ROLE_LEADER, userId: 42, username: 'Gunther' },
+                { role: Gang.ROLE_LEADER, userId: 1337, username: 'Russell' }
+            ]);
+        }
+
+        if (gang.tag === 'HKO3') {
+            return Promise.resolve([
+                { role: Gang.ROLE_LEADER, userId: 42, username: 'Gunther' },
+                { role: Gang.ROLE_MEMBER, userId: 1521, username: 'OfflinePlayer' }
             ]);
         }
 
@@ -67,7 +88,7 @@ class MockGangDatabase {
         return Promise.resolve(true);
     }
 
-    removePlayerFromGang(player, gang) {
+    removePlayerFromGang(userId, gang) {
         return Promise.resolve(true);
     }
 

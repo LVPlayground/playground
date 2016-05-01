@@ -26,6 +26,9 @@ class GangCommands {
                 .build(GangCommands.prototype.onGangInviteCommand.bind(this))
             .sub('join')
                 .build(GangCommands.prototype.onGangJoinCommand.bind(this))
+            .sub('kick')
+                .parameters([{ name: 'member', type: CommandBuilder.WORD_PARAMETER }])
+                .build(GangCommands.prototype.onGangKickCommand.bind(this))
             .sub('leave')
                 .build(GangCommands.prototype.onGangLeaveCommand.bind(this))
             .sub('members')
@@ -42,6 +45,7 @@ class GangCommands {
         // Promises that can be used for testing purposes.
         this.createdPromiseForTesting_ = null;
         this.joinPromiseForTesting_ = null;
+        this.kickPromiseForTesting_ = null;
         this.leavePromiseForTesting_ = null;
         this.membersPromiseForTesting_ = null;
     }
@@ -189,6 +193,78 @@ class GangCommands {
         }).then(() => resolveForTests());
     }
 
+    // Called when the player uses the `/gang kick [member]` command. It enables gang leaders and
+    // managers to remove other members from the gang. The kicked player does not have to be on the
+    // server- otherwise people who are in trouble could just not show up for a while.
+    onGangKickCommand(player, member) {
+        let resolveForTests = null;
+
+        const gang = this.manager_.gangForPlayer(player);
+        if (!gang) {
+            player.sendMessage(Message.GANG_NOT_IN_GANG);
+            return;
+        }
+
+        const playerRole = gang.getPlayerRole(player);
+
+        // Only leaders and managers of a gang can kick members.
+        if (![ Gang.ROLE_LEADER, Gang.ROLE_MANAGER ].includes(playerRole)) {
+            player.sendMessage(Message.GANG_KICK_NO_MANAGER);
+            return;
+        }
+
+        // TODO(Russell): Allow |member| to be a player Id as well as a name?
+        const lowerCaseMember = member.toLowerCase();
+
+        // Create a "player has been kicked" promise that tests can use to observe progress.
+        this.kickPromiseForTesting_ = new Promise(resolve => resolveForTests = resolve);
+
+        // Get a list of all members in the gang, whether they're in-game or not.
+        this.manager_.getFullMemberList(gang, false /* groupByRole */).then(members => {
+            let matchingMembers = [];
+
+            for (let member of members) {
+                if (!member.nickname.toLowerCase().includes(lowerCaseMember))
+                    continue;
+
+                matchingMembers.push(member);
+            }
+
+            // Bail out if no members matched the member query.
+            if (!matchingMembers.length) {
+                player.sendMessage(Message.GANG_KICK_NO_MATCH, member);
+                return;
+            }
+
+            // Bail out if the member query turned out to be ambiguous.
+            if (matchingMembers.length > 1) {
+                player.sendMessage(Message.GANG_KICK_AMBIGUOUS_MATCH,
+                                   matchingMembers.slice(0, 3).map(member => member.nickname));
+                return;
+            }
+
+            const memberToKick = matchingMembers[0];
+
+            // Bail out if |player| is a manager and |member| is not a Member.
+            if (playerRole === Gang.ROLE_MANAGER && memberToKick.role != Gang.ROLE_MEMBER) {
+                player.sendMessage(Message.GANG_KICK_NOT_ALLOWED);
+                return;
+            }
+
+            const promise =
+                memberToKick.player ? this.manager_.removePlayerFromGang(memberToKick.player, gang)
+                                    : this.manager_.removeMemberFromGang(memberToKick.userId);
+
+            return promise.then(() => {
+                player.sendMessage(Message.GANG_KICK_REMOVED, memberToKick.nickname, gang.name);
+
+                // TODO(Russell): Announce the change to the administrators.
+                // TODO(Russell): Announce the change to the online gang members.
+            });
+
+        }).then(() => resolveForTests());
+    }
+
     // Called when the player uses the `/gang leave` command. It will show a confirmation dialog
     // informing them of the consequences of leaving the gang. This differs for Leaders and regular
     // members of a gang, because gangs cannot be left without a leader.
@@ -325,7 +401,7 @@ class GangCommands {
         player.sendMessage(Message.GANGS_HEADER);
         player.sendMessage(Message.GANG_INFO_1);
         player.sendMessage(Message.GANG_INFO_2);
-        player.sendMessage(Message.COMMAND_USAGE, '/gang [create/invite/join/leave/members]');
+        player.sendMessage(Message.COMMAND_USAGE, '/gang [create/invite/join/kick/leave/members]');
     }
 
     // Called when the player uses the `/gangs` command. It will, by default, list the gangs that

@@ -207,10 +207,9 @@ class GangDatabase {
         return this.database_.query(GANG_CREATE_MEMBER_QUERY, userId, gangId, 'Member');
     }
 
-    // Removes the |player| from the |gang|. Returns a promise that will be resolved with a boolean
+    // Removes the |userId| from the |gang|. Returns a promise that will be resolved with a boolean
     // reflecting whether the information in the database has been updated.
-    removePlayerFromGang(player, gang) {
-        const userId = player.userId;
+    removePlayerFromGang(userId, gang) {
         const gangId = gang.id;
 
         return this.database_.query(GANG_REMOVE_MEMBER_QUERY, userId, gangId).then(results => {

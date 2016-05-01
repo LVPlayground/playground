@@ -226,6 +226,83 @@ describe('GangManager', (it, beforeEach, afterEach) => {
         });
     });
 
+    it('should not allow people not in a gang to kick people', assert => {
+        assert.isTrue(player.issueCommand('/pgang kick nickname'));
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.GANG_NOT_IN_GANG);
+    });
+
+    it('should not allow members to kick other members', assert => {
+        player.identify();
+
+        addPlayerToGang(player, createGang(), Gang.ROLE_MEMBER);
+
+        assert.isTrue(player.issueCommand('/pgang kick nickname'));
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.GANG_KICK_NO_MANAGER);
+    });
+
+    it('should not allow managers to kick leaders or other managers', assert => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+        const gang = createGang({ tag: 'HKO' });
+
+        player.identify();
+
+        addPlayerToGang(russell, gang, Gang.ROLE_MANAGER);
+        addPlayerToGang(player, gang, Gang.ROLE_MANAGER);
+
+        assert.isTrue(player.issueCommand('/pgang kick ' + russell.name));
+        assert.equal(player.messages.length, 0);
+
+        return gangCommands.kickPromiseForTesting_.then(() => {
+            assert.equal(player.messages.length, 1);
+            assert.equal(player.messages[0], Message.GANG_KICK_NOT_ALLOWED);
+
+            assert.isTrue(gang.hasPlayer(russell));
+        });
+    });
+
+    it('should allow managers and leaders to kick people from the gang', assert => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+        const gang = createGang({ tag: 'HKO2' });
+
+        player.identify();
+        russell.identify({ userId: 1337 });
+
+        addPlayerToGang(russell, gang, Gang.ROLE_LEADER);
+        addPlayerToGang(player, gang, Gang.ROLE_LEADER);
+
+        assert.isTrue(player.issueCommand('/pgang kick ' + russell.name));
+        assert.equal(player.messages.length, 0);
+
+        return gangCommands.kickPromiseForTesting_.then(() => {
+            assert.equal(player.messages.length, 1);
+            assert.equal(player.messages[0],
+                         Message.format(Message.GANG_KICK_REMOVED, russell.name, gang.name));
+
+            assert.isFalse(gang.hasPlayer(russell));
+        });
+    });
+
+    it('should allow managers and leaders to kick offline people from the gang', assert => {
+        const gang = createGang({ tag: 'HKO3' });
+
+        player.identify();
+
+        addPlayerToGang(player, gang, Gang.ROLE_LEADER);
+
+        assert.isTrue(player.issueCommand('/pgang kick fflineplaye'));
+        assert.equal(player.messages.length, 0);
+
+        return gangCommands.kickPromiseForTesting_.then(() => {
+            assert.equal(player.messages.length, 1);
+            assert.equal(player.messages[0],
+                         Message.format(Message.GANG_KICK_REMOVED, 'OfflinePlayer', gang.name));
+        });
+    });
+
     it('should not allow players to leave a gang if they aren\'t in one', assert => {
         assert.isTrue(player.issueCommand('/pgang leave'));
 

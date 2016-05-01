@@ -32,7 +32,7 @@ const ACTIVITY_LOG_VEHICLE_DEATHS = `
       activity_log_vehicle_deaths
       (model_id, activity_timestamp, activity_position_x, activity_position_y, activity_position_z)
     VALUES
-      (? NOW(), ?, ?, ?)`;
+      (?, NOW(), ?, ?, ?)`;
 
 // -------------------------------------------------------------------------------------------------
 

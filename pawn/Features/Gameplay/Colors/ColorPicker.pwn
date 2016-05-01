@@ -194,8 +194,11 @@ class ColorPicker {
             this->hideColorPicker(playerId);
 
             // Take care of the actual color changing.
-            new color = this->colorForColorPickerCell(cellIndex), extraId = m_colorPickerExtraId[playerId],
-                message[128];
+            new color = this->colorForColorPickerCell(cellIndex);
+
+#if Feature::EnableGangSystem == 1
+            new message[128], extraId = m_colorPickerExtraId[playerId];
+#endif
 
             // Set the correct color when a crew member picks their special color.
             if (cellIndex == 0 && m_colorPickerTarget[playerId] != GangColor) {
@@ -204,6 +207,7 @@ class ColorPicker {
             }
 
             switch (m_colorPickerTarget[playerId]) {
+#if Feature::EnableGangSystem == 1
                 case GangColor: {
                     // TODO: Move this to Gang::OnColorChanged or something similar.
                     Gang(extraId)->setColor(color);
@@ -214,7 +218,7 @@ class ColorPicker {
 
                     SendClientMessage(playerId, Color::Success, "You have successfully changed the colour of your gang!");
                 }
-
+#endif
                 case PlayerColor: {
                     // TODO: Move all of this to Player::OnColorChanged.
                     if (Player(playerId)->isAdministrator() == false)

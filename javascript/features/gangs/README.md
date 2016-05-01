@@ -51,6 +51,5 @@ The following list contains a number of items that have to be done before this f
 launched on the server. Items may be added or removed whenever appropriate.
 
   - Implement the **/gang settings** command.
-  - Implement the **/gangs top** command.
   - Notify players of important happenings whilst offline, e.g. having been kicked or promoted.
   - Implement support for gang chats based on the persistent gang system.

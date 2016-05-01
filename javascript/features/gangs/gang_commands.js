@@ -38,8 +38,6 @@ class GangCommands {
         // /pgangs [top]
         server.commandManager.buildCommand('pgangs')
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .sub('top')
-                .build(GangCommands.prototype.onGangsTopCommand.bind(this))
             .build(GangCommands.prototype.onGangsCommand.bind(this));
 
         // Promises that can be used for testing purposes.
@@ -436,12 +434,6 @@ class GangCommands {
             player.sendMessage(Message.GANGS_NONE_ONLINE);
 
         player.sendMessage(Message.GANGS_BEST_ADV);
-    }
-
-    // Called when a player uses the `/gangs top` command. Displays the top 5 gangs on the server
-    // regardless of whether they currently have players in-game.
-    onGangsTopCommand(player) {
-        // TODO(Russell): List the top 5 gangs from the database once we figure out rankings.
     }
 
     // Cleans up the state created by this class, i.e. unregisters the commands.

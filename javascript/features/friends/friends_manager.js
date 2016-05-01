@@ -74,7 +74,7 @@ class FriendsManager {
       delete this.loadPromises_[player.id];
 
     if (player.isRegistered())
-      this.lastActive_[player.account.userId] = Date.now();
+      this.lastActive_[player.userId] = Date.now();
   }
 
   // Called when a player logs in to their account. Will start loading their friends.
@@ -104,12 +104,12 @@ class FriendsManager {
         return;  // nothing to do, the relation already exists.
 
       this.friends_[player.id].push({
-        userId: friendPlayer.account.userId,
+        userId: friendPlayer.userId,
         name: friendPlayer.name,
         lastSeen: Date.now()
       });
 
-      return this.database_.query(ADD_QUERY, player.account.userId, friendPlayer.account.userId);
+      return this.database_.query(ADD_QUERY, player.userId, friendPlayer.userId);
     });
   }
 
@@ -138,7 +138,7 @@ class FriendsManager {
     if (!player.isRegistered() || !friendPlayer.isRegistered())
       return Promise.resolve(false /* has_friend */);
 
-    const friendUserId = friendPlayer.account.userId;
+    const friendUserId = friendPlayer.userId;
 
     return this.loadPromises_[player.id].then(() => {
       for (let friend of this.friends_[player.id]) {
@@ -187,7 +187,7 @@ class FriendsManager {
       // Remove the friend from the cached list of friends.
       this.friends_[player.id] = this.friends_[player.id].filter(f => removeUserId != f.userId);
 
-      return this.database_.query(REMOVE_QUERY, player.account.userId, removeUserId).then(() => {
+      return this.database_.query(REMOVE_QUERY, player.userId, removeUserId).then(() => {
         return removeNickname;
       });
     });

@@ -141,6 +141,8 @@ class Announcements {
         new playerName[MAX_PLAYER_NAME+1];
         GetPlayerName(playerId, playerName, sizeof(playerName));
 
+        printf("[DEBUG] Disconnect: %d (%s) due to %d", playerId, Player(playerId)->nicknameString(), reason);
+
         switch (reason) {
             case 0 /** timed out **/:
                 format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) has left {A9C4E4}Las Venturas Playground{CCCCCC} (timed out).",

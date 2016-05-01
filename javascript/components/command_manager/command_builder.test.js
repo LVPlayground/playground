@@ -164,14 +164,14 @@ describe('CommandBuilder', (it, beforeEach, afterEach) => {
     parameterSubject = null;
 
     assert.isNull(server.playerManager.getById(42));
-    listener(player, '42 0');
-    assert.equal(parameterSubject, player);
+    assert.isTrue(listener(player, '42 0'));
+    assert.isNull(parameterSubject);
 
     parameterSubject = null;
 
     assert.isNull(server.playerManager.find({ nameOrId: 'foobar', returnPlayer: true }));
-    listener(player, 'foobar ' + player.name);
-    assert.equal(parameterSubject, player);
+    assert.isTrue(listener(player, 'foobar ' + player.name));
+    assert.isNull(parameterSubject, player);
   });
 
   it('should check for ambiguity of sub-commands', assert => {

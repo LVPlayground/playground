@@ -6,6 +6,7 @@
     "ANNOUNCE_MINIGAME": "{CCD782}Sign up for the {838F31}%s{CCD782}! Type {838F31}%s{CCD782} to join ({838F31}%${CCD782}).",
 
     "COMMAND_ERROR_INSUFFICIENT_RIGHTS": "@error Sorry, this command is only available to %s.",
+    "COMMAND_ERROR_UNKNOWN_PLAYER": "@error Sorry, no player could be found for \"%s\".",
     "COMMAND_ERROR": "@error %s",
     "COMMAND_USAGE": "@usage %s",
 

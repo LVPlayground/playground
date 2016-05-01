@@ -220,8 +220,10 @@ class CommandBuilder {
               break;
 
             let subject = server.playerManager.find({ nameOrId: result[0], returnPlayer: true });
-            if (subject === null)
-              break;
+            if (subject === null) {
+              player.sendMessage(Message.COMMAND_ERROR_UNKNOWN_PLAYER, argumentString);
+              return true;
+            }
 
             return listener(player, argumentString.substr(result[0].length), [ ...carriedArguments, subject ]);
         }

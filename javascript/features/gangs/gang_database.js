@@ -15,7 +15,8 @@ const LOAD_GANG_FOR_PLAYER_QUERY = `
         gangs ON gangs.gang_id = users_gangs.gang_id
     WHERE
         users_gangs.user_id = ? AND
-        users_gangs.gang_id = ?`;
+        users_gangs.gang_id = ? AND
+        users_gangs.left_gang IS NULL`;
 
 // Query to determine whether any gang currently exists for a given name or tag.
 const GANG_EXISTS_QUERY = `

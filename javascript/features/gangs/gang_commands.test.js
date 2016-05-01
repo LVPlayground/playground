@@ -20,7 +20,6 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
     MockServer.bindTo(beforeEach, afterEach,
         () => {
             player = server.playerManager.getById(0 /* Gunther */);
-            player.level = Player.LEVEL_ADMINISTRATOR;
 
             gangManager = new GangManager(null /* database */);
             gangManager.database_ = new MockGangDatabase();
@@ -58,25 +57,6 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         gangManager.gangPlayers_.delete(player);
         gang.removePlayer(player);
     }
-
-    // Be sure to remove the LEVEL_ADMINISTRATOR overrides elsewhere when removing this.
-    it('should only be available to administrators', assert => {
-        assert.equal(player.level, Player.LEVEL_ADMINISTRATOR);
-
-        player.level = Player.LEVEL_PLAYER;
-
-        assert.isTrue(player.issueCommand('/gang'));
-
-        assert.equal(player.messages.length, 1);
-        assert.isTrue(player.messages[0].includes('only available to administrators'));
-
-        player.clearMessages();
-
-        assert.isTrue(player.issueCommand('/gangs'));
-
-        assert.equal(player.messages.length, 1);
-        assert.isTrue(player.messages[0].includes('only available to administrators'));
-    });
 
     it('should only allow registered players to create a gang', assert => {
         assert.isTrue(player.issueCommand('/gang create'));
@@ -186,7 +166,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         assert.isTrue(player.issueCommand('/gang invite Russell'));
         assert.equal(russell.messages.length, 2);
-        assert.equal(player.messages.length, 3);
+        assert.equal(player.messages.length, 2);
         assert.equal(
             player.messages[0], Message.format(Message.GANG_DID_INVITE, russell.name, russell.id));
 
@@ -297,7 +277,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.equal(player.messages.length, 0);
 
         return gangCommands.kickPromiseForTesting_.then(() => {
-            assert.equal(player.messages.length, 3);
+            assert.equal(player.messages.length, 2);
             assert.equal(player.messages[0],
                          Message.format(Message.GANG_KICK_REMOVED, russell.name, gang.name));
 
@@ -319,7 +299,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.equal(player.messages.length, 0);
 
         return gangCommands.kickPromiseForTesting_.then(() => {
-            assert.equal(player.messages.length, 3);
+            assert.equal(player.messages.length, 2);
             assert.equal(player.messages[0],
                          Message.format(Message.GANG_KICK_REMOVED, russell.name, gang.name));
 
@@ -338,7 +318,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.equal(player.messages.length, 0);
 
         return gangCommands.kickPromiseForTesting_.then(() => {
-            assert.equal(player.messages.length, 3);
+            assert.equal(player.messages.length, 2);
             assert.equal(player.messages[0],
                          Message.format(Message.GANG_KICK_REMOVED, 'OfflinePlayer', gang.name));
         });

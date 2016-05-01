@@ -28,8 +28,6 @@ The following commands are available as part of the feature:
   - **/gang settings**: Allows leaders to change settings of their gang.
   - **/gangs**: Display the gangs currently represented on Las Venturas Playground.
 
-_This feature is still under development, these commands are currently only available to admins._
-
 ## FAQ: Can I only kick online players from my gang?
 No. As the leader or manager of a gang, you can kick any member of the gang regardless of whether
 they are online or offline. You can see a full list of your gang's members by using the

@@ -20,7 +20,6 @@ class GangCommands {
 
         // Command: /gang
         server.commandManager.buildCommand('gang')
-            .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('create')
                 .build(GangCommands.prototype.onGangCreateCommand.bind(this))
             .sub('invite')
@@ -41,7 +40,6 @@ class GangCommands {
 
         // Command: /gangs
         server.commandManager.buildCommand('gangs')
-            .restrict(Player.LEVEL_ADMINISTRATOR)
             .build(GangCommands.prototype.onGangsCommand.bind(this));
 
         // Promises that can be used for testing purposes.

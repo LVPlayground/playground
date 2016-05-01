@@ -25,6 +25,7 @@ The following commands are available as part of the feature:
   - **/gang kick [member]**: Enables leaders and managers to kick members from their gang.
   - **/gang leave**: Leave the gang that you're currently part of.
   - **/gang members**: Display the gang's members, including those who aren't currently online.
+  - **/gang settings**: Allows leaders to change settings of their gang.
   - **/gangs**: Display the gangs currently represented on Las Venturas Playground.
 
 _This feature is still under development, these commands are currently only available to admins._
@@ -50,6 +51,7 @@ through this command. Instead, one of the leaders should open a
 The following list contains a number of items that have to be done before this feature can be
 launched on the server. Items may be added or removed whenever appropriate.
 
-  - Implement the **/gang settings** command.
+  - Finish the **/gang settings** command.
   - Notify players of important happenings whilst offline, e.g. having been kicked or promoted.
+  - Implement announcements to the right audiences (admins/gang members) of actions.
   - Implement support for gang chats based on the persistent gang system.

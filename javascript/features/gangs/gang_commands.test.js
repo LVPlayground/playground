@@ -427,6 +427,28 @@ describe('GangManager', (it, beforeEach, afterEach) => {
         });
     });
 
+    it('should only allow leaders to see and amend the gang settings', assert => {
+        assert.isTrue(player.issueCommand('/pgang settings'));
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.GANG_NOT_IN_GANG);
+
+        player.clearMessages();
+
+        addPlayerToGang(player, createGang(), Gang.ROLE_MANAGER);
+
+        assert.isTrue(player.issueCommand('/pgang settings'));
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.GANG_SETTINGS_NO_LEADER);
+    });
+
+    it('should enable leaders to change settings of their gang', assert => {
+
+        // TODO: Split this up when the settings have been implemented.
+
+    });
+
     it('should be able to display information about the gang command', assert => {
         assert.isTrue(player.issueCommand('/pgang'));
         assert.isAboveOrEqual(player.messages.length, 1);

@@ -33,6 +33,8 @@ class GangCommands {
                 .build(GangCommands.prototype.onGangLeaveCommand.bind(this))
             .sub('members')
                 .build(GangCommands.prototype.onGangMembersCommand.bind(this))
+            .sub('settings')
+                .build(GangCommands.prototype.onGangSettingsCommand.bind(this))
             .build(GangCommands.prototype.onGangCommand.bind(this));
 
         // /pgangs [top]
@@ -46,6 +48,7 @@ class GangCommands {
         this.kickPromiseForTesting_ = null;
         this.leavePromiseForTesting_ = null;
         this.membersPromiseForTesting_ = null;
+        this.settingsPromiseForTesting_ = null;
     }
 
     // Called when the player uses the `/gang create` command to create a new gang. If the player is
@@ -393,13 +396,38 @@ class GangCommands {
         }).then(() => resolveForTests());
     }
 
+    // Called when a player types the `/gang settings` command. This command is only available for
+    // gang leaders, and allows them to change their gang's settings.
+    onGangSettingsCommand(player) {
+        let resolveForTests = null;
+
+        const gang = this.manager_.gangForPlayer(player);
+        if (!gang) {
+            player.sendMessage(Message.GANG_NOT_IN_GANG);
+            return;
+        }
+
+        if (gang.getPlayerRole(player) !== Gang.ROLE_LEADER) {
+            player.sendMessage(Message.GANG_SETTINGS_NO_LEADER);
+            return;
+        }
+
+        // Create a "gang has been created" promise that tests can use to observe progress.
+        this.settingsPromiseForTesting_ = new Promise(resolve => resolveForTests = resolve);
+
+        // TODO(Russell): Implement the rest of the /settings command.
+
+        resolveForTests();
+    }
+
     // Called when the player uses the `/gang` command without parameters. It will show information
     // on the available sub commands, as well as the feature itself.
     onGangCommand(player) {
         player.sendMessage(Message.GANGS_HEADER);
         player.sendMessage(Message.GANG_INFO_1);
         player.sendMessage(Message.GANG_INFO_2);
-        player.sendMessage(Message.COMMAND_USAGE, '/gang [create/invite/join/kick/leave/members]');
+        player.sendMessage(
+            Message.COMMAND_USAGE, '/gang [create/invite/join/kick/leave/members/settings]');
     }
 
     // Called when the player uses the `/gangs` command. It will, by default, list the gangs that

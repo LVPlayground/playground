@@ -33,7 +33,7 @@ No. As the leader or manager of a gang, you can kick any member of the gang rega
 they are online or offline. You can see a full list of your gang's members by using the
 `/gang members` command.
 
-## FAQ: What happens then the gang's leader leaves?
+## FAQ: What happens when the gang's leader leaves?
 Every gang must have at least one leader. When the leader leaves the gang by using the `/gang leave`
 command, the following line of succession will apply:
 

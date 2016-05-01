@@ -135,6 +135,16 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.equal(player.messages[0], Message.GANG_INVITE_NO_MANAGER);
     });
 
+    it('should not allow invitations to oneself', assert => {
+        player.identify();
+
+        addPlayerToGang(player, createGang(), Gang.ROLE_MANAGER);
+
+        assert.isTrue(player.issueCommand('/gang invite ' + player.name));
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.GANG_INVITE_SELF);
+    });
+
     it('should not allow invitations to unregistered players', assert => {
         player.identify();
 

@@ -44,6 +44,7 @@
     "GANG_INTERNAL_ANNOUNCE_LEFT": "%s has left your gang.",
     "GANG_INVITE_NO_MANAGER": "@error Only leaders and managers of a gang can invite new members.",
     "GANG_INVITE_NOT_REGISTERED": "@error %s needs to register on https://sa-mp.nl/ before they can join your gang.",
+    "GANG_INVITE_SELF": "@error You cannot invite yourself, silly!",
     "GANG_INVITED": "{B1FC17}*** %s (Id: %d) invites you to join %s. Type `/gang join` to accept!",
     "GANG_JOIN_IN_GANG": "@error You must leave the %s before you can accept this invitation.",
     "GANG_JOIN_NO_INVITATION": "@error You have not been invited to join another gang.",

@@ -143,6 +143,12 @@ class GangCommands {
             return;
         }
 
+        // Players cannot invite themselves to the gang.
+        if (invitee === player) {
+            player.sendMessage(Message.GANG_INVITE_SELF);
+            return;
+        }
+
         // The invitee must be registered with Las Venturas Playground.
         if (!invitee.isRegistered()) {
             player.sendMessage(Message.GANG_INVITE_NOT_REGISTERED, invitee.name);

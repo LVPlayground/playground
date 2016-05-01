@@ -25,8 +25,9 @@ const GANG_EXISTS_QUERY = `
     FROM
         gangs
     WHERE
-        gangs.gang_deleted IS NULL AND
-        (LOWER(gangs.gang_tag) = ? OR LOWER(gangs.gang_name) = ?)
+        (LOWER(gangs.gang_tag) = ? OR LOWER(gangs.gang_name) = ?) AND
+        (NOT EXISTS(SELECT 1 FROM users_gangs WHERE users_gangs.gang_id = gangs.gang_id AND
+                                                    users_gangs.left_gang IS NOT NULL))
     LIMIT
         1`;
 

@@ -344,7 +344,7 @@ SlapCommand(playerId, targetPlayerId) {
         Player(playerId)->nicknameString(), Player(targetPlayerId)->nicknameString(), SLAP_REASONS[reason]);
     SendClientMessageToAllEx(Color::SlapAnnouncement, message);
 
-    GameTextForPlayer(playerId, "~y~slapped", 5000, 5);
+    GameTextForPlayer(targetPlayerId, "~y~slapped", 5000, 5);
 
     g_LastSlapTime[playerId] = Time->currentTime();
     g_LastSlappedBy[targetPlayerId] = playerId;

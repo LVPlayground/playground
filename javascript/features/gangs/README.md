@@ -53,4 +53,6 @@ launched on the server. Items may be added or removed whenever appropriate.
 
   - Finish the **/gang settings** command.
   - Notify players of important happenings whilst offline, e.g. having been kicked or promoted.
+  - Make sure that the player's color will be set to the gang color when joined.
+  - Disable the non-persistent gang system in the Pawn part of Las Venturas Playground.
   - Implement support for gang chats based on the persistent gang system.

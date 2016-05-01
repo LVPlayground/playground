@@ -60,7 +60,6 @@
     "GANG_NOT_IN_GANG": "@error You need to be part of a gang in order to be able to use this command.",
     "GANG_SETTINGS_NO_LEADER": "@error Only leaders may change the settings of a gang.",
     "GANGS_ALREADY_SET": "@error You need to leave your current gang first by using /gang leave.",
-    "GANGS_BEST_ADV": "{FFFFFF}Type `/gangs top` to list the best gangs on Las Venturas Playground.",
     "GANGS_HEADER": "{B1FC17}Gangs on Las Venturas Playground",
     "GANGS_NONE_ONLINE": "{B1FC17}There are no gang members on the server right now.",
     "GANGS_NOT_REGISTERED": "@error You need to register on https://sa-mp.nl/ before you can participate in a gang.",

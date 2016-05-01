@@ -489,8 +489,7 @@ class GangCommands {
     }
 
     // Called when the player uses the `/gangs` command. It will, by default, list the gangs that
-    // are currently represented on Las Venturas Playground, but the "top" sub-command is available
-    // to list the top 5 all-round gangs on the server.
+    // are currently represented on Las Venturas Playground.
     onGangsCommand(player) {
         let gangs = this.manager_.gangs;
 
@@ -518,8 +517,6 @@ class GangCommands {
 
         if (!gangs.length)
             player.sendMessage(Message.GANGS_NONE_ONLINE);
-
-        player.sendMessage(Message.GANGS_BEST_ADV);
     }
 
     // Cleans up the state created by this class, i.e. unregisters the commands.

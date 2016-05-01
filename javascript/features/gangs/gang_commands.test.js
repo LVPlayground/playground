@@ -488,7 +488,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
     it('should be able to list the local gangs on the server', assert => {
         assert.isTrue(player.issueCommand('/gangs'));
 
-        assert.equal(player.messages.length, 3);
+        assert.equal(player.messages.length, 2);
         assert.equal(player.messages[1], Message.GANGS_NONE_ONLINE);
 
         player.clearMessages();
@@ -500,7 +500,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         assert.isTrue(player.issueCommand('/gangs'));
 
-        assert.equal(player.messages.length, 3);
+        assert.equal(player.messages.length, 2);
         assert.isTrue(player.messages[1].includes(gangColor.toHexRGB()));
         assert.isTrue(player.messages[1].includes('HKO'));
         assert.isTrue(player.messages[1].includes('Hello Kitty Online'));

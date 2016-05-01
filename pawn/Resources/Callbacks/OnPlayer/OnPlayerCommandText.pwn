@@ -42,6 +42,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     if (Player(playerid)->isConnected() == false)
         return 1; // we haven't marked this player as being connected.
 
+    PlayerIdlePenalty->resetCurrentIdleTime(playerid);
+
     new cmd[256], idx;
     cmd = strtok(cmdtext, idx);
 

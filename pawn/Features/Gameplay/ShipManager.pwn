@@ -304,7 +304,8 @@ class ShipManager {
                 return 1;
             }
 
-            this->issueMoneyToPlayer(playerId);
+            if (!PlayerIdlePenalty->isIdle(playerId))
+                this->issueMoneyToPlayer(playerId);
 
             if (Player(playerId)->isAdministrator() == false) {
                 if (!LegacyIsKillTimeActivated()) {

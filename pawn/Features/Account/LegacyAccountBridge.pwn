@@ -129,6 +129,13 @@ class LegacyAccountBridge {
             customColor = ColorManager->playerCustomColor(playerId);
         }
 
+        new onlineTime = (gameplayhours[playerId] * 3600 + gameplayminutes[playerId] * 60 + gameplayseconds[playerId]);
+        new sessionTime = Time->currentTime() - Player(playerId)->connectionTime();
+
+        new penaltyTime = PlayerIdlePenalty->getPlayerPenaltyTime(playerId);
+        if (penaltyTime > 0 && penaltyTime < sessionTime)
+            onlineTime -= Math->floor(penaltyTime * 0.75);
+
         // TODO: Remove the following fields.
         // * plus_points
         // * money_bank_limit
@@ -191,7 +198,7 @@ class LegacyAccountBridge {
                 SavedPos2[playerId][3], SavedPos2[playerId][4],
 
                 // Gameplay statistics (values)
-                (gameplayhours[playerId] * 3600 + gameplayminutes[playerId] * 60 + gameplayseconds[playerId]),
+                onlineTime,
                 MyKills[playerId],
                 MyDeaths[playerId],
 
@@ -278,7 +285,7 @@ class LegacyAccountBridge {
                 SavedPos2[playerId][3], SavedPos2[playerId][4],
 
                 // Gameplay statistics (values)
-                (gameplayhours[playerId] * 3600 + gameplayminutes[playerId] * 60 + gameplayseconds[playerId]),
+                onlineTime,
                 MyKills[playerId],
                 MyDeaths[playerId],
 

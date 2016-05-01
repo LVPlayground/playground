@@ -41,16 +41,14 @@ const REMOVE_QUERY = `
 // An object of last active times is being maintained by this class, containing a map from nicknames
 // to either |CurrentlyOnline| or a timestamp representing their most recent disconnection time.
 class FriendsManager {
-  constructor(database, eventListener) {
+  constructor(database) {
     this.database_ = database;
 
     this.friends_ = {};
     this.lastActive_ = {};
     this.loadPromises_ = {};
 
-    eventListener.addEventListener('playerconnect', this.__proto__.onPlayerConnect.bind(this));
-    eventListener.addEventListener('playerdisconnect', this.__proto__.onPlayerDisconnect.bind(this));
-    eventListener.addEventListener('playerlogin', this.__proto__.onPlayerLogin.bind(this));
+    server.playerManager.addObserver(this);
   }
 
   // Called when a player connects to Las Venturas Playground. Players that added them to their
@@ -193,6 +191,10 @@ class FriendsManager {
         return removeNickname;
       });
     });
+  }
+
+  dispose() {
+    server.playerManager.removeObserver(this);
   }
 }
 

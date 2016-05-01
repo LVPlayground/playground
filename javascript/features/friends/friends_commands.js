@@ -101,6 +101,8 @@ class FriendsCommands {
         name  => player.sendMessage(Message.FRIENDS_REMOVED, name),
         error => player.sendMessage(Message.COMMAND_ERROR, error.message));
   }
+
+  dispose() {}
 }
 
 exports = FriendsCommands;

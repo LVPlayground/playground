@@ -25,6 +25,7 @@ testRunner.run('**/*.test.js').then(() => {
     server = new Server();
     server.featureManager.load({
         /** V2 features **/
+        announce:      require('features/announce/announce.js'),
         gangs:         require('features/gangs/gangs.js'),
 
         /** V1 features **/

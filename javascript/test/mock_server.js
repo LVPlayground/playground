@@ -68,6 +68,10 @@ class MockServer {
     // Gets the mocked database.
     get database() { return this.database_; }
 
+    // Returns whether the current Server instance is used for testing. Should be using sparsely,
+    // prefer injecting mocks where possible.
+    isTest() { return true; }
+
     // Disposes the MockServer and uninitializes all owned objects.
     dispose() {
         this.playerManager_.dispose();

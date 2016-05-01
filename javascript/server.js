@@ -32,6 +32,9 @@ class Server {
     // Gets the connection to the Las Venturas Playground database.
     get database() { return this.database_; }
 
+    // Returns whether the Server instance is used to drive tests.
+    isTest() { return false; }
+
     // Disposes and uninitializes the server object and all objects owned by it.
     dispose() {
         this.playerManager_.dispose();

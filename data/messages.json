@@ -43,6 +43,7 @@
     "GANG_INTERNAL_ANNOUNCE_JOINED": "%s (Id: %d) has joined your gang.",
     "GANG_INTERNAL_ANNOUNCE_KICKED": "%s has kicked %s from your gang.",
     "GANG_INTERNAL_ANNOUNCE_LEFT": "%s has left your gang.",
+    "GANG_INVITE_NO_HAMMER": "@error You already invited %s to the gang! Ask them to use `/gang join` instead.",
     "GANG_INVITE_NO_MANAGER": "@error Only leaders and managers of a gang can invite new members.",
     "GANG_INVITE_NOT_REGISTERED": "@error %s needs to register on https://sa-mp.nl/ before they can join your gang.",
     "GANG_INVITE_SELF": "@error You cannot invite yourself, silly!",

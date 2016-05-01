@@ -155,7 +155,16 @@ class GangCommands {
             return;
         }
 
-        this.invitations_.set(invitee, gang);
+        // People should not be able to hammer specific players with invites.
+        if (this.invitations_.has(invitee) && this.invitations_.get(invitee).inviter === player) {
+            player.sendMessage(Message.GANG_INVITE_NO_HAMMER, invitee.name);
+            return;
+        }
+
+        this.invitations_.set(invitee, {
+            gang: gang,
+            inviter: player
+        });
 
         player.sendMessage(Message.GANG_DID_INVITE, invitee.name, invitee.id);
         invitee.sendMessage(Message.GANG_INVITED, player.name, player.id, gang.name);
@@ -179,7 +188,7 @@ class GangCommands {
         }
 
         const currentGang = this.manager_.gangForPlayer(player);
-        const gang = this.invitations_.get(player);
+        const gang = this.invitations_.get(player).gang;
 
         if (currentGang !== null) {
             player.sendMessage(Message.GANG_JOIN_IN_GANG, currentGang.name);

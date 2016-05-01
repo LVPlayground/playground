@@ -1,5 +1,5 @@
 # Feature: Announce
-This is a non-user-facing feature that provides a number of APIs for other features to announce
+This is a non-triggerable feature that provides a number of APIs for other features to announce
 events to players, administrators and those watching on IRC. All settings, audience checks and
 formatting will be done as part of this module.
 

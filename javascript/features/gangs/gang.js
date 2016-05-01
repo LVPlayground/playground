@@ -61,7 +61,7 @@ class Gang {
     removePlayer(player) {
         this.members_.delete(player);
 
-        if (!server.isTest())
+        if (!server.isTest() && !player.isDisconnecting())
             pawnInvoke('OnUpdatePlayerGangColor', 'ii', player.id, 0 /* reset */);
     }
 }

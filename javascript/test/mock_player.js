@@ -24,14 +24,22 @@ class MockPlayer {
         this.messages_ = [];
 
         this.connected_ = true;
+        this.disconnecting_ = false;
     }
 
     get id() { return this.id_; }
 
     isConnected() { return this.connected_; }
 
+    isDisconnecting() { return this.disconnecting_; }
+
+    notifyDisconnecting() {
+        this.disconnecting_ = true;
+    }
+
     notifyDisconnected() {
         this.connected_ = false;
+        this.disconnecting_ = false;
     }
 
     get name() { return this.name_; }

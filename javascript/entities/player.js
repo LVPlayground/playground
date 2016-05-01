@@ -11,9 +11,11 @@ class Player extends Extendable {
     super();
 
     this.id_ = playerId;
-    this.connected_ = true;
     this.name_ = pawnInvoke('GetPlayerName', 'iS', playerId);
     this.ipAddress_ = pawnInvoke('GetPlayerIp', 'iS', playerId);
+
+    this.connected_ = true;
+    this.disconnecting_ = false;
 
     this.level_ = Player.LEVEL_PLAYER;
     this.userId_ = null;
@@ -27,9 +29,18 @@ class Player extends Extendable {
   // Returns whether the player is still connected to the server.
   isConnected() { return this.connected_; }
 
+  // Returns whether the player is currently in process of disconnecting.
+  isDisconnecting() { return this.disconnecting_; }
+
+  // Marks the player as being in process of disconnecting from the server.
+  notifyDisconnecting() {
+    this.disconnecting_ = true;
+  }
+
   // Marks the player as having disconnected from the server.
   notifyDisconnected() {
     this.connected_ = false;
+    this.disconnecting_ = false;
   }
 
   // Returns or updates the name of this player. Changing the player's name is currently not

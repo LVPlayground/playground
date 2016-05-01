@@ -176,7 +176,7 @@ class PlayerManager {
 
         const player = this.players_[playerId];
 
-        player.notifyDisconnected();
+        player.notifyDisconnecting();
 
         delete this.players_[playerId];
         delete this.playersByName_[player.name];
@@ -193,6 +193,8 @@ class PlayerManager {
         }
 
         this.notifyObservers('onPlayerDisconnect', player, reason);
+
+        player.notifyDisconnected();
     }
 
     // Factory method for creating a Player instance for the player with Id |playerId|. May be

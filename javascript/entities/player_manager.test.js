@@ -166,6 +166,8 @@ describe('PlayerManager', it => {
             return {
                 id: playerId,
                 name: playerMap[playerId],
+
+                notifyDisconnecting() {},
                 notifyDisconnected() {}
             };
         };

@@ -108,10 +108,7 @@ class PlayerEvents <playerId (MAX_PLAYERS)> {
  * implementation will reside. The cost of introducing an additional call here is negligible.
  */
 public OnPlayerConnect(playerid) { return PlayerEvents(playerid)->onPlayerConnect(); }
-public OnPlayerDisconnect(playerid, reason) {
-    printf("[DEBUG] OPD(%d, %d)", playerid, reason);
-    return PlayerEvents(playerid)->onPlayerDisconnect(reason);
-}
+public OnPlayerDisconnect(playerid, reason) { return PlayerEvents(playerid)->onPlayerDisconnect(reason); }
 public OnPlayerUpdate(playerid) { return PlayerEvents(playerid)->onPlayerUpdate(); }
 public OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ) { PlayerEvents(playerid)->onPlayerClickMap(fX, fY, fZ); return 1; }
 public OnPlayerClickTextDraw(playerid, Text:clickedid) { return PlayerEvents(playerid)->onPlayerClickTextDraw(clickedid); }

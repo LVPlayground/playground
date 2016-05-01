@@ -32,14 +32,14 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         });
 
     // Utility function to create a gang with the given information.
-    function createGang({ tag = 'HKO', name = 'Hello Kitty Online', color = null } = {}) {
+    function createGang({tag = 'HKO', name = 'Hello Kitty Online', goal = '', color = null} = {}) {
         const gangId = Math.floor(Math.random() * 1000000);
 
         gangManager.gangs_[gangId] = new Gang({
             id: gangId,
             tag: tag,
             name: name,
-            goal: 'Testing Gang',
+            goal: goal || 'Testing gang',
             color: color
         });
 
@@ -501,6 +501,29 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         // TODO: Split this up when the settings have been implemented.
 
+    });
+
+    it('should enable leaders to change the goal of their gang', assert => {
+        const gang = createGang({ tag: 'CC', goal: 'We rule!' });
+
+        player.identify();
+
+        addPlayerToGang(player, gang, Gang.ROLE_LEADER);
+
+        assert.equal(gang.goal, 'We rule!');
+
+        assert.isTrue(player.issueCommand('/gang settings'));
+        assert.equal(player.messages.length, 0);
+
+        player.respondToDialog({ listitem: 4 /* Gang goal */ }).then(() =>
+            player.respondToDialog({ inputtext: 'We rule more!' }));
+
+        return gangCommands.settingsPromiseForTesting_.then(() => {
+            assert.equal(gang.goal, 'We rule more!');
+
+            assert.equal(player.messages.length, 2);
+            assert.equal(player.messages[0], Message.GANG_SETTINGS_NEW_GOAL);
+        });
     });
 
     it('should be able to display information about the gang command', assert => {

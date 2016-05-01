@@ -206,6 +206,14 @@ class GangManager {
         });
     }
 
+    // Updates the |gang|'s goal to be |goal| in both the local state and in the database. Returns
+    // a promise that will be resolved when the goal has been updated.
+    updateGoal(gang, goal) {
+        return this.database_.updateGoal(gang, goal).then(() => {
+            gang.goal = goal;
+        });
+    }
+
     // Called when |player| has logged in to their Las Venturas Playground account. Will check with
     // the database to see if they should automatically join a gang.
     onPlayerLogin(player, eventData) {

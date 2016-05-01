@@ -109,6 +109,15 @@ const GANG_UPDATE_ROLE_QUERY = `
         users_gangs.gang_id = ? AND
         users_gangs.left_gang IS NULL`;
 
+// Query to update the goal of a gang.
+const GANG_UPDATE_GOAL_QUERY = `
+    UPDATE
+        gangs
+    SET
+        gangs.gang_goal = ?
+    WHERE
+        gangs.gang_id = ?`;
+
 // The gang database is responsible for interacting with the MySQL database for queries related to
 // gangs, e.g. loading, storing and updating the gang and player information.
 class GangDatabase {
@@ -243,6 +252,12 @@ class GangDatabase {
     updateRoleForUserId(userId, gang, role) {
         return this.database_.query(GANG_UPDATE_ROLE_QUERY, GangDatabase.toRoleString(role),
                                     userId, gang.id);
+    }
+
+    // Updates the goal of the |gang| to |goal|. Returns a promise that will be resolved when the
+    // database has been updated with the new information.
+    updateGoal(gang, goal) {
+        return this.database_.query(GANG_UPDATE_GOAL_QUERY, goal, gang.id);
     }
 
     // Utility function for converting a role string to a Gang.ROLE_* value.

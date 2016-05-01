@@ -108,6 +108,10 @@ class MockGangDatabase {
 
         return Promise.reject(new Error('No special behaviour implemented.'));
     }
+
+    updateGoal(gang, goal) {
+        return Promise.resolve(true);
+    }
 }
 
 // Magic userId values that can be used by the database.

@@ -2,7 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-// Encapsulates the information associated with a gang.
+// Encapsulates the information associated with a gang. Changes to data stored in this class should
+// only be made from the Gang Manager, since it may have to be propagated to multiple places.
 class Gang {
     constructor(info) {
         this.id_ = info.id;
@@ -23,8 +24,9 @@ class Gang {
     // Gets the name of this gang, as can be used for presentation.
     get name() { return this.name_; }
 
-    // Gets the goal of this gang, as can be used for presentation.
+    // Gets or sets the goal of this gang, as can be used for presentation.
     get goal() { return this.goal_; }
+    set goal(value) { this.goal_ = value; }
 
     // Gets the color of members of this gang.
     get color() { return this.color_; }

@@ -6,7 +6,43 @@ const CommandBuilder = require('components/command_manager/command_builder.js');
 const Dialog = require('components/dialogs/dialog.js');
 const Gang = require('features/gangs/gang.js');
 const Menu = require('components/menu/menu.js');
+const Question = require('components/dialogs/question.js');
 const QuestionSequence = require('components/dialogs/question_sequence.js');
+
+// Options for asking the player what the gang's full name should be.
+const NAME_QUESTION = {
+    question: 'Choose your gang\'s name',
+    message: 'What is the full name your gang will be known as?',
+    constraints: {
+        min: 4, max: 32,
+        explanation: 'The name of your gang must be between 4 and 32 characters long.',
+        abort: 'Sorry, a gang must have a valid name!'
+    }
+};
+
+// Options for asking the player what the gang's tag should be.
+const TAG_QUESTION = {
+    question: 'Choose your gang\'s tag',
+    message: 'What should we use as the gang\'s tag (without brackets)?',
+    constraints: {
+        min: 1, max: 5,
+        explanation: 'The tag of your gang must be between 1 and 5 characters long, and ' +
+                     'does not have to contain brackets.',
+        abort: 'Sorry, a gang must have a valid tag!'
+    }
+};
+
+// Options for asking the player what the gang's goal should be.
+const GOAL_QUESTION = {
+    question: 'Choose your gang\'s goal',
+    message: 'In one sentence, what is the purpose of your gang?',
+    constraints: {
+        min: 4, max: 128,
+        explanation: 'The goal of your gang must be between 4 and 128 characters long, ' +
+                     'just a brief sentence.',
+        abort: 'Sorry, a gang must have a valid goal!'
+    }
+};
 
 // Implements the commands available as part of the persistent gang feature. The primary ones are
 // /gang and /gangs, each of which has a number of sub-options available to them.
@@ -70,43 +106,8 @@ class GangCommands {
         // Create a "gang has been created" promise that tests can use to observe progress.
         this.createdPromiseForTesting_ = new Promise(resolve => resolveForTests = resolve);
 
-        // Options for asking the player what the gang's full name should be.
-        const nameQuestion = {
-            question: 'Choose your gang\'s name',
-            message: 'What is the full name your gang will be known as?',
-            constraints: {
-                min: 4, max: 32,
-                explanation: 'The name of your gang must be between 4 and 32 characters long.',
-                abort: 'Sorry, you cannot create a gang without a valid name!'
-            }
-        };
-
-        // Options for asking the player what the gang's tag should be.
-        const tagQuestion = {
-            question: 'Choose your gang\'s tag',
-            message: 'What should we use as the gang\'s tag (without brackets)?',
-            constraints: {
-                min: 1, max: 5,
-                explanation: 'The tag of your gang must be between 1 and 5 characters long, and ' +
-                             'does not have to contain brackets.',
-                abort: 'Sorry, you cannot create a gang without a valid tag!'
-            }
-        };
-
-        // Options for asking the player what the gang's goal should be.
-        const goalQuestion = {
-            question: 'Choose your gang\'s goal',
-            message: 'In one sentence, what is the purpose of your gang?',
-            constraints: {
-                min: 4, max: 128,
-                explanation: 'The goal of your gang must be between 4 and 128 characters long, ' +
-                             'just a brief sentence.',
-                abort: 'Sorry, you cannot create a gang without a goal!'
-            }
-        };
-
         // Ask the questions to the player, and only proceed if they answered everything.
-        QuestionSequence.ask(player, [ nameQuestion, tagQuestion, goalQuestion ]).then(answers => {
+        QuestionSequence.ask(player, [NAME_QUESTION, TAG_QUESTION, GOAL_QUESTION]).then(answers => {
             if (!answers)
                 return;  // they clicked `cancel` or got a dialog with an explanation
 
@@ -470,21 +471,32 @@ class GangCommands {
         });
 
         menu.addItem('Gang name', gang.name, () => {
-
+            // TODO(Russell): Implement support for updating the gang's name and tag.
         });
 
         menu.addItem('Gang tag', gang.tag, () => {
-
+            // TODO(Russell): Implement support for updating the gang's name and tag.
         });
 
         menu.addItem('Gang goal', gang.goal, () => {
+            Question.ask(player, GOAL_QUESTION).then(answer => {
+                if (!answer)
+                    return;  // the leader decided to not update the gang's goal
 
+                return this.manager_.updateGoal(gang, answer).then(() => {
+                    player.sendMessage(Message.GANG_SETTINGS_NEW_GOAL);
+
+                    this.manager_.announceToGang(
+                        gang, Message.GANG_INTERNAL_ANNOUNCE_NEW_GOAL, player.name, answer);
+
+                    this.announce_.announceToAdministrators(
+                        Message.GANG_ANNOUNCE_NEW_GOAL, player.name, player.id, gang.name, answer);
+                });
+
+            }).then(() => resolveForTests());
         });
 
         menu.displayForPlayer(player);
-
-        // TODO(Russell): Move this to the individual handling functions of the menu.
-        resolveForTests();
     }
 
     // Called when the player uses the `/gang` command without parameters. It will show information

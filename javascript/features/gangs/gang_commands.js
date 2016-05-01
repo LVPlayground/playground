@@ -5,6 +5,7 @@
 const CommandBuilder = require('components/command_manager/command_builder.js');
 const Dialog = require('components/dialogs/dialog.js');
 const Gang = require('features/gangs/gang.js');
+const Menu = require('components/menu/menu.js');
 const QuestionSequence = require('components/dialogs/question_sequence.js');
 
 // Implements the commands available as part of the persistent gang feature. The primary ones are
@@ -415,8 +416,21 @@ class GangCommands {
         // Create a "gang has been created" promise that tests can use to observe progress.
         this.settingsPromiseForTesting_ = new Promise(resolve => resolveForTests = resolve);
 
-        // TODO(Russell): Implement the rest of the /settings command.
 
+        });
+
+
+        });
+
+
+        });
+
+        // TODO(Russell): Add an option to change the gang's color. The color picker probably needs
+        // to be displayed by the gamemode, where that logic currently lives.
+
+        menu.displayForPlayer(player);
+
+        // TODO(Russell): Move this to the individual handling functions of the menu.
         resolveForTests();
     }
 

@@ -53,5 +53,4 @@ launched on the server. Items may be added or removed whenever appropriate.
 
   - Finish the **/gang settings** command.
   - Notify players of important happenings whilst offline, e.g. having been kicked or promoted.
-  - Implement announcements to gang members of events.
   - Implement support for gang chats based on the persistent gang system.

@@ -153,14 +153,15 @@ class GangCommands {
 
         this.invitations_.set(invitee, gang);
 
-        this.announce_.announceToAdministrators(
-            Message.GANG_ANNOUNCE_INVITATION, player.name, player.id, invitee.name, invitee.name,
-            gang.name);
-
-        // TODO(Russell): Announce the invitation to other gang members.
-
         player.sendMessage(Message.GANG_DID_INVITE, invitee.name, invitee.id);
         invitee.sendMessage(Message.GANG_INVITED, player.name, player.id, gang.name);
+
+        this.manager_.announceToGang(
+            gang, Message.GANG_INTERNAL_ANNOUNCE_INVITATION, player.name, invitee.name, invitee.id);
+
+        this.announce_.announceToAdministrators(
+            Message.GANG_ANNOUNCE_INVITATION, player.name, player.id, invitee.name, invitee.id,
+            gang.name);
     }
 
     // Called when the player uses the `/gang join` command to accept an earlier invitation. They
@@ -191,7 +192,9 @@ class GangCommands {
 
             player.sendMessage(Message.GANG_DID_JOIN, gang.name);
 
-            // TODO(Russell): Announce the join to other gang members.
+            this.manager_.announceToGang(
+                gang, Message.GANG_INTERNAL_ANNOUNCE_JOINED, player.name, player.id);
+
             this.announce_.announceToPlayers(Message.GANG_ANNOUNCE_JOINED, player.name, gang.name);
 
             this.invitations_.delete(player);
@@ -263,17 +266,19 @@ class GangCommands {
                 return;
             }
 
+            const nickname = memberToKick.nickname;
             const promise =
                 memberToKick.player ? this.manager_.removePlayerFromGang(memberToKick.player, gang)
                                     : this.manager_.removeMemberFromGang(memberToKick.userId);
 
             return promise.then(() => {
-                player.sendMessage(Message.GANG_KICK_REMOVED, memberToKick.nickname, gang.name);
+                player.sendMessage(Message.GANG_KICK_REMOVED, nickname, gang.name);
 
-                // TODO(Russell): Announce the change to the online gang members.
+                this.manager_.announceToGang(
+                    gang, Message.GANG_INTERNAL_ANNOUNCE_KICKED, player.name, nickname);
+
                 this.announce_.announceToAdministrators(
-                    Message.GANG_ANNOUNCE_KICKED, player.name, player.id, memberToKick.nickname,
-                    gang.name);
+                    Message.GANG_ANNOUNCE_KICKED, player.name, player.id, nickname, gang.name);
             });
 
         }).then(() => resolveForTests());
@@ -305,7 +310,9 @@ class GangCommands {
                 return this.manager_.removePlayerFromGang(player, gang).then(() => {
                     player.sendMessage(Message.GANG_DID_LEAVE, gang.name);
 
-                    // TODO(Russell): Announce the player's departure to other gang members.
+                    this.manager_.announceToGang(
+                        gang, Message.GANG_INTERNAL_ANNOUNCE_LEFT, player.name);
+
                     this.announce_.announceToPlayers(Message.GANG_ANNOUNCE_LEFT,
                         player.name, gang.name);
                 });
@@ -349,9 +356,11 @@ class GangCommands {
             return Promise.all(actions).then(() => {
                 player.sendMessage(Message.GANG_DID_LEAVE, gang.name);
 
-                // TODO(Russell): Announce the player's departure to other gang members.
+                this.manager_.announceToGang(
+                    gang, Message.GANG_INTERNAL_ANNOUNCE_LEFT, player.name);
+
                 this.announce_.announceToPlayers(Message.GANG_ANNOUNCE_LEFT,
-                        player.name, gang.name);
+                    player.name, gang.name);
             });
 
         }).then(() => resolveForTests());

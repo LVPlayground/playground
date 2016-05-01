@@ -24,6 +24,7 @@
     "FRIENDS_USAGE": "{FFFFFF}Use '/friends add' to add a friend or '/friends remove' to remove one.",
 
     "GANG_ANNOUNCE_CREATED": "%s has just founded the %s gang!",
+    "GANG_ANNOUNCE_INTERNAL": "{29B6F6}*** %s",
     "GANG_ANNOUNCE_INVITATION": "%s (Id: %d) has invited %s (Id: %d) to join the %s gang.",
     "GANG_ANNOUNCE_JOINED": "%s has joined the %s gang!",
     "GANG_ANNOUNCE_KICKED": "%s (Id: %d) has kicked %s from the %s gang.",
@@ -37,6 +38,10 @@
     "GANG_DID_LEAVE": "@success You have left the %s gang.",
     "GANG_INFO_1": "{FFFFFF}Gangs are groups of players that have declared an alliance and fight",
     "GANG_INFO_2": "{FFFFFF}together. They will persist between different playing sessions.",
+    "GANG_INTERNAL_ANNOUNCE_INVITATION": "%s has invited %s (Id: %d) to your gang.",
+    "GANG_INTERNAL_ANNOUNCE_JOINED": "%s (Id: %d) has joined your gang.",
+    "GANG_INTERNAL_ANNOUNCE_KICKED": "%s has kicked %s from your gang.",
+    "GANG_INTERNAL_ANNOUNCE_LEFT": "%s has left your gang.",
     "GANG_INVITE_NO_MANAGER": "@error Only leaders and managers of a gang can invite new members.",
     "GANG_INVITE_NOT_REGISTERED": "@error %s needs to register on https://sa-mp.nl/ before they can join your gang.",
     "GANG_INVITED": "{B1FC17}*** %s (Id: %d) invites you to join %s. Type `/gang join` to accept!",

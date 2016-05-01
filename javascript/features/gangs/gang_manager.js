@@ -27,6 +27,18 @@ class GangManager {
         return this.gangPlayers_.get(player) || null;
     }
 
+    // Sends the |message| to the |gang|. Optionally the |args| will be applied when the |message|
+    // is an instance of the Message class that requires formatting.
+    announceToGang(gang, message, ...args) {
+        if (message instanceof Message)
+            message = Message.format(message, ...args);
+
+        const formattedMessage = Message.format(Message.GANG_ANNOUNCE_INTERNAL, message);
+
+        for (let player of gang.members)
+            player.sendMessage(formattedMessage);
+    }
+
     // Creates a gang with |tag|, named |name| pursuing |goal| and stores it in the database. When
     // successful, |player| will be added to the gang as its leader. Error messages thrown by this
     // method may be presented to users.

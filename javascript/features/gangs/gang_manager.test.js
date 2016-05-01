@@ -19,6 +19,32 @@ describe('GangManager', (it, beforeEach, afterEach) => {
 
         }, () => gangManager.dispose());
 
+    it('should be able to announce something to gang members', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        assert.isNull(gangManager.gangForPlayer(gunther));
+
+        gunther.identify({ userId: MockGangDatabase.HKO_LEADER_USER_ID,
+                           gangId: MockGangDatabase.HKO_GANG_ID });
+
+        // The database result will be loaded through a promise, continue the test asynchronously.
+        return Promise.resolve().then(() => {
+            const gang = gangManager.gangForPlayer(gunther);
+            assert.isNotNull(gang);
+
+            gangManager.announceToGang(gang, 'Hello, members!');
+
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(gunther.messages[0],
+                         Message.format(Message.GANG_ANNOUNCE_INTERNAL, 'Hello, members!'));
+
+            assert.isFalse(gang.hasPlayer(russell));
+            assert.isNull(gangManager.gangForPlayer(russell));
+            assert.equal(russell.messages.length, 0);
+        });
+    });
+
     it('should create a gang and make the player its leader', assert => {
         const player = server.playerManager.getById(0 /* Gunther */);
         assert.isNotNull(player);

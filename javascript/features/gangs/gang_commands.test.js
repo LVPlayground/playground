@@ -264,6 +264,24 @@ describe('GangManager', (it, beforeEach, afterEach) => {
         });
     });
 
+    it('should not allow managers and leaders to kick themselves', assert => {
+        const gang = createGang({ tag: 'HKO2' });
+
+        player.identify();
+
+        addPlayerToGang(player, gang, Gang.ROLE_LEADER);
+
+        assert.isTrue(player.issueCommand('/pgang kick ' + player.name));
+        assert.equal(player.messages.length, 0);
+
+        return gangCommands.kickPromiseForTesting_.then(() => {
+            assert.equal(player.messages.length, 1);
+            assert.equal(player.messages[0], Message.GANG_KICK_SELF_NOT_ALLOWED);
+
+            assert.isTrue(gang.hasPlayer(player));
+        });
+    });
+
     it('should allow managers and leaders to kick people from the gang', assert => {
         const russell = server.playerManager.getById(1 /* Russell */);
         const gang = createGang({ tag: 'HKO2' });

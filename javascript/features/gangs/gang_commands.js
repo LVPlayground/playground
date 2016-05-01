@@ -247,6 +247,12 @@ class GangCommands {
 
             const memberToKick = matchingMembers[0];
 
+            // Bail out if |memberToKick| and |player| describe the same person.
+            if (memberToKick.player === player) {
+                player.sendMessage(Message.GANG_KICK_SELF_NOT_ALLOWED);
+                return;
+            }
+
             // Bail out if |player| is a manager and |member| is not a Member.
             if (playerRole === Gang.ROLE_MANAGER && memberToKick.role != Gang.ROLE_MEMBER) {
                 player.sendMessage(Message.GANG_KICK_NOT_ALLOWED);
@@ -416,12 +422,16 @@ class GangCommands {
         // Create a "gang has been created" promise that tests can use to observe progress.
         this.settingsPromiseForTesting_ = new Promise(resolve => resolveForTests = resolve);
 
+        let menu = new Menu('Which setting do you want to change?', ['Option', 'Current value']);
+        menu.addItem('The name', gang.name, () => {
 
         });
 
+        menu.addItem('The tag', gang.tag, () => {
 
         });
 
+        menu.addItem('The goal', gang.goal, () => {
 
         });
 

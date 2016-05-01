@@ -40,6 +40,7 @@
     "GANG_KICK_NO_MATCH": "@error No members match your description: %s.",
     "GANG_KICK_NOT_ALLOWED": "@error You are not allowed to kick leaders or managers from the gang.",
     "GANG_KICK_REMOVED": "@success %s has been kicked from the %s gang.",
+    "GANG_KICK_SELF_NOT_ALLOWED": "@error You cannot kick yourself from the gang! Use `/gang leave` instead.",
     "GANG_LEAVE_CONFIRMATION": "Are you sure that you want to leave the %s gang?",
     "GANG_LEAVE_PROMO_CONFIRMATION": "Are you sure that you want to leave the %s gang? %s (now a %s) will be promoted to its leader.",
     "GANG_MEMBERS_HEADER": "{B1FC17}Members of the [%s] %s gang:",

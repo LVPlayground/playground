@@ -448,20 +448,25 @@ class GangCommands {
         this.settingsPromiseForTesting_ = new Promise(resolve => resolveForTests = resolve);
 
         let menu = new Menu('Which setting do you want to change?', ['Option', 'Current value']);
-        menu.addItem('The name', gang.name, () => {
+        menu.addItem('Member settings', '-', () => {
+            // should handle promotion and demotion of members (i.e. updateRoleForUserId)
+        });
+
+        menu.addItem('Member color', '-', () => {
+            // needs to talk to pawn to display cake's color picker
+        });
+
+        menu.addItem('Gang name', gang.name, () => {
 
         });
 
-        menu.addItem('The tag', gang.tag, () => {
+        menu.addItem('Gang tag', gang.tag, () => {
 
         });
 
-        menu.addItem('The goal', gang.goal, () => {
+        menu.addItem('Gang goal', gang.goal, () => {
 
         });
-
-        // TODO(Russell): Add an option to change the gang's color. The color picker probably needs
-        // to be displayed by the gamemode, where that logic currently lives.
 
         menu.displayForPlayer(player);
 

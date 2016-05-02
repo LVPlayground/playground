@@ -53,6 +53,9 @@ class GangChatManager {
             if (recipients.has(onlinePlayer))
                 return;  // they have already received the message
 
+            if (onlinePlayer.messageLevel < 2)
+                return;  // they do not wish to see gang chat
+
             onlinePlayer.sendMessage(Message.GANG_CHAT, gang.tag, player.id, player.name, message);
             recipients.add(onlinePlayer);
         });

@@ -86,6 +86,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         gang.addPlayer(player);
 
         russell.level = Player.LEVEL_ADMINISTRATOR;
+        russell.messageLevel = 2 /* see gang chat */;
 
         const expectedMessage =
             Message.format(Message.GANG_CHAT, gang.tag, player.id, player.name, 'hello');
@@ -111,6 +112,28 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
 
         assert.equal(russell.messages.length, 1);
         assert.equal(russell.messages[0], expectedMessage);
+    });
+
+    it('should skip administrators if their message level is lower than two', assert => {
+        const player = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        const gang = gangs.createGang();
+        gang.addPlayer(player);
+
+        russell.level = Player.LEVEL_ADMINISTRATOR;
+        russell.messageLevel = 0 /* do not see gang chat */;
+
+        const expectedMessage =
+            Message.format(Message.GANG_CHAT, gang.tag, player.id, player.name, 'hello');
+
+        assert.isFalse(gang.hasPlayer(russell));
+        assert.isTrue(sendChat(player, '!  hello  '));
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], expectedMessage);
+
+        assert.equal(russell.messages.length, 0);
     });
 
     it('should make an announcement when somebody buys Seti @ Home', assert => {

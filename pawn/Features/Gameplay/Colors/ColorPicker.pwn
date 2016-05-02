@@ -183,6 +183,9 @@ class ColorPicker {
         if (m_globalColorPickerTextDraw[1] == clickedId) {
             this->hideColorPicker(playerId);
 
+            if (m_colorPickerTarget[playerId] == JavaScriptColor)
+                CallRemoteFunction("OnColorPickerResponse", "ii", playerId, 0 /* invalid color */);
+
             return 1;
         }
 
@@ -228,6 +231,10 @@ class ColorPicker {
 
                     SendClientMessage(playerId, Color::Success, "Your colour has been changed!");
                 }
+
+                case JavaScriptColor: {
+                    CallRemoteFunction("OnColorPickerResponse", "ii", playerId, color);
+                }
             }
 
             return 1;
@@ -237,3 +244,16 @@ class ColorPicker {
         return 0;
     }
 };
+
+forward OnColorPickerRequest(playerid);
+forward OnColorPickerResponse(playerid, color);
+
+public OnColorPickerRequest(playerid) {
+    if (!Player(playerid)->isConnected())
+        return;
+
+    ColorPicker->showColorPicker(playerid, JavaScriptColor);
+}
+
+public OnColorPickerResponse(playerid, color) {}
+

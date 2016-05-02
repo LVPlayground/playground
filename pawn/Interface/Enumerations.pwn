@@ -69,5 +69,6 @@ enum Casino {
  */
 enum ColorPickerResultTarget {
     GangColor,
-    PlayerColor
+    PlayerColor,
+    JavaScriptColor
 };

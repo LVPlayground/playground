@@ -51,7 +51,7 @@ class DialogManager {
     this.dialogs_[dialogId].resolve({
       response: event.response,
       listitem: event.listitem,
-      inputtext: event.inputtext
+      inputtext: event.inputtext.trim()
     });
 
     delete this.playerDialogs_[event.playerid];

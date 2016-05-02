@@ -15,7 +15,8 @@ describe('QuestionSequence', (it, beforeEach, afterEach) => {
     // Common sequence of simple questions used by the sequence.
     const questionSequence = [
         { question: 'First question' },
-        { question: 'Second question', constraints: { min: 5, explanation: 'Five?!1' } },
+        { question: 'Second question',
+          constraints: { validation: /^(.){5,}$/, explanation: 'Five?!1' } },
         { question: 'Third question' }
     ];
 

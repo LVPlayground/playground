@@ -24,8 +24,7 @@ class Question {
     // that will be resolved with the answer when available or NULL when no answer has been entered.
     static ask(player, { question, message = null, leftButton = 'Next', constraints = {} } = {}) {
         const checkedConstraints = {
-            min: constraints.min || null,
-            max: constraints.max || null,
+            validation: constraints.validation || null,
             explanation: constraints.explanation || null,
             abort: constraints.abort || null
         };
@@ -48,7 +47,7 @@ class Question {
         this.leftButton_ = leftButton;
         this.constraints_ = constraints;
 
-        this.message_ = this.compileMessage(message);
+        this.message_ = message;
 
         this.attempts_ = 3;  // maximum number of attempts a player can do
 
@@ -123,35 +122,11 @@ class Question {
         });
     }
 
-    // Compiles the message for the question, which will include a textual description of the
-    // constraints that should be applied.
-    compileMessage(message) {
-        message = message || '';
-
-        let constraints = [];
-
-        // Length constraints
-        if (this.constraints_.min !== null && this.constraints_.max !== null)
-            constraints.push(this.constraints_.min + '-' + this.constraints_.max + ' characters');
-        else if (this.constraints_.max !== null)
-            constraints.push('no more than ' + this.constraints_.max + ' characters');
-        else if (this.constraints_.min !== null)
-            constraints.push('at least ' + this.constraints_.min + ' characters');
-
-        if (constraints.length)
-            return message + ' (' + constraints.join(', ') + ')';
-
-        return message;
-    }
-
     // Verifies that the constraints of this question have been met for |input|, and returns true
     // or false depending on that.
     verifyConstraints(input) {
-        if (this.constraints_.min !== null && input.length < this.constraints_.min)
-            return false;  // too short
-
-        if (this.constraints_.max !== null && input.length > this.constraints_.max)
-            return false;  // too long
+        if (this.constraints_.validation !== null && !this.constraints_.validation.test(input))
+            return false;  // validation fails
 
         return true;
     }

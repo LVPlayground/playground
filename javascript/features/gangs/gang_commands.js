@@ -16,8 +16,10 @@ const NAME_QUESTION = {
     question: 'Choose your gang\'s name',
     message: 'What is the full name your gang will be known as?',
     constraints: {
-        min: 4, max: 32,
-        explanation: 'The name of your gang must be between 4 and 32 characters long.',
+        validation: /^[a-zA-Z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð\s,\.'\-~_]{4,32}$/u,
+        explanation: 'The name of your gang must be between 4 and 32 characters long and should ' +
+                     'not contain very exotic characters.',
+
         abort: 'Sorry, a gang must have a valid name!'
     }
 };
@@ -27,9 +29,10 @@ const TAG_QUESTION = {
     question: 'Choose your gang\'s tag',
     message: 'What should we use as the gang\'s tag (without brackets)?',
     constraints: {
-        min: 1, max: 5,
-        explanation: 'The tag of your gang must be between 1 and 5 characters long, and ' +
-                     'does not have to contain brackets.',
+        validation: /^[a-zA-Z0-9,\.\-_]{1,5}/,
+        explanation: 'The tag of your gang must be between 1 and 5 characters long (without the ' +
+                     'brackets) and be a valid username.',
+
         abort: 'Sorry, a gang must have a valid tag!'
     }
 };
@@ -39,9 +42,10 @@ const GOAL_QUESTION = {
     question: 'Choose your gang\'s goal',
     message: 'In one sentence, what is the purpose of your gang?',
     constraints: {
-        min: 4, max: 128,
-        explanation: 'The goal of your gang must be between 4 and 128 characters long, ' +
-                     'just a brief sentence.',
+        validation: /^[a-zA-Z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð\s,\.'\-~_!?]{4,32}$/u,
+        explanation: 'The goal of your gang must be between 4 and 128 characters long and should ' +
+                     'not contain very exotic characters.',
+
         abort: 'Sorry, a gang must have a valid goal!'
     }
 };

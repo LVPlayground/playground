@@ -19,7 +19,7 @@ describe('Question', (it, beforeEach, afterEach) => {
     const constraintQuestion = {
         question: 'Example question?',
         constraints: {
-            min: 5,
+            validation: /^(.){5,}$/,
             explanation: 'Type at least five characters.',
             abort: 'Sorry, you did not enter a correct value.',
         }
@@ -45,6 +45,18 @@ describe('Question', (it, beforeEach, afterEach) => {
         const promise = Question.ask(player, constraintQuestion);
 
         player.respondToDialog({ inputtext: 'four' }).then(() =>
+            player.respondToDialog({ response: 0 }));
+
+        return promise.then(answer => assert.isNull(answer));
+    });
+
+    it('should fail validation if a regular expression was passed and the input fails', assert => {
+        let validatedConstraintQuestion = JSON.parse(JSON.stringify(constraintQuestion));
+        validatedConstraintQuestion.constraints.validation = /^\d+$/;  // numbers only
+
+        const promise = Question.ask(player, validatedConstraintQuestion);
+
+        player.respondToDialog({ inputtext: 'not just numbers' }).then(() =>
             player.respondToDialog({ response: 0 }));
 
         return promise.then(answer => assert.isNull(answer));

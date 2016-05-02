@@ -150,7 +150,7 @@ class Player extends Extendable {
     if (message instanceof Message)
       message = Message.format(message, ...args);
 
-    pawnInvoke('SendClientMessage', 'iis', this.id_, 0x000000FF, message.toString());
+    pawnInvoke('SendClientMessage', 'iis', this.id_, 0xFFFFFFFF, message.toString());
   }
 
   // -----------------------------------------------------------------------------------------------

@@ -55,6 +55,7 @@
     "GANG_INTERNAL_ANNOUNCE_NEW_NAME": "%s has updated your gang's name to \"%s\".",
     "GANG_INTERNAL_ANNOUNCE_NEW_TAG": "%s has updated your gang's tag to [%s].",
     "GANG_INTERNAL_ANNOUNCE_ROLE_CHANGED": "%s has %s %s to %s of your gang.",
+    "GANG_INVITE_IS_MEMBER": "@error %s is a member of your gang already.",
     "GANG_INVITE_NO_HAMMER": "@error You already invited %s to the gang! Ask them to use `/gang join` instead.",
     "GANG_INVITE_NO_MANAGER": "@error Only leaders and managers of a gang can invite new members.",
     "GANG_INVITE_NOT_REGISTERED": "@error %s needs to register on https://sa-mp.nl/ before they can join your gang.",

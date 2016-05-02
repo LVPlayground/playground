@@ -162,6 +162,12 @@ class GangCommands {
             return;
         }
 
+        // The invitee cannot be part of the gang already.
+        if (gang.hasPlayer(invitee)) {
+            player.sendMessage(Message.GANG_INVITE_IS_MEMBER, invitee.name);
+            return;
+        }
+
         // People should not be able to hammer specific players with invites.
         if (this.invitations_.has(invitee) && this.invitations_.get(invitee).inviter === player) {
             player.sendMessage(Message.GANG_INVITE_NO_HAMMER, invitee.name);
@@ -720,7 +726,7 @@ class GangCommands {
         // the gang, which is the order they will be presented in.
         gangs.sort((lhs, rhs) => {
             if (lhs.memberCount > rhs.memberCount)
-                return 1;
+                return -1;
 
             return lhs.name.localeCompare(rhs.name);
         });

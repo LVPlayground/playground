@@ -156,6 +156,21 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
             player.messages[0], Message.format(Message.GANG_INVITE_NOT_REGISTERED, 'Russell'));
     });
 
+    it('should not allow invitations to unregistered players', assert => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+        const gang = createGang();
+
+        player.identify();
+        russell.identify();
+
+        addPlayerToGang(player, gang, Gang.ROLE_MANAGER);
+        addPlayerToGang(russell, gang, Gang.ROLE_MEMBER);
+
+        assert.isTrue(player.issueCommand('/gang invite Russell'));
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.format(Message.GANG_INVITE_IS_MEMBER, 'Russell'));
+    });
+
     it('should not allow people to hammer others with invitations', assert => {
         const russell = server.playerManager.getById(1 /* Russell */);
 

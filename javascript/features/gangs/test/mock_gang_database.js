@@ -123,6 +123,10 @@ class MockGangDatabase {
         return Promise.reject(new Error('No special behaviour implemented.'));
     }
 
+    updateColor(gang, color) {
+        return Promise.resolve(true);
+    }
+
     updateName(gang, name) {
         return Promise.resolve(true);
     }

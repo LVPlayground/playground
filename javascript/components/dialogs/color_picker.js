@@ -48,7 +48,7 @@ class ColorPicker {
     // which will respond to JavaScript through an event that will be listened to.
     showPicker() {
         if (server.isTest()) {
-            this.onColorPicked({ playerid: this.player_.id, color: Color.RED.toNumberRGB() });
+            this.onColorPicked({ playerid: this.player_.id, color: Color.RED.toNumberRGBA() });
             return;
         }
 

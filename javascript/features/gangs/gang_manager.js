@@ -206,6 +206,14 @@ class GangManager {
         });
     }
 
+    // Update the |gang|'s color, as well as the color of all its in-game members, to |color|. Will
+    // return a promise that will be resolved when the color has been updated.
+    updateColor(gang, color) {
+        return this.database_.updateColor(gang, color).then(() => {
+            gang.updateColor(color);
+        });
+    }
+
     // Updates the |gang|'s name to be |name|. Will return a promise when the operation has
     // completed, TRUE means the tag has been changed, FALSE means another gang owns it.
     updateName(gang, name) {

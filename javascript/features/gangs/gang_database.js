@@ -137,6 +137,15 @@ const GANG_UPDATE_ROLE_QUERY = `
         users_gangs.gang_id = ? AND
         users_gangs.left_gang IS NULL`;
 
+// Query to update the color of a gang.
+const GANG_UPDATE_COLOR_QUERY = `
+    UPDATE
+        gangs
+    SET
+        gangs.gang_color = ?
+    WHERE
+        gangs.gang_id = ?`;
+
 // Query to update the name of a gang.
 const GANG_UPDATE_NAME_QUERY = `
     UPDATE
@@ -314,6 +323,12 @@ class GangDatabase {
     updateRoleForUserId(userId, gang, role) {
         return this.database_.query(GANG_UPDATE_ROLE_QUERY, GangDatabase.toRoleString(role),
                                     userId, gang.id);
+    }
+
+    // Updates the color of the |gang| to |color|. Returns a promise that will be resolved when the
+    // database has been updated with the new information.
+    updateColor(gang, color) {
+        return this.database_.query(GANG_UPDATE_COLOR_QUERY, color.toNumberRGBA(), gang.id);
     }
 
     // Updates the name of the |gang| to |name|. Returns a promise that will be resolved when the

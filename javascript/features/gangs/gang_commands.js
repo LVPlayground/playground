@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const ColorPicker = require('components/dialogs/color_picker.js');
 const CommandBuilder = require('components/command_manager/command_builder.js');
 const Dialog = require('components/dialogs/dialog.js');
 const Gang = require('features/gangs/gang.js');
@@ -467,7 +468,28 @@ class GangCommands {
         });
 
         menu.addItem('Member color', '-', () => {
-            // needs to talk to pawn to display cake's color picker
+            ColorPicker.show(player).then(color => {
+                if (!color)
+                    return;  // the leader decided to not update the gang's color
+
+                const colorName = '0x' + color.toHexRGB();
+
+                return this.manager_.updateColor(gang, color).then(() => {
+                    this.manager_.announceToGang(
+                        gang, Message.GANG_INTERNAL_ANNOUNCE_NEW_COLOR, player.name, colorName);
+
+                    this.announce_.announceToAdministrators(
+                        Message.GANG_ANNOUNCE_NEW_COLOR, player.name, player.id, gang.name,
+                        colorName);
+
+                    const formattedMessage =
+                        Message.format(Message.GANG_SETTINGS_NEW_COLOR, colorName);
+
+                    return Dialog.displayMessage(
+                        player, 'The color has been updated', formattedMessage, 'OK', '');
+                });
+
+            }).then(() => resolveForTests());
         });
 
         menu.addItem('Gang name', gang.name, () => {

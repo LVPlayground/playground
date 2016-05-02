@@ -45,7 +45,7 @@ class Gang {
         this.members_.set(player, role);
 
         if (!server.isTest() && this.color_ !== null)
-            pawnInvoke('OnUpdatePlayerGangColor', 'ii', player.id, this.color_);
+            pawnInvoke('OnUpdatePlayerGangColor', 'ii', player.id, this.color_.toNumberRGBA());
     }
 
     // Returns the role |player| has in the gang, or NULL when they are not part of the gang.
@@ -67,6 +67,18 @@ class Gang {
 
         if (!server.isTest() && !player.isDisconnecting())
             pawnInvoke('OnUpdatePlayerGangColor', 'ii', player.id, 0 /* reset */);
+    }
+
+    // Updates the color of this gang, as well of all in-game players, to |color|.
+    updateColor(color) {
+        this.color_ = color;
+
+        for (let player of this.members_.keys()) {
+            if (player.isDisconnecting())
+                continue;
+
+            pawnInvoke('OnUpdatePlayerGangColor', 'ii', player.id, this.color_.toNumberRGBA());
+        }
     }
 }
 

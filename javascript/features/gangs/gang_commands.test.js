@@ -503,6 +503,31 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
     });
 
+    it('should enable leaders to change the color of their gang', assert => {
+        const gang = createGang();
+
+        player.identify();
+
+        addPlayerToGang(player, gang, Gang.ROLE_LEADER);
+
+        assert.equal(gang.color, null);
+
+        assert.isTrue(player.issueCommand('/gang settings'));
+        assert.equal(player.messages.length, 0);
+
+        player.respondToDialog({ listitem: 1 /* Gang color */ }).then(() =>
+            player.respondToDialog({ response: 0 /* Ok */}));
+
+        return gangCommands.settingsPromiseForTesting_.then(() => {
+            assert.deepEqual(gang.color, Color.RED /* defined in color_manager.js */);
+
+            assert.equal(player.messages.length, 1);
+            assert.equal(player.lastDialog,
+                Message.format(Message.GANG_SETTINGS_NEW_COLOR, '0x' + gang.color.toHexRGB()));
+        });
+    });
+
+
     it('should not enable leaders to change the name to an existing one', assert => {
         const gang = createGang({ name: 'Candy Crush' });
 

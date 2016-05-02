@@ -52,7 +52,8 @@ class ColorPicker {
             return;
         }
 
-        pawnInvoke('OnColorPickerRequest', 'i', this.player_.id);
+        Promise.resolve().then(() =>
+            pawnInvoke('OnColorPickerRequest', 'i', this.player_.id));
     }
 
     // Called when a color has been picked for a player. Will resolve the promise if that player

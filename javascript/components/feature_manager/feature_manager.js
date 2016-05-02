@@ -10,7 +10,7 @@ let DependencyGraph = require('components/feature_manager/dependency_graph.js'),
 class FeatureManager {
   constructor() {
     this.dependencyGraph_ = new DependencyGraph();
-    this.registeredFeatures_ = null;
+    this.registeredFeatures_ = {};
     this.features_ = {};
   }
 

@@ -24,11 +24,15 @@ testRunner.run('**/*.test.js').then(() => {
 
     server = new Server();
     server.featureManager.load({
-        /** V2 features **/
+        // Foundational features
         announce:      require('features/announce/announce.js'),
+
+        // Gang-related features
+        gangChat:      require('features/gang_chat/gang_chat.js'),
         gangs:         require('features/gangs/gangs.js'),
 
-        /** V1 features **/
+
+        // v1 features - these need to be cleaned up
         activityLog:   require('features/activity_log/activity_log.js'),
         commands:      require('features/commands/commands_feature.js'),
         deathFeed:     require('features/death_feed/death_feed_feature.js'),

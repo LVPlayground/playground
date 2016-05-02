@@ -624,7 +624,7 @@ class GangCommands {
                     const formattedMessage =
                         Message.format(Message.GANG_SETTINGS_ROLE_UPDATED, member.nickname, role);
 
-                    const mutation = newRole > currentRole ? 'promoted' : 'demoted';
+                    const mutation = newRole < currentRole ? 'promoted' : 'demoted';
 
                     this.manager_.announceToGang(
                         gang, null, Message.GANG_INTERNAL_ANNOUNCE_ROLE_CHANGED, player.name,

@@ -471,11 +471,53 @@ class GangCommands {
         });
 
         menu.addItem('Gang name', gang.name, () => {
-            // TODO(Russell): Implement support for updating the gang's name and tag.
+            Question.ask(player, NAME_QUESTION).then(answer => {
+                if (!answer)
+                    return;  // the leader decided to not update the gang's name
+
+                const formerName = gang.name;
+
+                return this.manager_.updateName(gang, answer).then(result => {
+                    if (!result) {
+                        return Dialog.displayMessage(
+                            player, 'Unable to update the name', Message.GANG_SETTINGS_NAME_TAKEN,
+                            'OK' /* leftButton */, '' /* rightButton */);
+                    }
+
+                    player.sendMessage(Message.GANG_SETTINGS_NEW_NAME);
+
+                    this.manager_.announceToGang(
+                        gang, Message.GANG_INTERNAL_ANNOUNCE_NEW_NAME, player.name, answer);
+
+                    this.announce_.announceToAdministrators(
+                        Message.GANG_ANNOUNCE_NEW_NAME, player.name, player.id, formerName, answer);
+                });
+
+            }).then(() => resolveForTests());
         });
 
         menu.addItem('Gang tag', gang.tag, () => {
-            // TODO(Russell): Implement support for updating the gang's name and tag.
+            Question.ask(player, TAG_QUESTION).then(answer => {
+                if (!answer)
+                    return;  // the leader decided to not update the gang's tag
+
+                return this.manager_.updateTag(gang, answer).then(result => {
+                    if (!result) {
+                        return Dialog.displayMessage(
+                            player, 'Unable to update the tag', Message.GANG_SETTINGS_TAG_TAKEN,
+                            'OK' /* leftButton */, '' /* rightButton */);
+                    }
+
+                    player.sendMessage(Message.GANG_SETTINGS_NEW_TAG);
+
+                    this.manager_.announceToGang(
+                        gang, Message.GANG_INTERNAL_ANNOUNCE_NEW_TAG, player.name, answer);
+
+                    this.announce_.announceToAdministrators(
+                        Message.GANG_ANNOUNCE_NEW_TAG, player.name, player.id, gang.name, answer);
+                });
+
+            }).then(() => resolveForTests());
         });
 
         menu.addItem('Gang goal', gang.goal, () => {
@@ -496,7 +538,12 @@ class GangCommands {
             }).then(() => resolveForTests());
         });
 
-        menu.displayForPlayer(player);
+        // Display the menu for the |player|. If the resulting value is NULL, it means that they
+        // dismissed the dialog and we may have to resolve the promise for testing purposes.
+        menu.displayForPlayer(player).then(result => {
+            if (!result)
+                resolveForTests();
+        });
     }
 
     // Called when the player uses the `/gang` command without parameters. It will show information

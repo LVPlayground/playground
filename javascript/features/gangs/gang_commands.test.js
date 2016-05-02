@@ -503,6 +503,101 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
     });
 
+    it('should not enable leaders to change the name to an existing one', assert => {
+        const gang = createGang({ name: 'Candy Crush' });
+
+        player.identify();
+
+        addPlayerToGang(player, gang, Gang.ROLE_LEADER);
+
+        assert.equal(gang.name, 'Candy Crush');
+
+        assert.isTrue(player.issueCommand('/gang settings'));
+        assert.equal(player.messages.length, 0);
+
+        player.respondToDialog({ listitem: 2 /* Gang name */ }).then(() =>
+            player.respondToDialog({ inputtext: 'Hello Kitty Online' })).then(() =>
+            player.respondToDialog({ response: 0 /* Ok */}));
+
+        return gangCommands.settingsPromiseForTesting_.then(() => {
+            assert.equal(gang.name, 'Candy Crush');
+
+            assert.equal(player.messages.length, 0);
+            assert.equal(player.lastDialog, Message.GANG_SETTINGS_NAME_TAKEN);
+        });
+    });
+
+    it('should enable leaders to change the name of their gang', assert => {
+        const gang = createGang({ name: 'Candy Crush' });
+
+        player.identify();
+
+        addPlayerToGang(player, gang, Gang.ROLE_LEADER);
+
+        assert.equal(gang.name, 'Candy Crush');
+
+        assert.isTrue(player.issueCommand('/gang settings'));
+        assert.equal(player.messages.length, 0);
+
+        player.respondToDialog({ listitem: 2 /* Gang name */ }).then(() =>
+            player.respondToDialog({ inputtext: 'Thundering Offline Kittens' }));
+
+        return gangCommands.settingsPromiseForTesting_.then(() => {
+            assert.equal(gang.name, 'Thundering Offline Kittens');
+
+            assert.equal(player.messages.length, 2);
+            assert.equal(player.messages[0], Message.GANG_SETTINGS_NEW_NAME);
+        });
+    });
+
+    it('should not enable leaders to change the tag to an existing one', assert => {
+        const gang = createGang({ tag: 'CC' });
+
+        player.identify();
+
+        addPlayerToGang(player, gang, Gang.ROLE_LEADER);
+
+        assert.equal(gang.tag, 'CC');
+
+        assert.isTrue(player.issueCommand('/gang settings'));
+        assert.equal(player.messages.length, 0);
+
+        player.respondToDialog({ listitem: 3 /* Gang tag */ }).then(() =>
+            player.respondToDialog({ inputtext: 'HKO' })).then(() =>
+            player.respondToDialog({ response: 0 /* Ok */}));
+
+        return gangCommands.settingsPromiseForTesting_.then(() => {
+            assert.equal(gang.tag, 'CC');
+
+            assert.equal(player.messages.length, 0);
+            assert.equal(player.lastDialog, Message.GANG_SETTINGS_TAG_TAKEN);
+        });
+    });
+
+    it('should enable leaders to change the tag of their gang', assert => {
+        const gang = createGang({ tag: 'CC' });
+
+        player.identify();
+
+        addPlayerToGang(player, gang, Gang.ROLE_LEADER);
+
+        assert.equal(gang.tag, 'CC');
+
+        assert.isTrue(player.issueCommand('/gang settings'));
+        assert.equal(player.messages.length, 0);
+
+        player.respondToDialog({ listitem: 3 /* Gang tag */ }).then(() =>
+            player.respondToDialog({ inputtext: 'GG' })).then(() =>
+            player.respondToDialog({ response: 0 /* Ok */}));
+
+        return gangCommands.settingsPromiseForTesting_.then(() => {
+            assert.equal(gang.tag, 'GG');
+
+            assert.equal(player.messages.length, 2);
+            assert.equal(player.messages[0], Message.GANG_SETTINGS_NEW_TAG);
+        });
+    });
+
     it('should enable leaders to change the goal of their gang', assert => {
         const gang = createGang({ tag: 'CC', goal: 'We rule!' });
 

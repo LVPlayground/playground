@@ -206,6 +206,34 @@ class GangManager {
         });
     }
 
+    // Updates the |gang|'s name to be |name|. Will return a promise when the operation has
+    // completed, TRUE means the tag has been changed, FALSE means another gang owns it.
+    updateName(gang, name) {
+        return this.database_.doesNameExist(name).then(exists => {
+            if (exists)
+                return false;  // name is owned by another gang
+
+            return this.database_.updateName(gang, name).then(() => {
+                gang.name = name;
+                return true;
+            });
+        });
+    }
+
+    // Updates the |gang|'s tag to be |tag|. Will return a promise when the operation has completed,
+    // TRUE means the tag has been changed, FALSE means another gang owns it.
+    updateTag(gang, tag) {
+        return this.database_.doesTagExist(tag).then(exists => {
+            if (exists)
+                return false;  // tag is owned by another gang
+
+            return this.database_.updateTag(gang, tag).then(() => {
+                gang.tag = tag;
+                return true;
+            });
+        });
+    }
+
     // Updates the |gang|'s goal to be |goal| in both the local state and in the database. Returns
     // a promise that will be resolved when the goal has been updated.
     updateGoal(gang, goal) {

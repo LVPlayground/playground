@@ -20,9 +20,11 @@ class Gang {
 
     // Gets the tag used by members of this gang.
     get tag() { return this.tag_; }
+    set tag(value) { this.tag_ = value; }
 
     // Gets the name of this gang, as can be used for presentation.
     get name() { return this.name_; }
+    set name(value) { this.name_ = value; }
 
     // Gets or sets the goal of this gang, as can be used for presentation.
     get goal() { return this.goal_; }

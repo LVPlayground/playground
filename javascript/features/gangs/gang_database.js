@@ -32,6 +32,34 @@ const GANG_EXISTS_QUERY = `
     LIMIT
         1`;
 
+// Query to determine whether any gang currently exists for a given name.
+const NAME_EXISTS_QUERY = `
+    SELECT
+        gangs.gang_tag,
+        gangs.gang_name
+    FROM
+        gangs
+    WHERE
+        LOWER(gangs.gang_name) = ? AND
+        NOT EXISTS(SELECT 1 FROM users_gangs WHERE users_gangs.gang_id = gangs.gang_id AND
+                                                   users_gangs.left_gang IS NOT NULL)
+    LIMIT
+        1`;
+
+// Query to determine whether any gang currently exists for a given tag.
+const TAG_EXISTS_QUERY = `
+    SELECT
+        gangs.gang_tag,
+        gangs.gang_name
+    FROM
+        gangs
+    WHERE
+        LOWER(gangs.gang_tag) = ? AND
+        NOT EXISTS(SELECT 1 FROM users_gangs WHERE users_gangs.gang_id = gangs.gang_id AND
+                                                   users_gangs.left_gang IS NOT NULL)
+    LIMIT
+        1`;
+
 // Query to read a full list of members from the database.
 const GANG_MEMBERS_QUERY = `
     SELECT
@@ -109,6 +137,24 @@ const GANG_UPDATE_ROLE_QUERY = `
         users_gangs.gang_id = ? AND
         users_gangs.left_gang IS NULL`;
 
+// Query to update the name of a gang.
+const GANG_UPDATE_NAME_QUERY = `
+    UPDATE
+        gangs
+    SET
+        gangs.gang_name = ?
+    WHERE
+        gangs.gang_id = ?`;
+
+// Query to update the tag of a gang.
+const GANG_UPDATE_TAG_QUERY = `
+    UPDATE
+        gangs
+    SET
+        gangs.gang_tag = ?
+    WHERE
+        gangs.gang_id = ?`;
+
 // Query to update the goal of a gang.
 const GANG_UPDATE_GOAL_QUERY = `
     UPDATE
@@ -162,6 +208,22 @@ class GangDatabase {
                 tag: info.gang_tag,
                 name: info.gang_name
             };
+        });
+    }
+
+    // Returns a promise that will be resolved with a boolean indicating whether any existing gang
+    // (with members) is using the given |name|.
+    doesNameExist(name) {
+        return this.database_.query(NAME_EXISTS_QUERY, name.toLowerCase()).then(results => {
+            return results.rows.length > 0;
+        });
+    }
+
+    // Returns a promise that will be resolved with a boolean indicating whether any existing gang
+    // (with members) is using the given |tag|.
+    doesTagExist(tag) {
+        return this.database_.query(TAG_EXISTS_QUERY, tag.toLowerCase()).then(results => {
+            return results.rows.length > 0;
         });
     }
 
@@ -252,6 +314,18 @@ class GangDatabase {
     updateRoleForUserId(userId, gang, role) {
         return this.database_.query(GANG_UPDATE_ROLE_QUERY, GangDatabase.toRoleString(role),
                                     userId, gang.id);
+    }
+
+    // Updates the name of the |gang| to |name|. Returns a promise that will be resolved when the
+    // database has been updated with the new information.
+    updateName(gang, name) {
+        return this.database_.query(GANG_UPDATE_NAME_QUERY, goal, gang.id);
+    }
+
+    // Updates the tag of the |gang| to |tag|. Returns a promise that will be resolved when the
+    // database has been updated with the new information.
+    updateTag(gang, tag) {
+        return this.database_.query(GANG_UPDATE_TAG_QUERY, goal, gang.id);
     }
 
     // Updates the goal of the |gang| to |goal|. Returns a promise that will be resolved when the

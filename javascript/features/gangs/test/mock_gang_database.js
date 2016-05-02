@@ -36,6 +36,20 @@ class MockGangDatabase {
         return Promise.resolve({ available: true });
     }
 
+    doesNameExist(name) {
+        if (name === 'Hello Kitty Online')
+            return Promise.resolve(true);
+
+        return Promise.resolve(false);
+    }
+
+    doesTagExist(tag) {
+        if (tag === 'HKO')
+            return Promise.resolve(true);
+
+        return Promise.resolve(false);
+    }
+
     createGangWithLeader(player, tag, name, goal) {
         if (tag === 'CC') {
             return Promise.resolve({
@@ -107,6 +121,14 @@ class MockGangDatabase {
             return Promise.resolve();  // `CC` case in determineSuccessionAfterDeparture().
 
         return Promise.reject(new Error('No special behaviour implemented.'));
+    }
+
+    updateName(gang, name) {
+        return Promise.resolve(true);
+    }
+
+    updateTag(gang, tag) {
+        return Promise.resolve(true);
     }
 
     updateGoal(gang, goal) {

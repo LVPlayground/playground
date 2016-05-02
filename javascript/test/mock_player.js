@@ -23,6 +23,8 @@ class MockPlayer {
 
         this.messages_ = [];
 
+        this.messageLevel_ = 0;
+
         this.connected_ = true;
         this.disconnecting_ = false;
     }
@@ -80,6 +82,10 @@ class MockPlayer {
 
     // Gets the messages that have been sent to this player.
     get messages() { return this.messages_; }
+
+    // Gets or sets the message level at which this player would like to receive messages.
+    get messageLevel() { return this.messageLevel_; }
+    set messageLevel(value) { this.messageLevel_ = value; }
 
     // Identifies the player to a fake account. The options can be specified optionally.
     identify({ userId = 42, gangId = 0 } = {}) {

@@ -21,6 +21,7 @@ class Player extends Extendable {
     this.userId_ = null;
 
     this.activity_ = Player.PLAYER_ACTIVITY_NONE;
+    this.messageLevel_ = 0;
   }
 
   // Returns the id of this player. This attribute is read-only.
@@ -130,6 +131,10 @@ class Player extends Extendable {
     pawnInvoke('OnPlayerActivityChange', 'ii', this.id_, activity);
   }
 
+  // Gets the message level at which this player would like to receive messages. Only applicable
+  // to administrators on the server.
+  get messageLevel() { return this.messageLevel_; }
+
   // Displays the dialog for |caption| explained by |message| to the player.
   showDialog(dialogId, style, caption, message, leftButton, rightButton) {
     pawnInvoke('ShowPlayerDialog', 'iiissss', this.id_, dialogId, style, caption, message,
@@ -189,6 +194,15 @@ self.addEventListener('playeractivitychange', event => {
     return;
 
   player.activity_ = event.activity;
+});
+
+// Called when a player's message level changes. This event is custom to Las Venturas Playground.
+self.addEventListener('messagelevelchange', event => {
+  const player = server.playerManager.getById(event.playerid);
+  if (!player)
+    return;
+
+  player.messageLevel_ = event.activity;
 });
 
 // Utility function: convert a player's level to a string.

@@ -80,6 +80,7 @@ class MessageLevelsManager {
             return 1;
         }
 
+        CallRemoteFunction("OnMessageLevelChange", "ii", playerId, messageLevel);
         m_playerMessageLevel[playerId] = messageLevel;
 
         format(message, sizeof(message), "Message level changed to: {FFFFFF}%d (%s).", messageLevel,
@@ -107,7 +108,8 @@ class MessageLevelsManager {
      * @param playerId Id of the player to set the message level for.
      * @param messageLevel Level of receiving messages.
      */
-    public inline setPlayerMessageLevel(playerId, messageLevel) {
+    public setPlayerMessageLevel(playerId, messageLevel) {
+        CallRemoteFunction("OnMessageLevelChange", "ii", playerId, messageLevel);
         m_playerMessageLevel[playerId] = messageLevel;
     }
 
@@ -121,3 +123,6 @@ class MessageLevelsManager {
         return (m_playerMessageLevel[playerId]);
     }
 };
+
+forward OnMessageLevelChange(playerid, messagelevel);
+public OnMessageLevelChange(playerid, messagelevel) {}

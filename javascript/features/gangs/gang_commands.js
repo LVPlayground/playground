@@ -498,7 +498,7 @@ class GangCommands {
 
                 return this.manager_.updateColor(gang, color).then(() => {
                     this.manager_.announceToGang(
-                        gang, player, Message.GANG_INTERNAL_ANNOUNCE_NEW_COLOR, player.name,
+                        gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_COLOR, player.name,
                         colorName);
 
                     this.announce_.announceToAdministrators(
@@ -530,7 +530,7 @@ class GangCommands {
                     }
 
                     this.manager_.announceToGang(
-                        gang, player, Message.GANG_INTERNAL_ANNOUNCE_NEW_NAME, player.name, answer);
+                        gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_NAME, player.name, answer);
 
                     this.announce_.announceToAdministrators(
                         Message.GANG_ANNOUNCE_NEW_NAME, player.name, player.id, formerName, answer);
@@ -556,7 +556,7 @@ class GangCommands {
                     }
 
                     this.manager_.announceToGang(
-                        gang, player, Message.GANG_INTERNAL_ANNOUNCE_NEW_TAG, player.name, answer);
+                        gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_TAG, player.name, answer);
 
                     this.announce_.announceToAdministrators(
                         Message.GANG_ANNOUNCE_NEW_TAG, player.name, player.id, gang.name, answer);
@@ -576,7 +576,7 @@ class GangCommands {
 
                 return this.manager_.updateGoal(gang, answer).then(() => {
                     this.manager_.announceToGang(
-                        gang, player, Message.GANG_INTERNAL_ANNOUNCE_NEW_GOAL, player.name, answer);
+                        gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_GOAL, player.name, answer);
 
                     this.announce_.announceToAdministrators(
                         Message.GANG_ANNOUNCE_NEW_GOAL, player.name, player.id, gang.name, answer);
@@ -611,6 +611,7 @@ class GangCommands {
         }
 
         const memberName = member.nickname;
+        const currentRole = member.role;
 
         // The menu has to be personalized based on the |member| and their current role.
         return new Promise(resolve => {
@@ -619,9 +620,15 @@ class GangCommands {
             // Function that can be referred to for updating a member's role to a certain value.
             function updateMemberRole(newRole) {
                 this.manager_.updateRoleForUserId(member.userId, gang, newRole).then(() => {
+                    const role = GangDatabase.toRoleString(newRole).toLowerCase();
                     const formattedMessage =
-                        Message.format(Message.GANG_SETTINGS_ROLE_UPDATED, member.nickname,
-                                       GangDatabase.toRoleString(newRole).toLowerCase());
+                        Message.format(Message.GANG_SETTINGS_ROLE_UPDATED, member.nickname, role);
+
+                    const mutation = newRole > currentRole ? 'promoted' : 'demoted';
+
+                    this.manager_.announceToGang(
+                        gang, null, Message.GANG_INTERNAL_ANNOUNCE_ROLE_CHANGED, player.name,
+                        mutation, member.nickname, role);
 
                     return Dialog.displayMessage(
                         player, 'The member has been updated!', formattedMessage, 'OK', '');
@@ -638,6 +645,17 @@ class GangCommands {
                 promise.then(() => {
                     const formattedMessage =
                         Message.format(Message.GANG_SETTINGS_MEMBER_KICKED, member.nickname);
+
+                    this.manager_.announceToGang(
+                        gang, null, Message.GANG_INTERNAL_ANNOUNCE_KICKED, player.name,
+                        member.nickname);
+
+                    this.announce_.announceToAdministrators(
+                        Message.GANG_ANNOUNCE_KICKED, player.name, player.id, member.nickname,
+                        gang.name);
+
+                    if (member.player.isConnected())
+                        member.player.sendMessage(Message.GANG_KICKED, player.name, gang.name);
 
                     return Dialog.displayMessage(
                         player, 'The member has been kicked!', formattedMessage, 'OK', '');

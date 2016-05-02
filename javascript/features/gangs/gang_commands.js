@@ -6,6 +6,7 @@ const ColorPicker = require('components/dialogs/color_picker.js');
 const CommandBuilder = require('components/command_manager/command_builder.js');
 const Dialog = require('components/dialogs/dialog.js');
 const Gang = require('features/gangs/gang.js');
+const GangDatabase = require('features/gangs/gang_database.js');
 const Menu = require('components/menu/menu.js');
 const Question = require('components/dialogs/question.js');
 const QuestionSequence = require('components/dialogs/question_sequence.js');
@@ -464,7 +465,24 @@ class GangCommands {
 
         let menu = new Menu('Which setting do you want to change?', ['Option', 'Current value']);
         menu.addItem('Member settings', '-', () => {
-            // should handle promotion and demotion of members (i.e. updateRoleForUserId)
+            this.manager_.getFullMemberList(gang).then(members => {
+                let memberMenu = new Menu('Which member do you want to update?', ['Name', 'Role']);
+                members.forEach(member => {
+                    const roleString = GangDatabase.toRoleString(member.role);
+
+                    memberMenu.addItem(member.nickname, roleString, () => {
+                        this.onGangSettingsMemberCommand(player, member).then(() =>
+                            resolveForTests());
+                    });
+                });
+
+                // The onGangSettingsMemberCommand() method will take over unless the dialog has
+                // been dismissed by the leader, in which case the promise needs to be resolved.
+                memberMenu.displayForPlayer(player).then(result => {
+                    if (!result)
+                        resolveForTests();
+                });
+            });
         });
 
         menu.addItem('Member color', '-', () => {
@@ -572,6 +590,92 @@ class GangCommands {
             if (!result)
                 resolveForTests();
         });
+    }
+
+    // Called when the settings of a given gang member have to be updated. The gang leader can
+    // promote or demote everybody in the gang, except for themselves.
+    onGangSettingsMemberCommand(player, member) {
+        const gang = this.manager_.gangForPlayer(player);
+
+        // The leader cannot modify their own settings. If they want to leave the gang, they will
+        // have to use `/gang leave` instead.
+        if (member.player === player) {
+            return Dialog.displayMessage(
+                player, 'You cannot change your own settings!', Message.GANG_SETTINGS_SELF_CHANGE,
+                'OK' /* leftButton */, '' /* rightButton */);
+        }
+
+        const memberName = member.nickname;
+
+        // The menu has to be personalized based on the |member| and their current role.
+        return new Promise(resolve => {
+            let optionMenu = new Menu('What do you want to do?');
+
+            // Function that can be referred to for updating a member's role to a certain value.
+            function updateMemberRole(newRole) {
+                this.manager_.updateRoleForUserId(member.userId, gang, newRole).then(() => {
+                    const formattedMessage =
+                        Message.format(Message.GANG_SETTINGS_ROLE_UPDATED, member.nickname,
+                                       GangDatabase.toRoleString(newRole).toLowerCase());
+
+                    return Dialog.displayMessage(
+                        player, 'The member has been updated!', formattedMessage, 'OK', '');
+
+                }).then(resolve());
+            }
+
+            // Function that can be used for kicking the current member from the gang.
+            function removeMemberFromGang() {
+                const promise = member.player && member.player.isConnected()
+                                    ? this.manager_.removePlayerFromGang(member.player, gang)
+                                    : this.manager_.removeMemberFromGang(member.userId, gang);
+
+                promise.then(() => {
+                    const formattedMessage =
+                        Message.format(Message.GANG_SETTINGS_MEMBER_KICKED, member.nickname);
+
+                    return Dialog.displayMessage(
+                        player, 'The member has been kicked!', formattedMessage, 'OK', '');
+
+                }).then(resolve());
+            }
+
+            // Bound references to the above functions to use as the event listeners.
+            const updateToLeader = updateMemberRole.bind(this, Gang.ROLE_LEADER);
+            const updateToManager = updateMemberRole.bind(this, Gang.ROLE_MANAGER);
+            const updateToMember = updateMemberRole.bind(this, Gang.ROLE_MEMBER);
+            const removeFromGang = removeMemberFromGang.bind(this);
+
+            // Add the "promote X to Y" and "demote X to Y" options.
+            switch (member.role) {
+                case Gang.ROLE_LEADER:
+                    optionMenu.addItem('Demote ' + memberName + ' to manager.', updateToManager);
+                    optionMenu.addItem('Demote ' + memberName + ' to member.', updateToMember);
+                    break;
+                case Gang.ROLE_MANAGER:
+                    optionMenu.addItem('Promote ' + memberName + ' to leader.', updateToLeader);
+                    optionMenu.addItem('Demote ' + memberName + ' to member.', updateToMember);
+                    break;
+                case Gang.ROLE_MEMBER:
+                    optionMenu.addItem('Promote ' + memberName + ' to leader.', updateToLeader);
+                    optionMenu.addItem('Promote ' + memberName + ' to manager.', updateToManager);
+                    break;
+                default:
+                    throw new Error('Invalid role: ' + member.role);
+            }
+
+            // Add the "kick X from gang" option.
+            optionMenu.addItem('Kick ' + memberName + ' from the gang.', removeFromGang);
+
+            // Display the menu to the |player|. Listens to the |result| in case the dialog will be
+            // dismissed by the player, in which case the promise shouldn't be left hanging.
+            optionMenu.displayForPlayer(player).then(result => {
+                if (!result)
+                    resolve();
+            });
+        });
+
+        return Promise.resolve();
     }
 
     // Called when the player uses the `/gang` command without parameters. It will show information

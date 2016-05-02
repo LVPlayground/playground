@@ -45,9 +45,15 @@ Unless the leader is the only person in the gang, it is not possible to complete
 through this command. Instead, one of the leaders should open a
 [help request](https://forum.sa-mp.nl/forumdisplay.php?fid=13) on the forums.
 
+## FAQ: How do I transfer leadership to another player?
+Transferring leadership of a gang is a two-step process that requires both of you to be online. The
+current leader has to type `/gang settings` and promote the other player to _Leader_. The newly
+appointed leader then has to type `/gang settings` and demote the former leader to another level.
+
+However, keep in mind that it's fine for a gang to have multiple leaders. Why not share the joy? :)
+
 ## TODO
 The following list contains a number of items that have to be done before this feature can be
 launched on the server. Items may be added or removed whenever appropriate.
 
-  - Finish the **/gang settings** command.
   - Implement support for gang chats based on the persistent gang system.

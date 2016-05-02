@@ -199,8 +199,7 @@ class GangManager {
                 if (player.userId !== userId)
                     continue;
 
-                // TODO(Russell): Inform |player| of their promotion.
-                console.log('--- found player to update');
+                gang.addPlayer(player, role);
                 return;
             }
         });

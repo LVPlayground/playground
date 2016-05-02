@@ -497,10 +497,74 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.equal(player.messages[0], Message.GANG_SETTINGS_NO_LEADER);
     });
 
-    it('should enable leaders to change settings of their gang', assert => {
+    it('should not enable leaders to edit their own settings', assert => {
+        player.identify();
 
-        // TODO: Split this up when the settings have been implemented.
+        addPlayerToGang(player, createGang(), Gang.ROLE_LEADER);
 
+        assert.isTrue(player.issueCommand('/gang settings'));
+        assert.equal(player.messages.length, 0);
+
+        player.respondToDialog({ listitem: 0 /* Gang members */ }).then(() =>
+            player.respondToDialog({ listitem: 0 /* The |player| */ })).then(() =>
+            player.respondToDialog({ response: 0 /* Ok */}));
+
+        return gangCommands.settingsPromiseForTesting_.then(() => {
+            assert.equal(player.messages.length, 0);
+            assert.equal(player.lastDialog, Message.GANG_SETTINGS_SELF_CHANGE);
+        });
+    });
+
+    it('should enable leaders to change the role of other members', assert => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+        const gang = createGang();
+
+        player.identify();
+        russell.identify({ userId: 1337 });
+
+        addPlayerToGang(player, gang, Gang.ROLE_LEADER);
+        addPlayerToGang(russell, gang, Gang.ROLE_MANAGER);
+
+        assert.isTrue(player.issueCommand('/gang settings'));
+        assert.equal(player.messages.length, 0);
+
+        player.respondToDialog({ listitem: 0 /* Gang members */ }).then(() =>
+            player.respondToDialog({ listitem: 1 /* The |russell| */ })).then(() =>
+            player.respondToDialog({ listitem: 0 /* Promote to leader */}));
+
+        return gangCommands.settingsPromiseForTesting_.then(() => {
+            assert.equal(player.messages.length, 0);
+            assert.equal(player.lastDialog,
+                Message.format(Message.GANG_SETTINGS_ROLE_UPDATED, russell.name, 'leader'));
+
+            assert.equal(gang.getPlayerRole(russell), Gang.ROLE_LEADER);
+        });
+    });
+
+    it('should enable leaders to kick other members from the gang', assert => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+        const gang = createGang();
+
+        player.identify();
+        russell.identify({ userId: 1337 });
+
+        addPlayerToGang(player, gang, Gang.ROLE_LEADER);
+        addPlayerToGang(russell, gang, Gang.ROLE_MANAGER);
+
+        assert.isTrue(player.issueCommand('/gang settings'));
+        assert.equal(player.messages.length, 0);
+
+        player.respondToDialog({ listitem: 0 /* Gang members */ }).then(() =>
+            player.respondToDialog({ listitem: 1 /* The |russell| */ })).then(() =>
+            player.respondToDialog({ listitem: 2 /* Kick from gang */}));
+
+        return gangCommands.settingsPromiseForTesting_.then(() => {
+            assert.equal(player.messages.length, 0);
+            assert.equal(player.lastDialog,
+                Message.format(Message.GANG_SETTINGS_MEMBER_KICKED, russell.name));
+
+            assert.isFalse(gang.hasPlayer(russell));
+        });
     });
 
     it('should enable leaders to change the color of their gang', assert => {

@@ -118,7 +118,10 @@ class MockGangDatabase {
 
     updateRoleForUserId(userId, gang, role) {
         if (gang.tag == 'CC' && userId == 42)
-            return Promise.resolve();  // `CC` case in determineSuccessionAfterDeparture().
+            return Promise.resolve();  // `CC` case in determineSuccessionAfterDeparture()
+
+        if (gang.tag == 'HKO' && userId == 1337)
+            return Promise.resolve();  // kick member from gang through `/gang settings` case
 
         return Promise.reject(new Error('No special behaviour implemented.'));
     }

@@ -165,7 +165,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         addPlayerToGang(player, createGang(), Gang.ROLE_MANAGER);
 
         assert.isTrue(player.issueCommand('/gang invite ' + russell.name));
-        assert.equal(player.messages.length, 2);
+        assert.equal(player.messages.length, 1);
         assert.equal(
             player.messages[0], Message.format(Message.GANG_DID_INVITE, russell.name, russell.id));
 
@@ -199,7 +199,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         assert.isTrue(player.issueCommand('/gang invite Russell'));
         assert.equal(russell.messages.length, 2);
-        assert.equal(player.messages.length, 2);
+        assert.equal(player.messages.length, 1);
         assert.equal(
             player.messages[0], Message.format(Message.GANG_DID_INVITE, russell.name, russell.id));
 
@@ -310,7 +310,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.equal(player.messages.length, 0);
 
         return gangCommands.kickPromiseForTesting_.then(() => {
-            assert.equal(player.messages.length, 2);
+            assert.equal(player.messages.length, 1);
             assert.equal(player.messages[0],
                          Message.format(Message.GANG_KICK_REMOVED, russell.name, gang.name));
 
@@ -332,7 +332,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.equal(player.messages.length, 0);
 
         return gangCommands.kickPromiseForTesting_.then(() => {
-            assert.equal(player.messages.length, 2);
+            assert.equal(player.messages.length, 1);
             assert.equal(player.messages[0],
                          Message.format(Message.GANG_KICK_REMOVED, russell.name, gang.name));
 
@@ -351,7 +351,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.equal(player.messages.length, 0);
 
         return gangCommands.kickPromiseForTesting_.then(() => {
-            assert.equal(player.messages.length, 2);
+            assert.equal(player.messages.length, 1);
             assert.equal(player.messages[0],
                          Message.format(Message.GANG_KICK_REMOVED, 'OfflinePlayer', gang.name));
         });
@@ -585,7 +585,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         return gangCommands.settingsPromiseForTesting_.then(() => {
             assert.deepEqual(gang.color, Color.RED /* defined in color_manager.js */);
 
-            assert.equal(player.messages.length, 1);
+            assert.equal(player.messages.length, 0);
             assert.equal(player.lastDialog,
                 Message.format(Message.GANG_SETTINGS_NEW_COLOR, '0x' + gang.color.toHexRGB()));
         });
@@ -635,7 +635,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         return gangCommands.settingsPromiseForTesting_.then(() => {
             assert.equal(gang.name, 'Thundering Offline Kittens');
 
-            assert.equal(player.messages.length, 1);
+            assert.equal(player.messages.length, 0);
             assert.equal(player.lastDialog,
                 Message.format(Message.GANG_SETTINGS_NEW_NAME, 'Thundering Offline Kittens'));
         });
@@ -684,7 +684,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         return gangCommands.settingsPromiseForTesting_.then(() => {
             assert.equal(gang.tag, 'GG');
 
-            assert.equal(player.messages.length, 1);
+            assert.equal(player.messages.length, 0);
             assert.equal(player.lastDialog, Message.format(Message.GANG_SETTINGS_NEW_TAG, 'GG'));
         });
     });
@@ -708,7 +708,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         return gangCommands.settingsPromiseForTesting_.then(() => {
             assert.equal(gang.goal, 'We rule more!');
 
-            assert.equal(player.messages.length, 1);
+            assert.equal(player.messages.length, 0);
             assert.equal(player.lastDialog,
                          Message.format(Message.GANG_SETTINGS_NEW_GOAL, 'We rule more!'));
         });

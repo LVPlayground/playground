@@ -33,7 +33,7 @@ describe('GangManager', (it, beforeEach, afterEach) => {
             const gang = gangManager.gangForPlayer(gunther);
             assert.isNotNull(gang);
 
-            gangManager.announceToGang(gang, 'Hello, members!');
+            gangManager.announceToGang(gang, russell, 'Hello, members!');
 
             assert.equal(gunther.messages.length, 1);
             assert.equal(gunther.messages[0],

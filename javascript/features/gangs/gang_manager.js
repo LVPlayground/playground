@@ -27,16 +27,21 @@ class GangManager {
         return this.gangPlayers_.get(player) || null;
     }
 
-    // Sends the |message| to the |gang|. Optionally the |args| will be applied when the |message|
-    // is an instance of the Message class that requires formatting.
-    announceToGang(gang, message, ...args) {
+    // Sends the |message| to the |gang|. The |excludePlayer| triggered the message and will get
+    // confirmed through other means. Optionally the |args| will be applied when the |message| is an
+    // instance of the Message class that requires formatting.
+    announceToGang(gang, excludePlayer, message, ...args) {
         if (message instanceof Message)
             message = Message.format(message, ...args);
 
         const formattedMessage = Message.format(Message.GANG_ANNOUNCE_INTERNAL, message);
 
-        for (let player of gang.members)
+        for (let player of gang.members) {
+            if (player === excludePlayer)
+                continue;
+
             player.sendMessage(formattedMessage);
+        }
     }
 
     // Creates a gang with |tag|, named |name| pursuing |goal| and stores it in the database. When

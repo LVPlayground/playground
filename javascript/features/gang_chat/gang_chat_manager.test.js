@@ -77,4 +77,39 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         assert.equal(russell.messages.length, 1);
         assert.equal(russell.messages[0], expectedMessage);
     });
+
+    it('should distribute the messages to administrators', assert => {
+        const player = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        const gang = gangs.createGang();
+        gang.addPlayer(player);
+
+        russell.level = Player.LEVEL_ADMINISTRATOR;
+
+        const expectedMessage =
+            Message.format(Message.GANG_CHAT, gang.tag, player.id, player.name, 'hello');
+
+        assert.isFalse(gang.hasPlayer(russell));
+        assert.isTrue(sendChat(player, '!  hello  '));
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], expectedMessage);
+
+        assert.equal(russell.messages.length, 1);
+        assert.equal(russell.messages[0], expectedMessage);
+
+        gang.addPlayer(russell);
+
+        player.clearMessages();
+        russell.clearMessages();
+
+        assert.isTrue(sendChat(player, '!  hello  '));
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], expectedMessage);
+
+        assert.equal(russell.messages.length, 1);
+        assert.equal(russell.messages[0], expectedMessage);
+    });
 });

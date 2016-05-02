@@ -33,12 +33,27 @@ class GangChatManager {
             return;
         }
 
+        const recipients = new Set();
         const message = text.substr(1).trim();
         
-        for (let member of gang.members)
+        for (let member of gang.members) {
             member.sendMessage(Message.GANG_CHAT, gang.tag, player.id, player.name, message);
+            recipients.add(member);
+        }
 
-        // TODO(Russell): Distribute the message to administrators.
+        // Distribute the message to administrators who have not received the message yet.
+        server.playerManager.forEach(onlinePlayer => {
+            if (onlinePlayer.level != Player.LEVEL_ADMINISTRATOR &&
+                onlinePlayer.level != Player.LEVEL_MANAGEMENT)
+                return;  // they are not a member of the crew
+
+            if (recipients.has(onlinePlayer))
+                return;  // they have already received the message
+
+            onlinePlayer.sendMessage(Message.GANG_CHAT, gang.tag, player.id, player.name, message);
+            recipients.add(onlinePlayer);
+        });
+
         // TODO(Russell): Distribute the message to the Seti@Home owner.
     }
 

@@ -16,7 +16,10 @@ class GangChat extends Feature {
         // audience, i.e. the members of the gang they're part of.
         const gangs = this.defineDependency('gangs');
 
-        this.manager_ = new GangChatManager(gangs);
+        // Gang chat has to be announced to administrators watching on IRC.
+        const announce = this.defineDependency('announce');
+
+        this.manager_ = new GangChatManager(gangs, announce);
     }
 
     // ---------------------------------------------------------------------------------------------

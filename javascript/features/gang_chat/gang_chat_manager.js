@@ -6,8 +6,10 @@ const ScopedCallbacks = require('base/scoped_callbacks.js');
 
 // Implementation of the actual gang chat feature. Will work with the gangs feature to get its data.
 class GangChatManager {
-    constructor(gangs) {
+    constructor(gangs, announce) {
         this.gangs_ = gangs;
+        this.announce_ = announce;
+
         this.spyingPlayer_ = null;
 
         this.callbacks_ = new ScopedCallbacks();
@@ -39,6 +41,12 @@ class GangChatManager {
         const recipients = new Set();
         const message = text.substr(1).trim();
         
+        // Announce the message to people watching on IRC.
+        if (this.announce_) {
+            this.announce_.announceToIRC('gang', player.id, player.name, gang.id, gang.name,length,
+                                         gang.name, message);
+        }
+
         for (let member of gang.members) {
             member.sendMessage(Message.GANG_CHAT, gang.tag, player.id, player.name, message);
             recipients.add(member);

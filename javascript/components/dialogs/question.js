@@ -93,7 +93,7 @@ class Question {
             // If the player is able to make another attempt and an explanation message was given,
             // display that in a dialog box and allow them to try again unless they cancel.
             if (this.attempts_ > 0 && this.constraints_.explanation !== null) {
-                Dialog.displayMessage(this.player_, this.caption_, this.constraints_.explanation,
+                Dialog.displayMessage(this.player_, this.question_, this.constraints_.explanation,
                                       'Try again', 'Cancel').then(result => {
                     // Bail out if the player clicked on "Cancel".
                     if (!result.response) {
@@ -113,7 +113,7 @@ class Question {
             // in a dialog instead and give them a single "Close" button.
             if (this.attempts_ === 0 && this.constraints_.abort !== null) {
                 Dialog.displayMessage(
-                    this.player_, this.caption_, this.constraints_.abort, 'Close', '').then(() =>
+                    this.player_, this.question_, this.constraints_.abort, 'Close', '').then(() =>
                         this.resolve_(null));
                 return;
             }

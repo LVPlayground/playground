@@ -112,4 +112,36 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         assert.equal(russell.messages.length, 1);
         assert.equal(russell.messages[0], expectedMessage);
     });
+
+    it('should make an announcement when somebody buys Seti @ Home', assert => {
+        const player = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        const gang = gangs.createGang();
+        gang.addPlayer(player);
+
+        manager.onSetiOwnershipChange({ playerid: russell.id });
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0],
+                      Message.format(Message.GANG_CHAT_SPY, russell.name, russell.id));
+
+        assert.equal(russell.messages.length, 0);
+
+        player.clearMessages();
+
+        const expectedMessage =
+            Message.format(Message.GANG_CHAT, gang.tag, player.id, player.name, 'hello');
+
+        assert.isTrue(sendChat(player, '!hello'));
+
+        assert.isTrue(gang.hasPlayer(player));
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], expectedMessage);
+
+        assert.isFalse(gang.hasPlayer(russell));
+        assert.equal(russell.level, Player.LEVEL_PLAYER);
+        assert.equal(russell.messages.length, 1);
+        assert.equal(russell.messages[0], expectedMessage);
+    });
 });

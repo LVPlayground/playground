@@ -33,10 +33,12 @@ class PropertyEvents {
      */
     public handleFeatureInformation(playerId, PropertyFeature: feature) {
         switch (feature) {
-            case ReadGroupConversationsFeature:
+            case ReadGroupConversationsFeature: {
                 SendClientMessage(playerId, Color::PropertyFeatureText,
                     "With the purchase of the Seti @ Home satellite, you'll be able to see gang messages of other people!");
 
+                CallRemoteFunction("OnSetiOwnershipChange", "i", playerId);
+            }
             case CustomTaxAirportFeature: {
                 SendClientMessage(playerId, Color::PropertyFeatureText,
                     "With the purchase of the Las Venturas Airport, you can set the customs tax using /customtax.");
@@ -101,3 +103,6 @@ class PropertyEvents {
         }
     }
 };
+
+forward OnSetiOwnershipChange(playerid);
+public OnSetiOwnershipChange(playerid) {}

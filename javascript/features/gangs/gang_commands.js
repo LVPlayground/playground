@@ -725,6 +725,8 @@ class GangCommands {
         // Sort the |gangs| by number of in-game players in descending order, then by the name of
         // the gang, which is the order they will be presented in.
         gangs.sort((lhs, rhs) => {
+            if (lhs.memberCount < rhs.memberCount)
+                return 1;
             if (lhs.memberCount > rhs.memberCount)
                 return -1;
 

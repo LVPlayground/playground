@@ -78,7 +78,9 @@ class FriendsManager {
   }
 
   // Called when a player logs in to their account. Will start loading their friends.
-  onPlayerLogin(player, userId) {
+  onPlayerLogin(player) {
+    const userId = player.userId;
+
     this.lastActive_[userId] = FriendsManager.CURRENTLY_ONLINE;
     this.loadPromises_[player.id] = this.database_.query(LOAD_QUERY, userId).then(results => {
       let friends = [];

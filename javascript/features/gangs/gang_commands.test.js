@@ -540,13 +540,15 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.equal(player.messages.length, 0);
 
         player.respondToDialog({ listitem: 2 /* Gang name */ }).then(() =>
-            player.respondToDialog({ inputtext: 'Thundering Offline Kittens' }));
+            player.respondToDialog({ inputtext: 'Thundering Offline Kittens' })).then(() =>
+            player.respondToDialog({ response: 0 /* Ok */}));
 
         return gangCommands.settingsPromiseForTesting_.then(() => {
             assert.equal(gang.name, 'Thundering Offline Kittens');
 
-            assert.equal(player.messages.length, 2);
-            assert.equal(player.messages[0], Message.GANG_SETTINGS_NEW_NAME);
+            assert.equal(player.messages.length, 1);
+            assert.equal(player.lastDialog,
+                Message.format(Message.GANG_SETTINGS_NEW_NAME, 'Thundering Offline Kittens'));
         });
     });
 
@@ -593,8 +595,8 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         return gangCommands.settingsPromiseForTesting_.then(() => {
             assert.equal(gang.tag, 'GG');
 
-            assert.equal(player.messages.length, 2);
-            assert.equal(player.messages[0], Message.GANG_SETTINGS_NEW_TAG);
+            assert.equal(player.messages.length, 1);
+            assert.equal(player.lastDialog, Message.format(Message.GANG_SETTINGS_NEW_TAG, 'GG'));
         });
     });
 
@@ -611,13 +613,15 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.equal(player.messages.length, 0);
 
         player.respondToDialog({ listitem: 4 /* Gang goal */ }).then(() =>
-            player.respondToDialog({ inputtext: 'We rule more!' }));
+            player.respondToDialog({ inputtext: 'We rule more!' })).then(() =>
+            player.respondToDialog({ response: 0 /* Ok */}));
 
         return gangCommands.settingsPromiseForTesting_.then(() => {
             assert.equal(gang.goal, 'We rule more!');
 
-            assert.equal(player.messages.length, 2);
-            assert.equal(player.messages[0], Message.GANG_SETTINGS_NEW_GOAL);
+            assert.equal(player.messages.length, 1);
+            assert.equal(player.lastDialog,
+                         Message.format(Message.GANG_SETTINGS_NEW_GOAL, 'We rule more!'));
         });
     });
 

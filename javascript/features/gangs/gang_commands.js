@@ -484,13 +484,15 @@ class GangCommands {
                             'OK' /* leftButton */, '' /* rightButton */);
                     }
 
-                    player.sendMessage(Message.GANG_SETTINGS_NEW_NAME);
-
                     this.manager_.announceToGang(
                         gang, Message.GANG_INTERNAL_ANNOUNCE_NEW_NAME, player.name, answer);
 
                     this.announce_.announceToAdministrators(
                         Message.GANG_ANNOUNCE_NEW_NAME, player.name, player.id, formerName, answer);
+
+                    const formattedMessage = Message.format(Message.GANG_SETTINGS_NEW_NAME, answer);
+                    return Dialog.displayMessage(
+                        player, 'The name has been updated', formattedMessage, 'OK', '');
                 });
 
             }).then(() => resolveForTests());
@@ -508,13 +510,15 @@ class GangCommands {
                             'OK' /* leftButton */, '' /* rightButton */);
                     }
 
-                    player.sendMessage(Message.GANG_SETTINGS_NEW_TAG);
-
                     this.manager_.announceToGang(
                         gang, Message.GANG_INTERNAL_ANNOUNCE_NEW_TAG, player.name, answer);
 
                     this.announce_.announceToAdministrators(
                         Message.GANG_ANNOUNCE_NEW_TAG, player.name, player.id, gang.name, answer);
+
+                    const formattedMessage = Message.format(Message.GANG_SETTINGS_NEW_TAG, answer);
+                    return Dialog.displayMessage(
+                        player, 'The tag has been updated', formattedMessage, 'OK', '');
                 });
 
             }).then(() => resolveForTests());
@@ -526,13 +530,15 @@ class GangCommands {
                     return;  // the leader decided to not update the gang's goal
 
                 return this.manager_.updateGoal(gang, answer).then(() => {
-                    player.sendMessage(Message.GANG_SETTINGS_NEW_GOAL);
-
                     this.manager_.announceToGang(
                         gang, Message.GANG_INTERNAL_ANNOUNCE_NEW_GOAL, player.name, answer);
 
                     this.announce_.announceToAdministrators(
                         Message.GANG_ANNOUNCE_NEW_GOAL, player.name, player.id, gang.name, answer);
+
+                    const formattedMessage = Message.format(Message.GANG_SETTINGS_NEW_GOAL, answer);
+                    return Dialog.displayMessage(
+                        player, 'The goal has been updated', formattedMessage, 'OK', '');
                 });
 
             }).then(() => resolveForTests());

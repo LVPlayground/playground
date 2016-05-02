@@ -319,13 +319,13 @@ class GangDatabase {
     // Updates the name of the |gang| to |name|. Returns a promise that will be resolved when the
     // database has been updated with the new information.
     updateName(gang, name) {
-        return this.database_.query(GANG_UPDATE_NAME_QUERY, goal, gang.id);
+        return this.database_.query(GANG_UPDATE_NAME_QUERY, name, gang.id);
     }
 
     // Updates the tag of the |gang| to |tag|. Returns a promise that will be resolved when the
     // database has been updated with the new information.
     updateTag(gang, tag) {
-        return this.database_.query(GANG_UPDATE_TAG_QUERY, goal, gang.id);
+        return this.database_.query(GANG_UPDATE_TAG_QUERY, tag, gang.id);
     }
 
     // Updates the goal of the |gang| to |goal|. Returns a promise that will be resolved when the

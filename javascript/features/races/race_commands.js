@@ -17,6 +17,8 @@ class RaceCommands {
   constructor(commandManager, raceManager) {
     this.raceManager_ = raceManager;
 
+    return;  // The system still has to be disabled.
+
     // Register the /race command, currently limited to administrators because it's experimental.
     commandManager.buildCommand('race')
         // /race [id]

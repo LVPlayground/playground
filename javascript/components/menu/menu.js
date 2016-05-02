@@ -66,7 +66,7 @@ class Menu {
 
         let item = this.items_[result.item];
         if (item.listener)
-          item.listener(player);
+          Promise.resolve().then(() => item.listener(player));
 
         return { player: player, item: item.labels };
       }));

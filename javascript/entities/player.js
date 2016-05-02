@@ -202,7 +202,7 @@ self.addEventListener('messagelevelchange', event => {
   if (!player)
     return;
 
-  player.messageLevel_ = event.activity;
+  player.messageLevel_ = event.messagelevel;
 });
 
 // Utility function: convert a player's level to a string.

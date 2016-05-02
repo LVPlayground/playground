@@ -261,5 +261,5 @@ class Account <playerId (MAX_PLAYERS)> {
     }
 };
 
-forward OnPlayerLogin(playerid, userid);
-public OnPlayerLogin(playerid, userid) {}
+forward OnPlayerLogin(playerid, userid, gangId);
+public OnPlayerLogin(playerid, userid, gangId) {}

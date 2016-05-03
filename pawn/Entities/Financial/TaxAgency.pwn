@@ -50,6 +50,9 @@ class TaxAgency {
      * @return integer Amount of money paid by our player.
      */
     private bool: isPlayerEligableForTaxCollection(playerId) {
+        if (Player(playerId)->isAdministrator())
+            return false;
+
         if (GetPlayerMoney(playerId) >= MinimumRegisteredPlayerTaxableAmount)
             return true;
 

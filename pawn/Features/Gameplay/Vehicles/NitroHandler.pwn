@@ -51,13 +51,17 @@ class NitroHandler {
             amountOfNitro = 999;
         }
 
+        new const bool: isAdministrator = Player(playerId)->isAdministrator();
+
         // Does the first part of the params contains a valid amount of nitro: 2, 5, 10 or 999 for
         // infinite? If not, we send the player an usage-message. Else, we attach the nitro and let
         // them pay and play.
         switch (amountOfNitro) {
             case 2: {
-                if (GetPlayerMoney(playerId) >= 2000) {
-                    GivePlayerMoney(playerId, -2000);
+                if (isAdministrator || GetPlayerMoney(playerId) >= 2000) {
+                    if (!isAdministrator)
+                        GivePlayerMoney(playerId, -2000);
+
                     AddVehicleComponent(playerVehicleId, 1008);
                 } else {
                     SendClientMessage(playerId, Color::Error, "You do need $2,000 to attach 2x nos to your vehicle.");
@@ -66,8 +70,10 @@ class NitroHandler {
             }
 
             case 5: {
-                if (GetPlayerMoney(playerId) >= 5000) {
-                    GivePlayerMoney(playerId, -5000);
+                if (isAdministrator || GetPlayerMoney(playerId) >= 5000) {
+                    if (!isAdministrator)
+                        GivePlayerMoney(playerId, -5000);
+
                     AddVehicleComponent(playerVehicleId, 1009);
                 } else {
                     SendClientMessage(playerId, Color::Error, "You do need $5,000 to attach 5x nos to your vehicle.");
@@ -76,8 +82,10 @@ class NitroHandler {
             }
 
             case 10: {
-                if (GetPlayerMoney(playerId) >= 10000) {
-                    GivePlayerMoney(playerId, -10000);
+                if (isAdministrator || GetPlayerMoney(playerId) >= 10000) {
+                    if (!isAdministrator)
+                        GivePlayerMoney(playerId, -10000);
+
                     AddVehicleComponent(playerVehicleId, 1010);
                 } else {
                     SendClientMessage(playerId, Color::Error, "You do need $10,000 to attach 10x nos to your vehicle.");
@@ -86,8 +94,10 @@ class NitroHandler {
             }
 
             case 999: {
-                if (GetPlayerMoney(playerId) >= 250000) {
-                    GivePlayerMoney(playerId, -250000);
+                if (isAdministrator || GetPlayerMoney(playerId) >= 250000) {
+                    if (!isAdministrator)
+                        GivePlayerMoney(playerId, -250000);
+
                     this->enableAndAddInfiniteNos(playerVehicleId);
                 } else {
                     SendClientMessage(playerId, Color::Error, "You do need $250,000 to attach infinite nos to your vehicle.");

@@ -27,28 +27,59 @@ class GangChatManager {
         if (!player || !text || !text.length)
             return;  // basic sanity checks to make sure that the message is valid
 
-        if (!text.startsWith('!') || text.startsWith('!!'))
+        if (!text.startsWith('!') || (text.startsWith('!!') && !player.isAdministrator()))
             return;  // this message is not meant for gang chat
 
         event.preventDefault();
 
-        const gang = this.gangs_.getGangForPlayer(player);
-        if (!gang) {
-            player.sendMessage(Message.GANG_CHAT_NO_GANG);
-            return;
-        }
-
         const recipients = new Set();
-        const message = text.substr(1).trim();
+
+        let gang = null;
+
+        let messageRaw = null;
+        let message = null;
+
+        // Administrators have the ability to send messages to other gangs by prefixing their
+        // message with two exclamation marks, followed by the tag of the target gang.
+        if (text.startsWith('!!') && player.isAdministrator()) {
+            const firstSpaceIndex = text.indexOf(' ');
+            const firstWord = text.substring(2, firstSpaceIndex);
+
+            gang = this.findGangByTag(firstWord);
+            if (!gang) {
+                player.sendMessage(Message.GANG_CHAT_NO_GANG_FOUND, firstWord);
+                return;
+            }
+
+            messageRaw = text.substr(firstSpaceIndex).trim();
+            message = Message.format(Message.GANG_CHAT_REMOTE, gang.tag, player.id, player.name,
+                                     messageRaw);
+
+            player.sendMessage(message);
+            recipients.add(player);
+
+        // Players and administrators who do not use the prefix will by default just target their
+        // own gang, if they are in one.
+        } else {
+            gang = this.gangs_.getGangForPlayer(player);
+            if (!gang) {
+                player.sendMessage(Message.GANG_CHAT_NO_GANG);
+                return;
+            }
+
+            messageRaw = text.substr(1).trim();
+            message =
+                Message.format(Message.GANG_CHAT, gang.tag, player.id, player.name, messageRaw);
+        }
         
         // Announce the message to people watching on IRC.
         if (this.announce_) {
             this.announce_.announceToIRC('gang', player.id, player.name, gang.id, gang.name,length,
-                                         gang.name, message);
+                                         gang.name, messageRaw);
         }
 
         for (let member of gang.members) {
-            member.sendMessage(Message.GANG_CHAT, gang.tag, player.id, player.name, message);
+            member.sendMessage(message);
             recipients.add(member);
         }
 
@@ -63,7 +94,7 @@ class GangChatManager {
             if (onlinePlayer.messageLevel < 2)
                 return;  // they do not wish to see gang chat
 
-            onlinePlayer.sendMessage(Message.GANG_CHAT, gang.tag, player.id, player.name, message);
+            onlinePlayer.sendMessage(message);
             recipients.add(onlinePlayer);
         });
 
@@ -77,10 +108,22 @@ class GangChatManager {
             if (recipients.has(this.spyingPlayer_))
                 return;  // they have already received the message
 
-            this.spyingPlayer_.sendMessage(
-                Message.GANG_CHAT, gang.tag, player.id, player.name, message);
+            this.spyingPlayer_.sendMessage(message);
             recipients.add(this.spyingPlayer_);
         }
+    }
+
+    // Finds the gang carrying |tag|, which must be a complete identifier of the (unique) gang tag.
+    // A case insensitive match will be done on all in-game represented gangs.
+    findGangByTag(tag) {
+        const lowerCaseTag = tag.toLowerCase();
+
+        for (const gang of this.gangs_.getGangs()) {
+            if (gang.tag.toLowerCase() === lowerCaseTag)
+                return gang;
+        }
+
+        return null;
     }
 
     // Called when a player buys or sells the Seti @ Home property, which gives them the ability to

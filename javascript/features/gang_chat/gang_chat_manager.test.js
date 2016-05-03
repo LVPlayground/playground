@@ -167,4 +167,48 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         assert.equal(russell.messages.length, 1);
         assert.equal(russell.messages[0], expectedMessage);
     });
+
+    it('should show an error when sending a remote message to an invalid gang', assert => {
+        const player = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        const gang = gangs.createGang({ tag: 'HKO' });
+        gang.addPlayer(player);
+
+        russell.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isTrue(sendChat(russell, '!!OMG hello'));
+
+        assert.isTrue(gang.hasPlayer(player));
+        assert.equal(player.messages.length, 0);
+
+        assert.equal(russell.messages.length, 1);
+        assert.equal(russell.messages[0], Message.format(Message.GANG_CHAT_NO_GANG_FOUND, 'OMG'));
+    });
+
+    it('should allow administrators to send remote messages to gangs', assert => {
+        const player = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        const gang = gangs.createGang({ tag: 'hKo' });
+        gang.addPlayer(player);
+
+        russell.level = Player.LEVEL_ADMINISTRATOR;
+        russell.messageLevel = 0 /* do not see gang chat */;
+
+        assert.isTrue(sendChat(russell, '!!HKO hello'));
+
+        const expectedMessage =
+            Message.format(Message.GANG_CHAT_REMOTE, gang.tag, russell.id, russell.name, 'hello');
+
+        assert.isTrue(gang.hasPlayer(player));
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], expectedMessage);
+
+        assert.isFalse(gang.hasPlayer(russell));
+        assert.isBelow(russell.messageLevel, 2);
+
+        assert.equal(russell.messages.length, 1);
+        assert.equal(russell.messages[0], expectedMessage);
+    });
 });

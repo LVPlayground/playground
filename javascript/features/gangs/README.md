@@ -57,9 +57,3 @@ current leader has to type `/gang settings` and promote the other player to _Lea
 appointed leader then has to type `/gang settings` and demote the former leader to another level.
 
 However, keep in mind that it's fine for a gang to have multiple leaders. Why not share the joy? :)
-
-## TODO
-The following list contains a number of items that have to be done before this feature can be
-launched on the server. Items may be added or removed whenever appropriate.
-
-  - Implement support for gang chats based on the persistent gang system.

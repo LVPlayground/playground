@@ -1,25 +1,24 @@
 # Feature: Friends
-Players have the ability to maintain a list of their friends on Las Venturas Playground. These
-indicate one-directional relations, as there are no approval processes or notifications.
+Players have the ability to maintain a list of their friends on Las Venturas Playground. Adding
+another player as a friend does not require approval from them, in fact, they will likely never
+find out unless you decide to tell them.
 
-Adding a player to your friend list enables a number of things:
+## Commands
+The following commands are available as part of the feature:
 
-  * You will hear a notification sound when they connect to Las Venturas Playground.
+  - **/friends add [player]**: Adds the `player` to your list of friends. They must be online.
+  - **/friends remove [player]**: Removes the `player` from your list of friends. They don't have
+    to be online for you to use this command.
+  - **/friends**: Lists the friends you have on Las Venturas Playground.
 
-## Command: /friends
-The `/friends` command is available for all registered players on Las Venturas Playground. It can be
-used to list, add and remove friends. Administrators can also list friends of other players.
+## Features
+The following features are enabled for those maintaining a list of friends:
 
-When not passing any arguments, a list of friends will be displayed ordered by the time they last
-connected to the server.
+  - **Connection beep**: A sound will be played when they connect to the server.
 
-### /friends add [player]
-Adds `player` as a friend, who must be connected to the server. This will persist between playing
-sessions.
+## FAQ: I'm an admin, can I see somebody's friends?
+Yes, you can. Simple append the player whose friends you want to see to the `/friends` command:
 
-### /friends remove [name]
-Removes `name` as a friend. This only has to be part of their name (as long as it's unambiguous) and
-they do not have to be connected to the server.
-
-### /friends [player]
-Lists the friends of `player`. This command is only available to administrators.
+```
+/friends [player]
+```

@@ -36,7 +36,6 @@ class Gangs extends Feature {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Cleans up all routines and state stored as part of the gang feature.
     dispose() {
         this.commands_.dispose();
         this.manager_.dispose();

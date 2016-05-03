@@ -139,6 +139,8 @@ class TestRunner {
       require('entities/scoped_entities.test.js');
       require('features/announce/announce_manager.test.js');
       require('features/death_feed/death_feed_feature.test.js');
+      require('features/friends/friends_commands.test.js');
+      require('features/friends/friends_manager.test.js');
       require('features/gang_chat/gang_chat_manager.test.js');
       require('features/gangs/gang_commands.test.js');
       require('features/gangs/gang_manager.test.js');

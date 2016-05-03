@@ -25,20 +25,22 @@ testRunner.run('**/*.test.js').then(() => {
     server = new Server();
     server.featureManager.load({
         // Foundational features
-        announce:      require('features/announce/announce.js'),
+        announce:       require('features/announce/announce.js'),
 
         // Gang-related features
-        gangChat:      require('features/gang_chat/gang_chat.js'),
-        gangs:         require('features/gangs/gangs.js'),
+        gangChat:       require('features/gang_chat/gang_chat.js'),
+        gangs:          require('features/gangs/gangs.js'),
+
+        // General smaller, self-contained features
+        friends:        require('features/friends/friends.js'),
 
 
         // v1 features - these need to be cleaned up
-        activityLog:   require('features/activity_log/activity_log.js'),
-        commands:      require('features/commands/commands_feature.js'),
-        deathFeed:     require('features/death_feed/death_feed_feature.js'),
-        debug:         require('features/debug/debug_feature.js'),
-        friends:       require('features/friends/friends_feature.js'),
-        races:         require('features/races/race_feature.js')
+        activityLog:    require('features/activity_log/activity_log.js'),
+        commands:       require('features/commands/commands_feature.js'),
+        deathFeed:      require('features/death_feed/death_feed_feature.js'),
+        debug:          require('features/debug/debug_feature.js'),
+        races:          require('features/races/race_feature.js')
     });
 
 }, failures => {

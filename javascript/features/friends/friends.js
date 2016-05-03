@@ -14,7 +14,7 @@ class FriendsFeature extends Feature {
         super(playground);
 
         this.friendsManager_ = new FriendsManager(server.database);
-        this.friendsCommands_ = new FriendsCommands(this.friendsManager_, server.commandManager);
+        this.friendsCommands_ = new FriendsCommands(this.friendsManager_);
     }
 
     // ---------------------------------------------------------------------------------------------

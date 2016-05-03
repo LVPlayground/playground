@@ -52,6 +52,13 @@ class MockPlayer {
     get level() { return this.level_; }
     set level(value) { this.level_ = value; }
 
+    isAdministrator() {
+        return this.level_ == Player.LEVEL_ADMINISTRATOR ||
+               this.level_ == Player.LEVEL_MANAGEMENT;
+    }
+
+    isManagement() { return this.level_ == Player.LEVEL_MANAGEMENT; }
+
     isRegistered() { return this.userId_ != null; }
 
     get userId() { return this.userId_; }

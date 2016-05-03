@@ -55,6 +55,15 @@ class Player extends Extendable {
   // Gets the level of this player. Synchronized with the gamemode using the `levelchange` event.
   get level() { return this.level_; }
 
+  // Returns whether the player is an administrator on Las Venturas Playground.
+  isAdministrator() {
+    return this.level_ == Player.LEVEL_ADMINISTRATOR ||
+           this.level_ == Player.LEVEL_MANAGEMENT;
+  }
+
+  // Returns whether the player is a Management member on Las Venturas Playground.
+  isManagement() { return this.level_ == Player.LEVEL_MANAGEMENT; }
+
   // Returns whether the player is registered and logged in to their account.
   isRegistered() { return this.userId_ !== null; }
 

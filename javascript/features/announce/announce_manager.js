@@ -39,10 +39,8 @@ class AnnounceManager {
         const formattedMessage = Message.format(Message.ANNOUNCE_ADMINISTRATORS, message);
 
         this.playerManager_.forEach(player => {
-            if (player.level != Player.LEVEL_ADMINISTRATOR &&
-                player.level != Player.LEVEL_MANAGEMENT) {
+            if (!player.isAdministrator())
                 return;
-            }
 
             player.sendMessage(formattedMessage);
         });

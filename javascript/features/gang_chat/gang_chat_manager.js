@@ -54,8 +54,7 @@ class GangChatManager {
 
         // Distribute the message to administrators who have not received the message yet.
         server.playerManager.forEach(onlinePlayer => {
-            if (onlinePlayer.level != Player.LEVEL_ADMINISTRATOR &&
-                onlinePlayer.level != Player.LEVEL_MANAGEMENT)
+            if (!onlinePlayer.isAdministrator())
                 return;  // they are not a member of the crew
 
             if (recipients.has(onlinePlayer))

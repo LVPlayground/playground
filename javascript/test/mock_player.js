@@ -20,6 +20,7 @@ class MockPlayer {
 
         this.lastDialogMessage_ = null;
         this.lastDialogId_ = null;
+        this.lastPlayedSound_ = null;
 
         this.messages_ = [];
 
@@ -89,6 +90,14 @@ class MockPlayer {
 
     // Gets the messages that have been sent to this player.
     get messages() { return this.messages_; }
+
+    // Fake playing a sound for this player. Stores the soundId in |lastPlayedSound_|.
+    playSound(soundId) {
+        this.lastPlayedSound_ = soundId;
+    }
+
+    // Gets the most recently played sound for this player.
+    get lastPlayedSound() { return this.lastPlayedSound_; }
 
     // Gets or sets the message level at which this player would like to receive messages.
     get messageLevel() { return this.messageLevel_; }

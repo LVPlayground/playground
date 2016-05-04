@@ -102,7 +102,7 @@ class FriendsManager {
 
             // Remove the friend from the cached list of friends.
             this.friends_.set(player, this.friends_.get(player).filter(friend => {
-                return removeUserId != f.userId;
+                return removeUserId != friend.userId;
             }));
 
             return this.database_.removeFriend(player, removeUserId).then(() => removeNickname);

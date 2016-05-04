@@ -21,11 +21,18 @@ class FriendsCommands {
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(FriendsCommands.prototype.onListFriendsCommand.bind(this))
             .build(FriendsCommands.prototype.onListFriendsCommand.bind(this));
+
+        // Promises that can be used for testing purposes.
+        this.addPromiseForTesting_ = null;
+        this.listPromiseForTesting_ = null;
+        this.removePromiseForTesting_ = null;
     }
 
     // Called when a player types `/friends add`. Adds |friendPlayer| as a friend of |player|. This
     // will persist between playing sessions.
     onFriendsAddCommand(player, friendPlayer) {
+        let resolveForTests = null;
+
         if (!player.isRegistered()) {
             player.sendMessage(Message.FRIENDS_ERROR_NOT_REGISTERED);
             return;
@@ -41,19 +48,26 @@ class FriendsCommands {
             return;
         }
 
+        // Create a "friend has been added" promise that tests can use to observe progress.
+        this.addPromiseForTesting_ = new Promise(resolve => resolveForTests = resolve);
+
         this.manager_.addFriend(player, friendPlayer).then(() =>
-            player.sendMessage(Message.FRIENDS_ADDED, friendPlayer.name));
+            player.sendMessage(Message.FRIENDS_ADDED, friendPlayer.name)).then(resolveForTests);
     }
 
     // Lists the friends of |player|. Administrators can also list the friends of other players by
     // providing a parameter, in which case the |parameterPlayer| will be assigned a value.
     onListFriendsCommand(player, parameterPlayer) {
         const subjectPlayer = parameterPlayer || player;
+        let resolveForTests = null;
 
         if (!subjectPlayer.isRegistered()) {
-                player.sendMessage(Message.FRIENDS_ERROR_NOT_REGISTERED);
-                return;
+            player.sendMessage(Message.FRIENDS_ERROR_NOT_REGISTERED);
+            return;
         }
+
+        // Create a "friends have been listed" promise that tests can use to observe progress.
+        this.listPromiseForTesting_ = new Promise(resolve => resolveForTests = resolve);
 
         this.manager_.getFriends(subjectPlayer).then(friends => {
             // Number of friends to display in a single line of the output.
@@ -84,11 +98,14 @@ class FriendsCommands {
             }
 
             player.sendMessage(Message.FRIENDS_USAGE);
-        });
+
+        }).then(resolveForTests);
     }
 
     // Removes |name| as a friend of |player|. This will persist between playing sessions.
     onFriendsRemoveCommand(player, name) {
+        let resolveForTests = null;
+
         if (!player.isRegistered()) {
             player.sendMessage(Message.FRIENDS_ERROR_NOT_REGISTERED);
             return;
@@ -96,9 +113,12 @@ class FriendsCommands {
 
         // TODO(Russell): |name| could be the Id of an online player, which should be handled here.
 
+        // Create a "friend has been removed" promise that tests can use to observe progress.
+        this.removePromiseForTesting_ = new Promise(resolve => resolveForTests = resolve);
+
         this.manager_.removeFriend(player, name).then(
             name  => player.sendMessage(Message.FRIENDS_REMOVED, name),
-            error => player.sendMessage(Message.COMMAND_ERROR, error.message));
+            error => player.sendMessage(Message.COMMAND_ERROR, error.message)).then(resolveForTests)
     }
 
     dispose() {

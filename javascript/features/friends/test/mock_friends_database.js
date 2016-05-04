@@ -6,6 +6,13 @@
 // actual FriendsDatabase class, but is intended to be used for testing.
 class MockFriendsDatabase {
     loadFriends(player) {
+        if (player.userId == 50) {
+            return Promise.resolve([
+                { userId: 1000, name: 'Lucy', lastSeen: Date.now() },
+                { userId: 1337, name: 'Russell', lastSeen: Date.now() }
+            ]);
+        }
+
         return Promise.resolve([]);
     }
 

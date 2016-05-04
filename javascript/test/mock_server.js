@@ -51,7 +51,8 @@ class MockServer {
         // Connect a series of fake players to the server.
         [
             { playerid: 0, name: 'Gunther' },
-            { playerid: 1, name: 'Russell' }
+            { playerid: 1, name: 'Russell' },
+            { playerid: 2, name: 'Lucy' }
 
         ].forEach(event => this.playerManager_.onPlayerConnect(event));
     }

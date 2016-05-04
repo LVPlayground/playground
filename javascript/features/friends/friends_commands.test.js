@@ -245,7 +245,34 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable removing friends by id who are online on the server', assert => {
-        // TODO(Russell): Implement this ability.
+        gunther.identify();
+        russell.identify();
+
+        assert.isTrue(gunther.isRegistered());
+        assert.isTrue(russell.isRegistered());
+
+        return friendsManager.addFriend(gunther, russell).then(() => {
+            return friendsManager.getFriends(gunther);
+
+        }).then(friends => {
+            assert.equal(friends.online.length, 1);
+            assert.equal(friends.online[0], russell.name);
+            assert.equal(friends.offline.length, 0);
+
+            assert.isTrue(gunther.issueCommand('/friends remove ' + russell.id));
+            return friendsCommands.removePromiseForTesting_;
+
+        }).then(() => {
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(
+                gunther.messages[0], Message.format(Message.FRIENDS_REMOVED, russell.name));
+
+            return friendsManager.getFriends(gunther);
+
+        }).then(friends => {
+            assert.equal(friends.online.length, 0);
+            assert.equal(friends.offline.length, 0);
+        });
     });
 
     it('should enable removing friends by name who are not online on the server', assert => {

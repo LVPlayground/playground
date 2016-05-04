@@ -111,7 +111,12 @@ class FriendsCommands {
             return;
         }
 
-        // TODO(Russell): |name| could be the Id of an online player, which should be handled here.
+        const maybePlayerId = parseInt(name, 10);
+        if (!Number.isNaN(maybePlayerId)) {
+            const targetPlayer = server.playerManager.getById(maybePlayerId);
+            if (targetPlayer)
+                name = targetPlayer.name;
+        }
 
         // Create a "friend has been removed" promise that tests can use to observe progress.
         this.removePromiseForTesting_ = new Promise(resolve => resolveForTests = resolve);

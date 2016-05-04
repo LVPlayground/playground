@@ -23,7 +23,7 @@ class MyFeature extends Feature {
     // All messages that start with "log:" will be logged to the server's console.
     onPlayerText(player, message) {
         if (!message.startsWith('log:'))
-            return false;  // we won't handle the feature
+            return false;  // the message is not meant for this feature
 
         console.log(player.name + ' logs: ' + message.substr(4));
         return true;

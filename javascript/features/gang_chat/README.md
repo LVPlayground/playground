@@ -8,7 +8,7 @@ by prefixing their message with an exclamation mark (`!`).
 ```
 
 ## FAQ: Who can read these messages?
-Messages send to the group chat of a gang can be read by all members of the gang, administrators
+Messages sent to the group chat of a gang can be read by all members of the gang, administrators
 and the owner of the Seti@Home property, who has the ability to spy on you.
 
 Ownership changes to the Seti@Home property will be clearly announced to all players that

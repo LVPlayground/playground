@@ -6,31 +6,24 @@ const ScopedCallbacks = require('base/scoped_callbacks.js');
 
 // Implementation of the actual gang chat feature. Will work with the gangs feature to get its data.
 class GangChatManager {
-    constructor(gangs, announce) {
+    constructor(gangs, announce, communication) {
         this.gangs_ = gangs;
         this.announce_ = announce;
+        this.communication_ = communication;
 
         this.spyingPlayer_ = null;
 
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
-            'playertext', GangChatManager.prototype.onPlayerText.bind(this));
-        this.callbacks_.addEventListener(
             'setiownershipchange', GangChatManager.prototype.onSetiOwnershipChange.bind(this));
+
+        this.communication_.addDelegate(this);
     }
 
     // Called when a player sends a message to the chat box. If it starts 
-    onPlayerText(event) {
-        const player = server.playerManager.getById(event.playerid);
-        const text = event.text;
-
-        if (!player || !text || !text.length)
-            return;  // basic sanity checks to make sure that the message is valid
-
+    onPlayerText(player, text) {
         if (!text.startsWith('!') || (text.startsWith('!!') && !player.isAdministrator()))
-            return;  // this message is not meant for gang chat
-
-        event.preventDefault();
+            return false;  // this message is not meant for gang chat
 
         const recipients = new Set();
 
@@ -48,7 +41,7 @@ class GangChatManager {
             gang = this.findGangByTag(firstWord);
             if (!gang) {
                 player.sendMessage(Message.GANG_CHAT_NO_GANG_FOUND, firstWord);
-                return;
+                return true;
             }
 
             messageRaw = text.substr(firstSpaceIndex).trim();
@@ -64,7 +57,7 @@ class GangChatManager {
             gang = this.gangs_.getGangForPlayer(player);
             if (!gang) {
                 player.sendMessage(Message.GANG_CHAT_NO_GANG);
-                return;
+                return true;
             }
 
             messageRaw = text.substr(1).trim();
@@ -102,15 +95,17 @@ class GangChatManager {
         if (this.spyingPlayer_ !== null) {
             if (!this.spyingPlayer_.isConnected()) {
                 this.spyingPlayer_ = null;
-                return;
+                return true;
             }
 
             if (recipients.has(this.spyingPlayer_))
-                return;  // they have already received the message
+                return true;  // they have already received the message
 
             this.spyingPlayer_.sendMessage(message);
             recipients.add(this.spyingPlayer_);
         }
+
+        return true;
     }
 
     // Finds the gang carrying |tag|, which must be a complete identifier of the (unique) gang tag.
@@ -147,6 +142,7 @@ class GangChatManager {
     }
 
     dispose() {
+        this.communication_.removeDelegate(this);
         this.callbacks_.dispose();
     }
 }

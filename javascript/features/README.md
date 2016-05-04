@@ -22,6 +22,7 @@ The following features have been implemented in JavaScript.
 
   - **[Announce](announce/)**: Provides the ability to announce events to players, administrators
     and IRC.
+  - **[Communication](communication/)**: Provides the lower-level player communication capabilities.
   - **[Friends](friends/)**: Gives players the ability to list who their friends are, as well as
     the `/friends` command.
   - **[Gang chat](gang_chat/)** Provides a private-ish group chat for online gangs.

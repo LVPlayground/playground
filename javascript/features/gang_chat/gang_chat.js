@@ -19,7 +19,10 @@ class GangChat extends Feature {
         // Gang chat has to be announced to administrators watching on IRC.
         const announce = this.defineDependency('announce');
 
-        this.manager_ = new GangChatManager(gangs, announce);
+        // Gang chat will register with the communication feature as a delegate.
+        const communication = this.defineDependency('communication');
+
+        this.manager_ = new GangChatManager(gangs, announce, communication);
     }
 
     // ---------------------------------------------------------------------------------------------

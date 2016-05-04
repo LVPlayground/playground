@@ -26,6 +26,7 @@ testRunner.run('**/*.test.js').then(() => {
     server.featureManager.load({
         // Foundational features
         announce:       require('features/announce/announce.js'),
+        communication:  require('features/communication/communication.js'),
 
         // Gang-related features
         gangChat:       require('features/gang_chat/gang_chat.js'),

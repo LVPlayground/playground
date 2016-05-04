@@ -19,7 +19,6 @@ class HitmanCommands {
     public onBountiesCommand(playerId, params[]) {
         SendClientMessage(playerId, Color::Information, "Current bounties:");
 
-        // We are following the same visual style here as with the /gangs command (GangCommands.pwn)
         new message[128], displayed = 0;
         for (new player = 0; player <= PlayerManager->highestPlayerId(); player++) {
             if (Player(player)->isConnected() == true && Player(player)->isNonPlayerCharacter() == false

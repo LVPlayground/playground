@@ -50,18 +50,6 @@
     <DiskObject>\Entities\Financial\CashPoints\CashPointController.pwn</DiskObject>
     <DiskObject>\Entities\Financial\FinancialUtilities.pwn</DiskObject>
     <DiskObject>\Entities\Financial\TaxAgency.pwn</DiskObject>
-    <DiskObject>\Entities\Gangs.pwn</DiskObject>
-    <DiskObject>\Entities\Gangs\</DiskObject>
-    <DiskObject>\Entities\Gangs\Financial\</DiskObject>
-    <DiskObject>\Entities\Gangs\Financial\GangBankAccount.pwn</DiskObject>
-    <DiskObject>\Entities\Gangs\Financial\GangBankCommands.pwn</DiskObject>
-    <DiskObject>\Entities\Gangs\Gang.pwn</DiskObject>
-    <DiskObject>\Entities\Gangs\GangCommands.pwn</DiskObject>
-    <DiskObject>\Entities\Gangs\GangManager.pwn</DiskObject>
-    <DiskObject>\Entities\Gangs\GangPlayer.pwn</DiskObject>
-    <DiskObject>\Entities\Gangs\GangRole.pwn</DiskObject>
-    <DiskObject>\Entities\Gangs\GangSettings.pwn</DiskObject>
-    <DiskObject>\Entities\Gangs\GangTurfs.pwn</DiskObject>
     <DiskObject>\Entities\NPCs.pwn</DiskObject>
     <DiskObject>\Entities\NPCs\</DiskObject>
     <DiskObject>\Entities\NPCs\NonPlayerCharacter.pwn</DiskObject>

@@ -102,9 +102,6 @@ class Feature {
     // Enable the rewritten Fight Club handlers.
     public const EnableFightClub = 0;
 
-    // Enables the gang system implemented in Pawn. This will be superseded by JavaScript.
-    public const EnableGangSystem = 0;
-
     /** **************************************************************************************** **/
     /// Christmas
 

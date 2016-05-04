@@ -128,23 +128,6 @@ public OnPlayerText(playerid, text[]) {
     if (CLyse__OnText(playerid, text)) return 0;
     if (CWWTW__OnText(playerid, text)) return 0;
 
-#if Feature::EnableGangSystem == 1
-
-    // Gang chat (! - requires gang membership). To be done after minigames, since some of these
-    // have built in team chat using the ! character.
-    if (text[0] == '!' && strlen(text) > 1) {
-        new gangId = GangPlayer(playerid)->gangId();
-        if (gangId == Gang::InvalidId) {
-            SendClientMessage(playerid, Color::Error, "You need to be in a gang before you can use gang chat.");
-            return 0;
-        }
-
-        Gang(gangId)->onChatMessage(playerid, text[1]);
-        return 0;
-    }
-
-#endif
-
     // Phone calls.
     if (CallManager->isCalling(playerid) == true) {
         new calleeId = CallManager->isCallingId(playerid);

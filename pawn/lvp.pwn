@@ -88,10 +88,6 @@
 #include "Entities/Financial.pwn"
 #include "Entities/Properties.pwn"
 
-#if Feature::EnableGangSystem == 1
-#include "Entities/Gangs.pwn"
-#endif
-
 // Interface features with dependencies.
 #include "Interface/Data.pwn"
 #include "Interface/TimerController.pwn"

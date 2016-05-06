@@ -134,6 +134,7 @@ class TestRunner {
       require('components/dialogs/question_sequence.test.js');
       require('components/feature_manager/dependency_graph.test.js');
       require('components/feature_manager/feature_manager.test.js');
+      require('components/interior_selector/interior_selector.test.js');
       require('components/text_draw/text_draw.test.js');
       require('entities/player_manager.test.js');
       require('entities/scoped_entities.test.js');

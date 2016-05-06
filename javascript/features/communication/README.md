@@ -11,7 +11,7 @@ Features can register a delegate with this feature whose `onPlayerText` method w
 each message that any player sends to the main chat. The method can then return `TRUE` to indicate
 that it handled the message, thus blocking it from further processing, or `FALSE` to pass through.
 
-Registering a delegate is very straight-forward. By sure to remove it as well.
+Registering a delegate is very straight-forward. Be sure to remove it as well.
 
 ```javascript
 class MyFeature extends Feature {
@@ -20,7 +20,8 @@ class MyFeature extends Feature {
         this.communication_.addDelegate(this);
     }
 
-    // All messages that start with "log:" will be logged to the server's console.
+    // All messages that start with "log:" will be logged to the server's
+    // console instead of being distributed to all online players.
     onPlayerText(player, message) {
         if (!message.startsWith('log:'))
             return false;  // the message is not meant for this feature

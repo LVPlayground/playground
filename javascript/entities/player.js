@@ -2,8 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Extendable = require('base/extendable.js'),
-      Vector = require('base/vector.js');
+const Extendable = require('base/extendable.js');
+const Vector = require('base/vector.js');
+
+// Camera interpolation modes defined by SA-MP.
+const CAMERA_MOVE = 1;
+const CAMERA_CUT = 2;
 
 class Player extends Extendable {
   // Creates a new instance of the Player class for |playerId|.
@@ -123,6 +127,32 @@ class Player extends Extendable {
       pawnInvoke('PutPlayerInVehicle', 'iii', this.id_, vehicle.id, seat);
     else
       throw new Error('Unknown vehicle to put the player in: ' + vehicle);
+  }
+
+  // Sets whether the player should be in spectator mode. Disabling spectator mode will force them
+  // to respawn immediately after, which may be an unintended side-effect.
+  setSpectating(spectating) {
+    pawnInvoke('TogglePlayerSpectating', 'ii', this.id_, spectating ? 1 : 0);
+  }
+
+  // Sets the player's camera to |position| and |target|, both of which must be vectors. The camera
+  // position is interpolated becaue this makes it play nice with spectating and camera streaming.
+  setCamera(position, target) {
+    this.interpolateCamera(position, position, target, target, 100);
+  }
+
+  // Interpolates the player's camera from |positionFrom|, |targetFrom| to |positionTo|, |targetTo|,
+  // which must be vectors, in |duration| milliseconds.
+  interpolateCamera(positionFrom, positionTo, targetFrom, targetTo, duration) {
+    pawnInvoke('InterpolateCameraPos', 'iffffffii', this.id_, positionFrom.x, positionFrom.y,
+               positionFrom.z, positionTo.x, positionTo.y, positionTo.z, duration, CAMERA_MOVE);
+    pawnInvoke('InterpolateCameraLookAt', 'iffffffii', this.id_, targetFrom.x, targetFrom.y,
+               targetFrom.z, targetTo.x, targetTo.y, targetTo.z, duration, CAMERA_MOVE);
+  }
+
+  // Resets the player's camera to be positioned behind them.
+  resetCamera() {
+    pawnInvoke('SetCameraBehindPlayer', 'i', this.id_);
   }
 
   // Plays |soundId| for the player at their current position.

@@ -2,6 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+// Beginning of the range of virtual world ids that are private to a particular player id.
+const PRIVATE_VIRTUAL_WORLD_BASE = 100;
+
 // Range of private virtual world that can be reserved by features for private usage. A ring-buffer
 // will be created for storing the available virtual worlds.
 const EXCLUSIVE_VIRTUAL_WORLD_BASE = 10000000;
@@ -13,6 +16,11 @@ let acquiredVirtualWorlds = {};
 // A virtual world is a separated dimension in the San Andreas world, featuring its own entities,
 // environment (weather, time) and other properties.
 class VirtualWorld {
+  // Returns the private virtual world Id for this |player|.
+  static forPlayer(player) {
+    return player.id + PRIVATE_VIRTUAL_WORLD_BASE;
+  }
+
   // Acquires an exclusive Virtual World id that can be used by the feature. A description must be
   // given, so that leaky features can be detected through debugging.
   static acquire(description) {

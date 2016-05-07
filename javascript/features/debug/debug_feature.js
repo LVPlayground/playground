@@ -2,8 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let CommandBuilder = require('components/command_manager/command_builder.js'),
-    Feature = require('components/feature_manager/feature.js');
+const CommandBuilder = require('components/command_manager/command_builder.js');
+const DefaultInteriorList = require('components/interior_selector/default_interior_list.js');
+const Feature = require('components/feature_manager/feature.js');
+const InteriorSelector = require('components/interior_selector/interior_selector.js');
+const Vector = require('base/vector.js');
 
 // Utility function to return |value| in |len| digits, left-padded with zeros when necessary.
 function leftPad(value, len = 2) {
@@ -32,6 +35,30 @@ class DebugFeature extends Feature {
         .restrict(Player.LEVEL_MANAGEMENT)
         .parameters([{ name: 'sound', type: CommandBuilder.NUMBER_PARAMETER }])
         .build(this.__proto__.playSound.bind(this));
+
+    // intsel
+    server.commandManager.buildCommand('intsel')
+        .restrict(Player.LEVEL_ADMINISTRATOR)
+        .build(this.__proto__.intsel.bind(this));
+
+    // /pos [x] [y] [z]
+    server.commandManager.buildCommand('pos')
+        .restrict(Player.LEVEL_ADMINISTRATOR)
+        .parameters([ { name: 'x', type: CommandBuilder.NUMBER_PARAMETER },
+                      { name: 'y', type: CommandBuilder.NUMBER_PARAMETER },
+                      { name: 'z', type: CommandBuilder.NUMBER_PARAMETER } ])
+        .build(this.__proto__.pos.bind(this));
+
+    // /int [id]
+    server.commandManager.buildCommand('int')
+        .restrict(Player.LEVEL_ADMINISTRATOR)
+        .parameters([ { name: 'id', type: CommandBuilder.NUMBER_PARAMETER } ])
+        .build(this.__proto__.int.bind(this));
+
+    // /cam
+    server.commandManager.buildCommand('cam')
+        .restrict(Player.LEVEL_ADMINISTRATOR)
+        .build(this.__proto__.cam.bind(this));
   }
 
   // Displays the number of FPS the server was able to handle since the last call to this command.
@@ -71,6 +98,38 @@ class DebugFeature extends Feature {
   // Plays |soundId| for all in-game players.
   playSound(player, soundId) {
     server.playerManager.forEach(p => p.playSound(soundId));
+  }
+
+  // Starts the interior selector for the |player|.
+  intsel(player) {
+    InteriorSelector.select(player, DefaultInteriorList).then(interior => {
+      if (interior)
+        player.sendMessage('You selected: ' + interior.name);
+      else
+        player.sendMessage('You did not select an interior');
+    });
+  }
+
+  // Changes the position of |player| to the vector of [x, y, z].
+  pos(player, x, y, z) {
+    player.position = new Vector(x, y, z);
+  }
+
+  // Changes the interior of |player| to |id|.
+  int(player, id) {
+    player.interior = id;
+  }
+
+  // Has the player spectate their current position.
+  cam(player) {
+    player.setSpectating(true);
+
+    const position = player.position;
+    const camera = new Vector(position.x, position.y, position.z + 10);
+
+    player.setCamera(camera, position);
+
+    wait(5000).then(() => player.setSpectating(false));
   }
 }
 

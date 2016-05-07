@@ -91,6 +91,17 @@ class MockPlayer {
     // Gets the messages that have been sent to this player.
     get messages() { return this.messages_; }
 
+    // Sets whether the player should be in spectator mode. Disabling spectator mode will force them
+    // to respawn immediately after, which may be an unintended side-effect.
+    setSpectating(spectating) {}
+
+    // Sets the player's camera to |position| and |target|, both of which must be vectors.
+    setCamera(position, target) {}
+
+    // Interpolates the player's camera from |positionFrom|, |targetFrom| to |positionTo|, |targetTo|,
+    // which must be vectors, in |duration| milliseconds.
+    interpolateCamera(positionFrom, positionTo, targetFrom, targetTo, duration) {}
+
     // Fake playing a sound for this player. Stores the soundId in |lastPlayedSound_|.
     playSound(soundId) {
         this.lastPlayedSound_ = soundId;

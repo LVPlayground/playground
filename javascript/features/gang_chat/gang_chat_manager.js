@@ -67,7 +67,7 @@ class GangChatManager {
         
         // Announce the message to people watching on IRC.
         if (this.announce_) {
-            this.announce_.announceToIRC('gang', player.id, player.name, gang.id, gang.name,length,
+            this.announce_.announceToIRC('gang', player.id, player.name, gang.id, gang.name.length,
                                          gang.name, messageRaw);
         }
 

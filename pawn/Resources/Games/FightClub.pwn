@@ -32,7 +32,7 @@ Original Author: Mattias Kristiansson (iou)
 #define FC_STATUS_ACTIVE        3
 #define FC_STATUS_FIGHTING      4
 
-#define FC_MAX_MATCHES          10
+#define FC_MAX_MATCHES          30
 
 #define FC_MAX_ROUNDS           10
 #define FC_MIN_ROUNDS           1

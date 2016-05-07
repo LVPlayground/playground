@@ -752,7 +752,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0],
                      Message.format(Message.GANGS_INFO_PLAYER, player.name, player.id, 'Manager',
-                                    gang.tag, gang.name));
+                                    gang.name));
     });
 
     it('should be able to list the local gangs on the server', assert => {

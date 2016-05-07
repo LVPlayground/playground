@@ -726,9 +726,9 @@ class GangCommands {
         if (gang) {
             const roleString = GangDatabase.toRoleString(gang.getPlayerRole(subject));
             player.sendMessage(
-                Message.GANGS_INFO_PLAYER, player.name, player.id, roleString, gang.tag, gang.name);
+                Message.GANGS_INFO_PLAYER, subject.name, subject.id, roleString, gang.name);
         } else {
-            player.sendMessage(Message.GANGS_INFO_PLAYER_NONE, player.name, player.id);
+            player.sendMessage(Message.GANGS_INFO_PLAYER_NONE, subject.name, subject.id);
         }
     }
 

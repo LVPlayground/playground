@@ -61,7 +61,7 @@ class DamageManager <playerId (MAX_PLAYERS)> {
 
         // Show a text and play a sound for the damage taker and dealer.
         GameTextForPlayer(subjectId, "~r~Ouch, headshot!", 2000, 6);
-        PlayAudioStreamForPlayer(playerId, "http://crew.sa-mp.nl/jay/radio/headshot.mp3");
+        PlayAudioStreamForPlayer(playerId, "https://crew.sa-mp.nl/jay/radio/headshot.mp3");
     }
 
     /**
@@ -78,7 +78,7 @@ class DamageManager <playerId (MAX_PLAYERS)> {
      * @return boolean Is this player in a fighting state?
      */
     public bool: isPlayerFighting() {
-        if (Player(playerId)->isConnected() == false || Player(playerId)->isAdministrator() == true)
+        if (!Player(playerId)->isConnected() || Player(playerId)->isAdministrator())
             return false;
 
         if (Time->currentTime() - m_fighting < FightingStateDuration)
@@ -109,31 +109,39 @@ class DamageManager <playerId (MAX_PLAYERS)> {
  * @param fZ The Z coordinate that the shot hit.
  */
 public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: fY, Float: fZ) {
+    if (!Player(playerid)->isConnected())
+        return 0;
+
     // Set the player who fired the bullets as currently fighting.
     DamageManager(playerid)->setFighting(Time->currentTime());
 
     // Some exceptions take place when it is a player being shot at.
     if (hittype == BULLET_HIT_TYPE_PLAYER) {
         // Checking for out of bound possibilities.
-        if (Player(hitid)->isConnected() == false || Player(hitid)->isNonPlayerCharacter() == true)
+        if (!Player(hitid)->isConnected() || Player(hitid)->isNonPlayerCharacter())
             return 0;
 
         // A paused player should not be able to take damage.
-        if (Player(hitid)->isMinimized() == true)
+        if (Player(hitid)->isMinimized())
             return 0;
 
         // The safe-zone should avoid damage infliction to a player.
-        if (ShipManager->isPlayerWalkingOnShip(hitid) == true)
+        if (ShipManager->isPlayerWalkingOnShip(hitid))
             return 0;
 
         // Crew members using god-mode should not be able to take damage.
-        if (LegacyPlayerHasGodMode(hitid) == true)
+        if (LegacyPlayerHasGodMode(hitid))
             return 0;
 
         // Players inside interiors (including VIP room), should not be hurt.
-        if ((GetPlayerInterior(hitid) != 0 || LegacyIsPlayerInVipRoom(hitid) == true)
-            && !CFightClub__IsPlayerFighting(playerid))
-            return 0;
+        if (GetPlayerInterior(hitid) != 0 || LegacyIsPlayerInVipRoom(hitid)) {
+            // Various minigames are exceptions to this rule.
+            if (!CFightClub__IsPlayerFighting(playerid) &&
+                    !CWWT__IsPlaying(playerid) &&
+                    !CRobbery__IsPlaying(playerid)) {
+                return 0;
+            }
+        }
     }
 
     return 1;
@@ -166,8 +174,7 @@ public OnPlayerGiveDamage(playerid, damagedid, Float: amount, weaponid, bodypart
  * @param bodypart Id of the body part that was hit.
  */
 public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart) {
-    // Handle exceptions.
-    if (Player(playerid)->isConnected() == false || Player(playerid)->isNonPlayerCharacter() == true)
+    if (!Player(playerid)->isConnected() || Player(playerid)->isNonPlayerCharacter())
         return 0;
 
     // Players inside interiors (including VIP room), should not be hurt.
@@ -179,15 +186,18 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
         return 0;
     }
 
-    // If the player is currently not residing on the ship, or if the damage is not self-inflicted,
-    // set the player as currently fighting.
-    if (ShipManager->isPlayerWalkingOnShip(playerid) == false && issuerid != Player::InvalidId)
-        DamageManager(playerid)->setFighting(Time->currentTime());
+    if (issuerid != Player::InvalidId) {
+        // If the player is currently not residing on the ship, or if the damage is not self-inflicted,
+        // set the player as currently fighting.
+        if (!ShipManager->isPlayerWalkingOnShip(playerid))
+            DamageManager(playerid)->setFighting(Time->currentTime());
 
-    // Deal noteworthy more damage for sniper headshots.
-    if (ShipManager->isPlayerWalkingOnShip(playerid) == false && issuerid != Player::InvalidId
-        && weaponid == WEAPON_SNIPER && bodypart == BODY_PART_HEAD)
-        DamageManager(issuerid)->dealHeadShot(playerid);
+        // Deal noteworthy more damage for sniper headshots.
+        if (!ShipManager->isPlayerWalkingOnShip(playerid) &&
+                weaponid == WEAPON_SNIPER && bodypart == BODY_PART_HEAD) {
+            DamageManager(issuerid)->dealHeadShot(playerid);
+        }
+    }
 
     return 1;
     #pragma unused playerid, amount, weaponid, bodypart

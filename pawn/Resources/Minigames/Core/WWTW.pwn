@@ -144,6 +144,11 @@ CWWTW__MenuActivate(playerid)
     CWWTW__OnCommand(playerid);
 }
 
+// Returns whether the |playerId| is playing in the WWTW.
+bool: CWWT__IsPlaying(playerId) {
+    return WWTW_PlayerData[playerId][iStatus] == WWTW_STATE_PLAYING;
+}
+
 // CWWTW__OnText
 // Called in OnPlayerText
 CWWTW__OnText(playerid, text[])

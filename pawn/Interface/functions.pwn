@@ -3,17 +3,11 @@
 // be found in the LICENSE file.
 
 bool: LegacyIsPlayerInVipRoom(playerId) {
-    if (iPlayerInVipRoom[playerId])
-        return true;
-    else
-        return false;
+    return !!iPlayerInVipRoom[playerId];
 }
 
 bool: LegacyPlayerHasGodMode(playerId) {
-    if (g_bPlayerGodmode[playerId])
-        return true;
-    else
-        return false;
+    return !!g_bPlayerGodmode[playerId];
 }
 
 LegacySetValidKillerVariables(forPlayerId, killerId, reasonId) {

@@ -532,6 +532,12 @@ CRobbery__DestroyAll()
 
 }
 
+// Returns whether |playerId| is currently playing the robbery minigame.
+bool: CRobbery__IsPlaying(playerId) {
+    return playerCasinoData[playerId][status] == ROBSTATUS_PLAYING;
+}
+
+
 // CRobbery__OnInteriorChange
 // When a player changes interior, we know about it.
 CRobbery__OnInteriorChange(playerid, newinterior)
@@ -1136,28 +1142,28 @@ CRobbery__PlayerExit(playerid)
 
 // CRobbery__GetStatus
 // Returns the status of the minigame
-stock CRobbery__GetStatus()
+CRobbery__GetStatus()
 {
     return casinoData[status];
 }
 
 // CRobbery__GetPhase
 // Returns the phase of the minigame
-stock CRobbery__GetPhase()
+CRobbery__GetPhase()
 {
     return casinoData[phase];
 }
 
 // CRobbery__GetPlayerStatus
 // Returns the status of a player in the minigame
-stock CRobbery__GetPlayerStatus(playerid)
+CRobbery__GetPlayerStatus(playerid)
 {
     return playerCasinoData[playerid][status];
 }
 
 // CRobbery__GetPlayerTeam
 // Returns the team of a player in the minigame
-stock CRobbery__GetPlayerTeam(playerid)
+CRobbery__GetPlayerTeam(playerid)
 {
     return playerCasinoData[playerid][team];
 }

@@ -72,6 +72,9 @@ class GangChatManager {
         }
 
         for (let member of gang.members) {
+            if (recipients.has(member))
+                continue;
+
             member.sendMessage(message);
             recipients.add(member);
         }

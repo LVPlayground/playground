@@ -48,7 +48,7 @@
     "GANG_DID_LEAVE": "@success You have left the %s gang.",
     "GANG_INFO_1": "{FFFFFF}Gangs are groups of players that have declared an alliance and fight",
     "GANG_INFO_2": "{FFFFFF}together. They will persist between different playing sessions.",
-    "GANGS_INFO_PLAYER": "{29B6F6}*** %s (Id: %d) is a {B3E5FC}%s{29B6F6} in the [%s] {B3E5FC}%s{29B6F6} gang.",
+    "GANGS_INFO_PLAYER": "{29B6F6}*** %s (Id: %d) is a {B3E5FC}%s{29B6F6} of the [%s] {B3E5FC}%s{29B6F6} gang.",
     "GANGS_INFO_PLAYER_NONE": "{29B6F6}*** %s (Id: %d) is not part of a gang.",
     "GANG_INTERNAL_ANNOUNCE_INVITATION": "%s has invited %s (Id: %d) to your gang.",
     "GANG_INTERNAL_ANNOUNCE_JOINED": "%s (Id: %d) has joined your gang.",

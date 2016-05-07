@@ -7,6 +7,13 @@
  * takes care of updating scores every few seconds. This allows external services, such as the
  * website, to stay informed about the in-game activities.
  *
+ * The second function of the player tracker is to maintain a binary log of the lag information as
+ * seen by players. The data will be saved in a file in the scriptfiles/ directory.
+ *
+ * Each online player will contribute one log record each second, containing their player Id, total
+ * number of online players, their ping, packet loss percentage and number of in-game seconds. The
+ * size of one of these records is 8 bytes.
+ *
  * @author Russell Krupke <russell@sa-mp.nl>
  */
 class PlayerTracker {
@@ -16,6 +23,16 @@ class PlayerTracker {
     // 311+numberOfPlayers*55
     new m_queryBuffer[311+MAX_PLAYERS*80];
 
+    // The network buffer will be used for writing the binary network data to a file.
+    new m_networkBuffer[2*MAX_PLAYERS];
+
+    // Handle using which the network binary log has been opened.
+    new File: m_networkHandle;
+
+    // The file handle has to be re-opened every now and then to make sure the latest information
+    // flushes from filesystem caches. We do this every 8KB. (1024 entries)
+    new m_networkBytesWritten;
+
     /**
      * When the gamemode first starts, we have to clear the table containing the in-game players as
      * this no longer will be relevant. When this is a GMX, players will be re-added as they connect
@@ -23,6 +40,12 @@ class PlayerTracker {
      */
     public __construct() {
         Database->query("TRUNCATE TABLE online", "", 0);
+
+        m_networkHandle = fopen("network.bin", io_append);
+        if (!m_networkHandle)
+            printf("[PlayerTracker] WARNING: Could not open `network.bin` for writing.");
+
+        m_networkBytesWritten = 0;
     }
 
     /**
@@ -136,5 +159,51 @@ class PlayerTracker {
 
         // If there are more than 50 players in-game, we need multiple queries.
         } while (playerId <= PlayerManager->highestPlayerId());
+
+        if (!m_networkHandle)
+            return;  // no need to create the network buffer if we can't use the handle
+
+        new currentTime = Time->currentTime();
+        new playerIndex = 0;
+
+        // Iterate over the players once more to fill the network buffer log.
+        for (playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
+            if (!Player(playerId)->isConnected() || Player(playerId)->isNonPlayerCharacter())
+                continue;
+
+            new const firstCellOffset = 2 * playerIndex;
+            new const secondCellOffset = 2 * playerIndex + 1;
+
+            new ping = GetPlayerPing(playerId);
+            new Float: packetLoss = NetStats_PacketLossPercent(playerId);
+
+            new roundedPacketLoss = Math->round(packetLoss * 10);
+            new ingameSeconds = currentTime - Player(playerId)->connectionTime();
+
+            // First cell: 1 byte for player Id, 1 byte for number of online players, 2 bytes for ping.
+            Cell->setByteValue(m_networkBuffer[firstCellOffset], 0, playerId);
+            Cell->setByteValue(m_networkBuffer[firstCellOffset], 1, PlayerManager->connectedPlayerCount());
+            Cell->setShortValue(m_networkBuffer[firstCellOffset], 1, ping);
+
+            // Second cell: 2 bytes for packet loss percentage (*10), 2 bytes for in-game time seconds.
+            Cell->setShortValue(m_networkBuffer[secondCellOffset], 0, roundedPacketLoss);
+            Cell->setShortValue(m_networkBuffer[secondCellOffset], 1, ingameSeconds);
+
+            ++playerIndex;
+        }
+
+        fblockwrite(m_networkHandle, m_networkBuffer, playerIndex * 2);
+
+        m_networkBytesWritten += playerIndex * 2 * 4 /* sizeof(cell) */;
+
+        if (m_networkBytesWritten > 8192) {
+            fclose(m_networkHandle);
+
+            m_networkHandle = fopen("network.bin", io_append);
+            if (!m_networkHandle)
+                printf("[PlayerTracker] WARNING: Could not open `network.bin` for writing.");
+
+            m_networkBytesWritten = 0;
+        }
     }
 };

@@ -133,6 +133,9 @@ class VehicleStorageManager {
         // Output an error to the console when no vehicles were retrieved.
         if (vehiclesLoaded == 0)
             printf("[VehicleController] ERROR: Could not load any vehicles.");
+
+        // Initialize the exports system now that the vehicles are available.
+        CExport__NewWantedVehicle();
     }
 
     /**

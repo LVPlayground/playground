@@ -77,7 +77,6 @@ public OnGameModeInit() {
     StartTimers();                              // Starts the LVP timers
     LoadMaps();                                 // Loads the mapped areas.
     SetMapIcons();                              // Map icons - Interface/functions.pwn
-    CExport__NewWantedVehicle();                // Inits the export
     InitSpawnPos();                             // Format the spawn position arrays - see Elements/Player/SpawnPos.pwn
 
     UsePlayerPedAnims();                        // Enables CJ running on all peds.

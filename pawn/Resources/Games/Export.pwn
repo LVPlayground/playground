@@ -25,10 +25,13 @@ new wantedVehicles[MAX_WANTEDVEH] =
 
 new wantedVehicle[3];
 new amountWantedVehicle[3];
+new bool: exportInitialised = false;
 
 forward CExport__NewWantedVehicle();
 public CExport__NewWantedVehicle()
 {
+    exportInitialised = true;
+
     // Choose a new vehicle that shall be exported.
     new vehID, vehFound[3], bFoo = 1, done[ 3 ];
     for (new i = 0; i < 3; i++)
@@ -97,7 +100,7 @@ public CExport__NewWantedVehicle()
     return 1;
 }
 
-stock CExport__CreateMap()
+CExport__CreateMap()
 {
     // All credits to [eF]Kase for this map.
     CreateDynamicObject(3458, 2284.8579101563, 603.15881347656, 8.3418426513672, 0, 0, 270, 0);
@@ -124,7 +127,7 @@ stock CExport__CreateMap()
     return 1;
 }
 
-stock CExport__OnEnterCheckpoint( playerid )
+CExport__OnEnterCheckpoint( playerid )
 {
     if(GetPlayerVirtualWorld(playerid) == 0)
     {
@@ -257,8 +260,14 @@ stock CExport__OnEnterCheckpoint( playerid )
     return 1;
 }
 
-stock CExport__OnCommand(playerid)
+CExport__OnCommand(playerid)
 {
+    if (!exportInitialised) {
+        SendClientMessage(playerid, COLOR_ORANGE, "Sorry, the export system has not been initialised yet!");
+        SendClientMessage(playerid, COLOR_ORANGE, "(You really should not see this. Please tell an admin.)");
+        return 1;
+    }
+
     new szMessage[ 256 ];
     SendClientMessage( playerid, COLOR_YELLOW, "The following vehicles are currently wanted:" );
     format( szMessage, sizeof( szMessage ), "The%s", "" );
@@ -274,7 +283,7 @@ stock CExport__OnCommand(playerid)
     return 1;
 }
 
-stock CExport__EnterVehicle(playerid)
+CExport__EnterVehicle(playerid)
 {
     for (new i = 0; i < 3; i++)
     {

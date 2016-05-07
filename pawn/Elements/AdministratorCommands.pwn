@@ -1035,7 +1035,7 @@ lvp_p(playerId, params[]) {
             return 1;
         }
 
-        SetPlayerSkinEx(subjectId, skinId);
+        SpawnManager(subjectId)->setSkinId(skinId, true /* forceUpdate */);
 
         SendClientMessage(playerId, Color::Success, "The skin has been set!");
 

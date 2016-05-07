@@ -106,9 +106,10 @@ class SpawnManager <playerId (MAX_PLAYERS)> {
      * currently has in-game, ensuring the right skin is being displayed.
      *
      * @param skinId Id of the skin which has been selected by the player.
+     * @param forceUpdate Whether to force an update of the cached spawn info.
      */
-    public setSkinId(skinId) {
-        if (m_beforeInitialClassSelection)
+    public setSkinId(skinId, bool: forceUpdate = false) {
+        if (m_beforeInitialClassSelection || forceUpdate)
             SetSpawnInfo(playerId, 0, skinId, 1346.17, 2807.06, 10.82, 320.0, 0, 0, 0, 0, 0, 0);
 
         SetPlayerSkinEx(playerId, skinId);

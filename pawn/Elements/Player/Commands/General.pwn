@@ -1008,7 +1008,7 @@ lvp_My( playerid, params[] )
         }
 
         if(!strcmp(tmp, "save", true, 4)) {
-            SpawnManager(playerid)->setSkinId(GetPlayerSkin(playerid));
+            SpawnManager(playerid)->setSkinId(GetPlayerSkin(playerid), true /* forceUpdate */);
             ShowBoxForPlayer(playerid, "Skin saved! Use /my skin remove to undo this action.");
             return 1;
         }

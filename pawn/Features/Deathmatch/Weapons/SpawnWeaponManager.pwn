@@ -30,10 +30,10 @@ class SpawnWeaponManager <playerId (MAX_PLAYERS)> {
      */
     @list(OnPlayerSpawn)
     public onPlayerSpawn() {
-        GiveWeapon(playerId, 24, 150); // Desert Eagle
-        GiveWeapon(playerId, 26, 200); // Sawnoff Shotgun
-        GiveWeapon(playerId, 28, 600); // Micro Uzi
-        GiveWeapon(playerId, 41, 5000); // Spraycan
+        GiveWeapon(playerId, WEAPON_DEAGLE, 50);
+        GiveWeapon(playerId, WEAPON_SAWEDOFF, 100);
+        GiveWeapon(playerId, WEAPON_UZI, 200);
+        GiveWeapon(playerId, WEAPON_SPRAYCAN, 1000);
 
         new weaponId;
         for (new weaponSlot = 0; weaponSlot < WeaponSlots; ++weaponSlot) {

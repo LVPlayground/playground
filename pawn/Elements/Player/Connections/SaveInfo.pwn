@@ -271,15 +271,9 @@ CSave__LoadInfo(playerId) {
     SetPlayerHealth(playerId, m_playerSaveInfo[slotId][savedHealth]);
     SetPlayerArmour(playerId, m_playerSaveInfo[slotId][savedArmour]);
 
-    if (m_playerSaveInfo[slotId][spawnArmour] == true)
-        SpawnWeaponManager(playerId)->giveSpawnArmour();
-
     // Give out the standard weapons to make sure a player doesn't join the game unarmed. If any
     // (spawn)weapon was set, the weapon will be overridden.
-    GiveWeapon(playerId, 24, 150);
-    GiveWeapon(playerId, 26, 200);
-    GiveWeapon(playerId, 28, 600);
-    GiveWeapon(playerId, 41, 5000);
+    SpawnWeaponManager(playerId)->onPlayerSpawn();
 
     for (new weaponSlot = 0; weaponSlot < WeaponSlots; weaponSlot++) {
         if (m_playerSaveInfo[slotId][savedWeaponId][weaponSlot] == 0)

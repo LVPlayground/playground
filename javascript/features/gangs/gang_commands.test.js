@@ -734,6 +734,27 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.isAboveOrEqual(player.messages.length, 1);
     });
 
+    it('should error out when getting gang information about a gangless player', assert => {
+        assert.isTrue(player.issueCommand('/gangs ' + player.name));
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0],
+                     Message.format(Message.GANGS_INFO_PLAYER_NONE, player.name, player.id));
+    });
+
+    it('should share gang information when a player is in a gang', assert => {
+        const gang = createGang({ tag: 'CC', name: 'Creative Cows', goal: 'We rule!' });
+
+        addPlayerToGang(player, gang, Gang.ROLE_MANAGER);
+
+        assert.isTrue(player.issueCommand('/gangs ' + player.name));
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0],
+                     Message.format(Message.GANGS_INFO_PLAYER, player.name, player.id, 'Manager',
+                                    gang.tag, gang.name));
+    });
+
     it('should be able to list the local gangs on the server', assert => {
         assert.isTrue(player.issueCommand('/gangs'));
 

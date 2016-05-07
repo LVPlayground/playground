@@ -82,6 +82,8 @@ class GangCommands {
 
         // Command: /gangs
         server.commandManager.buildCommand('gangs')
+            .sub(CommandBuilder.PLAYER_PARAMETER)
+                .build(GangCommands.prototype.onGangsInfoCommand.bind(this))
             .build(GangCommands.prototype.onGangsCommand.bind(this));
 
         // Promises that can be used for testing purposes.
@@ -715,6 +717,19 @@ class GangCommands {
         player.sendMessage(Message.GANG_INFO_2);
         player.sendMessage(
             Message.COMMAND_USAGE, '/gang [create/invite/join/kick/leave/members/settings]');
+    }
+
+    // Called when the player uses the `/gangs [player]` command. It will display information about
+    // the gang the given player is part of when issued by an administrator.
+    onGangsInfoCommand(player, subject) {
+        const gang = this.manager_.gangForPlayer(subject);
+        if (gang) {
+            const roleString = GangDatabase.toRoleString(gang.getPlayerRole(subject));
+            player.sendMessage(
+                Message.GANGS_INFO_PLAYER, player.name, player.id, roleString, gang.tag, gang.name);
+        } else {
+            player.sendMessage(Message.GANGS_INFO_PLAYER_NONE, player.name, player.id);
+        }
     }
 
     // Called when the player uses the `/gangs` command. It will, by default, list the gangs that

@@ -26,6 +26,7 @@ The following commands are available as part of the feature:
   - **/gang leave**: Leave the gang that you're currently part of.
   - **/gang members**: Display the gang's members, including those who aren't currently online.
   - **/gang settings**: Allows leaders to change settings of their gang.
+  - **/gangs [player]**: Displays whether the `player` is associated with a gang.
   - **/gangs**: Display the gangs currently represented on Las Venturas Playground.
 
 ## Features

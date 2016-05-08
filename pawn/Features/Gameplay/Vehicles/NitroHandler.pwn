@@ -51,63 +51,55 @@ class NitroHandler {
             amountOfNitro = 999;
         }
 
-        new const bool: isAdministrator = Player(playerId)->isAdministrator();
+        new EconomyValueType: economyType;
+        new nitroComponent;
 
         // Does the first part of the params contains a valid amount of nitro: 2, 5, 10 or 999 for
         // infinite? If not, we send the player an usage-message. Else, we attach the nitro and let
         // them pay and play.
         switch (amountOfNitro) {
             case 2: {
-                if (isAdministrator || GetPlayerMoney(playerId) >= 2000) {
-                    if (!isAdministrator)
-                        GivePlayerMoney(playerId, -2000);
-
-                    AddVehicleComponent(playerVehicleId, 1008);
-                } else {
-                    SendClientMessage(playerId, Color::Error, "You do need $2,000 to attach 2x nos to your vehicle.");
-                    return 1;
-                }
+                economyType = NitroTwoShot;
+                nitroComponent = 1008;
             }
-
             case 5: {
-                if (isAdministrator || GetPlayerMoney(playerId) >= 5000) {
-                    if (!isAdministrator)
-                        GivePlayerMoney(playerId, -5000);
-
-                    AddVehicleComponent(playerVehicleId, 1009);
-                } else {
-                    SendClientMessage(playerId, Color::Error, "You do need $5,000 to attach 5x nos to your vehicle.");
-                    return 1;
-                }
+                economyType = NitroFiveShot;
+                nitroComponent = 1009;
             }
-
             case 10: {
-                if (isAdministrator || GetPlayerMoney(playerId) >= 10000) {
-                    if (!isAdministrator)
-                        GivePlayerMoney(playerId, -10000);
-
-                    AddVehicleComponent(playerVehicleId, 1010);
-                } else {
-                    SendClientMessage(playerId, Color::Error, "You do need $10,000 to attach 10x nos to your vehicle.");
-                    return 1;
-                }
+                economyType = NitroTwoShot;
+                nitroComponent = 1010;
             }
-
             case 999: {
-                if (isAdministrator || GetPlayerMoney(playerId) >= 250000) {
-                    if (!isAdministrator)
-                        GivePlayerMoney(playerId, -250000);
-
-                    this->enableAndAddInfiniteNos(playerVehicleId);
-                } else {
-                    SendClientMessage(playerId, Color::Error, "You do need $250,000 to attach infinite nos to your vehicle.");
-                    return 1;
-                }
+                economyType = NitroInfinite;
+                nitroComponent = -1;
             }
-
             default: {
                 return SendClientMessage(playerId, Color::Information, "Usage: /nos [2/5/10/inf(inite)]");
             }
+        }
+
+        new const price = GetEconomyValue(economyType);
+        new message[128];
+
+        // Administrators enjoy free nitro.
+        if (!Player(playerId)->isAdministrator()) {
+            if (GetPlayerMoney(playerId) < price) {
+                format(message, sizeof(message), "You need $%s to attach this kind of nitro to your vehicle.",
+                       formatPrice(price));
+
+                SendClientMessage(playerId, Color::Error, message);
+                return 1;
+            }
+
+            TakeRegulatedMoney(playerId, economyType);
+        }
+
+        // Special-case granting of infinite nitro, since that isn't a component.
+        if (nitroComponent == -1 /* infinite */) {
+            this->enableAndAddInfiniteNos(playerVehicleId);
+        } else {
+            AddVehicleComponent(playerVehicleId, nitroComponent);
         }
 
         // Play a sound to attend the player that we've attached nitro to their vehicle

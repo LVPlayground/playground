@@ -333,7 +333,7 @@ new SLAP_REASONS[][] = {
 
 // Makes |playerId| slap the |targetPlayerId|. Their most recent slap time and the target's most
 // recent slapped-by records will be updated.
-SlapCommand(playerId, targetPlayerId) {
+ExecuteSlapCommand(playerId, targetPlayerId) {
     for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
         PlayerPlaySound(i, 1190 ,0, 0, 0);
 
@@ -377,14 +377,18 @@ lvp_slap(playerId, params[]) {
         return 1;
     }
 
-    if (GetPlayerMoney(playerId) < 5000 /* dollars */) {
-        SendClientMessage(playerId, Color::Warning, "Error: Slapping another player costs $5,000.");
+    new const price = GetEconomyValue(SlapCommand);
+
+    if (GetPlayerMoney(playerId) < price /* dollars */) {
+        new message[128];
+        format(message, sizeof(message), "Error: Slapping another player costs $%s.", formatPrice(price));
+        SendClientMessage(playerId, Color::Warning, message);
         return 1;
     }
 
-    GivePlayerMoney(playerId, -5000);
+    TakeRegulatedMoney(playerId, SlapCommand);
 
-    SlapCommand(playerId, targetPlayerId);
+    ExecuteSlapCommand(playerId, targetPlayerId);
     return 1;
 }
 
@@ -402,14 +406,18 @@ lvp_slapb(playerId, params[]) {
         return 1;
     }
 
-    if (GetPlayerMoney(playerId) < 5000 /* dollars */) {
-        SendClientMessage(playerId, Color::Warning, "Error: Slapping another player costs $5,000.");
+    new const price = GetEconomyValue(SlapCommand);
+
+    if (GetPlayerMoney(playerId) < price /* dollars */) {
+        new message[128];
+        format(message, sizeof(message), "Error: Slapping another player costs $%s.", formatPrice(price));
+        SendClientMessage(playerId, Color::Warning, message);
         return 1;
     }
 
-    GivePlayerMoney(playerId, -5000);
+    TakeRegulatedMoney(playerId, SlapCommand);
 
-    SlapCommand(playerId, g_LastSlappedBy[playerId]);
+    ExecuteSlapCommand(playerId, g_LastSlappedBy[playerId]);
     return 1;
 
     #pragma unused params
@@ -627,21 +635,23 @@ lvp_tune(playerid,params[])
         return 1;
     }
 
-    if(!params[0]) goto l_Tune;
+    if(!params[0])
+        goto l_Tune;
 
-    if(Player(playerid)->isAdministrator() == false)
-    {
-        if(GetPlayerMoney(playerid) < 10000)
-        {
-            ShowBoxForPlayer(playerid, "You need $10,000 to teleport to a tune shop.");
-            return 1;
-        }
+    new const price = GetEconomyValue(TuneCommand);
+    new message[128];
+
+    if(!Player(playerid)->isAdministrator() && GetPlayerMoney(playerid) < price) {
+        format(message, sizeof(message), "You need $%s to teleport to a tune shop.", formatPrice(price));
+        ShowBoxForPlayer(playerid, message);
+        return 1;
     }
 
-    if(!IsNumeric(params)) goto l_Tune;
+    if(!IsNumeric(params))
+        goto l_Tune;
 
     new iTune = strval(params);
-    new szMessage[128], szName[18];
+    new szName[18];
     GetPlayerName(playerid, szName, sizeof(szName));
     new tuneLocation[2][32] =
     {
@@ -660,19 +670,19 @@ lvp_tune(playerid,params[])
 
         ClearPlayerMenus(playerid);
         PlayerInfo[playerid][playerInCheckpoint] = 0;
-        format(szMessage, sizeof(szMessage), "%s (Id:%d) went to TuneShop %s (Id:%d).", szName, playerid, tuneLocation[iTune - 1], iTune);
-        Admin(playerid, szMessage);
+        format(message, sizeof(message), "%s (Id:%d) went to TuneShop %s (Id:%d).", szName, playerid, tuneLocation[iTune - 1], iTune);
+        Admin(playerid, message);
         SendClientMessage(playerid,COLOR_GREEN,"You have been teleported to the tune shop. Use /back to go back to L.V.");
 
         if (Player(playerid)->isAdministrator() == false)
-            GivePlayerMoney(playerid, -10000);
+            TakeRegulatedMoney(playerid, TuneCommand);
 
         iTuneTime[playerid] = Time->currentTime();
         isInSF[playerid] = true;
         return 1;
     }
 
-    l_Tune:
+l_Tune:
     SendClientMessage(playerid,COLOR_WHITE,"Use: /tune [1/2] - Wheel Arch Angles / Loco Low Co.");
     return 1;
 }

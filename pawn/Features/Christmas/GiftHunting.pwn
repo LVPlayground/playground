@@ -153,17 +153,17 @@ class GiftHunting {
                 presentName = "knife";
                 GiveWeapon(playerId, 4, 1);
             }
-            case 8: { /* Money ($3,000,000) */
-                presentName = "$3,000,000";
-                GivePlayerMoney(playerId, 3000000);
+            case 8: { /* Money (large prize) */
+                format(presentName, sizeof(presentName), "$%s", formatPrice(GetEconomyValue(GiftHuntLargePrize));
+                GiveRegulatedMoney(playerId, GiftHuntLargePrize);
             }
-            case 9: { /* Money ($1,000,000) */
-                presentName = "$1,000,000";
-                GivePlayerMoney(playerId, 1000000);
+            case 9: { /* Money (medium prize) */
+                format(presentName, sizeof(presentName), "$%s", formatPrice(GetEconomyValue(GiftHuntMediumPrize));
+                GiveRegulatedMoney(playerId, GiftHuntMediumPrize);
             }
-            case 10: { /* Money ($500,000) */
-                presentName = "$500,000";
-                GivePlayerMoney(playerId, 500000);
+            case 10: { /* Money (small prize) */
+                format(presentName, sizeof(presentName), "$%s", formatPrice(GetEconomyValue(GiftHuntSmallPrize));
+                GiveRegulatedMoney(playerId, GiftHuntSmallPrize);
             }
         }
 

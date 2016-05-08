@@ -18,7 +18,17 @@ enum EconomyValueType {
     BombTypeDetonator,
     BombTypeDetonatorOwnersShare,
     BombTypeEngine,
-    BombTypeEngineOwnersShare
+    BombTypeEngineOwnersShare,
+    GiftHuntLargePrize,
+    GiftHuntMediumPrize,
+    GiftHuntSmallPrize,
+    NitroTwoShot,
+    NitroFiveShot,
+    NitroTenShot,
+    NitroInfinite,
+    SlapCommand,
+    TowCommand,
+    TuneCommand
 };
 
 new customsTax = 1500;
@@ -38,6 +48,16 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case BombTypeDetonatorOwnersShare:      return 4000000 / 40;
         case BombTypeEngine:                    return 1000000;
         case BombTypeEngineOwnersShare:         return 1000000 / 40;
+        case GiftHuntLargePrize:                return 3000000;
+        case GiftHuntMediumPrize:               return 1000000;
+        case GiftHuntSmallPrize:                return 500000;
+        case NitroTwoShot:                      return 2000;
+        case NitroFiveShot:                     return 5000;
+        case NitroTenShot:                      return 10000;
+        case NitroInfinite:                     return 250000;
+        case SlapCommand:                       return 5000;
+        case TowCommand:                        return 45000;
+        case TuneCommand:                       return 10000;
     }
 
     return 0;

@@ -65,6 +65,9 @@ new towNames[NumberOfTowLocations][] =
 // This is the code called when the player uses the /tow command.
 lvp_tow(playerid, params[])
 {
+    new const price = GetEconomyValue(TowCommand);
+    new message[128];
+
     // If the player is an administrator, the following checks do not matter. Using an empty if-statement
     // because the following else-ifs are nicely structured.
     if (Player(playerid)->isAdministrator() && IsPlayerInAnyVehicle(playerid)) {}
@@ -74,8 +77,10 @@ lvp_tow(playerid, params[])
         return SendClientMessage(playerid, COLOR_RED, "Looks like you're on foot... Use /taxi instead!");
 
     // Does the player have enough money to start a tow?
-    else if (GetPlayerMoney(playerid) < 45000)
-        return SendClientMessage(playerid, COLOR_RED, "Using a tow will cost you $45,000!");
+    else if (GetPlayerMoney(playerid) < price) {
+        format(message, sizeof(message), "Using a tow will cost you $%s!", formatPrice(price));
+        return SendClientMessage(playerid, COLOR_RED, message);
+    }
 
     // Secondly, some checks... Let's see if the player has already used tow a while ago!
     else if (!CanPlayerUseTow(playerid))
@@ -111,7 +116,7 @@ lvp_tow(playerid, params[])
 
         // Lets take their money and tow them!
         if (Player(playerid)->isAdministrator() == false)
-            GivePlayerMoney(playerid, -45000);
+            TakeRegulatedMoney(playerid, TowCommand);
 
         TowPlayer(playerid, location);
     }
@@ -120,7 +125,7 @@ lvp_tow(playerid, params[])
 }
 
 // This is the function which teleports the player and its car to a certain location!
-stock TowPlayer(playerid, locationid)
+TowPlayer(playerid, locationid)
 {
     if (locationid < 0 || locationid >= NumberOfTowLocations)
         return 0;
@@ -144,7 +149,7 @@ stock TowPlayer(playerid, locationid)
 }
 
 // This function checks if the player is able to use tow right now.
-stock CanPlayerUseTow(playerid)
+CanPlayerUseTow(playerid)
 {
     // If the player hasn't used tow yet, we let him!
     if(!lastPlayerTow[playerid])

@@ -25,7 +25,6 @@
 #define WWTW_MINPLAYERS 2                // Min people that can join
 #define WWTW_MAXPLAYERS 10               // Max people that can join
 #define WWTW_SIGNUPTIME 20               // How many seconds players have until the minigame starts
-#define WWTW_VWORLD 386                  // Virtual world for this minigame.
 #define WWTW_WINMONEY 5000*iSignupCount  // how much the winners actually get in $
 
 // Variables!

@@ -192,6 +192,13 @@ class Player extends Extendable {
     pawnInvoke('SendClientMessage', 'iis', this.id_, 0xFFFFFFFF, message.toString());
   }
 
+  // Removes default game objects from the map of model |modelId| that are within |radius| units
+  // of the |position|. Should be called while the player is connecting to the server.
+  removeGameObject(modelId, position, radius) {
+    pawnInvoke('RemoveBuildingForPlayer', 'iiffff', this.id_, modelId, position.x, position.y,
+               position.z, radius);
+  }
+
   // -----------------------------------------------------------------------------------------------
   // TODO: The following methods should not be on the common Player object, but rather provided by
   // a feature of sorts.

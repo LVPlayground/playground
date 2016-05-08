@@ -146,6 +146,7 @@ class TestRunner {
       require('features/gang_chat/gang_chat_manager.test.js');
       require('features/gangs/gang_commands.test.js');
       require('features/gangs/gang_manager.test.js');
+      require('features/player_favours/object_remover.test.js');
       require('features/races/drift_tracker.test.js');
       require('features/races/race_importer.test.js');
     }

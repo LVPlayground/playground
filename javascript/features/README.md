@@ -25,8 +25,10 @@ The following features have been implemented in JavaScript.
   - **[Communication](communication/)**: Provides the lower-level player communication capabilities.
   - **[Friends](friends/)**: Gives players the ability to list who their friends are, as well as
     the `/friends` command.
-  - **[Gang chat](gang_chat/)** Provides a private-ish group chat for online gangs.
+  - **[Gang chat](gang_chat/)**: Provides a private-ish group chat for online gangs.
   - **[Gangs](gangs/)**: Provides the persistent gangs feature, as well as the `/gang` command.
+  - **[Player favours](player_favours/)**: Various smaller features implemented specifically for
+    the benefit of certain players.
 
 _There are several other features that have to be updated and documented before being listed here._
 

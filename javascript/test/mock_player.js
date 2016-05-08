@@ -24,6 +24,7 @@ class MockPlayer {
 
         this.messages_ = [];
 
+        this.removedObjectCount_ = 0;
         this.messageLevel_ = 0;
 
         this.connected_ = true;
@@ -106,6 +107,15 @@ class MockPlayer {
     playSound(soundId) {
         this.lastPlayedSound_ = soundId;
     }
+
+    // Removes default game objects from the map of model |modelId| that are within |radius| units
+    // of the |position|. Should be called while the player is connecting to the server.
+    removeGameObject(modelId, position, radius) {
+        this.removedObjectCount_++;
+    }
+
+    // Gets the number of objects that have been removed from the map for this player.
+    get removedObjectCount() { return this.removedObjectCount_; }
 
     // Gets the most recently played sound for this player.
     get lastPlayedSound() { return this.lastPlayedSound_; }

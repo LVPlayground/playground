@@ -37,6 +37,7 @@ class DamageManager <playerId (MAX_PLAYERS)> {
     /**
      * Special damage is done when a sniper headshot has been made. This function deals the proper
      * damage to the subject's armour and health. This function will be disabled if both players
+     * are part of the same team, and that team is not NO_TEAM.
      */
     public dealHeadShot(subjectId) {
         if (GetPlayerTeam(subjectId) != NO_TEAM && GetPlayerTeam(subjectId) == GetPlayerTeam(playerId))

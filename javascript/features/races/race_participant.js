@@ -14,7 +14,7 @@ class RaceParticipant {
     this.userId_ = null;
 
     if (player.isRegistered())
-      this.userId_ = player.account.userId;
+      this.userId_ = player.userId;
 
     this.state_ = RaceParticipant.STATE_SIGNUP;
 

@@ -68,7 +68,6 @@ new g_LastSlapTime[MAX_PLAYERS];
 new g_LastSlappedBy[MAX_PLAYERS];
 new bankRente = 4;
 new Float: SavedPos2[MAX_PLAYERS][5];
-new douane = 1500;
 new isCaged[MAX_PLAYERS];
 new UserTemped[MAX_PLAYERS][MAX_PLAYER_NAME+1];
 new g_AirportPickup[4];

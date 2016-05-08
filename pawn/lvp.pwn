@@ -67,6 +67,7 @@
 #include "Interface/Command.pwn"
 #include "Interface/CompilerDebug.pwn"
 #include "Interface/Dialog.pwn"
+#include "Interface/Economy.pwn"
 #include "Interface/Enumerations.pwn"
 #include "Interface/Instrumentation.pwn"
 #include "Interface/Math.pwn"

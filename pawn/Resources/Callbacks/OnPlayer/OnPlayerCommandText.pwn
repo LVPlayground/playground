@@ -1040,24 +1040,31 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     if(strcmp(cmd, "/customtax", true) == 0)
     {
         // If a player owns L.V airport, they can set the customs tax value.
-        new
-        tmp[256],
-        ctax;
+        new tmp[256];
+        new ctax;
 
         new propertyId = PropertyManager->propertyForSpecialFeature(CustomTaxAirportFeature),
             endid = propertyId == Property::InvalidId ? Player::InvalidId : Property(propertyId)->ownerId();
 
         // Does the player own the airport?
         if (endid != playerid)
-        return 0;
+            return 0;
 
         // Have they used the correct params?
         tmp = strtok(cmdtext, idx);
 
+        new message[128];
+
+        new const maximumTax = GetEconomyValue(AirportCustomsTaxMax);
+        new const minimumTax = GetEconomyValue(AirportCustomsTaxMin);
+
         if(!tmp[0])
         {
-            SendClientMessage(playerid,COLOR_WHITE,"Use: /customtax [amount]");
-            SendClientMessage(playerid,COLOR_WHITE,"The custom tax can be set from $500-$5000.");
+            SendClientMessage(playerid, COLOR_WHITE, "Use: /customtax [amount]");
+            format(message, sizeof(message), "The custom tax must be between $%s and $%s.",
+                formatPrice(minimumTax), formatPrice(maximumTax));
+
+            SendClientMessage(playerid, COLOR_WHITE, message);
             return 1;
         }
 
@@ -1067,25 +1074,29 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             ShowBoxForPlayer(playerid, "You can only change the airport custom tax every five minutes.");
             return 1;
         }
+
         ctax = strval(tmp);
+
         // Have they set a valid value?
-        if(ctax > 5000)
-        {
-            ShowBoxForPlayer(playerid, "You can't set the custom tax above $5000.");
+        if (ctax > maximumTax) {
+            format(message, sizeof(message), "You can't set the custom tax above $%s.", formatPrice(maximumTax));
+            ShowBoxForPlayer(playerid, message);
             return 1;
         }
-        if(ctax < 500)
-        {
-            ShowBoxForPlayer(playerid, "You can't set the customs tax below $500.");
+
+        if (ctax < minimumTax) {
+            format(message, sizeof(message), "You can't set the custom tax below $%s.", formatPrice(minimumTax));
+            ShowBoxForPlayer(playerid, message);
             return 1;
         }
 
         // Otherwise, set the customs tax :>
-        douane = ctax;
-        new str[256];
-        format(str,256,"~r~~h~%s~w~ has set the airport customs tax as ~y~$%d~w~ (~p~/customtax~w~)",
-            Player(playerid)->nicknameString(),douane);
-        NewsController->show(str);
+        SetEconomyValue(AirportCustomsTax, ctax);
+
+        format(message, sizeof(message), "~r~~h~%s~w~ has set the airport customs tax as ~y~$%d~w~ (~p~/customtax~w~)",
+            Player(playerid)->nicknameString(), ctax);
+        NewsController->show(message);
+
         g_FlagTime[playerid][0] = Time->currentTime();
         return 1;
     }

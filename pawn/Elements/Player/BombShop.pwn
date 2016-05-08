@@ -19,18 +19,10 @@ forward bomb_Countdown(playerid);
 #define BOMB_TYPE_COUNTDOWN 2
 #define BOMB_TYPE_DETONATOR 3
 
-#define ENGINE_BOMB_PRICE       1000000
-#define COUNTDOWN_BOMB_PRICE    2000000
-#define DETONATOR_BOMB_PRICE    4000000
-
 #define EXPLODE_TYPE_SMALL 0
 #define EXPLODE_TYPE_MEDIUM 1
 #define EXPLODE_TYPE_LARGE 2
 #define EXPLODE_TYPE_MASSIVE 3
-
-#define MEDIUM_EXPLODE_PRICE    25000
-#define LARGE_EXPLODE_PRICE     70000
-#define MASSIVE_EXPLODE_PRICE   400000
 
 #define MIN_SPRAY_TAGS          30
 
@@ -207,10 +199,12 @@ CBomb__ProcessMenu(playerid,row)
                     return 1;
                 }
 
+                new const bombPrice = GetEconomyValue(BombTypeEngine);
+
                 // can our player afford an engine bomb?
-                if(GetPlayerMoney(playerid) < ENGINE_BOMB_PRICE)
+                if(GetPlayerMoney(playerid) < bombPrice)
                 {
-                    format(str,256,"The engine bombs cost $%s!",formatPrice(ENGINE_BOMB_PRICE));
+                    format(str,256,"The engine bombs cost $%s!",formatPrice(bombPrice));
                     ShowBoxForPlayer(playerid, str);
                     ShowMenuForPlayer(BombMenu[0],playerid);
                     g_PlayerMenu[ playerid ] = true;
@@ -219,7 +213,7 @@ CBomb__ProcessMenu(playerid,row)
 
                 // otherwise, it's all good.
                 PlayerPlaySound(playerid, 1133, 0.0, 0.0, 0.0);
-                GivePlayerMoney(playerid,-ENGINE_BOMB_PRICE);
+                TakeRegulatedMoney(playerid, BombTypeEngine);
                 ShowMenuForPlayer(BombMenu[1],playerid);
                 g_PlayerMenu[ playerid ] = true;
                 ShowBoxForPlayer(playerid, "Please choose the explosion impact");
@@ -230,10 +224,12 @@ CBomb__ProcessMenu(playerid,row)
                 VehicleBomb[GetPlayerVehicleID(playerid)][armer] = playerid;
                 if(Player(endid)->isConnected() && endid != playerid)
                 {
-                    format(str,256,"* %s (Id:%d) bought an {A9C4E4}engine bomb{CCCCCC}, you earned {A9C4E4}$25,000{CCCCCC}.",
-                        PlayerName(playerid), playerid);
+                    new const ownerShare = GetEconomyValue(BombTypeEngineOwnersShare);
+
+                    format(str,256,"* %s (Id:%d) bought an {A9C4E4}engine bomb{CCCCCC}, you earned {A9C4E4}$%s{CCCCCC}.",
+                        PlayerName(playerid), playerid, formatPrice(ownerShare));
                     SendClientMessage(endid,Color::ConnectionMessage,str);
-                    GivePlayerMoney(endid,25000);
+                    GiveRegulatedMoney(playerid, BombTypeEngineOwnersShare);
                 }
 
                 Instrumentation->recordActivity(VehicleArmedWithBombActivity, 1); // [1] = engine bomb
@@ -254,9 +250,11 @@ CBomb__ProcessMenu(playerid,row)
                     return 1;
                 }
 
-                if(GetPlayerMoney(playerid) < DETONATOR_BOMB_PRICE)
+                new const bombPrice = GetEconomyValue(BombTypeDetonator);
+
+                if(GetPlayerMoney(playerid) < bombPrice)
                 {
-                    format(str,256,"The detonation bombs cost $%s.",formatPrice(DETONATOR_BOMB_PRICE));
+                    format(str,256,"The detonation bombs cost $%s.",formatPrice(bombPrice));
                     ShowBoxForPlayer(playerid, str);
                     ShowMenuForPlayer(BombMenu[0],playerid);
                     g_PlayerMenu[ playerid ] = true;
@@ -264,7 +262,7 @@ CBomb__ProcessMenu(playerid,row)
                 }
 
                 PlayerPlaySound(playerid, 1133, 0.0, 0.0, 0.0);
-                GivePlayerMoney(playerid,-DETONATOR_BOMB_PRICE);
+                TakeRegulatedMoney(playerid, BombTypeDetonator);
                 ShowMenuForPlayer(BombMenu[1],playerid);
                 g_PlayerMenu[ playerid ] = true;
                 ShowBoxForPlayer(playerid, "Choose the explosion impact");
@@ -275,10 +273,12 @@ CBomb__ProcessMenu(playerid,row)
 
                 if(Player(endid)->isConnected() && endid != playerid)
                 {
-                    format(str,256,"* %s (Id:%d) bought a {A9C4E4}detonation bomb{CCCCCC}, you earned {A9C4E4}$15,000{CCCCCC}.",
-                        PlayerName(playerid), playerid);
+                    new const ownerShare = GetEconomyValue(BombTypeDetonatorOwnersShare);
+
+                    format(str,256,"* %s (Id:%d) bought a {A9C4E4}detonation bomb{CCCCCC}, you earned {A9C4E4}$%s{CCCCCC}.",
+                        PlayerName(playerid), playerid, formatPrice(ownerShare));
                     SendClientMessage(endid,Color::ConnectionMessage,str);
-                    GivePlayerMoney(endid,15000);
+                    GiveRegulatedMoney(endid, BombTypeDetonatorOwnersShare);
                 }
 
                 Instrumentation->recordActivity(VehicleArmedWithBombActivity, 2); // [2] = detonation bomb
@@ -298,9 +298,11 @@ CBomb__ProcessMenu(playerid,row)
                     return 1;
                 }
 
-                if(GetPlayerMoney(playerid) < COUNTDOWN_BOMB_PRICE)
+                new const bombPrice = GetEconomyValue(BombTypeCountdown);
+
+                if(GetPlayerMoney(playerid) < bombPrice)
                 {
-                    format(str,256,"The countdown bombs cost $%s.",formatPrice(COUNTDOWN_BOMB_PRICE));
+                    format(str,256,"The countdown bombs cost $%s.",formatPrice(bombPrice));
                     ShowBoxForPlayer(playerid, str);
                     ShowMenuForPlayer(BombMenu[0],playerid);
                     g_PlayerMenu[ playerid ] = true;
@@ -308,7 +310,7 @@ CBomb__ProcessMenu(playerid,row)
                 }
 
                 PlayerPlaySound(playerid, 1133, 0.0, 0.0, 0.0);
-                GivePlayerMoney(playerid, -COUNTDOWN_BOMB_PRICE);
+                TakeRegulatedMoney(playerid, BombTypeCountdown);
                 ShowMenuForPlayer(BombMenu[1],playerid);
                 g_PlayerMenu[ playerid ] = true;
                 ShowBoxForPlayer(playerid, "Please choose the explosion impact");
@@ -320,10 +322,12 @@ CBomb__ProcessMenu(playerid,row)
 
                 if(Player(endid)->isConnected() && endid != playerid)
                 {
-                    format(str,256,"* %s (Id:%d) bought a {A9C4E4}countdown bomb{CCCCCC}, you earned {A9C4E4}$10,000{CCCCCC}.",
-                        PlayerName(playerid), playerid);
+                    new const ownerShare = GetEconomyValue(BombTypeCountdownOwnersShare);
+
+                    format(str,256,"* %s (Id:%d) bought a {A9C4E4}countdown bomb{CCCCCC}, you earned {A9C4E4}$%s{CCCCCC}.",
+                        PlayerName(playerid), playerid, formatPrice(ownerShare));
                     SendClientMessage(endid,Color::ConnectionMessage,str);
-                    GivePlayerMoney(endid,10000);
+                    GiveRegulatedMoney(endid, BombTypeDetonatorOwnersShare);
                 }
 
                 Instrumentation->recordActivity(VehicleArmedWithBombActivity, 3); // [3] = countdown bomb
@@ -350,16 +354,21 @@ CBomb__ProcessMenu(playerid,row)
             RemovePlayerFromBombShop(playerid);
             return 1;
         }
+
+        new EconomyValueType: explosionType;
+
         // Now, we have to check if a player has the correct amount of money.
         switch(row)
         {
             // Medium explosion. Does some damage, but not lethal.
         case 1:
             {
-                // is the money less than the defined price?
-                if(GetPlayerMoney(playerid) < MEDIUM_EXPLODE_PRICE)
+                explosionType = BombExplosionMedium;
+
+                new const explosionPrice = GetEconomyValue(explosionType);
+                if(GetPlayerMoney(playerid) < explosionPrice)
                 {
-                    format(str,256,"You need $%s for a medium explosion.", formatPrice(MEDIUM_EXPLODE_PRICE));
+                    format(str,256,"You need $%s for a medium explosion.", formatPrice(explosionPrice));
                     ShowBoxForPlayer(playerid, str);
                     ShowMenuForPlayer(BombMenu[1],playerid);
                     g_PlayerMenu[ playerid ] = true;
@@ -369,9 +378,12 @@ CBomb__ProcessMenu(playerid,row)
             // Large explosion. Kills.
         case 2:
             {
-                if(GetPlayerMoney(playerid) < LARGE_EXPLODE_PRICE)
+                explosionType = BombExplosionLarge;
+
+                new const explosionPrice = GetEconomyValue(explosionType);
+                if(GetPlayerMoney(playerid) < explosionPrice)
                 {
-                    format(str,256,"You need $%s for a large explosion.",formatPrice(LARGE_EXPLODE_PRICE));
+                    format(str,256,"You need $%s for a large explosion.",formatPrice(explosionPrice));
                     ShowBoxForPlayer(playerid, str);
                     ShowMenuForPlayer(BombMenu[1],playerid);
                     g_PlayerMenu[ playerid ] = true;
@@ -382,9 +394,12 @@ CBomb__ProcessMenu(playerid,row)
             // Massive explosion. Kills anybody around it as-well. LETHAL.
         case 3:
             {
-                if(GetPlayerMoney(playerid) < MASSIVE_EXPLODE_PRICE)
+                explosionType = BombExplosionExtreme;
+
+                new const explosionPrice = GetEconomyValue(explosionType);
+                if(GetPlayerMoney(playerid) < explosionPrice)
                 {
-                    format(str,256,"You need $%s for a huge explosion!",formatPrice(MASSIVE_EXPLODE_PRICE));
+                    format(str,256,"You need $%s for a huge explosion!",formatPrice(explosionPrice));
                     ShowBoxForPlayer(playerid, str);
                     ShowMenuForPlayer(BombMenu[1],playerid);
                     g_PlayerMenu[ playerid ] = true;
@@ -393,18 +408,13 @@ CBomb__ProcessMenu(playerid,row)
             }// eof case
         }// eof switch
 
-        new bill;
-        if(row)         bill    =   MEDIUM_EXPLODE_PRICE;
-        if(row == 2)    bill    =   LARGE_EXPLODE_PRICE;
-        if(row == 3)    bill    =   MASSIVE_EXPLODE_PRICE;
-
         // Otherwise, it is all good. We set the vehicle bomb type in accordance
         // to the row selected making it nice and easy :)
         VehicleBomb[GetPlayerVehicleID(playerid)][ExplosionType] = row;
         RemovePlayerFromBombShop(playerid);
         SendClientMessage(playerid,COLOR_GREEN,"* Vehicle Bomb setup.");
         ShowBoxForPlayer(playerid, "Vehicle Armed!");
-        GivePlayerMoney(playerid,-bill);
+        TakeRegulatedMoney(playerid, explosionType);
     }
     return 1;
 }

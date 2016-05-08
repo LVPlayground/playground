@@ -116,25 +116,28 @@ AirportGateCheck(i)
         // if the player is near the tax pay-point, and hasn't already payed,
         if(!isPlayerInTaxPoint[i])
         {
+            new const tax = GetEconomyValue(AirportCustomsTax);
+
             isPlayerInTaxPoint[ i ] = true;
-            if(GetPlayerMoney(i) < douane && endid != i && !isGateOpen && !IsPlayerInMinigame(i) && GetPlayerState(i) == PLAYER_STATE_DRIVER)
+            if(GetPlayerMoney(i) < tax && endid != i && !isGateOpen && !IsPlayerInMinigame(i) && GetPlayerState(i) == PLAYER_STATE_DRIVER)
             {
-                format(szMessage,sizeof(szMessage),"You need $%d to pay customs tax to enter/exit the airport.",douane);
+                format(szMessage,sizeof(szMessage),"You need $%s to pay customs tax to enter/exit the airport.", formatPrice(tax));
                 ShowBoxForPlayer(i, szMessage);
             }
             else
             {
 
-                if(GetPlayerMoney(i) >= douane && endid != i && !isGateOpen && GetPlayerState(i) != PLAYER_STATE_PASSENGER)
+                if(GetPlayerMoney(i) >= tax && endid != i && !isGateOpen && GetPlayerState(i) != PLAYER_STATE_PASSENGER)
                 {
                     // we take the money away :> But, only if they have enough!
                     // Is it the airport owner entering the airport?
-                    format( szMessage, sizeof( szMessage ), "You've paid $%d custom's tax.", douane );
+                    format( szMessage, sizeof( szMessage ), "You've paid $%s custom's tax.", formatPrice(tax) );
                     if(!IsPlayerInMinigame(i))
                     {
                         ShowBoxForPlayer(i, szMessage);
-                        GivePlayerMoney( i, -douane );
+                        TakeRegulatedMoney(i, AirportCustomsTax);
                     }
+
                     OpenAirportGate();
                 }
             }
@@ -152,10 +155,11 @@ AirportGateCheck(i)
             {
                 if(Player(endid)->isConnected() && !IsPlayerInMinigame(i))
                 {
-                    new calc = douane/4;
-                    format(szMessage,256,"* You earned {A9C4E4}$%d customs tax{CCCCCC} from %s (Id:%d).",calc,PlayerName(i),i);
+                    new ownershipShare = GetEconomyValue(AirportCustomsTaxOwnersShare);
+                    format(szMessage,256,"* You earned {A9C4E4}$%s customs tax{CCCCCC} from %s (Id:%d).",formatPrice(ownershipShare),PlayerName(i),i);
                     SendClientMessage(endid,Color::ConnectionMessage,szMessage);
-                    GivePlayerMoney(endid, calc);
+
+                    GiveRegulatedMoney(endid, AirportCustomsTaxOwnersShare);
                 }
             }
 

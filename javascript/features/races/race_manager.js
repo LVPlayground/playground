@@ -124,7 +124,6 @@ class RaceManager {
   // Called when |runningRace| has finished. The |finishedParticipants| argument contains a
   // generator that will yield for each participant that has successfully finished the race.
   onRaceFinished(runningRace, finishedParticipants) {
-    console.log('Race finished!');
     this.activeRaces_ = this.activeRaces_.filter(activeRace => activeRace !== runningRace);
 
     // Store the result for each of the finished participants in the database.
@@ -135,8 +134,6 @@ class RaceManager {
       this.raceDatabase_.storeRaceResult(
           runningRace.race.id, participant.userId, participant.rank, participant.totalTime, participant.checkpointTimes);
     });
-
-    console.log('Race finished! (2)');
   }
 
   // Announces that |runningRace| has started and is now accepting sign-ups. Other players can join

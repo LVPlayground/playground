@@ -92,8 +92,10 @@ class RunningRace {
     // Mark the player as being idle again. The will be able to start other activities again.
     player.activity = Player.PLAYER_ACTIVITY_NONE;
 
-    if (this.state_ >= RunningRace.STATE_COUNTDOWN)
-      pawnInvoke('OnSerializePlayerState', 'ii', player.id, 0 /* serialize */);
+    if (this.state_ >= RunningRace.STATE_COUNTDOWN) {
+      Promise.resolve().then(() =>
+          pawnInvoke('OnSerializePlayerState', 'ii', player.id, 0 /* serialize */));
+    }
 
     // Hide the next checkpoint if it's still being displayed for |participant|.
     let lastCheckpoint = participant.checkpointIndex;
@@ -306,7 +308,8 @@ class RunningRace {
     for (let participant of this.participants_.racingParticipants()) {
       let player = participant.player;
 
-      pawnInvoke('OnSerializePlayerState', 'ii', player.id, 1 /* serialize */);
+      Promise.resolve().then(() =>
+          pawnInvoke('OnSerializePlayerState', 'ii', player.id, 1 /* serialize */));
 
       // Disable the death feed for the player, we'll use that space for a scoreboard.
       this.manager_.deathFeed.disableForPlayer(player);

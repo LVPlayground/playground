@@ -166,8 +166,9 @@ class Player extends Extendable {
   set activity(activity) {
     this.activity_ = activity;
 
-    // Inform the Pawn script of the activity change.
-    pawnInvoke('OnPlayerActivityChange', 'ii', this.id_, activity);
+    // Asynchronously inform the Pawn script of the activity change.
+    Promise.resolve().then(() =>
+        pawnInvoke('OnPlayerActivityChange', 'ii', this.id_, activity));
   }
 
   // Gets the message level at which this player would like to receive messages. Only applicable

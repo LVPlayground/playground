@@ -33,7 +33,7 @@ class SpawnWeaponManager <playerId (MAX_PLAYERS)> {
         GiveWeapon(playerId, WEAPON_DEAGLE, 50);
         GiveWeapon(playerId, WEAPON_SAWEDOFF, 100);
         GiveWeapon(playerId, WEAPON_UZI, 200);
-        GiveWeapon(playerId, WEAPON_SPRAYCAN, 1000);
+        GiveWeapon(playerId, WEAPON_SPRAYCAN, 5000);
 
         new weaponId;
         for (new weaponSlot = 0; weaponSlot < WeaponSlots; ++weaponSlot) {

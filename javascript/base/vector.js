@@ -45,7 +45,7 @@ class Vector {
     get normalized2D() {
         let magnitude = this.magnitude2D;
         if (magnitude === 0)
-        return new Vector(0, 0, 0);
+            return new Vector(0, 0, 0);
 
         return new Vector(this.x_ / magnitude, this.y_ / magnitude, 0);
     }
@@ -54,7 +54,7 @@ class Vector {
     get normalized() {
         let magnitude = this.magnitude;
         if (magnitude === 0)
-        return new Vector(0, 0, 0);
+            return new Vector(0, 0, 0);
 
         return new Vector(this.x_ / magnitude, this.y_ / magnitude, this.z_ / magnitude);
     }

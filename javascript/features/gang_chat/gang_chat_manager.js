@@ -22,8 +22,14 @@ class GangChatManager {
 
     // Called when a player sends a message to the chat box. If it starts 
     onPlayerText(player, text) {
-        if (!text.startsWith('!') || (text.startsWith('!!') && !player.isAdministrator()))
-            return false;  // this message is not meant for gang chat
+        if (!text.startsWith('!'))
+            return false;  // this is not a gang-bound message
+
+        if (!player.isAdministrator() && text.startsWith('!!'))
+            return false;  // the player uses exclamation marks in a regular context
+
+        if (player.isAdministrator() && text.startsWith('!!!'))
+            return false;  // the administrator uses exclamation marks in a regular context
 
         const recipients = new Set();
 

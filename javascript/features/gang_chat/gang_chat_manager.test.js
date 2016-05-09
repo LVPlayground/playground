@@ -23,6 +23,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
 
         assert.isFalse(player.issueMessage(''));
         assert.isFalse(player.issueMessage('Hello, world!'));
+        assert.isFalse(player.issueMessage('!!message'));
         assert.isFalse(player.issueMessage('!!! omg'));
     });
 
@@ -198,5 +199,12 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
 
         assert.equal(russell.messages.length, 1);
         assert.equal(russell.messages[0], expectedMessage);
+    });
+
+    it('should ignore three exclamation marks for administrators as well', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isFalse(gunther.issueMessage('!!!what happened'));
     });
 });

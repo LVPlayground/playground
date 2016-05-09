@@ -149,6 +149,10 @@ class TestRunner {
       require('features/player_favours/object_remover.test.js');
       require('features/races/drift_tracker.test.js');
       require('features/races/race_importer.test.js');
+      require('features/vehicles/vehicle_commands.test.js');
+      require('features/vehicles/vehicle_grid.test.js');
+      require('features/vehicles/vehicle_manager.test.js');
+      require('features/vehicles/vehicle_streamer.test.js');
     }
 
     // Remove the `describe` method from the global scope again.

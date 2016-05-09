@@ -21,6 +21,14 @@ class Vector {
         return Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffY, 2));
     }
 
+    // Computes the distance to this vector from |vector| in a 2D space. Returns the squared result.
+    squaredDistanceTo2D(vector) {
+        const diffX = Math.abs(this.x_ - vector.x);
+        const diffY = Math.abs(this.y_ - vector.y);
+
+        return Math.pow(diffX, 2) + Math.pow(diffY, 2);
+    }
+
     // Computes the distance from this vector to |vector| in a 3D space.
     distanceTo(vector) {
         const diffX = Math.abs(this.x_ - vector.x);
@@ -28,6 +36,15 @@ class Vector {
         const diffZ = Math.abs(this.z_ - vector.z);
 
         return Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffY, 2) + Math.pow(diffZ, 2));
+    }
+
+    // Computes the distance to this vector from |vector| in a 3D space. Returns the squared result.
+    squaredDistanceTo(vector) {
+        const diffX = Math.abs(this.x_ - vector.x);
+        const diffY = Math.abs(this.y_ - vector.y);
+        const diffZ = Math.abs(this.z_ - vector.z);
+
+        return Math.pow(diffX, 2) + Math.pow(diffY, 2) + Math.pow(diffZ, 2);
     }
 
     // Calculates the 2-dimensional magnitude of the vector per the Pythagoras theorem.

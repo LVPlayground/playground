@@ -18,6 +18,9 @@ describe('Vector', it => {
 
         assert.closeTo(topLeft.distanceTo2D(bottomRight), 14.1421, 0.01);
         assert.closeTo(bottomRight.distanceTo2D(topLeft), 14.1421, 0.01);
+
+        assert.equal(topLeft.squaredDistanceTo2D(bottomRight), 200);
+        assert.equal(bottomRight.squaredDistanceTo2D(topLeft), 200);
     });
 
     it('should calculate the distance in a 3D space', assert => {
@@ -26,6 +29,9 @@ describe('Vector', it => {
 
         assert.closeTo(topLeft.distanceTo(bottomRight), 24.4949, 0.01);
         assert.closeTo(bottomRight.distanceTo(topLeft), 24.4949, 0.01);
+
+        assert.equal(topLeft.squaredDistanceTo(bottomRight), 600);
+        assert.equal(bottomRight.squaredDistanceTo(topLeft), 600);
     });
 
     it('should calculate the magnitude', assert => {

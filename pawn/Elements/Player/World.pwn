@@ -212,7 +212,6 @@ l_GotoWorld(playerId, worldId) {
 
     SetPlayerVirtualWorld(playerId, worldId);
 
-    for (new i = 0; i < 15; i++) SendClientMessage(playerId, 0, "");
     if (worldId != World::MainWorld) {
         format(message, sizeof(message), "*** %s (Id:%d) has joined this world (#%d).",
             Player(playerId)->nicknameString(), playerId, worldId);

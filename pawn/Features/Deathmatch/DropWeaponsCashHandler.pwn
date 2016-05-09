@@ -72,6 +72,7 @@ class DropWeaponsCashHandler {
                 m_pickupWeaponPickupId[weaponSlot][player] = PickupController::InvalidId;
                 m_pickupWeaponId[weaponSlot][player] = 0;
                 m_pickupWeaponAmmo[weaponSlot][player] = 0;
+                return 1;
             }
 
             if (m_pickupCashPickupId[player] == pickupId) {
@@ -82,6 +83,7 @@ class DropWeaponsCashHandler {
 
                 m_pickupCashPickupId[player] = PickupController::InvalidId;
                 m_pickupCashAmount[player] = 0;
+                return 1;
             }
         }
 

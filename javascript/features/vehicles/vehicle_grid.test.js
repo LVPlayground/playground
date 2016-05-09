@@ -121,4 +121,66 @@ describe('VehicleGrid', (it, beforeEach, afterEach) => {
 
         assert.deepEqual(closestFour, [ [-1, -1], [-1, 150], [150, -1], [150, 150] ]);
     });
+
+    it('should be performant for 500 players with 10,000 randomly positioned vehicles', assert => {
+        const PLAYER_COUNT = 500;
+        const VEHICLE_COUNT = 10000;
+        const CLOSEST_COUNT = 20;
+
+        let players = [];
+
+        for (let vehicleIndex = 0; vehicleIndex < VEHICLE_COUNT; ++vehicleIndex)
+            grid.addVehicle(createStoredVehicle());
+
+        for (let playerIndex = 0; playerIndex < PLAYER_COUNT; ++playerIndex) {
+            players.push({
+                position: new Vector(Math.floor(Math.random() * 6000) - 3000,
+                                     Math.floor(Math.random() * 6000) - 3000, 0)
+            });
+        }
+
+        const minimumVehicles = Math.floor((6000 / grid.streamDistance) / 4);
+        const beginTime = highResolutionTime();
+
+        players.forEach(player =>
+            assert.isAboveOrEqual(grid.closest(player, CLOSEST_COUNT).length, minimumVehicles));
+
+        const totalTime = Math.round((highResolutionTime() - beginTime) * 100) / 100;;
+
+        console.log('[VehicleGrid] Processed ' + CLOSEST_COUNT + ' vehicles for ' + PLAYER_COUNT +
+                    ' players on a random grid of ' + VEHICLE_COUNT + ': ' + totalTime + 'ms.');
+    });
+
+    it('should be performant for 500 players with 10,000 grouped vehicles', assert => {
+        const PLAYER_COUNT = 500;
+        const VEHICLE_COUNT = 10000;
+        const CLOSEST_COUNT = 20;
+
+        let players = [];
+
+        // Add all vehicles between [1000, 1000] and [3000, 3000], comparable to Las Venturas.
+        for (let vehicleIndex = 0; vehicleIndex < VEHICLE_COUNT; ++vehicleIndex) {
+            grid.addVehicle(createStoredVehicle({ positionX: Math.random(2000) + 1000,
+                                                  positionY: Math.random(2000) + 1000 }));
+        }
+
+        // Most of the players should be located in this area as well.
+        for (let playerIndex = 0; playerIndex < PLAYER_COUNT; ++playerIndex) {
+            players.push({
+                position: new Vector(Math.floor(Math.random() * 3000) - 500,
+                                     Math.floor(Math.random() * 3000) - 500, 0)
+            });
+        }
+
+        const minimumVehicles = Math.floor((6000 / grid.streamDistance) / 4);
+        const beginTime = highResolutionTime();
+
+        players.forEach(player =>
+            assert.isAboveOrEqual(grid.closest(player, CLOSEST_COUNT).length, 0));
+
+        const totalTime = Math.round((highResolutionTime() - beginTime) * 100) / 100;;
+
+        console.log('[VehicleGrid] Processed ' + CLOSEST_COUNT + ' vehicles for ' + PLAYER_COUNT +
+                    ' players on a biased grid of ' + VEHICLE_COUNT + ': ' + totalTime + 'ms.');
+    });
 });

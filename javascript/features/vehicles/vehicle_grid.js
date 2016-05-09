@@ -33,6 +33,9 @@ class VehicleGrid {
         }
     }
 
+    // Gets the streaming distance relevant to this grid.
+    get streamDistance() { return this.streamDistance_; }
+
     // Gets the number of vehicles that have been added to the grid.
     get size() { return this.vehicles_.size; }
 

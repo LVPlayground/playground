@@ -8,12 +8,29 @@ const MinimumGridCoordinate = -3000;
 const MaximumGridCoordinate = 3000;
 
 // The vehicle grid stores all vehicles on a grid in order to provide reasonably fast KNN updates.
+// It is a two dimensional grid- the Z-index (height) of the vehicle will be ignored.
 class VehicleGrid {
     constructor(streamDistance) {
         this.streamDistance_ = streamDistance;
 
+        this.maximumSquaredDistance_ = streamDistance * streamDistance;
+
         this.grid_ = {};
+        this.gridWidth_ = ((0 - MinimumGridCoordinate) + MaximumGridCoordinate) / streamDistance;
+        
+        if (!Number.isInteger(this.gridWidth_))
+            throw new Error('The width of the grid must be a whole number.');
+
         this.vehicles_ = new Set();
+
+        // Initialize the grid with empty arrays, so that the rest of the implementation can assume
+        // that all valid cells have been assigned arrays of vehicles.
+        for (let x = 0; x < this.gridWidth_; ++x) {
+            this.grid_[x] = {};
+
+            for (let y = 0; y < this.gridWidth_; ++y)
+                this.grid_[x][y] = [];
+        }
     }
 
     // Gets the number of vehicles that have been added to the grid.
@@ -30,22 +47,16 @@ class VehicleGrid {
 
         const position = storedVehicle.position;
 
-        if (position.x < MinimumGridCoordinate || position.x > MaximumGridCoordinate)
+        if (position.x < MinimumGridCoordinate || position.x >= MaximumGridCoordinate)
             throw new Error('The x-coordinate of the vehicle is out of range: ' + position.x);
 
-        if (position.y < MinimumGridCoordinate || position.y > MaximumGridCoordinate)
+        if (position.y < MinimumGridCoordinate || position.y >= MaximumGridCoordinate)
             throw new Error('The y-coordinate of the vehicle is out of range: ' + position.y);
 
         this.vehicles_.add(storedVehicle);
 
         const gridX = this.coordinateToGridIndex(position.x);
         const gridY = this.coordinateToGridIndex(position.y);
-
-        if (!this.grid_.hasOwnProperty(gridX))
-            this.grid_[gridX] = {};
-
-        if (!this.grid_[gridX].hasOwnProperty(gridY))
-            this.grid_[gridX][gridY] = [];
 
         this.grid_[gridX][gridY].push(storedVehicle);
     }
@@ -62,13 +73,46 @@ class VehicleGrid {
         const gridX = this.coordinateToGridIndex(position.x);
         const gridY = this.coordinateToGridIndex(position.y);
 
-        if (!this.grid_.hasOwnProperty(gridX))
-            return;  // theoretically this should never happen
-
-        if (!this.grid_[gridX].hasOwnProperty(gridY))
-            return;  // theoretically this should never happen
-
         this.grid_[gridX][gridY] = this.grid_[gridX][gridY].filter(entry => entry != storedVehicle);
+    }
+
+    // Gets the closest |count| vehicles to the |player| that are within the streaming distance.
+    closest(player, count) {
+        const position = player.position;
+
+        const playerGridX = this.coordinateToGridIndex(position.x);
+        const playerGridY = this.coordinateToGridIndex(position.y);
+
+        let candidates = [];
+        for (let deltaX = -1; deltaX <= 1; ++deltaX) {
+            for (let deltaY = -1; deltaY <= 1; ++deltaY) {
+                const x = playerGridX + deltaX;
+                const y = playerGridY + deltaY;
+
+                // Bail out if this particular cell is out of range on the grid.
+                if (x < 0 || x >= this.gridWidth_ || y < 0 || y >= this.gridWidth_)
+                    continue;
+
+                this.grid_[x][y].forEach(storedVehicle => {
+                    const squaredDistance = position.squaredDistanceTo2D(storedVehicle.position);
+                    if (squaredDistance > this.maximumSquaredDistance_)
+                        return;  // the vehicle is too far away
+
+                    candidates.push({ storedVehicle, squaredDistance });
+                });
+            }
+        }
+
+        // Sort the candidate vehicles by distance in descending order.
+        candidates.sort((lhs, rhs) => {
+            if (lhs.squaredDistance === rhs.squaredDistance)
+                return 0;
+
+            return lhs.squaredDistance > rhs.squaredDistance ? 1 : -1;
+        });
+
+        // Return the top |count| stored vehicle instances.
+        return candidates.slice(0, count).map(entry => entry.storedVehicle);
     }
 
     // Converts the |coordinate| to an index on the grid based on the range and streaming distance.

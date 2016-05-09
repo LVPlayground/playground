@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const StoredVehicle = require('features/vehicles/stored_vehicle.js');
+const Vector = require('base/vector.js');
 const VehicleGrid = require('features/vehicles/vehicle_grid.js');
 
 describe('VehicleGrid', (it, beforeEach, afterEach) => {
@@ -27,6 +28,10 @@ describe('VehicleGrid', (it, beforeEach, afterEach) => {
             interior_id: options.interiorId || 0
         });
     }
+
+    it('should not allow grids with a non-whole number of cells', assert => {
+        assert.throws(() => new VehicleGrid(123 /** 6000 / 123 = 48.78 **/));
+    });
 
     it('should allow vehicles to be added multiple times', assert => {
         const storedVehicle = createStoredVehicle();
@@ -65,4 +70,55 @@ describe('VehicleGrid', (it, beforeEach, afterEach) => {
         assert.isTrue(cells.every(value => value === 300));
     });
 
+    it('should not complain if the player is not positioned on the grid', assert => {
+        const player = { position: new Vector(-50000, -50000, 0) };
+        assert.deepEqual(grid.closest(player, 10 /* count */), []);
+    });
+
+    it('should be able to find the vehicles closest to a given player', assert => {
+        const locations = [ [1, 1], [2, 8], [3, 2], [3, 3], [5, 6], [7, 1], [9, 9] ];
+        const player = { position: new Vector(4, 5, 0) };
+
+        locations.forEach(loc =>
+            grid.addVehicle(createStoredVehicle({ positionX: loc[0], positionY: loc[1] })));
+
+        const [closestStoredVehicle] = grid.closest(player, 1);
+        assert.equal(closestStoredVehicle.position.x, 5);
+        assert.equal(closestStoredVehicle.position.y, 6);
+
+        const closestFive = grid.closest(player, 5).map(storedVehicle => {
+            return [ storedVehicle.position.x, storedVehicle.position.y ];
+        });
+
+        assert.deepEqual(closestFive, [[5, 6], [3, 3], [3, 2], [2, 8], [1, 1]]);
+    });
+
+    it('should considering neighbouring cells when finding the closest vehicles', assert => {
+        const locations = [ [  -1,   -1 ], [ 150,   -1 ], [ 301,   -1 ],
+                            [  -1,  150 ], [ 150,  150 ], [ 301,  150 ],
+                            [  -1,  301 ], [ 150,  301 ], [ 301,  301 ] ];
+
+        locations.forEach(loc =>
+            grid.addVehicle(createStoredVehicle({ positionX: loc[0], positionY: loc[1] })));
+        
+        const gridCenterX = grid.coordinateToGridIndex(locations[4][0]);
+        const gridCenterY = grid.coordinateToGridIndex(locations[4][1]);
+
+        for (let gridX = gridCenterX - 1; gridX <= gridCenterX + 1; ++gridX) {
+            for (let gridY = gridCenterY - 1; gridY <= gridCenterY + 1; ++gridY)
+                assert.equal(grid.grid_[gridX][gridY].length, 1);
+        }
+
+        const gunther = { position: new Vector(150, 150, 0) };
+        const russell = { position: new Vector(0, 0, 0) }
+
+        assert.equal(grid.closest(gunther, 10).length, 9);
+        assert.equal(grid.closest(russell, 10).length, 4);
+
+        const closestFour = grid.closest(russell, 4).map(storedVehicle => {
+            return [ storedVehicle.position.x, storedVehicle.position.y ];
+        });
+
+        assert.deepEqual(closestFour, [ [-1, -1], [-1, 150], [150, -1], [150, 150] ]);
+    });
 });

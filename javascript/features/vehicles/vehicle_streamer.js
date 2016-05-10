@@ -11,6 +11,9 @@ const DefaultStreamDistance = 300;
 // The maximum number of vehicles that the streamer will create at any one time.
 const DefaultVehicleLimit = 1000;
 
+// The number of closest vehicle to each player that should be attempted to be spawned.
+const DefaultVehiclesPerPlayer = 20;
+
 // The vehicle streamer is responsible for making sure that sufficient vehicles have been created
 // around players to give everyone the feeling that there are plenty of them available. It does
 // this by maintaining a grid of the original vehicle locations, so that the nearest vehicles to
@@ -25,6 +28,9 @@ class VehicleStreamer {
 
         // Persistent vehicles will always exist and bypass the grid streamer.
         this.persistentVehicles_ = new Set();
+
+        // Mapping of players to the set of vehicles that are referenced by them.
+        this.playerReferences_ = new Map();
 
         // A prioritized queue containing the streamable vehicles that aren't being kept alive for
         // any of the players, but are being kept alive to reduce vehicle churn.
@@ -55,8 +61,23 @@ class VehicleStreamer {
             if (!this.initialized_)
                 return;  // the loader will initialize the streamer afterwards
 
-            // TODO(Russell): How to property refcount players for whom the |storedVehicle| is
-            //                being kept alive?
+            const squaredStreamDistance = this.grid_.streamDistance * this.grid_.streamDistance;
+            const storedVehiclePosition = storedVehicle.position;
+
+            server.playerManager.forEach(player => {
+                if (!this.playerReferences_.has(player))
+                    return;  // the player has not been considered for vehicle streaming
+
+                const distance = storedVehiclePosition.squaredDistanceTo2D(player.position);
+                if (distance > squaredStreamDistance)
+                    return;  // the vehicle is out of range for the player
+
+                // Reference the vehicle from the player's vehicle set.
+                this.playerReferences_.get(player).add(storedVehicle);
+
+                // Increase the reference count on the vehicle itself.
+                storedVehicle.increaseRefCount();
+            });
         }
     }
 
@@ -71,8 +92,15 @@ class VehicleStreamer {
 
         } else {
             this.grid_.removeVehicle(storedVehicle);
+            this.internalDestroyVehicle(storedVehicle);
 
-            // TODO(Russell): Release refcounts on the |storedVehicle| and remove it from the game.
+            for (let [player, references] of this.playerReferences_) {
+                if (references.delete(storedVehicle))
+                    storedVehicle.decreaseRefCount();
+            }
+
+            if (storedVehicle.refCount != 0)
+                throw new Error('The vehicle has stray references after processing all players.');
         }
     }
 
@@ -85,10 +113,30 @@ class VehicleStreamer {
         for (let storedVehicle of this.persistentVehicles_)
             this.internalCreateVehicle(storedVehicle);
 
-        // TODO(Russell): Run a full stream for all connected players and create the necessary
-        //                vehicles. NPCs should of course be excluded from this.
+        // The number of vehicles to create depends on the regular vehicles-per-player limit, as
+        // well as on the total number of in-game players 
+        let maximumVehiclesPerPlayer = DefaultVehiclesPerPlayer;
+        if (server.playerManager.count > 0) {
+            const vehicleLimit = DefaultVehicleLimit - this.persistentVehicleCount;
+
+            maximumVehiclesPerPlayer =
+                Math.min(maximumVehiclesPerPlayer, vehicleLimit / server.playerManager.count);
+        }
+
+        // Synchronously initialize vehicles for all in-game players.
+        server.playerManager.forEach(player =>
+            this.streamForPlayer(player, maximumVehiclesPerPlayer));
 
         this.initialized_ = true;
+    }
+
+    // Synchronously streams the vehicles for |player|. The |vehicleCount| indicates the number of
+    // vehicles that should be attempted to be created for the player.
+    streamForPlayer(player, vehicleCount = DefaultVehiclesPerPlayer) {
+        if (!this.playerReferences_.has(player))
+            this.playerReferences_.set(player, new Set());
+
+        // TODO(Russell): Implement the streaming routines.
     }
 
     // Actually creates the vehicle associated with |storedVehicle| and returns the |vehicle|

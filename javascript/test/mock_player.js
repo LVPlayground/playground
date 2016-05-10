@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const Vector = require('base/vector.js');
+
 // Mocked player. Has the same interface and abilities as a real Player object, except that it does
 // not rely on the SA-MP server to be available, nor communicates with Pawn.
 class MockPlayer {
@@ -12,6 +14,7 @@ class MockPlayer {
         this.level_ = event.level || Player.LEVEL_PLAYER;
         this.userId_ = null;
         this.ipAddress_ = event.ipAddress || '127.0.0.1';
+        this.position_ = new Vector(0, 0, 0);
 
         this.dialogPromiseResolve_ = null;
         this.dialogPromise_ = new Promise(resolve => {
@@ -60,6 +63,10 @@ class MockPlayer {
     }
 
     isManagement() { return this.level_ == Player.LEVEL_MANAGEMENT; }
+
+    // Gets or sets the position of this player.
+    get position() { return this.position_; }
+    set position(value) { this.position_ = value; }
 
     isRegistered() { return this.userId_ != null; }
 

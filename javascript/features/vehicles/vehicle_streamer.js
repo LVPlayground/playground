@@ -111,17 +111,8 @@ class VehicleStreamer {
         for (let storedVehicle of this.persistentVehicles_)
             this.internalCreateVehicle(storedVehicle);
 
-        // The number of vehicles to create depends on the regular vehicles-per-player limit, as
-        // well as on the total number of in-game players 
-        if (server.playerManager.count > 0) {
-            const vehicleLimit = DefaultVehicleLimit - this.persistentVehicleCount;
-            const maximumVehiclesPerPlayer =
-                Math.min(DefaultVehiclesPerPlayer, vehicleLimit / server.playerManager.count);
-
-            // Synchronously initialize vehicles for all in-game players.
-            server.playerManager.forEach(player =>
-                this.streamForPlayer(player, maximumVehiclesPerPlayer));
-        }
+        // Synchronously initialize vehicles for all in-game players.
+        server.playerManager.forEach(player => this.streamForPlayer(player));
 
         this.initialized_ = true;
     }
@@ -129,9 +120,13 @@ class VehicleStreamer {
     // Synchronously streams the vehicles for |player|. The |vehicleCount| indicates the number of
     // vehicles that should be attempted to be created for the player.
     streamForPlayer(player, vehicleCount = DefaultVehiclesPerPlayer) {
+        const vehicleLimit = DefaultVehicleLimit - this.persistentVehicleCount;
+        const maximumVehiclesPerPlayer =
+            Math.min(DefaultVehiclesPerPlayer, vehicleLimit / server.playerManager.count);
+
         const currentVehicles = this.playerReferences_.get(player) || EMPTY_SET;
 
-        const updatedVehicles = this.grid_.closest(player, vehicleCount);
+        const updatedVehicles = this.grid_.closest(player, maximumVehiclesPerPlayer);
         const updatedVehicleSet = new Set(updatedVehicles);
 
         currentVehicles.forEach(storedVehicle => {

@@ -168,6 +168,7 @@ class SpawnWeaponCommands {
                         return 1;
                     }
 
+                    SpawnWeaponManager(subjectId)->removeSpawnWeapon(weaponId);
                     SpawnWeaponManager(subjectId)->giveSpawnWeapon(weaponId, multiplier);
 
                     GetWeaponName(weaponId, weaponName, sizeof(weaponName));

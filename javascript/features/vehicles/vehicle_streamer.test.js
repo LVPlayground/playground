@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const MockVehicle = require('test/mock_vehicle.js');
+const PriorityQueue = require('base/priority_queue.js');
 const VehicleStreamer = require('features/vehicles/vehicle_streamer.js');
 
 const createStoredVehicle = require('features/vehicles/test/create_stored_vehicle.js');
@@ -75,5 +76,28 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
 
         streamer.removeVehicle(persistentVehicle);
         assert.isNull(persistentVehicle.vehicle);
+    });
+
+
+    it('should order disposable vehicles by total ref count in ascending order', assert => {
+        const queue = new PriorityQueue(VehicleStreamer.totalRefCountComparator);
+
+        const streamableInfernus = createStoredVehicle({ modelId: 411 /* Infernus */ });
+        streamableInfernus.increaseRefCount();
+        streamableInfernus.increaseRefCount();
+
+        const streamablePatriot = createStoredVehicle({ modelId: 470 /* Patriot */ });
+        streamablePatriot.increaseRefCount();
+
+        const streamableDinghy = createStoredVehicle({ modelId: 473 /* Dinghy */ });
+        streamableDinghy.increaseRefCount();
+        streamableDinghy.increaseRefCount();
+        streamableDinghy.increaseRefCount();
+
+        queue.push(streamableInfernus, streamablePatriot, streamableDinghy);
+
+        assert.equal(queue.pop(), streamablePatriot);
+        assert.equal(queue.pop(), streamableInfernus);
+        assert.equal(queue.pop(), streamableDinghy);
     });
 });

@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const PriorityQueue = require('base/priority_queue.js');
 const VehicleGrid = require('features/vehicles/vehicle_grid.js');
 
 // The default streaming distance for vehicles.
@@ -24,6 +25,10 @@ class VehicleStreamer {
 
         // Persistent vehicles will always exist and bypass the grid streamer.
         this.persistentVehicles_ = new Set();
+
+        // A prioritized queue containing the streamable vehicles that aren't being kept alive for
+        // any of the players, but are being kept alive to reduce vehicle churn.
+        this.disposableVehicles_ = new PriorityQueue(VehicleStreamer.totalRefCountComparator);
     }
 
     // Gets the number of persistent vehicles in the game.
@@ -119,6 +124,15 @@ class VehicleStreamer {
 
         this.persistentVehicles_ = null;
         this.grid_ = null;
+    }
+
+    // Comparator for ordering the list of disposable vehicles by total number of references in
+    // ascending order. The top of the list contains vehicles most appropriate to remove.
+    static totalRefCountComparator(lhs, rhs) {
+        if (lhs.totalRefCount === rhs.totalRefCount)
+            return 0;
+
+        return lhs.totalRefCount > rhs.totalRefCount ? 1 : -1;
     }
 }
 

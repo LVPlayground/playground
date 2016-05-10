@@ -23,6 +23,9 @@ class StoredVehicle {
         this.interiorId_ = vehicleData.interior_id;
 
         this.vehicle_ = null;
+
+        this.totalRefCount_ = 0;
+        this.refCount_ = 0;
     }
 
     // Gets the persistent Id of this vehicle in the database.
@@ -56,6 +59,17 @@ class StoredVehicle {
     // Gets or sets the vehicle on the server that represents this stored vehicle.
     get vehicle() { return this.vehicle_; }
     set vehicle(value) { this.vehicle_ = value; }
+
+    // Gets the number of times this vehicle has currently been referenced.
+    get refCount() { return this.refCount_; }
+
+    // Gets the total number of times this vehicle has ever been referenced.
+    get totalRefCount() { return this.totalRefCount_; }
+
+    // Increases or decreases the number of times this vehicle has been referenced. Increasing the
+    // reference count will also increase the total number of times it has been referenced.
+    increaseRefCount() { ++this.refCount_; ++this.totalRefCount_; }
+    decreaseRefCount() { --this.refCount_; }
 }
 
 exports = StoredVehicle;

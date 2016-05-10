@@ -7,6 +7,22 @@
 const MinimumGridCoordinate = -3000;
 const MaximumGridCoordinate = 3000;
 
+// The groups, in prioritized order, to consider when finding the closest vehicles for a player.
+const ClosestVehicleGroups = [
+    // Group (1): The vehicles in the player's current cell, and those immediately around it.
+    [ [ -1, -1 ], [  0, -1 ], [  1, -1 ],
+      [ -1,  0 ], [  0,  0 ], [  1,  0 ],
+      [ -1,  1 ], [  0,  1 ], [  1,  1 ] ],
+
+    // Group (2): The vehicles slightly further away from the player, but potentially still within
+    // streaming distance.
+    [ [ -2, -2 ], [ -1, -2 ], [  0, -2 ], [  1, -2 ], [  2, -2 ],
+      [ -2, -1 ], /* ***************************** */ [  2, -1 ],
+      [ -2,  0 ], /* ***************************** */ [  2,  0 ],
+      [ -2,  1 ], /* ***************************** */ [  2,  1 ],
+      [ -2,  2 ], [ -1,  2 ], [  0,  2 ], [  1,  2 ], [  2,  2 ] ]
+];
+
 // The vehicle grid stores all vehicles on a grid in order to provide reasonably fast KNN updates.
 // It is a two dimensional grid- the Z-index (height) of the vehicle will be ignored.
 class VehicleGrid {
@@ -16,7 +32,10 @@ class VehicleGrid {
         this.maximumSquaredDistance_ = streamDistance * streamDistance;
 
         this.grid_ = {};
-        this.gridWidth_ = ((0 - MinimumGridCoordinate) + MaximumGridCoordinate) / streamDistance;
+
+        this.cellWidth_ = streamDistance / 2;
+        this.gridWidth_ =
+            ((0 - MinimumGridCoordinate) + MaximumGridCoordinate) / this.cellWidth_;
         
         if (!Number.isInteger(this.gridWidth_))
             throw new Error('The width of the grid must be a whole number.');
@@ -35,6 +54,9 @@ class VehicleGrid {
 
     // Gets the streaming distance relevant to this grid.
     get streamDistance() { return this.streamDistance_; }
+
+    // Gets the number of cells in each direction on the grid.
+    get gridWidth() { return this.gridWidth_; }
 
     // Gets the number of vehicles that have been added to the grid.
     get size() { return this.vehicles_.size; }
@@ -87,22 +109,28 @@ class VehicleGrid {
         const playerGridY = this.coordinateToGridIndex(position.y);
 
         let candidates = [];
-        for (let deltaX = -1; deltaX <= 1; ++deltaX) {
-            for (let deltaY = -1; deltaY <= 1; ++deltaY) {
-                const x = playerGridX + deltaX;
-                const y = playerGridY + deltaY;
+
+        for (let groupId = 0; groupId < ClosestVehicleGroups.length; ++groupId) {
+            if (candidates.length >= count)
+                break;
+
+            for (let deltaId = 0; deltaId < ClosestVehicleGroups[groupId].length; ++deltaId) {
+                const x = playerGridX + ClosestVehicleGroups[groupId][deltaId][0];
+                const y = playerGridY + ClosestVehicleGroups[groupId][deltaId][1];
 
                 // Bail out if this particular cell is out of range on the grid.
                 if (x < 0 || x >= this.gridWidth_ || y < 0 || y >= this.gridWidth_)
                     continue;
 
-                this.grid_[x][y].forEach(storedVehicle => {
+                for (let vehicleId = 0; vehicleId < this.grid_[x][y].length; ++vehicleId) {
+                    const storedVehicle = this.grid_[x][y][vehicleId];
+
                     const squaredDistance = position.squaredDistanceTo2D(storedVehicle.position);
                     if (squaredDistance > this.maximumSquaredDistance_)
-                        return;  // the vehicle is too far away
+                        continue;  // the vehicle is too far away
 
                     candidates.push({ storedVehicle, squaredDistance });
-                });
+                }
             }
         }
 
@@ -120,7 +148,7 @@ class VehicleGrid {
 
     // Converts the |coordinate| to an index on the grid based on the range and streaming distance.
     coordinateToGridIndex(coordinate) {
-        return Math.floor((coordinate + Math.abs(MinimumGridCoordinate)) / this.streamDistance_);
+        return Math.floor((coordinate + Math.abs(MinimumGridCoordinate)) / this.cellWidth_);
     }
 
     dispose() {

@@ -62,12 +62,12 @@ describe('VehicleGrid', (it, beforeEach, afterEach) => {
     });
 
     it('should be able to convert a coordinate to a grid index', assert => {
-        let cells = Array(20).fill(0);
+        let cells = Array(grid.gridWidth).fill(0);
 
         for (let coordinate = -3000; coordinate < 3000; ++coordinate)
             cells[grid.coordinateToGridIndex(coordinate)]++;
 
-        assert.isTrue(cells.every(value => value === 300));
+        assert.isTrue(cells.every(value => value === (6000 / grid.gridWidth)));
     });
 
     it('should not complain if the player is not positioned on the grid', assert => {
@@ -104,11 +104,6 @@ describe('VehicleGrid', (it, beforeEach, afterEach) => {
         const gridCenterX = grid.coordinateToGridIndex(locations[4][0]);
         const gridCenterY = grid.coordinateToGridIndex(locations[4][1]);
 
-        for (let gridX = gridCenterX - 1; gridX <= gridCenterX + 1; ++gridX) {
-            for (let gridY = gridCenterY - 1; gridY <= gridCenterY + 1; ++gridY)
-                assert.equal(grid.grid_[gridX][gridY].length, 1);
-        }
-
         const gunther = { position: new Vector(150, 150, 0) };
         const russell = { position: new Vector(0, 0, 0) }
 
@@ -119,13 +114,13 @@ describe('VehicleGrid', (it, beforeEach, afterEach) => {
             return [ storedVehicle.position.x, storedVehicle.position.y ];
         });
 
-        assert.deepEqual(closestFour, [ [-1, -1], [-1, 150], [150, -1], [150, 150] ]);
+        assert.deepEqual(closestFour, [ [-1, -1], [150, -1], [-1, 150], [150, 150] ]);
     });
 
-    it('should be performant for 500 players with 10,000 randomly positioned vehicles', assert => {
+    it('should be performant for 500 players with 25,000 randomly positioned vehicles', assert => {
         const PLAYER_COUNT = 500;
-        const VEHICLE_COUNT = 10000;
-        const CLOSEST_COUNT = 20;
+        const VEHICLE_COUNT = 25000;
+        const CLOSEST_COUNT = 40;
 
         let players = [];
 
@@ -154,7 +149,7 @@ describe('VehicleGrid', (it, beforeEach, afterEach) => {
     it('should be performant for 500 players with 10,000 grouped vehicles', assert => {
         const PLAYER_COUNT = 500;
         const VEHICLE_COUNT = 10000;
-        const CLOSEST_COUNT = 20;
+        const CLOSEST_COUNT = 40;
 
         let players = [];
 

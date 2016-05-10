@@ -43,6 +43,9 @@ class VehicleStreamer {
         this.disposableVehicles_ = new PriorityQueue(VehicleStreamer.totalRefCountComparator);
     }
 
+    // Gets the number of vehicles that are on the disposable vehicle list.
+    get disposableVehicleCount() { return this.disposableVehicles_.size(); }
+
     // Gets the number of vehicles that are live right now.
     get liveVehicleCount() { return this.liveVehicleCount_; }
 
@@ -168,9 +171,13 @@ class VehicleStreamer {
     // freed up in order to accomodate persistent vehicles.
     allocateVehicleSlot(storedVehicle) {
         if (this.liveVehicleCount_ < this.vehicleLimit_)
-            return true;  // we've got space to grow.
+            return true;  // we've got space to grow
 
-        // TODO(Russell): Empty the list of disposable vehicles if we have to.
+        if (this.disposableVehicles_.size() > 0) {
+            this.internalDestroyVehicle(this.disposableVehicles_.pop());
+            return true;  // a disposable vehicle has been destroyed
+        }
+
         // TODO(Russell): Ensure that a slot is allocated if |storedVehicle| is persistent.
         // TODO(Russell): Ensure that at least the closest vehicle to each player can be created.
 
@@ -180,10 +187,14 @@ class VehicleStreamer {
     // Deallocated the |storedVehicle|, which means that it is ready to be destroyed. In practice
     // this means that it will be added to the disposable vehicle list instead.
     deallocateVehicleSlot(storedVehicle) {
-        // TODO(Russell): Add the vehicle to the disposable vehicle list first, then remove the
-        // vehicle at the top of that list instead of |storedVehicle| if necessary.
+        this.disposableVehicles_.push(storedVehicle);
+    }
 
-        this.internalDestroyVehicle(storedVehicle);
+    // Clears all disposable vehicles that are currently alive in the streamer. In practice this
+    // should never be necessary, except for testing purposes.
+    clearDisposableVehicles() {
+        while (this.disposableVehicles_.size())
+            this.internalDestroyVehicle(this.disposableVehicles_.pop());
     }
 
     // Actually creates the vehicle associated with |storedVehicle| and returns the |vehicle|

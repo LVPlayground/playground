@@ -181,9 +181,19 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
 
         gunther.position = new Vector(1000, 2000, 0);  // 1000 units from the vehicle
 
-        // A stream with the player moving out-of-range should destroy the vehicle.
+        // A stream with the player moving out-of-range should move the vehicle to the list of
+        // disposable vehicles, which are to be removed later.
         streamer.streamForPlayer(gunther);
 
+        assert.equal(streamer.disposableVehicleCount, 1);
+        assert.equal(streamer.liveVehicleCount, 1);
+        assert.equal(streamableInfernus.refCount, 0);
+        assert.isNotNull(streamableInfernus.vehicle);
+
+        // Forcefully clearing the disposable vehicle list will get rid of it.
+        streamer.clearDisposableVehicles();
+
+        assert.equal(streamer.disposableVehicleCount, 0);
         assert.equal(streamer.liveVehicleCount, 0);
         assert.equal(streamableInfernus.refCount, 0);
         assert.isNull(streamableInfernus.vehicle);
@@ -225,6 +235,48 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
             streamer.addVehicle(createStoredVehicle({ persistent: true }));
 
         assert.isFalse(streamer.allocateVehicleSlot(createStoredVehicle({ persistent: true })));
+    });
+
+    it('should prune the disposable vehicle list if the slots are necessary', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.position = new Vector(1000, 1000, 0);  // 50 units from the vehicles
+
+        streamer.initialize();
+
+        for (let i = 0; i < TestingVehicleLimit; ++i) {
+            streamer.addVehicle(createStoredVehicle({ positionX: gunther.position.x + i,
+                                                      positionY: gunther.position.y + 1 }));
+        }
+
+        assert.equal(streamer.liveVehicleCount, 0);
+
+        // Streaming the vehicles for Gunther should create all |TestingVehicleLimit| of them.
+        streamer.streamForPlayer(gunther);
+
+        assert.equal(streamer.disposableVehicleCount, 0);
+        assert.equal(streamer.liveVehicleCount, TestingVehicleLimit);
+
+        gunther.position = new Vector(1000, 2000, 0);  // 1000 units from the vehicle
+
+        // Streaming the vehicle for Gunther when he moved should make all of them disposable.
+        streamer.streamForPlayer(gunther);
+
+        assert.equal(streamer.disposableVehicleCount, TestingVehicleLimit);
+        assert.equal(streamer.liveVehicleCount, TestingVehicleLimit);
+
+        const streamableInfernus = createStoredVehicle({ positionX: 1000, positionY: 2005 });
+        assert.equal(streamableInfernus.refCount, 0);
+        assert.isNull(streamableInfernus.vehicle);
+
+        // Creating a new vehicle and streaming it in for Gunther should remove a disposable one.
+        streamer.addVehicle(streamableInfernus);
+        streamer.streamForPlayer(gunther);
+
+        assert.equal(streamer.disposableVehicleCount, TestingVehicleLimit - 1);
+        assert.equal(streamer.liveVehicleCount, TestingVehicleLimit);
+
+        assert.equal(streamableInfernus.refCount, 1);
+        assert.isNotNull(streamableInfernus.refCount);
     });
 
     it('should order disposable vehicles by total ref count in ascending order', assert => {

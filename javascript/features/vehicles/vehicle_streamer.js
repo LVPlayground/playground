@@ -22,9 +22,12 @@ const DefaultVehiclesPerPlayer = 20;
 // this by maintaining a grid of the original vehicle locations, so that the nearest vehicles to
 // each players can quickly and accurately be determined.
 class VehicleStreamer {
-    constructor(vehicleConstructor = Vehicle) {
+    constructor(vehicleLimit = DefaultVehicleLimit, vehicleConstructor = Vehicle) {
         this.grid_ = new VehicleGrid(DefaultStreamDistance);
         this.initialized_ = false;
+
+        this.vehicleLimit_ = vehicleLimit;
+        this.liveVehicleCount_ = 0;
 
         // The constructor that will be used for creating vehicles.
         this.vehicleConstructor_ = vehicleConstructor;
@@ -40,6 +43,9 @@ class VehicleStreamer {
         this.disposableVehicles_ = new PriorityQueue(VehicleStreamer.totalRefCountComparator);
     }
 
+    // Gets the number of vehicles that are live right now.
+    get liveVehicleCount() { return this.liveVehicleCount_; }
+
     // Gets the number of persistent vehicles in the game.
     get persistentVehicleCount() { return this.persistentVehicles_.size; }
 
@@ -52,12 +58,14 @@ class VehicleStreamer {
     // Adds the |storedVehicle| to the vehicle streamer. The state for players will only be
     // recomputed if the streamer has been initialized already.
     addVehicle(storedVehicle) {
+        // TODO(Russell): Throw when |storedVehicle.vehicle| is not null.
+
         if (storedVehicle.isPersistent()) {
             this.persistentVehicles_.add(storedVehicle);
             if (!this.initialized_)
                 return;  // the loader will initialize the streamer afterwards
 
-            // TODO(Russell): A slot for the vehicle should be requested here.
+            this.allocateVehicleSlot(storedVehicle);
             this.internalCreateVehicle(storedVehicle);
 
         } else {
@@ -141,10 +149,12 @@ class VehicleStreamer {
     // vehicles that should be attempted to be created for the player.
     streamForPlayer(player, vehicleCount = DefaultVehiclesPerPlayer) {
         const currentVehicles = this.playerReferences_.get(player) || EMPTY_SET;
-        const updatedVehicles = new Set(this.grid_.closest(player, vehicleCount));
+
+        const updatedVehicles = this.grid_.closest(player, vehicleCount);
+        const updatedVehicleSet = new Set(updatedVehicles);
 
         currentVehicles.forEach(storedVehicle => {
-            if (updatedVehicles.has(storedVehicle))
+            if (updatedVehicleSet.has(storedVehicle))
                 return;  // the vehicle has remained unchanged for the player
 
             // Dereference the vehicle for the |player|.
@@ -155,13 +165,18 @@ class VehicleStreamer {
                 this.internalDestroyVehicle(storedVehicle);
         });
 
-        updatedVehicles.forEach(storedVehicle => {
+        updatedVehicles.forEach((storedVehicle, index) => {
             if (currentVehicles.has(storedVehicle))
                 return;  // the vehicle has already been streamed for the player
 
-            // The vehicle has to be created if the |player| is the first to reference it.
+            // The vehicle has to be created if the |player| is the first to reference it. If no
+            // slot could be allocated for the vehicle, bail out.
             if (!storedVehicle.refCount) {
-                // TODO(Russell): A slot for the vehicle should be requested here.
+                if (!this.allocateVehicleSlot(storedVehicle, !index)) {
+                    updatedVehicleSet.delete(storedVehicle);
+                    return;
+                }
+
                 this.internalCreateVehicle(storedVehicle);
             }
 
@@ -169,12 +184,28 @@ class VehicleStreamer {
             storedVehicle.increaseRefCount();
         });
 
-        this.playerReferences_.set(player, updatedVehicles);
+        this.playerReferences_.set(player, updatedVehicleSet);
+    }
+
+    // Returns whether a slot can be allocated for |storedVehicle|. Will return false in case the
+    // streaming limit has been reached and no slot could be freed up elsewhere. Slots will be
+    // freed up in order to accomodate persistent vehicles.
+    allocateVehicleSlot(storedVehicle, closestVehicle = false) {
+        if (this.liveVehicleCount_ < this.vehicleLimit_)
+            return true;  // we've got space to grow.
+
+        // TODO(Russell): Empty the list of disposable vehicles if we have to.
+        // TODO(Russell): Ensure that a slot is allocated if |storedVehicle| is persistent.
+        // TODO(Russell): Ensure that at least the closest vehicle to each player can be created.
+
+        return false;
     }
 
     // Actually creates the vehicle associated with |storedVehicle| and returns the |vehicle|
     // instance it's now associated with. The instance will be set on the |storedVehicle| as well.
     internalCreateVehicle(storedVehicle) {
+        this.liveVehicleCount_++;
+
         if (!storedVehicle.vehicle) {
             storedVehicle.vehicle = new this.vehicleConstructor_({
                 modelId: storedVehicle.modelId,
@@ -191,6 +222,8 @@ class VehicleStreamer {
 
     // Removes the vehicle associated with the |storedVehicle| from the server.
     internalDestroyVehicle(storedVehicle) {
+        this.liveVehicleCount_--;
+
         if (!storedVehicle.vehicle)
             return;  // the vehicle does not exist on the server anymore
 

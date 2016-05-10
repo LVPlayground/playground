@@ -10,11 +10,15 @@ const VehicleStreamer = require('features/vehicles/vehicle_streamer.js');
 
 const createStoredVehicle = require('features/vehicles/test/create_stored_vehicle.js');
 
+// The live vehicle limit that will be used for the streamer.
+const TestingVehicleLimit = 10;
+
 describe('VehicleStreamer', (it, beforeEach, afterEach) => {
     let streamer = null;
 
     MockServer.bindTo(beforeEach, afterEach,
-        () => streamer = new VehicleStreamer(MockVehicle /* vehicleConstructor */),
+        () => streamer = new VehicleStreamer(TestingVehicleLimit,
+                                             MockVehicle /* vehicleConstructor */),
         () => streamer.dispose());
 
     it('should properly group persistent and non-persistent vehicles', assert => {
@@ -64,9 +68,11 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
 
         streamer.initialize();
         assert.isNotNull(persistentVehicle.vehicle);
+        assert.equal(streamer.liveVehicleCount, 1);
 
         streamer.removeVehicle(persistentVehicle);
         assert.isNull(persistentVehicle.vehicle);
+        assert.equal(streamer.liveVehicleCount, 0);
     });
 
     it('should eagerly create persistent vehicles', assert => {
@@ -76,9 +82,11 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
 
         streamer.addVehicle(persistentVehicle);
         assert.isNotNull(persistentVehicle.vehicle);
+        assert.equal(streamer.liveVehicleCount, 1);
 
         streamer.removeVehicle(persistentVehicle);
         assert.isNull(persistentVehicle.vehicle);
+        assert.equal(streamer.liveVehicleCount, 0);
     });
 
     it('should not reference added streamable vehicles when no one is in range', assert => {
@@ -136,6 +144,7 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
         streamer.initialize();
 
         assert.equal(streamableInfernus.refCount, 1);
+        assert.equal(streamer.liveVehicleCount, 1);
 
         const vehicle = streamableInfernus.vehicle;
         assert.isNotNull(vehicle);
@@ -143,6 +152,7 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
 
         streamer.removeVehicle(streamableInfernus);
 
+        assert.equal(streamer.liveVehicleCount, 0);
         assert.equal(streamableInfernus.refCount, 0);
         assert.isNull(streamableInfernus.vehicle);
         assert.isFalse(vehicle.isLive());
@@ -158,6 +168,7 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
         streamer.addVehicle(streamableInfernus);
         streamer.initialize();
 
+        assert.equal(streamer.liveVehicleCount, 1);
         assert.equal(streamableInfernus.refCount, 1);
         assert.isNotNull(streamableInfernus.vehicle);
 
@@ -172,6 +183,7 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
         // A stream with the player moving out-of-range should destroy the vehicle.
         streamer.streamForPlayer(gunther);
 
+        assert.equal(streamer.liveVehicleCount, 0);
         assert.equal(streamableInfernus.refCount, 0);
         assert.isNull(streamableInfernus.vehicle);
     });
@@ -184,12 +196,14 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
         streamer.addVehicle(streamableInfernus);
         streamer.initialize();
 
+        assert.equal(streamer.liveVehicleCount, 0);
         assert.equal(streamableInfernus.refCount, 0);
         assert.isNull(streamableInfernus.vehicle);
 
         // A stream while the player remains at the same position should not change anything.
         streamer.streamForPlayer(gunther);
 
+        assert.equal(streamer.liveVehicleCount, 0);
         assert.equal(streamableInfernus.refCount, 0);
         assert.isNull(streamableInfernus.vehicle);
 
@@ -198,8 +212,18 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
         // A stream with the player moving out-of-range should destroy the vehicle.
         streamer.streamForPlayer(gunther);
 
+        assert.equal(streamer.liveVehicleCount, 1);
         assert.equal(streamableInfernus.refCount, 1);
         assert.isNotNull(streamableInfernus.vehicle);
+    });
+
+    it('should fail to allocate slots for persistent vehicles if the streamer is full', assert => {
+        streamer.initialize();
+
+        for (let i = 0; i < TestingVehicleLimit; ++i)
+            streamer.addVehicle(createStoredVehicle({ persistent: true }));
+
+        assert.isFalse(streamer.allocateVehicleSlot(createStoredVehicle({ persistent: true })));
     });
 
     it('should order disposable vehicles by total ref count in ascending order', assert => {

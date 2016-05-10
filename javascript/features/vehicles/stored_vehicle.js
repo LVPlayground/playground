@@ -9,6 +9,7 @@ const Vector = require('base/vector.js');
 class StoredVehicle {
     constructor(vehicleData) {
         this.databaseId_ = vehicleData.vehicle_id;
+        this.persistent_ = vehicleData.persistent;
 
         this.modelId_ = vehicleData.model_id;
         this.position_ =
@@ -24,6 +25,10 @@ class StoredVehicle {
 
     // Gets the persistent Id of this vehicle in the database.
     get databaseId() { return this.databaseId_; }
+
+    // Returns whether this is a persistent vehicle, which means that the vehicle should always be
+    // created regardless of whether there are players nearby.
+    isPersistent() { return this.persistent_; }
 
     // Gets the model Id of this stored vehicle.
     get modelId() { return this.modelId_ };

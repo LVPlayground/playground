@@ -5,6 +5,9 @@
 const PriorityQueue = require('base/priority_queue.js');
 const VehicleGrid = require('features/vehicles/vehicle_grid.js');
 
+// An empty set that may be used to prevent repeated allocations. Should not be modified.
+const EMPTY_SET = new Set();
+
 // The default streaming distance for vehicles.
 const DefaultStreamDistance = 300;
 
@@ -54,12 +57,16 @@ class VehicleStreamer {
             if (!this.initialized_)
                 return;  // the loader will initialize the streamer afterwards
 
+            // TODO(Russell): A slot for the vehicle should be requested here.
             this.internalCreateVehicle(storedVehicle);
 
         } else {
             this.grid_.addVehicle(storedVehicle);
             if (!this.initialized_)
                 return;  // the loader will initialize the streamer afterwards
+
+            if (!storedVehicle.vehicle)
+                return;  // the vehicle has not been created for anyone yet
 
             const squaredStreamDistance = this.grid_.streamDistance * this.grid_.streamDistance;
             const storedVehiclePosition = storedVehicle.position;
@@ -133,29 +140,53 @@ class VehicleStreamer {
     // Synchronously streams the vehicles for |player|. The |vehicleCount| indicates the number of
     // vehicles that should be attempted to be created for the player.
     streamForPlayer(player, vehicleCount = DefaultVehiclesPerPlayer) {
-        if (!this.playerReferences_.has(player))
-            this.playerReferences_.set(player, new Set());
+        const currentVehicles = this.playerReferences_.get(player) || EMPTY_SET;
+        const updatedVehicles = new Set(this.grid_.closest(player, vehicleCount));
 
-        // TODO(Russell): Implement the streaming routines.
+        currentVehicles.forEach(storedVehicle => {
+            if (updatedVehicles.has(storedVehicle))
+                return;  // the vehicle has remained unchanged for the player
+
+            // Dereference the vehicle for the |player|.
+            storedVehicle.decreaseRefCount();
+
+            // The vehicle may have to be destroyed if it has no further references.
+            if (!storedVehicle.refCount)
+                this.internalDestroyVehicle(storedVehicle);
+        });
+
+        updatedVehicles.forEach(storedVehicle => {
+            if (currentVehicles.has(storedVehicle))
+                return;  // the vehicle has already been streamed for the player
+
+            // The vehicle has to be created if the |player| is the first to reference it.
+            if (!storedVehicle.refCount) {
+                // TODO(Russell): A slot for the vehicle should be requested here.
+                this.internalCreateVehicle(storedVehicle);
+            }
+
+            // Reference the vehicle for the |player|.
+            storedVehicle.increaseRefCount();
+        });
+
+        this.playerReferences_.set(player, updatedVehicles);
     }
 
     // Actually creates the vehicle associated with |storedVehicle| and returns the |vehicle|
     // instance it's now associated with. The instance will be set on the |storedVehicle| as well.
     internalCreateVehicle(storedVehicle) {
-        if (storedVehicle.vehicle)
-            return;  // the vehicle has already been created
+        if (!storedVehicle.vehicle) {
+            storedVehicle.vehicle = new this.vehicleConstructor_({
+                modelId: storedVehicle.modelId,
+                position: storedVehicle.position,
+                rotation: storedVehicle.rotation,
+                colors: [ storedVehicle.primaryColor, storedVehicle.secondaryColor ],
+                paintjob: storedVehicle.paintjob,
+                interiorId: storedVehicle.interiorId
+            });
+        }
 
-        const vehicle = new this.vehicleConstructor_({
-            modelId: storedVehicle.modelId,
-            position: storedVehicle.position,
-            rotation: storedVehicle.rotation,
-            colors: [ storedVehicle.primaryColor, storedVehicle.secondaryColor ],
-            paintjob: storedVehicle.paintjob,
-            interiorId: storedVehicle.interiorId
-        });
-
-        storedVehicle.vehicle = vehicle;
-        return vehicle;
+        return storedVehicle.vehicle;
     }
 
     // Removes the vehicle associated with the |storedVehicle| from the server.

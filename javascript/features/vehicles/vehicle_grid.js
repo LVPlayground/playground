@@ -103,6 +103,9 @@ class VehicleGrid {
 
     // Gets the closest |count| vehicles to the |player| that are within the streaming distance.
     closest(player, count) {
+        // TODO(Russell): Bail out for player.interiorId != 0
+        // TODO(Russell): Bail out for player.worldId != 0
+
         const position = player.position;
 
         const playerGridX = this.coordinateToGridIndex(position.x);

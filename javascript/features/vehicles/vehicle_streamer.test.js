@@ -98,9 +98,14 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
     it('should eagerly reference streamable vehicles when adding them', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const streamableInfernus = createStoredVehicle({
-            modelId: 411 /* Infernus */, positionX: 1000, positionY: 1000, positionZ: 0 });
+            modelId: 411 /* Infernus */, positionX: 1000, positionY: 1000, create: true });
+
+        const infernus = streamableInfernus.vehicle;
 
         gunther.position = new Vector(1000, 1050, 0);  // 50 units from the vehicle
+
+        assert.isNotNull(infernus);
+        assert.isTrue(infernus.isLive());
 
         streamer.initialize();
         assert.equal(streamableInfernus.refCount, 0);
@@ -108,13 +113,94 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
         streamer.addVehicle(streamableInfernus);
         assert.equal(streamableInfernus.refCount, 1);
 
-        // TODO(Russell): Verify that the vehicle has been created.
+        assert.isNotNull(streamableInfernus.vehicle);
 
         streamer.removeVehicle(streamableInfernus);
         assert.equal(streamableInfernus.refCount, 0);
+
+        assert.isNull(streamableInfernus.vehicle);
+        assert.isFalse(infernus.isLive());
     });
 
-    // TODO(Russell): Write a test for lazily referencing vehicles.
+    it('should lazily reference vehicles when initializing the streamer', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const streamableInfernus = createStoredVehicle({
+            modelId: 411 /* Infernus */, positionX: 1000, positionY: 1000 });
+
+        gunther.position = new Vector(1000, 1050, 0);  // 50 units from the vehicle
+
+        streamer.addVehicle(streamableInfernus);
+        assert.equal(streamableInfernus.refCount, 0);
+        assert.isNull(streamableInfernus.vehicle);
+
+        streamer.initialize();
+
+        assert.equal(streamableInfernus.refCount, 1);
+
+        const vehicle = streamableInfernus.vehicle;
+        assert.isNotNull(vehicle);
+        assert.isTrue(vehicle.isLive());
+
+        streamer.removeVehicle(streamableInfernus);
+
+        assert.equal(streamableInfernus.refCount, 0);
+        assert.isNull(streamableInfernus.vehicle);
+        assert.isFalse(vehicle.isLive());
+    });
+
+    it('should dereference out-of-range vehicles when streaming', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const streamableInfernus = createStoredVehicle({
+            modelId: 411 /* Infernus */, positionX: 1000, positionY: 1000 });
+
+        gunther.position = new Vector(1000, 1050, 0);  // 50 units from the vehicle
+
+        streamer.addVehicle(streamableInfernus);
+        streamer.initialize();
+
+        assert.equal(streamableInfernus.refCount, 1);
+        assert.isNotNull(streamableInfernus.vehicle);
+
+        // A stream while the player remains at the same position should not change anything.
+        streamer.streamForPlayer(gunther);
+
+        assert.equal(streamableInfernus.refCount, 1);
+        assert.isNotNull(streamableInfernus.vehicle);
+
+        gunther.position = new Vector(1000, 2000, 0);  // 1000 units from the vehicle
+
+        // A stream with the player moving out-of-range should destroy the vehicle.
+        streamer.streamForPlayer(gunther);
+
+        assert.equal(streamableInfernus.refCount, 0);
+        assert.isNull(streamableInfernus.vehicle);
+    });
+
+    it('should reference newly-in-range vehicles when streaming', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const streamableInfernus = createStoredVehicle({
+            modelId: 411 /* Infernus */, positionX: 1000, positionY: 1000 });
+
+        streamer.addVehicle(streamableInfernus);
+        streamer.initialize();
+
+        assert.equal(streamableInfernus.refCount, 0);
+        assert.isNull(streamableInfernus.vehicle);
+
+        // A stream while the player remains at the same position should not change anything.
+        streamer.streamForPlayer(gunther);
+
+        assert.equal(streamableInfernus.refCount, 0);
+        assert.isNull(streamableInfernus.vehicle);
+
+        gunther.position = new Vector(1000, 1050, 0);  // 50 units from the vehicle
+
+        // A stream with the player moving out-of-range should destroy the vehicle.
+        streamer.streamForPlayer(gunther);
+
+        assert.equal(streamableInfernus.refCount, 1);
+        assert.isNotNull(streamableInfernus.vehicle);
+    });
 
     it('should order disposable vehicles by total ref count in ascending order', assert => {
         const queue = new PriorityQueue(VehicleStreamer.totalRefCountComparator);

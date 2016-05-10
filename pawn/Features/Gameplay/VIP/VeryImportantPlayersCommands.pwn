@@ -318,7 +318,8 @@ class VeryImportantPlayersCommands {
             if (player == receiverId)
                 continue; /* let's not spam the receiver twice */
 
-            /// @todo: Allow administrators to disable these notices based on message preferences.
+            if (MessageLevelsManager->getPlayerMessageLevel(player) < 1)
+                continue; /* the administrator does not wish to see this message */
 
             SendClientMessage(player, Color::HighlightBlue, notice);
         }

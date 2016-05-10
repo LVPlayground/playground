@@ -8,7 +8,7 @@ const StoredVehicle = require('features/vehicles/stored_vehicle.js');
 // Creates a new StoredVehicle instance based on the |options|. Reasonable defaults will be
 // applied if no options are provided to this function.
 function createStoredVehicle(options = {}) {
-    const storedVehicle = new StoredVehicle({
+    return new StoredVehicle({
         vehicle_id: options.vehicleId || Math.floor(Math.random() * 1000000),
         persistent: options.persistent || false,
         model_id: options.modelId || 411,
@@ -21,19 +21,6 @@ function createStoredVehicle(options = {}) {
         paintjob: options.paintjob || 0,
         interior_id: options.interiorId || 0
     });
-
-    if (options.create) {
-        storedVehicle.vehicle = new MockVehicle({
-            modelId: storedVehicle.modelId,
-            position: storedVehicle.position,
-            rotation: storedVehicle.rotation,
-            colors: [ storedVehicle.primaryColor, storedVehicle.secondaryColor ],
-            paintjob: storedVehicle.paintjob,
-            interiorId: storedVehicle.interiorId
-        });
-    }
-
-    return storedVehicle;
 }
 
 exports = createStoredVehicle;

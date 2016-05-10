@@ -106,22 +106,23 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
     it('should eagerly reference streamable vehicles when adding them', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const streamableInfernus = createStoredVehicle({
-            modelId: 411 /* Infernus */, positionX: 1000, positionY: 1000, create: true });
-
-        const infernus = streamableInfernus.vehicle;
+            modelId: 411 /* Infernus */, positionX: 1000, positionY: 1000 });
 
         gunther.position = new Vector(1000, 1050, 0);  // 50 units from the vehicle
-
-        assert.isNotNull(infernus);
-        assert.isTrue(infernus.isLive());
 
         streamer.initialize();
         assert.equal(streamableInfernus.refCount, 0);
 
         streamer.addVehicle(streamableInfernus);
+        assert.equal(streamableInfernus.refCount, 0);
+
+        streamer.streamForPlayer(gunther);
+
         assert.equal(streamableInfernus.refCount, 1);
 
-        assert.isNotNull(streamableInfernus.vehicle);
+        const infernus = streamableInfernus.vehicle;
+        assert.isNotNull(infernus);
+        assert.isTrue(infernus.isLive());
 
         streamer.removeVehicle(streamableInfernus);
         assert.equal(streamableInfernus.refCount, 0);

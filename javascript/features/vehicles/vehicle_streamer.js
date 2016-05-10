@@ -58,7 +58,8 @@ class VehicleStreamer {
     // Adds the |storedVehicle| to the vehicle streamer. The state for players will only be
     // recomputed if the streamer has been initialized already.
     addVehicle(storedVehicle) {
-        // TODO(Russell): Throw when |storedVehicle.vehicle| is not null.
+        if (storedVehicle.vehicle)
+            throw new Error('Vehicles must not have been created when being added to the streamer');
 
         if (storedVehicle.isPersistent()) {
             this.persistentVehicles_.add(storedVehicle);
@@ -72,27 +73,6 @@ class VehicleStreamer {
             this.grid_.addVehicle(storedVehicle);
             if (!this.initialized_)
                 return;  // the loader will initialize the streamer afterwards
-
-            if (!storedVehicle.vehicle)
-                return;  // the vehicle has not been created for anyone yet
-
-            const squaredStreamDistance = this.grid_.streamDistance * this.grid_.streamDistance;
-            const storedVehiclePosition = storedVehicle.position;
-
-            server.playerManager.forEach(player => {
-                if (!this.playerReferences_.has(player))
-                    return;  // the player has not been considered for vehicle streaming
-
-                const distance = storedVehiclePosition.squaredDistanceTo2D(player.position);
-                if (distance > squaredStreamDistance)
-                    return;  // the vehicle is out of range for the player
-
-                // Reference the vehicle from the player's vehicle set.
-                this.playerReferences_.get(player).add(storedVehicle);
-
-                // Increase the reference count on the vehicle itself.
-                storedVehicle.increaseRefCount();
-            });
         }
     }
 

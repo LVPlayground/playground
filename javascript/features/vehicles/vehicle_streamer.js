@@ -138,17 +138,17 @@ class VehicleStreamer {
 
             // The vehicle may have to be destroyed if it has no further references.
             if (!storedVehicle.refCount)
-                this.internalDestroyVehicle(storedVehicle);
+                this.deallocateVehicleSlot(storedVehicle);
         });
 
-        updatedVehicles.forEach((storedVehicle, index) => {
+        updatedVehicles.forEach(storedVehicle => {
             if (currentVehicles.has(storedVehicle))
                 return;  // the vehicle has already been streamed for the player
 
             // The vehicle has to be created if the |player| is the first to reference it. If no
             // slot could be allocated for the vehicle, bail out.
             if (!storedVehicle.refCount) {
-                if (!this.allocateVehicleSlot(storedVehicle, !index)) {
+                if (!this.allocateVehicleSlot(storedVehicle)) {
                     updatedVehicleSet.delete(storedVehicle);
                     return;
                 }
@@ -166,7 +166,7 @@ class VehicleStreamer {
     // Returns whether a slot can be allocated for |storedVehicle|. Will return false in case the
     // streaming limit has been reached and no slot could be freed up elsewhere. Slots will be
     // freed up in order to accomodate persistent vehicles.
-    allocateVehicleSlot(storedVehicle, closestVehicle = false) {
+    allocateVehicleSlot(storedVehicle) {
         if (this.liveVehicleCount_ < this.vehicleLimit_)
             return true;  // we've got space to grow.
 
@@ -177,11 +177,18 @@ class VehicleStreamer {
         return false;
     }
 
+    // Deallocated the |storedVehicle|, which means that it is ready to be destroyed. In practice
+    // this means that it will be added to the disposable vehicle list instead.
+    deallocateVehicleSlot(storedVehicle) {
+        // TODO(Russell): Add the vehicle to the disposable vehicle list first, then remove the
+        // vehicle at the top of that list instead of |storedVehicle| if necessary.
+
+        this.internalDestroyVehicle(storedVehicle);
+    }
+
     // Actually creates the vehicle associated with |storedVehicle| and returns the |vehicle|
     // instance it's now associated with. The instance will be set on the |storedVehicle| as well.
     internalCreateVehicle(storedVehicle) {
-        this.liveVehicleCount_++;
-
         if (!storedVehicle.vehicle) {
             storedVehicle.vehicle = new this.vehicleConstructor_({
                 modelId: storedVehicle.modelId,
@@ -191,6 +198,8 @@ class VehicleStreamer {
                 paintjob: storedVehicle.paintjob,
                 interiorId: storedVehicle.interiorId
             });
+
+            this.liveVehicleCount_++;
         }
 
         return storedVehicle.vehicle;
@@ -198,10 +207,10 @@ class VehicleStreamer {
 
     // Removes the vehicle associated with the |storedVehicle| from the server.
     internalDestroyVehicle(storedVehicle) {
-        this.liveVehicleCount_--;
-
         if (!storedVehicle.vehicle)
             return;  // the vehicle does not exist on the server anymore
+
+        this.liveVehicleCount_--;
 
         storedVehicle.vehicle.dispose();
         storedVehicle.vehicle = null;

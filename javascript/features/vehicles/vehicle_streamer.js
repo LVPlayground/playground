@@ -61,19 +61,17 @@ class VehicleStreamer {
         if (storedVehicle.vehicle)
             throw new Error('Vehicles must not have been created when being added to the streamer');
 
-        if (storedVehicle.isPersistent()) {
-            this.persistentVehicles_.add(storedVehicle);
-            if (!this.initialized_)
-                return;  // the loader will initialize the streamer afterwards
-
-            this.allocateVehicleSlot(storedVehicle);
-            this.internalCreateVehicle(storedVehicle);
-
-        } else {
+        if (!storedVehicle.isPersistent()) {
             this.grid_.addVehicle(storedVehicle);
-            if (!this.initialized_)
-                return;  // the loader will initialize the streamer afterwards
+            return;
         }
+
+        this.persistentVehicles_.add(storedVehicle);
+        if (!this.initialized_)
+            return;  // the loader will initialize the streamer afterwards
+
+        this.allocateVehicleSlot(storedVehicle);
+        this.internalCreateVehicle(storedVehicle);
     }
 
     // Removes the |storedVehicle| from the vehicle streamer.
@@ -82,21 +80,26 @@ class VehicleStreamer {
             throw new Error('Vehicles may not be removed before the initial initialization.');
 
         if (storedVehicle.isPersistent()) {
-            this.persistentVehicles_.delete(storedVehicle);
-            this.internalDestroyVehicle(storedVehicle);
+            if (this.persistentVehicles_.delete(storedVehicle))
+                this.internalDestroyVehicle(storedVehicle);
 
-        } else {
-            this.grid_.removeVehicle(storedVehicle);
-            this.internalDestroyVehicle(storedVehicle);
-
-            for (let [player, references] of this.playerReferences_) {
-                if (references.delete(storedVehicle))
-                    storedVehicle.decreaseRefCount();
-            }
-
-            if (storedVehicle.refCount != 0)
-                throw new Error('The vehicle has stray references after processing all players.');
+            return;
         }
+
+        this.grid_.removeVehicle(storedVehicle);
+
+        if (!storedVehicle.vehicle)
+            return;  // the vehicle has not been streamed in by any player
+
+        this.internalDestroyVehicle(storedVehicle);
+
+        for (let [player, references] of this.playerReferences_) {
+            if (references.delete(storedVehicle))
+                storedVehicle.decreaseRefCount();
+        }
+
+        if (storedVehicle.refCount != 0)
+            throw new Error('The vehicle has stray references after processing all players.');
     }
 
     // Initializes the streamer. This must be called after the initial vehicle import to make sure
@@ -110,17 +113,15 @@ class VehicleStreamer {
 
         // The number of vehicles to create depends on the regular vehicles-per-player limit, as
         // well as on the total number of in-game players 
-        let maximumVehiclesPerPlayer = DefaultVehiclesPerPlayer;
         if (server.playerManager.count > 0) {
             const vehicleLimit = DefaultVehicleLimit - this.persistentVehicleCount;
+            const maximumVehiclesPerPlayer =
+                Math.min(DefaultVehiclesPerPlayer, vehicleLimit / server.playerManager.count);
 
-            maximumVehiclesPerPlayer =
-                Math.min(maximumVehiclesPerPlayer, vehicleLimit / server.playerManager.count);
+            // Synchronously initialize vehicles for all in-game players.
+            server.playerManager.forEach(player =>
+                this.streamForPlayer(player, maximumVehiclesPerPlayer));
         }
-
-        // Synchronously initialize vehicles for all in-game players.
-        server.playerManager.forEach(player =>
-            this.streamForPlayer(player, maximumVehiclesPerPlayer));
 
         this.initialized_ = true;
     }

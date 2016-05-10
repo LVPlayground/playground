@@ -21,6 +21,8 @@ class StoredVehicle {
         this.paintjob_ = vehicleData.paintjob;
 
         this.interiorId_ = vehicleData.interior_id;
+
+        this.vehicle_ = null;
     }
 
     // Gets the persistent Id of this vehicle in the database.
@@ -50,6 +52,10 @@ class StoredVehicle {
 
     // Gets the interior Id this vehicle should be linked to.
     get interiorId() { return this.interiorId_; }
+
+    // Gets or sets the vehicle on the server that represents this stored vehicle.
+    get vehicle() { return this.vehicle_; }
+    set vehicle(value) { this.vehicle_ = value; }
 }
 
 exports = StoredVehicle;

@@ -10,7 +10,7 @@ class Vehicle extends Extendable {
     super();
 
     this.id_ = 0;
-    this.interior_ = 0;
+    this.interiorId_ = 0;
     this.modelId_ = 0;
 
     if (typeof options === 'number') {
@@ -34,6 +34,12 @@ class Vehicle extends Extendable {
       
       if (this.id_ == Vehicle.INVALID_ID)
         throw new Error('The vehicle could not be created on the SA-MP server.');
+
+      if (options.paintjob)
+        pawnInvoke('ChangeVehiclePaintjob', 'ii', this.id_, options.paintjob);
+
+      if (options.interiorId)
+        this.interiorId = options.interiorId;
     }
   }
 
@@ -51,13 +57,13 @@ class Vehicle extends Extendable {
 
   // Gets or sets the interior in which this vehicle resides. Vehicles will be invisible to players
   // (but might still influence colission) if they are in the wrong interior.
-  get interior() { return this.interior_; }
-  set interior(value) {
-    if (this.interior_ == value)
+  get interiorId() { return this.interiorId_; }
+  set interiorId(value) {
+    if (this.interiorId_ == value)
       return;
 
     pawnInvoke('LinkVehicleToInterior', 'ii', this.id_, value);
-    this.interior_ = value;
+    this.interiorId_ = value;
   }
 
   // Gets the model Id of this vehicle.

@@ -15,9 +15,12 @@ const DefaultVehicleLimit = 1000;
 // this by maintaining a grid of the original vehicle locations, so that the nearest vehicles to
 // each players can quickly and accurately be determined.
 class VehicleStreamer {
-    constructor() {
+    constructor(vehicleConstructor = Vehicle) {
         this.grid_ = new VehicleGrid(DefaultStreamDistance);
         this.initialized_ = false;
+
+        // The constructor that will be used for creating vehicles.
+        this.vehicleConstructor_ = vehicleConstructor;
 
         // Persistent vehicles will always exist and bypass the grid streamer.
         this.persistentVehicles_ = new Set();
@@ -40,7 +43,7 @@ class VehicleStreamer {
             if (!this.initialized_)
                 return;  // the loader will initialize the streamer afterwards
 
-            // TODO(Russell): Create the actual vehicle associated with |storedVehicle|.
+            this.internalCreateVehicle(storedVehicle);
 
         } else {
             this.grid_.addVehicle(storedVehicle);
@@ -59,8 +62,7 @@ class VehicleStreamer {
 
         if (storedVehicle.isPersistent()) {
             this.persistentVehicles_.delete(storedVehicle);
-
-            // TODO(Russell): Destroy the actual vehicle associated with |storedVehicle|.
+            this.internalDestroyVehicle(storedVehicle);
 
         } else {
             this.grid_.removeVehicle(storedVehicle);
@@ -72,11 +74,44 @@ class VehicleStreamer {
     // Initializes the streamer. This must be called after the initial vehicle import to make sure
     // that the right vehicles have been created, and have been associated with the right players.
     initialize() {
-        // TODO(Russell): Create all persistent vehicles.
+        if (this.initialized_)
+            throw new Error('The vehicle streamer cannot be initialized multiple times.');
+
+        for (let storedVehicle of this.persistentVehicles_)
+            this.internalCreateVehicle(storedVehicle);
+
         // TODO(Russell): Run a full stream for all connected players and create the necessary
         //                vehicles. NPCs should of course be excluded from this.
 
         this.initialized_ = true;
+    }
+
+    // Actually creates the vehicle associated with |storedVehicle| and returns the |vehicle|
+    // instance it's now associated with. The instance will be set on the |storedVehicle| as well.
+    internalCreateVehicle(storedVehicle) {
+        if (storedVehicle.vehicle)
+            return;  // the vehicle has already been created
+
+        const vehicle = new this.vehicleConstructor_({
+            modelId: storedVehicle.modelId,
+            position: storedVehicle.position,
+            rotation: storedVehicle.rotation,
+            colors: [ storedVehicle.primaryColor, storedVehicle.secondaryColor ],
+            paintjob: storedVehicle.paintjob,
+            interiorId: storedVehicle.interiorId
+        });
+
+        storedVehicle.vehicle = vehicle;
+        return vehicle;
+    }
+
+    // Removes the vehicle associated with the |storedVehicle| from the server.
+    internalDestroyVehicle(storedVehicle) {
+        if (!storedVehicle.vehicle)
+            return;  // the vehicle does not exist on the server anymore
+
+        storedVehicle.vehicle.dispose();
+        storedVehicle.vehicle = null;
     }
 
     dispose() {

@@ -262,7 +262,7 @@ class RunningRace {
       // Link the vehicle to the race's virtual world and interior (unless it's in the main world).
       vehicle.virtualWorld = this.virtualWorld_;
       if (this.race_.interior != 0)
-        vehicle.interior = this.race_.interior;
+        vehicle.interiorId = this.race_.interior;
 
       // If the vehicle should have nitrous oxide systems, make sure to create them.
       switch (spawn.vehicle.nos) {

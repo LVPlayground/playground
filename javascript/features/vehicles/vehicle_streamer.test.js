@@ -319,8 +319,8 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
         streamer.initialize();
 
         for (let i = 0; i < TestingVehicleLimit; ++i) {
-            streamer.addVehicle(createStoredVehicle({ positionX: gunther.position.x + i,
-                                                      positionY: gunther.position.y + 1 }));
+            streamer.addVehicle(createStoredVehicle({ positionX: gunther.position.x + 10 * i,
+                                                      positionY: gunther.position.y + 10 * i }));
         }
 
         assert.equal(streamer.liveVehicleCount, 0);
@@ -350,10 +350,10 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
         gunther.position = new Vector(2000, 1000, 0);  // 1000 units from the vehicles
         streamer.streamForPlayer(gunther);
 
-        gunther.position = new Vector(1000, 1000, 0);  // 0-20 units from the vehicles
+        gunther.position = new Vector(1000, 1350, 0);  // 0-20 units from the vehicles
         streamer.streamForPlayer(gunther);
 
-        assert.equal(streamer.liveVehicleCount, TestingVehicleLimit);
+        assert.isBelowOrEqual(streamer.liveVehicleCount, TestingVehicleLimit);
     });
 
     it('should order disposable vehicles by total ref count in ascending order', assert => {

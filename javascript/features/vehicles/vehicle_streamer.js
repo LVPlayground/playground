@@ -243,6 +243,9 @@ class VehicleStreamer {
             });
 
             this.liveVehicleCount_++;
+        } else {
+            if (!this.disposableVehicles_.delete(storedVehicle))
+                console.log('[VehicleStreamer] A stored vehicle was found to be in invalid state.');
         }
 
         return storedVehicle.vehicle;

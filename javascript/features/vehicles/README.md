@@ -7,6 +7,13 @@ The following terminology is important for this feature:
 
   - A **persistent** vehicle will not be considered for streaming, but will instead always be
     created on the server.
+  - A **streamable** vehicle will be created and destroyed on demand. There is no limit to the
+    amount of streamable vehicles that can be created on Las Venturas Playground.
+  - The list of **disposable vehicles** include vehicles that are not referenced anymore by players,
+    but haven't been destroyed yet to reduce churn in vehicle creation.
+
+As currently tested, the performance of the vehicle streamer is sufficient to provide about half
+a million vehicles for 500 online players.
 
 ## Commands
 No commands are available yet.

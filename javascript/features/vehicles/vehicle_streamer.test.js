@@ -228,6 +228,32 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
         assert.isNotNull(streamableInfernus.vehicle);
     });
 
+    it('should release references when a player disconnects from the server', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const streamableInfernus = createStoredVehicle({ positionX: 1000, positionY: 1000 });
+
+        gunther.position = new Vector(1000, 1050, 0);  // 50 units from the vehicle
+
+        streamer.addVehicle(streamableInfernus);
+        streamer.initialize();
+
+        assert.equal(streamer.liveVehicleCount, 1);
+        assert.equal(streamableInfernus.refCount, 1);
+        assert.isNotNull(streamableInfernus.vehicle);
+
+        streamer.onPlayerDisconnect(gunther);
+
+        assert.equal(streamer.liveVehicleCount, 1);
+        assert.equal(streamableInfernus.refCount, 0);
+        assert.isNotNull(streamableInfernus.vehicle);
+
+        streamer.clearDisposableVehicles();
+
+        assert.equal(streamer.liveVehicleCount, 0);
+        assert.equal(streamableInfernus.refCount, 0);
+        assert.isNull(streamableInfernus.vehicle);
+    });
+
     it('should fail to initialize when too many persistent vehicles exist', assert => {
         for (let i = 0; i < TestingVehicleLimit * 2; ++i)
             streamer.addVehicle(createStoredVehicle({ persistent: true }));

@@ -126,9 +126,8 @@ class VehicleStreamer {
         this.initialized_ = true;
     }
 
-    // Synchronously streams the vehicles for |player|. The |vehicleCount| indicates the number of
-    // vehicles that should be attempted to be created for the player.
-    streamForPlayer(player, vehicleCount = DefaultVehiclesPerPlayer) {
+    // Synchronously streams the vehicles for |player|.
+    streamForPlayer(player) {
         const vehicleLimit = DefaultVehicleLimit - this.persistentVehicles_.size;
         const maximumVehiclesPerPlayer =
             Math.min(DefaultVehiclesPerPlayer, vehicleLimit / server.playerManager.count);
@@ -172,7 +171,24 @@ class VehicleStreamer {
         this.playerReferences_.set(player, updatedVehicleSet);
     }
 
-    // TODO(Russell): onPlayerDisconnect, release references
+    // To be called when |player| disconnects from the server. Their vehicle references will be
+    // released, and vehicles will be moved to the disposable vehicle list where possible.
+    onPlayerDisconnect(player) {
+        const references = this.playerReferences_.get(player);
+        if (!references)
+            return;
+
+        references.forEach(storedVehicle => {
+            // Dereference the vehicle for the |player|.
+            storedVehicle.decreaseRefCount();
+
+            // The vehicle may have to be destroyed if it has no further references.
+            if (!storedVehicle.refCount)
+                this.deallocateVehicleSlot(storedVehicle);
+        });
+
+        this.playerReferences_.delete(player);
+    }
 
     // Returns whether a slot can be allocated for |storedVehicle|. Will return false in case the
     // streaming limit has been reached and no slot could be freed up elsewhere. The |forceAllocate|

@@ -1,4 +1,4 @@
-// Copyright 2006-2015 Las Venturas Playground. All rights reserved.
+// Copyright 2006-2016 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
@@ -560,7 +560,7 @@ stock CBrief__Start()
             SendClientMessage(i,COLOR_WHITE,"--------------------------------------");
             SendClientMessage(i,COLOR_ORANGE,"Get the briefcase marked red on your radar.");
             SendClientMessage(i,COLOR_ORANGE,"The briefcase is worth $2,000,000 and other");
-            SendClientMessage(i,COLOR_ORANGE,"players are competiting to get it as you read this.");
+            SendClientMessage(i,COLOR_ORANGE,"players are competing to get it as you read this.");
             SendClientMessage(i,COLOR_ORANGE,"So what are you waiting for? Don't let anyone else get it!");
             SendClientMessage(i,COLOR_ORANGE,"Drive your vehicle carefully because it is the only vehicle you get.");
             SendClientMessage(i,COLOR_WHITE,"--------------------------------------");

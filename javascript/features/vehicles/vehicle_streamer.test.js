@@ -228,6 +228,13 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
         assert.isNotNull(streamableInfernus.vehicle);
     });
 
+    it('should fail to initialize when too many persistent vehicles exist', assert => {
+        for (let i = 0; i < TestingVehicleLimit * 2; ++i)
+            streamer.addVehicle(createStoredVehicle({ persistent: true }));
+
+        assert.throws(() => streamer.initialize());
+    });
+
     it('should fail to allocate slots for persistent vehicles if the streamer is full', assert => {
         streamer.initialize();
 
@@ -277,6 +284,50 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
 
         assert.equal(streamableInfernus.refCount, 1);
         assert.isNotNull(streamableInfernus.refCount);
+    });
+
+    it('should always allow creating a persistent vehicle when within 20% of limits', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.position = new Vector(1000, 1000, 0);
+
+        streamer.initialize();
+
+        for (let i = 0; i < TestingVehicleLimit; ++i) {
+            streamer.addVehicle(createStoredVehicle({ positionX: gunther.position.x + i,
+                                                      positionY: gunther.position.y + 1 }));
+        }
+
+        assert.equal(streamer.liveVehicleCount, 0);
+
+        // Streaming the vehicles for Gunther should create all |TestingVehicleLimit| of them.
+        streamer.streamForPlayer(gunther);
+
+        assert.equal(streamer.disposableVehicleCount, 0);
+        assert.equal(streamer.liveVehicleCount, TestingVehicleLimit);
+
+        const streamableInfernus = createStoredVehicle({
+            persistent: true, positionX: 1000, positionY: 2005 });
+
+        assert.equal(streamableInfernus.refCount, 0);
+        assert.isNull(streamableInfernus.vehicle);
+
+        streamer.addVehicle(streamableInfernus);
+
+        // The limit will temporarily be exceeded, which is expected to auto-rebalance when players
+        // move around and streamable vehicles will be destoyed in due course.
+        assert.equal(streamer.liveVehicleCount, TestingVehicleLimit + 1);
+
+        assert.equal(streamableInfernus.refCount, 0);  // persistent vehicles don't refcount
+        assert.isNotNull(streamableInfernus.vehicle);
+
+        // Teleport the player back and forth, which should re-balance the vehicle count.
+        gunther.position = new Vector(2000, 1000, 0);  // 1000 units from the vehicles
+        streamer.streamForPlayer(gunther);
+
+        gunther.position = new Vector(1000, 1000, 0);  // 0-20 units from the vehicles
+        streamer.streamForPlayer(gunther);
+
+        assert.equal(streamer.liveVehicleCount, TestingVehicleLimit);
     });
 
     it('should order disposable vehicles by total ref count in ascending order', assert => {

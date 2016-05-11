@@ -12,7 +12,7 @@ const EMPTY_SET = new Set();
 const DefaultStreamDistance = 300;
 
 // The maximum number of vehicles that the streamer will create at any one time.
-const DefaultVehicleLimit = 1000;
+const DefaultVehicleLimit = 800;
 
 // The number of closest vehicle to each player that should be attempted to be spawned.
 const DefaultVehiclesPerPlayer = 20;
@@ -69,12 +69,14 @@ class VehicleStreamer {
             return;
         }
 
-        this.persistentVehicles_.add(storedVehicle);
-        if (!this.initialized_)
-            return;  // the loader will initialize the streamer afterwards
+        if (this.initialized_) {
+            if (!this.allocateVehicleSlot(storedVehicle, true /* forceAllocate */))
+                throw new Error('Too many persistent vehicles have been created for the streamer.');
 
-        this.allocateVehicleSlot(storedVehicle);
-        this.internalCreateVehicle(storedVehicle);
+            this.internalCreateVehicle(storedVehicle);
+        }
+
+        this.persistentVehicles_.add(storedVehicle);
     }
 
     // Removes the |storedVehicle| from the vehicle streamer.
@@ -111,8 +113,12 @@ class VehicleStreamer {
         if (this.initialized_)
             throw new Error('The vehicle streamer cannot be initialized multiple times.');
 
-        for (let storedVehicle of this.persistentVehicles_)
+        for (let storedVehicle of this.persistentVehicles_) {
+            if (this.liveVehicleCount_ >= this.vehicleLimit_)
+                throw new Error('Too many persistent vehicles have been created for the streamer.');
+
             this.internalCreateVehicle(storedVehicle);
+        }
 
         // Synchronously initialize vehicles for all in-game players.
         server.playerManager.forEach(player => this.streamForPlayer(player));
@@ -123,7 +129,7 @@ class VehicleStreamer {
     // Synchronously streams the vehicles for |player|. The |vehicleCount| indicates the number of
     // vehicles that should be attempted to be created for the player.
     streamForPlayer(player, vehicleCount = DefaultVehiclesPerPlayer) {
-        const vehicleLimit = DefaultVehicleLimit - this.persistentVehicleCount;
+        const vehicleLimit = DefaultVehicleLimit - this.persistentVehicles_.size;
         const maximumVehiclesPerPlayer =
             Math.min(DefaultVehiclesPerPlayer, vehicleLimit / server.playerManager.count);
 
@@ -144,14 +150,14 @@ class VehicleStreamer {
                 this.deallocateVehicleSlot(storedVehicle);
         });
 
-        updatedVehicles.forEach(storedVehicle => {
+        updatedVehicles.forEach((storedVehicle, index) => {
             if (currentVehicles.has(storedVehicle))
                 return;  // the vehicle has already been streamed for the player
 
             // The vehicle has to be created if the |player| is the first to reference it. If no
             // slot could be allocated for the vehicle, bail out.
             if (!storedVehicle.refCount) {
-                if (!this.allocateVehicleSlot(storedVehicle)) {
+                if (!this.allocateVehicleSlot(storedVehicle, !index /* forceAllocate */)) {
                     updatedVehicleSet.delete(storedVehicle);
                     return;
                 }
@@ -166,10 +172,12 @@ class VehicleStreamer {
         this.playerReferences_.set(player, updatedVehicleSet);
     }
 
+    // TODO(Russell): onPlayerDisconnect, release references
+
     // Returns whether a slot can be allocated for |storedVehicle|. Will return false in case the
-    // streaming limit has been reached and no slot could be freed up elsewhere. Slots will be
-    // freed up in order to accomodate persistent vehicles.
-    allocateVehicleSlot(storedVehicle) {
+    // streaming limit has been reached and no slot could be freed up elsewhere. The |forceAllocate|
+    // flag may be used to enable exceeding the limits if all else fails.
+    allocateVehicleSlot(storedVehicle, forceAllocate = false) {
         if (this.liveVehicleCount_ < this.vehicleLimit_)
             return true;  // we've got space to grow
 
@@ -178,8 +186,16 @@ class VehicleStreamer {
             return true;  // a disposable vehicle has been destroyed
         }
 
-        // TODO(Russell): Ensure that a slot is allocated if |storedVehicle| is persistent.
-        // TODO(Russell): Ensure that at least the closest vehicle to each player can be created.
+        // The limit may temporarily be exceeded if the |forceAllocate| flag has been set. A warning
+        // will be displayed to the console, however.
+        if (forceAllocate && this.liveVehicleCount_ < (1.2 * this.vehicleLimit_)) {
+            if (!server.isTest()) {
+                console.log('[VehicleStreamer] Exceeding the vehicle limit to spawn vehicle #' +
+                            storedVehicle.databaseId + '.');
+            }
+
+            return true;
+        }
 
         return false;
     }
@@ -230,6 +246,8 @@ class VehicleStreamer {
     dispose() {
         this.grid_.dispose();
 
+        this.disposableVehicles_ = null;
+        this.playerReferences_ = null;
         this.persistentVehicles_ = null;
         this.grid_ = null;
     }

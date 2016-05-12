@@ -29,6 +29,8 @@ class PlaygroundCommands {
         server.commandManager.buildCommand('jetpack')
             .sub(CommandBuilder.PLAYER_PARAMETER)
                 .restrict(Player.LEVEL_ADMINISTRATOR)
+                .parameters([
+                    { name: 'remove', type: CommandBuilder.WORD_PARAMETER, optional: true }])
                 .build(PlaygroundCommands.prototype.onJetpackCommand.bind(this))
             .build(PlaygroundCommands.prototype.onJetpackCommand.bind(this));
     }
@@ -81,7 +83,7 @@ class PlaygroundCommands {
 
     // Command that gives the |player| a jetpack. Always available to administrators (also when
     // specifying a different |targetPlayer|), can be enabled for all by using the `jetpack` option.
-    onJetpackCommand(player, targetPlayer) {
+    onJetpackCommand(player, targetPlayer, remove = null) {
         const subject = targetPlayer || player;
 
         // Do not allow the |player| to get a jetpack if the option has been disabled.
@@ -90,6 +92,19 @@ class PlaygroundCommands {
             return;
         }
 
+        // Is the administrator removing a jetpack from this player instead of granting one?
+        if (player.isAdministrator() && ['remove', 'take'].includes(remove)) {
+            subject.specialAction = Player.SPECIAL_ACTION_NONE;
+
+            subject.sendMessage(Message.LVP_JETPACK_REMOVED, player.name, player.id);
+            if (player !== subject)
+                player.sendMessage(Message.LVP_JETPACK_REMOVED_OTHER, subject.name, subject.id);
+
+            // TODO(Russell): Distribute a message to administrators about this removal.
+            return;
+        }
+
+        // Grant a jetpack to the |subject|.
         subject.specialAction = Player.SPECIAL_ACTION_USEJETPACK;
 
         if (subject !== player) {

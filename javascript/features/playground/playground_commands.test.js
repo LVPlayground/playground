@@ -139,4 +139,23 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
 
         assert.equal(russell.specialAction, Player.SPECIAL_ACTION_USEJETPACK);
     });
+
+    it('should enable administrators to remove administrators from players', assert => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+        russell.specialAction = Player.SPECIAL_ACTION_USEJETPACK;
+
+        player.level = Player.LEVEL_ADMINISTRATOR;
+        
+        assert.isTrue(player.issueCommand('/jetpack ' + russell.name + ' remove'));
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.format(Message.LVP_JETPACK_REMOVED_OTHER,
+                                                        russell.name, russell.id));
+
+        assert.equal(russell.messages.length, 1);
+        assert.equal(russell.messages[0], Message.format(Message.LVP_JETPACK_REMOVED, player.name,
+                                                         player.id));
+
+        assert.equal(russell.specialAction, Player.SPECIAL_ACTION_NONE);
+    });
 });

@@ -6,8 +6,9 @@ features have been implemented specifically for the anniversary weekend.
 ## Commands
 The following commands are available as part of the feature:
 
-  - **/jetpack [player]**: Gives the `player` a jetpack. Only available to administrators.
   - **/jetpack**: Gives you a jetpack. Must have been enabled by an administrator.
+  - **/jetpack [player]**: Gives the `player` a jetpack. Only available to administrators.
+  - **/jetpack [player] remove**: Removes a jetpack from `player`. Only available to administrators.
   - **/lvp10**: Displays information about the server's ten anniversary.
   - **/lvp10 set [option] [on/off]**: Toggles the `option` on or off. Only available to
     administrators.

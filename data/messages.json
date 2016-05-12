@@ -94,6 +94,14 @@
     "GANGS_NOT_REGISTERED": "@error You need to register on https://sa-mp.nl/ before you can participate in a gang.",
     "GANGS_ONLINE": "{%s}[%s]{FFFFFF} - %s ({B1FC17}%d player%s{FFFFFF})",
 
+    "LVP_ANNIVERSARY_OPTIONS": "@usage /lvp10 set [%s] [on/off]",
+    "LVP_ANNIVERSARY_OPTION_STATUS": "The {FF8282}%s{FFFFFF} option is {FF8282}%s{FFFFFF}. Type {FF8282}/lvp10 set %s [on/off]{FFFFFF} to change this.",
+    "LVP_ANNIVERSARY_OPTION_NO_CHANGE": "The {FF8282}%s{FFFFFF} feature has already been {FF8282}%s{FFFFFF}.",
+    "LVP_JETPACK_NOT_AVAILABLE": "@error Sorry, the /jetpack command is unavailable right now!",
+    "LVP_JETPACK_GRANTED_OTHER": "@success %s (Id: %d) has been given a jetpack.",
+    "LVP_JETPACK_GRANTED_SELF": "@success You have been given a jetpack, enjoy!",
+    "LVP_JETPACK_GRANTED": "{33AA33}%s (Id: %d) has given you a jetpack, enjoy!",
+
     "RACE_ERROR_NO_RACES_AVAILABLE": "@error Sorry, there are no races available right now.",
     "RACE_ERROR_INVALID_RACE_ID": "@error Sorry, that is not a known race. Type /race for an overview!",
     "RACE_ERROR_ALREADY_ENGAGED": "@error Sorry, you can't start a race while you're already engaged in something.",

@@ -29,6 +29,7 @@ The following features have been implemented in JavaScript.
   - **[Gangs](gangs/)**: Provides the persistent gangs feature, as well as the `/gang` command.
   - **[Player favours](player_favours/)**: Various smaller features implemented specifically for
     the benefit of certain players.
+  - **[Playground](playground/)**: Features created for the identity of Las Venturas Playground.
   - **[Vehicles](vehicles/)**: Manages all vehicles around Las Venturas Playground.
 
 _There are several other features that have to be updated and documented before being listed here._

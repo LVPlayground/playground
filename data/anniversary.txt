@@ -1,0 +1,7 @@
+Ten years of Las Venturas Playground!
+
+Somebody should write some amazing message here, that explains
+why this is a significant event.
+
+Also, we have some fancy commands for you that may or may not be
+enabled, at the administrator's discretion: {FF8282}/jetpack{A9C4E4}.

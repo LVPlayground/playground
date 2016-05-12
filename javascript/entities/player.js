@@ -100,6 +100,11 @@ class Player extends Extendable {
   // SA-MP does not expose an IsPlayerControllable native. Silly.
   set controllable(value) { pawnInvoke('TogglePlayerControllable', 'ii', this.id_, value ? 1 : 0); }
 
+  // Gets or sets the special action the player is currently engaged in. The values must be one of
+  // the Player.SPECIAL_ACTION_* constants static to this class.
+  get specialAction() { return pawnInvoke('GetPlayerSpecialAction', 'i', this.id_); }
+  set specialAction(value) { pawnInvoke('SetPlayerSpecialAction', 'ii', this.id_, value); }
+
   // Returns whether the player is in an vehicle. If |vehicle| is provided, this method will check
   // whether the player is in that particular vehicle. Otherwise any vehicle will do.
   isInVehicle(vehicle) {
@@ -230,6 +235,27 @@ Player.STATE_ENTER_VEHICLE_PASSENGER = 6;
 Player.STATE_WASTED = 7;
 Player.STATE_SPAWNED = 8;
 Player.STATE_SPECTATING = 9;
+
+// The special actions that a player can be engaged in. Used by Player.specialAction.
+Player.SPECIAL_ACTION_NONE = 0;
+Player.SPECIAL_ACTION_DUCK = 1;
+Player.SPECIAL_ACTION_USEJETPACK = 2;
+Player.SPECIAL_ACTION_ENTER_VEHICLE = 3;
+Player.SPECIAL_ACTION_EXIT_VEHICLE = 4;
+Player.SPECIAL_ACTION_DANCE1 = 5;
+Player.SPECIAL_ACTION_DANCE2 = 6;
+Player.SPECIAL_ACTION_DANCE3 = 7;
+Player.SPECIAL_ACTION_DANCE4 = 8;
+Player.SPECIAL_ACTION_HANDSUP = 10;
+Player.SPECIAL_ACTION_USECELLPHONE = 11;
+Player.SPECIAL_ACTION_SITTING = 12;
+Player.SPECIAL_ACTION_STOPUSECELLPHONE = 13;
+Player.SPECIAL_ACTION_DRINK_BEER = 20;
+Player.SPECIAL_ACTION_SMOKE_CIGGY = 21;
+Player.SPECIAL_ACTION_DRINK_WINE = 22;
+Player.SPECIAL_ACTION_DRINK_SPRUNK = 23;
+Player.SPECIAL_ACTION_CUFFED = 24;
+Player.SPECIAL_ACTION_CARRY = 25;
 
 // Loads the activities of a player and installs them on |Player|.
 require('entities/player_activities.js')(Player);

@@ -15,6 +15,7 @@ class MockPlayer {
         this.userId_ = null;
         this.ipAddress_ = event.ipAddress || '127.0.0.1';
         this.position_ = new Vector(0, 0, 0);
+        this.specialAction_ = Player.SPECIAL_ACTION_NONE;
 
         this.dialogPromiseResolve_ = null;
         this.dialogPromise_ = new Promise(resolve => {
@@ -67,6 +68,11 @@ class MockPlayer {
     // Gets or sets the position of this player.
     get position() { return this.position_; }
     set position(value) { this.position_ = value; }
+
+    // Gets or sets the special action the player is currently engaged in. The values must be one of
+    // the Player.SPECIAL_ACTION_* constants static to this class.
+    get specialAction() { return this.specialAction_; }
+    set specialAction(value) { this.specialAction_ = value; }
 
     isRegistered() { return this.userId_ != null; }
 

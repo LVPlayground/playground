@@ -11,8 +11,7 @@ const AdminTag = 'admin';
 // Implementation of the functionality of the Announce feature. This is where input will be verified
 // and the messages will be dispatched to the appropriate audience.
 class AnnounceManager {
-    constructor(playerManager, ircDelegate = null) {
-        this.playerManager_ = playerManager;
+    constructor(ircDelegate = null) {
         this.ircDelegate_ = ircDelegate;
     }
 
@@ -24,7 +23,7 @@ class AnnounceManager {
 
         const formattedMessage = Message.format(Message.ANNOUNCE_ALL, message);
 
-        this.playerManager_.forEach(player =>
+        server.playerManager.forEach(player =>
             player.sendMessage(formattedMessage));
 
         this.announceToIRC(AnnounceTag, message);
@@ -38,7 +37,7 @@ class AnnounceManager {
 
         const formattedMessage = Message.format(Message.ANNOUNCE_ADMINISTRATORS, message);
 
-        this.playerManager_.forEach(player => {
+        server.playerManager.forEach(player => {
             if (!player.isAdministrator())
                 return;
 
@@ -71,7 +70,7 @@ class AnnounceManager {
     }
 
     dispose() {
-        this.playerManager_ = null;
+        this.ircDelegate_ = null;
     }
 }
 

@@ -11,7 +11,7 @@ class Announce extends Feature {
     constructor() {
         super();
 
-        this.manager_ = new AnnounceManager(server.playerManager);
+        this.manager_ = new AnnounceManager();
     }
 
     // ---------------------------------------------------------------------------------------------

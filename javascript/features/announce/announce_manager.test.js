@@ -10,7 +10,7 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
     let ircMessages = [];
 
     MockServer.bindTo(beforeEach, afterEach, server => {
-        announceManager = new AnnounceManager(server.playerManager, message => {
+        announceManager = new AnnounceManager(message => {
             ircMessages.push(message);
         });
 

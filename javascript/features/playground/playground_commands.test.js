@@ -83,6 +83,8 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable administrators to toggle options using /lvp10 set [option]', assert => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+
         player.level = Player.LEVEL_ADMINISTRATOR;
 
         playgroundManager.setOptionEnabled('jetpack', false);
@@ -91,8 +93,35 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(player.issueCommand('/lvp10 set jetpack on'));
         assert.isTrue(playgroundManager.isOptionEnabled('jetpack'));
 
+        assert.equal(russell.messages.length, 1);
+        assert.isTrue(
+            russell.messages[0].includes(Message.format(Message.LVP_ANNOUNCE_JETPACK, player.name,
+                                                        'enabled')));
+
+        assert.equal(player.messages.length, 2);
+        assert.equal(player.messages[0], russell.messages[0]);
+        assert.isTrue(
+            player.messages[1].includes(Message.format(Message.LVP_ANNOUNCE_ADMIN_NOTICE,
+                                                       player.name, player.id, 'enabled',
+                                                       'jetpack')));
+
+        player.clearMessages();
+        russell.clearMessages();
+
         assert.isTrue(player.issueCommand('/lvp10 set jetpack off'));
         assert.isFalse(playgroundManager.isOptionEnabled('jetpack'));
+
+        assert.equal(russell.messages.length, 1);
+        assert.isTrue(
+            russell.messages[0].includes(Message.format(Message.LVP_ANNOUNCE_JETPACK, player.name,
+                                                        'disabled')));
+
+        assert.equal(player.messages.length, 2);
+        assert.equal(player.messages[0], russell.messages[0]);
+        assert.isTrue(
+            player.messages[1].includes(Message.format(Message.LVP_ANNOUNCE_ADMIN_NOTICE,
+                                                       player.name, player.id, 'disabled',
+                                                       'jetpack')));
     });
 
     it('should disable jetpacks for players when the option is disabled', assert => {

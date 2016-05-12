@@ -97,6 +97,8 @@
     "LVP_ANNIVERSARY_OPTIONS": "@usage /lvp10 set [%s] [on/off]",
     "LVP_ANNIVERSARY_OPTION_STATUS": "The {FF8282}%s{FFFFFF} option is {FF8282}%s{FFFFFF}. Type {FF8282}/lvp10 set %s [on/off]{FFFFFF} to change this.",
     "LVP_ANNIVERSARY_OPTION_NO_CHANGE": "The {FF8282}%s{FFFFFF} feature has already been {FF8282}%s{FFFFFF}.",
+    "LVP_ANNOUNCE_ADMIN_NOTICE": "%s (Id: %d) has %s the %s option.",
+    "LVP_ANNOUNCE_JETPACK": "%s has %s the /jetpack command!",
     "LVP_JETPACK_NOT_AVAILABLE": "@error Sorry, the /jetpack command is unavailable right now!",
     "LVP_JETPACK_GRANTED_OTHER": "@success %s (Id: %d) has been given a jetpack.",
     "LVP_JETPACK_GRANTED_SELF": "@success You have been given a jetpack, enjoy!",

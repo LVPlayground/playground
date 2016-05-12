@@ -63,12 +63,23 @@ class PlaygroundCommands {
             return;
         }
 
+        const updatedValueText = updatedValue ? 'enabled' : 'disabled';
+
         // Enable the option with the Playground Manager, so that side-effects get applied too.
         this.manager_.setOptionEnabled(option, updatedValue);
 
-        // TODO(Russell): Announce the status update to the |player|.
+        let announcement = null;
+        switch (option) {
+            case 'jetpack':
+                announcement = Message.LVP_ANNOUNCE_JETPACK;
+                break;
+        }
 
-        // TODO(Russell): Make public announcements when certain features get enabled or disabled.
+        if (announcement)
+            this.announce_.announceToPlayers(announcement, player.name, updatedValueText);
+
+        this.announce_.announceToAdministrators(
+            Message.LVP_ANNOUNCE_ADMIN_NOTICE, player.name, player.id, updatedValueText, option);
     }
 
     // Command that gives details about Las Venturas Playground's anniversary and the commands that

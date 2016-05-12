@@ -111,7 +111,10 @@ class PlaygroundCommands {
             if (player !== subject)
                 player.sendMessage(Message.LVP_JETPACK_REMOVED_OTHER, subject.name, subject.id);
 
-            // TODO(Russell): Distribute a message to administrators about this removal.
+            this.announce_.announceToAdministrators(
+                Message.LVP_JETPACK_ANNOUNCE, player.name, player.id, 'removed', 'from',
+                subject.name, subject.id);
+
             return;
         }
 
@@ -121,12 +124,15 @@ class PlaygroundCommands {
         if (subject !== player) {
             player.sendMessage(Message.LVP_JETPACK_GRANTED_OTHER, subject.name, subject.id);
             subject.sendMessage(Message.LVP_JETPACK_GRANTED, player.name, player.id);
+
+            this.announce_.announceToAdministrators(
+                Message.LVP_JETPACK_ANNOUNCE, player.name, player.id, 'given', 'to', subject.name,
+                subject.id);
+
             return;
         }
 
         player.sendMessage(Message.LVP_JETPACK_GRANTED_SELF);
-
-        // TODO(Russell): Distribute a message to administrators about this jetpack.
     }
 
     dispose() {

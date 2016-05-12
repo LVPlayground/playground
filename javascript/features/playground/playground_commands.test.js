@@ -158,7 +158,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
 
         assert.isTrue(player.issueCommand('/jetpack ' + russell.name));
 
-        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages.length, 2);
         assert.equal(player.messages[0], Message.format(Message.LVP_JETPACK_GRANTED_OTHER,
                                                         russell.name, russell.id));
 
@@ -177,7 +177,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         
         assert.isTrue(player.issueCommand('/jetpack ' + russell.name + ' remove'));
 
-        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages.length, 2);
         assert.equal(player.messages[0], Message.format(Message.LVP_JETPACK_REMOVED_OTHER,
                                                         russell.name, russell.id));
 

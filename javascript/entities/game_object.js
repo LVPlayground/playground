@@ -23,6 +23,7 @@ class GameObject extends Extendable {
       let worlds = options.worlds || [ (typeof options.worldId !== 'undefined' ? options.worldId : -1 ) ];
       let interiors = options.interiors || [ (typeof options.interiorId !== 'undefined' ? options.interiorId : -1 ) ];
       let players = options.players || [ (typeof options.playerId !== 'undefined' ? options.playerId : -1 ) ];
+      let areas = [ -1 ];
 
       // NOTE: The native function definition of CreateDynamicObjectEx notes that the drawDistance
       // parameter comes *after* the streamDistance, as is the case with CreateDynamicObject.
@@ -30,10 +31,10 @@ class GameObject extends Extendable {
       //
       // https://github.com/samp-incognito/samp-streamer-plugin/blob/master/src/natives/extended.cpp
 
-      this.id_ = pawnInvoke('CreateDynamicObjectEx', 'iffffffffaaaiii', modelId, position.x,
+      this.id_ = pawnInvoke('CreateDynamicObjectEx', 'iffffffffaaaaiiii', modelId, position.x,
                             position.y, position.z, rotation.x, rotation.y, rotation.z,
-                            drawDistance, streamDistance, worlds, interiors, players, worlds.length,
-                            interiors.length, players.length);
+                            drawDistance, streamDistance, worlds, interiors, players, areas,
+                            worlds.length, interiors.length, players.length, areas.length);
 
       if (this.id_ == GameObject.INVALID_ID)
         throw new Error('Unable to create the new game object.');

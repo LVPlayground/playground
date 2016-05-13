@@ -17,6 +17,7 @@ The following commands are available as part of the feature:
 The following options are available and can be enabled or disabled with the `/lvp10` command:
 
   - **jetpack**: Toggles whether the `/jetpack` command is available.
+  - **party**: Toggles Party Mode on the pirate ship in Las Venturas.
 
 ## FAQ: Can I enable features outside of the anniversary weekend?
 Administrators are free to enable or disable these features at their own discretion.

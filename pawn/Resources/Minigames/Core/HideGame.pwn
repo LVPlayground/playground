@@ -9,9 +9,9 @@
 *  This minigame is quite fun. Crew members can start this minigame, giving     *
 *  everyone 30 seconds to signup. The seeker gets to see the entire map while   *
 *  the rest has x minutes to search for a place to hide. Once hidden, the       *
-*  seeker spawns and he searches everyone. If the seeker is close to a hidden   *
+*  seeker spawns and they search everyone. If the seeker is close to a hidden   *
 *  player, that player gets frozen and a pickup gets spawned above their head   *
-*  If the seeker sees them, he runs into the pickup and the player loses.       *
+*  If the seeker sees them, they runs into the pickup and the player loses.     *
 *  This continues untill everyone is found.                                     *
 *                                                                               *
 *  @copyright Copyright (c) 2006-2010 Las Venturas Playground                   *
@@ -20,8 +20,6 @@
 *  @version   $Id: HideGame.pwn 5123 2015-09-04 23:06:44Z Xanland $         *
 *                                                                               *
 ********************************************************************************/
-
-#define CHideGame__%1( CHideGame__%1(
 
 // States of the minigames
 #define HS_STATE_NONE       0
@@ -37,7 +35,7 @@
 #define HS_THROWNOUT_PUNCHING   5
 
 // Other global defines.
-#define HS_NO_SEEKER        -1      // What 'iSeekerPlayer' contains if there's no H&S minigame in progress.
+#define HS_MINIMUM_PLAYERS  3
 #define HS_VIRTUAL_WORLD    1355
 #define LOCATIONS_AVAILABLE 19
 
@@ -65,35 +63,36 @@ new Float:aLocationCoordinates[LOCATIONS_AVAILABLE][3] =
     // Third menu
     { 2002.1793, 1544.4141, 13.585930 },        // LVP Thriller
     { 199.94100, 99.004000, 3.9840000 },        // Peru2600 kingdom
-    { -82.56, -3.62, 3.117}                      // FiXeRs Sheep Farm
+    { -82.56, -3.62, 3.117}                     // FiXeRs Sheep Farm
 };
 
 
-new aLocationInfo[LOCATIONS_AVAILABLE][4] =
+new aLocationInfo[LOCATIONS_AVAILABLE][3] =
 {
-    // Min players, max players, weather, interior
+    // max players, weather, interior
+
     // First menu
-    { 3,  8, -1, 3 },       // Jizzy's Pleasure Dome
-    { 3, -1, -1, 15 },      // Jeffersons Motel
-    { 3, -1, -1, 1 },       // Caligulaz Casino
-    { 3, -1, -1, 5 },       // Madd doggs mansion.
-    { 3, -1, -1, 2 },       // Big Smokes Crack Denn
-    { 3, -1, -1, 3 },       // Las Venturas Police Departement
-    { 3, -1, -1, 3 },       // Main bank
-    { 3, 10, -1, 10 },      // 4 Dragons
+    {  8, -1, 3 },       // Jizzy's Pleasure Dome
+    { -1, -1, 15 },      // Jeffersons Motel
+    { -1, -1, 1 },       // Caligulaz Casino
+    { -1, -1, 5 },       // Madd doggs mansion.
+    { -1, -1, 2 },       // Big Smokes Crack Denn
+    { -1, -1, 3 },       // Las Venturas Police Departement
+    { -1, -1, 3 },       // Main bank
+    { 10, -1, 10 },      // 4 Dragons
     // Second menu
-    { 3, -1, -1, 0 },       // Area 69
-    { 3,  6, -1, 0 },       // Russian Mafia Depot
-    { 3, 10, -1, 0 },       // xBlueXFoxx' Summer Hideout
-    { 3,  8, -1, 0 },       // Grove Street
-    { 3, -1, -1, 0 },       // LVP Monument
-    { 3, 10, -1, 0 },       // Titanic for starters
-    { 3, -1, -1, 0 },       // Mayday!
-    { 3,  4, -1, 0 },       // Blueberry Square
+    { -1, -1, 0 },       // Area 69
+    {  6, -1, 0 },       // Russian Mafia Depot
+    { 10, -1, 0 },       // xBlueXFoxx' Summer Hideout
+    {  8, -1, 0 },       // Grove Street
+    { -1, -1, 0 },       // LVP Monument
+    { 10, -1, 0 },       // Titanic for starters
+    { -1, -1, 0 },       // Mayday!
+    {  4, -1, 0 },       // Blueberry Square
     // Third menu
-    { 3, -1, 16, 0 },       // LVP Thriller
-    { 3, -1, -1, 0 },        // Peru2600's Kingdom
-    { 3, -1, 9, 0}          // FiXeR's Sheep Farm
+    { -1, 16, 0 },       // LVP Thriller
+    { -1, -1, 0 },       // Peru2600's Kingdom
+    { -1, 9, 0}          // FiXeR's Sheep Farm
 };
 
 new aLocationName[LOCATIONS_AVAILABLE][128] =
@@ -141,7 +140,7 @@ forward CHideGame__SecondTimer();
 
 // Function: CHideGame__Initialize
 // This function is called in OnGameModeInit, initializing our shizzle.
-stock CHideGame__Initialize()
+CHideGame__Initialize()
 {
     // Reset some variables here.
     CHideGame__ResetVariables();
@@ -151,12 +150,11 @@ stock CHideGame__Initialize()
 
     // Create the maps needed
     CHideGame__CreateMaps();
-    return 1;
 }
 
 // Function: CHideGame__CreateMaps
 // This function creates the maps required to play this correctly.
-stock CHideGame__CreateMaps()
+CHideGame__CreateMaps()
 {
     // Peru2600's kingdom by bluefox
     CreateDynamicObject(8620,215.42675781,149.96777344,24.53649712,0.00000000,0.00000000,0.00000000, HS_VIRTUAL_WORLD ); //object(exclbrsign01_lvs) (1)
@@ -873,16 +871,11 @@ stock CHideGame__CreateMaps()
     CreateDynamicObject(3461,-81.16589355,12.61717987,3.69219899,0.00000000,0.00000000,0.00000000, HS_VIRTUAL_WORLD); //object(tikitorch01_lvs) (1)
     CreateDynamicObject(3461,-88.74055481,-7.68271255,3.68440747,0.00000000,0.00000000,0.00000000, HS_VIRTUAL_WORLD); //object(tikitorch01_lvs) (2)
     CreateDynamicObject(3461,-71.45410156,-1.38574219,3.68440747,0.00000000,0.00000000,0.00000000, HS_VIRTUAL_WORLD); //object(tikitorch01_lvs) (3)
-
-
-
-
-    return 1;
 }
 
 // Function: CHideGame__CreateMenu
 // This function creates the menu.
-stock CHideGame__CreateMenus()
+CHideGame__CreateMenus()
 {
     new sInteriorRow[20];
 
@@ -893,7 +886,7 @@ stock CHideGame__CreateMenus()
     for(new i = 0; i < 8; i++)
     {
         // Loop through all locations and add them to the menu.
-        format(sInteriorRow, sizeof(sInteriorRow), "Interior: %d", aLocationInfo[i][3]);
+        format(sInteriorRow, sizeof(sInteriorRow), "Interior: %d", aLocationInfo[i][2]);
         AddMenuItem(mLocationMenu1, 0, aLocationName[i]);
         AddMenuItem(mLocationMenu1, 1, sInteriorRow);
     }
@@ -910,7 +903,7 @@ stock CHideGame__CreateMenus()
     for(new i = 8; i < 16; i++)
     {
         // Loop through all locations and add them to the menu.
-        format(sInteriorRow, sizeof(sInteriorRow), "Interior: %d", aLocationInfo[i][3]);
+        format(sInteriorRow, sizeof(sInteriorRow), "Interior: %d", aLocationInfo[i][2]);
         AddMenuItem(mLocationMenu2, 0, aLocationName[i]);
         AddMenuItem(mLocationMenu2, 1, sInteriorRow);
     }
@@ -927,173 +920,79 @@ stock CHideGame__CreateMenus()
     for(new i = 16; i < LOCATIONS_AVAILABLE; i++)
     {
         // Loop through all locations and add them to the menu.
-        format(sInteriorRow, sizeof(sInteriorRow), "Interior: %d", aLocationInfo[i][3]);
+        format(sInteriorRow, sizeof(sInteriorRow), "Interior: %d", aLocationInfo[i][2]);
         AddMenuItem(mLocationMenu3, 0, aLocationName[i]);
         AddMenuItem(mLocationMenu3, 1, sInteriorRow);
     }
 
     AddMenuItem(mLocationMenu3, 0, ">> Page 1");
     AddMenuItem(mLocationMenu3, 1, " ");
-    return 1;
 }
 
 // Function: CHideGame__onStartCommand
 // This function is called in OnPlayerCommandText, when somebody types /has.
-stock CHideGame__onStartCommand( iPlayerID, params[] )
+CHideGame__onStartCommand( iPlayerID, params[] )
 {
-    new iSeeker;
-
-    if( CHideGame__GetState() == HS_STATE_NONE)
+    if (iHideGameState == HS_STATE_NONE)
     {
-        if(Player(iPlayerID)->isAdministrator())
-        {
-            // We need someone to seek!
-            if(!strlen( params )) return SendClientMessage( iPlayerID, COLOR_WHITE, "* Usage: /has [seeker id]");
+        new seekerId = iPlayerID;
 
-            if(IsNumeric( params ))
-            {
-                iSeeker = strval( params );
-            }
-            else
-            {
-                // He entered a name, start the search.
-                new iMatches = 0;
-                for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-                {
-                    new sName[24];
-                    GetPlayerName( i, sName, sizeof(sName) );
-                    if (strfind( sName, params, true ) != -1)
-                    {
-                        iMatches++;
-                        iSeeker = i;
-                    }
-                }
-
-                // Too many matches
-                if(iMatches > 1)
-                {
-                    new sMessage[128];
-                    format( sMessage, sizeof(sMessage), "* Error: %d players matching %s, please be more specific.", iMatches, params);
-                    SendClientMessage( iPlayerID, COLOR_RED, sMessage );
-                    return 1;
-                }
-
-                // Nothing found.
-                if(iMatches == 0)
-                {
-                    new sMessage[128];
-                    format( sMessage, sizeof(sMessage), "* Error: No players found matching %s.", params);
-                    SendClientMessage( iPlayerID, COLOR_RED, sMessage);
-                    return 1;
-                }
-            }
-
-            // The player has to be connected
-            if(!IsPlayerConnected( iSeeker )) return SendClientMessage( iPlayerID, COLOR_RED, "* Error: that player isn't connected!");
-            // NPCs should be driving trains, not seeking.
-            if(IsPlayerNPC( iSeeker )) return SendClientMessage( iPlayerID, COLOR_RED, "* Error: The seeker cannot be a NPC!");
-            if(GetPlayerInterior( iSeeker ) != 0) return SendClientMessage( iPlayerID, COLOR_RED, "* Error: The seeker has to leave the interior first.");
-
-            // Send the player a nice message and show him the menu.
-            SendClientMessage( iPlayerID, COLOR_GREEN, "* Please choose a location for the Hide&Seek minigame.");
-            ShowMenuForPlayer( mLocationMenu1, iPlayerID );
-            g_PlayerMenu[iPlayerID] = true;
-
-            // Set some variables.
-            iSeekerPlayer = iSeeker;
-
-            // Freeze him.
-            TogglePlayerControllable( iPlayerID, false );
+        // Administrators can choose another player to be the seeker.
+        if (Player(iPlayerID)->isAdministrator() && Command->parameterCount(params) > 0) {
+            seekerId = Command->playerParameter(params, 0, iPlayerID);
+            if (seekerId == INVALID_PLAYER_ID)
+                return 1;  // an error will have been shown by Command::playerParameter().
         }
-        else
-        {
-            // Send the player a nice message and show him the menu.
-            SendClientMessage( iPlayerID, COLOR_GREEN, "* Please choose a location for the Hide&Seek minigame.");
-            ShowMenuForPlayer( mLocationMenu1, iPlayerID );
-            g_PlayerMenu[iPlayerID] = true;
 
-            // Set some variables.
-            iSeekerPlayer = iPlayerID;
+        // Send the player a nice message and show him the menu.
+        SendClientMessage( iPlayerID, COLOR_GREEN, "* Please choose a location for the Hide&Seek minigame.");
+        ShowMenuForPlayer( mLocationMenu1, iPlayerID );
+        g_PlayerMenu[iPlayerID] = true;
 
-            // Freeze him.
-            TogglePlayerControllable( iPlayerID, false );
-        }
-    }
+        // Set some variables.
+        iSeekerPlayer = seekerId;
 
-    else if( CHideGame__GetState() == HS_STATE_SIGNING_UP)
-    {
+        // Freeze them.
+        TogglePlayerControllable( iPlayerID, false );
+
+    } else if (iHideGameState == HS_STATE_SIGNING_UP) {
         CHideGame__onJoinCommand( iPlayerID, params );
-    }
 
-    else if( CHideGame__GetState() == HS_STATE_PLAYING)
-    {
+    } else if (iHideGameState == HS_STATE_PLAYING) {
         SendClientMessage( iPlayerID,  COLOR_RED, "* Error: this minigame is already in progress.");
-    }
-    else
-    {
+
+    } else {
         SendClientMessage( iPlayerID,  COLOR_RED, "* [Hide&Seek]: Something is completely fucked up.");
     }
+
     return 1;
 }
 
 // Function: CHideGame__onFindCommand
 // This function is called in OnPlayerCommandText, when somebody types /find
-stock CHideGame__onFindCommand( iPlayerID, params[] )
+CHideGame__onFindCommand( iPlayerID, params[] )
 {
-    if(CHideGame__GetState() != HS_STATE_PLAYING ) return SendClientMessage( iPlayerID,  COLOR_RED, "* Error: this minigame isn't in progress.");
+    if (CHideGame__GetState() != HS_STATE_PLAYING )
+        return SendClientMessage( iPlayerID,  COLOR_RED, "* Error: this minigame isn't in progress.");
 
-    if(iPlayerID != iSeekerPlayer) return SendClientMessage( iPlayerID, COLOR_RED, "* Error: You have to be the seeker to use this command!");
+    if (iPlayerID != iSeekerPlayer)
+        return SendClientMessage( iPlayerID, COLOR_RED, "* Error: You have to be the seeker to use this command!");
 
-    if(!strlen(params)) return SendClientMessage( iPlayerID, COLOR_WHITE, "* Usage: /find [playerid]");
+    if (!strlen(params))
+        return SendClientMessage( iPlayerID, COLOR_WHITE, "* Usage: /find [playerid]");
 
-    new iFoundPlayer;
-    if(IsNumeric( params ))
-    {
-        iFoundPlayer = strval( params );
-    }
-    else
-    {
-        // He entered a name, start the search.
-        new iMatches = 0;
-        for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-        {
-            new sName[24];
-            GetPlayerName( i, sName, sizeof(sName) );
-            if (strfind( sName, params, true ) != -1)
-            {
-                iMatches++;
-                iFoundPlayer = i;
-            }
-        }
+    new iFoundPlayer = Command->playerParameter(params, 0, iPlayerID);
+    if (iFoundPlayer == INVALID_PLAYER_ID)
+        return 1;  // Command::playerParameter() will have displayed an error message.
 
-        // Too many matches
-        if(iMatches > 1)
-        {
-            new sMessage[128];
-            format( sMessage, sizeof(sMessage), "* Error: %d players matching %s, please be more specific.", iMatches, params);
-            SendClientMessage( iPlayerID, COLOR_RED, sMessage );
-            return 1;
-        }
+    if(CHideGame__GetPlayerState(iFoundPlayer) != HS_STATE_PLAYING)
+        return SendClientMessage( iPlayerID,  COLOR_RED, "* Error: That player isn't in the H&S minigame.");
 
-        // Nothing found.
-        if(iMatches == 0)
-        {
-            new sMessage[128];
-            format( sMessage, sizeof(sMessage), "* Error: No players found matching %s.", params);
-            SendClientMessage( iPlayerID, COLOR_RED, sMessage);
-            return 1;
-        }
-    }
+    if(iSeekerPlayer == iFoundPlayer)
+        return SendClientMessage( iPlayerID, COLOR_RED, "* Error: What are you trying to do here?!");
 
-    if (!Player(iFoundPlayer)->isConnected()) return SendClientMessage(iPlayerID, Color::Error, "* Error: player not connected.");
-
-    if (Player(iFoundPlayer)->isNonPlayerCharacter()) return SendClientMessage(iPlayerID, Color::Error, "* Error: It's an NPC, silly.");
-
-    if(CHideGame__GetPlayerState(iFoundPlayer) != HS_STATE_PLAYING) return SendClientMessage( iPlayerID,  COLOR_RED, "* Error: That player isn't in the H&S minigame.");
-
-    if(iSeekerPlayer == iFoundPlayer) return SendClientMessage( iPlayerID, COLOR_RED, "* Error: What are you trying to do here?!");
-
-    if(iFrozenCount != 0) return SendClientMessage( iPlayerID, COLOR_RED, "* Error: Wait for the countdown to finish first!");
+    if(iFrozenCount != 0)
+        return SendClientMessage( iPlayerID, COLOR_RED, "* Error: Wait for the countdown to finish first!");
 
     // Get the players position.
     new Float:fHideX, Float:fHideY, Float:fHideZ;
@@ -1101,7 +1000,8 @@ stock CHideGame__onFindCommand( iPlayerID, params[] )
 
     // Get the distance between the two players.
     new Float:fDistance = GetDistance( iSeekerPlayer, fHideX, fHideY, fHideZ );
-    if( fDistance > 5.0) return SendClientMessage( iPlayerID,  COLOR_RED, "* Error: You're not close to that player!");
+    if( fDistance > 5.0)
+        return SendClientMessage( iPlayerID,  COLOR_RED, "* Error: You're not close to that player!");
 
     CHideGame__ThrowOut( iFoundPlayer, HS_THROWNOUT_GOTFOUND );
     return 1;
@@ -1109,26 +1009,39 @@ stock CHideGame__onFindCommand( iPlayerID, params[] )
 
 // Function: CHideGame__onJoinCommand
 // This function is called in CHideGame__onStartCommand
-stock CHideGame__onJoinCommand( iPlayerID, params[] )
+CHideGame__onJoinCommand( iPlayerID, params[] )
 {
     // Error checking comes here.
-    if(CHideGame__GetState() == HS_STATE_NONE) return SendClientMessage( iPlayerID, COLOR_RED, "* Error: this minigame isn't signing up right now, only admins can start it.");
+    if (CHideGame__GetState() == HS_STATE_NONE)
+        return SendClientMessage(iPlayerID, COLOR_RED, "* Error: this minigame isn't signing up right now, only admins can start it.");
 
-    if(CHideGame__GetPlayerState( iPlayerID ) == HS_STATE_PLAYING) return SendClientMessage( iPlayerID,  COLOR_RED, "* Error: you're playing already, silly!");
+    if (CHideGame__GetPlayerState(iPlayerID) == HS_STATE_PLAYING)
+        return SendClientMessage(iPlayerID, COLOR_RED, "* Error: you're playing already, silly!");
 
-    if(CHideGame__GetPlayerState( iPlayerID ) == HS_STATE_SIGNING_UP) return SendClientMessage( iPlayerID,  COLOR_RED, "* Error: you've already been signed up for this minigame.");
+    if (CHideGame__GetPlayerState(iPlayerID) == HS_STATE_SIGNING_UP)
+        return SendClientMessage(iPlayerID, COLOR_RED, "* Error: you've already been signed up for this minigame.");
 
-    if(GetPlayerMoney( iPlayerID ) < 250 ) return SendClientMessage( iPlayerID, COLOR_RED, "* Error: you need $250 to sign up for this minigame!");
+    new const price = GetEconomyValue(HideAndSeekSignUpCost);
 
-    if(GetPlayerInterior( iPlayerID) != 0) return SendClientMessage( iPlayerID, COLOR_RED, "* Error: Go outside first.");
+    if (GetPlayerMoney( iPlayerID ) < price) {
+        new message[128];
+        format(message, sizeof(message), "* Error: You need $%s to sign up for Hide and Seek!", formatPrice(price));
 
-    if(iHideGameSignups >= aLocationInfo[ iMapRunning ] [ 1 ] && aLocationInfo[ iMapRunning ] [ 1 ] != -1) return SendClientMessage( iPlayerID, COLOR_RED, "* Error: Too many players have signed up for this map already.");
+        return SendClientMessage(iPlayerID, COLOR_RED, message);
+    }
 
-    // Okay, he may sign up.
+    if (GetPlayerInterior(iPlayerID) != 0)
+        return SendClientMessage( iPlayerID, COLOR_RED, "* Error: Go outside first.");
+
+    if (iHideGameSignups >= aLocationInfo[iMapRunning] [0] && aLocationInfo[iMapRunning][0] != -1)
+        return SendClientMessage( iPlayerID, COLOR_RED, "* Error: Too many players have signed up for this map already.");
+
+    // Okay, they may sign up.
     aHidePlayerState[ iPlayerID ] = HS_STATE_SIGNING_UP;
     SendClientMessage( iPlayerID, COLOR_GREEN, "* You've succesfully signed up for the Hide and Seek minigame.");
-    // Take his moneys :D
-    GivePlayerMoney( iPlayerID, -250 );
+
+    // Take their moneys :D
+    TakeRegulatedMoney(iPlayerID, HideAndSeekSignUpCost);
     iHideGameSignups++;
 
     iHideGameState = HS_STATE_SIGNING_UP;
@@ -1146,11 +1059,17 @@ stock CHideGame__onJoinCommand( iPlayerID, params[] )
 
 // Function: CHideGame__onLeaveCommand
 // This function is called in OnPlayerCommandText, when somebody types /leave.
-stock CHideGame__onLeaveCommand( iPlayerID )
+CHideGame__onLeaveCommand( iPlayerID )
 {
-    // He was only signed up, just sign him out again!
+    // They have only signed up, just sign them out again!
     if(CHideGame__GetPlayerState( iPlayerID ) == HS_STATE_SIGNING_UP)
     {
+        aHidePlayerState[ iPlayerID ] = HS_STATE_NONE;
+
+        // Give them their money back.
+        GiveRegulatedMoney(iPlayerID, HideAndSeekSignUpCost);
+        iHideGameSignups--;
+
         // If the seeker leaves, the minigame is over.
         if(iSeekerPlayer == iPlayerID)
         {
@@ -1159,62 +1078,46 @@ stock CHideGame__onLeaveCommand( iPlayerID )
             NewsController->show(notice);
             CHideGame__ResetVariables();
         }
-
-        aHidePlayerState[ iPlayerID ] = HS_STATE_NONE;
-
-        // Give him his money back.
-        GivePlayerMoney( iPlayerID, 250 );
-        iHideGameSignups--;
     }
-    // He's playing :/
-    else
+    else  // They're playing :/
     {
         CHideGame__ThrowOut( iPlayerID, HS_THROWNOUT_LEAVING );
     }
-    return 1;
 }
 
 // Function: CHideGame__onInteriorChange
 // Called when someone leaves the interior.
-stock CHideGame__onInteriorChange( iPlayerID, iOldInteriorID )
+CHideGame__onInteriorChange( iPlayerID, iOldInteriorID )
 {
     if(CHideGame__GetPlayerState(iPlayerID) != HS_STATE_PLAYING)
-    {
         return 0;
-    }
 
     new Float:fDistance = GetDistance( iPlayerID,  aLocationCoordinates[ iMapRunning ] [ 0 ], aLocationCoordinates[ iMapRunning ] [ 1 ], aLocationCoordinates[ iMapRunning ] [ 2 ] );
 
     // Make sure the minigame has started already, otherwise we throw them out @ start.
-    if(iOldInteriorID != 0 && fDistance < 100)
-    {
+    if(iOldInteriorID != 0 && fDistance < 100) {
         CHideGame__ThrowOut( iPlayerID, HS_THROWNOUT_INTERIOR );
         return 1;
     }
+
     return 0;
 }
 
 // Function: CHideGame__onPlayerSpawn
 // Called when someone spawns in the minigame.
-stock CHideGame__onPlayerSpawn( iPlayerID )
+CHideGame__onPlayerSpawn( iPlayerID )
 {
-    // This is to prevent the "kill" before it starts bug.
-    // People spawned in the main world after the minigame started.
-    if(CHideGame__GetPlayerState(iPlayerID) == HS_STATE_PLAYING)
-    {
-        new Float:fDistance = GetDistance( iPlayerID,  aLocationCoordinates[ iMapRunning ] [ 0 ], aLocationCoordinates[ iMapRunning ] [ 1 ], aLocationCoordinates[ iMapRunning ] [ 2 ] );
+    new Float:fDistance = GetDistance( iPlayerID,  aLocationCoordinates[ iMapRunning ] [ 0 ], aLocationCoordinates[ iMapRunning ] [ 1 ], aLocationCoordinates[ iMapRunning ] [ 2 ] );
 
-        if(fDistance > 50.0)
-        {
-            SetPlayerPos( iPlayerID, aLocationCoordinates[ iMapRunning ] [ 0 ], aLocationCoordinates[ iMapRunning ] [ 1 ], aLocationCoordinates[ iMapRunning ] [ 2 ] );
-        }
+    if(fDistance > 50.0)
+    {
+        SetPlayerPos( iPlayerID, aLocationCoordinates[ iMapRunning ] [ 0 ], aLocationCoordinates[ iMapRunning ] [ 1 ], aLocationCoordinates[ iMapRunning ] [ 2 ] );
     }
-    return 1;
 }
 
 // Function: CHideGame__onPlayerPunch
 // Called when someone punches!
-stock CHideGame__onPlayerPunch( iPlayerID )
+CHideGame__onPlayerPunch( iPlayerID )
 {
     // This prevents the annoying hitting in the H&S minigame.
     if(iHidePlayerPunches[ iPlayerID ] > 5)
@@ -1232,21 +1135,20 @@ stock CHideGame__onPlayerPunch( iPlayerID )
 
 // Function: CHideGame__onPlayerDeath
 // Called when someone dies in the minigame
-stock CHideGame__onPlayerDeath( iPlayerID )
+CHideGame__onPlayerDeath( iPlayerID )
 {
-    if(CHideGame__GetPlayerState(iPlayerID) == HS_STATE_PLAYING)
-    {
-        CHideGame__ThrowOut( iPlayerID, HS_THROWNOUT_DIED );
-    }
-    return 1;
+    CHideGame__ThrowOut( iPlayerID, HS_THROWNOUT_DIED );
 }
 
 // Function: CHideGame__onPlayerDisconnect
 // Called when someone disconnects.
-stock CHideGame__onPlayerDisconnect( iPlayerID )
+CHideGame__onPlayerDisconnect( iPlayerID )
 {
     if(CHideGame__GetPlayerState(iPlayerID) == HS_STATE_SIGNING_UP)
     {
+        aHidePlayerState[ iPlayerID ] = HS_STATE_NONE;
+        iHideGameSignups--;
+
         if(iSeekerPlayer == iPlayerID)
         {
             new notice[128];
@@ -1254,21 +1156,17 @@ stock CHideGame__onPlayerDisconnect( iPlayerID )
             NewsController->show(notice);
             CHideGame__ResetVariables();
         }
-
-        aHidePlayerState[ iPlayerID ] = HS_STATE_NONE;
-        iHideGameSignups--;
     }
 
     else if(CHideGame__GetPlayerState(iPlayerID) == HS_STATE_PLAYING)
     {
         CHideGame__ThrowOut( iPlayerID, HS_THROWNOUT_DISCONNECT );
     }
-    return 1;
 }
 
 // Function: CHideGame__ThrowOut
 // This function handles the process of a player leaving the minigame under any circumstance.
-stock CHideGame__ThrowOut( iPlayerID, iReason )
+CHideGame__ThrowOut( iPlayerID, iReason )
 {
     // The seeker has left the minigame, it should be stopped.
     if(iPlayerID == iSeekerPlayer)
@@ -1278,11 +1176,12 @@ stock CHideGame__ThrowOut( iPlayerID, iReason )
                 continue;
 
             // Spawn everyone who signed up, and inform them.
-            if(CHideGame__GetPlayerState(hiderId) != HS_STATE_PLAYING) continue;
+            if(CHideGame__GetPlayerState(hiderId) != HS_STATE_PLAYING)
+                continue;
 
             ColorManager->releasePlayerMinigameColor(hiderId);
 
-            // Load his old position.
+            // Load their old position.
             CHideGame__LoadPos(hiderId);
             // Reset the minigame data.
         }
@@ -1298,108 +1197,83 @@ stock CHideGame__ThrowOut( iPlayerID, iReason )
         new sMessage[128];
         iHideGameSignups--;
 
-        if(iHideGameSignups != 2)
+        new sReason[50];
+        switch( iReason )
         {
-            new sReason[50];
-            switch( iReason )
-            {
-                case 0: sReason = "Leaving";
-                case 1: sReason = "Got found";
-                case 2: sReason = "Left the server";
-                case 3: sReason = "Left the interior";
-                case 4: sReason = "Died";
-                case 5: sReason = "Constant punching";
-            }
-
-            format(sMessage, sizeof(sMessage), "~y~Hide and Seek~w~ update: ~r~~h~%s~w~ left the minigame (%s)!", Player(iPlayerID)->nicknameString(), sReason);
-            NewsController->show(sMessage);
-
-            ColorManager->releasePlayerMinigameColor(iPlayerID);
-
-            for (new forPlayerId = 0; forPlayerId <= PlayerManager->highestPlayerId(); ++forPlayerId) {
-                if (Player(forPlayerId)->isConnected() == false)
-                    continue;
-
-                ShowPlayerNameTagForPlayer(forPlayerId, iPlayerID, 1);
-            }
-
-            CHideGame__LoadPos( iPlayerID );
-            CHideGame__ResetPlayerVariables( iPlayerID );
+            case 0: sReason = "Leaving";
+            case 1: sReason = "Got found";
+            case 2: sReason = "Left the server";
+            case 3: sReason = "Left the interior";
+            case 4: sReason = "Died";
+            case 5: sReason = "Constant punching";
         }
 
-        if(iHideGameSignups == 2)
-        {
-            new sReason[50];
-            switch( iReason )
-            {
-                case 0: sReason = "Leaving";
-                case 1: sReason = "Got found";
-                case 2: sReason = "Left the server";
-                case 3: sReason = "Left the interior";
-                case 4: sReason = "Died";
-                case 5: sReason = "Constant punching";
-            }
+        format(sMessage, sizeof(sMessage), "~y~Hide and Seek~w~ update: ~r~~h~%s~w~ left the minigame (%s)!", Player(iPlayerID)->nicknameString(), sReason);
+        NewsController->show(sMessage);
 
-            format(sMessage, sizeof(sMessage), "~y~Hide and Seek~w~ update: ~r~~h~%s~w~ left the minigame (%s)!", Player(iPlayerID)->nicknameString(), sReason);
-            NewsController->show(sMessage);
+        ColorManager->releasePlayerMinigameColor(iPlayerID);
 
-            ColorManager->releasePlayerMinigameColor(iPlayerID);
+        for (new forPlayerId = 0; forPlayerId <= PlayerManager->highestPlayerId(); ++forPlayerId) {
+            if (Player(forPlayerId)->isConnected() == false)
+                continue;
+
+            ShowPlayerNameTagForPlayer(forPlayerId, iPlayerID, 1);
+        }
+
+        CHideGame__LoadPos( iPlayerID );
+        CHideGame__ResetPlayerVariables( iPlayerID );
+
+        // Bail out if there aren't exactly two players left.
+        if (iHideGameSignups != 2)
+            return;
+
+        new iWinner = -1;
+
+        for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); playerId++) {
+            if (Player(playerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter() == true)
+                continue;
+
+            // Spawn everyone who signed up, and inform them.
+            if(CHideGame__GetPlayerState(playerId) != HS_STATE_PLAYING)
+                continue;
+
+            if(iSeekerPlayer == playerId)
+                continue;
+
+            // We get the winner.
+            iWinner = playerId;
+            ColorManager->releasePlayerMinigameColor(iWinner);
 
             for (new forPlayerId = 0; forPlayerId <= PlayerManager->highestPlayerId(); ++forPlayerId) {
-                if (Player(forPlayerId)->isConnected() == false)
+                if (Player(forPlayerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter() == true)
                     continue;
 
-                ShowPlayerNameTagForPlayer(forPlayerId, iPlayerID, 1);
+                ShowPlayerNameTagForPlayer(forPlayerId, iWinner, 1);
             }
 
-            CHideGame__LoadPos( iPlayerID );
-            CHideGame__ResetPlayerVariables( iPlayerID );
-
-            new iWinner = -1;
-
-            for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); playerId++) {
-                if (Player(playerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter() == true)
-                    continue;
-
-                // Spawn everyone who signed up, and inform them.
-                if(CHideGame__GetPlayerState(playerId) != HS_STATE_PLAYING) continue;
-                if(iSeekerPlayer == playerId) continue;
-
-                // We get the winner.
-                iWinner = playerId;
-                ColorManager->releasePlayerMinigameColor(iWinner);
-
-                for (new forPlayerId = 0; forPlayerId <= PlayerManager->highestPlayerId(); ++forPlayerId) {
-                    if (Player(forPlayerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter() == true)
-                        continue;
-
-                    ShowPlayerNameTagForPlayer(forPlayerId, iWinner, 1);
-                }
-
-                CHideGame__LoadPos( iWinner );
-            }
-
-            ColorManager->releasePlayerMinigameColor(iSeekerPlayer);
-
-            CHideGame__LoadPos( iSeekerPlayer );
-
-            format(sMessage, sizeof(sMessage), "~y~Hide and Seek~w~ has finished: ~r~~h~%s~w~ has won the minigame!", Player(iWinner)->nicknameString());
-            NewsController->show(sMessage);
-
-            CHideGame__ResetVariables();
-            SendClientMessage( iWinner, COLOR_GREEN, "You've won the Hide&Seek minigame and you've received $500.000!");
-            GivePlayerMoney( iWinner, 500000 );
-
-            // Increase the amount of minigames the player has won
-            WonMinigame[ iWinner ]++;
+            CHideGame__LoadPos( iWinner );
+            break;
         }
+
+        ColorManager->releasePlayerMinigameColor(iSeekerPlayer);
+
+        CHideGame__LoadPos( iSeekerPlayer );
+
+        format(sMessage, sizeof(sMessage), "~y~Hide and Seek~w~ has finished: ~r~~h~%s~w~ has won the minigame!", Player(iWinner)->nicknameString());
+        NewsController->show(sMessage);
+
+        CHideGame__ResetVariables();
+        SendClientMessage( iWinner, COLOR_GREEN, "You've won the Hide&Seek minigame and you've received $500.000!");
+        GiveRegulatedMoney(iWinner, HideAndSeekPrize);
+
+        // Increase the amount of minigames the player has won
+        WonMinigame[ iWinner ]++;
     }
-    return 1;
 }
 
 // Function: CHideGame__onMenuSelection
 // This function is called in OnPlayerMenuSelectedRow, if someone selects something of the location menu.
-stock CHideGame__onMenuSelection( iPlayerID, iRow )
+CHideGame__onMenuSelection( iPlayerID, iRow )
 {
     if(GetPlayerMenu( iPlayerID ) != mLocationMenu1 && GetPlayerMenu( iPlayerID ) != mLocationMenu2 && GetPlayerMenu( iPlayerID ) != mLocationMenu3) return 0;
 
@@ -1464,12 +1338,12 @@ stock CHideGame__onMenuSelection( iPlayerID, iRow )
 
 // Function: CHideGame__startSignup
 // Starts the signing up of the minigame.
-stock CHideGame__startSignup( iPlayerID, iLocation )
+CHideGame__startSignup( iPlayerID, iLocation )
 {
     new sMessage[128];
 
     // Inform everyone!
-    SendClientMessageToAllEx(COLOR_YELLOW, "* The Hide & Seek minigame is now signing up! Use /has to join. This minigame will start in 30 seconds.");
+    SendClientMessageToAllEx(COLOR_YELLOW, "* The Hide & Seek minigame is now signing up! Use /has to join. This minigame will start in 20 seconds.");
     format(sMessage, sizeof(sMessage), "* The searching location is %s, and %s (Id:%d) will seek.", aLocationName[ iLocation ], PlayerName( iSeekerPlayer ), iSeekerPlayer );
     SendClientMessageToAllEx(COLOR_YELLOW, sMessage);
     SendClientMessage( iSeekerPlayer, COLOR_LIGHTBLUE, "* You were chosen as Seeker for the H&S minigame, use /leave if you don't wish to signup.");
@@ -1485,17 +1359,16 @@ stock CHideGame__startSignup( iPlayerID, iLocation )
     iHideGameState = HS_STATE_SIGNING_UP;
 
     // And set the start timer.
-    iHideStartTimer = SetTimer("CHideGame__Start", 30000, false);
-    return 1;
+    iHideStartTimer = SetTimer("CHideGame__Start", 20000, false);
 }
 
 // Function: CHideGame__ResetVariables
 // This function resets all variables.
-stock CHideGame__ResetVariables()
+CHideGame__ResetVariables()
 {
     // Resets all basic variables.
     iHideGameState = HS_STATE_NONE;
-    iSeekerPlayer = HS_NO_SEEKER;
+    iSeekerPlayer = INVALID_PLAYER_ID;
     iHideGameSignups = 0;
     iFrozenCount = 60;
     iMapRunning = -1;
@@ -1508,15 +1381,13 @@ stock CHideGame__ResetVariables()
     iFrozenCountDown = false;
     iHideStartTimer = false;
     iHideSecondCountDown = false;
-
-    return 1;
 }
 
 // Function: CHideGame__onExitedMenu
 // Called when someone exists the menu.
-stock CHideGame__onExitedMenu( iPlayerID )
+CHideGame__onExitedMenu( iPlayerID )
 {
-    // He exited the menu, reset the data.
+    // They exited the menu, reset the data.
     if(GetPlayerMenu( iPlayerID ) == mLocationMenu1 || GetPlayerMenu( iPlayerID ) == mLocationMenu2)
     {
         CHideGame__ResetVariables();
@@ -1526,26 +1397,24 @@ stock CHideGame__onExitedMenu( iPlayerID )
 
 // Function: CHideGame__ResetVariables
 // This function resets all variables.
-stock CHideGame__ResetPlayerVariables( iPlayerID )
+CHideGame__ResetPlayerVariables( iPlayerID )
 {
     aHidePlayerState[ iPlayerID ] = HS_STATE_NONE;
     bHideFrozen[ iPlayerID ] = false;
     iHidePlayerPunches[ iPlayerID ] = false;
     TogglePlayerControllable( iPlayerID, true );
-
-    return 1;
 }
 
 // Function: CHideGame__GetState
 // Returns the player state in the Hide&Seek minigame.
-stock CHideGame__GetPlayerState( iPlayerID )
+CHideGame__GetPlayerState( iPlayerID )
 {
     return aHidePlayerState[ iPlayerID ];
 }
 
 // Function: CHideGame__GetState
 // Returns the state of the minigame.
-stock CHideGame__GetState()
+CHideGame__GetState()
 {
     return iHideGameState;
 }
@@ -1554,7 +1423,7 @@ stock CHideGame__GetState()
 // The actual starting of the minigame comes here, kewl stuff. This is public since it's being called by a timer.
 public CHideGame__Start()
 {
-    if(iHideGameSignups < aLocationInfo[ iMapRunning ] [ 0 ])
+    if(iHideGameSignups < HS_MINIMUM_PLAYERS)
     {
         // Not enough signups, cancel the minigame.
         SendClientMessageToAllEx(COLOR_ORANGE, "*** There weren't enough signups for Hide&Seek!");
@@ -1573,7 +1442,7 @@ public CHideGame__Start()
             if(iSeekerPlayer == playerId) continue;
             if(CHideGame__GetPlayerState(playerId) != HS_STATE_SIGNING_UP) continue;
 
-            // Save his data.
+            // Save their data.
             CHideGame__SavePos(playerId);
 
             for (new forPlayerId = 0; forPlayerId <= PlayerManager->highestPlayerId(); ++forPlayerId) {
@@ -1585,19 +1454,19 @@ public CHideGame__Start()
 
             // Set the position.
             aHidePlayerState[playerId] = HS_STATE_PLAYING;
-            SetPlayerInterior(playerId, aLocationInfo[ iMapRunning ] [ 3 ]);
+            SetPlayerInterior(playerId, aLocationInfo[ iMapRunning ] [ 2 ]);
             SetPlayerPos(playerId, aLocationCoordinates[ iMapRunning ] [ 0 ], aLocationCoordinates[ iMapRunning ] [ 1 ], aLocationCoordinates[ iMapRunning ] [ 2 ] );
             SendClientMessage(playerId, COLOR_LIGHTBLUE, "* You have 60 seconds to find yourself a hiding place! What are you waiting for? Go!");
 
             ColorManager->setPlayerMinigameColor(playerId, 0xFFFFFF00);
 
             SetPlayerVirtualWorld(playerId, HS_VIRTUAL_WORLD );
-            if( aLocationInfo[ iMapRunning ] [ 2 ] != -1 )
+            if( aLocationInfo[ iMapRunning ] [ 1 ] != -1 )
             {
-                SetPlayerWeather(playerId, aLocationInfo[ iMapRunning ] [ 2 ] );
+                SetPlayerWeather(playerId, aLocationInfo[ iMapRunning ] [ 1 ] );
             }
 
-            // Reset his weapons
+            // Reset their weapons
             ResetPlayerWeapons(playerId);
         }
 
@@ -1605,25 +1474,25 @@ public CHideGame__Start()
         CHideGame__SavePos( iSeekerPlayer );
 
         // Set the seekers position too.
-        SetPlayerInterior( iSeekerPlayer, aLocationInfo[ iMapRunning ][ 3 ] );
+        SetPlayerInterior( iSeekerPlayer, aLocationInfo[ iMapRunning ][ 2 ] );
         SetPlayerPos( iSeekerPlayer, aLocationCoordinates[ iMapRunning ] [ 0 ], aLocationCoordinates[ iMapRunning ] [ 1 ], aLocationCoordinates[ iMapRunning ] [ 2 ] );
 
         ColorManager->setPlayerMinigameColor(iSeekerPlayer, COLOR_RED);
 
         SetPlayerVirtualWorld( iSeekerPlayer, HS_VIRTUAL_WORLD );
 
-        if( aLocationInfo[ iMapRunning ] [ 2 ] != -1 )
+        if( aLocationInfo[ iMapRunning ] [ 1 ] != -1 )
         {
-            SetPlayerWeather( iSeekerPlayer, aLocationInfo[ iMapRunning ] [ 2 ] );
+            SetPlayerWeather( iSeekerPlayer, aLocationInfo[ iMapRunning ] [ 1 ] );
         }
 
-        // Reset his weapons
+        // Reset their weapons
         ResetPlayerWeapons( iSeekerPlayer );
 
-        // Set his var to playing.
+        // Set their var to playing.
         aHidePlayerState[ iSeekerPlayer ] = HS_STATE_PLAYING;
 
-        // Freeze him and inform him what the heck is going on.
+        // Freeze them and inform them what the heck is going on.
         SendClientMessage( iSeekerPlayer, COLOR_LIGHTBLUE, "*** You'll be frozen for 60 seconds, after which you can start searching.");
         SendClientMessage( iSeekerPlayer, COLOR_LIGHTBLUE, "*** Use /find [player] to throw someone out of the minigame.");
         TogglePlayerControllable( iSeekerPlayer, false );
@@ -1690,9 +1559,9 @@ public CHideGame__SecondTimer()
 {
     for (new iPlayerID = 0; iPlayerID <= PlayerManager->highestPlayerId(); iPlayerID++)
     {
-        if(IsPlayerNPC(iPlayerID)) continue;
         if(!Player(iPlayerID)->isConnected()) continue;
         if(CHideGame__GetPlayerState(iPlayerID) != HS_STATE_PLAYING) continue;
+        if(IsPlayerNPC(iPlayerID)) continue;
 
         // "Godmode"
         SetPlayerHealth( iPlayerID, 100.0 );
@@ -1707,20 +1576,20 @@ public CHideGame__SecondTimer()
         // Get the distance between the two players.
         new Float:fDistance = GetDistance(iSeekerPlayer, fHideX, fHideY, fHideZ);
 
-        // He's frozen.
+        // They're frozen.
         if(bHideFrozen[ iPlayerID ] == 1)
         {
-            // The seeker hasn't found him, unfreeze him again.
+            // The seeker hasn't found him, unfreeze them again.
             if( fDistance > 8.0)
             {
                 TogglePlayerControllable( iPlayerID, true );
                 bHideFrozen[ iPlayerID ] = false;
             }
         }
-        // He's not frozen.
+        // They're not frozen.
         else
         {
-            // The seeker is near him, we should freeze him.
+            // The seeker is near them, we should freeze them.
             if( fDistance < 8.0 && iFrozenCount == 0)
             {
                 TogglePlayerControllable( iPlayerID, false );
@@ -1728,15 +1597,13 @@ public CHideGame__SecondTimer()
             }
         }
     }
-    return 1;
 }
 
 // Function: CHideGame__SavePos
-// This function saves the position of the player when he signs up for the minigame.
+// This function saves the position of the player when they signs up for the minigame.
 CHideGame__SavePos(playerid)
 {
     SavePlayerGameState(playerid);
-    return 1;
 }
 
 // Function: CHideGame__LoadPos
@@ -1744,9 +1611,6 @@ CHideGame__SavePos(playerid)
 CHideGame__LoadPos(playerid)
 {
     LoadPlayerGameState(playerid);
-    return 1;
 }
 
-CHideGame__SeekerId() {
-    return iSeekerPlayer;
-}
+CHideGame__SeekerId() { return iSeekerPlayer; }

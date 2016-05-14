@@ -22,6 +22,8 @@ enum EconomyValueType {
     GiftHuntLargePrize,
     GiftHuntMediumPrize,
     GiftHuntSmallPrize,
+    HideAndSeekSignUpCost,
+    HideAndSeekPrize,
     NitroTwoShot,
     NitroFiveShot,
     NitroTenShot,
@@ -51,6 +53,8 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case GiftHuntLargePrize:                return 3000000;
         case GiftHuntMediumPrize:               return 1000000;
         case GiftHuntSmallPrize:                return 500000;
+        case HideAndSeekSignUpCost:             return 250;
+        case HideAndSeekPrize:                  return 500000;
         case NitroTwoShot:                      return 2000;
         case NitroFiveShot:                     return 5000;
         case NitroTenShot:                      return 10000;

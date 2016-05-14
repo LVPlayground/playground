@@ -15,6 +15,34 @@ class AnnounceManager {
         this.ircDelegate_ = ircDelegate;
     }
 
+    // Announces that the |name| has started. Players can join by typing |command|. When indicated,
+    // players will have to pay |price| in order to participate.
+    announceMinigame(player, name, command, price) {
+        const formattedMessage = Message.format(Message.ANNOUNCE_MINIGAME, name, command, price);
+
+        server.playerManager.forEach(onlinePlayer =>
+            onlinePlayer.sendMessage(formattedMessage));
+
+        this.announceToIRC(AnnounceTag, Message.format(Message.ANNOUNCE_MINIGAME_IRC, player.name,
+                                                       player.id, name));
+    }
+
+    // Announces that |player| has joined the minigame named |name|. Other players can type the
+    // |command| themselves to participate in the minigame as well.
+    announceMinigameParticipation(player, name, command) {
+        const formattedMessage =
+            Message.format(Message.ANNOUNCE_NEWS_MINIGAME_JOINED, player.name, name, command);
+
+        // TODO(Russell): Validate that |formattedMessage| is safe for game text usage.
+        console.log(formattedMessage);
+
+        // Announce it asynchronously to avoid potential reentrancy problems.
+        Promise.resolve().then(() => pawnInvoke('OnDisplayNewsMessage', 's', formattedMessage));
+
+        this.announceToIRC(AnnounceTag, Message.format(Message.ANNOUNCE_MINIGAME_JOINED_IRC,
+                                                       player.name, player.id, name));
+    }
+
     // Announces |message| to all in-game players. Optionally |args| may be passed if the |message|
     // is an instance of the Message class, which is common infrastructure for user-visible text.
     announceToPlayers(message, ...args) {

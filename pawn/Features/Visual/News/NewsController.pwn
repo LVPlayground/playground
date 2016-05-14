@@ -99,7 +99,6 @@ class NewsController {
      */
     @list(OnPlayerConnect)
     public onPlayerConnect(playerId) {
-
         if (IsPlayerNPC(playerId))
             return;
 
@@ -139,3 +138,9 @@ class NewsController {
         return 1;
     }
 }
+
+forward OnDisplayNewsMessage(message[]);
+public OnDisplayNewsMessage(message[]) {
+    NewsController->show(message);
+}
+

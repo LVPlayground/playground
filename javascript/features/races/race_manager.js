@@ -9,8 +9,9 @@ const RunningRace = require('features/races/running_race.js');
 // The race manager is responsible for keeping track of the available races, the in-progress races
 // and providing the ability to start or stop races when that's necessary.
 class RaceManager {
-  constructor(database, deathFeed) {
+  constructor(database, announce, deathFeed) {
     this.raceDatabase_ = new RaceDatabase(database);
+    this.announce_ = announce;
     this.deathFeed_ = deathFeed;
 
     // An array of all races that are currently in-progress.
@@ -87,13 +88,18 @@ class RaceManager {
     // the player. If |skipSignup| is true, the announcement phase will be skipped.
     if (activeRace) {
       activeRace.addPlayer(player);
+      this.announce_.announceMinigameParticipation(
+          player, activeRace.race.name, activeRace.command);
+
     } else {
       activeRace = new RunningRace(this.races_[race_id], player, skipSignup, this);
       activeRace.finished.then(finishedParticipants =>
           this.onRaceFinished(activeRace, finishedParticipants));
 
-      if (activeRace.state == RunningRace.STATE_SIGNUP)
-        this.announceRace(activeRace);
+      if (activeRace.state == RunningRace.STATE_SIGNUP) {
+        this.announce_.announceMinigame(
+            player, activeRace.race.name, activeRace.command, RaceSettings.RACE_SIGNUP_PRICE);
+      }
 
       this.activeRaces_.push(activeRace);
     }
@@ -127,15 +133,6 @@ class RaceManager {
       this.raceDatabase_.storeRaceResult(
           runningRace.race.id, participant.userId, participant.rank, participant.totalTime, participant.checkpointTimes);
     });
-  }
-
-  // Announces that |runningRace| has started and is now accepting sign-ups. Other players can join
-  // for a given number of seconds before the race will automatically start.
-  announceRace(runningRace) {
-    let message = Message.format(Message.ANNOUNCE_MINIGAME,
-        runningRace.race.name, '/race ' + runningRace.race.id, RaceSettings.RACE_SIGNUP_PRICE);
-
-    server.playerManager.forEach(player => player.sendMessage(message));
   }
 
   // Returns a promise that will be resolved with a personalized list of races available for the

@@ -17,6 +17,43 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
         ircMessages = [];
     });
 
+    it('should announce new minigames to players', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        const name = 'Hello Kitty Playground';
+        const command = '/hko';
+        const price = 25000;
+
+        announceManager.announceMinigame(gunther, name, command, price);
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0],
+                     Message.format(Message.ANNOUNCE_MINIGAME, name, command, price));
+
+        assert.deepEqual(ircMessages, [
+            '[announce] ' + Message.format(Message.ANNOUNCE_MINIGAME_IRC, gunther.name, gunther.id,
+                                           name)
+        ]);
+    });
+
+    it('should announce minigame participation to players', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        const name = 'Hello Kitty Playground';
+        const command = '/hko';
+
+        announceManager.announceMinigameParticipation(gunther, name, command);
+
+        assert.equal(gunther.messages.length, 0);
+
+        // TODO(Russell): Test the message through the news controller when possible.
+
+        assert.deepEqual(ircMessages, [
+            '[announce] ' + Message.format(Message.ANNOUNCE_MINIGAME_JOINED_IRC,
+                                           gunther.name, gunther.id, name)
+        ]);
+    });
+
     it('should distribute messages to players', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);

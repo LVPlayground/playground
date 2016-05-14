@@ -18,6 +18,18 @@ class Announce extends Feature {
     // Public API of the announce feature.
     // ---------------------------------------------------------------------------------------------
 
+    // Announces that the |name| has started by |player|. Players can join by typing |command|, and
+    // will have to pay |price| in order to participate in the minigame.
+    announceMinigame(player, name, command, price) {
+        this.manager_.announceMinigame(player, name, command, price);
+    }
+
+    // Announces that |player| has joined the minigame named |name|. Other players can type the
+    // |command| themselves to participate in the minigame as well.
+    announceMinigameParticipation(player, name, command) {
+        this.manager_.announceMinigameParticipation(player, name, command);
+    }
+
     // Announces |message| to all in-game players. This will automatically generate an IRC message
     // with the "announce" tag. The |args| will only be used if |message| is a Message object.
     announceToPlayers(message, ...args) {

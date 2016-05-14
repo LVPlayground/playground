@@ -13,10 +13,13 @@ class Races extends Feature {
     constructor() {
         super();
 
+        // Races depend on the announce feature to announce minigame availability and participation.
+        const announce = this.defineDependency('announce');
+
         // Races depend on the death feed for disabling it during a race.
         const deathFeed = this.defineDependency('deathFeed');
 
-        this.manager_ = new RaceManager(server.database, deathFeed);
+        this.manager_ = new RaceManager(server.database, announce, deathFeed);
         this.commands_ = new RaceCommands(this.manager_);
 
         // TODO(Russell): Import races using a glob() rather than manually.

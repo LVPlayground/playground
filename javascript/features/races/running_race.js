@@ -48,9 +48,9 @@ class RunningRace {
     // Listen to the required callbacks. Use a scoped callbacks object because this object is
     // ephemeral, and the listeners won't be necessary after the race has finished.
     this.callbacks_ = new ScopedCallbacks();
-    this.callbacks_.addEventListener('playerdeath', this.__proto__.onPlayerDeathOrDisconnect.bind(this));
-    this.callbacks_.addEventListener('playerdisconnect', this.__proto__.onPlayerDeathOrDisconnect.bind(this));
-    this.callbacks_.addEventListener('playerstatechange', this.__proto__.onPlayerStateChange.bind(this));
+    this.callbacks_.addEventListener('playerdeath', RunningRace.prototype.onPlayerDeathOrDisconnect.bind(this));
+    this.callbacks_.addEventListener('playerdisconnect', RunningRace.prototype.onPlayerDeathOrDisconnect.bind(this));
+    this.callbacks_.addEventListener('playerstatechange', RunningRace.prototype.onPlayerStateChange.bind(this));
   }
 
   // Returns a promise that will be resolved when the race has finished.
@@ -61,6 +61,9 @@ class RunningRace {
 
   // Returns the state this race currently is in.
   get state() { return this.state_; }
+
+  // Gets the command through which this race can be started.
+  get command() { return '/race ' + this.race_.id; }
 
   // Removes |player| from the race if they are participating in it. Returns whether the |player|
   // could be removed from the race successfully.

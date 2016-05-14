@@ -119,6 +119,8 @@ class TimerController {
             Annotation::ExpandList<TwoSecondTimer>();
             this->afterRunTimer();
 
+            Check_Textdraw();  // Bag of Cash text-draw visibility check
+
             m_twoSecondTimerTicker = 0;
         }
 

@@ -620,7 +620,7 @@ CBomb__Countdown(playerid)
 {
     // is the bomb timer active for the player?
     if(!g_BombTimer[playerid])
-    return 0;
+        return 0;
 
     // Decrease the seconds that have passed.
 

@@ -24,6 +24,8 @@ enum E_RAND_MONEY_BAG {
 	szRandClue[64]
 }
 
+new bool: g_bagOfCashTextDrawVisible[MAX_PLAYERS];
+
 static RandPickupLoc[RANDOM_MONEY_LOCATIONS][E_RAND_MONEY_BAG] = {
 	{1600.5999,-1569.6865,22.5681, "Below busy"}, // Below the big roadcrossings in LS
 	{-1381.7249,-40.7204,6.0000, "Long term parking"}, // Parking lot under SF airport
@@ -164,6 +166,7 @@ static RandPickupLoc[RANDOM_MONEY_LOCATIONS][E_RAND_MONEY_BAG] = {
 	};
 
 BagCash__Disconnect(playerid) {
+    g_bagOfCashTextDrawVisible[playerid] = false;
     TextDrawHideForPlayer(playerid, moneyText);
 	iCashAddTime[playerid] = 0;
 }
@@ -177,21 +180,30 @@ BagCash__Initialize() {
 	TextDrawSetOutline(moneyText, 1);
 	TextDrawSetProportional(moneyText, 1);
 
-    SetTimer("Check_Textdraw", 1000, 1);
 	SetTimer("Promote_Cash", 10*1000*50, 1);
 	SetTimer("RandomMoneyBagLocation", 10*1000, 0);
 }
 
-forward Check_Textdraw();
-public Check_Textdraw() {
+Check_Textdraw() {
     if (iMoneyBagCashPickup == -1)
 		return;
 
     for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); playerId++) {
-        if (IsPlayerInMinigame(playerId) || GetPlayerVirtualWorld(playerId) != World::MainWorld)
-            TextDrawHideForPlayer(playerId, moneyText);
-        else
+        if (!Player(playerId)->isConnected())
+            continue;  // npc?
+
+        new const bool: shouldDisplay = GetPlayerVirtualWorld(playerId) == World::MainWorld &&
+                                        !IsPlayerInMinigame(playerId);
+
+        if (g_bagOfCashTextDrawVisible[playerId] == shouldDisplay)
+            continue;  // visibility already is set accordingly for them
+
+        g_bagOfCashTextDrawVisible[playerId] = shouldDisplay;
+
+        if (shouldDisplay)
             TextDrawShowForPlayer(playerId, moneyText);
+        else
+            TextDrawHideForPlayer(playerId, moneyText);
     }
 }
 
@@ -211,7 +223,7 @@ public RandomMoneyBagLocation() {
 	CreateMoneyBagPickup(RandPickupLoc[iRand][randPosX], RandPickupLoc[iRand][randPosY], RandPickupLoc[iRand][randPosZ], strtoupper(RandPickupLoc[iRand][szRandClue]), MIN_MONEY_BAG_CASH + random(MIN_MONEY_BAG_CASH));
 }
 
-stock CreateMoneyBagPickup(Float:fPosX, Float:fPosY, Float:fPosZ, szClue[], amount) {
+CreateMoneyBagPickup(Float:fPosX, Float:fPosY, Float:fPosZ, szClue[], amount) {
 	if (iMoneyBagCashPickup != -1) {
 	    DestroyPickup(iMoneyBagCashPickup);
 	    iMoneyBagCashPickup = -1;
@@ -226,7 +238,6 @@ stock CreateMoneyBagPickup(Float:fPosX, Float:fPosY, Float:fPosZ, szClue[], amou
 	TextDrawSetString(moneyText, szClueText);
 
 	format(szMoneyClue, 128, "%s", strtoupper(szClue));
-	TextDrawShowForAll(moneyText);
 
 	SendClientMessageToAllEx(0x00E1E1FF, "-----------------------------");
 	format(szClueText, 128, "A Bag of Cash has been dropped with $%s in it!", formatPrice(amount));
@@ -236,7 +247,7 @@ stock CreateMoneyBagPickup(Float:fPosX, Float:fPosY, Float:fPosZ, szClue[], amou
 	SendClientMessageToAllEx(0x00E1E1FF, "-----------------------------");
 }
 
-stock UpdateMoneyAmount(iNewAmount, playerid) {
+UpdateMoneyAmount(iNewAmount, playerid) {
 	if (iMoneyBagCash + iNewAmount > MAX_MONEY_BAG_CASH || iMoneyBagCash + iNewAmount < 0)
 	    return 0;
 
@@ -274,6 +285,9 @@ OnPlayerFindMoneyBag(playerid) {
 	SendClientMessageToAllEx(0x00E1E1FF, "-----------------------------");
 
     TextDrawHideForAll(moneyText);
+    for (new i = 0; i < MAX_PLAYERS; ++i)
+        g_bagOfCashTextDrawVisible[i] = false;
+
     SetTimer("RandomMoneyBagLocation", 40*1000, 0);
 
 }
@@ -292,7 +306,7 @@ BagCash__CheckPickup(playerid, pickupid) {
 	return 0;
 }
 
-stock strtoupper(string[]) {
+strtoupper(string[]) {
 	new
 		retStr[256],
 		i,

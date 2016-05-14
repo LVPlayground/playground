@@ -42,6 +42,11 @@ class GangChatManager {
         // message with two exclamation marks, followed by the tag of the target gang.
         if (text.startsWith('!!') && player.isAdministrator()) {
             const firstSpaceIndex = text.indexOf(' ');
+            if (firstSpaceIndex === -1) {
+                player.sendMessage(Message.GANG_CHAT_REMOTE_USAGE);
+                return true;
+            }
+
             const firstWord = text.substring(2, firstSpaceIndex);
 
             gang = this.findGangByTag(firstWord);

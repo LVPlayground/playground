@@ -175,6 +175,16 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         assert.equal(russell.messages[0], Message.format(Message.GANG_CHAT_NO_GANG_FOUND, 'OMG'));
     });
 
+    it('should show usage information to admins using two exclamation marks', assert => {
+        const player = server.playerManager.getById(0 /* Gunther */);
+        player.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isTrue(player.issueMessage('!!'));
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.GANG_CHAT_REMOTE_USAGE);
+    });
+
     it('should allow administrators to send remote messages to gangs', assert => {
         const player = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);

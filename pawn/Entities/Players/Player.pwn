@@ -332,7 +332,7 @@ class Player <playerId (MAX_PLAYERS)> {
      * @return boolean Is this player connected to Las Venturas Playground?
      */
     public bool: isConnected() {
-        return playerId >= 0 && playerId <= MAX_PLAYERS && this->hasFlag(IsConnectedPlayerFlag);
+        return playerId >= 0 && playerId < MAX_PLAYERS && this->hasFlag(IsConnectedPlayerFlag);
     }
 
     /**

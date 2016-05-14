@@ -13,7 +13,7 @@ new playerDeathsInTheLastFiveSeconds[MAX_PLAYERS];
  *
  * @param playerId Id of the player we're resetting this variable for.
  */
-stock ResetDeathFloodCountForPlayer(playerId) {
+ResetDeathFloodCountForPlayer(playerId) {
     playerDeathsInTheLastFiveSeconds[playerId] = 0;
 }
 
@@ -24,7 +24,7 @@ stock ResetDeathFloodCountForPlayer(playerId) {
  * @param playerId Id of the killed player.
  * @param killerId Id of the killer.
  */
-stock OnPlayerLameKill(playerId, killerId) {
+OnPlayerLameKill(playerId, killerId) {
     // Handle the message and statistics for a drive-by/heli-kill separately.
     new message[256], modelId = GetVehicleModel(GetPlayerVehicleID(killerId));
     if (VehicleModel(modelId)->isHelicopter() == true) {

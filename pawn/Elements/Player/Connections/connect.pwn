@@ -3,8 +3,6 @@
 // be found in the LICENSE file.
 
 OnPlayerLVPConnect(playerid) {
-    ResetDeathFloodCountForPlayer(playerid);
-
     if (playerid >= MAX_PLAYERS) {
         new message[128];
         format(message, sizeof(message), "*** Warning: Buffer overflow detected for playerId %d.", playerid);
@@ -12,6 +10,8 @@ OnPlayerLVPConnect(playerid) {
         Kick(playerid);
         return 1;
     }
+
+    ResetDeathFloodCountForPlayer(playerid);
 
     ResetPlayerStats(playerid);
 

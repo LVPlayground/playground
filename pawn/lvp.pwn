@@ -45,6 +45,9 @@
 // Enable or disable debug mode within the LVP PreCompiler?
 #pragma debug 2
 
+// The maximum number of players that will be able to join the server.
+#define LVP_MAX_PLAYERS 208
+
 // Debug defines from the framework need to be available everywhere.
 #include "Framework/Debug.pwn"
 

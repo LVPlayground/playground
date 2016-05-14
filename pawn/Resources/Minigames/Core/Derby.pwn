@@ -384,7 +384,6 @@ CDerby__Start(iDerbyID)
         CDerby__SetPlayerState(i,DERBY_STATE_COUNTDOWN);
         SetPlayerInterior(i,CDerby__GetInterior(iDerbyID));
         CDerby__SetPlayerBlip(i);
-        ClearPlayerChat(i);
 
         CDerby__ShowTextdrawsForPlayer(iDerbyID, i, true);
 

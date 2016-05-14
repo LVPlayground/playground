@@ -12,7 +12,6 @@ forward OnSerializePlayerState(playerid, serialize);
 public OnSerializePlayerState(playerid, serialize) {
     if (serialize) {
         ClearPlayerMenus(playerid);
-        ClearPlayerChat(playerid);
 
         TogglePlayerSpectating(playerid, 0);
 

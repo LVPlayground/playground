@@ -470,7 +470,6 @@ haySpawnPlayer(playerid)
         SetPlayerCameraPos(playerid, 32.9946,47.2079,78.5389);
         SetPlayerCameraLookAt(playerid, -5.6487,1.4449,50.5060);
         GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~y~Haystack:~n~~w~Be the first to reach the top!", 5000, 5);
-        ClearPlayerChat(playerid);
         return;
     }
     else

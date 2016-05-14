@@ -736,13 +736,6 @@ PlayerName(playerId) {
     return name;
 }
 
-ClearPlayerChat(playerId) {
-    for (new j = 1; j <= 120; j++)
-        SendClientMessage(playerId, 0, "\n");
-
-    return 1;
-}
-
 ConvertTime(time) {
     new m, s, string[256];
     if (time > 59) {

@@ -1161,7 +1161,6 @@ CRace__StartRace( iRaceID )
 
         // Clear the players menus to stop any bugs occuring
         ClearPlayerMenus(i);
-        ClearPlayerChat(i);
 
 
         // Set the Virtual World which we'll use for this game;

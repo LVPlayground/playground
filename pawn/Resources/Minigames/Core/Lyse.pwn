@@ -529,8 +529,6 @@ CLyse__Start()
             continue;
         }
 
-        ClearPlayerChat(i);
-
         CLyse__SetPlayerState(i, LYSE_STATE_RUNNING);
 
         CLyse__StorePlayerData(i);

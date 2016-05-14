@@ -58,7 +58,7 @@ class PlayerIdlePenalty {
         new Float: position[3];
         new Float: rotation;
 
-        for (new playerId = 0; playerId < PlayerManager->highestPlayerId(); ++playerId) {
+        for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
             if (!Player(playerId)->isConnected())
                 continue;
 

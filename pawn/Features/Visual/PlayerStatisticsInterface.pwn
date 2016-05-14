@@ -26,6 +26,16 @@ class PlayerStatisticsInterface {
     new Float: m_textDrawFloatCache[MAX_PLAYERS];
 
     /**
+     * Clears the stored cached values for the |player|.
+     */
+    private clearCacheForPlayer(playerId) {
+        for (new i = 0; i < sizeof(m_textDrawIntCache[]); ++i)
+            m_textDrawIntCache[playerId][i] = -1;
+
+        m_textDrawFloatCache[playerId] = -1.0;
+    }
+
+    /**
      * A function showing the needed textdraws if the statistics interface needs to be shown.
      *
      * @param playerId Id of the player we are showing the player statistics for.
@@ -37,10 +47,7 @@ class PlayerStatisticsInterface {
         for (new textDraw = 0; textDraw < PlayerStatisticsTextDraws; textDraw++)
             PlayerTextDrawShow(playerId, m_playerStatisticsTextDraw[textDraw][playerId]);
 
-        for (new i = 0; i < sizeof(m_textDrawIntCache[]); ++i)
-            m_textDrawIntCache[playerId][i] = -1;
-
-        m_textDrawFloatCache[playerId] = -1.0;
+        this->clearCacheForPlayer(playerId);
 
         m_playerStatisticsHidden[playerId] = false;
 
@@ -59,10 +66,7 @@ class PlayerStatisticsInterface {
         for (new textDraw = 0; textDraw < PlayerStatisticsTextDraws; textDraw++)
             PlayerTextDrawHide(playerId, m_playerStatisticsTextDraw[textDraw][playerId]);
 
-        for (new i = 0; i < sizeof(m_textDrawIntCache[]); ++i)
-            m_textDrawIntCache[playerId][i] = -1;
-
-        m_textDrawFloatCache[playerId] = -1.0;
+        this->clearCacheForPlayer(playerId);
 
         m_playerStatisticsHidden[playerId] = true;
 
@@ -80,6 +84,8 @@ class PlayerStatisticsInterface {
 
         for (new textDraw = 0; textDraw < PlayerStatisticsTextDraws; textDraw++)
             m_playerStatisticsTextDraw[textDraw][playerId] = PlayerText: INVALID_TEXT_DRAW;
+
+        this->clearCacheForPlayer(playerId);
 
         // The white separation line between top and bottom statistics.
         m_playerStatisticsTextDraw[0][playerId] = CreatePlayerTextDraw(playerId, 556.0, 397.0, "_");
@@ -186,11 +192,6 @@ class PlayerStatisticsInterface {
         PlayerTextDrawSetOutline(playerId, m_playerStatisticsTextDraw[8][playerId], 1);
         PlayerTextDrawSetProportional(playerId, m_playerStatisticsTextDraw[8][playerId], 1);
 
-        for (new i = 0; i < sizeof(m_textDrawIntCache[]); ++i)
-            m_textDrawIntCache[playerId][i] = -1;
-
-        m_textDrawFloatCache[playerId] = -1.0;
-
         return 1;
     }
 
@@ -217,7 +218,7 @@ class PlayerStatisticsInterface {
      */
     @list(FiveSecondTimer)
     public updateStatisticsInterface() {
-        for (new playerId = 0; playerId < PlayerManager->highestPlayerId(); ++playerId) {
+        for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
             if (!Player(playerId)->isConnected() || Player(playerId)->isNonPlayerCharacter())
                 continue;
 

@@ -24,6 +24,7 @@ class Player extends Extendable {
     this.level_ = Player.LEVEL_PLAYER;
     this.userId_ = null;
 
+    this.vehicleCollisionsEnabled_ = true;
     this.activity_ = Player.PLAYER_ACTIVITY_NONE;
     this.messageLevel_ = 0;
   }
@@ -107,6 +108,13 @@ class Player extends Extendable {
 
   // Clears the animations applied to the player.
   clearAnimations() { pawnInvoke('ClearAnimations', 'i', this.id_); }
+
+  // Gets or sets whether vehicle collisions should be enabled for this player.
+  get vehicleCollisionsEnabled() { return this.vehicleCollisionsEnabled_; }
+  set vehicleCollisionsEnabled(value) {
+    pawnInvoke('DisableRemoteVehicleCollisions', 'ii', this.id_, value ? 0 : 1);
+    this.vehicleCollisionsEnabled_ = !!value;
+  }
 
   // Returns whether the player is in an vehicle. If |vehicle| is provided, this method will check
   // whether the player is in that particular vehicle. Otherwise any vehicle will do.

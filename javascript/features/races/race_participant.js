@@ -34,14 +34,9 @@ class RaceParticipant {
   // Gets the name of the player this participant represents.
   get playerName() { return this.player_.name; }
 
-  // Gets the player associated with this participant. Will throw an exception if the player is
-  // not connected to Las Venturas Playground anymore.
-  get player() {
-    if (!this.player_.isConnected())
-      throw new Error('The player is not connected to the server anymore.');
-
-    return this.player_;
-  }
+  // Gets the player associated with this participant. The player may not be connected to the server
+  // anymore- be sure to check that before using it.
+  get player() { return this.player_; }
 
   // Gets the user Id of the account that belongs to this participant.
   get userId() { return this.player_.userId; }

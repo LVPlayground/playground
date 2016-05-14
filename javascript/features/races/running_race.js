@@ -89,6 +89,9 @@ class RunningRace {
       participant.scoreBoard.hideForPlayer();
     }
 
+    // Make sure that vehicles will collide for the player again.
+    player.vehicleCollisionsEnabled = true;
+
     // Mark the player as being controllable again, so that they're not frozen for no reason.
     player.controllable = true;
 
@@ -328,6 +331,9 @@ class RunningRace {
 
       // Put the player in their designated 
       player.putInVehicle(participant.vehicle);
+
+      // Disable vehicle collisions for the palyer, so that bumping in to each other is fine.
+      player.vehicleCollisionsEnabled = false;
 
       // Freeze the player so that they can't begin racing yet.
       player.controllable = false;

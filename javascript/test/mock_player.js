@@ -28,6 +28,7 @@ class MockPlayer {
 
         this.messages_ = [];
 
+        this.vehicleCollisionsEnabled_ = true;
         this.removedObjectCount_ = 0;
         this.messageLevel_ = 0;
 
@@ -76,6 +77,10 @@ class MockPlayer {
 
     // Clears the animations applied to the player.
     clearAnimations() {}
+
+    // Gets or sets whether vehicle collisions should be enabled for this player.
+    get vehicleCollisionsEnabled() { return this.vehicleCollisionsEnabled_; }
+    set vehicleCollisionsEnabled(value) { this.vehicleCollisionsEnabled_ = value; }
 
     isRegistered() { return this.userId_ != null; }
 

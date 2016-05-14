@@ -18,7 +18,6 @@ class RaceManager {
     this.activeRaces_ = [];
 
     this.races_ = {};
-    this.challengeDesks_ = {};
   }
 
   // Returns the database interface that can be used for races.
@@ -32,17 +31,12 @@ class RaceManager {
     return Object.keys(this.races_).length;
   }
 
-  // Registers |race| as a new race in the system. If the |race| has an associated challenge desk,
-  // this will be created as well.
+  // Registers |race| as a new race in the system.
   registerRace(race) {
     if (this.races_.hasOwnProperty(race.id))
       throw new Error('A race with Id ' + race.id + ' already exists in the system.');
 
     this.races_[race.id] = race;
-    if (!race.challengeDesk)
-      return;
-
-    this.challengeDesks_[race.id] = new ChallengeDesk(this, race);
   }
 
   // Asynchronously loads the best times for all known races from the database. They will be stored

@@ -226,6 +226,13 @@ lvp_Sul(playerid, params[])
     return sprayTagOnVehicleCommand(playerid, params, SPRAY_TAG_SULTAN);
 }
 
+// Spawn a Turismo. Only if players have sprayed all 100 tags.
+// This is handled in Elements/Player/SprayTags.pwn
+lvp_Tur(playerid, params[])
+{
+    return sprayTagOnVehicleCommand(playerid, params, SPRAY_TAG_TURISMO);
+}
+
 // /cmds
 lvp_cmds(playerid, params[])
 {

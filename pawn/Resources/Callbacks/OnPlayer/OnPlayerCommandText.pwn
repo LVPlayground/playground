@@ -526,6 +526,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(Inf,            3, PlayerLevel);
     lvp_command(Nrg,            3, PlayerLevel);
     lvp_command(Sul,            3, PlayerLevel);
+    lvp_command(Tur,            3, PlayerLevel);
 
     // General player commands:
     lvp_command(Commands,       8, PlayerLevel);

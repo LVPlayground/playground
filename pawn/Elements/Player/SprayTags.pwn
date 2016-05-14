@@ -61,7 +61,8 @@ enum SprayTagVehicle {
     SPRAY_TAG_ELEGY,
     SPRAY_TAG_INFERNUS,
     SPRAY_TAG_NRG,
-    SPRAY_TAG_SULTAN
+    SPRAY_TAG_SULTAN,
+    SPRAY_TAG_TURISMO
 };
 
 //-------------------
@@ -333,7 +334,7 @@ sprayTagOnPlayerSpray(playerid, tagid)
         format(szGameTextMsg, 128, "~n~~g~%d/%d Tags Sprayed!~n~~n~~w~You have sprayed every tag. ~n~~b~You have access to spawn vehicles!", n_TagsPlayerSprayed[playerid], sprayTagGetCount());
         GameTextForPlayer(playerid, szGameTextMsg, 5000, 3);
 
-        SendClientMessage(playerid, COLOR_YELLOW, "* You can now use /inf, /nrg, /ele and /sul to spawn a vehicle whenever you want!");
+        SendClientMessage(playerid, COLOR_YELLOW, "* You can now use /inf, /nrg, /ele, /sul and /tur to spawn a vehicle whenever you want!");
 
         new szNewsMsg[128];
         format(szNewsMsg, 128, "~r~~h~%s~w~ has sprayed all ~y~%d~w~ spraytags and unlocked ability to spawn vehicles!",
@@ -541,6 +542,8 @@ sprayTagOnVehicleCommand(playerid, params[], SprayTagVehicle: vehicleType)
             vehicleModelId = 522;
         case SPRAY_TAG_SULTAN:
             vehicleModelId = 560;
+        case SPRAY_TAG_TURISMO:
+            vehicleModelId = 451;
         default:
             return 0;  // invalid vehicle type supplied. nothing we can do really
     }

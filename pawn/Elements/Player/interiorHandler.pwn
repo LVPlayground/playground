@@ -31,14 +31,22 @@ CheckGymEntry(playerid)
 
 UpdateInteriorGodMode() {
     for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); playerId++) {
-        if (IsPlayerInMinigame(playerId) || LegacyIsPlayerInVipRoom(playerId) == true)
+        if (!Player(playerId)->isConnected() || Player(playerId)->isNonPlayerCharacter())
             continue;
 
-        if (GetPlayerInterior(playerId) > 0 && GetPlayerInterior(playerId) != 7)
-            SetPlayerTeam(playerId, GetPlayerInterior(playerId));
+        if (IsPlayerInMinigame(playerId) || LegacyIsPlayerInVipRoom(playerId))
+            continue;
 
-        if (GetPlayerInterior(playerId) == 0)
-            SetPlayerTeam(playerId, NO_TEAM);
+        new const currentInterior = GetPlayerInterior(playerId);
+        new const currentTeam = GetPlayerTeam(playerId);
+
+        if (currentInterior > 0 && currentInterior != 7) {
+            if (currentTeam != currentInterior)
+                SetPlayerTeam(playerId, currentInterior);
+        } else if (currentInterior == 0) {
+            if (currentTeam != NO_TEAM)
+                SetPlayerTeam(playerId, NO_TEAM);
+        }
     }
 }
 

@@ -12,7 +12,7 @@ const DIALOG_TITLE = 'Racing on Las Venturas Playground';
 // The race commands class provides the interface between players' ability to execute commands, and
 // the ability to start or control races. It uses the command manager to do so.
 class RaceCommands {
-    constructor(commandManager, manager) {
+    constructor(manager) {
         this.manager_ = manager;
 
         server.commandManager.buildCommand('race')

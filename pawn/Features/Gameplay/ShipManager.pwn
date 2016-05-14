@@ -288,7 +288,7 @@ class ShipManager {
             return 0;
 
         if (m_activityOfPlayerOnShip[playerId] == JustLeft && m_playerHealthSpawnWeaponsSaved[playerId] == true) {
-            if (!LegacyIsKillTimeActivated() && !IsPlayerInMinigame(playerId)) {
+            if (!IsPlayerInMinigame(playerId)) {
                 this->restoreSpawnWeapons(playerId);
 
                 SetPlayerHealth(playerId, m_playerHealthAndArmour[playerId][0]);

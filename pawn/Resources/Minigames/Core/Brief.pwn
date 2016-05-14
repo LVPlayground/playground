@@ -222,8 +222,9 @@ CBrief__Checkpoint(playerid)
             #endif
             briefCasePlayer = playerid;
 
-            format(str,128,"~b~%s~w~ has the briefcase! Stop them before they reach ~r~LV Airport~w~!",PlayerName(playerid));
+            format(str,128,"%s has the briefcase! Stop them before they reach the airport!",PlayerName(playerid));
             CBrief__Announce(str);
+
             for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
             {
                 if(!Player(i)->isConnected()) continue;

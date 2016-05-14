@@ -258,6 +258,29 @@ lvp_Has(playerid, params[])
     return 1;
 }
 
+new g_lastHasFixCommand = 0;
+
+// Command: /hasfix
+// Parameters: -
+// Author: Russell
+lvp_hasfix(playerId, params[])
+{
+    new const diff = Time->currentTime() - g_lastHasFixCommand;
+
+    g_lastHasFixCommand = Time->currentTime();
+    if (iHideGameState != HS_STATE_NONE && diff > 5) {
+        SendClientMessage(playerId, COLOR_RED, "The game is still in progress, you probably don't want to fix the minigame.");
+        SendClientMessage(playerId, COLOR_RED, "Type /hasfix again if you are sure nobody is playing.");
+        return 1;
+    }
+
+    CHideGame__ResetVariables();
+
+    SendClientMessage(playerId, COLOR_YELLOW, "The Hide and Seek minigame has been reset.");
+    return 1;
+    #pragma unused params
+}
+
 // Command: /stats
 // Level: Player
 // Params: n/a

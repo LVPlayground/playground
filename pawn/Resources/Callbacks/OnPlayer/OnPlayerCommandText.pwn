@@ -564,6 +564,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(p,              1, AdministratorLevel);
     lvp_command(t,              1, AdministratorLevel);
     lvp_command(announce,       8, AdministratorLevel);
+    lvp_command(hasfix,         6, AdministratorLevel);
 
 #if Feature::EnableFightClub == 0
     lvp_command(resetfc,        7, AdministratorLevel);

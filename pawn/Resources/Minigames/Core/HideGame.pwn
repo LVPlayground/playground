@@ -66,7 +66,6 @@ new Float:aLocationCoordinates[LOCATIONS_AVAILABLE][3] =
     { -82.56, -3.62, 3.117}                     // FiXeRs Sheep Farm
 };
 
-
 new aLocationInfo[LOCATIONS_AVAILABLE][3] =
 {
     // max players, weather, interior
@@ -1373,14 +1372,21 @@ CHideGame__ResetVariables()
     iFrozenCount = 60;
     iMapRunning = -1;
 
-    // Kill the timers if any are running.
-    KillTimer( iHideStartTimer );
-    KillTimer( iFrozenCountDown );
-    KillTimer( iHideSecondCountDown );
+    // Reset the per-player information.
+    for (new playerId = 0; playerId < MAX_PLAYERS; ++playerId) {
+        aHidePlayerState[playerId] = HS_STATE_NONE;
+        bHideFrozen[playerId] = 0;
+        iHidePlayerPunches[playerId] = 0;
+    }
 
-    iFrozenCountDown = false;
-    iHideStartTimer = false;
-    iHideSecondCountDown = false;
+    // Kill the timers if any are running.
+    KillTimer(iHideStartTimer);
+    KillTimer(iFrozenCountDown);
+    KillTimer(iHideSecondCountDown);
+
+    iFrozenCountDown = -1;
+    iHideStartTimer = -1;
+    iHideSecondCountDown = -1;
 }
 
 // Function: CHideGame__onExitedMenu
@@ -1400,8 +1406,8 @@ CHideGame__onExitedMenu( iPlayerID )
 CHideGame__ResetPlayerVariables( iPlayerID )
 {
     aHidePlayerState[ iPlayerID ] = HS_STATE_NONE;
-    bHideFrozen[ iPlayerID ] = false;
-    iHidePlayerPunches[ iPlayerID ] = false;
+    bHideFrozen[ iPlayerID ] = 0;
+    iHidePlayerPunches[ iPlayerID ] = 0;
     TogglePlayerControllable( iPlayerID, true );
 }
 

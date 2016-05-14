@@ -118,7 +118,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         if(strcmp(cmdtext,"/hax",true) == 0)
         {
-            GivePlayerMoney ( playerid, 2500000 );
+            GivePlayerMoney ( playerid, 2500000 );  // beta usage
             SendClientMessage ( playerid, COLOR_GREEN, "No problem sir." );
             return 1;
         }
@@ -256,9 +256,14 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if(GetPlayerMoney(playerid) < 250)
+        new const price = GetEconomyValue(RivershellParticipate);
+
+        if(GetPlayerMoney(playerid) < price)
         {
-            ShowBoxForPlayer(playerid,"You need $250 to take part in the minigame!");
+            new message[128];
+            format(message, sizeof(message), "You need $%s to take part in the minigame!", formatPrice(price));
+
+            ShowBoxForPlayer(playerid,message);
             return 1;
         }
 
@@ -315,19 +320,21 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if(GetPlayerMoney(playerid) < 100)
+        new const price = GetEconomyValue(CaptureBriefcaseParticipation);
+        new message[128];
+
+        if(GetPlayerMoney(playerid) < price)
         {
-            ShowBoxForPlayer(playerid,"You need $100 to take part in the game!");
+            format(message, sizeof(message), "You need $%s to take part in this minigame!", formatPrice(price));
+            ShowBoxForPlayer(playerid, message);
             return 1;
         }
-
-        new str[256];
 
         if(briefStatus == BRIEF_STATE_EMPTY)
         {
             CBrief__Initalize(playerid);
-            format(str,256,"%s (Id:%d) has signed up for /brief.",PlayerName(playerid),playerid);
-            Admin(playerid, str);
+            format(message,sizeof(message),"%s (Id:%d) has signed up for /brief.",PlayerName(playerid),playerid);
+            Admin(playerid, message);
             CBrief__SignPlayerUp(playerid);
             return 1;
         }
@@ -335,8 +342,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         if(!isPlayerBrief[playerid])
         {
             CBrief__SignPlayerUp(playerid);
-            format(str,256,"%s (Id:%d) has signed up for /brief.",PlayerName(playerid),playerid);
-            Admin(playerid, str);
+            format(message,sizeof(message),"%s (Id:%d) has signed up for /brief.",PlayerName(playerid),playerid);
+            Admin(playerid, message);
             return 1;
         }
         else

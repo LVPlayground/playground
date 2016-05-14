@@ -10,6 +10,7 @@ enum EconomyValueType {
     AirportCustomsTaxMax,
     AirportCustomsTaxMin,
     AirportCustomsTaxOwnersShare,
+    AirportFlight,
     BombExplosionExtreme,
     BombExplosionLarge,
     BombExplosionMedium,
@@ -19,18 +20,32 @@ enum EconomyValueType {
     BombTypeDetonatorOwnersShare,
     BombTypeEngine,
     BombTypeEngineOwnersShare,
+    CaptureBriefcaseParticipation,
+    CaptureBriefcaseVictory,
+    ChaseEscaped,
+    ChaseWinner,
+    FightClubParticipation,
+    FightClubVictory,
     GiftHuntLargePrize,
     GiftHuntMediumPrize,
     GiftHuntSmallPrize,
+    HayParticipation,
     HideAndSeekSignUpCost,
     HideAndSeekPrize,
+    KilltimeVictory,
     NitroTwoShot,
     NitroFiveShot,
     NitroTenShot,
     NitroInfinite,
+    RivershellParticipate,
+    ShowMessageCommand,
     SlapCommand,
+    SpawnMoney,
     TowCommand,
-    TuneCommand
+    TuneCommand,
+    VipColourChange,
+    WalkiesWeaponParticipation,
+    WalkiesWeaponVictory
 };
 
 new customsTax = 1500;
@@ -41,6 +56,7 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case AirportCustomsTaxMax:              return 5000;
         case AirportCustomsTaxMin:              return 500;
         case AirportCustomsTaxOwnersShare:      return customsTax / 4;
+        case AirportFlight:                     return 250000;
         case BombExplosionExtreme:              return 400000;
         case BombExplosionLarge:                return 70000;
         case BombExplosionMedium:               return 25000;
@@ -50,18 +66,32 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case BombTypeDetonatorOwnersShare:      return 4000000 / 40;
         case BombTypeEngine:                    return 1000000;
         case BombTypeEngineOwnersShare:         return 1000000 / 40;
+        case CaptureBriefcaseParticipation:     return 100;
+        case CaptureBriefcaseVictory:           return 2000000;
+        case ChaseEscaped:                      return 1000000;
+        case ChaseWinner:                       return 2500000;
+        case FightClubParticipation:            return 2500;
+        case FightClubVictory:                  return 5000;
         case GiftHuntLargePrize:                return 3000000;
         case GiftHuntMediumPrize:               return 1000000;
         case GiftHuntSmallPrize:                return 500000;
+        case HayParticipation:                  return 250;
         case HideAndSeekSignUpCost:             return 250;
         case HideAndSeekPrize:                  return 500000;
+        case KilltimeVictory:                   return 2500000;
         case NitroTwoShot:                      return 2000;
         case NitroFiveShot:                     return 5000;
         case NitroTenShot:                      return 10000;
         case NitroInfinite:                     return 250000;
+        case RivershellParticipate:             return 250;
+        case ShowMessageCommand:                return 200000;
         case SlapCommand:                       return 5000;
+        case SpawnMoney:                        return 175000;
         case TowCommand:                        return 45000;
         case TuneCommand:                       return 10000;
+        case VipColourChange:                   return 10000000;
+        case WalkiesWeaponParticipation:        return 250;
+        case WalkiesWeaponVictory:              return 5000 * inputValue /* player count */;
     }
 
     return 0;
@@ -77,16 +107,16 @@ SetEconomyValue(EconomyValueType: type, value) {
     }
 }
 
-GiveRegulatedMoney(playerId, EconomyValueType: type) {
-    new const amount = GetEconomyValue(type);
+GiveRegulatedMoney(playerId, EconomyValueType: type, inputValue = 0) {
+    new const amount = GetEconomyValue(type, inputValue);
     if (amount)
         GivePlayerMoney(playerId, amount);
     else
         printf("WARNING: Unable to grant money to %d: invalid amount (type %d).", playerId, _: type);
 }
 
-TakeRegulatedMoney(playerId, EconomyValueType: type) {
-    new const amount = GetEconomyValue(type);
+TakeRegulatedMoney(playerId, EconomyValueType: type, inputValue = 0) {
+    new const amount = GetEconomyValue(type, inputValue);
     if (amount)
         GivePlayerMoney(playerId, -amount);
     else

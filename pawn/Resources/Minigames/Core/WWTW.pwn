@@ -25,7 +25,6 @@
 #define WWTW_MINPLAYERS 2                // Min people that can join
 #define WWTW_MAXPLAYERS 10               // Max people that can join
 #define WWTW_SIGNUPTIME 20               // How many seconds players have until the minigame starts
-#define WWTW_WINMONEY 5000*iSignupCount  // how much the winners actually get in $
 
 // Variables!
 static aTeamCount[2];
@@ -57,7 +56,8 @@ CWWTW__PlayerLeft( iPlayerID )
 
     WWTW_PlayerData[iPlayerID][iStatus] = WWTW_STATE_NONE;
     iSignupCount--;
-    GivePlayerMoney(iPlayerID, 250);
+
+    GiveRegulatedMoney(iPlayerID, WalkiesWeaponParticipation);
     return 1;
 }
 
@@ -104,10 +104,14 @@ CWWTW__OnCommand(playerid)
         return 1;
     }
 
+    new const price = GetEconomyValue(WalkiesWeaponParticipation);
+
     if(GetPlayerMoney(playerid) < 250)
     {
-        // Poor player is poor.
-        SendClientMessage(playerid, COLOR_RED, "You need $250 to sign up for this minigame!");
+        new message[128];
+        format(message, sizeof(message), "You need $%d to sign up for this minigame!", formatPrice(price));
+
+        SendClientMessage(playerid, COLOR_RED, message);
         return 1;
     }
 
@@ -130,7 +134,9 @@ CWWTW__OnCommand(playerid)
     NewsController->show(string);
 
     iSignupCount++;
-    GivePlayerMoney(playerid, -250);
+
+    TakeRegulatedMoney(playerid, WalkiesWeaponParticipation);
+
     WWTW_PlayerData[playerid][iStatus] = WWTW_STATE_SIGNUP;
     return 1;
 }
@@ -194,7 +200,7 @@ public WWTW__CheckTimer()
             {
                 // We must let them know.
                 ShowBoxForPlayer(i, "Not enough players have signed up for Walkies Weapons Team War. You have been refunded.");
-                GivePlayerMoney(i, 250);
+                GiveRegulatedMoney(i, WalkiesWeaponParticipation);
             }
         }
         CWWTW__Initialize();
@@ -267,7 +273,7 @@ CWWTW__End(iWinningTeam)
         if(WWTW_PlayerData[i][iStatus] != WWTW_STATE_PLAYING) continue;
         if(WWTW_PlayerData[i][iPlayerTeam] == iWinningTeam)
         {
-            GivePlayerMoney(i, WWTW_WINMONEY);
+            GiveRegulatedMoney(i, WalkiesWeaponVictory, iSignupCount);
         }
         CWWTW__LoadPos(i);
         CWWTW__ResetPlayerVars(i);
@@ -327,7 +333,7 @@ CWWTW__OnExit(playerid, iReason)
         if(WWTW_PlayerData[playerid][iStatus] == WWTW_STATE_SIGNUP)
         {
             ShowBoxForPlayer(playerid, "Not enough players have signed up for Walkies Weapons Team War. You have been refunded.");
-            GivePlayerMoney(playerid, 250);
+            GiveRegulatedMoney(playerid, WalkiesWeaponParticipation);
             return 1;
         }
         else

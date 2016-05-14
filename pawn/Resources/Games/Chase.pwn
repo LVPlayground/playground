@@ -125,7 +125,7 @@ CChase__Stop(reason, playerid)
         format( string, sizeof ( string ) , "%s has killed %s! The chase is over!!", name, name2 );
         SendClientMessageToAllEx( COLOR_YELLOW, string );
         CChase__TDShow(1, 3); // "THE CHASE IS OVER"
-        GivePlayerMoney( playerid, 2500000  ); // Give the killer $2.5 million
+        GiveRegulatedMoney(playerid, ChaseWinner);
         WonMinigame[playerid]++;
     } else if(reason == 2) {    // Stopped by admin
 
@@ -155,7 +155,7 @@ CChase__Stop(reason, playerid)
 
         CChase__TDShow(1, 3); // "THE CHASE IS OVER"
 
-        GivePlayerMoney( chaseData[1], 1000000  ); // Give them a million
+        GiveRegulatedMoney(chaseData[1], ChaseEscaped);
         WonMinigame[chaseData[1]]++;
     }
 

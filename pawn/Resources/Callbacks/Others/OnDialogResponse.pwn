@@ -167,9 +167,11 @@ stock deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputt
                 if (matchId < 0)
                     return SendClientMessage(playerid, Color::Error, "The FightClub is currently full.");
 
-                if (GetPlayerMoney(playerid) < FC_MONEY) {
+                new const price = GetEconomyValue(FightClubParticipation);
+
+                if (GetPlayerMoney(playerid) < price) {
                     new string[128];
-                    format(string, sizeof(string), "Inviting a player to a duel costs $%s.", formatPrice(FC_MONEY));
+                    format(string, sizeof(string), "Inviting a player to a duel costs $%s.", formatPrice(price));
                     SendClientMessage(playerid, Color::Error, string);
                     CFightClub__ResetPlayerFCInfo(playerid);
                     return 1;

@@ -213,9 +213,14 @@ class VeryImportantPlayersCommands {
             return 1;
         }
 
+        new const price = GetEconomyValue(VipColourChange);
+
         // We charge VIPs 10 mil on every player color change, except for crew.
-        if (Player(playerId)->isAdministrator() == false && GetPlayerMoney(playerId) < 10000000) {
-            SendClientMessage(playerId, Color::Information, "You'll need {40CCFF}$10,000,000{FFFFFF} to change your colour.");
+        if (Player(playerId)->isAdministrator() == false && GetPlayerMoney(playerId) < price) {
+            new message[128];
+            format(message, sizeof(message), "You need {40CCFF}$%s{FFFFFF} to change your colour.", formatPrice(price));
+
+            SendClientMessage(playerId, Color::Information, message);
             return 1;
         }
 

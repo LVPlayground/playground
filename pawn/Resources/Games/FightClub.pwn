@@ -37,7 +37,6 @@ Original Author: Mattias Kristiansson (iou)
 #define FC_MAX_ROUNDS           10
 #define FC_MIN_ROUNDS           1
 
-#define FC_MONEY                2500
 #define FC_MAX_BETMONEY         2000000
 #define FC_MIN_BETMONEY         100
 
@@ -505,8 +504,7 @@ CFightClub__OnInvite(playerid, inviteid)
     format(string, sizeof(string), "  Use '/fight accept %d' to accept or '/fight deny %d' to deny.", matchid, matchid);
     SendClientMessage(inviteid, COLOR_YELLOW, string);
 
-    GivePlayerMoney(playerid, 0 - FC_MONEY);
-
+    TakeRegulatedMoney(playerid, FightClubParticipation);
     return 1;
 }
 
@@ -674,7 +672,7 @@ CFightClub__OnDisconnect(playerId)
 
             // Award the prize money when the other player initiated the match.
             if (!wasPrimaryPlayer)
-                GivePlayerMoney(otherPlayer, FC_MONEY);
+                GiveRegulatedMoney(otherPlayer, FightClubParticipation);
 
             format(message, sizeof(message), "* The fight has been concluded because %s has left the server.", PlayerName(playerId));
             SendClientMessage(otherPlayer, COLOR_RED, message);
@@ -1009,23 +1007,29 @@ CFightClub__EndMatch(matchid)
 
     CFightClub__ResetMatch(matchid);
 
+    new const prize = GetEconomyValue(FightClubVictory);
+
     // First of all calculate the winners / loosers
     // and process the news message
     if (iScore1 > iScore2)
     {
-        format (sMessage, sizeof (sMessage), "* You have won the fight against %s! You win $%s!", PlayerName(iPlayer2), formatPrice(FC_MONEY * 2));
+        format (sMessage, sizeof (sMessage), "* You have won the fight against %s! You win $%s!", PlayerName(iPlayer2), formatPrice(prize));
         SendClientMessage (iPlayer1, COLOR_YELLOW, sMessage);
         format (sMessage, sizeof (sMessage), "* You have lost the fight against %s.", PlayerName(iPlayer1));
         SendClientMessage (iPlayer2, COLOR_RED, sMessage);
         format (sMessage, sizeof (sMessage), "~r~~h~%s~w~ has beaten ~r~~h~%s~w~ in a fight with ~y~%d-%d", PlayerName(iPlayer1), PlayerName(iPlayer2), iScore1, iScore2);
+
+        GiveRegulatedMoney(iPlayer1, FightClubVictory);
     }
     else if (iScore2 > iScore1)
     {
-        format (sMessage, sizeof (sMessage), "* You have won the fight against %s! You win $%s!", PlayerName(iPlayer1), formatPrice(FC_MONEY * 2));
+        format (sMessage, sizeof (sMessage), "* You have won the fight against %s! You win $%s!", PlayerName(iPlayer1), formatPrice(prize));
         SendClientMessage (iPlayer2, COLOR_YELLOW, sMessage);
         format (sMessage, sizeof (sMessage), "* You have lost the fight against %s.", PlayerName(iPlayer2));
         SendClientMessage (iPlayer1, COLOR_RED, sMessage);
         format (sMessage, sizeof (sMessage), "~r~~h~%s~w~ has beaten ~r~~h~%s~w~ in a fight with ~y~%d-%d", PlayerName(iPlayer2), PlayerName(iPlayer1), iScore2, iScore1);
+
+        GiveRegulatedMoney(iPlayer2, FightClubVictory);
     }
     else
     {

@@ -26,7 +26,6 @@
 // RELEASED(keys)
 #define RELEASED(%0) (((newkeys & (%0)) != (%0)) && ((oldkeys & (%0)) == (%0)))
 
-#define StartGeld 175000  // spawn money
 #define MAX_LOAN 500000
 
 #define CP_INKOOP   7

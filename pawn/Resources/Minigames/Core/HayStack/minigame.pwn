@@ -29,8 +29,6 @@
 #define     HAY_SIGNUP_TIME         20      // How long should the signup phase last for (in seconds)
 #define     HAY_OBJECTIVE_TIME      5       // How long should the objective screen show for (in seconds)
 
-#define     HAY_SIGNUP_COST         250     // How much does it cost to signup for the Haystack minigame?
-
 #define     HAY_VIRTUAL_WORLD       30       // Virtual world that Haystack should be in.
 
 
@@ -398,9 +396,11 @@ hayOnCommand(playerid)
         return 1;
     }
 
-    if(GetPlayerMoney(playerid) < HAY_SIGNUP_COST)
+    new const price = GetEconomyValue(HayParticipation);
+
+    if(GetPlayerMoney(playerid) < price)
     {
-        format(szMsg, 128, "* You need $%d to signup for Haystack.", HAY_SIGNUP_COST);
+        format(szMsg, 128, "* You need $%s to signup for Haystack.", formatPrice(price));
         SendClientMessage(playerid, COLOR_RED, szMsg);
         return 1;
     }
@@ -411,12 +411,11 @@ hayOnCommand(playerid)
         return 1;
     }
 
-
-    GivePlayerMoney(playerid, -HAY_SIGNUP_COST);
+    TakeRegulatedMoney(playerid, HayParticipation);
 
     if (hayGetState() == HAY_STATE_IDLE) {
         hayInitialize();
-        Announcements->announceMinigameSignup(HayStackMinigame, "HayStack", "/haystack", HAY_SIGNUP_COST, playerid);
+        Announcements->announceMinigameSignup(HayStackMinigame, "HayStack", "/haystack", price, playerid);
     }
     Responses->respondMinigameSignedUp(playerid, HayStackMinigame, "HayStack", HAY_SIGNUP_TIME);
 
@@ -517,7 +516,7 @@ hayRemovePlayer(playerid)
     }
     else
     {   // Player signed out so give them a refund
-        GivePlayerMoney(playerid, HAY_SIGNUP_COST);
+        GiveRegulatedMoney(playerid, HayParticipation);
     }
 
     // Check to end the minigame if not enough people

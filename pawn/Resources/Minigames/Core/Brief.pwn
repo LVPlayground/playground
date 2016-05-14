@@ -118,7 +118,7 @@ CBrief__SignPlayerUp(playerid)
     isPlayerBrief[playerid] = 1;
     signedUpCount++;
 
-    GivePlayerMoney(playerid, -100);
+    TakeRegulatedMoney(playerid, CaptureBriefcaseParticipation);
     Responses->respondMinigameSignedUp(playerid, CaptureBriefcaseMinigame, "Capture the Briefcase", 20);
 
     new message[128];
@@ -170,7 +170,7 @@ CBrief__SignPlayerOut(playerid)
         ColorManager->releasePlayerMinigameColor(playerid);
     }
 
-    GivePlayerMoney(playerid, 100);
+    GiveRegulatedMoney(playerid, CaptureBriefcaseParticipation);
     isPlayerBrief[playerid] = 0;
     signedUpCount--;
     return 1;
@@ -195,8 +195,12 @@ CBrief__Checkpoint(playerid)
                 SendClientMessageToAll(COLOR_GREY,"CBrief__Checkpoint - ENDGAME");
             #endif
             WonMinigame[playerid]++;
-            GivePlayerMoney(playerid,2000000);
-            SendClientMessage(playerid,COLOR_PINK,"You have successfully delivered the briefcase! Here is your $2,000,000.");           
+            GiveRegulatedMoney(playerid, CaptureBriefcaseVictory);
+
+            format(str, sizeof(str), "You have successfully delivered the briefcase! Here is your $%s.",
+                formatPrice(GetEconomyValue(CaptureBriefcaseVictory)));
+
+            SendClientMessage(playerid,COLOR_PINK,str);           
             format(str, sizeof(str), "~y~Capture the Briefcase~w~ has finished: ~r~~h~%s~w~ has deliverd the briefcase!", Player(playerid)->nicknameString());
             NewsController->show(str);
             CBrief__Cancel();
@@ -372,7 +376,7 @@ CBrief__Cancel()
             ColorManager->releasePlayerMinigameColor(i);
             TimeController->releasePlayerOverrideTime(i);
         } else {
-            GivePlayerMoney(i, 100);
+            GiveRegulatedMoney(i, CaptureBriefcaseParticipation);
             ShowBoxForPlayer(i, "Not enough players have signed up for Capture the Briefcase. You have been refunded.");
         }
 

@@ -15,11 +15,20 @@ public OnPlayerSelectedMenuRow(playerid, row) {
     CBomb__ProcessMenu(playerid, row);
     CHideGame__onMenuSelection(playerid, row);
 
+    new const Menu: playerMenu = GetPlayerMenu(playerid);
+    if (playerMenu != AirportMenu[0] && playerMenu != AirportMenu[1] &&
+        playerMenu != AirportMenu[2] && playerMenu != AirportMenu[3])
+        return 1;
+
+    new const flightPrice = GetEconomyValue(AirportFlight);
     new message[128];
-    if (GetPlayerMenu(playerid) == AirportMenu[0]) { /* Las Venturas */
-        if (GetPlayerMoney(playerid) < 250000) { 
+
+    if (playerMenu == AirportMenu[0]) { /* Las Venturas */
+        if (GetPlayerMoney(playerid) < flightPrice) { 
             TogglePlayerControllable(playerid, true);
-            SendClientMessage(playerid, Color::Error, "You need $250,000 for this flight.");
+
+            format(message, sizeof(message), "You need $%s for this flight.", formatPrice(flightPrice));
+            SendClientMessage(playerid, Color::Error, message);
             return 0;
         }
 
@@ -27,7 +36,7 @@ public OnPlayerSelectedMenuRow(playerid, row) {
             if (row != i)
                 continue;
 
-            GivePlayerMoney(playerid, -250000);
+            TakeRegulatedMoney(playerid, AirportFlight);
             SetPlayerPos(playerid, airports[i+1][0], airports[i+1][1], airports[i+1][2]);
             if (i == 2) SetPlayerInterior(playerid, 1);
             else SetPlayerInterior(playerid, 0);
@@ -43,10 +52,12 @@ public OnPlayerSelectedMenuRow(playerid, row) {
         SendClientMessage(playerid, Color::Success, "Thank you for flying with Juank Air. You have arrived at your destination.");
     }
 
-    if (GetPlayerMenu(playerid) == AirportMenu[1]) { /* San Fierro */
-        if (GetPlayerMoney(playerid) < 250000) { 
+    if (playerMenu == AirportMenu[1]) { /* San Fierro */
+        if (GetPlayerMoney(playerid) < flightPrice) { 
             TogglePlayerControllable(playerid, true);
-            SendClientMessage(playerid, Color::Error, "You need $250,000 for this flight.");
+
+            format(message, sizeof(message), "You need $%s for this flight.", formatPrice(flightPrice));
+            SendClientMessage(playerid, Color::Error, message);
             return 0;
         }
 
@@ -54,7 +65,7 @@ public OnPlayerSelectedMenuRow(playerid, row) {
             if (row != i)
                 continue;
 
-            GivePlayerMoney(playerid, -250000);
+            TakeRegulatedMoney(playerid, AirportFlight);
             if (i == 0) SetPlayerPos(playerid, airports[i][0], airports[i][1], airports[i][2]);
             else SetPlayerPos(playerid, airports[i+1][0], airports[i+1][1], airports[i+1][2]);
             if (i == 2) SetPlayerInterior(playerid, 1);
@@ -71,10 +82,12 @@ public OnPlayerSelectedMenuRow(playerid, row) {
         SendClientMessage(playerid, Color::Success, "Thank you for flying with Juank Air. You have arrived at your destination.");
     }
 
-    if (GetPlayerMenu(playerid) == AirportMenu[2]) { /* Los Santos */
-        if (GetPlayerMoney(playerid) < 250000) { 
+    if (playerMenu == AirportMenu[2]) { /* Los Santos */
+        if (GetPlayerMoney(playerid) < flightPrice) { 
             TogglePlayerControllable(playerid, true);
-            SendClientMessage(playerid, Color::Error, "You need $250,000 for this flight.");
+
+            format(message, sizeof(message), "You need $%s for this flight.", formatPrice(flightPrice));
+            SendClientMessage(playerid, Color::Error, message);
             return 0;
         }
 
@@ -82,7 +95,7 @@ public OnPlayerSelectedMenuRow(playerid, row) {
             if (row != i)
                 continue;
 
-            GivePlayerMoney(playerid, -250000);
+            TakeRegulatedMoney(playerid, AirportFlight);
             if (i == 2) SetPlayerPos(playerid, airports[i+1][0], airports[i+1][1], airports[i+1][2]);
             else SetPlayerPos(playerid, airports[i][0], airports[i][1], airports[i][2]);
             if (i == 2) SetPlayerInterior(playerid, 1);
@@ -99,10 +112,12 @@ public OnPlayerSelectedMenuRow(playerid, row) {
         SendClientMessage(playerid, Color::Success, "Thank you for flying with Juank Air. You have arrived at your destination.");
     }
 
-    if (GetPlayerMenu(playerid) == AirportMenu[3]) { /* Liberty City */
-        if (GetPlayerMoney(playerid) < 250000) { 
+    if (playerMenu == AirportMenu[3]) { /* Liberty City */
+        if (GetPlayerMoney(playerid) < flightPrice) { 
             TogglePlayerControllable(playerid, true);
-            SendClientMessage(playerid, Color::Error, "You need $250,000 for this flight.");
+
+            format(message, sizeof(message), "You need $%s for this flight.", formatPrice(flightPrice));
+            SendClientMessage(playerid, Color::Error, message);
             return 0;
         }
 
@@ -110,7 +125,7 @@ public OnPlayerSelectedMenuRow(playerid, row) {
             if (row != i)
                 continue;
 
-            GivePlayerMoney(playerid, -250000);
+            TakeRegulatedMoney(playerid, AirportFlight);
             SetPlayerPos(playerid, airports[i][0], airports[i][1], airports[i][2]);
             SetPlayerInterior(playerid, 0);
 

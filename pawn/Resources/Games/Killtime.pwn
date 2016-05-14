@@ -72,13 +72,15 @@ public KillTimeRun() {
             format(string, sizeof(string), "%s has won the KillTime with %d kills!", Player(lead)->nicknameString(), leadKills);
             SendClientMessageToAll(COLOR_YELLOW, string);
 
-            format(string, sizeof(string), "Congratulations! You have won $%s!", formatPrice(2500000));
+            new const price = GetEconomyValue(KilltimeVictory);
+
+            format(string, sizeof(string), "Congratulations! You have won $%s!", formatPrice(price));
             SendClientMessage(lead, COLOR_GREEN, string);
 
             format(string, sizeof(string), "[killtime] %s %d", Player(lead)->nicknameString(), leadKills);
             AddEcho(string);
 
-            GivePlayerMoney(lead, 2500000);
+            GiveRegulatedMoney(lead, KilltimeVictory);
             WonMinigame[lead]++;
         }
 

@@ -773,15 +773,17 @@ lvp_showmessage(playerid,params[])
         return 1;
     }
 
+    new const price = GetEconomyValue(ShowMessageCommand);
+    new message[128];
+
     // Has the player got enough money?
-    if(GetPlayerMoney(playerid) < 2000000 && Player(playerid)->isAdministrator() == false)
-    {
-        ShowBoxForPlayer(playerid, "Showmessages cost $2,000,000.");
+    if(GetPlayerMoney(playerid) < price && Player(playerid)->isAdministrator() == false) {
+        format(message, sizeof(message), "This command costs $%s to use.", formatPrice(price));
+        ShowBoxForPlayer(playerid, message);
         return 1;
     }
     // has a showmessage been done recently?
-    if(Time->currentTime() - lastShowmsg < 4)
-    {
+    if(Time->currentTime() - lastShowmsg < 4) {
         SendClientMessage(playerid,COLOR_RED,"* A showmessage is currently active.");
         return 1;
     }
@@ -790,21 +792,18 @@ lvp_showmessage(playerid,params[])
     param_shift(tmp);
 
     // Are they correct?
-    if(!strlen(tmp))
-    {
+    if(!strlen(tmp)) {
         SendClientMessage(playerid,COLOR_WHITE,"Correct Usage: /showmessage [colour] [message] (Colours: red/yellow/green/blue/white/purple)");
         return 1;
     }
-    if(!params[0])
-    {
+    if(!params[0]) {
         SendClientMessage(playerid,COLOR_WHITE,"Correct Usage: /showmessage [colour] [message] (Colours: red/yellow/green/blue/white/purple)");
         return 1;
     }
 
     // Now, we find out what colour they used
     new
-    str[256],
-    string[256];
+    str[256];
 
     if(!strcmp(tmp,"red",true,3)) str = "~r~";
     else if(!strcmp(tmp,"yellow",true,6)) str = "~y~";
@@ -830,7 +829,7 @@ lvp_showmessage(playerid,params[])
     }
 
     // Format the string,
-    format(string,256,"%s%s",str,iTmp);
+    format(message,256,"%s%s",str,iTmp);
 
     // and finally show it, however, we only show it for people who are in
     // the same World, and are not in a minigame.
@@ -839,22 +838,16 @@ lvp_showmessage(playerid,params[])
     for (new j = 0; j <= PlayerManager->highestPlayerId(); j++)
     {
         if(!Player(j)->isConnected())
-        {
             continue;
-        }
+
         if(IsPlayerInMinigame(j))
-        {
             continue;
-        }
+
         if(GetPlayerVirtualWorld(j) != G_VWorld)
-        {
             continue;
-        }
 
         if(!showMessagesEnabled[j])
-        {
             continue;
-        }
 
         if (Player(j)->isRegular()) {
             if (random(4) == 0) {
@@ -862,18 +855,18 @@ lvp_showmessage(playerid,params[])
             }
         }
 
-        GameTextForPlayer(j,string,4000,5);
+        GameTextForPlayer(j,message,4000,5);
     }
     // and finally, we send an admin message and inform the player it was successfull, oh, and take their cash.
-    format(str,256,"%s (Id:%d) has shown: %s (%s) to world: %d.",PlayerName(playerid),playerid,iTmp,tmp,G_VWorld);
-    Admin(playerid, str);
+    format(message,sizeof(message),"%s (Id:%d) has shown: %s (%s) to world: %d.",PlayerName(playerid),playerid,iTmp,tmp,G_VWorld);
+    Admin(playerid, message);
 
     ShowBoxForPlayer(playerid, "Message shown to all players in this world.");
 
     lastShowmsg = Time->currentTime();
 
     if (Player(playerid)->isAdministrator() == false)
-        GivePlayerMoney(playerid, -2000000);
+        TakeRegulatedMoney(playerid, ShowMessageCommand);
 
     return 1;
 }
@@ -1129,7 +1122,7 @@ charHelp:
             return 1;
         }
 
-        new const MIN_START_MONEY = StartGeld;
+        new const MIN_START_MONEY = GetEconomyValue(SpawnMoney);
         new const MAX_START_MONEY = 10000000;
 
         param_shift_int(amount);
@@ -1257,22 +1250,6 @@ MinigameHelp:
 
     new gzcm_name [24];
     GetPlayerName (playerid, gzcm_name, 24);
-
-    if(!strcmp(szParameter, "cash",true,4) && Player(playerid)->isAdministrator() == true) {
-        if(!params[0]) {
-            new szMessage[128];
-            format(szMessage,sizeof(szMessage),"You currently have $%s.",formatPrice(GetPlayerMoney(playerid)));
-            SendClientMessage(playerid,COLOR_WHITE,szMessage);
-            SendClientMessage(playerid,COLOR_WHITE,"Usage: /my cash [amount]");
-            return 1;
-        }
-
-        param_shift_int(iAmount);
-
-        GivePlayerMoney(playerid, iAmount);
-        SendClientMessage(playerid,COLOR_GREEN, "* Done!");
-        return 1;
-    }
 
     if(!strcmp(szParameter, "weapon", true, 6) && Player(playerid)->isAdministrator() == true)
     {
@@ -1430,7 +1407,7 @@ MyHelp:
     SendClientMessage(playerid, COLOR_WHITE, "Usage: /my [achievements/deathmessage/minigame/playerinfo/properties/ramp/skin/spawnmoney/stats]");
 
     if (Player(playerid)->isAdministrator() || UndercoverAdministrator(playerid)->isUndercoverAdministrator()) {
-        SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[allchat/armour/bank/cash/color/health/hide/(goto/save)loc/look/maptp]");
+        SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[allchat/armour/bank/color/health/hide/(goto/save)loc/look/maptp]");
         SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[messagelevel/resetspawnweapons/spawnweapons/weapon/weather/time]");
     } else if (Player(playerid)->isAdministrator())
         SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[color/look/resetspawnweapons/teleport/weather/time]");

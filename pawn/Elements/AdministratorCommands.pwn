@@ -1202,6 +1202,11 @@ lvp_show(playerId, params[]) {
         format(g_message, sizeof(g_message), "Don't spam in the mainchat, people will see it after one time!");
     }
 
+    if (!strcmp(showParameter, "ship", true, 4)) {
+        showInfo = true;
+        format(g_message, sizeof(g_message), "The pirate ship is a peace zone! Please don't hit, shoot or throw grenades on it!");
+    }
+
     if (showInfo == true) {
         SendClientMessageToAllEx(Color::Red, "-------------------");
         SendClientMessageToAllEx(Color::Warning, g_message);
@@ -1214,8 +1219,8 @@ lvp_show(playerId, params[]) {
         return 1;
     }
 
-    ShowHelp:
-    SendClientMessage(playerId, Color::Information, "Usage: /show [reg/beg/caps/donate/nick/report/rules/spam/forum/swear/ts/weaps]");
+ShowHelp:
+    SendClientMessage(playerId, Color::Information, "Usage: /show [/beg/caps/donate/forum/nick/reg/report/rules/ship/spam/swear/ts/weaps]");
 
     return 1;
 }

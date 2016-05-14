@@ -19,6 +19,12 @@ class PlayerStatisticsInterface {
     // For every player we create 9 player textdraws to show them their own statistics.
     new PlayerText: m_playerStatisticsTextDraw[PlayerStatisticsTextDraws][MAX_PLAYERS];
 
+    // A cache that stores the current integral values displayed in a player's text draws.
+    new m_textDrawIntCache[MAX_PLAYERS][4];
+
+    // A cache that stores the current floating point values displayed in a player's text draws.
+    new Float: m_textDrawFloatCache[MAX_PLAYERS];
+
     /**
      * A function showing the needed textdraws if the statistics interface needs to be shown.
      *
@@ -30,6 +36,11 @@ class PlayerStatisticsInterface {
 
         for (new textDraw = 0; textDraw < PlayerStatisticsTextDraws; textDraw++)
             PlayerTextDrawShow(playerId, m_playerStatisticsTextDraw[textDraw][playerId]);
+
+        for (new i = 0; i < sizeof(m_textDrawIntCache[]); ++i)
+            m_textDrawIntCache[playerId][i] = -1;
+
+        m_textDrawFloatCache[playerId] = -1.0;
 
         m_playerStatisticsHidden[playerId] = false;
 
@@ -47,6 +58,11 @@ class PlayerStatisticsInterface {
 
         for (new textDraw = 0; textDraw < PlayerStatisticsTextDraws; textDraw++)
             PlayerTextDrawHide(playerId, m_playerStatisticsTextDraw[textDraw][playerId]);
+
+        for (new i = 0; i < sizeof(m_textDrawIntCache[]); ++i)
+            m_textDrawIntCache[playerId][i] = -1;
+
+        m_textDrawFloatCache[playerId] = -1.0;
 
         m_playerStatisticsHidden[playerId] = true;
 
@@ -170,6 +186,11 @@ class PlayerStatisticsInterface {
         PlayerTextDrawSetOutline(playerId, m_playerStatisticsTextDraw[8][playerId], 1);
         PlayerTextDrawSetProportional(playerId, m_playerStatisticsTextDraw[8][playerId], 1);
 
+        for (new i = 0; i < sizeof(m_textDrawIntCache[]); ++i)
+            m_textDrawIntCache[playerId][i] = -1;
+
+        m_textDrawFloatCache[playerId] = -1.0;
+
         return 1;
     }
 
@@ -189,51 +210,74 @@ class PlayerStatisticsInterface {
     }
 
     /**
-     * Every second we check whether the statistics interface needs to be shown or hidden.
+     * Every five seconds we check whether the statistics interface needs to be shown or hidden.
      * The statistics are then cycled through to update each one of them.
      * 
      * @param playerId Id of the player of who we update the userbar for.
      */
-    @list(SecondTimerPerPlayer)
-    public updateStatisticsInterface(playerId) {
-        if (IsPlayerInMinigame(playerId) && m_playerStatisticsHidden[playerId] == false) {
-            this->hidePlayerStatistics(playerId);
-            return 1;
+    @list(FiveSecondTimer)
+    public updateStatisticsInterface() {
+        for (new playerId = 0; playerId < PlayerManager->highestPlayerId(); ++playerId) {
+            if (!Player(playerId)->isConnected() || Player(playerId)->isNonPlayerCharacter())
+                continue;
+
+            if (IsPlayerInMinigame(playerId) && m_playerStatisticsHidden[playerId] == false) {
+                this->hidePlayerStatistics(playerId);
+                continue;
+            }
+
+            if (!IsPlayerInMinigame(playerId) && m_playerStatisticsHidden[playerId] == true)
+                this->showPlayerStatistics(playerId);
+
+            new statisticString[12];
+
+            // Ping
+            new const ping = GetPlayerPing(playerId);
+            if (m_textDrawIntCache[playerId][0 /* ping */] != ping) {
+                m_textDrawIntCache[playerId][0 /* ping */] = ping;
+
+                format(statisticString, sizeof(statisticString), "%d", ping);
+                PlayerTextDrawSetString(playerId, m_playerStatisticsTextDraw[2][playerId], statisticString);
+            }
+
+            // FPS
+            new const fps = PlayerManager->framesPerSecond(playerId);
+            if (m_textDrawIntCache[playerId][1 /* fps */] != fps) {
+                m_textDrawIntCache[playerId][1 /* fps */] = fps;
+
+                format(statisticString, sizeof(statisticString), "%d", fps);
+                PlayerTextDrawSetString(playerId, m_playerStatisticsTextDraw[3][playerId], statisticString);
+            }
+
+            // Kills
+            new const kills = iPlayerSesKills[playerId];
+            if (m_textDrawIntCache[playerId][2 /* kills */] != kills) {
+                m_textDrawIntCache[playerId][2 /* kills */] = kills;
+
+                format(statisticString, sizeof(statisticString), "%d", kills);
+                PlayerTextDrawSetString(playerId, m_playerStatisticsTextDraw[6][playerId], statisticString);
+            }
+
+            // Deaths
+            new const deaths = iPlayerSesDeaths[playerId];
+            if (m_textDrawIntCache[playerId][3 /* deaths */] != deaths) {
+                m_textDrawIntCache[playerId][3 /* deaths */] = deaths;
+
+                format(statisticString, sizeof(statisticString), "%d", deaths);
+                PlayerTextDrawSetString(playerId, m_playerStatisticsTextDraw[7][playerId], statisticString);
+            }
+
+            // Ratio
+            new const Float: ratio =
+                iPlayerSesDeaths[playerId] != 0 ? floatdiv(iPlayerSesKills[playerId], iPlayerSesDeaths[playerId])
+                                                : float(iPlayerSesKills[playerId]);
+
+            if (m_textDrawFloatCache[playerId] != ratio) {
+                m_textDrawFloatCache[playerId] = ratio;
+
+                format(statisticString, sizeof(statisticString), "%.2f", ratio);
+                PlayerTextDrawSetString(playerId, m_playerStatisticsTextDraw[8][playerId], statisticString);
+            }
         }
-
-        if (!IsPlayerInMinigame(playerId) && m_playerStatisticsHidden[playerId] == true)
-            this->showPlayerStatistics(playerId);
-
-        new statisticString[12];
-
-        // Ping
-        format(statisticString, sizeof(statisticString), "%d", GetPlayerPing(playerId));
-        PlayerTextDrawSetString(playerId, m_playerStatisticsTextDraw[2][playerId], statisticString);
-
-        // FPS
-        format(statisticString, sizeof(statisticString), "%d", PlayerManager->framesPerSecond(playerId));
-        PlayerTextDrawSetString(playerId, m_playerStatisticsTextDraw[3][playerId], statisticString);
-
-        // Packetloss percentage
-        //format(statisticString, sizeof(statisticString), "%.1f%", NetStats_PacketLossPercent(playerId));
-        //PlayerTextDrawSetString(playerId, m_playerStatisticsTextDraw[4][playerId], statisticString);
-
-        // Kills
-        format(statisticString, sizeof(statisticString), "%d", iPlayerSesKills[playerId]);
-        PlayerTextDrawSetString(playerId, m_playerStatisticsTextDraw[6][playerId], statisticString);
-
-        // Deaths
-        format(statisticString, sizeof(statisticString), "%d", iPlayerSesDeaths[playerId]);
-        PlayerTextDrawSetString(playerId, m_playerStatisticsTextDraw[7][playerId], statisticString);
-
-        // Ratio.
-        new Float: ratio;
-        if (iPlayerSesDeaths[playerId] != 0) ratio = floatdiv(iPlayerSesKills[playerId], iPlayerSesDeaths[playerId]);
-        else ratio = iPlayerSesKills[playerId];
-
-        format(statisticString, sizeof(statisticString), "%.2f", ratio);
-        PlayerTextDrawSetString(playerId, m_playerStatisticsTextDraw[8][playerId], statisticString);
-
-        return 1;
     }
 };

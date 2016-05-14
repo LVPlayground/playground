@@ -34,6 +34,7 @@ public OnMinuteTimerTick() {
  * SecondTimer          - Invoked every second.
  * SecondTimerPerPlayer - Invoked every second for each online player.
  * TwoSecondTimer       - Invoked every two seconds.
+ * FiveSecondTimer      - Invoked every five seconds.
  * TenSecondTimer       - Invoked every ten seconds.
  * MinuteTimer          - Invoked every minute.
  * MinuteTimerPerPlayer - Invoked every minute for each online player.
@@ -55,6 +56,9 @@ public OnMinuteTimerTick() {
 class TimerController {
     // Ticker to manage invocation interval for two-second timers.
     new m_twoSecondTimerTicker = 0;
+
+    // Ticker to manage invocation interval for five-second timers.
+    new m_fiveSecondTimerTicker = 0;
 
     // Ticker to manage invocation interval for ten-second timers.
     new m_tenSecondTimerTicker = 1;
@@ -116,6 +120,14 @@ class TimerController {
             this->afterRunTimer();
 
             m_twoSecondTimerTicker = 0;
+        }
+
+        if (++m_fiveSecondTimerTicker == 5) {
+            this->beforeRunTimer(5000);
+            Annotation::ExpandList<FiveSecondTimer>();
+            this->afterRunTimer();
+
+            m_fiveSecondTimerTicker = 0;
         }
 
         if (++m_tenSecondTimerTicker == 10) {

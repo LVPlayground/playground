@@ -126,23 +126,9 @@ class PlayerMoneyState <playerId (MAX_PLAYERS)> {
                 }
             }
 
-            // Send announcements to administrators if the total differences made by this player are
-            // higher than a set threshold, allowing us to catch cheaters anyway.
-            m_unauthorizedIncreases[playerId] += difference;
-            if (m_unauthorizedIncreases[playerId] > MinimumIncreaseValueForAdministratorNotice) {
-                new message[128];
-
-                format(message, sizeof(message), "%s (Id:%d) has $%s worth of unauthorized money increases.",
-                    Player(playerId)->nicknameString(), playerId, formatPrice(m_unauthorizedIncreases[playerId]));
-                /* Admin(playerId, message); Disable this for now since it would spam the admin chat */
-
-                m_unauthorizedIncreases[playerId] = 0;
-            }
-
             // We have not been able to identify why this player's money is diverging. As such,
             // synchronize their local status with that of the server again.
-            ResetPlayerMoneyPrivate(playerId);
-            GivePlayerMoneyPrivate(playerId, expected);
+            GivePlayerMoneyPrivate(playerId, expected - money);
         }
     }
 
@@ -179,8 +165,7 @@ class PlayerMoneyState <playerId (MAX_PLAYERS)> {
 
         // Now re-synchronize the amount of money with the player, based on what we think they
         // should be having right now. Reset their money first, then give them the new amount.
-        ResetPlayerMoneyPrivate(playerId);
-        GivePlayerMoneyPrivate(playerId, m_cash);
+        GivePlayerMoneyPrivate(playerId, amount);
 
         // Report this change to the money indicator, so we can give them visual feedback of what
         // happened. We won't show the indicator if this is a discrete money change.

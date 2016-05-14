@@ -347,12 +347,10 @@ class ShipManager {
      * @param playerId Id of the player who we issue money to
      */
     public issueMoneyToPlayer(playerId) {
-        // Yes, also Gunther deserves his loan!
-        GivePlayerMoney(playerId, ShipIdlingMoneyAmount);
+        new const multiplier = Player(playerId)->isVip() ? 2 /* VIP members */
+                                                         : 1 /* Regular players */;
 
-        // VIPs get the same amount twice a second.
-        if (Player(playerId)->isVip() == true)
-            GivePlayerMoney(playerId, ShipIdlingMoneyAmount);
+        GivePlayerMoney(playerId, ShipIdlingMoneyAmount * multiplier);
     }
 
     /**

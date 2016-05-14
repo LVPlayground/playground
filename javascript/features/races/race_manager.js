@@ -2,10 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let ChallengeDesk = require('features/races/challenge_desk.js'),
-    RaceDatabase = require('features/races/race_database.js'),
-    RaceSettings = require('features/races/race_settings.js'),
-    RunningRace = require('features/races/running_race.js');
+const RaceDatabase = require('features/races/race_database.js');
+const RaceSettings = require('features/races/race_settings.js');
+const RunningRace = require('features/races/running_race.js');
 
 // The race manager is responsible for keeping track of the available races, the in-progress races
 // and providing the ability to start or stop races when that's necessary.

@@ -45,7 +45,7 @@ testRunner.run('**/*.test.js').then(() => {
         commands:       require('features/commands/commands_feature.js'),
         deathFeed:      require('features/death_feed/death_feed_feature.js'),
         debug:          require('features/debug/debug_feature.js'),
-        races:          require('features/races/race_feature.js')
+        races:          require('features/races/races.js')
     });
 
 }, failures => {

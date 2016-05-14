@@ -22,8 +22,8 @@ class CheckpointManager {
                                                                    : 'racecheckpoint';
 
     // TODO: Is there a use-case in which we'd like to know the leave event?
-    global.addEventListener('playerenter' + eventSuffix, this.__proto__.onEnter.bind(this));
-    global.addEventListener('playerdisconnect', this.__proto__.onDisconnect.bind(this));
+    global.addEventListener('playerenter' + eventSuffix, CheckpointManager.prototype.onEnter.bind(this));
+    global.addEventListener('playerdisconnect', CheckpointManager.prototype.onDisconnect.bind(this));
   }
 
   // Displays the |checkpoint| for |player|. Returns a promise that will be resolved when the player
@@ -66,7 +66,7 @@ class CheckpointManager {
   // current for the player, the associated promise will be resolved.
   onEnter(event) {
     let player = server.playerManager.getById(event.playerid);
-    if (player === null || !this.playerMap_.has(player))
+    if (!player || !this.playerMap_.has(player))
       return;
 
     pawnInvoke('PlayerPlaySound', 'iifff', player.id, CHECKPOINT_ENTER_SOUND_ID, 0, 0, 0);

@@ -113,11 +113,11 @@ class RunningRace {
   // removed from the race if they were a participant of it.
   onPlayerDeathOrDisconnect(event) {
     let player = server.playerManager.getById(event.playerid);
-    if (player === null)
+    if (!player)
       return;
 
     let participant = this.participants_.participantForPlayer(player);
-    if (participant === null)
+    if (!participant)
       return;
 
     if (participant.markAsFinishing())
@@ -128,11 +128,11 @@ class RunningRace {
   // vehicle, or, when that previously happened, has continued driving their vehicle again.
   onPlayerStateChange(event) {
     let player = server.playerManager.getById(event.playerid);
-    if (player === null)
+    if (!player)
       return;
 
     let participant = this.participants_.participantForPlayer(player);
-    if (participant === null)
+    if (!participant)
       return;
 
     if (participant.state != RaceParticipant.STATE_RACING)
@@ -182,10 +182,10 @@ class RunningRace {
       case RunningRace.STATE_LOADING:
         this.createVehicles();
         this.createObjects();
-        this.preparePlayers();
 
         // Automatically advance the race's state to countdown after a short period of time.
         Promise.all([
+          Promise.resolve().then(() => this.preparePlayers()),
           this.participants_.loadParticipantData(this.race.id, this.manager_.database),
           wait(RaceSettings.RACE_LOADING_WAIT_DURATION)
 
@@ -308,8 +308,7 @@ class RunningRace {
     for (let participant of this.participants_.racingParticipants()) {
       let player = participant.player;
 
-      Promise.resolve().then(() =>
-          pawnInvoke('OnSerializePlayerState', 'ii', player.id, 1 /* serialize */));
+      pawnInvoke('OnSerializePlayerState', 'ii', player.id, 1 /* serialize */);
 
       // Disable the death feed for the player, we'll use that space for a scoreboard.
       this.manager_.deathFeed.disableForPlayer(player);
@@ -343,8 +342,6 @@ class RunningRace {
 
       ++playerIndex;
     }
-
-    return true;
   }
 
   // -----------------------------------------------------------------------------------------------

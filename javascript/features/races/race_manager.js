@@ -114,7 +114,7 @@ class RaceManager {
       if (!runningRace.removePlayer(player))
         return;
 
-      player.sendMessage(Message.format(Message.RACE_COMMAND_LEFT, runningRace.race.name));
+      player.sendMessage(Message.RACE_COMMAND_LEFT, runningRace.race.name);
       leftRace = true;          
     });
 

@@ -4,17 +4,10 @@
 
 let DriftTracker = require('features/races/drift_tracker.js');
 
-// Represents an individual participant in a race. This class may be used to represent participants
-// who are no longer connected to Las Venturas Playground, so be careful to not rely on the
-// availability of the Player object used to represent them.
+// Represents an individual participant in a race.
 class RaceParticipant {
   constructor(player) {
-    this.playerId_ = player.id;
-    this.playerName_ = player.name;
-    this.userId_ = null;
-
-    if (player.isRegistered())
-      this.userId_ = player.userId;
+    this.player_ = player;
 
     this.state_ = RaceParticipant.STATE_SIGNUP;
 
@@ -35,26 +28,25 @@ class RaceParticipant {
     this.scoreBoard_ = null;
   }
 
-  // Returns the Id of the player this participant represents.
-  get playerId() { return this.playerId_; }
+  // Gets the Id of the player this participant represents.
+  get playerId() { return this.player_.id; }
 
-  // Returns the name of the player this participant represents.
-  get playerName() { return this.playerName_; }
+  // Gets the name of the player this participant represents.
+  get playerName() { return this.player_.name; }
 
-  // Returns the player associated with this participant. If they are no longer connected to the
-  // server, or the player id has been recycled since, an exception will be thrown.
+  // Gets the player associated with this participant. Will throw an exception if the player is
+  // not connected to Las Venturas Playground anymore.
   get player() {
-    let player = server.playerManager.getById(this.playerId_);
-    if (player === null || !this.isPlayer(player))
-      throw new Error('The player this participant once represented is no longer connected.');
+    if (!this.player_.isConnected())
+      throw new Error('The player is not connected to the server anymore.');
 
-    return player;
+    return this.player_;
   }
 
-  // Returns the user Id of the account that belongs to this participant.
-  get userId() { return this.userId_; }
+  // Gets the user Id of the account that belongs to this participant.
+  get userId() { return this.player_.userId; }
 
-  // Returns the state of this participant.
+  // Gets the state of this participant.
   get state() { return this.state_; }
 
   // Gets or sets the vehicle associated with this participant. The vehicle is not guaranteed to
@@ -107,13 +99,6 @@ class RaceParticipant {
   // Gets or sets the score board for this participant.
   get scoreBoard() { return this.scoreBoard_; }
   set scoreBoard(value) { this.scoreBoard_ = value; }
-
-  // Determines whether |player| represents the player this instance represents. We can't rely on
-  // the equality operator because the player for this participant may have disconnected since.
-  isPlayer(player) {
-    return this.playerId_ === player.id &&
-           this.playerName_ === player.name;
-  }
 
   // Imports the best results this participant ever scored on the race. Used to update the score
   // board of the player with the absolute and relative performance compared to their best.

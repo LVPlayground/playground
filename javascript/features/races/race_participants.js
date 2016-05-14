@@ -85,7 +85,7 @@ class RaceParticipants {
   // will silently fail (for example, drop-out versus finished). 
   advancePlayer(player, state) {
     for (let participantId = 0; participantId < this.participants_.length; ++participantId) {
-      if (!this.participants_[participantId].isPlayer(player))
+      if (this.participants_[participantId].player !== player)
         continue;
 
       this.participants_[participantId].advance(state);
@@ -96,7 +96,7 @@ class RaceParticipants {
   // Returns the participant associated with |player|, or NULL when there is none.
   participantForPlayer(player) {
     for (let participant of this.racingParticipants()) {
-      if (participant.isPlayer(player))
+      if (participant.player === player)
         return participant;
     }
 

@@ -74,6 +74,9 @@ class MockPlayer {
     get specialAction() { return this.specialAction_; }
     set specialAction(value) { this.specialAction_ = value; }
 
+    // Clears the animations applied to the player.
+    clearAnimations() {}
+
     isRegistered() { return this.userId_ != null; }
 
     get userId() { return this.userId_; }

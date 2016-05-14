@@ -106,6 +106,7 @@ class PlaygroundCommands {
         // Is the administrator removing a jetpack from this player instead of granting one?
         if (player.isAdministrator() && ['remove', 'take'].includes(remove)) {
             subject.specialAction = Player.SPECIAL_ACTION_NONE;
+            subject.clearAnimations();
 
             subject.sendMessage(Message.LVP_JETPACK_REMOVED, player.name, player.id);
             if (player !== subject)

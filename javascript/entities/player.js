@@ -105,6 +105,9 @@ class Player extends Extendable {
   get specialAction() { return pawnInvoke('GetPlayerSpecialAction', 'i', this.id_); }
   set specialAction(value) { pawnInvoke('SetPlayerSpecialAction', 'ii', this.id_, value); }
 
+  // Clears the animations applied to the player.
+  clearAnimations() { pawnInvoke('ClearAnimations', 'i', this.id_); }
+
   // Returns whether the player is in an vehicle. If |vehicle| is provided, this method will check
   // whether the player is in that particular vehicle. Otherwise any vehicle will do.
   isInVehicle(vehicle) {

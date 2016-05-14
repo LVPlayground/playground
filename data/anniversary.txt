@@ -1,7 +1,8 @@
 Ten years of Las Venturas Playground!
 
-Somebody should write some amazing message here, that explains
-why this is a significant event.
+On Sunday the 22nd of May, it will have been exactly ten years since Badeend,
+Sander and Peter founded Las Venturas Playground. In celebration, several new
+joyous commands may be available for your entertainment :-).
 
-Also, we have some fancy commands for you that may or may not be
-enabled, at the administrator's discretion: {FF8282}/jetpack{A9C4E4}.
+Check out {FF8282}/jetpack{A9C4E4}, or ask an administrator for more details
+in case it's not available!

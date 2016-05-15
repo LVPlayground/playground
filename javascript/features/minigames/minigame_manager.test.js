@@ -127,6 +127,7 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         assert.equal(manager.getMinigamesForCategory(category).length, 1);
         assert.equal(minigame.removedPlayers.length, 0);
         assert.isNull(minigame.finishedReason);
+        assert.equal(minigame.state, Minigame.STATE_SIGN_UP);
 
         gunther.disconnect();
 
@@ -143,6 +144,7 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         assert.equal(manager.getMinigamesForCategory(category).length, 0);
         assert.equal(minigame.removedPlayers.length, 2);
         assert.equal(minigame.finishedReason, Minigame.REASON_NOT_ENOUGH_PLAYERS);
+        assert.equal(minigame.state, Minigame.STATE_FINISHED);
     });
 
     it('should be able for a minigame to require at least two players', assert => {

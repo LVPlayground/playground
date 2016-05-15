@@ -13,11 +13,16 @@ class MinigameDriver {
         this.category_ = category;
         this.minigame_ = minigame;
 
+        minigame.driver = this;
+
         // Set containing the players actively engaged in the minigame.
         this.activePlayers_ = new Set();
 
         // Set containing *all* players that have been engaged with the minigame.
         this.players_ = new Set();
+
+        // The current state of the minigame.
+        this.state_ = Minigame.STATE_SIGN_UP;
     }
 
     // Gets the set of players who are currently actively engaged in the minigame.
@@ -25,6 +30,9 @@ class MinigameDriver {
 
     // Gets the minigame that has been wrapped by this driver.
     get minigame() { return this.minigame_; }
+
+    // Gets the current state of the minigame.
+    get state() { return this.state_; }
 
     // Adds |player| to the minigame.
     addPlayer(player) {
@@ -39,6 +47,9 @@ class MinigameDriver {
 
         // Inform the minigame about |player| having joined the game.
         this.minigame_.onPlayerAdded(player);
+
+        // TODO(Russell): Auto-start the minigame when the maximum amount of players has been
+        // reached.
     }
 
     // Serializes the current state of |player|, making sure that whatever happens to them within
@@ -81,6 +92,9 @@ class MinigameDriver {
     // Finishes the minigame. The minigame will be informed, after which the remaining players will
     // be respawned and the minigame will be removed from the manager.
     finish(reason) {
+        // Mark the minigame as having finished.
+        this.state_ = Minigame.STATE_FINISHED;
+
         // Inform the minigame about it having finished. There may still be active players left
         // within the game, these will be removed immediately after.
         this.minigame_.onFinished(reason);

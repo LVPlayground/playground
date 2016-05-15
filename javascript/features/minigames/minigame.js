@@ -25,6 +25,7 @@ class Minigame {
         });
 
         this.name_ = settings.name;
+        this.driver_ = null;
 
         this.minimumParticipants_ = settings.minimumParticipants || 1;
         this.maximumParticipants_ = settings.maximumParticipants;
@@ -33,11 +34,18 @@ class Minigame {
     // Gets the name of this minigame.
     get name() { this.name_; }
 
+    // Gets the state this minigame is in. Only available after creating the minigame with the
+    // minigame manager, which creates the driver for us.
+    get state() { return this.driver_.state; }
+
     // Gets the minimum number of participants in this minigame.
     get minimumParticipants() { return this.minimumParticipants_; }
 
     // Gets the maximum number of participants in this minigame.
     get maximumParticipants() { return this.maximumParticipants_; }
+
+    // Sets the driver that's running this minigame.
+    set driver(value) { this.driver_ = value; }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -57,6 +65,12 @@ class Minigame {
 
     dispose() {}
 }
+
+// States that a minigame can be in.
+Minigame.STATE_SIGN_UP = 0;
+Minigame.STATE_LOADING = 1;
+Minigame.STATE_RUNNING = 2;
+Minigame.STATE_FINISHED = 3;
 
 // Reasons that a minigame can be finished.
 Minigame.REASON_NOT_ENOUGH_PLAYERS = 0;

@@ -25,6 +25,30 @@ class Minigame {
 
     // Gets the name of this minigame. 
     get name() { this.name_; }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Will be called when |player| has joined the minigame. Unless otherwise configured, this
+    // method will only be invoked when the minigame is still in sign-up phase.
+    onPlayerAdded(player) {}
+
+    // Will be called when |player| has left the minigame because of |reason|. The player will
+    // already have been removed from the set of active players.
+    onPlayerRemoved(player, reason) {}
+
+    // Will be called when the minigame has finished. All active players will be respawned after
+    // this call has finished.
+    onFinished(reason) {}
+
+    // ---------------------------------------------------------------------------------------------
+
+    dispose() {}
 }
+
+// Reasons that a minigame can be finished.
+Minigame.REASON_NO_MORE_PLAYERS = 0;
+
+// Reasons that can cause a player to be removed from the minigame.
+Minigame.REASON_DISCONNECT = 0;
 
 exports = Minigame;

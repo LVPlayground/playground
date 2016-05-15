@@ -4,7 +4,7 @@
 
 const MinigameDriver = require('features/minigames/minigame_driver.js');
 
-describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
+describe('MinigameDriver', (it, beforeEach, afterEach) => {
     let player = null;
 
     beforeEach(() => player = server.playerManager.getById(0 /* Gunther */));

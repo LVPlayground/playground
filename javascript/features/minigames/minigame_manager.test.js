@@ -94,4 +94,20 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         assert.throws(() => manager.createMinigame(category, minigame, gunther));
         // TODO(Russell): Test |gunther| signing up for another minigame.
     });
+
+    it('should stop the minigame when the only engaged player disconnects', assert => {
+        const category = manager.createCategory('test');
+        const minigame = new MockMinigame();
+
+        manager.createMinigame(category, minigame, gunther);
+        assert.isTrue(manager.isPlayerEngaged(gunther));
+
+        gunther.disconnect();
+
+        assert.isFalse(manager.isPlayerEngaged(gunther));
+    });
+
+    // TODO(Russell): Test for disconnecting players with player# > 1
+
+
 });

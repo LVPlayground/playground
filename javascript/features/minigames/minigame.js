@@ -4,7 +4,11 @@
 
 // Dictionary of the required settings together with the expected JavaScript variable type.
 const REQUIRED_SETTINGS = {
-    name: 'string'
+    // The player-visible name describing the minigame
+    name: 'string',
+
+    // The maximum number of players that can participate in the minigame
+    maximumParticipants: 'number'
 };
 
 // Base class that all minigames have to extend. Contains default implementations of the event
@@ -21,10 +25,19 @@ class Minigame {
         });
 
         this.name_ = settings.name;
+
+        this.minimumParticipants_ = settings.minimumParticipants || 1;
+        this.maximumParticipants_ = settings.maximumParticipants;
     }
 
-    // Gets the name of this minigame. 
+    // Gets the name of this minigame.
     get name() { this.name_; }
+
+    // Gets the minimum number of participants in this minigame.
+    get minimumParticipants() { return this.minimumParticipants_; }
+
+    // Gets the maximum number of participants in this minigame.
+    get maximumParticipants() { return this.maximumParticipants_; }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -46,9 +59,11 @@ class Minigame {
 }
 
 // Reasons that a minigame can be finished.
-Minigame.REASON_NO_MORE_PLAYERS = 0;
+Minigame.REASON_NOT_ENOUGH_PLAYERS = 0;
+Minigame.REASON_FORCED_STOP = 1;
 
 // Reasons that can cause a player to be removed from the minigame.
 Minigame.REASON_DISCONNECT = 0;
+Minigame.REASON_FINISHED = 1;
 
 exports = Minigame;

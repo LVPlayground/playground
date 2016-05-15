@@ -24,6 +24,8 @@ class MinigameManager {
         server.playerManager.addObserver(this);
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     // Creates a new minigame category. The category is guaranteed to be unique, but will only serve
     // as a completely opaque token to the implementing feature. Note that the |description| is not
     // currently used for anything, only stored in case of left-over categories.
@@ -35,6 +37,52 @@ class MinigameManager {
 
         return category;
     }
+
+    // Returns a list of minigames that are currently running for the |category|. The actual game
+    // instances will be returned rather than the drivers managed by this feature.
+    getMinigamesForCategory(category) {
+        if (!this.categories_.has(category))
+            throw new Error('Invalid category: ' + category);
+
+        let minigames = [];
+
+        this.minigames_.get(category).forEach(driver =>
+            minigames.push(driver.minigame));
+
+        return minigames;
+    }
+
+    // Deletes the minigame |category|. All minigames associated with it will be forcefully stopped,
+    // and all players part of these minigames will be respawned.
+    deleteCategory(category) {
+        if (!this.categories_.has(category))
+            throw new Error('Invalid category: ' + category);
+
+        const drivers = this.minigames_.get(category);
+        drivers.forEach(driver =>
+            driver.finish(Minigame.REASON_FORCED_STOP));
+
+        this.minigames_.delete(category);
+        this.categories_.delete(category);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Returns whether the player is currently ingaged in a minigame.
+    isPlayerEngaged(player) {
+        return this.players_.has(player);
+    }
+
+    // Returns the name of the minigame the |player| is involved in, or NULL when they are not
+    // involved in any minigame at all.
+    getMinigameNameForPlayer(player) {
+        if (!this.players_.has(player))
+            return null;
+
+        return this.players_.get(player).minigame.name;
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Wraps the |minigame| in the supporting driver and stores it for |category|. The |player| will
     // automatically be added to the driver, given that minigames cannot go without players.
@@ -49,13 +97,42 @@ class MinigameManager {
             throw new Error('Players can only be involved in a single minigame at a time.');
 
         const driver = new MinigameDriver(this, category, minigame);
-        driver.addPlayer(player);
 
         // Associate the |driver| with the |category|.
         this.minigames_.get(category).add(driver);
 
-        // Associate the |driver| with the |player|.
-        this.players_.set(player, driver);      
+        // Associate the |player| with the |driver|.
+        driver.addPlayer(player);
+    }
+
+    // Adds |player| to the minigame. The minigame must have been created already, and the |player|
+    // must not be engaged with any other activities.
+    addPlayerToMinigame(category, minigame, player) {
+        if (!this.categories_.has(category))
+            throw new Error('Invalid category: ' + category);
+
+        if (this.isPlayerEngaged(player))
+            throw new Error('Players can only be involved in a single minigame at a time.');
+
+        // Whether the |player| has been added to the |minigame|.
+        let added = false;
+
+        const drivers = this.minigames_.get(category);
+        drivers.forEach(driver => {
+            if (driver.minigame !== minigame)
+                return;  // this is a driver for another minigame
+
+            driver.addPlayer(player);
+            added = true;
+        });
+
+        if (!added)
+            throw new Error('Invalid minigame: ' + minigame);
+    }
+
+    // Called when |player| has been added to the |driver| for a certain minigame.
+    didAddPlayerToMinigame(player, driver) {
+        this.players_.set(player, driver);
     }
 
     // Called when |player| has been removed from the minigame they were part of. Should clear their
@@ -74,47 +151,11 @@ class MinigameManager {
             throw new Error('The |driver| still has active players associated with it.');
 
         this.minigames_.get(category).delete(driver);
+
+        driver.dispose();
     }
 
-    // Deletes the minigame |category|. All minigames associated with it will be forcefully stopped,
-    // and all players part of these minigames will be respawned.
-    deleteCategory(category) {
-        if (!this.categories_.has(category))
-            throw new Error('Invalid category: ' + category);
-
-        // TODO(Russell): Cancel any minigames running as part of this category.
-
-        this.minigames_.delete(category);
-        this.categories_.delete(category);
-    }
-
-    // Returns a list of minigames that are currently running for the |category|. The actual game
-    // instances will be returned rather than the drivers managed by this feature.
-    getMinigamesForCategory(category) {
-        if (!this.categories_.has(category))
-            throw new Error('Invalid category: ' + category);
-
-        let minigames = [];
-
-        this.minigames_.get(category).forEach(driver =>
-            minigames.push(driver.minigame));
-
-        return minigames;
-    }
-
-    // Returns the name of the minigame the |player| is involved in, or NULL when they are not
-    // involved in any minigame at all.
-    getMinigameNameForPlayer(player) {
-        if (!this.players_.has(player))
-            return null;
-
-        return this.players_.get(player).minigame.name
-    }
-
-    // Returns whether the player is currently ingaged in a minigame.
-    isPlayerEngaged(player) {
-        return this.players_.has(player);
-    }
+    // ---------------------------------------------------------------------------------------------
 
     // Called when |player| has disconnected from Las Venturas Playground. They will automatically
     // be removed from any minigame they were previously part of.
@@ -125,6 +166,8 @@ class MinigameManager {
 
         driver.removePlayer(player, Minigame.REASON_DISCONNECT);
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     dispose() {
         server.playerManager.removeObserver(this);

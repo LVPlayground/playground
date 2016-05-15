@@ -8,8 +8,40 @@ const Minigame = require('features/minigames/minigame.js');
 class MockMinigame extends Minigame {
     constructor(settings = {}) {
         super({
-            name: settings.name || 'My Minigame'
+            name: settings.name || 'My Minigame',
+
+            minimumParticipants: settings.minimumParticipants || 1,
+            maximumParticipants: settings.maximumParticipants || 4
         });
+
+        // These properties exist for testing purposes.
+        this.addedPlayers_ = [];
+        this.removedPlayers_ = [];
+        this.finishedReason_ = null;
+    }
+
+    // Gets an array with the players that have been added to the mock minigame.
+    get addedPlayers() { return this.addedPlayers_; }
+
+    // Gets an array with the players that have been removed from the mock minigame.
+    get removedPlayers() { return this.removedPlayers_; }
+
+    // Gets an array with the reason as to why the minigame has finished.
+    get finishedReason() { return this.finishedReason_; }
+
+    // Called when |player| has been added to the minigame.
+    onPlayerAdded(player) {
+        this.addedPlayers_.push(player);
+    }
+
+    // Called when |player| has been removed from the minigame because of |reason|.
+    onPlayerRemoved(player, reason) {
+        this.removedPlayers_.push({ player, reason });
+    }
+
+    // Called when the minigame has finished because of |reason|.
+    onFinished(reason) {
+        this.finishedReason_ = reason;
     }
 }
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const Minigame = require('features/minigames/minigame.js');
 const MinigameManager = require('features/minigames/minigame_manager.js');
 const MockMinigame = require('features/minigames/test/mock_minigame.js');
 
@@ -83,16 +84,20 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
 
     it('should not allow players to engage in multiple minigames at once', assert => {
         const category = manager.createCategory('test');
-        const minigame = new MockMinigame();
+
+        const simpleRace = new MockMinigame({ name: 'My Simple Race' });
+        const normalRace = new MockMinigame({ name: 'My Normal Race' });
 
         assert.isFalse(manager.isPlayerEngaged(gunther));
 
-        manager.createMinigame(category, minigame, gunther);
+        manager.createMinigame(category, simpleRace, gunther);
+        manager.createMinigame(category, normalRace, russell);
 
         assert.isTrue(manager.isPlayerEngaged(gunther));
+        assert.isTrue(manager.isPlayerEngaged(russell));
 
-        assert.throws(() => manager.createMinigame(category, minigame, gunther));
-        // TODO(Russell): Test |gunther| signing up for another minigame.
+        assert.throws(() => manager.createMinigame(category, simpleRace, gunther));
+        assert.throws(() => manager.addPlayerToMinigame(category, normalRace, gunther));
     });
 
     it('should stop the minigame when the only engaged player disconnects', assert => {
@@ -105,9 +110,78 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         gunther.disconnect();
 
         assert.isFalse(manager.isPlayerEngaged(gunther));
+        assert.equal(manager.getMinigamesForCategory(category).length, 0);
     });
 
-    // TODO(Russell): Test for disconnecting players with player# > 1
+    it('should stop the minigame when the last engaged player disconnects', assert => {
+        const category = manager.createCategory('test');
+        const minigame = new MockMinigame();
 
+        manager.createMinigame(category, minigame, gunther);
+        manager.addPlayerToMinigame(category, minigame, russell);
+
+        assert.equal(minigame.addedPlayers.length, 2);
+
+        assert.isTrue(manager.isPlayerEngaged(gunther));
+        assert.isTrue(manager.isPlayerEngaged(russell));
+        assert.equal(manager.getMinigamesForCategory(category).length, 1);
+        assert.equal(minigame.removedPlayers.length, 0);
+        assert.isNull(minigame.finishedReason);
+
+        gunther.disconnect();
+
+        assert.isFalse(manager.isPlayerEngaged(gunther));
+        assert.isTrue(manager.isPlayerEngaged(russell));
+        assert.equal(manager.getMinigamesForCategory(category).length, 1);
+        assert.equal(minigame.removedPlayers.length, 1);
+        assert.isNull(minigame.finishedReason);
+
+        russell.disconnect();
+
+        assert.isFalse(manager.isPlayerEngaged(gunther));
+        assert.isFalse(manager.isPlayerEngaged(russell));
+        assert.equal(manager.getMinigamesForCategory(category).length, 0);
+        assert.equal(minigame.removedPlayers.length, 2);
+        assert.equal(minigame.finishedReason, Minigame.REASON_NOT_ENOUGH_PLAYERS);
+    });
+
+    it('should be able for a minigame to require at least two players', assert => {
+        const category = manager.createCategory('test');
+        const minigame = new MockMinigame({ minimumParticipants: 2 });
+
+        manager.createMinigame(category, minigame, gunther);
+        manager.addPlayerToMinigame(category, minigame, russell);
+
+        assert.isTrue(manager.isPlayerEngaged(gunther));
+        assert.isTrue(manager.isPlayerEngaged(russell));
+        assert.equal(manager.getMinigamesForCategory(category).length, 1);
+        assert.isNull(minigame.finishedReason);
+
+        gunther.disconnect();
+
+        assert.isFalse(manager.isPlayerEngaged(gunther));
+        assert.isFalse(manager.isPlayerEngaged(russell));
+        assert.equal(manager.getMinigamesForCategory(category).length, 0);
+        assert.equal(minigame.finishedReason, Minigame.REASON_NOT_ENOUGH_PLAYERS);
+    });
+
+    it('should cancel minigames when deleting a minigame category', assert => {
+        const category = manager.createCategory('test');
+        const minigame = new MockMinigame();
+
+        manager.createMinigame(category, minigame, gunther);
+
+        assert.isTrue(manager.isPlayerEngaged(gunther));
+        assert.equal(manager.getMinigamesForCategory(category).length, 1);
+        assert.equal(minigame.addedPlayers.length, 1);
+
+        manager.deleteCategory(category);
+
+        assert.isFalse(manager.isPlayerEngaged(gunther));
+        assert.throws(() => manager.getMinigamesForCategory(category));
+
+        assert.equal(minigame.removedPlayers.length, 1);
+        assert.equal(minigame.finishedReason, Minigame.REASON_FORCED_STOP);
+    });
 
 });

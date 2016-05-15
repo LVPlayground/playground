@@ -26,28 +26,6 @@ class MinigameDriver {
     // Gets the minigame that has been wrapped by this driver.
     get minigame() { return this.minigame_; }
 
-    // Finishes the minigame. The minigame will be informed, after which the remaining players will
-    // be respawned and the minigame will be removed from the manager.
-    finish(reason) {
-        this.minigame_.onFinished(reason);
-
-        for (let player of this.activePlayers_) {
-            this.restorePlayerState(player);
-            this.manager_.didRemovePlayerFromMinigame(player);
-        }
-
-        this.activePlayers_.clear();
-
-        // Informs the manager that the minigame owned by this driver has finished.
-        this.manager_.didFinishMinigame(this.category_, this);
-    }
-
-    // Restores the state of |player| by respawning them in the main world and deserializing their
-    // state in the Pawn part of Las Venturas Playground.
-    restorePlayerState(player) {
-        // TODO(Russell): Restore the player's state.
-    }
-
     // Adds |player| to the minigame.
     addPlayer(player) {
         // TODO(Russell): Make sure that the minigame is in sign-up phase unless it's configured
@@ -56,8 +34,17 @@ class MinigameDriver {
         this.activePlayers_.add(player);
         this.players_.add(player);
 
+        // Inform the manager about |player| having joined the game.
+        this.manager_.didAddPlayerToMinigame(player, this);
+
         // Inform the minigame about |player| having joined the game.
         this.minigame_.onPlayerAdded(player);
+    }
+
+    // Serializes the current state of |player|, making sure that whatever happens to them within
+    // the minigame does not affect their status elsewhere on the server.
+    serializePlayerState(player) {
+        // TODO(Russell): Serialize the player's state.
     }
 
     // Removes |player| from the minigame because of |reason|. Will trigger the onPlayerRemoved
@@ -77,9 +64,37 @@ class MinigameDriver {
         // Clear the player's state from the minigame manager.
         this.manager_.didRemovePlayerFromMinigame(player);
 
-        // TODO(Russell): Allow this to be configurable to another >=0 number.
-        if (!this.activePlayers_.size)
-            this.finish(Minigame.REASON_NO_MORE_PLAYERS);
+        // Check whether the minigame has finished in its entirety. This is the case when there are
+        // no more active players and the |player| is not being removed because it's finished.
+        if (reason != Minigame.REASON_FINISHED) {
+            if (this.activePlayers_.size < this.minigame_.minimumParticipants)
+                this.finish(Minigame.REASON_NOT_ENOUGH_PLAYERS);
+        }
+    }
+
+    // Restores the state of |player| by respawning them in the main world and deserializing their
+    // state in the Pawn part of Las Venturas Playground.
+    restorePlayerState(player) {
+        // TODO(Russell): Restore the player's state.
+    }
+
+    // Finishes the minigame. The minigame will be informed, after which the remaining players will
+    // be respawned and the minigame will be removed from the manager.
+    finish(reason) {
+        // Inform the minigame about it having finished. There may still be active players left
+        // within the game, these will be removed immediately after.
+        this.minigame_.onFinished(reason);
+
+        for (let player of this.activePlayers_)
+            this.removePlayer(player, Minigame.REASON_FINISHED);
+
+        // Informs the manager that the minigame owned by this driver has finished.
+        this.manager_.didFinishMinigame(this.category_, this);
+    }
+
+    dispose() {
+        this.activePlayers_ = null;
+        this.players_ = null;
     }
 }
 

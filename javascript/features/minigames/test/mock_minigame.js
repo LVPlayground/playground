@@ -11,17 +11,27 @@ class MockMinigame extends Minigame {
             name: settings.name || 'My Minigame',
 
             minimumParticipants: settings.minimumParticipants || 1,
-            maximumParticipants: settings.maximumParticipants || 4
+            maximumParticipants: settings.maximumParticipants || 4,
+
+            enableRespawn: settings.enableRespawn || false
         });
 
         // These properties exist for testing purposes.
         this.addedPlayers_ = [];
+        this.deathPlayers_ = [];
+        this.spawnPlayers_ = [];
         this.removedPlayers_ = [];
         this.finishedReason_ = null;
     }
 
     // Gets an array with the players that have been added to the mock minigame.
     get addedPlayers() { return this.addedPlayers_; }
+
+    // Gets an array with the players who have died within this mock minigame.
+    get deathPlayers() { return this.deathPlayers_; }
+
+    // Gets an array with the players who have spawned within this mock minigame.
+    get spawnPlayers() { return this.spawnPlayers_; }
 
     // Gets an array with the players that have been removed from the mock minigame.
     get removedPlayers() { return this.removedPlayers_; }
@@ -32,6 +42,16 @@ class MockMinigame extends Minigame {
     // Called when |player| has been added to the minigame.
     onPlayerAdded(player) {
         this.addedPlayers_.push(player);
+    }
+
+    // Called when |player| has died because of |reason|.
+    onPlayerDeath(player, reason) {
+        this.deathPlayers_.push({ player, reason });
+    }
+
+    // Called when |player| has spawned within the minigame.
+    onPlayerSpawn(player) {
+        this.spawnPlayers_.push(player);
     }
 
     // Called when |player| has been removed from the minigame because of |reason|.

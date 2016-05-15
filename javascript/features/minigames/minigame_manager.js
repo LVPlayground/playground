@@ -4,6 +4,7 @@
 
 const Minigame = require('features/minigames/minigame.js');
 const MinigameDriver = require('features/minigames/minigame_driver.js');
+const ScopedCallbacks = require('base/scoped_callbacks.js');
 
 // The minigame manager keeps track of the states of all players and all minigames, and routes
 // events associated with these entities to the right places. Each type of minigame gets a category
@@ -22,6 +23,13 @@ class MinigameManager {
 
         // Observe player disconnection events which are of interest to the manager.
         server.playerManager.addObserver(this);
+
+        // Listen to other events relevant for accurately managing minigame state.
+        this.callbacks_ = new ScopedCallbacks();
+        this.callbacks_.addEventListener(
+            'playerdeath', MinigameManager.prototype.onPlayerDeath.bind(this));
+        this.callbacks_.addEventListener(
+            'playerspawn', MinigameManager.prototype.onPlayerSpawn.bind(this));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -157,6 +165,15 @@ class MinigameManager {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Called when a player has died. This may mean that they dropped out of the minigame.
+    onPlayerDeath(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player || !this.players_.has(player))
+            return;  // invalid player, or not engaged in a minigame
+
+        this.players_.get(player).onPlayerDeath(player, event.reason);
+    }
+
     // Called when |player| has disconnected from Las Venturas Playground. They will automatically
     // be removed from any minigame they were previously part of.
     onPlayerDisconnect(player) {
@@ -167,9 +184,22 @@ class MinigameManager {
         driver.removePlayer(player, Minigame.REASON_DISCONNECT);
     }
 
+    // Called when a player has spawned. If they partake in a minigame that enables in-game respawns
+    // then the event will be cancelled, and will never reach the Pawn code.
+    onPlayerSpawn(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player || !this.players_.has(player))
+            return;  // invalid player, or not engaged in a minigame
+
+        if (this.players_.get(player).onPlayerSpawn(player))
+            event.preventDefault();
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        this.callbacks_.dispose();
+
         server.playerManager.removeObserver(this);
 
         this.players_ = null;

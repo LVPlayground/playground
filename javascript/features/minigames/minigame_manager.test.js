@@ -186,4 +186,44 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         assert.equal(minigame.finishedReason, Minigame.REASON_FORCED_STOP);
     });
 
+    it('should remove a player from a minigame when they die', assert => {
+        const category = manager.createCategory('test');
+        const minigame = new MockMinigame();
+
+        manager.createMinigame(category, minigame, gunther);
+
+        assert.isTrue(manager.isPlayerEngaged(gunther));
+        assert.equal(manager.getMinigamesForCategory(category).length, 1);
+        assert.equal(minigame.addedPlayers.length, 1);
+
+        gunther.die();
+        assert.isFalse(gunther.spawn());
+
+        assert.isFalse(manager.isPlayerEngaged(gunther));
+        assert.equal(manager.getMinigamesForCategory(category).length, 0);
+        assert.equal(minigame.deathPlayers.length, 1);
+        assert.equal(minigame.spawnPlayers.length, 0);
+        assert.equal(minigame.removedPlayers.length, 1);
+    });
+
+    it('should enable minigames to enable in-game respawns', assert => {
+        const category = manager.createCategory('test');
+        const minigame = new MockMinigame({ enableRespawn: true });
+
+        manager.createMinigame(category, minigame, gunther);
+
+        assert.isTrue(manager.isPlayerEngaged(gunther));
+        assert.equal(manager.getMinigamesForCategory(category).length, 1);
+        assert.equal(minigame.addedPlayers.length, 1);
+
+        gunther.die();
+        assert.isTrue(gunther.spawn());
+
+        assert.isTrue(manager.isPlayerEngaged(gunther));
+        assert.equal(manager.getMinigamesForCategory(category).length, 1);
+        assert.equal(minigame.deathPlayers.length, 1);
+        assert.equal(minigame.spawnPlayers.length, 1);
+        assert.equal(minigame.removedPlayers.length, 0);
+    });
+
 });

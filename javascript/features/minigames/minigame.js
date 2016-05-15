@@ -29,6 +29,9 @@ class Minigame {
 
         this.minimumParticipants_ = settings.minimumParticipants || 1;
         this.maximumParticipants_ = settings.maximumParticipants;
+
+        // Whether the player can die and respawn within the minigame.
+        this.enableRespawn_ = !!settings.enableRespawn;
     }
 
     // Gets the name of this minigame.
@@ -44,6 +47,9 @@ class Minigame {
     // Gets the maximum number of participants in this minigame.
     get maximumParticipants() { return this.maximumParticipants_; }
 
+    // Gets whether the player can die and respawn within the minigame.
+    get enableRespawn() { return this.enableRespawn_; }
+
     // Sets the driver that's running this minigame.
     set driver(value) { this.driver_ = value; }
 
@@ -52,6 +58,10 @@ class Minigame {
     // Will be called when |player| has joined the minigame. Unless otherwise configured, this
     // method will only be invoked when the minigame is still in sign-up phase.
     onPlayerAdded(player) {}
+
+    // Will be called when the |player| has died. Unless otherwise configured, they will be removed
+    // from the minigame immediately after this call.
+    onPlayerDeath(player, reason) {}
 
     // Will be called when |player| has left the minigame because of |reason|. The player will
     // already have been removed from the set of active players.
@@ -77,7 +87,8 @@ Minigame.REASON_NOT_ENOUGH_PLAYERS = 0;
 Minigame.REASON_FORCED_STOP = 1;
 
 // Reasons that can cause a player to be removed from the minigame.
-Minigame.REASON_DISCONNECT = 0;
-Minigame.REASON_FINISHED = 1;
+Minigame.REASON_DEATH = 0;
+Minigame.REASON_DISCONNECT = 1;
+Minigame.REASON_FINISHED = 2;
 
 exports = Minigame;

@@ -58,6 +58,30 @@ class MinigameDriver {
         // TODO(Russell): Serialize the player's state.
     }
 
+    // Called when |player| has died because of |reason|. This definitely has to be forwarded to the
+    // minigame, but may also mean that they have to be removed from it.
+    onPlayerDeath(player, reason) {
+        if (!this.activePlayers_.has(player))
+            return;
+
+        // Inform the minigame about the player having died.
+        this.minigame_.onPlayerDeath(player, reason);
+
+        // Remove the player from the minigame unless the `respawn` flag has been set.
+        if (!this.minigame_.enableRespawn)
+            this.removePlayer(player, Minigame.REASON_DEATH);
+    }
+
+    // Called when |player| has spawned. Minigames that enable respawn will get this event forwarded
+    // to them. Returns a boolean indicating whether the event should be prevented elsewhere.
+    onPlayerSpawn(player) {
+        if (!this.activePlayers_.has(player))
+            return false;
+
+        this.minigame_.onPlayerSpawn(player);
+        return true;
+    }
+
     // Removes |player| from the minigame because of |reason|. Will trigger the onPlayerRemoved
     // method on the minigame object, and free the |player|'s state in the minigame manager.
     removePlayer(player, reason) {

@@ -203,6 +203,29 @@ class MockPlayer {
         });
     }
 
+    // Triggers an event indicating that the player died.
+    die(killerPlayer = null, reason = 0) {
+        global.dispatchEvent('playerdeath', {
+            playerid: this.id_,
+            killerid: killerPlayer ? killerPlayer.id
+                                   : Player.INVALID_ID,
+            reason: reason
+        });
+    }
+
+    // Triggers an event indicating that the player has respawned. Returns whether the event has
+    // been cancelled by something that handled it.
+    spawn() {
+        let defaultPrevented = false;
+
+        global.dispatchEvent('playerspawn', {
+            preventDefault: () => defaultPrevented = true,
+            playerid: this.id_
+        });
+
+        return defaultPrevented;
+    }
+
     // Disconnects the player from the server. They will be removed from the PlayerManager too.
     disconnect(reason = 0) {
         server.playerManager.onPlayerDisconnect({

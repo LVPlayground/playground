@@ -226,4 +226,24 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         assert.equal(minigame.removedPlayers.length, 0);
     });
 
+    it('should tell minigames about its players leaving their vehicles', assert => {
+        const category = manager.createCategory('test');
+        const minigame = new MockMinigame({ enableRespawn: true });
+
+        manager.createMinigame(category, minigame, gunther);
+        assert.isTrue(manager.isPlayerEngaged(gunther));
+
+        gunther.changeState({ newState: Player.STATE_DRIVER,
+                              oldState: Player.STATE_ON_FOOT });
+
+        assert.equal(minigame.enterVehicles.length, 1);
+        assert.equal(minigame.leaveVehicles.length, 0);
+
+        gunther.changeState({ newState: Player.STATE_ON_FOOT,
+                              oldState: Player.STATE_DRIVER });
+
+        assert.equal(minigame.enterVehicles.length, 1);
+        assert.equal(minigame.leaveVehicles.length, 1);
+    });
+
 });

@@ -30,6 +30,8 @@ class MinigameManager {
             'playerdeath', MinigameManager.prototype.onPlayerDeath.bind(this));
         this.callbacks_.addEventListener(
             'playerspawn', MinigameManager.prototype.onPlayerSpawn.bind(this));
+        this.callbacks_.addEventListener(
+            'playerstatechange', MinigameManager.prototype.onPlayerStateChange.bind(this));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -193,6 +195,16 @@ class MinigameManager {
 
         if (this.players_.get(player).onPlayerSpawn(player))
             event.preventDefault();
+    }
+
+    // Called when a player's state changes. This powers the minigame events for players who enter
+    // and leave their vehicles, which is important in, say, races.
+    onPlayerStateChange(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player || !this.players_.has(player))
+            return;  // invalid player, or not engaged in a minigame
+
+        this.players_.get(player).onPlayerStateChange(player, event.newstate, event.oldstate);
     }
 
     // ---------------------------------------------------------------------------------------------

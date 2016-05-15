@@ -203,6 +203,15 @@ class MockPlayer {
         });
     }
 
+    // Changes the player's state from |oldState| to |newState|.
+    changeState({ oldState, newState } = {}) {
+        global.dispatchEvent('playerstatechange', {
+            playerid: this.id_,
+            oldstate: oldState,
+            newstate: newState
+        });
+    }
+
     // Triggers an event indicating that the player died.
     die(killerPlayer = null, reason = 0) {
         global.dispatchEvent('playerdeath', {

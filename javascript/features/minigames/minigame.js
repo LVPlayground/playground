@@ -63,6 +63,17 @@ class Minigame {
     // from the minigame immediately after this call.
     onPlayerDeath(player, reason) {}
 
+    // Will be called when the |player| has spawned.
+    onPlayerSpawn(player) {}
+
+    // Will be called when the |player| has entered the |vehicle| as a driver.
+    onPlayerEnterVehicle(player, vehicle) {}
+
+    // Will be called when the |player| has left their vehicle.
+    onPlayerLeaveVehicle(player) {}
+
+    // TODO(Russell): onVehicleDeath scoped to the vehicles created by this minigame
+
     // Will be called when |player| has left the minigame because of |reason|. The player will
     // already have been removed from the set of active players.
     onPlayerRemoved(player, reason) {}

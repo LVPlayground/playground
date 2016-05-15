@@ -62,7 +62,9 @@ class MinigameDriver {
     // minigame, but may also mean that they have to be removed from it.
     onPlayerDeath(player, reason) {
         if (!this.activePlayers_.has(player))
-            return;
+            throw new Error('Received death event for an invalid player: ' + player.name);
+
+        // TODO(Russell): Only handle this event when the minigame has started.
 
         // Inform the minigame about the player having died.
         this.minigame_.onPlayerDeath(player, reason);
@@ -76,10 +78,28 @@ class MinigameDriver {
     // to them. Returns a boolean indicating whether the event should be prevented elsewhere.
     onPlayerSpawn(player) {
         if (!this.activePlayers_.has(player))
-            return false;
+            throw new Error('Received spawn event for an invalid player: ' + player.name);
+
+        // TODO(Russell): Only handle this event when the minigame has started.
 
         this.minigame_.onPlayerSpawn(player);
         return true;
+    }
+
+    // Called when the state of |player| changes from |oldState| to |newState|.
+    onPlayerStateChange(player, newState, oldState) {
+        if (!this.activePlayers_.has(player))
+            throw new Error('Received state change event for an invalid player: ' + player.name);
+
+        // TODO(Russell): Only handle this event when the minigame has started.
+
+        if (newState == Player.STATE_DRIVER) {
+            // TODO(Russell): This should be using a vehicle manager of sorts.
+            this.minigame_.onPlayerEnterVehicle(player, null /* vehicle */);
+
+        } else if (oldState == Player.STATE_DRIVER) {
+            this.minigame_.onPlayerLeaveVehicle(player);
+        }
     }
 
     // Removes |player| from the minigame because of |reason|. Will trigger the onPlayerRemoved

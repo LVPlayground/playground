@@ -37,6 +37,10 @@ class Minigame {
     // Gets the name of this minigame.
     get name() { this.name_; }
 
+    // Gets the set of entities available for this minigame. Only available after creating the
+    // minigame with the minigame manager, which creates the driver for us.
+    get entities() { return this.driver_.entities; }
+
     // Gets the state this minigame is in. Only available after creating the minigame with the
     // minigame manager, which creates the driver for us.
     get state() { return this.driver_.state; }

@@ -27,6 +27,7 @@ testRunner.run('**/*.test.js').then(() => {
         // Foundational features
         announce:       require('features/announce/announce.js'),
         communication:  require('features/communication/communication.js'),
+        minigames:      require('features/minigames/minigames.js'),
 
         // Gang-related features
         gangChat:       require('features/gang_chat/gang_chat.js'),

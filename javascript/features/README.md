@@ -27,6 +27,7 @@ The following features have been implemented in JavaScript.
     the `/friends` command.
   - **[Gang chat](gang_chat/)**: Provides a private-ish group chat for online gangs.
   - **[Gangs](gangs/)**: Provides the persistent gangs feature, as well as the `/gang` command.
+  - **[Minigames](minigames/)**: Provides common infrastructure for minigame features.
   - **[Player favours](player_favours/)**: Various smaller features implemented specifically for
     the benefit of certain players.
   - **[Playground](playground/)**: Features created for the identity of Las Venturas Playground.

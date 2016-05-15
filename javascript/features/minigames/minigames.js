@@ -23,10 +23,32 @@ class Minigames extends Feature {
         return this.manager_.createCategory(description);
     }
 
+    // Creates the supporting infrastructure around |minigame|. The |player| is the initiating
+    // player for whom the minigame has been created.
+    createMinigame(category, minigame, player) {
+        this.manager_.createMinigame(category, minigame, player);
+    }
+
     // Deletes the minigame |category|. All associated minigames will be stopped as well. Will throw
     // an exception if |category| has not been previously created.
     deleteCategory(category) {
         this.manager_.deleteCategory(category);
+    }
+
+    // Returns an array of minigames that are currently in-progress for the |category|.
+    getMinigamesForCategory(category) {
+        return this.manager_.getMinigamesForCategory(category);
+    }
+
+    // Returns the name of the minigame |player| is involved in, or NULL when they are not currently
+    // involved in any minigame at all.
+    getMinigameNameForPlayer(player) {
+        return this.manager_.getMinigameNameForPlayer(player);
+    }
+
+    // Returns whether the |player| is currently involved in any minigame.
+    isPlayerEngaged(player) {
+        return this.manager_.isPlayerEngaged(player);
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -2,15 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MockServer = require('test/mock_server.js');
 const Question = require('components/dialogs/question.js');
 
 describe('Question', (it, beforeEach, afterEach) => {
     let player = null;
 
-    MockServer.bindTo(beforeEach, afterEach, server => {
-        player = server.playerManager.getById(0 /* Gunther */);
-    });
+    beforeEach(() => player = server.playerManager.getById(0 /* Gunther */));
 
     // Common question to use in tests where only the question matters.
     const simpleQuestion = { question: 'Example question?' };

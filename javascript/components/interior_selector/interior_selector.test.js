@@ -4,14 +4,9 @@
 
 const DefaultInteriorList = require('components/interior_selector/default_interior_list.js');
 const InteriorSelector = require('components/interior_selector/interior_selector.js');
-const MockServer = require('test/mock_server.js');
 
 describe('InteriorSelector', (it, beforeEach, afterEach) => {
     let gunther = null;
-
-    MockServer.bindTo(beforeEach, afterEach, server => {
-        gunther = server.playerManager.getById(0 /* Gunther */);
-    });
 
 /**
     it('should resolve with null', assert => {

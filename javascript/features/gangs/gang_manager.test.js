@@ -6,18 +6,17 @@ const Gang = require('features/gangs/gang.js');
 const GangDatabase = require('features/gangs/gang_database.js');
 const GangManager = require('features/gangs/gang_manager.js');
 const MockGangDatabase = require('features/gangs/test/mock_gang_database.js');
-const MockServer = require('test/mock_server.js');
 
 describe('GangManager', (it, beforeEach, afterEach) => {
     // The GangManager instance to use for the tests. Will be reset after each test.
     let gangManager = null;
 
-    MockServer.bindTo(beforeEach, afterEach,
-        () => {
-            gangManager = new GangManager(null /* database */);
-            gangManager.database_ = new MockGangDatabase();
+    beforeEach(() => {
+        gangManager = new GangManager(null /* database */);
+        gangManager.database_ = new MockGangDatabase();
+    });
 
-        }, () => gangManager.dispose());
+    afterEach(() => gangManager.dispose());
 
     it('should be able to announce something to gang members', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);

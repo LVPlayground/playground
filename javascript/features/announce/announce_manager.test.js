@@ -3,13 +3,12 @@
 // be found in the LICENSE file.
 
 const AnnounceManager = require('features/announce/announce_manager.js');
-const MockServer = require('test/mock_server.js');
 
 describe('AnnounceManager', (it, beforeEach, afterEach) => {
     let announceManager = null;
     let ircMessages = [];
 
-    MockServer.bindTo(beforeEach, afterEach, server => {
+    beforeEach(() => {
         announceManager = new AnnounceManager(message => {
             ircMessages.push(message);
         });

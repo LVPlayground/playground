@@ -3,11 +3,8 @@
 // be found in the LICENSE file.
 
 const DeathFeedFeature = require('features/death_feed/death_feed_feature.js');
-const MockServer = require('test/mock_server.js');
 
-describe('DeathFeedFeature', (it, beforeEach, afterEach) => {
-  MockServer.bindTo(beforeEach, afterEach);
-
+describe('DeathFeedFeature', it => {
   it('should track deaths in fifo order', assert => {
     let feature = new DeathFeedFeature(null);
 

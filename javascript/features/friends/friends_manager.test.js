@@ -4,7 +4,6 @@
 
 const FriendsManager = require('features/friends/friends_manager.js');
 const MockFriendsDatabase = require('features/friends/test/mock_friends_database.js');
-const MockServer = require('test/mock_server.js');
 
 describe('FriendsManager', (it, beforeEach, afterEach) => {
     let gunther = null;
@@ -13,17 +12,15 @@ describe('FriendsManager', (it, beforeEach, afterEach) => {
     // The friendsManager instance to use for the tests. Will be reset after each test.
     let friendsManager = null;
 
-    MockServer.bindTo(beforeEach, afterEach,
-        () => {
-            gunther = server.playerManager.getById(0 /* Gunther */);
-            russell = server.playerManager.getById(1 /* Russell */);
+    beforeEach(() => {
+        gunther = server.playerManager.getById(0 /* Gunther */);
+        russell = server.playerManager.getById(1 /* Russell */);
 
-            friendsManager = new FriendsManager(null /* database */);
-            friendsManager.database_ = new MockFriendsDatabase();
+        friendsManager = new FriendsManager(null /* database */);
+        friendsManager.database_ = new MockFriendsDatabase();
+    });
 
-        }, () => {
-            friendsManager.dispose();
-        });
+    afterEach(() => friendsManager.dispose());
 
     it('should load the list of friends when a player logs in', assert => {
         gunther.identify({ userId: 50 });

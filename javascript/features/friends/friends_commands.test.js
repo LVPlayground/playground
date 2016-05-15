@@ -5,7 +5,6 @@
 const FriendsCommands = require('features/friends/friends_commands.js');
 const FriendsManager = require('features/friends/friends_manager.js');
 const MockFriendsDatabase = require('features/friends/test/mock_friends_database.js');
-const MockServer = require('test/mock_server.js');
 
 describe('FriendsCommands', (it, beforeEach, afterEach) => {
     let gunther = null;
@@ -15,20 +14,20 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     let friendsManager = null;
     let friendsCommands = null;
 
-    MockServer.bindTo(beforeEach, afterEach,
-        () => {
-            gunther = server.playerManager.getById(0 /* Gunther */);
-            russell = server.playerManager.getById(1 /* Russell */);
+    beforeEach(() => {
+        gunther = server.playerManager.getById(0 /* Gunther */);
+        russell = server.playerManager.getById(1 /* Russell */);
 
-            friendsManager = new FriendsManager(null /* database */);
-            friendsManager.database_ = new MockFriendsDatabase();
+        friendsManager = new FriendsManager(null /* database */);
+        friendsManager.database_ = new MockFriendsDatabase();
 
-            friendsCommands = new FriendsCommands(friendsManager);
+        friendsCommands = new FriendsCommands(friendsManager);
+    });
 
-        }, () => {
-            friendsCommands.dispose();
-            friendsManager.dispose();
-        });
+    afterEach(() => {
+        friendsCommands.dispose();
+        friendsManager.dispose();
+    });
 
     it('should show an error when adding a friend as an unregistered player', assert => {
         assert.isFalse(gunther.isRegistered());

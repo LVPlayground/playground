@@ -5,23 +5,22 @@
 const PlaygroundCommands = require('features/playground/playground_commands.js');
 const PlaygroundManager = require('features/playground/playground_manager.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
-const MockServer = require('test/mock_server.js');
 
 describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
     let playgroundCommands = null;
     let playgroundManager = null;
     let player = null;
 
-    MockServer.bindTo(beforeEach, afterEach,
-        () => {
-            playgroundManager = new PlaygroundManager();
-            playgroundCommands = new PlaygroundCommands(playgroundManager, new MockAnnounce());
-            player = server.playerManager.getById(0 /* Gunther */);
+    beforeEach(() => {
+        playgroundManager = new PlaygroundManager();
+        playgroundCommands = new PlaygroundCommands(playgroundManager, new MockAnnounce());
+        player = server.playerManager.getById(0 /* Gunther */);
+    });
 
-        }, () => {
-            playgroundCommands.dispose();
-            playgroundManager.dispose();
-        });
+    afterEach(() => {
+        playgroundCommands.dispose();
+        playgroundManager.dispose();
+    });
 
     it('should maintain the options in a sorted list', assert => {
         const sorted = playgroundManager.options.sort();

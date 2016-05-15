@@ -3,16 +3,15 @@
 // be found in the LICENSE file.
 
 const CommandBuilder = require('components/command_manager/command_builder.js');
-const MockServer = require('test/mock_server.js');
 
-describe('CommandBuilder', (it, beforeEach, afterEach) => {
+describe('CommandBuilder', (it, beforeEach) => {
   let command = null,
       listener = null;
 
   let player = null,
       lastMessage = null;
 
-  MockServer.bindTo(beforeEach, afterEach, server => {
+  beforeEach(() => {
     player = server.playerManager.getById(0);
     player.sendMessage = (message, ...args) => {
       if (message instanceof Message)

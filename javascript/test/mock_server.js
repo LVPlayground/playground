@@ -6,41 +6,12 @@ const CommandManager = require('components/command_manager/command_manager.js');
 const FeatureManager = require('components/feature_manager/feature_manager.js');
 const MockPlayerManager = require('test/mock_player_manager.js');
 
-// Private symbol used to prevent MockServer from being instantiated.
-const PrivateSymbol = Symbol('Do not construct the MockServer manually.');
-
 // The MockServer is a mocked implementation of the Server class that creates a mocked environment
-// having mocked connected players. It must be scoped to the lifetime of a test, so rather than
-// instantiating this class yourself, use the bindTo() method in your tests.
+// having mocked connected players. It will automatically be created before running a test, and
+// will be disposed afterwards. There should not be any need to instantiate this class manually.
 class MockServer {
-    // Makes sure that a global `server` variable is available for each test in the suite. The
-    // |beforeEach| and |afterEach| arguments are passed to your describe() suite.
-    static bindTo(beforeEach, afterEach, customBeforeFn = null, customAfterFn = null) {
-        let storedServer = null;
-
-        beforeEach(() => {
-            storedServer = global.server;
-
-            global.server = new MockServer(PrivateSymbol);
-            if (customBeforeFn)
-                customBeforeFn(global.server);
-        });
-
-        afterEach(() => {
-            if (customAfterFn)
-                customAfterFn();
-
-            global.server.dispose();
-            global.server = storedServer;
-        });
-    }
-
-    // Constructs the MockServer instance, and creates a mocked player manager having various
-    // mocked players.
-    constructor(privateSymbol) {
-        if (privateSymbol !== PrivateSymbol)
-            throw new Error('The MockServer class must not be manually instantiated.');
-
+    // Constructs the MockServer instance, and creates a mocked scenario on the server.
+    constructor() {
         // TODO(Russell): Create a mocked database.
         this.database_ = null;
 

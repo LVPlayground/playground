@@ -34,7 +34,6 @@ class AnnounceManager {
             Message.format(Message.ANNOUNCE_NEWS_MINIGAME_JOINED, player.name, name, command);
 
         // TODO(Russell): Validate that |formattedMessage| is safe for game text usage.
-        console.log(formattedMessage);
 
         // Announce it asynchronously to avoid potential reentrancy problems.
         Promise.resolve().then(() => pawnInvoke('OnDisplayNewsMessage', 's', formattedMessage));

@@ -2,15 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MockServer = require('test/mock_server.js');
 const QuestionSequence = require('components/dialogs/question_sequence.js');
 
 describe('QuestionSequence', (it, beforeEach, afterEach) => {
     let player = null;
 
-    MockServer.bindTo(beforeEach, afterEach, server => {
-        player = server.playerManager.getById(0 /* Gunther */);
-    });
+    beforeEach(() => player = server.playerManager.getById(0 /* Gunther */));
 
     // Common sequence of simple questions used by the sequence.
     const questionSequence = [

@@ -2,7 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MockServer = require('test/mock_server.js');
 const MockVehicle = require('test/mock_vehicle.js');
 const PriorityQueue = require('base/priority_queue.js');
 const Vector = require('base/vector.js');
@@ -16,10 +15,10 @@ const TestingVehicleLimit = 10;
 describe('VehicleStreamer', (it, beforeEach, afterEach) => {
     let streamer = null;
 
-    MockServer.bindTo(beforeEach, afterEach,
-        () => streamer = new VehicleStreamer(TestingVehicleLimit,
-                                             MockVehicle /* vehicleConstructor */),
-        () => streamer.dispose());
+    beforeEach(() => streamer = new VehicleStreamer(TestingVehicleLimit,
+                                                    MockVehicle /* vehicleConstructor */));
+
+    afterEach(() => streamer.dispose());
 
     it('should properly group persistent and non-persistent vehicles', assert => {
         const persistentVehicle = createStoredVehicle({ persistent: true });

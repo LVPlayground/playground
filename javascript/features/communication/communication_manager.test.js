@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 const CommunicationManager = require('features/communication/communication_manager.js');
-const MockServer = require('test/mock_server.js');
 
 describe('CommunicationManager', (it, beforeEach, afterEach) => {
     let gunther;
@@ -11,12 +10,12 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
     // A new CommunicationManager instance will be created for each test.
     let communicationManager = null;
 
-    MockServer.bindTo(beforeEach, afterEach, server => {
+    beforeEach(() => {
         gunther = server.playerManager.getById(0 /* Gunther */);
-
         communicationManager = new CommunicationManager();
+    });
 
-    }, () => communicationManager.dispose());
+    afterEach(() => communicationManager.dispose());
 
     it('should ignore messages when there are no delegates', assert => {
         assert.isFalse(gunther.issueMessage('Hello'));

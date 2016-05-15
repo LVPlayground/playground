@@ -3,12 +3,10 @@
 // be found in the LICENSE file.
 
 const MinigameDriver = require('features/minigames/minigame_driver.js');
-const MockServer = require('test/mock_server.js');
 
 describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
     let player = null;
 
-    MockServer.bindTo(beforeEach, afterEach,
-        () =>  player = server.playerManager.getById(0 /* Gunther */));
+    beforeEach(() => player = server.playerManager.getById(0 /* Gunther */));
 
 });

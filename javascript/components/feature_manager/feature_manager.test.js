@@ -4,11 +4,8 @@
 
 const Feature = require('components/feature_manager/feature.js');
 const FeatureManager = require('components/feature_manager/feature_manager.js');
-const MockServer = require('test/mock_server.js');
 
-describe('FeatureManager', (it, beforeEach, afterEach) => {
-  MockServer.bindTo(beforeEach, afterEach);
-
+describe('FeatureManager', it => {
   it('initializes the features', assert => {
     let counter = 0;
 

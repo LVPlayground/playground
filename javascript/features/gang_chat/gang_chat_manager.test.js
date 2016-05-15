@@ -5,18 +5,17 @@
 const Communication = require('features/communication/communication.js');
 const GangChatManager = require('features/gang_chat/gang_chat_manager.js');
 const MockGangs = require('features/gangs/test/mock_gangs.js');
-const MockServer = require('test/mock_server.js');
 
 describe('GangChatManager', (it, beforeEach, afterEach) => {
     let gangs = null;
     let manager = null;
 
-    // Bind to the mock server because this feature needs online players.
-    MockServer.bindTo(beforeEach, afterEach, () => {
+    beforeEach(() => {
         gangs = new MockGangs();
         manager = new GangChatManager(gangs, null /* announce */, new Communication());
+    });
 
-    }, () => manager.dispose());
+    afterEach(() => manager.dispose());
 
     it('should ignore messages that are not meant for gang chat', assert => {
         const player = server.playerManager.getById(0 /* Gunther */);

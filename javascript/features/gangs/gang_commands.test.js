@@ -8,7 +8,6 @@ const GangCommands = require('features/gangs/gang_commands.js');
 const GangDatabase = require('features/gangs/gang_database.js');
 const GangManager = require('features/gangs/gang_manager.js');
 const MockGangDatabase = require('features/gangs/test/mock_gang_database.js');
-const MockServer = require('test/mock_server.js');
 
 describe('GangCommands', (it, beforeEach, afterEach) => {
     let player = null;
@@ -17,19 +16,19 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
     let gangManager = null;
     let gangCommands = null;
 
-    MockServer.bindTo(beforeEach, afterEach,
-        () => {
-            player = server.playerManager.getById(0 /* Gunther */);
+    beforeEach(() => {
+        player = server.playerManager.getById(0 /* Gunther */);
 
-            gangManager = new GangManager(null /* database */);
-            gangManager.database_ = new MockGangDatabase();
+        gangManager = new GangManager(null /* database */);
+        gangManager.database_ = new MockGangDatabase();
 
-            gangCommands = new GangCommands(gangManager, new Announce());
+        gangCommands = new GangCommands(gangManager, new Announce());
+    });
 
-        }, () => {
-            gangCommands.dispose();
-            gangManager.dispose();
-        });
+    afterEach(() => {
+        gangCommands.dispose();
+        gangManager.dispose();
+    });
 
     // Utility function to create a gang with the given information.
     function createGang({tag = 'HKO', name = 'Hello Kitty Online', goal = '', color = null} = {}) {

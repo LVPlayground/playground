@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 const ObjectRemover = require('features/player_favours/object_remover.js');
-const MockServer = require('test/mock_server.js');
 const Vector = require('base/vector.js');
 
 describe('ObjectRemover', (it, beforeEach, afterEach) => {
@@ -12,15 +11,12 @@ describe('ObjectRemover', (it, beforeEach, afterEach) => {
     // The ObjectRemover instance to use for the tests. Will be reset after each test.
     let objectRemover = null;
 
-    MockServer.bindTo(beforeEach, afterEach,
-        () => {
-            gunther = server.playerManager.getById(0 /* Gunther */);
+    beforeEach(() => {
+        gunther = server.playerManager.getById(0 /* Gunther */);
+        objectRemover = new ObjectRemover();
+    });
 
-            objectRemover = new ObjectRemover();
-
-        }, () => {
-            objectRemover.dispose();
-        });
+    afterEach(() => objectRemover.dispose());
 
     it('should remove Joe\'s Garage when players connect', assert => {
         assert.doesNotThrow(() => objectRemover.load('data/favours/joes_garage.json'));

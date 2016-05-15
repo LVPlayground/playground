@@ -2,9 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let Assert = require('base/test/assert.js'),
-    AssertionFailedError = require('base/test/assertion_failed_error.js'),
-    UnexpectedExceptionError = require('base/test/unexpected_exception_error.js');
+const Assert = require('base/test/assert.js');
+const AssertionFailedError = require('base/test/assertion_failed_error.js');
+const MockServer = require('test/mock_server.js');
+const UnexpectedExceptionError = require('base/test/unexpected_exception_error.js');
 
 // A test suite represents a series of one or more individual tests. The test suite not only
 // registers individual tests and suite capabilities, but also provides the required functionality
@@ -35,22 +36,28 @@ class TestSuite {
   // decrease confusion and issues when people write tests.
   *executeTestGenerator() {
     for (let i = 0; i < this.tests_.length; ++i) {
-      let test = this.tests_[i],
-          carriedException = null;
+      let test = this.tests_[i];
+
+      let originalServer = global.server;
+      let carriedException = null;
 
       yield new Promise(resolve => {
-        // (1) Execute the beforeEach function, which will be considered asynchronous if it returns
+        // (1) Install the MockServer as the global `server` object.
+        global.server = new MockServer();
+
+        // (2) Execute the beforeEach function, which will be considered asynchronous if it returns
         // a promise. Otherwise resolve the preparation step immediately.
         if (this.beforeEach_)
           resolve(this.beforeEach_());
         else
           resolve();
+
       }).then((f) => {
-        // (2) Execute the test case itself. This will be considered asynchronous if it returns a
+        // (3) Execute the test case itself. This will be considered asynchronous if it returns a
         // promise. A new Assert instance will be created for each test.
         return test.fn(new Assert(this, test.description));
       }).catch(error => {
-        // (2b) If the test threw an exception that's different from an AssertionFailedError, it's
+        // (3b) If the test threw an exception that's different from an AssertionFailedError, it's
         // a problem outside of the test framework that should be displayed consistently.
         if (!(error instanceof AssertionFailedError)) {
           error = new UnexpectedExceptionError({ suiteDescription: this.description_,
@@ -62,19 +69,23 @@ class TestSuite {
         carriedException = error;
 
       }).then(() => {
-        // (3) Execute the afterEach function, which, as the other steps, will be considered
+        // (4) Execute the afterEach function, which, as the other steps, will be considered
         // asynchronous when it returns a promise.
         if (this.afterEach_)
           return this.afterEach_();
 
       }).catch(error => {
-        // (4) If the afterEach() method threw an exception, store this in |carriedException| unless
+        // (5) If the afterEach() method threw an exception, store this in |carriedException| unless
         // the test body itself already threw an exception as well.
         if (carriedException === null)
           carriedException = error;
 
       }).then(() => {
-        // (5) If an exception was thrown, either in the test body, or in the afterEach() method,
+        // (6) Dispose the global mocked server, and re-instate the original instance.
+        global.server.dispose();
+        global.server = originalServer;
+
+        // (7) If an exception was thrown, either in the test body, or in the afterEach() method,
         // rethrow it now so that this test will be marked as flaky.
         if (carriedException !== null)
           throw carriedException;

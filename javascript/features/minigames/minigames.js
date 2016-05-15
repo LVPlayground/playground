@@ -18,9 +18,11 @@ class Minigames extends Feature {
     // Public API of the minigame feature.
     // ---------------------------------------------------------------------------------------------
 
-    // Creates a new, opaque token for the category of minigames described by |description|.
-    createCategory(description) {
-        return this.manager_.createCategory(description);
+    // Creates a new, opaque token for the category of minigames described by |description|. When
+    // given, the |observer| will be informed about created, started and finished minigames. The
+    // |observer| must extend the MinigameObserver class.
+    createCategory(description, observer = null) {
+        return this.manager_.createCategory(description, observer);
     }
 
     // Returns an array of minigames that are currently in-progress for the |category|.

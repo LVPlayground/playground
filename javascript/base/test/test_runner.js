@@ -138,6 +138,7 @@ class TestRunner {
       require('components/text_draw/text_draw.test.js');
       require('entities/player_manager.test.js');
       require('entities/scoped_entities.test.js');
+      require('entities/vehicle_manager.test.js');
       require('features/announce/announce_manager.test.js');
       require('features/communication/communication_manager.test.js');
       require('features/death_feed/death_feed_feature.test.js');

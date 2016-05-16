@@ -5,6 +5,7 @@
 const CommandManager = require('components/command_manager/command_manager.js');
 const FeatureManager = require('components/feature_manager/feature_manager.js');
 const MockPlayerManager = require('test/mock_player_manager.js');
+const MockVehicleManager = require('test/mock_vehicle_manager.js');
 
 // The MockServer is a mocked implementation of the Server class that creates a mocked environment
 // having mocked connected players. It will automatically be created before running a test, and
@@ -18,6 +19,7 @@ class MockServer {
         this.commandManager_ = new CommandManager();
         this.featureManager_ = new FeatureManager();
         this.playerManager_ = new MockPlayerManager();
+        this.vehicleManager_ = new MockVehicleManager();
 
         // Connect a series of fake players to the server.
         [
@@ -37,6 +39,9 @@ class MockServer {
     // Gets the mocked player manager.
     get playerManager() { return this.playerManager_; }
 
+    // Gets the mocked vehicle manager.
+    get vehicleManager() { return this.vehicleManager_; }
+
     // Gets the mocked database.
     get database() { return this.database_; }
 
@@ -46,6 +51,7 @@ class MockServer {
 
     // Disposes the MockServer and uninitializes all owned objects.
     dispose() {
+        this.vehicleManager_.dispose();
         this.playerManager_.dispose();
         this.featureManager_.dispose();
         this.commandManager_.dispose();

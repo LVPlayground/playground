@@ -33,11 +33,6 @@ class SpawnWeaponCommands {
         if (Player(playerId)->isAdministrator() == false)
             return 0;
 
-        if (Player(subjectId)->isAdministrator() == true && playerId != subjectId) {
-            SendClientMessage(playerId, Color::Error, "The selected player is a crew member!");
-            return 1;
-        }
-
         if (Player(subjectId)->isNonPlayerCharacter() == true) {
             SendClientMessage(playerId, Color::Error, "The selected player is a NPC!");
             return 1;

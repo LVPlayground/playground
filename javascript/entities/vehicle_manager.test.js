@@ -15,6 +15,17 @@ describe('VehicleManager', (it, beforeEach, afterEach) => {
             manager.dispose();
     });
 
+    // Observer recording all calls that can be used with the VehicleManager.
+    class MyVehicleObserver {
+        constructor() {
+            this.spawned = [];
+            this.deaths = [];
+        }
+
+        onVehicleSpawn(vehicle) { this.spawned.push(vehicle); }
+        onVehicleDeath(vehicle) { this.deaths.push(vehicle); }
+    }
+
     it('should be able to count the number of created vehicles', assert => {
         manager.createVehicle({ modelId: 411, position: new Vector(0, 0, 0) });
         manager.createVehicle({ modelId: 520, position: new Vector(1, 1, 1) });
@@ -86,5 +97,49 @@ describe('VehicleManager', (it, beforeEach, afterEach) => {
         manager = null;
 
         assert.isFalse(vehicle.isConnected());
+    });
+
+    it('should not double-register observers to the vehicle manager', assert => {
+        const vehicle = manager.createVehicle({ modelId: 411, position: new Vector(0, 0, 0) });
+        const observer = new MyVehicleObserver();
+
+        manager.addObserver(observer);
+        manager.addObserver(observer);
+
+        vehicle.spawn();
+
+        assert.equal(observer.spawned.length, 1);
+    });
+
+    it('should not send events to observers when they removed themselves', assert => {
+        const vehicle = manager.createVehicle({ modelId: 411, position: new Vector(0, 0, 0) });
+        const observer = new MyVehicleObserver();
+
+        manager.addObserver(observer);
+
+        vehicle.spawn();
+        assert.equal(observer.spawned.length, 1);
+
+        manager.removeObserver(observer);
+
+        vehicle.spawn();
+        assert.equal(observer.spawned.length, 1);
+    });
+
+    it('should properly forward events to the observers', assert => {
+        const vehicle = manager.createVehicle({ modelId: 411, position: new Vector(0, 0, 0) });
+        const observer = new MyVehicleObserver();
+
+        manager.addObserver(observer);
+
+        vehicle.spawn();
+
+        assert.equal(observer.spawned.length, 1);
+        assert.equal(observer.spawned[0], vehicle);
+
+        vehicle.death();
+
+        assert.equal(observer.deaths.length, 1);
+        assert.equal(observer.deaths[0], vehicle);
     });
 });

@@ -14,6 +14,16 @@ class VehicleManager {
         this.vehicles_ = new Map();
 
         this.callbacks_ = new ScopedCallbacks();
+        this.callbacks_.addEventListener(
+            'vehiclespawn', VehicleManager.prototype.onVehicleSpawn.bind(this));
+        this.callbacks_.addEventListener(
+            'vehicledeath', VehicleManager.prototype.onVehicleDeath.bind(this));
+
+        // TODO(Russell): Handle OnVehicleDamangeStatusUpdate
+        // TODO(Russell): Handle OnVehicleMod
+        // TODO(Russell): Handle OnVehiclePaintjob
+        // TODO(Russell): Handle OnVehicleRespray
+        // TODO(Russell): Handle OnVehicleSirenStateChange
     }
 
     // Gets the number of vehicles currently created on the server.
@@ -62,6 +72,25 @@ class VehicleManager {
 
         this.vehicles_.set(vehicle.id, vehicle);
         return vehicle;
+    }
+
+    // Called when a vehicle has spawned on the server. Observers will be informed about this event.
+    onVehicleSpawn(event) {
+        const vehicle = this.vehicles_.get(event.vehicleid);
+        if (!vehicle)
+            return;  // the vehicle isn't owned by the JavaScript code
+
+        this.notifyObservers('onVehicleSpawn', vehicle);
+    }
+
+    // Called when a vehicle on the server either has exploded or has hit the water. Observers will
+    // be informed about this event, but we ignore the misleading `killerid` parameter.
+    onVehicleDeath(event) {
+        const vehicle = this.vehicles_.get(event.vehicleid);
+        if (!vehicle)
+            return;  // the vehicle isn't owned by the JavaScript code
+
+        this.notifyObservers('onVehicleDeath', vehicle);
     }
 
     // Notifies observers about the |eventName|, passing |...args| as the argument to the method

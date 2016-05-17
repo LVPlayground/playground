@@ -75,6 +75,25 @@ class MockVehicle {
     // valid for this vehicle. Components can be added multiple times.
     addComponent(componentId) {}
 
+    // ---------------------------------------------------------------------------------------------
+
+    // Triggers an event informing the server that this vehicle has spawned.
+    spawn() {
+        global.dispatchEvent('vehiclespawn', {
+            vehicleid: this.id_
+        });
+    }
+
+    // Triggers an event informing the server that this vehicle has died.
+    death() {
+        global.dispatchEvent('vehicledeath', {
+            vehicleid: this.id_,
+            killerid: Player.INVALID_ID
+        });
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Disposes the vehicle by removing it from the server.
     dispose() {
         this.manager_.didDisposeVehicle(this);

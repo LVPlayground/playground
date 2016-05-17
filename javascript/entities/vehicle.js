@@ -1,109 +1,120 @@
-// Copyright 2015 Las Venturas Playground. All rights reserved.
+// Copyright 2016 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Extendable = require('base/extendable.js'),
-      Vector = require('base/vector.js');
+const Vector = require('base/vector.js');
 
-class Vehicle extends Extendable {
-  constructor(options) {
-    super();
+// Represents and encapsulates the lifetime of a Vehicle on the San Andreas: Multiplayer server.
+// Provides quick and idiomatic access to the vehicle's properties. 
+class Vehicle {
+    constructor(manager, options) {
+        this.manager_ = manager;
+        this.modelId_ = options.modelId;
+        this.siren_ = !!options.siren;
 
-    this.id_ = 0;
-    this.interiorId_ = 0;
-    this.modelId_ = 0;
+        // TODO(Russell): Synchronize these with the OnVehicleRespray event.
+        this.primaryColor_ = options.primaryColor;
+        this.secondaryColor_ = options.secondaryColor;
 
-    if (typeof options === 'number') {
-      // Initialize the vehicle with |options| being the vehicle's Id.
-      this.id_ = options;
-      this.modelId_ = pawnInvoke('GetVehicleModel', 'i', options);
+        // TODO(Russell): Synchronize these with the OnVehiclePaintjob event.
+        this.paintjob_ = options.paintjob;
 
-      if (this.modelId_ === 0)
-        throw new Error('There is no vehicle with Id ' + options + '.');
+        this.interiorId_ = options.interiorId || 0;
 
-    } else if (typeof options === 'object') {
-      // Creates a new vehicle based on the options defined in |options|.
-      let modelId = options.modelId || 411;
-      let position = options.position || new Vector(0, 0, 0);
-      let rotation = options.rotation || 0;
-      let colors = options.colors || [-1, -1];
+        this.id_ = pawnInvoke('CreateVehicle', 'iffffiiii', options.modelId, options.position.x,
+                              options.position.y, options.position.z, options.rotation,
+                              options.primaryColor, options.secondaryColor, -1 /* respawn delay */,
+                              options.siren ? 1 : 0);
 
-      this.modelId_ = modelId;
-      this.id_ = pawnInvoke('CreateVehicle', 'iffffiiii', modelId, position.x, position.y, position.z,
-                            rotation, colors[0], colors[1], -1 /* respawn_delay */, 0 /* addsiren */);
-      
-      if (this.id_ == Vehicle.INVALID_ID)
-        throw new Error('The vehicle could not be created on the SA-MP server.');
+        if (this.id_ == Vehicle.INVALID_ID)
+            throw new Error('Unable to create the vehicle on the SA-MP server.');
 
-      if (options.paintjob)
-        pawnInvoke('ChangeVehiclePaintjob', 'ii', this.id_, options.paintjob);
+        if (options.paintjob)
+            this.paintjob = options.paintjob;
 
-      if (options.interiorId)
-        this.interiorId = options.interiorId;
+        if (options.interiorId)
+            this.interiorId = options.interiorId;
+
+        if (options.virtualWorld)
+            this.virtualWorld = options.virtualWorld;
     }
-  }
 
-  // Returns the id by which this vehicle is identified in the SA-MP server.
-  get id() { return this.id_; }
+    // Returns whether this vehicle has been created on the server.
+    isConnected() { return !!pawnInvoke('GetVehicleModel', 'i', this.id_); }
 
-  // Disposes of the vehicle, and removes it from the world entirely.
-  dispose() {
-    pawnInvoke('DestroyVehicle', 'i', this.id_);
-  }
+    // Gets the Id of this vehicle as assigned by the SA-MP server.
+    get id() { return this.id_; }
 
-  // Gets or sets the virtual world in which this vehicle resides.
-  get virtualWorld() { return pawnInvoke('GetVehicleVirtualWorld', 'i', this.id_); }
-  set virtualWorld(value) { pawnInvoke('SetVehicleVirtualWorld', 'ii', this.id_, value); }
+    // Gets the model Id associated with this vehicle.
+    get modelId() { return this.modelId_; }
 
-  // Gets or sets the interior in which this vehicle resides. Vehicles will be invisible to players
-  // (but might still influence colission) if they are in the wrong interior.
-  get interiorId() { return this.interiorId_; }
-  set interiorId(value) {
-    if (this.interiorId_ == value)
-      return;
+    // Gets or sets the position of this vehicle.
+    get position() { return new Vector(...pawnInvoke('GetVehiclePos', 'iFFF', this.id_)); }
+    set position(value) {
+        pawnInfoke('SetVehiclePos', 'ifff', this.id_, value.x, value.y, value.z);
+    }
 
-    pawnInvoke('LinkVehicleToInterior', 'ii', this.id_, value);
-    this.interiorId_ = value;
-  }
+    // Gets or sets the rotation of this vehicle.
+    get rotation() { return pawnInvoke('GetVehicleZAngle', 'iF', this.id_); }
+    set rotation(value) { pawnInvoke('SetVehicleZAngle', 'if', this.id_, value); }
 
-  // Gets the model Id of this vehicle.
-  get modelId() { return pawnInvoke('GetVehicleModel', 'i', this.id_); }
+    // Gets or sets the primary colour of this vehicle.
+    get primaryColor() { return this.primaryColor_; }
+    set primaryColor(value) {
+        pawnInvoke('ChangeVehicleColor', 'iii', this.id_, value, this.secondaryColor_);
+        this.primaryColor_ = value;
+    }
 
-  // Gets or sets the position of the vehicle. Both must be used with a 3D vector.
-  get position() { return new Vector(...pawnInvoke('GetVehiclePos', 'iFFF', this.id_)); }
-  set position(value) { pawnInvoke('SetVehiclePos', 'ifff', this.id_, value.x, value.y, value.z); }
+    // Gets or sets the secondary colour of this vehicle.
+    get secondaryColor() { return this.secondaryColor_; }
+    set secondaryColor(value) {
+        pawnInvoke('ChangeVehicleColor', 'iii', this.id_, this.primaryColor_, value);
+        this.secondaryColor_ = value;
+    }
 
-  // Gets or sets the health of the vehicle. This is a floating point number generally between a
-  // zero (exploded) and a thousand (in perfect condition). Does not reflect the damage state of
-  // the vehicle, which has to be maintained separately.
-  get health() { return pawnInvoke('GetVehicleHealth', 'iF', this.id_); }
-  set health(value) { pawnInvoke('SetVehicleHealth', 'ii', this.id_, value); }
+    // Gets whether the vehicle has been forced to have a siren.
+    get siren() { return this.siren_; }
 
-  // Gets or sets the facing angle (among the Z-axis) of the vehicle.
-  get angle() { return pawnInvoke('GetVehicleZAngle', 'iF', this.id_); }
-  set angle(value) { pawnInvoke('SetVehicleZAngle', 'if', this.id_, value); }
+    // Gets or sets the paintjob that have been applied to this vehicle.
+    get paintjob() { return this.paintjob_; }
+    set paintjob(value) {
+        pawnInvoke('ChangeVehiclePaintjob', 'ii', this.id_, value);
+        this.paintjob_ = value;
+    }
 
-  // Gets the rotation of the vehicle as a quaternion. The order of the quaternion returned by the
-  // San Andreas: Multiplayer server is incorrect - it gives us {w, x, z, y}. Compensate for this.
-  get rotationQuat() {
-    let quat = pawnInvoke('GetVehicleRotationQuat', 'iFFFF', this.id_);
-    return [quat[0], quat[1], quat[3], quat[2]];
-  }
+    // Gets or sets the interior that this vehicle has been linked to.
+    get interiorId() { return this.interiorId_; }
+    set interiorId(value) {
+        pawnInvoke('LinkVehicleToInterior', 'ii', this.id_, value);
+        this.interiorId_ = value;
+    }
 
-  // Gets or sets the velocity of the vehicle. These must be instances of the Vector class.
-  get velocity() { return new Vector(...pawnInvoke('GetVehicleVelocity', 'iFFF', this.id_)); }
-  set velocity(value) { pawnInvoke('SetVehicleVelocity', 'ifff', this.id_, value.x, value.y, value.z); }
+    // Gets or sets the virtual world this vehicle is tied to.
+    get virtualWorld() { return pawnInvoke('GetVehicleVirtualWorld', 'i', this.id_); }
+    set virtualWorld(value) { pawnInvoke('SetVehicleVirtualWorld', 'ii', this.id_, value); }
 
-  // Repairs the vehicle. This sets the health of the vehicle to its maximum, and reset and visual
-  // damage that may have been done to the vehicle since the last repair.
-  repair() { pawnInvoke('RepairVehicle', 'i', this.id_); }
+    // Gets or sets the health of this vehicle. Should generally be between 0 and 1000.
+    get health() { return pawnInvoke('GetVehicleHealth', 'iF', this.id_); }
+    set health(value) { pawnInvoke('SetVehicleHealth', 'if', this.id_, value); }
 
-  // Adds |componentId| to this vehicle. No verification will be done on whether the component is
-  // valid for this vehicle. Components can be added multiple times.
-  addComponent(componentId) {
-    pawnInvoke('AddVehicleComponent', 'ii', this.id_, componentId);
-  }
-};
+    // Repairs the vehicle. This resets the visual damage state as well.
+    repair() { pawnInvoke('RepairVehicle', 'i', this.id_); }
+
+    // Adds |componentId| to this vehicle. No verification will be done on whether the component is
+    // valid for this vehicle. Components can be added multiple times.
+    addComponent(componentId) {
+        pawnInvoke('AddVehicleComponent', 'ii', this.id_, componentId);
+    }
+
+    // Disposes the vehicle by removing it from the server.
+    dispose() {
+        this.manager_.didDisposeVehicle(this);
+        this.manager_ = null;
+
+        pawnInvoke('DestroyVehicle', 'i', this.id_);
+        this.id_ = null;
+    }
+}
 
 // The Id that is used to represent invalid vehicles.
 Vehicle.INVALID_ID = 65535;
@@ -115,5 +126,3 @@ Vehicle.COMPONENT_NOS_TEN_SHOTS = 1010;
 
 // Expose the Vehicle object globally since it will be commonly used.
 global.Vehicle = Vehicle;
-
-exports = Vehicle;

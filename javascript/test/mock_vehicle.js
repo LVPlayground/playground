@@ -20,6 +20,8 @@ class MockVehicle {
 
         this.interiorId_ = options.interiorId;
         this.virtualWorld_ = options.virtualWorld;
+
+        this.health_ = 1000;
     }
 
     // Returns whether this vehicle has been created on the server.
@@ -61,6 +63,17 @@ class MockVehicle {
     // Gets or sets the virtual world this vehicle is tied to.
     get virtualWorld() { return this.virtualWorld_; }
     set virtualWorld(value) { this.virtualWorld_ = value; }
+
+    // Gets or sets the health of this vehicle. Should generally be between 0 and 1000.
+    get health() { return this.health_; }
+    set health(value) { this.health_ = value; }
+
+    // Repairs the vehicle. This resets the visual damage state as well.
+    repair() { this.health_ = 1000; }
+
+    // Adds |componentId| to this vehicle. No verification will be done on whether the component is
+    // valid for this vehicle. Components can be added multiple times.
+    addComponent(componentId) {}
 
     // Disposes the vehicle by removing it from the server.
     dispose() {

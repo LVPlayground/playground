@@ -1,27 +1,36 @@
-// Copyright 2015 Las Venturas Playground. All rights reserved.
+// Copyright 2016 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let ScopedEntities = require('entities/scoped_entities.js');
+const ScopedEntities = require('entities/scoped_entities.js');
+const Vector = require('base/vector.js');
 
 describe('ScopedEntities', it => {
-  it('should dispose of vehicles', assert => {
-    let entities = new ScopedEntities();
+    it('should be able to create and dispose of scoped actors', assert => {
+        const entities = new ScopedEntities();
 
-    // TODO: Is there a good way to count vehicles on the server? GetVehiclePoolSize() would return
-    // the highest id, while a new vehicle might be assigned a lower Id instead.
-/**
-    These tests cannot run in the Test Runner, because they rely on GetVehicleModel returning
-    something sensible there. Which it doesn't.
+        const gunther = entities.createActor({ modelId: 121, position: new Vector(12, 13, 14) });
+        assert.isNotNull(gunther);
+        assert.isTrue(gunther.isConnected());
 
-    let vehicle = entities.createVehicle({ modelId: 411 });
-    assert.isNotNull(vehicle);
+        entities.dispose();
 
-    assert.equal(pawnInvoke('GetVehicleModel', 'i', vehicle.id), 411);
+        assert.isNotNull(gunther);
+        assert.isFalse(gunther.isConnected());
+    });
 
-    entities.dispose();
+    // TODO(Russell): Test with objects once that moves to an object manager.
 
-    assert.equal(pawnInvoke('GetVehicleModel', 'i', vehicle.id), 0);
-**/
-  });
+    it('should be able to create and dispose of scoped vehicles', assert => {
+        const entities = new ScopedEntities();
+
+        const infernus = entities.createVehicle({ modelId: 411, position: new Vector(12, 13, 14) });
+        assert.isNotNull(infernus);
+        assert.isTrue(infernus.isConnected());
+
+        entities.dispose();
+
+        assert.isNotNull(infernus);
+        assert.isFalse(infernus.isConnected());
+    });
 });

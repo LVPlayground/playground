@@ -262,13 +262,11 @@ class RunningRace {
         modelId: spawn.vehicle.model,
         position: spawn.position,
         rotation: spawn.rotation,
-        colors: spawn.vehicle.colors
+        primaryColor: spawn.vehicle.colors[0],
+        secondaryColor: spawn.vehicle.colors[1],
+        interiorId: this.race_.interior,
+        virtualWorld: this.virtualWorld_
       });
-
-      // Link the vehicle to the race's virtual world and interior (unless it's in the main world).
-      vehicle.virtualWorld = this.virtualWorld_;
-      if (this.race_.interior != 0)
-        vehicle.interiorId = this.race_.interior;
 
       // If the vehicle should have nitrous oxide systems, make sure to create them.
       switch (spawn.vehicle.nos) {

@@ -22,7 +22,7 @@ class PirateShipParty {
 
         this.dj_ =
             server.actorManager.createActor({ modelId: 178 /* Whore */,
-                                              position: new Vector(2000.56, 1567.58, 15.3672),
+                                              position: new Vector(2000.56, 1567.98, 15.3072),
                                               rotation: 180 });
 
         this.dj_.applyAnimation(DjAnimation);

@@ -136,6 +136,7 @@ class TestRunner {
       require('components/feature_manager/feature_manager.test.js');
       require('components/interior_selector/interior_selector.test.js');
       require('components/text_draw/text_draw.test.js');
+      require('entities/actor_manager.test.js');
       require('entities/player_manager.test.js');
       require('entities/scoped_entities.test.js');
       require('entities/vehicle_manager.test.js');

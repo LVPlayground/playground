@@ -15,7 +15,10 @@ class ActorManager {
 
     // Creates a new actor with the given options. Actors do not have names.
     createActor({ modelId = 0, position, rotation = 0 } = {}) {
-        this.actors_.add(new this.actorConstructor_(this, modelId, position, rotation));
+        const actor = new this.actorConstructor_(this, modelId, position, rotation);
+        this.actors_.add(actor);
+
+        return actor;
     }
 
     // Removes the |actor| from the maintained set of actors. Should only be used by the Actor

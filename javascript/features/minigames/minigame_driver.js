@@ -27,6 +27,9 @@ class MinigameDriver {
 
         // The current state of the minigame.
         this.state_ = Minigame.STATE_SIGN_UP;
+
+        // Assign a unique virtual world Id to the minigame.
+        this.virtualWorld_ = VirtualWorld.acquire('minigame: ' + minigame.name);
     }
 
     // Gets the set of players who are currently actively engaged in the minigame.
@@ -40,6 +43,9 @@ class MinigameDriver {
 
     // Gets the current state of the minigame.
     get state() { return this.state_; }
+
+    // Gets the unique virtual world Id that has been assigned to this minigame.
+    get virtualWorld() { return this.virtualWorld_; }
 
     // Adds |player| to the minigame.
     addPlayer(player) {
@@ -158,6 +164,9 @@ class MinigameDriver {
     }
 
     dispose() {
+        VirtualWorld.release(this.virtualWorld_);
+        this.virtualWorld_ = null;
+
         this.entities_.dispose();
         this.entities_ = null;
 

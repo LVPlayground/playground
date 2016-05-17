@@ -45,6 +45,10 @@ class Minigame {
     // minigame manager, which creates the driver for us.
     get state() { return this.driver_.state; }
 
+    // Gets the virtual world Id in which this minigame should take place. Only available after
+    // creating the minigame with the minigame manager, which creates the driver for us.
+    get virtualWorld() { return this.driver_.virtualWorld; }
+
     // Gets the minimum number of participants in this minigame.
     get minimumParticipants() { return this.minimumParticipants_; }
 

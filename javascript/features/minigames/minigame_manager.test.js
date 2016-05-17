@@ -280,4 +280,22 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         assert.equal(minigame.leaveVehicles.length, 1);
     });
 
+    it('should assign a unique virtual world to each minigame', assert => {
+        const category = manager.createCategory('test');
+
+        const firstMinigame = new MockMinigame();
+        assert.throws(() => firstMinigame.virtualWorld);
+        manager.createMinigame(category, firstMinigame, gunther);
+        assert.doesNotThrow(() => firstMinigame.virtualWorld);
+        assert.isTrue(manager.isPlayerEngaged(gunther));
+
+        const secondMinigame = new MockMinigame();
+        assert.throws(() => secondMinigame.virtualWorld);
+        manager.createMinigame(category, secondMinigame, russell);
+        assert.doesNotThrow(() => secondMinigame.virtualWorld);
+        assert.isTrue(manager.isPlayerEngaged(russell));
+
+        assert.notEqual(firstMinigame.virtualWorld, secondMinigame.virtualWorld);
+    });
+
 });

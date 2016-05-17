@@ -2,7 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MockVehicle = require('test/mock_vehicle.js');
 const PriorityQueue = require('base/priority_queue.js');
 const Vector = require('base/vector.js');
 const VehicleStreamer = require('features/vehicles/vehicle_streamer.js');
@@ -15,8 +14,7 @@ const TestingVehicleLimit = 10;
 describe('VehicleStreamer', (it, beforeEach, afterEach) => {
     let streamer = null;
 
-    beforeEach(() => streamer = new VehicleStreamer(TestingVehicleLimit,
-                                                    MockVehicle /* vehicleConstructor */));
+    beforeEach(() => streamer = new VehicleStreamer(TestingVehicleLimit));
 
     afterEach(() => streamer.dispose());
 
@@ -121,13 +119,13 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
 
         const infernus = streamableInfernus.vehicle;
         assert.isNotNull(infernus);
-        assert.isTrue(infernus.isLive());
+        assert.isTrue(infernus.isConnected());
 
         streamer.removeVehicle(streamableInfernus);
         assert.equal(streamableInfernus.refCount, 0);
 
         assert.isNull(streamableInfernus.vehicle);
-        assert.isFalse(infernus.isLive());
+        assert.isFalse(infernus.isConnected());
     });
 
     it('should lazily reference vehicles when initializing the streamer', assert => {
@@ -148,14 +146,14 @@ describe('VehicleStreamer', (it, beforeEach, afterEach) => {
 
         const vehicle = streamableInfernus.vehicle;
         assert.isNotNull(vehicle);
-        assert.isTrue(vehicle.isLive());
+        assert.isTrue(vehicle.isConnected());
 
         streamer.removeVehicle(streamableInfernus);
 
         assert.equal(streamer.liveVehicleCount, 0);
         assert.equal(streamableInfernus.refCount, 0);
         assert.isNull(streamableInfernus.vehicle);
-        assert.isFalse(vehicle.isLive());
+        assert.isFalse(vehicle.isConnected());
     });
 
     it('should dereference out-of-range vehicles when streaming', assert => {

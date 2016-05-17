@@ -22,15 +22,12 @@ const DefaultVehiclesPerPlayer = 20;
 // this by maintaining a grid of the original vehicle locations, so that the nearest vehicles to
 // each players can quickly and accurately be determined.
 class VehicleStreamer {
-    constructor(vehicleLimit = DefaultVehicleLimit, vehicleConstructor = Vehicle) {
+    constructor(vehicleLimit = DefaultVehicleLimit) {
         this.grid_ = new VehicleGrid(DefaultStreamDistance);
         this.initialized_ = false;
 
         this.vehicleLimit_ = vehicleLimit;
         this.liveVehicleCount_ = 0;
-
-        // The constructor that will be used for creating vehicles.
-        this.vehicleConstructor_ = vehicleConstructor;
 
         // Persistent vehicles will always exist and bypass the grid streamer.
         this.persistentVehicles_ = new Set();
@@ -233,11 +230,12 @@ class VehicleStreamer {
     // instance it's now associated with. The instance will be set on the |storedVehicle| as well.
     internalCreateVehicle(storedVehicle) {
         if (!storedVehicle.vehicle) {
-            storedVehicle.vehicle = new this.vehicleConstructor_({
+            storedVehicle.vehicle = server.vehicleManager.createVehicle({
                 modelId: storedVehicle.modelId,
                 position: storedVehicle.position,
                 rotation: storedVehicle.rotation,
-                colors: [ storedVehicle.primaryColor, storedVehicle.secondaryColor ],
+                primaryColor: storedVehicle.primaryColor,
+                secondaryColor: storedVehicle.secondaryColor,
                 paintjob: storedVehicle.paintjob,
                 interiorId: storedVehicle.interiorId
             });

@@ -2,26 +2,31 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Vector = require('base/vector.js');
-
 // Supports exactly the same API as a regular Vehicle entity, but will only store the data locally
 // instead of actually creating the vehicle on the server.
 class MockVehicle {
-    constructor(options) {
-        this.vehicleId_ = Math.floor(Math.random() * 10000000);
-        this.modelId_ = options.modelId || 411;
+    constructor(manager, options) {
+        this.manager_ = manager;
+        this.id_ = Math.floor(Math.random() * 10000000);
 
-        this.position_ = options.position || new Vector(0, 0, 0);
-        this.rotation_ = options.rotation || 0;
+        this.modelId_ = options.modelId;
+        this.position_ = options.position;
+        this.rotation_ = options.rotation;
+        this.primaryColor_ = options.primaryColor;
+        this.secondaryColor_ = options.secondaryColor;
+        this.siren_ = options.siren;
 
-        this.colors_ = options.colors || [0, 0];
-        this.paintjob_ = options.paintjob || null;
+        this.paintjob_ = options.paintjob;
 
-        this.interiorId_ = options.interiorId || 0;
+        this.interiorId_ = options.interiorId;
+        this.virtualWorld_ = options.virtualWorld;
     }
 
     // Returns whether this vehicle has been created on the server.
-    isLive() { return this.vehicleId_ !== null; }
+    isConnected() { return this.id_ !== null; }
+
+    // Gets the Id of this vehicle as assigned by the SA-MP server.
+    get id() { return this.id_; }
 
     // Gets the model Id associated with this vehicle.
     get modelId() { return this.modelId_; }
@@ -34,9 +39,16 @@ class MockVehicle {
     get rotation() { return this.rotation_; }
     set rotation(value) { this.rotation_ = value; }
 
-    // Gets or sets the colors that have been applied to this vehicle.
-    get colors() { return this.colors_; }
-    set colors(value) { this.colors_ = value; }
+    // Gets or sets the primary colour of this vehicle.
+    get primaryColor() { return this.primaryColor_; }
+    set primaryColor(value) { this.primaryColor_ = value; }
+
+    // Gets or sets the secondary colour of this vehicle.
+    get secondaryColor() { return this.secondaryColor_; }
+    set secondaryColor(value) { this.secondaryColor_ = value; }
+
+    // Gets whether the vehicle has been forced to have a siren.
+    get siren() { return this.siren_; }
 
     // Gets or sets the paintjob that have been applied to this vehicle.
     get paintjob() { return this.paintjob_; }
@@ -46,9 +58,16 @@ class MockVehicle {
     get interiorId() { return this.interiorId_; }
     set interiorId(value) { this.interiorId_ = value; }
 
+    // Gets or sets the virtual world this vehicle is tied to.
+    get virtualWorld() { return this.virtualWorld_; }
+    set virtualWorld(value) { this.virtualWorld_ = value; }
+
     // Disposes the vehicle by removing it from the server.
     dispose() {
-        this.vehicleId_ = null;
+        this.manager_.didDisposeVehicle(this);
+        this.manager_ = null;
+
+        this.id_ = null;
     }
 }
 

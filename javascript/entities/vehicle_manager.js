@@ -7,7 +7,9 @@ const ScopedCallbacks = require('base/scoped_callbacks.js');
 // The vehicle manager is in control of all vehicles that have been created by the JavaScript code
 // of Las Venturas Playground. It deliberately does not provide access to the Pawn vehicles.
 class VehicleManager {
-    constructor() {
+    constructor(vehicleConstructor = Vehicle) {
+        this.vehicleConstructor_ = vehicleConstructor;
+
         this.observers_ = new Set();
         this.vehicles_ = new Map();
 
@@ -42,6 +44,26 @@ class VehicleManager {
         this.observers_.delete(observer);
     }
 
+    // Creates a new vehicle with the given options. The vehicle's model Id and position are
+    // required, all other options can optionally be provided.
+    createVehicle({ modelId, position, rotation = 0, primaryColor = -1, secondaryColor = -1,
+                    siren = false, paintjob = null, interiorId = 0, virtualWorld = 0 } = {}) {
+        const vehicle = new this.vehicleConstructor_(this, {
+            modelId: modelId,
+            position: position,
+            rotation: rotation,
+            primaryColor: primaryColor,
+            secondaryColor: secondaryColor,
+            siren: siren,
+            paintjob: paintjob,
+            interiorId: interiorId,
+            virtualWorld: virtualWorld
+        });
+
+        this.vehicles_.set(vehicle.id, vehicle);
+        return vehicle;
+    }
+
     // Notifies observers about the |eventName|, passing |...args| as the argument to the method
     // when it exists. The call will be bound to the observer's instance.
     notifyObservers(eventName, ...args) {
@@ -53,10 +75,25 @@ class VehicleManager {
         }
     }
 
+    // Called when |vehicle| has been disposed. The reference to the vehicle will be released from
+    // the vehicle manager, which means that it will be inaccessible from here on out.
+    didDisposeVehicle(vehicle) {
+        if (!this.vehicles_.has(vehicle.id))
+            throw new Error('The vehicle with Id #' + vehicle.id + ' is not known to the manager.');
+
+        this.vehicles_.delete(vehicle.id);
+    }
+
     // Releases all references and state held by the vehicle manager.
     dispose() {
         this.callbacks_.dispose();
         this.callbacks_ = null;
+
+        // Forcefully dispose all vehicles created through JavaScript on the server.
+        this.vehicles_.forEach(vehicle => vehicle.dispose());
+
+        if (this.vehicles_.size > 0)
+            throw new Error('There are vehicles left in the vehicle manager after disposing it.');
 
         this.vehicles_ = null;
         this.observers_ = null;

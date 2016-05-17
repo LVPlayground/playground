@@ -2,13 +2,13 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ObjectGroup = require('features/playground/object_group.js');
+const PirateShipParty = require('features/playground/pirate_ship_party.js');
 
 // The playground manager provides back-end logic for the features provided as part of this module.
 // It controls all settings, as well as the default values for the settings.
 class PlaygroundManager {
     constructor() {
-        this.partyObjects_ = null;
+        this.pirateShipParty_ = null;
 
         // List of the options available as part of this feature. Must be alphabetically sorted.
         this.options_ = {
@@ -62,21 +62,20 @@ class PlaygroundManager {
     // Enables party-mode on the pirate ship by loading the object group. It will immediately be
     // applied and visible to all players in interior 0, in world 0.
     enableParty() {
-        if (this.partyObjects_)
+        if (this.pirateShipParty_)
             return;
 
-        this.partyObjects_ = ObjectGroup.create('data/objects/pirate_ship_party.json',
-                                                0 /* virtual world */, 0 /* interior */);
+        this.pirateShipParty_ = new PirateShipParty();
     }
 
     // Disables party-mode on the pirate ship. Immediately removes all objects from the server,
     // causing the effects to go away for the players near the ship.
     disableParty() {
-        if (!this.partyObjects_)
+        if (!this.pirateShipParty_)
             return;
 
-        this.partyObjects_.dispose();
-        this.partyObjects_ = null;
+        this.pirateShipParty_.dispose();
+        this.pirateShipParty_ = null;
     }
 
     dispose() {

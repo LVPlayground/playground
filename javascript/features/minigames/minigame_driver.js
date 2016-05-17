@@ -115,6 +115,22 @@ class MinigameDriver {
         }
     }
 
+    // Called when the |vehicle| has respawned. Will be forwarded to the minigame if applicable.
+    onVehicleSpawn(vehicle) {
+        if (!this.entities_.hasVehicle(vehicle))
+            return;  // the |vehicle| is not owned by this minigame
+
+        this.minigame_.onVehicleSpawn(vehicle);
+    }
+
+    // Called when the |vehicle| has died. Will be forwarded to the minigame if applicable.
+    onVehicleDeath(vehicle) {
+        if (!this.entities_.hasVehicle(vehicle))
+            return;  // the |vehicle| is not owned by this minigame
+
+        this.minigame_.onVehicleDeath(vehicle);
+    }
+
     // Removes |player| from the minigame because of |reason|. Will trigger the onPlayerRemoved
     // method on the minigame object, and free the |player|'s state in the minigame manager.
     removePlayer(player, reason) {

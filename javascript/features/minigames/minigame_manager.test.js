@@ -6,6 +6,7 @@ const Minigame = require('features/minigames/minigame.js');
 const MinigameManager = require('features/minigames/minigame_manager.js');
 const MinigameObserver = require('features/minigames/minigame_observer.js');
 const MockMinigame = require('features/minigames/test/mock_minigame.js');
+const Vector = require('base/vector.js');
 
 describe('MinigameManager', (it, beforeEach, afterEach) => {
     let gunther, russell;
@@ -278,6 +279,54 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
 
         assert.equal(minigame.enterVehicles.length, 1);
         assert.equal(minigame.leaveVehicles.length, 1);
+    });
+
+    it('should not tell minigames of unrelated vehicle spawn and deaths', assert => {
+        const category = manager.createCategory('test');
+        const minigame = new MockMinigame({ enableRespawn: true });
+
+        manager.createMinigame(category, minigame, gunther);
+        assert.isTrue(manager.isPlayerEngaged(gunther));
+
+        const infernus =
+            server.vehicleManager.createVehicle({ modelId: 411, position: new Vector(0, 0, 0) });
+        assert.isNotNull(infernus);
+        assert.isTrue(infernus.isConnected());
+
+        assert.equal(minigame.spawnVehicles.length, 0);
+        assert.equal(minigame.deathVehicles.length, 0);
+
+        infernus.spawn();
+        infernus.death();
+
+        assert.equal(minigame.spawnVehicles.length, 0);
+        assert.equal(minigame.deathVehicles.length, 0);
+    });
+
+    it('should tell minigames about spawns and deaths of owned vehicles', assert => {
+        const category = manager.createCategory('test');
+        const minigame = new MockMinigame({ enableRespawn: true });
+
+        manager.createMinigame(category, minigame, gunther);
+        assert.isTrue(manager.isPlayerEngaged(gunther));
+
+        const infernus =
+            minigame.entities.createVehicle({ modelId: 411, position: new Vector(0, 0, 0) });
+        assert.isNotNull(infernus);
+        assert.isTrue(infernus.isConnected());
+
+        assert.equal(minigame.spawnVehicles.length, 0);
+        assert.equal(minigame.deathVehicles.length, 0);
+
+        infernus.spawn();
+
+        assert.equal(minigame.spawnVehicles.length, 1);
+        assert.equal(minigame.deathVehicles.length, 0);
+
+        infernus.death();
+
+        assert.equal(minigame.spawnVehicles.length, 1);
+        assert.equal(minigame.deathVehicles.length, 1);
     });
 
     it('should assign a unique virtual world to each minigame', assert => {

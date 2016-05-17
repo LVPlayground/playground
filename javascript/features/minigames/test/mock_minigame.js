@@ -9,6 +9,7 @@ class MockMinigame extends Minigame {
     constructor(settings = {}) {
         super({
             name: settings.name || 'My Minigame',
+            command: settings.command || '/minigame',
 
             minimumParticipants: settings.minimumParticipants || 1,
             maximumParticipants: settings.maximumParticipants || 4,
@@ -22,6 +23,8 @@ class MockMinigame extends Minigame {
         this.spawnPlayers = [];
         this.enterVehicles = [];
         this.leaveVehicles = [];
+        this.spawnVehicles = [];
+        this.deathVehicles = [];
         this.removedPlayers = [];
         this.finishedReason = null;
     }
@@ -49,6 +52,16 @@ class MockMinigame extends Minigame {
     // Called when the |player| has left their vehicle.
     onPlayerLeaveVehicle(player) {
         this.leaveVehicles.push(player);
+    }
+
+    // Called when the |vehicle| has respawned.
+    onVehicleSpawn(vehicle) {
+        this.spawnVehicles.push(vehicle);
+    }
+
+    // Called when the |vehicle| has been destroyed.
+    onVehicleDeath(vehicle) {
+        this.deathVehicles.push(vehicle);
     }
 
     // Called when |player| has been removed from the minigame because of |reason|.

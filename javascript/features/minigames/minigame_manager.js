@@ -22,8 +22,9 @@ class MinigameManager {
         // Map of player instance to the driver of the minigame they are engaged in.
         this.players_ = new Map();
 
-        // Observe player disconnection events which are of interest to the manager.
+        // Observe the entity managers for events which are of interest to the manager.
         server.playerManager.addObserver(this);
+        server.vehicleManager.addObserver(this);
 
         // Listen to other events relevant for accurately managing minigame state.
         this.callbacks_ = new ScopedCallbacks();
@@ -225,9 +226,26 @@ class MinigameManager {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Called when the |vehicle| has respawned on the server. Will be forwarded to the minigame
+    // that owns |vehicle|, or will be ignored if that doesn't apply.
+    onVehicleSpawn(vehicle) {
+        this.minigames_.forEach(minigames =>
+            minigames.forEach(driver => driver.onVehicleSpawn(vehicle)));
+    }
+
+    // Called when the |vehicle| has been destroyed. Will be forwarded to the minigame that owns
+    // |vehicle|, or will be ignored if that doesn't apply.
+    onVehicleDeath(vehicle) {
+        this.minigames_.forEach(minigames =>
+            minigames.forEach(driver => driver.onVehicleDeath(vehicle)));
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     dispose() {
         this.callbacks_.dispose();
 
+        server.vehicleManager.removeObserver(this);
         server.playerManager.removeObserver(this);
 
         this.players_ = null;

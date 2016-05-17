@@ -7,6 +7,12 @@ const REQUIRED_SETTINGS = {
     // The player-visible name describing the minigame
     name: 'string',
 
+    // The command that players can type to participate in the minigame
+    command: 'string',
+
+    // TODO(Russell): It should cost money to participate in minigames. They should also offer some
+    // form of prize money after the minigame has been completed.
+
     // The maximum number of players that can participate in the minigame
     maximumParticipants: 'number'
 };
@@ -35,7 +41,10 @@ class Minigame {
     }
 
     // Gets the name of this minigame.
-    get name() { this.name_; }
+    get name() { return this.name_; }
+
+    // Gets the command through which players can join this minigame.
+    get command() { return this.command_; }
 
     // Gets the set of entities available for this minigame. Only available after creating the
     // minigame with the minigame manager, which creates the driver for us.
@@ -80,7 +89,11 @@ class Minigame {
     // Will be called when the |player| has left their vehicle.
     onPlayerLeaveVehicle(player) {}
 
-    // TODO(Russell): onVehicleDeath scoped to the vehicles created by this minigame
+    // Will be called when the |vehicle|, which must be scoped to this minigame, has spawned.
+    onVehicleSpawn(vehicle) {}
+
+    // Will be called when the |vehicle|, which must be scoped to this minigame, has been destroyed.
+    onVehicleDeath(vehicle) {}
 
     // Will be called when |player| has left the minigame because of |reason|. The player will
     // already have been removed from the set of active players.

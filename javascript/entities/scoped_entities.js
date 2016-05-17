@@ -21,6 +21,9 @@ class ScopedEntities {
         return actor;
     }
 
+    // Returns whether the |actor| belongs to this set of scoped entities.
+    hasActor(actor) { return this.actors_.has(actor); }
+
     // Creates an object with |parameters|. The object will be removed automatically when this
     // instance is being disposed of.
     createObject(...parameters) {
@@ -40,6 +43,9 @@ class ScopedEntities {
         this.vehicles_.add(vehicle);
         return vehicle;
     }
+
+    // Returns whether the |vehicle| belongs to this set of scoped entities.
+    hasVehicle(vehicle) { return this.vehicles_.has(vehicle); }
 
     // Disposes of all entities that were created through this ScopedEntities instance. Remaining
     // references to the entity objects will indicate that they're not connected anymore.

@@ -11,12 +11,21 @@ describe('ScopedEntities', it => {
 
         const gunther = entities.createActor({ modelId: 121, position: new Vector(12, 13, 14) });
         assert.isNotNull(gunther);
+        assert.isTrue(entities.hasActor(gunther));
         assert.isTrue(gunther.isConnected());
 
         entities.dispose();
 
         assert.isNotNull(gunther);
         assert.isFalse(gunther.isConnected());
+    });
+
+    it('should not identify actors owned by other systems as part of a scoped set', assert => {
+        const actor =
+            server.actorManager.createActor({ modelId: 121, position: new Vector(12, 13, 14) });
+        const entities = new ScopedEntities();
+
+        assert.isFalse(entities.hasActor(actor));
     });
 
     // TODO(Russell): Test with objects once that moves to an object manager.
@@ -26,11 +35,20 @@ describe('ScopedEntities', it => {
 
         const infernus = entities.createVehicle({ modelId: 411, position: new Vector(12, 13, 14) });
         assert.isNotNull(infernus);
+        assert.isTrue(entities.hasVehicle(infernus));
         assert.isTrue(infernus.isConnected());
 
         entities.dispose();
 
         assert.isNotNull(infernus);
         assert.isFalse(infernus.isConnected());
+    });
+
+    it('should not identify vehicles owned by other systems as part of a scoped set', assert => {
+        const vehicle =
+            server.vehicleManager.createVehicle({ modelId: 411, position: new Vector(12, 13, 14) });
+        const entities = new ScopedEntities();
+
+        assert.isFalse(entities.hasVehicle(vehicle));
     });
 });

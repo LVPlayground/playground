@@ -23,8 +23,7 @@ class ActivityLog extends Feature {
 
     [
       'OnPlayerResolvedDeath',  // { playerid, killerid, reason }
-      'OnPlayerWeaponShot',     // { playerid, weaponid, hittype, hitid, fX, fY, fZ }
-      'OnVehicleDeath'          // { vehicleid }
+//    'OnPlayerWeaponShot',     // { playerid, weaponid, hittype, hitid, fX, fY, fZ }
 
     ].forEach(name =>
         this.callbacks_.addEventListener(toEventName(name), this.__proto__[toMethodName(name)].bind(this)));
@@ -74,18 +73,6 @@ class ActivityLog extends Feature {
     const targetDistance = new Vector(event.fX, event.fY, event.fZ).magnitude;
 
     this.recorder_.writeHit(userId, targetUserId, targetDistance, event.weaponid, position);
-  }
-
-  // Called when a vehicle has died. The |event| contains the { vehicleid }.
-  onVehicleDeath(event) {
-    const vehicle = new Vehicle(event.vehicleid);
-    if (!vehicle)
-      return;
-
-    const modelId = vehicle.modelId;
-    const position = vehicle.position;
-
-    this.recorder_.writeVehicleDeath(modelId, position);
   }
 };
 

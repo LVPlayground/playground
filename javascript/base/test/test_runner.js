@@ -121,7 +121,6 @@ class TestRunner {
     // plugin, which doesn't exist yet.
     {
       require('base/color.test.js');
-      require('base/extendable.test.js');
       require('base/message.test.js');
       require('base/priority_queue.test.js');
       require('base/scoped_callbacks.test.js');

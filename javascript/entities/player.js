@@ -2,18 +2,15 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Extendable = require('base/extendable.js');
 const Vector = require('base/vector.js');
 
 // Camera interpolation modes defined by SA-MP.
 const CAMERA_MOVE = 1;
 const CAMERA_CUT = 2;
 
-class Player extends Extendable {
+class Player {
   // Creates a new instance of the Player class for |playerId|.
   constructor(playerId) {
-    super();
-
     this.id_ = playerId;
     this.name_ = pawnInvoke('GetPlayerName', 'iS', playerId);
     this.ipAddress_ = pawnInvoke('GetPlayerIp', 'iS', playerId);

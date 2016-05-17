@@ -2,13 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let Extendable = require('base/extendable.js'),
-    Vector = require('base/vector.js');
+const Vector = require('base/vector.js');
 
-class GameObject extends Extendable {
+class GameObject {
   constructor(options) {
-    super();
-
     this.id_ = 0;
 
     if (typeof options === 'object') {

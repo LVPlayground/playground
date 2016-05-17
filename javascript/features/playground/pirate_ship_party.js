@@ -10,6 +10,9 @@ const DjAnimation = { library: 'LOWRIDER', name: 'RAP_B_Loop', loop: true };
 
 // The Pirate Ship Party object encapsulates the functionality that is available to decorate the
 // Pirate Ship in case of celebrations.
+//
+// A number of these decorations have been contributed by Jay (https://sa-mp.nl/players/19/jay.html)
+// and a number of them have been contributed by Russell.
 class PirateShipParty {
     constructor() {
         this.bartender_ =

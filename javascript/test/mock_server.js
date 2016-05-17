@@ -2,8 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const ActorManager = require('entities/actor_manager.js');
 const CommandManager = require('components/command_manager/command_manager.js');
 const FeatureManager = require('components/feature_manager/feature_manager.js');
+const MockActor = require('test/mock_actor.js');
 const MockPlayerManager = require('test/mock_player_manager.js');
 const MockVehicleManager = require('test/mock_vehicle_manager.js');
 
@@ -13,11 +15,10 @@ const MockVehicleManager = require('test/mock_vehicle_manager.js');
 class MockServer {
     // Constructs the MockServer instance, and creates a mocked scenario on the server.
     constructor() {
-        // TODO(Russell): Create a mocked database.
-        this.database_ = null;
-
         this.commandManager_ = new CommandManager();
         this.featureManager_ = new FeatureManager();
+
+        this.actorManager_ = new ActorManager(MockActor /* actorConstructor */);
         this.playerManager_ = new MockPlayerManager();
         this.vehicleManager_ = new MockVehicleManager();
 
@@ -30,11 +31,23 @@ class MockServer {
         ].forEach(event => this.playerManager_.onPlayerConnect(event));
     }
 
+    // ---------------------------------------------------------------------------------------------
+
+    // Gets the database. Will throw an exception because it's not available in tests.
+    get database() { throw new Error('The database is not available in tests.'); }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Gets the command manager. This is a real instance.
     get commandManager() { return this.commandManager_; }
 
     // Gets the feature manager. This is a real instance.
     get featureManager() { return this.featureManager_; }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Gets the real actor manager that maintains fake actors.
+    get actorManager() { return this.actorManager_; }
 
     // Gets the mocked player manager.
     get playerManager() { return this.playerManager_; }
@@ -42,17 +55,19 @@ class MockServer {
     // Gets the mocked vehicle manager.
     get vehicleManager() { return this.vehicleManager_; }
 
-    // Gets the mocked database.
-    get database() { return this.database_; }
+    // ---------------------------------------------------------------------------------------------
 
-    // Returns whether the current Server instance is used for testing. Should be using sparsely,
-    // prefer injecting mocks where possible.
+    // Returns whether the Server instance is used to drive tests.
     isTest() { return true; }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Disposes the MockServer and uninitializes all owned objects.
     dispose() {
         this.vehicleManager_.dispose();
         this.playerManager_.dispose();
+        this.actorManager_.dispose();
+
         this.featureManager_.dispose();
         this.commandManager_.dispose();
     }

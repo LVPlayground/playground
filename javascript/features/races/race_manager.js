@@ -4,6 +4,7 @@
 
 const Minigame = require('features/minigames/minigame.js');
 const RaceDatabase = require('features/races/race_database.js');
+const RaceMinigame = require('features/races/race_minigame.js');
 const RaceSettings = require('features/races/race_settings.js');
 const RunningRace = require('features/races/running_race.js');
 
@@ -103,13 +104,8 @@ class RaceManager {
         }
 
         // Alternatively we create a new race that the player will be invited to join in to.
-        const minigame = null;
-
-        // TODO(Russell): Create the actual Minigame instance for the race.
-        //this.minigames_.createMinigame(this.minigameCategory_, minigame, player);
+        this.minigames_.createMinigame(this.minigameCategory_, new RaceMinigame(race), player);
     }
-
-    // TODO(Russell): We need to call RaceDatabase.storeRaceResult() somewhere.
 
     // ---------------------------------------------------------------------------------------------
 

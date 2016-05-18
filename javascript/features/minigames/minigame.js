@@ -57,6 +57,10 @@ class Minigame {
     // Gets the maximum number of seconds the minigame is allowed to last for.
     get timeout() { return this.timeout_; }
 
+    // Gets an iterator for the active players in this minigame. Only available after creating the
+    // minigame with the minigame manager, which creates the driver for us.
+    get activePlayers() { return this.driver_.activePlayers; }
+
     // Gets the set of entities available for this minigame. Only available after creating the
     // minigame with the minigame manager, which creates the driver for us.
     get entities() { return this.driver_.entities; }

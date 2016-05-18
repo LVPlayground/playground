@@ -8,7 +8,7 @@ const MinigameObserver = require('features/minigames/minigame_observer.js');
 const ScopedCallbacks = require('base/scoped_callbacks.js');
 
 // Number of milliseconds player have to sign-up to another player's minigame.
-const SignupTimeoutMilliseconds = 20000;
+const SignupTimeoutMilliseconds = 1500;//20000;
 
 // The minigame manager keeps track of the states of all players and all minigames, and routes
 // events associated with these entities to the right places. Each type of minigame gets a category
@@ -87,6 +87,9 @@ class MinigameManager {
             pending.push(driver.finish(Minigame.REASON_FORCED_STOP)));
 
         return Promise.all(pending).then(() => {
+            if (!this.minigames_)
+                return;  // the minigame manager has been disposed of since
+
             this.minigames_.delete(category);
             this.categories_.delete(category);
         });

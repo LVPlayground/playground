@@ -81,8 +81,10 @@ class MinigameDriver {
         // Inform the minigame about |player| leaving the activity.
         this.minigame_.onPlayerRemoved(player, reason);
 
-        // Restore their state after the minigame had a chance to do their things.
-        player.restoreState();
+        // Restore their state after the minigame had a chance to do their things. This may be done
+        // in response to an event, so restore it asynchonously to avoid reentrancy.
+        if (reason != Minigame.REASON_DISCONNECT)
+            Promise.resolve().then(() => player.restoreState());
 
         // Clear the player's state from the minigame manager.
         this.manager_.didRemovePlayerFromMinigame(player);
@@ -195,6 +197,9 @@ class MinigameDriver {
         this.minigame_.onStart().then(() => {
             if (server.isTest())
                 return;  // don't schedule the timers during tests
+
+            if (!this.minigame_.timeout)
+                return;  // don't schedule the timers for minigames with no time limit
 
             wait(this.minigame_.timeout * 1000).then(() =>
                 this.finish(Minigame.REASON_TIMED_OUT));

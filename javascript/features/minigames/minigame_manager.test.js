@@ -5,6 +5,7 @@
 const Minigame = require('features/minigames/minigame.js');
 const MinigameManager = require('features/minigames/minigame_manager.js');
 const MinigameObserver = require('features/minigames/minigame_observer.js');
+const MockAnnounce = require('features/announce/test/mock_announce.js');
 const MockMinigame = require('features/minigames/test/mock_minigame.js');
 const Vector = require('base/vector.js');
 
@@ -16,7 +17,7 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         gunther = server.playerManager.getById(0 /* Gunther */);
         russell = server.playerManager.getById(1 /* Russell */);
 
-        manager = new MinigameManager();
+        manager = new MinigameManager(new MockAnnounce());
     });
 
     afterEach(() => manager.dispose());
@@ -157,7 +158,12 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         const minigame = new MockMinigame();
 
         manager.createMinigame(category, minigame, gunther);
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(russell.messages.length, 1);
+
         manager.addPlayerToMinigame(category, minigame, russell);
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(russell.messages.length, 1);
 
         assert.equal(minigame.addedPlayers.length, 2);
 
@@ -423,5 +429,4 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
             finishResolver();
         });
     });
-
 });

@@ -11,7 +11,10 @@ class Minigames extends Feature {
     constructor() {
         super();
 
-        this.manager_ = new MinigameManager();
+        // Races depend on the announce feature to announce minigame availability and participation.
+        const announce = this.defineDependency('announce');
+
+        this.manager_ = new MinigameManager(announce);
     }
 
     // ---------------------------------------------------------------------------------------------

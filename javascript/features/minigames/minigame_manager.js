@@ -7,11 +7,16 @@ const MinigameDriver = require('features/minigames/minigame_driver.js');
 const MinigameObserver = require('features/minigames/minigame_observer.js');
 const ScopedCallbacks = require('base/scoped_callbacks.js');
 
+// Number of milliseconds player have to sign-up to another player's minigame.
+const SignupTimeoutMilliseconds = 20000;
+
 // The minigame manager keeps track of the states of all players and all minigames, and routes
 // events associated with these entities to the right places. Each type of minigame gets a category
 // through which its active minigames can be retrieved.
 class MinigameManager {
-    constructor() {
+    constructor(announce) {
+        this.announce_ = announce;
+
         // Map of category symbol to description for the given category.
         this.categories_ = new Map();
 
@@ -125,6 +130,15 @@ class MinigameManager {
         // Associate the |player| with the |driver|.
         driver.addPlayer(player);
 
+        if (false) {
+            // TODO(Russell): Skip the sign-up phase when the |player| is the only eligable player
+            // on the server for joining this minigame.
+        } else {
+            this.announce_.announceMinigame(player, minigame.name, minigame.command);
+            if (!server.isTest())
+                wait(SignupTimeoutMilliseconds).then(() => driver.load());
+        }
+
         const categoryObserver = this.categories_.get(category);
 
         // Inform the category's observer about the created minigame.
@@ -155,6 +169,8 @@ class MinigameManager {
 
         if (!added)
             throw new Error('Invalid minigame: ' + minigame);
+
+        this.announce_.announceMinigameParticipation(player, minigame.name, minigame.command);
     }
 
     // Called when |player| has been added to the |driver| for a certain minigame.

@@ -20,7 +20,7 @@ class Announce extends Feature {
 
     // Announces that the |name| has started by |player|. Players can join by typing |command|, and
     // will have to pay |price| in order to participate in the minigame.
-    announceMinigame(player, name, command, price) {
+    announceMinigame(player, name, command, price = 0) {
         this.manager_.announceMinigame(player, name, command, price);
     }
 

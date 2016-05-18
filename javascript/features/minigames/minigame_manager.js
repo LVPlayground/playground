@@ -57,7 +57,7 @@ class MinigameManager {
     // instances will be returned rather than the drivers managed by this feature.
     getMinigamesForCategory(category) {
         if (!this.categories_.has(category))
-            throw new Error('Invalid category: ' + category);
+            throw new Error('Invalid category.');
 
         let minigames = [];
 
@@ -71,14 +71,20 @@ class MinigameManager {
     // and all players part of these minigames will be respawned.
     deleteCategory(category) {
         if (!this.categories_.has(category))
-            throw new Error('Invalid category: ' + category);
+            throw new Error('Invalid category.');
 
         const drivers = this.minigames_.get(category);
-        drivers.forEach(driver =>
-            driver.finish(Minigame.REASON_FORCED_STOP));
+        const pending = [];
 
-        this.minigames_.delete(category);
-        this.categories_.delete(category);
+        // Finishing minigames is an asynchronous process, so wait until all running drivers signal
+        // that it's safe to delete the category before doing so.
+        drivers.forEach(driver =>
+            pending.push(driver.finish(Minigame.REASON_FORCED_STOP)));
+
+        return Promise.all(pending).then(() => {
+            this.minigames_.delete(category);
+            this.categories_.delete(category);
+        });
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -103,7 +109,7 @@ class MinigameManager {
     // automatically be added to the driver, given that minigames cannot go without players.
     createMinigame(category, minigame, player) {
         if (!this.categories_.has(category))
-            throw new Error('Invalid category: ' + category);
+            throw new Error('Invalid category.');
 
         if (!(minigame instanceof Minigame))
             throw new Error('Only games for Minigame objects can be created by the manager.');
@@ -130,7 +136,7 @@ class MinigameManager {
     // must not be engaged with any other activities.
     addPlayerToMinigame(category, minigame, player) {
         if (!this.categories_.has(category))
-            throw new Error('Invalid category: ' + category);
+            throw new Error('Invalid category.');
 
         if (this.isPlayerEngaged(player))
             throw new Error('Players can only be involved in a single minigame at a time.');
@@ -166,7 +172,7 @@ class MinigameManager {
     // means that the minigame has been finished.
     didFinishMinigame(category, driver) {
         if (!this.categories_.has(category))
-            throw new Error('Invalid category: ' + category);
+            throw new Error('Invalid category.');
 
         if (driver.activePlayers.size > 0)
             throw new Error('The |driver| still has active players associated with it.');

@@ -47,10 +47,13 @@ class MinigameDriver {
     // Gets the unique virtual world Id that has been assigned to this minigame.
     get virtualWorld() { return this.virtualWorld_; }
 
-    // Adds |player| to the minigame.
+    // ---------------------------------------------------------------------------------------------
+
+    // Adds |player| to the minigame. This method may only be used when the minigame is in the
+    // sign-up state, and therefore still accepting sign-ups.
     addPlayer(player) {
-        // TODO(Russell): Make sure that the minigame is in sign-up phase unless it's configured
-        // to allow players being added at any time. (In which case their state needs to be set up).
+        if (this.state_ != Minigame.STATE_SIGN_UP)
+            throw new Error('Players can only be added to a minigame when it is accepting signups');
 
         this.activePlayers_.add(player);
         this.players_.add(player);
@@ -61,8 +64,9 @@ class MinigameDriver {
         // Inform the minigame about |player| having joined the game.
         this.minigame_.onPlayerAdded(player);
 
-        // TODO(Russell): Auto-start the minigame when the maximum amount of players has been
-        // reached.
+        // Begin loading the minigame when the maximum number of players has been reached.
+        if (this.activePlayers_.size >= this.minigame_.maximumParticipants)
+            this.load();
     }
 
     // Serializes the current state of |player|, making sure that whatever happens to them within
@@ -70,6 +74,39 @@ class MinigameDriver {
     serializePlayerState(player) {
         // TODO(Russell): Serialize the player's state.
     }
+
+    // Removes |player| from the minigame because of |reason|. Will trigger the onPlayerRemoved
+    // method on the minigame object, and free the |player|'s state in the minigame manager.
+    removePlayer(player, reason) {
+        if (!this.activePlayers_.has(player))
+            return;
+
+        this.activePlayers_.delete(player);
+
+        // Inform the minigame about |player| leaving the activity.
+        this.minigame_.onPlayerRemoved(player, reason);
+
+        // Restore their state after the minigame had a chance to do their things.
+        this.restorePlayerState(player);
+
+        // Clear the player's state from the minigame manager.
+        this.manager_.didRemovePlayerFromMinigame(player);
+
+        // Check whether the minigame has finished in its entirety. This is the case when there are
+        // no more active players and the |player| is not being removed because it's finished.
+        if (reason != Minigame.REASON_FINISHED) {
+            if (this.activePlayers_.size < this.minigame_.minimumParticipants)
+                this.finish(Minigame.REASON_NOT_ENOUGH_PLAYERS);
+        }
+    }
+
+    // Restores the state of |player| by respawning them in the main world and deserializing their
+    // state in the Pawn part of Las Venturas Playground.
+    restorePlayerState(player) {
+        // TODO(Russell): Restore the player's state.
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Called when |player| has died because of |reason|. This definitely has to be forwarded to the
     // minigame, but may also mean that they have to be removed from it.
@@ -115,6 +152,8 @@ class MinigameDriver {
         }
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     // Called when the |vehicle| has respawned. Will be forwarded to the minigame if applicable.
     onVehicleSpawn(vehicle) {
         if (!this.entities_.hasVehicle(vehicle))
@@ -131,53 +170,67 @@ class MinigameDriver {
         this.minigame_.onVehicleDeath(vehicle);
     }
 
-    // Removes |player| from the minigame because of |reason|. Will trigger the onPlayerRemoved
-    // method on the minigame object, and free the |player|'s state in the minigame manager.
-    removePlayer(player, reason) {
-        if (!this.activePlayers_.has(player))
-            return;
+    // ---------------------------------------------------------------------------------------------
 
-        this.activePlayers_.delete(player);
+    // Advances the minigame to the loading state. The loading state will considered to be complete
+    // when the minigame's own `onLoad` method promise has been completed.
+    load() {
+        if (this.state_ != Minigame.STATE_SIGN_UP)
+            return;  // bail out because the minigame is not in the sign-up state
 
-        // Inform the minigame about |player| leaving the activity.
-        this.minigame_.onPlayerRemoved(player, reason);
+        // Mark the minigame as being in the loading state.
+        this.state_ = Minigame.STATE_LOADING;
 
-        // Restore their state after the minigame had a chance to do their things.
-        this.restorePlayerState(player);
+        // Asynchronously store the state for each player, then invoke the `onLoad` handler on
+        // the minigame itself, after which the minigame can advance to the running state.
+        Promise.resolve().then(() => {
+            for (let player of this.activePlayers_)
+                this.serializePlayerState(player);
 
-        // Clear the player's state from the minigame manager.
-        this.manager_.didRemovePlayerFromMinigame(player);
+            return this.minigame_.onLoad();
 
-        // Check whether the minigame has finished in its entirety. This is the case when there are
-        // no more active players and the |player| is not being removed because it's finished.
-        if (reason != Minigame.REASON_FINISHED) {
-            if (this.activePlayers_.size < this.minigame_.minimumParticipants)
-                this.finish(Minigame.REASON_NOT_ENOUGH_PLAYERS);
-        }
+        }).then(() => this.start());
     }
 
-    // Restores the state of |player| by respawning them in the main world and deserializing their
-    // state in the Pawn part of Las Venturas Playground.
-    restorePlayerState(player) {
-        // TODO(Russell): Restore the player's state.
+    // Advances the minigame to the started state. It will immediately start a timer that will run
+    // for the duration of the minigame's timeout, finishing the minigame if necessary.
+    start() {
+        if (this.state_ != Minigame.STATE_LOADING)
+            return;  // bail out because the minigame is not in the loading state
+
+        // Mark the minigame as being in the running state.
+        this.state_ = Minigame.STATE_RUNNING;
+
+        this.minigame_.onStart().then(() => {
+            if (server.isTest())
+                return;  // don't schedule the timers during tests
+
+            wait(this.minigame_.timeout * 1000).then(() =>
+                this.finish(Minigame.REASON_TIMED_OUT));
+        });
     }
 
     // Finishes the minigame. The minigame will be informed, after which the remaining players will
     // be respawned and the minigame will be removed from the manager.
     finish(reason) {
+        if (this.state_ == Minigame.STATE_FINISHED)
+            return;  // bail out because the minigame has already finished
+
         // Mark the minigame as having finished.
         this.state_ = Minigame.STATE_FINISHED;
 
-        // Inform the minigame about it having finished. There may still be active players left
-        // within the game, these will be removed immediately after.
-        this.minigame_.onFinished(reason);
+        // Inform the minigame about it having finished.
+        return this.minigame_.onFinish(reason).then(() => {
+            // Remove the remaining players from the minigame.
+            for (let player of this.activePlayers_)
+                this.removePlayer(player, Minigame.REASON_FINISHED);
 
-        for (let player of this.activePlayers_)
-            this.removePlayer(player, Minigame.REASON_FINISHED);
-
-        // Informs the manager that the minigame owned by this driver has finished.
-        this.manager_.didFinishMinigame(this.category_, this);
+            // Informs the manager that the minigame owned by this driver has finished.
+            this.manager_.didFinishMinigame(this.category_, this);
+        });
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     dispose() {
         VirtualWorld.release(this.virtualWorld_);
@@ -188,6 +241,10 @@ class MinigameDriver {
 
         this.players_ = null;
         this.activePlayers_ = null;
+
+        this.manager_ = null;
+        this.category_ = null;
+        this.minigame_ = null;
     }
 }
 

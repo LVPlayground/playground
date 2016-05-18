@@ -10,6 +10,7 @@ class MockMinigame extends Minigame {
         super({
             name: settings.name || 'My Minigame',
             command: settings.command || '/minigame',
+            timeout: 60 /* seconds */,
 
             minimumParticipants: settings.minimumParticipants || 1,
             maximumParticipants: settings.maximumParticipants || 4,
@@ -26,13 +27,28 @@ class MockMinigame extends Minigame {
         this.spawnVehicles = [];
         this.deathVehicles = [];
         this.removedPlayers = [];
-        this.finishedReason = null;
+
+        // These public promises exist for testing purposes.
+        this.loadResolve_ = null;
+        this.loadPromise = new Promise(resolve => this.loadResolve_ = resolve);
+
+        this.startResolve_ = null;
+        this.startPromise = new Promise(resolve => this.startResolve_ = resolve);
+
+        this.finishResolve_ = null;
+        this.finishPromise = new Promise(resolve => this.finishResolve_ = resolve);
     }
 
     // Called when |player| has been added to the minigame.
     onPlayerAdded(player) {
         this.addedPlayers.push(player);
     }
+
+    // Called when the minigame has advanced to loading state.
+    onLoad() { this.loadResolve_(); return this.loadPromise; }
+
+    // Called when the minigame has advanced to running state.
+    onStart() { this.startResolve_(); return this.startPromise; }
 
     // Called when |player| has died because of |reason|.
     onPlayerDeath(player, reason) {
@@ -70,9 +86,7 @@ class MockMinigame extends Minigame {
     }
 
     // Called when the minigame has finished because of |reason|.
-    onFinished(reason) {
-        this.finishedReason = reason;
-    }
+    onFinish(reason) { this.finishResolve_(reason); return this.finishPromise; }
 }
 
 exports = MockMinigame;

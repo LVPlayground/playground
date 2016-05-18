@@ -30,9 +30,9 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         assert.throws(() => manager.deleteCategory(42));
 
         const races = manager.createCategory('races');
-        manager.deleteCategory(races);
-
-        assert.throws(() => manager.deleteCategory(races));
+        return manager.deleteCategory(races).then(() => {
+            assert.throws(() => manager.deleteCategory(races));
+        });
     });
 
     it('should throw errors in case of invalid parameters when creating a minigame', assert => {
@@ -99,9 +99,11 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
 
         gunther.disconnect();
 
-        assert.isFalse(manager.isPlayerEngaged(gunther));
-        assert.equal(observer.started.length, 1);
-        assert.equal(observer.finished.length, 1);
+        return minigame.finishPromise.then(() => {
+            assert.isFalse(manager.isPlayerEngaged(gunther));
+            assert.equal(observer.started.length, 1);
+            assert.equal(observer.finished.length, 1);
+        });
     });
 
     it('should properly update player state when creating a minigame', assert => {
@@ -144,8 +146,10 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
 
         gunther.disconnect();
 
-        assert.isFalse(manager.isPlayerEngaged(gunther));
-        assert.equal(manager.getMinigamesForCategory(category).length, 0);
+        return minigame.finishPromise.then(() => {
+            assert.isFalse(manager.isPlayerEngaged(gunther));
+            assert.equal(manager.getMinigamesForCategory(category).length, 0);
+        });
     });
 
     it('should stop the minigame when the last engaged player disconnects', assert => {
@@ -161,7 +165,6 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         assert.isTrue(manager.isPlayerEngaged(russell));
         assert.equal(manager.getMinigamesForCategory(category).length, 1);
         assert.equal(minigame.removedPlayers.length, 0);
-        assert.isNull(minigame.finishedReason);
         assert.equal(minigame.state, Minigame.STATE_SIGN_UP);
 
         gunther.disconnect();
@@ -170,16 +173,18 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         assert.isTrue(manager.isPlayerEngaged(russell));
         assert.equal(manager.getMinigamesForCategory(category).length, 1);
         assert.equal(minigame.removedPlayers.length, 1);
-        assert.isNull(minigame.finishedReason);
 
         russell.disconnect();
 
-        assert.isFalse(manager.isPlayerEngaged(gunther));
-        assert.isFalse(manager.isPlayerEngaged(russell));
-        assert.equal(manager.getMinigamesForCategory(category).length, 0);
-        assert.equal(minigame.removedPlayers.length, 2);
-        assert.equal(minigame.finishedReason, Minigame.REASON_NOT_ENOUGH_PLAYERS);
-        assert.equal(minigame.state, Minigame.STATE_FINISHED);
+        return minigame.finishPromise.then(reason => {
+            assert.isFalse(manager.isPlayerEngaged(gunther));
+            assert.isFalse(manager.isPlayerEngaged(russell));
+            assert.equal(manager.getMinigamesForCategory(category).length, 0);
+            assert.equal(minigame.removedPlayers.length, 2);
+
+            assert.equal(reason, Minigame.REASON_NOT_ENOUGH_PLAYERS);
+            assert.equal(minigame.state, Minigame.STATE_FINISHED);
+        });
     });
 
     it('should be able for a minigame to require at least two players', assert => {
@@ -192,14 +197,16 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         assert.isTrue(manager.isPlayerEngaged(gunther));
         assert.isTrue(manager.isPlayerEngaged(russell));
         assert.equal(manager.getMinigamesForCategory(category).length, 1);
-        assert.isNull(minigame.finishedReason);
 
         gunther.disconnect();
 
-        assert.isFalse(manager.isPlayerEngaged(gunther));
-        assert.isFalse(manager.isPlayerEngaged(russell));
-        assert.equal(manager.getMinigamesForCategory(category).length, 0);
-        assert.equal(minigame.finishedReason, Minigame.REASON_NOT_ENOUGH_PLAYERS);
+        return minigame.finishPromise.then(reason => {
+            assert.isFalse(manager.isPlayerEngaged(gunther));
+            assert.isFalse(manager.isPlayerEngaged(russell));
+            assert.equal(manager.getMinigamesForCategory(category).length, 0);
+
+            assert.equal(reason, Minigame.REASON_NOT_ENOUGH_PLAYERS);
+        });
     });
 
     it('should cancel minigames when deleting a minigame category', assert => {
@@ -212,13 +219,17 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         assert.equal(manager.getMinigamesForCategory(category).length, 1);
         assert.equal(minigame.addedPlayers.length, 1);
 
-        manager.deleteCategory(category);
+        return manager.deleteCategory(category).then(() => {
+            return minigame.finishPromise;
 
-        assert.isFalse(manager.isPlayerEngaged(gunther));
-        assert.throws(() => manager.getMinigamesForCategory(category));
+        }).then(reason => {
+            assert.isFalse(manager.isPlayerEngaged(gunther));
+            assert.equal(minigame.removedPlayers.length, 1);
+            assert.equal(reason, Minigame.REASON_FORCED_STOP);
 
-        assert.equal(minigame.removedPlayers.length, 1);
-        assert.equal(minigame.finishedReason, Minigame.REASON_FORCED_STOP);
+            return Promise.resolve().then(() =>
+                assert.throws(() => manager.getMinigamesForCategory(category)));
+        });
     });
 
     it('should remove a player from a minigame when they die', assert => {
@@ -234,11 +245,14 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         gunther.die();
         assert.isFalse(gunther.spawn());
 
-        assert.isFalse(manager.isPlayerEngaged(gunther));
-        assert.equal(manager.getMinigamesForCategory(category).length, 0);
-        assert.equal(minigame.deathPlayers.length, 1);
-        assert.equal(minigame.spawnPlayers.length, 0);
-        assert.equal(minigame.removedPlayers.length, 1);
+        return minigame.finishPromise.then(reason => {
+            assert.isFalse(manager.isPlayerEngaged(gunther));
+            assert.equal(manager.getMinigamesForCategory(category).length, 0);
+            assert.equal(minigame.deathPlayers.length, 1);
+            assert.equal(minigame.spawnPlayers.length, 0);
+            assert.equal(minigame.removedPlayers.length, 1);
+            assert.equal(reason, Minigame.REASON_NOT_ENOUGH_PLAYERS);
+        });
     });
 
     it('should enable minigames to enable in-game respawns', assert => {
@@ -345,6 +359,54 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         assert.isTrue(manager.isPlayerEngaged(russell));
 
         assert.notEqual(firstMinigame.virtualWorld, secondMinigame.virtualWorld);
+    });
+
+    it('should share the appropriate states for the given events', assert => {
+        const category = manager.createCategory('test');
+
+        // Resolvers for each of the minigame states. Will be triggered manually by the test.
+        let loadResolver, startResolver, finishResolver;
+
+        const minigame = new MockMinigame();
+        minigame.loadPromise = new Promise(resolve => loadResolver = resolve);
+        minigame.startPromise = new Promise(resolve => startResolver = resolve);
+        minigame.finishPromise = new Promise(resolve => finishResolver = resolve);
+
+        // The `state` accesor should throw an exception because it's not attached yet.
+        assert.throws(() => minigame.state);
+
+        manager.createMinigame(category, minigame, gunther);
+        assert.isTrue(manager.isPlayerEngaged(gunther));
+
+        assert.equal(minigame.state, Minigame.STATE_SIGN_UP);
+
+        // TODO(Russell): Enable more natural state transitions, for example through the sign-up
+        // manager(?) or through some sort of helper methods.
+
+        const driver = minigame.driver_;
+
+        driver.load();
+
+        assert.equal(minigame.state, Minigame.STATE_LOADING);
+        loadResolver();
+
+        return minigame.loadPromise.then(() => {
+            return Promise.resolve();  // starting a minigame is asynchronous as well
+
+        }).then(() => {
+            assert.equal(minigame.state, Minigame.STATE_RUNNING);
+            startResolver();
+
+            return minigame.startPromise;
+
+        }).then(() => {
+            driver.finish(Minigame.REASON_FORCED_STOP);
+            return Promise.resolve();  // finishing a minigame is asynchronous as well
+
+        }).then(() => {
+            assert.equal(minigame.state, Minigame.STATE_FINISHED);
+            finishResolver();
+        });
     });
 
 });

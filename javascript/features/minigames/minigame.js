@@ -4,16 +4,19 @@
 
 // Dictionary of the required settings together with the expected JavaScript variable type.
 const REQUIRED_SETTINGS = {
-    // The player-visible name describing the minigame
+    // The player-visible name describing the minigame.
     name: 'string',
 
-    // The command that players can type to participate in the minigame
+    // The command that players can type to participate in the minigame.
     command: 'string',
+
+    // The maximum number of time the minigame may last for, in seconds.
+    timeout: 'number',
 
     // TODO(Russell): It should cost money to participate in minigames. They should also offer some
     // form of prize money after the minigame has been completed.
 
-    // The maximum number of players that can participate in the minigame
+    // The maximum number of players that can participate in the minigame.
     maximumParticipants: 'number'
 };
 
@@ -31,6 +34,9 @@ class Minigame {
         });
 
         this.name_ = settings.name;
+        this.command_ = settings.command;
+        this.timeout_ = settings.timeout;
+
         this.driver_ = null;
 
         this.minimumParticipants_ = settings.minimumParticipants || 1;
@@ -40,11 +46,16 @@ class Minigame {
         this.enableRespawn_ = !!settings.enableRespawn;
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     // Gets the name of this minigame.
     get name() { return this.name_; }
 
     // Gets the command through which players can join this minigame.
     get command() { return this.command_; }
+
+    // Gets the maximum number of seconds the minigame is allowed to last for.
+    get timeout() { return this.timeout_; }
 
     // Gets the set of entities available for this minigame. Only available after creating the
     // minigame with the minigame manager, which creates the driver for us.
@@ -76,6 +87,14 @@ class Minigame {
     // method will only be invoked when the minigame is still in sign-up phase.
     onPlayerAdded(player) {}
 
+    // Will be called when the minigame advances to loading state. Must return a promise that has to
+    // be resolved when the minigame-specific loading routines have finished.
+    onLoad() { return Promise.resolve(); }
+
+    // Will be called when the minigame advances to the running state. Must return a promise that
+    // has to be resolved when the minigame-specific starting routines have finished.
+    onStart() { return Promise.resolve(); }
+
     // Will be called when the |player| has died. Unless otherwise configured, they will be removed
     // from the minigame immediately after this call.
     onPlayerDeath(player, reason) {}
@@ -99,9 +118,9 @@ class Minigame {
     // already have been removed from the set of active players.
     onPlayerRemoved(player, reason) {}
 
-    // Will be called when the minigame has finished. All active players will be respawned after
-    // this call has finished.
-    onFinished(reason) {}
+    // Will be called when the minigame has finished. Must return a promise that has to be resolved
+    // when clean-up has finished. All active players will be respawned after this call finishes. 
+    onFinish(reason) { return Promise.resolve(); }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -116,7 +135,8 @@ Minigame.STATE_FINISHED = 3;
 
 // Reasons that a minigame can be finished.
 Minigame.REASON_NOT_ENOUGH_PLAYERS = 0;
-Minigame.REASON_FORCED_STOP = 1;
+Minigame.REASON_TIMED_OUT = 1;
+Minigame.REASON_FORCED_STOP = 2;
 
 // Reasons that can cause a player to be removed from the minigame.
 Minigame.REASON_DEATH = 0;

@@ -19,6 +19,9 @@ class RaceMinigame extends Minigame {
 
         // Map of all engaged players with the vehicle that they are meant to be driving.
         this.vehicles_ = new Map();
+
+        // High-resolution timestamp at which the race actually started.
+        this.startTime_ = null;
     }
 
     // Gets access to the race that this minigame represents.
@@ -75,10 +78,14 @@ class RaceMinigame extends Minigame {
     // Called when the race is ready to start. This is where they will actually begin racing, so
     // all players will be unfrozen and we wish them the best of luck.
     onStart() {
+        // TODO(Russell): Start the high-resolution race progress ticker.
         // TODO(Russell): Enable unlimited NOS for the vehicles.
-        // TODO(Russell): Actually start the race.
 
-        console.log('onStart()');
+        // Unfreeze all players and allow them to begin racing.
+        for (const player of this.activePlayers)
+            player.controllable = true;
+
+        this.startTime_ = highResolutionTime();
 
         return Promise.resolve();
     }

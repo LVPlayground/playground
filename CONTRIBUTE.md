@@ -43,7 +43,7 @@ you can deploy them to the staging server by updating the [REVISION]
 `server-staging` repository with the current revision hash.
 
 The staging server will automatically deploy your change, and you can request a restart
-of the staging server in `#LVP.dev` on IRC to activate them immediately.
+of the staging server in `#LVP` on IRC to activate them immediately.
 
 ## Deploying to production
 Lead developers will occasionally deploy a new version of Las Venturas Playground to the

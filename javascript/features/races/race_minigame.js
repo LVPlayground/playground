@@ -17,8 +17,9 @@ class RaceMinigame extends Minigame {
 
         this.race_ = race;
 
-        // Map of all engaged players with the vehicle that they are meant to be driving.
-        this.vehicles_ = new Map();
+        // Map of all engaged players to their assigned ehicle and checkpoint.
+        this.playerVehicles_ = new Map();
+        this.playerCheckpoints_ = new Map();
 
         // High-resolution timestamp at which the race actually started.
         this.startTime_ = null;
@@ -60,14 +61,16 @@ class RaceMinigame extends Minigame {
                 // TODO(Russell): Force a streamer update if the race features objects.
 
                 // Put the player in their designated vehicle, and disable collisions for them.
-                player.putInVehicle(this.vehicles_.get(player));
+                player.putInVehicle(this.playerVehicles_.get(player));
                 player.vehicleCollisionsEnabled = false;
 
                 // Freeze the player so that they cannot begin racing yet.
                 player.controllable = false;
 
                 // TODO(Russell): Create and display the score-board for the player.
-                // TODO(Russell): Create the first checkpoint for the player.
+                
+                // Create the first checkpoint for the player, so they know where to go.
+                this.nextCheckpoint(player);
             }
 
             // TODO(Russell): Load the individual checkpoint times for the all players.
@@ -119,7 +122,7 @@ class RaceMinigame extends Minigame {
                     break;
             }
 
-            this.vehicles_.set(player, vehicle);
+            this.playerVehicles_.set(player, vehicle);
         }
     }
 
@@ -140,13 +143,63 @@ class RaceMinigame extends Minigame {
         return Promise.resolve();
     }
 
+    // Creates the next checkpoint for the |player|, optionally with a given |checkpointIndex|. The
+    // entry-promise for the checkpoint will be directed to this function as well.
+    nextCheckpoint(player, checkpointIndex = 0) {
+        const checkpoints = this.race_.checkpoints;
+
+        // Check whether the |player| has passed the final checkpoint.
+        if (checkpointIndex >= checkpoints.length) {
+            // TODO(Russell): Show the score board for the player before removing them from the
+            // race, to congratulate them on their winning.
+
+            // TODO(Russell): Finalize the player's time to make sure we store the correct value
+            // in the database, not the time including the congratulation message.
+
+            this.removePlayer(player, Minigame.REASON_FINISHED);
+            return;
+        }
+
+        // Record the time at which the |player| passed the checkpoint. Does not apply to the first
+        // checkpoint, because that will be shown to them in the loading phase.
+        if (checkpointIndex > 0)
+            ; // TODO(Russell): Record the time at which the player passed this checkpoint.
+
+        // Trigger a scoreboard update because the positions between the players may have changed.
+        // Does not apply to the first checkpoint.
+        if (checkpointIndex > 0)
+            ; // TODO(Russell): Update the score point for the players.
+
+        const checkpoint = checkpoints[checkpointIndex];
+
+        // Display the checkpoint to the |player|. The next checkpoint will automatically be shown
+        // when they enter it, until they pass the final checkpoint of the race.
+        checkpoint.displayForPlayer(player).then(() =>
+            this.nextCheckpoint(player, checkpointIndex + 1));
+
+        // Associate the |checkpoint| with the |player|.
+        this.playerCheckpoints_.set(player, checkpoint);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the race has finished because of |reason|.
+    onFinish(reason) {
+        if (reason != Minigame.REASON_TIMED_OUT)
+            return Promise.resolve();  // no special behaviour has to be applied.
+
+        // TODO(Russell): Display out-of-time textdraws to the participants.
+
+        return Promise.resolve();
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     // Called when the |vehicle| has been destroyed. The vehicle will belong to once of the race's
     // participants, in which case they will be forcefully dropped out.
     onVehicleDeath(vehicle) {
         for (const player of this.activePlayers) {
-            const playerVehicle = this.vehicles_.get(player);
+            const playerVehicle = this.playerVehicles_.get(player);
             if (playerVehicle !== vehicle)
                 continue;  // it's not their vehicle
 
@@ -167,14 +220,15 @@ class RaceMinigame extends Minigame {
 
         // TODO(Russell): Remove the vehicle created for |player| from the race.
 
+        if (this.playerCheckpoints_.has(player))
+            this.playerCheckpoints_.get(player).hideForPlayer(player);
+
         if (reason == Minigame.REASON_DISCONNECT)
             return;  // don't update the activity of |player| when they're disconnecting.
 
         if (reason == Minigame.REASON_FINISHED) {
             // TODO(Russell): Make sure that the time of the |player| gets stored in the database.
         }
-
-        // TODO(Russell): Hide the |checkpoint| for the |player| if one is still showing.
 
         // Make sure that vehicles will collide for the player again.
         player.vehicleCollisionsEnabled = true;

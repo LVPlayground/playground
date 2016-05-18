@@ -102,7 +102,8 @@ class MinigameDriver {
         if (!this.activePlayers_.has(player))
             throw new Error('Received death event for an invalid player: ' + player.name);
 
-        // TODO(Russell): Only handle this event when the minigame has started.
+        if (this.state_ != Minigame.STATE_LOADING && this.state_ != Minigame.STATE_RUNNING)
+            return;  // events are not relevant if the minigame is not active
 
         // Inform the minigame about the player having died.
         this.minigame_.onPlayerDeath(player, reason);
@@ -118,7 +119,8 @@ class MinigameDriver {
         if (!this.activePlayers_.has(player))
             throw new Error('Received spawn event for an invalid player: ' + player.name);
 
-        // TODO(Russell): Only handle this event when the minigame has started.
+        if (this.state_ != Minigame.STATE_LOADING && this.state_ != Minigame.STATE_RUNNING)
+            return;  // events are not relevant if the minigame is not active
 
         this.minigame_.onPlayerSpawn(player);
         return true;
@@ -129,7 +131,8 @@ class MinigameDriver {
         if (!this.activePlayers_.has(player))
             throw new Error('Received state change event for an invalid player: ' + player.name);
 
-        // TODO(Russell): Only handle this event when the minigame has started.
+        if (this.state_ != Minigame.STATE_LOADING && this.state_ != Minigame.STATE_RUNNING)
+            return;  // events are not relevant if the minigame is not active
 
         if (newState == Player.STATE_DRIVER) {
             // TODO(Russell): This should be using a vehicle manager of sorts.

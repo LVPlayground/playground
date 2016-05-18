@@ -220,7 +220,20 @@ class RaceMinigame extends Minigame {
 
     // Will update the scoreboards with the new positions between the participating players.
     updateScoreboardPositions() {
-        // TODO(Russell): Actually update the scoreboard positions.
+        let activeParticipantData = [];
+        for (const player of this.activePlayers)
+            activeParticipantData.push(this.dataForPlayer(player));
+
+        activeParticipantData.sort((lhs, rhs) => {
+            if (lhs.checkpointIndex != rhs.checkpointIndex)
+                return lhs.checkpointIndex > rhs.checkpointIndex ? -1 : 1;
+
+            return lhs.checkpointTime > rhs.checkpointTime ? 1 : -1;
+        });
+
+        let position = 1;
+        activeParticipantData.forEach(data =>
+            data.scoreBoard.updatePositionIfNeeded(position++, activeParticipantData.length));
     }
 
     // ---------------------------------------------------------------------------------------------

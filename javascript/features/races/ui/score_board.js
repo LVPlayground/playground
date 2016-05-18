@@ -146,14 +146,42 @@ class ScoreBoard {
 
     // ---------------------------------------------------------------------------------------------
 
+    // TODO(Russell): setBestTime()
+    // TODO(Russell): setPersonalRecordRelativeTime()
+
+    // ---------------------------------------------------------------------------------------------
+
     // Called at a high frequency while the race is active to update the player's timer.
     update(runtime) {
         this.timeValue_.setTime(this.player_, runtime);
     }
 
+    // Updates the position display, which includes the player's position in the race relative to
+    // the other participants, as well as the view containing the total participant count.
+    updatePositionIfNeeded(position, participantCount) {
+        if (position != this.position_) {
+            this.positionValue_.updateTextForPlayer(this.player_, position);
+
+            if (position <= 3 || this.position_ <= 3) {
+                const positionSuffixes = ['st', 'nd', 'rd', 'th'];
+
+                this.positionSuffix_.updateTextForPlayer(
+                    this.player_, positionSuffixes[Math.min(3, position - 1)]);
+            }
+
+            this.position_ = position;
+        }
+
+        if (participantCount != this.participantCount_) {
+            this.participantsValue_.updateTextForPlayer(this.player_, '/' + participantCount);
+            this.participantCount_ = participantCount;
+        }
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     dispose() {}
+
 
 
     // Called when the player's best time has been loaded from the database. It will be displayed on
@@ -185,42 +213,9 @@ class ScoreBoard {
     this.personalRecordValue_.setTime(this.player_, time);
     }
 
-    // Updates the position display 
-    updatePositionIfNeeded(position, participantCount) {
-    if (position != this.position_) {
-    this.positionValue_.updateTextForPlayer(this.player_, position);
-    if (position <= 3 || this.position_ <= 3) {
-    let positionSuffixes = ['st', 'nd', 'rd', 'th'];
+    
 
-    this.positionSuffix_.updateTextForPlayer(this.player_,
-    positionSuffixes[Math.min(3, position - 1)]);
-    }
-
-    this.position_ = position;
-    }
-
-    if (participantCount != this.participantCount_) {
-    this.participantsValue_.updateTextForPlayer(this.player_, '/' + participantCount);
-    this.participantCount_ = participantCount;
-    }
-    }
-
-    // Called when the rankings between players have changed. The |participantRanking| object contains
-    // information about the performance of the current participant, whereas |rankings| contains all
-    // participating players sorted by their current performance.
-    updateRankings(participantRanking, rankings) {
-    let position = 0;
-
-    rankings.forEach(participant => {
-    ++position;
-
-    if (participant === participantRanking)
-    this.updatePositionIfNeeded(position, rankings.length);
-
-    // TODO: Render a score board with the top 4 players, and the difference in time between their
-    // performance and the performance of |this.participant_|.
-    });
-    }
+    
 }
 
 exports = ScoreBoard;

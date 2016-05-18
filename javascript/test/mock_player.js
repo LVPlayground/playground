@@ -151,6 +151,10 @@ class MockPlayer {
     get messageLevel() { return this.messageLevel_; }
     set messageLevel(value) { this.messageLevel_ = value; }
 
+    // Returns the vehicle the player is currently driving in, when the player is in a vehicle and
+    // the vehicle is owned by the JavaScript code.
+    currentVehicle() { return null; }
+
     // Identifies the player to a fake account. The options can be specified optionally.
     identify({ userId = 42, gangId = 0 } = {}) {
         server.playerManager.onPlayerLogin({

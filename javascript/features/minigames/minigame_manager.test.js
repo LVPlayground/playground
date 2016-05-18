@@ -242,6 +242,9 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         assert.equal(manager.getMinigamesForCategory(category).length, 1);
         assert.equal(minigame.addedPlayers.length, 1);
 
+        // This test does not care about the minigame's state management.
+        minigame.driver_.state = Minigame.STATE_RUNNING;
+
         gunther.die();
         assert.isFalse(gunther.spawn());
 
@@ -265,6 +268,9 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         assert.equal(manager.getMinigamesForCategory(category).length, 1);
         assert.equal(minigame.addedPlayers.length, 1);
 
+        // This test does not care about the minigame's state management.
+        minigame.driver_.state = Minigame.STATE_RUNNING;
+
         gunther.die();
         assert.isTrue(gunther.spawn());
 
@@ -281,6 +287,9 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
 
         manager.createMinigame(category, minigame, gunther);
         assert.isTrue(manager.isPlayerEngaged(gunther));
+
+        // This test does not care about the minigame's state management.
+        minigame.driver_.state = Minigame.STATE_RUNNING;
 
         gunther.changeState({ newState: Player.STATE_DRIVER,
                               oldState: Player.STATE_ON_FOOT });
@@ -301,6 +310,9 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
 
         manager.createMinigame(category, minigame, gunther);
         assert.isTrue(manager.isPlayerEngaged(gunther));
+
+        // This test does not care about the minigame's state management.
+        minigame.driver_.state = Minigame.STATE_RUNNING;
 
         const infernus =
             server.vehicleManager.createVehicle({ modelId: 411, position: new Vector(0, 0, 0) });
@@ -323,6 +335,9 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
 
         manager.createMinigame(category, minigame, gunther);
         assert.isTrue(manager.isPlayerEngaged(gunther));
+
+        // This test does not care about the minigame's state management.
+        minigame.driver_.state = Minigame.STATE_RUNNING;
 
         const infernus =
             minigame.entities.createVehicle({ modelId: 411, position: new Vector(0, 0, 0) });

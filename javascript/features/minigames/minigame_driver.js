@@ -41,8 +41,9 @@ class MinigameDriver {
     // Gets the set of scoped entities that can be created and removed for this minigame.
     get entities() { return this.entities_; }
 
-    // Gets the current state of the minigame.
+    // Gets or sets the current state of the minigame.
     get state() { return this.state_; }
+    set state(value) { this.state_ = value; }
 
     // Gets the unique virtual world Id that has been assigned to this minigame.
     get virtualWorld() { return this.virtualWorld_; }
@@ -135,8 +136,7 @@ class MinigameDriver {
             return;  // events are not relevant if the minigame is not active
 
         if (newState == Player.STATE_DRIVER) {
-            // TODO(Russell): This should be using a vehicle manager of sorts.
-            this.minigame_.onPlayerEnterVehicle(player, null /* vehicle */);
+            this.minigame_.onPlayerEnterVehicle(player, player.currentVehicle());
 
         } else if (oldState == Player.STATE_DRIVER) {
             this.minigame_.onPlayerLeaveVehicle(player);

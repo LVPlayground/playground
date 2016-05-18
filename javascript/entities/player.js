@@ -113,6 +113,12 @@ class Player {
     this.vehicleCollisionsEnabled_ = !!value;
   }
 
+  // Returns the vehicle the player is currently driving in, when the player is in a vehicle and
+  // the vehicle is owned by the JavaScript code.
+  currentVehicle() {
+    return server.vehicleManager.getById(pawnInvoke('GetPlayerVehicleID', 'i', this.id_));
+  }
+
   // Returns whether the player is in an vehicle. If |vehicle| is provided, this method will check
   // whether the player is in that particular vehicle. Otherwise any vehicle will do.
   isInVehicle(vehicle) {

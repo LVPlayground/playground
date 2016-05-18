@@ -40,7 +40,7 @@ class Vehicle {
     }
 
     // Returns whether this vehicle has been created on the server.
-    isConnected() { return !!pawnInvoke('GetVehicleModel', 'i', this.id_); }
+    isConnected() { return this.id_ !== null; }
 
     // Gets the Id of this vehicle as assigned by the SA-MP server.
     get id() { return this.id_; }

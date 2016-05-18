@@ -5,6 +5,9 @@
 const Minigame = require('features/minigames/minigame.js');
 const RacePlayerData = require('features/races/race_player_data.js');
 
+// Frequency at which a race's update ticker will be updating. In milliseconds.
+const UpdateTickerInterval = 147;
+
 // This class represents an on-going race minigame. The race defines the maximum number of players,
 // and the lifetime of the minigame will be controlled by the minigame manager.
 class RaceMinigame extends Minigame {
@@ -39,7 +42,7 @@ class RaceMinigame extends Minigame {
     onPlayerAdded(player) {
         player.activity = Player.PLAYER_ACTIVITY_JS_RACE;
 
-        this.playerData_.set(player, new RacePlayerData());
+        this.playerData_.set(player, new RacePlayerData(player));
     }
 
     // Called when the race advances to loading state. This created the required entities, makes
@@ -52,8 +55,12 @@ class RaceMinigame extends Minigame {
             // targetted to their intended vehicle spawn, triggering the game to preload resources.
             this.createVehicles();
 
+            const participantCount = this.activePlayers.size;
+
             // Prepare each of the players that will be participating in the race.
             for (const player of this.activePlayers) {
+                const playerData = this.dataForPlayer(player);
+
                 // TODO(Russell): Disable the death feed for the |player|.
 
                 // Move the player to the right virtual world and interior for the race.
@@ -74,7 +81,8 @@ class RaceMinigame extends Minigame {
                 // Freeze the player so that they cannot begin racing yet.
                 player.controllable = false;
 
-                // TODO(Russell): Create and display the score-board for the player.
+                // Display the score board for the |player|.
+                playerData.scoreBoard.displayForPlayer(participantCount);
                 
                 // Create the first checkpoint for the player, so they know where to go.
                 this.nextCheckpoint(player);
@@ -138,8 +146,8 @@ class RaceMinigame extends Minigame {
     // Called when the race is ready to start. This is where they will actually begin racing, so
     // all players will be unfrozen and we wish them the best of luck.
     onStart() {
-        // TODO(Russell): Start the high-resolution race progress ticker.
         // TODO(Russell): Enable unlimited NOS for the vehicles.
+        this.updateTicker();
 
         // Unfreeze all players and allow them to begin racing.
         for (const player of this.activePlayers)
@@ -178,7 +186,7 @@ class RaceMinigame extends Minigame {
         // Trigger a scoreboard update because the positions between the players may have changed.
         // Does not apply to the first checkpoint.
         if (checkpointIndex > 0)
-            ; // TODO(Russell): Update the score point for the players.
+            this.updateScoreboardPositions();
 
         // Display the checkpoint to the |player|. The next checkpoint will automatically be shown
         // when they enter it, until they pass the final checkpoint of the race.
@@ -187,6 +195,32 @@ class RaceMinigame extends Minigame {
 
         // Associate the |checkpoint| with the |player|.
         playerData.checkpoint = checkpoint;
+    }
+
+    // High-resolution update ticker that will be updated as long as the race is in progress. It
+    // increases the timers on the participant's score boards, and implements vehicle god mode.
+    updateTicker() {
+        if (this.state != Minigame.STATE_RUNNING)
+            return;  // the race has finished, no need to run the update ticker.
+
+        // The runtime of the current race, in milliseconds.
+        const runtime = highResolutionTime() - this.startTime_;
+
+        for (const player of this.activePlayers) {
+            const playerData = this.dataForPlayer(player);
+
+            // Update the score board belonging to the player with the latest run-timer.
+            playerData.scoreBoard.update(runtime);
+
+            // TODO(Russell): Implement vehicle god mode.
+        }
+
+        wait(UpdateTickerInterval).then(() => this.updateTicker());
+    }
+
+    // Will update the scoreboards with the new positions between the participating players.
+    updateScoreboardPositions() {
+        // TODO(Russell): Actually update the scoreboard positions.
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -226,12 +260,7 @@ class RaceMinigame extends Minigame {
         if (this.state == Minigame.STATE_SIGN_UP)
             return;  // bail out if the actual race hasn't started yet.
 
-        const playerData = this.dataForPlayer(player);
-        if (playerData.vehicle)
-            playerData.vehicle.dispose();
-
-        if (playerData.checkpoint)
-            playerData.checkpoint.hideForPlayer(player);
+        this.dataForPlayer(player).dispose();
 
         if (reason == Minigame.REASON_DISCONNECT)
             return;  // don't update the activity of |player| when they're disconnecting.

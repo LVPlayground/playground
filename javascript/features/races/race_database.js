@@ -82,13 +82,13 @@ class RaceDatabase {
 
     // Fetches the best times for each known race, together with the player who raced it. The result
     // will include *all* races, not just those available in the race manager.
-    fetchBestTimes() {
+    loadRecordTimes() {
         return this.database_.query(FETCH_BEST_TIMES_QUERY).then(result => {
-            let times = {};
+            let times = new Map();
 
             result.rows.forEach(row => {
-                times[row.race_id] = { time: Math.round(row.result_time / 1000),
-                                       name: row.username };
+                times.set(row.race_id, { time: Math.round(row.result_time / 1000),
+                                         name: row.username });
             });
 
             return times;
@@ -100,15 +100,15 @@ class RaceDatabase {
     //
     // An empty object ("no high scores") will be used for unregistered players. The returned object
     // will include best times for *all* races, not just those available in the race manager.
-    fetchBestTimesForPlayer(player) {
+    loadRecordTimesForPlayer(player) {
         if (!player.isRegistered())
             return Promise.resolve({});
 
         return this.database_.query(FETCH_BEST_PLAYER_TIMES_QUERY, player.userId).then(result => {
-            let times = {};
+            let times = new Map();
 
             result.rows.forEach(row =>
-                times[row.race_id] = Math.round(row.result_time / 1000));
+                times.set(row.race_id, Math.round(row.result_time / 1000)));
 
             return times;
         });
@@ -160,6 +160,8 @@ class RaceDatabase {
                 STORE_RACE_CHECKPOINT_RESULT_QUERY + values.join(', '), ...parameters);
         });
     }
+
+    dispose() {}
 }
 
 exports = RaceDatabase;

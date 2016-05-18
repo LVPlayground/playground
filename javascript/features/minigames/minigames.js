@@ -68,6 +68,7 @@ class Minigames extends Feature {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        this.manager_.dispose();
         this.manager_ = null;
     }
 }

@@ -3,12 +3,17 @@
 // be found in the LICENSE file.
 
 const AnnounceManager = require('features/announce/announce_manager.js');
+const Feature = require('components/feature_manager/feature.js');
 
 // Mocked implementation of the Announce feature. May be used by tests that depend on this module.
-class MockAnnounce {
+class MockAnnounce extends Feature {
     constructor() {
+        super();
+
         this.manager_ = new AnnounceManager(() => null /* ircDelegate */);
     }
+
+    dispose() {}
 
     // Announces that the |name| has started by |player|. Players can join by typing |command|, and
     // will have to pay |price| in order to participate in the minigame.

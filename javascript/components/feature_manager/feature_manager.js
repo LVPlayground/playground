@@ -20,7 +20,10 @@ class FeatureManager {
   load(features) {
     this.registeredFeatures_ = features;
 
-    Object.keys(features).forEach(feature => this.ensureLoadFeature(feature));
+    Object.keys(features).forEach(feature =>
+        this.ensureLoadFeature(feature));
+
+    return this.features_;
   }
 
   // Returns whether |feature| is a registered feature in this manager.

@@ -13,13 +13,10 @@ class Races extends Feature {
     constructor() {
         super();
 
-        // Races depend on the announce feature to announce minigame availability and participation.
-        const announce = this.defineDependency('announce');
+        // Races depend on the minigame system to provide lifetime management.
+        const minigames = this.defineDependency('minigames');
 
-        // Races depend on the death feed for disabling it during a race.
-        const deathFeed = this.defineDependency('deathFeed');
-
-        this.manager_ = new RaceManager(server.database, announce, deathFeed);
+        this.manager_ = new RaceManager(server.database, minigames);
         this.commands_ = new RaceCommands(this.manager_);
 
         // TODO(Russell): Import races using a glob() rather than manually.
@@ -36,7 +33,7 @@ class Races extends Feature {
         ].forEach(file => this.manager_.registerRace(RaceImporter.fromFile(file)));
 
         // Load the best times for all races from the database.
-        this.manager_.loadBestTimes();
+        this.manager_.loadRecordTimes();
     }
 
     // ---------------------------------------------------------------------------------------------

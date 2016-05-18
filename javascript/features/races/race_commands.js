@@ -4,7 +4,6 @@
 
 const CommandBuilder = require('components/command_manager/command_builder.js');
 const Menu = require('components/menu/menu.js');
-const ScopedCallbacks = require('base/scoped_callbacks.js');
 
 // Title of the dialog that displays the available races.
 const DIALOG_TITLE = 'Racing on Las Venturas Playground';
@@ -19,10 +18,6 @@ class RaceCommands {
             .sub(CommandBuilder.NUMBER_PARAMETER)
                 .build(RaceCommands.prototype.raceStart.bind(this))
             .build(RaceCommands.prototype.raceOverview.bind(this));
-
-        this.callbacks_ = new ScopedCallbacks();
-        this.callbacks_.addEventListener(
-            'playercommandtext', RaceCommands.prototype.onPlayerCommandText.bind(this));
     }
 
     // Either starts or joins the race with |id|, depending on whether an instance of the race is
@@ -87,24 +82,7 @@ class RaceCommands {
         });
     }
 
-    // TODO: This is a hack because races exist here, while everything else for /leave exists in
-    // Pawn. We still need to be able to remove a player from a race though.
-    onPlayerCommandText(event) {
-        let player = server.playerManager.getById(event.playerid);
-        if (!player)
-            return;
-
-        if (!event.cmdtext.startsWith('/leave'))
-            return;
-
-        if (this.manager_.leaveRace(player))
-            event.preventDefault();
-    }
-
     dispose() {
-        this.callbacks_.dispose();
-        this.callbacks_ = null;
-
         server.commandManager.removeCommand('race');
     }
 }

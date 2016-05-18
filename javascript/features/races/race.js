@@ -5,8 +5,8 @@
 // The race class encapsulates the data associated with a race. The Race class is not responsible
 // for actually importing, loading or running a race, it only holds the associated data.
 class Race {
-  constructor() {
-    this.id_ = 0;
+  constructor({ id = 0 } = {}) {
+    this.id_ = id;
     this.name_ = 'Unknown race';
 
     this.timeLimit_ = 0;

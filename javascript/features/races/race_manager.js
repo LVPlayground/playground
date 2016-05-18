@@ -1,163 +1,126 @@
-// Copyright 2015 Las Venturas Playground. All rights reserved.
+// Copyright 2016 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const Minigame = require('features/minigames/minigame.js');
 const RaceDatabase = require('features/races/race_database.js');
 const RaceSettings = require('features/races/race_settings.js');
 const RunningRace = require('features/races/running_race.js');
 
-// The race manager is responsible for keeping track of the available races, the in-progress races
-// and providing the ability to start or stop races when that's necessary.
+// The race manager is in charge of meditating between the race database, the commands and the
+// minigame feature that will drive the actual races.
 class RaceManager {
-  constructor(database, announce, deathFeed) {
-    this.raceDatabase_ = new RaceDatabase(database);
-    this.announce_ = announce;
-    this.deathFeed_ = deathFeed;
+    constructor(database, minigames) {
+        this.database_ = new RaceDatabase(database);
 
-    // An array of all races that are currently in-progress.
-    this.activeRaces_ = [];
+        this.minigameCategory_ = minigames.createCategory('races');
+        this.minigames_ = minigames;
 
-    this.races_ = {};
-  }
-
-  // Returns the database interface that can be used for races.
-  get database() { return this.raceDatabase_; }
-
-  // Returns the death feed object, which races may have to disable.
-  get deathFeed() { return this.deathFeed_; }
-
-  // Returns the number of races that have been created on the system.
-  get raceCount() {
-    return Object.keys(this.races_).length;
-  }
-
-  // Registers |race| as a new race in the system.
-  registerRace(race) {
-    if (this.races_.hasOwnProperty(race.id))
-      throw new Error('A race with Id ' + race.id + ' already exists in the system.');
-
-    this.races_[race.id] = race;
-  }
-
-  // Asynchronously loads the best times for all known races from the database. They will be stored
-  // in the Race instance associated with the race.
-  loadBestTimes() {
-    this.raceDatabase_.fetchBestTimes().then(bestTimes => {
-      Object.keys(this.races_).forEach(raceId => {
-        if (!bestTimes.hasOwnProperty(raceId))
-          return;
-
-        let bestTime = bestTimes[raceId];
-        this.races_[raceId].bestRace = {
-          time: bestTime.time,
-          name: bestTime.name
-        };
-      });
-    });
-  }
-
-  // Returns if |race_id| represents a valid race that could be started by the player.
-  isValid(race_id) {
-    return this.races_.hasOwnProperty(race_id);
-  }
-
-  // Starts the race |race_id| for |player|. When the |skipSignup| argument is set to TRUE, the
-  // sign-up phase will be skipped and the race will begin immediately.
-  startRace(player, race_id, skipSignup) {
-    let activeRace = null;
-
-    // If the sign-up phase does not have to be skipped (i.e. because it hasn't been started through
-    // a challenge desk, or because the player is the only person online), find other races of the
-    // same type that are currently in sign-up phase to join.
-    if (!skipSignup) {
-      this.activeRaces_.forEach(runningRace => {
-        if (runningRace.race.id != race_id || runningRace.state != RunningRace.STATE_SIGNUP)
-          return;
-
-        activeRace = runningRace;
-      });
+        // Catalogue containing all races that can be started by players.
+        this.raceCatalogue_ = new Map();
     }
 
-    // Mark the player as being engaged in a race.
-    player.activity = Player.PLAYER_ACTIVITY_JS_RACE;
+    // ---------------------------------------------------------------------------------------------
 
-    // Announce to the player that they have signed up for the given race.
-    player.sendMessage(Message.format(Message.RACE_COMMAND_JOIN, this.races_[race_id].name));
+    // Registers the |race| with the race catalogue maintained by the manager. Will throw when a
+    // race having the same Id has already been registered. 
+    registerRace(race) {
+        if (this.raceCatalogue_.has(race.id))
+            throw new Error('A race with Id #' + race.id + ' has already been registered.');
 
-    // If there is an active race that can be joined, join it. Alternatively start a new race for
-    // the player. If |skipSignup| is true, the announcement phase will be skipped.
-    if (activeRace) {
-      activeRace.addPlayer(player);
-      this.announce_.announceMinigameParticipation(
-          player, activeRace.race.name, activeRace.command);
-
-    } else {
-      activeRace = new RunningRace(this.races_[race_id], player, skipSignup, this);
-      activeRace.finished.then(finishedParticipants =>
-          this.onRaceFinished(activeRace, finishedParticipants));
-
-      if (activeRace.state == RunningRace.STATE_SIGNUP) {
-        this.announce_.announceMinigame(
-            player, activeRace.race.name, activeRace.command, RaceSettings.RACE_SIGNUP_PRICE);
-      }
-
-      this.activeRaces_.push(activeRace);
+        this.raceCatalogue_.set(race.id, race);
     }
-  }
 
-  // Makes |player| leave any race they are participating in. Returns a boolean to indicate
-  // whether the |player| was removed from any race at all.
-  leaveRace(player) {
-    let leftRace = false;
-    this.activeRaces_.forEach(runningRace => {
-      if (!runningRace.removePlayer(player))
-        return;
+    // Returns whether a race has been registered that has |raceId|.
+    isValid(raceId) {
+        return this.raceCatalogue_.has(raceId);
+    }
 
-      player.sendMessage(Message.RACE_COMMAND_LEFT, runningRace.race.name);
-      leftRace = true;          
-    });
+    // ---------------------------------------------------------------------------------------------
 
-    return leftRace;
-  }
+    // Loads the all-time records for the races stored in the race catalogue from the database. Only
+    // has to be called once for the lifetime of this feature, usually after registering all races.
+    loadRecordTimes() {
+        return this.database_.loadRecordTimes().then(times => {
+            for (let race of this.raceCatalogue_.values()) {
+                if (!times.has(race.id))
+                    continue;
 
-  // Called when |runningRace| has finished. The |finishedParticipants| argument contains a
-  // generator that will yield for each participant that has successfully finished the race.
-  onRaceFinished(runningRace, finishedParticipants) {
-    this.activeRaces_ = this.activeRaces_.filter(activeRace => activeRace !== runningRace);
+                const record = times.get(race.id);
+                race.bestRace = {
+                    time: record.time,
+                    name: record.name
+                };
+            }
+        });
+    }
 
-    // Store the result for each of the finished participants in the database.
-    finishedParticipants.forEach(participant => {
-      if (!participant.userId)
-        return;
+    // Loads an overview of all created races in the catalogue that also contains the high-scores
+    // for the given |player|. The data will be loaded from the database. Returns a promise that
+    // will be resolved with an array containing all races, all-time records and personal records.
+    loadRecordTimesForPlayer(player) {
+        return this.database_.loadRecordTimesForPlayer(player).then(times => {
+            let races = [];
 
-      this.raceDatabase_.storeRaceResult(
-          runningRace.race.id, participant.userId, participant.rank, participant.totalTime, participant.checkpointTimes);
-    });
-  }
+            for (let race of this.raceCatalogue_.values()) {
+                races.push({
+                    id: race.id,
+                    name: race.name,
+                    bestRace: race.bestRace,
+                    personalBestTime: times.get(race.id) || null
+                });
+            }
 
-  // Returns a promise that will be resolved with a personalized list of races available for the
-  // |player|, together with the all-time best time of registered players on the race. If |player|
-  // is a registered player, their personal best time will be included in the overview as well.
-  listRacesForPlayer(player) {
-    if (!this.raceCount)
-      return Promise.resolve([]);
+            return races;
+        });
+    }
+  
+    // ---------------------------------------------------------------------------------------------
 
-    return this.raceDatabase_.fetchBestTimesForPlayer(player).then(bestTimes => {
-      let races = [];
+    // Starts the race identified by |raceId| for the |player|. If a race having that Id is already
+    // in the sign-up phase they will be invited to join that one, otherwise a new race will be
+    // created to cater for the player's preferences.
+    startRace(player, raceId) {
+        const race = this.raceCatalogue_.get(raceId);
+        if (!race)
+            throw new Error('Cannot start race for invalid Id: ' + raceId + '.');
 
-      Object.keys(this.races_).forEach(raceId => {
-        let personalBest = bestTimes.hasOwnProperty(raceId) ? bestTimes[raceId] : null,
-            race = this.races_[raceId];
+        // Announce to the player that they have signed up for the given race.
+        player.sendMessage(Message.RACE_COMMAND_JOIN, race.name);
 
-        races.push({ id: race.id,
-                     name: race.name,
-                     bestRace: race.bestRace,
-                     personalBestTime: personalBest });
-      });
+        // First try to join the player in an existing race of their choice.
+        for (let minigame of this.minigames_.getMinigamesForCategory(this.minigameCategory_)) {
+            if (minigame.state != Minigame.STATE_SIGN_UP)
+                continue;  // the minigame is not accepting sign-ups anymore
 
-      return races;
-    });
-  }
-};
+            if (minigame.race !== race)
+                continue;  // the minigame is hosting another race
+
+            // The current |minigame| represents the race the player would like to participate in
+            // and is still accepting sign-ups, so make it happen.
+            this.minigames_.addPlayerToMinigame(this.minigameCategory_, minigame, player);
+            break;
+        }
+
+        // Alternatively we create a new race that the player will be invited to join in to.
+        const minigame = null;
+
+        // TODO(Russell): Create the actual Minigame instance for the race.
+        //this.minigames_.createMinigame(this.minigameCategory_, minigame, player);
+    }
+
+    // TODO(Russell): We need to call RaceDatabase.storeRaceResult() somewhere.
+
+    // ---------------------------------------------------------------------------------------------
+
+    dispose() {
+        this.raceCatalogue_ = null;
+
+        this.minigames_.deleteCategory(this.minigameCategory_);
+        this.minigames_ = null;
+
+        this.database_.dispose();
+    }
+}
 
 exports = RaceManager;

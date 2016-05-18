@@ -58,12 +58,12 @@ class Server {
 
     // Disposes and uninitializes the server object and all objects owned by it.
     dispose() {
+        this.featureManager_.dispose();
+        this.commandManager_.dispose();
+
         this.vehicleManager_.dispose();
         this.playerManager_.dispose();
         this.actorManager_.dispose();
-
-        this.featureManager_.dispose();
-        this.commandManager_.dispose();
 
         this.database_.dispose();
     }

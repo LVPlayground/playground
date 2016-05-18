@@ -65,12 +65,12 @@ class MockServer {
 
     // Disposes the MockServer and uninitializes all owned objects.
     dispose() {
+        this.featureManager_.dispose();
+        this.commandManager_.dispose();
+
         this.vehicleManager_.dispose();
         this.playerManager_.dispose();
         this.actorManager_.dispose();
-
-        this.featureManager_.dispose();
-        this.commandManager_.dispose();
     }
 }
 

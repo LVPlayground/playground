@@ -75,21 +75,6 @@ class RaceMinigame extends Minigame {
         });
     }
 
-    // Called when the race is ready to start. This is where they will actually begin racing, so
-    // all players will be unfrozen and we wish them the best of luck.
-    onStart() {
-        // TODO(Russell): Start the high-resolution race progress ticker.
-        // TODO(Russell): Enable unlimited NOS for the vehicles.
-
-        // Unfreeze all players and allow them to begin racing.
-        for (const player of this.activePlayers)
-            player.controllable = true;
-
-        this.startTime_ = highResolutionTime();
-
-        return Promise.resolve();
-    }
-
     // Creates the objects associated with this race. They will be created in for the dynamic object
     // streamer and will be scoped to the virtual world the race will be hosted in.
     createObjects() {
@@ -138,6 +123,38 @@ class RaceMinigame extends Minigame {
         }
     }
 
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the race is ready to start. This is where they will actually begin racing, so
+    // all players will be unfrozen and we wish them the best of luck.
+    onStart() {
+        // TODO(Russell): Start the high-resolution race progress ticker.
+        // TODO(Russell): Enable unlimited NOS for the vehicles.
+
+        // Unfreeze all players and allow them to begin racing.
+        for (const player of this.activePlayers)
+            player.controllable = true;
+
+        this.startTime_ = highResolutionTime();
+
+        return Promise.resolve();
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the |vehicle| has been destroyed. The vehicle will belong to once of the race's
+    // participants, in which case they will be forcefully dropped out.
+    onVehicleDeath(vehicle) {
+        for (const player of this.activePlayers) {
+            const playerVehicle = this.vehicles_.get(player);
+            if (playerVehicle !== vehicle)
+                continue;  // it's not their vehicle
+
+            this.removePlayer(player, Minigame.REASON_DROPPED_OUT);
+            return;
+        }
+    }
+    
     // ---------------------------------------------------------------------------------------------
 
     // Called when the |player| has left the race, either by choice, because they disconnected or

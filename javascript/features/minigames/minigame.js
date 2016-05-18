@@ -87,6 +87,14 @@ class Minigame {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Removes the |player| from the minigame because of |reason|. Only available after creating the
+    // minigame with the minigame manager, which creates the driver for us.
+    removePlayer(player, reason) {
+        this.driver_.removePlayer(player, reason);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Will be called when |player| has joined the minigame. Unless otherwise configured, this
     // method will only be invoked when the minigame is still in sign-up phase.
     onPlayerAdded(player) {}
@@ -144,7 +152,8 @@ Minigame.REASON_FORCED_STOP = 2;
 
 // Reasons that can cause a player to be removed from the minigame.
 Minigame.REASON_DEATH = 0;
-Minigame.REASON_DISCONNECT = 1;
-Minigame.REASON_FINISHED = 2;
+Minigame.REASON_DROPPED_OUT = 1;
+Minigame.REASON_DISCONNECT = 2;
+Minigame.REASON_FINISHED = 3;
 
 exports = Minigame;

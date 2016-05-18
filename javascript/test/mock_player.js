@@ -124,6 +124,12 @@ class MockPlayer {
     // which must be vectors, in |duration| milliseconds.
     interpolateCamera(positionFrom, positionTo, targetFrom, targetTo, duration) {}
 
+    // Serializes the player's current state into a buffer.
+    serializeState() {}
+
+    // Restores the player's previous state from a buffer.
+    restoreState() {}
+
     // Fake playing a sound for this player. Stores the soundId in |lastPlayedSound_|.
     playSound(soundId) {
         this.lastPlayedSound_ = soundId;

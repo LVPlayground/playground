@@ -69,12 +69,6 @@ class MinigameDriver {
             this.load();
     }
 
-    // Serializes the current state of |player|, making sure that whatever happens to them within
-    // the minigame does not affect their status elsewhere on the server.
-    serializePlayerState(player) {
-        // TODO(Russell): Serialize the player's state.
-    }
-
     // Removes |player| from the minigame because of |reason|. Will trigger the onPlayerRemoved
     // method on the minigame object, and free the |player|'s state in the minigame manager.
     removePlayer(player, reason) {
@@ -87,7 +81,7 @@ class MinigameDriver {
         this.minigame_.onPlayerRemoved(player, reason);
 
         // Restore their state after the minigame had a chance to do their things.
-        this.restorePlayerState(player);
+        player.restoreState();
 
         // Clear the player's state from the minigame manager.
         this.manager_.didRemovePlayerFromMinigame(player);
@@ -98,12 +92,6 @@ class MinigameDriver {
             if (this.activePlayers_.size < this.minigame_.minimumParticipants)
                 this.finish(Minigame.REASON_NOT_ENOUGH_PLAYERS);
         }
-    }
-
-    // Restores the state of |player| by respawning them in the main world and deserializing their
-    // state in the Pawn part of Las Venturas Playground.
-    restorePlayerState(player) {
-        // TODO(Russell): Restore the player's state.
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -185,7 +173,7 @@ class MinigameDriver {
         // the minigame itself, after which the minigame can advance to the running state.
         Promise.resolve().then(() => {
             for (let player of this.activePlayers_)
-                this.serializePlayerState(player);
+                player.serializeState();
 
             return this.minigame_.onLoad();
 

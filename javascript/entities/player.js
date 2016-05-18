@@ -173,6 +173,14 @@ class Player {
     pawnInvoke('PlayerPlaySound', 'iifff', this.id_, soundId, 0, 0, 0);
   }
 
+  serializeState() {
+    pawnInvoke('OnSerializePlayerState', 'ii', this.id_, 1 /* serialize */);
+  }
+
+  restoreState() {
+    pawnInvoke('OnSerializePlayerState', 'ii', this.id_, 0 /* serialize */);
+  }
+
   // Returns or updates the activity of this player. Updating the activity will be propagated to
   // the Pawn part of the gamemode as well.
   get activity() { return this.activity_; }

@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const Minigame = require('features/minigames/minigame.js');
+const RaceExpiredMessage = require('features/races/ui/race_expired_message.js');
 const RacePlayerData = require('features/races/race_player_data.js');
 
 // Frequency at which infinite nitro should be given to vehicles. In milliseconds.
@@ -15,6 +16,8 @@ const UpdateTickerInterval = 147;
 // and the lifetime of the minigame will be controlled by the minigame manager.
 class RaceMinigame extends Minigame {
     constructor(race, database) {
+        console.log('[Race] Race "' + race.name + '" has been created.');
+
         super({
             name: race.name,
             command: '/race ' + race.id,
@@ -179,6 +182,8 @@ class RaceMinigame extends Minigame {
     // Called when the race is ready to start. This is where they will actually begin racing, so
     // all players will be unfrozen and we wish them the best of luck.
     onStart() {
+        console.log('[Race] Race "' + this.race_.name + '" has started.');
+
         this.updateInfiniteNitro();
         this.updateTicker();
 
@@ -295,12 +300,12 @@ class RaceMinigame extends Minigame {
 
     // Called when the race has finished because of |reason|.
     onFinish(reason) {
+        console.log('[Race] Race "' + this.race_.name + '" has finished.');
+
         if (reason != Minigame.REASON_TIMED_OUT)
             return Promise.resolve();  // no special behaviour has to be applied.
 
-        // TODO(Russell): Display out-of-time textdraws to the participants.
-
-        return Promise.resolve();
+        return RaceExpiredMessage.displayForPlayers(this.activePlayers);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -343,6 +348,10 @@ class RaceMinigame extends Minigame {
             return;  // don't store the race's information if the player didn't finish it.
 
         // TODO(Russell): Make sure that the time of the |player| gets stored in the database.
+    }
+
+    dispose() {
+        console.log('[Race] Race "' + this.race_.name + '" has been been disposed.');
     }
 }
 

@@ -4,6 +4,7 @@
 
 const Countdown = require('features/races/ui/countdown.js');
 const FinishedMessage = require('features/races/ui/finished_message.js');
+const LeaveVehicleMessage = require('features/races/ui/leave_vehicle_message.js');
 const Minigame = require('features/minigames/minigame.js');
 const RaceExpiredMessage = require('features/races/ui/race_expired_message.js');
 const RacePlayerData = require('features/races/race_player_data.js');
@@ -199,6 +200,18 @@ class RaceMinigame extends Minigame {
         this.startTime_ = highResolutionTime();
 
         return Promise.resolve();
+    }
+
+    // Called when |player| has left their vehicle. If the race does not allow for this, they will
+    // be forcefully dropped out as a consequence of this.
+    onPlayerLeaveVehicle(player) {
+        if (this.race_.allowLeaveVehicle)
+            return;
+
+        this.dataForPlayer(player).finished = true;
+
+        LeaveVehicleMessage.displayForPlayer(player).then(() =>
+            this.removePlayer(player, Minigame.REASON_DROPPED_OUT));
     }
 
     // Creates the next checkpoint for the |player|, optionally with a given |checkpointIndex|. The

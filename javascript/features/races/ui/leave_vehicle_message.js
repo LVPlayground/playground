@@ -1,28 +1,15 @@
-// Copyright 2015 Las Venturas Playground. All rights reserved.
+// Copyright 2016 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let MessageView = require('features/races/ui/message_view.js');
-
-// The message that should be displayed when a participant has left their vehicle.
-const MESSAGE = 'You left your vehicle!';
+const MessageView = require('features/races/ui/message_view.js');
 
 // Displays a message to a specific player that they have left their vehicle and therefore will be
 // dropping out of the race. They will be frozen while the message is displaying.
-class LeaveVehicle extends MessageView {
-  constructor(participant) {
-    super(MESSAGE);
+class LeaveVehicleMessage {
+    static displayForPlayer(players) {
+        return MessageView.displayForPlayers([ players ], `You left your vehicle!`, 2000);
+    }
+}
 
-    this.players_ = [participant.player];
-  }
-
-  getTargetPlayers() { return this.players_; }
-
-  // Displays a message about having left the vehicle to |participant| for |milliseconds|.
-  static displayForParticipant(participant, milliseconds) {
-    let leaveVehicle = new LeaveVehicle(participant);
-    return leaveVehicle.display(milliseconds);
-  }
-};
-
-exports = LeaveVehicle;
+exports = LeaveVehicleMessage;

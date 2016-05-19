@@ -28,6 +28,7 @@ class Races extends Feature {
             'data/races/engine_in_jeopardy.json',
             'data/races/los_santos_blown_bikes.json',
             'data/races/mountain_valleyside.json',
+            'data/races/nevada_aeronautics.json',
             'data/races/quad_race.json',
             'data/races/red_county_grove.json',
             'data/races/san_fierro_badlands.json',

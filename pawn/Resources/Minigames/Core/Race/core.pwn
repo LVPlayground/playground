@@ -91,7 +91,6 @@ new _RaceLoaded[MAX_RACES];
 // Include the races which are available;
 #include "Resources/Minigames/Race/Race7.pwn"
 #include "Resources/Minigames/Race/Race8.pwn"
-#include "Resources/Minigames/Race/Race9.pwn"
 #include "Resources/Minigames/Race/Race10.pwn"
 #include "Resources/Minigames/Race/Race12.pwn"
 #include "Resources/Minigames/Race/Race13.pwn"

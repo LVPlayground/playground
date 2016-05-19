@@ -85,11 +85,12 @@ class RaceMinigame extends Minigame {
                 player.weather = this.race_.weather;
                 player.time = this.race_.time;
 
-                // TODO(Russell): It would be so awesome if we could control gravity per-player.
-                // TODO(Russell): Force a streamer update if the race features objects.
+                // Force a streamer update for the player, to make sure everything is in place.
+                player.updateStreamer(playerData.vehicle.position, this.virtualWorld,
+                                      this.race_.interior, 0 /* STREAMER_TYPE_OBJECT */);
 
                 // Put the player in their designated vehicle, and disable collisions for them.
-                player.putInVehicle(this.dataForPlayer(player).vehicle);
+                player.putInVehicle(playerData.vehicle);
                 player.vehicleCollisionsEnabled = false;
 
                 // Freeze the player so that they cannot begin racing yet.

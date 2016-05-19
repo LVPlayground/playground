@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const Countdown = require('features/races/ui/countdown.js');
+const DestroyedVehicleMessage = require('features/races/ui/destroyed_vehicle_message.js');
 const FinishedMessage = require('features/races/ui/finished_message.js');
 const LeaveVehicleMessage = require('features/races/ui/leave_vehicle_message.js');
 const Minigame = require('features/minigames/minigame.js');
@@ -203,18 +204,6 @@ class RaceMinigame extends Minigame {
         return Promise.resolve();
     }
 
-    // Called when |player| has left their vehicle. If the race does not allow for this, they will
-    // be forcefully dropped out as a consequence of this.
-    onPlayerLeaveVehicle(player) {
-        if (this.race_.allowLeaveVehicle)
-            return;
-
-        this.dataForPlayer(player).finished = true;
-
-        LeaveVehicleMessage.displayForPlayer(player).then(() =>
-            this.removePlayer(player, Minigame.REASON_DROPPED_OUT));
-    }
-
     // Creates the next checkpoint for the |player|, optionally with a given |checkpointIndex|. The
     // entry-promise for the checkpoint will be directed to this function as well.
     nextCheckpoint(player, checkpointIndex = 0) {
@@ -329,6 +318,18 @@ class RaceMinigame extends Minigame {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Called when |player| has left their vehicle. If the race does not allow for this, they will
+    // be forcefully dropped out as a consequence of this.
+    onPlayerLeaveVehicle(player) {
+        if (this.race_.allowLeaveVehicle)
+            return;
+
+        this.dataForPlayer(player).finished = true;
+
+        LeaveVehicleMessage.displayForPlayer(player).then(() =>
+            this.removePlayer(player, Minigame.REASON_DROPPED_OUT));
+    }
+
     // Called when the |vehicle| has been destroyed. The vehicle will belong to once of the race's
     // participants, in which case they will be forcefully dropped out.
     onVehicleDeath(vehicle) {
@@ -337,7 +338,10 @@ class RaceMinigame extends Minigame {
             if (playerVehicle !== vehicle)
                 continue;  // it's not their vehicle
 
-            this.removePlayer(player, Minigame.REASON_DROPPED_OUT);
+            this.dataForPlayer(player).finished = true;
+
+            DestroyedVehicleMessage.displayForPlayer(player).then(() =>
+                this.removePlayer(player, Minigame.REASON_DROPPED_OUT));
             return;
         }
     }

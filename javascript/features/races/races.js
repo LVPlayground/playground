@@ -25,6 +25,7 @@ class Races extends Feature {
             'data/races/dangerous_mountain_tumbles.json',
             'data/races/desert_race.json',
             'data/races/dirty_race.json',
+            'data/races/engine_in_jeopardy.json',
             'data/races/los_santos_blown_bikes.json',
             'data/races/mountain_valleyside.json',
             'data/races/quad_race.json',

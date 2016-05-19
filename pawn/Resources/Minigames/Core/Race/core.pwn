@@ -97,7 +97,6 @@ new _RaceLoaded[MAX_RACES];
 #include "Resources/Minigames/Race/Race13.pwn"
 #include "Resources/Minigames/Race/Race14.pwn"
 #include "Resources/Minigames/Race/Race15.pwn"
-#include "Resources/Minigames/Race/Race16.pwn"
 #include "Resources/Minigames/Race/Race17.pwn"
 #include "Resources/Minigames/Race/Race18.pwn"
 #include "Resources/Minigames/Race/Race19.pwn"

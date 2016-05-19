@@ -86,6 +86,9 @@ class MinigameDriver {
         if (reason != Minigame.REASON_DISCONNECT)
             Promise.resolve().then(() => player.restoreState());
 
+        // Make sure that the death feed is re-enabled for the |player|.
+        this.manager_.deathFeed.enableForPlayer(player);
+
         // Clear the player's state from the minigame manager.
         this.manager_.didRemovePlayerFromMinigame(player);
 
@@ -177,8 +180,13 @@ class MinigameDriver {
         // Asynchronously store the state for each player, then invoke the `onLoad` handler on
         // the minigame itself, after which the minigame can advance to the running state.
         Promise.resolve().then(() => {
-            for (let player of this.activePlayers_)
+            for (let player of this.activePlayers_) {
+                // Serialize the player's current state so that it can be recovered later.
                 player.serializeState();
+
+                // Disable the death feed for them to stop it from obstructing the screen.
+                this.manager_.deathFeed.disableForPlayer(player);
+            }
 
             return this.minigame_.onLoad();
 

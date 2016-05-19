@@ -4,6 +4,7 @@
 
 const Minigames = require('features/minigames/minigames.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
+const MockDeathFeed = require('features/death_feed/test/mock_death_feed.js');
 const MockRaceDatabase = require('features/races/test/mock_race_database.js');
 const Race = require('features/races/race.js');
 const RaceManager = require('features/races/race_manager.js');
@@ -18,6 +19,7 @@ describe('RaceManager', (it, beforeEach, afterEach) => {
         // Load the mocked announce, but the real minigames feature, which races depend on.
         const features = server.featureManager.load({
             announce: MockAnnounce,
+            deathFeed: MockDeathFeed,
             minigames: Minigames
         });
 

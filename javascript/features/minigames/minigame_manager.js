@@ -14,8 +14,9 @@ const SignupTimeoutMilliseconds = 1500;//20000;
 // events associated with these entities to the right places. Each type of minigame gets a category
 // through which its active minigames can be retrieved.
 class MinigameManager {
-    constructor(announce) {
+    constructor(announce, deathFeed) {
         this.announce_ = announce;
+        this.deathFeed_ = deathFeed;
 
         // Map of category symbol to description for the given category.
         this.categories_ = new Map();
@@ -40,6 +41,9 @@ class MinigameManager {
         this.callbacks_.addEventListener(
             'playerstatechange', MinigameManager.prototype.onPlayerStateChange.bind(this));
     }
+
+    // Gets the death feed feature available to drivers to toggle a player's death feed.
+    get deathFeed() { return this.deathFeed_; }
 
     // ---------------------------------------------------------------------------------------------
 

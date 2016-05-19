@@ -6,18 +6,22 @@ const Minigame = require('features/minigames/minigame.js');
 const MinigameManager = require('features/minigames/minigame_manager.js');
 const MinigameObserver = require('features/minigames/minigame_observer.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
+const MockDeathFeed = require('features/death_feed/test/mock_death_feed.js');
 const MockMinigame = require('features/minigames/test/mock_minigame.js');
 const Vector = require('base/vector.js');
 
 describe('MinigameManager', (it, beforeEach, afterEach) => {
     let gunther, russell;
+    let deathFeed = null;
     let manager = null;
 
     beforeEach(() => {
         gunther = server.playerManager.getById(0 /* Gunther */);
         russell = server.playerManager.getById(1 /* Russell */);
 
-        manager = new MinigameManager(new MockAnnounce());
+        deathFeed = new MockDeathFeed();
+
+        manager = new MinigameManager(new MockAnnounce(), deathFeed);
     });
 
     afterEach(() => manager.dispose());
@@ -285,6 +289,29 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         assert.equal(minigame.deathPlayers.length, 1);
         assert.equal(minigame.spawnPlayers.length, 1);
         assert.equal(minigame.removedPlayers.length, 0);
+    });
+
+    it('should hide the death feed for players engaged in a minigame', assert => {
+        const category = manager.createCategory('test');
+        const minigame = new MockMinigame();
+
+        assert.isFalse(deathFeed.isDisabledForPlayer(gunther));
+
+        manager.createMinigame(category, minigame, gunther);
+        const driver = minigame.driver_;
+
+        assert.isTrue(manager.isPlayerEngaged(gunther));
+
+        driver.load();
+
+        return minigame.loadPromise.then(() => {
+            assert.isTrue(deathFeed.isDisabledForPlayer(gunther));
+
+            driver.finish(Minigame.REASON_FORCED_STOP);
+            return Promise.resolve();  // finishing a minigame is asynchronous
+
+        }).then(() =>
+            assert.isFalse(deathFeed.isDisabledForPlayer(gunther)));
     });
 
     it('should tell minigames about its players leaving their vehicles', assert => {

@@ -73,8 +73,6 @@ class RaceMinigame extends Minigame {
             for (const player of this.activePlayers) {
                 const playerData = this.dataForPlayer(player);
 
-                // TODO(Russell): Disable the death feed for the |player|.
-
                 // Move the player to the right virtual world and interior for the race.
                 player.virtualWorld = this.virtualWorld;
                 player.interior = this.race_.interior;

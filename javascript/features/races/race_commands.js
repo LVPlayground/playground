@@ -40,7 +40,7 @@ class RaceCommands {
     // Creates a dialog that provides an overview of the available races, together with their all-
     // time best times, and personalized best times if the player has logged in to their account.
     raceOverview(player) {
-        this.manager_.listRacesForPlayer(player).then(races => {
+        this.manager_.loadRecordTimesForPlayer(player).then(races => {
             // Bail out if there are no races, since there won't be anything to display.
             if (!races.length)
                 return player.sendMessage(Message.RACE_ERROR_NO_RACES_AVAILABLE);

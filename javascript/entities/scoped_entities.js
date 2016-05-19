@@ -31,7 +31,7 @@ class ScopedEntities {
         if (object === null)
             return null;
 
-        this.objects_.push(object);
+        this.objects_.add(object);
         return object;
     }
 
@@ -61,6 +61,7 @@ class ScopedEntities {
 
         // TODO(Russell): Introduce an ObjectManager global to the Server object.
         this.objects_.forEach(object => object.dispose());
+        this.objects_ = null;
 
         this.vehicles_.forEach(safeDisposeEntity);
         this.vehicles_ = null;

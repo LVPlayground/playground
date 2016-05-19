@@ -5,8 +5,6 @@
 const Minigame = require('features/minigames/minigame.js');
 const RaceDatabase = require('features/races/race_database.js');
 const RaceMinigame = require('features/races/race_minigame.js');
-const RaceSettings = require('features/races/race_settings.js');
-const RunningRace = require('features/races/running_race.js');
 
 // The race manager is in charge of meditating between the race database, the commands and the
 // minigame feature that will drive the actual races.

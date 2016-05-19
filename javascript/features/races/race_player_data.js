@@ -28,6 +28,9 @@ class RacePlayerData {
     // Gets the time at which the player passed their latest checkpoint.
     get checkpointTime() { return this.checkpointTimes_.get(this.checkpointIndex_); }
 
+    // Gets an array with the checkpoint times of the player's result.
+    get checkpointTimes() { return Array.from(this.checkpointTimes_.values()); }
+
     // Gets the scoreboard that will be displayed for this player.
     get scoreBoard() { return this.scoreBoard_; }
 

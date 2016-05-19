@@ -33,6 +33,9 @@ class RaceMinigame extends Minigame {
         // Update counter for resetting vehicle damages if vehicles should have godmode.
         this.resetVehicleDamageCounter_ = 0;
 
+        // Number of players who have successfully finished the race already.
+        this.finishedPlayers_ = 0;
+
         // Map of the engaged players to their player data.
         this.playerData_ = new Map();
 
@@ -335,7 +338,13 @@ class RaceMinigame extends Minigame {
         if (this.state == Minigame.STATE_SIGN_UP)
             return;  // bail out if the actual race hasn't started yet.
 
-        this.dataForPlayer(player).dispose();
+        const playerData = this.dataForPlayer(player);
+
+        const rank = ++this.finishedPlayers_;
+        const totalTime = playerData.checkpointTime;
+        const checkpointTimes = playerData.checkpointTimes;
+
+        playerData.dispose();
 
         if (reason == Minigame.REASON_DISCONNECT)
             return;  // don't update the activity of |player| when they're disconnecting.
@@ -346,10 +355,12 @@ class RaceMinigame extends Minigame {
         // Mark the player as being controllable again, so that they're not frozen for no reason.
         player.controllable = true;
 
-        if (reason != Minigame.REASON_FINISHED)
-            return;  // don't store the race's information if the player didn't finish it.
+        if (reason != Minigame.REASON_FINISHED || !player.isRegistered())
+            return;  // the race's result does not have to be stored
 
-        // TODO(Russell): Make sure that the time of the |player| gets stored in the database.
+        // Store the player's result in the database.
+        this.database_.storeRaceResult(
+            this.race_.id, player.userId, rank, totalTime, checkpointTimes);
     }
 
     dispose() {

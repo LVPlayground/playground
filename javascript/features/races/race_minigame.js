@@ -11,7 +11,7 @@ const UpdateTickerInterval = 147;
 // This class represents an on-going race minigame. The race defines the maximum number of players,
 // and the lifetime of the minigame will be controlled by the minigame manager.
 class RaceMinigame extends Minigame {
-    constructor(race) {
+    constructor(race, database) {
         super({
             name: race.name,
             command: '/race ' + race.id,
@@ -20,6 +20,7 @@ class RaceMinigame extends Minigame {
         });
 
         this.race_ = race;
+        this.database_ = database;
 
         // Map of the engaged players to their player data.
         this.playerData_ = new Map();
@@ -88,8 +89,8 @@ class RaceMinigame extends Minigame {
                 this.nextCheckpoint(player);
             }
 
-            // TODO(Russell): Load the individual checkpoint times for the all players.
             // TODO(Russell): Start the race's count-down after a few second's wait.
+            return this.loadCheckpointDataForPlayers();
         });
     }
 
@@ -139,6 +140,32 @@ class RaceMinigame extends Minigame {
 
             this.dataForPlayer(player).vehicle = vehicle;
         }
+    }
+
+    // Loads the checkpoint times for the best run in this race for each of the participants. As
+    // the data is coming from the database, this is a synchronous operation.
+    loadCheckpointDataForPlayers() {
+        let registeredPlayers = {};
+
+        for (const player of this.activePlayers) {
+            if (player.isRegistered())
+                registeredPlayers[player.userId] = player;
+        }
+
+        const userIds = Object.keys(registeredPlayers);
+        if (!userIds.length)
+            return;  // skip the database completely if there are no registered players.
+
+        const raceId = this.race_.id;
+
+        return this.database_.loadBestResultsForParticipants(raceId, userIds).then(results => {
+            Object.keys(results).forEach(userId => {
+                const player = registeredPlayers[userId];
+                const playerData = this.dataForPlayer(player);
+
+                playerData.importResults(results[userId]);
+            });
+        });
     }
 
     // ---------------------------------------------------------------------------------------------

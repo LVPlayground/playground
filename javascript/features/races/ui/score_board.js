@@ -146,8 +146,34 @@ class ScoreBoard {
 
     // ---------------------------------------------------------------------------------------------
 
-    // TODO(Russell): setBestTime()
-    // TODO(Russell): setPersonalRecordRelativeTime()
+    // Called when the player's best time has been loaded from the database. It will be displayed on
+    // the score board until relative times based on their performance are known.
+    setBestTime(time) {
+        this.hasPersonalRecords_ = true;
+        this.personalRecordValue_.setTime(this.player_, time);
+
+        if (this.visible_) {
+            this.personalRecordLabel_.displayForPlayer(this.player_);
+            this.personalRecordValue_.displayForPlayer(this.player_);
+        }
+    }
+
+    // Updates the relative time the player is currently driving at. If the personal record value
+    // still is an absolute time (as it is at the beginning of the race), re-create the view.
+    setPersonalRecordRelativeTime(time) {
+        if (this.personalRecordValue_ instanceof AbsoluteTimeView) {
+            this.personalRecordValue_.hideForPlayer(this.player_);
+            this.personalRecordLabel_.hideForPlayer(this.player_);
+
+            this.personalRecordValue_ = new RelativeTimeView(...this.personalRecordValue_.position);
+            this.personalRecordValue_.setTime(this.player_, time);
+
+            this.personalRecordValue_.displayForPlayer(this.player_);
+            return;
+        }
+
+        this.personalRecordValue_.setTime(this.player_, time);
+    }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -181,41 +207,6 @@ class ScoreBoard {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {}
-
-
-
-    // Called when the player's best time has been loaded from the database. It will be displayed on
-    // the score board until relative times based on their performance are known.
-    setBestTime(time) {
-    this.hasPersonalRecords_ = true;
-    this.personalRecordValue_.setTime(this.player_, time);
-
-    if (this.visible_) {
-    this.personalRecordLabel_.displayForPlayer(this.player_);
-    this.personalRecordValue_.displayForPlayer(this.player_);
-    }
-    }
-
-    // Updates the relative time the player is currently driving at. If the personal record value
-    // still is an absolute time (as it is at the beginning of the race), re-create the view.
-    setPersonalRecordRelativeTime(time) {
-    if (this.personalRecordValue_ instanceof AbsoluteTimeView) {
-    this.personalRecordValue_.hideForPlayer(this.player_);
-    this.personalRecordLabel_.hideForPlayer(this.player_);
-
-    this.personalRecordValue_ = new RelativeTimeView(...this.personalRecordValue_.position);
-    this.personalRecordValue_.setTime(this.player_, time);
-
-    this.personalRecordValue_.displayForPlayer(this.player_);
-    return;
-    }
-
-    this.personalRecordValue_.setTime(this.player_, time);
-    }
-
-    
-
-    
 }
 
 exports = ScoreBoard;

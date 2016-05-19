@@ -16,6 +16,8 @@ class RacePlayerData {
         this.checkpointIndex_ = 0;
         this.checkpointTimes_ = new Map();
 
+        this.bestCheckpointTimes_ = [];
+
         this.scoreBoard_ = new ScoreBoard(player);
     }
 
@@ -28,10 +30,21 @@ class RacePlayerData {
     // Gets the scoreboard that will be displayed for this player.
     get scoreBoard() { return this.scoreBoard_; }
 
+    // Imports the |results| for this player, which represents their best run in this race.
+    importResults(results) {
+        this.scoreBoard_.setBestTime(results.totalTime);
+        this.bestCheckpointTimes_ = results.checkpointTimes;
+    }
+
     // Records the time at which the player passed through the checkpoint with the given index.
     recordTime(checkpointIndex, time) {
         this.checkpointIndex_ = checkpointIndex;
         this.checkpointTimes_.set(checkpointIndex, time);
+
+        if (this.bestCheckpointTimes_.length > checkpointIndex) {
+            this.scoreBoard_.setPersonalRecordRelativeTime(
+                time - this.bestCheckpointTimes_[checkpointIndex]);
+        }
     }
 
     dispose() {

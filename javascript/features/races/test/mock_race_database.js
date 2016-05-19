@@ -20,6 +20,10 @@ class MockRaceDatabase {
         return Promise.resolve(times);
     }
 
+    loadBestResultsForParticipants(raceId, userIds) {
+        return Promise.resolve([]);
+    }
+
     dispose() {}
 }
 

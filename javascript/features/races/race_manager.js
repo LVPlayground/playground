@@ -103,8 +103,10 @@ class RaceManager {
             break;
         }
 
+        const raceMinigame = new RaceMinigame(race, this.database_);
+
         // Alternatively we create a new race that the player will be invited to join in to.
-        this.minigames_.createMinigame(this.minigameCategory_, new RaceMinigame(race), player);
+        this.minigames_.createMinigame(this.minigameCategory_, raceMinigame, player);
     }
 
     // ---------------------------------------------------------------------------------------------

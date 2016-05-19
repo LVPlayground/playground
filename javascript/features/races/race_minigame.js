@@ -212,7 +212,9 @@ class RaceMinigame extends Minigame {
             playerData.recordTime(checkpointIndex - 1, highResolutionTime() - this.startTime_);
 
         // Check whether the |player| has passed the final checkpoint.
-        if (checkpointIndex > 0 || checkpointIndex >= checkpoints.length) {
+        if (checkpointIndex >= checkpoints.length) {
+            playerData.finished = true;
+
             FinishedMessage.displayForPlayer(player).then(() =>
                 this.removePlayer(player, Minigame.REASON_FINISHED));
 
@@ -267,6 +269,8 @@ class RaceMinigame extends Minigame {
 
         for (const player of this.activePlayers) {
             const playerData = this.dataForPlayer(player);
+            if (playerData.finished)
+                continue;  // the player has finished the race already.
 
             // Update the score board belonging to the player with the latest run-timer.
             playerData.scoreBoard.update(runtime);

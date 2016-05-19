@@ -12,6 +12,7 @@ class RacePlayerData {
 
         this.vehicle = null;
         this.checkpoint = null;
+        this.finished = false;
 
         this.checkpointIndex_ = 0;
         this.checkpointTimes_ = new Map();

@@ -72,8 +72,8 @@ class MinigameDriver {
 
     // Removes |player| from the minigame because of |reason|. Will trigger the onPlayerRemoved
     // method on the minigame object, and free the |player|'s state in the minigame manager.
-    removePlayer(player, reason) {
-        if (!this.activePlayers_.has(player))
+    removePlayer(player, reason, isTimeout = false) {
+        if (!this.activePlayers_ || !this.activePlayers_.has(player))
             return;
 
         this.activePlayers_.delete(player);
@@ -90,8 +90,8 @@ class MinigameDriver {
         this.manager_.didRemovePlayerFromMinigame(player);
 
         // Check whether the minigame has finished in its entirety. This is the case when there are
-        // no more active players and the |player| is not being removed because it's finished.
-        if (reason != Minigame.REASON_FINISHED) {
+        // no more active players and the |player| is not being removed because of a timeout.
+        if (!isTimeout) {
             if (this.activePlayers_.size < this.minigame_.minimumParticipants)
                 this.finish(Minigame.REASON_NOT_ENOUGH_PLAYERS);
         }
@@ -219,7 +219,7 @@ class MinigameDriver {
         return this.minigame_.onFinish(reason).then(() => {
             // Remove the remaining players from the minigame.
             for (let player of this.activePlayers_)
-                this.removePlayer(player, Minigame.REASON_FINISHED);
+                this.removePlayer(player, Minigame.REASON_FINISHED, true /* isTimeout */);
 
             // Give the minigame an opportunity to dispose of their state.
             this.minigame_.dispose();

@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const Countdown = require('features/races/ui/countdown.js');
+const FinishedMessage = require('features/races/ui/finished_message.js');
 const Minigame = require('features/minigames/minigame.js');
 const RaceExpiredMessage = require('features/races/ui/race_expired_message.js');
 const RacePlayerData = require('features/races/race_player_data.js');
@@ -211,14 +212,10 @@ class RaceMinigame extends Minigame {
             playerData.recordTime(checkpointIndex - 1, highResolutionTime() - this.startTime_);
 
         // Check whether the |player| has passed the final checkpoint.
-        if (checkpointIndex >= checkpoints.length) {
-            // TODO(Russell): Show the You Won textdraw for the player before removing them from the
-            // race, to congratulate them on their winning.
+        if (checkpointIndex > 0 || checkpointIndex >= checkpoints.length) {
+            FinishedMessage.displayForPlayer(player).then(() =>
+                this.removePlayer(player, Minigame.REASON_FINISHED));
 
-            // TODO(Russell): Finalize the player's time to make sure we store the correct value
-            // in the database, not the time including the congratulation message.
-
-            this.removePlayer(player, Minigame.REASON_FINISHED);
             return;
         }
 

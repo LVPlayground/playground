@@ -37,6 +37,13 @@ lvp_minigaming(playerid, params[]) {
         if (!IsPlayerInMinigame(subjectId))
             continue;
 
+        if (PlayerActivity(subjectId)->isJavaScriptActivity()) {
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t-", minigaming,
+                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerMinigameName(subjectId));
+            continue;
+        }
+
         if (IsPlayerInMapZone(subjectId)) {
             format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s jump\t-", minigaming,
                 ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,

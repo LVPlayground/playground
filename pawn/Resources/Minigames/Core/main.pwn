@@ -75,11 +75,22 @@ MinigameType: GetPlayerMinigameType(playerId) {
 }
 
 // Return the name of the minigame.
-stock GetPlayerMinigameName(playerId) {
+GetPlayerMinigameName(playerId) {
     new notice[128];
 
     if (Player(playerId)->isConnected() == false) {
         format(notice, sizeof(notice), "Unknown");
+        return notice;
+    }
+
+    if (PlayerActivity(playerId)->isJavaScriptActivity()) {
+        switch (PlayerActivity(playerId)->get()) {
+            case PlayerActivityJsRace:
+                format(notice, sizeof(notice), "Racing");
+            default:
+                format(notice, sizeof(notice), "Unknown");
+        }
+
         return notice;
     }
 

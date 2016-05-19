@@ -27,7 +27,7 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0],
-                     Message.format(Message.ANNOUNCE_MINIGAME, name, command, price));
+                     Message.format(Message.ANNOUNCE_MINIGAME, name, command));
 
         assert.deepEqual(ircMessages, [
             '[announce] ' + Message.format(Message.ANNOUNCE_MINIGAME_IRC, gunther.name, gunther.id,

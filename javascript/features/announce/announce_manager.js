@@ -18,7 +18,7 @@ class AnnounceManager {
     // Announces that the |name| has started. Players can join by typing |command|. When indicated,
     // players will have to pay |price| in order to participate.
     announceMinigame(player, name, command, price) {
-        const formattedMessage = Message.format(Message.ANNOUNCE_MINIGAME, name, command, price);
+        const formattedMessage = Message.format(Message.ANNOUNCE_MINIGAME, name, command);
 
         server.playerManager.forEach(onlinePlayer =>
             onlinePlayer.sendMessage(formattedMessage));

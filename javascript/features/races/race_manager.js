@@ -98,7 +98,7 @@ class RaceManager {
             // The current |minigame| represents the race the player would like to participate in
             // and is still accepting sign-ups, so make it happen.
             this.minigames_.addPlayerToMinigame(this.minigameCategory_, minigame, player);
-            break;
+            return;
         }
 
         const raceMinigame = new RaceMinigame(race, this.database_);

@@ -31,10 +31,7 @@ class RaceCommands {
 
         // TODO: Withdraw the price of playing a race from the player's account.
 
-        // Skip the sign-up phase if the player is the only person in-game.
-        let skipSignup = server.playerManager.count == 1;
-
-        this.manager_.startRace(player, id, skipSignup);
+        this.manager_.startRace(player, id);
     }
 
     // Creates a dialog that provides an overview of the available races, together with their all-

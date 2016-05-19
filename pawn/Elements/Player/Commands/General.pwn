@@ -738,7 +738,7 @@ lvp_leave(playerid,params[]) {
         if (RemovePlayerFromAnyGame(targetPlayer)){
             // Send a message to the player depending on whether the player left themselves, or
             // has been forced to leave the minigame by an administrator.
-            if (Player(playerid)->isAdministrator() == true && targetPlayer != playerid)
+            if (Player(playerid)->isAdministrator() && targetPlayer != playerid)
                 Responses->respondMinigameDropout(targetPlayer, minigameType, name, RemovedByAdministratorDropoutReason);
             else
                 Responses->respondMinigameDropout(targetPlayer, minigameType, name, LeaveCommandDropoutReason);

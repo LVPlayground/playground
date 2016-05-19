@@ -55,6 +55,17 @@ class Responses {
      * @param reason The reason explaining why the player has left the minigame.
      */
     public respondMinigameDropout(playerId, MinigameType: type, name[], MinigameDropoutReason: reason) {
+        if (PlayerActivity(playerId)->isJavaScriptActivity()) {
+            switch (reason) {
+                case LeaveCommandDropoutReason:
+                    SendClientMessage(playerId, Color::MinigameAnnouncement, "You have left your current activity!");
+                case RemovedByAdministratorDropoutReason:
+                    SendClientMessage(playerId, Color::MinigameAnnouncement, "An administrator removed you from your previous activity!");
+            }
+
+            return;
+        }
+
         new colorBuffer[2][Color::TextualColorLength], typeString[12], reasonText[64];
         Color->toString(Color::MinigameAnnouncement, colorBuffer[0], sizeof(colorBuffer[]));
         Color->toString(Color::MinigameAnnouncementHighlight, colorBuffer[1], sizeof(colorBuffer[]));

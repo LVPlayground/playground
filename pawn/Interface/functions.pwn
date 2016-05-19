@@ -26,6 +26,12 @@ RemovePlayerFromAnyGame(playerId) {
     if (Player(playerId)->isConnected() == false)
         return 0;
 
+    // The player might be engaged in a JavaScript activity.
+    if (PlayerActivity(playerId)->isJavaScriptActivity()) {
+        CallLocalFunction("OnPlayerLeaveActivity", "d", playerId);
+        return 1;
+    }
+
     if (CLyse__GetPlayerState(playerId) >= LYSE_STATE_SIGNUP) {
         CLyse__SignPlayerOut(playerId);
         return 1;
@@ -1016,3 +1022,6 @@ GetPlayerIngameTime(playerId) {
 
     return 3600 * gameplayhours[playerId] + 60 * gameplayminutes[playerId] + gameplayseconds[playerId];
 }
+
+forward OnPlayerLeaveActivity(playerid);
+public OnPlayerLeaveActivity(playerid) {}

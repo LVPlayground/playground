@@ -37,6 +37,8 @@ class MinigameManager {
         this.callbacks_.addEventListener(
             'playerdeath', MinigameManager.prototype.onPlayerDeath.bind(this));
         this.callbacks_.addEventListener(
+            'playerleaveactivity', MinigameManager.prototype.onPlayerLeaveActivity.bind(this));
+        this.callbacks_.addEventListener(
             'playerspawn', MinigameManager.prototype.onPlayerSpawn.bind(this));
         this.callbacks_.addEventListener(
             'playerstatechange', MinigameManager.prototype.onPlayerStateChange.bind(this));
@@ -220,6 +222,17 @@ class MinigameManager {
             return;  // invalid player, or not engaged in a minigame
 
         this.players_.get(player).onPlayerDeath(player, event.reason);
+    }
+
+    // Called when |player| should be removed from any on-going activities.
+    onPlayerLeaveActivity(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player || !this.players_.has(player))
+            return;  // invalid player, or not engaged in a minigame
+
+        const driver = this.players_.get(player);
+
+        driver.removePlayer(player, Minigame.REASON_DROPPED_OUT);
     }
 
     // Called when |player| has disconnected from Las Venturas Playground. They will automatically

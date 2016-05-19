@@ -101,12 +101,12 @@ class RaceDatabase {
     // An empty object ("no high scores") will be used for unregistered players. The returned object
     // will include best times for *all* races, not just those available in the race manager.
     loadRecordTimesForPlayer(player) {
+        let times = new Map();
+
         if (!player.isRegistered())
-            return Promise.resolve({});
+            return Promise.resolve(times);
 
         return this.database_.query(FETCH_BEST_PLAYER_TIMES_QUERY, player.userId).then(result => {
-            let times = new Map();
-
             result.rows.forEach(row =>
                 times.set(row.race_id, Math.round(row.result_time / 1000)));
 

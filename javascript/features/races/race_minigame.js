@@ -5,6 +5,9 @@
 const Minigame = require('features/minigames/minigame.js');
 const RacePlayerData = require('features/races/race_player_data.js');
 
+// Frequency at which infinite nitro should be given to vehicles. In milliseconds.
+const InfiniteNitroInterval = 20000;
+
 // Frequency at which a race's update ticker will be updating. In milliseconds.
 const UpdateTickerInterval = 147;
 
@@ -176,7 +179,7 @@ class RaceMinigame extends Minigame {
     // Called when the race is ready to start. This is where they will actually begin racing, so
     // all players will be unfrozen and we wish them the best of luck.
     onStart() {
-        // TODO(Russell): Enable unlimited NOS for the vehicles.
+        this.updateInfiniteNitro();
         this.updateTicker();
 
         // Unfreeze all players and allow them to begin racing.
@@ -227,16 +230,32 @@ class RaceMinigame extends Minigame {
         playerData.checkpoint = checkpoint;
     }
 
+    // Grants and ensures infinite nitro for all active vehicles in the race while the race is
+    // running. Only enabled when the race's settings allow for this.
+    updateInfiniteNitro() {
+        if (this.state != Minigame.STATE_RUNNING)
+            return;  // the race has finished, no need to give infinite nitro.
+
+        // TODO(Russell): Check whether this race should support infinite nitro at all. This was
+        // enabled by accident in the old-new-race-system :-(.
+
+        for (const player of this.activePlayers)
+            this.dataForPlayer(player).vehicle.addComponent(Vehicle.COMPONENT_NOS_SINGLE_SHOT);
+
+        // Schedule another round of NOS component updates after a given amount of milliseconds.
+        wait(InfiniteNitroInterval).then(() => this.updateInfiniteNitro());
+    }
+
     // High-resolution update ticker that will be updated as long as the race is in progress. It
     // increases the timers on the participant's score boards, and implements vehicle god mode.
     updateTicker() {
         if (this.state != Minigame.STATE_RUNNING)
             return;  // the race has finished, no need to run the update ticker.
 
-        // Repair a vehicle once every ten score board updates if so desired by the race's settings.
-        // This makes the vehicle they're driving in pretty much invincible.
+        // Repair a vehicle once every seven score board updates if so desired by the race's
+        // settings. This makes the vehicle they're driving in pretty much invincible.
         const repairVehicles = this.race_.disableVehicleDamage &&
-                               this.resetVehicleDamageCounter_++ % 10 == 0;
+                               this.resetVehicleDamageCounter_++ % 7 == 0;
 
         // The runtime of the current race, in milliseconds.
         const runtime = highResolutionTime() - this.startTime_;

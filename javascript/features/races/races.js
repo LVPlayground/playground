@@ -23,10 +23,10 @@ class Races extends Feature {
         [
             'data/races/desert_race.json',
             'data/races/dirty_race.json',
-            'data/races/easy_race.json',
-            'data/races/hard_race.json',
+            'data/races/coastal_conduit.json',
+            'data/races/dangerous_mountain_tumbles.json',
             'data/races/mountain_valleyside.json',
-            'data/races/normal_race.json',
+            'data/races/los_santos_blown_bikes.json',
             'data/races/quad_race.json',
             'data/races/stunters_xpress.json',
 

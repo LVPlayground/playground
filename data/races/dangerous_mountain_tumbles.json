@@ -1,5 +1,5 @@
 {
-    "name": "Hard Race",
+    "name": "Dangerous Mountain Tumbles",
     "id": 3,
 
     "time_limit": 500,
@@ -41,6 +41,10 @@
             }
         }
     ],
+
+    "settings": {
+        "unlimited_nos": true
+    },
 
     "checkpoints": [
         { "position": [ -2311.4260, -1803.4481, 441.3239 ], "size":  5.0 },

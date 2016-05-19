@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const Countdown = require('features/races/ui/countdown.js');
 const Minigame = require('features/minigames/minigame.js');
 const RaceExpiredMessage = require('features/races/ui/race_expired_message.js');
 const RacePlayerData = require('features/races/race_player_data.js');
@@ -98,8 +99,10 @@ class RaceMinigame extends Minigame {
                 this.nextCheckpoint(player);
             }
 
-            // TODO(Russell): Start the race's count-down after a few second's wait.
-            return this.loadCheckpointDataForPlayers();
+            return Promise.all([
+                Countdown.displayForPlayers(this.activePlayers),
+                this.loadCheckpointDataForPlayers()
+            ]);
         });
     }
 

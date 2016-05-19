@@ -29,6 +29,7 @@ class Races extends Feature {
             'data/races/mountain_valleyside.json',
             'data/races/quad_race.json',
             'data/races/red_county_grove.json',
+            'data/races/san_fierro_badlands.json',
             'data/races/stunters_xpress.json',
 
         ].forEach(file => this.manager_.registerRace(RaceImporter.fromFile(file)));

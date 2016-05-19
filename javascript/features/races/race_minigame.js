@@ -262,8 +262,8 @@ class RaceMinigame extends Minigame {
         if (this.state != Minigame.STATE_RUNNING)
             return;  // the race has finished, no need to give infinite nitro.
 
-        // TODO(Russell): Check whether this race should support infinite nitro at all. This was
-        // enabled by accident in the old-new-race-system :-(.
+        if (!this.race_.unlimitedNos)
+            return;  // the race does not have unlimited nitro for its vehicles.
 
         for (const player of this.activePlayers)
             this.dataForPlayer(player).vehicle.addComponent(Vehicle.COMPONENT_NOS_SINGLE_SHOT);

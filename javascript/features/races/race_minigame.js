@@ -22,6 +22,9 @@ class RaceMinigame extends Minigame {
         this.race_ = race;
         this.database_ = database;
 
+        // Update counter for resetting vehicle damages if vehicles should have godmode.
+        this.resetVehicleDamageCounter_ = 0;
+
         // Map of the engaged players to their player data.
         this.playerData_ = new Map();
 
@@ -230,6 +233,11 @@ class RaceMinigame extends Minigame {
         if (this.state != Minigame.STATE_RUNNING)
             return;  // the race has finished, no need to run the update ticker.
 
+        // Repair a vehicle once every ten score board updates if so desired by the race's settings.
+        // This makes the vehicle they're driving in pretty much invincible.
+        const repairVehicles = this.race_.disableVehicleDamage &&
+                               this.resetVehicleDamageCounter_++ % 10 == 0;
+
         // The runtime of the current race, in milliseconds.
         const runtime = highResolutionTime() - this.startTime_;
 
@@ -239,7 +247,8 @@ class RaceMinigame extends Minigame {
             // Update the score board belonging to the player with the latest run-timer.
             playerData.scoreBoard.update(runtime);
 
-            // TODO(Russell): Implement vehicle god mode.
+            if (repairVehicles)
+                playerData.vehicle.repair();
         }
 
         wait(UpdateTickerInterval).then(() => this.updateTicker());

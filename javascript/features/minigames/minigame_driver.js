@@ -221,6 +221,9 @@ class MinigameDriver {
             for (let player of this.activePlayers_)
                 this.removePlayer(player, Minigame.REASON_FINISHED);
 
+            // Give the minigame an opportunity to dispose of their state.
+            this.minigame_.dispose();
+
             // Informs the manager that the minigame owned by this driver has finished.
             this.manager_.didFinishMinigame(this.category_, this);
         });

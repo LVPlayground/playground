@@ -142,6 +142,8 @@ class ScoreBoard {
         this.positionValue_.hideForPlayer(this.player_);
 
         this.positionBackground_.hideForPlayer(this.player_);
+
+        this.visible_ = false;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -206,7 +208,10 @@ class ScoreBoard {
 
     // ---------------------------------------------------------------------------------------------
 
-    dispose() {}
+    dispose() {
+        if (this.visible_)
+            this.hideForPlayer();
+    }
 }
 
 exports = ScoreBoard;

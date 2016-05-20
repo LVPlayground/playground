@@ -200,6 +200,9 @@ public OnPlayerDeath(playerid, killerid, reason) {
         }
         MyKills[killerid]++;
         MyDeaths[playerid]++;
+
+        if (!IsPlayerInMinigame(killerid))
+            AnniversaryStatistics->increaseKillScore(killerid);
     }
 
     // Brief

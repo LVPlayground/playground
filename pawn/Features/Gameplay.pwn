@@ -84,6 +84,3 @@
 
 // Add the (in)famous /report-command to report players.
 #include "Features/Gameplay/Commands/ReportHandler.pwn"
-
-// Add the script responsible for statistic gathering during LVP 10.
-#include "Features/Gameplay/AnniversaryStatistics.pwn"

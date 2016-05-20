@@ -379,7 +379,7 @@ CDerby__Start(iDerbyID)
             iSpawnID++;
         }
 
-
+        AnniversaryStatistics->increaseMinigameParticipationScore(i);
 
         CDerby__SetPlayerState(i,DERBY_STATE_COUNTDOWN);
         SetPlayerInterior(i,CDerby__GetInterior(iDerbyID));

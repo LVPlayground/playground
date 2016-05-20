@@ -122,6 +122,7 @@ hayInitialize()
         {
             if(hayHasPlayerSignedUp(i))
             {
+                AnniversaryStatistics->increaseMinigameParticipationScore(i);
                 TogglePlayerControllable(i, true);
                 GameTextForPlayer(i, "~g~Go!", 5000, 5);
                 PlayerPlaySound(i, 1057, 0, 0, 0);

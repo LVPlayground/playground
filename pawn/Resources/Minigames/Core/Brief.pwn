@@ -538,6 +538,8 @@ stock CBrief__Start()
 
         if(isPlayerBrief[i])
         {
+            AnniversaryStatistics->increaseMinigameParticipationScore(i);
+
             CBrief__Debug(i,"Recognized in loop... Beggining settings");
             ResetPlayerWeapons(i);
             SetPlayerHealth(i,100.0);

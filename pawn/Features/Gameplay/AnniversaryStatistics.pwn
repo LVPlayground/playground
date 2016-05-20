@@ -63,6 +63,34 @@ class AnniversaryStatistics {
     }
 
     /**
+     * After a player has participated in a minigame, increase their score.
+     *
+     * @param playerId Id of the player who the statistic is increased for.
+     */
+    public inline increaseMinigameParticipationScore(playerId) {
+        m_minigamesParticipated[playerId]++;
+    }
+
+    /**
+     * After a player has killed someone, increase their score.
+     *
+     * @param playerId Id of the player who the statistic is increased for.
+     */
+    public inline increaseKillScore(playerId) {
+        m_kills[playerId]++;
+    }
+
+    /**
+     * Clear the statistics for a certain player after they've been pushed to the database.
+     *
+     * @param playerId Id of the player who the statistics are cleared for.
+     */
+    public clearAnniversaryStatistics(playerId) {
+        m_minigamesParticipated[playerId] = 0;
+        m_kills[playerId] = 0;
+    }
+
+    /**
      * Create a database query that updates the player's anniversary statistics in the back-end.
      *
      * @param playerId Id of the player who the statistics are updated for.
@@ -73,6 +101,8 @@ class AnniversaryStatistics {
             "INSERT INTO %s (user_id, minigames_participated, kills, timestamp) VALUES (%d, %d, %d, NOW())",
             statisticsTableName, Account(playerId)->userId(), m_minigamesParticipated[playerId], m_kills[playerId]);
         Database->query(databaseQuery, "", -1);
+
+        this->clearAnniversaryStatistics(playerId);
     }
 
     /**
@@ -87,7 +117,8 @@ class AnniversaryStatistics {
                 return;
 
             for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
-                if (Player(playerId)->isConnected() == false || Player(playerId)->isLoggedIn() == false)
+                if (Player(playerId)->isConnected() == false || Player(playerId)->isLoggedIn() == false
+                    || Player(playerId)->isAdministrator() == true)
                     continue;
 
                 this->updateAnniversaryStatistics(playerId);
@@ -104,8 +135,7 @@ class AnniversaryStatistics {
      */
     @list(OnPlayerConnect)
     public onPlayerConnect(playerId) {
-        m_minigamesParticipated[playerId] = 0;
-        m_kills[playerId] = 0;
+        this->clearAnniversaryStatistics(playerId);
     }
 
     /**
@@ -115,7 +145,7 @@ class AnniversaryStatistics {
      */
     @list(OnPlayerDisconnect)
     public onPlayerDisconnect(playerId) {
-        if (Player(playerId)->isLoggedIn() == true && m_anniversary)
+        if (Player(playerId)->isLoggedIn() == true && m_anniversary && Player(playerId)->isAdministrator() == false)
             this->updateAnniversaryStatistics(playerId);
     }
 };

@@ -143,6 +143,7 @@ stock waterFightStart()
         }
 
         waterFightSpawnPlayer(i);
+        AnniversaryStatistics->increaseMinigameParticipationScore(i);
     }
 }
 

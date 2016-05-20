@@ -144,6 +144,8 @@ public OnGameModeInit() {
 
     CreatePickup(1241, 3, 1680.3677,1757.0861,10.8277);
 
+    g_enforceGeorgeTypo = false;
+
     g_iShipIcon = CreatePickup(1239, 2, 2021.8129, 1545.2087, 10.8231 );    // info icon
     g_TrainPickup_0 = CreatePickup(1239,3, 2855.7217,1290.7852,11.3906 );    // Train icon 0
     g_TrainPickup_1 = CreatePickup(1239,3, 1707.7102,-1949.6313,13.9554 );   // Train icon 1

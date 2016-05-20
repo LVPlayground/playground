@@ -23,6 +23,19 @@ public OnPlayerText(playerid, text[]) {
 
     CReaction__OnText(playerid, text);
 
+    // Enforce a typo in "George" (as "Geroge") when this feature has been enabled.
+    if (g_enforceGeorgeTypo) {
+        new const offset = strfind(text, "George", true);
+        new const target[] = "geroge";
+
+        if (offset > -1) {
+            for (new i = offset, j = 0; i < offset + 6 /* len(George) */; ++i, ++j) {
+                text[i] = text[i] >= 65 && text[i] <= 90 ? toupper(target[j])
+                                                         : target[j];
+            }
+        }
+    }
+
     // A muted player can't chat unless it's the admins he wants to chat with.
     if (MuteManager->isMuted(playerid) && text[0] != '@') {
         if (MuteManager->muteDuration(playerid) == -1)

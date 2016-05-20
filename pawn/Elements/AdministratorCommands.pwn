@@ -505,6 +505,19 @@ TimeHelp:
     if (Player(playerId)->isManagement() == false)
         goto SetHelp;
 
+
+    if (!strcmp(setParameter, "george", true, 6)) {
+        if (Command->parameterCount(params) < 2) {
+            SendClientMessage(playerId, Color::Information, "Usage: /set george [on/off]");
+            return 1;
+        }
+
+        g_enforceGeorgeTypo = Command->booleanParameter(params, 1);
+
+        SendClientMessage(playerId, Color::Success, "The setting has been updated!");
+        return 1;
+    }
+
     if (!strcmp(setParameter, "gravity", true, 7)) {
         new Float: gravity = Command->floatParameter(params, 1);
         if (gravity < -0.15 || gravity > 0.15) {

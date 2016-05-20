@@ -9,6 +9,7 @@ const LeaveVehicleMessage = require('features/races/ui/leave_vehicle_message.js'
 const Minigame = require('features/minigames/minigame.js');
 const RaceExpiredMessage = require('features/races/ui/race_expired_message.js');
 const RacePlayerData = require('features/races/race_player_data.js');
+const Vector = require('base/vector.js');
 
 // Frequency at which infinite nitro should be given to vehicles. In milliseconds.
 const InfiniteNitroInterval = 20000;
@@ -68,15 +69,17 @@ class RaceMinigame extends Minigame {
         return Promise.resolve().then(() => {
             this.createObjects();
 
-            // TODO(Russell): Create the vehicles after a small delay where the player's camera is
-            // targetted to their intended vehicle spawn, triggering the game to preload resources.
-            this.createVehicles();
+            let currentSpawnIndex = 0;
 
-            const participantCount = this.activePlayers.size;
-
-            // Prepare each of the players that will be participating in the race.
+            // Position each of the players, in frozen state, where their vehicle will spawn. This
+            // might mitigate some of the object loading difficulties we've been seeing.
             for (const player of this.activePlayers) {
-                const playerData = this.dataForPlayer(player);
+                const spawnPosition = this.race_.spawnPositions[currentSpawnIndex++];
+                const position = spawnPosition.position;
+
+                // Position the player slightly above their vehicle, facing the right way.
+                player.position = new Vector(position.x, position.y, position.z + 0.75);
+                player.rotation = spawnPosition.rotation;
 
                 // Move the player to the right virtual world and interior for the race.
                 player.virtualWorld = this.virtualWorld;
@@ -86,16 +89,28 @@ class RaceMinigame extends Minigame {
                 player.weather = this.race_.weather;
                 player.time = this.race_.time;
 
+                // Freeze the player so that they cannot begin racing yet.
+                player.controllable = false;
+
                 // Force a streamer update for the player, to make sure everything is in place.
-                player.updateStreamer(playerData.vehicle.position, this.virtualWorld,
-                                      this.race_.interior, 0 /* STREAMER_TYPE_OBJECT */);
+                player.updateStreamer(position, this.virtualWorld, this.race_.interior,
+                                      0 /* STREAMER_TYPE_OBJECT */);
+            }
+
+            return wait(1500);
+
+        }).then(() => {
+            this.createVehicles();
+
+            const participantCount = this.activePlayers.size;
+
+            // Prepare each of the players that will be participating in the race.
+            for (const player of this.activePlayers) {
+                const playerData = this.dataForPlayer(player);
 
                 // Put the player in their designated vehicle, and disable collisions for them.
                 player.putInVehicle(playerData.vehicle);
                 player.vehicleCollisionsEnabled = false;
-
-                // Freeze the player so that they cannot begin racing yet.
-                player.controllable = false;
 
                 // Display the score board for the |player|.
                 playerData.scoreBoard.displayForPlayer(participantCount);
@@ -247,8 +262,8 @@ class RaceMinigame extends Minigame {
         if (this.state != Minigame.STATE_RUNNING)
             return;  // the race has finished, no need to give infinite nitro.
 
-        // TODO(Russell): Check whether this race should support infinite nitro at all. This was
-        // enabled by accident in the old-new-race-system :-(.
+        if (!this.race_.unlimitedNos)
+            return;  // the race does not have unlimited nitro for its vehicles.
 
         for (const player of this.activePlayers)
             this.dataForPlayer(player).vehicle.addComponent(Vehicle.COMPONENT_NOS_SINGLE_SHOT);

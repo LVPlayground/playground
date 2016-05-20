@@ -68,6 +68,7 @@
     <DiskObject>\Entities\Players\PlayerActivity.pwn</DiskObject>
     <DiskObject>\Entities\Players\PlayerEvents.pwn</DiskObject>
     <DiskObject>\Entities\Players\PlayerFlags.pwn</DiskObject>
+    <DiskObject>\Entities\Players\PlayerIdlePenalty.pwn</DiskObject>
     <DiskObject>\Entities\Players\PlayerManager.pwn</DiskObject>
     <DiskObject>\Entities\Players\PlayerManager.tests.pwn</DiskObject>
     <DiskObject>\Entities\Players\PlayerMessageLevels.pwn</DiskObject>
@@ -85,6 +86,7 @@
     <DiskObject>\Entities\Vehicles.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles\</DiskObject>
     <DiskObject>\Entities\Vehicles\LegacyBridge.pwn</DiskObject>
+    <DiskObject>\Entities\Vehicles\LegalModifications.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles\RcVehicleManager.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles\Vehicle.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles\VehicleAccessManager.pwn</DiskObject>
@@ -249,6 +251,7 @@
     <DiskObject>\Interface\Data\PlayerRegisteredRequest.pwn</DiskObject>
     <DiskObject>\Interface\defines.pwn</DiskObject>
     <DiskObject>\Interface\Dialog.pwn</DiskObject>
+    <DiskObject>\Interface\Economy.pwn</DiskObject>
     <DiskObject>\Interface\Enumerations.pwn</DiskObject>
     <DiskObject>\Interface\functions.pwn</DiskObject>
     <DiskObject>\Interface\Instrumentation.pwn</DiskObject>
@@ -409,19 +412,14 @@
     <DiskObject>\Resources\Minigames\Derby\Derby8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby9.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race1.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race10.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race11.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race12.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race13.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race14.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race15.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race16.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race17.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race18.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race19.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race2.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race20.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race21.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race22.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race23.pwn</DiskObject>
@@ -431,22 +429,17 @@
     <DiskObject>\Resources\Minigames\Race\Race27.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race28.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race29.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race3.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race30.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race31.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race32.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race33.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race34.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race35.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race4.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race5.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race6.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race8.pwn</DiskObject>
+<<<<<<< HEAD
     <DiskObject>\Resources\Minigames\Race\Race9.pwn</DiskObject>
-    <DiskObject>\Entities\Players\PlayerIdlePenalty.pwn</DiskObject>
-    <DiskObject>\Entities\Vehicles\LegalModifications.pwn</DiskObject>
-    <DiskObject>\Interface\Economy.pwn</DiskObject>
+    <DiskObject>\Features\Gameplay\AnniversaryStatistics.pwn</DiskObject>
+=======
+>>>>>>> origin/master
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

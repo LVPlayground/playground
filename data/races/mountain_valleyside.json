@@ -41,6 +41,10 @@
         }
     ],
 
+    "settings": {
+        "unlimited_nos": true
+    },
+
     "checkpoints": [
         { "position": [ 4220.4638,  -517.6487, 42.1392 ], "size": 10.0 },
         { "position": [ 4217.6464,   -61.5051, 67.2224 ], "size": 10.0 },

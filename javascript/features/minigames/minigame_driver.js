@@ -83,11 +83,12 @@ class MinigameDriver {
 
         // Restore their state after the minigame had a chance to do their things. This may be done
         // in response to an event, so restore it asynchonously to avoid reentrancy.
-        if (reason != Minigame.REASON_DISCONNECT)
+        if (this.state_ >= Minigame.STATE_LOADING) {
             Promise.resolve().then(() => player.restoreState());
 
-        // Make sure that the death feed is re-enabled for the |player|.
-        this.manager_.deathFeed.enableForPlayer(player);
+            // Make sure that the death feed is re-enabled for the |player|.
+            this.manager_.deathFeed.enableForPlayer(player);
+        }
 
         // Clear the player's state from the minigame manager.
         this.manager_.didRemovePlayerFromMinigame(player);

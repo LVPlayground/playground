@@ -1,5 +1,5 @@
 {
-    "name": "Normal Race",
+    "name": "Los Santos Blown Bikes",
     "id": 2,
 
     "time_limit": 600,
@@ -43,7 +43,8 @@
     ],
 
     "settings": {
-        "allow_leave_vehicle": true
+        "allow_leave_vehicle": true,
+        "unlimited_nos": true
     },
 
     "checkpoints": [

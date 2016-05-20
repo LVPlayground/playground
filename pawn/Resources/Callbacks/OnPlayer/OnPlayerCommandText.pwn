@@ -1337,25 +1337,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         return 1;
     }
 
-    if(strcmp(cmd, "/dev", true) == 0) {
-        if (Player(playerid)->isDeveloper() == true || Player(playerid)->isAdministrator() == true) {
-            if (strlen(cmdtext) <= 5) {
-                SendClientMessage(playerid, Color::Information, "This command sends a message to #LVP.Dev.");
-                SendClientMessage(playerid, Color::Information, " Usage: /dev [message]");
-                return 1;
-            }
-
-            new message[128];
-            format(message, sizeof(message), "[dev] %s %s", Player(playerid)->nicknameString(), cmdtext[5]);
-            AddEcho(message);
-
-            format(message, sizeof(message), "Message sent to #LVP.Dev: %s", cmdtext[5]);
-            SendClientMessage(playerid, Color::Success, message);
-        }
-
-        return 1;
-    }
-
     // The /regular command shows a bunch of options for regular
     // players. Extra commands and stuff, that, or the time left
     // to go for people who aren't regulars yet.

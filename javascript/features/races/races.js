@@ -21,13 +21,17 @@ class Races extends Feature {
 
         // TODO(Russell): Import races using a glob() rather than manually.
         [
+            'data/races/coastal_conduit.json',
+            'data/races/dangerous_mountain_tumbles.json',
             'data/races/desert_race.json',
             'data/races/dirty_race.json',
-            'data/races/easy_race.json',
-            'data/races/hard_race.json',
+            'data/races/engine_in_jeopardy.json',
+            'data/races/los_santos_blown_bikes.json',
             'data/races/mountain_valleyside.json',
-            'data/races/normal_race.json',
+            'data/races/nevada_aeronautics.json',
             'data/races/quad_race.json',
+            'data/races/red_county_grove.json',
+            'data/races/san_fierro_badlands.json',
             'data/races/stunters_xpress.json',
 
         ].forEach(file => this.manager_.registerRace(RaceImporter.fromFile(file)));

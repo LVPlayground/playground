@@ -1,5 +1,5 @@
 {
-    "name": "Easy Race",
+    "name": "Coastal Conduit",
     "id": 1,
 
     "time_limit": 600,
@@ -51,6 +51,10 @@
             }
         }
     ],
+
+    "settings": {
+        "unlimited_nos": true
+    },
 
     "checkpoints": [
         { "position": [ 2905.7305, -1335.2546, 10.5547 ], "size": 23.0 },

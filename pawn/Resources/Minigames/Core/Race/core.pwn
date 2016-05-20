@@ -89,26 +89,16 @@ new _RaceLoaded[MAX_RACES];
 #define CRace__GetDynamicCheckpointID(%0) DynamicCP: g_RaceData[(%0)][38]
 
 // Include the races which are available;
-#include "Resources/Minigames/Race/Race1.pwn"
-#include "Resources/Minigames/Race/Race2.pwn"
-#include "Resources/Minigames/Race/Race3.pwn"
-#include "Resources/Minigames/Race/Race4.pwn"
-#include "Resources/Minigames/Race/Race5.pwn"
-#include "Resources/Minigames/Race/Race6.pwn"
 #include "Resources/Minigames/Race/Race7.pwn"
 #include "Resources/Minigames/Race/Race8.pwn"
-#include "Resources/Minigames/Race/Race9.pwn"
 #include "Resources/Minigames/Race/Race10.pwn"
-#include "Resources/Minigames/Race/Race11.pwn"
 #include "Resources/Minigames/Race/Race12.pwn"
 #include "Resources/Minigames/Race/Race13.pwn"
 #include "Resources/Minigames/Race/Race14.pwn"
 #include "Resources/Minigames/Race/Race15.pwn"
-#include "Resources/Minigames/Race/Race16.pwn"
 #include "Resources/Minigames/Race/Race17.pwn"
 #include "Resources/Minigames/Race/Race18.pwn"
 #include "Resources/Minigames/Race/Race19.pwn"
-#include "Resources/Minigames/Race/Race20.pwn"
 #include "Resources/Minigames/Race/Race21.pwn"
 #include "Resources/Minigames/Race/Race22.pwn"
 #include "Resources/Minigames/Race/Race23.pwn"
@@ -122,8 +112,6 @@ new _RaceLoaded[MAX_RACES];
 #include "Resources/Minigames/Race/Race31.pwn"
 #include "Resources/Minigames/Race/Race32.pwn"
 #include "Resources/Minigames/Race/Race33.pwn"
-#include "Resources/Minigames/Race/Race34.pwn"
-#include "Resources/Minigames/Race/Race35.pwn"
 
 // Variables used internally in our class;
 new Float:g_RaceSpawnPositions[ MAX_RACES ][ MAX_SPAWNPOINTS ][ 6 ];

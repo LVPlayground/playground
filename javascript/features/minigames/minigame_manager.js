@@ -8,7 +8,7 @@ const MinigameObserver = require('features/minigames/minigame_observer.js');
 const ScopedCallbacks = require('base/scoped_callbacks.js');
 
 // Number of milliseconds player have to sign-up to another player's minigame.
-const SignupTimeoutMilliseconds = 1500;//20000;
+const SignupTimeoutMilliseconds = 20000;
 
 // The minigame manager keeps track of the states of all players and all minigames, and routes
 // events associated with these entities to the right places. Each type of minigame gets a category
@@ -144,6 +144,8 @@ class MinigameManager {
             // on the server for joining this minigame.
         } else {
             this.announce_.announceMinigame(player, minigame.name, minigame.command);
+            this.announce_.announceMinigameParticipation(player, minigame.name, minigame.command);
+
             if (!server.isTest())
                 wait(SignupTimeoutMilliseconds).then(() => driver.load());
         }
@@ -164,22 +166,18 @@ class MinigameManager {
         if (this.isPlayerEngaged(player))
             throw new Error('Players can only be involved in a single minigame at a time.');
 
-        // Whether the |player| has been added to the |minigame|.
-        let added = false;
-
-        const drivers = this.minigames_.get(category);
-        drivers.forEach(driver => {
+        for (const driver of this.minigames_.get(category)) {
             if (driver.minigame !== minigame)
-                return;  // this is a driver for another minigame
+                continue;
 
             driver.addPlayer(player);
-            added = true;
-        });
 
-        if (!added)
-            throw new Error('Invalid minigame: ' + minigame);
+            this.announce_.announceMinigameParticipation(player, minigame.name, minigame.command);
+            return;
+        }
 
-        this.announce_.announceMinigameParticipation(player, minigame.name, minigame.command);
+        // The minigame was not found if we reach this location in the execution flow.
+        throw new Error('Invalid minigame: ' + minigame);
     }
 
     // Called when |player| has been added to the |driver| for a certain minigame.

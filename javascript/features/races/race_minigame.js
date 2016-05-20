@@ -108,6 +108,8 @@ class RaceMinigame extends Minigame {
             for (const player of this.activePlayers) {
                 const playerData = this.dataForPlayer(player);
 
+                pawnInvoke('OnPlayerMinigameStateChange', 'i', player.id);
+
                 // Put the player in their designated vehicle, and disable collisions for them.
                 player.putInVehicle(playerData.vehicle);
                 player.vehicleCollisionsEnabled = false;

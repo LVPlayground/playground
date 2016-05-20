@@ -149,3 +149,11 @@ class AnniversaryStatistics {
             this->updateAnniversaryStatistics(playerId);
     }
 };
+
+forward OnPlayerMinigameStateChange(playerid);
+public OnPlayerMinigameStateChange(playerid) {
+    if (!IsPlayerConnected(playerid))
+        return;
+
+    AnniversaryStatistics->increaseMinigameParticipationScore(playerid);
+}

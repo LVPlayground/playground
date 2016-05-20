@@ -81,5 +81,11 @@ class Responses {
             colorBuffer[1], name, typeString, colorBuffer[0], reasonText);
 
         SendClientMessage(playerId, Color::MinigameAnnouncement, m_formatBuffer);
+
+        if (reason == LeaveCommandDropoutReason) {
+            format(m_formatBuffer, sizeof(m_formatBuffer), "%s (Id:%d) used /leave during the %s %s.",
+                Player(playerId)->nicknameString(), playerId, name, typeString);
+            Admin(playerId, m_formatBuffer);
+        }
     }
 };

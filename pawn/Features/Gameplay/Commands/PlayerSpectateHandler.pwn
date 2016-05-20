@@ -119,7 +119,7 @@ class PlayerSpectateHandler {
 
             GetVehicleHealth(vehicleId, vehicleHealth);
 
-            if (!this->isSophiaAnniversaryException(playerId))
+            if (this->isSophiaAnniversaryException(playerId))
                 return 1;
 
             format(labelText, sizeof(labelText),
@@ -134,7 +134,7 @@ class PlayerSpectateHandler {
             if (reattach == true)
                 PlayerSpectatePlayer(playerId, subjectId); /* default spectate mode */
 
-            if (!this->isSophiaAnniversaryException(playerId))
+            if (this->isSophiaAnniversaryException(playerId))
                 return 1;
 
             format(labelText, sizeof(labelText),

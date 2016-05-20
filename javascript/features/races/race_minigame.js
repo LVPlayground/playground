@@ -393,6 +393,16 @@ class RaceMinigame extends Minigame {
         if (reason != Minigame.REASON_FINISHED || !player.isRegistered())
             return;  // the race's result does not have to be stored
 
+        const totalTimeSeconds = totalTime / 1000;
+
+        // Update the race's all-time best if the |player| has beaten it.
+        if (!this.race_.bestRace || this.race_.bestRace.time > totalTimeSeconds) {
+            this.race_.bestRace = {
+                time: Math.round(totalTimeSeconds),
+                name: player.name
+            };
+        }
+
         // Store the player's result in the database.
         this.database_.storeRaceResult(
             this.race_.id, player.userId, rank, totalTime, checkpointTimes);

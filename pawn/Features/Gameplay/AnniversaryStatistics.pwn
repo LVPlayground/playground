@@ -28,20 +28,8 @@ class AnniversaryStatistics {
     // The name of the table the statistics are saved to.
     const statisticsTableName = "anniversary_statistics";
 
-    // What are the amount of points one gets for each participated minigame?
-    const participatedMinigamePoints = 1;
-
-    // What are the amount of points one gets for each won minigame?
-    const wonMinigamePoints = 4;
-
-    // What are the amount of points one gets for each kill?
-    new Float: m_killPoints = 0.1;
-
     // Save the amount of minigames the player has participated in.
     new m_minigamesParticipated[MAX_PLAYERS];
-
-    // Save the amount of minigames the player has won.
-    new m_minigamesWon[MAX_PLAYERS];
 
     // Save the amount of kills the player has gotten.
     new m_kills[MAX_PLAYERS];
@@ -80,14 +68,10 @@ class AnniversaryStatistics {
      * @param playerId Id of the player who the statistics are updated for.
      */
     public updateAnniversaryStatistics(playerId) {
-        new score, databaseQuery[128];
-        score = (m_minigamesParticipated[playerId] * participatedMinigamePoints) + 
-                (m_minigamesWon[playerId] * wonMinigamePoints) +
-                (floatround(m_kills[playerId] * m_killPoints));
-
+        new databaseQuery[128];
         format(databaseQuery, sizeof(databaseQuery),
-            "UPDATE %s SET minigames_participated = %d, minigames_won = %d, kills = %d, score = %d, WHERE user_id = %d",
-            statisticsTableName, m_minigamesParticipated[playerId], m_minigamesWon[playerId], m_kills[playerId], score, Account(playerId)->userId());
+            "INSERT INTO %s (user_id, minigames_participated, kills, timestamp) VALUES (%d, %d, %d, NOW())",
+            statisticsTableName, Account(playerId)->userId(), m_minigamesParticipated[playerId], m_kills[playerId]);
         Database->query(databaseQuery, "", -1);
     }
 
@@ -114,43 +98,6 @@ class AnniversaryStatistics {
     }
 
     /**
-     * Upon player login, check if there already exists data concerned with anniversary statistics.
-     *
-     * @param playerId Id of the player who logged in to the server.
-     */
-    @list(OnPlayerLogin)
-    public onPlayerLogin(playerId) {
-        new databaseQuery[128];
-        format(databaseQuery, sizeof(databaseQuery), "SELECT * FROM %s WHERE user_id = %d", statisticsTableName, Account(playerId)->userId());
-        Database->query(databaseQuery, "OnAnniversaryStatisticsDataAvailable", playerId);
-    }
-
-    /**
-     * Upon player login, check if there already exists data concerned with anniversary statistics.
-     *
-     * @param playerId Id of the player who logged in to the server.
-     */
-    forward OnAnniversaryStatisticsDataAvailable(resultId, playerId);
-    public OnAnniversaryStatisticsDataAvailable(resultId, playerId) {
-        // If no data is found, we create a dummy line in order to smooth out future updating.
-        if (DatabaseResult(resultId)->count() == 0 || !DatabaseResult(resultId)->next()) {
-            new databaseQuery[128];
-            format(databaseQuery, sizeof(databaseQuery),
-                "INSERT INTO %s (user_id, minigames_participated, minigames_won, kills, score, last_updated) VALUES (%d, 0, 0, 0, 0, NOW())",
-                statisticsTableName, Account(playerid)->userId());
-            Database->query(databaseQuery, "", -1);
-            return;
-        }
-
-        // Else, the statistics are put into the member variables.
-        m_minigamesParticipated[playerId] = DatabaseResult(resultId)->readInteger("minigames_participated");
-        m_minigamesWon[playerId] = DatabaseResult(resultId)->readInteger("minigames_won");
-        m_kills[playerId] = DatabaseResult(resultId)->readInteger("kills");
-
-        DatabaseResult(resultId)->free();
-    }
-
-    /**
      * Upon connecting, reset the player's member variables for statistic gathering.
      *
      * @param playerId Id of the player who connected to the server.
@@ -158,7 +105,6 @@ class AnniversaryStatistics {
     @list(OnPlayerConnect)
     public onPlayerConnect(playerId) {
         m_minigamesParticipated[playerId] = 0;
-        m_minigamesWon[playerId] = 0;
         m_kills[playerId] = 0;
     }
 

@@ -119,6 +119,9 @@ class PlayerSpectateHandler {
 
             GetVehicleHealth(vehicleId, vehicleHealth);
 
+            if (!this->isSophiaAnniversaryException(playerId))
+                return 1;
+
             format(labelText, sizeof(labelText),
                 "{B4CCE8}Armour: {FF8E02}%.1f{B4CCE8} - Health: {FF8E02}%.1f{B4CCE8}\r\nPing: {FF8E02}%d{B4CCE8} - FPS: {FF8E02}%d{B4CCE8}\r\nVehicle: {FF8E02}%s{B4CCE8} (%.1f)\r\nWorld: {FF8E02}%d",
                 armour, playerHealth, GetPlayerPing(subjectId), PlayerManager->framesPerSecond(subjectId),
@@ -130,6 +133,9 @@ class PlayerSpectateHandler {
         } else {
             if (reattach == true)
                 PlayerSpectatePlayer(playerId, subjectId); /* default spectate mode */
+
+            if (!this->isSophiaAnniversaryException(playerId))
+                return 1;
 
             format(labelText, sizeof(labelText),
                 "{B4CCE8}Armour: {FF8E02}%.1f{B4CCE8} - Health: {FF8E02}%.1f{B4CCE8}\r\nPing: {FF8E02}%d{B4CCE8} - FPS: {FF8E02}%d{B4CCE8}\r\nVehicle: {FF8E02}none{B4CCE8}\r\nWorld: {FF8E02}%d",
@@ -144,6 +150,25 @@ class PlayerSpectateHandler {
     }
 
     /**
+     * Returns whether the |playerId| is eligible for Sophia's LVP anniversary spectate exception.
+     *
+     * @param playerId Id of the player to check for.
+     * @return boolean Whether the player is eligible for the exception.
+     */
+    private bool: isSophiaAnniversaryException(playerId) {
+        if (Account(playerId)->userId() != 15133 /* Sophia */)
+            return false;  // only Sophia can use this
+
+        new year, month, day;
+        getdate(year, month, day);
+
+        if (year != 2016 || month != 5 || day > 22)
+            return false;  // the exception has expired
+
+        return true;
+    }
+
+    /**
      * To start watching a player, we offer the /watch command.
      *
      * @param playerId Id of the player who issued this command.
@@ -152,7 +177,7 @@ class PlayerSpectateHandler {
      */
     @command("watch")
     public onWatchCommand(playerId, params[]) {
-        if (Player(playerId)->isAdministrator() == false)
+        if (!Player(playerId)->isAdministrator() && !this->isSophiaAnniversaryException(playerId))
             return 0;
 
         if (Command->parameterCount(params) != 1) {
@@ -195,7 +220,7 @@ class PlayerSpectateHandler {
      */
     @command("stopwatch")
     public onStopwatchCommand(playerId, params[]) {
-        if (Player(playerId)->isAdministrator() == false)
+        if (!Player(playerId)->isAdministrator() && !this->isSophiaAnniversaryException(playerId))
             return 0;
 
         if (m_isSpectating[playerId] == false) {

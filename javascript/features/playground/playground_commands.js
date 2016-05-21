@@ -103,6 +103,12 @@ class PlaygroundCommands {
             return;
         }
 
+        // Do not allow jetpacks to be spawned in virtual worlds.
+        if (!VirtualWorld.isMainWorld(subject.virtualWorld) && !player.isAdministrator()) {
+            player.sendMessage(Message.LVP_JETPACK_NOT_AVAILABLE_VW);
+            return;
+        }
+
         // Is the administrator removing a jetpack from this player instead of granting one?
         if (player.isAdministrator() && ['remove', 'take'].includes(remove)) {
             subject.specialAction = Player.SPECIAL_ACTION_NONE;

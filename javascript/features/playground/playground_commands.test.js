@@ -130,6 +130,20 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.equal(player.specialAction, Player.SPECIAL_ACTION_NONE);
     });
 
+    it('should disable jetpacks for players who are not in the main world', assert => {
+        playgroundManager.setOptionEnabled('jetpack', true);
+
+        const virtualWorld = 1337;  // any non-main world virtual world will do
+
+        assert.isFalse(VirtualWorld.isMainWorld(virtualWorld));
+        player.virtualWorld = virtualWorld;
+
+        assert.isTrue(player.issueCommand('/jetpack'));
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.LVP_JETPACK_NOT_AVAILABLE_VW);
+        assert.equal(player.specialAction, Player.SPECIAL_ACTION_NONE);
+    });
+
     it('should enable jetpacks for players when the option is enabled', assert => {
         playgroundManager.setOptionEnabled('jetpack', true);
 

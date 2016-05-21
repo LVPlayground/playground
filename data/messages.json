@@ -104,6 +104,7 @@
     "LVP_ANNOUNCE_JETPACK": "%s has %s the /jetpack command!",
     "LVP_JETPACK_ANNOUNCE": "%s (Id: %d) has %s a jetpack %s %s (Id: %d).",
     "LVP_JETPACK_NOT_AVAILABLE": "@error Sorry, the /jetpack command is unavailable right now!",
+    "LVP_JETPACK_NOT_AVAILABLE_VW": "@error Sorry, you can't use the /jetpack command in this world!",
     "LVP_JETPACK_GRANTED_OTHER": "@success %s (Id: %d) has been given a jetpack.",
     "LVP_JETPACK_GRANTED_SELF": "@success You have been given a jetpack, enjoy!",
     "LVP_JETPACK_GRANTED": "{33AA33}%s (Id: %d) has given you a jetpack, enjoy!",

@@ -60,7 +60,7 @@ class DebugFeature extends Feature {
         .restrict(Player.LEVEL_ADMINISTRATOR)
         .build(this.__proto__.cam.bind(this));
 
-    // /attach
+    // /pattach
     server.commandManager.buildCommand('pattach')
         .restrict(Player.LEVEL_MANAGEMENT)
         .parameters([ { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
@@ -70,8 +70,8 @@ class DebugFeature extends Feature {
                       { name: 'z', type: CommandBuilder.NUMBER_PARAMETER } ])
         .build(this.__proto__.attach.bind(this));
 
-    // /unattach
-    server.commandManager.buildCommand('punattach')
+    // /pdetach
+    server.commandManager.buildCommand('pdetach')
         .restrict(Player.LEVEL_MANAGEMENT)
         .parameters([ { name: 'player', type: CommandBuilder.PLAYER_PARAMETER } ])
         .build(this.__proto__.unattach.bind(this));
@@ -177,7 +177,7 @@ class DebugFeature extends Feature {
   }
 
   // Removes all attached objects from the |subject|.
-  unattach(player, subject) {
+  detach(player, subject) {
     this.onPlayerDisconnect(subject);
 
     player.sendMessage('Done!');

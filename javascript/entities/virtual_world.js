@@ -39,6 +39,11 @@ class VirtualWorld {
     throw new Error('No virtual worlds were available for allocation to the feature.');
   }
 
+  // Returns whether the |virtualWorld| is one of the main worlds in which players can freeroam.
+  static isMainWorld(worldId) {
+    return worldId == 0;
+  }
+
   // Releases a virtual world, which means that other parts of the gamemode will be able to use it.
   static release(worldId) {
     delete acquiredVirtualWorlds[worldId];

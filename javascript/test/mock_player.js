@@ -12,6 +12,7 @@ class MockPlayer {
 
         this.name_ = event.name || 'Player' + playerId;
         this.level_ = event.level || Player.LEVEL_PLAYER;
+        this.virtualWorld_ = 0;
         this.userId_ = null;
         this.ipAddress_ = event.ipAddress || '127.0.0.1';
         this.position_ = new Vector(0, 0, 0);
@@ -65,6 +66,10 @@ class MockPlayer {
     }
 
     isManagement() { return this.level_ == Player.LEVEL_MANAGEMENT; }
+
+    // Gets or sets the virtual world the player is part of.
+    get virtualWorld() { return this.virtualWorld_; }
+    set virtualWorld(value) { this.virtualWorld_ = value; }
 
     // Gets or sets the position of this player.
     get position() { return this.position_; }

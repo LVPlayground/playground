@@ -59,6 +59,26 @@ class DebugFeature extends Feature {
     server.commandManager.buildCommand('cam')
         .restrict(Player.LEVEL_ADMINISTRATOR)
         .build(this.__proto__.cam.bind(this));
+
+    // /attach
+    server.commandManager.buildCommand('pattach')
+        .restrict(Player.LEVEL_MANAGEMENT)
+        .parameters([ { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
+                      { name: 'model', type: CommandBuilder.NUMBER_PARAMETER },
+                      { name: 'x', type: CommandBuilder.NUMBER_PARAMETER },
+                      { name: 'y', type: CommandBuilder.NUMBER_PARAMETER },
+                      { name: 'z', type: CommandBuilder.NUMBER_PARAMETER } ])
+        .build(this.__proto__.attach.bind(this));
+
+    // /unattach
+    server.commandManager.buildCommand('punattach')
+        .restrict(Player.LEVEL_MANAGEMENT)
+        .parameters([ { name: 'player', type: CommandBuilder.PLAYER_PARAMETER } ])
+        .build(this.__proto__.unattach.bind(this));
+
+    this.attachedObjects_ = new Map();
+
+    server.playerManager.addObserver(this);
   }
 
   // Displays the number of FPS the server was able to handle since the last call to this command.
@@ -130,6 +150,37 @@ class DebugFeature extends Feature {
     player.setCamera(camera, position);
 
     wait(5000).then(() => player.setSpectating(false));
+  }
+
+  // Called when the |player| disconnects from the server.
+  onPlayerDisconnect(player) {
+    if (!this.attachedObjects_.has(player))
+      return;
+
+    for (const objectId of this.attachedObjects_.get(player))
+      pawnInvoke('DestroyObject', 'i', objectId);
+
+    this.attachedObjects_.delete(player);
+  }
+
+  // Attaches the object with |modelId| to the |subject| at the given offset.
+  attach(player, subject, modelId, x, y, z) {
+    if (!this.attachedObjects_.has(subject))
+      this.attachedObjects_.set(subject, new Set());
+
+    const objectId = pawnInvoke('CreateObject', 'ifffffff', modelId, 0, 0, 0, 0, 0, 0, 0);
+    this.attachedObjects_.get(subject).add(objectId);
+
+    pawnInvoke('AttachObjectToPlayer', 'iiffffff', objectId, subject.id, x, y, z, 0, 0, 0);
+
+    player.sendMessage('Done!');
+  }
+
+  // Removes all attached objects from the |subject|.
+  unattach(player, subject) {
+    this.onPlayerDisconnect(subject);
+
+    player.sendMessage('Done!');
   }
 }
 

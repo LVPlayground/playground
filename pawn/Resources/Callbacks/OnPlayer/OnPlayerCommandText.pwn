@@ -1197,7 +1197,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         if(!tmp[0])
         {
-            SendClientMessage(playerid, COLOR_WHITE, "Usage: /me [message");
+            SendClientMessage(playerid, COLOR_WHITE, "Usage: /me [message]");
             return 1;
         }
 

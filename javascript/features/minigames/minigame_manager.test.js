@@ -104,7 +104,7 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
 
         gunther.disconnect();
 
-        await minigame.finishPromise;
+        await minigame.waitUntilFinished();
 
         assert.isFalse(manager.isPlayerEngaged(gunther));
         assert.equal(observer.started.length, 1);
@@ -151,7 +151,7 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
 
         gunther.disconnect();
 
-        await minigame.finishPromise;
+        await minigame.waitUntilFinished();
 
         assert.isFalse(manager.isPlayerEngaged(gunther));
         assert.equal(manager.getMinigamesForCategory(category).length, 0);
@@ -186,7 +186,7 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
 
         russell.disconnect();
 
-        const reason = await minigame.finishPromise;
+        const reason = await minigame.waitUntilFinished();
 
         assert.isFalse(manager.isPlayerEngaged(gunther));
         assert.isFalse(manager.isPlayerEngaged(russell));
@@ -210,7 +210,7 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
 
         gunther.disconnect();
 
-        const reason = await minigame.finishPromise;
+        const reason = await minigame.waitUntilFinished();
 
         assert.isFalse(manager.isPlayerEngaged(gunther));
         assert.isFalse(manager.isPlayerEngaged(russell));
@@ -231,7 +231,7 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
 
         await manager.deleteCategory(category);
 
-        const reason = await minigame.finishPromise;
+        const reason = await minigame.waitUntilFinished();
 
         assert.isFalse(manager.isPlayerEngaged(gunther));
         assert.equal(minigame.removedPlayers.length, 1);
@@ -258,7 +258,7 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         gunther.die();
         assert.isFalse(gunther.spawn());
 
-        const reason = await minigame.finishPromise;
+        const reason = await minigame.waitUntilFinished();
 
         assert.isFalse(manager.isPlayerEngaged(gunther));
         assert.equal(manager.getMinigamesForCategory(category).length, 0);
@@ -417,9 +417,9 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         let loadResolver, startResolver, finishResolver;
 
         const minigame = new MockMinigame();
-        minigame.loadPromise = new Promise(resolve => loadResolver = resolve);
-        minigame.startPromise = new Promise(resolve => startResolver = resolve);
-        minigame.finishPromise = new Promise(resolve => finishResolver = resolve);
+        minigame.loadPromise_ = new Promise(resolve => loadResolver = resolve);
+        minigame.startPromise_ = new Promise(resolve => startResolver = resolve);
+        minigame.finishPromise_ = new Promise(resolve => finishResolver = resolve);
 
         // The `state` accesor should throw an exception because it's not attached yet.
         assert.throws(() => minigame.state);
@@ -439,11 +439,11 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         assert.equal(minigame.state, Minigame.STATE_LOADING);
         loadResolver();
 
-        await minigame.loadPromise;
+        await minigame.waitUntilLoaded();
 
         startResolver();
 
-        await minigame.startPromise;
+        await minigame.waitUntilStarted();
 
         driver.finish(Minigame.REASON_FORCED_STOP);
 

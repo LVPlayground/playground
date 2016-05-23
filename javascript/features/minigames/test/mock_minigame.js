@@ -30,14 +30,23 @@ class MockMinigame extends Minigame {
 
         // These public promises exist for testing purposes.
         this.loadResolve_ = null;
-        this.loadPromise = new Promise(resolve => this.loadResolve_ = resolve);
+        this.loadPromise_ = new Promise(resolve => this.loadResolve_ = resolve);
 
         this.startResolve_ = null;
-        this.startPromise = new Promise(resolve => this.startResolve_ = resolve);
+        this.startPromise_ = new Promise(resolve => this.startResolve_ = resolve);
 
         this.finishResolve_ = null;
-        this.finishPromise = new Promise(resolve => this.finishResolve_ = resolve);
+        this.finishPromise_ = new Promise(resolve => this.finishResolve_ = resolve);
     }
+
+    // Waits until the minigame has been loaded.
+    async waitUntilLoaded() { return this.loadPromise_; }
+
+    // Waits until the minigame has been started.
+    async waitUntilStarted() { return this.startPromise_; }
+
+    // Waits until the minigame has been finished.
+    async waitUntilFinished() { return this.finishPromise_; }
 
     // Called when |player| has been added to the minigame.
     onPlayerAdded(player) {
@@ -45,10 +54,10 @@ class MockMinigame extends Minigame {
     }
 
     // Called when the minigame has advanced to loading state.
-    onLoad() { this.loadResolve_(); return this.loadPromise; }
+    onLoad() { this.loadResolve_(); return this.loadPromise_; }
 
     // Called when the minigame has advanced to running state.
-    onStart() { this.startResolve_(); return this.startPromise; }
+    onStart() { this.startResolve_(); return this.startPromise_; }
 
     // Called when |player| has died because of |reason|.
     onPlayerDeath(player, reason) {
@@ -86,7 +95,7 @@ class MockMinigame extends Minigame {
     }
 
     // Called when the minigame has finished because of |reason|.
-    onFinish(reason) { this.finishResolve_(reason); return this.finishPromise; }
+    onFinish(reason) { this.finishResolve_(reason); return this.finishPromise_; }
 }
 
 exports = MockMinigame;

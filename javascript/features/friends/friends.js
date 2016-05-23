@@ -13,7 +13,7 @@ class FriendsFeature extends Feature {
     constructor(playground) {
         super(playground);
 
-        this.friendsManager_ = new FriendsManager(server.database);
+        this.friendsManager_ = new FriendsManager();
         this.friendsCommands_ = new FriendsCommands(this.friendsManager_);
     }
 
@@ -21,8 +21,8 @@ class FriendsFeature extends Feature {
     // Public API of the friends feature.
     // ---------------------------------------------------------------------------------------------
 
-    // Returns a promise that will be resolved with a boolean indicating whether |player| has added
-    // |friendPlayer| as a friend. Both players must be registered and logged in to their accounts.
+    // Asynchronously returns whether |player| has added |friendPlayer| as a friend. Both players
+    // must be registered and logged in to their accounts.
     async hasFriend(player, friendPlayer) {
         return await this.friendsManager_.hasFriend(player, friendPlayer);
     }

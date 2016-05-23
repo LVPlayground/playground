@@ -18,7 +18,7 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
         gunther = server.playerManager.getById(0 /* Gunther */);
         russell = server.playerManager.getById(1 /* Russell */);
 
-        friendsManager = new FriendsManager(null /* database */);
+        friendsManager = new FriendsManager();
         friendsManager.database_ = new MockFriendsDatabase();
 
         friendsCommands = new FriendsCommands(friendsManager);

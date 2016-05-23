@@ -7,8 +7,8 @@ const FriendsDatabase = require('features/friends/friends_database.js');
 // Manager for the friends feature responsible for the mid-level logic of the feature, including
 // making sure that a player's friends are loaded when they log in to the server.
 class FriendsManager {
-    constructor(database) {
-        this.database_ = new FriendsDatabase(database);
+    constructor() {
+        this.database_ = new FriendsDatabase();
 
         this.friends_ = new Map();
         this.lastActive_ = {};
@@ -18,10 +18,9 @@ class FriendsManager {
     }
 
     // Returns a promise that will be resolved when data for the |player| has been loaded.
-    async waitUntilPlayerDataLoaded(player) { return this.loadPromises_.get(player); }
+    waitUntilPlayerDataLoaded(player) { return this.loadPromises_.get(player); }
 
-    // Adds |friendPlayer| as a friend of |player|. Returns a promise that will be resolved when the
-    // relationship has been created in the database.
+    // Asynchronously adds |friendPlayer| as a friend of |player|.
     async addFriend(player, friendPlayer) {
         if (await this.hasFriend(player, friendPlayer))
             return;  // nothing to do, the relation already exists
@@ -39,8 +38,8 @@ class FriendsManager {
         });
     }
 
-    // Returns a promise that will be resolved with a boolean indicating whether |player| has added
-    // |friendPlayer| as a friend. Both players must be registered and logged in to their accounts.
+    // Asynchronously returns whether |player| has added |friendPlayer| as a friend. Both players
+    // must be registered and logged in to their accounts.
     async hasFriend(player, friendPlayer) {
         if (!player.isRegistered() || !friendPlayer.isRegistered())
             return false;
@@ -54,8 +53,7 @@ class FriendsManager {
         return false;
     }
 
-    // Returns a promise that will be resolved with the list of friends of |player|. The friends
-    // will be categorized in two groups: those who are online and those who are offline.
+    // Asynchronously returns the list of friends of |player|.
     async getFriends(player) {
         if (!player.isRegistered())
             return { online: [], offline: [] };
@@ -75,9 +73,8 @@ class FriendsManager {
         };
     }
 
-    // Removes |friendName| as a friend of |player|, which does not have to be their complete name.
-    // Returns a promise that will be resolved with the removed player's name when the relationship
-    // has been removed from both the local state and the database.
+    // Asynchronously removes |friendName| as a friend of |player|, which does not have to be their
+    // complete nickname. The |player| must be registered and logged in to their account.
     async removeFriend(player, friendName) {
         if (!player.isRegistered())
             throw new Error('The |player| must be registered.');
@@ -93,15 +90,17 @@ class FriendsManager {
             if (!friend.name.toLowerCase().includes(lowerCaseName))
                 continue;
 
-            if (removeNickname !== null && removeUserId != friend.userId)
-                throw new Error('More than one friend matches the given name: ' + friendName);
+            if (removeNickname !== null && removeUserId != friend.userId) {
+                return { success: false,
+                         message: 'More than one friend matches the given name: ' + friendName };
+            }
 
             removeNickname = friend.name;
             removeUserId = friend.userId;
         }
 
         if (removeUserId === null)
-            throw new Error('No friends match the given name: ' + friendName);
+            return { success: false, message: 'No friends match the given name: ' + friendName };
 
         // Remove the friend from the cached list of friends.
         this.friends_.set(player, this.friends_.get(player).filter(friend => {
@@ -110,7 +109,7 @@ class FriendsManager {
 
         await this.database_.removeFriend(player, removeUserId);
 
-        return removeNickname;
+        return { success: true, nickname: removeNickname }
     }
 
     // Called when a player connects to Las Venturas Playground. Players that added them to their

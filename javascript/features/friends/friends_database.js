@@ -38,14 +38,9 @@ const REMOVE_QUERY = `
 
 // Responsible for database interactions of the friends feature. Does not contain any other logic.
 class FriendsDatabase {
-    constructor(database) {
-        this.database_ = database;
-    }
-
-    // Loads the friends for |player| from the database. Returns a promise that will be resolved
-    // with an array when their list of friends is available.
+    // Asynchronously loads the friends for |player| from the database.
     async loadFriends(player) {
-        const results = await this.database_.query(LOAD_QUERY, player.userId);
+        const results = await server.database.query(LOAD_QUERY, player.userId);
 
         let friends = [];
 
@@ -60,16 +55,14 @@ class FriendsDatabase {
         return friends;
     }
 
-    // Adds a relationship from |player| to |friend|. Returns a promise that will be resolved once
-    // the relationship has been stored in the database.
+    // Asynchronously adds a relationship from |player| to |friend|.
     async addFriend(player, friend) {
-        await this.database_.query(ADD_QUERY, player.userId, friend.userId);
+        await server.database.query(ADD_QUERY, player.userId, friend.userId);
     }
 
-    // Removes the relationship from |player| to the friend with |friendUserId|. Returns a promise
-    // that will be resolved once the relationship has been removed from the database.
+    // Asynchronously removes the relationship from |player| to the friend with |friendUserId|.
     async removeFriend(player, friendUserId) {
-        await this.database_.query(REMOVE_QUERY, player.userId, friendUserId);
+        await server.database.query(REMOVE_QUERY, player.userId, friendUserId);
     }
 }
 

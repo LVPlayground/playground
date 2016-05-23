@@ -103,13 +103,14 @@ class FriendsCommands {
                 name = targetPlayer.name;
         }
 
-        try {
-            const completedName = await this.manager_.removeFriend(player, name);
-            player.sendMessage(Message.FRIENDS_REMOVED, completedName);
-
-        } catch (error) {
-            player.sendMessage(Message.COMMAND_ERROR, error.message);
+        const result = await this.manager_.removeFriend(player, name);
+        if (!result.success) {
+            player.sendMessage(Message.COMMAND_ERROR, result.message);
+            return;
+            
         }
+
+        player.sendMessage(Message.FRIENDS_REMOVED, result.nickname);
     }
 
     dispose() {

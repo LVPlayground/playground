@@ -85,7 +85,7 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         manager.createMinigame(category, minigame, gunther);
 
         assert.isTrue(manager.isPlayerEngaged(gunther));
-        assert.equal(manager.getMinigameNameForPlayer(gunther), minigame.name);
+        assert.equal(manager.getMinigameNameForPlayer(gunther), minigame.settings.name);
     });
 
     it('should not allow players to engage in multiple minigames at once', assert => {

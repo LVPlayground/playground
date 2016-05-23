@@ -109,7 +109,7 @@ class MinigameManager {
         if (!this.players_.has(player))
             return null;
 
-        return this.players_.get(player).minigame.name;
+        return this.players_.get(player).minigame.settings.name;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -127,6 +127,7 @@ class MinigameManager {
             throw new Error('Players can only be involved in a single minigame at a time.');
 
         const driver = new MinigameDriver(this, category, minigame);
+        const settings = minigame.settings;
 
         // Associate the |player| with the |driver|.
         driver.addPlayer(player);
@@ -141,8 +142,8 @@ class MinigameManager {
             // TODO(Russell): Skip the sign-up phase when the |player| is the only eligable player
             // on the server for joining this minigame.
         } else {
-            this.announce_.announceMinigame(player, minigame.name, minigame.command);
-            this.announce_.announceMinigameParticipation(player, minigame.name, minigame.command);
+            this.announce_.announceMinigame(player, settings.name, settings.command);
+            this.announce_.announceMinigameParticipation(player, settings.name, settings.command);
 
             if (!server.isTest())
                 wait(SignupTimeoutMilliseconds).then(() => driver.load());
@@ -158,6 +159,8 @@ class MinigameManager {
         if (this.isPlayerEngaged(player))
             throw new Error('Players can only be involved in a single minigame at a time.');
 
+        const settings = minigame.settings;
+
         for (const driver of this.minigames_.get(category)) {
             if (driver.minigame !== minigame)
                 continue;
@@ -168,7 +171,7 @@ class MinigameManager {
             // Associate the |driver| with the |player|.
             this.players_.set(player, driver);
 
-            this.announce_.announceMinigameParticipation(player, minigame.name, minigame.command);
+            this.announce_.announceMinigameParticipation(player, settings.name, settings.command);
             return;
         }
 

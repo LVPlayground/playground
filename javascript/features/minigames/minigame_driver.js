@@ -13,8 +13,9 @@ class MinigameDriver {
         this.manager_ = manager;
         this.category_ = category;
         this.minigame_ = minigame;
+        this.settings_ = minigame.settings;
 
-        minigame.driver = this;
+        minigame.attachDriver(this);
 
         // Set containing the players actively engaged in the minigame.
         this.activePlayers_ = new Set();
@@ -67,7 +68,7 @@ class MinigameDriver {
         this.minigame_.onPlayerAdded(player);
 
         // Begin loading the minigame when the maximum number of players has been reached.
-        if (this.activePlayers_.size >= this.minigame_.maximumParticipants)
+        if (this.activePlayers_.size >= this.settings_.maximumParticipants)
             this.load();
     }
 
@@ -96,7 +97,7 @@ class MinigameDriver {
 
         // Check whether the minigame has finished in its entirety. This is the case when there are
         // no more active players and the |player| is not being removed because of a timeout.
-        if (this.activePlayers_.size < this.minigame_.minimumParticipants && !isTimeout)
+        if (this.activePlayers_.size < this.settings_.minimumParticipants && !isTimeout)
             this.finish(Minigame.REASON_NOT_ENOUGH_PLAYERS);
     }
 
@@ -115,7 +116,7 @@ class MinigameDriver {
         this.minigame_.onPlayerDeath(player, reason);
 
         // Remove the player from the minigame unless the `respawn` flag has been set.
-        if (!this.minigame_.enableRespawn)
+        if (!this.settings_.enableRespawn)
             this.removePlayer(player, Minigame.REASON_DEATH);
     }
 
@@ -204,10 +205,10 @@ class MinigameDriver {
             if (server.isTest())
                 return;  // don't schedule the timers during tests
 
-            if (!this.minigame_.timeout)
+            if (!this.settings_.timeout)
                 return;  // don't schedule the timers for minigames with no time limit
 
-            wait(this.minigame_.timeout * 1000).then(() =>
+            wait(this.settings_.timeout * 1000).then(() =>
                 this.finish(Minigame.REASON_TIMED_OUT));
         });
     }
@@ -250,6 +251,7 @@ class MinigameDriver {
         this.manager_ = null;
         this.category_ = null;
         this.minigame_ = null;
+        this.settings_ = null;
     }
 }
 

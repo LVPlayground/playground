@@ -149,6 +149,7 @@ class TestRunner {
       require('features/gangs/gang_manager.test.js');
       require('features/minigames/minigame_driver.test.js');
       require('features/minigames/minigame_manager.test.js');
+      require('features/minigames/minigame_settings.test.js');
       require('features/player_favours/object_remover.test.js');
       require('features/playground/playground_commands.test.js');
       require('features/races/drift_tracker.test.js');

@@ -2,60 +2,25 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-// Dictionary of the required settings together with the expected JavaScript variable type.
-const REQUIRED_SETTINGS = {
-    // The player-visible name describing the minigame.
-    name: 'string',
-
-    // The command that players can type to participate in the minigame.
-    command: 'string',
-
-    // The maximum number of time the minigame may last for, in seconds.
-    timeout: 'number',
-
-    // TODO(Russell): It should cost money to participate in minigames. They should also offer some
-    // form of prize money after the minigame has been completed.
-
-    // The maximum number of players that can participate in the minigame.
-    maximumParticipants: 'number'
-};
+const MinigameSettings = require('features/minigames/minigame_settings.js');
 
 // Base class that all minigames have to extend. Contains default implementations of the event
 // handlers that are available, and makes sure that certain bits of information are available.
 class Minigame {
     constructor(settings) {
-        // Validate that the |settings| object is complete.
-        Object.entries(REQUIRED_SETTINGS).forEach(([name, type]) => {
-            if (!settings.hasOwnProperty(name))
-                throw new Error('The minigame must have a "' + name + '" setting.');
+        this.settings_ = new MinigameSettings(settings);
 
-            if (typeof settings[name] !== type)
-                throw new Error('The minigame setting "' + name + '" must be a ' + type + '.');
-        });
-
-        this.name_ = settings.name;
-        this.command_ = settings.command;
-        this.timeout_ = settings.timeout;
-
+        // The driver that will be in control of managing this minigame. Created when attaching
+        // the minigame to the Minigame Manager.
         this.driver_ = null;
-
-        this.minimumParticipants_ = settings.minimumParticipants || 1;
-        this.maximumParticipants_ = settings.maximumParticipants;
-
-        // Whether the player can die and respawn within the minigame.
-        this.enableRespawn_ = !!settings.enableRespawn;
     }
 
     // ---------------------------------------------------------------------------------------------
 
-    // Gets the name of this minigame.
-    get name() { return this.name_; }
+    // Gets the settings associated with this minigame. Immutable.
+    get settings() { return this.settings_; }
 
-    // Gets the command through which players can join this minigame.
-    get command() { return this.command_; }
-
-    // Gets the maximum number of seconds the minigame is allowed to last for.
-    get timeout() { return this.timeout_; }
+    // ---------------------------------------------------------------------------------------------
 
     // Gets an iterator for the active players in this minigame. Only available after creating the
     // minigame with the minigame manager, which creates the driver for us.
@@ -72,18 +37,6 @@ class Minigame {
     // Gets the virtual world Id in which this minigame should take place. Only available after
     // creating the minigame with the minigame manager, which creates the driver for us.
     get virtualWorld() { return this.driver_.virtualWorld; }
-
-    // Gets the minimum number of participants in this minigame.
-    get minimumParticipants() { return this.minimumParticipants_; }
-
-    // Gets the maximum number of participants in this minigame.
-    get maximumParticipants() { return this.maximumParticipants_; }
-
-    // Gets whether the player can die and respawn within the minigame.
-    get enableRespawn() { return this.enableRespawn_; }
-
-    // Sets the driver that's running this minigame.
-    set driver(value) { this.driver_ = value; }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -136,6 +89,15 @@ class Minigame {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Attaches the |driver| to the minigame. Must only be called by the minigame system.
+    attachDriver(driver) {
+        if (this.driver_ !== null)
+            throw new Error('The minigame has already been attached to the minigame manager.');
+
+        this.driver_ = driver;
+    }
+
+    // Called when the minigame is being disposed of.
     dispose() {}
 }
 

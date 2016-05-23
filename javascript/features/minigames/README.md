@@ -6,4 +6,5 @@ is critical in all minigames on Las Venturas Playground.
 The following terminology is relevant:
 
   - A **minigame category** identifies a particular kind of minigame, for example _races_, _derbies_
-    and _fight club_.
+    and _fight club_. It can only be created by the minigame feature, and should be considered as
+    an opaque token by the consumer.

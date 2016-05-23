@@ -128,11 +128,14 @@ class MinigameManager {
 
         const driver = new MinigameDriver(this, category, minigame);
 
-        // Associate the |driver| with the |category|.
-        this.minigames_.get(category).add(driver);
-
         // Associate the |player| with the |driver|.
         driver.addPlayer(player);
+
+        // Associate the |driver| with the |player|.
+        this.players_.set(player, driver);
+
+        // Associate the |driver| with the |category|.
+        this.minigames_.get(category).add(driver);
 
         if (false) {
             // TODO(Russell): Skip the sign-up phase when the |player| is the only eligable player
@@ -159,7 +162,11 @@ class MinigameManager {
             if (driver.minigame !== minigame)
                 continue;
 
+            // Associate the |player| with the |driver|.
             driver.addPlayer(player);
+
+            // Associate the |driver| with the |player|.
+            this.players_.set(player, driver);
 
             this.announce_.announceMinigameParticipation(player, minigame.name, minigame.command);
             return;
@@ -167,11 +174,6 @@ class MinigameManager {
 
         // The minigame was not found if we reach this location in the execution flow.
         throw new Error('Invalid minigame: ' + minigame);
-    }
-
-    // Called when |player| has been added to the |driver| for a certain minigame.
-    didAddPlayerToMinigame(player, driver) {
-        this.players_.set(player, driver);
     }
 
     // Called when |player| has been removed from the minigame they were part of. Should clear their

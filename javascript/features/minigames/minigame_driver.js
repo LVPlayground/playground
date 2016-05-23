@@ -43,24 +43,25 @@ class MinigameDriver {
 
     // Gets or sets the current state of the minigame.
     get state() { return this.state_; }
-    set state(value) { this.state_ = value; }
+    set state(value) {
+        if (value < this.state_)
+            throw new Error('The state of a minigame can only be advanced.');
+
+        this.state_ = value;
+    }
 
     // Gets the unique virtual world Id that has been assigned to this minigame.
     get virtualWorld() { return this.virtualWorld_; }
 
     // ---------------------------------------------------------------------------------------------
 
-    // Adds |player| to the minigame. This method may only be used when the minigame is in the
-    // sign-up state, and therefore still accepting sign-ups.
+    // Adds |player| to the minigame. This method must only be called by the MinigameManager.
     addPlayer(player) {
         if (this.state_ != Minigame.STATE_SIGN_UP)
             throw new Error('Players can only be added to a minigame when it is accepting signups');
 
         this.activePlayers_.add(player);
         this.players_.add(player);
-
-        // Inform the manager about |player| having joined the game.
-        this.manager_.didAddPlayerToMinigame(player, this);
 
         // Inform the minigame about |player| having joined the game.
         this.minigame_.onPlayerAdded(player);
@@ -95,10 +96,8 @@ class MinigameDriver {
 
         // Check whether the minigame has finished in its entirety. This is the case when there are
         // no more active players and the |player| is not being removed because of a timeout.
-        if (!isTimeout) {
-            if (this.activePlayers_.size < this.minigame_.minimumParticipants)
-                this.finish(Minigame.REASON_NOT_ENOUGH_PLAYERS);
-        }
+        if (this.activePlayers_.size < this.minigame_.minimumParticipants && !isTimeout)
+            this.finish(Minigame.REASON_NOT_ENOUGH_PLAYERS);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -141,12 +140,10 @@ class MinigameDriver {
         if (this.state_ != Minigame.STATE_LOADING && this.state_ != Minigame.STATE_RUNNING)
             return;  // events are not relevant if the minigame is not active
 
-        if (newState == Player.STATE_DRIVER) {
+        if (newState == Player.STATE_DRIVER)
             this.minigame_.onPlayerEnterVehicle(player, player.currentVehicle());
-
-        } else if (oldState == Player.STATE_DRIVER) {
+        else if (oldState == Player.STATE_DRIVER)
             this.minigame_.onPlayerLeaveVehicle(player);
-        }
     }
 
     // ---------------------------------------------------------------------------------------------

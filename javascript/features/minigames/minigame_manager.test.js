@@ -4,7 +4,6 @@
 
 const Minigame = require('features/minigames/minigame.js');
 const MinigameManager = require('features/minigames/minigame_manager.js');
-const MinigameObserver = require('features/minigames/minigame_observer.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 const MockDeathFeed = require('features/death_feed/test/mock_death_feed.js');
 const MockMinigame = require('features/minigames/test/mock_minigame.js');
@@ -74,41 +73,6 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         assert.equal(minigames.length, 2);
         assert.isTrue(minigames.includes(simpleRace));
         assert.isTrue(minigames.includes(normalRace));
-    });
-
-    it('should enable observers to be passed for minigame categories', async(assert) => {
-        class MyCategoryObserver extends MinigameObserver {
-            constructor() {
-                super();
-
-                this.started = [];
-                this.finished = [];
-            }
-
-            onMinigameCreated(minigame) { this.started.push(minigame); }
-            onMinigameFinished(minigame) { this.finished.push(minigame); }
-        }
-
-        const observer = new MyCategoryObserver();
-        const category = manager.createCategory('test', observer);
-        const minigame = new MockMinigame();
-
-        assert.equal(observer.started.length, 0);
-        assert.equal(observer.finished.length, 0);
-
-        manager.createMinigame(category, minigame, gunther);
-        assert.isTrue(manager.isPlayerEngaged(gunther));
-
-        assert.equal(observer.started.length, 1);
-        assert.equal(observer.finished.length, 0);
-
-        gunther.disconnect();
-
-        await minigame.waitUntilFinished();
-
-        assert.isFalse(manager.isPlayerEngaged(gunther));
-        assert.equal(observer.started.length, 1);
-        assert.equal(observer.finished.length, 1);
     });
 
     it('should properly update player state when creating a minigame', assert => {

@@ -4,7 +4,6 @@
 
 const Minigame = require('features/minigames/minigame.js');
 const MinigameDriver = require('features/minigames/minigame_driver.js');
-const MinigameObserver = require('features/minigames/minigame_observer.js');
 const ScopedCallbacks = require('base/scoped_callbacks.js');
 
 // Number of milliseconds player have to sign-up to another player's minigame.
@@ -18,8 +17,8 @@ class MinigameManager {
         this.announce_ = announce;
         this.deathFeed_ = deathFeed;
 
-        // Map of category symbol to description for the given category.
-        this.categories_ = new Map();
+        // Set containing the registered categories.
+        this.categories_ = new Set();
 
         // Map of category symbol to a set containing all minigame drivers that are currently in
         // progress for the given category. 
@@ -50,15 +49,11 @@ class MinigameManager {
     // ---------------------------------------------------------------------------------------------
 
     // Creates a new minigame category. The category is guaranteed to be unique, but will only serve
-    // as a completely opaque token to the implementing feature. The |observer| can be passed and
-    // will be informed about created, started and finished minigames.
-    createCategory(description, observer) {
-        if (observer && !(observer instanceof MinigameObserver))
-            throw new Error('Minigame category observers must extend the MinigameObserver class.');
-
+    // as a completely opaque token to the implementing feature.
+    createCategory(description) {
         const category = Symbol(description);
 
-        this.categories_.set(category, observer);
+        this.categories_.add(category);
         this.minigames_.set(category, new Set());
 
         return category;
@@ -149,12 +144,6 @@ class MinigameManager {
             if (!server.isTest())
                 wait(SignupTimeoutMilliseconds).then(() => driver.load());
         }
-
-        const categoryObserver = this.categories_.get(category);
-
-        // Inform the category's observer about the created minigame.
-        if (categoryObserver)
-            categoryObserver.onMinigameCreated(minigame);
     }
 
     // Adds |player| to the minigame. The minigame must have been created already, and the |player|
@@ -201,12 +190,6 @@ class MinigameManager {
             throw new Error('The |driver| still has active players associated with it.');
 
         this.minigames_.get(category).delete(driver);
-
-        const categoryObserver = this.categories_.get(category);
-
-        // Inform the category's observer about the finished minigame.
-        if (categoryObserver)
-            categoryObserver.onMinigameFinished(driver.minigame);
 
         driver.dispose();
     }

@@ -22,15 +22,9 @@ class GameObject {
       let players = options.players || [ (typeof options.playerId !== 'undefined' ? options.playerId : -1 ) ];
       let areas = [ -1 ];
 
-      // NOTE: The native function definition of CreateDynamicObjectEx notes that the drawDistance
-      // parameter comes *after* the streamDistance, as is the case with CreateDynamicObject.
-      // However, the implementation expects them in this order.
-      //
-      // https://github.com/samp-incognito/samp-streamer-plugin/blob/master/src/natives/extended.cpp
-
       this.id_ = pawnInvoke('CreateDynamicObjectEx', 'iffffffffaaaaiiii', modelId, position.x,
                             position.y, position.z, rotation.x, rotation.y, rotation.z,
-                            drawDistance, streamDistance, worlds, interiors, players, areas,
+                            streamDistance, drawDistance, worlds, interiors, players, areas,
                             worlds.length, interiors.length, players.length, areas.length);
 
       if (this.id_ == GameObject.INVALID_ID)

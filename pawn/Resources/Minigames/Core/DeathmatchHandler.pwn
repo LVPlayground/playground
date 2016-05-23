@@ -56,8 +56,6 @@ public DeathmatchStartFunc() {
 
                 // Enough sign-ups, do some magic for every contestant.
                 else if (MinigameTypeInfo[Players] > 1) {
-                    AnniversaryStatistics->increaseMinigameParticipationScore(contestant);
-
                     ClearPlayerMenus(contestant);
                     RemovePlayerFromVehicle(contestant);
 

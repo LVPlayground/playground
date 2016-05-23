@@ -128,9 +128,6 @@
 #include Elements/Player/playerHandler.pwn
 #include Resources/Maps/MapZones/Handler.pwn
 
-// Add the script responsible for statistic gathering during LVP 10.
-#include "Features/Gameplay/AnniversaryStatistics.pwn"
-
 // Virtual world handler - High priority, don't touch order. Requires some vehicle functions
 #include Elements/Player/World.pwn
 

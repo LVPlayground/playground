@@ -1450,7 +1450,6 @@ public CHideGame__Start()
 
             // Save their data.
             CHideGame__SavePos(playerId);
-            AnniversaryStatistics->increaseMinigameParticipationScore(playerId);
 
             for (new forPlayerId = 0; forPlayerId <= PlayerManager->highestPlayerId(); ++forPlayerId) {
                 if (Player(forPlayerId)->isConnected() == false)
@@ -1479,7 +1478,6 @@ public CHideGame__Start()
 
         // Save the seekers position.
         CHideGame__SavePos( iSeekerPlayer );
-        AnniversaryStatistics->increaseMinigameParticipationScore(iSeekerPlayer);
 
         // Set the seekers position too.
         SetPlayerInterior( iSeekerPlayer, aLocationInfo[ iMapRunning ][ 2 ] );

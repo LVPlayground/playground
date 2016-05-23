@@ -74,7 +74,7 @@ class DebugFeature extends Feature {
     server.commandManager.buildCommand('pdetach')
         .restrict(Player.LEVEL_MANAGEMENT)
         .parameters([ { name: 'player', type: CommandBuilder.PLAYER_PARAMETER } ])
-        .build(this.__proto__.unattach.bind(this));
+        .build(this.__proto__.detach.bind(this));
 
     this.attachedObjects_ = new Map();
 

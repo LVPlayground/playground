@@ -17,103 +17,107 @@ class FriendsManager {
         server.playerManager.addObserver(this);
     }
 
+    // Returns a promise that will be resolved when data for the |player| has been loaded.
+    async waitUntilPlayerDataLoaded(player) { return this.loadPromises_.get(player); }
+
     // Adds |friendPlayer| as a friend of |player|. Returns a promise that will be resolved when the
     // relationship has been created in the database.
-    addFriend(player, friendPlayer) {
-        return this.hasFriend(player, friendPlayer).then(exists => {
-            if (exists)
-                return;  // nothing to do, the relation already exists
+    async addFriend(player, friendPlayer) {
+        if (await this.hasFriend(player, friendPlayer))
+            return;  // nothing to do, the relation already exists
 
-            return this.database_.addFriend(player, friendPlayer);
+        await this.database_.addFriend(player, friendPlayer);
 
-        }).then(() => {
-            let friends = this.friends_.get(player);
-            if (!friends)
-                return;  // the player has disconnected from the server since
+        let friends = this.friends_.get(player);
+        if (!friends)
+            return;  // the player has disconnected from the server since
 
-            friends.push({
-                userId: friendPlayer.userId,
-                name: friendPlayer.name,
-                lastSeen: Date.now()
-            });
+        friends.push({
+            userId: friendPlayer.userId,
+            name: friendPlayer.name,
+            lastSeen: Date.now()
         });
     }
 
     // Returns a promise that will be resolved with a boolean indicating whether |player| has added
     // |friendPlayer| as a friend. Both players must be registered and logged in to their accounts.
-    hasFriend(player, friendPlayer) {
+    async hasFriend(player, friendPlayer) {
         if (!player.isRegistered() || !friendPlayer.isRegistered())
-            return Promise.resolve(false);
+            return false;
 
-        return this.loadPromises_.get(player).then(() => {
-            return !!this.friends_.get(player).find(friend =>
-                friend.userId === friendPlayer.userId);
-        });
+        await this.waitUntilPlayerDataLoaded(player);
+        for (const friend of this.friends_.get(player)) {
+            if (friend.userId === friendPlayer.userId)
+                return true;
+        }
+
+        return false;
     }
 
     // Returns a promise that will be resolved with the list of friends of |player|. The friends
     // will be categorized in two groups: those who are online and those who are offline.
-    getFriends(player) {
+    async getFriends(player) {
         if (!player.isRegistered())
-            return Promise.resolve({ online: [], offline: [] });
+            return { online: [], offline: [] };
 
-        return this.loadPromises_.get(player).then(() => {
-            let friends = this.friends_.get(player);
+        await this.waitUntilPlayerDataLoaded(player);
 
-            friends.sort((lhs, rhs) => lhs.name.localeCompare(rhs.name));
+        let friends = this.friends_.get(player);
+        friends.sort((lhs, rhs) => lhs.name.localeCompare(rhs.name));
 
-            // Function for determining if |friend| is currently online.
-            const isOnline = friend =>
-                this.lastActive_[friend.userId] == FriendsManager.CURRENTLY_ONLINE;
+        // Function for determining if |friend| is currently online.
+        const isOnline = friend =>
+            this.lastActive_[friend.userId] == FriendsManager.CURRENTLY_ONLINE;
 
-            return {
-                online: friends.filter(friend => isOnline(friend)).map(friend => friend.name),
-                offline: friends.filter(friend => !isOnline(friend)).map(friend => friend.name)
-            };
-        });
+        return {
+            online: friends.filter(friend => isOnline(friend)).map(friend => friend.name),
+            offline: friends.filter(friend => !isOnline(friend)).map(friend => friend.name)
+        };
     }
 
     // Removes |friendName| as a friend of |player|, which does not have to be their complete name.
     // Returns a promise that will be resolved with the removed player's name when the relationship
     // has been removed from both the local state and the database.
-    removeFriend(player, friendName) {
+    async removeFriend(player, friendName) {
         if (!player.isRegistered())
-            return Promise.reject(new Error('The |player| must be registered.'));
+            throw new Error('The |player| must be registered.');
+
+        await this.waitUntilPlayerDataLoaded(player);
 
         const lowerCaseName = friendName.toLowerCase();
 
-        return this.loadPromises_.get(player).then(() => {
-            let removeNickname = null;
-            let removeUserId = null;
+        let removeNickname = null;
+        let removeUserId = null;
 
-            for (let friend of this.friends_.get(player)) {
-                if (!friend.name.toLowerCase().includes(lowerCaseName))
-                    continue;
+        for (let friend of this.friends_.get(player)) {
+            if (!friend.name.toLowerCase().includes(lowerCaseName))
+                continue;
 
-                if (removeNickname !== null && removeUserId != friend.userId)
-                    throw new Error('More than one friend matches the given name: ' + friendName);
+            if (removeNickname !== null && removeUserId != friend.userId)
+                throw new Error('More than one friend matches the given name: ' + friendName);
 
-                removeNickname = friend.name;
-                removeUserId = friend.userId;
-            }
+            removeNickname = friend.name;
+            removeUserId = friend.userId;
+        }
 
-            if (removeUserId === null)
-                throw new Error('No friends match the given name: ' + friendName);
+        if (removeUserId === null)
+            throw new Error('No friends match the given name: ' + friendName);
 
-            // Remove the friend from the cached list of friends.
-            this.friends_.set(player, this.friends_.get(player).filter(friend => {
-                return removeUserId != friend.userId;
-            }));
+        // Remove the friend from the cached list of friends.
+        this.friends_.set(player, this.friends_.get(player).filter(friend => {
+            return removeUserId != friend.userId;
+        }));
 
-            return this.database_.removeFriend(player, removeUserId).then(() => removeNickname);
-        });
+        await this.database_.removeFriend(player, removeUserId);
+
+        return removeNickname;
     }
 
     // Called when a player connects to Las Venturas Playground. Players that added them to their
     // friend list will hear a sound informing them of their connection. Note that there are cases
     // where this could go wrong, for example when someone uses a registered name that's not theirs.
     onPlayerConnect(player) {
-        for (let [onlinePlayer, friends] of this.friends_) {
+        for (const [onlinePlayer, friends] of this.friends_) {
             friends.find(friend => {
                 if (friend.name !== player.name)
                     return false;

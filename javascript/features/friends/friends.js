@@ -23,8 +23,8 @@ class FriendsFeature extends Feature {
 
     // Returns a promise that will be resolved with a boolean indicating whether |player| has added
     // |friendPlayer| as a friend. Both players must be registered and logged in to their accounts.
-    hasFriend(player, friendPlayer) {
-        return this.friendsManager_.hasFriend(player, friendPlayer);
+    async hasFriend(player, friendPlayer) {
+        return await this.friendsManager_.hasFriend(player, friendPlayer);
     }
 
     // ---------------------------------------------------------------------------------------------

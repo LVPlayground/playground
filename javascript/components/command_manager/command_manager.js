@@ -50,8 +50,8 @@ class CommandManager {
 
   // Called when a player executes an in-game command. Will prevent the event from being executed in
   // the Pawn portion of the gamemode when the command can be handled here.
-  onPlayerCommandText(event) {
-    let player = server.playerManager.getById(event.playerid);
+  async onPlayerCommandText(event) {
+    const player = server.playerManager.getById(event.playerid);
     if (!player)
       return;
 
@@ -72,7 +72,7 @@ class CommandManager {
     // We can handle the event, so no need for Pawn to handle the event as well.
     event.preventDefault();
 
-    this.commands_[commandName](player, commandArguments);
+    return this.commands_[commandName](player, commandArguments);
   }
 
   // Disposes of the callbacks created as part of this class.

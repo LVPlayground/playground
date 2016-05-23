@@ -173,7 +173,7 @@ class CommandBuilder {
   // Internal implementation for creating the listener function. Each listener function follows the
   // same pattern of 
   createListener() {
-    return (player, argumentString, carriedArguments = []) => {
+    return async(player, argumentString, carriedArguments = []) => {
       // Make sure that any leading padding is removed from |args|.
       argumentString = argumentString.trim();
 
@@ -195,7 +195,7 @@ class CommandBuilder {
           if (!argumentString.startsWith(builder.command_) || (argumentString.length != commandLength && argumentString[commandLength] != ' '))
             continue;
 
-          return listener(player, argumentString.substr(commandLength), carriedArguments);
+          return await listener(player, argumentString.substr(commandLength), carriedArguments);
         }
 
         let result = null;
@@ -205,14 +205,14 @@ class CommandBuilder {
             if (result === null)
               break;
 
-            return listener(player, argumentString.substr(result[0].length), [ ...carriedArguments, parseFloat(result[0]) ]);
+            return await listener(player, argumentString.substr(result[0].length), [ ...carriedArguments, parseFloat(result[0]) ]);
 
           case CommandBuilder.WORD_PARAMETER:
             result = StringParser.WORD_MATCH.exec(argumentString);
             if (result === null)
               break;
 
-            return listener(player, argumentString.substr(result[0].length), [ ...carriedArguments, result[0] ]);
+            return await listener(player, argumentString.substr(result[0].length), [ ...carriedArguments, result[0] ]);
 
           case CommandBuilder.PLAYER_PARAMETER:
             result = StringParser.WORD_MATCH.exec(argumentString);
@@ -225,7 +225,7 @@ class CommandBuilder {
               return true;
             }
 
-            return listener(player, argumentString.substr(result[0].length), [ ...carriedArguments, subject ]);
+            return await listener(player, argumentString.substr(result[0].length), [ ...carriedArguments, subject ]);
         }
 
         // If the sub-command has a default value function defined, attempt to get its value by
@@ -233,7 +233,7 @@ class CommandBuilder {
         if (builder.defaultValue_ !== null) {
           let value = builder.defaultValue_(player);
           if (value !== null)
-            return listener(player, argumentString, [ ...carriedArguments, value ]);
+            return await listener(player, argumentString, [ ...carriedArguments, value ]);
         }
       }
 
@@ -256,7 +256,7 @@ class CommandBuilder {
         return false;
       }
 
-      this.listener_(player, ...carriedArguments);
+      await this.listener_(player, ...carriedArguments);
       return true;
     };
   }

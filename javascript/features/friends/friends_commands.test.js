@@ -29,126 +29,117 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
         friendsManager.dispose();
     });
 
-    it('should show an error when adding a friend as an unregistered player', assert => {
+    it('should show an error when adding a friend as an unregistered player', async(assert) => {
         assert.isFalse(gunther.isRegistered());
 
-        assert.isTrue(gunther.issueCommand('/friends add ' + russell.name));
+        assert.isTrue(await gunther.issueCommand('/friends add ' + russell.name));
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.FRIENDS_ERROR_NOT_REGISTERED);
     });
 
-    it('should show an error when adding an unregistered player as a friend', assert => {
+    it('should show an error when adding an unregistered player as a friend', async(assert) => {
         gunther.identify();
 
         assert.isTrue(gunther.isRegistered());
-        assert.isTrue(gunther.issueCommand('/friends add ' + russell.name));
+        assert.isTrue(await gunther.issueCommand('/friends add ' + russell.name));
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0],
                      Message.format(Message.FRIENDS_ERROR_FRIEND_NOT_REGISTERED, russell.name));
     });
 
-    it('should show an error when adding oneself as a friend', assert => {
+    it('should show an error when adding oneself as a friend', async(assert) => {
         gunther.identify();
 
         assert.isTrue(gunther.isRegistered());
-        assert.isTrue(gunther.issueCommand('/friends add ' + gunther.name));
+        assert.isTrue(await gunther.issueCommand('/friends add ' + gunther.name));
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.FRIENDS_ERROR_ADD_SELF);
     });
 
-    it('should allow players to add others as their friends', assert => {
+    it('should allow players to add others as their friends', async(assert) => {
         gunther.identify();
         russell.identify();
 
         assert.isTrue(gunther.isRegistered());
         assert.isTrue(russell.isRegistered());
 
-        assert.isTrue(gunther.issueCommand('/friends add ' + russell.id));
+        assert.isTrue(await gunther.issueCommand('/friends add ' + russell.id));
 
-        return friendsCommands.addPromiseForTesting_.then(() => {
-            assert.equal(gunther.messages.length, 1);
-            assert.equal(gunther.messages[0], Message.format(Message.FRIENDS_ADDED, russell.name));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.FRIENDS_ADDED, russell.name));
 
-            return friendsManager.getFriends(gunther);
+        const friends = await friendsManager.getFriends(gunther);
 
-        }).then(friends => {
-            assert.equal(friends.online.length, 1);
-            assert.equal(friends.online[0], russell.name);
-            assert.equal(friends.offline.length, 0);
-        });
+        assert.equal(friends.online.length, 1);
+        assert.equal(friends.online[0], russell.name);
+        assert.equal(friends.offline.length, 0);
     });
 
-    it('should show an error when listing friends as an unregistered player', assert => {
+    it('should show an error when listing friends as an unregistered player', async(assert) => {
         assert.isFalse(gunther.isRegistered());
 
-        assert.isTrue(gunther.issueCommand('/friends'));
+        assert.isTrue(await gunther.issueCommand('/friends'));
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.FRIENDS_ERROR_NOT_REGISTERED);
     });
 
-    it('should list friends of the current player when there are none', assert => {
+    it('should list friends of the current player when there are none', async(assert) => {
         gunther.identify();
 
         assert.isTrue(gunther.isRegistered());
-        assert.isTrue(gunther.issueCommand('/friends'));
 
-        return friendsManager.getFriends(gunther).then(friends => {
-            assert.equal(friends.online.length, 0);
-            assert.equal(friends.offline.length, 0);
+        const friends = await friendsManager.getFriends(gunther);
+        assert.equal(friends.online.length, 0);
+        assert.equal(friends.offline.length, 0);
 
-            return friendsCommands.listPromiseForTesting_;
+        assert.isTrue(await gunther.issueCommand('/friends'));
 
-        }).then(() => {
-            assert.equal(gunther.messages.length, 2);
-            assert.equal(gunther.messages[0], Message.FRIENDS_EMPTY);
-        });
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(gunther.messages[0], Message.FRIENDS_EMPTY);
     });
 
-    it('should list friends of the current player when they have some', assert => {
+    it('should list friends of the current player when they have some', async(assert) => {
         const lucy = server.playerManager.getById(2 /* Lucy */);
 
         gunther.identify();
         russell.identify();
         lucy.identify();
 
-        return Promise.all([
-            friendsManager.addFriend(gunther, russell),
-            friendsManager.addFriend(gunther, lucy)
-        ]).then(() => {
-            assert.isTrue(gunther.issueCommand('/friends'));
+        await Promise.all([ friendsManager.addFriend(gunther, russell),
+                            friendsManager.addFriend(gunther, lucy) ]);
 
-            return friendsManager.getFriends(gunther);
+        const friends = await friendsManager.getFriends(gunther);
+        assert.equal(friends.online.length, 2);
+        assert.equal(friends.offline.length, 0);
 
-        }).then(friends => {
-            assert.equal(friends.online.length, 2);
-            assert.equal(friends.offline.length, 0);
+        assert.isTrue(await gunther.issueCommand('/friends'));
 
-            return friendsCommands.listPromiseForTesting_;
-
-        }).then(() => {
-            assert.equal(gunther.messages.length, 3);
-            assert.equal(gunther.messages[0], Message.FRIENDS_HEADER);
-            assert.isTrue(gunther.messages[1].includes(russell.name));
-            assert.isTrue(gunther.messages[1].includes(lucy.name));
-        });
+        assert.equal(gunther.messages.length, 3);
+        assert.equal(gunther.messages[0], Message.FRIENDS_HEADER);
+        assert.isTrue(gunther.messages[1].includes(russell.name));
+        assert.isTrue(gunther.messages[1].includes(lucy.name));
     });
 
-    it('should ignore the command when listing friends of another player as a player', assert => {
+    it('should not allow players to list friends of another player', async(assert) => {
         gunther.identify();
+        russell.identify();
+
+        await friendsManager.addFriend(russell, gunther);
 
         assert.isTrue(gunther.isRegistered());
         assert.isFalse(gunther.isAdministrator());
 
-        assert.isTrue(gunther.issueCommand('/friends ' + russell.id));
+        assert.isTrue(await gunther.issueCommand('/friends ' + russell.id));
 
-        assert.equal(gunther.messages.length, 0);
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(gunther.messages[0], Message.FRIENDS_EMPTY);
     });
 
-    it('should list friends of another player as an administrator when they have none', assert => {
+    it('should list friends of another player as an admin when they have none', async(assert) => {
         const lucy = server.playerManager.getById(2 /* Lucy */);
 
         gunther.identify();
@@ -161,24 +152,19 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(gunther.isAdministrator());
         assert.isTrue(russell.isRegistered());
 
-        return friendsManager.addFriend(gunther, lucy).then(() => {
-            assert.isTrue(gunther.issueCommand('/friends ' + russell.id));
+        await friendsManager.addFriend(gunther, lucy);
 
-            return friendsManager.getFriends(gunther);
+        const friends = await friendsManager.getFriends(gunther);
+        assert.equal(friends.online.length, 1);
+        assert.equal(friends.offline.length, 0);
 
-        }).then(friends => {
-            assert.equal(friends.online.length, 1);
-            assert.equal(friends.offline.length, 0);
+        assert.isTrue(await gunther.issueCommand('/friends ' + russell.id));
 
-            return friendsCommands.listPromiseForTesting_;
-
-        }).then(() => {
-            assert.equal(gunther.messages.length, 2);
-            assert.equal(gunther.messages[0], Message.FRIENDS_EMPTY);
-        });
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(gunther.messages[0], Message.FRIENDS_EMPTY);
     });
 
-    it('should list friends of another player as an administrator when they have some', assert => {
+    it('should list friends of another player as an admin when they have some', async(assert) => {
         const lucy = server.playerManager.getById(2 /* Lucy */);
 
         gunther.identify();
@@ -191,127 +177,102 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(gunther.isAdministrator());
         assert.isTrue(russell.isRegistered());
 
-        return friendsManager.addFriend(russell, lucy).then(() => {
-            assert.isTrue(gunther.issueCommand('/friends ' + russell.id));
+        await friendsManager.addFriend(russell, lucy);
 
-            return friendsManager.getFriends(gunther);
+        assert.isTrue(await gunther.issueCommand('/friends ' + russell.id))
 
-        }).then(() => {
-            assert.equal(gunther.messages.length, 3);
-            assert.equal(gunther.messages[0], Message.FRIENDS_HEADER);
-            assert.isTrue(gunther.messages[1].includes(lucy.name));
-        });
+        assert.equal(gunther.messages.length, 3);
+        assert.equal(gunther.messages[0], Message.FRIENDS_HEADER);
+        assert.isTrue(gunther.messages[1].includes(lucy.name));
     });
 
-    it('should show an error removing friends as an unregistered player', assert => {
+    it('should show an error removing friends as an unregistered player', async(assert) => {
         assert.isFalse(gunther.isRegistered());
 
-        assert.isTrue(gunther.issueCommand('/friends remove ' + russell.name));
+        assert.isTrue(await gunther.issueCommand('/friends remove ' + russell.name));
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.FRIENDS_ERROR_NOT_REGISTERED);
     });
 
-    it('should enable removing friends by name who are online on the server', assert => {
+    it('should enable removing friends by name who are online on the server', async(assert) => {
         gunther.identify();
         russell.identify();
 
         assert.isTrue(gunther.isRegistered());
         assert.isTrue(russell.isRegistered());
 
-        return friendsManager.addFriend(gunther, russell).then(() => {
-            return friendsManager.getFriends(gunther);
+        await friendsManager.addFriend(gunther, russell);
 
-        }).then(friends => {
-            assert.equal(friends.online.length, 1);
-            assert.equal(friends.online[0], russell.name);
-            assert.equal(friends.offline.length, 0);
+        const friends = await friendsManager.getFriends(gunther);
+        assert.equal(friends.online.length, 1);
+        assert.equal(friends.online[0], russell.name);
+        assert.equal(friends.offline.length, 0);
 
-            assert.isTrue(gunther.issueCommand('/friends remove ' + russell.name));
-            return friendsCommands.removePromiseForTesting_;
+        assert.isTrue(await gunther.issueCommand('/friends remove ' + russell.name));
 
-        }).then(() => {
-            assert.equal(gunther.messages.length, 1);
-            assert.equal(
-                gunther.messages[0], Message.format(Message.FRIENDS_REMOVED, russell.name));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.FRIENDS_REMOVED, russell.name));
 
-            return friendsManager.getFriends(gunther);
-
-        }).then(friends => {
-            assert.equal(friends.online.length, 0);
-            assert.equal(friends.offline.length, 0);
-        });
+        const updatedFriends = await friendsManager.getFriends(gunther);
+        assert.equal(updatedFriends.online.length, 0);
+        assert.equal(updatedFriends.offline.length, 0);
     });
 
-    it('should enable removing friends by id who are online on the server', assert => {
+    it('should enable removing friends by id who are online on the server', async(assert) => {
         gunther.identify();
         russell.identify();
 
         assert.isTrue(gunther.isRegistered());
         assert.isTrue(russell.isRegistered());
 
-        return friendsManager.addFriend(gunther, russell).then(() => {
-            return friendsManager.getFriends(gunther);
+        await friendsManager.addFriend(gunther, russell);
 
-        }).then(friends => {
-            assert.equal(friends.online.length, 1);
-            assert.equal(friends.online[0], russell.name);
-            assert.equal(friends.offline.length, 0);
+        const friends = await friendsManager.getFriends(gunther);
+        assert.equal(friends.online.length, 1);
+        assert.equal(friends.online[0], russell.name);
+        assert.equal(friends.offline.length, 0);
 
-            assert.isTrue(gunther.issueCommand('/friends remove ' + russell.id));
-            return friendsCommands.removePromiseForTesting_;
+        assert.isTrue(await gunther.issueCommand('/friends remove ' + russell.id));
 
-        }).then(() => {
-            assert.equal(gunther.messages.length, 1);
-            assert.equal(
-                gunther.messages[0], Message.format(Message.FRIENDS_REMOVED, russell.name));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.FRIENDS_REMOVED, russell.name));
 
-            return friendsManager.getFriends(gunther);
-
-        }).then(friends => {
-            assert.equal(friends.online.length, 0);
-            assert.equal(friends.offline.length, 0);
-        });
+        const updatedFriends = await friendsManager.getFriends(gunther);
+        assert.equal(updatedFriends.online.length, 0);
+        assert.equal(updatedFriends.offline.length, 0);
     });
 
-    it('should enable removing friends by name who are not online on the server', assert => {
+    it('should enable removing friends by name who are not online on the server', async(assert) => {
         gunther.identify();
         russell.identify({ userId: 1337 });
 
         assert.isTrue(gunther.isRegistered());
         assert.isTrue(russell.isRegistered());
 
-        return friendsManager.addFriend(gunther, russell).then(() => {
-            return friendsManager.getFriends(gunther);
+        await friendsManager.addFriend(gunther, russell);
 
-        }).then(friends => {
-            assert.equal(friends.online.length, 1);
-            assert.equal(friends.online[0], russell.name);
-            assert.equal(friends.offline.length, 0);
+        const onlineFriends = await friendsManager.getFriends(gunther);
+        assert.equal(onlineFriends.online.length, 1);
+        assert.equal(onlineFriends.online[0], russell.name);
+        assert.equal(onlineFriends.offline.length, 0);
 
-            russell.disconnect();
+        russell.disconnect();
 
-            assert.isFalse(russell.isConnected());
-            return friendsManager.getFriends(gunther);
+        assert.isFalse(russell.isConnected());
 
-        }).then(friends => {
-            assert.equal(friends.online.length, 0);
-            assert.equal(friends.offline.length, 1);
-            assert.equal(friends.offline[0], russell.name);
+        const offlineFriends = await friendsManager.getFriends(gunther);
+        assert.equal(offlineFriends.online.length, 0);
+        assert.equal(offlineFriends.offline.length, 1);
+        assert.equal(offlineFriends.offline[0], russell.name);
 
-            assert.isTrue(gunther.issueCommand('/friends remove ' + russell.name.toLowerCase()));
-            return friendsCommands.removePromiseForTesting_;
+        assert.isTrue(await gunther.issueCommand('/friends remove ' + russell.name.toLowerCase()));
 
-        }).then(() => {
-            assert.equal(gunther.messages.length, 1);
-            assert.equal(
-                gunther.messages[0], Message.format(Message.FRIENDS_REMOVED, russell.name));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.FRIENDS_REMOVED, russell.name));
 
-            return friendsManager.getFriends(gunther);
-
-        }).then(friends => {
-            assert.equal(friends.online.length, 0);
-            assert.equal(friends.offline.length, 0);
-        });
+        const updatedFriends = await friendsManager.getFriends(gunther);
+        assert.equal(updatedFriends.online.length, 0);
+        assert.equal(updatedFriends.offline.length, 0);
     });
 });

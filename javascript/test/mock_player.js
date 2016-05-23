@@ -187,10 +187,10 @@ class MockPlayer {
 
     // Issues |commandText| as if it had been send by this player. Returns whether the event with
     // which the command had been issued was prevented.
-    issueCommand(commandText) {
+    async issueCommand(commandText) {
         let defaultPrevented = false;
 
-        server.commandManager.onPlayerCommandText({
+        await server.commandManager.onPlayerCommandText({
             preventDefault: () => defaultPrevented = true,
 
             playerid: this.id_,

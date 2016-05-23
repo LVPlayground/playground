@@ -44,34 +44,32 @@ class FriendsDatabase {
 
     // Loads the friends for |player| from the database. Returns a promise that will be resolved
     // with an array when their list of friends is available.
-    loadFriends(player) {
-        return this.database_.query(LOAD_QUERY, player.userId).then(results => {
-            let friends = [];
+    async loadFriends(player) {
+        const results = await this.database_.query(LOAD_QUERY, player.userId);
 
-            results.rows.forEach(row => {
-                friends.push({
-                    userId: row.friend_id,
-                    name: row.friend_name,
-                    lastSeen: row.friend_last_seen * 1000
-                });
+        let friends = [];
+
+        results.rows.forEach(row => {
+            friends.push({
+                userId: row.friend_id,
+                name: row.friend_name,
+                lastSeen: row.friend_last_seen * 1000
             });
-
-            return friends;
         });
+
+        return friends;
     }
 
     // Adds a relationship from |player| to |friend|. Returns a promise that will be resolved once
     // the relationship has been stored in the database.
-    addFriend(player, friend) {
-        return this.database_.query(ADD_QUERY, player.userId, friend.userId).then(
-            () => null /* remove the |results| data for the caller **/);
+    async addFriend(player, friend) {
+        await this.database_.query(ADD_QUERY, player.userId, friend.userId);
     }
 
     // Removes the relationship from |player| to the friend with |friendUserId|. Returns a promise
     // that will be resolved once the relationship has been removed from the database.
-    removeFriend(player, friendUserId) {
-        return this.database_.query(REMOVE_QUERY, player.userId, friendUserId).then(
-            () => null /* remove the |results| data for the caller **/);
+    async removeFriend(player, friendUserId) {
+        await this.database_.query(REMOVE_QUERY, player.userId, friendUserId);
     }
 }
 

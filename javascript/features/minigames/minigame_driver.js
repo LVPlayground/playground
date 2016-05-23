@@ -20,9 +20,6 @@ class MinigameDriver {
         // Set containing the players actively engaged in the minigame.
         this.activePlayers_ = new Set();
 
-        // Set containing *all* players that have been engaged with the minigame.
-        this.players_ = new Set();
-
         // Set of scoped entities available for this minigame.
         this.entities_ = new ScopedEntities();
 
@@ -62,7 +59,6 @@ class MinigameDriver {
             throw new Error('Players can only be added to a minigame when it is accepting signups');
 
         this.activePlayers_.add(player);
-        this.players_.add(player);
 
         // Inform the minigame about |player| having joined the game.
         this.minigame_.onPlayerAdded(player);
@@ -245,7 +241,6 @@ class MinigameDriver {
         this.entities_.dispose();
         this.entities_ = null;
 
-        this.players_ = null;
         this.activePlayers_ = null;
 
         this.manager_ = null;

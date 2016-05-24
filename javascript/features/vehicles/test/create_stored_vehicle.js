@@ -2,7 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MockVehicle = require('test/mock_vehicle.js');
 const StoredVehicle = require('features/vehicles/stored_vehicle.js');
 
 // Creates a new StoredVehicle instance based on the |options|. Reasonable defaults will be

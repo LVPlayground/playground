@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MockVehicle = require('test/mock_vehicle.js');
+const MockVehicle = require('entities/test/mock_vehicle.js');
 const Vector = require('base/vector.js');
 const VehicleManager = require('entities/vehicle_manager.js');
 

@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 const ActorManager = require('entities/actor_manager.js');
-const MockActor = require('test/mock_actor.js');
+const MockActor = require('entities/test/mock_actor.js');
 const Vector = require('base/vector.js');
 
 describe('ActorManager', (it, beforeEach, afterEach) => {

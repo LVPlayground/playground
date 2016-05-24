@@ -5,9 +5,9 @@
 const ActorManager = require('entities/actor_manager.js');
 const CommandManager = require('components/command_manager/command_manager.js');
 const FeatureManager = require('components/feature_manager/feature_manager.js');
-const MockActor = require('test/mock_actor.js');
-const MockPlayerManager = require('test/mock_player_manager.js');
-const MockVehicle = require('test/mock_vehicle.js');
+const MockActor = require('entities/test/mock_actor.js');
+const MockPlayerManager = require('entities/test/mock_player_manager.js');
+const MockVehicle = require('entities/test/mock_vehicle.js');
 const VehicleManager = require('entities/vehicle_manager.js');
 
 // The MockServer is a mocked implementation of the Server class that creates a mocked environment

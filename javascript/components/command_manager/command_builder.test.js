@@ -312,6 +312,13 @@ describe('CommandBuilder', (it, beforeEach) => {
     assert.throws(() => builder('testcommand').parameters([ {} ]));
     assert.throws(() => builder('testcommand').parameters([ { name: 'foo', type: 1337 } ]));
 
+    assert.throws(() => {
+      builder('testcommand')
+          .parameters([{ name: 'foo', type: CommandBuilder.NUMBER_PARAMETER }])
+          .parameters([{ name: 'bar', type: CommandBuilder.NUMBER_PARAMETER }])
+          .build();
+    });
+
     let parameterBar = null,
         parameterBoo = null;
 

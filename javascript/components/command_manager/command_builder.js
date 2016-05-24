@@ -68,6 +68,9 @@ class CommandBuilder {
     if (!Array.isArray(parameters))
       throw new Error('The list of parameters is expected to be an array.');
 
+    if (this.parameters_.length)
+      throw new Error('The parameters for this command have already been defined.');
+
     let format = [];
 
     // Iterate over all passed parameters to validate their correctness, store its name and whether

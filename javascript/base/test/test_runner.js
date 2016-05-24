@@ -155,6 +155,7 @@ class TestRunner {
       require('features/races/drift_tracker.test.js');
       require('features/races/race_importer.test.js');
       require('features/races/race_manager.test.js');
+      require('features/report/report_commands.test.js');
       require('features/vehicles/vehicle_commands.test.js');
       require('features/vehicles/vehicle_grid.test.js');
       require('features/vehicles/vehicle_manager.test.js');

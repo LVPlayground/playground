@@ -37,6 +37,7 @@ testRunner.run('**/*.test.js').then(() => {
         // General smaller, self-contained features
         friends:        require('features/friends/friends.js'),
         playground:     require('features/playground/playground.js'),
+        report:         require('features/report/report.js'),
 
         // Player-related features
         playerFavours:  require('features/player_favours/player_favours.js'),

@@ -6,6 +6,7 @@
     "ANNOUNCE_MINIGAME": "{CCD782}Sign up for the {838F31}%s{CCD782}! Type {838F31}%s{CCD782} to join.",
     "ANNOUNCE_MINIGAME_JOINED_IRC": "%s (Id: %d) has signed up for the %s.",
     "ANNOUNCE_NEWS_MINIGAME_JOINED": "~r~~h~%s~w~ has signed up for ~y~%s~w~ (~p~%s~w~)",
+    "ANNOUNCE_REPORT": "{FFFF00}* Report by %s (Id: %d): Player: %s (Id: %d) - Cheat/Hack: %s",
 
     "COMMAND_ERROR_INSUFFICIENT_RIGHTS": "@error Sorry, this command is only available to %s.",
     "COMMAND_ERROR_UNKNOWN_PLAYER": "@error Sorry, no player could be found for \"%s\".",
@@ -116,5 +117,7 @@
     "RACE_ERROR_ALREADY_ENGAGED": "@error Sorry, you can't start a race while you're already engaged in something.",
 
     "RACE_COMMAND_JOIN": "{CCD782}You have signed up for the {838F31}%s{CCD782}!",
-    "RACE_COMMAND_LEFT": "{CCD782}You have left the {838F31}%s{CCD782}!"
+    "RACE_COMMAND_LEFT": "{CCD782}You have left the {838F31}%s{CCD782}!",
+    
+    "REPORT_MESSAGE": "{33AA33}Your report has been delivered to the crew{FFFFFF}: Player: %s (Id: %d) - Cheat/Hack: %s"
 }

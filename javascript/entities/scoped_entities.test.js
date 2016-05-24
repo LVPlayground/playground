@@ -41,7 +41,11 @@ describe('ScopedEntities', it => {
         assert.equal(actor.virtualWorld, 42);
     });
 
+    // ---------------------------------------------------------------------------------------------
+
     // TODO(Russell): Test with objects once that moves to an object manager.
+
+    // ---------------------------------------------------------------------------------------------
 
     it('should be able to create and dispose of scoped vehicles', assert => {
         const entities = new ScopedEntities();
@@ -77,6 +81,21 @@ describe('ScopedEntities', it => {
 
         assert.equal(vehicle.interiorId, 7);
         assert.equal(vehicle.virtualWorld, 42);
+    });
+
+    // ---------------------------------------------------------------------------------------------
+
+    it('should create entities in the main world by default', assert => {
+        const entities = new ScopedEntities();
+
+        const actor = entities.createActor({ modelId: 121, position: new Vector(12, 13, 14) });
+        assert.equal(actor.virtualWorld, 0);
+
+        // TODO(Russell): Test with objects when that mess has been cleaned up.
+
+        const vehicle = entities.createVehicle({ modelId: 411, position: new Vector(12, 13, 14) });
+        assert.equal(vehicle.interiorId, 0);
+        assert.equal(vehicle.virtualWorld, 0);
     });
 
     it('should not be possible to create scoped entities after the object is disposed', assert => {

@@ -11,9 +11,9 @@ describe('ScopedEntities', it => {
 
         const actor = entities.createActor({ modelId: 121, position: new Vector(12, 13, 14) });
         assert.isNotNull(actor);
-        assert.isTrue(actor.isConnected());
 
         assert.isTrue(entities.hasActor(actor));
+        assert.isTrue(actor.isConnected());
 
         entities.dispose();
 
@@ -32,13 +32,6 @@ describe('ScopedEntities', it => {
         entities.dispose();
 
         assert.isTrue(actor.isConnected());
-    });
-
-    it('should associate actors with the scoped interior and virtual world', assert => {
-        const entities = new ScopedEntities({ interiorId: 7, virtualWorld: 42 });
-        const actor = entities.createActor({ modelId: 121, position: new Vector(12, 13, 14) });
-
-        assert.equal(actor.virtualWorld, 42);
     });
 
     // ---------------------------------------------------------------------------------------------
@@ -75,18 +68,13 @@ describe('ScopedEntities', it => {
         assert.isTrue(vehicle.isConnected());
     });
 
-    it('should associate vehicles with the scoped interior and virtual world', assert => {
-        const entities = new ScopedEntities({ interiorId: 7, virtualWorld: 42 });
-        const vehicle = entities.createVehicle({ modelId: 411, position: new Vector(12, 13, 14) });
-
-        assert.equal(vehicle.interiorId, 7);
-        assert.equal(vehicle.virtualWorld, 42);
-    });
-
     // ---------------------------------------------------------------------------------------------
 
-    it('should create entities in the main world by default', assert => {
+    it('should create entities in the main interior and virtual world by default', assert => {
         const entities = new ScopedEntities();
+
+        assert.equal(entities.interiorId, 0);
+        assert.equal(entities.virtualWorld, 0);
 
         const actor = entities.createActor({ modelId: 121, position: new Vector(12, 13, 14) });
         assert.equal(actor.virtualWorld, 0);
@@ -96,6 +84,22 @@ describe('ScopedEntities', it => {
         const vehicle = entities.createVehicle({ modelId: 411, position: new Vector(12, 13, 14) });
         assert.equal(vehicle.interiorId, 0);
         assert.equal(vehicle.virtualWorld, 0);
+    });
+
+    it('should be able to create entities in an associated interior and virtual world', assert => {
+        const entities = new ScopedEntities({ interiorId: 7, virtualWorld: 42 });
+
+        assert.equal(entities.interiorId, 7);
+        assert.equal(entities.virtualWorld, 42);
+
+        const actor = entities.createActor({ modelId: 121, position: new Vector(12, 13, 14) });
+        assert.equal(actor.virtualWorld, 42);
+
+        // TODO(Russell): Test with objects when that mess has been cleaned up.
+
+        const vehicle = entities.createVehicle({ modelId: 411, position: new Vector(12, 13, 14) });
+        assert.equal(vehicle.interiorId, 7);
+        assert.equal(vehicle.virtualWorld, 42);
     });
 
     it('should not be possible to create scoped entities after the object is disposed', assert => {

@@ -6,7 +6,7 @@
 // example temporary entities that exist because of a minigame. The entities may optionally be fixed
 // to a particular Interior Id and Virtual World Id as well.
 class ScopedEntities {
-    constructor({ interiorId = null, virtualWorld = null } = {}) {
+    constructor({ interiorId = 0, virtualWorld = 0 } = {}) {
         this.actors_ = new Set();
         this.objects_ = new Set();
         this.vehicles_ = new Set();
@@ -14,6 +14,12 @@ class ScopedEntities {
         this.interiorId_ = interiorId;
         this.virtualWorld_ = virtualWorld;
     }
+
+    // Gets the Interior Id that this object is associated with.
+    get interiorId() { return this.interiorId_; }
+
+    // Gets the Virtual World that this object is associated with.
+    get virtualWorld() { return this.virtualWorld_; }
 
     // Creates a new actor scoped to the lifetime of this object. The passed arguments must match
     // those accepted by ActorManager.createActor() on the global Server object.
@@ -80,8 +86,7 @@ class ScopedEntities {
         this.actors_.forEach(safeDisposeEntity);
         this.actors_ = null;
 
-        // TODO(Russell): Introduce an ObjectManager global to the Server object.
-        this.objects_.forEach(object => object.dispose());
+        this.objects_.forEach(safeDisposeEntity);
         this.objects_ = null;
 
         this.vehicles_.forEach(safeDisposeEntity);

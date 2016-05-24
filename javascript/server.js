@@ -6,6 +6,7 @@ const ActorManager = require('entities/actor_manager.js');
 const CommandManager = require('components/command_manager/command_manager.js');
 const Database = require('components/database/database.js');
 const FeatureManager = require('components/feature_manager/feature_manager.js');
+const ObjectManager = require('entities/object_manager.js');
 const PlayerManager = require('entities/player_manager.js');
 const VehicleManager = require('entities/vehicle_manager.js');
 
@@ -19,6 +20,7 @@ class Server {
         this.featureManager_ = new FeatureManager();
 
         this.actorManager_ = new ActorManager();
+        this.objectManager_ = new ObjectManager();
         this.playerManager_ = new PlayerManager();
         this.vehicleManager_ = new VehicleManager();
 
@@ -43,6 +45,9 @@ class Server {
     // Gets the global actor manager, responsible for all actors in the game.
     get actorManager() { return this.actorManager_; }
 
+    // Gets the global object manager, responsible for all objects created in the game.
+    get objectManager() { return this.objectManager_; }
+
     // Gets the global player manager that knows the details and whereabouts of all in-game players.
     get playerManager() { return this.playerManager_; }
 
@@ -63,6 +68,7 @@ class Server {
 
         this.vehicleManager_.dispose();
         this.playerManager_.dispose();
+        this.objectManager_.dispose();
         this.actorManager_.dispose();
 
         this.database_.dispose();

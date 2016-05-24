@@ -18,7 +18,7 @@ class MinigameSettings {
         if (!settings.hasOwnProperty('minimumParticipants'))
             throw new Error('A minigame must have a minimum number of participants.');
         if (!settings.hasOwnProperty('maximumParticipants'))
-            throw new Error('A minigame must have a minimum number of participants.');
+            throw new Error('A minigame must have a maximum number of participants.');
 
         this.name_ = settings.name;
         this.command_ = settings.command;

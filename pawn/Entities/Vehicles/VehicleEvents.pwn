@@ -78,8 +78,8 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
     }
 
     /**
-     * Vehicles can respawn or explode, both of which will trigger the onVehicleDeath() event to
-     * fire. A number of features may rely on this for closing off any loose ends.
+     * Vehicles can be submerged in water or explode, both of which will trigger the onVehicleDeath()
+     * event to fire. A number of features may rely on this for closing off any loose ends.
      */
     public onVehicleDeath() {
         CBomb__VehicleDeath(vehicleId);
@@ -102,6 +102,8 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
         // Remove vehicles created with /v create which have not been saved yet.
         if (Vehicle(vehicleId)->isOpenWorldVehicle() == true && Vehicle(vehicleId)->isPersistent() == false) {
             VehicleManager->destroyVehicle(vehicleId);
+            CBomb__ResetVehicleData(vehicleId);
+            CCrush__Reset(vehicleId);
             return 1;
         }
 

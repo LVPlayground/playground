@@ -2,270 +2,176 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const MockPlayer = require('entities/test/mock_player.js');
 const PlayerManager = require('entities/player_manager.js');
 
-describe('PlayerManager', it => {
+describe('PlayerManager', (it, beforeEach, afterEach) => {
+    let manager = null;
+
+    beforeEach(() => manager = new PlayerManager(MockPlayer /* playerConstructor */));
+    afterEach(() => manager.dispose());
+
     it('should deduplicate attached observers', assert => {
-        let playerManager = new PlayerManager();
         let counter = 0;
 
-        const myObserver = {
-            onPlayerConnect: player => ++counter,
-        };
+        class MyObserver {
+            onPlayerConnect() { ++counter; }
+        }
 
-        playerManager.addObserver(myObserver);
-        playerManager.notifyObservers('onPlayerConnect');
+        const myObserver = new MyObserver();
+
+        manager.addObserver(myObserver);
+        manager.notifyObservers('onPlayerConnect');
 
         assert.equal(counter, 1);
 
-        playerManager.addObserver(myObserver);  // second add
-        playerManager.notifyObservers('onPlayerConnect');
+        manager.addObserver(myObserver);  // second add
+        manager.notifyObservers('onPlayerConnect');
 
         assert.equal(counter, 2);
 
-        playerManager.removeObserver(myObserver);
-        playerManager.notifyObservers('onPlayerConnect');
+        manager.removeObserver(myObserver);
+        manager.notifyObservers('onPlayerConnect');
 
         assert.equal(counter, 2);
-
-        playerManager.dispose();
-    });
-
-    it('should invoke observer methods both on the object and on the prototype', assert => {
-        let playerManager = new PlayerManager();
-
-        let prototypalCounter = 0;
-        let propertyCounter = 0;
-
-        class PrototypalCounter {
-            onPlayerConnect(player) {
-                ++prototypalCounter;
-            }
-        }
-
-        const prototypalObserver = new PrototypalCounter();
-        const propertyObserver = {
-            onPlayerConnect: player => ++propertyCounter
-        };
-
-        const emptyObserver = {};
-
-        playerManager.addObserver(prototypalObserver);
-        playerManager.addObserver(propertyObserver);
-        playerManager.addObserver(emptyObserver);
-
-        playerManager.onPlayerConnect({ playerid: 42 });
-
-        assert.equal(prototypalCounter, 1);
-        assert.equal(propertyCounter, 1);
-
-        playerManager.dispose();
     });
 
     it('should inform observers of connecting and disconnecting players', assert => {
-        let playerManager = new PlayerManager();
-
         let connectionCount = 0;
         let disconnectionCount = 0;
 
-        const myObserver = {
-            onPlayerConnect: player => ++connectionCount,
-            onPlayerDisconnect: player => ++disconnectionCount
-        };
+        class MyObserver {
+            onPlayerConnect() { ++connectionCount; }
+            onPlayerDisconnect() { ++disconnectionCount; }
+        }
 
-        playerManager.addObserver(myObserver);
-        playerManager.onPlayerConnect({ playerid: 42 });
+        const myObserver = new MyObserver();
+
+        manager.addObserver(myObserver);
+        manager.onPlayerConnect({ playerid: 42 });
 
         assert.equal(connectionCount, 1);
         assert.equal(disconnectionCount, 0);
 
-        playerManager.onPlayerDisconnect({ playerid: 42, reason: 0 });
+        manager.onPlayerDisconnect({ playerid: 42, reason: 0 });
 
         assert.equal(connectionCount, 1);
         assert.equal(disconnectionCount, 1);
 
         let connectedPlayer = null;
 
-        const myOtherObserver = {
-            onPlayerConnect: player => connectedPlayer = player,
-            onPlayerDisconnect: player => 0
+        class MyOtherObserver {
+            onPlayerConnect(player) { connectedPlayer = player; }
         }
 
-        playerManager.addObserver(myOtherObserver);
+        const myOtherObserver = new MyOtherObserver();
 
-        playerManager.onPlayerConnect({ playerid: 42 });
+        manager.addObserver(myOtherObserver);
+
+        manager.onPlayerConnect({ playerid: 42 });
 
         assert.isNotNull(connectedPlayer);
         assert.equal(connectionCount, 2);
 
         assert.equal(connectedPlayer.id, 42);
-
-        playerManager.dispose();
     });
 
     it('should inform observers of level changes', assert => {
-        let playerManager = new PlayerManager();
         let counter = 0;
 
-        const myObserver = {
-            onPlayerLevelChange: player => ++counter
-        };
+        class MyObserver {
+            onPlayerLevelChange() { ++counter; }
+        }
 
-        playerManager.onPlayerConnect({ playerid: 42 });
+        manager.onPlayerConnect({ playerid: 42 });
 
-        playerManager.addObserver(myObserver);
-        playerManager.onPlayerLevelChange({ playerid: 42 });
+        manager.addObserver(new MyObserver());
+        manager.onPlayerLevelChange({ playerid: 42 });
 
         assert.equal(counter, 1);
-
-        playerManager.dispose();
     });
 
     it('should inform observers of logins', assert => {
-        let playerManager = new PlayerManager();
         let counter = 0;
 
-        const myObserver = {
-            onPlayerLogin: player => ++counter
-        };
+        class MyObserver {
+            onPlayerLogin() { ++counter; }
+        }
 
-        playerManager.onPlayerConnect({ playerid: 42 });
+        manager.onPlayerConnect({ playerid: 42 });
 
-        playerManager.addObserver(myObserver);
-        playerManager.onPlayerLogin({ playerid: 42, userid: 42 });
+        manager.addObserver(new MyObserver());
+        manager.onPlayerLogin({ playerid: 42, userid: 42 });
 
         assert.equal(counter, 1);
-
-        playerManager.dispose();
     });
 
     it('should be able to find players by ID', assert => {
-        let playerManager = new PlayerManager();
+        assert.isNull(manager.getById(42));
 
-        assert.isNull(playerManager.getById(42));
+        manager.onPlayerConnect({ playerid: 42 });
+        assert.isNotNull(manager.getById(42));
 
-        playerManager.onPlayerConnect({ playerid: 42 });
-        assert.isNotNull(playerManager.getById(42));
-
-        playerManager.onPlayerDisconnect({ playerid: 42, reason: 0 });
-        assert.isNull(playerManager.getById(42));
-
-        playerManager.dispose();
+        manager.onPlayerDisconnect({ playerid: 42, reason: 0 });
+        assert.isNull(manager.getById(42));
     });
 
     it('should be able to find players by name', assert => {
-        const playerMap = {
-            42: 'Russell'
-        }
+        assert.isNull(manager.getByName('Russell'));
 
-        let playerManager = new PlayerManager();
-        playerManager.createPlayer = function(playerId, event) {
-            if (!playerMap.hasOwnProperty(playerId))
-                throw new Error('Unexpected player connecting: ' + playerId);
+        manager.onPlayerConnect({ playerid: 42, name: 'Russell' });
 
-            return {
-                id: playerId,
-                name: playerMap[playerId],
+        assert.isNotNull(manager.getByName('Russell'));
+        assert.isNull(manager.getByName('RUSSELL'));
+        assert.isNull(manager.getByName('uSSel'));
 
-                notifyDisconnecting() {},
-                notifyDisconnected() {}
-            };
-        };
+        assert.isNotNull(manager.getByName('Russell', true /* fuzzy */));
+        assert.isNotNull(manager.getByName('RUSSELL', true /* fuzzy */));
+        assert.isNotNull(manager.getByName('uSSel', true /* fuzzy */));
 
-        assert.isNull(playerManager.getByName('Russell'));
+        manager.onPlayerDisconnect({ playerid: 42, reason: 0 });
 
-        playerManager.onPlayerConnect({ playerid: 42 });
-
-        assert.isNotNull(playerManager.getByName('Russell'));
-        assert.isNull(playerManager.getByName('RUSSELL'));
-        assert.isNull(playerManager.getByName('uSSel'));
-
-        assert.isNotNull(playerManager.getByName('Russell', true /* fuzzy */));
-        assert.isNotNull(playerManager.getByName('RUSSELL', true /* fuzzy */));
-        assert.isNotNull(playerManager.getByName('uSSel', true /* fuzzy */));
-
-        playerManager.onPlayerDisconnect({ playerid: 42, reason: 0 });
-
-        assert.isNull(playerManager.getByName('Russell'));
-        assert.isNull(playerManager.getById(42));
-
-        playerManager.dispose();
+        assert.isNull(manager.getByName('Russell'));
+        assert.isNull(manager.getById(42));
     });
+
+    // TODO(Russell): Properly test the find() method.
 
     it('should know about the number of connected players', assert => {
-        let playerManager = new PlayerManager();
+        assert.equal(manager.count, 0);
 
-        assert.equal(playerManager.count, 0);
+        manager.onPlayerConnect({ playerid: 42 });
+        manager.onPlayerConnect({ playerid: 15 });
+        manager.onPlayerConnect({ playerid: 0 });
 
-        playerManager.onPlayerConnect({ playerid: 42 });
-        playerManager.onPlayerConnect({ playerid: 15 });
-        playerManager.onPlayerConnect({ playerid: 0 });
+        assert.equal(manager.count, 3);
 
-        assert.equal(playerManager.count, 3);
+        manager.onPlayerDisconnect({ playerid: 15, reason: 0 });
+        assert.equal(manager.count, 2);
 
-        playerManager.onPlayerDisconnect({ playerid: 15, reason: 0 });
-        assert.equal(playerManager.count, 2);
-
-        playerManager.onPlayerDisconnect({ playerid: 0, reason: 0 });
-        assert.equal(playerManager.count, 1);
-
-        playerManager.dispose();
-    });
-
-    it('should know about the highest connected player ID', assert => {
-        let playerManager = new PlayerManager();
-
-        assert.equal(playerManager.highestId, 0);
-
-        playerManager.onPlayerConnect({ playerid: 5 });
-        assert.equal(playerManager.highestId, 5);
-
-        playerManager.onPlayerConnect({ playerid: 42 });
-        assert.equal(playerManager.highestId, 42);
-
-        playerManager.onPlayerConnect({ playerid: 32 });
-        assert.equal(playerManager.highestId, 42);
-
-        playerManager.onPlayerDisconnect({ playerid: 42, reason: 0 });
-        assert.equal(playerManager.highestId, 32);
-
-        playerManager.onPlayerDisconnect({ playerid: 5, reason: 0 });
-        assert.equal(playerManager.highestId, 32);
-
-        playerManager.onPlayerDisconnect({ playerid: 32, reason: 0 });
-        assert.equal(playerManager.highestId, 0);
-
-        playerManager.onPlayerConnect({ playerid: 0 });
-        assert.equal(playerManager.highestId, 0);
-
-        playerManager.onPlayerDisconnect({ playerid: 0, reason: 0 });
-        assert.equal(playerManager.highestId, 0);
-
-        playerManager.dispose();
+        manager.onPlayerDisconnect({ playerid: 0, reason: 0 });
+        assert.equal(manager.count, 1);
     });
 
     it('should be able to iterate over the connected players', assert => {
-        let playerManager = new PlayerManager();
         let count = 0;
 
-        playerManager.forEach(player => ++count);
+        manager.forEach(player => ++count);
         assert.equal(count, 0);
 
-        playerManager.onPlayerConnect({ playerid: 42 });
-        playerManager.onPlayerConnect({ playerid: 10 });
-        playerManager.onPlayerConnect({ playerid: 5 });
+        manager.onPlayerConnect({ playerid: 42 });
+        manager.onPlayerConnect({ playerid: 10 });
+        manager.onPlayerConnect({ playerid: 5 });
 
-        playerManager.forEach(player => ++count);
+        manager.forEach(player => ++count);
         assert.equal(count, 3);
 
-        const expectedIds = [5, 10, 42];
+        const expectedIds = [42, 10, 5];
         let actualIds = [];
 
-        playerManager.forEach((player, playerId) => actualIds.push(playerId));
+        manager.forEach((player, playerId) => actualIds.push(playerId));
 
         assert.equal(actualIds.length, 3);
         assert.deepEqual(actualIds, expectedIds);
-
-        playerManager.dispose();
     });
 });

@@ -6,8 +6,9 @@ const ActorManager = require('entities/actor_manager.js');
 const CommandManager = require('components/command_manager/command_manager.js');
 const FeatureManager = require('components/feature_manager/feature_manager.js');
 const MockActor = require('entities/test/mock_actor.js');
-const MockPlayerManager = require('entities/test/mock_player_manager.js');
+const MockPlayer = require('entities/test/mock_player.js');
 const MockVehicle = require('entities/test/mock_vehicle.js');
+const PlayerManager = require('entities/player_manager.js');
 const VehicleManager = require('entities/vehicle_manager.js');
 
 // The MockServer is a mocked implementation of the Server class that creates a mocked environment
@@ -20,7 +21,7 @@ class MockServer {
         this.featureManager_ = new FeatureManager();
 
         this.actorManager_ = new ActorManager(MockActor /* actorConstructor */);
-        this.playerManager_ = new MockPlayerManager();
+        this.playerManager_ = new PlayerManager(MockPlayer /* playerConstructor */);
         this.vehicleManager_ = new VehicleManager(MockVehicle /* vehicleConstructor */);
 
         // Connect a series of fake players to the server.
@@ -50,7 +51,7 @@ class MockServer {
     // Gets the real actor manager that maintains mocked actors.
     get actorManager() { return this.actorManager_; }
 
-    // Gets the mocked player manager.
+    // Gets the real player manager that maintains mocked players.
     get playerManager() { return this.playerManager_; }
 
     // Gets the real vehicle manager that maintains mocked vehicles.

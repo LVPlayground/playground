@@ -8,12 +8,9 @@ const ScopedCallbacks = require('base/scoped_callbacks.js');
 // choose to observe the manager in order to receive notifications when someone connects or
 // disconnects from the server. Non-player characters are treated identical to players.
 class PlayerManager {
-    constructor() {
-        this.players_ = {};
-        this.playersByName_ = {};
-
-        this.count_ = 0;
-        this.highestId_ = 0;
+    constructor(playerConstructor = Player) {
+        this.playerConstructor_ = playerConstructor;
+        this.players_ = new Map();
 
         this.observers_ = new Set();
 
@@ -29,17 +26,14 @@ class PlayerManager {
     }
 
     // Gets the number of players currently connected to the server.
-    get count() { return this.count_; }
+    get count() { return this.players_.size; }
 
-    // Gets the highest ID assigned to a player connected to the server.
-    get highestId() { return this.highestId_; }
-
-    // Returns the player whose ID is |playerId|, or NULL when they are not connected.
+    // Returns the player whose Id is |playerId|, or NULL when they are not connected.
     getById(playerId) {
-        if (this.players_.hasOwnProperty(playerId))
-            return this.players_[playerId];
+        if (!this.players_.has(playerId))
+            return null;
 
-        return null;
+        return this.players_.get(playerId);
     }
 
     // Returns the player whose name is |name|, optionally |fuzzy| when set. NULL will be returned
@@ -50,10 +44,10 @@ class PlayerManager {
             let matches = [];
 
             const lowerCaseName = name.toLowerCase();
-            Object.values(this.players_).forEach(player => {
+            for (const player of this.players_.values()) {
                 if (player.name.toLowerCase().includes(lowerCaseName))
                     matches.push(player);
-            });
+            }
 
             if (matches.length == 1)
                 return matches[0];
@@ -61,8 +55,10 @@ class PlayerManager {
             return null;
         }
 
-        if (this.playersByName_.hasOwnProperty(name))
-            return this.playersByName_[name];
+        for (const player of this.players_.values()) {
+            if (player.name === name)
+                return player;
+        }
 
         return null;
     }
@@ -73,9 +69,9 @@ class PlayerManager {
     find({ nameOrId = null, returnPlayer = false } = {}) {
         // TODO(Russell): Implement this method properly.
 
-        let player = this.getById(nameOrId);
-        if (player)
-            return player;
+        const playerId = parseInt(nameOrId, 10 /* base */);
+        if (!Number.isNaN(playerId) && this.players_.has(playerId))
+            return this.players_.get(playerId);
 
         return this.getByName(nameOrId, true /* fuzzy */);
     }
@@ -83,8 +79,8 @@ class PlayerManager {
     // Executes the |callback| once for each player connected to the server. The first argument to
     // the |callback| will be the Player object, the second the player's ID.
     forEach(callback, thisArg = null) {
-        Object.keys(this.players_).forEach(playerId =>
-            callback.call(thisArg, this.players_[playerId], parseInt(playerId, 10)));
+        for (const player of this.players_.values())
+            callback.call(thisArg, player, player.id);
     }
 
     // Observes players connecting and disconnecting from the server. The |observer| will receive
@@ -104,32 +100,28 @@ class PlayerManager {
     onPlayerConnect(event) {
         const playerId = event.playerid;
 
-        if (this.players_.hasOwnProperty(playerId)) {
-            console.log('[PlayerManager] Warning: A player with ID ' + playerId + ' is already ' +
+        if (this.players_.has(playerId)) {
+            console.log('[PlayerManager] Warning: A player with Id ' + playerId + ' is already ' +
                         'connected to the server.');
             return;
         }
 
-        const player = this.createPlayer(playerId, event);
+        // Pass the |event| as it may contain additional meta-data when used by tests.
+        const player = new this.playerConstructor_(playerId, event);
 
-        this.players_[playerId] = player;
-        this.playersByName_[player.name] = player;
+        // Associate the |player| instance with the |playerId|.
+        this.players_.set(playerId, player);
 
-        this.count_++;
-        this.highestId_ = Math.max(this.highestId_, playerId);
-
+        // Notify the observers of the |player|'s connection.
         this.notifyObservers('onPlayerConnect', player);
     }
 
     // Called when a player's level on the server changes, for example because they log in to their
     // account, they get temporary rights or take their own rights away.
     onPlayerLevelChange(event) {
-        const playerId = event.playerid;
-
-        if (!this.players_.hasOwnProperty(playerId))
-            return;  // the event has been received for an invalid player.
-
-        const player = this.players_[playerId];
+        const player = this.players_.get(event.playerid);
+        if (!player)
+            return;  // the event has been received for an invalid player
 
         switch (event.newlevel) {
             case 3:  // Management
@@ -149,15 +141,11 @@ class PlayerManager {
     // Called when a player logs in to their account. This marks availability of their user data
     // and the fact that their identity has been verified.
     onPlayerLogin(event) {
-        const playerId = event.playerid;
-        const userId = event.userid;
+        const player = this.players_.get(event.playerid);
+        if (!player)
+            return;  // the event has been received for an invalid player
 
-        if (!this.players_.hasOwnProperty(playerId))
-            return;  // the event has been received for an invalid player.
-
-        const player = this.players_[playerId];
-
-        player.userId_ = userId;
+        player.userId_ = event.userid;
 
         this.notifyObservers('onPlayerLogin', player, event);
     }
@@ -165,52 +153,33 @@ class PlayerManager {
     // Called when a player has disconnected from Las Venturas Playground. The |event| may contain
     // untrusted or incorrect data that has to be verified.
     onPlayerDisconnect(event) {
-        const playerId = event.playerid;
+        const player = this.players_.get(event.playerid);
+        if (!player)
+            return;  // the event has been received for an invalid player
+
         const reason = event.reason;
 
-        if (!this.players_.hasOwnProperty(playerId)) {
-            console.log('[PlayerManager] Warning: A player with ID ' + playerId + ' is not ' +
-                        'connected to the server.');
-            return;
-        }
-
-        const player = this.players_[playerId];
-
+        // Notify the |player| instance of the fact that the associated player is disconnecting.
         player.notifyDisconnecting();
 
-        delete this.players_[playerId];
-        delete this.playersByName_[player.name];
+        // Remove knowledge of the |player| from the player manager.
+        this.players_.delete(event.playerid);
 
-        this.count_--;
-
-        if (playerId == this.highestId_) {
-            while (this.highestId_ > 0) {
-                if (this.players_.hasOwnProperty(this.highestId_))
-                    break;
-
-                this.highestId_--;
-            }
-        }
-
+        // Notify observers of the player manager of their disconnecting.
         this.notifyObservers('onPlayerDisconnect', player, reason);
 
+        // And finally mark the player as having disconnected.
         player.notifyDisconnected();
-    }
-
-    // Factory method for creating a Player instance for the player with Id |playerId|. May be
-    // overridden for tests in order to verify the functionality of this class.
-    createPlayer(playerId, event) {
-        return new Player(playerId);
     }
 
     // Notifies observers about the |eventName|, passing |...args| as the argument to the method
     // when it exists. The call will be bound to the observer's instance.
     notifyObservers(eventName, ...args) {
-        for (let observer of this.observers_) {
-            if (observer.__proto__.hasOwnProperty(eventName))
-                observer.__proto__[eventName].call(observer, ...args);
-            else if (observer.hasOwnProperty(eventName))
-                observer[eventName].call(observer, ...args);
+        for (const observer of this.observers_) {
+            if (!observer.__proto__.hasOwnProperty(eventName))
+                continue;
+
+            observer.__proto__[eventName].call(observer, ...args);
         }
     }
 
@@ -220,6 +189,7 @@ class PlayerManager {
         this.callbacks_ = null;
 
         this.observers_ = null;
+        this.players_ = null;
     }
 }
 

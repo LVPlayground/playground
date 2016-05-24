@@ -9,23 +9,36 @@ describe('ScopedEntities', it => {
     it('should be able to create and dispose of scoped actors', assert => {
         const entities = new ScopedEntities();
 
-        const gunther = entities.createActor({ modelId: 121, position: new Vector(12, 13, 14) });
-        assert.isNotNull(gunther);
-        assert.isTrue(entities.hasActor(gunther));
-        assert.isTrue(gunther.isConnected());
+        const actor = entities.createActor({ modelId: 121, position: new Vector(12, 13, 14) });
+        assert.isNotNull(actor);
+        assert.isTrue(actor.isConnected());
+
+        assert.isTrue(entities.hasActor(actor));
 
         entities.dispose();
 
-        assert.isNotNull(gunther);
-        assert.isFalse(gunther.isConnected());
+        assert.isFalse(entities.hasActor(actor));
+        assert.isFalse(actor.isConnected());
     });
 
     it('should not identify actors owned by other systems as part of a scoped set', assert => {
+        const entities = new ScopedEntities();
         const actor =
             server.actorManager.createActor({ modelId: 121, position: new Vector(12, 13, 14) });
-        const entities = new ScopedEntities();
 
+        assert.isTrue(actor.isConnected());
         assert.isFalse(entities.hasActor(actor));
+
+        entities.dispose();
+
+        assert.isTrue(actor.isConnected());
+    });
+
+    it('should associate actors with the scoped interior and virtual world', assert => {
+        const entities = new ScopedEntities({ interiorId: 7, virtualWorld: 42 });
+        const actor = entities.createActor({ modelId: 121, position: new Vector(12, 13, 14) });
+
+        assert.equal(actor.virtualWorld, 42);
     });
 
     // TODO(Russell): Test with objects once that moves to an object manager.
@@ -33,22 +46,49 @@ describe('ScopedEntities', it => {
     it('should be able to create and dispose of scoped vehicles', assert => {
         const entities = new ScopedEntities();
 
-        const infernus = entities.createVehicle({ modelId: 411, position: new Vector(12, 13, 14) });
-        assert.isNotNull(infernus);
-        assert.isTrue(entities.hasVehicle(infernus));
-        assert.isTrue(infernus.isConnected());
+        const vehicle = entities.createVehicle({ modelId: 411, position: new Vector(12, 13, 14) });
+        assert.isNotNull(vehicle);
+        assert.isTrue(vehicle.isConnected());
+
+        assert.isTrue(entities.hasVehicle(vehicle));
 
         entities.dispose();
 
-        assert.isNotNull(infernus);
-        assert.isFalse(infernus.isConnected());
+        assert.isFalse(vehicle.isConnected());
     });
 
     it('should not identify vehicles owned by other systems as part of a scoped set', assert => {
+        const entities = new ScopedEntities();
         const vehicle =
             server.vehicleManager.createVehicle({ modelId: 411, position: new Vector(12, 13, 14) });
-        const entities = new ScopedEntities();
+
+        assert.isTrue(vehicle.isConnected());
+        assert.isFalse(entities.hasVehicle(vehicle));
+
+        entities.dispose();
 
         assert.isFalse(entities.hasVehicle(vehicle));
+        assert.isTrue(vehicle.isConnected());
+    });
+
+    it('should associate vehicles with the scoped interior and virtual world', assert => {
+        const entities = new ScopedEntities({ interiorId: 7, virtualWorld: 42 });
+        const vehicle = entities.createVehicle({ modelId: 411, position: new Vector(12, 13, 14) });
+
+        assert.equal(vehicle.interiorId, 7);
+        assert.equal(vehicle.virtualWorld, 42);
+    });
+
+    it('should not be possible to create scoped entities after the object is disposed', assert => {
+        const entities = new ScopedEntities();
+        entities.dispose();
+
+        assert.throws(() =>
+            entities.createActor({ modelId: 121, position: new Vector(12, 13, 14) }));
+
+        // TODO(Russell): Test with objects when that mess has been cleaned up.
+
+        assert.throws(() =>
+            entities.createVehicle({ modelId: 411, position: new Vector(12, 13, 14) }));
     });
 });

@@ -4,7 +4,7 @@
 
 const Assert = require('base/test/assert.js');
 const AssertionFailedError = require('base/test/assertion_failed_error.js');
-const MockServer = require('test/mock_server.js');
+const MockServer = require('mock_server.js');
 const UnexpectedExceptionError = require('base/test/unexpected_exception_error.js');
 
 // A test suite represents a series of one or more individual tests. The test suite not only

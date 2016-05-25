@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const ScopedEntities = require('entities/scoped_entities.js');
 const Vector = require('base/vector.js');
 
 // Private symbol ensuring that the ColorPicker constructor won't be used.
@@ -15,32 +16,30 @@ class ObjectGroup {
     static create(filename, virtualWorld, interiorId) {
         const objectData = JSON.parse(readFile(filename));
 
-        let objects = [];
+        let entities = new ScopedEntities();
         objectData.forEach(object => {
-            if (server.isTest())
-                return;  // don't create objects in tests
-
-            objects.push(new GameObject({
+            entities.createObject({
                 modelId: object.modelId,
                 position: new Vector(...object.position),
                 rotation: new Vector(...object.rotation),
-                worlds: [ virtualWorld ],
-                interiors: [ interiorId ]
-            }));
+                worlds: virtualWorld,
+                interiors: interiorId
+            });
         });
 
-        return new ObjectGroup(PrivateSymbol, objects);
+        return new ObjectGroup(PrivateSymbol, entities);
     }
 
-    constructor(privateSymbol, objects) {
+    constructor(privateSymbol, entities) {
         if (privateSymbol !== PrivateSymbol)
             throw new TypeError('Illegal constructor. Use the static methods instead.');
 
-        this.objects_ = objects;
+        this.entities_ = entities;
     }
 
     dispose() {
-        this.objects_.forEach(object => object.dispose());
+        this.entities_.dispose();
+        this.entities_ = null;
     }
 }
 

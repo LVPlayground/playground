@@ -134,7 +134,7 @@ class RaceMinigame extends Minigame {
                 modelId: object.model,
                 position: object.position,
                 rotation: object.rotation,
-                worldId: this.virtualWorld
+                virtualWorld: this.virtualWorld
             });
         }
     }

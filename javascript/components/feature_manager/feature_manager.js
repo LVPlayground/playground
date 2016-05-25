@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let DependencyGraph = require('components/feature_manager/dependency_graph.js'),
-    Feature = require('components/feature_manager/feature.js');
+const DependencyGraph = require('components/feature_manager/dependency_graph.js');
+const Feature = require('components/feature_manager/feature.js');
 
 // The feature manager owns all the features available in the JavaScript implementation of the
 // server, provides cross-feature interfaces and access to many of the shared objects.

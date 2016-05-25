@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let StringParser = require('base/string_parser.js');
+const StringParser = require('base/string_parser.js');
 
 // Parses the first word in |argumentString| as either the id or the name of a player. Returns the
 // player when successful, or fails when the player is not connected to the server.

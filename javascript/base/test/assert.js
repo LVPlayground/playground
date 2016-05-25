@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let AssertionFailedError = require('base/test/assertion_failed_error.js');
+const AssertionFailedError = require('base/test/assertion_failed_error.js');
 
 // This library provides a series of asserts that can be used for validating assumptions in unit
 // tests. Failing asserts will create clear and useful error messages.

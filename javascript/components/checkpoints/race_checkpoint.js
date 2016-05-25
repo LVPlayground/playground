@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let CheckpointManager = require('components/checkpoints/checkpoint_manager.js'),
-    Vector = require('base/vector.js');
+const CheckpointManager = require('components/checkpoints/checkpoint_manager.js');
+const Vector = require('base/vector.js');
 
 // Create an instance of the manager for race checkpoints.
 let manager = new CheckpointManager(CheckpointManager.RACE_CHECKPOINTS);

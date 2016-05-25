@@ -8,8 +8,8 @@ const ObjectRemover = require('features/player_favours/object_remover.js');
 // Implementation of a collection of features that have been implemented specifically by request of
 // a particular player. The actual features and their owners are documented in the README.md file.
 class PlayerFavours extends Feature {
-    constructor(playground) {
-        super(playground);
+    constructor() {
+        super();
 
         this.objectRemover_ = new ObjectRemover();
         this.objectRemover_.load('data/favours/joes_garage.json');  // Joe's Garage

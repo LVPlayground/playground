@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let PlayerDisconnectError = require('base/errors/player_disconnect_error.js');
+const PlayerDisconnectError = require('base/errors/player_disconnect_error.js');
 
 // The dialog manager manages allocation of the dialog ids to individual dialogs that should be
 // shown to users. The SA-MP server imposes a maximum of 32767 dialogs to exist at any given time,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let Database = require('components/database/database.js');
+const Database = require('components/database/database.js');
 
 const unresolvedPromise = new Promise(resolve => {});
 

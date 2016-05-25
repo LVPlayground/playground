@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let Feature = require('components/feature_manager/feature.js');
+const Feature = require('components/feature_manager/feature.js');
 
 // Number of death messages that are visible on the player's screens.
 const DEATH_FEED_VISIBLE_LENGTH = 5;
@@ -13,8 +13,8 @@ const UNASSIGNED_PLAYER_ID = 1337;
 // The death feed feature powers the deaths and kills visible on the right-hand side of a player's
 // screen. It provides an API that allows the feed to be disabled for certain players.
 class DeathFeedFeature extends Feature {
-  constructor(playground) {
-    super(playground);
+  constructor() {
+    super();
 
     // Set of player ids for whom the death feed is disabled.
     this.disabledPlayers_ = new Set();
@@ -22,9 +22,6 @@ class DeathFeedFeature extends Feature {
     // Array of the most recent additions to the death feed. Will be limited in size to the value of
     // DEATH_FEED_VISIBLE_LENGTH. Used to restore the death feeds for players.
     this.recentDeaths_ = [];
-
-    // Bail out if this instance was created for tests.
-    if (!playground) return;
 
     // Listen to the events required for reliably providing this feature.
     global.addEventListener('playerresolveddeath', this.__proto__.onPlayerDeath.bind(this));

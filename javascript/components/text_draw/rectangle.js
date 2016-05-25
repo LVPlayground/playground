@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let TextDraw = require('components/text_draw/text_draw.js');
+const TextDraw = require('components/text_draw/text_draw.js');
 
 // Represents a rectangular text draw that can be displayed on the player's screen. There is no text
 // on the rectangle, it only has a set position, size and color.

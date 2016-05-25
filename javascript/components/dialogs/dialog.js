@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let DialogManager = require('components/dialogs/dialog_manager.js');
+const DialogManager = require('components/dialogs/dialog_manager.js');
 
 // The different kind of available dialogs in SA-MP.
 // http://wiki.sa-mp.com/wiki/Dialog_Styles

@@ -6,6 +6,7 @@ const ActorManager = require('entities/actor_manager.js');
 const CommandManager = require('components/command_manager/command_manager.js');
 const Database = require('components/database/database.js');
 const FeatureManager = require('components/feature_manager/feature_manager.js');
+const Natives = require('natives.js');
 const ObjectManager = require('entities/object_manager.js');
 const PlayerManager = require('entities/player_manager.js');
 const VehicleManager = require('entities/vehicle_manager.js');
@@ -15,6 +16,7 @@ const VehicleManager = require('entities/vehicle_manager.js');
 class Server {
     constructor() {
         this.database_ = new Database();
+        this.natives_ = new Natives();
 
         this.commandManager_ = new CommandManager();
         this.featureManager_ = new FeatureManager();
@@ -71,6 +73,7 @@ class Server {
         this.objectManager_.dispose();
         this.actorManager_.dispose();
 
+        this.natives_.dispose();
         this.database_.dispose();
     }
 }

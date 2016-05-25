@@ -161,6 +161,7 @@ class TestRunner {
       require('features/vehicles/vehicle_grid.test.js');
       require('features/vehicles/vehicle_manager.test.js');
       require('features/vehicles/vehicle_streamer.test.js');
+      require('natives.test.js');
     }
 
     // Remove the `describe` method from the global scope again.

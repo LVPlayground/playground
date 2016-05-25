@@ -73,11 +73,12 @@ class AnnounceManager {
         this.announceToIRC(AdminTag, message);
     }
 
-    // Announces |message| to all in-game administrators. Optionally |args| may be passed if
-    // |message| is an instance of Message, which is common infrastructure for user-visible text.
-    announceReportToAdministrators(name, id, reportedName, reportedId, cheatHack) {
-        const formattedMessage = Message.format(Message.ANNOUNCE_REPORT, name, id, reportedName,
-            reportedId, cheatHack);
+    // Announces that a |player| did a report of |reportedPlayer| because of |reason| to all in-game
+    // administrators. It uses the ReportTag for the IRC-message.
+    announceReportToAdministrators(player, reportedPlayer, reason) {
+        const formattedMessage = Message.format(
+            Message.ANNOUNCE_REPORT, player.name, player.id, reportedPlayer.name, reportedPlayer.id,
+            reason);
 
         server.playerManager.forEach(player => {
             if (!player.isAdministrator())
@@ -86,7 +87,8 @@ class AnnounceManager {
             player.sendMessage(formattedMessage);
         });
 
-        this.announceToIRC(ReportTag, name, id, reportedName, reportedId, cheatHack);
+        this.announceToIRC(
+            ReportTag, player.name, player.id, reportedPlayer.name, reportedPlayer.id, reason);
     }
 
     // Announces |tag| with the given |parameters|, in order, to IRC. It is the responsibility for

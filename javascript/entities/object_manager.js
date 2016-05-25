@@ -15,8 +15,22 @@ class ObjectManager {
 
     // Creates a new object with the given options. The options are based on the available settings
     // as part of the Object Streamer, and can be changed after the object's creation.
-    createObject() {
-        // TODO(Russell): Make it possible to create objects.
+    createObject({ modelId, position, rotation, interiorId = -1, virtualWorld = -1 } = {}) {
+        const object = new this.objectConstructor_(this, {
+            modelId: modelId,
+
+            position: position,
+            rotation: rotation,
+
+            interiorId: interiorId,
+            virtualWorld: virtualWorld,
+
+            streamDistance: 300,
+            drawDistance: 0
+        });
+
+        this.objects_.add(object);
+        return object;
     }
 
     // Removes the |object| from the maintained set of objects. Should only be used by the

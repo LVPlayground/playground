@@ -42,6 +42,9 @@ class GameObject {
     // Returns whether the object still exists on the server.
     isConnected() { return this.id_ !== null; }
 
+    // Gets the Id of the model that is visually epresenting this object.
+    get modelId() { return this.modelId_; }
+
     // Gets or sets the position of the object in the world.
     get position() { return new Vector(...pawnInvoke('GetDynamicObjectPos', 'iFFF', this.id_)); }
     set position(value) {
@@ -60,11 +63,11 @@ class GameObject {
     // Gets the streaming distance the streamer will apply to this object.
     get streamDistance() { return this.streamDistance_; }
 
-    // Gets the virtual world in which this object will be visible. Will return NULL when the object
+    // Gets the virtual world in which this object will be visible. Will return -1 when the object
     // should be visible in all virtual worlds.
     get virtualWorld() { return this.virtualWorld_; }
 
-    // Gets the interior Id in which the object will be visible. Will return NULL when the object
+    // Gets the interior Id in which the object will be visible. Will return -1 when the object
     // should be visible in all interiors.
     get interiorId() { return this.interiorId_; }
 

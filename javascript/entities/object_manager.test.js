@@ -10,9 +10,71 @@ describe('ObjectManager', (it, beforeEach, afterEach) => {
     let manager = null;
 
     beforeEach(() => manager = new ObjectManager(MockObject /* objectConstructor */));
-    afterEach(() => manager.dispose());
+    afterEach(() => {
+        if (manager)
+            manager.dispose();
+    });
 
-    it('should fly', assert => {
-        assert.isTrue(true);
+    it('should maintain a count of the number of created objects', assert => {
+        const position = new Vector(0, 0, 0);
+        const rotation = new Vector(0, 0, 0);
+
+        assert.equal(manager.count, 0);
+
+        for (let i = 0; i < 10; ++i)
+            manager.createObject({ modelId: 1225, position, rotation });
+
+        assert.equal(manager.count, 10);
+    });
+
+    it('should release references when an object gets disposed of', assert => {
+        const object = manager.createObject({ modelId: 1225, position: new Vector(0, 0, 0),
+                                              rotation: new Vector(0, 0, 0) });
+
+        assert.isTrue(object.isConnected());
+        assert.equal(manager.count, 1);
+
+        object.dispose();
+
+        assert.isFalse(object.isConnected());
+        assert.equal(manager.count, 0);
+    });
+
+    it('should dispose of all objects when the manager gets disposed of', assert => {
+        const object = manager.createObject({ modelId: 1225, position: new Vector(0, 0, 0),
+                                              rotation: new Vector(0, 0, 0) });
+
+        assert.isTrue(object.isConnected());
+        assert.equal(manager.count, 1);
+
+        manager.dispose();
+        manager = null;
+
+        assert.isFalse(object.isConnected());
+    });
+
+    it('should create objects with the given settings', assert => {
+        const object = manager.createObject({
+            modelId: 1225,
+            position: new Vector(1, 1, 1),
+            rotation: new Vector(2, 2, 2),
+            interiorId: 7,
+            virtualWorld: 42
+        });
+
+        assert.isNotNull(object.id);
+        assert.equal(object.modelId, 1225);
+        assert.deepEqual(object.position, new Vector(1, 1, 1));
+        assert.deepEqual(object.rotation, new Vector(2, 2, 2));
+        assert.equal(object.drawDistance, 0);
+        assert.equal(object.streamDistance, 300);
+        assert.equal(object.virtualWorld, 42);
+        assert.equal(object.interiorId, 7);
+
+        const defaultObject = manager.createObject({ modelId: 1225, position: new Vector(0, 0, 0),
+                                                     rotation: new Vector(0, 0, 0) });
+
+        assert.equal(defaultObject.virtualWorld, -1);
+        assert.equal(defaultObject.interiorId, -1);
     });
 });

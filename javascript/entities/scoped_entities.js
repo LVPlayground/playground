@@ -21,13 +21,13 @@ class ScopedEntities {
     // Gets the Virtual World that this object is associated with.
     get virtualWorld() { return this.virtualWorld_; }
 
-    // Creates a new actor scoped to the lifetime of this object. The passed arguments must match
+    // Creates a new actor scoped to the lifetime of this object. The passed options must match
     // those accepted by ActorManager.createActor() on the global Server object.
-    createActor(...parameters) {
+    createActor(options) {
         if (!this.actors_)
             throw new Error('Unable to create the actor, this object has been disposed of.');
 
-        const actor = server.actorManager.createActor(...parameters);
+        const actor = server.actorManager.createActor(options);
 
         // Note that actors simultaneously exist in all interiors, so there is no need to explicitly
         // link them to the one given to this object's constructor.
@@ -42,24 +42,34 @@ class ScopedEntities {
     // Returns whether the |actor| belongs to this set of scoped entities.
     hasActor(actor) { return this.actors_ && this.actors_.has(actor); }
 
-    // Creates an object with |parameters|. The object will be removed automatically when this
-    // instance is being disposed of.
-    createObject(...parameters) {
-        let object = new GameObject(...parameters);
-        if (object === null)
-            return null;
+    // Creates an object with |options|, which must match those by ObjectManager.createObject(). The
+    // object will be removed automatically when this instance is being disposed of.
+    createObject(options) {
+        if (!this.objects_)
+            throw new Error('Unable to create the object, this object has been disposed of.');
+
+        if (this.interiorId_)
+            options.interiorId = this.interiorId_;
+
+        if (this.virtualWorld_)
+            options.virtualWorld = this.virtualWorld_;
+
+        const object = server.objectManager.createObject(options);
 
         this.objects_.add(object);
         return object;
     }
 
+    // Returns whether |object| belongs to this set of scoped entities.
+    hasObject(object) { return this.objects_ && this.objects_.has(object); }
+
     // Creates a vehicle scoped to the lifetime of this object. The passed arguments must match
     // those accepted by VehicleManager.createVehicle() on the global Server object.
-    createVehicle(...parameters) {
+    createVehicle(options) {
         if (!this.vehicles_)
             throw new Error('Unable to create the vehicle, this object has been disposed of.');
 
-        const vehicle = server.vehicleManager.createVehicle(...parameters);
+        const vehicle = server.vehicleManager.createVehicle(options);
 
         if (this.interiorId_)
             vehicle.interiorId = this.interiorId_;

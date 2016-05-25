@@ -42,6 +42,12 @@ class Announce extends Feature {
         this.manager_.announceToAdministrators(message, ...args);
     }
 
+    // Announces that a |player| did a report of |reportedPlayer| because of |reason| to all in-game
+    // administrators. This will automatically generate an IRC message with the "report" tag.
+    announceReportToAdministrators(player, reportedPlayer, reason) {
+        this.manager_.announceReportToAdministrators(player, reportedPlayer, reason);
+    }
+
     // Announces |tag| with the |...parameters| to people watching on IRC.
     announceToIRC(tag, ...parameters) {
         this.manager_.announceToIRC(tag, ...parameters);

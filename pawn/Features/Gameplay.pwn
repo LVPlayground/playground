@@ -81,6 +81,3 @@
 
 // If ever needed, crew should be able to fix a player.
 #include "Features/Gameplay/Commands/FixPlayerCommands.pwn"
-
-// Add the (in)famous /report-command to report players.
-#include "Features/Gameplay/Commands/ReportHandler.pwn"

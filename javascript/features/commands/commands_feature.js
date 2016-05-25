@@ -3,15 +3,14 @@
 // be found in the LICENSE file.
 
 const Feature = require('components/feature_manager/feature.js');
-
 const InfoDialogCommand = require('features/commands/info_dialog_command.js');
 
 // Feature that provides a series of commands not immediately affiliated with a particular feature.
 // The CommandsFeature class provides the shared infrastructure, whereas groups of commands will
 // be implemented separately based on their own requirements.
 class CommandsFeature extends Feature {
-  constructor(playground) {
-    super(playground);
+  constructor() {
+    super();
 
     const commandManager = server.commandManager;
 

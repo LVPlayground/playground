@@ -82,6 +82,28 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
         assert.equal(ircMessages[0], '[admin] Hello, admins!');
     });
 
+    it('should distribute reports to administrators', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+        const lucy    = server.playerManager.getById(2 /* Lucy */);
+
+        russell.level = Player.LEVEL_ADMINISTRATOR;
+
+        announceManager.announceReportToAdministrators(lucy, gunther, 'much moneyz');
+
+        assert.equal(gunther.messages.length, 0);
+
+        assert.equal(russell.messages.length, 1);
+        assert.equal(russell.messages[0],
+            Message.format(Message.ANNOUNCE_REPORT, lucy.name, lucy.id, gunther.name, gunther.id,
+                           'much moneyz'));
+
+        assert.equal(lucy.messages.length, 0);
+
+        assert.equal(ircMessages.length, 1);
+        assert.equal(ircMessages[0], '[report] Lucy 2 Gunther 0 much moneyz');
+    });
+
     it('should distribute messages to IRC', assert => {
         announceManager.announceToIRC('tag');
         announceManager.announceToIRC('hello', 'world', 25, [1, 2, 3], {});

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let TestSuite = require('base/test/test_suite.js');
+const TestSuite = require('base/test/test_suite.js');
 
 // The test runner class manages execution of tests before the gamemode starts.
 //
@@ -156,6 +156,7 @@ class TestRunner {
       require('features/races/drift_tracker.test.js');
       require('features/races/race_importer.test.js');
       require('features/races/race_manager.test.js');
+      require('features/report/report_commands.test.js');
       require('features/vehicles/vehicle_commands.test.js');
       require('features/vehicles/vehicle_grid.test.js');
       require('features/vehicles/vehicle_manager.test.js');

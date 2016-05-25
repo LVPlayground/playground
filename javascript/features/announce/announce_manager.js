@@ -8,6 +8,9 @@ const AnnounceTag = 'announce';
 // Tag to be used for private administrator-visible announcements.
 const AdminTag = 'admin';
 
+// Tag to be used for sending reports to admins on IRC.
+const ReportTag = 'report';
+
 // Implementation of the functionality of the Announce feature. This is where input will be verified
 // and the messages will be dispatched to the appropriate audience.
 class AnnounceManager {
@@ -68,6 +71,24 @@ class AnnounceManager {
         });
 
         this.announceToIRC(AdminTag, message);
+    }
+
+    // Announces that a |player| did a report of |reportedPlayer| because of |reason| to all in-game
+    // administrators. It uses the ReportTag for the IRC-message.
+    announceReportToAdministrators(player, reportedPlayer, reason) {
+        const formattedMessage = Message.format(
+            Message.ANNOUNCE_REPORT, player.name, player.id, reportedPlayer.name, reportedPlayer.id,
+            reason);
+
+        server.playerManager.forEach(player => {
+            if (!player.isAdministrator())
+                return;
+
+            player.sendMessage(formattedMessage);
+        });
+
+        this.announceToIRC(
+            ReportTag, player.name, player.id, reportedPlayer.name, reportedPlayer.id, reason);
     }
 
     // Announces |tag| with the given |parameters|, in order, to IRC. It is the responsibility for

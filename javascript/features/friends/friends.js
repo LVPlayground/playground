@@ -10,8 +10,8 @@ const FriendsManager = require('features/friends/friends_manager.js');
 // indicate one-directional relations, as there are no approval processes or notifications. See the
 // README.md file for a list of features enabled by friends.
 class FriendsFeature extends Feature {
-    constructor(playground) {
-        super(playground);
+    constructor() {
+        super();
 
         this.friendsManager_ = new FriendsManager();
         this.friendsCommands_ = new FriendsCommands(this.friendsManager_);

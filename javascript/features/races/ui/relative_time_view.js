@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let TextDraw = require('components/text_draw/text_draw.js'),
-    TimeView = require('features/races/ui/time_view.js');
+const TextDraw = require('components/text_draw/text_draw.js');
+const TimeView = require('features/races/ui/time_view.js');
 
 // Color to use when a relative time should be displayed as a positive thing.
 const TIME_AHEAD_COLOR = Color.GREEN;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let TextDraw = require('components/text_draw/text_draw.js');
+const TextDraw = require('components/text_draw/text_draw.js');
 
 // This is a time view that can be used to draw time in the format of [00:00.000] with consistent
 // spacing regardless of the value and without having to rely on ugly proportional text rendering.

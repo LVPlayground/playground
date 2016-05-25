@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let Message = require('base/message.js');
+const Message = require('base/message.js');
 
 describe('Message', it => {
   it('should apply formatting rules', assert => {

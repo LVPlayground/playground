@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let ScopedCallbacks = require('base/scoped_callbacks.js');
+const ScopedCallbacks = require('base/scoped_callbacks.js');
 
 describe('ScopedCallbacks', it => {
   it('should unbind the events', assert => {

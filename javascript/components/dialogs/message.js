@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let Dialog = require('components/dialogs/dialog.js');
+const Dialog = require('components/dialogs/dialog.js');
 
 // All messages share the same title. Only the message's content is configurable.
 const CAPTION = 'Las Venturas Playground';

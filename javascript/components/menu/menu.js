@@ -2,9 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-let Dialog = require('components/dialogs/dialog.js');
-
-let MenuBuilder = require('components/menu/menu_builder.js');
+const Dialog = require('components/dialogs/dialog.js');
+const MenuBuilder = require('components/menu/menu_builder.js');
 
 // The menu class represents a user-visible dialog from which they can choose an option. Optionally,
 // the menu can have up to four columns, each of which must have a set header. The width of columns

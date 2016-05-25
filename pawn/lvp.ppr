@@ -192,7 +192,6 @@
     <DiskObject>\Features\Gameplay\Commands\Mute\MuteManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\PlayerInfoHandler.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\PlayerSpectateHandler.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\Commands\ReportHandler.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\Announcements.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\CallCommands.pwn</DiskObject>

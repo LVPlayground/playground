@@ -2,10 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Announce = require('features/announce/announce.js');
+const MockAnnounce = require('features/announce/test/mock_announce.js');
 const Gang = require('features/gangs/gang.js');
 const GangCommands = require('features/gangs/gang_commands.js');
-const GangDatabase = require('features/gangs/gang_database.js');
 const GangManager = require('features/gangs/gang_manager.js');
 const MockGangDatabase = require('features/gangs/test/mock_gang_database.js');
 
@@ -22,7 +21,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         gangManager = new GangManager(null /* database */);
         gangManager.database_ = new MockGangDatabase();
 
-        gangCommands = new GangCommands(gangManager, new Announce());
+        gangCommands = new GangCommands(gangManager, new MockAnnounce());
     });
 
     afterEach(() => {

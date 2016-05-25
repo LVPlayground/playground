@@ -27,6 +27,7 @@ class RaceMinigame extends Minigame {
             name: race.name,
             command: '/race ' + race.id,
             timeout: race.timeLimit,
+            minimumParticipants: 1,
             maximumParticipants: race.maxPlayers
         });
 

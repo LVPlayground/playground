@@ -26,6 +26,9 @@ class MockObject {
         this.moving_ = false;
     }
 
+    // Gets the id the streamer assigned to this object.
+    get id() { return this.id_; }
+
     // Returns whether the object still exists on the server.
     isConnected() { return this.id_ !== null; }
 

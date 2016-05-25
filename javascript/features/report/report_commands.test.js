@@ -2,14 +2,14 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Announce = require('features/announce/announce.js');
+const MockAnnounce = require('features/announce/test/mock_announce.js');
 const ReportCommands = require('features/report/report_commands.js');
 
 describe('ReportCommand', (it, beforeEach, afterEach) => {
     let reportCommands = null;
 
     beforeEach(() => {
-        reportCommands = new ReportCommands(new Announce());
+        reportCommands = new ReportCommands(new MockAnnounce());
     });
 
     afterEach(() => {
@@ -28,7 +28,7 @@ describe('ReportCommand', (it, beforeEach, afterEach) => {
         assert.equal(russell.messages.length, 1);
         assert.equal(russell.messages[0],
             Message.format(Message.ANNOUNCE_REPORT, lucy.name, lucy.id, gunther.name, gunther.id,
-                'health freezed'));
+                           'health freezed'));
     });
 
     it('should show a message back to the player who reports a player', assert => {
@@ -40,7 +40,7 @@ describe('ReportCommand', (it, beforeEach, afterEach) => {
         assert.equal(russell.messages.length, 1);
         assert.equal(russell.messages[0],
             Message.format(Message.REPORT_MESSAGE, gunther.name, gunther.id,
-                'bullet-amount freezed'));
+                           'bullet-amount freezed'));
     });
 
     it('should show a message back to only non-administrators about report-delivery', assert => {
@@ -53,6 +53,7 @@ describe('ReportCommand', (it, beforeEach, afterEach) => {
 
         assert.equal(russell.messages.length, 1);
         assert.notEqual(russell.messages[0],
-            Message.format(Message.REPORT_MESSAGE, gunther.name, gunther.id, 'bullet-amount freezed'));
+            Message.format(Message.REPORT_MESSAGE, gunther.name, gunther.id,
+                           'bullet-amount freezed'));
     });
 });

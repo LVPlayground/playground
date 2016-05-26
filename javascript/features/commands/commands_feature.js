@@ -4,6 +4,7 @@
 
 const Feature = require('components/feature_manager/feature.js');
 const InfoDialogCommand = require('features/commands/info_dialog_command.js');
+const PositioningCommands = require('features/commands/positioning_commands.js');
 
 // Feature that provides a series of commands not immediately affiliated with a particular feature.
 // The CommandsFeature class provides the shared infrastructure, whereas groups of commands will
@@ -18,6 +19,13 @@ class CommandsFeature extends Feature {
     commandManager.registerCommand('help', InfoDialogCommand.create('data/commands/help.json'));
     commandManager.registerCommand('irc', InfoDialogCommand.create('data/commands/irc.json'));
     commandManager.registerCommand('rules', InfoDialogCommand.create('data/commands/rules.json'));
+
+    // Load the seperated positioning-related commands
+    this.positioningCommands_ = new PositioningCommands();
+  }
+  
+  dispose() {
+    this.positioningCommands_.dispose();
   }
 };
 

@@ -19,7 +19,7 @@ class ReportCommands {
     onReportPlayerCommand(player, reportedPlayer, reason) {
         this.announce_.announceReportToAdministrators(player, reportedPlayer, reason);
 
-        // Admins already get the notice themselves due to the above announce, they know it already
+        // Admins already get the notice themselves due to above announce and thus know it already
         if (player.level == Player.LEVEL_ADMINISTRATOR)
             return;
 

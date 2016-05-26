@@ -85,6 +85,10 @@ class Player {
   get position() { return new Vector(...pawnInvoke('GetPlayerPos', 'iFFF', this.id_)); }
   set position(value) { pawnInvoke('SetPlayerPos', 'ifff', this.id_, value.x, value.y, value.z); }
 
+  // Gets or sets the facing angle (rotation) of the player.
+  get facingAngle() { return pawnInvoke('GetPlayerFacingAngle', 'iF', this.id_); }
+  set facingAngle(value) { pawnInvoke('SetPlayerFacingAngle', 'if', this.id_, value); }
+
   // Gets or sets the time for this player. It will be returned, and must be set, as an array having
   // two entries: hours and minutes.
   get time() { return pawnInvoke('GetPlayerTime', 'iII', this.id); }

@@ -5,7 +5,7 @@
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 const ReportCommands = require('features/report/report_commands.js');
 
-describe('ReportCommand', (it, beforeEach, afterEach) => {
+describe('ReportCommands', (it, beforeEach, afterEach) => {
     let reportCommands = null;
 
     beforeEach(() => {

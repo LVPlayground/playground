@@ -1070,8 +1070,19 @@ lvp_My( playerid, params[] )
             return 1;
         }
 
+        if (IsNumeric(tmp) && !ClassManager->isSkinAvailableForClassSelection(strval(tmp))) {
+            SendClientMessage(playerid, Color::Error, "Error: This skin is not eligible for usage.");
+            return 1;
+        }
+
+        if (IsNumeric(tmp) && ClassManager->isSkinAvailableForClassSelection(strval(tmp))) {
+            SetPlayerSkinEx(playerid, strval(tmp));
+            SendClientMessage(playerid, Color::Information, "Skin has been set. Use /my skin save to permanently save.");
+            return 1;
+        }
+
 charHelp:
-        SendClientMessage(playerid, COLOR_WHITE, "Usage: /my skin [load/remove/save]");
+        SendClientMessage(playerid, COLOR_WHITE, "Usage: /my skin [Id] [load/remove/save]");
         return 1;
 
     }

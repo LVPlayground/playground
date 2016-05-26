@@ -11,19 +11,16 @@ class PlaygroundCommands {
         this.manager_ = manager;
         this.announce_ = announce;
 
-        // The anniversary message, will be lazily loaded from //data/anniversary.txt.
-        this.anniversaryMessage_ = null;
-
-        // The /lvp10 command is an informational dialog for players, and a toggle mechanism for
+        // The /lvp command is an informational dialog for players, and a toggle mechanism for
         // administrators to enable or disable certain features.
-        server.commandManager.buildCommand('lvp10')
+        server.commandManager.buildCommand('lvp')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('set')
-                .restrict(Player.LEVEL_ADMINISTRATOR)
                 .parameters([
                     { name: 'option', type: CommandBuilder.WORD_PARAMETER, optional: true },
                     { name: 'value', type: CommandBuilder.WORD_PARAMETER, optional: true } ])
-                .build(PlaygroundCommands.prototype.onAnniversaryOptionsCommand.bind(this))
-            .build(PlaygroundCommands.prototype.onAnniversaryCommand.bind(this));
+                .build(PlaygroundCommands.prototype.onPlaygroundCommand.bind(this))
+            .build(PlaygroundCommands.prototype.onPlaygroundCommand.bind(this));
 
         // The /jetpack command enables players to get a jetpack when enabled by an administrator.
         server.commandManager.buildCommand('jetpack')
@@ -36,13 +33,13 @@ class PlaygroundCommands {
     }
 
     // Command available to administrators for enabling or disabling an |option| as part of the
-    // anniversary features. Both |option| and |value| are optional parameters, and may be NULL.
-    onAnniversaryOptionsCommand(player, option, value) {
+    // playground features. Both |option| and |value| are optional parameters, and may be NULL.
+    onPlaygroundCommand(player, option, value) {
         const validOptions = this.manager_.options;
 
         // Display the available options if the administrator doesn't provide one.
         if ((!option && !value) || !validOptions.includes(option)) {
-            player.sendMessage(Message.LVP_ANNIVERSARY_OPTIONS, validOptions.join('/'));
+            player.sendMessage(Message.LVP_PLAYGROUND_OPTIONS, validOptions.join('/'));
             return;
         }
 
@@ -52,14 +49,14 @@ class PlaygroundCommands {
         // Displays the current status of |option|, together with some information on how to toggle.
         if (!value || !['on', 'off'].includes(value)) {
             player.sendMessage(
-                Message.LVP_ANNIVERSARY_OPTION_STATUS, option, currentValueText, option);
+                Message.LVP_PLAYGROUND_OPTION_STATUS, option, currentValueText, option);
             return;
         }
 
         const updatedValue = (value === 'on');
         if (currentValue === updatedValue) {
             player.sendMessage(
-                Message.LVP_ANNIVERSARY_OPTION_NO_CHANGE, option, currentValueText);
+                Message.LVP_PLAYGROUND_OPTION_NO_CHANGE, option, currentValueText);
             return;
         }
 
@@ -73,6 +70,9 @@ class PlaygroundCommands {
             case 'jetpack':
                 announcement = Message.LVP_ANNOUNCE_JETPACK;
                 break;
+            case 'party':
+                announcement = Message.LVP_ANNOUNCE_PARTY;
+                break;
         }
 
         if (announcement)
@@ -80,16 +80,6 @@ class PlaygroundCommands {
 
         this.announce_.announceToAdministrators(
             Message.LVP_ANNOUNCE_ADMIN_NOTICE, player.name, player.id, updatedValueText, option);
-    }
-
-    // Command that gives details about Las Venturas Playground's anniversary and the commands that
-    // are available as part of it. Displays a dialog.
-    onAnniversaryCommand(player) {
-        if (!this.anniversaryMessage_)
-            this.anniversaryMessage_ = readFile('data/anniversary.txt').trim();
-
-        Dialog.displayMessage(
-            player, '10 Years of Las Venturas Playground', this.anniversaryMessage_, 'Alright', '');
     }
 
     // Command that gives the |player| a jetpack. Always available to administrators (also when
@@ -144,7 +134,7 @@ class PlaygroundCommands {
 
     dispose() {
         server.commandManager.removeCommand('jetpack');
-        server.commandManager.removeCommand('lvp10');
+        server.commandManager.removeCommand('lvp');
     }
 }
 

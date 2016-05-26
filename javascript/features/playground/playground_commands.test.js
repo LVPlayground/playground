@@ -29,44 +29,30 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.deepEqual(sorted, options);
     });
 
-    it('should display an information dialog when using /lvp10', assert => {
-        assert.isTrue(player.issueCommand('/lvp10'));
-        assert.equal(player.messages.length, 0);
-
-        assert.isNotNull(player.lastDialog);
-    });
-
-    it('should display an information dialog when a player tries to use /lvp10 set', assert => {
-        assert.isTrue(player.issueCommand('/lvp10 set'));
-        assert.equal(player.messages.length, 0);
-
-        assert.isNotNull(player.lastDialog);
-    });
-
-    it('should enable administrators to get a list of options using /lvp10 set', assert => {
+    it('should enable administrators to get a list of options using /lvp set', assert => {
         player.level = Player.LEVEL_ADMINISTRATOR;
 
-        assert.isTrue(player.issueCommand('/lvp10 set'));
+        assert.isTrue(player.issueCommand('/lvp set'));
         assert.equal(player.messages.length, 1);
-        assert.equal(player.messages[0], Message.format(Message.LVP_ANNIVERSARY_OPTIONS,
+        assert.equal(player.messages[0], Message.format(Message.LVP_PLAYGROUND_OPTIONS,
                                                         playgroundManager.options.join('/')));
 
         player.clearMessages();
 
-        assert.isTrue(player.issueCommand('/lvp10 set bogusfeature'));
+        assert.isTrue(player.issueCommand('/lvp set bogusfeature'));
         assert.equal(player.messages.length, 1);
-        assert.equal(player.messages[0], Message.format(Message.LVP_ANNIVERSARY_OPTIONS,
+        assert.equal(player.messages[0], Message.format(Message.LVP_PLAYGROUND_OPTIONS,
                                                         playgroundManager.options.join('/')));
     });
 
-    it('should enable administrators to get the status of an option using /lvp10 set', assert => {
+    it('should enable administrators to get the status of an option using /lvp set', assert => {
         player.level = Player.LEVEL_ADMINISTRATOR;
 
         playgroundManager.setOptionEnabled('jetpack', true);
 
-        assert.isTrue(player.issueCommand('/lvp10 set jetpack'));
+        assert.isTrue(player.issueCommand('/lvp set jetpack'));
         assert.equal(player.messages.length, 1);
-        assert.equal(player.messages[0], Message.format(Message.LVP_ANNIVERSARY_OPTION_STATUS,
+        assert.equal(player.messages[0], Message.format(Message.LVP_PLAYGROUND_OPTION_STATUS,
                                                         'jetpack', 'enabled', 'jetpack'));
     });
 
@@ -75,13 +61,13 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
 
         playgroundManager.setOptionEnabled('jetpack', true);
 
-        assert.isTrue(player.issueCommand('/lvp10 set jetpack on'));
+        assert.isTrue(player.issueCommand('/lvp set jetpack on'));
         assert.equal(player.messages.length, 1);
-        assert.equal(player.messages[0], Message.format(Message.LVP_ANNIVERSARY_OPTION_NO_CHANGE,
+        assert.equal(player.messages[0], Message.format(Message.LVP_PLAYGROUND_OPTION_NO_CHANGE,
                                                         'jetpack', 'enabled'));
     });
 
-    it('should enable administrators to toggle options using /lvp10 set [option]', assert => {
+    it('should enable administrators to toggle options using /lvp set [option]', assert => {
         const russell = server.playerManager.getById(1 /* Russell */);
 
         player.level = Player.LEVEL_ADMINISTRATOR;
@@ -89,7 +75,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         playgroundManager.setOptionEnabled('jetpack', false);
         assert.isFalse(playgroundManager.isOptionEnabled('jetpack'));
 
-        assert.isTrue(player.issueCommand('/lvp10 set jetpack on'));
+        assert.isTrue(player.issueCommand('/lvp set jetpack on'));
         assert.isTrue(playgroundManager.isOptionEnabled('jetpack'));
 
         assert.equal(russell.messages.length, 1);
@@ -107,7 +93,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         player.clearMessages();
         russell.clearMessages();
 
-        assert.isTrue(player.issueCommand('/lvp10 set jetpack off'));
+        assert.isTrue(player.issueCommand('/lvp set jetpack off'));
         assert.isFalse(playgroundManager.isOptionEnabled('jetpack'));
 
         assert.equal(russell.messages.length, 1);

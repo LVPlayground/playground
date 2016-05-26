@@ -122,6 +122,7 @@ class TestRunner {
     {
       require('base/color.test.js');
       require('base/message.test.js');
+      require('base/natives.test.js');
       require('base/priority_queue.test.js');
       require('base/scoped_callbacks.test.js');
       require('base/string_parser.test.js');
@@ -161,7 +162,6 @@ class TestRunner {
       require('features/vehicles/vehicle_grid.test.js');
       require('features/vehicles/vehicle_manager.test.js');
       require('features/vehicles/vehicle_streamer.test.js');
-      require('natives.test.js');
     }
 
     // Remove the `describe` method from the global scope again.

@@ -101,4 +101,21 @@ describe('Natives', it => {
 
         assert.deepEqual(pawnInvoke('TestFunction', 'isfFI', 3, 'FF', 1.25), [3.75, 255]);
     });
+
+    it('should be able to return strings by reference', assert => {
+        provideNative('TestFunction', 'iiS', (value, maxLength) => {
+            return [maxLength + '---' + value];
+        });
+
+        assert.equal(pawnInvoke('TestFunction', 'iiS', 42, 1337), '1337---42');
+
+        provideNative('TestFunction', 'S', _ => ['Russell']);
+        assert.equal(pawnInvoke('TestFunction', 'S'), 'Russell');
+
+        provideNative('TestFunction', 'S', _ => ['']);
+        assert.equal(pawnInvoke('TestFunction', 'S'), '');
+
+        provideNative('TestFunction', 'S', _ => [null]);
+        assert.equal(pawnInvoke('TestFunction', 'S'), '');
+    });
 });

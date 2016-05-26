@@ -29,6 +29,14 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.deepEqual(sorted, options);
     });
 
+    it('should display an information dialog when a player tries to use /lvp', assert => {
+        assert.isTrue(player.issueCommand('/lvp'));
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.format(Message.COMMAND_ERROR_INSUFFICIENT_RIGHTS,
+                                                        playerLevelToString(Player.LEVEL_ADMINISTRATOR,
+                                                        true /* plural */)));
+    });
+
     it('should enable administrators to get a list of options using /lvp set', assert => {
         player.level = Player.LEVEL_ADMINISTRATOR;
 

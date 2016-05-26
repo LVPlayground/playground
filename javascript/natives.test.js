@@ -50,4 +50,33 @@ describe('Natives', it => {
 
         assert.equal(pawnInvoke('TestFunction', 'iiff', 5, 3, 10, 5), 5 * 10 + 3 * 5);
     });
+
+    it('should be able to receive string arguments', assert => {
+        let name = null;
+
+        provideNative('TestFunction', 's', value => name = value);
+
+        assert.equal(pawnInvoke('TestFunction', 's', 'Russell'), 1);
+        assert.isNotNull(name);
+        assert.equal(name, 'Russell');
+
+        let sentence = null;
+
+        provideNative('TestFunction', 'sisfs', (...args) => sentence = args.join(' '));
+
+        assert.equal(pawnInvoke('TestFunction', 'sisfs', 'foo', 5, 'bar', 11.5, 'baz'), 1);
+        assert.isNotNull(sentence);
+        assert.equal(sentence, 'foo 5 bar 11.5 baz');
+    });
+
+    it('should be able to handle strings of up to 2047 characters', assert => {
+        const longText = '1'.repeat(2047);
+
+        let receivedText = '';
+
+        provideNative('TestFunction', 's', value => receivedText = value);
+
+        assert.equal(pawnInvoke('TestFunction', 's', longText), 1);
+        assert.equal(receivedText, longText);
+    });
 });

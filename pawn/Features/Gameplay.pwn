@@ -63,6 +63,9 @@
 // Handle the access of admin vehicles for VIPs.
 #include "Features/Gameplay/Vehicles/AdminVehicleAccessManager.pwn"
 
+// Peter has his own car, yeah!
+#include "Features/Gameplay/Vehicles/PeterVehicleFeature.pwn"
+
 // Achievements provide a way of recognizing the player's achievements, such as paying certain sums
 // in tax, killing a certain amount of people or being in-game for a decent amount of time.
 #include "Features/Gameplay/Achievements.pwn"

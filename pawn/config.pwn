@@ -86,13 +86,6 @@ class Configuration {
  */
 class Feature {
     /** **************************************************************************************** **/
-    /// Experiments
-
-    // Whether functionality behind the OnVehicleStreamIn event should be enabled. This is a suspect
-    // in the cause of the in-game lag that becomes more severe the more players are online.
-    public const VehicleStreamInFunctionality = 0;
-
-    /** **************************************************************************************** **/
     /// Deathmatch
 
     // Enable the rewritten deathmatch commands, which supports roaming players with several

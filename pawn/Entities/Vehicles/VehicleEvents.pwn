@@ -191,6 +191,7 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
         if (VehicleAccessManager->isPlayerAllowedInVehicle(playerId, vehicleId) == false)
             SetVehicleParamsForPlayer(vehicleId, playerId, 0, 1);
 
+        Annotation::ExpandList<OnVehicleStreamIn>(vehicleId, playerId);
         return 1;
     }
 
@@ -294,7 +295,6 @@ public OnVehicleSpawn(vehicleid) {
     return 1;
 }
 
-#if Feature::VehicleStreamInFunctionality == 1
 public OnVehicleStreamIn(vehicleid, forplayerid) {
     if (Player(forplayerid)->isConnected() == false || Player(forplayerid)->isNonPlayerCharacter() == true
         || Vehicle(vehicleid)->isValid() == false)
@@ -303,7 +303,6 @@ public OnVehicleStreamIn(vehicleid, forplayerid) {
     VehicleEvents(vehicleid)->onVehicleStreamIn(forplayerid);
     return 1;
 }
-#endif
 
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
     if (Player(playerid)->isConnected() == false || Player(playerid)->isNonPlayerCharacter() == true

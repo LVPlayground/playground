@@ -78,7 +78,7 @@ class BanCommands {
 
         format(message, sizeof(message), "%s (Id:%d) has been banned by %s (Id:%d) for %d days: %s",
             Player(subjectId)->nicknameString(), subjectId, administrator, playerId, duration, params[parameterOffset]);
-        Admin(playerId, message);
+        Admin(Player::InvalidId, message);
 
         return 1;
     }
@@ -134,7 +134,7 @@ class BanCommands {
 
         format(message, sizeof(message), "%s (Id:%d) has been kicked by %s (Id:%d): %s",
             Player(subjectId)->nicknameString(), subjectId, administrator, playerId, params[parameterOffset]);
-        Admin(playerId, message);
+        Admin(Player::InvalidId, message);
 
         return 1;
     }

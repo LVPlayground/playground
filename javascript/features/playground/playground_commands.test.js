@@ -29,7 +29,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.deepEqual(sorted, options);
     });
 
-    it('should display an information dialog when a player tries to use /lvp', assert => {
+    it('should display an error message when a player tries to use /lvp', assert => {
         assert.isTrue(player.issueCommand('/lvp'));
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], Message.format(Message.COMMAND_ERROR_INSUFFICIENT_RIGHTS,

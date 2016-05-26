@@ -79,4 +79,26 @@ describe('Natives', it => {
         assert.equal(pawnInvoke('TestFunction', 's', longText), 1);
         assert.equal(receivedText, longText);
     });
+
+    it('should fail when not enough values have been returned for the references', assert => {
+        provideNative('TestFunction', 'I', _ => null);
+        assert.equal(pawnInvoke('TestFunction', 'I'), -1);
+
+        provideNative('TestFunction', 'I', _ => [ ]);
+        assert.equal(pawnInvoke('TestFunction', 'I'), -1);
+
+        provideNative('TestFunction', 'II', _ => [ 5 ]);
+        assert.equal(pawnInvoke('TestFunction', 'II'), -1);
+    });
+
+    it('should be able to return scalar values by reference', assert => {
+        provideNative('TestFunction', 'iII', value => [2 * value, 4 * value]);
+        assert.deepEqual(pawnInvoke('TestFunction', 'iII', 2), [4, 8]);
+
+        provideNative('TestFunction', 'isfFI', (i, s, f) => {
+            return [f * i, parseInt(s, 16)];
+        });
+
+        assert.deepEqual(pawnInvoke('TestFunction', 'isfFI', 3, 'FF', 1.25), [3.75, 255]);
+    });
 });

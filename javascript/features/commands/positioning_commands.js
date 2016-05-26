@@ -4,6 +4,8 @@
 
 const CommandBuilder = require('components/command_manager/command_builder.js');
 
+// For some purposes it could come in handy to know something about your own position and the
+// direction looking in. Some small positioning-related commands are for that defined in here.
 class PositioningCommands {
     constructor() {
         server.commandManager.buildCommand('getpos')

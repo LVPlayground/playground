@@ -1,0 +1,73 @@
+# Copyright 2016 Las Venturas Playground. All rights reserved.
+# Use of this source code is governed by the MIT license, a copy of which can
+# be found in the LICENSE file.
+
+# Las Venturas Playground callbacks
+forward OnColorPickerResponse(playerid, color);
+forward OnMessageLevelChange(playerid, messagelevel);
+forward OnPlayerActivityChange(playerid, activity);
+forward OnPlayerLeaveActivity(playerid);
+forward OnPlayerLevelChange(playerid, newlevel);
+forward OnPlayerLogin(playerid, userid, gangid);
+forward OnPlayerResolvedDeath(playerid, killerid, reason);
+forward OnSetiOwnershipChange(playerid);
+
+# SA-MP callbacks
+forward OnGameModeInit();
+forward OnGameModeExit();
+forward OnFilterScriptInit();
+forward OnFilterScriptExit();
+forward OnPlayerConnect(playerid);
+forward OnPlayerDisconnect(playerid, reason);
+[Cancelable, ReturnOne] forward OnPlayerSpawn(playerid);
+forward OnPlayerDeath(playerid, killerid, reason);
+forward OnVehicleSpawn(vehicleid);
+forward OnVehicleDeath(vehicleid, killerid);
+[Cancelable] forward OnPlayerText(playerid, text[]);
+[Cancelable, ReturnOne] forward OnPlayerCommandText(playerid, cmdtext[]);
+forward OnPlayerRequestClass(playerid, classid);
+forward OnPlayerEnterVehicle(playerid, vehicleid, ispassenger);
+forward OnPlayerExitVehicle(playerid, vehicleid);
+forward OnPlayerStateChange(playerid, newstate, oldstate);
+forward OnPlayerEnterCheckpoint(playerid);
+forward OnPlayerLeaveCheckpoint(playerid);
+forward OnPlayerEnterRaceCheckpoint(playerid);
+forward OnPlayerLeaveRaceCheckpoint(playerid);
+forward OnRconCommand(cmd[]);
+forward OnPlayerRequestSpawn(playerid);
+forward OnObjectMoved(objectid);
+forward OnPlayerObjectMoved(playerid, objectid);
+forward OnPlayerPickUpPickup(playerid, pickupid);
+forward OnVehicleMod(playerid, vehicleid, componentid);
+forward OnEnterExitModShop(playerid, enterexit, interiorid);
+forward OnVehiclePaintjob(playerid, vehicleid, paintjobid);
+forward OnVehicleRespray(playerid, vehicleid, color1, color2);
+forward OnVehicleDamageStatusUpdate(vehicleid, playerid);
+forward OnUnoccupiedVehicleUpdate(vehicleid, playerid, passenger_seat, Float:new_x, Float:new_y, Float:new_z, Float:vel_x, Float:vel_y, Float:vel_z);
+forward OnPlayerSelectedMenuRow(playerid, row);
+forward OnPlayerExitedMenu(playerid);
+forward OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid);
+forward OnPlayerKeyStateChange(playerid, newkeys, oldkeys);
+forward OnRconLoginAttempt( ip[], password[], success );
+# forward OnPlayerUpdate(playerid);
+forward OnPlayerStreamIn(playerid, forplayerid);
+forward OnPlayerStreamOut(playerid, forplayerid);
+forward OnVehicleStreamIn(vehicleid, forplayerid);
+forward OnVehicleStreamOut(vehicleid, forplayerid);
+forward OnActorStreamIn(actorid, forplayerid);
+forward OnActorStreamOut(actorid, forplayerid);
+forward OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]);
+forward OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart);
+forward OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid, bodypart);
+forward OnPlayerGiveDamageActor(playerid, damaged_actorid, Float:amount, weaponid, bodypart);
+forward OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ);
+forward OnPlayerClickTextDraw(playerid, Text:clickedid);
+forward OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid);
+forward OnIncomingConnection(playerid, ip_address[], port);
+forward OnTrailerUpdate(playerid, vehicleid);
+forward OnVehicleSirenStateChange(playerid, vehicleid, newstate);
+forward OnPlayerClickPlayer(playerid, clickedplayerid, source);
+forward OnPlayerEditObject( playerid, playerobject, objectid, response, Float:fX, Float:fY, Float:fZ, Float:fRotX, Float:fRotY, Float:fRotZ );
+forward OnPlayerEditAttachedObject( playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ );
+forward OnPlayerSelectObject(playerid, type, objectid, modelid, Float:fX, Float:fY, Float:fZ);
+forward OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ);

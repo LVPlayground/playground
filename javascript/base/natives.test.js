@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Natives = require('natives.js');
-
 describe('Natives', it => {
     it('should throw when providing an unknown native', assert => {
         assert.throws(() => provideNative('ThisNativeDoesNotExist', '', () => 42));

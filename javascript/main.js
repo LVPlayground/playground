@@ -51,6 +51,10 @@ testRunner.run('**/*.test.js').then(notifyReady).then(() => {
         races:          require('features/races/races.js')
     });
 
+    // Call the OnJavaScriptLoaded callback in the Pawn code, which will trigger the gamemode in
+    // beginning to work with the JavaScript code where required.
+    pawnInvoke('OnJavaScriptLoaded');
+
 }, failures => {
     // One or more tests have failed. Refuse to start the gamemode.
     console.log('===============================================================');

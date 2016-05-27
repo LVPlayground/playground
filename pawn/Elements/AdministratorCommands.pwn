@@ -285,32 +285,6 @@ lvp_killtime(playerId, params[]) {
     return 1;
 }
 
-lvp_up(playerId, params[]) {
-    new distance = Command->integerParameter(params, 0);
-    if (Command->parameterCount(params) == 0) {
-        SendClientMessage(playerId, Color::Success, "This command moves you upwards by the chosen distance.");
-        SendClientMessage(playerId, Color::Information, "Usage: /up [distance]");
-        return 1;
-    }
-
-    new Float: position[3];
-    GetPlayerPos(playerId, position[0], position[1], position[2]);
-
-    if (position[2] > 60000) {
-        SendClientMessage(playerId, Color::Error, "You're too high!");
-        return 1;
-    }
-
-    if (IsPlayerInAnyVehicle(playerId))
-        SetVehiclePos(GetPlayerVehicleID(playerId), position[0], position[1], position[2] + distance);
-    else
-        SetPlayerPos(playerId, position[0], position[1], position[2] + distance);
-
-    SetCameraBehindPlayer(playerId);
-
-    return 1;
-}
-
 lvp_forward(playerId, params[]) {
     new distance = Command->integerParameter(params, 0);
     if (Command->parameterCount(params) == 0) {

@@ -27,12 +27,25 @@ class PositioningCommands {
             playerPosition.z, playerFacingAngle);
     }
 
+    // Dirty hack to get position of current non-javascript created vehicle of player
+    getPositionOfVehicle(vehicleId) {
+        return new Vector(...pawnInvoke('GetVehiclePos', 'iFFF', vehicleId));
+    }
+
+    // Dirty hack to set that position of current non-javascript created vehicle of player
+    setPositionOfVehicle(vehicleId, positions) {
+        pawnInvoke('SetVehiclePos', 'ifff', vehicleId, positions.x, positions.y,
+                   positions.z);
+    }
+
     onUpCommand(player, distance) {
         if (player.isInVehicle()) {
-            const playerVehiclePosition = player.currentVehicle.position;
-            player.currentVehicle.position =
+            const playerVehicleId = pawnInvoke('GetPlayerVehicleID', 'i', player.id);
+
+            const playerVehiclePosition = this.getPositionOfVehicle(playerVehicleId);
+            this.setPositionOfVehicle(playerVehicleId,
                 new Vector(playerVehiclePosition.x, playerVehiclePosition.y,
-                           playerVehiclePosition.z + distance);
+                           playerVehiclePosition.z + distance));
         }
         else {
             const playerPosition = player.position;

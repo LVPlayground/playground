@@ -5,7 +5,8 @@
 #include "Interface/Server/a_samp.pwn"
 
 // -------------------------------------------------------------------------------------------------
-// JavaScript is the future of the Las Venturas Playground gamemode.
+// JavaScript is the future of the Las Venturas Playground gamemode, however, features written in
+// it will only be available after IsJavaScriptInitialized() returns true.
 
 new bool: g_javaScriptInitialized = false;
 

@@ -85,7 +85,7 @@ CShell__SignPlayerUp(playerid)
     // get team BLUE and the var gets set to true. Then, if its set to true, they
     // get team green and its set to false. Nice & easy ;)
 
-    TakeRegulatedMoney(playerid, RivershellParticipate);
+    TakeRegulatedMoney(playerid, RivershellParticipation);
 
     new message[128];
     Responses->respondMinigameSignedUp(playerid, RivershellMinigame, "Rivershell", 20);
@@ -130,7 +130,7 @@ CShell__SignPlayerOut(playerid)
     CShell__Debug("SignPlayerOut process successfull.");
 
     if (g_RivershellState == RIVERSHELL_STATE_SIGNUP)
-        GiveRegulatedMoney(playerid, RivershellParticipate);
+        GiveRegulatedMoney(playerid, RivershellParticipation);
 
     if(g_RivershellState == RIVERSHELL_STATE_RUNNING)
     {
@@ -222,7 +222,7 @@ CShell__End()
         g_RivershellPlayer[i] = false;
 
         if (g_RivershellState == RIVERSHELL_STATE_SIGNUP) {
-            GiveRegulatedMoney(i, RivershellParticipate);
+            GiveRegulatedMoney(i, RivershellParticipation);
             ShowBoxForPlayer(i, "Not enough players have signed up for Rivershell. You have been refunded.");
         }
 

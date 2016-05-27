@@ -26,8 +26,6 @@
 
 #define     RW_MIN_PLAYER_COUNT     4
 
-#define     RW_SIGNUP_AMOUNT        250
-
 #define     RW_STATE_NONE           0
 #define     RW_STATE_SIGNUP         1
 #define     RW_STATE_COUNTDOWN      2
@@ -467,7 +465,7 @@ rwRemovePlayerFromMinigame(playerid)
     }
 
     if(rwGetState() == RW_STATE_SIGNUP)
-        GivePlayerMoney(playerid, RW_SIGNUP_AMOUNT);
+        GiveRegulatedMoney(playerid, RunWeaponsParticipation);
 
     ColorManager->releasePlayerMinigameColor(playerid);
     TimeController->releasePlayerOverrideTime(playerid);
@@ -552,11 +550,13 @@ rwOnCommand(playerid, params[])
         return 1;
     }
 
+    new const price = GetEconomyValue(RunWeaponsParticipation);
+
     // Has the player got enough money to signup?
-    if(GetPlayerMoney(playerid) < RW_SIGNUP_AMOUNT)
+    if(GetPlayerMoney(playerid) < price)
     {
         new szMsg[128];
-        format(szMsg, 128, "You need $%s to signup for this minigame.", formatPrice(RW_SIGNUP_AMOUNT));
+        format(szMsg, 128, "You need $%s to signup for this minigame.", formatPrice(price));
         ShowBoxForPlayer(playerid, szMsg);
         return 1;
     }
@@ -582,13 +582,14 @@ rwOnCommand(playerid, params[])
 
         rwInitialize(rounds);
 
-        Announcements->announceMinigameSignup(RunWeaponsTeamWarMinigame, "Run Weapons Team War", "/rwtw", RW_SIGNUP_AMOUNT, playerid);
+        Announcements->announceMinigameSignup(RunWeaponsTeamWarMinigame, "Run Weapons Team War", "/rwtw", price, playerid);
         GameTextForAllEx("~y~Run Weapons Team War~w~ is now signing up!~n~Want to join? ~r~/rwtw~w~!", 5000, 5);
     }
 
     // All good, sign the player up and we're done.
     rwSignPlayerUp(playerid);
-    GivePlayerMoney(playerid, -RW_SIGNUP_AMOUNT);
+
+    TakeRegulatedMoney(playerid, RunWeaponsParticipation);
 
     return 1;
 }

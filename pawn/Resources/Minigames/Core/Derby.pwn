@@ -53,7 +53,6 @@
 
 
 // Prices, rewards, and signup time.
-#define DERBY_JOIN_PRICE            250                 // How much does it cost to signup?
 #define DERBY_WINNING_PRIZE         10000               // How much does the winner of the minigame get?
 #define DERBY_SIGNUP_TIME           20                  // How many seconds do players get to signup before it starts?
 
@@ -344,7 +343,7 @@ CDerby__Start(iDerbyID)
             {
                 ShowBoxForPlayer(i, "Not enough players have signed up for this derby. You have been refunded.");
                 CDerby__PlayerExit(i, LONELY);
-                GivePlayerMoney(i, DERBY_JOIN_PRICE);
+                GiveRegulatedMoney(i, DerbyParticipation);
                 return 1;
             }
         #endif
@@ -568,7 +567,7 @@ CDerby__PlayerExit(iPlayerID, iReason)
     // Give the player a refund if they sign out.
     if(iReason == SIGNOUT)
     {
-        GivePlayerMoney(iPlayerID, DERBY_JOIN_PRICE);
+        GiveRegulatedMoney(iPlayerID, DerbyParticipation);
     }
 
     if(iReason != SIGNOUT && iReason != DISCONNECT)
@@ -586,8 +585,15 @@ CDerby__PlayerExit(iPlayerID, iReason)
         {
             format(szMessage, sizeof(szMessage), "~y~%s~w~ has finished: ~r~~h~%s~w~ has won!", CDerby__GetName(iDerbyID), Player(iPlayerID)->nicknameString());
             NewsController->show(szMessage);
-            GivePlayerMoney(iPlayerID, 10000);
-            SendClientMessage(iPlayerID,COLOR_GREEN,"* You won the derby and received $10.000!");
+
+            new const prize = GetEconomyValue(DerbyVictory);
+            new message[128];
+
+            format(message, sizeof(message), "* You won the derby and received $%s!", formatPrice(prize));
+            SendClientMessage(iPlayerID, COLOR_GREEN, message);
+
+            GiveRegulatedMoney(iPlayerID, DerbyVictory);
+
             WonMinigame[iPlayerID]++;
         }
     }
@@ -1379,10 +1385,12 @@ CDerby__OnCommand(playerid, params[])
         return 1;
     }
 
+    new const price = GetEconomyValue(DerbyParticipation);
+
     // Does the player have enough money?
-    if(GetPlayerMoney(playerid) < DERBY_JOIN_PRICE)
+    if(GetPlayerMoney(playerid) < price)
     {
-        format(str,128,"* You require $%s to sign up for the %s.", formatPrice(DERBY_JOIN_PRICE), CDerby__GetName(iDerbyID));
+        format(str,128,"* You require $%s to sign up for the %s.", formatPrice(price), CDerby__GetName(iDerbyID));
         SendClientMessage(playerid,COLOR_RED,str);
         return 1;
     }
@@ -1393,7 +1401,7 @@ CDerby__OnCommand(playerid, params[])
         CDerby__Intialize(iDerbyID);
 
         format(str, sizeof(str), "/derby %d", iDerbyID);
-        Announcements->announceMinigameSignup(DerbyMinigame, CDerby__GetName(iDerbyID), str, DERBY_JOIN_PRICE, playerid);
+        Announcements->announceMinigameSignup(DerbyMinigame, CDerby__GetName(iDerbyID), str, price, playerid);
         format(str, sizeof(str), "~y~%s derby~w~ is now signing up!~n~Want to join? ~r~/derby %d~w~!", CDerby__GetName(iDerbyID), iDerbyID);
         GameTextForAllEx(str, 5000, 5);
     }
@@ -1409,7 +1417,7 @@ CDerby__OnCommand(playerid, params[])
         CDerby__GetName(iDerbyID), iDerbyID);
     NewsController->show(str);
 
-    GivePlayerMoney(playerid, -DERBY_JOIN_PRICE);
+    TakeRegulatedMoney(playerid, DerbyParticipation);
     return 1;
 }
 

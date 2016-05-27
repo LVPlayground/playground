@@ -244,7 +244,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        new const price = GetEconomyValue(RivershellParticipate);
+        new const price = GetEconomyValue(RivershellParticipation);
 
         if(GetPlayerMoney(playerid) < price)
         {

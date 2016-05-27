@@ -35,7 +35,6 @@
 #define ROBBERY_VWORLD 69       // the vworld for this game
 #define ROBBERY_STEALAMOUNT teamCount[0]*25  // How muc needs to be stolen
 #define ROBBERY_BOMBTIME    10  // how long it'll take for the bomb to explode
-#define ROBBERY_WINMONEY 5000*casinoSignupCount // how much the winners actually get in $
 
 // Phases
 // [0] - Attackers going into the casino
@@ -714,9 +713,13 @@ CRobbery__OnCommand(playerid)
         return 1;
     }
 
-    if(GetPlayerMoney(playerid) < 250) {
-        // Can't afford it.
-        SendClientMessage(playerid, COLOR_RED, "You need $250 to sign up for this minigame!");
+    new const price = GetEconomyValue(RobberyParticipation);
+
+    if(GetPlayerMoney(playerid) < price) {
+        new message[128];
+        format(message, sizeof(message), "You need $%s to sign up for this minigame!", formatPrice(price));
+
+        SendClientMessage(playerid, COLOR_RED, message);
         return 1;
     }
 
@@ -736,7 +739,7 @@ CRobbery__OnCommand(playerid)
     format(string, 128, "%s (Id:%d) has signed up for /robbery.", PlayerName(playerid), playerid);
     Admin(playerid, string);
 
-    GivePlayerMoney(playerid, -250);
+    TakeRegulatedMoney(playerid, RobberyParticipation);
     CRobbery__PlayerJoin(playerid);
     return 1;
 }
@@ -829,7 +832,7 @@ CRobbery__Process()
                     {
                         // We must let them know.
                         ShowBoxForPlayer(i, "Not enough players have signed up for Casino Robbery. You have been refunded.");
-                        GivePlayerMoney(i, 250);
+                        GiveRegulatedMoney(i, RobberyParticipation);
                     }
                 }
                 CRobbery__ResetVars();
@@ -1035,7 +1038,7 @@ CRobbery__End()
         if(CRobbery__GetPlayerStatus(i) != ROBSTATUS_PLAYING) continue;
         if(CRobbery__GetPlayerTeam(i) == casinoData[winners])
         {
-            GivePlayerMoney(i, ROBBERY_WINMONEY);
+            GiveRegulatedMoney(i, RobberyVictory, casinoSignupCount);
         }
         CRobbery__PlayerExit(i);
     }
@@ -1078,9 +1081,9 @@ CRobbery__PlayerExit(playerid)
     }
 
     // Done the hard stuff! Now, let's give them a refund if they never got to play.
-    if(CRobbery__GetStatus() == ROBSTATUS_SIGNUP)
-        GivePlayerMoney(playerid, 250);
-    else {
+    if(CRobbery__GetStatus() == ROBSTATUS_SIGNUP) {
+        GiveRegulatedMoney(playerid, RobberyParticipation);
+    } else {
         // Ugh oh. They're playing! Fuck!
 
         // Restore the marker colors for all players who played in the robbery.

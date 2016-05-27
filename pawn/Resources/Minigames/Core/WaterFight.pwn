@@ -30,8 +30,6 @@
 
 #define     WATER_FIGHT_MIN_PLAYERS         2
 
-#define     WATER_FIGHT_SIGNUP_COST         2500
-
 #define     WATER_FIGHT_MAX_RUNTIME         60      // Max time the minigame can run for.
 
 #define     WATER_FIGHT_MAX_HEALTH          50000 // Max Health in the minigame.
@@ -112,7 +110,7 @@ static Float:waterFightObjectCoords[WATER_FIGHT_MAX_OBJECTS][7] = {
 
 
 // Initialize the game, create the objects, and put it into its signup phase
-stock waterFightInitialize()
+waterFightInitialize()
 {
     waterFightInitObjects();
     waterFightSetState(WATER_FIGHT_STATE_SIGNUP);
@@ -121,7 +119,7 @@ stock waterFightInitialize()
 
 
 // 20 seconds have passed. Start the game!
-stock waterFightStart()
+waterFightStart()
 {
     waterFightSetState(WATER_FIGHT_STATE_COUNTDOWN);
     waterFightCountdown = 5;
@@ -147,7 +145,7 @@ stock waterFightStart()
 }
 
 // End the water fight minigame
-stock waterFightEnd()
+waterFightEnd()
 {
     waterFightDestroyObjects();
     waterFightSetState(WATER_FIGHT_STATE_IDLE);
@@ -156,7 +154,7 @@ stock waterFightEnd()
 
 
 // Create the water fight objects
-stock waterFightInitObjects()
+waterFightInitObjects()
 {
     for(new i = 0; i < WATER_FIGHT_MAX_OBJECTS; i++)
     {
@@ -165,7 +163,7 @@ stock waterFightInitObjects()
 }
 
 // Destroy the objects
-stock waterFightDestroyObjects()
+waterFightDestroyObjects()
 {
     for(new i = 0; i < WATER_FIGHT_MAX_OBJECTS; i++)
     {
@@ -365,7 +363,7 @@ waterFightProcess()
 
 
 // Sign the player up
-stock waterFightSignPlayerUp(playerid)
+waterFightSignPlayerUp(playerid)
 {
     if(waterFightGetState() != WATER_FIGHT_STATE_SIGNUP)
     {
@@ -383,7 +381,7 @@ stock waterFightSignPlayerUp(playerid)
 
 // Remove the player from the minigame. Either they have been knocked out or
 // they have /left
-stock waterFightRemovePlayer(playerid, bool:bLoadData = true)
+waterFightRemovePlayer(playerid, bool:bLoadData = true)
 {
     if(waterFightSignedUp[playerid] == false)
     {
@@ -394,7 +392,7 @@ stock waterFightRemovePlayer(playerid, bool:bLoadData = true)
     waterFightSignedUp[playerid] = false;
 
     if (waterFightGetState() == WATER_FIGHT_STATE_SIGNUP)
-        GivePlayerMoney(playerid, WATER_FIGHT_SIGNUP_COST);
+        GiveRegulatedMoney(playerid, WaterFightParticipation);
 
     if(waterFightGetState() == WATER_FIGHT_STATE_RUNNING && bLoadData == true)
     {
@@ -403,13 +401,13 @@ stock waterFightRemovePlayer(playerid, bool:bLoadData = true)
     }
 }
 
-stock waterFightOnDisconnect(playerid)
+waterFightOnDisconnect(playerid)
 {
     waterFightRemovePlayer(playerid);
 }
 
 // Return the status of a player (i.e. have they signed up or not)
-stock waterFightIsPlayerSignedUp(playerid)
+waterFightIsPlayerSignedUp(playerid)
 {
     if(waterFightSignedUp[playerid] == true)
     {
@@ -422,7 +420,7 @@ stock waterFightIsPlayerSignedUp(playerid)
 }
 
 // return 1 if the player is playing the minigame otherwise 0
-stock waterFightIsPlayerPlaying(playerid)
+waterFightIsPlayerPlaying(playerid)
 {
     if(waterFightGetState() != WATER_FIGHT_STATE_RUNNING)
     {
@@ -432,7 +430,7 @@ stock waterFightIsPlayerPlaying(playerid)
 }
 
 // Spawn the player on top of the water fight object thingie.
-stock waterFightSpawnPlayer(playerid)
+waterFightSpawnPlayer(playerid)
 {
     waterFightSaveData(playerid);
 
@@ -462,7 +460,7 @@ stock waterFightSpawnPlayer(playerid)
 // This is called from OnPlayerStateChange.
 // If the player playing water fight and their state changes they are
 // removed from the minigame.
-stock waterFightStateChange(playerid)
+waterFightStateChange(playerid)
 {
     if(waterFightIsPlayerPlaying(playerid))
     {
@@ -471,32 +469,32 @@ stock waterFightStateChange(playerid)
 }
 
 // Svae the players game state prior to the minigame starting.
-stock waterFightSaveData(playerid)
+waterFightSaveData(playerid)
 {
     SavePlayerGameState(playerid);
 }
 
 // Retireve previously saved data. Useful for when the minigame has ended
-stock waterFightLoadData(playerid)
+waterFightLoadData(playerid)
 {
     LoadPlayerGameState(playerid);
 }
 
 
 // Set the current state of the minigame. See the defines at the top
-stock waterFightSetState(iState)
+waterFightSetState(iState)
 {
     waterFightState = iState;
 }
 
 // Return the current state of the minigame
-stock waterFightGetState()
+waterFightGetState()
 {
     return waterFightState;
 }
 
 // Called when a player types /waterfight cmd
-stock OnWaterFightCmdText(playerid)
+OnWaterFightCmdText(playerid)
 {
     if(IsPlayerInMinigame(playerid))
     {
@@ -516,21 +514,21 @@ stock OnWaterFightCmdText(playerid)
         return 1;
     }
 
-    if(GetPlayerMoney(playerid) < WATER_FIGHT_SIGNUP_COST)
+    new const price = GetEconomyValue(WaterFightParticipation);
+    if(GetPlayerMoney(playerid) < price)
     {
-        ShowPlayerBox(playerid, "It costs $%d to join Water fights!", WATER_FIGHT_SIGNUP_COST);
+        ShowPlayerBox(playerid, "It costs $%d to join Water fights!", price);
         return 1;
     }
 
-
-    GivePlayerMoney(playerid, -WATER_FIGHT_SIGNUP_COST);
+    TakeRegulatedMoney(playerid, WaterFightParticipation);
 
     new szAdminMsg[128];
 
     // Start the minigame
     if (waterFightGetState() == WATER_FIGHT_STATE_IDLE) {
         waterFightInitialize();
-        Announcements->announceMinigameSignup(WaterFightMinigame, "WaterFight", "/waterfight", WATER_FIGHT_SIGNUP_COST, playerid);
+        Announcements->announceMinigameSignup(WaterFightMinigame, "WaterFight", "/waterfight", price, playerid);
         GameTextForAllEx("~y~WaterFight~w~ is now signing up!~n~Want to join? ~r~/waterfight~w~!", 5000, 5);
     }
     Responses->respondMinigameSignedUp(playerid, WaterFightMinigame, "WaterFight", 20);

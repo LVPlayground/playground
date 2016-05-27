@@ -2,6 +2,8 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
+new g_lastAirportGateOpenTime[MAX_PLAYERS];
+
 /*******************************************************************************
 *   Las Venturas Playground v2.90 - areahandler.pwn. This file contains        *
 *   everything to do with area management in Las Venturas Playground, such as  *
@@ -127,7 +129,7 @@ AirportGateCheck(i)
             else
             {
 
-                if(GetPlayerMoney(i) >= tax && endid != i && !isGateOpen && GetPlayerState(i) != PLAYER_STATE_PASSENGER)
+                new const timeSinceLastAirportTax = Time->currentTime() - g_lastAirportGateOpenTime[i];
                 {
                     // we take the money away :> But, only if they have enough!
                     // Is it the airport owner entering the airport?
@@ -136,6 +138,8 @@ AirportGateCheck(i)
                     {
                         ShowBoxForPlayer(i, szMessage);
                         TakeRegulatedMoney(i, AirportCustomsTax);
+
+                        g_lastAirportGateOpenTime[i] = Time->currentTime();
                     }
 
                     OpenAirportGate();
@@ -179,7 +183,7 @@ AirportGateCheck(i)
 // ------------------------------------------------------------------------------
 
 // Airport gate functions:
-stock OpenAirportGate()
+OpenAirportGate()
 {
     MoveDynamicObject(AirportGate, 1702.365845, 1596.505493, 12.022984 , 3.0 );
 
@@ -187,7 +191,7 @@ stock OpenAirportGate()
     PlaySoundForPlayersInRange(1153, 30, 1702.365845, 1596.505493, 12.022984);
 }
 
-stock CloseAirportGate()
+CloseAirportGate()
 {
     if(briefStatus != BRIEF_STATE_RUNNING)
     {

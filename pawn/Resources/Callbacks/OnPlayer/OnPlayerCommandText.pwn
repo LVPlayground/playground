@@ -87,18 +87,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
     new moneys;
 
-    // commands for testing
-    if (!strcmp(cmdtext, "/pos", true)) {
-        new message[64], Float: position[3], Float: rotation;
-        GetPlayerPos(playerid, position[0], position[1], position[2]);
-        GetPlayerFacingAngle(playerid, rotation);
-
-        format(message, sizeof(message), "Position: [%.2f, %.2f, %.2f]; Rotation: [%.2f]",
-            position[0], position[1], position[2], rotation);
-        SendClientMessage(playerid, COLOR_WHITE, message);
-        return 1;
-    }
-
 #if BETA_TEST == 1
         if(!strcmp(cmdtext, "/vehid", true))
         {
@@ -558,14 +546,13 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(showmessage,   11, PlayerLevel);
     lvp_command(jump,           4, PlayerLevel);
     lvp_command(tune,           4, PlayerLevel);
-    lvp_command(pos,            3, PlayerLevel);
     lvp_command(My,             2, PlayerLevel);
     lvp_command(Robbery,        7, PlayerLevel);
     lvp_command(Wwtw,           4, PlayerLevel);
     lvp_command(Rwtw,           4, PlayerLevel);
     lvp_command(minigaming,    10, PlayerLevel);
 
-    // Commands for  administrators:
+    // Commands for administrators:
     lvp_command(clear,          5, AdministratorLevel);
     lvp_command(crew,           4, AdministratorLevel);
     lvp_command(show,           4, AdministratorLevel);

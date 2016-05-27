@@ -878,19 +878,6 @@ lvp_showmessage(playerid,params[])
     return 1;
 }
 
-lvp_pos(playerid, params[])
-{
-    new szMsg[128];
-    new Float:fPosX, Float:fPosY, Float:fPosZ;
-    GetPlayerPos (playerid, fPosX, fPosY, fPosZ);
-    format (szMsg, sizeof (szMsg), "Your position: %f %f %f", fPosX, fPosY, fPosZ);
-    {
-        SendClientMessage(playerid, COLOR_WHITE, szMsg);
-        return 1;
-    }
-    #pragma unused params
-}
-
 // Command: /interest
 // Level: Player
 // Parameters: amount

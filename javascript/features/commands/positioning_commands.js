@@ -9,8 +9,13 @@ const Vector = require('base/vector.js');
 // direction looking in. Some small positioning-related commands are for that defined in here.
 class PositioningCommands {
     constructor() {
-        server.commandManager.buildCommand('getpos')
-            .build(PositioningCommands.prototype.onGetPosCommand.bind(this));
+        server.commandManager.buildCommand('pos')
+            .sub(CommandBuilder.NUMBER_PARAMETER) // x
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+                .parameters([{ name: 'y', type: CommandBuilder.NUMBER_PARAMETER },
+                             { name: 'z', type: CommandBuilder.NUMBER_PARAMETER }])
+                .build(PositioningCommands.prototype.onSetPosCommand.bind(this))
+            .build(PositioningCommands.prototype.onPosCommand.bind(this));
 
         server.commandManager.buildCommand('up')
             .restrict(Player.LEVEL_ADMINISTRATOR)
@@ -18,13 +23,20 @@ class PositioningCommands {
             .build(PositioningCommands.prototype.onUpCommand.bind(this));
     }
 
-    onGetPosCommand(player) {
+    onPosCommand(player) {
         const playerPosition = player.position;
         const playerFacingAngle = player.facingAngle;
 
         player.sendMessage(
             Message.POSITIONING_CURRENT_POSITION, playerPosition.x, playerPosition.y,
             playerPosition.z, playerFacingAngle);
+
+        if(player.level == Player.LEVEL_ADMINISTRATOR)
+            player.sendMessage(Message.POSITIONING_OTHER_USAGE_POS);
+    }
+
+    onSetPosCommand(player, x, y, z) {
+        player.position = new Vector (x, y, z);
     }
 
     // Dirty hack to get position of current non-javascript created vehicle of player
@@ -57,7 +69,8 @@ class PositioningCommands {
 
     // Cleans up the state created by this class, i.e. unregisters the commands.
     dispose() {
-        server.commandManager.removeCommand('getpos');
+        server.commandManager.removeCommand('pos');
+        server.commandManager.removeCommand('up');
     }
 }
 

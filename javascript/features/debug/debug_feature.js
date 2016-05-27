@@ -41,14 +41,6 @@ class DebugFeature extends Feature {
         .restrict(Player.LEVEL_ADMINISTRATOR)
         .build(this.__proto__.intsel.bind(this));
 
-    // /pos [x] [y] [z]
-    server.commandManager.buildCommand('pos')
-        .restrict(Player.LEVEL_ADMINISTRATOR)
-        .parameters([ { name: 'x', type: CommandBuilder.NUMBER_PARAMETER },
-                      { name: 'y', type: CommandBuilder.NUMBER_PARAMETER },
-                      { name: 'z', type: CommandBuilder.NUMBER_PARAMETER } ])
-        .build(this.__proto__.pos.bind(this));
-
     // /int [id]
     server.commandManager.buildCommand('int')
         .restrict(Player.LEVEL_ADMINISTRATOR)
@@ -128,11 +120,6 @@ class DebugFeature extends Feature {
       else
         player.sendMessage('You did not select an interior');
     });
-  }
-
-  // Changes the position of |player| to the vector of [x, y, z].
-  pos(player, x, y, z) {
-    player.position = new Vector(x, y, z);
   }
 
   // Changes the interior of |player| to |id|.

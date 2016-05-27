@@ -37,11 +37,6 @@ class BanCommands {
             return 1;
         }
 
-        if (Player(subjectId)->isAdministrator() == true) {
-            SendClientMessage(playerId, Color::Error, "You can't ban a crew member!");
-            return 1;
-        }
-
         new durationLength[8], duration = (Command->integerParameter(params, 1) == -1) ?
             BanManager::DefaultBanDuration : Command->integerParameter(params, 1);
         if (duration < 1) {
@@ -107,11 +102,6 @@ class BanCommands {
 
         if (Player(subjectId)->isNonPlayerCharacter() == true) {
             SendClientMessage(playerId, Color::Error, "You can't kick a NPC!");
-            return 1;
-        }
-
-        if (Player(subjectId)->isAdministrator() == true && Player(playerId)->isManagement() == false) {
-            SendClientMessage(playerId, Color::Error, "You can't kick a crew member!");
             return 1;
         }
 

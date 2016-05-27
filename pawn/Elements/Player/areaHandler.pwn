@@ -128,8 +128,9 @@ AirportGateCheck(i)
             }
             else
             {
-
                 new const timeSinceLastAirportTax = Time->currentTime() - g_lastAirportGateOpenTime[i];
+
+                if(GetPlayerMoney(i) >= tax && endid != i && !isGateOpen && GetPlayerState(i) != PLAYER_STATE_PASSENGER && timeSinceLastAirportTax > 15)
                 {
                     // we take the money away :> But, only if they have enough!
                     // Is it the airport owner entering the airport?

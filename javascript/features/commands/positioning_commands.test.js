@@ -30,4 +30,25 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
             Message.format(Message.POSITIONING_CURRENT_POSITION, guntherPosition.x,
                            guntherPosition.y, guntherPosition.z, gunther.facingAngle));
     });
+
+    it('/up can\'t be executed by a player', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        gunther.position = new Vector (1, 2, 3);
+
+        assert.isTrue(gunther.issueCommand('/up 5'));
+
+        assert.equal(gunther.position.z, 3);
+    });
+
+    it('/up places the crewmember on foot [distance] higher', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+        gunther.position = new Vector (1, 2, 3);
+
+        assert.isTrue(gunther.issueCommand('/up 5'));
+
+        assert.equal(gunther.position.z, 8);
+    });
 });

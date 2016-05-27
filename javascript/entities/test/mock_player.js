@@ -258,6 +258,11 @@ class MockPlayer {
         });
     }
 
+    // Tells the test whether the player is in a vehicle
+    isInVehicle() {
+        return this.currentVehicle() != null;
+    }
+
     // TODO: Add new getters and setters as required.
 }
 

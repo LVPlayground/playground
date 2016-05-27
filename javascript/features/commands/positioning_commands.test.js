@@ -19,7 +19,7 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
     it('/pos should show the x, y, z-coörds and rotation to the player', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        gunther.position = new Vector (0, 1, 2);
+        gunther.position = new Vector(0, 1, 2);
         const guntherPosition = gunther.position;
         gunther.facingAngle = 3;
 
@@ -34,7 +34,7 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
     it('/pos x y z should only show the position to the player', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        gunther.position = new Vector (0, 1, 2);
+        gunther.position = new Vector(0, 1, 2);
         gunther.facingAngle = 3;
 
         assert.isTrue(gunther.issueCommand('/pos 3 4 5'));
@@ -54,7 +54,7 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         gunther.level = Player.LEVEL_ADMINISTRATOR;
-        gunther.position = new Vector (0, 1, 2);
+        gunther.position = new Vector(0, 1, 2);
         const guntherPosition = gunther.position;
         gunther.facingAngle = 3;
 
@@ -71,7 +71,7 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         gunther.level = Player.LEVEL_ADMINISTRATOR;
-        gunther.position = new Vector (0, 1, 2);
+        gunther.position = new Vector(0, 1, 2);
 
         assert.isTrue(gunther.issueCommand('/pos 3 4 5'));
 
@@ -84,7 +84,7 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
     it('/up can\'t be executed by a player', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        gunther.position = new Vector (1, 2, 3);
+        gunther.position = new Vector(1, 2, 3);
 
         assert.isTrue(gunther.issueCommand('/up 5'));
 
@@ -95,7 +95,7 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         gunther.level = Player.LEVEL_ADMINISTRATOR;
-        gunther.position = new Vector (1, 2, 3);
+        gunther.position = new Vector(1, 2, 3);
 
         assert.isTrue(gunther.issueCommand('/up 5'));
 

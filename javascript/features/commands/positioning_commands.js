@@ -11,7 +11,7 @@ class PositioningCommands {
     constructor() {
         server.commandManager.buildCommand('pos')
             .sub(CommandBuilder.NUMBER_PARAMETER) // x
-            .restrict(Player.LEVEL_ADMINISTRATOR)
+                .restrict(Player.LEVEL_ADMINISTRATOR)
                 .parameters([{ name: 'y', type: CommandBuilder.NUMBER_PARAMETER },
                              { name: 'z', type: CommandBuilder.NUMBER_PARAMETER }])
                 .build(PositioningCommands.prototype.onSetPosCommand.bind(this))
@@ -31,12 +31,12 @@ class PositioningCommands {
             Message.POSITIONING_CURRENT_POSITION, playerPosition.x, playerPosition.y,
             playerPosition.z, playerFacingAngle);
 
-        if(player.level == Player.LEVEL_ADMINISTRATOR)
+        if (player.level == Player.LEVEL_ADMINISTRATOR)
             player.sendMessage(Message.POSITIONING_OTHER_USAGE_POS);
     }
 
     onSetPosCommand(player, x, y, z) {
-        player.position = new Vector (x, y, z);
+        player.position = new Vector(x, y, z);
     }
 
     // Dirty hack to get position of current non-javascript created vehicle of player

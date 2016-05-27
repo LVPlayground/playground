@@ -134,15 +134,9 @@
     <DiskObject>\Features\Deathmatch\Ammunation\AmmunationManager.pwn</DiskObject>
     <DiskObject>\Features\Deathmatch\Ammunation\AmmunationWeapon.pwn</DiskObject>
     <DiskObject>\Features\Deathmatch\DamageManager.pwn</DiskObject>
+    <DiskObject>\Features\Deathmatch\DeathmatchCommands.pwn</DiskObject>
     <DiskObject>\Features\Deathmatch\DeathMessageManager.pwn</DiskObject>
     <DiskObject>\Features\Deathmatch\DropWeaponsCashHandler.pwn</DiskObject>
-    <DiskObject>\Features\Deathmatch\FightClub\</DiskObject>
-    <DiskObject>\Features\Deathmatch\FightClub\FightClubArenas.pwn</DiskObject>
-    <DiskObject>\Features\Deathmatch\FightClub\FightClubCommands.pwn</DiskObject>
-    <DiskObject>\Features\Deathmatch\FightClub\FightClubInvitationManager.pwn</DiskObject>
-    <DiskObject>\Features\Deathmatch\FightClub\FightClubManager.pwn</DiskObject>
-    <DiskObject>\Features\Deathmatch\FightClub\FightClubScoreBoard.pwn</DiskObject>
-    <DiskObject>\Features\Deathmatch\FightClub\FightClubSpectateHandler.pwn</DiskObject>
     <DiskObject>\Features\Deathmatch\Hitman\</DiskObject>
     <DiskObject>\Features\Deathmatch\Hitman\HitmanCommands.pwn</DiskObject>
     <DiskObject>\Features\Deathmatch\Hitman\HitmanTracker.pwn</DiskObject>
@@ -180,6 +174,7 @@
     <DiskObject>\Features\Gameplay.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\</DiskObject>
     <DiskObject>\Features\Gameplay\Achievements.pwn</DiskObject>
+    <DiskObject>\Features\Gameplay\AnniversaryStatistics.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\ClassManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Colors\</DiskObject>
     <DiskObject>\Features\Gameplay\Colors\ColorManager.pwn</DiskObject>
@@ -191,6 +186,7 @@
     <DiskObject>\Features\Gameplay\Commands\Mute\MuteManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\PlayerInfoHandler.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\PlayerSpectateHandler.pwn</DiskObject>
+    <DiskObject>\Features\Gameplay\Commands\ReportHandler.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\Announcements.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\CallCommands.pwn</DiskObject>

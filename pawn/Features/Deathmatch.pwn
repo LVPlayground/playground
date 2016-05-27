@@ -32,14 +32,5 @@
 // A seperate environment for players to have fair fights: the FightClub.
 #define MAX_FC_MATCHES 30
 
-#if Feature::EnableFightClub == 1
-    #include "Features/Deathmatch/FightClub/FightClubManager.pwn"
-    #include "Features/Deathmatch/FightClub/FightClubInvitationManager.pwn"
-    #include "Features/Deathmatch/FightClub/FightClubSpectateHandler.pwn"
-    #include "Features/Deathmatch/FightClub/FightClubArenas.pwn"
-    #include "Features/Deathmatch/FightClub/FightClubCommands.pwn"
-    #include "Features/Deathmatch/FightClub/FightClubScoreBoard.pwn"
-#endif
-
 // The DamageManager makes sure proper damage is dealt when needed.
 #include "Features/Deathmatch/DamageManager.pwn"

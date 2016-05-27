@@ -9,6 +9,7 @@ class ScopedEntities {
     constructor({ interiorId = 0, virtualWorld = 0 } = {}) {
         this.actors_ = new Set();
         this.objects_ = new Set();
+        this.textLabels_ = new Set();
         this.vehicles_ = new Set();
 
         this.interiorId_ = interiorId;
@@ -63,6 +64,26 @@ class ScopedEntities {
     // Returns whether |object| belongs to this set of scoped entities.
     hasObject(object) { return this.objects_ && this.objects_.has(object); }
 
+    // Creates the text label with the |options|, which must match those of the TextLabelManager.
+    // The object will be removed automatically when this instance is being disposed of.
+    createTextLabel(options) {
+        if (!this.textLabels_)
+            throw new Error('Unable to create the text label, this object has been disposed of.');
+
+        // Note that text labels exist in all interiors simultaneously.
+
+        if (this.virtualWorld_)
+            options.virtualWorld = this.virtualWorld_;
+
+        const textLabel = server.textLabelManager.createTextLabel(options);
+
+        this.textLabels_.add(textLabel);
+        return textLabel;
+    }
+
+    // Returns whether the |textLabel| belongs to this set of scoped text labels.
+    hasTextLabel(textLabel) { return this.textLabels_ && this.textLabels_.has(textLabel); }
+
     // Creates a vehicle scoped to the lifetime of this object. The passed arguments must match
     // those accepted by VehicleManager.createVehicle() on the global Server object.
     createVehicle(options) {
@@ -98,6 +119,9 @@ class ScopedEntities {
 
         this.objects_.forEach(safeDisposeEntity);
         this.objects_ = null;
+
+        this.textLabels_.forEach(safeDisposeEntity);
+        this.textLabels_ = null;
 
         this.vehicles_.forEach(safeDisposeEntity);
         this.vehicles_ = null;

@@ -447,7 +447,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if(GetPlayerInterior(playerid) != 0)
+        if(GetPlayerInterior(playerid) != 0 || iPlayerInVipRoom[playerid])
         {
             ShowBoxForPlayer(playerid, "You can't use this command while being in an interior!");
             return 1;

@@ -129,22 +129,15 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: 
         if (Player(hitid)->isMinimized())
             return 0;
 
-        // The safe-zone should avoid damage infliction to a player.
-        if (ShipManager->isPlayerWalkingOnShip(hitid))
-            return 0;
-
         // Crew members using god-mode should not be able to take damage.
         if (LegacyPlayerHasGodMode(hitid))
             return 0;
 
-        // Players inside interiors (including VIP room), should not be hurt.
+        // Players inside interiors (including VIP room), should not be hurt, various minigames are
+        // exceptions to this rule.
         if (GetPlayerInterior(hitid) != 0 || LegacyIsPlayerInVipRoom(hitid)) {
-            // Various minigames are exceptions to this rule.
-            if (!CFightClub__IsPlayerFighting(playerid) &&
-                    !CWWT__IsPlaying(playerid) &&
-                    !CRobbery__IsPlaying(playerid)) {
+            if (!CFightClub__IsPlayerFighting(playerid) && !CWWT__IsPlaying(playerid) && !CRobbery__IsPlaying(playerid))
                 return 0;
-            }
         }
     }
 

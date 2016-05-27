@@ -185,7 +185,7 @@ lvp_fetch(playerId, params[]) {
     if (IsPlayerInMapZone(subjectId))
         OnPlayerLeaveMapZone(subjectId, -1);
 
-    if (!iPlayerInVipRoom[playerId])
+    if (iPlayerInVipRoom[playerId])
         iPlayerInVipRoom[subjectId] = false;
 
     new Float: position[3];

@@ -355,8 +355,8 @@ lvp_taxi(playerid,params[])
         return 1;
     }
 
-    // If our player is in the VIP room, they can't call a taxi because OnPlayerInteriorChange sets them back outside the VIP room pickup, so it won't work.
-    if(GetPlayerInterior(playerid) == 12)
+    // If our player is in the VIP room, they can't call a taxi.
+    if(iPlayerInVipRoom[playerid])
     {
         ShowBoxForPlayer(playerid, "Step out of the VIP room first.");
         return 1;

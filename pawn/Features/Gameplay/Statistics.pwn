@@ -182,7 +182,7 @@ class Statistics {
         // Heli kills.
         m_heliKills[playerId] = MyHeliKills[playerId];
 
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
         // Fightclub kills.
         m_fightclubKills[playerId] = CFightClub__GetKillCount(playerId);
 

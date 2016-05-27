@@ -106,7 +106,7 @@ class DropWeaponsCashHandler {
      */
     @list(OnPlayerDeath)
     public dropPlayerWeaponsCash(playerId, killerId, reason) {
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
         if (IsPlayerInMinigame(playerId) || CFightClub__GetPlayerStatus(playerId) == 4 /* FC_STATUS_FIGHTING */)
             return 0;
 #endif

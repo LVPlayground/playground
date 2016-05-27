@@ -4,7 +4,7 @@
 
 new g_message[256];
 
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
 lvp_resetfc(playerId, params[]) {
     CFightClub__TerminateAllMatches();
 

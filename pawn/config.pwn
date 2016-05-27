@@ -88,8 +88,8 @@ class Feature {
     /** **************************************************************************************** **/
     /// Deathmatch
 
-    // Enable the rewritten Fight Club handlers.
-    public const EnableFightClub = 0;
+    // Disables the Pawn version of the flight club handler.
+    public const DisableFightClub = 0;
 
     /** **************************************************************************************** **/
     /// Christmas

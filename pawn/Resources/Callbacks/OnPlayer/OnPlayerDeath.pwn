@@ -116,7 +116,7 @@ public OnPlayerDeath(playerid, killerid, reason) {
     ClearPlayerMenus(playerid);
     iPlayerSesDeaths[playerid]++;
 
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
     // An admin might use /kill in a fight, in which case we don't reset the killerid.
     if (preventKillLamers[playerid] && CFightClub__IsPlayerFighting(playerid))
         preventKillLamers[playerid] = 0;
@@ -230,7 +230,7 @@ public OnPlayerDeath(playerid, killerid, reason) {
         return 1;
     }
 
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
     // Fightclub
     if (CFightClub__IsPlayerFighting(playerid)) {
         CFightClub__OnDeath(playerid, killerid);

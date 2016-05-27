@@ -179,7 +179,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         }
     }
 
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
     // Prevents players from using commands whilst fighting in the FightClub
     if (CFightClub__GetPlayerStatus(playerid) == FC_STATUS_FIGHTING && Player(playerid)->isAdministrator() == false)
     {
@@ -500,7 +500,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     }
 
     // Commands for testing:
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
     lvp_command(Fight,          5, PlayerLevel);
 #endif
 
@@ -559,7 +559,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(announce,       8, AdministratorLevel);
     lvp_command(hasfix,         6, AdministratorLevel);
 
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
     lvp_command(resetfc,        7, AdministratorLevel);
     lvp_command(resetmatch,    10, AdministratorLevel);
 #endif

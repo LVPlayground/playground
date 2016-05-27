@@ -13,7 +13,7 @@
 *                   Author: Various                                            *
 *******************************************************************************/
 
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
 // This command was created by Martijnc a while back in the old
 // command syntax. It has been cleaned up here, and is in testing. This
 // will only be used in future versions, and will not be included in LVP 2.90.

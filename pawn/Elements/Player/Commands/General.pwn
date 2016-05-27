@@ -89,7 +89,7 @@ lvp_minigaming(playerid, params[]) {
             continue;
         }
 
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
         if (CFightClub__IsPlayerFighting(subjectId)) {
             format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t-", minigaming,
                 ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
@@ -558,7 +558,7 @@ lvp_locate(playerid,params[])
     if(IsPlayerInMinigame(iPlayerID))
     format(szMessage,128,"%s is taking part in the %s minigame, somewhat near", PlayerName(iPlayerID), GetPlayerMinigameName(iPlayerID));
 
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
     if(CFightClub__IsPlayerFighting(iPlayerID))
     {
         format(szMessage,128,"%s is currently fighting in the FightClub, use '/fight watch %d' to watch him!", PlayerName(iPlayerID), PlayerMatch[iPlayerID]);

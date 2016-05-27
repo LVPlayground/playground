@@ -60,7 +60,7 @@ class DeprecatedTimerRuntime {
 #endif
 
         ProcessMapZoneRaces();
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
         CFightClub__Process();
 #endif
 

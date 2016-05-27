@@ -172,7 +172,7 @@ ResetPlayerGameStateVariables(playerId) {
 ResetPlayerStats(playerId) {
     for (new i = 0; i < MAX_PLAYERS; i++) g_Ignore[playerId][i] = false;
     g_VirtualWorld[playerId] = 0;
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
     IsPlayerWatchingFC[playerId] = false;
 #endif
     for (new i =0; i < MAX_INTERIORS; i++) g_AllowWeapons[i][playerId] = false;
@@ -215,7 +215,7 @@ ResetPlayerStats(playerId) {
     isCaged[playerId] = false;
     PlayerInfo[playerId][playerIsHidden] = false;
     ColorManager->setPlayerMarkerHidden(playerId, false);
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
     CFightClub__SetKillCount(playerId, 0);
     CFightClub__SetDeathCount(playerId, 0);
 #endif
@@ -967,7 +967,7 @@ LegacyFixPlayer(playerId) {
     isCaged[playerId] = 0;
     PlayerInfo[playerId][playerIsHidden] = 0;
 
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
     if (PlayerMatch[playerId] != -1)
         CFightClub__TerminateMatch(PlayerMatch[playerId]);
 #endif

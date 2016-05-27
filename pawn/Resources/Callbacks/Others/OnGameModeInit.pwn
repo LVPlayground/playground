@@ -50,7 +50,7 @@ public OnGameModeInit() {
     radioInitializeDisplay();
     BagCash__Initialize();
 
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
     CFightClub__Initialize();       // FightClub handler
 #endif
 
@@ -145,7 +145,7 @@ public OnGameModeInit() {
     g_TrainPickup_3 = CreatePickup(1239,3, -1955.5629,137.6131,27.4579 );    // Train icon 3
     g_TrainPickup_4 = CreatePickup(1239,3, 1433.0952,2625.9695,11.3926 );    // Train icon 4
 
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
     //===== FightClub ======
     FCPickup = CreatePickup(1239, 3, 2104.4856,2189.9902,14.4965 ); // For info
     FCDPickup = CreatePickup(1254, 1, 2080.5310,2151.2712,19.1455 ); // For dialog (duel or watch)

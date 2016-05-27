@@ -415,7 +415,7 @@ IsPlayerInMinigame(playerId) {
     if (WWTW_PlayerData[playerId][iStatus] > 1)
         return 1;
 
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
     if (CFightClub__IsPlayerFighting(playerId))
         return 1;
 #endif

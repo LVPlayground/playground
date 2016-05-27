@@ -171,7 +171,7 @@
 #include Resources/Games/Bag of Cash.pwn
 
 // Fightclub
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
     #include Resources/Games/FightClub.pwn
 #endif
 #include Elements/Player/Commands/Testing.pwn

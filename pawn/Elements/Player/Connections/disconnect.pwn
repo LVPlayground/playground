@@ -37,7 +37,7 @@ OnPlayerLVPDisconnect(playerId, reason) {
     // TODO: Can we remove this? What is it for? It used to be in FightClub.pwn.
     SetPlayerInterior(playerId, 0); // Either way, don't make SaveInfo save the interior.
 
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
     CFightClub__OnDisconnect(playerId);
 #endif
 

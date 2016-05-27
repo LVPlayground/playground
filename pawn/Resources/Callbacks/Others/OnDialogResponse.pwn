@@ -154,7 +154,7 @@ stock deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputt
             return 1;
         }
 
-#if Feature::EnableFightClub == 0
+#if Feature::DisableFightClub == 0
         case DIALOG_FIGHTCLUB: {
             if (response) {
                 if (CFightClub__HasPlayerInvited(playerid))

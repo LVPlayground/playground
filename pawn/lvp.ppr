@@ -147,7 +147,6 @@
     <DiskObject>\Features\Debug.pwn</DiskObject>
     <DiskObject>\Features\Debug\</DiskObject>
     <DiskObject>\Features\Debug\BetaCommands.pwn</DiskObject>
-    <DiskObject>\Features\Debug\StartupBots.pwn</DiskObject>
     <DiskObject>\Features\Environment.pwn</DiskObject>
     <DiskObject>\Features\Environment\</DiskObject>
     <DiskObject>\Features\Environment\Area\</DiskObject>

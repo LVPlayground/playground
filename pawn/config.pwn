@@ -29,10 +29,6 @@ class Debug {
     // timers before they run, and give a brief overview of their run-time after they're done.
     public const EnableTimerDebugging = 0;
 
-    // How many bots should be connected to the server when the gamemode launches? While this should
-    // be set to zero for any production gamemode, it's great for tracing down overflows.
-    public const NumberOfBotsToConnectAtStartup = 0;
-
     // Enable visual verbosity, i.e. map icons for spawn positions, properties and cash points.
     public const EnableVisualVerbosity = 0;
 

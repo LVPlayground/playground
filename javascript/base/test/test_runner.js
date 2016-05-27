@@ -140,6 +140,7 @@ class TestRunner {
       require('entities/object_manager.test.js');
       require('entities/player_manager.test.js');
       require('entities/scoped_entities.test.js');
+      require('entities/text_label_manager.test.js');
       require('entities/vehicle_manager.test.js');
       require('features/announce/announce_manager.test.js');
       require('features/commands/positioning_commands.test.js');

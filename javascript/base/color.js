@@ -91,9 +91,10 @@ class Color {
 };
 
 // Define common colors as static properties on the Color class.
-Color.RED = Color.fromRGB(255, 0, 0);
-Color.GREEN = Color.fromRGB(0, 255, 0);
 Color.BLUE = Color.fromRGB(0, 0, 255);
+Color.GREEN = Color.fromRGB(0, 255, 0);
+Color.RED = Color.fromRGB(255, 0, 0);
+Color.WHITE = Color.fromRGB(255, 255, 255);
 
 // Define the Color object on the global object.
 global.Color = Color;

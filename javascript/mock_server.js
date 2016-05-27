@@ -8,9 +8,11 @@ const FeatureManager = require('components/feature_manager/feature_manager.js');
 const MockActor = require('entities/test/mock_actor.js');
 const MockObject = require('entities/test/mock_object.js');
 const MockPlayer = require('entities/test/mock_player.js');
+const MockTextLabel = require('entities/test/mock_text_label.js');
 const MockVehicle = require('entities/test/mock_vehicle.js');
 const ObjectManager = require('entities/object_manager.js');
 const PlayerManager = require('entities/player_manager.js');
+const TextLabelManager = require('entities/text_label_manager.js');
 const VehicleManager = require('entities/vehicle_manager.js');
 
 // The MockServer is a mocked implementation of the Server class that creates a mocked environment
@@ -25,6 +27,7 @@ class MockServer {
         this.actorManager_ = new ActorManager(MockActor /* actorConstructor */);
         this.objectManager_ = new ObjectManager(MockObject /* objectConstructor */);
         this.playerManager_ = new PlayerManager(MockPlayer /* playerConstructor */);
+        this.textLabelManager_ = new TextLabelManager(MockTextLabel /* textLabelConstructor */);
         this.vehicleManager_ = new VehicleManager(MockVehicle /* vehicleConstructor */);
 
         // Connect a series of fake players to the server.
@@ -60,6 +63,9 @@ class MockServer {
     // Gets the real player manager that maintains mocked players.
     get playerManager() { return this.playerManager_; }
 
+    // Gets the real text label manager that maintains mocked text labels.
+    get textLabelManager() { return this.textLabelManager_; }
+
     // Gets the real vehicle manager that maintains mocked vehicles.
     get vehicleManager() { return this.vehicleManager_; }
 
@@ -76,6 +82,7 @@ class MockServer {
         this.commandManager_.dispose();
 
         this.vehicleManager_.dispose();
+        this.textLabelManager_.dispose();
         this.playerManager_.dispose();
         this.objectManager_.dispose();
         this.actorManager_.dispose();

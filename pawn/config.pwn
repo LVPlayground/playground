@@ -115,11 +115,4 @@ class Feature {
 
     // The Hay minigame is a very nice-to-have game, but it hogs CPU.
     public const DisableHay = 0;
-
-    /** **************************************************************************************** **/
-    /// External
-
-    // The irc-command-class contains various methods so Nuwani can request the available commands and
-    // we can inform her of them.
-    public const EnableIrcRequestCommand = 0;
 };

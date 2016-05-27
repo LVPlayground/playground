@@ -168,7 +168,6 @@
     <DiskObject>\Features\External.pwn</DiskObject>
     <DiskObject>\Features\External\</DiskObject>
     <DiskObject>\Features\External\IRC.pwn</DiskObject>
-    <DiskObject>\Features\External\IrcCommand.pwn</DiskObject>
     <DiskObject>\Features\External\PlayerTracker.pwn</DiskObject>
     <DiskObject>\Features\External\RemoteCommand.pwn</DiskObject>
     <DiskObject>\Features\Gameplay.pwn</DiskObject>

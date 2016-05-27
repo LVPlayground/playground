@@ -421,15 +421,4 @@ class VeryImportantPlayersCommands {
 
         return 1;
     }
-
-    /**
-     * We need to register all the commands into Nuwani for use from IRC. This method will take care
-     * of it by registering a command per line.
-     */
-#if Feature::EnableIrcRequestCommand == 1
-    @list(OnIrcRequestCommandsList)
-    public OnIrcRequestCommandsList() {
-        IrcCommand->addCommand("pm", "is", "+", "[playerId] [message]");
-    }
-#endif
 };

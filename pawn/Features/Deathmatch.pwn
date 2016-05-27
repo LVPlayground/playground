@@ -17,11 +17,6 @@
 // On player death weapons and cash objects are dropped, to be picked up by any other player.
 #include "Features/Deathmatch/DropWeaponsCashHandler.pwn"
 
-// In order for some tasty roaming around the server, several commands are needed.
-#if Feature::EnableDeathmatchCommands == 1
-    #include "Features/Deathmatch/DeathmatchCommands.pwn"
-#endif
-
 // The Hitman system gives players the opportunity to place a bounty on other players' heads,
 // so they can earn money by bounty-hunting.
 #include "Features/Deathmatch/Hitman/HitmanTracker.pwn"

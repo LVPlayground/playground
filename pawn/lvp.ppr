@@ -134,7 +134,6 @@
     <DiskObject>\Features\Deathmatch\Ammunation\AmmunationManager.pwn</DiskObject>
     <DiskObject>\Features\Deathmatch\Ammunation\AmmunationWeapon.pwn</DiskObject>
     <DiskObject>\Features\Deathmatch\DamageManager.pwn</DiskObject>
-    <DiskObject>\Features\Deathmatch\DeathmatchCommands.pwn</DiskObject>
     <DiskObject>\Features\Deathmatch\DeathMessageManager.pwn</DiskObject>
     <DiskObject>\Features\Deathmatch\DropWeaponsCashHandler.pwn</DiskObject>
     <DiskObject>\Features\Deathmatch\FightClub\</DiskObject>
@@ -214,6 +213,7 @@
     <DiskObject>\Features\Gameplay\Vehicles\Cruise\CruiseCommands.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Vehicles\Cruise\CruiseController.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Vehicles\NitroHandler.pwn</DiskObject>
+    <DiskObject>\Features\Gameplay\Vehicles\PeterVehicleFeature.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Vehicles\VehicleGameplayCommands.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\VIP\</DiskObject>
     <DiskObject>\Features\Gameplay\VIP\VeryImportantPlayersCommands.pwn</DiskObject>
@@ -435,7 +435,6 @@
     <DiskObject>\Resources\Minigames\Race\Race7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Race\Race9.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\Vehicles\PeterVehicleFeature.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

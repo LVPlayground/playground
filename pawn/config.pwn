@@ -15,7 +15,7 @@
  */
 class Version {
     public const Major = 28;
-    public const Minor = 1;
+    public const Minor = 2;
 };
 
 /**
@@ -87,10 +87,6 @@ class Configuration {
 class Feature {
     /** **************************************************************************************** **/
     /// Deathmatch
-
-    // Enable the rewritten deathmatch commands, which supports roaming players with several
-    // commands in their journey to be King of LVP.
-    public const EnableDeathmatchCommands = 0;
 
     // Enable the rewritten Fight Club handlers.
     public const EnableFightClub = 0;

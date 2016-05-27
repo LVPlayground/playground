@@ -433,7 +433,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         }
     }
 
-#if Feature::EnableDeathmatchCommands == 0
     if(strcmp(cmd, "/kill", true) == 0)
     {
         if(IsPlayerInMinigame(playerid) && Player(playerid)->isAdministrator() == false)
@@ -469,7 +468,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         return 1;
     }
-#endif
 
     if(IsPlayerInMinigame(playerid) && Player(playerid)->isAdministrator() == false
         && !IsCommandAvailableForLimitedFunctionality(cmd)) {

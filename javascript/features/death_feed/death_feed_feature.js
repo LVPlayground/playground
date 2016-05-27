@@ -66,6 +66,9 @@ class DeathFeedFeature extends Feature {
 
   // Utility function to send a death message to |player|.
   sendDeathMessage(player, killee, killer, reason) {
+    if (server.isTest())
+      return;
+
     pawnInvoke('SendDeathMessageToPlayer', 'iiii', player.id, killer, killee, reason);
   }
 

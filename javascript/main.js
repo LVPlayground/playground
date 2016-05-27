@@ -20,7 +20,7 @@ require('entities/virtual_world.js');
 // the gamemode to be started. Without this requirement, certain features may break unexpectedly.
 const testRunner = new TestRunner();
 
-testRunner.run('**/*.test.js').then(() => {
+testRunner.run('**/*.test.js').then(notifyReady).then(() => {
     console.log('Passed all ' + testRunner.testCount + ' tests!');
 
     server = new Server();
@@ -50,6 +50,10 @@ testRunner.run('**/*.test.js').then(() => {
         debug:          require('features/debug/debug_feature.js'),
         races:          require('features/races/races.js')
     });
+
+    // Call the OnJavaScriptLoaded callback in the Pawn code, which will trigger the gamemode in
+    // beginning to work with the JavaScript code where required.
+    pawnInvoke('OnJavaScriptLoaded');
 
 }, failures => {
     // One or more tests have failed. Refuse to start the gamemode.

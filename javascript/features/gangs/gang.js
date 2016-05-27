@@ -72,6 +72,8 @@ class Gang {
     // Updates the color of this gang, as well of all in-game players, to |color|.
     updateColor(color) {
         this.color_ = color;
+        if (server.isTest())
+            return;
 
         for (let player of this.members_.keys()) {
             if (player.isDisconnecting())

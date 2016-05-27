@@ -34,8 +34,9 @@ class AnnounceManager {
 
         // TODO(Russell): Validate that |formattedMessage| is safe for game text usage.
 
-        // Announce it asynchronously to avoid potential reentrancy problems.
-        Promise.resolve().then(() => pawnInvoke('OnDisplayNewsMessage', 's', formattedMessage));
+        // Announce it asynchronously when not running a test to avoid reentrancy problems.
+        if (!server.isTest())
+            Promise.resolve().then(() => pawnInvoke('OnDisplayNewsMessage', 's', formattedMessage));
 
         this.announceToIRC(AnnounceTag, Message.format(Message.ANNOUNCE_MINIGAME_JOINED_IRC,
                                                        player.name, player.id, name));

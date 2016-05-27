@@ -4,6 +4,18 @@
 
 // TODO: Move this somewhere more appropriate.
 
+forward OnJavaScriptLoaded();
+public OnJavaScriptLoaded() {
+    g_javaScriptInitialized = true;
+    Annotation::ExpandList<OnJavaScriptLoaded>();
+}
+
+// TODO(Russell): Remove this once there are users of the OnJavaScriptLoaded annotation.
+class Foo {
+    @list(OnJavaScriptLoaded)
+    public onJavaScriptLoaded() {}
+}
+
 new Float: g_storedPlayerPositions[MAX_PLAYERS][4];
 new g_storedPlayerInteriors[MAX_PLAYERS];
 new g_storedPlayerVirtualWorlds[MAX_PLAYERS];

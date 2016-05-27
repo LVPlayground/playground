@@ -5,6 +5,16 @@
 #include "Interface/Server/a_samp.pwn"
 
 // -------------------------------------------------------------------------------------------------
+// JavaScript is the future of the Las Venturas Playground gamemode, however, features written in
+// it will only be available after IsJavaScriptInitialized() returns true.
+
+new bool: g_javaScriptInitialized = false;
+
+stock bool: IsJavaScriptInitialized() {
+    return g_javaScriptInitialized;
+}
+
+// -------------------------------------------------------------------------------------------------
 // We override the GivePlayerMoney native as it's used to record intentional changes in a player's
 // on-hand cash without being very intrusive to the rest of the gamemode. For similar reasons, the
 // ResetPlayerMoney native is also being overriden, because it can cause increases as well.

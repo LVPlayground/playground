@@ -1457,6 +1457,12 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
+        if (IsPlayerInMinigame(playerid))
+        {
+            SendClientMessage(playerid,COLOR_RED, "You cannot use /dive when you're playing a minigame.");
+            return 1;
+        }
+
         new Interior = GetPlayerInterior( playerid );
         new Float:fX, Float:fY, Float:fZ;
         GetPlayerPos( playerid, fX, fY, fZ );

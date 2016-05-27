@@ -134,7 +134,7 @@ class MinigameDriver {
         if (!this.activePlayers_.has(player))
             throw new Error('Received state change event for an invalid player: ' + player.name);
 
-        if (this.state_ != Minigame.STATE_LOADING && this.state_ != Minigame.STATE_RUNNING)
+        if (this.state_ != Minigame.STATE_RUNNING)
             return;  // events are not relevant if the minigame is not active
 
         if (newState == Player.STATE_DRIVER)

@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const Feature = require('components/feature_manager/feature.js');
+const ScopedCallbacks = require('base/scoped_callbacks.js');
 
 // Number of death messages that are visible on the player's screens.
 const DEATH_FEED_VISIBLE_LENGTH = 5;
@@ -24,8 +25,11 @@ class DeathFeedFeature extends Feature {
     this.recentDeaths_ = [];
 
     // Listen to the events required for reliably providing this feature.
-    global.addEventListener('playerresolveddeath', this.__proto__.onPlayerDeath.bind(this));
-    global.addEventListener('playerdisconnect', this.__proto__.onPlayerDisconnect.bind(this));
+    this.callbacks_ = new ScopedCallbacks();
+    this.callbacks_.addEventListener(
+        'playerresolveddeath', DeathFeedFeature.prototype.onPlayerDeath.bind(this));
+    this.callbacks_.addEventListener(
+        'playerdisconnect', DeathFeedFeature.prototype.onPlayerDisconnect.bind(this));
   }
 
   // Returns an array with the most recent deaths.
@@ -76,6 +80,13 @@ class DeathFeedFeature extends Feature {
   // case it was previously disabled. (So that it's not disabled for future players.)
   onPlayerDisconnect(event) {
     this.disabledPlayers_.delete(event.playerid);
+  }
+
+  dispose() {
+    this.disabledPlayers_ = null;
+
+    this.callbacks_.dispose();
+    this.callbacks_ = null;
   }
 };
 

@@ -19,5 +19,7 @@ describe('DeathFeedFeature', it => {
       { killee:  7, killer: 0, reason: 0 },
       { killee:  6, killer: 0, reason: 0 }
     ]);
+
+    feature.dispose();
   });
 });

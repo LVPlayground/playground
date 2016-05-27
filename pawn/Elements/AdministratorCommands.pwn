@@ -521,15 +521,12 @@ TimeHelp:
 }
 
 lvp_p(playerId, params[]) {
-    if (Command->parameterCount(params) < 1)
+    if (Command->parameterCount(params) < 2)
         goto PlayerHelp;
 
-    new subjectId = Command->playerParameter(params, 0);
-    if (subjectId == Player::InvalidId) {
-        if (PlayerSpectateHandler()->isSpectating(playerId))
-            subjectId = PlayerSpectateHandler()->isSpectatingWho(playerId);
-        else return 1;
-    }
+    new subjectId = Command->playerParameter(params, 0, playerId);
+    if (subjectId == Player::InvalidId)
+        return 1;
 
     if (Player(subjectId)->isNonPlayerCharacter() == true) {
         SendClientMessage(playerId, Color::Error, "This player is a NPC.");

@@ -366,16 +366,6 @@ class PlayerSpectateHandler {
     }
 
     /**
-     * Getter for retrieving the Id of the player being watched.
-     *
-     * @param playerId Id of the player to check the subject's Id for.
-     * @return Id of the player being watched.
-     */
-    public inline isSpectatingWho(playerId) {
-        return m_watchingPlayerId[playerId];
-    }
-
-    /**
      * A state change of the player's key requires us to detect if the player wants to go to the
      * previous or next player to watch. This is done by checking the left and right arrow keys.
      *

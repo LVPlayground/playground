@@ -109,10 +109,6 @@ class Feature {
     /** **************************************************************************************** **/
     /// Minigames
 
-    // Races are being rewritten in JavaScript. This flag determines whether the current race system
-    // should continue to be compiled in the Pawn part of Las Venturas Playground.
-    public const DisableRaces = 1;
-
     // The Hay minigame is a very nice-to-have game, but it hogs CPU.
     public const DisableHay = 0;
 };

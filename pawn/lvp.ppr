@@ -285,7 +285,6 @@
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerCommandText.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerDeath.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerEnterCheckpoint.pwn</DiskObject>
-    <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerEnterDynamicCheckpoint.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerEnterDynamicRaceCheckpoint.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerEnterRaceCheckpoint.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerExitedMenu.pwn</DiskObject>
@@ -302,7 +301,6 @@
     <DiskObject>\Resources\Callbacks\Others\OnDialogResponse.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\OnDynamicObjectMoved.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\OnGameModeInit.pwn</DiskObject>
-    <DiskObject>\Resources\Callbacks\Others\OnObjectMoved.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\OnRconLoginAttempt.pwn</DiskObject>
     <DiskObject>\Resources\Games\</DiskObject>
     <DiskObject>\Resources\Games\Achievements.pwn</DiskObject>
@@ -361,11 +359,6 @@
     <DiskObject>\Resources\Minigames\Core\Lyse.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\main.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\MinigamesHandler.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Core\Race\</DiskObject>
-    <DiskObject>\Resources\Minigames\Core\Race\core.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Core\Race\Drift.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Core\Race\Projectiles\</DiskObject>
-    <DiskObject>\Resources\Minigames\Core\Race\Projectiles\Rocket.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\Rivershell.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\Robbery.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\RWTW.pwn</DiskObject>

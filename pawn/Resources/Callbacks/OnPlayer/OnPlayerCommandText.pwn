@@ -585,41 +585,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         return 1;
     }
 
-#if Feature::DisableRaces == 0
-    if (strcmp(cmdtext, "/race", true, 5) == 0)
-    {
-
-        if(CheckMapZoneRaceCmd(playerid))
-        {
-            return 1;
-        }
-
-        if(GetPlayerInterior(playerid) != 0)
-        {
-            ShowBoxForPlayer(playerid, "You need to be outside to compete in races!");
-            return 1;
-        }
-
-        // Simple fix for now. Support for interior starting isn't really needed.
-        new szParameters[ 256 ], iLen = 5;
-        if (strlen(cmdtext) <= 5) {
-            return CRace__OnCommand( playerid, "" );
-        }
-        else
-        {
-            if (cmdtext[5] == ' ') iLen = 6;
-            format( szParameters, 256, "%s", cmdtext[ iLen ] );
-            return CRace__OnCommand( playerid, szParameters);
-        }
-    }
-
-    if(!strcmp(cmdtext, "/drift", true))
-    {
-        CRace__ShowPlayerDialog( playerid, RACE_TYPE_DRIFT);
-        return 1;
-    }
-#endif
-
     // There's plenty of people missing here?
     if(strcmp(cmd, "/credits", true) == 0) 
     {

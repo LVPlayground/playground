@@ -69,18 +69,6 @@ RemovePlayerFromAnyGame(playerId) {
         return 1;
     }
 
-#if Feature::DisableRaces == 0
-    if (g_RacePlayers[playerId][0] == RACE_STATE_SIGNUP) {
-        CRace__EndForPlayer(playerId, SIGNOUT);
-        return 1;
-    }
-
-    if (CRace__IsRacing(playerId)) {
-        CRace__EndForPlayer(playerId, LEFT);
-        return 1;
-    }
-#endif
-
     if (IsPlayerInMapZone(playerId)) {
         SetPlayerMapZone(playerId, -1);
         return 1;

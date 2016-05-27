@@ -357,28 +357,6 @@ CAchieve__FightClub(killerid, kills) {
 }
 #endif
 
-#if Feature::DisableRaces == 0
-CAchieve__Drift(playerid, score) {
-    if (score >= 5000)
-        CAchieve__Achieved(playerid, DRIFT5000);
-
-    if (score >= 8000)
-        CAchieve__Achieved(playerid, DRIFT8000);
-
-    if (score >= 10000)
-        CAchieve__Achieved(playerid, DRIFT10000);
-
-    if (score >= 15000)
-        CAchieve__Achieved(playerid, DRIFT15000);
-
-    if (score >= 20000)
-        CAchieve__Achieved(playerid, DRIFT20000);
-
-    if (score >= 30000)
-        CAchieve__Achieved(playerid, DRIFT30000);
-}
-#endif
-
 CAchieve__Achieved(playerid, achievement, silentmsg = 0) {
     if (iAchievements[playerid][achievement] == 0 && Player(playerid)->isRegistered() == true) {
         new string[256], count;

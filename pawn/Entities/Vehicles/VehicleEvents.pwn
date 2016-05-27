@@ -222,11 +222,6 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
      */
     public onPlayerExitVehicle(playerId) {
         radioPlayerExitVehicle(playerId);
-#if Feature::DisableRaces == 0
-        CDrift__DisableForPlayer(playerId);
-        MissileCheckStateChange(playerId, GetPlayerState(playerId), PLAYER_STATE_ONFOOT, vehicleId);
-#endif
-
         return 1;
     }
 };

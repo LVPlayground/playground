@@ -2,14 +2,6 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-#if Feature::DisableRaces == 1
-
-CRace__IsRacing(playerId) {
-    return playerId != 9001 ? 0 : 1;
-}
-
-#endif
-
 /**
  * Grand Theft Auto is a game all about driving about in all sorts of vehicles. Since nobody is
  * perfect stuff tends to happen to those vehicles which could eventually lead to it exploding or
@@ -49,12 +41,12 @@ class VehicleGameplayCommands {
 
         targetVehicleId = GetPlayerVehicleID(targetPlayerId);
         if (Player(playerId)->isAdministrator() == false) {
-            if (!CRace__IsRacing(targetPlayerId) && CruiseController->isCruiseActive() == false && !IsPlayerInMapZone(targetPlayerId)) {
+            if (CruiseController->isCruiseActive() == false && !IsPlayerInMapZone(targetPlayerId)) {
                 ShowBoxForPlayer(playerId, "You are only allowed to repair your vehicle during cruises, races or in map zones.");
                 return 1;
             }
 
-            if (!CRace__IsRacing(targetPlayerId) && !IsPlayerInMapZone(targetPlayerId) && CruiseController->isCruiseActive() == true) {
+            if (!IsPlayerInMapZone(targetPlayerId) && CruiseController->isCruiseActive() == true) {
                 if (CruiseController->isCruiseInsideLasVenturas() == true) {
                     ShowBoxForPlayer(playerId, "You can't fix your vehicle while the cruise is in Las Venturas.");
                     return 1;
@@ -106,12 +98,12 @@ class VehicleGameplayCommands {
 
         targetVehicleId = GetPlayerVehicleID(targetPlayerId);
         if (Player(playerId)->isAdministrator() == false) {
-            if (!CRace__IsRacing(targetPlayerId) && !IsPlayerInMapZone(targetPlayerId) && CruiseController->isCruiseActive() == false) {
+            if (!IsPlayerInMapZone(targetPlayerId) && CruiseController->isCruiseActive() == false) {
                 ShowBoxForPlayer(playerId, "You are only allowed to flip your vehicle during cruises, races or in map zones.");
                 return 1;
             }
 
-            if (!CRace__IsRacing(targetPlayerId) && !IsPlayerInMapZone(targetPlayerId) && CruiseController->isCruiseActive() == true) {
+            if (!IsPlayerInMapZone(targetPlayerId) && CruiseController->isCruiseActive() == true) {
                 if (CruiseController->isCruiseInsideLasVenturas() == true) {
                     ShowBoxForPlayer(playerId, "You can't flip your vehicle while the cruise is in Las Venturas.");
                     return 1;

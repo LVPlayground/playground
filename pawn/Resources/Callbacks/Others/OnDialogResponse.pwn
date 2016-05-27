@@ -127,9 +127,6 @@ stock deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputt
                 switch (listitem) {
                     case 0: CDerby__ShowMainDialog(playerid);
                     case 1: ShowDeathmatchDialog(playerid);
-#if Feature::DisableRaces == 0
-                    case 2: CRace__ShowPlayerDialog(playerid);
-#endif
                     case 3: CRobbery__MenuActivate(playerid);
                     case 4: CBrief__MenuActivate(playerid);
                     case 5: CShell__MenuActivate(playerid);
@@ -442,25 +439,11 @@ stock deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputt
             return 1;
         }
 
-#if Feature::DisableRaces == 0
-        case DIALOG_RACE_MAIN .. DIALOG_RACE_SUB: {
-            CRace__OnDialogResponse(playerid, dialogid, response, listitem);
-            return 1;
-        }
-#endif
-
         case DIALOG_JUMPS_LIST: {
             if (response)
                 OnJumpDialogResponse(playerid, listitem);
             return 1;
         }
-
-#if Feature::DisableRaces == 0
-        case DIALOG_WORLD_RACE_START: {
-            CRace__OnDialogResponse(playerid, dialogid, response, listitem);
-            return 1;
-        }
-#endif
 
         case DIALOG_DERBY_MAIN: {
             if (response) {
@@ -499,13 +482,6 @@ stock deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputt
                 ShowTaxiDialog(playerid);
                 return 1;
             }
-
-#if Feature::DisableRaces == 0
-            if (listitem == 3) {
-                CRace__ShowPlayerDialog(playerid);
-                return 1;
-            }
-#endif
 
             if (listitem == 4) {
                 CDerby__ShowMainDialog(playerid);

@@ -103,10 +103,6 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
                 }
             }
         }
-#if Feature::DisableRaces == 0
-        else if (playerState == PLAYER_STATE_DRIVER)
-            CheckVehicleMissileFire(playerid, GetPlayerVehicleID(playerid));
-#endif
     }
 
     // Other fighting style (punch + kick combo)

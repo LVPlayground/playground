@@ -51,15 +51,6 @@ lvp_minigaming(playerid, params[]) {
             continue;
         }
 
-#if Feature::DisableRaces == 0
-        if (CRace__IsRacing(subjectId)) {
-            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s race\t-", minigaming,
-                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
-                GetPlayerMinigameName(subjectId));
-            continue;
-        }
-#endif
-
         if (CDerby__GetPlayerState(subjectId) >= DERBY_STATE_COUNTDOWN) {
             format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s derby\t-", minigaming,
                 ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
@@ -342,11 +333,7 @@ lvp_stats(playerid, params[])
     format(szStatMsg, 128, "Players Online: %d  Admins Online: %d", iPlayersOnline, iAdminsOnline);
     SendClientMessage(playerid, COLOR_GREEN, szStatMsg);
 
-#if Feature::DisableRaces == 0
-    format(szStatMsg, 128, "Races: %d Achievements: %d NPCs: %d", g_RacesLoaded, TotalAchievements-UnavailableTotalAchievements, iNPCSOnline);
-#else
     format(szStatMsg, 128, "Achievements: %d NPCs: %d", TotalAchievements-UnavailableTotalAchievements, iNPCSOnline);
-#endif
     SendClientMessage(playerid, COLOR_GREEN, szStatMsg);
 
     format(szStatMsg, 128, "Vehicles: %d Properties: %d", VehicleManager->vehicleCount(), iProperties);

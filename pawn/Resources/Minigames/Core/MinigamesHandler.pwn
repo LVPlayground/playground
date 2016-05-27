@@ -20,10 +20,6 @@ enum minigameInfo {
 
 new MinigameTypeInfo[minigameInfo];
 
-#if Feature::DisableRaces == 1
-CRace__GetPlayerStatus(playerId) { return playerId != 9001 ? 0 : 1; }
-#endif
-
 // Resets the minigame status in case one of the games reached an inconsistent state. Will verify
 // that it indeed is safe to reset the status by asserting that no players are engaged in a minigame
 // and will return a boolean indicating whether the state was reset.
@@ -48,7 +44,7 @@ MiniGamesSignup(playerId, minigame) {
     new notice[256], minigameMaxPlayers = ReturnMinigameMaxPlayers(minigame);
 
     // Check if the player executing the commands is actually available for such an event.
-    if (CRace__GetPlayerStatus(playerId) != 0 || IsPlayerStatusMinigame(playerId) || !IsPlayerMinigameFree(playerId)) {
+    if (IsPlayerStatusMinigame(playerId) || !IsPlayerMinigameFree(playerId)) {
         SendClientMessage(playerId, Color::Error, "You have already signed up for a different minigame!");
         return 1;
     }
@@ -342,14 +338,6 @@ stock IsPlayerMinigameFree(playerId) {
     if (IsPlayerStatusMinigame(playerId))
         return 0;
 
-#if Feature::DisableRaces == 0
-    if (CRace__IsRacing(playerId))
-        return 0;
-
-    if (CRace__GetPlayerStatus(playerId) > 0)
-        return 0;
-#endif
-
     if (g_RivershellPlayer[playerId])
         return 0;
 
@@ -408,11 +396,6 @@ IsPlayerInMinigame(playerId) {
 
     if (CLyse__GetPlayerState(playerId) > 1)
         return 1;
-
-#if Feature::DisableRaces == 0
-    if (CRace__IsRacing(playerId))
-        return 1;
-#endif
 
     if (CHideGame__GetPlayerState(playerId) == 2)
         return 1;

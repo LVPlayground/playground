@@ -223,7 +223,6 @@
 #include Resources/Callbacks/OnPlayer/OnPlayerExitedMenu.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerEnterCheckpoint.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerLeaveCheckpoint.pwn
-#include Resources/Callbacks/OnPlayer/OnPlayerEnterDynamicCheckpoint.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerEnterDynamicRaceCheckpoint.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerEnterRaceCheckpoint.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerKeyStateChange.pwn
@@ -232,7 +231,6 @@
 #include Resources/Callbacks/OnPlayer/OnPlayerInteriorChange.pwn
 #include Resources/Callbacks/Others/OnGameModeInit.pwn
 #include Resources/Callbacks/Others/OnRconLoginAttempt.pwn
-#include Resources/Callbacks/Others/OnObjectMoved.pwn
 #include Resources/Callbacks/Others/OnDynamicObjectMoved.pwn
 #include Resources/Callbacks/Others/OnDialogResponse.pwn
 

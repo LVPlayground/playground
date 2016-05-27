@@ -28,19 +28,11 @@ public OnGameModeInit() {
 
 // *************************************************************************************************
 
-#if Feature::DisableRaces == 0
-    CRace__Initialize();            // Race
-#endif
-
     CChase__Initialize();           // Chase
     CDrink__Initialize();           // Drink
     CBomb__Initialize();            // Bomb shop
     CRobbery__Initialize();         // Robbery
     CShell__CheckStatus();          // Rivershell
-
-#if Feature::DisableRaces == 0
-    CDrift__Initialize();           // Drifting
-#endif
 
 #if Feature::DisableHay == 0
     CHay__Initialize();         // Haystack minigame

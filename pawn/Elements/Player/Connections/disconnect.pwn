@@ -12,10 +12,6 @@ OnPlayerLVPDisconnect(playerId, reason) {
     CShell__SignPlayerOut(playerId);            // Rivershell minigame
     CBrief__SignPlayerOut(playerId);            // Capture the briefcase
 
-#if Feature::DisableRaces == 0
-    CRace__EndForPlayer(playerId, DISCONNECT);  // Racing handler
-#endif
-
     CChase__Disconnect(playerId);               // Chase handler
     CDerby__Disconnect(playerId);               // Derby handler.
     CWWTW__OnDisconnect(playerId);              // Walkies Weapons Team War minigame

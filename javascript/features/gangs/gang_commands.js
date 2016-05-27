@@ -467,134 +467,179 @@ class GangCommands {
             return;
         }
 
-        if (gang.getPlayerRole(player) !== Gang.ROLE_LEADER) {
-            player.sendMessage(Message.GANG_SETTINGS_NO_LEADER);
-            return;
-        }
-
         // Create a "gang has been created" promise that tests can use to observe progress.
         this.settingsPromiseForTesting_ = new Promise(resolve => resolveForTests = resolve);
 
         let menu = new Menu('Which setting do you want to change?', ['Option', 'Current value']);
-        menu.addItem('Member settings', '-', () => {
-            this.manager_.getFullMemberList(gang).then(members => {
-                let memberMenu = new Menu('Which member do you want to update?', ['Name', 'Role']);
-                members.forEach(member => {
-                    const roleString = GangDatabase.toRoleString(member.role);
+        if (gang.getPlayerRole(player) === Gang.ROLE_LEADER) {
+            menu.addItem('Member settings', '-', () => {
+                this.manager_.getFullMemberList(gang).then(members => {
+                    let memberMenu =
+                        new Menu('Which member do you want to update?', ['Name', 'Role']);
+                    members.forEach(member => {
+                        const roleString = GangDatabase.toRoleString(member.role);
 
-                    memberMenu.addItem(member.nickname, roleString, () => {
-                        this.onGangSettingsMemberCommand(player, member).then(() =>
-                            resolveForTests());
+                        memberMenu.addItem(member.nickname, roleString, () => {
+                            this.onGangSettingsMemberCommand(player, member).then(() =>
+                                resolveForTests());
+                        });
+                    });
+
+                    // The onGangSettingsMemberCommand() method will take over unless the dialog has
+                    // been dismissed by the leader, in which case the promise needs to be resolved.
+                    memberMenu.displayForPlayer(player).then(result => {
+                        if (!result)
+                            resolveForTests();
                     });
                 });
-
-                // The onGangSettingsMemberCommand() method will take over unless the dialog has
-                // been dismissed by the leader, in which case the promise needs to be resolved.
-                memberMenu.displayForPlayer(player).then(result => {
-                    if (!result)
-                        resolveForTests();
-                });
             });
-        });
 
-        menu.addItem('Member color', '-', () => {
-            ColorPicker.show(player).then(color => {
-                if (!color)
-                    return;  // the leader decided to not update the gang's color
+            menu.addItem('Member color', '-', () => {
+                ColorPicker.show(player).then(color => {
+                    if (!color)
+                        return;  // the leader decided to not update the gang's color
 
-                const colorName = '0x' + color.toHexRGB();
+                    const colorName = '0x' + color.toHexRGB();
 
-                return this.manager_.updateColor(gang, color).then(() => {
-                    this.manager_.announceToGang(
-                        gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_COLOR, player.name,
-                        colorName);
+                    return this.manager_.updateColor(gang, color).then(() => {
+                        this.manager_.announceToGang(
+                            gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_COLOR, player.name,
+                            colorName);
 
-                    this.announce_.announceToAdministrators(
-                        Message.GANG_ANNOUNCE_NEW_COLOR, player.name, player.id, gang.name,
-                        colorName);
+                        this.announce_.announceToAdministrators(
+                            Message.GANG_ANNOUNCE_NEW_COLOR, player.name, player.id, gang.name,
+                            colorName);
 
-                    const formattedMessage =
-                        Message.format(Message.GANG_SETTINGS_NEW_COLOR, colorName);
+                        const formattedMessage =
+                            Message.format(Message.GANG_SETTINGS_NEW_COLOR, colorName);
 
-                    return Dialog.displayMessage(
-                        player, 'The color has been updated', formattedMessage, 'OK', '');
-                });
-
-            }).then(() => resolveForTests());
-        });
-
-        menu.addItem('Gang name', gang.name, () => {
-            Question.ask(player, NAME_QUESTION).then(answer => {
-                if (!answer)
-                    return;  // the leader decided to not update the gang's name
-
-                const formerName = gang.name;
-
-                return this.manager_.updateName(gang, answer).then(result => {
-                    if (!result) {
                         return Dialog.displayMessage(
-                            player, 'Unable to update the name', Message.GANG_SETTINGS_NAME_TAKEN,
-                            'OK' /* leftButton */, '' /* rightButton */);
-                    }
+                            player, 'The color has been updated', formattedMessage, 'OK', '');
+                    });
 
-                    this.manager_.announceToGang(
-                        gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_NAME, player.name, answer);
+                }).then(() => resolveForTests());
+            });
 
-                    this.announce_.announceToAdministrators(
-                        Message.GANG_ANNOUNCE_NEW_NAME, player.name, player.id, formerName, answer);
+            menu.addItem('Gang name', gang.name, () => {
+                Question.ask(player, NAME_QUESTION).then(answer => {
+                    if (!answer)
+                        return;  // the leader decided to not update the gang's name
 
-                    const formattedMessage = Message.format(Message.GANG_SETTINGS_NEW_NAME, answer);
-                    return Dialog.displayMessage(
-                        player, 'The name has been updated', formattedMessage, 'OK', '');
-                });
+                    const formerName = gang.name;
 
-            }).then(() => resolveForTests());
-        });
+                    return this.manager_.updateName(gang, answer).then(result => {
+                        if (!result) {
+                            return Dialog.displayMessage(
+                                player, 'Unable to update the name',
+                                Message.GANG_SETTINGS_NAME_TAKEN, 'OK', '');
+                        }
 
-        menu.addItem('Gang tag', gang.tag, () => {
-            Question.ask(player, TAG_QUESTION).then(answer => {
-                if (!answer)
-                    return;  // the leader decided to not update the gang's tag
+                        this.manager_.announceToGang(
+                            gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_NAME, player.name,
+                            answer);
 
-                return this.manager_.updateTag(gang, answer).then(result => {
-                    if (!result) {
+                        this.announce_.announceToAdministrators(
+                            Message.GANG_ANNOUNCE_NEW_NAME, player.name, player.id, formerName,
+                            answer);
+
+                        const formattedMessage =
+                            Message.format(Message.GANG_SETTINGS_NEW_NAME, answer);
+
                         return Dialog.displayMessage(
-                            player, 'Unable to update the tag', Message.GANG_SETTINGS_TAG_TAKEN,
-                            'OK' /* leftButton */, '' /* rightButton */);
-                    }
+                            player, 'The name has been updated', formattedMessage, 'OK', '');
+                    });
 
-                    this.manager_.announceToGang(
-                        gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_TAG, player.name, answer);
+                }).then(() => resolveForTests());
+            });
 
-                    this.announce_.announceToAdministrators(
-                        Message.GANG_ANNOUNCE_NEW_TAG, player.name, player.id, gang.name, answer);
+            menu.addItem('Gang tag', gang.tag, () => {
+                Question.ask(player, TAG_QUESTION).then(answer => {
+                    if (!answer)
+                        return;  // the leader decided to not update the gang's tag
 
-                    const formattedMessage = Message.format(Message.GANG_SETTINGS_NEW_TAG, answer);
+                    return this.manager_.updateTag(gang, answer).then(result => {
+                        if (!result) {
+                            return Dialog.displayMessage(
+                                player, 'Unable to update the tag', Message.GANG_SETTINGS_TAG_TAKEN,
+                                'OK' /* leftButton */, '' /* rightButton */);
+                        }
+
+                        this.manager_.announceToGang(
+                            gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_TAG, player.name,
+                            answer);
+
+                        this.announce_.announceToAdministrators(
+                            Message.GANG_ANNOUNCE_NEW_TAG, player.name, player.id, gang.name,
+                            answer);
+
+                        const formattedMessage =
+                            Message.format(Message.GANG_SETTINGS_NEW_TAG, answer);
+
+                        return Dialog.displayMessage(
+                            player, 'The tag has been updated', formattedMessage, 'OK', '');
+                    });
+
+                }).then(() => resolveForTests());
+            });
+
+            menu.addItem('Gang goal', gang.goal, () => {
+                Question.ask(player, GOAL_QUESTION).then(answer => {
+                    if (!answer)
+                        return;  // the leader decided to not update the gang's goal
+
+                    return this.manager_.updateGoal(gang, answer).then(() => {
+                        this.manager_.announceToGang(
+                            gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_GOAL, player.name,
+                            answer);
+
+                        this.announce_.announceToAdministrators(
+                            Message.GANG_ANNOUNCE_NEW_GOAL, player.name, player.id, gang.name,
+                            answer);
+
+                        const formattedMessage =
+                            Message.format(Message.GANG_SETTINGS_NEW_GOAL, answer);
+
+                        return Dialog.displayMessage(
+                            player, 'The goal has been updated', formattedMessage, 'OK', '');
+                    });
+
+                }).then(resolveForTests);
+            });
+        }
+
+        const usesGangColor = gang.usesGangColor(player);
+        const colorPreferenceUsage = usesGangColor ? 'Gang color'
+                                                   : 'Personal color';
+
+        // All members have the ability to change their color preferences. This enables, for
+        // example, administrators to be in a gang whilst not being forced to use the gang's color.
+        menu.addItem('My color', colorPreferenceUsage, () => {
+            let colorMenu =
+                new Menu('Do you want to use the gang\'s color?', ['Option', 'Selected']);
+
+            colorMenu.addItem('Yes, use the gang color', usesGangColor ? 'X' : '', () => {
+                this.manager_.updateColorPreference(gang, player, true).then(() => {
                     return Dialog.displayMessage(
-                        player, 'The tag has been updated', formattedMessage, 'OK', '');
-                });
+                        player, 'Your color has been updated', Message.GANG_SETTINGS_USE_GANG_COLOR,
+                        'OK' /* leftButton */, '' /* rightButton */);
 
-            }).then(() => resolveForTests());
-        });
+                }).then(resolveForTests);
+            });
 
-        menu.addItem('Gang goal', gang.goal, () => {
-            Question.ask(player, GOAL_QUESTION).then(answer => {
-                if (!answer)
-                    return;  // the leader decided to not update the gang's goal
-
-                return this.manager_.updateGoal(gang, answer).then(() => {
-                    this.manager_.announceToGang(
-                        gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_GOAL, player.name, answer);
-
-                    this.announce_.announceToAdministrators(
-                        Message.GANG_ANNOUNCE_NEW_GOAL, player.name, player.id, gang.name, answer);
-
-                    const formattedMessage = Message.format(Message.GANG_SETTINGS_NEW_GOAL, answer);
+            colorMenu.addItem('No, use my personal color', !usesGangColor ? 'X' : '', () => {
+                this.manager_.updateColorPreference(gang, player, false).then(() => {
                     return Dialog.displayMessage(
-                        player, 'The goal has been updated', formattedMessage, 'OK', '');
-                });
+                        player, 'Your color has been updated',
+                        Message.GANG_SETTINGS_USE_PERSONAL_COLOR, 'OK' /* leftButton */,
+                        '' /* rightButton */);
 
-            }).then(() => resolveForTests());
+                }).then(resolveForTests);
+            });
+
+            colorMenu.displayForPlayer(player).then(result => {
+                if (!result)
+                    resolveForTests();
+            });
         });
 
         // Display the menu for the |player|. If the resulting value is NULL, it means that they

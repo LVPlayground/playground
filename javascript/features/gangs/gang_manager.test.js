@@ -74,6 +74,50 @@ describe('GangManager', (it, beforeEach, afterEach) => {
 
     });
 
+    it('should be able to update member preferences in regards to gang color', assert => {
+        const player = server.playerManager.getById(0 /* Gunther */);
+        assert.isNotNull(player);
+
+        assert.isNull(gangManager.gangForPlayer(player));
+
+        player.identify({ userId: MockGangDatabase.HKO_LEADER_USER_ID,
+                          gangId: MockGangDatabase.HKO_GANG_ID });
+
+        // The database result will be loaded through a promise, continue the test asynchronously.
+        return Promise.resolve().then(() => {
+            const gang = gangManager.gangForPlayer(player);
+
+            assert.isTrue(gang.hasPlayer(player));
+            assert.isTrue(gang.usesGangColor(player));
+            assert.isNotNull(player.gangColor);
+
+            return gangManager.updateColorPreference(gang, player, false).then(() => {
+                assert.isFalse(gang.usesGangColor(player));
+                assert.isNull(player.gangColor);
+            });
+        });
+    });
+
+    it('should respect member color preferences when they connect to the server', assert => {
+        const player = server.playerManager.getById(0 /* Gunther */);
+        assert.isNotNull(player);
+
+        assert.isNull(gangManager.gangForPlayer(player));
+
+        player.identify({ userId: MockGangDatabase.HKO_MEMBER_USER_ID,
+                          gangId: MockGangDatabase.HKO_GANG_ID });
+
+        // The database result will be loaded through a promise, continue the test asynchronously.
+        return Promise.resolve().then(() => {
+            const gang = gangManager.gangForPlayer(player);
+
+            assert.isNotNull(gang);
+
+            assert.isFalse(gang.usesGangColor(player));
+            assert.isNull(player.gangColor);
+        });
+    });
+
     it('should load and unload gang data on connectivity events', assert => {
         const player = server.playerManager.getById(0 /* Gunther */);
         assert.isNotNull(player);
@@ -91,6 +135,9 @@ describe('GangManager', (it, beforeEach, afterEach) => {
             assert.equal(gang.tag, 'HKO');
 
             assert.isTrue(gang.hasPlayer(player));
+
+            assert.isTrue(gang.usesGangColor(player));
+            assert.isNotNull(player.gangColor);
 
             player.disconnect();
 

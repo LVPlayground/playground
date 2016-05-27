@@ -506,8 +506,10 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         assert.isTrue(player.issueCommand('/gang settings'));
 
-        assert.equal(player.messages.length, 1);
-        assert.equal(player.messages[0], Message.GANG_SETTINGS_NO_LEADER);
+        assert.equal(player.messages.length, 0);
+
+        assert.isFalse(player.lastDialog.includes('Gang name'));  // Leader-only option
+        assert.isTrue(player.lastDialog.includes('My color'));  // Member option
     });
 
     it('should not enable leaders to edit their own settings', assert => {
@@ -724,6 +726,27 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
             assert.equal(player.messages.length, 1);
             assert.equal(player.lastDialog,
                          Message.format(Message.GANG_SETTINGS_NEW_GOAL, 'We rule more!'));
+        });
+    });
+
+    it('should enable members to choose whether to use the gang color or their own', assert => {
+        const gang = createGang({ tag: 'CC', goal: 'We rule!' });
+
+        player.identify();
+
+        addPlayerToGang(player, gang, Gang.ROLE_MEMBER);
+
+        assert.isTrue(gang.usesGangColor(player));
+
+        assert.isTrue(player.issueCommand('/gang settings'));
+        assert.equal(player.messages.length, 0);
+
+        player.respondToDialog({ listitem: 0 /* Gang goal */ }).then(() =>
+            player.respondToDialog({ listitem: 1 /* use personal color */ })).then(() =>
+            player.respondToDialog({ response: 0 /* Ok */}));
+
+        return gangCommands.settingsPromiseForTesting_.then(() => {
+            assert.isFalse(gang.usesGangColor(player));
         });
     });
 

@@ -21,8 +21,12 @@ class MockGangDatabase {
         let gangInfo = null;
 
         switch (userId) {
+            case MockGangDatabase.HKO_MEMBER_USER_ID:
+                gangInfo = { role: Gang.ROLE_MEMBER, useGangColor: false,
+                             gang: mockedGangInfo.hko };
+                break;
             case MockGangDatabase.HKO_LEADER_USER_ID:
-                gangInfo = { role: Gang.ROLE_LEADER, gang: mockedGangInfo.hko };
+                gangInfo = { role: Gang.ROLE_LEADER, useGangColor: true, gang: mockedGangInfo.hko };
                 break;
         }
 
@@ -130,6 +134,10 @@ class MockGangDatabase {
         return Promise.resolve(true);
     }
 
+    updateColorPreference(gang, player, useGangColor) {
+        return Promise.resolve(true);
+    }
+
     updateName(gang, name) {
         return Promise.resolve(true);
     }
@@ -145,6 +153,7 @@ class MockGangDatabase {
 
 // Magic userId values that can be used by the database.
 MockGangDatabase.HKO_GANG_ID = 1337;
+MockGangDatabase.HKO_MEMBER_USER_ID = 41;
 MockGangDatabase.HKO_LEADER_USER_ID = 42;
 
 MockGangDatabase.CC_GANG_ID = 1000;

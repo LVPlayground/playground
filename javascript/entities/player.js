@@ -102,6 +102,10 @@ class Player {
   // SA-MP does not expose an IsPlayerControllable native. Silly.
   set controllable(value) { pawnInvoke('TogglePlayerControllable', 'ii', this.id_, value ? 1 : 0); }
 
+  // Gets or sets the drunk level of this player.
+  get drunkLevel() { return pawnInvoke('GetPlayerDrunkLevel', 'i', this.id_); }
+  set drunkLevel(value) { pawnInvoke('SetPlayerDrunkLevel', 'ii', this.id_, value); }
+
   // Gets or sets the special action the player is currently engaged in. The values must be one of
   // the Player.SPECIAL_ACTION_* constants static to this class.
   get specialAction() { return pawnInvoke('GetPlayerSpecialAction', 'i', this.id_); }
@@ -150,6 +154,12 @@ class Player {
       pawnInvoke('PutPlayerInVehicle', 'iii', this.id_, vehicle.id, seat);
     else
       throw new Error('Unknown vehicle to put the player in: ' + vehicle);
+  }
+
+  // Gets or sets the gang color of this player. May be NULL when no color has been defined.
+  get gangColor() { throw new Error('Player.gangColor() has not been implemented yet.'); }
+  set gangColor(value) {
+    pawnInvoke('OnUpdatePlayerGangColor', 'ii', this.id_, value ? value.toNumberRGBA() : 0);
   }
 
   // Sets whether the player should be in spectator mode. Disabling spectator mode will force them

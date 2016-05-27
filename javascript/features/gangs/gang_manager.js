@@ -218,6 +218,17 @@ class GangManager {
         });
     }
 
+    // Updates the preference of |player| within |gang| to use the common gang color when the
+    // |useGangColor| parameter is set to true, or their personal color otherwise.
+    updateColorPreference(gang, player, useGangColor) {
+        if (gang.usesGangColor(player) === useGangColor)
+            return;  // no need to update the value
+
+        return this.database_.updateColorPreference(gang, player, useGangColor).then(() => {
+            gang.setUsesGangColor(player, useGangColor);
+        });
+    }
+
     // Updates the |gang|'s name to be |name|. Will return a promise when the operation has
     // completed, TRUE means the tag has been changed, FALSE means another gang owns it.
     updateName(gang, name) {
@@ -279,7 +290,7 @@ class GangManager {
                 gang = this.gangs_[gangInfo.id];
 
             // Associate the |player| with the |gang|, for the appropriate role.
-            gang.addPlayer(player, result.role);
+            gang.addPlayer(player, result.role, result.useGangColor);
 
             // Associate the |gang| with the |player|.
             this.gangPlayers_.set(player, gang);

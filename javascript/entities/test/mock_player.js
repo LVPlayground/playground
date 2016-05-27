@@ -29,6 +29,7 @@ class MockPlayer {
 
         this.messages_ = [];
 
+        this.gangColor_ = null;
         this.vehicleCollisionsEnabled_ = true;
         this.removedObjectCount_ = 0;
         this.messageLevel_ = 0;
@@ -159,6 +160,10 @@ class MockPlayer {
     // Returns the vehicle the player is currently driving in, when the player is in a vehicle and
     // the vehicle is owned by the JavaScript code.
     currentVehicle() { return null; }
+
+    // Gets or sets the gang color of this player. May be NULL when no color has been defined.
+    get gangColor() { return this.gangColor_; }
+    set gangColor(value) { this.gangColor_ = value; }
 
     // Identifies the player to a fake account. The options can be specified optionally.
     identify({ userId = 42, gangId = 0 } = {}) {

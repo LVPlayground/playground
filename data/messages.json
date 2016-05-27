@@ -92,6 +92,8 @@
     "GANG_SETTINGS_ROLE_UPDATED": "The role of %s has been updated to %s.",
     "GANG_SETTINGS_SELF_CHANGE": "Sorry, but you cannot update your own settings here.",
     "GANG_SETTINGS_TAG_TAKEN": "Sorry, the tag you chose is being used by another gang.",
+    "GANG_SETTINGS_USE_GANG_COLOR": "You will now be using the gang's color again.",
+    "GANG_SETTINGS_USE_PERSONAL_COLOR": "You will now be using your personal color again.",
     "GANGS_ALREADY_SET": "@error You need to leave your current gang first by using /gang leave.",
     "GANGS_HEADER": "{B1FC17}Gangs on Las Venturas Playground",
     "GANGS_NONE_ONLINE": "{B1FC17}There are no gang members on the server right now.",

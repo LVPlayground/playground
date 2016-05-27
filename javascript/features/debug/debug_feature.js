@@ -52,6 +52,12 @@ class DebugFeature extends Feature {
         .restrict(Player.LEVEL_ADMINISTRATOR)
         .build(this.__proto__.cam.bind(this));
 
+    // /eval
+    server.commandManager.buildCommand('eval')
+        .restrict(Player.LEVEL_MANAGEMENT)
+        .parameters([ { name: 'command', type: CommandBuilder.SENTENCE_PARAMETER } ])
+        .build(this.__proto__.eval.bind(this));
+
     // /pattach
     server.commandManager.buildCommand('pattach')
         .restrict(Player.LEVEL_MANAGEMENT)
@@ -137,6 +143,12 @@ class DebugFeature extends Feature {
     player.setCamera(camera, position);
 
     wait(5000).then(() => player.setSpectating(false));
+  }
+
+  // Evaluates the |command| on behalf of |player|.
+  eval(player, command) {
+    console.log('[JavaScript] Evaluating: ' + command);
+    eval(command);
   }
 
   // Called when the |player| disconnects from the server.

@@ -40,12 +40,13 @@ class Gang {
     get memberCount() { return this.members_.size; }
 
     // Adds |player| with |role| to the gang. The |role| must be one of the ROLE_* constants defined
-    // on the function object of this class.
-    addPlayer(player, role) {
-        this.members_.set(player, role);
+    // on the function object of this class, and the |useGangColor| indicates whether the player
+    // should wear the color of the gang.
+    addPlayer(player, role, useGangColor = true) {
+        this.members_.set(player, { role, useGangColor });
 
-        if (!server.isTest() && this.color_ !== null)
-            pawnInvoke('OnUpdatePlayerGangColor', 'ii', player.id, this.color_.toNumberRGBA());
+        if (this.color_ && this.usesGangColor(player))
+            player.gangColor = this.color_;
     }
 
     // Returns the role |player| has in the gang, or NULL when they are not part of the gang.
@@ -53,7 +54,28 @@ class Gang {
         if (!this.members_.has(player))
             return null;
 
-        return this.members_.get(player);
+        return this.members_.get(player).role;
+    }
+
+    // Returns whether the |player| will wear the gang's color.
+    usesGangColor(player) {
+        if (!this.members_.has(player))
+            return false;
+
+        return this.members_.get(player).useGangColor;
+    }
+
+    // Sets whether the |player| will wear the gang's color.
+    setUsesGangColor(player, useGangColor) {
+        if (!this.members_.has(player))
+            return;
+
+        this.members_.get(player).useGangColor = useGangColor;
+        if (!this.color_)
+            return;
+
+        player.gangColor = useGangColor ? this.color_
+                                        : null;
     }
 
     // Returns whether |player| is part of this gang.
@@ -65,21 +87,22 @@ class Gang {
     removePlayer(player) {
         this.members_.delete(player);
 
-        if (!server.isTest() && !player.isDisconnecting())
-            pawnInvoke('OnUpdatePlayerGangColor', 'ii', player.id, 0 /* reset */);
+        if (!player.isDisconnecting() && this.usesGangColor(player))
+            player.gangColor = null;
     }
 
     // Updates the color of this gang, as well of all in-game players, to |color|.
     updateColor(color) {
         this.color_ = color;
-        if (server.isTest())
-            return;
 
-        for (let player of this.members_.keys()) {
+        for (const [ player, settings ] of this.members_.entries()) {
             if (player.isDisconnecting())
                 continue;
 
-            pawnInvoke('OnUpdatePlayerGangColor', 'ii', player.id, this.color_.toNumberRGBA());
+            if (!this.usesGangColor(player))
+                continue;
+
+            player.gangColor = color;
         }
     }
 }

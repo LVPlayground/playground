@@ -8,6 +8,7 @@ const Gang = require('features/gangs/gang.js');
 const LOAD_GANG_FOR_PLAYER_QUERY = `
     SELECT
         users_gangs.user_role,
+        users_gangs.user_use_gang_color,
         gangs.*
     FROM
         users_gangs
@@ -146,6 +147,17 @@ const GANG_UPDATE_COLOR_QUERY = `
     WHERE
         gangs.gang_id = ?`;
 
+// Query to update the personal color preferences of a gang member.
+const GANG_UPDATE_COLOR_PREFERENCES_QUERY = `
+    UPDATE
+        users_gangs
+    SET
+        users_gangs.user_use_gang_color = ?
+    WHERE
+        users_gangs.user_id = ? AND
+        users_gangs.gang_id = ? AND
+        users_gangs.left_gang IS NULL`;
+
 // Query to update the name of a gang.
 const GANG_UPDATE_NAME_QUERY = `
     UPDATE
@@ -190,6 +202,7 @@ class GangDatabase {
             const info = results.rows[0];
             return {
                 role: GangDatabase.toRoleValue(info.user_role),
+                useGangColor: info.user_use_gang_color,
                 gang: {
                     id: info.gang_id,
                     tag: info.gang_tag,
@@ -329,6 +342,13 @@ class GangDatabase {
     // database has been updated with the new information.
     updateColor(gang, color) {
         return this.database_.query(GANG_UPDATE_COLOR_QUERY, color.toNumberRGBA(), gang.id);
+    }
+
+    // Updates the color preferences of |player| in |gang| to |useGangColor|. Returns a promise that
+    // will be resolved when the database has been updated with the new information.
+    updateColorPreference(gang, player, useGangColor) {
+        return this.database_.query(
+            GANG_UPDATE_COLOR_PREFERENCES_QUERY, useGangColor ? 1 : 0, player.userId, gang.id);
     }
 
     // Updates the name of the |gang| to |name|. Returns a promise that will be resolved when the

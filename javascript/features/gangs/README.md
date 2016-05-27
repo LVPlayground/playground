@@ -25,7 +25,8 @@ The following commands are available as part of the feature:
   - **/gang kick [member]**: Enables leaders and managers to kick members from their gang.
   - **/gang leave**: Leave the gang that you're currently part of.
   - **/gang members**: Display the gang's members, including those who aren't currently online.
-  - **/gang settings**: Allows leaders to change settings of their gang.
+  - **/gang settings**: Allows the settings of the gang to be changed. The selection of available
+    options depends on your level in the gang.
   - **/gangs [player]**: Displays whether the `player` is associated with a gang.
   - **/gangs**: Display the gangs currently represented on Las Venturas Playground.
 
@@ -39,6 +40,10 @@ The following features are available to gang members:
 No. As the leader or manager of a gang, you can kick any member of the gang regardless of whether
 they are online or offline. You can see a full list of your gang's members by using the
 `/gang members` command.
+
+## FAQ: Do I have to wear the gang's color?
+No. You can update your personal color preferences by using the `/gang settings` command and
+changing the "My Color" option to your liking.
 
 ## FAQ: What happens when the gang's leader leaves?
 Every gang must have at least one leader. When the leader leaves the gang by using the `/gang leave`

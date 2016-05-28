@@ -55,7 +55,7 @@ enum PlayerInfoEnum {
 };
 
 new PlayerInfo [ MAX_PLAYERS ] [ PlayerInfoEnum ] ;
-stock ClearPlayer ( playerid ) {
+ClearPlayer ( playerid ) {
     PlayerInfo [ playerid ] [ playerID ]  = -1;
     format ( PlayerInfo [ playerid ] [ playerName ] ,32,"%s","" ) ;
     PlayerInfo [ playerid ] [ playerMoney ]  = 0;

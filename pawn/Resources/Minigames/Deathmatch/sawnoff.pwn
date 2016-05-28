@@ -2,7 +2,7 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-stock SetPlayerUpForSawnoff( playerid )
+SetPlayerUpForSawnoff( playerid )
 {
     new Float: x = -1480.0000 + float( random ( 100 ));
     new Float: y = 340.0000 + float( random ( 80 ));

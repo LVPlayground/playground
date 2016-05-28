@@ -407,7 +407,7 @@ IsPlayerInArea (playerId, Float:minX, Float:maxX, Float:minY, Float:maxY)
 
 // eof zone names
 
-stock GetPlayerCity(playerid)
+GetPlayerCity(playerid)
 {
     new Float:x;
     new Float:y;
@@ -435,7 +435,7 @@ stock GetPlayerCity(playerid)
     return cityName;
 }
 
-stock GetVehicleCity(vehicleid)
+GetVehicleCity(vehicleid)
 {
     new Float:x;
     new Float:y;
@@ -467,7 +467,7 @@ stock GetVehicleCity(vehicleid)
     return cityName;
 }
 
-stock GetVehicleZone(vehicleid)
+GetVehicleZone(vehicleid)
 {
     new Float:x;
     new Float:y;
@@ -491,7 +491,7 @@ stock GetVehicleZone(vehicleid)
 }
 
 
-stock GetPlayerZone(playerid)
+GetPlayerZone(playerid)
 {
     new Float:x;
     new Float:y;

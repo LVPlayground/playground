@@ -449,7 +449,7 @@ CBrief__CheckEmpty()
 
 // CBrief__MenuActivate
 // Called from OnPlayerSelectedMenuRow, to handle the minigame menu
-stock CBrief__MenuActivate(playerid)
+CBrief__MenuActivate(playerid)
 {
 
     if(IsPlayerInMinigame(playerid))
@@ -512,7 +512,7 @@ stock CBrief__MenuActivate(playerid)
 // This gets called when the minigame comes out of the signup
 // state, and actually starts.
 
-stock CBrief__Start()
+CBrief__Start()
 {
     #if BRIEF_ALLOW_SINGLE_PLAY == 0
         if(signedUpCount < 2)

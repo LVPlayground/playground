@@ -31,7 +31,7 @@ new BonusRecievements[3] =
 };
 
 
-stock BonusTime__Start()
+BonusTime__Start()
 {
     new szMessageToAll[128];
     new Bonus = random(sizeof(BonusTime));
@@ -77,7 +77,7 @@ stock BonusTime__Start()
     return true;
 }
 
-stock BonusTime__CheckPlayer(playerid, BonusCase)
+BonusTime__CheckPlayer(playerid, BonusCase)
 {
     new szMessageToPlayer[128];
     if(BonusCase == BONUS_MINIGAMES)

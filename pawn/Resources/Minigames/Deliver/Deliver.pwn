@@ -81,7 +81,7 @@ new TruckDeliveryLocations[54][TruckDeliveryLocationsEnum] = {
 };
 
 // Actual code
-stock PrepareDelivery(playerid)
+PrepareDelivery(playerid)
 {
         new iVehID;
         new iRandLoc;
@@ -150,7 +150,7 @@ stock PrepareDelivery(playerid)
         return 1;
 }
 
-stock DeliveryPlayerExitTruck(playerid)
+DeliveryPlayerExitTruck(playerid)
 {
     if(PlayerInfo[playerid][PlayerStatus] == STATUS_DELIVERY)
     {
@@ -176,7 +176,7 @@ public DeliveryPlayerTimeOver(playerid)
     }
 }
 
-stock DeliveryComplete(playerid)
+DeliveryComplete(playerid)
 {
     if(!IsPlayerInAnyVehicle(playerid)){
         PlayerInfo[playerid][PlayerStatus] = STATUS_NONE; // Not needed, just a backup.
@@ -204,7 +204,7 @@ stock DeliveryComplete(playerid)
     return 1;
 }
 
-stock DeliveryResetStuff(playerid)
+DeliveryResetStuff(playerid)
 {
     KillTimer(TruckDeliveryPlayer[playerid][TimerID]);
     TruckDeliveryPlayer[playerid][TimerID] = 0;

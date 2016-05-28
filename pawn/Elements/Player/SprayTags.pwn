@@ -179,7 +179,7 @@ sprayTagInitialize()
 
 
 // Create our actual spray tag at the given co-ords
-stock sprayTagCreate(Float:fPosX, Float:fPosY, Float:fPosZ, Float:fRotX, Float:fRotY, Float:fRotZ)
+sprayTagCreate(Float:fPosX, Float:fPosY, Float:fPosZ, Float:fRotX, Float:fRotY, Float:fRotZ)
 {
     if(sprayTagGetCount() >= MAX_SPRAY_TAGS)
     {
@@ -211,24 +211,24 @@ stock sprayTagCreate(Float:fPosX, Float:fPosY, Float:fPosZ, Float:fRotX, Float:f
 }
 
 // Return the number of spray tags loaded in the server
-stock sprayTagGetCount()
+sprayTagGetCount()
 {
     return n_SprayTagCount;
 }
 
 // Return the number of tags a player has sprayed
-stock sprayTagGetPlayerCount(playerid)
+sprayTagGetPlayerCount(playerid)
 {
     return n_TagsPlayerSprayed[playerid];
 }
 
 // Return vehicle id of the /inf car a player is driving
-stock sprayTagGetPlayerVehicleid(playerid)
+sprayTagGetPlayerVehicleid(playerid)
 {
     return sprayTagPlayerVehicle[playerid];
 }
 
-stock sprayTagHasPlayerSprayedAll(playerid)
+sprayTagHasPlayerSprayedAll(playerid)
 {
     if(sprayTagGetPlayerCount(playerid) == sprayTagGetCount())
     {

@@ -152,7 +152,7 @@ MiniGamesSignup(playerId, minigame) {
 }
 
 // Called when a player signed-up for a minigame, which hasn't started yet, decides to bail out.
-stock MiniGamesSignout(playerId) {
+MiniGamesSignout(playerId) {
     if (IsPlayerStatusMinigame(playerId)) {
         // In the meantime the game might've started yet, still leave please!
         if (MinigameTypeInfo[Progress] > 1)
@@ -174,7 +174,7 @@ stock MiniGamesSignout(playerId) {
 }
 
 // Called when the player disconnects, gets fixed or uses /leave when signed up.
-stock MinigameLeave(playerId, bool: justDisconnected = false) {
+MinigameLeave(playerId, bool: justDisconnected = false) {
     if (IsPlayerStatusMinigame(playerId, justDisconnected)) {
         if (MinigameTypeInfo[Progress] == 1)
             MiniGamesSignout(playerId); /* minigame hasn't started yet, sign-out please! */
@@ -187,7 +187,7 @@ stock MinigameLeave(playerId, bool: justDisconnected = false) {
 
 // Called from OnPlayerStateChange. We'll only apply this to minigames: if the players get killed
 // while participating one, force the player to leave... the sore loser.
-stock MinigameStateChange(playerId, newState, oldState) {
+MinigameStateChange(playerId, newState, oldState) {
     if (IsPlayerStatusMinigame(playerId)) {
         if (newState == PLAYER_STATE_WASTED && MinigameTypeInfo[Progress] > 1) 
             PlayerLigtUitMiniGame(playerId, KILLED);
@@ -198,7 +198,7 @@ stock MinigameStateChange(playerId, newState, oldState) {
 }
 
 // Called when the player has to leave the, already in progress, minigame for any reason.
-stock PlayerLigtUitMiniGame(playerId, reason) {
+PlayerLigtUitMiniGame(playerId, reason) {
     new notice[256], minigame = PlayerInfo[playerId][PlayerStatus];
 
     // Inform the player and the world about the reason of quitting.
@@ -320,7 +320,7 @@ stock PlayerLigtUitMiniGame(playerId, reason) {
 }
 
 // A simple function to check for the player's availability regarding minigames.
-stock IsPlayerStatusMinigame(playerId, bool: justDisconnected = false) {
+IsPlayerStatusMinigame(playerId, bool: justDisconnected = false) {
     if (Player(playerId)->isConnected() == true || justDisconnected) {
         if (PlayerInfo[playerId][PlayerStatus] <= 19 && PlayerInfo[playerId][PlayerStatus] != STATUS_NONE)
             return 1 ;
@@ -328,7 +328,7 @@ stock IsPlayerStatusMinigame(playerId, bool: justDisconnected = false) {
     return 0;
 }
 
-stock IsPlayerMinigameFree(playerId) {
+IsPlayerMinigameFree(playerId) {
     if (Player(playerId)->isConnected() == false)
         return 0;
 
@@ -423,7 +423,7 @@ IsPlayerInMinigame(playerId) {
     return 0 ;
 }
 
-stock ReturnMinigameName(minigame) {
+ReturnMinigameName(minigame) {
     new minigameName[256];
 
     switch (minigame) {
@@ -445,7 +445,7 @@ stock ReturnMinigameName(minigame) {
     return minigameName;
 }
 
-stock ReturnMinigameCmd(minigame) {
+ReturnMinigameCmd(minigame) {
     new command[256];
 
     switch (minigame) {
@@ -467,7 +467,7 @@ stock ReturnMinigameCmd(minigame) {
     return command;
 }
 
-stock ReturnMinigameMaxPlayers(minigame) {
+ReturnMinigameMaxPlayers(minigame) {
     new maxPlayers;
 
     switch (minigame) {

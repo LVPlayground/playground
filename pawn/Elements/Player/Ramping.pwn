@@ -42,7 +42,7 @@ new Float:fForbiddenRampingZonePositionX = 2034.7362,
     Float:fForbiddenRampingZonePositionZ =   11.6167;
 
 // Returns 1 if a vehicle is ramping valid, 0 otherwise
-stock IsVehicleRampingValid(n_Model)
+IsVehicleRampingValid(n_Model)
 {
     if(n_Model < 400 || n_Model > 611)
     {
@@ -218,7 +218,7 @@ OnPlayerPressRampKey(playerid)
 }
 
 forward Float:GetOptimumRampDistance(playerid);
-stock Float:GetOptimumRampDistance(playerid)
+Float:GetOptimumRampDistance(playerid)
 {
     new ping = GetPlayerPing(playerid), Float:dist;
     dist = floatpower(ping, 0.25);
@@ -227,7 +227,7 @@ stock Float:GetOptimumRampDistance(playerid)
     return dist;
 }
 
-stock RemoveRamp(playerid)
+RemoveRamp(playerid)
 {
     if (rampid[playerid] != DynamicObject: -1)
     {
@@ -238,7 +238,7 @@ stock RemoveRamp(playerid)
 }
 
 // Called from OnPlayerDisconnect to reset player ramping data
-stock ResetPlayerRampingData(playerid)
+ResetPlayerRampingData(playerid)
 {
     RemoveRamp(playerid);
     ramping[playerid] = ENABLE_RAMPING_BY_DEFAULT;

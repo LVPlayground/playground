@@ -2,7 +2,7 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-stock SetPlayerUpForDildoSpanking ( playerid)
+SetPlayerUpForDildoSpanking ( playerid)
 {
     new Float:x = -427.0000 + float ( random ( 5) ) ;
     new Float:y = 2506.0000 + float ( random ( 5) ) ;

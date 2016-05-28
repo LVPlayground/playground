@@ -2,7 +2,7 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-stock SetPlayerUpForKnockout ( playerid )
+SetPlayerUpForKnockout ( playerid )
 {
     new Float:x = 764.64 + float ( random ( 5 )  ) ;
     new Float:y = -70.91 + float ( random ( 6 )  ) ;

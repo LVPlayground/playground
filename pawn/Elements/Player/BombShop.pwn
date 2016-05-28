@@ -69,7 +69,7 @@ bool: LegacyIsPlayerInBombShop(playerId) {
 // sets them to an interior and shows a bombshop menu.
 
 
-stock CBomb__CheckPlayer(i)
+CBomb__CheckPlayer(i)
 {
     if(!Player(i)->isConnected() || !IsPlayerInAnyVehicle(i))
     {
@@ -499,7 +499,7 @@ CBomb__EngineCheck(playerid,vehicleid,i)
 // CBomb__DetonateCheck. Called from OnPlayerKeyStateChange, this checks if a player
 // presses the detonator to explode the vehicle or start the countdown :)
 
-stock CBomb__DetonateCheck(playerid,newkeys)
+CBomb__DetonateCheck(playerid,newkeys)
 {
     if((newkeys & KEY_LOOK_BEHIND) == KEY_LOOK_BEHIND || ((newkeys & 320) == 320))
     {
@@ -556,7 +556,7 @@ stock CBomb__DetonateCheck(playerid,newkeys)
 
 // CBomb__CheckCountdownDetonation
 // checks for the countdown detonation bomb
-stock CBomb__CheckCountdownDetonation(playerid, vid)
+CBomb__CheckCountdownDetonation(playerid, vid)
 {
     if(!Player(playerid)->isConnected())
         return;
@@ -594,7 +594,7 @@ stock CBomb__CheckCountdownDetonation(playerid, vid)
 // CBomb__CreateTextdraws
 // Called from OnGameModeInit, creates the textdraws.
 
-stock CBomb__CreateTextdraws()
+CBomb__CreateTextdraws()
 {
     new szCount[30];
 
@@ -666,7 +666,7 @@ CBomb__Countdown(playerid)
 // RemovePlayerFromBombShop. This function basically
 // sets the player out of the bomb shop and in the relevant
 // position to where they was last.
-stock RemovePlayerFromBombShop(playerid)
+RemovePlayerFromBombShop(playerid)
 {
     if(!Player(playerid)->isConnected()) return 0;
 
@@ -742,7 +742,7 @@ CBomb__ResetVehicleData(vehicleid)
 // DisarmVehicle. This manages the vehicle bombs, and whether
 // or not the vehicle needs to explode. It also has support to be called
 // from a loop or not. If it doesn't get called from a loop, it does it's own.
-stock DisarmVehicle(vehicleid, explode=1, i=-1)
+DisarmVehicle(vehicleid, explode=1, i=-1)
 {
     if(!GetVehicleModel(vehicleid))
         return 0;
@@ -979,7 +979,7 @@ stock DisarmVehicle(vehicleid, explode=1, i=-1)
 
 
 
-stock IsPointInArea( Float:fX, Float:fY, Float:fZ, Float:fMinX, Float:fMaxX, Float:fMinY, Float:fMaxY, Float:fMinZ=-99999.0, Float:fMaxZ=99999.9 )
+IsPointInArea( Float:fX, Float:fY, Float:fZ, Float:fMinX, Float:fMaxX, Float:fMinY, Float:fMaxY, Float:fMinZ=-99999.0, Float:fMaxZ=99999.9 )
 {
     // Checks if a point is inside the area specified. Credits to Simon.
 
@@ -994,7 +994,7 @@ stock IsPointInArea( Float:fX, Float:fY, Float:fZ, Float:fMinX, Float:fMaxX, Flo
 // bombshop and 0 if it doesn't. If a vehicle doesn't work in a bombshop, we let
 // GTASA deal with it, which by default explains that it "doesn't touch nothing
 // that hot".
-stock IsVehicleBombShopValid(vehicleid)
+IsVehicleBombShopValid(vehicleid)
 {
     new mod = GetVehicleModel(vehicleid);
     // is our vehicle model valid?

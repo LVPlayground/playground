@@ -2,14 +2,14 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-stock IsValidText(Text: text) {
+IsValidText(Text: text) {
     // TODO: Replace this method with IsTextDrawValid() when (if?) SA-MP implements it.
     #pragma unused text
     return 1;
 }
 
 native SetPlayerPosREAL(playerid, Float: x, Float: y, Float: z) = SetPlayerPos;
-stock SetPlayerPos(playerId, Float: x, Float: y, Float: z) {
+SetPlayerPos(playerId, Float: x, Float: y, Float: z) {
     TeleportCheatAddException(playerId);
     return SetPlayerPosREAL(playerId, Float: x, Float: y, Float: z);
 }
@@ -32,12 +32,12 @@ strval2(const string[]) {
 #define strval(%1) strval2(%1)
 
 native ResetPlayerWeaponsREAL(playerid) = ResetPlayerWeapons;
-stock ResetPlayerWeapons(playerId) {
+ResetPlayerWeapons(playerId) {
     ClearSafeWeapons(playerId);
     return ResetPlayerWeaponsREAL(playerId);
 }
 
-stock str_shift(string[], start) {
+str_shift(string[], start) {
     new i;
     for (i = 0; i < start; i++) {
         if (string[i] == '\0') {

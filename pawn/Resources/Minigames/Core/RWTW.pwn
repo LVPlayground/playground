@@ -736,7 +736,7 @@ rwSpawnPlayer(playerid, bool:n_MapFix = true)
     Streamer_Update(playerid);
 }
 
-stock rwSetPlayerTeam(playerid, n_Team)
+rwSetPlayerTeam(playerid, n_Team)
 {
     rwPlayerData[playerid][rwPlayerTeam] = n_Team;
 
@@ -752,17 +752,17 @@ stock rwSetPlayerTeam(playerid, n_Team)
     }
 }
 
-stock rwGetPlayerTeam(playerid)
+rwGetPlayerTeam(playerid)
 {
     return rwPlayerData[playerid][rwPlayerTeam];
 }
 
-stock rwGetPlayerSignupID(playerid)
+rwGetPlayerSignupID(playerid)
 {
     return rwPlayerData[playerid][rwTeamSignupID];
 }
 
-stock rwIsPlayerSignedUp(playerid)
+rwIsPlayerSignedUp(playerid)
 {
     if(rwPlayerData[playerid][rwPlayerSignedUp] == true)
     {
@@ -823,7 +823,7 @@ rwRestorePlayerData(playerid)
     }
 }
 
-stock rwResetData(bool: initialReset = false) {
+rwResetData(bool: initialReset = false) {
     if (initialReset == true)
         rwData[rwScoreText] = Text:INVALID_TEXT_DRAW;
 
@@ -844,7 +844,7 @@ stock rwResetData(bool: initialReset = false) {
     rwDestroyMap();
 }
 
-stock rwResetPlayerData(playerid)
+rwResetPlayerData(playerid)
 {
     TextDrawHideForPlayer(playerid, rwData[rwScoreText]);
     rwPlayerData[playerid][rwPlayerSignedUp] = false;
@@ -874,7 +874,7 @@ stock rwResetPlayerData(playerid)
 }
 
 
-stock rwSetScore(n_Team, score)
+rwSetScore(n_Team, score)
 {
     if(n_Team == RW_TEAM_RED)
     {
@@ -887,7 +887,7 @@ stock rwSetScore(n_Team, score)
     return 1;
 }
 
-stock rwGetScore(n_Team)
+rwGetScore(n_Team)
 {
     if(n_Team == RW_TEAM_RED)
     {
@@ -918,17 +918,17 @@ rwGetPlayerCount()
     return rwData[rwSignupCount];
 }
 
-stock rwSetState(n_State)
+rwSetState(n_State)
 {
     rwData[rwState] = n_State;
 }
 
-stock rwGetState()
+rwGetState()
 {
     return rwData[rwState];
 }
 
-stock GetPosInFrontOfPlayer( playerid, &Float:x, &Float:y, Float:distance )
+GetPosInFrontOfPlayer( playerid, &Float:x, &Float:y, Float:distance )
 {
     new Float:a;
 

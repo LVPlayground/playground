@@ -15,7 +15,7 @@ enum SpawnPositionData {
 new g_spawnPositions[MAX_SPAWN_POSITIONS][SpawnPositionData];
 new spawnPositionCount = 0;
 
-stock AddSpawnPos(Float: spawnPosX, Float: spawnPosY, Float: spawnPosZ, Float: spawnAngle, spawnInteriorId = 0) {
+AddSpawnPos(Float: spawnPosX, Float: spawnPosY, Float: spawnPosZ, Float: spawnAngle, spawnInteriorId = 0) {
     if (spawnPositionCount >= MAX_SPAWN_POSITIONS) {
         printf("[SpawnPos] WARNING: Cannot add spawn at: %f, %f, %f. Max. spawn positions limit exceeded.",
             spawnPosX, spawnPosY, spawnPosZ);
@@ -36,7 +36,7 @@ stock AddSpawnPos(Float: spawnPosX, Float: spawnPosY, Float: spawnPosZ, Float: s
     return 1;
 }
 
-stock SetPlayerRandomSpawnPos(playerId) {
+SetPlayerRandomSpawnPos(playerId) {
     new randomSpawnPosition = random(spawnPositionCount);
 
     SetPlayerPos(playerId, g_spawnPositions[randomSpawnPosition][positionX],
@@ -48,7 +48,7 @@ stock SetPlayerRandomSpawnPos(playerId) {
     return 1;
 }
 
-stock SavePlayerSpawnData(playerId) {
+SavePlayerSpawnData(playerId) {
     new Float: spawnPosX, Float: spawnPosY, Float: spawnPosZ, Float: spawnAngle, spawnInteriorId;
 
     GetPlayerPos(playerId, spawnPosX, spawnPosY, spawnPosZ);
@@ -69,7 +69,7 @@ stock SavePlayerSpawnData(playerId) {
     return 1;
 }
 
-stock InitSpawnPos() {
+InitSpawnPos() {
     AddSpawnPos(1675.272705, 1447.991333, 10.787893, 269.266143, 0);
     AddSpawnPos(1319.331298, 1252.010498, 10.820312, 355.673431, 0);
     AddSpawnPos(1679.644287, 1761.207397, 10.828730, 173.409606, 0);

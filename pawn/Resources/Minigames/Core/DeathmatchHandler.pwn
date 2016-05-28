@@ -16,7 +16,7 @@
 #include Resources/Minigames/Deathmatch/RandomDeathmatch.pwn
 #include Resources/Minigames/Deathmatch/IslandDM.pwn
 
-stock ShowDeathmatchDialog(playerId) {
+ShowDeathmatchDialog(playerId) {
     ShowPlayerDialog(playerId, DIALOG_MINIGAME_DM, DIALOG_STYLE_LIST, "Deathmatch Minigames",
         "Bat Fight\nHidden Massacre\nDildo Spanking\nFist Fight Knockout\nGrenade Wars\nRocket Wars\nSniper Madness\nMinigun Madness\nShip TDM\nSawnoff Fights\nWalkweapon Fights\nRandom DM\nIsland DM",
         "Select", "Cancel");

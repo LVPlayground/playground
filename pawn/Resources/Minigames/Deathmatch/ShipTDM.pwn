@@ -23,7 +23,7 @@ new m_sTDM_Members[ 2 ][ 100 ];
 new m_sTDM_SaveSkin[ MAX_PLAYERS ];
 new m_sTDM_PlayerCount = 0;
 
-stock SetupPlayerForShipTDM( playerid )
+SetupPlayerForShipTDM( playerid )
 {
 
     // First detect the team this player needs to be placed in;
@@ -127,7 +127,7 @@ stock SetupPlayerForShipTDM( playerid )
     return 1;
 }
 
-stock ShipTDM_GetTeam( playerid )
+ShipTDM_GetTeam( playerid )
 {
     for (new i = 0; i < m_sTDM_Teams[ 0 ]; i++) {
         if (m_sTDM_Members[ 0 ][ i ] == playerid)
@@ -136,7 +136,7 @@ stock ShipTDM_GetTeam( playerid )
     return 1;
 }
 
-stock ShipTDM_CheckFinished( )
+ShipTDM_CheckFinished( )
 {
 
     if (m_sTDM_PlayerCount <= 1)
@@ -168,7 +168,7 @@ stock ShipTDM_CheckFinished( )
     return 0;
 }
 
-stock StopPlayerForShipTDM( playerid, reason )
+StopPlayerForShipTDM( playerid, reason )
 {
     // We need some stuff to do if the player signs out of this minigame,
     // for whatever reason. This mainly is because we mess with teams.

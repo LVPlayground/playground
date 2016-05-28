@@ -100,67 +100,67 @@ new Float:gTeam2CapCarSpawns[3][4] =
 
 // CLyse__GetPlayerTeamObjectivePlayer
 // Returns the player currently capturing the vehicle
-stock CLyse__GetObjectivePlayer(iTeamID)
+CLyse__GetObjectivePlayer(iTeamID)
 {
     return iLyseObjectivePlayer[iTeamID];
 }
 
 // CLyse__SetObjectivePlayer
 // Set's the player ID for the player capturing the current vehicle
-stock CLyse__SetObjectivePlayer(iTeamID, iPlayerID)
+CLyse__SetObjectivePlayer(iTeamID, iPlayerID)
 {
     iLyseObjectivePlayer[iTeamID] = iPlayerID;
 }
 // CLyse__SetState
 // Set's the current game state of Lyse.
-stock CLyse__SetState(iState)
+CLyse__SetState(iState)
 {
     iLyseState = iState;
 }
 // CLyse__GetState
 // returns the state that Lyse is in.
-stock CLyse__GetState()
+CLyse__GetState()
 {
     return iLyseState;
 }
 
 // CLyse__SetPlayerState
 // Set the state of a player.
-stock CLyse__SetPlayerState(iPlayerID, iState)
+CLyse__SetPlayerState(iPlayerID, iState)
 {
     g_LyseWWTW_PlayerData[iPlayerID][iPlayerState] = iState;
 }
 // CLyse__GetPlayerState
 // Get the state of a player
-stock CLyse__GetPlayerState(iPlayerID)
+CLyse__GetPlayerState(iPlayerID)
 {
     return g_LyseWWTW_PlayerData[iPlayerID][iPlayerState];
 }
 
 // CLyse__SetTextdrawPhase
 // Set the textdraw phase for the player.
-stock CLyse__SetTextdrawPhase(playerid, iphase)
+CLyse__SetTextdrawPhase(playerid, iphase)
 {
     g_LyseWWTW_PlayerData[playerid][iLyseTextdrawPhase] = iphase;
     CLyse__UpdateTextdraw();
 }
 // CLyse__GetTextdrawPhase
 // return the textdraw phase ID for the player.
-stock CLyse__GetTextdrawPhase(playerid)
+CLyse__GetTextdrawPhase(playerid)
 {
     return g_LyseWWTW_PlayerData[playerid][iLyseTextdrawPhase];
 }
 
 // CLyse__GetPlayerCount
 // returns the amount of players signed up / currently active in Lyse.
-stock CLyse__GetPlayerCount()
+CLyse__GetPlayerCount()
 {
     return g_LysePlayers;
 }
 
 // CLyse__SetPlayerTeam
 // Set's the team ID of a player in Lyse.
-stock CLyse__SetPlayerTeam(iPlayerID, iTeam)
+CLyse__SetPlayerTeam(iPlayerID, iTeam)
 {
     g_LyseWWTW_PlayerData[iPlayerID][iPlayerLyseTeam] = iTeam;
     iTeamCount[iTeam]++;
@@ -168,21 +168,21 @@ stock CLyse__SetPlayerTeam(iPlayerID, iTeam)
 
 // CLyse__GetPlayerTeam
 // Return the team a player is in.
-stock CLyse__GetPlayerTeam(iPlayerID)
+CLyse__GetPlayerTeam(iPlayerID)
 {
     return g_LyseWWTW_PlayerData[iPlayerID][iPlayerLyseTeam];
 }
 
 // CLyse__GetPlayerTeamCount
 // return the amount of players in a team.
-stock CLyse__GetTeamCount(iTeamID)
+CLyse__GetTeamCount(iTeamID)
 {
     return iTeamCount[iTeamID];
 }
 
 // CLyse__GeneratePlayerTeam
 // Called from CLyse__SignPlayerUp and sets the players appropriate team.
-stock CLyse__GeneratePlayerTeam(iPlayerID)
+CLyse__GeneratePlayerTeam(iPlayerID)
 {
     if(!iCalcTeam)
     {
@@ -197,7 +197,7 @@ stock CLyse__GeneratePlayerTeam(iPlayerID)
 
 // CLyse__StorePlayerData
 // Store the data pre to a player signing up to Lyse
-stock CLyse__StorePlayerData(iPlayerID)
+CLyse__StorePlayerData(iPlayerID)
 {
     CShell__SaveGuns(iPlayerID);        // Sue me.
 
@@ -213,7 +213,7 @@ stock CLyse__StorePlayerData(iPlayerID)
 // CLyse__LoadPlayerData
 // This is called from when a player leaves the minigame and their
 // position and stuff needs re-loading.
-stock CLyse__LoadPlayerData(iPlayerID)
+CLyse__LoadPlayerData(iPlayerID)
 {
     ColorManager->releasePlayerMinigameColor(iPlayerID);
 
@@ -288,7 +288,7 @@ CLyse__Process()
 
 // CLyse__ResetPlayerData
 // Resets the players data when they leave
-stock CLyse__ResetPlayerData(iPlayerID)
+CLyse__ResetPlayerData(iPlayerID)
 {
     ResetPlayerWeapons(iPlayerID);
 
@@ -334,7 +334,7 @@ stock CLyse__ResetPlayerData(iPlayerID)
 
 // CLyse__ResetData
 // Resets the global data for Lyse, such as team and player counts.
-stock CLyse__ResetData()
+CLyse__ResetData()
 {
     g_LysePlayers = 0;
     iLyseStartTime = 0;
@@ -370,7 +370,7 @@ stock CLyse__ResetData()
 
 // CLyse__SetVehicleParams
 // Sets the vehicle params up for when a player respawns.
-stock CLyse__SetVehicleParams(iPlayerID)
+CLyse__SetVehicleParams(iPlayerID)
 {
     new iTeam = CLyse__GetPlayerTeam(iPlayerID);
     if(iTeam == TEAM_GREEN) {
@@ -384,7 +384,7 @@ stock CLyse__SetVehicleParams(iPlayerID)
 
 // CLyse__OnVehicleStreamIn
 // Called from OnVehicleStreamIn, resets vehicle params.
-stock CLyse__OnVehicleStreamIn(vehicleid, forplayerid)
+CLyse__OnVehicleStreamIn(vehicleid, forplayerid)
 {
     if(vehicleid == lyseGreenTeamVehicleId || vehicleid == lyseBlueTeamVehicleId)
         CLyse__SetVehicleParams(forplayerid);
@@ -425,7 +425,7 @@ CLyse__VehicleDeath(vehicleid) {
 
 // CLyse__SignPlayerUp
 // Sign a player up for the minigame whilst it's in it's signup state.
-stock CLyse__SignPlayerUp(playerid)
+CLyse__SignPlayerUp(playerid)
 {
     // Has the player already signed up?
     if(CLyse__GetPlayerState(playerid) != LYSE_STATE_NONE)
@@ -610,7 +610,7 @@ CLyse__End()
 
 // CLyse__SpawnPlayer
 // Spawns the player and gives them there weapons and such.
-stock CLyse__SpawnPlayer(iPlayerID)
+CLyse__SpawnPlayer(iPlayerID)
 {
 
     ResetPlayerWeapons(iPlayerID);
@@ -1115,7 +1115,7 @@ CLyse__OnText(playerid, text[])
 
 // CLyse__TeamMsg
 // Show a msg to a team
-stock CLyse__TeamMsg(iLyseTeam, iLyseColor, szMsg[])
+CLyse__TeamMsg(iLyseTeam, iLyseColor, szMsg[])
 {
 
     if(iLyseTeam < 0 || iLyseTeam > TEAM_GREEN)
@@ -1140,12 +1140,12 @@ stock CLyse__TeamMsg(iLyseTeam, iLyseColor, szMsg[])
 // CLyse__MenuActivate
 // Called from OnPlayerSelectedMenuRow, when a player selectes LYSE from the
 // minigame menu.
-stock CLyse__MenuActivate(playerid)
+CLyse__MenuActivate(playerid)
 {
     return CLyse__OnCommand(playerid);
 }
 
-stock CLyse__OnCommand(playerid){ 
+CLyse__OnCommand(playerid){ 
     if(!IsPlayerMinigameFree(playerid))
     {
         ShowBoxForPlayer(playerid, "You're already signed up with a different minigame.");

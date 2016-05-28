@@ -2,7 +2,7 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-stock SetPlayerUpForChainsawMassacre ( playerid )
+SetPlayerUpForChainsawMassacre ( playerid )
 {
     new Float: x = -2361.5000 + float ( random ( 49 )  ) ;
     new Float: y = -119.9000 + float ( random ( 39 )  ) ;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-stock deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
+deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
     switch (dialogid) {
         case DIALOG_DRIVEBY: {
             if (response) {

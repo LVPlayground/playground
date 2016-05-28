@@ -153,7 +153,7 @@ CRobbery__ResetVars()
 // CRobbery__HidePlayerTextDraws
 // This is called from CRobbery__PlayerExit and appropriately hides
 // all the textdraws showing for the player.
-stock CRobbery__HidePlayerTextDraws(playerid)
+CRobbery__HidePlayerTextDraws(playerid)
 {
     TextDrawHideForPlayer(playerid, casinoData[countdownTD]);
     TextDrawHideForPlayer(playerid, casinoData[stealTD]);

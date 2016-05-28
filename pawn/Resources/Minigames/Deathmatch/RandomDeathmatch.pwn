@@ -34,7 +34,7 @@ static RandomWeapons[15][2] =
 };
 //==============================================================================
 
-stock SetPlayerUpForRandomDeathmatch(playerid)
+SetPlayerUpForRandomDeathmatch(playerid)
 {
     new iRandom = random(sizeof(RandomSpawns));
     SetPlayerPos(playerid, RandomSpawns[iRandom][0], RandomSpawns[iRandom][1], RandomSpawns[iRandom][2]);

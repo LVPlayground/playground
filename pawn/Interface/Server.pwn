@@ -91,7 +91,7 @@ stock SetWorldTimeHook({Float,_}:...) { }
 // crash the current execution path for the sake of getting a stack trace.
 #if BETA_TEST == 1
 
-stock TextDrawDestroyHook(Text: textDrawId) {
+TextDrawDestroyHook(Text: textDrawId) {
     if (_: textDrawId == 0)
         CRASH("WARNING: Text draw with Id=0 is being destroyed.");
     return TextDrawDestroy(textDrawId);
@@ -111,7 +111,7 @@ stock TextDrawDestroyHook(Text: textDrawId) {
 #include "Interface/Server/a_streamer.pwn"
 
 // TODO: Move this elsewhere (maybe a_additional or something?)
-stock strncpy(destination[], source[], maximumCount = sizeof(destination)) {
+strncpy(destination[], source[], maximumCount = sizeof(destination)) {
     for (new currentLength = 0; currentLength < maximumCount; ++currentLength) {
         destination[currentLength] = source[currentLength];
         if (source[currentLength] == 0)

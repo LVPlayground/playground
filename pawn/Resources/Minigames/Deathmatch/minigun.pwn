@@ -4,7 +4,7 @@
 
 #define MINIGUN_VIRTUAL_WORLD 5
 
-stock SetPlayerUpForMinigun(playerId) {
+SetPlayerUpForMinigun(playerId) {
     enum spawnInfo {
         Float: posX,
         Float: posY,

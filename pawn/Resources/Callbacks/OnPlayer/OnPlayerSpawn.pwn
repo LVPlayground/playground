@@ -2,7 +2,7 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-stock SetPlayerSpawnPos(playerId) {
+SetPlayerSpawnPos(playerId) {
     TeleportCheatAddException(playerId);
 
     if (CSave__OnPlayerSpawn(playerId))

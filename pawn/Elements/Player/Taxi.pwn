@@ -58,7 +58,7 @@ new bool:isTaxiActive[MAX_PLAYERS]
    ,Float:playerOrderedTaxiPositionZ[MAX_PLAYERS]
    ,taxiPrice = 200;
 
-stock ShowTaxiDialog(playerid)
+ShowTaxiDialog(playerid)
 {
     new szTaxiLocations[512];
     for(new i = 0; i < NumberOfTaxiLocations; i++)
@@ -81,7 +81,7 @@ stock ShowTaxiDialog(playerid)
 // returns 1 if the cancel was successful, or 0 if it wasn't (I.E if the player hasn't
 // actually orded a taxi, or if he/she isn't connected).
 
-stock CancelTaxi(playerid)
+CancelTaxi(playerid)
 {
     if(!Player(playerid)->isConnected()) return 0;
     if(playerTaxi[playerid][0] == -1) return 0;
@@ -100,7 +100,7 @@ stock CancelTaxi(playerid)
 // a taxi, to calculate the arrival time, and manage when the arrival time is up
 // the teleporting of the player. It is badly named, I know. But care
 
-stock TaxiArrived(playerid)
+TaxiArrived(playerid)
 {
     if(!Player(playerid)->isConnected())
     return 0;
@@ -228,7 +228,7 @@ FreeTaxi()
     }
 }
 
-stock SendPlayerTaxi(playerid, locateid, fare)
+SendPlayerTaxi(playerid, locateid, fare)
 {
     // Get the id of the player who owns the taxi company for flagging:
     new propertyId = PropertyManager->propertyForSpecialFeature(TaxiCompanyFeature),
@@ -293,7 +293,7 @@ stock SendPlayerTaxi(playerid, locateid, fare)
 }
 
 // return the km price of taxis based on the /taxiprice cmd
-stock GetTaxiKMPrice()
+GetTaxiKMPrice()
 {
     return taxiPrice;
 }

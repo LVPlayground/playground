@@ -89,7 +89,7 @@ CTheft__Initalize()
 // CTheft__CheckNPCSpawn
 // This is called from SpawnNPCs to
 // position our GTA Merchant NPC
-stock CTheft__CheckNPCSpawn(playerid, szPlayerName[])
+CTheft__CheckNPCSpawn(playerid, szPlayerName[])
 {
 	if(!strcmp(szPlayerName, "GTA_Merchant", false, MAX_PLAYER_NAME))
 	{

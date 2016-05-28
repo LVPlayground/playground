@@ -2,7 +2,7 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-stock SetPlayerUpForRocket( playerid )
+SetPlayerUpForRocket( playerid )
 {
     new Float: x = -123.0000 - float( random ( 140 ));
     new Float: y = 100.0000 - float( random ( 180 ));

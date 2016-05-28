@@ -2,7 +2,7 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-stock SetPlayerUpForBatfight ( playerid )
+SetPlayerUpForBatfight ( playerid )
 {
     new Float: x = 1305.7500 + float ( random ( 84 ) ) ;
     new Float: y = 2107.5000 + float ( random ( 84 ) ) ;

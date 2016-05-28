@@ -773,7 +773,7 @@ CShell__LoadGuns(playerid)
 
 // CShell__MenuActivate
 // Handles /minigames menu of rivershell
-stock CShell__MenuActivate(playerid)
+CShell__MenuActivate(playerid)
 {
 
     if(IsPlayerInMinigame(playerid))

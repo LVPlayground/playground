@@ -4,7 +4,7 @@
 
 new KTTime;
 
-stock KillTimeStart(minutes = 5) {
+KillTimeStart(minutes = 5) {
     new string[256];
 
     for (new player = 0; player < MAX_PLAYERS; player++) {

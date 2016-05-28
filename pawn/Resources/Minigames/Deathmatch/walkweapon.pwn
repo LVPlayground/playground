@@ -4,7 +4,7 @@
 
 #define WW_VIRTUAL_WORLD 4
 
-stock SetPlayerUpForWalkWeapon(playerId) {
+SetPlayerUpForWalkWeapon(playerId) {
     SetPlayerVirtualWorld(playerId, WW_VIRTUAL_WORLD);
     SetPlayerWorldBounds(playerId, -1343.2637, -1485.9154, 447.1273, 334.7642);
 

@@ -4,7 +4,7 @@
 
 #define SNIPER_VIRTUAL_WORLD 3
 
-stock SetPlayerUpForSniper(playerId) {
+SetPlayerUpForSniper(playerId) {
     enum spawnInfo {
         Float: posX,
         Float: posY,

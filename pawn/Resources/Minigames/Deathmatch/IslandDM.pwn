@@ -25,7 +25,7 @@
 static  n_IslandDMBalancer;
 static  islandDMTeam[MAX_PLAYERS] = {NO_TEAM, ...};
 
-stock SetupPlayerForIslandDM(playerid)
+SetupPlayerForIslandDM(playerid)
 {
     new n_Team = islandDMSetTeam(playerid);
 
@@ -103,7 +103,7 @@ public Island_Dm_Unfreeze(playerid)
 }
 
 // Return the number of players in a team.
-stock islandDMGetTeamCount(iTeamID)
+islandDMGetTeamCount(iTeamID)
 {
     new islandTeamCount;
 
@@ -136,7 +136,7 @@ stock islandDMGetTeamCount(iTeamID)
 
 
 
-stock islandDMSetTeam(playerid)
+islandDMSetTeam(playerid)
 {
     if(!n_IslandDMBalancer)
     {
@@ -152,7 +152,7 @@ stock islandDMSetTeam(playerid)
     return islandDMTeam[playerid];
 }
 
-stock islandDMRemovePlayer(playerid)
+islandDMRemovePlayer(playerid)
 {
     islandDMTeam[playerid] = NO_TEAM;
     SetPlayerTeam(playerid, NO_TEAM);
@@ -230,7 +230,7 @@ stock islandDMRemovePlayer(playerid)
 }
 
 // This function shows / hides player blips for the island dm minigame
-stock islandDMToggleBlip(playerid, bool:show)
+islandDMToggleBlip(playerid, bool:show)
 {
     // Alright just show every name tag for the player.
     if(show == true)

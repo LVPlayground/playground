@@ -231,6 +231,13 @@ lvp_Tur(playerid, params[])
     return sprayTagOnVehicleCommand(playerid, params, SPRAY_TAG_TURISMO);
 }
 
+// Spawns a Vortex. Only if players have sprayed all 100 tags.
+// This is handled in Elements/Player/SprayTags.pwn
+lvp_Vor(playerid, params[])
+{
+    return sprayTagOnVehicleCommand(playerid, params, SPRAY_TAG_VORTEX);
+}
+
 // /cmds
 lvp_cmds(playerid, params[])
 {

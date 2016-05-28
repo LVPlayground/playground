@@ -117,55 +117,8 @@ class TestRunner {
     // Install the global `describe` function on the global.
     global.describe = TestRunner.prototype.registerSuite.bind(this);
 
-    // TODO(Russell): Actually use |pattern|. This requires file globbing functionality within the
-    // plugin, which doesn't exist yet.
-    {
-      require('base/color.test.js');
-      require('base/message.test.js');
-      require('base/natives.test.js');
-      require('base/priority_queue.test.js');
-      require('base/scoped_callbacks.test.js');
-      require('base/string_parser.test.js');
-      require('base/test/assert.test.js');
-      require('base/vector.test.js');
-      require('components/command_manager/command_builder.test.js');
-      require('components/database/database.test.js');
-      require('components/dialogs/question.test.js');
-      require('components/dialogs/question_sequence.test.js');
-      require('components/feature_manager/dependency_graph.test.js');
-      require('components/feature_manager/feature_manager.test.js');
-      require('components/interior_selector/interior_selector.test.js');
-      require('components/text_draw/text_draw.test.js');
-      require('entities/actor_manager.test.js');
-      require('entities/object_manager.test.js');
-      require('entities/pickup_manager.test.js');
-      require('entities/player_manager.test.js');
-      require('entities/scoped_entities.test.js');
-      require('entities/text_label_manager.test.js');
-      require('entities/vehicle_manager.test.js');
-      require('features/announce/announce_manager.test.js');
-      require('features/commands/positioning_commands.test.js');
-      require('features/communication/communication_manager.test.js');
-      require('features/death_feed/death_feed_feature.test.js');
-      require('features/friends/friends_commands.test.js');
-      require('features/friends/friends_manager.test.js');
-      require('features/gang_chat/gang_chat_manager.test.js');
-      require('features/gangs/gang_commands.test.js');
-      require('features/gangs/gang_manager.test.js');
-      require('features/minigames/minigame_driver.test.js');
-      require('features/minigames/minigame_manager.test.js');
-      require('features/minigames/minigame_settings.test.js');
-      require('features/player_favours/object_remover.test.js');
-      require('features/playground/playground_commands.test.js');
-      require('features/races/drift_tracker.test.js');
-      require('features/races/race_importer.test.js');
-      require('features/races/race_manager.test.js');
-      require('features/report/report_commands.test.js');
-      require('features/vehicles/vehicle_commands.test.js');
-      require('features/vehicles/vehicle_grid.test.js');
-      require('features/vehicles/vehicle_manager.test.js');
-      require('features/vehicles/vehicle_streamer.test.js');
-    }
+    // Include all files that match |pattern| in the ./javascript/ folder.
+    glob('javascript', pattern).map(require);
 
     // Remove the `describe` method from the global scope again.
     delete global.describe;

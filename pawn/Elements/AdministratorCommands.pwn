@@ -50,38 +50,6 @@ lvp_fixminigames(playerId, params[]) {
     #pragma unused params
 }
 
-lvp_crew(playerId, params[]) {
-    if (Command->parameterCount(params) == 0) {
-        SendClientMessage(playerId, Color::Success, "This command sends a message to #LVP.Crew.");
-        SendClientMessage(playerId, Color::Information, "Usage: /crew [message]");
-        return 1;
-    }
-
-    format(g_message, sizeof(g_message), "[crew] %s %s", Player(playerId)->nicknameString(), params);
-    AddEcho(g_message);
-
-    format(g_message, sizeof(g_message), "Message sent to #LVP.Crew: %s", params);
-    SendClientMessage(playerId, Color::Success, g_message);
-
-    return 1;
-}
-
-lvp_man(playerId, params[]) {
-    if (Command->parameterCount(params) == 0) {
-        SendClientMessage(playerId, Color::Success, "This command sends a message to #LVP.Management.");
-        SendClientMessage(playerId, Color::Information, "Usage: /man [message]");
-        return 1;
-    }
-
-    format(g_message, sizeof(g_message), "[man] %s %s", Player(playerId)->nicknameString(), params);
-    AddEcho(g_message);
-
-    format(g_message, sizeof(g_message), "Message sent to #LVP.Management: %s", params);
-    SendClientMessage(playerId, Color::Success, g_message);
-
-    return 1;
-}
-
 lvp_fakeact(playerId, params[]) {
     if (Command->parameterCount(params) < 2) {
         SendClientMessage(playerId, Color::Success, "This command makes a player do a fake /me message.");

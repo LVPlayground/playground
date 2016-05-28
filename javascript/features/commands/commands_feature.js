@@ -5,6 +5,7 @@
 const Feature = require('components/feature_manager/feature.js');
 const InfoDialogCommand = require('features/commands/info_dialog_command.js');
 const PositioningCommands = require('features/commands/positioning_commands.js');
+const IrcChatCommands = require('features/commands/irc_chat_commands.js');
 
 // Feature that provides a series of commands not immediately affiliated with a particular feature.
 // The CommandsFeature class provides the shared infrastructure, whereas groups of commands will
@@ -22,10 +23,16 @@ class CommandsFeature extends Feature {
 
     // Load the seperated positioning-related commands
     this.positioningCommands_ = new PositioningCommands();
+
+    // Needed to easily send a message to IRC
+    const announce = this.defineDependency('announce');
+    // Load the irc-chat commands to send a message to a channel
+    this.ircChatCommands_ = new IrcChatCommands(announce);
   }
-  
+
   dispose() {
     this.positioningCommands_.dispose();
+    this.ircChatCommands_.dispose();
   }
 };
 

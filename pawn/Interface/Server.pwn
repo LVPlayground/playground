@@ -37,16 +37,19 @@ ResetPlayerMoneyHook(playerId) { PlayerMoneyState(playerId)->reset(); }
 // otherwise the gamemode will tag the vehicles as invalid and stop anything from changing them. In
 // order to make sure we don't use CreateVehicle() and DestroyVehicle(), mark them as deprecated.
 
+native CreateVehicleJS(modelid, Float:x, Float:y, Float:z, Float:angle, color1, color2, respawn_delay, addsiren=0);
+native DestroyVehicleJS(vehicleid);
+
 // Private methods which can be used by the VehicleManager to bypass the deprecation.
-CreateVehiclePrivate(modelId, Float: x, Float: y, Float: z, Float: angle, color1, color2, respawn_delay) {
-    return CreateVehicle(modelId, x, y, z, angle, color1, color2, respawn_delay);
+CreateVehiclePrivate(modelId, Float: x, Float: y, Float: z, Float: angle, color1, color2, respawn_delay, addsiren=0) {
+    return CreateVehicleJS(modelId, x, y, z, angle, color1, color2, respawn_delay, addsiren);
 }
 
 AddStaticVehicleExPrivate(modelId, Float: x, Float: y, Float: z, Float: angle, color1, color2, respawn_delay) {
     return AddStaticVehicleEx(modelId, x, y, z, angle, color1, color2, respawn_delay);
 }
 
-DestroyVehiclePrivate(vehicleid) { return DestroyVehicle(vehicleid); }
+DestroyVehiclePrivate(vehicleid) { return DestroyVehicleJS(vehicleid); }
 
 // Now create hooked methods which will serve as the deprecated methods. They will be no-ops too and
 // will thus return INVALID_VEHICLE_ID where appropriate.

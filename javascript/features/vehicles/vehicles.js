@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const Feature = require('components/feature_manager/feature.js');
+const Vector = require('base/vector.js');
 
 // Walking around in Grand Theft Auto shows vehicles everywhere around you, it's never hard to find
 // one. Traditionally, due to a limit of two thousand vehicles, this has not been the same in online
@@ -11,6 +12,27 @@ const Feature = require('components/feature_manager/feature.js');
 class Vehicles extends Feature {
     constructor() {
         super();
+
+        provideNative('CreateVehicleJS', 'iffffiiii',
+                (modelId, x, y, z, angle, primaryColor, secondaryColor, respawnDelay, siren) => {
+            const vehicle = server.vehicleManager.createVehicle({
+                modelId: modelId,
+                position: new Vector(x, y, z),
+                rotation: angle,
+                primaryColor: primaryColor,
+                secondaryColor: secondaryColor,
+                respawnDelay: respawnDelay,
+                siren: !!siren
+            });
+
+            return vehicle.id;
+        });
+
+        provideNative('DestroyVehicleJS', 'i', vehicleId => {
+            const vehicle = server.vehicleManager.getById(vehicleId);
+            if (vehicle)
+                vehicle.dispose();
+        });
     }
 
     // ---------------------------------------------------------------------------------------------

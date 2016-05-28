@@ -17,7 +17,7 @@ class Report extends Feature {
         this.commands_ = new ReportCommands(announce);
     }
 
-    dispose () {
+    dispose() {
         this.commands_.dispose();
     }
 }

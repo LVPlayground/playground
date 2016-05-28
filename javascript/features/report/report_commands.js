@@ -10,6 +10,8 @@ class ReportCommands {
     constructor(announce) {
         this.announce_ = announce;
 
+        this.reportedPlayersWeakMap_ = new WeakMap();
+
         server.commandManager.buildCommand('report')
             .parameters([{ name: 'name/id', type: CommandBuilder.PLAYER_PARAMETER },
                          { name: 'reason', type: CommandBuilder.SENTENCE_PARAMETER }])
@@ -17,10 +19,19 @@ class ReportCommands {
     }
 
     onReportPlayerCommand(player, reportedPlayer, reason) {
+        const hasBeenReportedOneMinuteAgoOrLess =
+            Date.now() - this.reportedPlayersWeakMap_.get(reportedPlayer) < 60000
+
+        if (this.reportedPlayersWeakMap_.has(reportedPlayer) && hasBeenReportedOneMinuteAgoOrLess) {
+            player.sendMessage(Message.REPORT_ALREADY_REPORTED, reportedPlayer.name);
+            return;
+        } else
+            this.reportedPlayersWeakMap_.set(reportedPlayer, Date.now());
+
         this.announce_.announceReportToAdministrators(player, reportedPlayer, reason);
 
         // Admins already get the notice themselves due to above announce and thus know it already
-        if (player.level == Player.LEVEL_ADMINISTRATOR)
+        if (player.isAdministrator())
             return;
 
         player.sendMessage(Message.REPORT_MESSAGE, reportedPlayer.name, reportedPlayer.id, reason);

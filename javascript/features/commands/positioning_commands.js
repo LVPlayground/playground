@@ -31,7 +31,7 @@ class PositioningCommands {
             Message.POSITIONING_CURRENT_POSITION, playerPosition.x, playerPosition.y,
             playerPosition.z, playerFacingAngle);
 
-        if (player.level == Player.LEVEL_ADMINISTRATOR)
+        if (player.isAdministrator())
             player.sendMessage(Message.POSITIONING_OTHER_USAGE_POS);
     }
 

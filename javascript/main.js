@@ -12,6 +12,7 @@ require('base/message.js');
 // Import the entities. These are global objects.
 require('entities/actor.js');
 require('entities/game_object.js');
+require('entities/pickup.js');
 require('entities/player.js');
 require('entities/vehicle.js');
 require('entities/virtual_world.js');

@@ -138,6 +138,7 @@ class TestRunner {
       require('components/text_draw/text_draw.test.js');
       require('entities/actor_manager.test.js');
       require('entities/object_manager.test.js');
+      require('entities/pickup_manager.test.js');
       require('entities/player_manager.test.js');
       require('entities/scoped_entities.test.js');
       require('entities/text_label_manager.test.js');

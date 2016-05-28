@@ -10,24 +10,7 @@
  * @author Russell Krupke <russell@sa-mp.nl>
  */
 enum PickupType {
-    // The pickup will show up as being invisible.
-    InvisiblePickupType = 0,
-
     // The pickup will always exist in San Andreas, but default actions executed by GTA will be
     // disabled. This is most likely the pickup type you're looking for.
     PersistentPickupType = 1,
-
-    // Pickups of this type will respawn after a delay set by Grand Theft Auto. They can be picked
-    // up, and GTA's own actions will be invoked as well.
-    RespawnsAfterDelayPickupType = 2,
-
-    // Pickups of this type will respawn after the player has died, and respawns in the world.
-    RespawnsAfterDeathPickupType = 3,
-
-    // Pickups of this type will disappear after a delay set by Grand Theft Auto. An example user
-    // could be dropped weapons after a player has died.
-    DisappearsAfterDelayPickupType = 4,
-
-    // This pickup type makes it possible for players in vehicles to pick it up.
-    InVehiclePickupType = 14
 };

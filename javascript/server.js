@@ -7,6 +7,7 @@ const CommandManager = require('components/command_manager/command_manager.js');
 const Database = require('components/database/database.js');
 const FeatureManager = require('components/feature_manager/feature_manager.js');
 const ObjectManager = require('entities/object_manager.js');
+const PickupManager = require('entities/pickup_manager.js');
 const PlayerManager = require('entities/player_manager.js');
 const TextLabelManager = require('entities/text_label_manager.js');
 const VehicleManager = require('entities/vehicle_manager.js');
@@ -22,6 +23,7 @@ class Server {
 
         this.actorManager_ = new ActorManager();
         this.objectManager_ = new ObjectManager();
+        this.pickupManager_ = new PickupManager();
         this.playerManager_ = new PlayerManager();
         this.textLabelManager_ = new TextLabelManager();
         this.vehicleManager_ = new VehicleManager();
@@ -50,6 +52,9 @@ class Server {
     // Gets the global object manager, responsible for all objects created in the game.
     get objectManager() { return this.objectManager_; }
 
+    // Gets the global pickup manager that allows creation of pickups.
+    get pickupManager() { return this.pickupManager_; }
+
     // Gets the global player manager that knows the details and whereabouts of all in-game players.
     get playerManager() { return this.playerManager_; }
 
@@ -74,6 +79,7 @@ class Server {
         this.vehicleManager_.dispose();
         this.textLabelManager_.dispose();
         this.playerManager_.dispose();
+        this.pickupManager_.dispose();
         this.objectManager_.dispose();
         this.actorManager_.dispose();
 

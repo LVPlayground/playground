@@ -9,6 +9,7 @@ class ScopedEntities {
     constructor({ interiorId = 0, virtualWorld = 0 } = {}) {
         this.actors_ = new Set();
         this.objects_ = new Set();
+        this.pickups_ = new Set();
         this.textLabels_ = new Set();
         this.vehicles_ = new Set();
 
@@ -63,6 +64,26 @@ class ScopedEntities {
 
     // Returns whether |object| belongs to this set of scoped entities.
     hasObject(object) { return this.objects_ && this.objects_.has(object); }
+
+    // Creates the pickup with the |options|, which must match those of the PickupManager. The
+    // pickup will be removed automatically when this instance is being disposed of.
+    createPickup(options) {
+        if (!this.pickups_)
+            throw new Error('Unable to create the pickup, this object has been disposed of.');
+
+        // Note that pickups exist in all interiors simultaneously.
+
+        if (this.virtualWorld_)
+            options.virtualWorld = this.virtualWorld_;
+
+        const pickup = server.pickupManager.createPickup(options);
+
+        this.pickups_.add(pickup);
+        return pickup;
+    }
+
+    // Returns whether the |pickup| belongs to this set of scoped pickups.
+    hasPickup(pickup) { return this.pickups_ && this.pickups_.has(pickup); }
 
     // Creates the text label with the |options|, which must match those of the TextLabelManager.
     // The object will be removed automatically when this instance is being disposed of.
@@ -119,6 +140,9 @@ class ScopedEntities {
 
         this.objects_.forEach(safeDisposeEntity);
         this.objects_ = null;
+
+        this.pickups_.forEach(safeDisposeEntity);
+        this.pickups_ = null;
 
         this.textLabels_.forEach(safeDisposeEntity);
         this.textLabels_ = null;

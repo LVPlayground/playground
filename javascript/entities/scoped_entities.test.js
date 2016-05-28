@@ -68,6 +68,36 @@ describe('ScopedEntities', it => {
 
     // ---------------------------------------------------------------------------------------------
 
+    it('should be able to create and dispose of scoped pickups', assert => {
+        const entities = new ScopedEntities();
+
+        const pickup = entities.createPickup({ modelId: 322, position: new Vector(0, 0, 0) });
+        assert.isNotNull(pickup);
+        assert.isTrue(pickup.isConnected());
+
+        assert.isTrue(entities.hasPickup(pickup));
+
+        entities.dispose();
+
+        assert.isFalse(pickup.isConnected());
+    });
+
+    it('should not identify pickups owned by other systems as part of a scoped set', assert => {
+        const entities = new ScopedEntities();
+        const pickup =
+            server.pickupManager.createPickup({ modelId: 322, position: new Vector(0, 0, 0) });
+
+        assert.isTrue(pickup.isConnected());
+        assert.isFalse(entities.hasTextLabel(pickup));
+
+        entities.dispose();
+
+        assert.isFalse(entities.hasTextLabel(pickup));
+        assert.isTrue(pickup.isConnected());
+    });
+
+    // ---------------------------------------------------------------------------------------------
+
     it('should be able to create and dispose of scoped text labels', assert => {
         const entities = new ScopedEntities();
 
@@ -142,6 +172,9 @@ describe('ScopedEntities', it => {
         assert.equal(object.interiorId, -1);
         assert.equal(object.virtualWorld, -1);
 
+        const pickup = entities.createPickup({ modelId: 322, position: new Vector(0, 0, 0) });
+        assert.equal(pickup.virtualWorld, 0);
+
         const textLabel = entities.createTextLabel({ text: 'Hi', position: new Vector(0, 0, 0) });
         assert.equal(textLabel.virtualWorld, 0);
 
@@ -164,6 +197,9 @@ describe('ScopedEntities', it => {
         assert.equal(object.interiorId, 7);
         assert.equal(object.virtualWorld, 42);
 
+        const pickup = entities.createPickup({ modelId: 322, position: new Vector(0, 0, 0) });
+        assert.equal(pickup.virtualWorld, 42);
+
         const textLabel = entities.createTextLabel({ text: 'Hi', position: new Vector(0, 0, 0) });
         assert.equal(textLabel.virtualWorld, 42);
 
@@ -182,6 +218,9 @@ describe('ScopedEntities', it => {
         assert.throws(() =>
             entities.createObject({ modelId: 1225, position: new Vector(1, 2, 3),
                                     rotation: new Vector(4, 5, 6) }));
+
+        assert.throws(() =>
+            entities.createPickup({ modelId: 322, position: new Vector(0, 0, 0) }));
 
         assert.throws(() =>
             entities.createTextLabel({ text: 'Hi', position: new Vector(0, 0, 0) }));

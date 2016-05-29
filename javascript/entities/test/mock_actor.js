@@ -18,7 +18,9 @@ class MockActor {
         this.position_ = position;
         this.rotation_ = rotation;
         this.virtualWorld_ = 0;
-        this.invulnerable_ = false;
+        this.vulnerable_ = false;
+
+        Object.seal(this);  // prevent properties from being added or removed
     }
 
     // Returns whether the actor is still connected to the server.
@@ -29,27 +31,54 @@ class MockActor {
 
     // Gets or sets the health of this actor.
     get health() { return this.health_; }
-    set health(value) { this.health_ = value; }
+    set health(value) {
+        if (typeof value !== 'number')
+            throw new Error('The health of an actor must be set to a number.');
+
+        this.health_ = value;
+    }
 
     // Gets or sets the position of this actor.
     get position() { return this.position_; }
-    set position(value) { this.position_ = value; }
+    set position(value) {
+        if (typeof value !== 'object' || !(value instanceof Vector))
+            throw new Error('The position of an actor must be set to an object.');
+
+        this.position_ = value;
+    }
 
     // Gets or sets the rotation of this actor.
     get rotation() { return this.rotation_; }
-    set rotation(value) { this.rotation_ = value; }
+    set rotation(value) {
+        if (typeof value !== 'number')
+            throw new Error('The rotation of an actor must be set to a number.');
+
+        this.rotation_ = value;
+    }
 
     // Gets or sets the virtual world this actor resides in.
     get virtualWorld() { return this.virtualWorld_; }
-    set virtualWorld(value) { this.virtualWorld_ = value; }
+    set virtualWorld(value) {
+        if (typeof value !== 'number' || value < 0 || value > 2147483646) {
+            throw new Error('The virtual world of an actor must be set to a number between 0 and ' +
+                            '2,147,483,646.');
+        }
+
+        this.virtualWorld_ = value;
+    }
 
     // Note that actors are not tied to an interior: they show up everywhere.
 
-    // Returns whether this actor is invulnerable.
-    isInvulnerable() { return this.invulnerable_; }
+    // Returns whether this actor is vulnerable. Actors are invulnerable by default.
+    isVulnerable() { return this.vulnerable_; }
 
-    // Sets whether this actor should be invulnerable.
-    setInvulnerable(value) { this.invulnerable_ = value; }
+    // Sets whether this actor should be vulnerable.
+    setVulnerable(value) {
+        if (typeof value !== 'boolean')
+            throw new Error('The vulnerability of an actor must be set as a boolean.');
+
+        this.vulnerable_ = value;
+    }
 
     // Applies the animation from |library| and |name| to the actor. The |loop| argument decides
     // whether it should loop until the |time| runs out. |lock| determines whether the actor should

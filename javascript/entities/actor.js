@@ -44,11 +44,11 @@ class Actor {
 
     // Note that actors are not tied to an interior: they show up everywhere.
 
-    // Returns whether this actor is invulnerable.
-    isInvulnerable() { return pawnInvoke('IsActorInvulnerable', 'i', this.id_); }
+    // Returns whether this actor is vulnerable. Actors are invulnerable by default.
+    isVulnerable() { return !pawnInvoke('IsActorInvulnerable', 'i', this.id_); }
 
     // Sets whether this actor should be invulnerable.
-    setInvulnerable(value) { pawnInvoke('SetActorInvulnerable', 'ii', this.id_, value); }
+    setVulnerable(value) { pawnInvoke('SetActorInvulnerable', 'ii', this.id_, value ? 0 : 1); }
 
     // Applies the animation from |library| and |name| to the actor. The |loop| argument decides
     // whether it should loop until the |time| runs out. |lock| determines whether the actor should

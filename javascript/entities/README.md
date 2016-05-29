@@ -20,9 +20,12 @@ of its type.
 Tests are welcome to create entities as they please: they will be represented using mocked versions
 instead, which have additional functionality available to them to fake certain events.
 
+Entities created in tests are especially pedantic and validate every possible value, throwing
+exceptions when a bug might occur during the regular gamemode.
+
 ## Actors
 Actors are static, name-less pedestrians that stand at a given position. They can be made
-invulnerable, and can move according to an animation. Up to a thousand actors may be created.
+vulnerable, and can move according to an animation. Up to a thousand actors may be created.
 
 They are represented by the [Actor](actor.js) object, managed by the [ActorManager]
 (actor_manager.js). Tests use the [MockActor](test/mock_actor.js) instead.
@@ -50,8 +53,8 @@ The following methods are available for actors:
   - `actor.clearAnimations()`: Stops any animations currently applied to the actor.
   - `actor.dispose()`: Removes the actor from the server.
   - `actor.isConnected()`: Returns whether the actor still exists on the server.
-  - `actor.isInvulnerable()`: Returns whether the actor is invulnerable.
-  - `actor.setInvulnerable(invulnerable)`: Changes whether the actor is invulnerable.
+  - `actor.isVulnerable()`: Returns whether the actor is vulnerable to offense.
+  - `actor.setVulnerable(vulnerable)`: Changes whether the actor is vulnerable to offense.
 
 ## Objects
 

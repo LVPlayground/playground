@@ -8,13 +8,17 @@ The following categories of Entities are supported in JavaScript:
   - Objects
   - Pickups
   - Players
-  - Text Labels
+  - **[Text Labels](#text-labels)**, arbitrary text attached to an entity, or static at a given
+    position.
   - Vehicles
 
 Entities also have a **shared interface**: two methods that are available on each entity, regardless
 of its type.
   - `entity.isConnected()`: Returns whether the entity still exists on the server.
   - `entity.dispose()`: Removes the entity from the server.
+
+Tests are welcome to create entities as they please: they will be represented using mocked versions
+instead, which have additional functionality available to them to fake certain events.
 
 ## Actors
 Actors are static, name-less pedestrians that stand at a given position. They can be made
@@ -34,7 +38,7 @@ const actor = server.actorManager.createActor({
 
 #### The Actor interface
 The following properties are available for actors:
-  - `actor.modelId`: Gets the model representing the actor. _Immutable_
+  - `actor.modelId`: Gets the model representing the actor. _Immutable._
   - `actor.health`: Gets or sets the health of the actor. A number between 0 and 100.
   - `actor.position`: Gets or sets the position of the actor. Must be a vector.
   - `actor.rotation`: Gets or sets the rotation of the actor. A number between 0 and 360.
@@ -56,6 +60,39 @@ The following methods are available for actors:
 ## Players
 
 ## Text Labels
+Text labels render either at a given position in the world, or at an offset when attached to another
+entity. They can convey small amounts of information to a player without them having to type a
+command.
+
+They are represented by the [TextLabel](text_label.js) object, managed by the [TextLabelManager]
+(text_label_manager.js). Tests use the [MockTextLabel](test/mock_text_label.js) instead.
+
+#### Creating a text label
+```javascript
+const textLabel = server.textLabelManager.createTextLabel({
+    text: 'Hello, world!',
+    color: Color.fromRGB(255, 192, 203) /* pink */,
+    position: new Vector(2000.56, 1567.98, 15.31)
+});
+```
+
+#### The TextLabel interface
+The following properties are available for text labels:
+  - `textLabel.text`: Gets or sets text the label is currently displaying.
+  - `textLabel.color`: Gets or sets the color in which the text is being drawn.
+  - `textLabel.position`: Gets the position of the text label. _Immutable._
+  - `textLabel.drawDistance`: Gets the draw distance for the text label. _Immutable._
+  - `textLabel.virtualWorld`: Gets the virtual world where the text label is visible. _Immutable._
+
+The following methods are available for text labels:
+  - `textLabel.isConnected()`: Returns whether the text label still exists on the server.
+  - `textLabel.isAttached()`: Returns whether the text label is attached to an entity.
+  - `textLabel.doesTestLineOfSight()`: Returns whether the text label tests the line-of-sight.
+  - `textLabel.attachToPlayer(player, offset)`: Attaches the label to the player at the given
+    offset, which must be a vector.
+  - `textLabel.attachToVehicle(vehicle, offset)`: Attaches the label to the vehicle at the given
+    offset, which must be a vector.
+  - `textLabel.dispose()`: Removes the text label from the server.
 
 ## Vehicles
 

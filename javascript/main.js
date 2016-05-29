@@ -44,6 +44,9 @@ testRunner.run('.*\.test\.js').then(notifyReady).then(() => {
         // Player-related features
         playerFavours:  require('features/player_favours/player_favours.js'),
 
+        // VIP-related features
+        veryImportantPlayers:  require('features/vips/vips.js'),
+
 
         // v1 features - these need to be cleaned up
         activityLog:    require('features/activity_log/activity_log.js'),

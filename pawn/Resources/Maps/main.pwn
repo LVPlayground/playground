@@ -24,4 +24,4 @@
     #include    Resources/Maps/ScrapYard.pwn
     #include    Resources/Maps/TaxiRank.pwn
     #include    Resources/Maps/IslandDM.pwn
-    #include    Resources/Maps/VIPRoom.pwn
+    //#include    Resources/Maps/VIPRoom.pwn

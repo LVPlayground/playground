@@ -78,30 +78,6 @@ public OnPlayerText(playerid, text[]) {
         return 0;
     }
 
-    // Regular chat (; - requires 50 ingame hours).
-    if (text[0] == ';' && strlen(text) > 2) { // Length of 2 so only smileys are still displayed to everyone
-        format(message, sizeof(message), "** [%d] %s: %s", playerid, Player(playerid)->nicknameString(), text[1]);
-
-        if (gameplayhours[playerid] < Player::RegularHours && Player(playerid)->isAdministrator() == false) {
-            format(message, sizeof(message), "Regular chat is only available for registered players whom have been playing for at least %d hours.", Player::RegularHours);
-            SendClientMessage(playerid, Color::Error, message);
-            return 0;
-        }
-
-        for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
-            if (LegacyIsPlayerIgnored(subjectId, playerid) == true)
-                continue;
-
-            if (gameplayhours[subjectId] >= Player::RegularHours || Player(subjectId)->isAdministrator() == true)
-                SendClientMessage(subjectId, Color::RegularChat, message);
-        }
-
-        format(message, sizeof(message), "[regular] %s %d %s", Player(playerid)->nicknameString(), playerid, text[1]);
-        AddEcho(message);
-
-        return 0;
-    }
-
     // Crew chat (@).
     if (text[0] == '@' && strlen(text) > 1) {
         new prefix[MAX_PLAYER_NAME];

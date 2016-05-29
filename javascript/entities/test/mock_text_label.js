@@ -12,8 +12,24 @@ class MockTextLabel {
     constructor(manager, options) {
         this.manager_ = manager;
 
-        this.text_ = options.text;
-        this.color_ = options.color;
+        this.text_ = null;
+        this.text = options.text;
+
+        this.color_ = null;
+        this.color = options.color;
+
+        if (typeof options.position !== 'object' || !(options.position instanceof Vector))
+            throw new Error('The position of a text label must be given as a Vector.');
+
+        if (typeof options.drawDistance !== 'number')
+            throw new Error('The draw distance of a text label must be given as a number.');
+
+        if (typeof options.virtualWorld !== 'number')
+            throw new Error('The virtual world of a text label must be given as a number.');
+
+        if (typeof options.testLineOfSight !== 'boolean')
+            throw new Error('The test line-of-sight setting must be given as a boolean.');
+
         this.position_ = options.position;
         this.drawDistance_ = options.drawDistance;
         this.virtualWorld_ = options.virtualWorld;

@@ -23,6 +23,30 @@ describe('MockPickup', (it, beforeEach, afterEach) => {
             pickup.dispose();
     });
 
+    it('should not allow invalid values passed to its constructor', assert => {
+        const manager = { didDisposePickup: () => 1 };
+
+        const modelId = 1254;
+        const type = Pickup.TYPE_PERSISTENT;
+        const position = new Vector(1000, 1750, 15);
+        const virtualWorld = 42;
+
+        assert.throws(() => new MockPickup(manager, null, type, position, virtualWorld));
+        assert.throws(() => new MockPickup(manager, 'hello', type, position, virtualWorld));
+        // TODO(Russell): Validate that the modelId is actually valid for a pickup.
+
+        assert.throws(() => new MockPickup(manager, modelId, null, position, virtualWorld));
+        assert.throws(() => new MockPickup(manager, modelId, 'fly', position, virtualWorld));
+
+        assert.throws(() => new MockPickup(manager, modelId, type, null, virtualWorld));
+        assert.throws(() => new MockPickup(manager, modelId, type, 'upside down', virtualWorld));
+        assert.throws(() => new MockPickup(manager, modelId, type, [0, 1, 2], virtualWorld));
+
+        assert.throws(() => new MockPickup(manager, modelId, type, position, null));
+        assert.throws(() => new MockPickup(manager, modelId, type, position, -15));
+        assert.throws(() => new MockPickup(manager, modelId, type, position, 4000000000));
+    });
+
     it('should allow getting the model Id of the pickup as a number', assert => {
         assert.equal(typeof pickup.modelId, 'number');
         assert.equal(pickup.modelId, 1254);

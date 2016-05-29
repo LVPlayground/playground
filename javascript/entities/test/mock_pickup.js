@@ -2,11 +2,25 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const Vector = require('base/vector.js');
+
 // Mocked version of the Pickup implementation. Follows the same API, but does not actually create
 // pickups on the SA-MP server.
 class MockPickup {
     constructor(manager, modelId, type, position, virtualWorld) {
         this.manager_ = manager;
+
+        if (typeof modelId !== 'number')
+            throw new Error('The model Id of a pickup must be given as a number.');
+
+        if (typeof type !== 'number')
+            throw new Error('The type of a pickup must be given as a number.');
+
+        if (typeof position !== 'object' || !(position instanceof Vector))
+            throw new Error('The position of a pickup must be given as a Vector.');
+
+        if (typeof virtualWorld !== 'number' || virtualWorld < 0 || virtualWorld > 2147483646)
+            throw new Error('The virtual world of a pickup must be given as a number.');
 
         this.modelId_ = modelId;
         this.type_ = type;

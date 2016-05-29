@@ -21,6 +21,25 @@ describe('MockActor', (it, beforeEach, afterEach) => {
             actor.dispose();
     });
 
+    it('should not allow invalid values passed to its constructor', assert => {
+        const manager = { didDisposeActor: () => 1 };
+
+        const modelId = 121 /* Army */;
+        const position = new Vector(1000, 1250, 10);
+        const rotation = 180;
+
+        assert.throws(() => new MockActor(manager, null, position, rotation));
+        assert.throws(() => new MockActor(manager, 'army dude', position, rotation));
+        // TODO(Russell): Validate that |modelId| is valid.
+
+        assert.throws(() => new MockActor(manager, modelId, null, rotation));
+        assert.throws(() => new MockActor(manager, modelId, [1000, 1250, 10], rotation));
+        assert.throws(() => new MockActor(manager, modelId, 'next to the ship', rotation));
+
+        assert.throws(() => new MockActor(manager, modelId, position, null));
+        assert.throws(() => new MockActor(manager, modelId, position, 'upside down'));
+    });
+
     it('should allow getting and setting the health as numbers', assert => {
         assert.equal(typeof actor.health, 'number');
         assert.equal(actor.health, 100);

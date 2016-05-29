@@ -24,6 +24,37 @@ describe('MockTextLabel', (it, beforeEach, afterEach) => {
             textLabel.dispose();
     });
 
+    it('should not allow invalid values passed to its constructor', assert => {
+        const manager = { didDisposeTextLabel: () => 1 };
+
+        // Builds an options bag that is valid by default, but can have each individual value
+        // changed to create an invalid options bag instead.
+        const buildOptions = ({ text = 'Hello, world!', color = Color.fromRGB(255, 255, 0),
+                                position = new Vector(1000, 1500, 10), drawDistance = 50,
+                                virtualWorld = 42, testLineOfSight = true } = {}) => {
+            return { text, color, position, drawDistance, virtualWorld, testLineOfSight };
+        };
+
+        assert.throws(() => new MockActor(manager, buildOptions({ text: null })));
+        assert.throws(() => new MockActor(manager, buildOptions({ text: '' })));
+        assert.throws(() => new MockActor(manager, buildOptions({ text: ['foo', 'bar'] })));
+
+        assert.throws(() => new MockActor(manager, buildOptions({ color: null })));
+        assert.throws(() => new MockActor(manager, buildOptions({ color: 'red' })));
+
+        assert.throws(() => new MockActor(manager, buildOptions({ position: null })));
+        assert.throws(() => new MockActor(manager, buildOptions({ position: [100, 200, 20] })));
+
+        assert.throws(() => new MockActor(manager, buildOptions({ drawDistance: null })));
+
+        assert.throws(() => new MockActor(manager, buildOptions({ virtualWorld: null })));
+        assert.throws(() => new MockActor(manager, buildOptions({ virtualWorld: 'main world' })));
+
+        assert.throws(() => new MockActor(manager, buildOptions({ testLineOfSight: null })));
+        assert.throws(() => new MockActor(manager, buildOptions({ testLineOfSight: 42 })));
+        assert.throws(() => new MockActor(manager, buildOptions({ testLineOfSight: 'maybe' })));
+    });
+
     it('should allow getting and setting the color for the text', assert => {
         assert.equal(typeof textLabel.color, 'object');
         assert.isTrue(textLabel.color instanceof Color);

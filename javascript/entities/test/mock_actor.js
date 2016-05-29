@@ -12,6 +12,15 @@ class MockActor {
     constructor(manager, modelId, position, rotation) {
         this.manager_ = manager;
 
+        if (typeof modelId !== 'number')
+            throw new Error('The model Id of an actor must be a number.');
+
+        if (typeof position !== 'object' || !(position instanceof Vector))
+            throw new Error('The position of an actor must be a Vector.');
+
+        if (typeof rotation !== 'number')
+            throw new Error('The rotation of an actor must be a number.')
+
         this.connected_ = true;
         this.modelId_ = modelId;
         this.health_ = 100.0;

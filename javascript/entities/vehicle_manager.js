@@ -57,8 +57,7 @@ class VehicleManager {
     // Creates a new vehicle with the given options. The vehicle's model Id and position are
     // required, all other options can optionally be provided.
     createVehicle({ modelId, position, rotation = 0, primaryColor = -1, secondaryColor = -1,
-                    siren = false, respawnDelay = -1, paintjob = null, interiorId = 0,
-                    virtualWorld = 0 } = {}) {
+                    siren = false, paintjob = null, interiorId = 0, virtualWorld = 0 } = {}) {
         const vehicle = new this.vehicleConstructor_(this, {
             modelId: modelId,
             position: position,
@@ -66,7 +65,6 @@ class VehicleManager {
             primaryColor: primaryColor,
             secondaryColor: secondaryColor,
             siren: siren,
-            respawnDelay: respawnDelay,
             paintjob: paintjob,
             interiorId: interiorId,
             virtualWorld: virtualWorld

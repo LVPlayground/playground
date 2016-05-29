@@ -30,7 +30,6 @@ testRunner.run('.*\.test\.js').then(notifyReady).then(() => {
         announce:       require('features/announce/announce.js'),
         communication:  require('features/communication/communication.js'),
         minigames:      require('features/minigames/minigames.js'),
-        vehicles:       require('features/vehicles/vehicles.js'),
 
         // Gang-related features
         gangChat:       require('features/gang_chat/gang_chat.js'),

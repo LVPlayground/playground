@@ -6,7 +6,7 @@ validate, modify and destroy entities.
 The following categories of Entities are supported in JavaScript:
   - **[Actors](#actors)**, static, name-less pedestrians that stand at a given position.
   - Objects
-  - Pickups
+  - **[Pickups](#pickups)**, static objects that can be picked up by players.
   - Players
   - **[Text Labels](#text-labels)**, arbitrary text attached to an entity, or static at a given
     position.
@@ -57,11 +57,48 @@ The following methods are available for actors:
   - `actor.isVulnerable()`: Returns whether the actor is vulnerable to offense.
   - `actor.setVulnerable(vulnerable)`: Changes whether the actor is vulnerable to offense.
 
+
 ## Objects
+TO BE DOCUMENTED
+
 
 ## Pickups
+Pickups are static objects that can be picked up by players, optionally in a vehicle, by walking in
+to them. An event will be triggered when they do. There can be up to 4,096 pickups on the server.
+
+They are represented by the [Pickup](pickup.js) object, managed by the [PickupManager]
+(pickup_manager.js). Tests use the [MockPickup](test/mock_pickup.js) instead.
+
+#### Creating a pickup
+```javascript
+const pickup = server.pickupManager.createPickup({
+    modelId: 1254,
+    position: new Vector(2080.5310, 2151.2712, 19.1455),
+    type: Pickup.TYPE_PERSISTENT
+});
+```
+
+#### The Pickup interface
+The following properties are available for pickups:
+  - `pickup.modelId`: Gets the model Id that's representing the pickup. _Immutable._
+  - `pickup.position`: Gets the position of the pickup as a vector. _Immutable._
+  - `pickup.type`: Gets the behavioural type of the pickup. _Immutable._
+  - `pickup.virtualWorld`: Gets the virtual world the pickup resides in. _Immutable._
+
+The following methods are available for pickups:
+  - `pickup.dispose()`: Removes the pickup from the server.
+  - `pickup.isConnected()`: Returns whether the pickup still exists on the server.
+
+The following constants are available for pickups:
+  - `Pickup.TYPE_PERSISTENT`: Pickup _type_ that will trigger the event when a player walks in to
+    it. The pickup will not disappear, nor will trigger default effects.
+  - `Pickup.TYPE_VEHICLE`: Pickup _type_ that will only trigger when the player drives in to it with
+    a vehicle. The pickup will disappear afterwards.
+
 
 ## Players
+TO BE DOCUMENTED
+
 
 ## Text Labels
 Text labels render either at a given position in the world, or at an offset when attached to another
@@ -98,5 +135,6 @@ The following methods are available for text labels:
   - `textLabel.isConnected()`: Returns whether the text label still exists on the server.
   - `textLabel.testsLineOfSight()`: Returns whether the text label tests the line-of-sight.
 
-## Vehicles
 
+## Vehicles
+TO BE DOCUMENTED

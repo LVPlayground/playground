@@ -19,11 +19,13 @@ class ReportCommands {
             .build(ReportCommands.prototype.onReportPlayerCommand.bind(this))
     }
 
-    onReportPlayerCommand(player, reportedPlayer, reason) {
-        const hasBeenReportedOneMinuteAgoOrLess =
-            this.dateObject_.now() - this.reportedPlayersWeakMap_.get(reportedPlayer) < 60000
+    playerIsReportedOneMinuteAgoOrLess(reportedPlayer) {
+        return this.reportedPlayersWeakMap_.has(reportedPlayer)
+            && this.dateObject_.now() - this.reportedPlayersWeakMap_.get(reportedPlayer) < 60000;
+    }
 
-        if (this.reportedPlayersWeakMap_.has(reportedPlayer) && hasBeenReportedOneMinuteAgoOrLess) {
+    onReportPlayerCommand(player, reportedPlayer, reason) {
+        if (this.playerIsReportedOneMinuteAgoOrLess(reportedPlayer)) {
             player.sendMessage(Message.REPORT_ALREADY_REPORTED, reportedPlayer.name);
             return;
         } else

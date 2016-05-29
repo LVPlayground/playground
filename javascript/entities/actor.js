@@ -4,6 +4,9 @@
 
 const Vector = require('base/vector.js');
 
+// Id of an invalid actor. May be returned when there are no available actor slots.
+const INVALID_ID = 0xFFFF;
+
 // An actor is a name-less character that can be spawned in Grand Theft Auto: San Andreas without
 // taking up player slots. They have very basic interactions, options, and no events.
 class Actor {
@@ -16,7 +19,7 @@ class Actor {
         this.id_ = pawnInvoke(
             'CreateActor', 'iffff', modelId, position.x, position.y, position.z, rotation);
 
-        if (this.id_ == Actor.INVALID_ID)
+        if (this.id_ == INVALID_ID)
             console.log('[Actor] Failed to create an actor with model Id ' + modelId +'.');
     }
 
@@ -67,14 +70,11 @@ class Actor {
     // Disposes of the actor, and removes it from the server.
     dispose() {
         pawnInvoke('DestroyActor', 'i', this.id_);
-        this.id_ = Actor.INVALID_ID;
+        this.id_ = INVALID_ID;
 
         this.manager_.didDisposeActor(this);
     }
 }
-
-// Id of an invalid actor. May be returned when there are no available actor slots.
-Actor.INVALID_ID = 0xFFFF;
 
 // Expose the Actor object globally since it is an entity.
 global.Actor = Actor;

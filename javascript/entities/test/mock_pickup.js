@@ -13,14 +13,13 @@ class MockPickup {
         this.position_ = position;
         this.virtualWorld_ = virtualWorld;
 
-        this.id_ = Math.round(Math.random() * 10000);
+        this.created_ = true;
+
+        Object.seal(this);  // prevent properties from being added or removed
     }
 
-    // Gets the id of the pickup this object is representing.
-    get id() { return this.id_; }
-
     // Returns whether the pickup still exists on the server.
-    isConnected() { return this.id_ !== null; }
+    isConnected() { return this.created_; }
 
     // Gets the model Id used to present this pickup.
     get modelId() { return this.modelId_; }
@@ -36,10 +35,10 @@ class MockPickup {
 
     // Disposes of the pickup, and removes it from the server.
     dispose() {
-        this.id_ = null;
-
         this.manager_.didDisposePickup(this);
         this.manager_ = null;
+
+        this.created_ = false;
     }
 }
 

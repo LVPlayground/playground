@@ -16,7 +16,10 @@ describe('MockActor', (it, beforeEach, afterEach) => {
         actor = new MockActor({ didDisposeActor: () => 1 }, modelId, position, rotation);
     });
 
-    afterEach(() => actor.dispose());
+    afterEach(() => {
+        if (actor.isConnected())
+            actor.dispose();
+    });
 
     it('should allow getting and setting the health as numbers', assert => {
         assert.equal(typeof actor.health, 'number');
@@ -95,6 +98,14 @@ describe('MockActor', (it, beforeEach, afterEach) => {
 
     // TODO(Russell): Test animate()
     // TODO(Russell): Test clearAnimations()
+
+    it('should allow disposing of theactor', assert => {
+        assert.isTrue(actor.isConnected());
+
+        actor.dispose();
+
+        assert.isFalse(actor.isConnected());
+    });
 
     it('should not be possible to add or delete properties from an actor', assert => {
         assert.isTrue(Object.isSealed(actor));

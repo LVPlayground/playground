@@ -20,9 +20,6 @@ class Pickup {
             console.log('[Pickup] Failed to create a pickup with model Id ' + modelId +'.');
     }
 
-    // Gets the id of the pickup this object is representing.
-    get id() { return this.id_; }
-
     // Returns whether the pickup still exists on the server.
     isConnected() { return this.id_ !== null; }
 

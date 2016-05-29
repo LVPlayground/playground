@@ -19,7 +19,10 @@ describe('MockTextLabel', (it, beforeEach, afterEach) => {
         });
     });
 
-    afterEach(() => textLabel.dispose());
+    afterEach(() => {
+        if (textLabel.isConnected())
+            textLabel.dispose();
+    });
 
     it('should allow getting and setting the color for the text', assert => {
         assert.equal(typeof textLabel.color, 'object');
@@ -120,6 +123,14 @@ describe('MockTextLabel', (it, beforeEach, afterEach) => {
     it('should allow getting whether a text label tests line of sight', assert => {
         assert.equal(typeof textLabel.testsLineOfSight(), 'boolean');
         assert.isTrue(textLabel.testsLineOfSight());
+    });
+
+    it('should allow disposing of the text label', assert => {
+        assert.isTrue(textLabel.isConnected());
+
+        textLabel.dispose();
+
+        assert.isFalse(textLabel.isConnected());
     });
 
     it('should not be possible to add or delete properties from a text label', assert => {

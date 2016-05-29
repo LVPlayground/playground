@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const ActorManager = require('entities/actor_manager.js');
+const Clock = require('base/clock.js');
 const CommandManager = require('components/command_manager/command_manager.js');
 const Database = require('components/database/database.js');
 const FeatureManager = require('components/feature_manager/feature_manager.js');
@@ -17,6 +18,7 @@ const VehicleManager = require('entities/vehicle_manager.js');
 class Server {
     constructor() {
         this.database_ = new Database();
+        this.clock_ = new Clock();
 
         this.commandManager_ = new CommandManager();
         this.featureManager_ = new FeatureManager();
@@ -35,6 +37,9 @@ class Server {
 
     // Gets the connection to the Las Venturas Playground database.
     get database() { return this.database_; }
+
+    // Gets the clock that can be used for getting the current time.
+    get clock() { return this.clock_; }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -83,6 +88,7 @@ class Server {
         this.objectManager_.dispose();
         this.actorManager_.dispose();
 
+        this.clock_.dispose();
         this.database_.dispose();
     }
 }

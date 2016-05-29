@@ -3,22 +3,13 @@
 // be found in the LICENSE file.
 
 const MockAnnounce = require('features/announce/test/mock_announce.js');
-const MockDate = require('features/report/test/mock_date.js');
 const ReportCommands = require('features/report/report_commands.js');
 
 describe('ReportCommands', (it, beforeEach, afterEach) => {
     let reportCommands = null;
 
-    let mockDate = null;
-
-    beforeEach(() => {
-        mockDate = new MockDate();
-        reportCommands = new ReportCommands(new MockAnnounce(), mockDate);
-    });
-
-    afterEach(() => {
-        reportCommands.dispose();
-    });
+    beforeEach(() => reportCommands = new ReportCommands(new MockAnnounce()));
+    afterEach(() => reportCommands.dispose());
 
     it('should report a player to the admins', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
@@ -67,9 +58,7 @@ describe('ReportCommands', (it, beforeEach, afterEach) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         const lucy    = server.playerManager.getById(2 /* Lucy    */);
 
-        mockDate.setNow(1);
         assert.isTrue(russell.issueCommand('/report 0 bullet-amount freezed'));
-        mockDate.setNow(55000);
         assert.isTrue(lucy.issueCommand('/report 0 weird weapon-use'));
 
         assert.equal(lucy.messages.length, 1);
@@ -83,9 +72,11 @@ describe('ReportCommands', (it, beforeEach, afterEach) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         const lucy    = server.playerManager.getById(2 /* Lucy    */);
 
-        mockDate.setNow(1);
         assert.isTrue(russell.issueCommand('/report 0 bullet-amount freezed'));
-        mockDate.setNow(65000);
+        
+        // Advance the server's time by two minutes to fake the wait having passed.
+        server.clock.advance(120000);
+
         assert.isTrue(lucy.issueCommand('/report 0 weird weapon-use'));
 
         assert.equal(lucy.messages.length, 1);

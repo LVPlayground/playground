@@ -19,16 +19,49 @@
     dev@sa-mp.nl
 */
 
-#define     HOT_AIR_BALLOON_OBJECT                      19332         // Object ID for the hot air balloon
-#define     HOT_AIR_BALLOON_MIN_Z                       55          // Minimum Z height which the balloon can be at any time
-#define     MAX_HOT_AIR_BALLOON_DISTANCE_FROM_SPAWN     120         // Maximum distance from the default spawn point the balloon can travel
-#define     MAX_HOT_AIR_BALLOON_SPEED                   3           // Max speed the balloon can travel
+#define     HOT_AIR_BALLOON_OBJECT                      19332       // Object ID for the hot air balloon
+#define     HOT_AIR_BALLOON_MIN_Z                       38          // Minimum Z height which the balloon can be at any time
+#define     MAX_HOT_AIR_BALLOON_DISTANCE_FROM_SPAWN     80          // Maximum distance from the default spawn point the balloon can travel
+#define     MAX_HOT_AIR_BALLOON_SPEED                   5           // Max speed the balloon can travel
 
 static      DynamicObject: iHotAirBalloonObjectID = DynamicObject: INVALID_OBJECT_ID;
 
 // Spawn co-ords for the Balloon
 // If you no longer wish the balloon to be above the ship change these co-ords.
-static      Float:fHotAirBalloonSpawn[3] = {2046.49, 1550.25, 62.67};
+static      Float:fHotAirBalloonSpawn[3]       = {2046.49, 1550.25, 62.67};
+static      Float:fHotAirBalloonPickupPlace[3] = {2034.94, 1528.17, 10.00};
+
+class Balloon {
+    public const BalloonHandlerId = @counter(PickupHandler);
+
+    new bool: m_isSomeoneWaitingForBalloon;
+
+    public __construct() {
+        PickupController->createPickup(Balloon::BalloonHandlerId, 1318 /*DownArrowForBalloonPickupId*/,
+            PersistentPickupType, 2034.7087, 1531.6294, 11.0000, -1);
+    }
+
+    @switch(OnPlayerEnterPickup, Balloon::BalloonHandlerId)
+    public onPlayerEnterBalloonPickup(playerId, pickupId, extraId) {
+        m_isSomeoneWaitingForBalloon = true;
+        MoveDynamicObject(iHotAirBalloonObjectID, fHotAirBalloonPickupPlace[0], fHotAirBalloonPickupPlace[1], fHotAirBalloonPickupPlace[2], MAX_HOT_AIR_BALLOON_SPEED);
+        ShowBoxForPlayer(playerId, "Please wait while the balloon comes towards you!");
+
+        #pragma unused pickupId, extraId
+    }
+
+    @switch(OnPlayerLeavePickup, Balloon::BalloonHandlerId)
+    public onPlayerLeaveBalloonPickup(playerId, pickupId, extraId) {
+        m_isSomeoneWaitingForBalloon = false;
+        MoveHotAirBalloon();
+
+        #pragma unused playerId, pickupId, extraId
+    }
+
+    public inline bool: isSomeoneWaitingForBalloon() {
+        return m_isSomeoneWaitingForBalloon;
+    }
+}
 
 // Create (or re-create) the hot air balloon object.
 // Called when the gamemode initializes
@@ -48,6 +81,9 @@ InitHotAirBalloon()
 // to a new destination within the spawns radius at a random but slow speed
 MoveHotAirBalloon()
 {
+    if (Balloon->isSomeoneWaitingForBalloon())
+        return;
+
     // Error checking - if the balloon has somehow been destroyed re-create it
     if(!IsValidDynamicObject(iHotAirBalloonObjectID))
     {
@@ -113,8 +149,12 @@ GlideHotAirBalloon()
         Float:fPosY,
         Float:fPosZ;
 
+    new posZrandom = random(5);
+    if (Balloon->isSomeoneWaitingForBalloon())
+        posZrandom = 0;
+
     GetDynamicObjectPos(iHotAirBalloonObjectID, fPosX, fPosY, fPosZ);
-    MoveDynamicObject(iHotAirBalloonObjectID, fPosX + random(5), fPosY + random(10), fPosZ - random(5), 0.2);
+    MoveDynamicObject(iHotAirBalloonObjectID, fPosX + random(5), fPosY + random(10), fPosZ - posZrandom, 0.2);
 }
 
 // This function is wrapped from OnObjectMoved
@@ -149,5 +189,3 @@ GetHotAirBalloonDistanceFromSpawn()
     GetDynamicObjectPos(iHotAirBalloonObjectID, fPosX, fPosY, fPosZ);
     return floatround(floatsqroot(((fPosX - fHotAirBalloonSpawn[0]) * (fPosX - fHotAirBalloonSpawn[1])) + ((fPosY - fHotAirBalloonSpawn[1]) * (fPosY - fHotAirBalloonSpawn[1])) + ((fPosZ - fHotAirBalloonSpawn[2]) * (fPosZ - fHotAirBalloonSpawn[2]))));
 }
-
-

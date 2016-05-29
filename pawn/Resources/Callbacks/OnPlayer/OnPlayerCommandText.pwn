@@ -1128,7 +1128,10 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         SendClientMessage(playerid, COLOR_ORANGE, "3: Mount Chiliad  4: Ammu-Nation  5: Area 69");
         SendClientMessage(playerid, COLOR_ORANGE, "6: Airstrip       7: Basejumping       8: San Fierro Airport");
         SendClientMessage(playerid, COLOR_ORANGE, "9: Los Santos Airport 10: LV Main Bank 11: LV Train Station");
-        SendClientMessage(playerid, COLOR_ORANGE, "12: LV Fight Club");
+        if (Player(playerid)->isAdministrator())
+            SendClientMessage(playerid, COLOR_ORANGE, "12: LV Fight Club 13: Balloon (/t only)");
+        else
+            SendClientMessage(playerid, COLOR_ORANGE, "12: LV Fight Club");
         return 1;
     }
 

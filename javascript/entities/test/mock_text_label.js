@@ -29,11 +29,13 @@ class MockTextLabel {
     // Returns whether the text label is attached to another entity.
     isAttached() { return this.attached_; }
 
-    // Gets the text that's being displayed using this text label.
+    // Gets or sets the text that's being displayed using this text label.
     get text() { return this.text_; }
+    set text(value) { this.text_ = value; }
 
-    // Gets the color in which the text on the text label is being drawn.
+    // Gets or sets the color in which the text on the text label is being drawn.
     get color() { return this.color_; }
+    set color(value) { this.color_ = value; }
 
     // Gets the position of the text label. This will be irrelevant if the text label has been
     // attached to another entity in the world, which isAttached() will tell you.
@@ -47,13 +49,6 @@ class MockTextLabel {
 
     // Returns whether the text draw tests for having a clear line-of-sight from the player.
     doesTestLineOfSight() { return this.testLineOfSight_; }
-
-    // Updates the text shown by the text label to |text| in |color|. If the |color| argument is
-    // omitted, the current color will be carried forward.
-    updateText(text, color = null) {
-        this.text_ = text;
-        this.color_ = color || this.color_;
-    }
 
     // Attaches the text label to the |player| at |offset|.
     attachToPlayer(player, offset) {

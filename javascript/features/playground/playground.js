@@ -28,6 +28,7 @@ class Playground extends Feature {
 
     dispose() {
         this.commands_.dispose();
+        this.manager_.dispose();
     }
 }
 

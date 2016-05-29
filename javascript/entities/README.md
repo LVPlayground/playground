@@ -21,7 +21,8 @@ Tests are welcome to create entities as they please: they will be represented us
 instead, which have additional functionality available to them to fake certain events.
 
 Entities created in tests are especially pedantic and validate every possible value, throwing
-exceptions when a bug might occur during the regular gamemode.
+exceptions when a bug might occur during the regular gamemode. This adds to the importance of having
+test coverage for the features you develop.
 
 ## Actors
 Actors are static, name-less pedestrians that stand at a given position. They can be made

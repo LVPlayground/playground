@@ -23,9 +23,6 @@ class TextLabel {
                               options.testLineOfSight);
     }
 
-    // Gets the Id SA-MP assigned to this text label.
-    get id() { return this.id_; }
-
     // Returns whether the text label still exists on the server.
     isConnected() { return this.id_ !== null; }
 
@@ -87,4 +84,5 @@ class TextLabel {
     }
 }
 
-exports = TextLabel;
+// Expose the TextLabel object globally since it is an entity.
+global.TextLabel = TextLabel;

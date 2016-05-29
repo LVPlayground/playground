@@ -2,6 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const MockPlayer = require('entities/test/mock_player.js');
+const MockVehicle = require('entities/test/mock_vehicle.js');
+const Vector = require('base/vector.js');
+
 // Mocked version of the TextLabel class that supports the same API, but won't interact with the
 // SA-MP server in order to do its actions.
 class MockTextLabel {
@@ -16,26 +20,34 @@ class MockTextLabel {
         this.testLineOfSight_ = options.testLineOfSight;
 
         this.attached_ = false;
+        this.created_ = true;
 
-        this.id_ = Math.round(Math.random() * 10000);
+        Object.seal(this);  // prevent properties from being added or removed
     }
 
-    // Gets the Id SA-MP assigned to this text label.
-    get id() { return this.id_; }
-
     // Returns whether the text label still exists on the server.
-    isConnected() { return this.id_ !== null; }
+    isConnected() { return this.created_; }
 
     // Returns whether the text label is attached to another entity.
     isAttached() { return this.attached_; }
 
     // Gets or sets the text that's being displayed using this text label.
     get text() { return this.text_; }
-    set text(value) { this.text_ = value; }
+    set text(value) {
+        if (typeof value !== 'string' || !value.length)
+            throw new Error('The text of a text label must be a non-empty string.');
+
+        this.text_ = value;
+    }
 
     // Gets or sets the color in which the text on the text label is being drawn.
     get color() { return this.color_; }
-    set color(value) { this.color_ = value; }
+    set color(value) {
+        if (typeof value !== 'object' || !(value instanceof Color))
+            throw new Error('The color of a text label must be set to a Color instance.');
+
+        this.color_ = value;
+    }
 
     // Gets the position of the text label. This will be irrelevant if the text label has been
     // attached to another entity in the world, which isAttached() will tell you.
@@ -52,11 +64,23 @@ class MockTextLabel {
 
     // Attaches the text label to the |player| at |offset|.
     attachToPlayer(player, offset) {
+        if (typeof player !== 'object' || !(player instanceof MockPlayer))
+            throw new Error('The player to attach the label to must be a Player instance.');
+
+        if (typeof offset !== 'object' || !(offset instanceof Vector))
+            throw new Error('The offset to the given |player| must be a Vector.');
+
         this.attached_ = true;
     }
 
     // Attaches the text label to the |vehicle| at |offset|.
     attachToVehicle(vehicle, offset) {
+        if (typeof vehicle !== 'object' || !(vehicle instanceof MockVehicle))
+            throw new Error('The vehicle to attach the label to must be a Vehicle instance.');
+
+        if (typeof offset !== 'object' || !(offset instanceof Vector))
+            throw new Error('The offset to the given |vehicle| must be a Vector.');
+
         this.attached_ = true;
     }
 
@@ -64,7 +88,7 @@ class MockTextLabel {
         this.manager_.didDisposeTextLabel(this);
         this.manager_ = null;
 
-        this.id_ = null;
+        this.created_ = false;
     }
 }
 

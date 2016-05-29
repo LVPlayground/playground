@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const TextLabel = require('entities/text_label.js');
-
 // The text label manager is in control of all text labels created on Las Venturas Playground.
 class TextLabelManager {
     constructor(textLabelConstructor = TextLabel) {

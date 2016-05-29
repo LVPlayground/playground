@@ -7,9 +7,8 @@ const CommandBuilder = require('components/command_manager/command_builder.js');
 // Here we introduce the manager for the /report-command to give users the ability to send the
 // message to the (IRC-)admins.
 class ReportCommands {
-    constructor(announce, dateObject) {
+    constructor(announce) {
         this.announce_ = announce;
-        this.dateObject_ = dateObject;
 
         this.reportedPlayersWeakMap_ = new WeakMap();
 
@@ -20,16 +19,19 @@ class ReportCommands {
     }
 
     playerIsReportedOneMinuteAgoOrLess(reportedPlayer) {
-        return this.reportedPlayersWeakMap_.has(reportedPlayer)
-            && this.dateObject_.now() - this.reportedPlayersWeakMap_.get(reportedPlayer) < 60000;
+        return this.reportedPlayersWeakMap_.has(reportedPlayer) &&
+               server.clock.monotonicallyIncreasingTime() -
+                   this.reportedPlayersWeakMap_.get(reportedPlayer) < 60000;
     }
 
     onReportPlayerCommand(player, reportedPlayer, reason) {
         if (this.playerIsReportedOneMinuteAgoOrLess(reportedPlayer)) {
             player.sendMessage(Message.REPORT_ALREADY_REPORTED, reportedPlayer.name);
             return;
-        } else
-            this.reportedPlayersWeakMap_.set(reportedPlayer, this.dateObject_.now());
+        } else {
+            this.reportedPlayersWeakMap_.set(
+                reportedPlayer, server.clock.monotonicallyIncreasingTime());
+        }
 
         this.announce_.announceReportToAdministrators(player, reportedPlayer, reason);
 

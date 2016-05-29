@@ -14,7 +14,7 @@ class Report extends Feature {
         // Be able to send a certain message to a certain public
         const announce = this.defineDependency('announce');
 
-        this.commands_ = new ReportCommands(announce);
+        this.commands_ = new ReportCommands(announce, Date);
     }
 
     dispose() {

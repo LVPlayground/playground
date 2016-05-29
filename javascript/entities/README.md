@@ -24,6 +24,12 @@ Entities created in tests are especially pedantic and validate every possible va
 exceptions when a bug might occur during the regular gamemode. This adds to the importance of having
 test coverage for the features you develop.
 
+In addition, there are a few utility classes that are also defined here:
+  - **[ObjectGroup](#utility-objectgroup)**, a class allows loading a series of objects from a file
+    or array, allowing them to be removed together.
+  - **[ScopedEntities](#utility-scopedentities)**, a class that creates objects for a shared owner,
+    allowing them to be removed together.
+
 ## Actors
 Actors are static, name-less pedestrians that stand at a given position. They can be made
 vulnerable, and can move according to an animation. Up to a thousand actors may be created.
@@ -138,3 +144,63 @@ The following methods are available for text labels:
 
 ## Vehicles
 TO BE DOCUMENTED
+
+
+## Utility: ObjectGroup
+TO BE DOCUMENTED
+
+
+## Utility: ScopedEntities
+There are many scenarios in which a set of entities should be created for a particular reason: a
+race, a set of decorations or a feature implemented in JavaScript. In those cases it's convenient to
+be able to remove all associated entities in one go as well.
+
+It is defined in the [ScopedEntities](scoped_entities.js) class. Each individual _create_ method
+takes the same arguments as those accepted by the managers in charge of the entity type.
+
+#### Creating scoped entities 
+```javascript
+const entities = new ScopedEntities();
+
+const actor = entities.createActor(...);
+const object = entities.createObject(...);
+const pickup = entities.createPickup(...);
+const textLabel = entities.createTextLabel(...);
+const vehicle = entities.createVehicle(...);
+
+entities.dispose();  // removes all entities created by |entities|
+```
+
+#### Creating scoped entities for a defined environment
+If all created entities must be part of a specific virtual world or be tied to a specific interior,
+you can identify those in the constructor. All entities will then automatically be tied to them.
+
+```javascript
+const entities = new ScopedEntities({ interior: 7, virtualWorld: 42 });
+const infernus = entities.createVehicle({
+    modelId: 411 /* Infernus */,
+    position: new Vector(12, 13, 14)
+});
+
+infernus.interiorId;  // 7
+pickup.virtualWorld;  // 42
+```
+
+#### The ScopedEntities interface
+The following methods are available on a ScopedEntities instance:
+  - `entities.createActor(options)`: Creates an actor with the given _options_, per the
+    [ActorManager](actor_manager.js).
+  - `entities.createObject(options)`: Creates an object with the given _options_, per the
+    [ObjectManager](object_manager.js).
+  - `entities.createPickup(options)`: Creates a pickup with the given _options_, per the
+    [PickupManager](pickup_manager.js).
+  - `entities.createTextLabel(options)`: Creates a text label with the given _options_, per the
+    [TextLabelManager](text_label_manager.js).
+  - `entities.createVehicle(options)`: Creates a vehicle with the given _options_, per the
+    [VehicleManager](vehicle_manager.js).
+  - `entities.dispose()`: Removes all entities that were created using this object.
+  - `entities.hasActor(actor)`: Returns whether the _actor_ is owned by the object.
+  - `entities.hasObject(object)`: Returns whether the _object_ is owned by the object.
+  - `entities.hasPickup(pickup)`: Returns whether the _pickup_ is owned by the object.
+  - `entities.hasTextLabel(textLabel)`: Returns whether the _textLabel_ is owned by the object.
+  - `entities.hasVehicle(vehicle)`: Returns whether the _vehicle_ is owned by the object.

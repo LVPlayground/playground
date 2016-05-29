@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ObjectGroup = require('features/playground/object_group.js');
+const ObjectGroup = require('entities/object_group.js');
 
 // The VIP room offers our donating players a cool place to hangout or get some
 // health/armor and weapons.

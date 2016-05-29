@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ObjectGroup = require('features/playground/object_group.js');
+const ObjectGroup = require('entities/object_group.js');
 const Vector = require('base/vector.js');
 
 // The animation that the DJ on the ship should be moving with.

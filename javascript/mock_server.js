@@ -12,6 +12,7 @@ const TextLabelManager = require('entities/text_label_manager.js');
 const VehicleManager = require('entities/vehicle_manager.js');
 
 const MockActor = require('entities/test/mock_actor.js');
+const MockClock = require('base/test/mock_clock.js');
 const MockObject = require('entities/test/mock_object.js');
 const MockPickup = require('entities/test/mock_pickup.js');
 const MockPlayer = require('entities/test/mock_player.js');
@@ -24,6 +25,8 @@ const MockVehicle = require('entities/test/mock_vehicle.js');
 class MockServer {
     // Constructs the MockServer instance, and creates a mocked scenario on the server.
     constructor() {
+        this.clock_ = new MockClock();
+
         this.commandManager_ = new CommandManager();
         this.featureManager_ = new FeatureManager();
 
@@ -47,6 +50,9 @@ class MockServer {
 
     // Gets the database. Will throw an exception because it's not available in tests.
     get database() { throw new Error('The database is not available in tests.'); }
+
+    // Gets the clock. Returns real values, but has additional methods available for testing.
+    get clock() { return this.clock_; }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -94,6 +100,8 @@ class MockServer {
         this.pickupManager_.dispose();
         this.objectManager_.dispose();
         this.actorManager_.dispose();
+
+        this.clock_.dispose();
     }
 }
 

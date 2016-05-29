@@ -25,15 +25,15 @@ class PirateShipParty {
                                               position: new Vector(2000.56, 1567.98, 15.3072),
                                               rotation: 180 });
 
-        this.dj_.applyAnimation(DjAnimation);
-        this.dj_.applyAnimation(DjAnimation);
+        this.dj_.animate(DjAnimation);
+        this.dj_.animate(DjAnimation);
 
         wait(4000).then(() => {
             if (!this.dj_.isConnected())
                 return;  // the pirate ship party has been disabled since
 
-            this.dj_.applyAnimation(DjAnimation);
-            this.dj_.applyAnimation(DjAnimation);
+            this.dj_.animate(DjAnimation);
+            this.dj_.animate(DjAnimation);
         })
 
         this.objects_ = ObjectGroup.create('data/objects/pirate_ship_party.json',

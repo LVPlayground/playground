@@ -50,12 +50,12 @@ class Actor {
     // Sets whether this actor should be invulnerable.
     setInvulnerable(value) { pawnInvoke('SetActorInvulnerable', 'ii', this.id_, value); }
 
-    // Apples the animation from |library| and |name| to the actor. The |loop| argument decides
+    // Applies the animation from |library| and |name| to the actor. The |loop| argument decides
     // whether it should loop until the |time| runs out. |lock| determines whether the actor should
     // be returned to their position after the animation finishes, and |freeze| determines whether
     // the actor should be frozen after the animation finishes.
-    applyAnimation({ library, name, delta = 4.1, loop = false, lock = false, freeze = false,
-                     time = 0} = {}) {
+    animate({ library, name, delta = 4.1, loop = false, lock = false, freeze = false,
+              time = 0} = {}) {
         pawnInvoke('ApplyActorAnimation', 'issfiiiii', this.id_, library, name, delta, loop ? 1 : 0,
                                                        lock ? 1 : 0, lock ? 1 : 0, freeze ? 1 : 0,
                                                        time);

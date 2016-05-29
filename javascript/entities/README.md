@@ -14,8 +14,8 @@ The following categories of Entities are supported in JavaScript:
 
 Entities also have a **shared interface**: two methods that are available on each entity, regardless
 of its type.
-  - `entity.isConnected()`: Returns whether the entity still exists on the server.
   - `entity.dispose()`: Removes the entity from the server.
+  - `entity.isConnected()`: Returns whether the entity still exists on the server.
 
 Tests are welcome to create entities as they please: they will be represented using mocked versions
 instead, which have additional functionality available to them to fake certain events.
@@ -38,20 +38,20 @@ const actor = server.actorManager.createActor({
 
 #### The Actor interface
 The following properties are available for actors:
-  - `actor.modelId`: Gets the model representing the actor. _Immutable._
   - `actor.health`: Gets or sets the health of the actor. A number between 0 and 100.
+  - `actor.modelId`: Gets the model representing the actor. _Immutable._
   - `actor.position`: Gets or sets the position of the actor. Must be a vector.
   - `actor.rotation`: Gets or sets the rotation of the actor. A number between 0 and 360.
   - `actor.virtualWorld`: Gets or sets the virtual world the actor resides in.
 
 The following methods are available for actors:
+  - `actor.animate({ library, name, loop = false, lock = false, freeze = false, time = 0})`: Applies
+     an animation to the actor with the given options.
+  - `actor.clearAnimations()`: Stops any animations currently applied to the actor.
+  - `actor.dispose()`: Removes the actor from the server.
   - `actor.isConnected()`: Returns whether the actor still exists on the server.
   - `actor.isInvulnerable()`: Returns whether the actor is invulnerable.
   - `actor.setInvulnerable(invulnerable)`: Changes whether the actor is invulnerable.
-  - `actor.applyAnimation({ library, name, loop = false, lock = false, freeze = false, time = 0})`:
-     Applies an animation to the actor with the given options.
-  - `actor.clearAnimations()`: Stops any animations currently applied to the actor.
-  - `actor.dispose()`: Removes the actor from the server.
 
 ## Objects
 
@@ -78,21 +78,21 @@ const textLabel = server.textLabelManager.createTextLabel({
 
 #### The TextLabel interface
 The following properties are available for text labels:
-  - `textLabel.text`: Gets or sets text the label is currently displaying.
   - `textLabel.color`: Gets or sets the color in which the text is being drawn.
-  - `textLabel.position`: Gets the position of the text label. _Immutable._
   - `textLabel.drawDistance`: Gets the draw distance for the text label. _Immutable._
+  - `textLabel.position`: Gets the position of the text label. _Immutable._
+  - `textLabel.text`: Gets or sets text the label is currently displaying.
   - `textLabel.virtualWorld`: Gets the virtual world where the text label is visible. _Immutable._
 
 The following methods are available for text labels:
-  - `textLabel.isConnected()`: Returns whether the text label still exists on the server.
-  - `textLabel.isAttached()`: Returns whether the text label is attached to an entity.
-  - `textLabel.doesTestLineOfSight()`: Returns whether the text label tests the line-of-sight.
   - `textLabel.attachToPlayer(player, offset)`: Attaches the label to the player at the given
     offset, which must be a vector.
   - `textLabel.attachToVehicle(vehicle, offset)`: Attaches the label to the vehicle at the given
     offset, which must be a vector.
   - `textLabel.dispose()`: Removes the text label from the server.
+  - `textLabel.isAttached()`: Returns whether the text label is attached to an entity.
+  - `textLabel.isConnected()`: Returns whether the text label still exists on the server.
+  - `textLabel.testsLineOfSight()`: Returns whether the text label tests the line-of-sight.
 
 ## Vehicles
 

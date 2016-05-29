@@ -48,7 +48,7 @@ class MockTextLabel {
     get virtualWorld() { return this.virtualWorld_; }
 
     // Returns whether the text draw tests for having a clear line-of-sight from the player.
-    doesTestLineOfSight() { return this.testLineOfSight_; }
+    testsLineOfSight() { return this.testLineOfSight_; }
 
     // Attaches the text label to the |player| at |offset|.
     attachToPlayer(player, offset) {

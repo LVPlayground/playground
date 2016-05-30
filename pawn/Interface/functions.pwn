@@ -276,7 +276,7 @@ ResetPlayerStats(playerId) {
     WonMinigame[playerId] = 0;
     ClearPlayer(playerId);
     iPlayerAnimation[playerId] = 0;
-    iWeaponCheatCount[playerId] = 0;
+    ResetWeaponCheatCount(playerId);
     playerArmour[playerId] = 0.0;
     iPlayerSawnoffWeapon[playerId] = 0;
     banWarning[playerId] = 0;

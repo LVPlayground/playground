@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 new g_PlayerWeapon[MAX_PLAYERS][50];
+new iWeaponCheatCount[MAX_PLAYERS];
 
 WeaponCheat(i) {
     if (Player(i)->isConnected() == false || Player(i)->isNonPlayerCharacter() == true)
@@ -53,6 +54,10 @@ WeaponCheat(i) {
     }
 
     return 1;
+}
+
+ResetWeaponCheatCount(playerId) {
+    iWeaponCheatCount[playerId] = 0;
 }
 
 GiveWeapon(playerId, weaponId, ammo) {

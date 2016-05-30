@@ -590,7 +590,7 @@ CDerby__PlayerExit(iPlayerID, iReason)
             new message[128];
 
             format(message, sizeof(message), "* You won the derby and received $%s!", formatPrice(prize));
-            SendClientMessage(iPlayerID, COLOR_GREEN, message);
+            SendClientMessage(iPlayerID, Color::Green, message);
 
             GiveRegulatedMoney(iPlayerID, DerbyVictory);
 

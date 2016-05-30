@@ -49,7 +49,7 @@ lvp_Ignore( playerid, params[] )
     GetPlayerName( ignoreID, szName, 24 );
     format( szMessage, sizeof( szMessage ), "You have successfully ignored %s (ID:%d)!", szName, ignoreID);
 
-    SendClientMessage( playerid, COLOR_GREEN, szMessage );
+    SendClientMessage( playerid, Color::Green, szMessage );
     return 1;
 }
 
@@ -93,7 +93,7 @@ lvp_Unignore( playerid, params[] )
     GetPlayerName(ignoreID, szName, 24 );
     format( szMessage, sizeof( szMessage ), "You now receive messages from %s (ID:%d) again!", szName,ignoreID);
 
-    SendClientMessage( playerid, COLOR_GREEN, szMessage );
+    SendClientMessage( playerid, Color::Green, szMessage );
     return 1;
 }
 

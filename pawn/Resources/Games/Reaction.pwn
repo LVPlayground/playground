@@ -169,7 +169,7 @@ CReaction__OnText(playerid, text[])
 
         // So we've got a right answer and this should be handled, add a win and
         // give the 10.000 dollar I recon, and some nice messages as well :>
-        SendClientMessage( playerid, COLOR_GREEN, "* You have won the reaction-test!" );
+        SendClientMessage( playerid, Color::Green, "* You have won the reaction-test!" );
         GivePlayerMoney( playerid, REACTION_WIN );
         CReaction__Win(playerid);
 
@@ -226,7 +226,7 @@ CReaction__OnCommand(playerid)
     reactionData[type] = -1;
     reactionData[mode] = 0;
     reactionData[clock] = -1;
-    SendClientMessage(playerid, COLOR_GREEN, "The reaction test will start in 5 seconds!");
+    SendClientMessage(playerid, Color::Green, "The reaction test will start in 5 seconds!");
     return;
 }
 

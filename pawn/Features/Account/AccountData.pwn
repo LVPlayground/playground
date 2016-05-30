@@ -9,9 +9,9 @@ public OnAdvertiseVip(playerId) {
     if (!Player(playerId)->isConnected())
         return;  // the player is not connected anymore
 
-    SendClientMessage(playerId, COLOR_GREEN,
+    SendClientMessage(playerId, Color::Green,
         "Merry Christmas! We've granted you VIP rights for this playing session to celebrate the festive season.");
-    SendClientMessage(playerId, COLOR_GREEN,
+    SendClientMessage(playerId, Color::Green,
         "Free VIP will last until January 1st. Consider donating on https://sa-mp.nl/donate if you like it!");
 
     Player(playerId)->setIsVip(true);

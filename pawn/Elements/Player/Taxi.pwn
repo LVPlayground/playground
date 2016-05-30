@@ -171,11 +171,11 @@ TaxiArrived(playerid)
             if(endid != playerid)
             {
                 format(str,256,"* Kaufman Cabs: Thank you for using our service! Your fare has come to $%d",fare);
-                SendClientMessage(playerid,COLOR_GREEN,str);
+                SendClientMessage(playerid,Color::Green,str);
                 format(str,256,"* at a per kilometer price of $%d.",taxiPrice);
-                SendClientMessage(playerid,COLOR_GREEN,str);
+                SendClientMessage(playerid,Color::Green,str);
             }else{
-                SendClientMessage(playerid,COLOR_GREEN,"The taxi driver has dropped you off for free because you own the company.");
+                SendClientMessage(playerid,Color::Green,"The taxi driver has dropped you off for free because you own the company.");
             }
 
             if(locateid != 13)

@@ -7,7 +7,6 @@
  *  Please keep this file as organized as possible.
  */
 #define COLOR_GREY 0xAFAFAFAA
-#define COLOR_GREEN 0x33AA33AA
 #define COLOR_RED 0xDC143CFF
 #define COLOR_YELLOW 0xFFFF00AA
 #define COLOR_WHITE 0xFFFFFFAA

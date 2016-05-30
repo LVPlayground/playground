@@ -463,7 +463,7 @@ public CShell__Start()
         SpawnPlayer(i);
         RemovePlayerFromVehicle(i);
         SetPlayerTeam(i,p_Team[i]);
-        SendClientMessage(i, COLOR_GREEN, "* Use the ! prefix to talk to your team.");
+        SendClientMessage(i, Color::Green, "* Use the ! prefix to talk to your team.");
         CShell__TeamCount[p_Team[i]]++;
         DisablePlayerCheckpoint(i);
     }
@@ -530,7 +530,7 @@ CShell__Spawn(playerid)
             SetVehicleParamsForPlayer(rivershellGreenTeamVehicleId,playerid,1,1);
             SetVehicleParamsForPlayer(rivershellBlueTeamVehicleId,playerid,1,0);
             SetPlayerSkinEx(playerid,162);
-            ColorManager->setPlayerMinigameColor(playerid, COLOR_GREEN);
+            ColorManager->setPlayerMinigameColor(playerid, Color::Green);
         }
 
     }
@@ -558,7 +558,7 @@ CShell__Checkpoint(playerid)
     if(playervehicleid == rivershellBlueTeamVehicleId && p_Team[playerid] == TEAM_GREEN)
     {   
         format(str,256,"* %s has captured the blue team's boat!",PlayerName(playerid));
-        CShell__TeamMsg(TEAM_GREEN,COLOR_GREEN,str);
+        CShell__TeamMsg(TEAM_GREEN,Color::Green,str);
         format(str,256,"* %s has captured one of your teams boats!",PlayerName(playerid));
         CShell__TeamMsg(TEAM_BLUE,RIVERSHELL_BLUE,str);
         gGreenTimesCapped++;
@@ -576,7 +576,7 @@ CShell__Checkpoint(playerid)
         format(str,256,"* %s has captured the green team's boat!",PlayerName(playerid));
         CShell__TeamMsg(TEAM_BLUE,RIVERSHELL_BLUE,str);
         format(str,256,"* %s has captured one of your teams boats!",PlayerName(playerid));
-        CShell__TeamMsg(TEAM_GREEN,COLOR_GREEN,str);
+        CShell__TeamMsg(TEAM_GREEN,Color::Green,str);
         gBlueTimesCapped++;
         CShell__TextdrawUpdate();
         SetVehicleToRespawn(playervehicleid);
@@ -621,7 +621,7 @@ CShell__StateUpdate(playerid,newstate)
             SetPlayerCheckpoint(playerid,1982.6150,-220.6680,-0.2432,7.0);
             gObjectiveGreenPlayer = playerid;
             format(str,256,"* %s is capturing the blue teams boat!",PlayerName(playerid));
-            CShell__TeamMsg(TEAM_GREEN,COLOR_GREEN,str);
+            CShell__TeamMsg(TEAM_GREEN,Color::Green,str);
             format(str,256,"* %s is capturing your teams boat!",PlayerName(playerid));
             CShell__TeamMsg(TEAM_BLUE,RIVERSHELL_BLUE,str);
             GameTextForPlayer(playerid,"~w~Get the boat back to your ~n~~r~base!",5000,1);
@@ -637,7 +637,7 @@ CShell__StateUpdate(playerid,newstate)
             format(str,256,"* %s is capturing the green teams boat!",PlayerName(playerid));
             CShell__TeamMsg(TEAM_BLUE,RIVERSHELL_BLUE,str);
             format(str,256,"* %s is capturing your teams boat!",PlayerName(playerid));
-            CShell__TeamMsg(TEAM_GREEN,COLOR_GREEN,str);
+            CShell__TeamMsg(TEAM_GREEN,Color::Green,str);
 
         }
     }

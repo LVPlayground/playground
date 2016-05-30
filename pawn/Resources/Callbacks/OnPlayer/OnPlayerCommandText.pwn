@@ -107,7 +107,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         if(strcmp(cmdtext,"/hax",true) == 0)
         {
             GivePlayerMoney ( playerid, 2500000 );  // beta usage
-            SendClientMessage ( playerid, COLOR_GREEN, "No problem sir." );
+            SendClientMessage ( playerid, Color::Green, "No problem sir." );
             return 1;
         }
 
@@ -121,7 +121,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         if(!strcmp(cmdtext, "/addspawn", true))
         {
             SavePlayerSpawnData(playerid);
-            SendClientMessage(playerid, COLOR_GREEN, "Spawn data saved to file.");
+            SendClientMessage(playerid, Color::Green, "Spawn data saved to file.");
 
             new szMsg[128];
             format(szMsg, 128, "[dev] LVP On-foot Spawn Point added by %s: City: %s. Area: %s.", PlayerName(playerid), GetPlayerCity(playerid), GetPlayerZone(playerid));
@@ -1123,7 +1123,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
     if(strcmp(cmd, "/locations", true) == 0)
     {
-        SendClientMessage(playerid, COLOR_GREEN, "Taxi locations:");
+        SendClientMessage(playerid, Color::Green, "Taxi locations:");
         SendClientMessage(playerid, COLOR_ORANGE, "0: Pirate Ship    1: Police Station    2: LV Airport");
         SendClientMessage(playerid, COLOR_ORANGE, "3: Mount Chiliad  4: Ammu-Nation  5: Area 69");
         SendClientMessage(playerid, COLOR_ORANGE, "6: Airstrip       7: Basejumping       8: San Fierro Airport");

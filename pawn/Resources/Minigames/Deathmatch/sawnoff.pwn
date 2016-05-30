@@ -26,8 +26,8 @@ SetPlayerUpForSawnoff( playerid )
     } else
     {
         GiveWeapon(playerid, 32, 4000);
-        SendClientMessage(playerid, COLOR_GREEN, "You've been automatically given a Tec9 as spawnweapon for the sawnoff minigame,");
-        SendClientMessage(playerid, COLOR_GREEN, "because you didn't set a spawnweapon. Please use /my minigame to do this.");
+        SendClientMessage(playerid, Color::Green, "You've been automatically given a Tec9 as spawnweapon for the sawnoff minigame,");
+        SendClientMessage(playerid, Color::Green, "because you didn't set a spawnweapon. Please use /my minigame to do this.");
     }
 
     GiveWeapon( playerid, 26, 3000);

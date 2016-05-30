@@ -412,7 +412,7 @@ CBomb__ProcessMenu(playerid,row)
         // to the row selected making it nice and easy :)
         VehicleBomb[GetPlayerVehicleID(playerid)][ExplosionType] = row;
         RemovePlayerFromBombShop(playerid);
-        SendClientMessage(playerid,COLOR_GREEN,"* Vehicle Bomb setup.");
+        SendClientMessage(playerid,Color::Green,"* Vehicle Bomb setup.");
         ShowBoxForPlayer(playerid, "Vehicle Armed!");
         TakeRegulatedMoney(playerid, explosionType);
     }

@@ -338,16 +338,16 @@ lvp_stats(playerid, params[])
     SendClientMessage(playerid, COLOR_YELLOW, szStatMsg);
 
     format(szStatMsg, 128, "Players Online: %d  Admins Online: %d", iPlayersOnline, iAdminsOnline);
-    SendClientMessage(playerid, COLOR_GREEN, szStatMsg);
+    SendClientMessage(playerid, Color::Green, szStatMsg);
 
     format(szStatMsg, 128, "Achievements: %d NPCs: %d", TotalAchievements-UnavailableTotalAchievements, iNPCSOnline);
-    SendClientMessage(playerid, COLOR_GREEN, szStatMsg);
+    SendClientMessage(playerid, Color::Green, szStatMsg);
 
     format(szStatMsg, 128, "Vehicles: %d Properties: %d", VehicleManager->vehicleCount(), iProperties);
-    SendClientMessage(playerid, COLOR_GREEN, szStatMsg);
+    SendClientMessage(playerid, Color::Green, szStatMsg);
 
     format(szStatMsg, 128, "ATMs: %d", CashPointController->count());
-    SendClientMessage(playerid, COLOR_GREEN, szStatMsg);
+    SendClientMessage(playerid, Color::Green, szStatMsg);
 
     return 1;
 }
@@ -545,7 +545,7 @@ lvp_locate(playerid,params[])
     if( iCount > 1 )
     {
         format( szMessage, sizeof( szMessage ), "* Narrow your search down! Matches found: %s.", szMessage );
-        SendClientMessage( playerid, COLOR_GREEN, szMessage );
+        SendClientMessage( playerid, Color::Green, szMessage );
         return 1;
     }
 
@@ -703,7 +703,7 @@ lvp_tune(playerid,params[])
         PlayerInfo[playerid][playerInCheckpoint] = 0;
         format(message, sizeof(message), "%s (Id:%d) went to TuneShop %s (Id:%d).", szName, playerid, tuneLocation[iTune - 1], iTune);
         Admin(playerid, message);
-        SendClientMessage(playerid,COLOR_GREEN,"You have been teleported to the tune shop. Use /back to go back to L.V.");
+        SendClientMessage(playerid,Color::Green,"You have been teleported to the tune shop. Use /back to go back to L.V.");
 
         if (Player(playerid)->isAdministrator() == false)
             TakeRegulatedMoney(playerid, TuneCommand);
@@ -1165,7 +1165,7 @@ charHelp:
             }
 
             iPlayerSawnoffWeapon [playerid] = 1;
-            SendClientMessage(playerid, COLOR_GREEN, "You have chosen the Tec9 as spawn-weapon for the FightClub and the /sawnoff minigame.");
+            SendClientMessage(playerid, Color::Green, "You have chosen the Tec9 as spawn-weapon for the FightClub and the /sawnoff minigame.");
             return 1;
         }
 
@@ -1178,7 +1178,7 @@ charHelp:
             }
 
             iPlayerSawnoffWeapon[playerid] = 2;
-            SendClientMessage(playerid, COLOR_GREEN, "You have chosen the Uzi as spawn-weapon for the FightClub and the /sawnoff minigame.");
+            SendClientMessage(playerid, Color::Green, "You have chosen the Uzi as spawn-weapon for the FightClub and the /sawnoff minigame.");
             return 1;
         }
 
@@ -1199,7 +1199,7 @@ MinigameHelp:
         else
             GetPlayerFacingAngle ( playerid, SavedPos2[ playerid ][ 4 ] );
 
-        SendClientMessage( playerid, COLOR_GREEN, "This position has been saved successfully." );
+        SendClientMessage( playerid, Color::Green, "This position has been saved successfully." );
         return 1;
     }
 
@@ -1243,7 +1243,7 @@ MinigameHelp:
 
         }
 
-        SendClientMessage( playerid, COLOR_GREEN, "You have been successfully teleported.");
+        SendClientMessage( playerid, Color::Green, "You have been successfully teleported.");
         return 1;
     }
 
@@ -1291,7 +1291,7 @@ MinigameHelp:
 
         GiveWeapon(playerid, iPlayerWeaponID, iAmmo);
         format(szMessage, sizeof( szMessage ), "* You have given yourself a %s", iWeaponName);
-        SendClientMessage(playerid, COLOR_GREEN, szMessage);
+        SendClientMessage(playerid, Color::Green, szMessage);
 
         return 1;
     }
@@ -1316,7 +1316,7 @@ MinigameHelp:
         new szMessage[128];
 
         format(szMessage, sizeof( szMessage ), "Your health has been set to %d!", iHealth);
-        SendClientMessage(playerid, COLOR_GREEN, szMessage);
+        SendClientMessage(playerid, Color::Green, szMessage);
 
         return 1;
     }
@@ -1343,7 +1343,7 @@ MinigameHelp:
         new szMessage[ 128 ];
 
         format( szMessage, sizeof( szMessage ), "Your armour has been set to %d!", iArmour );
-        SendClientMessage(playerid, COLOR_GREEN, szMessage);
+        SendClientMessage(playerid, Color::Green, szMessage);
 
         return 1;
     }

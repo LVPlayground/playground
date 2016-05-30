@@ -36,7 +36,7 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
                 GameTextForPlayer(playerid,"The ship is a peace zone!",1000,6);
 
         } else if(sKillTime)
-            SendClientMessage(playerid,COLOR_GREEN,"It's Killtime! Shooting on the ship is temporarily allowed.");
+            SendClientMessage(playerid,Color::Green,"It's Killtime! Shooting on the ship is temporarily allowed.");
 
         return 1;
     }

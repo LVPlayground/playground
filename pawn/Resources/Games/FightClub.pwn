@@ -482,7 +482,7 @@ CFightClub__OnInvite(playerid, inviteid)
     Matches[matchid][fcworld] = FC_BASE_WORLD + matchid;
 
     format(string, sizeof(string), "You've successfully invited %s to the FightClub.", PlayerName(inviteid));
-    SendClientMessage(playerid, COLOR_GREEN, string);
+    SendClientMessage(playerid, Color::Green, string);
     format(string, sizeof(string), "You've been invited by %s to the FightClub. (Rounds: %d | Location: %s)", PlayerName(playerid), Matches[matchid][rounds], CFightClub__GetLocationName(Matches[matchid][location]));
     SendClientMessage(inviteid, COLOR_YELLOW, string);
 
@@ -499,7 +499,7 @@ CFightClub__OnInvite(playerid, inviteid)
     }
 
     format(ShowWeaponsString2, sizeof(ShowWeaponsString2), "Weapons: %s", ShowWeaponsString);
-    SendClientMessage(inviteid, COLOR_GREEN, ShowWeaponsString2);
+    SendClientMessage(inviteid, Color::Green, ShowWeaponsString2);
 
     format(string, sizeof(string), "  Use '/fight accept %d' to accept or '/fight deny %d' to deny.", matchid, matchid);
     SendClientMessage(inviteid, COLOR_YELLOW, string);
@@ -566,7 +566,7 @@ CFightClub__OnDeath(playerid, killerid)
             SendClientMessage(playerid, COLOR_RED, string);
 
             format(string, sizeof(string), "* You %s %s with (HP: %.1f Arm: %.1f) left! Score is now: %d-%d.", FightClubKillMsg[random(7)], PlayerName(playerid), HP, Arm, iScore2, iScore1);
-            SendClientMessage(killerid, COLOR_GREEN, string);
+            SendClientMessage(killerid, Color::Green, string);
 
             format(string, sizeof(string), "* %s %s %s with (HP: %.1f Arm: %.1f) left! Score is now: %d-%d.", PlayerName(killerid), FightClubKillMsg[random(7)], PlayerName(playerid), HP, Arm, iScore1, iScore2);
             CFightClub__SendSpecMessage(matchid, string);
@@ -591,7 +591,7 @@ CFightClub__OnDeath(playerid, killerid)
             SendClientMessage(playerid, COLOR_RED, string);
 
             format(string, sizeof(string), "* You %s %s with (HP: %.1f Arm: %.1f) left! Score is now: %d-%d.", FightClubKillMsg[random(7)], PlayerName(playerid), HP, Arm, iScore1, iScore2);
-            SendClientMessage(killerid, COLOR_GREEN, string);
+            SendClientMessage(killerid, Color::Green, string);
 
             format(string, sizeof(string), "* %s %s %s with (HP: %.1f Arm: %.1f) left! Score is now: %d-%d.", PlayerName(killerid), FightClubKillMsg[random(7)], PlayerName(playerid), HP, Arm, iScore1, iScore2);
             CFightClub__SendSpecMessage(matchid, string);
@@ -724,7 +724,7 @@ CFightClub__WatchMatch(playerid, matchid)
     // Messages
     format(string, sizeof(string), "* You're now watching %s and %s fight.", PlayerName(iPlayer1), PlayerName(iPlayer2));
 
-    SendClientMessage(playerid, COLOR_GREEN, string);
+    SendClientMessage(playerid, Color::Green, string);
     SendClientMessage(playerid, COLOR_YELLOW, "** Use '/fight switch' to switch between the fighting players.");
     SendClientMessage(playerid, COLOR_YELLOW, "** Use '/fight stopwatch' to stop watching.");
     SendClientMessage(playerid, COLOR_YELLOW, "* Note: Watch another match by simply using '/fight watch [matchid]' again.");
@@ -1035,9 +1035,9 @@ CFightClub__EndMatch(matchid)
     {
         // Impossible unless FC_ROUNDS is on > 3
         format (sMessage, sizeof (sMessage), "* Your fight against %s ended in a draw.", PlayerName(iPlayer2));
-        SendClientMessage (iPlayer1, COLOR_GREEN, sMessage);
+        SendClientMessage (iPlayer1, Color::Green, sMessage);
         format (sMessage, sizeof (sMessage), "* Your fight against %s ended in a draw.", PlayerName(iPlayer1));
-        SendClientMessage (iPlayer2, COLOR_GREEN, sMessage);
+        SendClientMessage (iPlayer2, Color::Green, sMessage);
         format (sMessage, sizeof (sMessage), "The fight between ~r~~h~%s~w~ and ~r~~h~%s~w~ ended in a draw!", PlayerName(iPlayer1), PlayerName(iPlayer2));
     }
 
@@ -1088,7 +1088,7 @@ CFightClub__EndMatch(matchid)
         }
 
         CFightClub__StopWatch(iPlayerID);
-        SendClientMessage(iPlayerID, COLOR_GREEN, "* You've been respawned because the fight has ended.");
+        SendClientMessage(iPlayerID, Color::Green, "* You've been respawned because the fight has ended.");
     }
 
     return 1;
@@ -1569,7 +1569,7 @@ CFightClub__SendSpecMessage(matchid, const string[])
         if(!IsPlayerWatchingFC[i]) continue;
         if(aSpecInfo[i][specmatch] == matchid)
         {
-            SendClientMessage(i, COLOR_GREEN, string);
+            SendClientMessage(i, Color::Green, string);
         }
     }
     return 1;
@@ -1582,7 +1582,7 @@ CFightClub__ShowFCMessage(playerid, messageid)
         if(!CFightClub__CountMatches(FC_STATUS_FIGHTING)) return SendClientMessage(playerid, COLOR_RED, "No matches are running at this time.");
 
 
-        SendClientMessage(playerid, COLOR_GREEN, "** Current Matches: **");
+        SendClientMessage(playerid, Color::Green, "** Current Matches: **");
 
         new iPlayer1, iPlayer2;
         new iScore1, iScore2;
@@ -1604,12 +1604,12 @@ CFightClub__ShowFCMessage(playerid, messageid)
     }
     if(messageid == FC_MSG_HELP)
     {
-        SendClientMessage(playerid, COLOR_GREEN, "** FightClub Help **");
+        SendClientMessage(playerid, Color::Green, "** FightClub Help **");
         SendClientMessage(playerid, COLOR_YELLOW, "Fight people by typing '/fight invite'");
         SendClientMessage(playerid, COLOR_YELLOW, "Use '/fight watch [matchId]' to watch other players fight.");
         SendClientMessage(playerid, COLOR_YELLOW, "Get matches and matchid by typing '/fight matches'");
         SendClientMessage(playerid, COLOR_YELLOW, "All those functions exists on the Death Skull near /taxi 12 as well.");
-        SendClientMessage(playerid, COLOR_GREEN, "----------------------------");
+        SendClientMessage(playerid, Color::Green, "----------------------------");
         return 1;
     }
     return 1;

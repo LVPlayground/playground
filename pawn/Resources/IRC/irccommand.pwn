@@ -81,7 +81,7 @@ RunDeprecatedIrcCommand(line[]) {
         format(UserTemped[pid], sizeof(UserTemped[]), "%s", szName);
         format(str,256,"%s is now a temp administrator.",PlayerName(pid));
         AddEcho(str); 
-        SendClientMessage(pid,COLOR_GREEN,"You have been granted administrator rights.");
+        SendClientMessage(pid,Color::Green,"You have been granted administrator rights.");
         return 1;
     }
 

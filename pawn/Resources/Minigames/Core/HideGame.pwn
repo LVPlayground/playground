@@ -944,7 +944,7 @@ CHideGame__onStartCommand( iPlayerID, params[] )
         }
 
         // Send the player a nice message and show him the menu.
-        SendClientMessage( iPlayerID, COLOR_GREEN, "* Please choose a location for the Hide&Seek minigame.");
+        SendClientMessage( iPlayerID, Color::Green, "* Please choose a location for the Hide&Seek minigame.");
         ShowMenuForPlayer( mLocationMenu1, iPlayerID );
         g_PlayerMenu[iPlayerID] = true;
 
@@ -1037,7 +1037,7 @@ CHideGame__onJoinCommand( iPlayerID, params[] )
 
     // Okay, they may sign up.
     aHidePlayerState[ iPlayerID ] = HS_STATE_SIGNING_UP;
-    SendClientMessage( iPlayerID, COLOR_GREEN, "* You've succesfully signed up for the Hide and Seek minigame.");
+    SendClientMessage( iPlayerID, Color::Green, "* You've succesfully signed up for the Hide and Seek minigame.");
 
     // Take their moneys :D
     TakeRegulatedMoney(iPlayerID, HideAndSeekSignUpCost);
@@ -1262,7 +1262,7 @@ CHideGame__ThrowOut( iPlayerID, iReason )
         NewsController->show(sMessage);
 
         CHideGame__ResetVariables();
-        SendClientMessage( iWinner, COLOR_GREEN, "You've won the Hide&Seek minigame and you've received $500.000!");
+        SendClientMessage( iWinner, Color::Green, "You've won the Hide&Seek minigame and you've received $500.000!");
         GiveRegulatedMoney(iWinner, HideAndSeekPrize);
 
         // Increase the amount of minigames the player has won

@@ -137,7 +137,7 @@ AirportGateCheck(i)
             {
                 if(!IsPlayerInMinigame(i))
                 {
-                    SendClientMessage(i, COLOR_GREEN,"You don't have to pay customs tax because you own the airport.");
+                    SendClientMessage(i, Color::Green,"You don't have to pay customs tax because you own the airport.");
                 }
                 OpenAirportGate();
             }

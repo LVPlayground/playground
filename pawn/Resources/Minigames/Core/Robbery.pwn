@@ -193,8 +193,8 @@ CRobbery__Build(phaseid)
             SetVehicleVirtualWorld(casinoCars[i], ROBBERY_VWORLD);
         }
 
-        CRobbery__TeamMsg(ROBBERY_TEAMATTACK, COLOR_GREEN, "Enter the casino via either the roof or main entrance to begin.");
-        CRobbery__TeamMsg(ROBBERY_TEAMDEFEND, COLOR_GREEN, "Stop the attackers from stealing the cash, by any means necessary. They're coming!");
+        CRobbery__TeamMsg(ROBBERY_TEAMATTACK, Color::Green, "Enter the casino via either the roof or main entrance to begin.");
+        CRobbery__TeamMsg(ROBBERY_TEAMDEFEND, Color::Green, "Stop the attackers from stealing the cash, by any means necessary. They're coming!");
 
         // We destroy first in case it wasn't destroyed properly last time.
         if(IsValidDynamicObject(vaultObject)) DestroyDynamicObject(vaultObject);
@@ -218,7 +218,7 @@ CRobbery__Build(phaseid)
 
         vaultObject = CreateDynamicObject(2634, 2144.1, 1627.1, 994.2, 0.0, 0.0, 180.0);
 
-        CRobbery__TeamMsg(ROBBERY_TEAMDEFEND, COLOR_GREEN, "The attackers have entered the casino.");
+        CRobbery__TeamMsg(ROBBERY_TEAMDEFEND, Color::Green, "The attackers have entered the casino.");
 
         for (new i = 0; i <= PlayerManager->highestPlayerId(); i++) {
             if(CRobbery__GetPlayerStatus(i) == ROBSTATUS_PLAYING) {
@@ -234,7 +234,7 @@ CRobbery__Build(phaseid)
 
         vaultObject = CreateDynamicObject(2634, 2144.1, 1627.1, 994.2, 0.0, 0.0, 180.0);
 
-        CRobbery__TeamMsg(ROBBERY_TEAMATTACK, COLOR_GREEN, "Press F in front of the casino door to arm the bomb in order to open the vault door.");
+        CRobbery__TeamMsg(ROBBERY_TEAMATTACK, Color::Green, "Press F in front of the casino door to arm the bomb in order to open the vault door.");
 
         for (new i = 0; i <= PlayerManager->highestPlayerId(); i++) {
             if(CRobbery__GetPlayerStatus(i) == ROBSTATUS_PLAYING) {
@@ -255,7 +255,7 @@ CRobbery__Build(phaseid)
 
         PlaySoundForPlayersInRange(3401, 250, 2146.1, 1627.1, 994.2);
 
-        CRobbery__TeamMsg(ROBBERY_TEAMATTACK, COLOR_GREEN, "Run into the vault to get the cash. The more players you use, the faster this will be.");
+        CRobbery__TeamMsg(ROBBERY_TEAMATTACK, Color::Green, "Run into the vault to get the cash. The more players you use, the faster this will be.");
 
 
     } else {
@@ -297,9 +297,9 @@ CRobbery__Build(phaseid)
             SetVehicleVirtualWorld(casinoCars[i], ROBBERY_VWORLD);
         }
 
-        CRobbery__TeamMsg(ROBBERY_TEAMATTACK, COLOR_GREEN, "Escape to the base where you started. There are escape vehicles in front, or");
-        CRobbery__TeamMsg(ROBBERY_TEAMATTACK, COLOR_GREEN, "you may parachute off the roof in order to access many vehicles stored at the");
-        CRobbery__TeamMsg(ROBBERY_TEAMATTACK, COLOR_GREEN, "rear of the building. Be fast - the defenders will be chasing you to the end!");
+        CRobbery__TeamMsg(ROBBERY_TEAMATTACK, Color::Green, "Escape to the base where you started. There are escape vehicles in front, or");
+        CRobbery__TeamMsg(ROBBERY_TEAMATTACK, Color::Green, "you may parachute off the roof in order to access many vehicles stored at the");
+        CRobbery__TeamMsg(ROBBERY_TEAMATTACK, Color::Green, "rear of the building. Be fast - the defenders will be chasing you to the end!");
 
         for (new i = 0; i <= PlayerManager->highestPlayerId(); i++) {
             if(CRobbery__GetPlayerStatus(i) == ROBSTATUS_PLAYING) {
@@ -517,7 +517,7 @@ CRobbery__OnCPEnter(playerid)
         if(GetPlayerInterior(playerid) == 0 && CRobbery__GetPhase() == 0)
         {
             // They're outside -- tell them to get in
-            SendClientMessage(playerid, COLOR_GREEN, "Enter the casino.");
+            SendClientMessage(playerid, Color::Green, "Enter the casino.");
         }
         if(CRobbery__GetPlayerTeam(playerid) == ROBBERY_TEAMATTACK && CRobbery__GetPhase() == 2)
         {
@@ -868,8 +868,8 @@ CRobbery__Process()
                 // they're going for the back end.
                 if(Rx > 2143.0161 && Rx < 2149.4712 && Ry > 1596.3927 && Ry < 1604.2245 && Rz > 999) {
                     // They're in.
-                    CRobbery__TeamMsg(ROBBERY_TEAMATTACK, COLOR_GREEN, "You, the attackers, have breached the casino back-end.");
-                    CRobbery__TeamMsg(ROBBERY_TEAMDEFEND, COLOR_GREEN, "The attackers have breached the casino back-end. Stop them from getting to the vault!");
+                    CRobbery__TeamMsg(ROBBERY_TEAMATTACK, Color::Green, "You, the attackers, have breached the casino back-end.");
+                    CRobbery__TeamMsg(ROBBERY_TEAMDEFEND, Color::Green, "The attackers have breached the casino back-end. Stop them from getting to the vault!");
 
                     casinoData[phase]++;
                     CRobbery__PhaseChange();
@@ -892,8 +892,8 @@ CRobbery__Process()
                 if(casinoData[steal] >= ROBBERY_STEALAMOUNT)
                 {
                     // they've got all they need ;x
-                    CRobbery__TeamMsg(ROBBERY_TEAMATTACK, COLOR_GREEN, "You've got the cash! Go go go!");
-                    CRobbery__TeamMsg(ROBBERY_TEAMDEFEND, COLOR_GREEN, "They've got the cash! Kill them!");
+                    CRobbery__TeamMsg(ROBBERY_TEAMATTACK, Color::Green, "You've got the cash! Go go go!");
+                    CRobbery__TeamMsg(ROBBERY_TEAMDEFEND, Color::Green, "They've got the cash! Kill them!");
                     casinoData[phase]++;
                     CRobbery__PhaseChange();
                     if(casinoData[stealTD] != Text:0)
@@ -1038,8 +1038,8 @@ CRobbery__PlayerExit(playerid)
         if(casinoData[end] == 0)
         {
             format(iStr,128,"* %s has left the Casino Robbery.",PlayerName(playerid));
-            CRobbery__TeamMsg(ROBBERY_TEAMATTACK, COLOR_GREEN, iStr);
-            CRobbery__TeamMsg(ROBBERY_TEAMDEFEND, COLOR_GREEN, iStr);
+            CRobbery__TeamMsg(ROBBERY_TEAMATTACK, Color::Green, iStr);
+            CRobbery__TeamMsg(ROBBERY_TEAMDEFEND, Color::Green, iStr);
 
             if(teamCount[casteam] == 0)
             {

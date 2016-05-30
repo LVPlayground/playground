@@ -550,7 +550,7 @@ CLyse__Start()
 
         if(CLyse__GetPlayerTeam(i) == TEAM_GREEN)
         {
-            iLysePlayerText[i] = Create3DTextLabel("Green Team", COLOR_GREEN, fPosX, fPosY, fPosZ+0.7, 20.0, LYSE_VIRTUAL_WORLD);
+            iLysePlayerText[i] = Create3DTextLabel("Green Team", Color::Green, fPosX, fPosY, fPosZ+0.7, 20.0, LYSE_VIRTUAL_WORLD);
             Attach3DTextLabelToPlayer(iLysePlayerText[i], i, 0, 0, 1.0);
         }
         else
@@ -624,7 +624,7 @@ CLyse__SpawnPlayer(iPlayerID)
         GameTextForPlayer(iPlayerID, "~n~~n~Capture the ~b~blue teams~y~ vehicle~w~~n~Defend ~g~your teams ~y~vehicle~w~!",7000, 3);
         SendClientMessage(iPlayerID, COLOR_YELLOW, "* Capture the blue teams vehicle whilst defending your own!");
 
-        ColorManager->setPlayerMinigameColor(iPlayerID, COLOR_GREEN);
+        ColorManager->setPlayerMinigameColor(iPlayerID, Color::Green);
     }
 
 
@@ -821,7 +821,7 @@ CLyse__HandleVehicles(iStart = 0)
 
 
         GetVehiclePos(lyseGreenTeamVehicleId, fPosX, fPosY, fPosZ);
-        iLyseObjectiveGreen = Create3DTextLabel("Green team", COLOR_GREEN, fPosX, fPosY, fPosZ, 30.0, LYSE_VIRTUAL_WORLD);
+        iLyseObjectiveGreen = Create3DTextLabel("Green team", Color::Green, fPosX, fPosY, fPosZ, 30.0, LYSE_VIRTUAL_WORLD);
         Attach3DTextLabelToVehicle(iLyseObjectiveGreen, lyseGreenTeamVehicleId, 0, 0, 3);
 
 
@@ -954,7 +954,7 @@ CLyse__Checkpoint(playerid)
     if(CLyse__GetPlayerTeam(playerid) == TEAM_GREEN)
     {
         format(str,128,"* %s has captured the blue team's vehicle!",PlayerName(playerid));
-        CLyse__TeamMsg(TEAM_GREEN,COLOR_GREEN,str);
+        CLyse__TeamMsg(TEAM_GREEN,Color::Green,str);
 
         format(str,128,"* %s has captured one of your teams vehicle!",PlayerName(playerid));
         CLyse__TeamMsg(TEAM_BLUE,RIVERSHELL_BLUE,str);
@@ -982,7 +982,7 @@ CLyse__Checkpoint(playerid)
         CLyse__TeamMsg(TEAM_BLUE,RIVERSHELL_BLUE,str);
 
         format(str,256,"* %s has captured one of your teams vehicle!",PlayerName(playerid));
-        CLyse__TeamMsg(TEAM_GREEN,COLOR_GREEN,str);
+        CLyse__TeamMsg(TEAM_GREEN,Color::Green,str);
 
         iTeamCaptures[TEAM_BLUE] ++;
 
@@ -1035,7 +1035,7 @@ CLyse__StateUpdate(playerid,newstate)
 
             format(str,256,"* %s is capturing the blue teams vehicle!",PlayerName(playerid));
 
-            CLyse__TeamMsg(TEAM_GREEN,COLOR_GREEN,str);
+            CLyse__TeamMsg(TEAM_GREEN,Color::Green,str);
 
             format(str,256,"* %s is capturing your teams vehicle!",PlayerName(playerid));
             CLyse__TeamMsg(TEAM_BLUE,RIVERSHELL_BLUE,str);
@@ -1064,7 +1064,7 @@ CLyse__StateUpdate(playerid,newstate)
             CLyse__TeamMsg(TEAM_BLUE,RIVERSHELL_BLUE,str);
 
             format(str,256,"* %s is capturing your teams vehicle!",PlayerName(playerid));
-            CLyse__TeamMsg(TEAM_GREEN,COLOR_GREEN,str);
+            CLyse__TeamMsg(TEAM_GREEN,Color::Green,str);
 
             if(CLyse__GetTextdrawPhase(playerid) != TEXTDRAW_PHASE_COMPLETE)
             CLyse__SetTextdrawPhase(playerid, TEXTDRAW_PHASE_COMPLETE);
@@ -1098,7 +1098,7 @@ CLyse__OnText(playerid, text[])
         if(CLyse__GetPlayerTeam(playerid) == TEAM_GREEN)
         {
             format(szTeamMsg, 128, "%s: %s", PlayerName(playerid),  text[1]);
-            CLyse__TeamMsg(TEAM_GREEN, COLOR_GREEN, szTeamMsg);
+            CLyse__TeamMsg(TEAM_GREEN, Color::Green, szTeamMsg);
             return 1;
         }
 

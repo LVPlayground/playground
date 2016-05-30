@@ -75,7 +75,7 @@ public KillTimeRun() {
             new const price = GetEconomyValue(KilltimeVictory);
 
             format(string, sizeof(string), "Congratulations! You have won $%s!", formatPrice(price));
-            SendClientMessage(lead, COLOR_GREEN, string);
+            SendClientMessage(lead, Color::Green, string);
 
             format(string, sizeof(string), "[killtime] %s %d", Player(lead)->nicknameString(), leadKills);
             AddEcho(string);

@@ -382,43 +382,4 @@ class VeryImportantPlayersCommands {
 
         return 1;
     }
-
-    /**
-     * The ingame regular chat is available to both ingame and IRC users. Even if players are in a
-     * minigame, the regular chat will still be shown to them, and vice versa they can talk to players
-     * not participating in a minigame. IRC users can use the !regular command to talk to all the
-     * ingame players via regular chat.
-     *
-     * @param message Message that needs to be send to ingame regular chat.
-     * @remotecommand !regular [message]
-     */
-    @switch(RemoteCommand, "regm")
-    public onRemoteRegularCommand(params[]) {
-        new notice[256], message[256], sender[25];
-
-        // Store IRC sender and message in variables.
-        Command->stringParameter(params, 0, sender, sizeof(sender));
-
-        new messageOffset = Command->startingIndexForParameter(params, 1);
-        if (messageOffset == -1)
-            return 1; /* invalid parameters given by the sender */
-        strncpy(message, params[messageOffset], sizeof(message));
-
-        // Send message to all ingame regular players.
-        format(notice, sizeof(notice), "** [IRC] %s: %s", sender, message);
-
-        for (new player = 0; player <= PlayerManager->highestPlayerId(); ++player) {
-            if (Player(player)->isConnected() == false || (Player(player)->isRegular() == false
-                && Player(player)->isAdministrator() == false))
-                continue; /* either not connected or not regular/crew */
-
-            SendClientMessage(player, Color::RegularChat, notice);
-        }
-
-        // Broadcast message on IRC.
-        format(notice, sizeof(notice), "%s 255 %s", sender, message);
-        IRC->broadcast(RegularIrcMessage, notice);
-
-        return 1;
-    }
 };

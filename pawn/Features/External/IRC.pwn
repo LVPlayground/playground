@@ -57,8 +57,6 @@ class IRC {
                 m_messageBuffer = "[vipchat] ";
             case PhoneIrcMessage:
                 m_messageBuffer = "[phone] ";
-            case RegularIrcMessage:
-                m_messageBuffer = "[regular] ";
             case NotConnectedIrcMessage:
                 m_messageBuffer = "[notconnected] ";
             case AddCommandIrcMessage:

@@ -20,7 +20,7 @@ class TextLabel {
         this.id_ = pawnInvoke('Create3DTextLabel', 'siffffii', options.text,
                               options.color.toNumberRGBA(), options.position.x, options.position.y,
                               options.position.z, options.drawDistance, options.virtualWorld,
-                              options.testLineOfSight);
+                              options.testLineOfSight ? 1 : 0);
     }
 
     // Returns whether the text label still exists on the server.

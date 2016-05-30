@@ -187,19 +187,7 @@ public OnGameModeInit() {
     KTTimer = -1;                                   // Disables the killtime timer.
     #endif
 
-    for (new playerid = 0; playerid < MAX_PLAYERS; playerid++)
-    {
-        TaxiArrival[playerid] = TextDrawCreate(457.0, 66.0, "_");
-        TextDrawAlignment(TaxiArrival[playerid], 2);
-        TextDrawColor(TaxiArrival[playerid], 0xFFFFFFFF);
-        TextDrawBoxColor(TaxiArrival[playerid], 0xFFCC0065);
-        TextDrawUseBox(TaxiArrival[playerid], 1);
-        TextDrawFont(TaxiArrival[playerid], 1);
-        TextDrawTextSize(TaxiArrival[playerid], 0.0, 64.0);
-        TextDrawLetterSize(TaxiArrival[playerid], 0.51, 2.3);
-        TextDrawSetOutline(TaxiArrival[playerid], 1);
-
-    }
+    CTaxi__Initialize();
 
     CDrink__BuildMenus();
 

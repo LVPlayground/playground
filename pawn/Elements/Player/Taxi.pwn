@@ -56,7 +56,24 @@ new bool:isTaxiActive[MAX_PLAYERS]
    ,Float:playerOrderedTaxiPositionX[MAX_PLAYERS]
    ,Float:playerOrderedTaxiPositionY[MAX_PLAYERS]
    ,Float:playerOrderedTaxiPositionZ[MAX_PLAYERS]
-   ,taxiPrice = 200;
+   ,taxiPrice = 200
+   ,Text: TaxiArrival[MAX_PLAYERS] = {Text:INVALID_TEXT_DRAW, ...};
+
+CTaxi__Initialize()
+{
+    for (new playerId = 0; playerId < MAX_PLAYERS; playerId++)
+    {
+        TaxiArrival[playerId] = TextDrawCreate(457.0, 66.0, "_");
+        TextDrawAlignment(TaxiArrival[playerId], 2);
+        TextDrawColor(TaxiArrival[playerId], 0xFFFFFFFF);
+        TextDrawBoxColor(TaxiArrival[playerId], 0xFFCC0065);
+        TextDrawUseBox(TaxiArrival[playerId], 1);
+        TextDrawFont(TaxiArrival[playerId], 1);
+        TextDrawTextSize(TaxiArrival[playerId], 0.0, 64.0);
+        TextDrawLetterSize(TaxiArrival[playerId], 0.51, 2.3);
+        TextDrawSetOutline(TaxiArrival[playerId], 1);
+    }
+}
 
 ShowTaxiDialog(playerid)
 {

@@ -49,7 +49,6 @@ new g_TrainPickup_2;
 new g_TrainPickup_3;
 new g_TrainPickup_4;
 new bool: showMessagesEnabled[MAX_PLAYERS];
-new Text: TaxiArrival[MAX_PLAYERS] = {Text:INVALID_TEXT_DRAW, ...};
 new playerTaxi[MAX_PLAYERS][6];
 new bool: g_isAiming[MAX_PLAYERS];
 new isGateOpen;

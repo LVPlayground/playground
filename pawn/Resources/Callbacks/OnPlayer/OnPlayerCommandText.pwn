@@ -1307,7 +1307,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         // Now just send an overview of commands for the player.
         SendClientMessage( playerid, COLOR_YELLOW, "Available regular commands" );
         SendClientMessage( playerid, Color::White, "/regular /settings /ignore /unignore /ignored" );
-        SendClientMessage( playerid, Color::White, "Note: use ;<message> to talk in the regular chat.");
 
         return 1;
     }

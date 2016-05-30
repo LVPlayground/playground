@@ -18,7 +18,6 @@ enum IrcMessageType {
     IrcPrivateMessageIrcMessage, // [playerId] [playerName] [receiverName] [message]
     VipChatIrcMessage, // [playerName] [playerId] [message]
     PhoneIrcMessage, // [playerName] [playerId] [calleeName] [calleeId] [message]
-    RegularIrcMessage, // [playerName] [playerId] [message]
     JoinIrcMessage, // [playerId] [playerName]
     JoinIpIrcMessage, // [playerId] [playerIp] [playerName]
     LeaveIrcMessage, // [playerId] [playerName] [reason]

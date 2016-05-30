@@ -42,7 +42,6 @@ class Color {
 
     // Colors meant for chat messages related to certain features.
     public const GangChat = 0x33CCFFAA;
-    public const RegularChat = 0xFF9900AA;
     public const VipChat = 0x00E1E1AA;
     public const PrivateMessageReceived = 0xFFDC1833;
     public const PrivateMessageSent = 0xFCF54500;

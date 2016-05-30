@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const EconomyCalculator = require('features/economy/economy_calculator.js');
 const Feature = require('components/feature_manager/feature.js');
 const ResidentialValueMap = require('features/economy/residential_value_map.js');
 
@@ -11,6 +12,7 @@ class Economy extends Feature {
     constructor() {
         super();
 
+        this.economyCalculator_ = new EconomyCalculator();
         this.residentialValueMap_ = new ResidentialValueMap();
     }
 
@@ -18,7 +20,13 @@ class Economy extends Feature {
     // Public API of the economy feature.
     // ---------------------------------------------------------------------------------------------
 
-    // TODO(Russell): Define the economy API.
+    // Calculates and returns the price of a house at |position| with the given |interiorValue|,
+    // which must be in range of [0, 9]. A variance factor will be applied to the price.
+    calculateHousePrice(position, interiorValue) {
+        this.economyCalculator_.calculateHousePrice(
+            /* residentialValue */ this.residentialValueMap_.query(position),
+            /* interiorValue */    interiorValue);
+    }
 
     // ---------------------------------------------------------------------------------------------
 

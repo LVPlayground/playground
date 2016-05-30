@@ -15,6 +15,11 @@ const testPointDirection = (currentPoint, nextPoint, inputPoint) => {
 
 // The residential value map loads a JSON file containing several polygons, each of which has been
 // assigned a value between 5 and 1. The map allows querying the value given an input position.
+//
+// A visualization of the residential value map can be seen on this page:
+//   https://sa-mp.nl/tools/visualize-map/
+//
+// The page will automatically be updated when a new data file has been committed to GitHub.
 class ResidentialValueMap {
     constructor() {
         this.entries_ = [];

@@ -95,7 +95,6 @@ new iLoanPercent[MAX_PLAYERS];
 new hiddenKill[MAX_PLAYERS];
 new tempLevel[MAX_PLAYERS];
 new Float: playerArmour[MAX_PLAYERS];
-new iAchievements[MAX_PLAYERS][TotalAchievements];
 new g_RivershellState; 
 new g_RivershellPlayer[MAX_PLAYERS];
 new isPlayerBrief[MAX_PLAYERS];

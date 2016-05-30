@@ -159,6 +159,8 @@ new sAchievements[TotalAchievements][128] = {
     "Sprayed (Spray 100 tags)"
 };
 
+new iAchievements[MAX_PLAYERS][TotalAchievements];
+
 enum gPlayerStats {
     ACdeaths,
     ACkills
@@ -175,6 +177,10 @@ enum gThingsToSave {
     ACamount
 };
 new iGlobalStats[gGlobalStats][gThingsToSave];
+
+CAchieve_GetPlayerAchievement(playerId, achievement) {
+    return iAchievements[playerId][achievement];
+}
 
 CAchieve__OnPlayerConnect(playerid) {
     for (new i = 0; i < TotalAchievements; i++)

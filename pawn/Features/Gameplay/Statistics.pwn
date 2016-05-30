@@ -200,7 +200,7 @@ class Statistics {
         // Earned achievements.
         new achievementCount;
         for (new achievement = 0; achievement < TotalAchievements; achievement++) {
-            if (iAchievements[playerId][achievement] == 1)
+            if (CAchieve_GetPlayerAchievement(playerId, achievement) == 1)
                 achievementCount++;
         }
         m_earnedAchievements[playerId] = achievementCount;

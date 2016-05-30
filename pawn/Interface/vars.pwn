@@ -42,7 +42,6 @@ new g_iSpawnMoney[MAX_PLAYERS];
 new bool: RampingEnabled = true;
 new bool: g_Ignore[MAX_PLAYERS][MAX_PLAYERS];
 new bool: g_NoCaps[MAX_PLAYERS];
-new g_VirtualWorld[MAX_PLAYERS];
 new g_WorldInvite[MAX_PLAYERS];
 new g_TrainPickup_0;
 new g_TrainPickup_1;

@@ -166,7 +166,9 @@
 #include Resources/Games/Reaction.pwn
 #include Resources/Games/Achievements.pwn
 #include Resources/Games/Chase.pwn
-#include Resources/Games/Killtime.pwn
+#if Feature::DisableKilltime == 0
+    #include Resources/Games/Killtime.pwn
+#endif
 #include Resources/Games/Export.pwn
 #include Resources/Games/Bag of Cash.pwn
 

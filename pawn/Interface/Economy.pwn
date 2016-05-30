@@ -35,7 +35,9 @@ enum EconomyValueType {
     HideAndSeekSignUpCost,
     HideAndSeekPrize,
     IslandTeamDeathMatchPrize,
+    #if Feature::DisableKilltime == 0
     KilltimeVictory,
+    #endif
     LyseSignUpCost,
     NitroTwoShot,
     NitroFiveShot,
@@ -89,7 +91,9 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case HideAndSeekSignUpCost:             return 250;
         case HideAndSeekPrize:                  return 500000;
         case IslandTeamDeathMatchPrize:         return 10000;
+        #if Feature::DisableKilltime == 0
         case KilltimeVictory:                   return 2500000;
+        #endif
         case LyseSignUpCost:                    return 250;
         case NitroTwoShot:                      return 2000;
         case NitroFiveShot:                     return 5000;

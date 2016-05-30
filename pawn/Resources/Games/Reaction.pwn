@@ -87,7 +87,7 @@ CReaction__Process()
                 // Now we show
                 if(reactionData[type] == -1)
                 {
-                    SendClientMessageToAll(COLOR_WHITE, "REACTION TEST ERROR");
+                    SendClientMessageToAll(Color::White, "REACTION TEST ERROR");
                     return 1;
                 }
 

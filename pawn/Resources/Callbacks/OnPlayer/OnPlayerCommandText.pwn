@@ -92,7 +92,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         {
             new str[128];
             format(str, 128, "Vehicle ID: %d. Model: %d. Name: %s.",GetPlayerVehicleID(playerid), GetVehicleModel(GetPlayerVehicleID(playerid)), VehicleModel(GetVehicleModel(GetPlayerVehicleID(playerid)))->nameString());
-            SendClientMessage(playerid, COLOR_WHITE, str);
+            SendClientMessage(playerid, Color::White, str);
             return 1;
         }
 
@@ -798,9 +798,9 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     if(strcmp(cmd, "/animations", true) == 0)
     {
         SendClientMessage(playerid, COLOR_YELLOW, "These are the animation commands:");
-        SendClientMessage(playerid, COLOR_WHITE, "/fu, /smoke, /haha, /wank, /vomit, /handsup, /sit, /kiss,");
-        SendClientMessage(playerid, COLOR_WHITE, "/bitchslap, /piss, /wave, /lay, /dance.");
-        SendClientMessage(playerid, COLOR_WHITE, "To end an animation, press the enter/leave vehicle key.");
+        SendClientMessage(playerid, Color::White, "/fu, /smoke, /haha, /wank, /vomit, /handsup, /sit, /kiss,");
+        SendClientMessage(playerid, Color::White, "/bitchslap, /piss, /wave, /lay, /dance.");
+        SendClientMessage(playerid, Color::White, "To end an animation, press the enter/leave vehicle key.");
 
         return 1;
     }
@@ -1015,11 +1015,11 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         if(!tmp[0])
         {
-            SendClientMessage(playerid, COLOR_WHITE, "Use: /customtax [amount]");
+            SendClientMessage(playerid, Color::White, "Use: /customtax [amount]");
             format(message, sizeof(message), "The custom tax must be between $%s and $%s.",
                 formatPrice(minimumTax), formatPrice(maximumTax));
 
-            SendClientMessage(playerid, COLOR_WHITE, message);
+            SendClientMessage(playerid, Color::White, message);
             return 1;
         }
 
@@ -1063,7 +1063,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         tmp = strtok(cmdtext, idx);
 
         if(!tmp[0]) {
-            SendClientMessage(playerid, COLOR_WHITE, "Usage: /borrow [amount]");
+            SendClientMessage(playerid, Color::White, "Usage: /borrow [amount]");
             return 1;
         }
 
@@ -1146,7 +1146,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         if(!tmp[0])
         {
-            SendClientMessage(playerid, COLOR_WHITE, "Usage: /me [message]");
+            SendClientMessage(playerid, Color::White, "Usage: /me [message]");
             return 1;
         }
 
@@ -1292,8 +1292,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     if (strcmp( cmd, "/regular", true) == 0) {
         if (Player(playerid)->isRegular() == false) {
             if (Player(playerid)->isRegistered() == false) {
-                SendClientMessage( playerid, COLOR_WHITE, "Please register on www.sa-mp.nl/ before");
-                SendClientMessage( playerid, COLOR_WHITE, "even thinking about access to regular commands ;)" );
+                SendClientMessage( playerid, Color::White, "Please register on www.sa-mp.nl/ before");
+                SendClientMessage( playerid, Color::White, "even thinking about access to regular commands ;)" );
                 return 1;
             }
             else
@@ -1306,8 +1306,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         // Now just send an overview of commands for the player.
         SendClientMessage( playerid, COLOR_YELLOW, "Available regular commands" );
-        SendClientMessage( playerid, COLOR_WHITE, "/regular /settings /ignore /unignore /ignored" );
-        SendClientMessage( playerid, COLOR_WHITE, "Note: use ;<message> to talk in the regular chat.");
+        SendClientMessage( playerid, Color::White, "/regular /settings /ignore /unignore /ignored" );
+        SendClientMessage( playerid, Color::White, "Note: use ;<message> to talk in the regular chat.");
 
         return 1;
     }
@@ -1494,7 +1494,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         if( !strlen( iTmp ) )
         {
-            SendClientMessage( playerid, COLOR_WHITE, "Usage: /givecash [player] [amount]");
+            SendClientMessage( playerid, Color::White, "Usage: /givecash [player] [amount]");
             return 1;
         }
 
@@ -1518,7 +1518,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         if( !strlen( iTmp ) )
         {
-            SendClientMessage( playerid, COLOR_WHITE, "Usage: /givecash [player] [amount]");
+            SendClientMessage( playerid, Color::White, "Usage: /givecash [player] [amount]");
             return 1;
         }
 
@@ -1602,7 +1602,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             new mVID = GetPlayerVehicleID(playerid);
             SetVehiclePos(mVID, 2257.6133,2233.3518,10.4252);
 
-            SendClientMessage(playerid,COLOR_WHITE,"* Welcome back to Las Venturas.");
+            SendClientMessage(playerid,Color::White,"* Welcome back to Las Venturas.");
             return 1;
         }
 

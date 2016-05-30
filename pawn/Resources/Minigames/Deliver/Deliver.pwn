@@ -155,7 +155,7 @@ DeliveryPlayerExitTruck(playerid)
     if(PlayerInfo[playerid][PlayerStatus] == STATUS_DELIVERY)
     {
         DeliveryResetStuff(playerid);
-        SendClientMessage(playerid, COLOR_WHITE, "* You left your vehicle. Delivery over!");
+        SendClientMessage(playerid, Color::White, "* You left your vehicle. Delivery over!");
         PlayerInfo[playerid][PlayerStatus] = STATUS_NONE;
         GameTextForPlayer(playerid,"~r~Delivery over!",5000,0);
         DisablePlayerCheckpoint(playerid);
@@ -169,7 +169,7 @@ public DeliveryPlayerTimeOver(playerid)
     if(PlayerInfo[playerid][PlayerStatus] == STATUS_DELIVERY)
     {
         DeliveryResetStuff(playerid);
-        SendClientMessage(playerid, COLOR_WHITE, "* You are out of time. Delivery over!");
+        SendClientMessage(playerid, Color::White, "* You are out of time. Delivery over!");
         PlayerInfo[playerid][PlayerStatus] = STATUS_NONE;
         GameTextForPlayer(playerid,"~r~Delivery over!", 5000, 0);
         DisablePlayerCheckpoint(playerid);

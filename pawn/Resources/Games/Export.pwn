@@ -278,8 +278,8 @@ CExport__OnCommand(playerid)
     }
 
     format( szMessage, sizeof( szMessage ), "%s which can be exported at the export point, in the South of Las Venturas.", szMessage );
-    SendClientMessage( playerid, COLOR_WHITE, szMessage );
-    SendClientMessage(playerid,COLOR_WHITE,"The more vehicle damage there is, the less the vehicle is worth!");
+    SendClientMessage( playerid, Color::White, szMessage );
+    SendClientMessage(playerid,Color::White,"The more vehicle damage there is, the less the vehicle is worth!");
     return 1;
 }
 

@@ -23,7 +23,7 @@ lvp_Ignore( playerid, params[] )
 
     if(!strlen(params))
     {
-        SendClientMessage( playerid, COLOR_WHITE, "Use: /ignore [playerid/name]");
+        SendClientMessage( playerid, Color::White, "Use: /ignore [playerid/name]");
         return 1;
     }
 
@@ -31,7 +31,7 @@ lvp_Ignore( playerid, params[] )
     // Proper parameters given to the command?
     if (ignoreID == Player::InvalidId)
     {
-        SendClientMessage( playerid, COLOR_WHITE, "Usage: /ignore [playerid/name]" );
+        SendClientMessage( playerid, Color::White, "Usage: /ignore [playerid/name]" );
         return 1;
     }
 
@@ -67,7 +67,7 @@ lvp_Unignore( playerid, params[] )
 
     if(!strlen(params))
     {
-        SendClientMessage( playerid, COLOR_WHITE, "Use: /unignore [playerid/name]");
+        SendClientMessage( playerid, Color::White, "Use: /unignore [playerid/name]");
         return 1;
     }
 
@@ -75,7 +75,7 @@ lvp_Unignore( playerid, params[] )
     // Proper parameters given to the command?
     if (ignoreID == Player::InvalidId)
     {
-        SendClientMessage( playerid, COLOR_WHITE, "Usage: /unignore [playerid]" );
+        SendClientMessage( playerid, Color::White, "Usage: /unignore [playerid]" );
         return 1;
     }
 
@@ -131,7 +131,7 @@ lvp_Ignored( playerid, params[] )
             GetPlayerName( i, szName, 24 ); iCount++;
             format( szMessage, sizeof( szMessage ), "%s%s ", szMessage, szName );
             if (strlen( szMessage ) > 60) {
-                SendClientMessage( playerid, COLOR_WHITE, szMessage );
+                SendClientMessage( playerid, Color::White, szMessage );
                 format( szMessage, sizeof( szMessage ), " " );
             }
         }
@@ -139,12 +139,12 @@ lvp_Ignored( playerid, params[] )
 
     // Do we have a message yet-to-be-send?
     if (strlen( szMessage ) > 4)
-    SendClientMessage( playerid, COLOR_WHITE, szMessage );
+    SendClientMessage( playerid, Color::White, szMessage );
 
     // Allright, did we ignore anyone?
     if (iCount == 0)
     {
-        SendClientMessage( playerid, COLOR_WHITE, "Noone is being ignored." );
+        SendClientMessage( playerid, Color::White, "Noone is being ignored." );
         return 1;
     }
 

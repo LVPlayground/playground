@@ -292,7 +292,7 @@ hayCheckFinish(playerid)
                 {
                     continue;
                 }
-                SendClientMessage(i, COLOR_WHITE, szMsg);
+                SendClientMessage(i, Color::White, szMsg);
             }
         }
 

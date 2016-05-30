@@ -13,13 +13,13 @@ KillTimeStart(minutes = 5) {
     }
 
     SendClientMessageToAll(COLOR_YELLOW, "KillTime modus started!");
-    SendClientMessageToAll(COLOR_WHITE, "The goal of KillTime: Kill more people than your opponents!");
+    SendClientMessageToAll(Color::White, "The goal of KillTime: Kill more people than your opponents!");
 
     format(string, sizeof(string), "You have %d minutes before the KillTime is over. Kill them all!", minutes);
-    SendClientMessageToAll(COLOR_WHITE, string);
+    SendClientMessageToAll(Color::White, string);
 
     format(string, sizeof(string), "The winner gets $%s! Success!", formatPrice(2500000));
-    SendClientMessageToAll(COLOR_WHITE, string);
+    SendClientMessageToAll(Color::White, string);
 
     KTTime = minutes;
     sKillTime = true;

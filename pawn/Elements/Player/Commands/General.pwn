@@ -491,7 +491,7 @@ lvp_locate(playerid,params[])
     // Has the player used the correct params?
     if(!params[0])
     {
-        SendClientMessage(playerid,COLOR_WHITE,"Use: /locate [player]");
+        SendClientMessage(playerid,Color::White,"Use: /locate [player]");
         return 1;
     }
 
@@ -714,7 +714,7 @@ lvp_tune(playerid,params[])
     }
 
 l_Tune:
-    SendClientMessage(playerid,COLOR_WHITE,"Use: /tune [1/2] - Wheel Arch Angles / Loco Low Co.");
+    SendClientMessage(playerid,Color::White,"Use: /tune [1/2] - Wheel Arch Angles / Loco Low Co.");
     return 1;
 }
 
@@ -794,11 +794,11 @@ lvp_showmessage(playerid,params[])
 
     // Are they correct?
     if(!strlen(tmp)) {
-        SendClientMessage(playerid,COLOR_WHITE,"Correct Usage: /showmessage [colour] [message] (Colours: red/yellow/green/blue/white/purple)");
+        SendClientMessage(playerid,Color::White,"Correct Usage: /showmessage [colour] [message] (Colours: red/yellow/green/blue/white/purple)");
         return 1;
     }
     if(!params[0]) {
-        SendClientMessage(playerid,COLOR_WHITE,"Correct Usage: /showmessage [colour] [message] (Colours: red/yellow/green/blue/white/purple)");
+        SendClientMessage(playerid,Color::White,"Correct Usage: /showmessage [colour] [message] (Colours: red/yellow/green/blue/white/purple)");
         return 1;
     }
 
@@ -814,7 +814,7 @@ lvp_showmessage(playerid,params[])
     else if(!strcmp(tmp,"purple",true,6)) str = "~p~";
     else
     {
-        SendClientMessage(playerid,COLOR_WHITE,"Invalid Colour! Available Colours: red / yellow / green / blue / white / purple");
+        SendClientMessage(playerid,Color::White,"Invalid Colour! Available Colours: red / yellow / green / blue / white / purple");
         return 1;
     }
 
@@ -852,7 +852,7 @@ lvp_showmessage(playerid,params[])
 
         if (Player(j)->isRegular()) {
             if (random(4) == 0) {
-                SendClientMessage(j, COLOR_WHITE, "Hint: Disable these showmessages with /settings showmsg off.");
+                SendClientMessage(j, Color::White, "Hint: Disable these showmessages with /settings showmsg off.");
             }
         }
 
@@ -895,20 +895,20 @@ lvp_interest(playerid,params[])
     // have they used the correct params?
     if(!params[0])
     {
-        SendClientMessage(playerid,COLOR_WHITE,"Usage: /interest [percent 1 - 7]");
+        SendClientMessage(playerid,Color::White,"Usage: /interest [percent 1 - 7]");
         return 1;
     }
     // are the params numeric?
     if(!IsNumeric(params))
     {
-        SendClientMessage(playerid,COLOR_WHITE,"Usage: /interest [percent 1 - 7]");
+        SendClientMessage(playerid,Color::White,"Usage: /interest [percent 1 - 7]");
         return 1;
     }
     new iInterest = strval(params);
     // is the interest rate there trying to set valid?
     if(iInterest < 1 || iInterest > 7)
     {
-        SendClientMessage(playerid,COLOR_WHITE,"Usage: /interest [percent 1 - 7]");
+        SendClientMessage(playerid,Color::White,"Usage: /interest [percent 1 - 7]");
         return 1;
     }
     iInterestTime[playerid] = Time->currentTime();
@@ -939,7 +939,7 @@ lvp_countdown(playerid,params[])
     // has the player used the correct parameters?
     if(!params[0])
     {
-        SendClientMessage(playerid,COLOR_WHITE,"Usage: /cd [seconds]");
+        SendClientMessage(playerid,Color::White,"Usage: /cd [seconds]");
         return 1;
     }
 
@@ -1063,7 +1063,7 @@ lvp_My( playerid, params[] )
         }
 
 charHelp:
-        SendClientMessage(playerid, COLOR_WHITE, "Usage: /my skin [Id] [load/remove/save]");
+        SendClientMessage(playerid, Color::White, "Usage: /my skin [Id] [load/remove/save]");
         return 1;
 
     }
@@ -1080,8 +1080,8 @@ charHelp:
         {
             new szMessage[128];
             format (szMessage, sizeof(szMessage), "Your current ramp is %d.", playerramptypes[playerid]);
-            SendClientMessage (playerid, COLOR_WHITE, szMessage);
-            SendClientMessage( playerid, COLOR_WHITE, "Usage: /my ramp [rampId]");
+            SendClientMessage (playerid, Color::White, szMessage);
+            SendClientMessage( playerid, Color::White, "Usage: /my ramp [rampId]");
             return 1;
         }
 
@@ -1183,8 +1183,8 @@ charHelp:
         }
 
 MinigameHelp:
-        SendClientMessage(playerid, COLOR_WHITE, "Usage: /my minigame [tec9/uzi]");
-        SendClientMessage(playerid, COLOR_WHITE, "This is used to set your spawnweapon in the FightClub and the /sawnoff minigame.");
+        SendClientMessage(playerid, Color::White, "Usage: /my minigame [tec9/uzi]");
+        SendClientMessage(playerid, Color::White, "This is used to set your spawnweapon in the FightClub and the /sawnoff minigame.");
         return 1;
 
     }
@@ -1257,7 +1257,7 @@ MinigameHelp:
 
         if(iLen == 0)
         {
-            SendClientMessage( playerid, COLOR_WHITE, "Usage: /my weapon [weaponId] [ammo]");
+            SendClientMessage( playerid, Color::White, "Usage: /my weapon [weaponId] [ammo]");
             return 1;
         }
 
@@ -1302,7 +1302,7 @@ MinigameHelp:
         param_shift_int(iHealth);
 
         if(iLen == 0) {
-            SendClientMessage( playerid, COLOR_WHITE, "Usage: /my health [0-100]");
+            SendClientMessage( playerid, Color::White, "Usage: /my health [0-100]");
             return 1;
         }
 
@@ -1328,7 +1328,7 @@ MinigameHelp:
 
         if( iLen == 0 )
         {
-            SendClientMessage( playerid, COLOR_WHITE, "Usage: /my armour [0-100]");
+            SendClientMessage( playerid, Color::White, "Usage: /my armour [0-100]");
             return 1;
         }
 
@@ -1398,20 +1398,20 @@ MinigameHelp:
         }
 
 HideHelp:
-        SendClientMessage( playerid, COLOR_WHITE, "Usage: /my hide [on/off]");
+        SendClientMessage( playerid, Color::White, "Usage: /my hide [on/off]");
         return 1;
     }
 
 MyHelp:
-    SendClientMessage(playerid, COLOR_WHITE, "Usage: /my [achievements/deathmessage/minigame/playerinfo/properties/ramp/skin/spawnmoney/stats]");
+    SendClientMessage(playerid, Color::White, "Usage: /my [achievements/deathmessage/minigame/playerinfo/properties/ramp/skin/spawnmoney/stats]");
 
     if (Player(playerid)->isAdministrator() || UndercoverAdministrator(playerid)->isUndercoverAdministrator()) {
-        SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[allchat/armour/bank/color/health/hide/(goto/save)loc/look/maptp]");
-        SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[messagelevel/resetspawnweapons/spawnweapons/weapon/weather/time]");
+        SendClientMessage(playerid, Color::White, "Usage: /my {DDDDDD}[allchat/armour/bank/color/health/hide/(goto/save)loc/look/maptp]");
+        SendClientMessage(playerid, Color::White, "Usage: /my {DDDDDD}[messagelevel/resetspawnweapons/spawnweapons/weapon/weather/time]");
     } else if (Player(playerid)->isAdministrator())
-        SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[color/look/resetspawnweapons/teleport/weather/time]");
+        SendClientMessage(playerid, Color::White, "Usage: /my {DDDDDD}[color/look/resetspawnweapons/teleport/weather/time]");
     else if (Player(playerid)->isVip())
-        SendClientMessage(playerid, COLOR_WHITE, "Usage: /my {DDDDDD}[color/look/teleport/weather/time]");
+        SendClientMessage(playerid, Color::White, "Usage: /my {DDDDDD}[color/look/teleport/weather/time]");
 
     return 1;
 }

@@ -1342,7 +1342,7 @@ CDerby__OnCommand(playerid, params[])
     if(!params[0])
     {
         format(str,128,"Usage: /derby [0-%d]",CDerby__GetCount()-1);
-        SendClientMessage(playerid,COLOR_WHITE,str);
+        SendClientMessage(playerid,Color::White,str);
 
         CDerby__ShowMainDialog(playerid);
         return 1;

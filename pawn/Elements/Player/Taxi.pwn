@@ -371,8 +371,8 @@ lvp_taxi(playerid,params[])
         new notice[128];
 
         format(notice, sizeof(notice), "* You can also state a destination using /taxi [0-%d] and get", NumberOfTaxiLocations - 1);
-        SendClientMessage(playerid, COLOR_WHITE, notice);
-        SendClientMessage(playerid, COLOR_WHITE, "teleported directly to your chosen location! Check /locations too!");
+        SendClientMessage(playerid, Color::White, notice);
+        SendClientMessage(playerid, Color::White, "teleported directly to your chosen location! Check /locations too!");
 
         ShowTaxiDialog(playerid);
         return 1;
@@ -436,7 +436,7 @@ lvp_taxiprice(playerid,params[])
     // have they used the correct params?
     if(!params[0])
     {
-        SendClientMessage(playerid,COLOR_WHITE,"Use: /taxiprice [price]");
+        SendClientMessage(playerid,Color::White,"Use: /taxiprice [price]");
         return 1;
     }
     // Is it a correct value?

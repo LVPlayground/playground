@@ -82,8 +82,8 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
 
     if(pickupid == g_CrushIcon)
     {
-        SendClientMessage(playerid,COLOR_WHITE,"* Park a vehicle into the allocated area to crush it and receive a scrap value!");
-        SendClientMessage(playerid,COLOR_WHITE,"* You receive a higher scrap value for the vehicles condition, i.e modifcations, health, etc.");
+        SendClientMessage(playerid,Color::White,"* Park a vehicle into the allocated area to crush it and receive a scrap value!");
+        SendClientMessage(playerid,Color::White,"* You receive a higher scrap value for the vehicles condition, i.e modifcations, health, etc.");
         return 1;
     }
 

@@ -567,7 +567,7 @@ rwOnCommand(playerid, params[])
     {
         if(!strlen(params) || !IsNumeric(params))
         {
-            SendClientMessage(playerid, COLOR_WHITE, "Use: /rwtw [Maximum Kills]");
+            SendClientMessage(playerid, Color::White, "Use: /rwtw [Maximum Kills]");
             return 1;
         }
 
@@ -576,7 +576,7 @@ rwOnCommand(playerid, params[])
         {
             new str[128];
             format(str, 128, "Use: /rwtw [Maximum Kills]. Valid values are %d - %d", RW_MIN_KILLS, RW_MAX_KILLS);
-            SendClientMessage(playerid, COLOR_WHITE, str);
+            SendClientMessage(playerid, Color::White, str);
             return 1;
         }
 

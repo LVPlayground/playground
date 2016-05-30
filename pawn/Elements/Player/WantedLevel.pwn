@@ -53,11 +53,11 @@ WantedLevel__OnPlayerDeath (playerid, killerid) {
             // Only set the new champion if the player isn't the champion already...
             if(iServerChampion != killerid)
             {
-                SendClientMessageToAllEx(COLOR_WHITE,"--------------------------------------");
+                SendClientMessageToAllEx(Color::White,"--------------------------------------");
                 format(iStr,sizeof(iStr),"* %s (Id:%d) has broken %s's killstreak of %d kills and is the new Deathmatch Champion!",
                 PlayerName(killerid),killerid,iRecordName,iServerKillRecord,PlayerName(killerid));
                 SendClientMessageToAllEx(COLOR_YELLOW,iStr);
-                SendClientMessageToAllEx(COLOR_WHITE,"--------------------------------------");
+                SendClientMessageToAllEx(Color::White,"--------------------------------------");
                 GameTextForPlayer(killerid,"~g~New Deathmatch Champion~n~~y~Congratulations~n~~w~$1000000",5000,0);
                 GivePlayerMoney(killerid,1000000);
                 iServerKillRecord = WantedLevel[killerid];
@@ -95,7 +95,7 @@ WantedLevel__OnPlayerDeath (playerid, killerid) {
         }
 
         format(iStr,128,"* %s had a wanted level of %d stars, you earned $%d.",PlayerName(playerid),iPlayerKills,iPlayerKills * 10000);
-        SendClientMessage(killerid,COLOR_WHITE,iStr);
+        SendClientMessage(killerid,Color::White,iStr);
         GivePlayerMoney(killerid,iPlayerKills*10000);
         WantedLevel[playerid] = 0;
         SetPlayerWantedLevel(playerid,0);

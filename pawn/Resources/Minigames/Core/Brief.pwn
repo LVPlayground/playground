@@ -236,7 +236,7 @@ CBrief__Checkpoint(playerid)
                 DisablePlayerCheckpoint(i);
                 SetPlayerCheckpoint(i,AIRPORT_HANGER,5.0);
             }
-            SendClientMessage(playerid,COLOR_WHITE,"* Deliver this briefcase to the Airport hanger in Las Venturas Airport!");
+            SendClientMessage(playerid,Color::White,"* Deliver this briefcase to the Airport hanger in Las Venturas Airport!");
             GameTextForPlayer(playerid,"~r~Briefcase collected!",5000,6);
             ShowBoxForPlayer(playerid, "Deliver the brief to LV Airport - Marked red on your radar!");
 
@@ -423,7 +423,7 @@ CBrief__Announce(msg[])
         }
 
         ShowBoxForPlayer(i, msg);
-        SendClientMessage(i, COLOR_WHITE, msg);
+        SendClientMessage(i, Color::White, msg);
     }
     return 1;
 }
@@ -558,16 +558,16 @@ CBrief__Start()
             TimeController->setPlayerOverrideTime(i, 0, 0);
 
             // Give them a white color to indicate that they're part of the game.
-            ColorManager->setPlayerMinigameColor(i, COLOR_WHITE);
+            ColorManager->setPlayerMinigameColor(i, Color::White);
 
             CBrief__PositionPlayer(i);
-            SendClientMessage(i,COLOR_WHITE,"--------------------------------------");
+            SendClientMessage(i,Color::White,"--------------------------------------");
             SendClientMessage(i,COLOR_ORANGE,"Get the briefcase marked red on your radar.");
             SendClientMessage(i,COLOR_ORANGE,"The briefcase is worth $2,000,000 and other");
             SendClientMessage(i,COLOR_ORANGE,"players are competing to get it as you read this.");
             SendClientMessage(i,COLOR_ORANGE,"So what are you waiting for? Don't let anyone else get it!");
             SendClientMessage(i,COLOR_ORANGE,"Drive your vehicle carefully because it is the only vehicle you get.");
-            SendClientMessage(i,COLOR_WHITE,"--------------------------------------");
+            SendClientMessage(i,Color::White,"--------------------------------------");
             GameTextForPlayer(i,"~r~Get the briefcase!",5000,1);
             ShowBoxForPlayer(i, "Get the ~r~briefcase~w~!");
             CBrief__Debug(i,"Opening airport gate and generating position / colour.");

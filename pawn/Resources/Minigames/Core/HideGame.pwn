@@ -978,7 +978,7 @@ CHideGame__onFindCommand( iPlayerID, params[] )
         return SendClientMessage( iPlayerID, Color::Red, "* Error: You have to be the seeker to use this command!");
 
     if (!strlen(params))
-        return SendClientMessage( iPlayerID, COLOR_WHITE, "* Usage: /find [playerid]");
+        return SendClientMessage( iPlayerID, Color::White, "* Usage: /find [playerid]");
 
     new iFoundPlayer = Command->playerParameter(params, 0, iPlayerID);
     if (iFoundPlayer == INVALID_PLAYER_ID)

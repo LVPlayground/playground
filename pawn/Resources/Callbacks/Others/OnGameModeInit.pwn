@@ -54,6 +54,8 @@ public OnGameModeInit() {
     CFightClub__Initialize();       // FightClub handler
 #endif
 
+    CLyse__Initialize();
+
     // Set the gamemode text in accordance to the version:
     new GameModeText[128];
     format(GameModeText, 32, "LVP %d.%d Freeroam Deathmatch", Version::Major, Version::Minor);

@@ -30,6 +30,7 @@ testRunner.run('.*\.test\.js').then(notifyReady).then(() => {
         // Foundational features
         announce:       require('features/announce/announce.js'),
         communication:  require('features/communication/communication.js'),
+        economy:        require('features/economy/economy.js'),
         minigames:      require('features/minigames/minigames.js'),
 
         // Gang-related features

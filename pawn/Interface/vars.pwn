@@ -167,3 +167,5 @@ new validKillerId[MAX_PLAYERS];
 // Temporary variable holding the reasonId of a death in case we set the player's health to 0.
 new validReasonId[MAX_PLAYERS];
 // -------------------------------------------------------------------------------------------------
+
+new bPlayerWeaponStored[MAX_PLAYERS];

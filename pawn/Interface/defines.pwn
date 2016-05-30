@@ -46,7 +46,6 @@ new __iCMDIDX;
 #define DIALOG_COMMANDS_TELEPORTATION       4003
 #define DIALOG_COMMANDS_FIGHTING            4004
 #define DIALOG_COMMANDS_MONEY               4005
-#define DIALOG_RULES                        4006
 #define DIALOG_MINIGAMES                    4007
 #define DIALOG_DRIVEBY                      4008
 #define DIALOG_GYM_FIGHT                    4009
@@ -60,10 +59,6 @@ new __iCMDIDX;
 #define DIALOG_FIGHTCLUB_DUEL_ROUNDS        4017
 #define DIALOG_FIGHTCLUB_DUEL_INVITE        4018
 #define DIALOG_FIGHTCLUB_WATCH              4019
-#define DIALOG_RACE_MAIN                    4020
-#define DIALOG_RACE_SUB                     4030
-#define DIALOG_SPAWN_VEHICLE                4031
-#define DIALOG_WORLD_RACE_START             4032
 #define DIALOG_DERBY_MAIN                   4033
 #define DIALOG_JUMP_RACES                   4035
 #define DIALOG_TELES_MAIN                   4036
@@ -71,15 +66,6 @@ new __iCMDIDX;
 #define DIALOG_TAXI_LOCATIONS               4038
 #define DIALOG_MINIGAME_DM                  4039
 #define DIALOG_JUMPS_LIST                   4041
-
-// Help
-#define DIALOG_HELP_MAIN                    4043
-#define DIALOG_HELP_MONEY                   4044
-#define DIALOG_HELP_CONTACT                 4045
-#define DIALOG_HELP_CRUISE                  4046
-#define DIALOG_HELP_LANGUAGES               4047
-#define DIALOG_HELP_VEHICLES                4048
-#define DIALOG_HELP_BANK                    4049
 
 // What is the maximum dialog Id? Used to start switching towards the dialog manager.
 #compiler counter(OnDialogResponse, 101)
@@ -89,5 +75,4 @@ new __iCMDIDX;
  * DO NOT ADD NEW DIALOGS IN HERE. ALL FEATURES SHOULD BE MOSTLY SELF-CONTAINED.
  *
  */
-// These are required by something that is required by the vars.pwn so they need to come beforehand
-new bPlayerWeaponStored[MAX_PLAYERS];
+ 

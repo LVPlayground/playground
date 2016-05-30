@@ -213,9 +213,9 @@ CExport__OnEnterCheckpoint( playerid )
                 else
                 {
                     format(string, sizeof(string), "Thanks for exporting a %s! However, since the vehicle isn't in perfect",name);
-                    SendClientMessage(playerid, COLOR_BROWN, string);
+                    SendClientMessage(playerid, COLOR_ORANGE, string);
                     format(string, sizeof(string), "condition, you only received $%s for it.", formatPrice(iPlayerReward));
-                    SendClientMessage(playerid, COLOR_BROWN, string);
+                    SendClientMessage(playerid, COLOR_ORANGE, string);
                 }
 
                 playerVehExp[ playerid ]++;

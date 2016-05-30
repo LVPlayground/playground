@@ -517,12 +517,6 @@ CBomb__DetonateCheck(playerid,newkeys)
                     continue;
                 }
 
-                if(iTeleportTime[playerid] != 0 && Time->currentTime() - iTeleportTime[playerid] < 2 && VehicleBomb[vid][armer] == playerid)
-                {
-                    ShowBoxForPlayer(playerid, "You have to wait 2 seconds after teleporting before you can detonate a bomb.");
-                    continue;
-                }
-
                 if(VehicleBomb[vid][BombType] == BOMB_TYPE_COUNTDOWN)
                 {
                     CBomb__CheckCountdownDetonation(playerid, DetonateVehicle[playerid]);

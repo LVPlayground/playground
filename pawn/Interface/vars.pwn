@@ -29,7 +29,6 @@ new iPlayerDied[MAX_PLAYERS];
 new g_CrushIcon;
 new iCashTime[MAX_PLAYERS];
 new iDiveTime[MAX_PLAYERS];
-new iTeleportTime[MAX_PLAYERS];
 new g_iShipIcon = 0; 
 new iTuneTime[MAX_PLAYERS];
 new n_PlayerInGym[MAX_PLAYERS];

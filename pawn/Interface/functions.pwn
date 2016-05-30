@@ -266,7 +266,6 @@ ResetPlayerStats(playerId) {
     iPlayerInVipRoom[playerId] = false;
     iTuneTime[playerId] = 0;
     iDiveTime[playerId] = false;
-    iTeleportTime[playerId] = false;
     iCashTime[playerId] = false;
     iPlayerDied[playerId] = false;
     MyDeaths[playerId] = 0;

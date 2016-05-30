@@ -36,7 +36,7 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
 
             if(Player(playerid)->isRegular() == false)
                 GameTextForPlayer(playerid,"The ship is a peace zone!",1000,6);
-                
+
         #if Feature::DisableKilltime == 0
         } else if(sKillTime)
             SendClientMessage(playerid,Color::Green,"It's Killtime! Shooting on the ship is temporarily allowed.");
@@ -86,14 +86,13 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
 
     if(pickupid == g_CrushIcon)
     {
-        SendClientMessage(playerid,Color::White,"* Park a vehicle into the allocated area to crush it and receive a scrap value!");
-        SendClientMessage(playerid,Color::White,"* You receive a higher scrap value for the vehicles condition, i.e modifcations, health, etc.");
+        SendClientMessage(playerid, Color::White, "* Park a vehicle into the allocated area to crush it and receive a scrap value!");
+        SendClientMessage(playerid, Color::White, "* You receive a higher scrap value for the vehicles condition, i.e modifications, health, etc.");
         return 1;
     }
 
     if(pickupid == Vip) // if a player pickups the vip icon
     {
-
         if(playerVipRoomEntryTime[playerid] != 0)
         {
             if(Time->currentTime() - playerVipRoomEntryTime[playerid] < 5)

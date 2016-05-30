@@ -334,39 +334,17 @@ CShell__TextdrawUpdate()
 
 
 
-    if(!IsValidText(Rivershell))
+    for (new j = 0; j <= PlayerManager->highestPlayerId(); j++)
     {
-        new str[256];
-        format(str,256,"~b~Blue team: %d~n~~n~~g~Green team: %d",gBlueTimesCapped,gGreenTimesCapped);
-        Rivershell = TextDrawCreate(501,100,str);
-        TextDrawAlignment(Rivershell,0);
-        TextDrawBackgroundColor(Rivershell,0x000000ff);
-        TextDrawFont(Rivershell,1);
-        TextDrawLetterSize(Rivershell,0.399999,1.200000);
-        TextDrawColor(Rivershell,0xffffffff);
-        TextDrawSetOutline(Rivershell,1);
-        TextDrawSetProportional(Rivershell,1);
-        TextDrawSetShadow(Rivershell,1);
-        for (new j = 0; j <= PlayerManager->highestPlayerId(); j++)
-        {
-            if(!Player(j)->isConnected()) continue;
-            if(!g_RivershellPlayer[j]) continue;
+        if(!Player(j)->isConnected()) continue;
+        if(!g_RivershellPlayer[j]) continue;
 
-            TextDrawShowForPlayer(j,Rivershell);
-        }
-    }else{
-        for (new j = 0; j <= PlayerManager->highestPlayerId(); j++)
-        {
-            if(!Player(j)->isConnected()) continue;
-            if(!g_RivershellPlayer[j]) continue;
-
-            TextDrawShowForPlayer(j,Rivershell);
-        }
-
-        new str[256];
-        format(str,256,"~b~Blue team: %d~n~~n~~g~Green team: %d",gBlueTimesCapped,gGreenTimesCapped);
-        TextDrawSetString(Rivershell, str);
+        TextDrawShowForPlayer(j,Rivershell);
     }
+
+    new str[256];
+    format(str,256,"~b~Blue team: %d~n~~n~~g~Green team: %d",gBlueTimesCapped,gGreenTimesCapped);
+    TextDrawSetString(Rivershell, str);
     CShell__Debug("Textdraw re-created.");
 
     CShell__Debug("CShell__TextdrawUpdate process finished.");

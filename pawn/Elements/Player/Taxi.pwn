@@ -57,7 +57,8 @@ new bool:isTaxiActive[MAX_PLAYERS]
    ,Float:playerOrderedTaxiPositionY[MAX_PLAYERS]
    ,Float:playerOrderedTaxiPositionZ[MAX_PLAYERS]
    ,taxiPrice = 200
-   ,Text: TaxiArrival[MAX_PLAYERS] = {Text:INVALID_TEXT_DRAW, ...};
+   ,Text: TaxiArrival[MAX_PLAYERS] = {Text:INVALID_TEXT_DRAW, ...}
+   ,mayTaxi[MAX_PLAYERS];
 
 CTaxi__Initialize()
 {
@@ -73,6 +74,10 @@ CTaxi__Initialize()
         TextDrawLetterSize(TaxiArrival[playerId], 0.51, 2.3);
         TextDrawSetOutline(TaxiArrival[playerId], 1);
     }
+}
+
+CTaxi_ResetMayTaxi(playerId) {
+    mayTaxi[playerId] = 0;
 }
 
 ShowTaxiDialog(playerid)
@@ -205,7 +210,7 @@ TaxiArrived(playerid)
             if(playerid != endid)
             GivePlayerMoney(playerid,-fare);
 
-            mayTax[playerid] = 1;
+            mayTaxi[playerid] = 1;
             format(str, 256,"%s (Id:%d) has /taxi'd to %s (#%d).",PlayerName(playerid),playerid, taxiLocationName[locateid], locateid);
             Admin(playerid, str);
 
@@ -236,7 +241,7 @@ FreeTaxi()
 {
     for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
     {
-        mayTax[i]=0;
+        CTaxi_ResetMayTaxi(i);
     }
 }
 

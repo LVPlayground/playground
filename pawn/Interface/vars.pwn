@@ -61,7 +61,6 @@ new playerVehExp[MAX_PLAYERS];
 new g_PlayerMenu[ MAX_PLAYERS ];
 new lastShowmsg;
 new isInSF[MAX_PLAYERS];
-new mayTax[MAX_PLAYERS];
 new g_bPlayerGodmode[ MAX_PLAYERS ];
 new banWarning[MAX_PLAYERS];
 new tpWarning[MAX_PLAYERS];

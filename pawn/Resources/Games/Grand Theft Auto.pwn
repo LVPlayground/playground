@@ -274,9 +274,8 @@ CTheft__ChooseRandomVehicle()
 	    new Float:fVehHealth;
 	    GetVehicleHealth(iRandomVeh, fVehHealth);
 
-	    if( iRandomVeh != Vehicle::InvalidId && VehicleModel(GetVehicleModel(iRandomVeh))->isNitroInjectionAvailable()
-		&& !AnyPlayerInVehicle(iRandomVeh) && fVehHealth > 600
-		&& GetVehicleVirtualWorld(iRandomVeh) == 0 && !IsVehicleLocked(iRandomVeh)
+	    if (iRandomVeh != Vehicle::InvalidId && VehicleModel(GetVehicleModel(iRandomVeh))->isNitroInjectionAvailable()
+		&& fVehHealth > 600 && GetVehicleVirtualWorld(iRandomVeh) == 0 && !IsVehicleLocked(iRandomVeh)
 		&& Vehicle(iRandomVeh)->isAdministratorVehicle() == false && Vehicle(iRandomVeh)->isVeryImportantPlayerVehicle() == false)
 		{
 		    iChosenVehicleID = iRandomVeh;

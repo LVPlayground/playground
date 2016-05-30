@@ -194,7 +194,7 @@ CBomb__ProcessMenu(playerid,row)
                 // is our player in a vehicle? (near impossible scenario)
                 if(!IsPlayerInAnyVehicle(playerid))
                 {
-                    SendClientMessage(playerid,COLOR_RED,"* You're not in a vehicle!");
+                    SendClientMessage(playerid,Color::Red,"* You're not in a vehicle!");
                     TogglePlayerControllable(playerid,true);
                     return 1;
                 }
@@ -245,7 +245,7 @@ CBomb__ProcessMenu(playerid,row)
 
                 if(!IsPlayerInAnyVehicle(playerid))
                 {
-                    SendClientMessage(playerid,COLOR_RED,"* You're not in a vehicle!");
+                    SendClientMessage(playerid,Color::Red,"* You're not in a vehicle!");
                     TogglePlayerControllable(playerid,true);
                     return 1;
                 }
@@ -293,7 +293,7 @@ CBomb__ProcessMenu(playerid,row)
 
                 if(!IsPlayerInAnyVehicle(playerid))
                 {
-                    SendClientMessage(playerid,COLOR_RED,"* You're not in a vehicle!");
+                    SendClientMessage(playerid,Color::Red,"* You're not in a vehicle!");
                     TogglePlayerControllable(playerid,true);
                     return 1;
                 }
@@ -342,7 +342,7 @@ CBomb__ProcessMenu(playerid,row)
         // Is the players vehicle armed?
         if(!VehicleBomb[GetPlayerVehicleID(playerid)][VehicleArmed])
         {
-            SendClientMessage(playerid,COLOR_RED,"* Your vehicle isn't armed!");
+            SendClientMessage(playerid,Color::Red,"* Your vehicle isn't armed!");
             RemovePlayerFromBombShop(playerid);
             return 1;
         }
@@ -350,7 +350,7 @@ CBomb__ProcessMenu(playerid,row)
         // Is the player the person who armed it?
         if(VehicleBomb[GetPlayerVehicleID(playerid)][armer] != playerid)
         {
-            SendClientMessage(playerid,COLOR_RED,"* You didn't arm the vehicle!");
+            SendClientMessage(playerid,Color::Red,"* You didn't arm the vehicle!");
             RemovePlayerFromBombShop(playerid);
             return 1;
         }
@@ -474,7 +474,7 @@ CBomb__EngineCheck(playerid,vehicleid,i)
         GetVehiclePos(vehicleid ,x ,y , z);
         if (x >= 1950.5 && x <= 2070.47 && y >= 1480.0 && y <= 1620.70)
         {
-            return SendClientMessage(VehicleBomb[vehicleid][armer],COLOR_RED, "Your bomb didn't go off because the vehicle is too close to the ship!");
+            return SendClientMessage(VehicleBomb[vehicleid][armer],Color::Red, "Your bomb didn't go off because the vehicle is too close to the ship!");
         }
         else
         {

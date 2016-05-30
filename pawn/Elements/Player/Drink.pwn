@@ -459,7 +459,7 @@ CDrink__MenuProcess(playerid, row)
         // It's our menu -- and the row id is equals to the drink id.. bingo.
         if(GetPlayerInterior(playerid) != 11 && GetPlayerInterior(playerid) != 12 && GetPlayerInterior(playerid) != 0)
         {
-            SendClientMessage(playerid, COLOR_RED, "You're not at the bar!");
+            SendClientMessage(playerid, Color::Red, "You're not at the bar!");
         } else {
             CDrink__Buy(playerid, row);
             CDrink__HideMenu(playerid);

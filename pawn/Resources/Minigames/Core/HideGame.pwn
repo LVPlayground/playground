@@ -958,10 +958,10 @@ CHideGame__onStartCommand( iPlayerID, params[] )
         CHideGame__onJoinCommand( iPlayerID, params );
 
     } else if (iHideGameState == HS_STATE_PLAYING) {
-        SendClientMessage( iPlayerID,  COLOR_RED, "* Error: this minigame is already in progress.");
+        SendClientMessage( iPlayerID,  Color::Red, "* Error: this minigame is already in progress.");
 
     } else {
-        SendClientMessage( iPlayerID,  COLOR_RED, "* [Hide&Seek]: Something is completely fucked up.");
+        SendClientMessage( iPlayerID,  Color::Red, "* [Hide&Seek]: Something is completely fucked up.");
     }
 
     return 1;
@@ -972,10 +972,10 @@ CHideGame__onStartCommand( iPlayerID, params[] )
 CHideGame__onFindCommand( iPlayerID, params[] )
 {
     if (CHideGame__GetState() != HS_STATE_PLAYING )
-        return SendClientMessage( iPlayerID,  COLOR_RED, "* Error: this minigame isn't in progress.");
+        return SendClientMessage( iPlayerID,  Color::Red, "* Error: this minigame isn't in progress.");
 
     if (iPlayerID != iSeekerPlayer)
-        return SendClientMessage( iPlayerID, COLOR_RED, "* Error: You have to be the seeker to use this command!");
+        return SendClientMessage( iPlayerID, Color::Red, "* Error: You have to be the seeker to use this command!");
 
     if (!strlen(params))
         return SendClientMessage( iPlayerID, COLOR_WHITE, "* Usage: /find [playerid]");
@@ -985,13 +985,13 @@ CHideGame__onFindCommand( iPlayerID, params[] )
         return 1;  // Command::playerParameter() will have displayed an error message.
 
     if(CHideGame__GetPlayerState(iFoundPlayer) != HS_STATE_PLAYING)
-        return SendClientMessage( iPlayerID,  COLOR_RED, "* Error: That player isn't in the H&S minigame.");
+        return SendClientMessage( iPlayerID,  Color::Red, "* Error: That player isn't in the H&S minigame.");
 
     if(iSeekerPlayer == iFoundPlayer)
-        return SendClientMessage( iPlayerID, COLOR_RED, "* Error: What are you trying to do here?!");
+        return SendClientMessage( iPlayerID, Color::Red, "* Error: What are you trying to do here?!");
 
     if(iFrozenCount != 0)
-        return SendClientMessage( iPlayerID, COLOR_RED, "* Error: Wait for the countdown to finish first!");
+        return SendClientMessage( iPlayerID, Color::Red, "* Error: Wait for the countdown to finish first!");
 
     // Get the players position.
     new Float:fHideX, Float:fHideY, Float:fHideZ;
@@ -1000,7 +1000,7 @@ CHideGame__onFindCommand( iPlayerID, params[] )
     // Get the distance between the two players.
     new Float:fDistance = GetDistance( iSeekerPlayer, fHideX, fHideY, fHideZ );
     if( fDistance > 5.0)
-        return SendClientMessage( iPlayerID,  COLOR_RED, "* Error: You're not close to that player!");
+        return SendClientMessage( iPlayerID,  Color::Red, "* Error: You're not close to that player!");
 
     CHideGame__ThrowOut( iFoundPlayer, HS_THROWNOUT_GOTFOUND );
     return 1;
@@ -1012,13 +1012,13 @@ CHideGame__onJoinCommand( iPlayerID, params[] )
 {
     // Error checking comes here.
     if (CHideGame__GetState() == HS_STATE_NONE)
-        return SendClientMessage(iPlayerID, COLOR_RED, "* Error: this minigame isn't signing up right now, only admins can start it.");
+        return SendClientMessage(iPlayerID, Color::Red, "* Error: this minigame isn't signing up right now, only admins can start it.");
 
     if (CHideGame__GetPlayerState(iPlayerID) == HS_STATE_PLAYING)
-        return SendClientMessage(iPlayerID, COLOR_RED, "* Error: you're playing already, silly!");
+        return SendClientMessage(iPlayerID, Color::Red, "* Error: you're playing already, silly!");
 
     if (CHideGame__GetPlayerState(iPlayerID) == HS_STATE_SIGNING_UP)
-        return SendClientMessage(iPlayerID, COLOR_RED, "* Error: you've already been signed up for this minigame.");
+        return SendClientMessage(iPlayerID, Color::Red, "* Error: you've already been signed up for this minigame.");
 
     new const price = GetEconomyValue(HideAndSeekSignUpCost);
 
@@ -1026,14 +1026,14 @@ CHideGame__onJoinCommand( iPlayerID, params[] )
         new message[128];
         format(message, sizeof(message), "* Error: You need $%s to sign up for Hide and Seek!", formatPrice(price));
 
-        return SendClientMessage(iPlayerID, COLOR_RED, message);
+        return SendClientMessage(iPlayerID, Color::Red, message);
     }
 
     if (GetPlayerInterior(iPlayerID) != 0)
-        return SendClientMessage( iPlayerID, COLOR_RED, "* Error: Go outside first.");
+        return SendClientMessage( iPlayerID, Color::Red, "* Error: Go outside first.");
 
     if (iHideGameSignups >= aLocationInfo[iMapRunning] [0] && aLocationInfo[iMapRunning][0] != -1)
-        return SendClientMessage( iPlayerID, COLOR_RED, "* Error: Too many players have signed up for this map already.");
+        return SendClientMessage( iPlayerID, Color::Red, "* Error: Too many players have signed up for this map already.");
 
     // Okay, they may sign up.
     aHidePlayerState[ iPlayerID ] = HS_STATE_SIGNING_UP;
@@ -1121,13 +1121,13 @@ CHideGame__onPlayerPunch( iPlayerID )
     // This prevents the annoying hitting in the H&S minigame.
     if(iHidePlayerPunches[ iPlayerID ] > 5)
     {
-        SendClientMessage( iPlayerID, COLOR_RED, "* You were warned for punching. You've been automatically thrown out of the minigame.");
+        SendClientMessage( iPlayerID, Color::Red, "* You were warned for punching. You've been automatically thrown out of the minigame.");
         CHideGame__ThrowOut( iPlayerID, HS_THROWNOUT_PUNCHING );
     }
     else
     {
         iHidePlayerPunches[ iPlayerID ] ++;
-        SendClientMessage( iPlayerID, COLOR_RED, "* Stop punching in the H&S minigame or you'll be kicked out.");
+        SendClientMessage( iPlayerID, Color::Red, "* Stop punching in the H&S minigame or you'll be kicked out.");
     }
     return 1;
 }
@@ -1278,7 +1278,7 @@ CHideGame__onMenuSelection( iPlayerID, iRow )
 
     if(iHideGameState > HS_STATE_NONE)
     {
-        SendClientMessage( iPlayerID, COLOR_RED, "* Error: The minigame is already processing the signup or playing.");
+        SendClientMessage( iPlayerID, Color::Red, "* Error: The minigame is already processing the signup or playing.");
         TogglePlayerControllable( iPlayerID, true );
         return 1;
     }
@@ -1483,7 +1483,7 @@ public CHideGame__Start()
         SetPlayerInterior( iSeekerPlayer, aLocationInfo[ iMapRunning ][ 2 ] );
         SetPlayerPos( iSeekerPlayer, aLocationCoordinates[ iMapRunning ] [ 0 ], aLocationCoordinates[ iMapRunning ] [ 1 ], aLocationCoordinates[ iMapRunning ] [ 2 ] );
 
-        ColorManager->setPlayerMinigameColor(iSeekerPlayer, COLOR_RED);
+        ColorManager->setPlayerMinigameColor(iSeekerPlayer, Color::Red);
 
         SetPlayerVirtualWorld( iSeekerPlayer, HS_VIRTUAL_WORLD );
 

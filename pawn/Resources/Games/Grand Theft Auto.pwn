@@ -64,12 +64,12 @@ CTheft__Initalize()
 		ConnectNPC("GTA_Merchant", "npcidle");
 	#endif
 
-	SendClientMessageToAllEx(COLOR_RED,"-------------------------------------------------------------------");
+	SendClientMessageToAllEx(Color::Red,"-------------------------------------------------------------------");
 	format(str,256,"* Grand Theft Auto: The merchant is desperately in need of the %s marked with the car on your radar", VehicleModel(vehicleModel)->nameString());
 	SendClientMessageToAllEx(COLOR_GTA,str);
 	format(str,256,"* and is willing to pay $%s to whoever brings it to him. It's located in %s, %s.",formatPrice(GTA_Value), GetVehicleZone(GTA_Vehicle), GetVehicleCity(GTA_Vehicle));
 	SendClientMessageToAllEx(COLOR_GTA,str);
-	SendClientMessageToAllEx(COLOR_RED,"-------------------------------------------------------------------");
+	SendClientMessageToAllEx(Color::Red,"-------------------------------------------------------------------");
 	GTA_Time = Time->currentTime();
 
 	for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)

@@ -467,45 +467,45 @@ sprayTagOnVehicleCommand(playerid, params[], SprayTagVehicle: vehicleType)
     if (!Player(playerid)->isAdministrator()) {
         if(!sprayTagHasPlayerSprayedAll(playerid))
         {
-            SendClientMessage(playerid, COLOR_RED, "* You have not unlocked this command.");
+            SendClientMessage(playerid, Color::Red, "* You have not unlocked this command.");
             return 1;
         }
 
         // Has the player used /inf in the past 3 minutes?
         if((Time->currentTime() - g_iTimeInfCommandLastUsed[playerid]) < 3 * 60)
         {
-            SendClientMessage(playerid, COLOR_RED, "You may only spawn a vehicle once every 3 minutes.");
+            SendClientMessage(playerid, Color::Red, "You may only spawn a vehicle once every 3 minutes.");
             return 1;
         }
 
         if(DamageManager(playerid)->isPlayerFighting() == true)
         {
-            SendClientMessage(playerid, COLOR_RED, "* You cannot spawn an a vehicle because you've recently been in a gunfight.");
+            SendClientMessage(playerid, Color::Red, "* You cannot spawn an a vehicle because you've recently been in a gunfight.");
             return 1;
         }
 
         if(ShipManager->isPlayerWalkingOnShip(playerid))
         {
-            SendClientMessage(playerid, COLOR_RED, "* You cannot spawn vehicles on the ship!");
+            SendClientMessage(playerid, Color::Red, "* You cannot spawn vehicles on the ship!");
             return 1;
         }
     }
 
     if(GetPlayerVirtualWorld(playerid) != 0)
     {
-        SendClientMessage(playerid, COLOR_RED, "* You must be in world 0.");
+        SendClientMessage(playerid, Color::Red, "* You must be in world 0.");
         return 1;
     }
 
     if(GetPlayerInterior(playerid) != 0)
     {
-        SendClientMessage(playerid, COLOR_RED, "* You must be outside to use this command.");
+        SendClientMessage(playerid, Color::Red, "* You must be outside to use this command.");
         return 1;
     }
 
     if(iPlayerInVipRoom[playerid])
     {
-        SendClientMessage(playerid, COLOR_RED, "* You must be outside to use this command.");
+        SendClientMessage(playerid, Color::Red, "* You must be outside to use this command.");
         return 1;
     }
 

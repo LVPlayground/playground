@@ -34,7 +34,7 @@ CheckPlayerArea(playerId) {
         SetPlayerInterior (playerId, 7);
         SetPlayerPos (playerId, Xko, Yko, 1001);
 
-        SendClientMessage (playerId, COLOR_RED, "Stay in the Boxring!");
+        SendClientMessage (playerId, Color::Red, "Stay in the Boxring!");
         GameTextForPlayer (playerId, "~r~Stay in the Boxring!", 3000, 5);
     }
 }

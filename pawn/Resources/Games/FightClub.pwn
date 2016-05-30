@@ -432,7 +432,7 @@ CFightClub__OnCommand(playerid, params[]) {
 
     else if (strcmp(params, "switch", true, 6) == 0) {
         if (!IsPlayerWatchingFC[playerid])
-            return SendClientMessage(playerid, COLOR_RED, "* You're not watching any match.");
+            return SendClientMessage(playerid, Color::Red, "* You're not watching any match.");
 
         new matchId = aSpecInfo[playerid][specmatch];
         new ispecplayer = aSpecInfo[playerid][specplayer];
@@ -448,7 +448,7 @@ CFightClub__OnCommand(playerid, params[]) {
             PlayerSpectatePlayer(playerid, aSpecInfo[playerid][specplayer]);
         } else {
             CFightClub__StopWatch(playerid);
-            SendClientMessage(playerid, COLOR_RED, "Oops, something went horribly wrong.");
+            SendClientMessage(playerid, Color::Red, "Oops, something went horribly wrong.");
         }
         return 1;
     }
@@ -541,8 +541,8 @@ CFightClub__OnDeath(playerid, killerid)
             CFightClub__SetDeathCount(playerid, CFightClub__GetDeathCount(playerid) + 1);
 
             format(string, sizeof(string), "* For some reason, %s died (probably suicided). Score is now %d-%d.", PlayerName(playerid), iScore1, iScore2);
-            SendClientMessage(iPlayer1, COLOR_RED, string);
-            SendClientMessage(iPlayer2, COLOR_RED, string);
+            SendClientMessage(iPlayer1, Color::Red, string);
+            SendClientMessage(iPlayer2, Color::Red, string);
             CFightClub__SendSpecMessage(matchid, string);
         }
 
@@ -563,7 +563,7 @@ CFightClub__OnDeath(playerid, killerid)
             GetPlayerArmour(killerid, Arm);
 
             format(string, sizeof(string), "* You got %s by %s (HP: %.1f Arm: %.1f)! Score is now: %d-%d.", FightClubKillMsg[random(7)], PlayerName(killerid), HP, Arm, iScore1, iScore2);
-            SendClientMessage(playerid, COLOR_RED, string);
+            SendClientMessage(playerid, Color::Red, string);
 
             format(string, sizeof(string), "* You %s %s with (HP: %.1f Arm: %.1f) left! Score is now: %d-%d.", FightClubKillMsg[random(7)], PlayerName(playerid), HP, Arm, iScore2, iScore1);
             SendClientMessage(killerid, Color::Green, string);
@@ -588,7 +588,7 @@ CFightClub__OnDeath(playerid, killerid)
             GetPlayerArmour(killerid, Arm);
 
             format(string, sizeof(string), "* You got %s by %s (HP: %.1f Arm: %.1f)! Score is now: %d-%d.", FightClubKillMsg[random(7)], PlayerName(killerid), HP, Arm, iScore2, iScore1);
-            SendClientMessage(playerid, COLOR_RED, string);
+            SendClientMessage(playerid, Color::Red, string);
 
             format(string, sizeof(string), "* You %s %s with (HP: %.1f Arm: %.1f) left! Score is now: %d-%d.", FightClubKillMsg[random(7)], PlayerName(playerid), HP, Arm, iScore1, iScore2);
             SendClientMessage(killerid, Color::Green, string);
@@ -601,8 +601,8 @@ CFightClub__OnDeath(playerid, killerid)
         else if(killerid != iPlayer1 && killerid != iPlayer2 && killerid)
         {
             format(string, sizeof(string), "* For some reason, someone else killed %s. Round will now restart.", PlayerName(playerid));
-            SendClientMessage(iPlayer1, COLOR_RED, string);
-            SendClientMessage(iPlayer2, COLOR_RED, string);
+            SendClientMessage(iPlayer1, Color::Red, string);
+            SendClientMessage(iPlayer2, Color::Red, string);
             CFightClub__SendSpecMessage(matchid, string);
             return 1; // No need to go any further because the (round) will (restart)
         }
@@ -663,7 +663,7 @@ CFightClub__OnDisconnect(playerId)
             else
                 format(message, sizeof(message), "* %s cannot accept your invite because they left the server.", PlayerName(playerId));
 
-            SendClientMessage(otherPlayer, COLOR_RED, message);
+            SendClientMessage(otherPlayer, Color::Red, message);
         }
 
         // The match has begun and the players are fighting each other.
@@ -675,7 +675,7 @@ CFightClub__OnDisconnect(playerId)
                 GiveRegulatedMoney(otherPlayer, FightClubParticipation);
 
             format(message, sizeof(message), "* The fight has been concluded because %s has left the server.", PlayerName(playerId));
-            SendClientMessage(otherPlayer, COLOR_RED, message);
+            SendClientMessage(otherPlayer, Color::Red, message);
 
             // Respawn the other player, now that they won't be part of the fight anymore.
             SpawnPlayer(otherPlayer);
@@ -701,7 +701,7 @@ CFightClub__OnDisconnect(playerId)
 //==============================================
 CFightClub__WatchMatch(playerid, matchid)
 {
-    if(Matches[matchid][status] != FC_STATUS_FIGHTING) return SendClientMessage(playerid, COLOR_RED, "* Sorry, this match isn't running anymore");
+    if(Matches[matchid][status] != FC_STATUS_FIGHTING) return SendClientMessage(playerid, Color::Red, "* Sorry, this match isn't running anymore");
 
     new string[256];
     new iPlayer1 = Matches[matchid][player1];
@@ -760,7 +760,7 @@ CFightClub__TerminateInvitation(matchid)
     new string[128];
 
     format(string, sizeof(string), "* Your invitation has been terminated due to %s accepting another.", PlayerName(iPlayer2));
-    SendClientMessage(iPlayer1, COLOR_RED, string);
+    SendClientMessage(iPlayer1, Color::Red, string);
 
     // Prevents player2's PlayerMatch being reset on ResetMatch
     Matches[matchid][player1] = -1;
@@ -792,13 +792,13 @@ CFightClub__TerminateMatch(matchid)
             if(IsPlayerConnected(iPlayer1))
             {
                 format(string, sizeof(string), "* An administrator terminated your invitation to %s.", PlayerName(iPlayer2));
-                SendClientMessage(iPlayer1, COLOR_RED, string);
+                SendClientMessage(iPlayer1, Color::Red, string);
                 SpawnPlayer(iPlayer1);
             }
             if(IsPlayerConnected(iPlayer2))
             {
                 format(string, sizeof(string), "* An administrator terminated %s's invitation to you.", PlayerName(iPlayer1));
-                SendClientMessage(iPlayer2, COLOR_RED, string);
+                SendClientMessage(iPlayer2, Color::Red, string);
                 SpawnPlayer(iPlayer2);
             }
         }
@@ -817,13 +817,13 @@ CFightClub__TerminateMatch(matchid)
             if(IsPlayerConnected(iPlayer1))
             {
                 format(string, sizeof(string), "* An administrator terminated your fight with %s.", PlayerName(iPlayer2));
-                SendClientMessage(iPlayer1, COLOR_RED, string);
+                SendClientMessage(iPlayer1, Color::Red, string);
                 SpawnPlayer(iPlayer1);
             }
             if(IsPlayerConnected(iPlayer2))
             {
                 format(string, sizeof(string), "* An administrator terminated your fight with %s.", PlayerName(iPlayer1));
-                SendClientMessage(iPlayer2, COLOR_RED, string);
+                SendClientMessage(iPlayer2, Color::Red, string);
                 SpawnPlayer(iPlayer2);
             }
 
@@ -832,7 +832,7 @@ CFightClub__TerminateMatch(matchid)
             {
                 if(IsPlayerWatchingFC[i] && aSpecInfo[i][specmatch] == matchid)
                 {
-                    SendClientMessage(i, COLOR_RED, "* The match was reset by an administrator, thus you've stopped watching.");
+                    SendClientMessage(i, Color::Red, "* The match was reset by an administrator, thus you've stopped watching.");
                     CFightClub__StopWatch(i);
                 }
             }
@@ -855,13 +855,13 @@ CFightClub__TerminateAllMatches()
 
             if(iPlayer1 != -1)
             {
-                SendClientMessage(iPlayer1, COLOR_RED, "* The FightClub was reset by an administrator, thus your invitation was canceled.");
+                SendClientMessage(iPlayer1, Color::Red, "* The FightClub was reset by an administrator, thus your invitation was canceled.");
                 CFightClub__ResetPlayerFCInfo(iPlayer1);
                 SpawnPlayer(iPlayer1);
             }
             if(iPlayer2 != -1)
             {
-                SendClientMessage(iPlayer2, COLOR_RED, "* The FightClub was reset, any current invitations you had has been canceled.");
+                SendClientMessage(iPlayer2, Color::Red, "* The FightClub was reset, any current invitations you had has been canceled.");
                 CFightClub__ResetPlayerFCInfo(iPlayer2);
                 SpawnPlayer(iPlayer2);
             }
@@ -872,13 +872,13 @@ CFightClub__TerminateAllMatches()
 
             if(iPlayer1 != -1)
             {
-                SendClientMessage(iPlayer1, COLOR_RED, "* The FightClub was reset by an administrator, your fight was terminated.");
+                SendClientMessage(iPlayer1, Color::Red, "* The FightClub was reset by an administrator, your fight was terminated.");
                 CFightClub__ResetPlayerFCInfo(iPlayer1);
                 SpawnPlayer(iPlayer1);
             }
             if(iPlayer2 != -1)
             {
-                SendClientMessage(iPlayer2, COLOR_RED, "* The FightClub was reset by an administrator, your fight was terminated.");
+                SendClientMessage(iPlayer2, Color::Red, "* The FightClub was reset by an administrator, your fight was terminated.");
                 CFightClub__ResetPlayerFCInfo(iPlayer2);
                 SpawnPlayer(iPlayer2);
             }
@@ -917,7 +917,7 @@ CFightClub__TerminateAllMatches()
             continue;
         }
 
-        SendClientMessage(i, COLOR_RED, "* The FightClub was reset by an administrator, thus you've stopped watching.");
+        SendClientMessage(i, Color::Red, "* The FightClub was reset by an administrator, thus you've stopped watching.");
         CFightClub__StopWatch(i);
     }
 
@@ -1016,7 +1016,7 @@ CFightClub__EndMatch(matchid)
         format (sMessage, sizeof (sMessage), "* You have won the fight against %s! You win $%s!", PlayerName(iPlayer2), formatPrice(prize));
         SendClientMessage (iPlayer1, COLOR_YELLOW, sMessage);
         format (sMessage, sizeof (sMessage), "* You have lost the fight against %s.", PlayerName(iPlayer1));
-        SendClientMessage (iPlayer2, COLOR_RED, sMessage);
+        SendClientMessage (iPlayer2, Color::Red, sMessage);
         format (sMessage, sizeof (sMessage), "~r~~h~%s~w~ has beaten ~r~~h~%s~w~ in a fight with ~y~%d-%d", PlayerName(iPlayer1), PlayerName(iPlayer2), iScore1, iScore2);
 
         GiveRegulatedMoney(iPlayer1, FightClubVictory);
@@ -1026,7 +1026,7 @@ CFightClub__EndMatch(matchid)
         format (sMessage, sizeof (sMessage), "* You have won the fight against %s! You win $%s!", PlayerName(iPlayer1), formatPrice(prize));
         SendClientMessage (iPlayer2, COLOR_YELLOW, sMessage);
         format (sMessage, sizeof (sMessage), "* You have lost the fight against %s.", PlayerName(iPlayer2));
-        SendClientMessage (iPlayer1, COLOR_RED, sMessage);
+        SendClientMessage (iPlayer1, Color::Red, sMessage);
         format (sMessage, sizeof (sMessage), "~r~~h~%s~w~ has beaten ~r~~h~%s~w~ in a fight with ~y~%d-%d", PlayerName(iPlayer2), PlayerName(iPlayer1), iScore2, iScore1);
 
         GiveRegulatedMoney(iPlayer2, FightClubVictory);
@@ -1104,10 +1104,10 @@ CFightClub__DenyMatch(matchid)
     new string[128];
 
     format(string, sizeof(string), "* %s has denied your invitation.", PlayerName(iPlayer2));
-    SendClientMessage(iPlayer1, COLOR_RED, string);
+    SendClientMessage(iPlayer1, Color::Red, string);
 
     format(string, sizeof(string), "* You denied your invitation sent by %s.", PlayerName(iPlayer1));
-    SendClientMessage(iPlayer2, COLOR_RED, string);
+    SendClientMessage(iPlayer2, Color::Red, string);
 
     Matches[matchid][player1] = -1;
     Matches[matchid][player2] = -1;
@@ -1138,13 +1138,13 @@ CFightClub__CancelMatch(matchid)
     if(IsPlayerConnected(iPlayer2))
     {
         format(string, sizeof(string), "* You canceled your invitation to %s.", PlayerName(iPlayer2));
-        SendClientMessage(iPlayer1, COLOR_RED, string);
+        SendClientMessage(iPlayer1, Color::Red, string);
     }
 
     if(IsPlayerConnected(iPlayer1))
     {
         format(string, sizeof(string), "* %s has canceled his invitation.", PlayerName(iPlayer1));
-        SendClientMessage(iPlayer2, COLOR_RED, string);
+        SendClientMessage(iPlayer2, Color::Red, string);
     }
 
 
@@ -1579,7 +1579,7 @@ CFightClub__ShowFCMessage(playerid, messageid)
 {
     if(messageid == FC_MSG_MATCHES)
     {
-        if(!CFightClub__CountMatches(FC_STATUS_FIGHTING)) return SendClientMessage(playerid, COLOR_RED, "No matches are running at this time.");
+        if(!CFightClub__CountMatches(FC_STATUS_FIGHTING)) return SendClientMessage(playerid, Color::Red, "No matches are running at this time.");
 
 
         SendClientMessage(playerid, Color::Green, "** Current Matches: **");

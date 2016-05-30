@@ -80,9 +80,9 @@ CChase__Start(tID)
             // They're in the main world.
             SendClientMessage(i, COLOR_WHITE, "-------------------------------------------------------------------------------------------------------");
             format(string, sizeof(string), "%s has been identified as a VERY dangerous terrorist,", name);
-            SendClientMessage(i, COLOR_RED, string);
-            SendClientMessage(i, COLOR_RED, "and should be eliminated as soon as possible. The killer receives");
-            SendClientMessage(i, COLOR_RED, "two and a half million dollars in cash money.");
+            SendClientMessage(i, Color::Red, string);
+            SendClientMessage(i, Color::Red, "and should be eliminated as soon as possible. The killer receives");
+            SendClientMessage(i, Color::Red, "two and a half million dollars in cash money.");
             SendClientMessage(i, COLOR_WHITE, "-------------------------------------------------------------------------------------------------------");
             CancelTaxi(tID);
 
@@ -135,7 +135,7 @@ CChase__Stop(reason, playerid)
         format(string, sizeof(string), "The chase of %s (Id:%d) has been ended by %s (Id:%d).",
             name, chaseData[1], name2, playerid);
         Admin(playerid, string);
-        SendClientMessageToAllEx( COLOR_RED, "The chase has been aborted!" );
+        SendClientMessageToAllEx( Color::Red, "The chase has been aborted!" );
         CChase__TDHide(0);
         CChase__TDShow(2, 3); // "THE CHASE HAS BEEN ABORTED"
 
@@ -143,7 +143,7 @@ CChase__Stop(reason, playerid)
 
         new string[128];
         format(string,128,"%s has died! The chase is over.",PlayerName(chaseData[1]));
-        SendClientMessageToAllEx(COLOR_RED,string);
+        SendClientMessageToAllEx(Color::Red,string);
         CChase__TDShow(1, 3);
     } else {                    // Escaped
 
@@ -345,7 +345,7 @@ CChase__CheckShip()
         SetPlayerPos(chaseData[1],2033.8163,1544.3827,10.8203); // Set the pos in front..
 
         SetPlayerFacingAngle(chaseData[1],274.1228);            // And face them away!
-        SendClientMessage(chaseData[1], COLOR_RED, "Stay away from the ship! That's simply lame!");
+        SendClientMessage(chaseData[1], Color::Red, "Stay away from the ship! That's simply lame!");
     }
 }
 

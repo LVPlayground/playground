@@ -756,12 +756,12 @@ CShell__MenuActivate(playerid)
 
     if(IsPlayerInMinigame(playerid))
     {
-        SendClientMessage(playerid,COLOR_RED,"You're already in another minigame!");
+        SendClientMessage(playerid,Color::Red,"You're already in another minigame!");
         return 1;
     }
     if(!IsPlayerMinigameFree(playerid))
     {
-        SendClientMessage(playerid,COLOR_RED,"You have already signed up with a different minigame.");
+        SendClientMessage(playerid,Color::Red,"You have already signed up with a different minigame.");
         return 1;
     }
 
@@ -776,7 +776,7 @@ CShell__MenuActivate(playerid)
     {
         if(g_RivershellPlayer[playerid])
         {
-            SendClientMessage(playerid,COLOR_RED,"You already signed up for rivershell!");
+            SendClientMessage(playerid,Color::Red,"You already signed up for rivershell!");
             return 1;
         }
         CShell__SignPlayerUp(playerid);
@@ -786,7 +786,7 @@ CShell__MenuActivate(playerid)
 
     else
     {
-        SendClientMessage(playerid,COLOR_RED,"Rivershell is already running.");
+        SendClientMessage(playerid,Color::Red,"Rivershell is already running.");
         return 1;
     }
 }

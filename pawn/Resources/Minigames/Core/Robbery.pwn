@@ -624,24 +624,24 @@ CRobbery__OnCommand(playerid)
     if(CRobbery__GetStatus() == ROBSTATUS_PLAYING) {
 
         // Already active
-        SendClientMessage(playerid, COLOR_RED, "This minigame is currently underway. Please wait, and try again later.");
+        SendClientMessage(playerid, Color::Red, "This minigame is currently underway. Please wait, and try again later.");
         return 1;
 
     } else if(CRobbery__GetPlayerStatus(playerid) == ROBSTATUS_SIGNUP) {
 
         // Signed up already
-        SendClientMessage(playerid, COLOR_RED, "You've already signed up for this minigame!");
+        SendClientMessage(playerid, Color::Red, "You've already signed up for this minigame!");
         return 1;
 
     } else if(!IsPlayerMinigameFree(playerid)) {
 
         // Signed up with a different minigame
-        SendClientMessage(playerid,COLOR_RED,"You've already signed up with a different minigame.");
+        SendClientMessage(playerid,Color::Red,"You've already signed up with a different minigame.");
         return 1;
 
     } else if(casinoSignupCount == ROBBERY_MAXPLAYERS) {
         // Full!
-        SendClientMessage(playerid, COLOR_RED, "This minigame is full. Please wait, and try again later.");
+        SendClientMessage(playerid, Color::Red, "This minigame is full. Please wait, and try again later.");
         return 1;
     }
 
@@ -651,7 +651,7 @@ CRobbery__OnCommand(playerid)
         new message[128];
         format(message, sizeof(message), "You need $%s to sign up for this minigame!", formatPrice(price));
 
-        SendClientMessage(playerid, COLOR_RED, message);
+        SendClientMessage(playerid, Color::Red, message);
         return 1;
     }
 
@@ -700,8 +700,8 @@ CRobbery__OnKey(playerid, key)
             casinoData[bomb] = ROBBERY_BOMBTIME;
             new string[128];
             format(string, 128, "* Bomb armed! %d seconds until explosion..", ROBBERY_BOMBTIME);
-            CRobbery__TeamMsg(ROBBERY_TEAMATTACK, COLOR_RED, string);
-            CRobbery__TeamMsg(ROBBERY_TEAMDEFEND, COLOR_RED, string);
+            CRobbery__TeamMsg(ROBBERY_TEAMATTACK, Color::Red, string);
+            CRobbery__TeamMsg(ROBBERY_TEAMDEFEND, Color::Red, string);
 
             for (new i = 0; i <= PlayerManager->highestPlayerId(); i++) {
                 if(CRobbery__GetPlayerStatus(i) != ROBSTATUS_PLAYING) continue;
@@ -813,8 +813,8 @@ CRobbery__Process()
                 // BOOM!
                 casinoData[phase]++;
                 CRobbery__PhaseChange();
-                CRobbery__TeamMsg(ROBBERY_TEAMATTACK, COLOR_RED, "BOOM!");
-                CRobbery__TeamMsg(ROBBERY_TEAMDEFEND, COLOR_RED, "BOOM!");
+                CRobbery__TeamMsg(ROBBERY_TEAMATTACK, Color::Red, "BOOM!");
+                CRobbery__TeamMsg(ROBBERY_TEAMDEFEND, Color::Red, "BOOM!");
                 casinoData[bomb] = -1; // If we don't do this, then we see '0 seconds'
 
                 if(casinoData[bombTD] != Text:0)
@@ -1211,7 +1211,7 @@ CRobbery__SpawnPosition(playerid)
 
             SetPlayerInterior(playerid, 1);
         } else {
-            SendClientMessage(playerid, COLOR_RED, "Error setting position..");
+            SendClientMessage(playerid, Color::Red, "Error setting position..");
         }
 
         // Other stuff
@@ -1249,7 +1249,7 @@ CRobbery__SpawnPosition(playerid)
 
             SetPlayerInterior(playerid, 1);
         } else {
-            SendClientMessage(playerid, COLOR_RED, "Error setting position..");
+            SendClientMessage(playerid, Color::Red, "Error setting position..");
         }
 
         // Other stuff

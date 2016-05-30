@@ -159,11 +159,11 @@ CReaction__OnText(playerid, text[])
     if (strcmp( text, reactionText, true ) == 0 || strcmp( text, reactionAnswer, true ) == 0) {
         if (reactionData[expire] == 1)
         {
-            SendClientMessage( playerid, COLOR_RED, "* You are too late! The reaction-test already ended!" );
+            SendClientMessage( playerid, Color::Red, "* You are too late! The reaction-test already ended!" );
             return 0;
         }
         if (reactionData[mode] == 0) {
-            SendClientMessage( playerid, COLOR_RED, "* You are too late! Someone has already won in the reaction-test!" );
+            SendClientMessage( playerid, Color::Red, "* You are too late! Someone has already won in the reaction-test!" );
             return 0;
         }
 
@@ -351,7 +351,7 @@ CReaction__ReactionExpire()
     {
 
         CReaction__Rebuild();
-        //      SendClientMessageToAll(COLOR_RED, "No one won the reactiontest!");
+        //      SendClientMessageToAll(Color::Red, "No one won the reactiontest!");
         reactionData[expire] = 1;
     }
 }

@@ -602,7 +602,7 @@ CDerby__PlayerExit(iPlayerID, iReason)
     {
         new szMessage[128];
         format(szMessage,128,"* Times up! Nobody won the %s.", CDerby__GetName(iDerbyID));
-        SendClientMessage(iPlayerID, COLOR_RED, szMessage);
+        SendClientMessage(iPlayerID, Color::Red, szMessage);
     }
 
     // Now decrease the amount of players taking part in this derby
@@ -619,7 +619,7 @@ CDerby__PlayerExit(iPlayerID, iReason)
 
         new szMessage[128];
         format(szMessage, 128, "* You fell off the %s derby.", CDerby__GetName(iDerbyID));
-        SendClientMessage(iPlayerID, COLOR_RED, szMessage);
+        SendClientMessage(iPlayerID, Color::Red, szMessage);
 
         GameTextForPlayer(iPlayerID, "~r~knocked out!", 5000, 6);
 
@@ -687,7 +687,7 @@ CDerby__RemovePlayerFromDerby(iPlayerID, bool:n_LoadData = false)
 
     if(!CDerby__IsValid(iDerbyID))
     {
-        SendClientMessage(iPlayerID, COLOR_RED, "Unable to sign out of derby (invalid derby id for player).");
+        SendClientMessage(iPlayerID, Color::Red, "Unable to sign out of derby (invalid derby id for player).");
         return;
     }
 
@@ -949,7 +949,7 @@ CDerby__UpdateTextdraw(iDerbyID)
 
         if(n_Position[playerid] < 0 || n_Position[playerid] > MAX_DERBY_SPAWNPOINTS)
         {
-            SendClientMessage(playerid, COLOR_RED, "Derby Handler Error: Unable to update position (Array limit breached)");
+            SendClientMessage(playerid, Color::Red, "Derby Handler Error: Unable to update position (Array limit breached)");
 
         }
         else
@@ -1167,7 +1167,7 @@ CDerby__Process() {
                                 SetVehicleParamsEx(g_DerbyPlayer[i][1], 1, 1, 0, 1, 0, 0, 0);
                             } else {
                                 CDerby__PlayerExit(i, ONFOOT);
-                                SendClientMessage(i, COLOR_RED, "* An error occured and your vehicle was destroyed.");
+                                SendClientMessage(i, Color::Red, "* An error occured and your vehicle was destroyed.");
                             }
                         }
                         continue;
@@ -1195,7 +1195,7 @@ CDerby__Process() {
                             SetVehicleParamsEx(g_DerbyPlayer[i][1], 1, 1, 0, 1, 0, 0, 0);
                         } else {
                             CDerby__PlayerExit(i, ONFOOT);
-                            SendClientMessage(i, COLOR_RED, "* An error occured and your vehicle was destroyed.");
+                            SendClientMessage(i, Color::Red, "* An error occured and your vehicle was destroyed.");
                         }
                     }
                     else if (CDerby__GetCountdownMode(iDerbyID) == DERBY_COUNTDOWN_FREEZE) {
@@ -1319,19 +1319,19 @@ CDerby__OnCommand(playerid, params[])
         // Is the player already taking part in a minigame?
     if(IsPlayerInMinigame(playerid))
     {
-        SendClientMessage(playerid,COLOR_RED,"* You are already taking part in a minigame!");
+        SendClientMessage(playerid,Color::Red,"* You are already taking part in a minigame!");
         return 1;
     }
 
     if(CDerby__GetPlayerState(playerid) != DERBY_STATE_NONE)
     {
-        SendClientMessage(playerid,COLOR_RED,"* You have already signed up for a destruction derby!");
+        SendClientMessage(playerid,Color::Red,"* You have already signed up for a destruction derby!");
         return 1;
     }
 
     if(!IsPlayerMinigameFree(playerid))
     {
-        SendClientMessage(playerid,COLOR_RED,"You have already signed up with a different minigame.");
+        SendClientMessage(playerid,Color::Red,"You have already signed up with a different minigame.");
         return 1;
     }
 
@@ -1353,13 +1353,13 @@ CDerby__OnCommand(playerid, params[])
     // Is the derby ID valid?
     if(iDerbyID < 0 || iDerbyID > CDerby__GetCount()-1)
     {
-        SendClientMessage(playerid,COLOR_RED,"* Invalid derby ID.");
+        SendClientMessage(playerid,Color::Red,"* Invalid derby ID.");
         return 1;
     }
 
     if(!CDerby__IsValid(iDerbyID))
     {
-        SendClientMessage(playerid,COLOR_RED,"* Invalid derby ID.");
+        SendClientMessage(playerid,Color::Red,"* Invalid derby ID.");
         return 1;
     }
 
@@ -1367,7 +1367,7 @@ CDerby__OnCommand(playerid, params[])
     if(CDerby__GetState(iDerbyID) > DERBY_STATE_SIGNUP)
     {
         format(str,128,"* The %s is currently in progress. Try again later.",CDerby__GetName(iDerbyID));
-        SendClientMessage(playerid,COLOR_RED,str);
+        SendClientMessage(playerid,Color::Red,str);
         return 1;
     }
 
@@ -1377,7 +1377,7 @@ CDerby__OnCommand(playerid, params[])
     if(GetPlayerMoney(playerid) < price)
     {
         format(str,128,"* You require $%s to sign up for the %s.", formatPrice(price), CDerby__GetName(iDerbyID));
-        SendClientMessage(playerid,COLOR_RED,str);
+        SendClientMessage(playerid,Color::Red,str);
         return 1;
     }
 

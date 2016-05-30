@@ -302,7 +302,7 @@ lvp_taxi(playerid,params[])
     // Is our player on the phone? If so, they can't call a taxi.
     if (GetPlayerSpecialAction( playerid ) == SPECIAL_ACTION_USECELLPHONE)
     {
-        SendClientMessage(playerid,COLOR_RED,"* You cannot call a taxi because you are currently using the phone. Use /hangup to stop using it.");
+        SendClientMessage(playerid,Color::Red,"* You cannot call a taxi because you are currently using the phone. Use /hangup to stop using it.");
         return 1;
     }
     // get the id of the player who owns the taxi company for flagging:
@@ -312,7 +312,7 @@ lvp_taxi(playerid,params[])
     // If the player is in ammunation, he shouldn't be calling the taxi! (Menu bug)
     if(GetPlayerInterior(playerid) != 0)
     {
-        SendClientMessage(playerid,COLOR_RED,"* You have to be outside to call a taxi.");
+        SendClientMessage(playerid,Color::Red,"* You have to be outside to call a taxi.");
         return 1;
     }
 
@@ -442,7 +442,7 @@ lvp_taxiprice(playerid,params[])
     // Is it a correct value?
     if(!IsNumeric(params))
     {
-        SendClientMessage(playerid,COLOR_RED,"Invalid amount! You can only set it between $0 and $100.");
+        SendClientMessage(playerid,Color::Red,"Invalid amount! You can only set it between $0 and $100.");
         return 1;
     }
 

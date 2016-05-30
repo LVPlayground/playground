@@ -354,7 +354,7 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
             if (response) {
                 if (!strlen(inputtext)) {
                     CFightClub__ShowDialog(playerid, DIALOG_FIGHTCLUB_DUEL_INVITE);
-                    SendClientMessage(playerid, COLOR_RED, "You didn't enter anything.");
+                    SendClientMessage(playerid, Color::Red, "You didn't enter anything.");
                     return 1;
                 }
 

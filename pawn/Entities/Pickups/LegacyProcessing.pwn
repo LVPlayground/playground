@@ -49,7 +49,7 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
         if(!FightClubDialogEnabled) return false;
         if(FightClubDialog[playerid]) return false;
         if(DamageManager(playerid)->isPlayerFighting() == true)
-            return SendClientMessage(playerid, COLOR_RED, "* You were recently in a gunfight, thus this is inaccessible.");
+            return SendClientMessage(playerid, Color::Red, "* You were recently in a gunfight, thus this is inaccessible.");
         if(IsPlayerWatchingFC[playerid]) return false;
 
         CFightClub__ShowDialog(playerid, DIALOG_FIGHTCLUB);
@@ -59,12 +59,12 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
     // Pickup near FC, giving info about /fight
     if(pickupid == FCPickup)
     {
-        SendClientMessage(playerid, COLOR_RED, "----------------------");
+        SendClientMessage(playerid, Color::Red, "----------------------");
         SendClientMessage(playerid, COLOR_YELLOW, "Want to challenge someone to a fair fight? Find the Death Skull on this roof to get started!");
         SendClientMessage(playerid, COLOR_YELLOW, "Alternatively use '/fight invite'.");
         SendClientMessage(playerid, COLOR_YELLOW, "People can watch this fight as well.");
         SendClientMessage(playerid, COLOR_YELLOW, "See '/fight' and '/fight help' for more info!");
-        SendClientMessage(playerid, COLOR_RED, "----------------------");
+        SendClientMessage(playerid, Color::Red, "----------------------");
         return 1;
     }
 #endif
@@ -104,15 +104,15 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
         if(chaseData[1] == playerid && chaseData[0] == 1)
         {
             // The chase is active, they're trying to escape to the VIP room..
-            SendClientMessage(playerid, COLOR_RED, "Access denied. We don't house fugitives.");
+            SendClientMessage(playerid, Color::Red, "Access denied. We don't house fugitives.");
             return 1;
         }
 
         if(!Player(playerid)->isVip())
         {
-            SendClientMessage(playerid,COLOR_RED,"This pickup gives access to the VIP Room.");
-            SendClientMessage(playerid,COLOR_RED,"You being an ordinary player, denies you access to it.");
-            SendClientMessage(playerid,COLOR_RED,"For more information, check out /donate!");
+            SendClientMessage(playerid,Color::Red,"This pickup gives access to the VIP Room.");
+            SendClientMessage(playerid,Color::Red,"You being an ordinary player, denies you access to it.");
+            SendClientMessage(playerid,Color::Red,"For more information, check out /donate!");
             return 1;
         }
 
@@ -147,7 +147,7 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
     {
         if(Time->currentTime() - AirTime[playerid] < 60)
         {
-            SendClientMessage(playerid,COLOR_RED,"There are no flights departing right now! Try again later.");
+            SendClientMessage(playerid,Color::Red,"There are no flights departing right now! Try again later.");
             return 1;
         }
         g_PlayerMenu[ playerid ] = 1;

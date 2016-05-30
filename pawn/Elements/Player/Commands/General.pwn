@@ -281,8 +281,8 @@ lvp_hasfix(playerId, params[])
 
     g_lastHasFixCommand = Time->currentTime();
     if (iHideGameState != HS_STATE_NONE && diff > 5) {
-        SendClientMessage(playerId, COLOR_RED, "The game is still in progress, you probably don't want to fix the minigame.");
-        SendClientMessage(playerId, COLOR_RED, "Type /hasfix again if you are sure nobody is playing.");
+        SendClientMessage(playerId, Color::Red, "The game is still in progress, you probably don't want to fix the minigame.");
+        SendClientMessage(playerId, Color::Red, "Type /hasfix again if you are sure nobody is playing.");
         return 1;
     }
 
@@ -511,7 +511,7 @@ lvp_locate(playerid,params[])
             iPlayerID = strval(params);
             goto l_Proceed;
         }else{
-            SendClientMessage(playerid,COLOR_RED,"Invalid Player ID.");
+            SendClientMessage(playerid,Color::Red,"Invalid Player ID.");
             return 1;
         }
     }
@@ -553,7 +553,7 @@ lvp_locate(playerid,params[])
     if( iCount < 1 )
     {
         format( szMessage, sizeof( szMessage ), "* Player %s was not found.", params );
-        SendClientMessage( playerid, COLOR_RED, szMessage );
+        SendClientMessage( playerid, Color::Red, szMessage );
         return 1;
     }
 
@@ -770,7 +770,7 @@ lvp_showmessage(playerid,params[])
 {
     if(MuteManager->isMuted(playerid))
     {
-        SendClientMessage(playerid,COLOR_RED,"You can't send a showmessage when you're muted!");
+        SendClientMessage(playerid,Color::Red,"You can't send a showmessage when you're muted!");
         return 1;
     }
 
@@ -785,7 +785,7 @@ lvp_showmessage(playerid,params[])
     }
     // has a showmessage been done recently?
     if(Time->currentTime() - lastShowmsg < 4) {
-        SendClientMessage(playerid,COLOR_RED,"* A showmessage is currently active.");
+        SendClientMessage(playerid,Color::Red,"* A showmessage is currently active.");
         return 1;
     }
 
@@ -824,7 +824,7 @@ lvp_showmessage(playerid,params[])
     // Have they used a crash safe string?
     for (new j; j < strlen(iTmp); j++) {
         if (strcmp(iTmp[j],"~",true,1) == 0 || strcmp(iTmp[j],"\\",true,1) == 0) {
-            SendClientMessage(playerid,COLOR_RED,"You cannot use this character in a showmessage.");
+            SendClientMessage(playerid,Color::Red,"You cannot use this character in a showmessage.");
             return 1;
         }
     }
@@ -1012,7 +1012,7 @@ lvp_My( playerid, params[] )
     {
         if(DamageManager(playerid)->isPlayerFighting() == true)
         {
-            SendClientMessage(playerid, COLOR_RED, "* You cannot use this command at the moment because you have recently been in a gun fight.");
+            SendClientMessage(playerid, Color::Red, "* You cannot use this command at the moment because you have recently been in a gun fight.");
             return 1;
         }
 
@@ -1160,7 +1160,7 @@ charHelp:
         {
             if(iPlayerSawnoffWeapon[playerid] == 1)
             {
-                SendClientMessage(playerid, COLOR_RED, "You've already chosen the Tec9!");
+                SendClientMessage(playerid, Color::Red, "You've already chosen the Tec9!");
                 return 1;
             }
 
@@ -1173,7 +1173,7 @@ charHelp:
         {
             if(iPlayerSawnoffWeapon[playerid] == 2)
             {
-                SendClientMessage(playerid, COLOR_RED, "You've already chosen the Uzi!");
+                SendClientMessage(playerid, Color::Red, "You've already chosen the Uzi!");
                 return 1;
             }
 
@@ -1208,7 +1208,7 @@ MinigameHelp:
 
         if( SavedPos2[playerid][0] == 0.0 )
         {
-            SendClientMessage(playerid, COLOR_RED, "You haven't saved a position yet.");
+            SendClientMessage(playerid, Color::Red, "You haven't saved a position yet.");
             return 1;
         }
 
@@ -1265,19 +1265,19 @@ MinigameHelp:
         {
             case 19, 20, 21, 40, 44, 45:
             {
-                SendClientMessage(playerid, COLOR_RED, "* This weapon is locked.");
+                SendClientMessage(playerid, Color::Red, "* This weapon is locked.");
                 return 1;
             }
         }
 
         if(iPlayerWeaponID < 1 || iPlayerWeaponID > 46)
         {
-            SendClientMessage(playerid, COLOR_RED, "* This weapon doesn't exist!");
+            SendClientMessage(playerid, Color::Red, "* This weapon doesn't exist!");
         }
 
         if(bPlayerWeaponStored[playerid])
         {
-            SendClientMessage(playerid,COLOR_RED,"You cannot give yourself a weapon whilst your other weapons are saved.");
+            SendClientMessage(playerid,Color::Red,"You cannot give yourself a weapon whilst your other weapons are saved.");
             return 1;
         }
 
@@ -1359,7 +1359,7 @@ MinigameHelp:
         {
             if( PlayerInfo[playerid][playerIsHidden] == 1) 
             {
-                SendClientMessage(playerid, COLOR_RED, "* You are already hidden!");
+                SendClientMessage(playerid, Color::Red, "* You are already hidden!");
                 return 1;
             }
 
@@ -1380,7 +1380,7 @@ MinigameHelp:
         {
             if( PlayerInfo[playerid][playerIsHidden] == 0) 
             {
-                SendClientMessage(playerid, COLOR_RED, "* You are already visible!");
+                SendClientMessage(playerid, Color::Red, "* You are already visible!");
                 return 1;
             }
 

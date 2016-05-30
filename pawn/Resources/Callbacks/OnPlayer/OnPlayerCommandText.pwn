@@ -160,7 +160,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
     if(GetPlayerState(playerid) == PLAYER_STATE_WASTED && Player(playerid)->isAdministrator() == false)
     {
-        SendClientMessage(playerid,COLOR_RED,"* You cannot use commands when you are wasted!");
+        SendClientMessage(playerid,Color::Red,"* You cannot use commands when you are wasted!");
         return 1;
     }
 
@@ -174,7 +174,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         }
         if(!IsPlayerMinigameFree(playerid))
         {
-            SendClientMessage(playerid,COLOR_RED,"You have already signed up with a different minigame.");
+            SendClientMessage(playerid,Color::Red,"You have already signed up with a different minigame.");
             return 1;
         }
     }
@@ -210,7 +210,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
     if(chaseData[1] == playerid && chaseData[0] == 1) {
         if(Player(playerid)->isAdministrator() == true) {
-            SendClientMessage(playerid, COLOR_RED, "You are currently being chased -- do not abuse your administrative power to use commands.");
+            SendClientMessage(playerid, Color::Red, "You are currently being chased -- do not abuse your administrative power to use commands.");
         } else {
             ShowBoxForPlayer(playerid, "You cannot use commands when you're being chased.");
             return 1;
@@ -275,7 +275,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         else
         {
-            SendClientMessage(playerid,COLOR_RED,"Rivershell is already running.");
+            SendClientMessage(playerid,Color::Red,"Rivershell is already running.");
             return 1;
         }
     }
@@ -409,7 +409,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
     if(PlayerHandOfGod[playerid] == 1)
     {
-    //  SendClientMessage(playerid, COLOR_RED, "Commands are temporary disabled for you!");
+    //  SendClientMessage(playerid, Color::Red, "Commands are temporary disabled for you!");
         return 0;
     }
 
@@ -767,7 +767,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             // Check if ramping is disabled
             if ( RampingEnabled == false )
             {
-                SendClientMessage(playerid,COLOR_RED, "Ramping has been temporary disabled by an administrator. Try again later.");
+                SendClientMessage(playerid,Color::Red, "Ramping has been temporary disabled by an administrator. Try again later.");
                 return 1;
             }
             // End disabled check
@@ -846,7 +846,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
             if(DamageManager(playerid)->isPlayerFighting() == true)
             {
-                SendClientMessage(playerid, COLOR_RED, "* You cannot use this command at the moment because you have recently been in a gun fight.");
+                SendClientMessage(playerid, Color::Red, "* You cannot use this command at the moment because you have recently been in a gun fight.");
                 return 1;
             }
 
@@ -1114,9 +1114,9 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         GetPlayerName(playerid, name, 24);
 
         format(string, sizeof(string), "You have borrowed $%d at this moment,", iLoan[playerid]);
-        SendClientMessage(playerid, COLOR_RED, string );
+        SendClientMessage(playerid, Color::Red, string );
         format(string, sizeof(string), "at an interest of %d percent per minute.", iLoanPercent[playerid]);
-        SendClientMessage(playerid, COLOR_RED, string);
+        SendClientMessage(playerid, Color::Red, string);
         return 1;
 
     }
@@ -1316,7 +1316,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     {
         if(DamageManager(playerid)->isPlayerFighting() == true)
         {
-            SendClientMessage(playerid,COLOR_RED,"You cannot teleport at the moment because you have recently been in a gun fight.");
+            SendClientMessage(playerid,Color::Red,"You cannot teleport at the moment because you have recently been in a gun fight.");
             return 1;
         }
 
@@ -1339,7 +1339,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
                     if(!Player(pid)->isConnected()){
                         format(string,sizeof(string), "The requested player (ID:%d) is not present!", pid);
-                        SendClientMessage(playerid, COLOR_RED, string);
+                        SendClientMessage(playerid, Color::Red, string);
                         return 1;
                     }
                 }
@@ -1353,7 +1353,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
                     if(GetPlayerState(playerid) == PLAYER_STATE_PASSENGER && Player(playerid)->isAdministrator() == false)
                     {
-                        SendClientMessage(playerid, COLOR_RED, "Only the driver can do this!");
+                        SendClientMessage(playerid, Color::Red, "Only the driver can do this!");
                         return 1;
                     }
 
@@ -1397,13 +1397,13 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             }
             else 
             {
-                SendClientMessage(playerid,COLOR_RED, "You can dive only once per 3 minutes");
+                SendClientMessage(playerid,Color::Red, "You can dive only once per 3 minutes");
                 return 1;
             }
         }
         else 
         {
-            SendClientMessage(playerid,COLOR_RED, "You don't have enough cash (10000 dollar)");
+            SendClientMessage(playerid,Color::Red, "You don't have enough cash (10000 dollar)");
             return 1;
         }
     }
@@ -1412,19 +1412,19 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     {
         if(DamageManager(playerid)->isPlayerFighting() == true)
         {
-            SendClientMessage(playerid, COLOR_RED, "You cannot dive at the moment because you have recently been in a gun fight.");
+            SendClientMessage(playerid, Color::Red, "You cannot dive at the moment because you have recently been in a gun fight.");
             return 1;
         }
 
         if(iPlayerInVipRoom[playerid])
         {
-            SendClientMessage(playerid, COLOR_RED, "You cannot dive out of the VIP room.");
+            SendClientMessage(playerid, Color::Red, "You cannot dive out of the VIP room.");
             return 1;
         }
 
         if (IsPlayerInMinigame(playerid))
         {
-            SendClientMessage(playerid,COLOR_RED, "You cannot use /dive when you're playing a minigame.");
+            SendClientMessage(playerid,Color::Red, "You cannot use /dive when you're playing a minigame.");
             return 1;
         }
 
@@ -1433,25 +1433,25 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         GetPlayerPos( playerid, fX, fY, fZ );
         if (Interior != 0)
         {
-            SendClientMessage( playerid, COLOR_RED, "You cannot teleport in interiors!" );
+            SendClientMessage( playerid, Color::Red, "You cannot teleport in interiors!" );
             return 1;
         }
 
         if (GetPlayerSpecialAction( playerid ) == SPECIAL_ACTION_USECELLPHONE)
         {
-            SendClientMessage( playerid, COLOR_RED, "You cannot dive when you're on the phone!" );
+            SendClientMessage( playerid, Color::Red, "You cannot dive when you're on the phone!" );
             return 1;
         }
 
         if( GetPlayerMoney( playerid ) < 7499 && Player(playerid)->isAdministrator() == false)
         {
-            SendClientMessage(playerid,COLOR_RED, "You don't have enough cash (7500 dollar)");
+            SendClientMessage(playerid,Color::Red, "You don't have enough cash (7500 dollar)");
             return 1;
         }
 
         if( Time->currentTime() - iDiveTime[playerid] < 1*60 && Player(playerid)->isAdministrator() == false)
         {
-            SendClientMessage(playerid,COLOR_RED, "You can dive only once per 3 minutes");
+            SendClientMessage(playerid,Color::Red, "You can dive only once per 3 minutes");
             return 1;
         }
 
@@ -1488,7 +1488,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         if(Time->currentTime() - iCashTime[playerid] < 15 && Player(playerid)->isAdministrator() == false)
         {
-            SendClientMessage( playerid, COLOR_RED, "You can only send money every 15 seconds." );
+            SendClientMessage( playerid, Color::Red, "You can only send money every 15 seconds." );
             return 1;
         }
 
@@ -1509,7 +1509,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             if( iGivePlayerID == Player::InvalidId )
             {
                 format(string,sizeof(string), "Player '%s' is not connected.", iTmp);
-                SendClientMessage(playerid, COLOR_RED, string);
+                SendClientMessage(playerid, Color::Red, string);
                 return 1;
             }
         }
@@ -1533,25 +1533,25 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         if(IsPlayerInMinigame(iGivePlayerID))
         {
-            SendClientMessage(playerid,COLOR_RED,"* You can't transfer money to a player who is taking part in a minigame.");
+            SendClientMessage(playerid,Color::Red,"* You can't transfer money to a player who is taking part in a minigame.");
             return 1;
         }
 
         if(iMoney <= 0)
         {
-            SendClientMessage( playerid, COLOR_RED, "Error: A minimum of $1 is required." );
+            SendClientMessage( playerid, Color::Red, "Error: A minimum of $1 is required." );
             return 1;
         }
 
         if(iMoney > 10000000)
         {
-            SendClientMessage( playerid, COLOR_RED, "Error: You can send a maximum of $10,000,000 per transaction." );
+            SendClientMessage( playerid, Color::Red, "Error: You can send a maximum of $10,000,000 per transaction." );
             return 1;
         }
 
         if(GetPlayerMoney( playerid ) < iMoney)
         {
-            SendClientMessage( playerid, COLOR_RED, "Error: You have insufficient funds to carry out this transaction." );
+            SendClientMessage( playerid, Color::Red, "Error: You have insufficient funds to carry out this transaction." );
             return 1;
         }
 
@@ -1581,22 +1581,22 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         // Lets block Rhino's from being teleported into town.
         if(GetVehicleModel(GetPlayerVehicleID(playerid)) == 432)
-            return SendClientMessage(playerid, COLOR_RED, "You can't tow a Rhino!");
+            return SendClientMessage(playerid, Color::Red, "You can't tow a Rhino!");
 
         // Lets also block town for vortexes to prevent the annoying driveby's with it.
         if(GetVehicleModel(GetPlayerVehicleID(playerid)) == 539)
-            return SendClientMessage(playerid, COLOR_RED, "You can't teleport a Vortex!");
+            return SendClientMessage(playerid, Color::Red, "You can't teleport a Vortex!");
 
         if(isInSF[playerid])
         {
             if(GetPlayerInterior(playerid) != 0)
             {
-                SendClientMessage(playerid,COLOR_RED,"You have to be outside any interior to use this command.");
+                SendClientMessage(playerid,Color::Red,"You have to be outside any interior to use this command.");
                 return 1;
             }
 
             if(Time->currentTime() - iTuneTime[playerid] < 15)
-                return SendClientMessage(playerid, COLOR_RED, "* You have to wait 15 seconds to use this command.");
+                return SendClientMessage(playerid, Color::Red, "* You have to wait 15 seconds to use this command.");
 
             isInSF[playerid] = false;
             new mVID = GetPlayerVehicleID(playerid);
@@ -1608,7 +1608,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         else
         { // Ironically, this would have worked as is, perfectly, anyway
-            SendClientMessage(playerid, COLOR_RED, "You have to use /tune before you can use /back!");
+            SendClientMessage(playerid, Color::Red, "You have to use /tune before you can use /back!");
             return 1;
         }
     }

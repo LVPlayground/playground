@@ -250,9 +250,9 @@ RunDeprecatedIrcCommand(line[]) {
         new sendText[256];
         sendText = right(line,(strlen(line)-strlen(tmp)-10));
 
-        SendClientMessageToAll(COLOR_RED, "-------------------");
+        SendClientMessageToAll(Color::Red, "-------------------");
         SendClientMessageToAll(COLOR_YELLOW, sendText );
-        SendClientMessageToAll(COLOR_RED, "-------------------");
+        SendClientMessageToAll(Color::Red, "-------------------");
 
         format(string,sizeof(string),"Announce by %s (IRC): %s", tmp, sendText);
 

@@ -76,7 +76,7 @@ OnPlayerPressRampKey(playerid)
     // Is Ramping disabled, globally?
     if ( RampingEnabled == false )
     {
-        SendClientMessage(playerid,COLOR_RED, "* Ramping has been temporary disabled by an administrator.");
+        SendClientMessage(playerid,Color::Red, "* Ramping has been temporary disabled by an administrator.");
         return;
     }
 
@@ -137,7 +137,7 @@ OnPlayerPressRampKey(playerid)
                 szRampMsg[75];
 
             format(szRampMsg, 75, "* You cannot spawn a ramp because %s is in the way!", PlayerName(i));
-            SendClientMessage(playerid, COLOR_RED, szRampMsg);
+            SendClientMessage(playerid, Color::Red, szRampMsg);
             return;
         }
     }
@@ -191,7 +191,7 @@ OnPlayerPressRampKey(playerid)
     {
         if(Player(playerid)->isAdministrator() == false)
         {
-            SendClientMessage(playerid, COLOR_RED, "* You have to be an admin to spawn this ramp! Change your ramp using /my ramp.");
+            SendClientMessage(playerid, Color::Red, "* You have to be an admin to spawn this ramp! Change your ramp using /my ramp.");
             return;
         }
 

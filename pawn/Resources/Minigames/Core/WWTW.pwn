@@ -79,28 +79,28 @@ CWWTW__OnCommand(playerid)
     if(iMinigameState == WWTW_STATE_PLAYING)
     {
         // People are playing already.
-        SendClientMessage(playerid, COLOR_RED, "This minigame is currently underway. Please wait, and try again later.");
+        SendClientMessage(playerid, Color::Red, "This minigame is currently underway. Please wait, and try again later.");
         return 1;
 
     }
     else if(WWTW_PlayerData[playerid][iStatus] == WWTW_STATE_SIGNUP)
     {
         // Signed up already
-        SendClientMessage(playerid, COLOR_RED, "You've already signed up for this minigame!");
+        SendClientMessage(playerid, Color::Red, "You've already signed up for this minigame!");
         return 1;
 
     }
     else if(!IsPlayerMinigameFree(playerid))
     {
         // Signed up with a different minigame
-        SendClientMessage(playerid,COLOR_RED,"You've already signed up with a different minigame.");
+        SendClientMessage(playerid,Color::Red,"You've already signed up with a different minigame.");
         return 1;
     }
 
     if(iSignupCount == WWTW_MAXPLAYERS)
     {
         // Too many people playing already.
-        SendClientMessage(playerid, COLOR_RED, "This minigame is full. Please wait, and try again later.");
+        SendClientMessage(playerid, Color::Red, "This minigame is full. Please wait, and try again later.");
         return 1;
     }
 
@@ -111,7 +111,7 @@ CWWTW__OnCommand(playerid)
         new message[128];
         format(message, sizeof(message), "You need $%d to sign up for this minigame!", formatPrice(price));
 
-        SendClientMessage(playerid, COLOR_RED, message);
+        SendClientMessage(playerid, Color::Red, message);
         return 1;
     }
 

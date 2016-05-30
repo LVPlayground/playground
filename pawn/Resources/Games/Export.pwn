@@ -178,7 +178,7 @@ CExport__OnEnterCheckpoint( playerid )
                 // What is he trying to sell us here?!
                 if(fHealth <= 370)
                 {
-                    SendClientMessage(playerid, COLOR_RED, "Sorry, we don't accept trashed vehicles.");
+                    SendClientMessage(playerid, Color::Red, "Sorry, we don't accept trashed vehicles.");
                     return 1;
                 }
 
@@ -187,7 +187,7 @@ CExport__OnEnterCheckpoint( playerid )
                 {
                     new string[128];
                     format(string, sizeof(string), "Sorry, we don't need a %s any more! Check /export for vehicles we still need.", name);
-                    SendClientMessage(playerid, COLOR_RED, string);
+                    SendClientMessage(playerid, Color::Red, string);
                     return 1;
                 }
 

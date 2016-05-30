@@ -74,29 +74,29 @@ lvp_tow(playerid, params[])
 
     // What if player is on foot?
     else if (!IsPlayerInAnyVehicle(playerid))
-        return SendClientMessage(playerid, COLOR_RED, "Looks like you're on foot... Use /taxi instead!");
+        return SendClientMessage(playerid, Color::Red, "Looks like you're on foot... Use /taxi instead!");
 
     // Does the player have enough money to start a tow?
     else if (GetPlayerMoney(playerid) < price) {
         format(message, sizeof(message), "Using a tow will cost you $%s!", formatPrice(price));
-        return SendClientMessage(playerid, COLOR_RED, message);
+        return SendClientMessage(playerid, Color::Red, message);
     }
 
     // Secondly, some checks... Let's see if the player has already used tow a while ago!
     else if (!CanPlayerUseTow(playerid))
-        return SendClientMessage(playerid, COLOR_RED, "You already used /tow less than 3 minutes ago! You must wait a bit more.");
+        return SendClientMessage(playerid, Color::Red, "You already used /tow less than 3 minutes ago! You must wait a bit more.");
 
     // And what if he's just a passenger?
     else if (GetPlayerVehicleSeat(playerid) > 0)
-        return SendClientMessage(playerid, COLOR_RED, "You have to be driving the vehicle to use this command!");
+        return SendClientMessage(playerid, Color::Red, "You have to be driving the vehicle to use this command!");
 
     // We should also check if he's in a Rhino, it can cause a SA:MP bug.
     else if (GetVehicleModel(GetPlayerVehicleID(playerid)) == 432)
-        return SendClientMessage(playerid, COLOR_RED, "You can't tow a Rhino!");
+        return SendClientMessage(playerid, Color::Red, "You can't tow a Rhino!");
 
     // Lets also block town for vortexes to prevent the annoying driveby's with it.
     else if (GetVehicleModel(GetPlayerVehicleID(playerid)) == 539)
-        return SendClientMessage(playerid, COLOR_RED, "You can't teleport a Vortex!");
+        return SendClientMessage(playerid, Color::Red, "You can't teleport a Vortex!");
 
     new location = Command->integerParameter(params, 0);
 
@@ -112,7 +112,7 @@ lvp_tow(playerid, params[])
     {
         // Is the ID valid?
         if(location < 0 || location >= NumberOfTowLocations)
-            return SendClientMessage(playerid, COLOR_RED, "You entered an invalid location ID!");
+            return SendClientMessage(playerid, Color::Red, "You entered an invalid location ID!");
 
         // Lets take their money and tow them!
         if (Player(playerid)->isAdministrator() == false)

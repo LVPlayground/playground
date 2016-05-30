@@ -191,7 +191,7 @@ CHay__Process()
     if(!IsValidDynamicObject(g_RandomHay))
     {
         printf("[HayStack] Error occured when processing hay movement (Invalid Object ID picked up. Re-initialized.");
-        SendClientMessageToAll(COLOR_RED, "[HayStack] An error occured when attempting to move a haystack: Invalid object ID picked up. Haystack re-initialized.");
+        SendClientMessageToAll(Color::Red, "[HayStack] An error occured when attempting to move a haystack: Invalid object ID picked up. Haystack re-initialized.");
         CHay__Destroy();
         CHay__Initialize();
         return;

@@ -17,7 +17,7 @@ lvp_Ignore( playerid, params[] )
     // A new command which enables regulars to ignore other players, for
     // whatever purpose that might be. Administrators are excluded of course.
     if (Player(playerid)->isRegular() == false && Player(playerid)->isAdministrator() == false) {
-        SendClientMessage( playerid, COLOR_RED, "You can only use this command as a regular!" );
+        SendClientMessage( playerid, Color::Red, "You can only use this command as a regular!" );
         return 1;
     }
 
@@ -38,7 +38,7 @@ lvp_Ignore( playerid, params[] )
     // Do we want to ignore ourselfes (silly people ~.~)
     if (ignoreID == playerid)
     {
-        SendClientMessage( playerid, COLOR_RED, "You cannot ignore yourself, silly!" );
+        SendClientMessage( playerid, Color::Red, "You cannot ignore yourself, silly!" );
         return 1;
     }
 
@@ -61,7 +61,7 @@ lvp_Unignore( playerid, params[] )
     // Obviously, people that we ignore must be un-ignored on request. Whatever
     // purpose that might have is unknown to me, why would you ignore someone then ._.
     if (Player(playerid)->isRegular() == false && Player(playerid)->isAdministrator() == false) {
-        SendClientMessage( playerid, COLOR_RED, "You can only use this command as a regular!" );
+        SendClientMessage( playerid, Color::Red, "You can only use this command as a regular!" );
         return 1;
     }
 
@@ -82,7 +82,7 @@ lvp_Unignore( playerid, params[] )
     // Check if the player actually is ignored, would be usefull.
     if (g_Ignore[ playerid ][ignoreID] == false)
     {
-        SendClientMessage( playerid, COLOR_RED, "You currently haven't ignored this player!" );
+        SendClientMessage( playerid, Color::Red, "You currently haven't ignored this player!" );
         return 1;
     }
 
@@ -113,7 +113,7 @@ lvp_Ignored( playerid, params[] )
         }
         else 
         {
-            SendClientMessage(playerid, COLOR_RED, "* That play doesn't exist");
+            SendClientMessage(playerid, Color::Red, "* That play doesn't exist");
             return 1;
         }
     }

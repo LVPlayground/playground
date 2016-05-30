@@ -38,7 +38,7 @@
 #define     RW_TEAM_RED             10
 #define     RW_TEAM_BLUE            20
 
-#define     RW_RED_COLOUR           COLOR_RED
+#define     RW_RED_COLOUR           Color::Red
 #define     RW_BLUE_COLOUR          COLOR_BLUE
 
 #define     RW_BLUE_SKIN            230
@@ -539,14 +539,14 @@ rwOnCommand(playerid, params[])
             ShowBoxForPlayer(playerid, szMsg);
             return 1;
         }
-        SendClientMessage(playerid, COLOR_RED, "* You are already taking part in a minigame!");
+        SendClientMessage(playerid, Color::Red, "* You are already taking part in a minigame!");
         return 1;
     }
 
     // Is this minigame already running?
     if(rwGetState() > RW_STATE_SIGNUP)
     {
-        SendClientMessage(playerid, COLOR_RED, "* Run Weapons Team War is already in progress. Please try again later.");
+        SendClientMessage(playerid, Color::Red, "* Run Weapons Team War is already in progress. Please try again later.");
         return 1;
     }
 

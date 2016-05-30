@@ -88,26 +88,26 @@ PrepareDelivery(playerid)
         new iVehMod;
 
         if(PlayerInfo[playerid][PlayerStatus] == STATUS_DELIVERY){
-            SendClientMessage(playerid, COLOR_RED,"* You are already on a delivery!");
+            SendClientMessage(playerid, Color::Red,"* You are already on a delivery!");
             return 1;
         }
 
         if(!IsPlayerInAnyVehicle(playerid)){
-            SendClientMessage(playerid, COLOR_RED, "* You have to be in a truck!");
+            SendClientMessage(playerid, Color::Red, "* You have to be in a truck!");
             return 1;
         }
         iVehID = GetPlayerVehicleID(playerid);
         iVehMod = GetVehicleModel(iVehID);
         if(!(iVehMod == 515 || iVehMod == 403 || iVehMod == 414)){
-            SendClientMessage(playerid, COLOR_RED, "* You are NOT in a truck!");
+            SendClientMessage(playerid, Color::Red, "* You are NOT in a truck!");
             return 1;
         }
         if(GetPlayerState(playerid) == PLAYER_STATE_PASSENGER){
-            SendClientMessage(playerid, COLOR_RED, "* You are not the driver!");
+            SendClientMessage(playerid, Color::Red, "* You are not the driver!");
             return 1;
         }
         if(!IsTrailerAttachedToVehicle(iVehID)){
-            SendClientMessage(playerid, COLOR_RED, "* You have to pick up a trailer first!");
+            SendClientMessage(playerid, Color::Red, "* You have to pick up a trailer first!");
             return 1;
         }
 
@@ -185,7 +185,7 @@ DeliveryComplete(playerid)
     }
     new iVehID = GetPlayerVehicleID(playerid);
     if(!IsTrailerAttachedToVehicle(iVehID)){
-        SendClientMessage(playerid, COLOR_RED, "* What are you trying to pull? Bring me the trailer!");
+        SendClientMessage(playerid, Color::Red, "* What are you trying to pull? Bring me the trailer!");
         return 1;
     }
     DisablePlayerCheckpoint(playerid);

@@ -392,7 +392,7 @@ hayOnCommand(playerid)
     if(IsPlayerInMinigame(playerid) || !IsPlayerMinigameFree(playerid))
     {
         format(szMsg, 128, "* You have already signed up for the %s minigame.", GetPlayerMinigameName(playerid));
-        SendClientMessage(playerid, COLOR_RED, szMsg);
+        SendClientMessage(playerid, Color::Red, szMsg);
         return 1;
     }
 
@@ -401,13 +401,13 @@ hayOnCommand(playerid)
     if(GetPlayerMoney(playerid) < price)
     {
         format(szMsg, 128, "* You need $%s to signup for Haystack.", formatPrice(price));
-        SendClientMessage(playerid, COLOR_RED, szMsg);
+        SendClientMessage(playerid, Color::Red, szMsg);
         return 1;
     }
 
     if(hayGetState() > HAY_STATE_SIGNUP)
     {
-        SendClientMessage(playerid, COLOR_RED, "* Haystack is already running. Try again later.");
+        SendClientMessage(playerid, Color::Red, "* Haystack is already running. Try again later.");
         return 1;
     }
 

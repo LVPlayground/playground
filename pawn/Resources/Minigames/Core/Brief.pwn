@@ -453,31 +453,31 @@ CBrief__MenuActivate(playerid)
 
     if(IsPlayerInMinigame(playerid))
     {
-        SendClientMessage(playerid,COLOR_RED,"* You're already in another minigame!");
+        SendClientMessage(playerid,Color::Red,"* You're already in another minigame!");
         return 1;
     }
 
     if(!IsPlayerMinigameFree(playerid))
     {
-        SendClientMessage(playerid,COLOR_RED,"* You have already signed up with a different minigame.");
+        SendClientMessage(playerid,Color::Red,"* You have already signed up with a different minigame.");
         return 1;
     }
 
     if(briefStatus == BRIEF_STATE_RUNNING)
     {
-        SendClientMessage(playerid,COLOR_RED,"* The capture the brief minigame is already running!");
+        SendClientMessage(playerid,Color::Red,"* The capture the brief minigame is already running!");
         return 1;
     }
 
     if(isPlayerBrief[playerid])
     {
-        SendClientMessage(playerid,COLOR_RED,"* You have already signed up for the capture the brief minigame!");
+        SendClientMessage(playerid,Color::Red,"* You have already signed up for the capture the brief minigame!");
         return 1;
     }
 
     if(GetPlayerMoney(playerid) < 100)
     {
-        SendClientMessage(playerid,COLOR_RED,"* You need $100 to take part in the game!");
+        SendClientMessage(playerid,Color::Red,"* You need $100 to take part in the game!");
         return 1;
     }
 
@@ -501,7 +501,7 @@ CBrief__MenuActivate(playerid)
 
     else
     {
-        SendClientMessage(playerid,COLOR_RED,"You have already signed up!");
+        SendClientMessage(playerid,Color::Red,"You have already signed up!");
         return 1;
     }
 }

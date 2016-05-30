@@ -866,28 +866,14 @@ CDerby__ShowTextdrawsForPlayer(iDerbyID, iPlayerID, bool:show)
     {
         for(new i = 0; i < 4; i++)
         {
-            if(IsValidText(g_DerbyTextdraw[iDerbyID][i]))
-            {
-                TextDrawShowForPlayer(iPlayerID, g_DerbyTextdraw[iDerbyID][i]);
-            }
-            else
-            {
-                SendClientMessage(iPlayerID, COLOR_RED, "* Error in derby handler: Unable to show derby textdraw (textdraw not initialized)");
-            }
+            TextDrawShowForPlayer(iPlayerID, g_DerbyTextdraw[iDerbyID][i]);
         }
     }
     else
     {
         for(new i = 0; i < 4; i++)
         {
-            if(IsValidText(g_DerbyTextdraw[iDerbyID][i]))
-            {
-                TextDrawHideForPlayer(iPlayerID, g_DerbyTextdraw[iDerbyID][i]);
-            }
-            else
-            {
-                SendClientMessage(iPlayerID, COLOR_RED, "* Error in derby handler: Unable to hide derby textdraw (textdraw not initialized)");
-            }
+            TextDrawHideForPlayer(iPlayerID, g_DerbyTextdraw[iDerbyID][i]);
         }
     }
 }

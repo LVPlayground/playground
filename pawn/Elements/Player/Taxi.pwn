@@ -202,18 +202,13 @@ TaxiArrived(playerid)
         // otherwise just update the arrival textdraw.
         else
         {
-            if(IsValidText(TaxiArrival[playerid]))
-            {
-                new tme[256];
+            new tme[256];
 
-                tme =  ConvertTime(playerTaxi[playerid][1]); // convert the time into MM:SS format
-                format(tme, sizeof(tme), "%s", tme);
+            tme =  ConvertTime(playerTaxi[playerid][1]); // convert the time into MM:SS format
+            format(tme, sizeof(tme), "%s", tme);
 
-                TextDrawSetString(TaxiArrival[playerid], tme);
-                TextDrawShowForPlayer(playerid, TaxiArrival[playerid]);
-            }else{
-                SendClientMessage(playerid,COLOR_RED,"Error in taxi - (#25 textdraw string update in TaxiArrived)");
-            }
+            TextDrawSetString(TaxiArrival[playerid], tme);
+            TextDrawShowForPlayer(playerid, TaxiArrival[playerid]);
         }
     }
     return 1;
@@ -262,13 +257,6 @@ SendPlayerTaxi(playerid, locateid, fare)
     playerTaxi[playerid][3] = fare;
 
     ClearPlayerMenus(playerid);
-
-    // now create the textdraw
-    if(!IsValidText(TaxiArrival[playerid]))
-    {
-        SendClientMessage(playerid, COLOR_RED, "Error in taxi - #1986 Textdraw show.");
-        return;
-    }
 
     new time[256];
     time = ConvertTime(playerTaxi[playerid][1]); // convert the time into MM:SS format

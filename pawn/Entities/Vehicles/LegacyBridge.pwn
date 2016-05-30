@@ -2,15 +2,6 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-// -------------------------------------------------------------------------------------------------
-// TODO: Figure out what to do with the following information.
-
-AnyPlayerInVehicle(vehicleId) {
-    // TODO: Implement me.
-    return 0;
-    #pragma unused vehicleId
-}
-
 // -----------------------------------------------
 // Feature: Locking a vehicle's doors.
 

@@ -377,36 +377,15 @@ CRobbery__UpdateTDs()
     format(strr, 64, "Time remaining: %s", ConvertTime(casinoData[timer]));
 
 
-    if(!IsValidText(casinoData[countdownTD]))
+    for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
     {
-        casinoData[countdownTD] = TextDrawCreate(24.000000,311.000000,strr);
-        TextDrawAlignment(casinoData[countdownTD],0);
-        TextDrawBackgroundColor(casinoData[countdownTD],0x000000ff);
-        TextDrawFont(casinoData[countdownTD],2);
-        TextDrawLetterSize(casinoData[countdownTD],0.399999,1.599999);
-        TextDrawColor(casinoData[countdownTD],0xffffffff);
-        TextDrawSetProportional(casinoData[countdownTD],1);
-        TextDrawSetShadow(casinoData[countdownTD],1);
-        for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
+        if(CRobbery__GetPlayerStatus(i) == ROBSTATUS_PLAYING)
         {
-            if(CRobbery__GetPlayerStatus(i) == ROBSTATUS_PLAYING)
-            {
-                TextDrawShowForPlayer(i,casinoData[countdownTD]);
-            }
+            TextDrawShowForPlayer(i,casinoData[countdownTD]);
         }
-
-    }else{
-
-        for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-        {
-            if(CRobbery__GetPlayerStatus(i) == ROBSTATUS_PLAYING)
-            {
-                TextDrawShowForPlayer(i,casinoData[countdownTD]);
-            }
-        }
-
-        TextDrawSetString(casinoData[countdownTD], strr);
     }
+
+    TextDrawSetString(casinoData[countdownTD], strr);
 
     // ---- //
     // Bomb //
@@ -419,18 +398,6 @@ CRobbery__UpdateTDs()
 
         new str[64];
         format(str, 64, "Bomb countdown: %s", ConvertTime(casinoData[bomb]));
-
-        if(!IsValidText(casinoData[bombTD]))
-        {
-            casinoData[bombTD] = TextDrawCreate(24.000000,290.000000,str);
-            TextDrawAlignment(casinoData[bombTD],0);
-            TextDrawBackgroundColor(casinoData[bombTD],0x000000ff);
-            TextDrawFont(casinoData[bombTD],2);
-            TextDrawLetterSize(casinoData[bombTD],0.399999,1.599999);
-            TextDrawColor(casinoData[bombTD],0xffffffff);
-            TextDrawSetProportional(casinoData[bombTD],1);
-            TextDrawSetShadow(casinoData[bombTD],1);
-        }
 
         TextDrawSetString(casinoData[bombTD], str);
 
@@ -478,33 +445,14 @@ CRobbery__UpdateTDs()
         new str[64];
         format(str, 64, "Amount stolen: %d / %d", casinoData[steal], ROBBERY_STEALAMOUNT);
 
-        if(!IsValidText(casinoData[stealTD]))
+        for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
         {
-            casinoData[stealTD] = TextDrawCreate(24.000000,285.000000,str);
-            TextDrawAlignment(casinoData[stealTD],0);
-            TextDrawBackgroundColor(casinoData[stealTD],0x000000ff);
-            TextDrawFont(casinoData[stealTD],2);
-            TextDrawLetterSize(casinoData[stealTD],0.399999,1.599999);
-            TextDrawColor(casinoData[stealTD],0xffffffff);
-            TextDrawSetProportional(casinoData[stealTD],1);
-            TextDrawSetShadow(casinoData[stealTD],1);
-            for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
+            if(CRobbery__GetPlayerStatus(i) == ROBSTATUS_PLAYING && CRobbery__GetPhase() == 3)
             {
-                if(CRobbery__GetPlayerStatus(i) == ROBSTATUS_PLAYING && CRobbery__GetPhase() == 3)
-                {
-                    TextDrawShowForPlayer(i,casinoData[stealTD]);
-                }
+                TextDrawShowForPlayer(i,casinoData[stealTD]);
             }
-        }else{
-            for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-            {
-                if(CRobbery__GetPlayerStatus(i) == ROBSTATUS_PLAYING && CRobbery__GetPhase() == 3)
-                {
-                    TextDrawShowForPlayer(i,casinoData[stealTD]);
-                }
-            }
-            TextDrawSetString(casinoData[stealTD], str);
         }
+        TextDrawSetString(casinoData[stealTD], str);
     }
     return 1;
 }
@@ -605,20 +553,6 @@ CRobbery__PhaseChange(iIgnoreBuild=0)
     // ------ //
     // Autres //
     // ------ //
-
-    if(!IsValidText(casinoData[mainTD]))
-    {
-        casinoData[mainTD] = TextDrawCreate(129.000000,414.000000,"LOADING");
-        TextDrawAlignment(casinoData[mainTD],0);
-        TextDrawBackgroundColor(casinoData[mainTD],0x000000ff);
-        TextDrawFont(casinoData[mainTD],3);
-        TextDrawLetterSize(casinoData[mainTD],0.599999,1.500000);
-        TextDrawColor(casinoData[mainTD],0xffffffff);
-        TextDrawSetOutline(casinoData[mainTD],1);
-        TextDrawSetProportional(casinoData[mainTD],1);
-        TextDrawSetShadow(casinoData[mainTD],1);
-    }
-
 
     if(CRobbery__GetPhase() == 0)
     {

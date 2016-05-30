@@ -897,9 +897,6 @@ CLyse__Initialize()
 // CLyse__UpdateTextdraw
 CLyse__UpdateTextdraw()
 {
-    if(!IsValidText(LyseTextdraw))
-    CLyse__Initialize();
-
     new szTextString[128];
     format(szTextString, 128, "~b~Blue team: %d~n~~n~~g~Green team: %d",iTeamCaptures[TEAM_BLUE], iTeamCaptures[TEAM_GREEN]);
     TextDrawSetString(LyseTextdraw, szTextString);

@@ -173,7 +173,9 @@ class TimeController {
      * @param minute The current minute of the server's in-game time.
      */
     private scheduleNextUpdate(hour, minute) {
+        #if Feature::DisableKilltime == 0
         KillTimer(m_updateTimer);
+        #endif
 
         // Determine the hourly update duration for the current |hour|.
         new Float: hourlyUpdateIntervalMs = this->resolveDurationForHour(hour) * 1000;

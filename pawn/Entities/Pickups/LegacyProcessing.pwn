@@ -27,16 +27,20 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
     // Other pickup ID's, added the SendClientMessage for debugging purposes.
     if (pickupid == g_iShipIcon && g_VirtualWorld[ playerid ] == 0)
     {
+        #if Feature::DisableKilltime == 0
         if(!sKillTime) {
+        #endif
             SendClientMessage( playerid, COLOR_ORANGE, "The Pirate Ship on Las Venturas Playground is a safe-zone," );
             SendClientMessage( playerid, COLOR_ORANGE, "you are NOT allowed to fight, kill, hit, slap or have sexual" );
             SendClientMessage( playerid, COLOR_ORANGE, "intercourse with anyone on the pirate ship!" );
 
             if(Player(playerid)->isRegular() == false)
                 GameTextForPlayer(playerid,"The ship is a peace zone!",1000,6);
-
+                
+        #if Feature::DisableKilltime == 0
         } else if(sKillTime)
             SendClientMessage(playerid,Color::Green,"It's Killtime! Shooting on the ship is temporarily allowed.");
+        #endif
 
         return 1;
     }

@@ -107,4 +107,10 @@ class Feature {
 
     // The Hay minigame is a very nice-to-have game, but it hogs CPU.
     public const DisableHay = 0;
+
+    /** **************************************************************************************** **/
+    /// KillTime
+
+    // Be able to switch it off in preperation of the rewrite of it in javascript
+    public const DisableKilltime = 0;
 };

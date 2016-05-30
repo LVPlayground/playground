@@ -179,6 +179,7 @@ lvp_fetch(playerId, params[]) {
     return 1;
 }
 
+#if Feature::DisableKilltime == 0
 lvp_killtime(playerId, params[]) {
     if (!sKillTime) {
         if (Command->parameterCount(params) == 0) {
@@ -252,6 +253,7 @@ lvp_killtime(playerId, params[]) {
 
     return 1;
 }
+#endif
 
 lvp_forward(playerId, params[]) {
     new distance = Command->integerParameter(params, 0);

@@ -23,8 +23,10 @@ WeaponCheat(i) {
     new notice[128], weaponId, ammo;
     GetPlayerWeaponData(i, 7, weaponId, ammo);
 
+    #if Feature::DisableKilltime == 0
     if (weaponId == killTimeWeaponId && sKillTime)
         return 0;
+    #endif
 
     // RPG
     if (weaponId == 35 && !g_PlayerWeapon[i][weaponId])

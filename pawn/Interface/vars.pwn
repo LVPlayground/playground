@@ -9,8 +9,14 @@
  *
  */
 
+#if Feature::DisableKilltime == 0
 new sKillTime;
 new killTimeWeaponId = 0;
+new KTKills[MAX_PLAYERS];
+new KTDeaths[MAX_PLAYERS];
+new KTTimer;
+#endif
+
 new iServerChampion = Player::InvalidId;
 new iRecordName[MAX_PLAYER_NAME+1] = "LVP";
 new playerLastQuitInterior[MAX_PLAYERS];
@@ -85,9 +91,6 @@ new WonMinigame[MAX_PLAYERS];
 new MyDrivebys[MAX_PLAYERS];
 new MyHeliKills[MAX_PLAYERS];
 new MyCarBombs[MAX_PLAYERS];
-new KTKills[MAX_PLAYERS];
-new KTDeaths[MAX_PLAYERS];
-new KTTimer;
 new WantedLevel[MAX_PLAYERS];
 new gameplayseconds[MAX_PLAYERS];
 new gameplayminutes[MAX_PLAYERS];

@@ -207,7 +207,9 @@ ResetPlayerStats(playerId) {
     IsPlayerInBombShop[playerId] = false;
     DetonateVehicle[playerId] = -1;
     bombDetonation[playerId] = 10;
+    #if Feature::DisableKilltime == 0
     KTKills[playerId] = false;
+    #endif
     iLoan[playerId] = 0;
     iLoanPercent[playerId] = 0;
     PlayerInfo[playerId][playerTJailSes] = 0;

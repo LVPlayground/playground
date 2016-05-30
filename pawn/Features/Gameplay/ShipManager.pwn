@@ -144,7 +144,9 @@ class ShipManager {
         if (zoneId < 2) {
             this->respawnPlayerVehicle(playerId);
 
+            #if Feature::DisableKilltime == 0
             if (!LegacyIsKillTimeActivated()) {
+            #endif
                 if (DamageManager(playerId)->isPlayerFighting() == true) {
                     SetPlayerPos(playerId, 2034.85, 1545.15, 10.82);
                     SetPlayerFacingAngle(playerId, 275.44);
@@ -168,7 +170,9 @@ class ShipManager {
 
                     m_playerHealthSpawnWeaponsSaved[playerId] = true;
                 }
+            #if Feature::DisableKilltime == 0
             }
+            #endif
 
             m_activityOfPlayerOnShip[playerId] = Walking;
         }
@@ -308,7 +312,9 @@ class ShipManager {
                 this->issueMoneyToPlayer(playerId);
 
             if (Player(playerId)->isAdministrator() == false) {
+                #if Feature::DisableKilltime == 0
                 if (!LegacyIsKillTimeActivated()) {
+                #endif
                     ResetPlayerWeapons(playerId);
                     if (m_playerHealthSpawnWeaponsSaved[playerId] == false) {
                         this->storeSpawnWeapons(playerId);
@@ -323,6 +329,7 @@ class ShipManager {
 
                         m_playerHealthSpawnWeaponsSaved[playerId] = true;
                     }
+                #if Feature::DisableKilltime == 0
                 } else {
                     if (m_playerHealthSpawnWeaponsSaved[playerId] == true) {
                         this->restoreSpawnWeapons(playerId);
@@ -332,6 +339,7 @@ class ShipManager {
                         m_playerHealthSpawnWeaponsSaved[playerId] = false;
                     }
                 }
+                #endif
 
                 this->respawnPlayerVehicle(playerId);
             }

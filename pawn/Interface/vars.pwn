@@ -33,7 +33,6 @@ new g_iShipIcon = 0;
 new iTuneTime[MAX_PLAYERS];
 new n_PlayerInGym[MAX_PLAYERS];
 new g_InExportVeh[MAX_PLAYERS];
-new PlayerJoins[MAX_PLAYERS][6];
 new g_PlayerCpVisible[MAX_PLAYERS];
 new Vip;
 new VipExit;

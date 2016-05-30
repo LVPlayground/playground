@@ -5,6 +5,7 @@
 const EconomyCalculator = require('features/economy/economy_calculator.js');
 const Feature = require('components/feature_manager/feature.js');
 const ResidentialValueMap = require('features/economy/residential_value_map.js');
+const VehicleValueMap = require('features/economy/vehicle_value_map.js');
 
 // The economy feature provides a lower-level interface enabling other features to figure out the
 // right price to charge for a certain thing, or the right prize to award for a certain event.
@@ -14,6 +15,7 @@ class Economy extends Feature {
 
         this.economyCalculator_ = new EconomyCalculator();
         this.residentialValueMap_ = new ResidentialValueMap();
+        this.vehicleValueMap_ = new VehicleValueMap();
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -26,6 +28,14 @@ class Economy extends Feature {
         this.economyCalculator_.calculateHousePrice(
             /* residentialValue */ this.residentialValueMap_.query(position),
             /* interiorValue */    interiorValue);
+    }
+
+    // Calculates and returns the price of placing a vehicle with |modelId| at the |position|.
+    // A variance factor will be applied to the price.
+    calculateHouseVehiclePrice(position, modelId) {
+        this.economyCalculator_.calculateHouseVehiclePrice(
+            /* residentialValue */ this.residentialValueMap_.query(position),
+            /* vehicleValue */     this.vehicleValueMap_.query(modelId));
     }
 
     // ---------------------------------------------------------------------------------------------

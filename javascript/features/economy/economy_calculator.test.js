@@ -92,4 +92,52 @@ describe('EconomyCalculator', (it, beforeEach, afterEach) => {
         assert.throws(() => calculateHousePrice(0, 200, 0));
         assert.throws(() => calculateHousePrice(0, 0, 200));
     });
+
+    it('should be able to price vehicles for houses appropriately', assert => {
+        const minimum = EconomyCalculator.PRICE_RANGE_HOUSE_VEHICLES[0];
+        const maximum = EconomyCalculator.PRICE_RANGE_HOUSE_VEHICLES[1];
+        const delta = maximum - minimum;
+
+        const residentialPercentage = 0.4875;
+        const vehiclePercentage = 0.5;
+        const variancePercentage = 0.0125;
+
+        // Returns the vehicle price that has been determined for the three input values.
+        const calculateVehiclePrice = (residentialValue, vehicleValue, varianceValue) => {
+            calculator.setVarianceValueForTests(varianceValue);
+            return calculator.calculateHouseVehiclePrice(residentialValue, vehicleValue);
+        };
+
+        const errorMargin = delta * 0.01;
+
+        // The minimum and maximum prices should be adhered to.
+        assert.equal(calculateVehiclePrice(0, 0, 0), minimum);
+        assert.equal(calculateVehiclePrice(4, 100, 100), maximum);
+
+        // The residential percentage should matter for the indicated percentage.
+        assert.closeTo(calculateVehiclePrice(4, 0, 0) - calculateVehiclePrice(0, 0, 0),
+                       delta * residentialPercentage, errorMargin);
+        assert.closeTo(calculateVehiclePrice(4, 100, 100) - calculateVehiclePrice(0, 100, 100),
+                       delta * residentialPercentage, errorMargin);
+
+        // The vehicle percentage should matter for the indicated percentage.
+        assert.closeTo(calculateVehiclePrice(0, 100, 0) - calculateVehiclePrice(0, 0, 0),
+                       delta * vehiclePercentage, errorMargin);
+        assert.closeTo(calculateVehiclePrice(4, 100, 100) - calculateVehiclePrice(4, 0, 100),
+                       delta * vehiclePercentage, errorMargin);
+
+        // The variance percentage should matter for the indicated percentage.
+        assert.closeTo(calculateVehiclePrice(0, 0, 100) - calculateVehiclePrice(0, 0, 0),
+                       delta * variancePercentage, errorMargin);
+        assert.closeTo(calculateVehiclePrice(4, 100, 100) - calculateVehiclePrice(4, 100, 0),
+                       delta * variancePercentage, errorMargin);
+
+        // It should throw when any of the input values are out of range.
+        assert.throws(() => calculateVehiclePrice(-1, 0, 0));
+        assert.throws(() => calculateVehiclePrice(0, -1, 0));
+        assert.throws(() => calculateVehiclePrice(0, 0, -1));
+        assert.throws(() => calculateVehiclePrice(200, 0, 0));
+        assert.throws(() => calculateVehiclePrice(0, 200, 0));
+        assert.throws(() => calculateVehiclePrice(0, 0, 200));
+    });
 });

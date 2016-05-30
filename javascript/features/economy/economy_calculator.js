@@ -54,6 +54,37 @@ class EconomyCalculator {
         return Math.round(priceMinimum + (factor / 200) * priceDelta);
     }
 
+    // Calculates the price for a vehicle that will be positioned at a house. The |residentialValue|
+    // must be in range of [0, 4], the |vehicleValue| must be in range of [0, 100]. The variance
+    // factor will be included in the vehicle's price as well.
+    calculateHouseVehiclePrice(residentialValue, vehicleValue) {
+        if (residentialValue < 0 || residentialValue > 4) {
+            throw new Error(
+                'The residential value must be in range of [0, 4] (was ' + residentialValue + ').');
+        }
+
+        if (vehicleValue < 0 || vehicleValue > 100) {
+            throw new Error(
+                'The vehicle value must be in range of [0, 100] (was ' + vehicleValue + ').');
+        }
+
+        // Residential value accounts for 48.75% of the price, the vehicle value 50% and the
+        // variance for 1.25%. Scale this up to a range of two hundred price points.
+        const residentialFactor = residentialValue * 24.375;
+        const vehicleFactor = vehicleValue;
+        const varianceFactor = this.varianceValue_ * 0.025;
+
+        const factor = residentialFactor + vehicleFactor + varianceFactor;
+
+        // The minimum and price delta are determined by the constants defined on this class.
+        const priceMinimum = EconomyCalculator.PRICE_RANGE_HOUSE_VEHICLES[0];
+        const priceDelta = EconomyCalculator.PRICE_RANGE_HOUSE_VEHICLES[1] -
+                           EconomyCalculator.PRICE_RANGE_HOUSE_VEHICLES[0];
+
+        // Return the minimum price plus the factor of the delta that should be applied.
+        return Math.round(priceMinimum + (factor / 200) * priceDelta);
+    }
+
     // Updates the variance value with a new random number in range of [0, 100]. The method will
     // schedule another invocation of itself unless the calculator has since been disposed of.
     updateVariance() {
@@ -80,8 +111,10 @@ class EconomyCalculator {
     }
 }
 
-// The valid price range based on which houses will be priced.
+// The price range based on which houses will be priced.
 EconomyCalculator.PRICE_RANGE_HOUSES = [ 500000, 25000000 ];
 
+// The price range based on which vehicles for houses will be priced.
+EconomyCalculator.PRICE_RANGE_HOUSE_VEHICLES = [ 100000, 1500000 ];
 
 exports = EconomyCalculator;

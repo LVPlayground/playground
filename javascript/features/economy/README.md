@@ -6,6 +6,12 @@ something should cost or award.
 ## API: calculateHousePrice(position, interiorValue)
 Calculates the price for a house positioned at the `position`, which must be a [Vector]
 (../../base/vector.js), with an interior value of `interiorValue`, which must be a number in range
-of [0, 9]. A variance will be applied to the price as well.
+of `[0, 9]`. A variance will be applied to the price as well.
 
 The returned price will be a value between $1,000,000 and $25,000,000.
+
+## API: calculateHouseVehiclePrice(position, modelId)
+Calculates the price for placing a vehicle with `modelId`  at the `position` near someone's house.
+A variance will be applied to the price as well.
+
+The returned price will be a value between $100,000 and $1,500,000.

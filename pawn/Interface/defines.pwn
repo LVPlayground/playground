@@ -17,8 +17,6 @@
 #define COLOR_BROWN 0xA52A2AAA
 #define COLOR_PINK 0xFF66FFAA
 
-#define ISLAND_DM_WORLD             4
-
 // HOLDING(keys)
 #define HOLDING(%0) ((newkeys & (%0)) == (%0))
 // PRESSED(keys)

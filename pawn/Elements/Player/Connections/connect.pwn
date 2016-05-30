@@ -71,7 +71,7 @@ OnPlayerLVPConnect(playerid) {
     GetPlayerVersion(playerid, ver, 32);
 
     format(str, 128, "Your SA-MP Client Version: %s", ver);
-    SendClientMessage(playerid, COLOR_GREY, str);
+    SendClientMessage(playerid, Color::Debug, str);
 #endif
 
     return 1;

@@ -184,7 +184,7 @@ CBrief__SignPlayerOut(playerid)
 CBrief__Checkpoint(playerid)
 {
     #if BRIEF_DEBUG == 1
-    SendClientMessageToAll(COLOR_GREY,"CBrief__Checkpoint - START");
+    SendClientMessageToAll(Color::Debug,"CBrief__Checkpoint - START");
     #endif
     new str[128];
     if(!IsPlayerInAnyVehicle(playerid))
@@ -192,7 +192,7 @@ CBrief__Checkpoint(playerid)
         if(briefCasePlayer == playerid) // if the player enters the cp with the brief case, aye wollah!
         {
             #if BRIEF_DEBUG == 1
-                SendClientMessageToAll(COLOR_GREY,"CBrief__Checkpoint - ENDGAME");
+                SendClientMessageToAll(Color::Debug,"CBrief__Checkpoint - ENDGAME");
             #endif
             WonMinigame[playerid]++;
             GiveRegulatedMoney(playerid, CaptureBriefcaseVictory);
@@ -210,7 +210,7 @@ CBrief__Checkpoint(playerid)
         if(briefCasePlayer > -1) // But if its not the player that enters the cp
         {
             #if BRIEF_DEBUG == 1
-                SendClientMessageToAll(COLOR_GREY,"CBrief__Checkpoint - LOSER AT FINISH");
+                SendClientMessageToAll(Color::Debug,"CBrief__Checkpoint - LOSER AT FINISH");
             #endif
             format(str,128,"Stop %s from delivering the brief case to this location.",PlayerName(briefCasePlayer));
             SendClientMessage(playerid,COLOR_PINK,str);
@@ -222,7 +222,7 @@ CBrief__Checkpoint(playerid)
         if(briefCasePlayer == -1) // If nobody has found the briefcase yet.
         {
             #if BRIEF_DEBUG == 1
-                SendClientMessageToAll(COLOR_GREY,"CBrief__Checkpoint - PICKING UP BRIEFCASE");
+                SendClientMessageToAll(Color::Debug,"CBrief__Checkpoint - PICKING UP BRIEFCASE");
             #endif
             briefCasePlayer = playerid;
 
@@ -246,13 +246,12 @@ CBrief__Checkpoint(playerid)
             if(!IsValidDynamicObject(BriefCase))
             {
                 #if BRIEF_DEBUG == 1
-                    SendClientMessageToAll(COLOR_GREY,"CBrief__Checkpoint - MAKING OBJECT AGAIN (should not happen)");
+                    SendClientMessageToAll(Color::Debug,"CBrief__Checkpoint - MAKING OBJECT AGAIN (should not happen)");
                 #endif
                 new Float:x,Float:y,Float:z;
                 BriefCase = CreateDynamicObject(1210,x,y,z,0,0,0, BRIEF_WORLD);
 
             }
-            //AttachObjectToPlayer(BriefCase,playerid,0,0,2,0,0,0);
             return 1;
         }
     }
@@ -261,7 +260,7 @@ CBrief__Checkpoint(playerid)
         GameTextForPlayer(playerid,"~n~~n~~w~Exit your vehicle!",5000,5);
     }
         #if BRIEF_DEBUG == 1
-        SendClientMessageToAll(COLOR_GREY,"CBrief__Checkpoint - END");
+        SendClientMessageToAll(Color::Debug, "CBrief__Checkpoint - END");
         #endif
     return 1;
 }
@@ -274,7 +273,7 @@ CBrief__Checkpoint(playerid)
 CBrief__Death(playerid, killerid = Player::InvalidId)
 {   
     #if BRIEF_DEBUG == 1
-        SendClientMessageToAll(COLOR_GREY,"CBrief__Death - START");
+        SendClientMessageToAll(Color::Debug, "CBrief__Death - START");
     #endif
 
     new str[128];
@@ -283,7 +282,7 @@ CBrief__Death(playerid, killerid = Player::InvalidId)
     if(briefCasePlayer == playerid)
     { // DROP THE SOAP
         #if BRIEF_DEBUG == 1
-            SendClientMessageToAll(COLOR_GREY,"CBrief__Death - BRIEF CARRIER DEAD");
+            SendClientMessageToAll(Color::Debug, "CBrief__Death - BRIEF CARRIER DEAD");
         #endif
         new Float:x,Float:y,Float:z;
         briefCasePlayer = -1;
@@ -314,7 +313,7 @@ CBrief__Death(playerid, killerid = Player::InvalidId)
     }
 
     #if BRIEF_DEBUG == 1
-        SendClientMessageToAll(COLOR_GREY,"CBrief__Death - END");
+        SendClientMessageToAll(Color::Debug, "CBrief__Death - END");
     #endif
         // Reset the playerid's variables
     DisablePlayerCheckpoint(playerid);
@@ -696,7 +695,7 @@ CBrief__Process()
 CBrief__Debug(playerid,msg[])
 {
     #if BRIEF_DEBUG == 1
-    SendClientMessage(playerid,COLOR_GREY,msg);
+    SendClientMessage(playerid,Color::Debug, msg);
     #else
     #pragma unused playerid,msg
     #endif

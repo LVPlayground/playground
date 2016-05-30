@@ -97,8 +97,6 @@ CRobbery__Initialize()
 // Resets all of the variables to their default values.
 CRobbery__ResetVars()
 {
-//  SendClientMessageToAll(COLOR_GREY,"Textdraw debug - CRobbery__ResetVars called");
-
     for(new i=0; i<2; i++)
         teamCount[i] = 0;
 

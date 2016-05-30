@@ -27,4 +27,22 @@ describe('ResidentialValueMap', it => {
         // Immediately next to the polygon of San Fierro Airport.
         assert.equal(map.query(new Vector(-1150, 100, 10)), 0);
     });
+
+    it('should be reasonably performant when doing ten thousand queries', assert => {
+        const map = new ResidentialValueMap();
+        const iterations = 10000;
+
+        let result = 0;
+        const start = highResolutionTime();
+
+        for (let i = 0; i < iterations; ++i) {
+            result += map.query(new Vector((Math.random() * 6000) - 3000,
+                                           (Math.random() * 6000) - 3000, 10));
+        }
+
+        const delta = highResolutionTime() - start;
+
+        // console.log('[ResidentialValue] Executed ' + iterations + ' queries in ' + delta + 'ms');
+        // My numbers: ~15ms
+    });
 });

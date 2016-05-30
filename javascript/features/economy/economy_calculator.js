@@ -2,6 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+// Update frequency, in milliseconds, of the variance. Currently set to one hour.
+const VarianceUpdateFrequency = 60 * 60 * 1000;
+
 // The economy calculator class determines the actual price of something based on a number of input
 // variables. There is also a variance factor in range of [0, 100] that changes at predetermined
 // times, to make sure that prices within Las Venturas Playground continue to differ a little bit.
@@ -12,8 +15,14 @@
 // Please be sure to update it when you modify values in this calculator.
 class EconomyCalculator {
     constructor() {
-        this.varianceValue_ = 0;
+        this.varianceValue_ = null;
+        this.disposed_ = false;
+
+        this.updateVariance();
     }
+
+    // Gets the variance that's currently being applied to certain calculations.
+    get variance() { return this.varianceValue_; }
 
     // Calculates the price for a house. The |residentialValue| must be in range of [0, 4], the
     // |interiorValue| must be in range of [0, 9]. The variance factor will be included.
@@ -45,6 +54,17 @@ class EconomyCalculator {
         return Math.round(priceMinimum + (factor / 200) * priceDelta);
     }
 
+    // Updates the variance value with a new random number in range of [0, 100]. The method will
+    // schedule another invocation of itself unless the calculator has since been disposed of.
+    updateVariance() {
+        if (this.disposed_)
+            return;
+
+        this.varianceValue_ = Math.random() * 100;
+        wait(VarianceUpdateFrequency).then(
+            EconomyCalculator.prototype.updateVariance.bind(this));
+    }
+
     // Sets the variance value to |value| for testing purposes only.
     setVarianceValueForTests(value) {
         if (value < 0 || value > 100) {
@@ -53,6 +73,10 @@ class EconomyCalculator {
         }
 
         this.varianceValue_ = value;
+    }
+
+    dispose() {
+        this.disposed_ = true;
     }
 }
 

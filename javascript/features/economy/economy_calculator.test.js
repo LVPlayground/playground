@@ -8,7 +8,42 @@ describe('EconomyCalculator', (it, beforeEach, afterEach) => {
     let calculator = null;
 
     beforeEach(() => calculator = new EconomyCalculator());
-    afterEach(() => calculator = null);
+    afterEach(() => {
+        if (calculator)
+            calculator.dispose();
+    });
+
+    it('should have a variance that updates once per hour', async(assert) => {
+        assert.isNotNull(calculator.variance);
+
+        let previousVariance = calculator.variance;
+        let misses = 0;
+
+        for (let iter = 0; iter < 5; iter++) {
+            // Advancing the server's clock will cause the wait() function to yield.
+            server.clock.advance(60 * 60 * 1000 /* updateFrequency */);
+
+            // Wait until the next microtask execution time, to make sure the handler gets invoked.
+            await Promise.resolve();
+
+            if (calculator.variance === previousVariance)
+                ++misses;
+
+            previousVariance = calculator.variance;
+        }
+
+        // There is a minor, but not impossible chance that the variance ends up being the same
+        // value multiple times in a row, so allow for up to three sequential identical values.
+        assert.isBelowOrEqual(misses, 3);
+
+        // Updating the variance should stop when the calculator has been disposed of.
+        calculator.dispose();
+
+        server.clock.advance(60 * 60 * 1000 /* updateFrequency */);
+        await Promise.resolve();
+
+        assert.equal(previousVariance, calculator.variance);
+    });
 
     it('should be able to price houses appropriately', assert => {
         const minimum = EconomyCalculator.PRICE_RANGE_HOUSES[0];

@@ -30,7 +30,9 @@ class Economy extends Feature {
 
     // ---------------------------------------------------------------------------------------------
 
-    dispose() {}
+    dispose() {
+        this.economyCalculator_.dispose();
+    }
 }
 
 exports = Economy;

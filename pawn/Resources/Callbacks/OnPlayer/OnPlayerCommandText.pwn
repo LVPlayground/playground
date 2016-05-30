@@ -1058,7 +1058,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
     if(strcmp(cmd, "/borrow", true) == 0){
 
-        new tmp[256];
+        new tmp[256]
+           ,maxAvailableLoan = 500000;
         tmp = strtok(cmdtext, idx);
 
         if(!tmp[0]) {
@@ -1081,21 +1082,20 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         }
 
         if( moneys == 0 ){
-            moneys = MAX_LOAN - iLoan[playerid];
+            moneys = maxAvailableLoan - iLoan[playerid];
         }
 
-        if( iLoan[playerid] >= MAX_LOAN ){
+        if( iLoan[playerid] >= maxAvailableLoan ){
             ShowBoxForPlayer(playerid, "You have already borrowed 500.000 dollar!");
             return 1;
         }
 
-        if( ( iLoan[playerid] + moneys ) > MAX_LOAN )
+        if( ( iLoan[playerid] + moneys ) > maxAvailableLoan )
         {
 
-            new over;
-            over = MAX_LOAN - iLoan[playerid];
+            new amountUntilLimit = maxAvailableLoan - iLoan[playerid];
 
-            format(string, sizeof(string), "You can borrow $%d before you reach your limit!", over);
+            format(string, sizeof(string), "You can borrow $%d before you reach your limit!", amountUntilLimit);
             ShowBoxForPlayer(playerid, string);
             return 1;
         }

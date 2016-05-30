@@ -26,8 +26,6 @@
 // RELEASED(keys)
 #define RELEASED(%0) (((newkeys & (%0)) != (%0)) && ((oldkeys & (%0)) == (%0)))
 
-#define MAX_LOAN 500000
-
 #define CP_INKOOP   7
 
 #define lvp_command(%1,%2,%3); if( ( strcmp( cmdtext[1], #%1, true, (%2) ) == 0 ) \

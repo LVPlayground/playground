@@ -77,11 +77,16 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
         }
 
         new modelId = GetVehicleModel(GetPlayerVehicleID(playerid));
-        if ((modelId == 515 || modelId == 403 || modelId == 414) && GetPlayerVehicleID(playerid) != GTA_Vehicle)
-        if (IsTrailerAttachedToVehicle(GetPlayerVehicleID(playerid)))
-            SendClientMessage(playerid, Color::Warning, "Type /deliver to start the delivery minigame.");
-        else
-            SendClientMessage(playerid, Color::Warning, "Find a trailer and type /deliver to start the delivery minigame.");
+        if ((modelId == 515 || modelId == 403 || modelId == 414) && GetPlayerVehicleID(playerid) != GTA_Vehicle) {
+            if (IsTrailerAttachedToVehicle(GetPlayerVehicleID(playerid)))
+                SendClientMessage(playerid, Color::Warning, "Type /deliver to start the delivery minigame.");
+            else
+                SendClientMessage(playerid, Color::Warning, "Find a trailer and type /deliver to start the delivery minigame.");
+        }
+
+        // Disable drive-by in the vortex.
+        if (modelId == 539)
+            SetPlayerArmedWeapon(playerid, 0 /* fists */);
     }
 
     if (oldstate == PLAYER_STATE_DRIVER) {

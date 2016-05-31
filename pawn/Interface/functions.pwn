@@ -185,7 +185,7 @@ ResetPlayerStats(playerId) {
 #endif
     rwRemovePlayerFromMinigame(playerId);
     DestroyPlayerBox(playerId);
-    mayTax[playerId]=0;
+    CTaxi_ResetMayTaxi(playerId);
     ResetTeleCheatData(playerId);
     sprayTagResetData(playerId);
     radioStreamResetData(playerId);

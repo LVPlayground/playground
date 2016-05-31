@@ -2,6 +2,9 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
+new g_VirtualWorld[MAX_PLAYERS];
+new g_WorldInvite[MAX_PLAYERS];
+
 LegacyChangePlayerWorld(playerId, worldId) {
     g_VirtualWorld[playerId] = worldId;
 }

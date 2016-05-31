@@ -159,9 +159,10 @@ CExport__OnEnterCheckpoint( playerid )
             }
 
             // Check if it's not the GTA Vehicle
-            if(playerVehicleID  == GTA_Vehicle)
-            {
-                SendClientMessage(playerid, COLOR_ORANGE, "You can't export the GTA Vehicle!");
+            if(playerVehicleID  == GTA_Vehicle || playerVehicleID == sprayTagPlayerVehicle[playerid] ||
+                (Vehicle(playerVehicleID)->isOpenWorldVehicle() == true && Vehicle(playerVehicleID)->isPersistent() == false)) {
+                SendClientMessage(playerid, Color::Error, "Error: You can't export this vehicle.");
+                return 1;
             }
 
             // He's in the correct vehicle

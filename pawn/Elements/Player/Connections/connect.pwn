@@ -2,6 +2,8 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
+new PlayerJoins[MAX_PLAYERS][6];
+
 OnPlayerLVPConnect(playerid) {
     if (playerid >= MAX_PLAYERS) {
         new message[128];

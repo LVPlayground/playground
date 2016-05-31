@@ -366,8 +366,8 @@ CFightClub__OnCommand(playerid, params[]) {
         }
 
         new string[128];
-        format(string, sizeof(string), "A fight between ~r~~h~%s~w~ and ~r~~h~%s~w~ has started!",
-            PlayerName(Matches[matchId][player1]), PlayerName(Matches[matchId][player2]));
+        format(string, sizeof(string), "A fight between ~r~~h~%s~w~ and ~r~~h~%s~w~ has started! ~r~~h~(/fight watch %d)",
+            PlayerName(Matches[matchId][player1]), PlayerName(Matches[matchId][player2]), matchId);
         NewsController->show(string);
 
         Matches[matchId][status] = FC_STATUS_FIGHTING;

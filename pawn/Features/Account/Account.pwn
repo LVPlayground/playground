@@ -256,8 +256,8 @@ class Account <playerId (MAX_PLAYERS)> {
      *
      * @return integer Id of the user account associated with this player.
      */
-    public inline userId() {
-        return ((m_verified == true) ? (m_userId) : (0));
+    public userId() {
+        return m_verified == true ? m_userId : 0;
     }
 };
 

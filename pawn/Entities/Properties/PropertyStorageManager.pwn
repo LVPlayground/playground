@@ -38,6 +38,9 @@ public PropertyCreateRequestCallback(resultId, internalId) {
  * @author Russell Krupke <russell@sa-mp.nl>
  */
 class PropertyStorageManager {
+    // Id of the prepared statement which we use to store ownership information.
+    new m_recordOwnershipStatementId;
+
     // Id of the prepared statement which we use to create new properties.
     new m_createPropertyStatementId;
 
@@ -52,6 +55,8 @@ class PropertyStorageManager {
      * execute various times. This makes sure that we don't have to fiddle with queries ourselves.
      */
     public __construct() {
+        m_recordOwnershipStatementId = Database->prepare("INSERT INTO properties_ownership " ...
+            "(property_id, user_id, ownership_date, ownership_duration) VALUES (?, ?, NOW(), ?)", "iii");
         m_createPropertyStatementId = Database->prepare("INSERT INTO properties (property_id, name, " ...
             "price, earnings_percentage, position_x, position_y, position_z, interior_id, special_feature_id) " ...
             "VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)", "siifffii");
@@ -59,6 +64,22 @@ class PropertyStorageManager {
             "earnings_percentage = ?, position_x = ?, position_y = ?, position_z = ?, interior_id = ?, " ...
             "special_feature_id = ? WHERE property_id = ?", "siifffiii");
         m_destroyPropertyStatementId = Database->prepare("DELETE FROM properties WHERE property_id = ?", "i");
+    }
+
+    /**
+     * Records in the database that the property identified by |databaseId| was owned by the player
+     * with |playerId| for |ownershipDuration| seconds.
+     *
+     * @param databaseId Id the property is represented with in the database.
+     * @param playerId Id of the player who owned the property.
+     * @param ownershipDuration Number of seconds that the player owned the property.
+     */
+    public recordPropertyOwnership(databaseId, playerId, ownershipDuration) {
+        new userId = 0; /* would ideally be NULL, but meh */
+        if (Player(playerId)->isLoggedIn())
+            userId = Account(playerId)->userId();
+
+        Database->execute(m_recordOwnershipStatementId, "", 0, databaseId, userId, ownershipDuration);
     }
 
     /**

@@ -61,6 +61,9 @@ class Property <propertyId (MAX_PROPERTIES)> {
     // Which player does currently own this property?
     new m_ownerId;
 
+    // At what time (in seconds) did the owner purchase this property?
+    new m_purchaseTime;
+
     // Track the availability for each property by saving the timestamp of sale.
     new m_propertyAvailability;
 
@@ -93,6 +96,7 @@ class Property <propertyId (MAX_PROPERTIES)> {
         m_interiorId = interiorId;
         m_specialFeature = NoPropertyFeature;
         m_ownerId = Player::InvalidId;
+        m_purchaseTime = 0;
 
         // Create a pickup for this property. A green house indicates that it's available.
         m_pickupId = this->createPropertyPickupWithModel(GreenHousePickupId);
@@ -137,6 +141,7 @@ class Property <propertyId (MAX_PROPERTIES)> {
         m_propertySlotInUse = false;
         m_databaseId = Property::InvalidId;
         m_ownerId = Player::InvalidId;
+        m_purchaseTime = 0;
 
         if (m_pickupId != PickupController::InvalidId)
             PickupController->destroyPickup(PropertyManager->pickupHandlerId(), m_pickupId);
@@ -396,12 +401,20 @@ class Property <propertyId (MAX_PROPERTIES)> {
             m_pickupId = this->createPropertyPickupWithModel(GreenHousePickupId);
         }
 
+        // Record the duration that the previous owner, if any, owned the property.
+        if (m_ownerId != Player::InvalidId && m_databaseId != Property::InvalidId) {
+            new const ownershipDuration = Time->currentTime() - m_purchaseTime;
+
+            PropertyStorageManager->recordPropertyOwnership(m_databaseId, m_ownerId, ownershipDuration);
+        }
+
         // Check for a special feature, we might have to do something special.
         if (m_specialFeature != NoPropertyFeature)
             PropertyEvents->handleFeatureInformation(playerId, m_specialFeature);
 
         // Now update the actual owner of the property to the new value.
         m_ownerId = playerId;
+        m_purchaseTime = Time->currentTime();
 
         // Update the 3D text label.
         PropertyManager->update3DTextLabel(propertyId, m_labelId);

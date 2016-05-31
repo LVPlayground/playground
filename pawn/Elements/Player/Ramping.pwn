@@ -61,7 +61,9 @@ IsVehicleRampingValid(n_Model)
         n_Model == 537 || n_Model == 538 ||
         n_Model == 548 || n_Model == 553 ||
         n_Model == 563 || n_Model == 577 ||
-        n_Model == 592 || n_Model == 593)
+        n_Model == 481 || n_Model == 509 ||
+        n_Model == 510 || n_Model == 592 ||
+        n_Model == 593)
         return 0;
 
     // We're still here. It's valid!

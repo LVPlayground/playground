@@ -857,7 +857,9 @@ lvp_p(playerId, params[]) {
             SetVehicleToRespawn(GetPlayerVehicleID(subjectId));
 
         SetPlayerPos(subjectId, position[0], position[1], position[2] + 40);
-        PlayerHandOfGod[subjectId] = true;
+
+        if (!Player(subjectId)->isAdministrator())
+            PlayerHandOfGod[subjectId] = true;
 
         SendClientMessage(playerId, Color::Success, "Player thrown in the air.");
 

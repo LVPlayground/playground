@@ -14,9 +14,6 @@ public OnPlayerText(playerid, text[]) {
     if (!strlen(text))
         return 0;
 
-    if (strlen(text) > 144)
-        return 0; /* SendClientMessage won't send messages longer than 144 chars */
-
     PlayerIdlePenalty->resetCurrentIdleTime(playerid);
 
     SpamTracker->record(playerid, text);

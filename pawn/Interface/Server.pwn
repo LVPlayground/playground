@@ -109,18 +109,18 @@ SendClientMessagePrivate(playerid, color, const message[]) {
 
     // If the text string exceeds the character limit of 144 chars, split it up.
     if (strlen(textBuffer) > 143) {
-        // Look for the first whitespace at the end of the 144 chars string.
+        // Look for the first whitespace at the end of the string.
         for (new index = 143; index > 0; index--) {
             if (strcmp(textBuffer[index], " ", false, 1))
                 continue;
 
-            // Call OnPlayerText on the first part of the string.
+            // Call SendClientMessagePrivate on the first part of the string.
             new splitText[156];
             strmid(splitText, textBuffer, 0, index);
             SendClientMessagePrivate(playerid, color, splitText);
 
-            // Call SendClientMessage on the remaining part of the string. If the string is still
-            // too long, it will be split again.
+            // Call SendClientMessagePrivate on the remaining part of the string. If the string is
+            // still too long, it will be split again.
             strdel(textBuffer, 0, index);
             SendClientMessagePrivate(playerid, color, textBuffer);
 

@@ -31,6 +31,7 @@ testRunner.run('.*\.test\.js').then(notifyReady).then(() => {
         announce:       require('features/announce/announce.js'),
         communication:  require('features/communication/communication.js'),
         economy:        require('features/economy/economy.js'),
+        location:       require('features/location/location.js'),
         minigames:      require('features/minigames/minigames.js'),
 
         // Gang-related features

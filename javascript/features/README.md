@@ -23,10 +23,13 @@ The following features have been implemented in JavaScript.
   - **[Announce](announce/)**: Provides the ability to announce events to players, administrators
     and IRC.
   - **[Communication](communication/)**: Provides the lower-level player communication capabilities.
+  - **[Economy](economy/)**: Provides primitives for managing LVP's economy.
   - **[Friends](friends/)**: Gives players the ability to list who their friends are, as well as
     the `/friends` command.
   - **[Gang chat](gang_chat/)**: Provides a private-ish group chat for online gangs.
   - **[Gangs](gangs/)**: Provides the persistent gangs feature, as well as the `/gang` command.
+  - **[Houses](houses/)**: Provide the ability for player-owned houses in the main world.
+  - **[Location](location/)**: Provides functionality related to a player's location.
   - **[Minigames](minigames/)**: Provides common infrastructure for minigame features.
   - **[Player favours](player_favours/)**: Various smaller features implemented specifically for
     the benefit of certain players.

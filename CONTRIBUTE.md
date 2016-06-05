@@ -3,6 +3,8 @@ This guide will explain the process of contributing code to the Las Venturas Pla
 Please read and follow it carefully, and file bugs for anything that's unclear or doesn't work.
 
 ## Preparing your checkout
+Before proceeding, please ensure you have [Visual C++ Redistributable 2015](https://support.microsoft.com/en-gb/kb/2977003) installed on your local machine. 
+
 At least repositories are necessary in order to be able to contribute code. If you are unsure
 about how to clone repositories, read [GitHub's guide]
 (https://help.github.com/articles/cloning-a-repository/) first. You may also be interested in

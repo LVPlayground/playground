@@ -11,11 +11,11 @@ class Location extends Feature {
     constructor() {
         super();
 
-        this.interiorManager_ = new InteriorManager();
+        //this.interiorManager_ = new InteriorManager();
     }
 
     dispose() {
-        this.interiorManager_.dispose();
+        //this.interiorManager_.dispose();
     }
 }
 

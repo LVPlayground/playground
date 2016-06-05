@@ -73,7 +73,7 @@ public OnGameModeInit() {
     SetMapIcons();                              // Map icons - Interface/functions.pwn
     InitSpawnPos();                             // Format the spawn position arrays - see Elements/Player/SpawnPos.pwn
 
-    DisableInteriorEnterExits();
+    //DisableInteriorEnterExits();
     UsePlayerPedAnims();                        // Enables CJ running on all peds.
 
     // Chainsaw pickup

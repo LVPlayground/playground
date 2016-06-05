@@ -6,7 +6,6 @@ const ActorManager = require('entities/actor_manager.js');
 const CommandManager = require('components/command_manager/command_manager.js');
 const FeatureManager = require('components/feature_manager/feature_manager.js');
 const ObjectManager = require('entities/object_manager.js');
-const PickupManager = require('entities/pickup_manager.js');
 const PlayerManager = require('entities/player_manager.js');
 const TextLabelManager = require('entities/text_label_manager.js');
 const VehicleManager = require('entities/vehicle_manager.js');
@@ -15,6 +14,7 @@ const MockActor = require('entities/test/mock_actor.js');
 const MockClock = require('base/test/mock_clock.js');
 const MockObject = require('entities/test/mock_object.js');
 const MockPickup = require('entities/test/mock_pickup.js');
+const MockPickupManager = require('entities/test/mock_pickup_manager.js');
 const MockPlayer = require('entities/test/mock_player.js');
 const MockTextLabel = require('entities/test/mock_text_label.js');
 const MockVehicle = require('entities/test/mock_vehicle.js');
@@ -32,7 +32,7 @@ class MockServer {
 
         this.actorManager_ = new ActorManager(MockActor /* actorConstructor */);
         this.objectManager_ = new ObjectManager(MockObject /* objectConstructor */);
-        this.pickupManager_ = new PickupManager(MockPickup /* pickupConstructor */);
+        this.pickupManager_ = new MockPickupManager(MockPickup /* pickupConstructor */);
         this.playerManager_ = new PlayerManager(MockPlayer /* playerConstructor */);
         this.textLabelManager_ = new TextLabelManager(MockTextLabel /* textLabelConstructor */);
         this.vehicleManager_ = new VehicleManager(MockVehicle /* vehicleConstructor */);
@@ -70,7 +70,8 @@ class MockServer {
     // Gets the real object manager that maintains mocked objects.
     get objectManager() { return this.objectManager_; }
 
-    // Gets the real pickup manager that maintains mocked pickups.
+    // Gets the real pickup manager that maintains mocked pickups, but also has a number of utility
+    // methods useful for testing purposes.
     get pickupManager() { return this.pickupManager_; }
 
     // Gets the real player manager that maintains mocked players.

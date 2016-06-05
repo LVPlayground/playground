@@ -6,11 +6,10 @@ const PickupManager = require('entities/pickup_manager.js');
 const MockPickup = require('entities/test/mock_pickup.js');
 const Vector = require('base/vector.js');
 
-describe('PickupManager', (it, beforeEach, afterEach) => {
+describe('PickupManager', (it, beforeEach) => {
     let manager = null;
 
-    beforeEach(() => manager = new PickupManager(MockPickup /* pickupConstructor */));
-    afterEach(() => manager.dispose());
+    beforeEach(() => manager = server.pickupManager);
 
     // Common observer that can be used for observing the PickupManager.
     class MyPickupObserver {
@@ -190,14 +189,13 @@ describe('PickupManager', (it, beforeEach, afterEach) => {
 
     it('should fire the leave event when the player moves away from the pickup', async(assert) => {
         const pickup = manager.createPickup({ modelId: 1225, position: new Vector(1, 2, 3) });
-
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.position = pickup.position;
 
         const observer = new MyPickupObserver();
         manager.addObserver(observer);
 
-        pickup.pickUpByPlayer(gunther);
+        // Update Gunther's position to the pickup's position, this will make them enter it.
+        gunther.position = pickup.position;
 
         assert.equal(observer.enteredCount, 1);
         assert.equal(observer.leftCount, 0);
@@ -215,5 +213,28 @@ describe('PickupManager', (it, beforeEach, afterEach) => {
         // Now Gunther has moved away from the pickup, so they have left it.
         assert.equal(observer.enteredCount, 1);
         assert.equal(observer.leftCount, 1);
+    });
+
+    it('should fire the enter event when the player changes position', assert => {
+        const pickup = manager.createPickup({ modelId: 1225, position: new Vector(100, 200, 300) });
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        const observer = new MyPickupObserver();
+        manager.addObserver(observer);
+
+        assert.equal(observer.enteredCount, 0);
+        assert.equal(observer.leftCount, 0);
+
+        gunther.position = new Vector(100, 200, 0);
+
+        // Gunther's new position is not in range of the pickup.
+        assert.equal(observer.enteredCount, 0);
+        assert.equal(observer.leftCount, 0);
+
+        gunther.position = pickup.position;
+
+        // Gunther is now in range of the pickup.
+        assert.equal(observer.enteredCount, 1);
+        assert.equal(observer.leftCount, 0);
     });
 });

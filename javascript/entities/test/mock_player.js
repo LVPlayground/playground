@@ -74,7 +74,12 @@ class MockPlayer {
 
     // Gets or sets the position of this player.
     get position() { return this.position_; }
-    set position(value) { this.position_ = value; }
+    set position(value) {
+        this.position_ = value;
+
+        // Fake pickup events if the player happened to have stepped in a pickup.
+        server.pickupManager.onPlayerPositionChanged(this);
+    }
 
     // Gets or sets the special action the player is currently engaged in. The values must be one of
     // the Player.SPECIAL_ACTION_* constants static to this class.

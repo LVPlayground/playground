@@ -78,8 +78,12 @@ class Player {
 
   // Gets or sets the interior the player is part of. Moving them to the wrong interior will mess up
   // their visual state significantly, as all world objects may disappear.
-  get interior() { return pawnInvoke('GetPlayerInterior', 'i', this.id_); }
-  set interior(value) { pawnInvoke('SetPlayerInterior', 'ii', this.id_, value); }
+  get interiorId() { return pawnInvoke('GetPlayerInterior', 'i', this.id_); }
+  set interiorId(value) { pawnInvoke('SetPlayerInterior', 'ii', this.id_, value); }
+
+  // TODO(Russell): Remove these accessors in favor of the `interiorId` ones.
+  get interior() { return this.interiorId; }
+  set interior(value) { this.interiorId = value; }
 
   // Gets or sets the position of the player. Both must be used with a 3D vector.
   get position() { return new Vector(...pawnInvoke('GetPlayerPos', 'iFFF', this.id_)); }

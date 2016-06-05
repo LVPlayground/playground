@@ -12,6 +12,7 @@ class MockPlayer {
 
         this.name_ = event.name || 'Player' + playerId;
         this.level_ = event.level || Player.LEVEL_PLAYER;
+        this.interiorId_ = 0;
         this.virtualWorld_ = 0;
         this.userId_ = null;
         this.ipAddress_ = event.ipAddress || '127.0.0.1';
@@ -67,6 +68,11 @@ class MockPlayer {
     }
 
     isManagement() { return this.level_ == Player.LEVEL_MANAGEMENT; }
+
+    // Gets or sets the interior the player is part of. Moving them to the wrong interior will mess up
+  // their visual state significantly, as all world objects may disappear.
+  get interiorId() { return this.interiorId_; }
+  set interiorId(value) { this.interiorId_ = value; }
 
     // Gets or sets the virtual world the player is part of.
     get virtualWorld() { return this.virtualWorld_; }

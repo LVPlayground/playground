@@ -5,6 +5,13 @@
 const Vector = require('base/vector.js');
 
 describe('Vector', it => {
+    // Asserts that all values of the vector |actual| are within |error| of vector |expected|.
+    function assertVectorCloseTo(assert, actual, expected, error = 0.01) {
+        assert.closeTo(actual.x, expected.x, error);
+        assert.closeTo(actual.y, expected.y, error);
+        assert.closeTo(actual.z, expected.z, error);
+    }
+
     it('should reflect the values', assert => {
         let vector = new Vector(100, 200, 300);
         assert.equal(vector.x, 100);
@@ -32,6 +39,20 @@ describe('Vector', it => {
 
         assert.equal(topLeft.squaredDistanceTo(bottomRight), 600);
         assert.equal(bottomRight.squaredDistanceTo(topLeft), 600);
+    });
+
+    it('should calculate the translation of a vector by distance and angle', assert => {
+        const vector = new Vector(0, 0, 0);
+
+        assertVectorCloseTo(assert, vector.translateTo2D(10, 0), new Vector(0, 10, 0));
+        assertVectorCloseTo(assert, vector.translateTo2D(10, 45), new Vector(7.07, 7.07, 0));
+        assertVectorCloseTo(assert, vector.translateTo2D(10, 90), new Vector(10, 0, 0));
+        assertVectorCloseTo(assert, vector.translateTo2D(10, 135), new Vector(7.07, -7.07, 0));
+        assertVectorCloseTo(assert, vector.translateTo2D(10, 180), new Vector(0, -10, 0));
+        assertVectorCloseTo(assert, vector.translateTo2D(10, 225), new Vector(-7.07, -7.07, 0));
+        assertVectorCloseTo(assert, vector.translateTo2D(10, 270), new Vector(-10, 0, 0));
+        assertVectorCloseTo(assert, vector.translateTo2D(10, 315), new Vector(-7.07, 7.07, 0));
+        assertVectorCloseTo(assert, vector.translateTo2D(10, 360), new Vector(0, 10, 0));
     });
 
     it('should calculate the magnitude', assert => {

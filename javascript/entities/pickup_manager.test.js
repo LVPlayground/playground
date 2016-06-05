@@ -12,6 +12,17 @@ describe('PickupManager', (it, beforeEach, afterEach) => {
     beforeEach(() => manager = new PickupManager(MockPickup /* pickupConstructor */));
     afterEach(() => manager.dispose());
 
+    // Common observer that can be used for observing the PickupManager.
+    class MyPickupObserver {
+        constructor() {
+            this.enteredCount = 0;
+            this.leftCount = 0;
+        }
+
+        onPlayerEnterPickup(player, pickup) { ++this.enteredCount; }
+        onPlayerLeavePickup(player, pickup) { ++this.leftCount; }
+    }
+
     it('should enable creation of manager', assert => {
         const pickup = manager.createPickup({ modelId: 1225, position: new Vector(1, 2, 3) });
         assert.isNotNull(pickup);
@@ -59,17 +70,7 @@ describe('PickupManager', (it, beforeEach, afterEach) => {
         const pickup = manager.createPickup({ modelId: 1225, position: new Vector(1, 2, 3) });
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        class MyObserver {
-            constructor() {
-                this.enteredCount = 0;
-                this.leftCount = 0;
-            }
-
-            onPlayerEnterPickup(player, pickup) { ++this.enteredCount; }
-            onPlayerLeavePickup(player, pickup) { ++this.leftCount; }
-        }
-
-        const observer = new MyObserver();
+        const observer = new MyPickupObserver();
 
         // Add the observer twice to verify that it will only be added once.
         manager.addObserver(observer);
@@ -96,5 +97,50 @@ describe('PickupManager', (it, beforeEach, afterEach) => {
 
         assert.equal(observer.enteredCount, 1);
         assert.equal(observer.leftCount, 1);
+    });
+
+    it('should not fire entrance events multiple times when standing in a pickup', assert => {
+        const pickup = manager.createPickup({ modelId: 1225, position: new Vector(1, 2, 3) });
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        const observer = new MyPickupObserver();
+        manager.addObserver(observer);
+
+        assert.equal(observer.enteredCount, 0);
+        assert.equal(observer.leftCount, 0);
+
+        for (let i = 0; i < 10; ++i)
+            pickup.pickUpByPlayer(gunther);
+
+        assert.equal(observer.enteredCount, 1);
+        assert.equal(observer.leftCount, 0);
+    });
+
+    it('should fire the leave event when the player moves to another pickup', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        const pickup1 = manager.createPickup({ modelId: 1225, position: new Vector(1, 2, 3) });
+        const pickup2 = manager.createPickup({ modelId: 1225, position: new Vector(4, 5, 6) });
+
+        const observer = new MyPickupObserver();
+        manager.addObserver(observer);
+
+        assert.equal(observer.enteredCount, 0);
+        assert.equal(observer.leftCount, 0);
+
+        pickup1.pickUpByPlayer(gunther);
+
+        assert.equal(observer.enteredCount, 1);
+        assert.equal(observer.leftCount, 0);
+
+        pickup2.pickUpByPlayer(gunther);
+
+        assert.equal(observer.enteredCount, 2);
+        assert.equal(observer.leftCount, 1);
+
+        await server.clock.advance(10000 /* 10 seconds */);
+
+        assert.equal(observer.enteredCount, 2);
+        assert.equal(observer.leftCount, 2);
     });
 });

@@ -17,6 +17,8 @@ class PickupManager {
 
         this.observers_ = new Set();
 
+        this.currentPickupForPlayer_ = new WeakMap();
+
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
             'playerpickuppickup', PickupManager.prototype.onPickupPickedUp.bind(this));
@@ -57,11 +59,31 @@ class PickupManager {
         if (!pickup)
             return;  // the pickup is not known to JavaScript
 
+        {
+            const currentPickup = this.currentPickupForPlayer_.get(player);
+            if (currentPickup === pickup)
+                return;  // the player is already standing in the pickup
+
+            // Fire the `onPlayerLeavePickup` event if they are suddenly standing in another pickup.
+            if (currentPickup)
+                this.notifyObservers('onPlayerLeavePickup', player, currentPickup);
+        }
+
+        this.currentPickupForPlayer_.set(player, pickup);
+
         this.notifyObservers('onPlayerEnterPickup', player, pickup);
 
         await wait(PickupPositionExpirationTime);
 
-        this.notifyObservers('onPlayerLeavePickup', player, pickup);
+        {
+            const currentPickup = this.currentPickupForPlayer_.get(player);
+            if (currentPickup !== pickup)
+                return;  // the player picked up another pickup since
+
+            this.notifyObservers('onPlayerLeavePickup', player, pickup);
+
+            this.currentPickupForPlayer_.delete(player);
+        }
     }
 
     // Notifies observers about the |eventName|, passing |...args| as the argument to the method

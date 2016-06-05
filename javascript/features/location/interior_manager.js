@@ -21,6 +21,8 @@ class InteriorManager {
         this.entities_ = new ScopedEntities();
         this.markers_ = new Map();
 
+        this.expectedPickup_ = new WeakMap();
+
         server.pickupManager.addObserver(this);
 
         const markers = JSON.parse(readFile(InteriorMarkersFile));
@@ -41,11 +43,11 @@ class InteriorManager {
     loadMarker(marker) {
         const entranceMarker = marker.entry;
         const entrancePosition = new Vector(entranceMarker.position[0], entranceMarker.position[1],
-                                            entranceMarker.position[2] + 0.5);
+                                            entranceMarker.position[2] + 1);
 
         const exitMarker = marker.return;
         const exitPosition = new Vector(exitMarker.position[0], exitMarker.position[1],
-                                        exitMarker.position[2] + 0.5);
+                                        exitMarker.position[2] + 1);
 
         const virtualWorld = this.virtualWorlds_.allocate();
 
@@ -57,10 +59,11 @@ class InteriorManager {
 
         this.markers_.set(entrancePickup, {
             // Animation direction
-            rotation: entranceMarker.rotation,
+            //rotation: entranceMarker.rotation,
 
             // Destination
-            destination: exitPosition.translateTo2D(PositionOffset, exitMarker.rotation),
+            destination: exitPosition,//.translateTo2D(PositionOffset, exitMarker.rotation),
+            rotation: entranceMarker.rotation % 360,
 
             interiorId: exitMarker.interiorId,
             virtualWorld: virtualWorld
@@ -74,14 +77,19 @@ class InteriorManager {
 
         this.markers_.set(exitPickup, {
             // Animation direction
-            rotation: exitMarker.rotation,
+            //rotation: exitMarker.rotation,
 
             // Destination
-            destination: entrancePosition.translateTo2D(PositionOffset, entranceMarker.rotation),
+            destination: entrancePosition,//.translateTo2D(PositionOffset, entranceMarker.rotation),
+            rotation: entranceMarker.rotation % 360,
 
             interiorId: entranceMarker.interiorId,
             virtualWorld: entranceMarker.dimension
         });
+
+        // Cross-associate the markers with each other so that we can block the follow-up pickup.
+        this.markers_.get(exitPickup).expectedPickup = entrancePickup;
+        this.markers_.get(entrancePickup).expectedPickup = exitPickup;
     }
 
     // Called when a player enters a pickup. Teleport the player to the marker's destination if the
@@ -91,12 +99,23 @@ class InteriorManager {
         if (!marker)
             return;  // the |pickup| is not an interior marker
 
+        if (this.expectedPickup_.get(player) === pickup)
+            return;  // they're expected to have stepped in this pickup
+
         // TODO(Russell): Animate the player whilst they enter the interior.
 
+        this.expectedPickup_.set(player, marker.expectedPickup);
+
         player.position = marker.destination;
+        player.facingAngle = marker.rotation;
 
         player.interiorId = marker.interiorId;
         player.virtualWorld = marker.virtualWorld;
+    }
+
+    onPlayerLeavePickup(player, pickup) {
+        if (this.expectedPickup_.get(player) === pickup)
+            this.expectedPickup_.delete(player);
     }
 
     dispose() {

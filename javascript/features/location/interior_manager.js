@@ -22,6 +22,7 @@ class InteriorManager {
         this.markers_ = new Map();
 
         this.expectedPickup_ = new WeakMap();
+        this.saveResolver_ = new WeakMap();
 
         server.pickupManager.addObserver(this);
 
@@ -30,8 +31,54 @@ class InteriorManager {
         // Allocate Virtual Worlds for each of the interiors that will be created.
         this.virtualWorlds_ = server.virtualWorldManager.allocateBlock(markers.length);
 
+        let count = 0;
         markers.forEach(marker =>
-            this.loadMarker(marker));
+            this.loadMarker(marker, ++count));
+
+        server.commandManager.registerCommand(
+            'next', this.onNextCommand.bind(this));
+    }
+
+    async onCommand(entranceMarker, entrancePickup, exitMarker, exitPickup, count, player) {
+        player.sendMessage('Teleported. Face the door and type /next.');
+
+        this.expectedPickup_.set(player, entrancePickup);
+
+        player.interiorId = entranceMarker.interiorId;
+        player.virtualWorld = 0;
+        player.position = new Vector(entranceMarker.position[0], entranceMarker.position[1],
+                                     entranceMarker.position[2] + 1);
+
+        const entranceRotation = await new Promise(resolve => this.saveResolver_.set(player, resolve));
+
+        player.sendMessage('Awesome! Teleported again. Face the door and type /next once more.');
+
+        this.expectedPickup_.set(player, exitPickup);
+
+        player.interiorId = entranceMarker.interiorId;
+        player.virtualWorld = exitPickup.virtualWorld;
+        player.position = new Vector(exitMarker.position[0], exitMarker.position[1],
+                                     exitMarker.position[2] + 1);
+
+        const exitRotation = await new Promise(resolve => this.saveResolver_.set(player, resolve));
+        const record = '[' + entranceMarker.id + '] ' + entranceRotation + ' ' + exitRotation;
+
+        console.log(record);
+
+        player.sendMessage('Cool, all recorded! (' + record + ')');
+        player.sendMessage('Why don\'t you try /e' + (count + 1) + '?');
+    }
+
+    onNextCommand(player) {
+        const resolver = this.saveResolver_.get(player);
+        if (!resolver) {
+            player.sendMessage('Sorry, I don\'t know what you\'re typing /next for!');
+            return;
+        }
+
+        this.saveResolver_.delete(player);
+
+        resolver(player.facingAngle);
     }
 
     // Returns the number of interior markers that have been created on the map.
@@ -40,7 +87,7 @@ class InteriorManager {
     // Loads the |marker|. Each defined marker must have an entry position and a return position,
     // which create for a linked set of markers. Each position exists of an ID, 3D vector containing
     // the actual position, rotation for the player to animate to and the destination interior Id.
-    loadMarker(marker) {
+    loadMarker(marker, count) {
         const entranceMarker = marker.entry;
         const entrancePosition = new Vector(entranceMarker.position[0], entranceMarker.position[1],
                                             entranceMarker.position[2] + 1);
@@ -90,6 +137,9 @@ class InteriorManager {
         // Cross-associate the markers with each other so that we can block the follow-up pickup.
         this.markers_.get(exitPickup).expectedPickup = entrancePickup;
         this.markers_.get(entrancePickup).expectedPickup = exitPickup;
+
+        server.commandManager.registerCommand(
+            'e' + count, this.onCommand.bind(this, entranceMarker, entrancePickup, exitMarker, exitPickup, count));
     }
 
     // Called when a player enters a pickup. Teleport the player to the marker's destination if the

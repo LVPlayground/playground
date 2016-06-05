@@ -19,9 +19,6 @@ describe('InteriorManager', (it, beforeEach, afterEach) => {
 
     const AmmunationInteriorId = 4;
 
-//  { "entry": { "id": "AMMUN2 (3)", "position": [  ], "rotation": 0, "interiorId": 0, "dimension": 0 },
-//    "return": { "id": "AMMUN2 (3)", "position": [  ], "rotation": -3870.01, "interiorId": 4, "dimension": 2 } },
-
     it('should load the defined interior markers from the data file', assert => {
         assert.isAbove(manager.markerCount, 0);
         assert.equal(manager.markerCount % 2, 0);  // an even number
@@ -33,8 +30,9 @@ describe('InteriorManager', (it, beforeEach, afterEach) => {
         manager.dispose();
         assert.isBelow(server.pickupManager.count, originalPickupCount);
 
-        manager = new InteriorManager();
-        assert.equal(server.pickupManager.count, originalPickupCount);
+        //manager = new InteriorManager();
+        //assert.equal(server.pickupManager.count, originalPickupCount);
+        manager = null;
     });
 
     it('should teleport the player when standing in an interior marker', async(assert) => {

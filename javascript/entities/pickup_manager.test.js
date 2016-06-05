@@ -116,6 +116,50 @@ describe('PickupManager', (it, beforeEach, afterEach) => {
         assert.equal(observer.leftCount, 0);
     });
 
+    it('should not fire the leave event when the player disconnects from LVP', async(assert) => {
+        const pickup = manager.createPickup({ modelId: 1225, position: new Vector(1, 2, 3) });
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        const observer = new MyPickupObserver();
+        manager.addObserver(observer);
+
+        pickup.pickUpByPlayer(gunther);
+
+        assert.equal(observer.enteredCount, 1);
+        assert.equal(observer.leftCount, 0);
+
+        gunther.disconnect();
+
+        await server.clock.advance(10000 /* 10 seconds */);
+
+        assert.equal(observer.enteredCount, 1);
+        assert.equal(observer.leftCount, 0);
+    });
+
+    it('should not fire the leave event when the pickup is destroyed', async(assert) => {
+        const pickup = manager.createPickup({ modelId: 1225, position: new Vector(1, 2, 3) });
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        assert.equal(manager.count, 1);
+
+        const observer = new MyPickupObserver();
+        manager.addObserver(observer);
+
+        pickup.pickUpByPlayer(gunther);
+
+        assert.equal(observer.enteredCount, 1);
+        assert.equal(observer.leftCount, 0);
+
+        pickup.dispose();
+
+        assert.equal(manager.count, 0);
+
+        await server.clock.advance(10000 /* 10 seconds */);
+
+        assert.equal(observer.enteredCount, 1);
+        assert.equal(observer.leftCount, 0);
+    });
+
     it('should fire the leave event when the player moves to another pickup', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
@@ -142,5 +186,34 @@ describe('PickupManager', (it, beforeEach, afterEach) => {
 
         assert.equal(observer.enteredCount, 2);
         assert.equal(observer.leftCount, 2);
+    });
+
+    it('should fire the leave event when the player moves away from the pickup', async(assert) => {
+        const pickup = manager.createPickup({ modelId: 1225, position: new Vector(1, 2, 3) });
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.position = pickup.position;
+
+        const observer = new MyPickupObserver();
+        manager.addObserver(observer);
+
+        pickup.pickUpByPlayer(gunther);
+
+        assert.equal(observer.enteredCount, 1);
+        assert.equal(observer.leftCount, 0);
+
+        await server.clock.advance(10000 /* 10 seconds */);
+
+        // Gunther is still standing in the pickup, so nothing should have happened.
+        assert.equal(observer.enteredCount, 1);
+        assert.equal(observer.leftCount, 0);
+
+        gunther.position = new Vector(10, 20, 30);
+
+        await server.clock.advance(10000 /* 10 seconds */);
+
+        // Now Gunther has moved away from the pickup, so they have left it.
+        assert.equal(observer.enteredCount, 1);
+        assert.equal(observer.leftCount, 1);
     });
 });

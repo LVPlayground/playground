@@ -6,7 +6,11 @@ const ScopedCallbacks = require('base/scoped_callbacks.js');
 
 // Number of milliseconds after which it should be confirmed whether the player is still standing
 // in the given pickup. This works around an issue where SA-MP fires the event too frequently.
-const PickupPositionExpirationTime = 1000;
+const PickupPositionValidationFrequency = 1000;
+
+// The maximum distance, squared, that a player may be away from the pickup's position in order to
+// still be considered to be standing on it.
+const PickupPositionValidDistanceSq = 2 * 2;
 
 // The pickup manager maintains the list of pickups created for Las Venturas Playground, and is in
 // charge of delegating events related to those pickups.
@@ -71,19 +75,34 @@ class PickupManager {
 
         this.currentPickupForPlayer_.set(player, pickup);
 
+        // Fire the `onPlayerEnterPickup` event because they freshly entered the pickup.
         this.notifyObservers('onPlayerEnterPickup', player, pickup);
 
-        await wait(PickupPositionExpirationTime);
+        // Spin until the player leaves the pickup, has entered a different pickup, has disconnected
+        // from Las Venturas Playground or the pickup has been destroyed.
+        while (true) {
+            await wait(PickupPositionValidationFrequency);
 
-        {
-            const currentPickup = this.currentPickupForPlayer_.get(player);
-            if (currentPickup !== pickup)
-                return;  // the player picked up another pickup since
+            if (!player.isConnected() || !pickup.isConnected())
+                break;  // either the player or the pickup is not valid anymore
 
+            if (this.currentPickupForPlayer_.get(player) !== pickup)
+                break;  // the player has picked up another pickup since
+
+            if (player.position.squaredDistanceTo(pickup.position) > PickupPositionValidDistanceSq)
+                break;  // the player has moved away from the pickup since
+        }
+
+        // Fire the `onPlayerLeavePickup` event if they're still standing in the pickup and both
+        // the player and the pickup are still valid entities on the server.
+        const currentPickup = this.currentPickupForPlayer_.get(player);
+        if (currentPickup !== pickup)
+            return;  // the player picked up another pickup since
+
+        if (player.isConnected() && pickup.isConnected())
             this.notifyObservers('onPlayerLeavePickup', player, pickup);
 
-            this.currentPickupForPlayer_.delete(player);
-        }
+        this.currentPickupForPlayer_.delete(player);
     }
 
     // Notifies observers about the |eventName|, passing |...args| as the argument to the method

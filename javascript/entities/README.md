@@ -109,6 +109,9 @@ leave pickups. The following two events are available:
   - `onPlayerEnterPickup(player, pickup)`: Called when a player stands on a pickup.
   - `onPlayerLeavePickup(player, pickup)`: Called when a player no longer stands in a pickup.
 
+You can assume sensible behaviour for these events. The [PickupManager](pickup_manager.js) abstracts
+away the peculiar behaviour of the OnPlayerPickUpPickup event you may be familiar with.
+
 
 ## Players
 TO BE DOCUMENTED

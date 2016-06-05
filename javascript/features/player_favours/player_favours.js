@@ -16,7 +16,7 @@ class PlayerFavours extends Feature {
         this.objectRemover_ = new ObjectRemover();
         this.objectRemover_.load('data/favours/joes_garage.json');  // Joe's Garage
         this.objectRemover_.load('data/favours/houses_promo.json');  // LVP Houses promotion
-		this.objectRemover_.load('data/favours/caligula_basement_door.json'); // Door which blocks access to basement in caligulas
+        this.objectRemover_.load('data/favours/caligula_basement_door.json'); // Door which blocks access to basement in caligulas
 		
         this.objectGroup_ = ObjectGroup.create('data/favours/houses_promo_new.json', 0, 0);
 

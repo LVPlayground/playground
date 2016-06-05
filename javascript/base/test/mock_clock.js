@@ -63,6 +63,8 @@ class MockClock {
             const timer = this.timers_.pop();
             timer.resolver();
         }
+
+        return Promise.resolve();
     }
 
     // Automatically called when using the wait() method. Will wait for |milliseconds|, which can

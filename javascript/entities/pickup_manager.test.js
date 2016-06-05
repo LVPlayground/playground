@@ -54,4 +54,47 @@ describe('PickupManager', (it, beforeEach, afterEach) => {
         assert.throws(() => pickup.dispose());
         assert.throws(() => manager.didDisposePickup(pickup));
     });
+
+    it('should allow observers to be registered', async(assert) => {
+        const pickup = manager.createPickup({ modelId: 1225, position: new Vector(1, 2, 3) });
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        class MyObserver {
+            constructor() {
+                this.enteredCount = 0;
+                this.leftCount = 0;
+            }
+
+            onPlayerEnterPickup(player, pickup) { ++this.enteredCount; }
+            onPlayerLeavePickup(player, pickup) { ++this.leftCount; }
+        }
+
+        const observer = new MyObserver();
+
+        // Add the observer twice to verify that it will only be added once.
+        manager.addObserver(observer);
+        manager.addObserver(observer);
+
+        // Confirm that the event will only be called once.
+        pickup.pickUpByPlayer(gunther);
+
+        assert.equal(observer.enteredCount, 1);
+        assert.equal(observer.leftCount, 0);
+
+        // Confirm that the player moving away will properly fire the left event after a while.
+        gunther.position = new Vector(10, 20, 30);
+
+        await server.clock.advance(10000 /* 10 seconds */);
+
+        assert.equal(observer.enteredCount, 1);
+        assert.equal(observer.leftCount, 1);
+
+        // Confirm that unregistering the observer will stop it from firing again.
+        manager.removeObserver(observer);
+
+        pickup.pickUpByPlayer(gunther);
+
+        assert.equal(observer.enteredCount, 1);
+        assert.equal(observer.leftCount, 1);
+    });
 });

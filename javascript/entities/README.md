@@ -86,6 +86,7 @@ const pickup = server.pickupManager.createPickup({
 
 #### The Pickup interface
 The following properties are available for pickups:
+  - `pickup.id`: Gets the internal Id assigned to the pickup. _Immutable._
   - `pickup.modelId`: Gets the model Id that's representing the pickup. _Immutable._
   - `pickup.position`: Gets the position of the pickup as a vector. _Immutable._
   - `pickup.type`: Gets the behavioural type of the pickup. _Immutable._
@@ -100,6 +101,13 @@ The following constants are available for pickups:
     it. The pickup will not disappear, nor will trigger default effects.
   - `Pickup.TYPE_VEHICLE`: Pickup _type_ that will only trigger when the player drives in to it with
     a vehicle. The pickup will disappear afterwards.
+
+#### Observing pickup events
+Your feature can observe the [PickupManager](pickup_manager.js) to be notified when players enter or
+leave pickups. The following two events are available:
+
+  - `onPlayerEnterPickup(player, pickup)`: Called when a player stands on a pickup.
+  - `onPlayerLeavePickup(player, pickup)`: Called when a player no longer stands in a pickup.
 
 
 ## Players

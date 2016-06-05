@@ -102,9 +102,7 @@ describe('MockPickup', (it, beforeEach, afterEach) => {
     });
 
     it('should have an interface identical to that of a real Pickup', assert => {
-        const pickupProperties = Object.getOwnPropertyNames(Pickup.prototype).sort();
-        const mockPickupProperties = Object.getOwnPropertyNames(MockPickup.prototype).sort();
-
-        assert.deepEqual(mockPickupProperties, pickupProperties);
+        Object.getOwnPropertyNames(Pickup.prototype).forEach(property =>
+            assert.isTrue(MockPickup.prototype.hasOwnProperty(property)));
     });
 });

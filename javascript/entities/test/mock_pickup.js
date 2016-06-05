@@ -4,6 +4,9 @@
 
 const Vector = require('base/vector.js');
 
+// Global counter for the created pickup Id.
+let mockPickupId = 0;
+
 // Mocked version of the Pickup implementation. Follows the same API, but does not actually create
 // pickups on the SA-MP server.
 class MockPickup {
@@ -27,13 +30,16 @@ class MockPickup {
         this.position_ = position;
         this.virtualWorld_ = virtualWorld;
 
-        this.created_ = true;
+        this.id_ = ++mockPickupId;
 
         Object.seal(this);  // prevent properties from being added or removed
     }
 
+    // Gets the id assigned to this pickup by the SA-MP server.
+    get id() { return this.id_; }
+
     // Returns whether the pickup still exists on the server.
-    isConnected() { return this.created_; }
+    isConnected() { return this.id_ !== null; }
 
     // Gets the model Id used to present this pickup.
     get modelId() { return this.modelId_; }
@@ -47,12 +53,21 @@ class MockPickup {
     // Gets the Virtual World in which this pickup will appear.
     get virtualWorld() { return this.virtualWorld_; }
 
+    // Utility function, only available for testing, that fakes as if the |player| entered this
+    // pickup. It should cause observers to receive the onPlayerEnterPickup event.
+    pickUpByPlayer(player) {
+        this.manager_.onPickupPickedUp({
+            playerid: player.id,
+            pickupid: this.id_
+        });
+    }
+
     // Disposes of the pickup, and removes it from the server.
     dispose() {
         this.manager_.didDisposePickup(this);
         this.manager_ = null;
 
-        this.created_ = false;
+        this.id_ = null;
     }
 }
 

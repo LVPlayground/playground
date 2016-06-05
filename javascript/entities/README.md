@@ -112,6 +112,9 @@ leave pickups. The following two events are available:
 You can assume sensible behaviour for these events. The [PickupManager](pickup_manager.js) abstracts
 away the peculiar behaviour of the OnPlayerPickUpPickup event you may be familiar with.
 
+When changing the position of an entity in a test, the pickup events will be fired if their new
+position is in range of a pickup.
+
 
 ## Players
 TO BE DOCUMENTED

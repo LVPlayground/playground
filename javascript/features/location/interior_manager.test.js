@@ -41,7 +41,7 @@ describe('InteriorManager', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         assert.equal(gunther.interiorId, 0);
-        //assert.equal(gunther.virtualWorld, 0);
+        assert.equal(gunther.virtualWorld, 0);
 
         // Move Gunther to the entrance of the Ammunation in south Las Venturas.
         gunther.position = AmmunationEntranceMarkerPosition;
@@ -50,6 +50,6 @@ describe('InteriorManager', (it, beforeEach, afterEach) => {
         //await wait(5000);
 
         assert.equal(gunther.interiorId, AmmunationInteriorId);
-        //assert.notEqual(gunther.virtualWorld, 0);
+        assert.notEqual(gunther.virtualWorld, 0);
     });
 });

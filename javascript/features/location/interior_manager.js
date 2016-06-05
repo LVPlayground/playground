@@ -24,6 +24,10 @@ class InteriorManager {
         server.pickupManager.addObserver(this);
 
         const markers = JSON.parse(readFile(InteriorMarkersFile));
+
+        // Allocate Virtual Worlds for each of the interiors that will be created.
+        this.virtualWorlds_ = server.virtualWorldManager.allocateBlock(markers.length);
+
         markers.forEach(marker =>
             this.loadMarker(marker));
     }
@@ -43,10 +47,12 @@ class InteriorManager {
         const exitPosition = new Vector(exitMarker.position[0], exitMarker.position[1],
                                         exitMarker.position[2] + 0.5);
 
+        const virtualWorld = this.virtualWorlds_.allocate();
+
         const entrancePickup = this.entities_.createPickup({
             modelId: 19902 /* yellow entrance marker */,
             position: new Vector(...entranceMarker.position),
-            virtualWorld: -1
+            virtualWorld: entranceMarker.dimension
         });
 
         this.markers_.set(entrancePickup, {
@@ -55,13 +61,15 @@ class InteriorManager {
 
             // Destination
             destination: exitPosition.translateTo2D(PositionOffset, exitMarker.rotation),
-            interiorId: exitMarker.interiorId
+
+            interiorId: exitMarker.interiorId,
+            virtualWorld: virtualWorld
         });
 
         const exitPickup = this.entities_.createPickup({
             modelId: 19902 /* yellow entrance marker */,
             position: new Vector(...exitMarker.position),
-            virtualWorld: -1
+            virtualWorld: virtualWorld
         });
 
         this.markers_.set(exitPickup, {
@@ -70,7 +78,9 @@ class InteriorManager {
 
             // Destination
             destination: entrancePosition.translateTo2D(PositionOffset, entranceMarker.rotation),
-            interiorId: entranceMarker.interiorId
+
+            interiorId: entranceMarker.interiorId,
+            virtualWorld: entranceMarker.dimension
         });
     }
 
@@ -84,7 +94,9 @@ class InteriorManager {
         // TODO(Russell): Animate the player whilst they enter the interior.
 
         player.position = marker.destination;
+
         player.interiorId = marker.interiorId;
+        player.virtualWorld = marker.virtualWorld;
     }
 
     dispose() {

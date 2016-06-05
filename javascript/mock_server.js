@@ -9,6 +9,7 @@ const ObjectManager = require('entities/object_manager.js');
 const PlayerManager = require('entities/player_manager.js');
 const TextLabelManager = require('entities/text_label_manager.js');
 const VehicleManager = require('entities/vehicle_manager.js');
+const VirtualWorldManager = require('entities/virtual_world_manager.js');
 
 const MockActor = require('entities/test/mock_actor.js');
 const MockClock = require('base/test/mock_clock.js');
@@ -36,6 +37,7 @@ class MockServer {
         this.playerManager_ = new PlayerManager(MockPlayer /* playerConstructor */);
         this.textLabelManager_ = new TextLabelManager(MockTextLabel /* textLabelConstructor */);
         this.vehicleManager_ = new VehicleManager(MockVehicle /* vehicleConstructor */);
+        this.virtualWorldManager_ = new VirtualWorldManager();
 
         // Connect a series of fake players to the server.
         [
@@ -83,6 +85,9 @@ class MockServer {
     // Gets the real vehicle manager that maintains mocked vehicles.
     get vehicleManager() { return this.vehicleManager_; }
 
+    // Gets the Virtual World manager, responsible for allocating virtual worlds.
+    get virtualWorldManager() { return this.virtualWorldManager_; }
+
     // ---------------------------------------------------------------------------------------------
 
     // Returns whether the Server instance is used to drive tests.
@@ -95,6 +100,7 @@ class MockServer {
         this.featureManager_.dispose();
         this.commandManager_.dispose();
 
+        this.virtualWorldManager_.dispose();
         this.vehicleManager_.dispose();
         this.textLabelManager_.dispose();
         this.playerManager_.dispose();

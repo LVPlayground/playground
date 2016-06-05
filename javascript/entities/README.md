@@ -11,6 +11,7 @@ The following categories of Entities are supported in JavaScript:
   - **[Text Labels](#text-labels)**, arbitrary text attached to an entity, or static at a given
     position.
   - Vehicles
+  - **[Virtual Worlds](#virtual-worlds)**, identifiers for isolated dimensions on the server.
 
 Entities also have a **shared interface**: two methods that are available on each entity, regardless
 of its type.
@@ -158,6 +159,35 @@ The following methods are available for text labels:
 
 ## Vehicles
 TO BE DOCUMENTED
+
+
+## Virtual Worlds
+Virtual Worlds are unique dimensions on the server that have their own set of entities of all sorts—
+players located in one Virtual World cannot entities living in another. They are controlled by the
+server, so not sensitive to the actions of cheaters.
+
+Virtual Worlds are not strictly _entities_, but we do treat them as _something that can be handed
+out_. For example, a feature that needs to be isolated will allocate Virtual Worlds for its own use.
+
+Features can allocate a block of virtual worlds for its own use. Within this block, it's free to
+allocate and release worlds as it pleases. The worlds within the block are guaranteed to be private
+to the feature, and will not be handed out to other parts of Las Venturas Playground.
+
+#### Allocating a block of worlds
+```javascript
+const block = server.virtualWorldManager.allocateBlock(1000);
+console.log(block.size);  // 1000
+
+const virtualWorld = block.allocate();
+
+// ... later, when |virtualWorld| is not needed anymore ...
+
+block.release(virtualWorld);
+
+block.dispose();  // releases all owned Virtual Worlds
+```
+
+You should dispose a block of Virtual Worlds just like you would dispose other resource.
 
 
 ## Utility: ObjectGroup

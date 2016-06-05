@@ -12,6 +12,7 @@ const PickupManager = require('entities/pickup_manager.js');
 const PlayerManager = require('entities/player_manager.js');
 const TextLabelManager = require('entities/text_label_manager.js');
 const VehicleManager = require('entities/vehicle_manager.js');
+const VirtualWorldManager = require('entities/virtual_world_manager.js');
 
 // The Server object is the global instance of the Las Venturas Playground run-time. It is globally
 // available and exposes an interface that enables any aspect of the server to be changed.
@@ -29,6 +30,7 @@ class Server {
         this.playerManager_ = new PlayerManager();
         this.textLabelManager_ = new TextLabelManager();
         this.vehicleManager_ = new VehicleManager();
+        this.virtualWorldManager_ = new VirtualWorldManager();
 
         // TODO(Russell): The DialogManager should be owned by the Server instance.
     }
@@ -69,6 +71,9 @@ class Server {
     // Gets the vehicle manager that controls all vehicles on the server.
     get vehicleManager() { return this.vehicleManager_; }
 
+    // Gets the Virtual World manager, responsible for allocating virtual worlds.
+    get virtualWorldManager() { return this.virtualWorldManager_; }
+
     // ---------------------------------------------------------------------------------------------
 
     // Returns whether the Server instance is used to drive tests.
@@ -81,6 +86,7 @@ class Server {
         this.featureManager_.dispose();
         this.commandManager_.dispose();
 
+        this.virtualWorldManager_.dispose();
         this.vehicleManager_.dispose();
         this.textLabelManager_.dispose();
         this.playerManager_.dispose();

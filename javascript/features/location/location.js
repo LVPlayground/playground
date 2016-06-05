@@ -3,16 +3,19 @@
 // be found in the LICENSE file.
 
 const Feature = require('components/feature_manager/feature.js');
+const InteriorManager = require('features/location/interior_manager.js');
 
 // The location feature encapsulates capabilities related to a player's location: interior handling,
 // teleportation, informational commands and so on.
 class Location extends Feature {
     constructor() {
         super();
+
+        this.interiorManager_ = new InteriorManager();
     }
 
     dispose() {
-
+        this.interiorManager_.dispose();
     }
 }
 

@@ -19,7 +19,7 @@ class MockPickup {
         if (typeof position !== 'object' || !(position instanceof Vector))
             throw new Error('The position of a pickup must be given as a Vector.');
 
-        if (typeof virtualWorld !== 'number' || virtualWorld < 0 || virtualWorld > 2147483646)
+        if (typeof virtualWorld !== 'number' || virtualWorld < -1 || virtualWorld > 2147483646)
             throw new Error('The virtual world of a pickup must be given as a number.');
 
         this.modelId_ = modelId;

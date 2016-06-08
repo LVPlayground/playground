@@ -91,9 +91,9 @@ lvp_minigaming(playerid, params[]) {
 
 #if Feature::DisableFightClub == 0
         if (CFightClub__IsPlayerFighting(subjectId)) {
-            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t-", minigaming,
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s (/fight watch %d)\t-", minigaming,
                 ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
-                GetPlayerMinigameName(subjectId));
+                GetPlayerMinigameName(subjectId), PlayerMatch[subjectId]);
             continue;
         }
 #endif

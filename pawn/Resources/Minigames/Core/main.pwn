@@ -147,6 +147,13 @@ GetPlayerMinigameName(playerId) {
         goto l_Success;
     }
 
+#if Feature::DisableFightClub == 0
+    if (CFightClub__IsPlayerFighting(playerId)) {
+        notice = "FightClub";
+        goto l_Success;
+    }
+#endif
+
     if (!strlen(notice))
         notice = "Unknown";
 

@@ -4,7 +4,7 @@
 
 OnPlayerLVPDisconnect(playerId, reason) {
     if (reason != 2)
-        CSave__OnPlayerDisconnect(playerId, reason);
+        CSave__OnPlayerDisconnect(playerId);
 
     CHideGame__onPlayerDisconnect(playerId);    // Hide & Seek
     CDrink__Disconnect(playerId);               // Drinking handler
@@ -33,9 +33,6 @@ OnPlayerLVPDisconnect(playerId, reason) {
 
     if (playerId == iServerChampion)
         iServerChampion = Player::InvalidId;
-
-    // TODO: Can we remove this? What is it for? It used to be in FightClub.pwn.
-    SetPlayerInterior(playerId, 0); // Either way, don't make SaveInfo save the interior.
 
 #if Feature::DisableFightClub == 0
     CFightClub__OnDisconnect(playerId);

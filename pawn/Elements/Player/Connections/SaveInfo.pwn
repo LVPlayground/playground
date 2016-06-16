@@ -153,8 +153,7 @@ CSave__SaveInfo(playerId) {
         m_playerSaveInfo[slotId][savedAmmo][weaponSlot] = ammo;
     }
 
-    if (false) {}
-    else if (IsPlayerInMapZone(playerId)) {
+    if (IsPlayerInMapZone(playerId)) {
         m_playerSaveInfo[slotId][positionX] = g_PlayerPos[playerId][0];
         m_playerSaveInfo[slotId][positionY] = g_PlayerPos[playerId][1];
         m_playerSaveInfo[slotId][positionZ] = g_PlayerPos[playerId][2];
@@ -296,12 +295,11 @@ CSave__LoadInfo(playerId) {
 }
 
 // On player disconnection we save their data.
-CSave__OnPlayerDisconnect(playerId, reason) {
+CSave__OnPlayerDisconnect(playerId) {
     if (Player(playerId)->isLoggedIn() == true && Player(playerId)->isRegistered() == true)
         CSave__SaveInfo(playerId);
 
     return 1;
-    #pragma unused reason
 }
 
 // Check if we need to load the player's data on spawn.

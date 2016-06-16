@@ -47,9 +47,6 @@ class LegacyAccountBridge {
         // mutable: message_level
         MessageLevelsManager->setPlayerMessageLevel(playerId, DatabaseResult(resultId)->readInteger("message_level"));
 
-        // mutable: message_flags
-        /// @todo Implement message priorities.
-
         // mutable: stats_reaction
         PlayerInfo[playerId][reactionTestWins] = DatabaseResult(resultId)->readInteger("stats_reaction");
 

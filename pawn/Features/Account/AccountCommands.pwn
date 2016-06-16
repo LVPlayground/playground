@@ -89,11 +89,6 @@ class AccountCommands {
             return 1;
         }
 
-        if (Player(victimId)->isAdministrator()) {
-            SendClientMessage(playerId, Color::Error, "You can't force a crew member to reconnect!");
-            return 1;
-        }
-
         new notice[128];
         format(notice, sizeof(notice), "%s (Id:%d) has been successfully forced to reconnect.",
             Player(victimId)->nicknameString(), victimId);
@@ -104,6 +99,8 @@ class AccountCommands {
         Admin(playerId, notice);
 
         SendClientMessage(victimId, Color::Information, "Oops.. seems like you're bugged! Please reconnect!");
+
+        CSave__OnPlayerDisconnect(victimId);
         Player(victimId)->scheduleKick();
 
         return 1;

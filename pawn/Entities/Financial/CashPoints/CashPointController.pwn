@@ -122,10 +122,10 @@ class CashPointController {
         if (IsPlayerInAnyVehicle(playerId))
             return; // never show messages for players in vehicles.
 
+        m_playerInRangeOfCashPoint[playerId] = true;
+
         if (m_hasShownInformativeMessage[playerId])
             return;
-
-        m_playerInRangeOfCashPoint[playerId] = true;
 
         // Show a message to them about what they can do when they're in range of a cash point. We
         // will only show this message once, so mark it as "being shown" here.
@@ -160,6 +160,8 @@ class CashPointController {
     @switch(OnPlayerLeaveZone, CashPointController::CashPointLayerId)
     public onPlayerMoveAwayFromCashPoint(playerId, zoneId) {
         m_playerInRangeOfCashPoint[playerId] = false;
+        m_hasShownInformativeMessage[playerId] = false;
+
         #pragma unused zoneId
     }
 

@@ -107,7 +107,7 @@ class PrivateMessagingManager {
             if (MessageLevelsManager->getPlayerMessageLevel(player) < 1)
                 continue; /* crew member doesn't want to read player PMs */
 
-            SendClientMessage(player, Color::HighlightBlue, notice);
+            SendClientMessage(player, Color::PlayerStatistics, notice);
         }
 
         // Show the message to the receiver.

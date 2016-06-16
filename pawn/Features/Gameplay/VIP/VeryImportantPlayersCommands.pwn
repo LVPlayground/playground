@@ -326,7 +326,7 @@ class VeryImportantPlayersCommands {
             if (MessageLevelsManager->getPlayerMessageLevel(player) < 1)
                 continue; /* the administrator does not wish to see this message */
 
-            SendClientMessage(player, Color::HighlightBlue, notice);
+            SendClientMessage(player, Color::PlayerStatistics, notice);
         }
 
         // Send the actual message the to receiver.

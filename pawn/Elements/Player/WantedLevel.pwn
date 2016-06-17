@@ -74,7 +74,7 @@ WantedLevel__OnPlayerDeath (playerid, killerid) {
 
         }else{
             format(iStr,sizeof(iStr),
-                "* %s (Id:%d) murdered {A9C4E4}%d players {CCCCCC}in a row and is wanted dead for {A9C4E4}$%s{CCCCCC}, with a {A9C4E4}%d star {CCCCCC}wanted level.",
+                "* %s (Id:%d) murdered {A9C4E4}%d players {CCCCCC}in a row and is wanted dead for {A9C4E4}$%s{CCCCCC}.",
                 PlayerName(killerid), killerid, WantedLevel[killerid],formatPrice(iKillValue),iWantedLevel);
 
             SendClientMessageToAllEx(Color::ConnectionMessage,iStr);

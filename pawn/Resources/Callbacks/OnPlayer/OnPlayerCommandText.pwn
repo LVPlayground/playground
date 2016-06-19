@@ -1107,7 +1107,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             ShowBoxForPlayer(playerid, string);
         }
 
-        canMoney[playerid] += moneys;
         GivePlayerMoney(playerid, moneys);
         iLoan[playerid] += moneys;
         iLoanPercent[playerid] = bankRente;
@@ -1487,12 +1486,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         new iTmp[ 256 ], iGivePlayerID;
         iTmp = strtok(cmdtext, idx);
 
-        if(Time->currentTime() - iCashTime[playerid] < 15 && Player(playerid)->isAdministrator() == false)
-        {
-            SendClientMessage( playerid, Color::Red, "You can only send money every 15 seconds." );
-            return 1;
-        }
-
         if( !strlen( iTmp ) )
         {
             SendClientMessage( playerid, Color::White, "Usage: /givecash [player] [amount]");
@@ -1544,12 +1537,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if(iMoney > 10000000)
-        {
-            SendClientMessage( playerid, Color::Red, "Error: You can send a maximum of $10,000,000 per transaction." );
-            return 1;
-        }
-
         if(GetPlayerMoney( playerid ) < iMoney)
         {
             SendClientMessage( playerid, Color::Red, "Error: You have insufficient funds to carry out this transaction." );
@@ -1569,10 +1556,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         format(string, sizeof(string), "You have received $%d from %s (id: %d).", iMoney, iSenderName, playerid);
         SendClientMessage(iGivePlayerID, COLOR_YELLOW, string);
 
-        iCashTime[playerid] = Time->currentTime();
-        canMoney[ iGivePlayerID ] += iMoney;
-
-        format(string,sizeof(string), "%s (Id:%d) has transfered $%s to %s (Id:%d).", iSenderName, playerid, formatPrice(iMoney), iGivePlayerName, iGivePlayerID);
+        format(string,sizeof(string), "%s (Id:%d) has transferred $%s to %s (Id:%d).", iSenderName, playerid, formatPrice(iMoney), iGivePlayerName, iGivePlayerID);
         Admin(playerid, string);
 
         return 1;

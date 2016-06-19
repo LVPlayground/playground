@@ -235,7 +235,6 @@ ResetPlayerStats(playerId) {
     preventKillLamers[playerId] = 0;
     Drivebyer[playerId] = -1;
     HeliKill[playerId] = 0;
-    canMoney[playerId] = 0;
     UserTemped[playerId] = "";
     PlayerHandOfGod[playerId] = 0;
     g_LastSlapTime[playerId] = 0;
@@ -266,7 +265,6 @@ ResetPlayerStats(playerId) {
     iPlayerInVipRoom[playerId] = false;
     iTuneTime[playerId] = 0;
     iDiveTime[playerId] = false;
-    iCashTime[playerId] = false;
     iPlayerDied[playerId] = false;
     MyDeaths[playerId] = 0;
     MyKills[playerId] = 0;

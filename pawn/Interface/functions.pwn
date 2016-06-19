@@ -823,14 +823,6 @@ GetWantedLevel(playerId, kills) {
     return wanted;
 }
 
-AntiDeAMX() {
-    new a[2][] = {
-        "Unarmed (Fist)",
-        "Brass K"
-    };
-    #pragma unused a
-}
-
 SpawnNPCs(playerId) {
     new name[MAX_PLAYER_NAME];
     Player(playerId)->nickname(name, sizeof(name));

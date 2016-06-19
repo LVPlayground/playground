@@ -182,19 +182,6 @@ class ColorManager {
     }
 
     /**
-     * Releases the custom color owned by this player. The only case in which we should be using
-     * this method is when they gained temporary administrator rights and that they were taken away
-     * again. For all other intents and purposes, think twice whether this is what you need.
-     *
-     * @param playerId Id of the player to release the custom color for.
-     */
-    public releasePlayerCustomColor(playerId) {
-        m_playerColorStack[playerId][CustomColorIndex] = InvalidColorId;
-        if (m_playerColorIndex[playerId] == CustomColorIndex)
-            this->synchronizePlayerColorIndex(playerId);
-    }
-
-    /**
      * Sets the color associated with the gang this player has joined. The color can be updated at
      * any time as well, for example because the gang changes their color.
      *

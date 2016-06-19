@@ -263,6 +263,4 @@ main() {
     // test suites are being executed as part of it, it can take a non-trivial amount of time. When
     // the OnGameModeInit() method then starts executing we need to be sure this is finished.
     g_mainFinishedExecuting = true;
-
-    AntiDeAMX(); // Jay's hax
 }

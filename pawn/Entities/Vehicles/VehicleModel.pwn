@@ -133,17 +133,6 @@ class VehicleModel <modelId (NumberOfVehicleModels)> {
     }
 
     /**
-     * Decreases the reference count for a given vehicle model. If this is the last vehicle of its
-     * kind being removed from Las Venturas Playground, also decrease the global model count.
-     *
-     * @param modelId Id of the model which is being dereferenced.
-     */
-    public static decreaseReferenceCount(modelId) {
-        if (--m_usageCount[modelId - VehicleModel::LowestVehicleId] == 0)
-            --m_modelUsageCount;
-    }
-
-    /**
      * Returns how many models have currently been created in Las Venturas Playground.
      *
      * @return integer The amount of unique models currently in the game.

@@ -74,23 +74,6 @@ class NPCManager {
     }
 
     /**
-     * Disconnect a single NPC. They'll be gracefully removed from the server and the non player
-     * character itself will be asked to announce their disconnection after it happened, making
-     * sure that the owning feature knows they're gone.
-     *
-     * @param npcId Id of the non player character that should be disconnecting.
-     */
-    public requestDisconnect(npcId) {
-        if (NonPlayerCharacter(npcId)->status() == AvailableNpcStatus)
-            return;
-
-        // We allow disconnections to be requested with all other statuses. When the bot is still
-        // connecting to the server, we'll remove them once they've connected. If they already are
-        // disconnecting, do nothing and wait for that to complete.
-        NonPlayerCharacter(npcId)->disconnect();
-    }
-
-    /**
      * Disconnect all non player characters owned by a certain feature. As each bot has an owner,
      * we can easily shut down all dependencies owned by a certain feature when it stops, which will
      * be the case for minigame-created NPCs.

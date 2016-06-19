@@ -166,28 +166,6 @@ class Vehicle <vehicleId (MAX_VEHICLES)> {
     }
 
     /**
-     * Toggle whether the vehicle is a persistent vehicle. They will be serialized to a database by
-     * the vehicle storage manager, and be excluded from certain auto-cleanup operations.
-     *
-     * @param bePersistent Should the vehicle be labeled as being persistent?
-     */
-    public setVehiclePersistent(bool: persistent) {
-        new bool: currentlyPersistent = this->isPersistent();
-        if (currentlyPersistent == persistent)
-            return; // nothing has changed about this vehicle's settings.
-
-        if (persistent == true) {
-            // This vehicle is being promoted to being a persistent vehicle.
-            VehicleStorageManager->requestStoreVehicle(vehicleId);
-            this->toggleFlag(PersistentVehicleFlag, true);
-        } else {
-            // We're requesting the vehicle to surrender its persistent status.
-            VehicleStorageManager->requestRemoveVehicle(vehicleId);
-            this->toggleFlag(PersistentVehicleFlag, false);
-        }
-    }
-
-    /**
      * Clean up the vehicle's current state after it has been removed from the gamemode. This makes
      * sure that the isValid() method no longer will return true.
      */
@@ -344,16 +322,6 @@ class Vehicle <vehicleId (MAX_VEHICLES)> {
      */
     public inline interiorId() {
         return (Cell->getByteValue(m_colorsPaintJobAndInterior, 3));
-    }
-
-    /**
-     * Update the interior this vehicle is linked to, and reflact that in the stored state.
-     *
-     * @param interiorId Id of the interior this vehicle should be linked to.
-     */
-    public setInteriorId(interiorId) {
-        LinkVehicleToInterior(vehicleId, interiorId);
-        Cell->setByteValue(m_colorsPaintJobAndInterior, 3, interiorId);
     }
 
     /**

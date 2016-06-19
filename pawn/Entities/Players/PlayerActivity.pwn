@@ -42,14 +42,6 @@ class PlayerActivity <playerId (MAX_PLAYERS)> {
     }
 
     /**
-     * Updates the activity the player is engaged in to |activity|. The update will be propagated to
-     * the JavaScript version of the gamemode as well.
-     */
-    public set(PlayerActivityType: activity) {
-        CallLocalFunction("OnPlayerActivityChange", "dd", playerId, _: activity);
-    }
-
-    /**
      * Updates the activity the player is engaged in to |activity|. Will not propagate.
      */
     public silentSet(PlayerActivityType: activity) {

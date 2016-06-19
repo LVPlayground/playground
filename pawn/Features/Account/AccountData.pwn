@@ -109,21 +109,6 @@ class AccountData <playerId (MAX_PLAYERS)> {
     }
 
     /**
-     * Translates a gang role string to the associated GangRole enumeration we use in the gamemode.
-     *
-     * @param role The string containing the gang role.
-     * @return GangRole The GangRole enumeration value associated with the text.
-     */
-    public static GangRole: stringToGangRole(role[]) {
-        if (!strcmp(role, "Leader"))
-            return GangLeaderRole;
-        else if (!strcmp(role, "Manager"))
-            return GangManagerRole;
-
-        return GangMemberRole;
-    }
-
-    /**
      * When data is available from the database, this method will be invoked giving us the chance
      * to apply it to the data members in this class.
      *

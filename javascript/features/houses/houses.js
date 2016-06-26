@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const Feature = require('components/feature_manager/feature.js');
+const HouseCommands = require('features/houses/house_commands.js');
 const HouseManager = require('features/houses/house_manager.js');
 
 // Houses are points on the map that players may purchase and then call their house. While the
@@ -12,8 +13,16 @@ class Houses extends Feature {
     constructor() {
         super();
 
+        // Various actions will result in announcements being made to administrators.
+        const announce = this.defineDependency('announce');
+
+        // House pricing is determined using a predefined set of algorithms.
+        const economy = this.defineDependency('economy');
+
         this.manager_ = new HouseManager();
         this.manager_.loadHousesFromDatabase();
+
+        this.commands_ = new HouseCommands(this.manager_, announce, economy);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -25,6 +34,7 @@ class Houses extends Feature {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        this.commands_.dispose();
         this.manager_.dispose();
     }
 }

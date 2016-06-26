@@ -25,7 +25,7 @@ class Economy extends Feature {
     // Calculates and returns the price of a house at |position| with the given |interiorValue|,
     // which must be in range of [0, 9]. A variance factor will be applied to the price.
     calculateHousePrice(position, interiorValue) {
-        this.economyCalculator_.calculateHousePrice(
+        return this.economyCalculator_.calculateHousePrice(
             /* residentialValue */ this.residentialValueMap_.query(position),
             /* interiorValue */    interiorValue);
     }
@@ -33,7 +33,7 @@ class Economy extends Feature {
     // Calculates and returns the price of placing a vehicle with |modelId| at the |position|.
     // A variance factor will be applied to the price.
     calculateHouseVehiclePrice(position, modelId) {
-        this.economyCalculator_.calculateHouseVehiclePrice(
+        return this.economyCalculator_.calculateHouseVehiclePrice(
             /* residentialValue */ this.residentialValueMap_.query(position),
             /* vehicleValue */     this.vehicleValueMap_.query(modelId));
     }

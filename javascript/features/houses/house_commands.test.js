@@ -29,7 +29,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     it('should only be available for Management members', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        assert.isTrue(await gunther.issueCommand('/houses'));
+        assert.isTrue(await gunther.issueCommand('/house'));
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0],
@@ -39,9 +39,9 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         gunther.clearMessages();
         gunther.level = Player.LEVEL_MANAGEMENT;
 
-        assert.isTrue(await gunther.issueCommand('/houses'));
+        assert.isTrue(await gunther.issueCommand('/house'));
         assert.equal(gunther.messages.length, 4);
-        assert.equal(gunther.messages[0], Message.HOUSES_HEADER);
+        assert.equal(gunther.messages[0], Message.HOUSE_HEADER);
     });
 
     it('should allow for creation of house locations', async(assert) => {
@@ -54,12 +54,12 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         assert.equal(manager.locationCount, 0);
 
-        assert.isTrue(await gunther.issueCommand('/houses create'));
+        assert.isTrue(await gunther.issueCommand('/house create'));
 
         assert.equal(gunther.messages.length, 1);
         assert.isTrue(
             gunther.messages[0].includes(
-                Message.format(Message.HOUSES_ANNOUNCE_CREATED, gunther.name, gunther.id)));
+                Message.format(Message.HOUSE_ANNOUNCE_CREATED, gunther.name, gunther.id)));
 
         assert.equal(manager.locationCount, 1);
     });
@@ -67,11 +67,11 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     it('should clean up after itself', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        assert.isTrue(await gunther.issueCommand('/houses'));
+        assert.isTrue(await gunther.issueCommand('/house'));
 
         commands.dispose();
         commands = null;
 
-        assert.isFalse(await gunther.issueCommand('/houses'));
+        assert.isFalse(await gunther.issueCommand('/house'));
     });
 });

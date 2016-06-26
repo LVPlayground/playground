@@ -4,7 +4,7 @@
 
 const Dialog = require('components/dialogs/dialog.js');
 
-// This class provides the `/houses` command available to administrators to manage parts of the
+// This class provides the `/house` command available to administrators to manage parts of the
 // Houses feature on Las Venturas Playground. Most interaction occurs through dialogs.
 class HouseCommands {
     constructor(manager, announce, economy) {
@@ -13,18 +13,18 @@ class HouseCommands {
         this.announce_ = announce;
         this.economy_ = economy;
 
-        // Command: /houses [create]
-        server.commandManager.buildCommand('houses')
+        // Command: /house [create/modify]
+        server.commandManager.buildCommand('house')
             .restrict(Player.LEVEL_MANAGEMENT)
             .sub('create')
-                .build(HouseCommands.prototype.onHousesCreateCommand.bind(this))
-            .build(HouseCommands.prototype.onHousesCommand.bind(this));
+                .build(HouseCommands.prototype.onHouseCreateCommand.bind(this))
+            .build(HouseCommands.prototype.onHouseCommand.bind(this));
     }
 
-    // Called when an administrator types `/houses create`. It will confirm with them whether they
+    // Called when an administrator types `/house create`. It will confirm with them whether they
     // do want to create a house at their current location, together with the price range for which
     // the house will be on offer to players.
-    async onHousesCreateCommand(player) {
+    async onHouseCreateCommand(player) {
         const position = player.position;
 
         const minimumPrice = this.economy_.calculateHousePrice(position, 0 /* interiorValue */);
@@ -32,7 +32,7 @@ class HouseCommands {
 
         const confirmation =
             await Dialog.displayMessage(player, 'Create a new house location',
-                                        Message.format(Message.HOUSES_CREATE_CONFIRM, minimumPrice,
+                                        Message.format(Message.HOUSE_CREATE_CONFIRM, minimumPrice,
                                                                                       maximumPrice),
                                         'Yes' /* leftButton */, 'No' /* rightButton */);
 
@@ -43,25 +43,25 @@ class HouseCommands {
 
         // Announce creation of the location to other administrators.
         this.announce_.announceToAdministrators(
-            Message.HOUSES_ANNOUNCE_CREATED, player.name, player.id);
+            Message.HOUSE_ANNOUNCE_CREATED, player.name, player.id);
 
         // Display a confirmation dialog to the player to inform them of their action.
         Dialog.displayMessage(player, 'Create a new house location',
-                              Message.format(Message.HOUSES_CREATE_CONFIRMED),
+                              Message.format(Message.HOUSE_CREATE_CONFIRMED),
                               'Close' /* leftButton */, '' /* rightButton */);
     }
 
-    // Called when an administrator types the `/houses` command. Gives an overview of the available
+    // Called when an administrator types the `/house` command. Gives an overview of the available
     // options, with information on how to use the command.
-    onHousesCommand(player) {
-        player.sendMessage(Message.HOUSES_HEADER);
-        player.sendMessage(Message.HOUSES_INFO_1);
-        player.sendMessage(Message.HOUSES_INFO_2);
-        player.sendMessage(Message.COMMAND_USAGE, '/houses [create]');
+    onHouseCommand(player) {
+        player.sendMessage(Message.HOUSE_HEADER);
+        player.sendMessage(Message.HOUSE_INFO_1);
+        player.sendMessage(Message.HOUSE_INFO_2);
+        player.sendMessage(Message.COMMAND_USAGE, '/house [create/modify]');
     }
 
     dispose() {
-        server.commandManager.removeCommand('houses');
+        server.commandManager.removeCommand('house');
 
         this.economy_ = null;
         this.announce_ = null;

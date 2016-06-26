@@ -27,13 +27,15 @@ There are several scenarios that may occur when a player enters a house marker.
     - **They don't have access to the house**: Error message, with an option to force-enter.
 
 
-## Command: /houses
-The `/houses` command is available to administrators for administrating the available houses. It has
+## Command: /house
+The `/house` command is available to administrators for administrating the available houses. It has
 the following options:
 
-  - **/houses create**: Creates a new house location. The price range of houses on this location is
+  - **/house create**: Creates a new house location. The price range of houses on this location is
     predetermined by an algorithm, and cannot be modified.
-  - **/houses**: Displays information about the command.
+  - **/house modify**: Modifies settings for the house closest to the administrator issuing the
+    command. Enables creation and removal of parking spots.
+  - **/house**: Displays information about the command.
 
 
 ## FAQ: Can I own multiple houses?

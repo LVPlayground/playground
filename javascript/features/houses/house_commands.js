@@ -22,7 +22,7 @@ class HouseCommands {
     }
 
     // Called when an administrator types `/houses create`. It will confirm with them whether they
-    // do want to create an house at their current location, together with the price range for which
+    // do want to create a house at their current location, together with the price range for which
     // the house will be on offer to players.
     async onHousesCreateCommand(player) {
         const position = player.position;

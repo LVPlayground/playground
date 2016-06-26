@@ -40,8 +40,8 @@ the following options:
 No.
 
 
-## FAQ: Who's got access to an house?
-The owner of an house and their [friends](../friends/). Administrators can always access an house.
+## FAQ: Who's got access to a house?
+The owner of a house and their [friends](../friends/). Administrators can always access a house.
 Players who are not registered with Las Venturas Playground are not able to access houses.
 
 In the future, houses may feature dedicated access lists configurable by the owner.

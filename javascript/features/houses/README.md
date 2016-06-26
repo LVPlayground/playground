@@ -10,3 +10,11 @@ as opposed to administrators. This enables us to keep control over pricing.
 The following concepts are important for this feature:
   - **House locations** can be created by administrators around San Andreas. These define where
     players are able to purchase the houses of their liking.
+
+## Command: /houses
+The `/houses` command is available to administrators for administrating the available houses. It has
+the following options:
+
+  - **/houses create**: Creates a new house location. The price range of houses on this location is
+    predetermined by an algorithm, and cannot be modified.
+  - **/houses**: Displays information about the command.

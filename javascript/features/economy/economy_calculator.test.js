@@ -21,10 +21,7 @@ describe('EconomyCalculator', (it, beforeEach, afterEach) => {
 
         for (let iter = 0; iter < 5; iter++) {
             // Advancing the server's clock will cause the wait() function to yield.
-            server.clock.advance(60 * 60 * 1000 /* updateFrequency */);
-
-            // Wait until the next microtask execution time, to make sure the handler gets invoked.
-            await Promise.resolve();
+            await server.clock.advance(60 * 60 * 1000 /* updateFrequency */);
 
             if (calculator.variance === previousVariance)
                 ++misses;
@@ -39,8 +36,7 @@ describe('EconomyCalculator', (it, beforeEach, afterEach) => {
         // Updating the variance should stop when the calculator has been disposed of.
         calculator.dispose();
 
-        server.clock.advance(60 * 60 * 1000 /* updateFrequency */);
-        await Promise.resolve();
+        await server.clock.advance(60 * 60 * 1000 /* updateFrequency */);
 
         assert.equal(previousVariance, calculator.variance);
     });

@@ -100,6 +100,13 @@
     "GANGS_NOT_REGISTERED": "@error You need to register on https://sa-mp.nl/ before you can participate in a gang.",
     "GANGS_ONLINE": "{%s}[%s]{FFFFFF} - %s ({B1FC17}%d player%s{FFFFFF})",
 
+    "HOUSES_ANNOUNCE_CREATED": "%s (Id: %d) has created a new house location.",
+    "HOUSES_CREATE_CONFIRM": "Houses will cost between %$ and %$ at this location. Continue?",
+    "HOUSES_CREATE_CONFIRMED": "The house location has been created!",
+    "HOUSES_HEADER": "{B1FC17}Houses on Las Venturas Playground",
+    "HOUSES_INFO_1": "Personalized, player-owned houses spread throughout San Andreas that are",
+    "HOUSES_INFO_2": "available to the richer players on the server.",
+
     "IRC_CHAT_MESSAGE_SENT": "{33AA33}Message sent to {FFFFFF}%s {33AA33}as {FFFFFF}%s{33AA33}: {FFFFFF}%s",
     
     "LVP_ANNOUNCE_ADMIN_NOTICE": "%s (Id: %d) has %s the %s option.",

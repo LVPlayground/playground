@@ -67,7 +67,7 @@ describe('ReportCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should show a message to an other player if the reported player is reported more than 60' +
-        ' seconds ago', assert => {
+        ' seconds ago', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
         const lucy    = server.playerManager.getById(2 /* Lucy    */);
@@ -75,7 +75,7 @@ describe('ReportCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(russell.issueCommand('/report 0 bullet-amount freezed'));
         
         // Advance the server's time by two minutes to fake the wait having passed.
-        server.clock.advance(120000);
+        await server.clock.advance(120000);
 
         assert.isTrue(lucy.issueCommand('/report 0 weird weapon-use'));
 

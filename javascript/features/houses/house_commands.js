@@ -64,6 +64,8 @@ class HouseCommands {
         server.commandManager.removeCommand('houses');
 
         this.economy_ = null;
+        this.announce_ = null;
+
         this.manager_ = null;
     }
 }

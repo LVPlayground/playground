@@ -55,16 +55,24 @@ class MockClock {
 
         this.offset_ += milliseconds;
 
-        const currentMonotonicallyIncreasingTime = this.monotonicallyIncreasingTime();
-        while (!this.timers_.isEmpty()) {
+        return this.resolveTimerIfNecessary(this.monotonicallyIncreasingTime());
+    }
+
+    // Returns a promise that will be resolved when the timer at the top of the stack has been
+    // invoked when this is appropriate on the current time advancement.
+    resolveTimerIfNecessary(currentMonotonicallyIncreasingTime) {
+        return new Promise(resolve => {
+            if (this.timers_.isEmpty())
+                return resolve();
+
             if (this.timers_.peek().time > currentMonotonicallyIncreasingTime)
-                continue;
+                return resolve();
 
             const timer = this.timers_.pop();
             timer.resolver();
-        }
 
-        return Promise.resolve();
+            resolve(this.resolveTimerIfNecessary(currentMonotonicallyIncreasingTime));
+        });
     }
 
     // Automatically called when using the wait() method. Will wait for |milliseconds|, which can

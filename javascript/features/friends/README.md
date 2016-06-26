@@ -1,17 +1,24 @@
-# Feature: Report
-We like to keep the server clean from hackers, cheaters, etc. To give the players the ability to
-help with this we provide the report-feature for it. Via this feature players can report players to
-the administrators in-game and on IRC. On this way administrators can take a look to it and decide
-what to do.
+# Feature: Friends
+Players have the ability to maintain a list of their friends on Las Venturas Playground. Adding
+another player as a friend does not require approval from them, in fact, they will likely never
+find out unless you decide to tell them.
 
 ## Commands
 The following commands are available as part of the feature:
 
-  - **/report [reportedPlayer] [reason]**: Reports the give in-game player with the specified reason to
-    administators.
+  - **/friends add [player]**: Adds the `player` to your list of friends. They must be online.
+  - **/friends remove [player]**: Removes the `player` from your list of friends. They don't have
+    to be online for you to use this command.
+  - **/friends**: Lists the friends you have on Las Venturas Playground.
 
 ## Features
 The following features are enabled for those maintaining a list of friends:
 
-  - **What did they type?**: Since the [player]-parameter relies on partial matching, we show the
-    player who is reporting someone the reported player and given reason.
+  - **Connection beep**: A sound will be played when they connect to the server.
+
+## FAQ: I'm an admin, can I see somebody's friends?
+Yes, you can. Simple append the player whose friends you want to see to the `/friends` command:
+
+```
+/friends [player]
+```

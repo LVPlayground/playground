@@ -38,6 +38,9 @@ testRunner.run('.*\.test\.js').then(notifyReady).then(() => {
         gangChat:       require('features/gang_chat/gang_chat.js'),
         gangs:          require('features/gangs/gangs.js'),
 
+        // House-related features
+        houses:         require('features/houses/houses.js'),
+
         // General smaller, self-contained features
         friends:        require('features/friends/friends.js'),
         playground:     require('features/playground/playground.js'),

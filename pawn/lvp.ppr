@@ -225,7 +225,6 @@
     <DiskObject>\Features\Visual\PlayerStatisticsInterface.pwn</DiskObject>
     <DiskObject>\Framework\</DiskObject>
     <DiskObject>\Framework\Annotations.pwn</DiskObject>
-    <DiskObject>\Framework\Debug.pwn</DiskObject>
     <DiskObject>\Framework\Tests.pwn</DiskObject>
     <DiskObject>\Interface\</DiskObject>
     <DiskObject>\Interface\Cell.pwn</DiskObject>

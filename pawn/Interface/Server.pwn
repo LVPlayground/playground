@@ -93,7 +93,8 @@ stock SetWorldTimeHook({Float,_}:...) { }
 
 TextDrawDestroyHook(Text: textDrawId) {
     if (_: textDrawId == 0)
-        CRASH("WARNING: Text draw with Id=0 is being destroyed.");
+        return 0;
+
     return TextDrawDestroy(textDrawId);
 }
 

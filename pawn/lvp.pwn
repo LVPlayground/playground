@@ -48,9 +48,6 @@
 // The maximum number of players that will be able to join the server.
 #define LVP_MAX_PLAYERS 208
 
-// Debug defines from the framework need to be available everywhere.
-#include "Framework/Debug.pwn"
-
 // Include the configuration file of Las Venturas Playground, together with the release file which
 // defines features that may not be enabled for local beta-server builds.
 #include "config.pwn"

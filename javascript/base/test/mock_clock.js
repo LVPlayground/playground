@@ -18,12 +18,12 @@ class MockClock {
     constructor() {
         this.offset_ = 0;
 
-        // Maintain a prioritized queue of the pending timers in descending order.
+        // Maintain a prioritized queue of the pending timers in ascending order.
         this.timers_ = new PriorityQueue((lhs, rhs) => {
             if (lhs === rhs)
                 return 0;
 
-            return lhs > rhs ? -1 : 1;
+            return lhs > rhs ? 1 : -1;
         });
 
         if (existingInstance !== null)

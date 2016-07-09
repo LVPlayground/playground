@@ -106,6 +106,7 @@
     "HOUSE_HEADER": "{B1FC17}Houses on Las Venturas Playground",
     "HOUSE_INFO_1": "Personalized, player-owned houses spread throughout San Andreas that are",
     "HOUSE_INFO_2": "available to the richer players on the server.",
+    "HOUSE_MODIFY_NONE_NEAR": "@error You need to be close to a house in order to use this command.",
 
     "IRC_CHAT_MESSAGE_SENT": "{33AA33}Message sent to {FFFFFF}%s {33AA33}as {FFFFFF}%s{33AA33}: {FFFFFF}%s",
     

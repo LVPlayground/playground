@@ -3,6 +3,10 @@
 // be found in the LICENSE file.
 
 const Dialog = require('components/dialogs/dialog.js');
+const Vector = require('base/vector.js');
+
+// Maximum number of milliseconds during which the identity beam should be displayed.
+const IDENTITY_BEAM_DISPLAY_TIME_MS = 5000;
 
 // This class provides the `/house` command available to administrators to manage parts of the
 // Houses feature on Las Venturas Playground. Most interaction occurs through dialogs.
@@ -18,6 +22,8 @@ class HouseCommands {
             .restrict(Player.LEVEL_MANAGEMENT)
             .sub('create')
                 .build(HouseCommands.prototype.onHouseCreateCommand.bind(this))
+            .sub('modify')
+                .build(HouseCommands.prototype.onHouseModifyCommand.bind(this))
             .build(HouseCommands.prototype.onHouseCommand.bind(this));
     }
 
@@ -33,7 +39,7 @@ class HouseCommands {
         const confirmation =
             await Dialog.displayMessage(player, 'Create a new house location',
                                         Message.format(Message.HOUSE_CREATE_CONFIRM, minimumPrice,
-                                                                                      maximumPrice),
+                                                                                     maximumPrice),
                                         'Yes' /* leftButton */, 'No' /* rightButton */);
 
         if (!confirmation.response)
@@ -49,6 +55,33 @@ class HouseCommands {
         Dialog.displayMessage(player, 'Create a new house location',
                               Message.format(Message.HOUSE_CREATE_CONFIRMED),
                               'Close' /* leftButton */, '' /* rightButton */);
+    }
+
+    // Called when an administrator types the `/house modify` command to change settings for the
+    // house closest to their location, allowing them to, for example, add or remove parking lots.
+    async onHouseModifyCommand(player) {
+        const closestLocation =
+            await this.manager_.findClosestLocation(player, 15 /* maximumDistance */);
+
+        if (!closestLocation) {
+            player.sendMessage(Message.HOUSE_MODIFY_NONE_NEAR);
+            return;
+        }
+
+        // Create a beam at the house's entrance to clarify what's being edited.
+        const identityBeamObject = server.objectManager.createObject({
+            modelId: 11753 /* narrow red beam */,
+            position: closestLocation.position,
+            rotation: new Vector(0, 0, 0)
+        });
+
+        // Automatically remove the beam after the given number of milliseconds.
+        wait(IDENTITY_BEAM_DISPLAY_TIME_MS).then(() => {
+            if (identityBeamObject.isConnected())
+                identityBeamObject.dispose();
+        });
+
+        // ...
     }
 
     // Called when an administrator types the `/house` command. Gives an overview of the available

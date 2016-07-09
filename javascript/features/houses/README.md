@@ -22,9 +22,11 @@ There are several scenarios that may occur when a player enters a house marker.
     - **They've got access to the house**: Teleported to the house's interior.
     - **They don't have access to the house**: Error message.
   - The player is an administrator.
-    - **The location is available**: Dialog inviting them to purchase or remove the location.
+    - **The location is available**: Dialog inviting them to purchase the location.
     - **They've got access to the house**: Teleported to the house's interior.
     - **They don't have access to the house**: Error message, with an option to force-enter.
+
+Administrators can modify or remove a house by using the `/house modify` command.
 
 
 ## Command: /house

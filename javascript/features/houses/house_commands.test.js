@@ -7,6 +7,7 @@ const HouseCommands = require('features/houses/house_commands.js');
 const HouseManager = require('features/houses/house_manager.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 const MockHouseDatabase = require('features/houses/test/mock_house_database.js');
+const Vector = require('base/vector.js');
 
 describe('HouseCommands', (it, beforeEach, afterEach) => {
     let commands = null;
@@ -62,6 +63,42 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
                 Message.format(Message.HOUSE_ANNOUNCE_CREATED, gunther.name, gunther.id)));
 
         assert.equal(manager.locationCount, 1);
+    });
+
+    it('should issue an error when trying to modify a non-existing house', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        await manager.loadHousesFromDatabase();
+
+        gunther.identify();
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
+        assert.isTrue(await gunther.issueCommand('/house modify'));
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.HOUSE_MODIFY_NONE_NEAR);
+    });
+
+    it('should display an identity beam when modifying a nearby house', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const objectCount = server.objectManager.count;
+
+        await manager.loadHousesFromDatabase();
+
+        gunther.identify();
+        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest house
+
+        assert.isTrue(gunther.issueCommand('/house modify'));
+        await manager.findClosestLocation(gunther);
+
+        assert.equal(gunther.messages.length, 0);
+
+        assert.equal(server.objectManager.count, objectCount + 1);
+
+        await server.clock.advance(30000);  // forward the clock to test the auto-expire function
+
+        assert.equal(server.objectManager.count, objectCount);
     });
 
     it('should clean up after itself', async(assert) => {

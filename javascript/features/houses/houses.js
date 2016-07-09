@@ -19,7 +19,7 @@ class Houses extends Feature {
         // House pricing is determined using a predefined set of algorithms.
         const economy = this.defineDependency('economy');
 
-        this.manager_ = new HouseManager();
+        this.manager_ = new HouseManager(economy);
         this.manager_.loadHousesFromDatabase();
 
         this.commands_ = new HouseCommands(this.manager_, announce, economy);

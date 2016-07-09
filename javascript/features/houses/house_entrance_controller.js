@@ -7,8 +7,11 @@ const ScopedEntities = require('entities/scoped_entities.js');
 // The house entrance controller is responsible for the entrances associated with each of the house
 // locations, regardless of whether the location has been occupied.
 class HouseEntranceController {
-    constructor(entities) {
+    constructor(manager, economy) {
         this.entities_ = new ScopedEntities();
+
+        this.manager_ = manager;
+        this.economy_ = economy;
 
         // Maps providing mappings from location to pickup, and from pickup to location.
         this.locations_ = new Map();
@@ -49,7 +52,26 @@ class HouseEntranceController {
         if (!location)
             return;
 
-        // TODO: Respond to the player entering the location's entrance.
+        const playerHouse = this.manager_.getHouseForPlayer(player);
+
+        // Offer the |player| the ability to purchase the house when it's available and they don't
+        // own another house yet (players are limited to owning one house at a time).
+        if (location.isAvailable()) {
+            const minimumPrice =
+                this.economy_.calculateHousePrice(location.position, 0 /* interiorValue */);
+
+            // The |location| is available, but the |player| owns a house.
+            if (playerHouse !== null) {
+                player.sendMessage(Message.HOUSE_PICKUP_CANNOT_PURCHASE, minimumPrice);
+                return;
+            }
+
+            // The |location| is available, and the |player| does not own the house.
+            player.sendMessage(Message.HOUSE_PICKUP_CAN_PURCHASE, minimumPrice);
+            return;
+        }
+
+        // TODO: Respond to the player entering the occupied location's entrance.
         console.log('Entered location #' + location.id);
     }
 

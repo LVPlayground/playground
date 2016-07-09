@@ -41,6 +41,8 @@ class TestSuite {
       let originalServer = global.server;
       let carriedException = null;
 
+      const assert = new Assert(this, test.description);
+
       yield new Promise(resolve => {
         // (1) Install the MockServer as the global `server` object.
         global.server = new MockServer();
@@ -48,14 +50,14 @@ class TestSuite {
         // (2) Execute the beforeEach function, which will be considered asynchronous if it returns
         // a promise. Otherwise resolve the preparation step immediately.
         if (this.beforeEach_)
-          resolve(this.beforeEach_());
+          resolve(this.beforeEach_(assert));
         else
           resolve();
 
       }).then((f) => {
         // (3) Execute the test case itself. This will be considered asynchronous if it returns a
         // promise. A new Assert instance will be created for each test.
-        return test.fn(new Assert(this, test.description));
+        return test.fn(assert);
       }).catch(error => {
         // (3b) If the test threw an exception that's different from an AssertionFailedError, it's
         // a problem outside of the test framework that should be displayed consistently.
@@ -72,7 +74,7 @@ class TestSuite {
         // (4) Execute the afterEach function, which, as the other steps, will be considered
         // asynchronous when it returns a promise.
         if (this.afterEach_)
-          return this.afterEach_();
+          return this.afterEach_(assert);
 
       }).catch(error => {
         // (5) If the afterEach() method threw an exception, store this in |carriedException| unless

@@ -111,6 +111,8 @@
     "HOUSE_MODIFY_DELETE_CONFIRM": "Are you absolutely sure that you want to remove this location? Any occupants will be evicted with it.",
     "HOUSE_MODIFY_DELETE_CONFIRMED": "The house location has been deleted.",
     "HOUSE_MODIFY_NONE_NEAR": "@error You need to be close to a house in order to use this command.",
+    "HOUSE_PICKUP_CAN_PURCHASE": "{10F441}This house is available for purchase, starting at %$. Type {DDFFDD}/buy{10F441} if you're interested!",
+    "HOUSE_PICKUP_CANNOT_PURCHASE": "{CCCCCC}This house is available for purchase, starting at %$.",
 
     "IRC_CHAT_MESSAGE_SENT": "{33AA33}Message sent to {FFFFFF}%s {33AA33}as {FFFFFF}%s{33AA33}: {FFFFFF}%s",
     

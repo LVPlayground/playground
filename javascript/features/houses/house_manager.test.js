@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const Economy = require('features/economy/economy.js');
 const HouseManager = require('features/houses/house_manager.js');
 const MockHouseDatabase = require('features/houses/test/mock_house_database.js');
 
@@ -10,7 +11,7 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
 
     afterEach(() => manager.dispose());
     beforeEach(() => {
-        manager = new HouseManager();
+        manager = new HouseManager(new Economy());
         manager.database_ = new MockHouseDatabase();
     });
 

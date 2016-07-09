@@ -9,7 +9,7 @@ const HouseLocation = require('features/houses/house_location.js');
 // The house manager orchestrates all details associated with housing, manages data and responds to
 // player connection and disconnection events.
 class HouseManager {
-    constructor() {
+    constructor(economy) {
         this.database_ = new HouseDatabase();
         this.dataLoadedPromise_ = new Promise(resolver =>
             this.dataLoadedResolver_ = resolver);
@@ -17,7 +17,7 @@ class HouseManager {
         this.locations_ = new Set();
 
         // Responsible for all entrances and exits associated with the locations.
-        this.entranceController_ = new HouseEntranceController();
+        this.entranceController_ = new HouseEntranceController(this, economy);
     }
 
     // Gets the number of house locations that have been made available.
@@ -77,6 +77,11 @@ class HouseManager {
             return null;  // the location is too far away
 
         return closestLocation;
+    }
+
+    // Returns the house owned by |player|. Assumes that the data has been loaded already.
+    getHouseForPlayer(player) {
+        return null;
     }
 
     // Removes the given house |location|, including the house tied to it, if any. This action can

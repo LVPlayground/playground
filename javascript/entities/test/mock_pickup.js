@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Vector = require('base/vector.js');
-
 // Global counter for the created pickup Id.
 let mockPickupId = 0;
 

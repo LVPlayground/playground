@@ -4,7 +4,6 @@
 
 const ObjectManager = require('entities/object_manager.js');
 const MockObject = require('entities/test/mock_object.js');
-const Vector = require('base/vector.js');
 
 describe('ObjectManager', (it, beforeEach, afterEach) => {
     let manager = null;

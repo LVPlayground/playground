@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Vector = require('base/vector.js');
-
 // Mocked database class that implements the same API as the regular HouseDatabase class, but will
 // return faked data for the purposes of testing rather than consult the database.
 class MockHouseDatabase {

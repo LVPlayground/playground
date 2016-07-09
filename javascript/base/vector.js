@@ -89,4 +89,4 @@ class Vector {
     }
 };
 
-exports = Vector;
+global.Vector = Vector;

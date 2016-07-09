@@ -4,7 +4,6 @@
 
 const MockPlayer = require('entities/test/mock_player.js');
 const MockVehicle = require('entities/test/mock_vehicle.js');
-const Vector = require('base/vector.js');
 
 // Mocked version of the TextLabel class that supports the same API, but won't interact with the
 // SA-MP server in order to do its actions.

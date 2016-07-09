@@ -5,7 +5,6 @@
 const Feature = require('components/feature_manager/feature.js');
 const ObjectGroup = require('entities/object_group.js');
 const ObjectRemover = require('features/player_favours/object_remover.js');
-const Vector = require('base/vector.js');
 
 // Implementation of a collection of features that have been implemented specifically by request of
 // a particular player. The actual features and their owners are documented in the README.md file.

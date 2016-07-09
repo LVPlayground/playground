@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 const ResidentialValueMap = require('features/economy/residential_value_map.js');
-const Vector = require('base/vector.js');
 
 describe('ResidentialValueMap', it => {
     it('should be able to load and query the data', assert => {

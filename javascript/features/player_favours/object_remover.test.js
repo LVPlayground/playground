@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 const ObjectRemover = require('features/player_favours/object_remover.js');
-const Vector = require('base/vector.js');
 
 describe('ObjectRemover', (it, beforeEach, afterEach) => {
     let gunther = null;

@@ -7,7 +7,6 @@ const HouseCommands = require('features/houses/house_commands.js');
 const HouseManager = require('features/houses/house_manager.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 const MockHouseDatabase = require('features/houses/test/mock_house_database.js');
-const Vector = require('base/vector.js');
 
 describe('HouseCommands', (it, beforeEach, afterEach) => {
     let commands = null;

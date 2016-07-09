@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 const PriorityQueue = require('base/priority_queue.js');
-const Vector = require('base/vector.js');
 const VehicleStreamer = require('features/vehicles/vehicle_streamer.js');
 
 const createStoredVehicle = require('features/vehicles/test/create_stored_vehicle.js');

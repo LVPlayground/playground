@@ -4,7 +4,6 @@
 
 const Race = require('features/races/race.js');
 const RaceCheckpoint = require('components/checkpoints/race_checkpoint.js');
-const Vector = require('base/vector.js');
 
 // Private symbol to prevent people from using the RaceImporter's constructor.
 const PrivateSymbol = Symbol('Required for constructing the RaceImporter.');

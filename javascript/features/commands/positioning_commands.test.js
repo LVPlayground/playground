@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 const PositioningCommands = require('features/commands/positioning_commands.js');
-const Vector = require('base/vector.js');
 
 describe('PositioningCommands', (it, beforeEach, afterEach) => {
     let positioningCommands = null;

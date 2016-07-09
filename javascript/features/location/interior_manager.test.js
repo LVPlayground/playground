@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 const InteriorManager = require('features/location/interior_manager.js');
-const Vector = require('base/vector.js');
 
 describe('InteriorManager', (it, beforeEach, afterEach) => {
     let manager = null;

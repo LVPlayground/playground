@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 const Dialog = require('components/dialogs/dialog.js');
-const Vector = require('base/vector.js');
 
 // Maximum number of milliseconds during which the identity beam should be displayed.
 const IDENTITY_BEAM_DISPLAY_TIME_MS = 5000;

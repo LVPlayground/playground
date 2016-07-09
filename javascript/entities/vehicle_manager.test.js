@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 const MockVehicle = require('entities/test/mock_vehicle.js');
-const Vector = require('base/vector.js');
 const VehicleManager = require('entities/vehicle_manager.js');
 
 describe('VehicleManager', (it, beforeEach, afterEach) => {

@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Vector = require('base/vector.js');
-
 // Query to load the locations at which houses can be created from the database.
 const LOAD_LOCATIONS_QUERY = `
     SELECT

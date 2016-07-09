@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 const ObjectGroup = require('entities/object_group.js');
-const Vector = require('base/vector.js');
 
 // The animation that the DJ on the ship should be moving with.
 const DjAnimation = { library: 'LOWRIDER', name: 'RAP_B_Loop', loop: true };

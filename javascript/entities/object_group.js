@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 const ScopedEntities = require('entities/scoped_entities.js');
-const Vector = require('base/vector.js');
 
 // Private symbol ensuring that the ColorPicker constructor won't be used.
 const PrivateSymbol = Symbol('Please use the static methods.');

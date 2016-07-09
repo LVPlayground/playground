@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Vector = require('base/vector.js');
-
 // Maintains a list of objects that have to be removed upon a player's connection. Additional data
 // files can be loaded through the `load` method, which reads a JSON file.
 class ObjectRemover {

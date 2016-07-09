@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Vector = require('base/vector.js');
-
 // Defines the interface available to game objects created for players in the game. New objects
 // are only meant to be constructed through the ObjectManager.
 class GameObject {

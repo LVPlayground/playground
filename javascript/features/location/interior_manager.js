@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 const ScopedEntities = require('entities/scoped_entities.js');
-const Vector = require('base/vector.js');
 
 // The JSON data file in which all the interior markers have been defined.
 const InteriorMarkersFile = 'data/interior_markers.json';

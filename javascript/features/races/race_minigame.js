@@ -9,7 +9,6 @@ const LeaveVehicleMessage = require('features/races/ui/leave_vehicle_message.js'
 const Minigame = require('features/minigames/minigame.js');
 const RaceExpiredMessage = require('features/races/ui/race_expired_message.js');
 const RacePlayerData = require('features/races/race_player_data.js');
-const Vector = require('base/vector.js');
 
 // Frequency at which infinite nitro should be given to vehicles. In milliseconds.
 const InfiniteNitroInterval = 20000;

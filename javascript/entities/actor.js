@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Vector = require('base/vector.js');
-
 // Id of an invalid actor. May be returned when there are no available actor slots.
 const INVALID_ID = 0xFFFF;
 

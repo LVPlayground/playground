@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Vector = require('base/vector.js');
-
 // Represents and encapsulates the lifetime of a Vehicle on the San Andreas: Multiplayer server.
 // Provides quick and idiomatic access to the vehicle's properties. 
 class Vehicle {

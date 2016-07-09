@@ -4,7 +4,6 @@
 
 const PickupManager = require('entities/pickup_manager.js');
 const MockPickup = require('entities/test/mock_pickup.js');
-const Vector = require('base/vector.js');
 
 describe('PickupManager', (it, beforeEach) => {
     let manager = null;

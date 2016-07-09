@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Vector = require('base/vector.js');
-
 // Represents a stored vehicle. There is no limit to the number of vehicles that can be stored on
 // Las Venturas Playground, as the vehicle streamer will create and destroy these on demand.
 class StoredVehicle {

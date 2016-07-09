@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Vector = require('base/vector.js');
-
 describe('Vector', it => {
     // Asserts that all values of the vector |actual| are within |error| of vector |expected|.
     function assertVectorCloseTo(assert, actual, expected, error = 0.01) {

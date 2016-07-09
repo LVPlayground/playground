@@ -4,7 +4,6 @@
 
 const RaceCheckpoint = require('components/checkpoints/race_checkpoint.js');
 const RaceImporter = require('features/races/race_importer.js');
-const Vector = require('base/vector.js');
 
 describe('RaceImporter', it => {
     it('should require and validate the id', assert => {

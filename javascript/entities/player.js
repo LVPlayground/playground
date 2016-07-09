@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Vector = require('base/vector.js');
-
 // Camera interpolation modes defined by SA-MP.
 const CAMERA_MOVE = 1;
 const CAMERA_CUT = 2;

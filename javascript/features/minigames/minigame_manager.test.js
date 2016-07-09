@@ -7,7 +7,6 @@ const MinigameManager = require('features/minigames/minigame_manager.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 const MockDeathFeed = require('features/death_feed/test/mock_death_feed.js');
 const MockMinigame = require('features/minigames/test/mock_minigame.js');
-const Vector = require('base/vector.js');
 
 describe('MinigameManager', (it, beforeEach, afterEach) => {
     let gunther, russell;

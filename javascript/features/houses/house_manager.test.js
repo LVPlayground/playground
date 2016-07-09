@@ -4,7 +4,6 @@
 
 const HouseManager = require('features/houses/house_manager.js');
 const MockHouseDatabase = require('features/houses/test/mock_house_database.js');
-const Vector = require('base/vector.js');
 
 describe('HouseManager', (it, beforeEach, afterEach) => {
     let manager = null;

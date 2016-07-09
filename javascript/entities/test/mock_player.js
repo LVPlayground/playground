@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Vector = require('base/vector.js');
-
 // Mocked player. Has the same interface and abilities as a real Player object, except that it does
 // not rely on the SA-MP server to be available, nor communicates with Pawn.
 class MockPlayer {

@@ -4,7 +4,6 @@
 
 const TextLabelManager = require('entities/text_label_manager.js');
 const MockTextLabel = require('entities/test/mock_text_label.js');
-const Vector = require('base/vector.js');
 
 describe('TextLabelManager', (it, beforeEach, afterEach) => {
     let manager = null;

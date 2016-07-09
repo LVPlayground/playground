@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 const MockActor = require('entities/test/mock_actor.js');
-const Vector = require('base/vector.js');
 
 describe('MockActor', (it, beforeEach, afterEach) => {
     let actor = null;

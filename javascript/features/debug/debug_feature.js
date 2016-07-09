@@ -6,7 +6,6 @@ const CommandBuilder = require('components/command_manager/command_builder.js');
 const DefaultInteriorList = require('components/interior_selector/default_interior_list.js');
 const Feature = require('components/feature_manager/feature.js');
 const InteriorSelector = require('components/interior_selector/interior_selector.js');
-const Vector = require('base/vector.js');
 
 // Utility function to return |value| in |len| digits, left-padded with zeros when necessary.
 function leftPad(value, len = 2) {

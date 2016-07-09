@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 const MockTextLabel = require('entities/test/mock_text_label.js');
-const Vector = require('base/vector.js');
 
 describe('MockTextLabel', (it, beforeEach, afterEach) => {
     let textLabel = null;

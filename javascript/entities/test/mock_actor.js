@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Vector = require('base/vector.js');
-
 // Mocked implementation of the Actor entity. Supports the same API, but won't actually create an
 // actor on the San Andreas: Multiplayer server.
 class MockActor {

@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Vector = require('base/vector.js');
-
 // Mocked implementation of the GameObject class that mimics the API of an in-game object, but will
 // not actually interact with the SA-MP server or its plugins to create actual objects.
 class MockObject {

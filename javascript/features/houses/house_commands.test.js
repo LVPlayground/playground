@@ -64,6 +64,21 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.equal(manager.locationCount, 1);
     });
 
+    it('should prevent houses from being created in residential exclusion zones', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        gunther.identify();
+        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.position = new Vector(2000, 1567, 15);  // on the pirate ship
+
+        gunther.respondToDialog({ response: 0 /* Accept that the house cannot be created */ });
+
+        assert.isTrue(await gunther.issueCommand('/house create'));
+
+        assert.equal(gunther.messages.length, 0);
+        assert.equal(gunther.lastDialog, Message.HOUSE_CREATE_RESIDENTIAL_EXCLUSION_ZONE);
+    })
+
     it('should issue an error when trying to modify a non-existing house', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 

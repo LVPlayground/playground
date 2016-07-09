@@ -10,8 +10,15 @@ of `[0, 9]`. A variance will be applied to the price as well.
 
 The returned price will be a value between $1,000,000 and $25,000,000.
 
+
 ## API: calculateHouseVehiclePrice(position, modelId)
 Calculates the price for placing a vehicle with `modelId`  at the `position` near someone's house.
 A variance will be applied to the price as well.
 
 The returned price will be a value between $100,000 and $1,500,000.
+
+
+## API: isResidentialExclusionZone(position)
+Returns whether |position| exists in a residential exclusion zone. These are the red areas on the
+[residential value map](https://sa-mp.nl/tools/visualize-map/) that are considered to be of high
+strategic value.

@@ -40,6 +40,12 @@ the following options:
   - **/house**: Displays information about the command.
 
 
+## FAQ: Where can houses be located?
+Houses can be located throughout San Andreas, with the precise locations left at the discretion of
+our administrators. The red zones on the [residential value map](https://sa-mp.nl/tools/visualize-map/)
+are excluded from this— only Management members can authorize houses to be created there.
+
+
 ## FAQ: Can I own multiple houses?
 No.
 

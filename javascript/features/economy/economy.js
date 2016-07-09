@@ -38,6 +38,12 @@ class Economy extends Feature {
             /* vehicleValue */     this.vehicleValueMap_.query(modelId));
     }
 
+    // Returns whether the |position| is located in one of the residential exclusion zones, that is,
+    // areas on the map where we don't allow residential activity.
+    isResidentialExclusionZone(position) {
+        return this.residentialValueMap_.query(position) === 5;
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     dispose() {

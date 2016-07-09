@@ -32,6 +32,18 @@ class HouseCommands {
     async onHouseCreateCommand(player) {
         const position = player.position;
 
+        // Certain areas are considered to be of high strategic value, and only allow for limited
+        // residential activity. Houses should be maintained by players elsewhere.
+        if (this.economy_.isResidentialExclusionZone(position)) {
+            // TODO(Russell): Give an [Override] button to Management members.
+
+            Dialog.displayMessage(player, 'Create a new house location',
+                                  Message.format(Message.HOUSE_CREATE_RESIDENTIAL_EXCLUSION_ZONE),
+                                  'Close' /* leftButton */, '' /* rightButton */);
+
+            return;
+        }
+
         const minimumPrice = this.economy_.calculateHousePrice(position, 0 /* interiorValue */);
         const maximumPrice = this.economy_.calculateHousePrice(position, 9 /* interiorValue */);
 

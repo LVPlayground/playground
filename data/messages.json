@@ -103,6 +103,7 @@
     "HOUSE_ANNOUNCE_CREATED": "%s (Id: %d) has created a new house location.",
     "HOUSE_CREATE_CONFIRM": "Houses will cost between %$ and %$ at this location. Continue?",
     "HOUSE_CREATE_CONFIRMED": "The house location has been created!",
+    "HOUSE_CREATE_RESIDENTIAL_EXCLUSION_ZONE": "Sorry, no houses may be created in the residential exclusion zones!",
     "HOUSE_HEADER": "{B1FC17}Houses on Las Venturas Playground",
     "HOUSE_INFO_1": "Personalized, player-owned houses spread throughout San Andreas that are",
     "HOUSE_INFO_2": "available to the richer players on the server.",

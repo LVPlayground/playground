@@ -42,10 +42,10 @@ class Pickup {
     dispose() {
         pawnInvoke('DestroyPickup', 'i', this.id_);
 
-        this.id_ = null;
-
         this.manager_.didDisposePickup(this);
         this.manager_ = null;
+
+        this.id_ = null;
     }
 }
 

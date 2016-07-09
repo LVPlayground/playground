@@ -83,7 +83,7 @@ class HouseCommands {
         // Create a beam at the house's entrance to clarify what's being edited.
         const identityBeamObject = server.objectManager.createObject({
             modelId: 11753 /* narrow red beam */,
-            position: closestLocation.position,
+            position: closestLocation.position.translate({ z: -10 }),
             rotation: new Vector(0, 0, 0)
         });
 
@@ -104,7 +104,7 @@ class HouseCommands {
                                             Message.format(Message.HOUSE_MODIFY_DELETE_CONFIRM),
                                             'Yes' /* leftButton */, 'No' /* rightButton */);
 
-            if (!confirmation)
+            if (!confirmation.response)
                 return;
 
             await this.manager_.removeLocation(closestLocation);

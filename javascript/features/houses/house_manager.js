@@ -3,8 +3,8 @@
 // be found in the LICENSE file.
 
 const HouseDatabase = require('features/houses/house_database.js');
+const HouseEntranceController = require('features/houses/house_entrance_controller.js');
 const HouseLocation = require('features/houses/house_location.js');
-const ScopedEntities = require('entities/scoped_entities.js');
 
 // The house manager orchestrates all details associated with housing, manages data and responds to
 // player connection and disconnection events.
@@ -14,13 +14,10 @@ class HouseManager {
         this.dataLoadedPromise_ = new Promise(resolver =>
             this.dataLoadedResolver_ = resolver);
 
-        // Only to be used for the entrance/exit pickups associated with locations.
-        this.entities_ = new ScopedEntities();
-
         this.locations_ = new Set();
-        this.locationPickups_ = new Map();
 
-        server.pickupManager.addObserver(this);
+        // Responsible for all entrances and exits associated with the locations.
+        this.entranceController_ = new HouseEntranceController();
     }
 
     // Gets the number of house locations that have been made available.
@@ -37,9 +34,9 @@ class HouseManager {
         // TODO: Load the vehicles associated with houses.
         // TODO: Load the objects associated with houses.
 
-        // Create the pickup representing the house entrance at |location|.
+        // Create entrances and exits for each of the known |locations_|.
         this.locations_.forEach(location =>
-            this.createLocationPickup(location));
+            this.entranceController_.addLocation(location));
 
         this.dataLoadedResolver_();
     }
@@ -54,7 +51,7 @@ class HouseManager {
         const location = new HouseLocation({ id, position });
 
         this.locations_.add(location);
-        this.createLocationPickup(location);
+        this.entranceController_.addLocation(location);
     }
 
     // Returns the location closest to the position of |player|. The |maximumDistance| argument can
@@ -91,45 +88,12 @@ class HouseManager {
         await this.database_.removeLocation(location);
 
         this.locations_.delete(location);
-
-        for (const [pickup, pickupLocation] of this.locationPickups_.entries()) {
-            if (pickupLocation !== location)
-                continue;
-
-            this.locationPickups_.delete(pickup);
-            pickup.dispose();
-            break;
-        }
-    }
-
-    // Creates a pickup for the |location| and stores it in the pickup map.
-    createLocationPickup(location) {
-        const pickup = this.entities_.createPickup({
-            position: location.position,
-            modelId: location.isAvailable() ? 19524 /* yellow house */
-                                            : 19902 /* yellow marker */
-        });
-
-        this.locationPickups_.set(pickup, location);
-    }
-
-    // Called when the |player| enters the |pickup|, which could be one of the houses created on the
-    // server. In that case we either teleport them, or show them the information dialog.
-    onPlayerEnterPickup(player, pickup) {
-        const location = this.locationPickups_.get(pickup);
-        if (!location)
-            return;
-
-        // TODO: Respond to the player entering the location's entrance.
+        this.entranceController_.removeLocation(location);
     }
 
     dispose() {
-        this.entities_.dispose();
-
-        this.locationPickups_.clear();
+        this.entranceController_.dispose();
         this.locations_.clear();
-
-        server.pickupManager.removeObserver(this);
     }
 }
 

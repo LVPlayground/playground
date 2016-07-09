@@ -84,7 +84,7 @@ class HouseCommands {
         const identityBeamObject = server.objectManager.createObject({
             modelId: 11753 /* narrow red beam */,
             position: closestLocation.position.translate({ z: -10 }),
-            rotation: new Vector(0, 0, 0)
+            rotation: new Vector(0, 0, player.rotation)
         });
 
         // Automatically remove the beam after the given number of milliseconds.
@@ -92,6 +92,9 @@ class HouseCommands {
             if (identityBeamObject.isConnected())
                 identityBeamObject.dispose();
         });
+
+        // Force a streamer object update for this player, to make sure the beam is visible.
+        player.updateStreamerObjects();
 
         const menu = new Menu('How do you want to modify this house?');
 

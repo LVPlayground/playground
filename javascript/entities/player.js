@@ -87,6 +87,9 @@ class Player {
   get position() { return new Vector(...pawnInvoke('GetPlayerPos', 'iFFF', this.id_)); }
   set position(value) { pawnInvoke('SetPlayerPos', 'ifff', this.id_, value.x, value.y, value.z); }
 
+  get rotation() { return this.facingAngle; }
+  set rotation(value) { this.facingAngle = value; }
+
   // Gets or sets the facing angle (rotation) of the player.
   get facingAngle() { return pawnInvoke('GetPlayerFacingAngle', 'iF', this.id_); }
   set facingAngle(value) { pawnInvoke('SetPlayerFacingAngle', 'if', this.id_, value); }
@@ -246,6 +249,10 @@ class Player {
   // -----------------------------------------------------------------------------------------------
   // TODO: The following methods should not be on the common Player object, but rather provided by
   // a feature of sorts.
+
+  updateStreamerObjects() {
+    pawnInvoke('Streamer_Update', 'ii', this.id_, 0 /* STREAMER_TYPE_OBJECT */);
+  }
 
   updateStreamer(position, virtualWorld, interiorId, type) {
     pawnInvoke('Streamer_UpdateEx', 'ifffiii', this.id_, position.x, position.y, position.z,

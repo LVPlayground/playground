@@ -277,6 +277,8 @@ class MockPlayer {
         return this.currentVehicle() != null;
     }
 
+    updateStreamerObjects() {}
+
     // TODO: Add new getters and setters as required.
 }
 

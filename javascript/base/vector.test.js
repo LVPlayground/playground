@@ -85,4 +85,20 @@ describe('Vector', it => {
         assert.closeTo(zeroVector.normalized2D.x, 0, 0.001);
         assert.closeTo(zeroVector.normalized.x, 0, 0.001);
     });
+
+    it('should translate the vector in a 3D space', assert => {
+        const vector = new Vector(4, 8, 12);
+
+        assertVectorCloseTo(assert, vector.translate(), new Vector(4, 8, 12));
+
+        assertVectorCloseTo(assert, vector.translate({ x: -4 }), new Vector(0, 8, 12));
+        assertVectorCloseTo(assert, vector.translate({ x:  4 }), new Vector(8, 8, 12));
+        assertVectorCloseTo(assert, vector.translate({ y: -4 }), new Vector(4, 4, 12));
+        assertVectorCloseTo(assert, vector.translate({ y:  4 }), new Vector(4, 12, 12));
+        assertVectorCloseTo(assert, vector.translate({ z: -4 }), new Vector(4, 8, 8));
+        assertVectorCloseTo(assert, vector.translate({ z:  4 }), new Vector(4, 8, 16));
+
+        assertVectorCloseTo(assert, vector.translate({ x: 4, y: 4, z: 4 }), new Vector(8, 12, 16));
+        assertVectorCloseTo(assert, vector.translate({ x: -4, y: -4, z: -4 }), new Vector(0, 4, 8));
+    });
 });

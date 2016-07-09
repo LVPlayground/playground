@@ -59,6 +59,11 @@ class Vector {
                           this.z_);
     }
 
+    // Returns a new vector with this vector's location translated by |x|, |y| and |z|.
+    translate({ x = 0, y = 0, z = 0 } = {}) {
+        return new Vector(this.x_ + x, this.y_ + y, this.z_ + z);
+    }
+
     // Calculates the 2-dimensional magnitude of the vector per the Pythagoras theorem.
     get magnitude2D() {
         return Math.sqrt(Math.pow(this.x_, 2) + Math.pow(this.y_, 2));

@@ -33,6 +33,33 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
         assert.equal(manager.locationCount, locationCount + 1);
     });
 
+    it('should be able to find the closest house to a player', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.position = new Vector(200, 200, 300);
+
+        await manager.loadHousesFromDatabase();
+
+        assert.equal(manager.locationCount, 3);
+
+        const closestLocation = await manager.findClosestLocation(gunther);
+        assert.isNotNull(closestLocation);
+
+        assert.equal(gunther.position.distanceTo(closestLocation.position), 50);
+    });
+
+    it('should be able to limit searches to find the closest house', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.position = new Vector(200, 200, 300);
+
+        await manager.loadHousesFromDatabase();
+
+        assert.equal(manager.locationCount, 3);
+
+        const closestLocation =
+            await manager.findClosestLocation(gunther, 40 /* maximumDistance */);
+        assert.isNull(closestLocation);
+    });
+
     it('should be able to remove existing house locations', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify();

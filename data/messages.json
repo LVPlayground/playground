@@ -101,12 +101,15 @@
     "GANGS_ONLINE": "{%s}[%s]{FFFFFF} - %s ({B1FC17}%d player%s{FFFFFF})",
 
     "HOUSE_ANNOUNCE_CREATED": "%s (Id: %d) has created a new house location.",
+    "HOUSE_ANNOUNCE_DELETED": "%s (Id: %d) has deleted a house location (Id: %d).",
     "HOUSE_CREATE_CONFIRM": "Houses will cost between %$ and %$ at this location. Continue?",
     "HOUSE_CREATE_CONFIRMED": "The house location has been created!",
     "HOUSE_CREATE_RESIDENTIAL_EXCLUSION_ZONE": "Sorry, no houses may be created in the residential exclusion zones!",
     "HOUSE_HEADER": "{B1FC17}Houses on Las Venturas Playground",
     "HOUSE_INFO_1": "Personalized, player-owned houses spread throughout San Andreas that are",
     "HOUSE_INFO_2": "available to the richer players on the server.",
+    "HOUSE_MODIFY_DELETE_CONFIRM": "Are you absolutely sure that you want to remove this location? Any occupants will be evicted with it.",
+    "HOUSE_MODIFY_DELETE_CONFIRMED": "The house location has been deleted.",
     "HOUSE_MODIFY_NONE_NEAR": "@error You need to be close to a house in order to use this command.",
 
     "IRC_CHAT_MESSAGE_SENT": "{33AA33}Message sent to {FFFFFF}%s {33AA33}as {FFFFFF}%s{33AA33}: {FFFFFF}%s",

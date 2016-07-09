@@ -3,9 +3,10 @@
 // be found in the LICENSE file.
 
 const Dialog = require('components/dialogs/dialog.js');
+const Menu = require('components/menu/menu.js');
 
 // Maximum number of milliseconds during which the identity beam should be displayed.
-const IDENTITY_BEAM_DISPLAY_TIME_MS = 5000;
+const IDENTITY_BEAM_DISPLAY_TIME_MS = 60000;
 
 // This class provides the `/house` command available to administrators to manage parts of the
 // Houses feature on Las Venturas Playground. Most interaction occurs through dialogs.
@@ -92,7 +93,35 @@ class HouseCommands {
                 identityBeamObject.dispose();
         });
 
-        // ...
+        const menu = new Menu('How do you want to modify this house?');
+
+        // TODO: Add the ability to add and remove parking lots.
+        // TODO: Add the ability to evict the occupant?
+
+        menu.addItem('Delete the location', async(player) => {
+            const confirmation =
+                await Dialog.displayMessage(player, 'Delete the house location',
+                                            Message.format(Message.HOUSE_MODIFY_DELETE_CONFIRM),
+                                            'Yes' /* leftButton */, 'No' /* rightButton */);
+
+            if (!confirmation)
+                return;
+
+            await this.manager_.removeLocation(closestLocation);
+
+            // Announce creation of the location to other administrators.
+            this.announce_.announceToAdministrators(
+                Message.HOUSE_ANNOUNCE_DELETED, player.name, player.id, closestLocation.id);
+
+            // Display a confirmation dialog to the player to inform them of their action.
+            Dialog.displayMessage(player, 'Delete the house location',
+                                  Message.format(Message.HOUSE_MODIFY_DELETE_CONFIRMED),
+                                  'Close' /* leftButton */, '' /* rightButton */);
+        });
+
+        await menu.displayForPlayer(player);
+        if (identityBeamObject.isConnected())
+            identityBeamObject.dispose();
     }
 
     // Called when an administrator types the `/house` command. Gives an overview of the available

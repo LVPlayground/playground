@@ -64,8 +64,13 @@ class Menu {
           throw new Error('An out-of-bounds menu item has been selected by the player.');
 
         let item = this.items_[result.item];
-        if (item.listener)
-          Promise.resolve().then(() => item.listener(player));
+        if (item.listener) {
+          return new Promise(async(resolve) => {
+            await item.listener(player);
+            resolve();
+
+          }).then(() => { return { player: player, item: item.labels } });
+        }
 
         return { player: player, item: item.labels };
       }));

@@ -110,9 +110,28 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         assert.equal(server.objectManager.count, objectCount + 1);
 
-        await server.clock.advance(30000);  // forward the clock to test the auto-expire function
+        await server.clock.advance(180000);  // forward the clock to test the auto-expire function
 
         assert.equal(server.objectManager.count, objectCount);
+    });
+
+    it('should enable administrators to remove house locations', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        await manager.loadHousesFromDatabase();
+
+        assert.equal(manager.locationCount, 3);
+
+        gunther.identify();
+        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest house
+
+        gunther.respondToDialog({ listitem: 0 /* Delete the location */ }).then(
+            () => gunther.respondToDialog({ response: 1 /* Yes, really get rid of it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/house modify'));
+
+        assert.equal(manager.locationCount, 2);
     });
 
     it('should clean up after itself', async(assert) => {

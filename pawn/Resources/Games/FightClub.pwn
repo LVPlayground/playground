@@ -481,7 +481,7 @@ CFightClub__OnInvite(playerid, inviteid)
     Matches[matchid][player2] = inviteid;
     Matches[matchid][fcworld] = FC_BASE_WORLD + matchid;
 
-    format(string, sizeof(string), "You've successfully invited %s to the FightClub (Match id: %d).", PlayerName(inviteid), Matches[matchid]);
+    format(string, sizeof(string), "You've successfully invited %s to the FightClub (Match id: %d).", PlayerName(inviteid), matchid);
     SendClientMessage(playerid, Color::Green, string);
     format(string, sizeof(string), "You've been invited by %s to the FightClub. (Rounds: %d | Location: %s)", PlayerName(playerid), Matches[matchid][rounds], CFightClub__GetLocationName(Matches[matchid][location]));
     SendClientMessage(inviteid, COLOR_YELLOW, string);

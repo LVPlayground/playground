@@ -37,8 +37,8 @@ class IRC {
                 m_messageBuffer = "[kill] ";
             case JoinIrcMessage:
                 m_messageBuffer = "[join] ";
-            case JoinIpIrcMessage:
-                m_messageBuffer = "[joinip] ";
+            case JoinIpGpciIrcMessage:
+                m_messageBuffer = "[joinipgpci] ";
             case LeaveIrcMessage:
                 m_messageBuffer = "[leave] ";
             case GuestLoginIrcMessage:

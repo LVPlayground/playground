@@ -19,7 +19,7 @@ enum IrcMessageType {
     VipChatIrcMessage, // [playerName] [playerId] [message]
     PhoneIrcMessage, // [playerName] [playerId] [calleeName] [calleeId] [message]
     JoinIrcMessage, // [playerId] [playerName]
-    JoinIpIrcMessage, // [playerId] [playerIp] [playerName]
+    JoinIpGpciIrcMessage, // [playerId] [playerIp] [playerName] [playerGpci]
     LeaveIrcMessage, // [playerId] [playerName] [reason]
     DeathIrcMessage, // [playerName]
     KillIrcMessage, // [playerName] [playerId] [killerName] [killerId] [reason]

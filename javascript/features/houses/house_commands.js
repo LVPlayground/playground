@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const Dialog = require('components/dialogs/dialog.js');
+const IdentityBeam = require('features/houses/utils/identity_beam.js');
 const Menu = require('components/menu/menu.js');
 
 // Maximum number of milliseconds during which the identity beam should be displayed.
@@ -80,21 +81,11 @@ class HouseCommands {
             return;
         }
 
-        // Create a beam at the house's entrance to clarify what's being edited.
-        const identityBeamObject = server.objectManager.createObject({
-            modelId: 11753 /* narrow red beam */,
-            position: closestLocation.position.translate({ z: -10 }),
-            rotation: new Vector(0, 0, player.rotation)
+        // Create a beam for |player| at the house's entrance to clarify what's being edited.
+        const identityBeam = new IdentityBeam(closestLocation.position.translate({ z: -10 }), {
+            timeout: IDENTITY_BEAM_DISPLAY_TIME_MS,
+            player: player
         });
-
-        // Automatically remove the beam after the given number of milliseconds.
-        wait(IDENTITY_BEAM_DISPLAY_TIME_MS).then(() => {
-            if (identityBeamObject.isConnected())
-                identityBeamObject.dispose();
-        });
-
-        // Force a streamer object update for this player, to make sure the beam is visible.
-        player.updateStreamerObjects();
 
         const menu = new Menu('How do you want to modify this house?');
 
@@ -123,8 +114,9 @@ class HouseCommands {
         });
 
         await menu.displayForPlayer(player);
-        if (identityBeamObject.isConnected())
-            identityBeamObject.dispose();
+
+        // Remove the identity beam that was displayed for this house.
+        identityBeam.dispose();
     }
 
     // Called when an administrator types the `/house` command. Gives an overview of the available

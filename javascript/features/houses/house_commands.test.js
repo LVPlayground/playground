@@ -108,7 +108,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         assert.equal(gunther.messages.length, 0);
 
-        assert.equal(server.objectManager.count, objectCount + 1);
+        assert.equal(server.objectManager.count, objectCount + 2);
 
         await server.clock.advance(180000);  // forward the clock to test the auto-expire function
 

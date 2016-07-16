@@ -33,6 +33,8 @@ class MockPlayer {
         this.removedObjectCount_ = 0;
         this.messageLevel_ = 0;
 
+        this.streamerObjectsUpdated_ = false;
+
         this.connected_ = true;
         this.disconnecting_ = false;
     }
@@ -277,7 +279,8 @@ class MockPlayer {
         return this.currentVehicle() != null;
     }
 
-    updateStreamerObjects() {}
+    updateStreamerObjects() { this.streamerObjectsUpdated_ = true; }
+    streamerObjectsUpdated() { return this.streamerObjectsUpdated_; }
 
     // TODO: Add new getters and setters as required.
 }

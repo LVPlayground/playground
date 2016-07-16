@@ -926,16 +926,23 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         {
             new Target, tName[2][MAX_PLAYER_NAME+1], Float:tCoord[3], sNear[MAX_PLAYERS];
 
-            if(GetPlayerMoney(playerid) < 15000) return ShowBoxForPlayer(playerid, "This animation costs $15000." );
-            if(Time->currentTime() - g_LastSlapTime[playerid] < 10 && Player(playerid)->isAdministrator() == false)
-            {
+            if(GetPlayerMoney(playerid) < 15000) {
+                ShowBoxForPlayer(playerid, "This animation costs $15000." );
+                return 1;
+            }
+
+            if(Time->currentTime() - g_LastSlapTime[playerid] < 10 && !Player(playerid)->isAdministrator()) {
                 ShowBoxForPlayer(playerid, "You can only slap every 10 seconds." );
                 return 1;
             }
-            if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT) return ShowBoxForPlayer(playerid, "You can only use this animation on foot!" );
+
+            if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT) {
+                ShowBoxForPlayer(playerid, "You can only use this animation on foot!" );
+                return 1;
+            }
 
             for (new slappedPlayerId = 0; slappedPlayerId <= PlayerManager->highestPlayerId(); slappedPlayerId++) {
-                if (Player(slappedPlayerId)->isConnected() == false || Player(slappedPlayerId)->isNonPlayerCharacter() == true)
+                if (!Player(slappedPlayerId)->isConnected() || Player(slappedPlayerId)->isNonPlayerCharacter())
                     continue;
 
                 if(slappedPlayerId != playerid) {
@@ -947,7 +954,11 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
                     }
                 }
             }
-            if(sNear[playerid] == 0) return ShowBoxForPlayer(playerid, "There's no one near you to slap!" );
+
+            if(sNear[playerid] == 0) {
+                ShowBoxForPlayer(playerid, "There's no one near you to slap!" );
+                return 1;
+            }
 
             tName[0] = PlayerName(playerid);
             tName[1] = PlayerName(Target);

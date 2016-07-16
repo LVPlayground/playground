@@ -73,6 +73,13 @@ class DebugFeature extends Feature {
         .parameters([ { name: 'player', type: CommandBuilder.PLAYER_PARAMETER } ])
         .build(this.__proto__.detach.bind(this));
 
+     // /boost
+    server.commandManager.buildCommand('boost')
+        .restrict(Player.LEVEL_MANAGEMENT)
+        .parameters([ { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
+                      { name: 'val', type: CommandBuilder.NUMBER_PARAMETER } ])
+        .build(this.__proto__.boost.bind(this));
+
     this.attachedObjects_ = new Map();
 
     server.playerManager.addObserver(this);
@@ -179,6 +186,16 @@ class DebugFeature extends Feature {
     this.onPlayerDisconnect(subject);
 
     player.sendMessage('Done!');
+  }
+
+  boost(player, subject, by) {
+    const vehicleId = pawnInvoke('GetPlayerVehicleID', 'i', subject.id);
+    if (vehicleId > 1 && vehicleId < 3000) {
+      const velocity = pawnInvoke('GetVehicleVelocity', 'iFFF', vehicleId);
+      pawnInvoke('SetVehicleVelocity', 'ifff', vehicleId, velocity[0] * by, velocity[1] * by, velocity[2] * by);
+
+      player.sendMessage('Done!');
+    }
   }
 }
 

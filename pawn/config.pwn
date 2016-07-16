@@ -14,8 +14,8 @@
  * @author Russell Krupke <russell@sa-mp.nl>
  */
 class Version {
-    public const Major = 28;
-    public const Minor = 4;
+    public const Major = 29;
+    public const Minor = 1;
 };
 
 /**
@@ -38,7 +38,7 @@ class Debug {
 };
 
 // Set this to 1 if you'd like to build Las Venturas Playground in release mode (lead devs only).
-#define BuildGamemodeInReleaseMode 0
+#define BuildGamemodeInReleaseMode 1
 
 // Try to include the private release configuration file. This are necessary to authenticate with
 // the MySQL database and distribute echo to the right location, among other things.

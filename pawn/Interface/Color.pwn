@@ -43,8 +43,6 @@ class Color {
     // Colors meant for chat messages related to certain features.
     public const GangChat = 0x33CCFFAA;
     public const VipChat = 0x00E1E1AA;
-    public const PrivateMessageReceived = 0xFFDC1833;
-    public const PrivateMessageSent = 0xFCF54500;
 
     // The highlight blue color which we use to put emphasis on certain words.
     public const HighlightBlue = 0x40CCFFFF;

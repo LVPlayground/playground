@@ -330,8 +330,8 @@ class VeryImportantPlayersCommands {
         }
 
         // Send the actual message the to receiver.
-        format(notice, sizeof(notice), "PM from [IRC] %s: {FFFFFF}%s", sender, message);
-        SendClientMessage(receiverId, Color::PrivateMessageReceived, notice);
+        format(notice, sizeof(notice), "{FFDC18}PM from [IRC] %s: {FFFFFF}%s", sender, message);
+        SendClientMessage(receiverId, Color::White, notice);
 
         // Only show the /r or /reply message to people who haven't played on LVP a lot yet.
         if (Player(receiverId)->isRegular() == false)

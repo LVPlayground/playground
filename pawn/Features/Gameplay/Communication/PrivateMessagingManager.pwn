@@ -111,12 +111,12 @@ class PrivateMessagingManager {
         }
 
         // Show the message to the receiver.
-        format(notice, sizeof(notice), "PM to [%d] %s: {FFFFFF}%s", receiverId, receiver, message);
-        SendClientMessage(senderId, Color::PrivateMessageSent, notice);
+        format(notice, sizeof(notice), "{FCF545}PM to [%d] %s: {FFFFFF}%s", receiverId, receiver, message);
+        SendClientMessage(senderId, Color::White, notice);
 
         // Show the sender the result.
-        format(notice, sizeof(notice), "PM from [%d] %s: {FFFFFF}%s", senderId, sender, message);
-        SendClientMessage(receiverId, Color::PrivateMessageReceived, notice);
+        format(notice, sizeof(notice), "{FFDC18}PM from [%d] %s: {FFFFFF}%s", senderId, sender, message);
+        SendClientMessage(receiverId, Color::White, notice);
 
         // Play a sound for the receiver to indicate they received a message.
         PlayerPlaySound(receiverId, 1058, 0.0, 0.0, 0.0);
@@ -179,8 +179,8 @@ class PrivateMessagingManager {
         }
 
         // Show the sender the result.
-        format(notice, sizeof(notice), "PM to [IRC] %s: {FFFFFF}%s", receiver, message);
-        SendClientMessage(senderId, Color::PrivateMessageSent, notice);
+        format(notice, sizeof(notice), "{FCF545}PM to [IRC] %s: {FFFFFF}%s", receiver, message);
+        SendClientMessage(senderId, Color::White, notice);
 
         // Broadcast message on IRC.
         format(notice, sizeof(notice), "%d %s %s %s", senderId, sender, receiver, message);

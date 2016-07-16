@@ -72,6 +72,7 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         }
 
                         SetPlayerPos(lamerId, pos[0], pos[1], pos[2] + 400);
+                        SetPlayerHealth(lamerId, 1);
 
                         PlayerHandOfGod[lamerId] = 1;
                         ResetPlayerWeapons(lamerId);

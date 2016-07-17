@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const NavigationButton = require('components/text_draw/navigation_button.js');
 const Rectangle = require('components/text_draw/rectangle.js');
 
 // Background color of the user interface. Should be semi-transparent.
@@ -23,6 +24,16 @@ class InteriorSelectorUI {
         this.background_ = new Rectangle(15, 400, 610, 40, BACKGROUND_COLOR);
         this.background_.displayForPlayer(player);
 
+        // Create the navigational back-and-forward buttons for the player.
+        this.previousButton_ = new NavigationButton(
+            30, 409, NavigationButton.DIRECTION_LEFT, () => this.selector_.selectPrevious());
+
+        this.nextButton_ = new NavigationButton(
+            592, 409, NavigationButton.DIRECTION_RIGHT, () => this.selector_.selectNext());
+
+        this.previousButton_.displayForPlayer(player);
+        this.nextButton_.displayForPlayer(player);
+
         player.setSpectating(true);
         player.setSelectTextDraw(true, BUTTON_HOVER_COLOR);
     }
@@ -39,7 +50,12 @@ class InteriorSelectorUI {
         this.player_.setSpectating(false);
         this.player_.setSelectTextDraw(false);
 
+        this.previousButton_.hideForPlayer(this.player_);
+        this.nextButton_.hideForPlayer(this.player_);
         this.background_.hideForPlayer(this.player_);
+
+        this.previousButton_ = null;
+        this.nextButton_ = null;
         this.background_ = null;
     }
 }

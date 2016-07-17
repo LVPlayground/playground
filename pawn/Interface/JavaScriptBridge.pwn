@@ -66,3 +66,6 @@ public OnSerializePlayerState(playerid, serialize) {
         SetPlayerWeather(playerid, g_iSavedWeatherID);
     }
 }
+
+// Required by JavaScript, do not remove.
+public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid) {}

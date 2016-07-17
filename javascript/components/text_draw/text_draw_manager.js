@@ -9,6 +9,7 @@ class TextDrawManager {
     this.players_ = {};
 
     // Listen to the `playerdisconnect` event to clear state of leaving players.
+    global.addEventListener('playerclickplayertextdraw', this.__proto__.onPlayerClickPlayerTextDraw.bind(this));
     global.addEventListener('playerdisconnect', this.__proto__.onPlayerDisconnect.bind(this));
   }
 
@@ -52,6 +53,23 @@ class TextDrawManager {
 
     this.players_[player.id].delete(textDraw);
     return true;
+  }
+
+  // Called when a player clicks on a player text draw.
+  onPlayerClickPlayerTextDraw(event) {
+    const player = server.playerManager.getById(event.playerid);
+    const playerId = event.playerid;
+
+    if (!player || !this.players_.hasOwnProperty(playerId))
+      return;
+
+    for (const [textDraw, textDrawId] of this.players_[playerId]) {
+      if (textDrawId != event.playertextid)
+        continue;
+
+      textDraw.onClick(player);
+      break;
+    }
   }
 
   // Called when a player disconnects from the server. Clears out all state for the player.

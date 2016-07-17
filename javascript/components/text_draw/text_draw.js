@@ -45,6 +45,8 @@ class TextDraw {
     this.shadowSize_ = null;
     this.shadowColor_ = null;
 
+    this.selectable_ = null;
+
     if (!options)
       return;
 
@@ -53,7 +55,7 @@ class TextDraw {
       throw new Error('The options for a text draw must be an object.');
 
     // Walk through all available settings for the text-draw, then apply them using the setter.
-    ['position', 'useBox', 'text', 'font', 'alignment', 'proportional', 'textSize', 'letterSize', 'color', 'boxColor', 'outlineSize', 'shadowSize', 'shadowColor'].forEach(property => {
+    ['position', 'useBox', 'text', 'font', 'alignment', 'proportional', 'textSize', 'letterSize', 'color', 'boxColor', 'outlineSize', 'shadowSize', 'shadowColor', 'selectable'].forEach(property => {
       if (options.hasOwnProperty(property))
         this[property] = options[property];
     });
@@ -107,7 +109,7 @@ class TextDraw {
   // the TextDraw class. Custom fonts are not possible.
   get font() { return this.font_; }
   set font(value) {
-    if (typeof value !== 'number' || value < 0 || value > TextDraw.FONT_PRICEDOWN)
+    if (typeof value !== 'number' || value < 0 || value > TextDraw.FONT_TEXTURE)
       throw new Error('The font of a text draw must be set using one of the TextDraw.FONT_* constants.');
 
     this.font_ = value;
@@ -203,6 +205,10 @@ class TextDraw {
     this.shadowColor_ = value;
   }
 
+  // Gets or sets whether the
+  get selectable() { return this.selectable_; }
+  set selectable(value) { this.selectable_ = value; }
+
   // Builds and displays the text draw to |player|. This method is a no-op if the text draw is
   // already being shown for the player.
   displayForPlayer(player) {
@@ -243,7 +249,8 @@ class TextDraw {
     if (this.shadowColor_ !== null)
       pawnInvoke('PlayerTextDrawBackgroundColor', 'iii', player.id, textDrawId, this.shadowColor_.toNumberRGBA());
 
-    // TODO: PlayerTextDrawSetSelectable: Sets whether a player-textdraw is selectable through SelectTextDraw
+    if (this.selectable_ !== null)
+      pawnInvoke('PlayerTextDrawSetSelectable', 'iii', player.id, textDrawId, this.selectable_ ? 1 : 0);
 
     // TODO: PlayerTextDrawSetPreviewModel: Set model ID of a 3D player textdraw preview.
 
@@ -253,6 +260,11 @@ class TextDraw {
 
     pawnInvoke('PlayerTextDrawShow', 'ii', player.id, textDrawId);
     return true;
+  }
+
+  // Called when the player has clicked on the text draw. Only applicable if it's selectable.
+  onClick(player) {
+    console.log('ERROR: The text draw [' + this.text_ + '] has no onClick() handler.');
   }
 
   // Hides the text draw from |player| their screen if it's currently being shown.
@@ -266,6 +278,7 @@ TextDraw.FONT_CLASSIC = 0;
 TextDraw.FONT_SANS_SERIF = 1;
 TextDraw.FONT_MONOSPACE = 2;
 TextDraw.FONT_PRICEDOWN = 3;
+TextDraw.FONT_TEXTURE = 4;
 
 // The alignment values that may be used with a text draw.
 TextDraw.ALIGN_LEFT = 1;

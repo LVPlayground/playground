@@ -167,7 +167,7 @@
     #include Resources/Games/Killtime.pwn
 #endif
 #include Resources/Games/Export.pwn
-#include Resources/Games/Bag of Cash.pwn
+#include Resources/Games/Bag_of_Cash.pwn
 
 // Fightclub
 #if Feature::DisableFightClub == 0

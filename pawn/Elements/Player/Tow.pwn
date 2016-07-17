@@ -15,7 +15,7 @@
 
 #define         TOW_FARE                50000           // Tow's set fare.
 #define         TOW_MINUTES_WAIT        3               // The number of minutes the player should wait between tows.
-#define         NumberOfTowLocations    12              // Number of tow(?) locations.
+#define         NumberOfTowLocations    13              // Number of tow(?) locations.
 
 #define         DIALOG_TOW_COMMAND      8473            // Tow's dialog command (random number, change if in conflict)
 
@@ -38,7 +38,8 @@ new Float:towLocations[NumberOfTowLocations][] =
     {-1341.4988,    -248.8117,      13.8755,        342.4696}, // SF Airport
     {1890.2701,     -2627.1948,     13.2740,        0.2716}, // LS Airport
     {2422.0320,     1113.8469,      10.4708,        0.3177}, // LV Main bank
-    {2765.3484,     1281.4395,      10.4771,        269.4123} // LV Train Station
+    {2765.3484,     1281.4395,      10.4771,        269.4123}, // LV Train Station
+    {2118.9729,     2179.2515,      10.5671,        0.0375} // LV FightClub
 };
 
 // Here we have the tow locations' names.
@@ -55,7 +56,8 @@ new towNames[NumberOfTowLocations][] =
     "San Fierro airport",
     "Los Santos airport",
     "Main bank",
-    "Train station"
+    "Train station",
+    "LV FightClub"
 };
 
 /**

@@ -24,6 +24,7 @@ class ActivityLog extends Feature {
     [
       'OnPlayerResolvedDeath',  // { playerid, killerid, reason }
 //    'OnPlayerWeaponShot',     // { playerid, weaponid, hittype, hitid, fX, fY, fZ }
+      'OnPlayerConnect',        // { playerid }
 
     ].forEach(name =>
         this.callbacks_.addEventListener(toEventName(name), this.__proto__[toMethodName(name)].bind(this)));
@@ -79,7 +80,7 @@ class ActivityLog extends Feature {
   // the database to be able to keep track of them.
   onPlayerConnect(event) {
     const player = server.playerManager.getById(event.playerid);
-    if (!player)
+    if (!player || player.isNpc())
       return;
 
     const numericIpAddress = this.ip2long(player.ipAddress);
@@ -93,12 +94,6 @@ class ActivityLog extends Feature {
   ip2long (ip) {
     const numericParts = ip.split('.');
 
-    //const firstPart = numericParts[0]+256;
-    //const secondPart = numericParts[1]+256;
-    //const thirdPart = numericParts[2]+256;
-
-    //return firstPart + secondPart + thirdPart + numericParts[3];
-    
     return ((((((+numericParts[0])*256)
            +(+numericParts[1]))*256)
            +(+numericParts[2]))*256)

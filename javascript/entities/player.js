@@ -250,6 +250,11 @@ class Player {
                position.z, radius);
   }
 
+  // Returns whether this player is a NPC or just a normal player
+  isNpc() {
+    return pawnInvoke('IsPlayerNPC', 'i', this.id_);
+  }
+
   // -----------------------------------------------------------------------------------------------
   // TODO: The following methods should not be on the common Player object, but rather provided by
   // a feature of sorts.

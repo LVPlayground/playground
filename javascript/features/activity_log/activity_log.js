@@ -5,6 +5,7 @@
 const ActivityRecorder = require('features/activity_log/activity_recorder.js');
 const Feature = require('components/feature_manager/feature.js');
 const ScopedCallbacks = require('base/scoped_callbacks.js');
+const MurmurHash3 = require('features/activity_log/murmurhash3.js');
 
 // The activity log feature keeps track of many in-game events and logs them to the database. This
 // is part of an effort to gather more information with Las Venturas Playground, enabling analysis
@@ -15,7 +16,7 @@ class ActivityLog extends Feature {
 
     this.callbacks_ = new ScopedCallbacks();
     this.recorder_ = new ActivityRecorder(server.database);
-    
+
     // Translates OnPawnEventName to respectively `onPawnEventName` or `pawneventname`.
     const toMethodName = name => name.charAt(0).toLowerCase() + name.slice(1);
     const toEventName = name => name.slice(2).toLowerCase();
@@ -73,6 +74,32 @@ class ActivityLog extends Feature {
 
     this.recorder_.writeHit(userId, targetUserId, targetDistance, event.weaponid, position);
   }
+
+  // Called when a player connects. Logs the name, numeric variant of their ip and hashed serial to
+  // the database to be able to keep track of them.
+  onPlayerConnect(event) {
+    const player = server.playerManager.getById(event.playerid);
+    if (!player)
+      return;
+
+    const numericIpAddress = this.ip2long(player.ipAddress);
+    const hashedGpci = MurmurHash3.generateHash(player.gpci);
+
+    this.recorder_.writeSessionAtConnect(player.name, numericIpAddress, hashedGpci);
+  }
+
+  // TODO: (re)move this to a better place!
+  // Converts an IP to an int to store in the database
+  ip2long (ip) {
+    const numericParts = ip.split('.');
+
+    const firstPart = numericParts[0]+256;
+    const secondPart = numericParts[1]+256;
+    const thirdPart = numericParts[2]+256;
+
+    return firstPart + secondPart + thirdPart + numericParts[3];
+  }
+
 };
 
 exports = ActivityLog;

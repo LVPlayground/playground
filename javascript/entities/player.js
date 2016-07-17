@@ -12,6 +12,7 @@ class Player {
     this.id_ = playerId;
     this.name_ = pawnInvoke('GetPlayerName', 'iS', playerId);
     this.ipAddress_ = pawnInvoke('GetPlayerIp', 'iS', playerId);
+    this.gpci_ = pawnInvoke('gpci', 'iS', playerId);
 
     this.connected_ = true;
     this.disconnecting_ = false;
@@ -51,6 +52,9 @@ class Player {
 
   // Returns the IP address of this player. This attribute is read-only.
   get ipAddress() { return this.ipAddress_; }
+
+  // Returns the serial of the player. Read-only and note that it is not unique per player!
+  get gpci() { return this.gpci_; }
 
   // Gets the level of this player. Synchronized with the gamemode using the `levelchange` event.
   get level() { return this.level_; }

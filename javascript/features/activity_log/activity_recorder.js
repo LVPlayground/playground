@@ -34,6 +34,14 @@ const ACTIVITY_LOG_VEHICLE_DEATHS = `
     VALUES
       (?, NOW(), ?, ?, ?)`;
 
+// Query to insert a new row in the `activity_log_vehicle_deaths` table.
+const ACTIVITY_LOG_SESSION_PLAYER_CONNECT = `
+    INSERT INTO
+      sessions
+      (session_date, nickname, ip_address, gpci)
+    VALUES
+      (NOW(), ?, ?, ?)`;
+
 // -------------------------------------------------------------------------------------------------
 
 // The activity recorder is responsible for actually recording the events that took place in-game,
@@ -65,6 +73,12 @@ class ActivityRecorder {
   // Writes the death of a vehicle of |modelId| at |position| to the database.
   writeVehicleDeath(modelId, position) {
     this.database_.query(ACTIVITY_LOG_VEHICLE_DEATHS, modelId, position.x, position.y, position.z);
+  }
+
+  // Writes a new session to the database of a player who just connected to log name, numeric
+  // variant of their ip and hashed serial
+  writeSessionAtConnect(playerName, numericIpAddress, hashedGpci) {
+    this.database_.query(ACTIVITY_LOG_SESSION_PLAYER_CONNECT, playerName, numericIpAddress, hashedGpci);
   }
 };
 

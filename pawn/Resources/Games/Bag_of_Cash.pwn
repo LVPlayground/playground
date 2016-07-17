@@ -193,7 +193,8 @@ Check_Textdraw() {
             continue;  // npc?
 
         new const bool: shouldDisplay = GetPlayerVirtualWorld(playerId) == World::MainWorld &&
-                                        !IsPlayerInMinigame(playerId);
+                                        !IsPlayerInMinigame(playerId) &&
+                                        !IsInterfaceBlockedByJavaScript(playerId);
 
         if (g_bagOfCashTextDrawVisible[playerId] == shouldDisplay)
             continue;  // visibility already is set accordingly for them

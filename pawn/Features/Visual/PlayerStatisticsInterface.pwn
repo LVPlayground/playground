@@ -2,6 +2,8 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
+new bool: g_InterfaceBlockedByJavaScript[MAX_PLAYERS];
+
 /**
  * Players need a direct feed of information regarding some usefull statistics; ping, FPS, packetloss,
  * kills, death and kill/death ratio. This is, besides from money, important information a player
@@ -40,7 +42,7 @@ class PlayerStatisticsInterface {
      *
      * @param playerId Id of the player we are showing the player statistics for.
      */
-    private showPlayerStatistics(playerId) {
+    public showPlayerStatistics(playerId) {
         if (m_playerStatisticsHidden[playerId] == false)
             return 0;
 
@@ -59,7 +61,7 @@ class PlayerStatisticsInterface {
      *
      * @param playerId Id of the player we are hiding the player statistics for.
      */
-    private hidePlayerStatistics(playerId) {
+    public hidePlayerStatistics(playerId) {
         if (m_playerStatisticsHidden[playerId] == true)
             return 0;
 
@@ -81,6 +83,7 @@ class PlayerStatisticsInterface {
     @list(OnPlayerConnect)
     public onPlayerConnect(playerId) {
         m_playerStatisticsHidden[playerId] = true;
+        g_InterfaceBlockedByJavaScript[playerId] = false;
 
         for (new textDraw = 0; textDraw < PlayerStatisticsTextDraws; textDraw++)
             m_playerStatisticsTextDraw[textDraw][playerId] = PlayerText: INVALID_TEXT_DRAW;
@@ -222,6 +225,9 @@ class PlayerStatisticsInterface {
             if (!Player(playerId)->isConnected() || Player(playerId)->isNonPlayerCharacter())
                 continue;
 
+            if (g_InterfaceBlockedByJavaScript[playerId])
+                continue;
+
             if (IsPlayerInMinigame(playerId) && m_playerStatisticsHidden[playerId] == false) {
                 this->hidePlayerStatistics(playerId);
                 continue;
@@ -282,3 +288,23 @@ class PlayerStatisticsInterface {
         }
     }
 };
+
+forward OnToggleStatisticsDisplay(playerId, display);
+public OnToggleStatisticsDisplay(playerId, display) {
+    if (!Player(playerId)->isConnected())
+        return;
+
+    g_InterfaceBlockedByJavaScript[playerId] = !display;
+
+    if (display)
+        PlayerStatisticsInterface->showPlayerStatistics(playerId);
+    else
+        PlayerStatisticsInterface->hidePlayerStatistics(playerId);
+
+    Check_Textdraw();
+}
+
+IsInterfaceBlockedByJavaScript(playerId) {
+    return g_InterfaceBlockedByJavaScript[playerId];
+}
+

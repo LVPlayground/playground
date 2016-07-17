@@ -4,6 +4,7 @@
 
 const NavigationButton = require('components/text_draw/navigation_button.js');
 const Rectangle = require('components/text_draw/rectangle.js');
+const TextDraw = require('components/text_draw/text_draw.js');
 
 // Background color of the user interface. Should be semi-transparent.
 const BACKGROUND_COLOR = Color.fromRGBA(0, 0, 0, 100);
@@ -24,6 +25,19 @@ class InteriorSelectorUI {
         this.background_ = new Rectangle(15, 400, 610, 40, BACKGROUND_COLOR);
         this.background_.displayForPlayer(player);
 
+        // Create the title that describes the name of this property.
+        this.title_ = new TextDraw({
+            position: [ 320, 400 ],
+            letterSize: [ 1.1, 3.9 ],
+            color: Color.WHITE,
+            text: '_',
+
+            font: TextDraw.FONT_CLASSIC,
+            alignment: TextDraw.ALIGN_CENTER
+        });
+
+        this.title_.displayForPlayer(player);
+
         // Create the navigational back-and-forward buttons for the player.
         this.previousButton_ = new NavigationButton(
             30, 409, NavigationButton.DIRECTION_LEFT, () => this.selector_.selectPrevious());
@@ -36,26 +50,31 @@ class InteriorSelectorUI {
 
         player.setSpectating(true);
         player.setSelectTextDraw(true, BUTTON_HOVER_COLOR);
+        player.toggleStatisticsDisplay(false);
     }
 
     // Displays the user interface specific to the interior at the given |index|.
     displayInterior(index) {
         const interior = this.interiorList_[index];
 
-        // TODO: Update the title.
+        this.title_.updateTextForPlayer(this.player_, interior.name);
+
         // TODO: Update the property's price.
     }
 
     dispose() {
         this.player_.setSpectating(false);
         this.player_.setSelectTextDraw(false);
+        this.player_.toggleStatisticsDisplay(true);
 
         this.previousButton_.hideForPlayer(this.player_);
         this.nextButton_.hideForPlayer(this.player_);
+        this.title_.hideForPlayer(this.player_);
         this.background_.hideForPlayer(this.player_);
 
         this.previousButton_ = null;
         this.nextButton_ = null;
+        this.title_ = null;
         this.background_ = null;
     }
 }

@@ -51,7 +51,12 @@ class InteriorSelector {
 
     // Called when the "Previous" button of the user interface has been clicked.
     selectPrevious() {
-        // TODO: Implement this method.
+        let previousIndex = this.interiorListIndex_ - 1;
+
+        if (previousIndex < 0)
+            previousIndex = this.interiorList_.length - 1;
+
+        this.displayInterior(previousIndex);
     }
 
     // Called when the "Purchase" button of the user interface has been clicked.
@@ -66,7 +71,12 @@ class InteriorSelector {
 
     // Called when the "Next" button of the user interface has been clicked.
     selectNext() {
-        // TODO: Implement this method.
+        let nextIndex = this.interiorListIndex_ + 1;
+
+        if (nextIndex >= this.interiorList_.length)
+            nextIndex = 0;
+
+        this.displayInterior(nextIndex);
     }
 
     // ---------------------------------------------------------------------------------------------

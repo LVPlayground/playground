@@ -259,6 +259,12 @@ class Player {
                position.z, radius);
   }
 
+  // Toggles display of the statistics display in the player's bottom-right corner.
+  toggleStatisticsDisplay(enabled) {
+    Promise.resolve().then(() =>
+        pawnInvoke('OnToggleStatisticsDisplay', 'ii', this.id_, enabled ? 1 : 0));
+  }
+
   // Returns whether this player is a NPC or just a normal player
   isNpc() {
     return pawnInvoke('IsPlayerNPC', 'i', this.id_);

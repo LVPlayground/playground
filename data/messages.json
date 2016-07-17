@@ -131,6 +131,10 @@
     "LVP_PLAYGROUND_OPTION_STATUS": "The {FF8282}%s{FFFFFF} option is {FF8282}%s{FFFFFF}. Type {FF8282}/lvp set %s [on/off]{FFFFFF} to change this.",
     "LVP_PLAYGROUND_OPTION_NO_CHANGE": "@error The {FF8282}%s{FFFFFF} feature has already been %s.",
 
+    "MANAGEMENT_ACCESS_HEADER": "{B1FC17}Players with Management-command access:",
+    "MANAGEMENT_ERROR": "@error %s",
+    "MANAGEMENT_SUCCESS": "@success %s",
+
     "POSITIONING_CURRENT_POSITION": "Your current position is X: %d, Y: %d Z: %d, Rotation: %d",
     "POSITIONING_OTHER_USAGE_POS": "{FF9900}Other usage{FFFFFF}: /pos [x] [y] [z]",
     

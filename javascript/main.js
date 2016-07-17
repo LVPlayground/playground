@@ -49,6 +49,7 @@ testRunner.run('.*\.test\.js').then(notifyReady).then(() => {
 
         // Player-related features
         playerFavours:  require('features/player_favours/player_favours.js'),
+        management:     require('features/management/management.js'),
 
         // VIP-related features
         veryImportantPlayers:  require('features/vips/vips.js'),

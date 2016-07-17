@@ -191,7 +191,7 @@ class CommandBuilder {
 
       // When a level restriction is in effect for this command and the player does not meet the
       // required level, bail out immediately. This clause only hits for the main command.
-      if ((this.restrictFn_ && !this.restrictFn_()) || this.restrictLevel_ > player.level) {
+      if ((this.restrictFn_ && !this.restrictFn_(player)) || this.restrictLevel_ > player.level) {
         const message = this.restrictFn_ ? 'specific players'
                                          : playerLevelToString(this.restrictLevel_, true /* plural */);
 
@@ -202,7 +202,7 @@ class CommandBuilder {
       // Determine if there is a sub-command that we should delegate to. Word matching is used for
       // string values (which will be the common case for delegating commands.)
       for (let { builder, listener } of this.subCommands_) {
-        if ((this.restrictFn_ && !this.restrictFn_()) || builder.restrictLevel_ > player.level)
+        if ((this.restrictFn_ && !this.restrictFn_(player)) || builder.restrictLevel_ > player.level)
           continue;
 
         if (typeof builder.command_ == 'string') {

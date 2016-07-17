@@ -61,7 +61,11 @@ class TestRunner {
       let runNextSuite = () => {
         if (currentSuiteIndex >= this.testSuites_.length) {
           // Report to the test runner that running the tests has finished.
-          reportTestsFinished(this.testCount, failures.length);
+          try {
+            reportTestsFinished(this.testCount, failures.length);
+          } catch (e) {
+            return;  // silently abort when the test runner is done.
+          }
 
           // Either resolve or reject the promise based on the number of failing tests.
           failures.length > 0 ? reject(failures)

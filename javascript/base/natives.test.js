@@ -3,6 +3,13 @@
 // be found in the LICENSE file.
 
 describe('Natives', it => {
+    try {
+        provideNative();
+    } catch (e) {
+        if (e.message.includes('in the test runner'))
+            return;  // the Natives functionality is not available in the test runner.
+    }
+
     it('should throw when providing an unknown native', assert => {
         assert.throws(() => provideNative('ThisNativeDoesNotExist', '', () => 42));
     });

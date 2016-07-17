@@ -177,6 +177,15 @@ class Player {
     pawnInvoke('TogglePlayerSpectating', 'ii', this.id_, spectating ? 1 : 0);
   }
 
+  // Sets whether the player is currently selecting a text draw on their screen. If so, the
+  // |hoverColor| can be supplied to highlight the selected text draws.
+  setSelectTextDraw(selecting, hoverColor = null) {
+    if (selecting)
+      pawnInvoke('SelectTextDraw', 'ii', this.id_, (hoverColor || Color.WHITE).toNumberRGBA());
+    else
+      pawnInvoke('CancelSelectTextDraw', 'i', this.id_);
+  }
+
   // Sets the player's camera to |position| and |target|, both of which must be vectors. The camera
   // position is interpolated becaue this makes it play nice with spectating and camera streaming.
   setCamera(position, target) {

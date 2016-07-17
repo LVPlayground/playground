@@ -4,6 +4,8 @@
 
 const Dialog = require('components/dialogs/dialog.js');
 const IdentityBeam = require('features/houses/utils/identity_beam.js');
+const InteriorList = require('features/houses/utils/interior_list.js');
+const InteriorSelector = require('features/houses/utils/interior_selector.js');
 const Menu = require('components/menu/menu.js');
 
 // Maximum number of milliseconds during which the identity beam should be displayed.
@@ -55,6 +57,11 @@ class HouseCommands {
         }
 
         // |location| is available for purchase, and the |player| does not have a house yet.
+
+        const interiorList = InteriorList.forEconomy(this.economy_, location.position);
+        const interior = await InteriorSelector.select(player, interiorList);
+
+        console.log(interior);
     }
 
     // Called when an administrator types `/house create`. It will confirm with them whether they

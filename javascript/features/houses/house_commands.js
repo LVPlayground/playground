@@ -18,14 +18,43 @@ class HouseCommands {
         this.announce_ = announce;
         this.economy_ = economy;
 
-        // Command: /house [create/modify]
+        // Command: /house [buy/create/modify/sell]
         server.commandManager.buildCommand('house')
             .restrict(Player.LEVEL_MANAGEMENT)
+            .sub('buy')
+                .build(HouseCommands.prototype.onHouseBuyCommand.bind(this))
             .sub('create')
+                .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(HouseCommands.prototype.onHouseCreateCommand.bind(this))
             .sub('modify')
+                .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(HouseCommands.prototype.onHouseModifyCommand.bind(this))
+            .sub('sell')
+                .build(HouseCommands.prototype.onHouseSellCommand.bind(this))
             .build(HouseCommands.prototype.onHouseCommand.bind(this));
+    }
+
+    // Called when a player types the `/house buy` command to start purchasing a house. They must be
+    // standing in a house entrance in order for the command to work.
+    async onHouseBuyCommand(player) {
+        const location = this.manager_.getCurrentLocationForPlayer(player);
+        if (!location) {
+            player.sendMessage(Message.HOUSE_BUY_NO_LOCATION);
+            return;
+        }
+
+        const currentHouse = this.manager_.getHouseForPlayer(player);
+        if (currentHouse) {
+            player.sendMessage(Message.HOUSE_BUY_NO_MULTIPLE);
+            return;
+        }
+
+        if (!location.isAvailable()) {
+            player.sendMessage(Message.HOUSE_BUY_NOT_AVAILABLE, location.owner);
+            return;
+        }
+
+        // |location| is available for purchase, and the |player| does not have a house yet.
     }
 
     // Called when an administrator types `/house create`. It will confirm with them whether they
@@ -121,13 +150,23 @@ class HouseCommands {
         identityBeam.dispose();
     }
 
+    // Called when a player types the `/house sell` command to sell their house. They don't have to
+    // be in the house when typing this, but they will have to confirm the transaction.
+    async onHouseSellCommand(player) {
+
+    }
+
     // Called when an administrator types the `/house` command. Gives an overview of the available
-    // options, with information on how to use the command.
+    // options, with information on how to use the command, depending on the |player|'s level.
     onHouseCommand(player) {
         player.sendMessage(Message.HOUSE_HEADER);
         player.sendMessage(Message.HOUSE_INFO_1);
         player.sendMessage(Message.HOUSE_INFO_2);
-        player.sendMessage(Message.COMMAND_USAGE, '/house [create/modify]');
+
+        if (player.isAdministrator())
+            player.sendMessage(Message.COMMAND_USAGE, '/house [buy/create/modify/sell]');
+        else
+            player.sendMessage(Message.COMMAND_USAGE, '/house [buy/sell]');
     }
 
     dispose() {

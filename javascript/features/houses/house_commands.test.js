@@ -13,10 +13,13 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     let manager = null;
 
     beforeEach(() => {
-        manager = new HouseManager();
+        const announce = new MockAnnounce();
+        const economy = new Economy();
+
+        manager = new HouseManager(economy);
         manager.database_ = new MockHouseDatabase();
 
-        commands = new HouseCommands(manager, new MockAnnounce(), new Economy());
+        commands = new HouseCommands(manager, announce, economy);
     });
 
     afterEach(() => {
@@ -101,7 +104,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         gunther.identify();
         gunther.level = Player.LEVEL_MANAGEMENT;
-        gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest house
+        gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest location
 
         assert.isTrue(gunther.issueCommand('/house modify'));
         await manager.findClosestLocation(gunther);
@@ -119,12 +122,11 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         await manager.loadHousesFromDatabase();
-
-        assert.equal(manager.locationCount, 3);
+        assert.isAbove(manager.locationCount, 0);
 
         gunther.identify();
         gunther.level = Player.LEVEL_MANAGEMENT;
-        gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest house
+        gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest location
 
         gunther.respondToDialog({ listitem: 0 /* Delete the location */ }).then(
             () => gunther.respondToDialog({ response: 1 /* Yes, really get rid of it */ }));
@@ -132,6 +134,37 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(await gunther.issueCommand('/house modify'));
 
         assert.equal(manager.locationCount, 2);
+    });
+
+    it('should not allow buying a house when the player is not standing in one', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        await manager.loadHousesFromDatabase();
+        assert.isAbove(manager.locationCount, 0);
+
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
+        assert.isTrue(await gunther.issueCommand('/house buy'));
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.HOUSE_BUY_NO_LOCATION);
+    });
+
+    it('should not allow buying a house when the player already has one', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        await manager.loadHousesFromDatabase();
+        assert.isAbove(manager.locationCount, 0);
+
+        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.position = new Vector(200, 250, 300);  // on the nearest location pickup
+
+        manager.getHouseForPlayer = player => true;  // any non-NULL value will do
+
+        assert.isTrue(await gunther.issueCommand('/house buy'));
+
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(gunther.messages[1], Message.HOUSE_BUY_NO_MULTIPLE);
     });
 
     it('should clean up after itself', async(assert) => {

@@ -81,6 +81,11 @@ class HouseManager {
         return closestLocation;
     }
 
+    // Returns the house location the |player| is currently standing in. May return NULL.
+    getCurrentLocationForPlayer(player) {
+        return this.entranceController_.getCurrentLocationForPlayer(player);
+    }
+
     // Returns the house owned by |player|. Assumes that the data has been loaded already.
     getHouseForPlayer(player) {
         return null;

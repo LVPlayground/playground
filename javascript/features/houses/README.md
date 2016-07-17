@@ -33,10 +33,12 @@ Administrators can modify or remove a house by using the `/house modify` command
 The `/house` command is available to administrators for administrating the available houses. It has
 the following options:
 
+  - **/house buy**: Begins the purchase process for the house you're currently standing in.
   - **/house create**: Creates a new house location. The price range of houses on this location is
     predetermined by an algorithm, and cannot be modified.
   - **/house modify**: Modifies settings for the house closest to the administrator issuing the
     command. Enables creation and removal of parking spots.
+  - **/house sell**: Sells your house after a firm confirmation.
   - **/house**: Displays information about the command.
 
 
@@ -55,3 +57,8 @@ The owner of a house and their [friends](../friends/). Administrators can always
 Players who are not registered with Las Venturas Playground are not able to access houses.
 
 In the future, houses may feature dedicated access lists configurable by the owner.
+
+
+## FAQ: As an admin, can I change a house's price?
+No. We've learned from the property system that the economy becomes a chaos when administrators can
+determine the prices of in-game objects. Sorry.

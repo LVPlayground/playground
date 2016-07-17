@@ -102,6 +102,9 @@
 
     "HOUSE_ANNOUNCE_CREATED": "%s (Id: %d) has created a new house location.",
     "HOUSE_ANNOUNCE_DELETED": "%s (Id: %d) has deleted a house location (Id: %d).",
+    "HOUSE_BUY_NO_LOCATION": "@error You need to stand in a house entrance to use this command.",
+    "HOUSE_BUY_NO_MULTIPLE": "@error You already own a house, so can't buy this one as well.",
+    "HOUSE_BUY_NOT_AVAILABLE": "@error The house you're standing in is already owned by %s.",
     "HOUSE_CREATE_CONFIRM": "Houses will cost between %$ and %$ at this location. Continue?",
     "HOUSE_CREATE_CONFIRMED": "The house location has been created!",
     "HOUSE_CREATE_RESIDENTIAL_EXCLUSION_ZONE": "Sorry, no houses may be created in the residential exclusion zones!",
@@ -111,7 +114,7 @@
     "HOUSE_MODIFY_DELETE_CONFIRM": "Are you absolutely sure that you want to remove this location? Any occupants will be evicted with it.",
     "HOUSE_MODIFY_DELETE_CONFIRMED": "The house location has been deleted.",
     "HOUSE_MODIFY_NONE_NEAR": "@error You need to be close to a house in order to use this command.",
-    "HOUSE_PICKUP_CAN_PURCHASE": "{10F441}This house is available for purchase, starting at %$. Type {DDFFDD}/buy{10F441} if you're interested!",
+    "HOUSE_PICKUP_CAN_PURCHASE": "{10F441}This house is available for purchase, starting at %$. Type `{DDFFDD}/house buy{10F441}` if you're interested!",
     "HOUSE_PICKUP_CANNOT_PURCHASE": "{CCCCCC}This house is available for purchase, starting at %$.",
 
     "IRC_CHAT_MESSAGE_SENT": "{33AA33}Message sent to {FFFFFF}%s {33AA33}as {FFFFFF}%s{33AA33}: {FFFFFF}%s",

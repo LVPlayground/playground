@@ -17,6 +17,9 @@ class HouseEntranceController {
         this.locations_ = new Map();
         this.pickups_ = new Map();
 
+        // Weak map providing a reference to the location pickup a player currently stands in.
+        this.currentPickup_ = new WeakMap();
+
         server.pickupManager.addObserver(this);
     }
 
@@ -52,6 +55,9 @@ class HouseEntranceController {
         if (!location)
             return;
 
+        // Store the |pickup| the |player| is currently standing in, powering `/house buy`.
+        this.currentPickup_.set(player, pickup);
+
         const playerHouse = this.manager_.getHouseForPlayer(player);
 
         // Offer the |player| the ability to purchase the house when it's available and they don't
@@ -73,6 +79,20 @@ class HouseEntranceController {
 
         // TODO: Respond to the player entering the occupied location's entrance.
         console.log('Entered location #' + location.id);
+    }
+
+    // Returns the house location the |player| is currently standing in. May return NULL.
+    getCurrentLocationForPlayer(player) {
+        const pickup = this.currentPickup_.get(player);
+        if (pickup)
+            return this.pickups_.get(pickup);
+
+        return null;
+    }
+
+    // Called when the |player| leaves the pickup they were standing in.
+    onPlayerLeavePickup(player) {
+        this.currentPickup_.delete(player);
     }
 
     dispose() {

@@ -93,11 +93,16 @@ class ActivityLog extends Feature {
   ip2long (ip) {
     const numericParts = ip.split('.');
 
-    const firstPart = numericParts[0]+256;
-    const secondPart = numericParts[1]+256;
-    const thirdPart = numericParts[2]+256;
+    //const firstPart = numericParts[0]+256;
+    //const secondPart = numericParts[1]+256;
+    //const thirdPart = numericParts[2]+256;
 
-    return firstPart + secondPart + thirdPart + numericParts[3];
+    //return firstPart + secondPart + thirdPart + numericParts[3];
+    
+    return ((((((+numericParts[0])*256)
+           +(+numericParts[1]))*256)
+           +(+numericParts[2]))*256)
+           +(+numericParts[3]);
   }
 
 };

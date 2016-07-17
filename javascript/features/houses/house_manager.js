@@ -59,6 +59,8 @@ class HouseManager {
     async findClosestLocation(player, maximumDistance = null) {
         await this.dataLoadedPromise_;
 
+        // TODO: Return the current house if the |player| happens to be in one.
+
         const position = player.position;
 
         let closestLocation = null;

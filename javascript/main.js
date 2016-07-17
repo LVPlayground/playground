@@ -40,7 +40,7 @@ testRunner.run('.*\.test\.js').then(notifyReady).then(() => {
         gangs:          require('features/gangs/gangs.js'),
 
         // House-related features
-        //houses:         require('features/houses/houses.js'),
+        houses:         require('features/houses/houses.js'),
 
         // General smaller, self-contained features
         friends:        require('features/friends/friends.js'),

@@ -29,6 +29,7 @@ class CommandBuilder {
     this.command_ = command;
     this.defaultValue_ = defaultValue;
 
+    this.restrictFn_ = null;
     this.restrictLevel_ = Player.LEVEL_PLAYER;
 
     this.parameters_ = [];
@@ -54,8 +55,16 @@ class CommandBuilder {
 
   // Restricts usage of the command to the given player level.
   restrict(level) {
+    if (typeof level == 'function') {
+      this.restrictFn_ = level;
+      return this;
+    }
+
     if (typeof level != 'number' || level < Player.LEVEL_PLAYER || level > Player.LEVEL_MANAGEMENT)
       throw new Error('Invalid player level supplied: ' + level);
+
+    if (this.restrictFn_ !== null)
+      throw new Error('A restrictive function has already been supplied.');
 
     this.restrictLevel_ = level;
     return this;
@@ -182,15 +191,18 @@ class CommandBuilder {
 
       // When a level restriction is in effect for this command and the player does not meet the
       // required level, bail out immediately. This clause only hits for the main command.
-      if (this.restrictLevel_ > player.level) {
-        player.sendMessage(Message.format(Message.COMMAND_ERROR_INSUFFICIENT_RIGHTS, playerLevelToString(this.restrictLevel_, true /* plural */)));
+      if ((this.restrictFn_ && !this.restrictFn_()) || this.restrictLevel_ > player.level) {
+        const message = this.restrictFn_ ? 'specific players'
+                                         : playerLevelToString(this.restrictLevel_, true /* plural */);
+
+        player.sendMessage(Message.format(Message.COMMAND_ERROR_INSUFFICIENT_RIGHTS, message));
         return true;
       }
 
       // Determine if there is a sub-command that we should delegate to. Word matching is used for
       // string values (which will be the common case for delegating commands.)
       for (let { builder, listener } of this.subCommands_) {
-        if (builder.restrictLevel_ > player.level)
+        if ((this.restrictFn_ && !this.restrictFn_()) || builder.restrictLevel_ > player.level)
           continue;
 
         if (typeof builder.command_ == 'string') {

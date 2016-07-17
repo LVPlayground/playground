@@ -305,6 +305,39 @@ describe('CommandBuilder', (it, beforeEach) => {
     assert.equal(Message.filter(lastMessage), 'Error: Sorry, this command is only available to administrators.');
   });
 
+  it('should restrict values to functions', assert => {
+    let counter = 0;
+    let invoked = 0;
+
+    function IsEvenInvocation(player) {
+        return (++counter % 2) == 0;
+    }
+
+    builder('testcommand')
+        .restrict(IsEvenInvocation)
+        .build(player => invoked++);
+
+    listener(player, '');
+    assert.equal(invoked, 0);
+
+    listener(player, '');
+    assert.equal(invoked, 1);
+
+    listener(player, '');
+    assert.equal(invoked, 1);
+
+    listener(player, '');
+    assert.equal(invoked, 2);
+  });
+
+  it('should not be able to restrict to player levels when a function has been set', assert => {
+    assert.throws(() => {
+      builder('testcommand')
+          .restrict(player => true)
+          .restrict(Player.LEVEL_MANAGEMENT);
+    });
+  });
+
   it('should parse and apply parameters', assert => {
     assert.throws(() => builder('testcommand').parameters(null));
     assert.throws(() => builder('testcommand').parameters({}));

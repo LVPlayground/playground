@@ -129,7 +129,7 @@
 #include Elements/Player/World.pwn
 
 // Order is important here! Import handler requires GTA
-#include Resources/Games/Grand Theft Auto.pwn
+#include Resources/Games/Grand_Theft_Auto.pwn
 
 // MiniGames:
 #include Resources/Minigames/Core/main.pwn
@@ -154,7 +154,7 @@
 #include Elements/Player/SprayTags.pwn
 
 // Player connections
-#include Elements/Player/Connections/Saveinfo.pwn
+#include Elements/Player/Connections/SaveInfo.pwn
 #include Elements/Player/Connections/connect.pwn
 #include Elements/Player/Connections/disconnect.pwn
 

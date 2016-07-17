@@ -11,8 +11,8 @@
 #include Resources/Minigames/Deathmatch/sniper.pwn
 #include Resources/Minigames/Deathmatch/minigun.pwn
 #include Resources/Minigames/Deathmatch/ShipTDM.pwn
-#include Resources/Minigames/Deathmatch/Sawnoff.pwn
-#include Resources/Minigames/Deathmatch/WalkWeapon.pwn
+#include Resources/Minigames/Deathmatch/sawnoff.pwn
+#include Resources/Minigames/Deathmatch/walkweapon.pwn
 #include Resources/Minigames/Deathmatch/RandomDeathmatch.pwn
 #include Resources/Minigames/Deathmatch/IslandDM.pwn
 

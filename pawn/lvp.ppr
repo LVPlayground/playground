@@ -301,12 +301,12 @@
     <DiskObject>\Resources\Callbacks\Others\OnRconLoginAttempt.pwn</DiskObject>
     <DiskObject>\Resources\Games\</DiskObject>
     <DiskObject>\Resources\Games\Achievements.pwn</DiskObject>
-    <DiskObject>\Resources\Games\Bag of Cash.pwn</DiskObject>
+    <DiskObject>\Resources\Games\Bag_of_Cash.pwn</DiskObject>
     <DiskObject>\Resources\Games\Bonuses.pwn</DiskObject>
     <DiskObject>\Resources\Games\Chase.pwn</DiskObject>
     <DiskObject>\Resources\Games\Export.pwn</DiskObject>
     <DiskObject>\Resources\Games\FightClub.pwn</DiskObject>
-    <DiskObject>\Resources\Games\Grand Theft Auto.pwn</DiskObject>
+    <DiskObject>\Resources\Games\Grand_Theft_Auto.pwn</DiskObject>
     <DiskObject>\Resources\Games\Killtime.pwn</DiskObject>
     <DiskObject>\Resources\Games\Reaction.pwn</DiskObject>
     <DiskObject>\Resources\IRC\</DiskObject>

@@ -42,10 +42,30 @@ const ACTIVITY_LOG_SESSION_PLAYER_CONNECT_INSERT = `
     VALUES
       (NOW(), 0, 0, ?, ?, ?)`;
 
-// Query to update the session-row of the player in the `sessions` table.
+// Query to update the session-row of the player on successful login in the `sessions` table.
 const ACTIVITY_LOG_SESSION_PLAYER_LOGIN_UPDATE = `
-    UPDATE sessions
-      set sessions.user_id = ?
+    UPDATE
+      sessions
+    SET
+      sessions.user_id = ?
+    WHERE
+      sessions.session_id = ?`;
+
+// Query to get the session_date datetime of the disconnecting player in the `sessions` table.
+const ACTIVITY_LOG_SESSION_START_DATETIME_SELECT = `
+    SELECT
+      sessions.session_date
+    FROM
+      sessions
+    WHERE
+      sessions.session_id = ?`;
+
+// Query to update the session-row of the disconnecting player in the `sessions` table.
+const ACTIVITY_LOG_SESSION_PLAYER_DISCONNECT_UPDATE = `
+    UPDATE
+      sessions
+    SET
+      sessions.session_duration = ?
     WHERE
       sessions.session_id = ?`;
 
@@ -86,21 +106,36 @@ class ActivityRecorder {
   // variant of their ip and hashed serial.
   // Returns the id of that row to be ablo to update it correctly later on.
   getIdFromWriteInsertSessionAtConnect(playerName, numericIpAddress, hashedGpci) {
-    let rowId = null;
-
-    this.database_.query(ACTIVITY_LOG_SESSION_PLAYER_CONNECT_INSERT, playerName, numericIpAddress, hashedGpci).then(result => {
+    return this.database_.query(ACTIVITY_LOG_SESSION_PLAYER_CONNECT_INSERT, playerName, numericIpAddress, hashedGpci).then(result => {
       if (result.insertId === null)
-        throw new Error('Unexpectedly got NULL as the inserted Id.');
+        throw new Error('Unexpectedly got NULL as the inserted id.');
 
-      rowId = result.insertId;
+      return {
+          sessionId: result.insertId
+      };
     });
-
-    return rowId;
   }
 
   // Updates the row by rowId at login with the id of the registered user
-  writeUpdateSessionAtLogin(rowId, userId) {
-    this.database_.query(ACTIVITY_LOG_SESSION_PLAYER_LOGIN_UPDATE, rowId, userId);
+  writeUpdateSessionAtLogin(sessionId, userId) {
+    this.database_.query(ACTIVITY_LOG_SESSION_PLAYER_LOGIN_UPDATE, userId, sessionId);
+  }
+
+  // Updates the row by rowId when the player disconnects from the server to write the session dura-
+  // tion in seconds
+  writeUpdateSessionAtDisconnect(sessionId, currentDateTime) {
+      this.database_.query(ACTIVITY_LOG_SESSION_START_DATETIME_SELECT, sessionId).then(results => {
+          if (results.rows.length !== 1)
+              return null;
+
+          const startDateTime = Date.parse(results.rows[0].session_date);
+          if (!Number.isFinite(startDateTime))
+              return null;
+
+          const sessionDurationInSeconds = (currentDateTime / 1000) - (startDateTime / 1000);
+          this.database_.query(
+              ACTIVITY_LOG_SESSION_PLAYER_DISCONNECT_UPDATE, sessionDurationInSeconds, sessionId);
+      });
   }
 };
 

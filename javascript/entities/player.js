@@ -271,10 +271,6 @@ class Player {
     return pawnInvoke('IsPlayerNPC', 'i', this.id_);
   }
 
-  // Keeps track of the sessions.session_id of the last join of the player
-  get sessionId() { return this.sessionId_; }
-  set sessionId(value) { this.sessionId_ = value; }
-
   // -----------------------------------------------------------------------------------------------
   // TODO: The following methods should not be on the common Player object, but rather provided by
   // a feature of sorts.

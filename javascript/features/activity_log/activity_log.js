@@ -25,6 +25,7 @@ class ActivityLog extends Feature {
       'OnPlayerResolvedDeath',  // { playerid, killerid, reason }
 //    'OnPlayerWeaponShot',     // { playerid, weaponid, hittype, hitid, fX, fY, fZ }
       'OnPlayerConnect',        // { playerid }
+      'OnPlayerLogin',          // { playerid, userid, gangid }
 
     ].forEach(name =>
         this.callbacks_.addEventListener(toEventName(name), this.__proto__[toMethodName(name)].bind(this)));
@@ -86,7 +87,15 @@ class ActivityLog extends Feature {
     const numericIpAddress = this.ip2long(player.ipAddress);
     const hashedGpci = MurmurHash3.generateHash(player.gpci);
 
-    this.recorder_.writeSessionAtConnect(player.name, numericIpAddress, hashedGpci);
+    player.sessionId = this.recorder_.getIdFromWriteInsertSessionAtConnect(player.name, numericIpAddress, hashedGpci);
+  }
+
+  onPlayerLogin(event) {
+    const player = server.playerManager.getById(event.playerid);
+    if (!player || player.isNpc())
+      return;
+
+    this.recorder_.writeUpdateSessionAtLogin(player.sessionId, player.userId);
   }
 
   // TODO: (re)move this to a better place!
@@ -95,11 +104,10 @@ class ActivityLog extends Feature {
     const numericParts = ip.split('.');
 
     return ((((((+numericParts[0])*256)
-           +(+numericParts[1]))*256)
-           +(+numericParts[2]))*256)
-           +(+numericParts[3]);
+               +(+numericParts[1]))*256)
+               +(+numericParts[2]))*256)
+               +(+numericParts[3]);
   }
-
 };
 
 exports = ActivityLog;

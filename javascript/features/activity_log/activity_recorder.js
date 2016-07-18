@@ -34,13 +34,20 @@ const ACTIVITY_LOG_VEHICLE_DEATHS = `
     VALUES
       (?, NOW(), ?, ?, ?)`;
 
-// Query to insert a new row in the `activity_log_vehicle_deaths` table.
-const ACTIVITY_LOG_SESSION_PLAYER_CONNECT = `
+// Query to insert a new row in the `sessions` table.
+const ACTIVITY_LOG_SESSION_PLAYER_CONNECT_INSERT = `
     INSERT INTO
       sessions
       (session_date, session_duration, user_id, nickname, ip_address, gpci)
     VALUES
       (NOW(), 0, 0, ?, ?, ?)`;
+
+// Query to update the session-row of the player in the `sessions` table.
+const ACTIVITY_LOG_SESSION_PLAYER_LOGIN_UPDATE = `
+    UPDATE sessions
+      set sessions.user_id = ?
+    WHERE
+      sessions.session_id = ?`;
 
 // -------------------------------------------------------------------------------------------------
 
@@ -76,9 +83,24 @@ class ActivityRecorder {
   }
 
   // Writes a new session to the database of a player who just connected to log name, numeric
-  // variant of their ip and hashed serial
-  writeSessionAtConnect(playerName, numericIpAddress, hashedGpci) {
-    this.database_.query(ACTIVITY_LOG_SESSION_PLAYER_CONNECT, playerName, numericIpAddress, hashedGpci);
+  // variant of their ip and hashed serial.
+  // Returns the id of that row to be ablo to update it correctly later on.
+  getIdFromWriteInsertSessionAtConnect(playerName, numericIpAddress, hashedGpci) {
+    let rowId = null;
+
+    this.database_.query(ACTIVITY_LOG_SESSION_PLAYER_CONNECT_INSERT, playerName, numericIpAddress, hashedGpci).then(result => {
+      if (result.insertId === null)
+        throw new Error('Unexpectedly got NULL as the inserted Id.');
+
+      rowId = result.insertId;
+    });
+
+    return rowId;
+  }
+
+  // Updates the row by rowId at login with the id of the registered user
+  writeUpdateSessionAtLogin(rowId, userId) {
+    this.database_.query(ACTIVITY_LOG_SESSION_PLAYER_LOGIN_UPDATE, rowId, userId);
   }
 };
 

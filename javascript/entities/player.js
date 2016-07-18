@@ -13,6 +13,7 @@ class Player {
     this.name_ = pawnInvoke('GetPlayerName', 'iS', playerId);
     this.ipAddress_ = pawnInvoke('GetPlayerIp', 'iS', playerId);
     this.gpci_ = pawnInvoke('gpci', 'iS', playerId);
+    this.sessionId_ = null;
 
     this.connected_ = true;
     this.disconnecting_ = false;
@@ -269,6 +270,10 @@ class Player {
   isNpc() {
     return pawnInvoke('IsPlayerNPC', 'i', this.id_);
   }
+
+  // Keeps track of the sessions.session_id of the last join of the player
+  get sessionId() { return this.sessionId_; }
+  set sessionId(value) { this.sessionId_ = value; }
 
   // -----------------------------------------------------------------------------------------------
   // TODO: The following methods should not be on the common Player object, but rather provided by

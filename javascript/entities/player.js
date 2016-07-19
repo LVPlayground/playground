@@ -13,7 +13,6 @@ class Player {
     this.name_ = pawnInvoke('GetPlayerName', 'iS', playerId);
     this.ipAddress_ = pawnInvoke('GetPlayerIp', 'iS', playerId);
     this.gpci_ = pawnInvoke('gpci', 'iS', playerId);
-    this.sessionId_ = null;
 
     this.connected_ = true;
     this.disconnecting_ = false;

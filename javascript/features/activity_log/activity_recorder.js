@@ -51,6 +51,15 @@ const ACTIVITY_LOG_SESSION_PLAYER_LOGIN_UPDATE = `
     WHERE
       sessions.session_id = ?`;
 
+// Query to update the session-row of the player on successful login in the `sessions` table.
+const ACTIVITY_LOG_SESSION_PLAYER_GUEST_LOGIN_UPDATE = `
+    UPDATE
+      sessions
+    SET
+      sessions.nickname = ?
+    WHERE
+      sessions.session_id = ?`;
+
 // Query to get the session_date datetime of the disconnecting player in the `sessions` table.
 const ACTIVITY_LOG_SESSION_START_DATETIME_SELECT = `
     SELECT
@@ -119,6 +128,11 @@ class ActivityRecorder {
   // Updates the row by rowId at login with the id of the registered user
   writeUpdateSessionAtLogin(sessionId, userId) {
     this.database_.query(ACTIVITY_LOG_SESSION_PLAYER_LOGIN_UPDATE, userId, sessionId);
+  }
+
+  // Updates the row by rowId at login with the id of the registered user
+  writeUpdateSessionAtGuestLogin(sessionId, guestPlayerName) {
+    this.database_.query(ACTIVITY_LOG_SESSION_PLAYER_GUEST_LOGIN_UPDATE, guestPlayerName, sessionId);
   }
 
   // Updates the row by rowId when the player disconnects from the server to write the session dura-

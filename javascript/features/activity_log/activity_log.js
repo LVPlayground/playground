@@ -26,6 +26,7 @@ class ActivityLog extends Feature {
 //    'OnPlayerWeaponShot',     // { playerid, weaponid, hittype, hitid, fX, fY, fZ }
       'OnPlayerConnect',        // { playerid }
       'OnPlayerLogin',          // { playerid, userid, gangid }
+      'OnPlayerGuestLogin',     // { playerId  }
       'OnPlayerDisconnect',     // { playerid, reason }
 
     ].forEach(name =>
@@ -107,6 +108,22 @@ class ActivityLog extends Feature {
 
     const sessionId = this.playerSessionIdMap_.get(player.id);
     this.recorder_.writeUpdateSessionAtLogin(sessionId, player.userId);
+  }
+
+  // Called at the moment a player with an already used nickname wants to play as guest. In that
+  // case his name changes and we should adjust that in the db.
+  onPlayerGuestLogin(event) {
+    const player = server.playerManager.getById(event.playerId);
+    if (!player || player.isNpc())
+      return;
+
+    if (!this.playerSessionIdMap_.has(player.id))
+      return;
+
+    const sessionId = this.playerSessionIdMap_.get(player.id);
+    const guestPlayerName = pawnInvoke('GetPlayerName', 'iS', player.id);
+
+    this.recorder_.writeUpdateSessionAtGuestLogin(sessionId, guestPlayerName);
   }
 
   // Called when a player somehow leaves the server.

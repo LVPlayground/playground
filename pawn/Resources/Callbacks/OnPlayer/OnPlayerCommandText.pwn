@@ -1567,9 +1567,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         format(string, sizeof(string), "You have received $%d from %s (id: %d).", iMoney, iSenderName, playerid);
         SendClientMessage(iGivePlayerID, COLOR_YELLOW, string);
 
-        format(string,sizeof(string), "%s (Id:%d) has transferred $%s to %s (Id:%d).", iSenderName, playerid, formatPrice(iMoney), iGivePlayerName, iGivePlayerID);
-        Admin(playerid, string);
-
         return 1;
     }
 

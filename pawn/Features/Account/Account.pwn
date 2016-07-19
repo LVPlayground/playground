@@ -267,5 +267,5 @@ class Account <playerId (MAX_PLAYERS)> {
 forward OnPlayerLogin(playerid, userid, gangId);
 public OnPlayerLogin(playerid, userid, gangId) {}
 
-forward OnPlayerGuestLogin(playerid);
-public OnPlayerGuestLogin(playerid) {}
+forward OnPlayerGuestLogin(playerId);
+public OnPlayerGuestLogin(playerId) {}

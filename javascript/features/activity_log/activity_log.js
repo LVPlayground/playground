@@ -25,9 +25,14 @@ class ActivityLog extends Feature {
       'OnPlayerResolvedDeath',  // { playerid, killerid, reason }
 //    'OnPlayerWeaponShot',     // { playerid, weaponid, hittype, hitid, fX, fY, fZ }
       'OnPlayerConnect',        // { playerid }
+      'OnPlayerLogin',          // { playerid, userid, gangid }
+      'OnPlayerGuestLogin',     // { playerId  }
+      'OnPlayerDisconnect',     // { playerid, reason }
 
     ].forEach(name =>
         this.callbacks_.addEventListener(toEventName(name), this.__proto__[toMethodName(name)].bind(this)));
+
+    this.playerSessionIdMap_ = new Map(); // { playerid, sessionid )
   }
 
   // Called when a confirmed death has happened with the corrected Id of the killer, if any. The
@@ -86,20 +91,62 @@ class ActivityLog extends Feature {
     const numericIpAddress = this.ip2long(player.ipAddress);
     const hashedGpci = MurmurHash3.generateHash(player.gpci);
 
-    this.recorder_.writeSessionAtConnect(player.name, numericIpAddress, hashedGpci);
+    this.recorder_.getIdFromWriteInsertSessionAtConnect(player.name, numericIpAddress, hashedGpci).then (result => {
+      this.playerSessionIdMap_.set(player.id, result.sessionId);
+    });
   }
 
-  // TODO: (re)move this to a better place!
+  // Called at the moment a player logged in with a correct password. In this successful case we can
+  // update the session with the userid of the player.
+  onPlayerLogin(event) {
+    const player = server.playerManager.getById(event.playerid);
+    if (!player || player.isNpc())
+      return;
+
+    if (!this.playerSessionIdMap_.has(player.id))
+      return;
+
+    const sessionId = this.playerSessionIdMap_.get(player.id);
+    this.recorder_.writeUpdateSessionAtLogin(sessionId, player.userId);
+  }
+
+  // Called at the moment a player with an already used nickname wants to play as guest. In that
+  // case his name changes and we should adjust that in the db.
+  onPlayerGuestLogin(event) {
+    const player = server.playerManager.getById(event.playerId);
+    if (!player || player.isNpc())
+      return;
+
+    if (!this.playerSessionIdMap_.has(player.id))
+      return;
+
+    const sessionId = this.playerSessionIdMap_.get(player.id);
+    const guestPlayerName = pawnInvoke('GetPlayerName', 'iS', player.id);
+
+    this.recorder_.writeUpdateSessionAtGuestLogin(sessionId, guestPlayerName);
+  }
+
+  // Called when a player somehow leaves the server.
+  onPlayerDisconnect(event) {
+    if (!this.playerSessionIdMap_.has(event.playerid))
+      return;
+
+    const sessionId = this.playerSessionIdMap_.get(event.playerid);
+    this.recorder_.writeUpdateSessionAtDisconnect(sessionId, Date.now());
+
+    this.playerSessionIdMap_.delete(event.playerid);
+  }
+
+  // TODO: move this to a better place!
   // Converts an IP to an int to store in the database
   ip2long (ip) {
     const numericParts = ip.split('.');
 
     return ((((((+numericParts[0])*256)
-           +(+numericParts[1]))*256)
-           +(+numericParts[2]))*256)
-           +(+numericParts[3]);
+               +(+numericParts[1]))*256)
+               +(+numericParts[2]))*256)
+               +(+numericParts[3]);
   }
-
 };
 
 exports = ActivityLog;

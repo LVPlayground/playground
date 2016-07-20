@@ -11,6 +11,7 @@ forward OnPlayerLevelChange(playerid, newlevel);
 forward OnPlayerLogin(playerid, userid, gangid);
 forward OnPlayerResolvedDeath(playerid, killerid, reason);
 forward OnSetiOwnershipChange(playerid);
+forward OnPlayerGuestLogin(playerId);
 
 # SA-MP callbacks
 forward OnGameModeInit();

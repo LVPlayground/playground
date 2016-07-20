@@ -21,16 +21,16 @@ Please do read the [contribution guide](CONTRIBUTE.md) if you're considering con
   3. Check out the [playground](https://github.com/LVPlayground/playground) repository in the
      `LVP\playground` directory.
   4. Go to `LVP\playground\pawn\`.
-    a. Create a new file called `AUTHOR` with a single line noting your e-mail address.
-    b. Open `lvp.ppr` with the _LVP Pawn Editor_ and click _F5_ to compile.
-    c. You should now have a file called `lvp.amx` in this directory.
+    1. Create a new file called `AUTHOR` with a single line noting your e-mail address.
+    2. Open `lvp.ppr` with the _LVP Pawn Editor_ and click _F5_ to compile.
+    3. You should now have a file called `lvp.amx` in this directory.
   5. Go to `LVP\server-staging\`.
-    a. Run `dev-init.bat` as an administrator. This will create some symbolic links.
+    1. Run `dev-init.bat` as an administrator. This will create some symbolic links.
   6. Go to `LVP\server-staging\server\`.
-    a. Create a new file called `database.json` in this directory, and paste the contents of
+    1. Create a new file called `database.json` in this directory, and paste the contents of
        [this gist](https://gist.github.com/RussellLVP/17920662fc96dda0b26d5f8e2506f647). It grants
        you read-only access to the test server database.
-    b. Run `samp-server.exe`. You are now running Las Venturas Playground.
+    2. Run `samp-server.exe`. You are now running Las Venturas Playground.
 
 Developers having made some larger contributions to Las Venturas Playground will be granted write
 access to the test server database, enabling them to test features more comprehensively.

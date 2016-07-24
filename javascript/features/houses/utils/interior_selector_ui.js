@@ -17,18 +17,20 @@ const BUTTON_HOVER_COLOR = Color.YELLOW;
 // It allows them to see more information about it, including the price, and navigate back and forth
 // depending on the other available interiors.
 class InteriorSelectorUI {
-    constructor(player, selector, interiorList) {
+    constructor(player, availableMoney, selector, interiorList) {
         this.player_ = player;
+        this.availableMoney_ = availableMoney;
         this.selector_ = selector;
         this.interiorList_ = interiorList;
 
         this.background_ = new Rectangle(15, 400, 610, 40, BACKGROUND_COLOR);
         this.background_.displayForPlayer(player);
 
-        // Create the title that describes the name of this property.
+        // Create the title that describes the name of this property. The price will be created on-
+        // demand because varying colours are used to indicate availability.
         this.title_ = new TextDraw({
             position: [ 320, 400 ],
-            letterSize: [ 1.1, 3.9 ],
+            letterSize: [ 0.573395, 1.836444 ],
             color: Color.WHITE,
             text: '_',
 
@@ -53,13 +55,47 @@ class InteriorSelectorUI {
         player.toggleStatisticsDisplay(false);
     }
 
+    // Formats the price as a string using underscores as the thousand separator.
+    formatPrice(price) {
+        return '$' + price.toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, '$1_');
+    }
+
+    // Creates or updates the text draw display for the price of the house. Different colours will
+    // be used to indicate whether the player can purchase the property or not.
+    updatePriceDisplay(price) {
+        const canPurchase = price <= this.availableMoney_;
+        const color = canPurchase ? Color.GREEN
+                                  : Color.RED;
+
+        // Update the text if it already exists and has the same color.
+        if (this.price_ && this.price_.color === color) {
+            this.price_.updateTextForPlayer(this.player_, this.formatPrice(price));
+            return;
+        }
+
+        if (this.price_)
+            this.price_.hideForPlayer(this.player_);
+
+        this.price_ = new TextDraw({
+            position: [ 320, 420 ],
+            letterSize: [ 0.260464, 1.064890 ],
+            color: color,
+            proportional: true,
+            text: this.formatPrice(price),
+
+            font: TextDraw.FONT_MONOSPACE,
+            alignment: TextDraw.ALIGN_CENTER
+        });
+
+        this.price_.displayForPlayer(this.player_);
+    }
+
     // Displays the user interface specific to the interior at the given |index|.
     displayInterior(index) {
         const interior = this.interiorList_[index];
 
         this.title_.updateTextForPlayer(this.player_, interior.name);
-
-        // TODO: Update the property's price.
+        this.updatePriceDisplay(interior.price);
     }
 
     dispose() {
@@ -71,6 +107,9 @@ class InteriorSelectorUI {
         this.nextButton_.hideForPlayer(this.player_);
         this.title_.hideForPlayer(this.player_);
         this.background_.hideForPlayer(this.player_);
+
+        if (this.price_)
+            this.price_.hideForPlayer(this.player_);
 
         this.previousButton_ = null;
         this.nextButton_ = null;

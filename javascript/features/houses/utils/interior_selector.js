@@ -11,11 +11,11 @@ const PrivateSymbol = Symbol('Please use InteriorSelector.select() instead.');
 // many interiors available in Grand Theft Auto: San Andreas. The selector can be started by
 // calling the asynchronous "select" method, which returns a promise to be resolved when finished.
 class InteriorSelector {
-    static select(player, interiorList) {
+    static select(player, availableMoney, interiorList) {
         if (!Array.isArray(interiorList) || !interiorList.length)
             throw new Error('You must pass a list of interiors to the interior selector.');
 
-        const selector = new InteriorSelector(PrivateSymbol, player, interiorList);
+        const selector = new InteriorSelector(PrivateSymbol, player, availableMoney, interiorList);
         selector.displayInterior(0 /* the first interior in the list */);
 
         return selector.finished;
@@ -23,7 +23,7 @@ class InteriorSelector {
 
     // ---------------------------------------------------------------------------------------------
 
-    constructor(privateSymbol, player, interiorList) {
+    constructor(privateSymbol, player, availableMoney, interiorList) {
         if (privateSymbol !== PrivateSymbol)
             throw new TypeError('Illegal constructor. Use InteriorSelector.select() instead.');
 
@@ -31,7 +31,7 @@ class InteriorSelector {
         this.interiorList_ = interiorList;
         this.interiorListIndex_ = 0;
 
-        this.userInterface_ = new InteriorSelectorUI(player, this, interiorList);
+        this.userInterface_ = new InteriorSelectorUI(player, availableMoney, this, interiorList);
 
         this.resolve_ = null;
         this.finished_ = new Promise(resolve => {

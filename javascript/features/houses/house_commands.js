@@ -59,7 +59,7 @@ class HouseCommands {
         // |location| is available for purchase, and the |player| does not have a house yet.
 
         const interiorList = InteriorList.forEconomy(this.economy_, location.position);
-        const interior = await InteriorSelector.select(player, interiorList);
+        const interior = await InteriorSelector.select(player, 12500000, interiorList);
 
         console.log(interior);
     }
@@ -160,6 +160,12 @@ class HouseCommands {
     // Called when a player types the `/house sell` command to sell their house. They don't have to
     // be in the house when typing this, but they will have to confirm the transaction.
     async onHouseSellCommand(player) {
+        const location = await this.manager_.findClosestLocation(player);
+
+        const interiorList = InteriorList.forEconomy(this.economy_, location.position);
+        const interior = await InteriorSelector.select(player, 12500000, interiorList);
+
+        console.log(interior);
 
     }
 

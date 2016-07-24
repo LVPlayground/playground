@@ -37,4 +37,7 @@ NavigationButton.DIRECTION_BOTTOM = 'LD_BEAT:down';
 NavigationButton.DIRECTION_BOTTOM_LEFT = 'LD_BEAT:downl';
 NavigationButton.DIRECTION_LEFT = 'LD_BEAT:left';
 
+NavigationButton.ACTION_OK = 'LD_CHAT:thumbup';
+NavigationButton.ACTION_CANCEL = 'LD_CHAT:thumbdn';
+
 exports = NavigationButton;

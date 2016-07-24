@@ -47,8 +47,17 @@ class InteriorSelectorUI {
         this.nextButton_ = new NavigationButton(
             592, 409, NavigationButton.DIRECTION_RIGHT, () => this.selector_.selectNext());
 
+        // Create the navigational acknowledge and cancel buttons for the player.
+        this.acceptButton_ = new NavigationButton(
+            532, 409, NavigationButton.ACTION_OK, () => this.selector_.selectPurchase());
+        this.cancelButton_ = new NavigationButton(
+            562, 409, NavigationButton.ACTION_CANCEL, () => this.selector_.selectCancel());
+
         this.previousButton_.displayForPlayer(player);
         this.nextButton_.displayForPlayer(player);
+
+        this.acceptButton_.displayForPlayer(player);
+        this.cancelButton_.displayForPlayer(player);
 
         player.setSpectating(true);
         player.setSelectTextDraw(true, BUTTON_HOVER_COLOR);
@@ -103,6 +112,8 @@ class InteriorSelectorUI {
         this.player_.setSelectTextDraw(false);
         this.player_.toggleStatisticsDisplay(true);
 
+        this.acceptButton_.hideForPlayer(this.player_);
+        this.cancelButton_.hideForPlayer(this.player_);
         this.previousButton_.hideForPlayer(this.player_);
         this.nextButton_.hideForPlayer(this.player_);
         this.title_.hideForPlayer(this.player_);
@@ -111,9 +122,12 @@ class InteriorSelectorUI {
         if (this.price_)
             this.price_.hideForPlayer(this.player_);
 
+        this.acceptButton_ = null;
+        this.cancelButton_ = null;
         this.previousButton_ = null;
         this.nextButton_ = null;
         this.title_ = null;
+        this.price_ = null;
         this.background_ = null;
     }
 }

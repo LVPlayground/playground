@@ -61,6 +61,8 @@ class HouseCommands {
         const interiorList = InteriorList.forEconomy(this.economy_, location.position);
         const interior = await InteriorSelector.select(player, 12500000, interiorList);
 
+        // TODO: Verify the amount of money of |player| again.
+
         console.log(interior);
     }
 

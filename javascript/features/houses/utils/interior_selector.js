@@ -83,7 +83,6 @@ class InteriorSelector {
     // Called when the "Next" button of the user interface has been clicked.
     selectNext() {
         let nextIndex = this.interiorListIndex_ + 1;
-
         if (nextIndex >= this.interiorList_.length)
             nextIndex = 0;
 
@@ -96,7 +95,34 @@ class InteriorSelector {
     displayInterior(index) {
         this.interiorListIndex_ = index;
 
-        // TODO: Implement the actual animation for the current interior.
+        const interior = this.interiorList_[index];
+        const interiorPreview = interior.preview;
+
+        // Make sure that the player is in the correct interior to view this interior.
+        this.player_.interior = interior.interior;
+
+        // Force-update the streamer for this player to make sure custom houses are visible.
+        this.player_.updateStreamer(
+            new Vector(...interiorPreview.position[0]), VirtualWorld.forPlayer(this.player_),
+            interior.interior, 0 /* STREAMER_TYPE_OBJECT */);
+
+        // Set the player's camera to the initial frame of the interior's preview.
+        this.player_.setCamera(new Vector(...interiorPreview.position[0]),
+                               new Vector(...interiorPreview.target[0]));
+
+        // Wait one second to give the scene a chance to load for this player.
+        wait(1000).then(() => {
+            if (this.interiorListIndex_ !== index)
+                return;  // the player has navigated away from this scene
+
+            // Interpolate the player's camera to a different position to add interactivity.
+            this.player_.interpolateCamera(
+                new Vector(...interiorPreview.position[0]),  // positionFrom
+                new Vector(...interiorPreview.position[1]),  // positionTo
+                new Vector(...interiorPreview.target[0]),  // targetFrom
+                new Vector(...interiorPreview.target[1]),  // targetTo
+                interiorPreview.duration);
+        });
 
         this.userInterface_.displayInterior(index);
     }

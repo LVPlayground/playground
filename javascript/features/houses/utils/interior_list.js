@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-// The list of interiors in which players are allowed to settle. Do not remove interiors from this
-// list, rather, mark them as unselectable. New entries should always be added at the end.
+// The list of interiors in which players are allowed to settle. DO NOT REMOVE INTERIORS FROM THIS
+// LIST. Instead, mark them as unselectable. New entries should always be added at the end.
 const INTERIOR_LIST = [
     {
         name: 'Hashbury House',

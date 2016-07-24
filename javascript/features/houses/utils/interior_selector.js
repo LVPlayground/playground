@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const Dialog = require('components/dialogs/dialog.js');
 const InteriorSelectorUI = require('features/houses/utils/interior_selector_ui.js');
 
 // Private symbol ensuring that the InteriorSelector constructor won't be used.
@@ -28,6 +29,7 @@ class InteriorSelector {
             throw new TypeError('Illegal constructor. Use InteriorSelector.select() instead.');
 
         this.player_ = player;
+        this.availableMoney_ = availableMoney;
         this.interiorList_ = interiorList;
         this.interiorListIndex_ = 0;
 
@@ -59,9 +61,18 @@ class InteriorSelector {
         this.displayInterior(previousIndex);
     }
 
-    // Called when the "Purchase" button of the user interface has been clicked.
+    // Called when the "Purchase" button of the user interface has been clicked. Verify that the
+    // player isn't trying to purchase a property they don't have sufficient money available for.
     selectPurchase() {
-        this.resolve_(this.interiorList_[this.interiorListIndex_]);
+        const interior = this.interiorList_[this.interiorListIndex_];
+        if (interior.price > this.availableMoney_) {
+            Dialog.displayMessage(this.player_, 'Unable to purchase this house',
+                                  Message.HOUSE_PURCHASE_TOO_EXPENSIVE, 'OK' /* leftButton */,
+                                  '' /* rightButton */);
+            return;
+        }
+
+        this.resolve_(interior);
     }
 
     // Called when the "Cancel" button of the user interface has been clicked.

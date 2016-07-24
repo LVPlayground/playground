@@ -116,6 +116,7 @@
     "HOUSE_MODIFY_NONE_NEAR": "@error You need to be close to a house in order to use this command.",
     "HOUSE_PICKUP_CAN_PURCHASE": "{10F441}This house is available for purchase, starting at %$. Type `{DDFFDD}/house buy{10F441}` if you're interested!",
     "HOUSE_PICKUP_CANNOT_PURCHASE": "{CCCCCC}This house is available for purchase, starting at %$.",
+    "HOUSE_PURCHASE_TOO_EXPENSIVE": "Sorry, you cannot purchase this house because you don't have enough money available.",
 
     "IRC_CHAT_MESSAGE_SENT": "{33AA33}Message sent to {FFFFFF}%s {33AA33}as {FFFFFF}%s{33AA33}: {FFFFFF}%s",
     

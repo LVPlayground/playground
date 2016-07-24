@@ -3,9 +3,7 @@
 // be found in the LICENSE file.
 
 const CommandBuilder = require('components/command_manager/command_builder.js');
-const DefaultInteriorList = require('components/interior_selector/default_interior_list.js');
 const Feature = require('components/feature_manager/feature.js');
-const InteriorSelector = require('components/interior_selector/interior_selector.js');
 
 // Utility function to return |value| in |len| digits, left-padded with zeros when necessary.
 function leftPad(value, len = 2) {
@@ -34,11 +32,6 @@ class DebugFeature extends Feature {
         .restrict(Player.LEVEL_MANAGEMENT)
         .parameters([{ name: 'sound', type: CommandBuilder.NUMBER_PARAMETER }])
         .build(this.__proto__.playSound.bind(this));
-
-    // intsel
-    server.commandManager.buildCommand('intsel')
-        .restrict(Player.LEVEL_ADMINISTRATOR)
-        .build(this.__proto__.intsel.bind(this));
 
     // /int [id]
     server.commandManager.buildCommand('int')
@@ -115,16 +108,6 @@ class DebugFeature extends Feature {
   // Plays |soundId| for all in-game players.
   playSound(player, soundId) {
     server.playerManager.forEach(p => p.playSound(soundId));
-  }
-
-  // Starts the interior selector for the |player|.
-  intsel(player) {
-    InteriorSelector.select(player, DefaultInteriorList).then(interior => {
-      if (interior)
-        player.sendMessage('You selected: ' + interior.name);
-      else
-        player.sendMessage('You did not select an interior');
-    });
   }
 
   // Changes the interior of |player| to |id|.

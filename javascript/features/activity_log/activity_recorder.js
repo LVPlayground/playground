@@ -38,7 +38,7 @@ const ACTIVITY_LOG_VEHICLE_DEATHS = `
 const ACTIVITY_LOG_SESSION_PLAYER_CONNECT_INSERT = `
     INSERT INTO
       sessions
-      (session_date, session_duration, user_id, nickname, ip_address, gpci)
+      (session_date, session_duration, user_id, nickname, ip_address, gpci_hash)
     VALUES
       (NOW(), 0, 0, ?, ?, ?)`;
 

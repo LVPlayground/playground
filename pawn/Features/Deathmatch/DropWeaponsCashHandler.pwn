@@ -106,10 +106,8 @@ class DropWeaponsCashHandler {
      */
     @list(OnPlayerDeath)
     public dropPlayerWeaponsCash(playerId, killerId, reason) {
-#if Feature::DisableFightClub == 0
-        if (IsPlayerInMinigame(playerId) || CFightClub__GetPlayerStatus(playerId) == 4 /* FC_STATUS_FIGHTING */)
+        if (GetPlayerVirtualWorld(playerId) != World::MainWorld)
             return 0;
-#endif
 
         // First we run a little loop to destroy any existing pickups, which will be bugged if we don't.
         for (new weaponSlot = 0; weaponSlot < WeaponSlots; ++weaponSlot) {

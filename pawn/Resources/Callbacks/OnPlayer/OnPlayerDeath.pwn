@@ -128,6 +128,9 @@ public OnPlayerDeath(playerid, killerid, reason) {
         preventKillLamers[playerid] = 0;
     }
 
+    if (killerid == Player::InvalidId && reason == WEAPON_NONE && (Time->currentTime() - DamageManager(playerid)->getLastHitTime()) < 15)
+        LegacySetValidKillerVariables(playerid, DamageManager(playerid)->getLastHitId(), WEAPON_EXPLOSION);
+
     // Extract the died player from the map zone if he's in one.
     OnPlayerLeaveMapZone(playerid, g_MapZone[playerid]);
 

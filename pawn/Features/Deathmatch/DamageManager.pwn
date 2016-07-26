@@ -34,6 +34,12 @@ class DamageManager <playerId (MAX_PLAYERS)> {
     // Is the player currently fighting? Fighting is defined as shooting or being shot at.
     new m_fighting;
 
+    // Track the last playerId who hit a player.
+    new m_lastHitId;
+
+    // Keep track of the time a player has been hit last.
+    new m_lastHitTime;
+
     /**
      * Special damage is done when a sniper headshot has been made. This function deals the proper
      * damage to the subject's armour and health. This function will be disabled if both players
@@ -77,6 +83,20 @@ class DamageManager <playerId (MAX_PLAYERS)> {
     }
 
     /**
+     * Set the last playerId who hit a player.
+     */
+    public inline setLastHitId(subjectId) {
+        m_lastHitId = subjectId;
+    }
+
+    /**
+     * Set the time a player has been hit last.
+     */
+    public inline setLastHitTime(currentTime) {
+        m_lastHitTime = currentTime;
+    }
+
+    /**
      * Returns whether this player has been active in a fight in the last 10 seconds.
      *
      * @return boolean Is this player in a fighting state?
@@ -92,11 +112,27 @@ class DamageManager <playerId (MAX_PLAYERS)> {
     }
 
     /**
+     * Get the last playerId who hit a player.
+     */
+    public inline getLastHitId() {
+        m_lastHitId;
+    }
+
+    /**
+     * Get the time a player has been hit last.
+     */
+    public inline getLastHitTime() {
+        m_lastHitTime;
+    }
+
+    /**
      * Reset some variables upon player joining.
      */
     @list(OnPlayerConnect)
     public onPlayerConnect() {
         m_fighting = 0;
+        m_lastHitId = Player::InvalidId;
+        m_lastHitTime = 0;
     }
 };
 
@@ -175,23 +211,25 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
         return 0;
 
     // Players inside interiors (including VIP room), should not be hurt.
-    if ((GetPlayerInterior(playerid) != 0 || LegacyIsPlayerInVipRoom(playerid) == true) && weaponid == WEAPON_GRENADE) {
+    if ((GetPlayerInterior(playerid) != 0 || LegacyIsPlayerInVipRoom(playerid) == true) && weaponid == WEAPON_EXPLOSION) {
         new notice[128];
         format(notice, sizeof(notice), "Possible interior bug abuser: %s (Id:%d) damaged %s (Id:%d).",
             Player(issuerid)->nicknameString(), issuerid, Player(playerid)->nicknameString());
         Admin(issuerid, notice);
-        return 0;
     }
 
     if (issuerid != Player::InvalidId) {
+        // Keep track of the last person who hit a player.
+        DamageManager(playerid)->setLastHitId(issuerid);
+        DamageManager(playerid)->setLastHitTime(Time->currentTime());
+
         // If the player is currently not residing on the ship, or if the damage is not self-inflicted,
         // set the player as currently fighting.
         if (!ShipManager->isPlayerWalkingOnShip(playerid))
             DamageManager(playerid)->setFighting(Time->currentTime());
 
         // Deal noteworthy more damage for sniper headshots.
-        if (!ShipManager->isPlayerWalkingOnShip(playerid) &&
-                weaponid == WEAPON_SNIPER && bodypart == BODY_PART_HEAD) {
+        if (!ShipManager->isPlayerWalkingOnShip(playerid) && weaponid == WEAPON_SNIPER && bodypart == BODY_PART_HEAD) {
             DamageManager(issuerid)->dealHeadShot(playerid);
         }
     }

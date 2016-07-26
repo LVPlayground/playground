@@ -128,6 +128,7 @@ public OnPlayerDeath(playerid, killerid, reason) {
         preventKillLamers[playerid] = 0;
     }
 
+    // Disallow self-nading to suicide when the player has been hit in the last 15 seconds.
     if (killerid == Player::InvalidId && reason == WEAPON_NONE && (Time->currentTime() - DamageManager(playerid)->getLastHitTime()) < 15)
         LegacySetValidKillerVariables(playerid, DamageManager(playerid)->getLastHitId(), WEAPON_EXPLOSION);
 

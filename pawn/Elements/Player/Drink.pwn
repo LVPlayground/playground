@@ -15,7 +15,7 @@ Author: Tomos Jenkins -- tomozj
 
 // Variables
 new drinkData[2];
-new drinksData[9][2];
+new drinkUnits[9];
 new playerAlcohol[MAX_PLAYERS];
 new playerService[MAX_PLAYERS];
 new playerDrinkTimer[MAX_PLAYERS];
@@ -56,26 +56,15 @@ CDrink__SetVars(bool:all = false)
     }
 
     // Alcohol units in each of the drinks
-    drinksData[0][0] = CDrink__RandAlcoholVolume(2, 3); // Wine         $2000
-    drinksData[1][0] = CDrink__RandAlcoholVolume(1, 2); // Beer         $1000
-    drinksData[2][0] = CDrink__RandAlcoholVolume(1, 2); // Cider        $1000
-    drinksData[3][0] = CDrink__RandAlcoholVolume(1, 3); // Alcopop      $2000
-    drinksData[4][0] = CDrink__RandAlcoholVolume(2, 6); // Cocktail     $3000
-    drinksData[5][0] = CDrink__RandAlcoholVolume(1, 1); // Shots        $1000
-    drinksData[6][0] = CDrink__RandAlcoholVolume(5, 8); // Vodka        $5000
-    drinksData[7][0] = CDrink__RandAlcoholVolume(5, 8); // Whisky       $5000
-    drinksData[8][0] = -5;                              // Sprunk       $FREE
-
-    // And their prices
-    drinksData[0][1] = drinksData[0][0] * DRINK_COSTPERUNIT;
-    drinksData[1][1] = drinksData[1][0] * DRINK_COSTPERUNIT;
-    drinksData[2][1] = drinksData[2][0] * DRINK_COSTPERUNIT;
-    drinksData[3][1] = drinksData[3][0] * DRINK_COSTPERUNIT;
-    drinksData[4][1] = drinksData[4][0] * DRINK_COSTPERUNIT;
-    drinksData[5][1] = drinksData[5][0] * DRINK_COSTPERUNIT;
-    drinksData[6][1] = drinksData[6][0] * DRINK_COSTPERUNIT;
-    drinksData[7][1] = drinksData[7][0] * DRINK_COSTPERUNIT;
-    drinksData[8][1] = 0;
+    drinkUnits[0] = CDrink__RandAlcoholVolume(2, 3); // Wine         $2000
+    drinkUnits[1] = CDrink__RandAlcoholVolume(1, 2); // Beer         $1000
+    drinkUnits[2] = CDrink__RandAlcoholVolume(1, 2); // Cider        $1000
+    drinkUnits[3] = CDrink__RandAlcoholVolume(1, 3); // Alcopop      $2000
+    drinkUnits[4] = CDrink__RandAlcoholVolume(2, 6); // Cocktail     $3000
+    drinkUnits[5] = CDrink__RandAlcoholVolume(1, 1); // Shots        $1000
+    drinkUnits[6] = CDrink__RandAlcoholVolume(5, 8); // Vodka        $5000
+    drinkUnits[7] = CDrink__RandAlcoholVolume(5, 8); // Whisky       $5000
+    drinkUnits[8] = -5;                              // Sprunk       $FREE
 
 
     // Reset the alcohol for everyone maybe
@@ -112,17 +101,11 @@ CDrink__RandAlcoholVolume(min, max)
     return out;
 }
 
-// CDrink__String
-// Converts an int to a string -- makes stuff easier.
-CDrink__String(int, money = 0)
+// CDrink__UnitsToPriceString
+// Converts the number of units to a string indicating the price.
+CDrink__UnitsToPriceString(units)
 {
-    new string[64];
-    if(money == 0) {
-        format(string, 64, "%d", int);
-    } else {
-        format(string, 64, "$%d", int);
-    }
-    return string;
+    return formatPrice(GetEconomyValue(AlcoholicDrink, units));
 }
 
 // CDrink__BuildMenus
@@ -147,15 +130,15 @@ CDrink__BuildMenus()
     AddMenuItem(drinkMenu, 0, "Sprunk (Sober up)");
 
     // Content - Cost
-    AddMenuItem(drinkMenu, 1, CDrink__String(drinksData[0][1], 1)); // Wine
-    AddMenuItem(drinkMenu, 1, CDrink__String(drinksData[1][1], 1)); // Beer
-    AddMenuItem(drinkMenu, 1, CDrink__String(drinksData[2][1], 1)); // Cider
-    AddMenuItem(drinkMenu, 1, CDrink__String(drinksData[3][1], 1)); // Alcopop
-    AddMenuItem(drinkMenu, 1, CDrink__String(drinksData[4][1], 1)); // Cocktail
-    AddMenuItem(drinkMenu, 1, CDrink__String(drinksData[5][1], 1)); // Shot
-    AddMenuItem(drinkMenu, 1, CDrink__String(drinksData[6][1], 1)); // Vodka
-    AddMenuItem(drinkMenu, 1, CDrink__String(drinksData[7][1], 1)); // Whisky
-    AddMenuItem(drinkMenu, 1, "~b~FREE");                           // Sprunk
+    AddMenuItem(drinkMenu, 1, CDrink__UnitsToPriceString(drinkUnits[0])); // Wine
+    AddMenuItem(drinkMenu, 1, CDrink__UnitsToPriceString(drinkUnits[1])); // Beer
+    AddMenuItem(drinkMenu, 1, CDrink__UnitsToPriceString(drinkUnits[2])); // Cider
+    AddMenuItem(drinkMenu, 1, CDrink__UnitsToPriceString(drinkUnits[3])); // Alcopop
+    AddMenuItem(drinkMenu, 1, CDrink__UnitsToPriceString(drinkUnits[4])); // Cocktail
+    AddMenuItem(drinkMenu, 1, CDrink__UnitsToPriceString(drinkUnits[5])); // Shot
+    AddMenuItem(drinkMenu, 1, CDrink__UnitsToPriceString(drinkUnits[6])); // Vodka
+    AddMenuItem(drinkMenu, 1, CDrink__UnitsToPriceString(drinkUnits[7])); // Whisky
+    AddMenuItem(drinkMenu, 1, "~b~FREE");                     // Sprunk
 }
 
 
@@ -164,7 +147,8 @@ CDrink__BuildMenus()
 CDrink__Buy(playerid, drinkid)
 {
     // Lets just get stuff in our own variable.
-    new price = drinksData[drinkid][1];
+    new const units = max(0, drinkUnits[drinkid]);
+    new const price = GetEconomyValue(AlcoholicDrink, units);
 
     if(GetPlayerSpecialAction(playerid) != SPECIAL_ACTION_NONE)
     {
@@ -182,7 +166,8 @@ CDrink__Buy(playerid, drinkid)
     new propertyId = PropertyManager->propertyForSpecialFeature(BarFeature),
         endid = propertyId == Property::InvalidId ? Player::InvalidId : Property(propertyId)->ownerId();
 
-    GivePlayerMoney(playerid, -price); // XXXXXXXXXXXXXXXXXX Drinks
+    TakeRegulatedMoney(playerid, AlcoholicDrink, units);
+
     playerDrinkID[playerid] = drinkid;
     CDrink__Drink(playerid);
 
@@ -199,7 +184,8 @@ CDrink__Buy(playerid, drinkid)
         new str[256];
         format(str,256,"* %s bought a drink! You earned $%d.",PlayerName(playerid),price/10);
         SendClientMessage(endid,COLOR_GREY,str);
-        GivePlayerMoney(endid,price/10); // XXXXXXXXXXXXXXXXXX Drinks (bar owner share)
+
+        GiveRegulatedMoney(endid, AlcoholicDrinkOwnerShare, units);
     }
     return 1;
 }
@@ -231,7 +217,7 @@ CDrink__DrinkBottle(playerid)
     iPlayerSwigTime[playerid] = Time->currentTime();
 
     new drinkid = playerDrinkID[playerid];
-    new alcohol = drinksData[drinkid][0];
+    new alcohol = drinkUnits[drinkid];
     new string[128];
 
     if(playerAlcohol[playerid] > 5)

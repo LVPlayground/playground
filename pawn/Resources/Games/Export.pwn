@@ -195,7 +195,8 @@ CExport__OnEnterCheckpoint( playerid )
                 // Respawn his old vehicle
                 SetVehicleToRespawn( playerVehicleID );
                 // Calculate the reward :o
-                iPlayerReward = floatround(fHealth * 75 * 1.216);
+
+                iPlayerReward = GetEconomyValue(VehicleExportReward, floatround(fHealth));
 
                 // Decrease the amount of wanted vehicles of that type (only if it's above 0)
                 if(amountWantedVehicle[iTempVar] != 0)

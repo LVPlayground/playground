@@ -11,6 +11,8 @@ enum EconomyValueType {
     AirportCustomsTaxMin,
     AirportCustomsTaxOwnersShare,
     AirportFlight,
+    AlcoholicDrink,
+    AlcoholicDrinkOwnerShare,
     BombExplosionExtreme,
     BombExplosionLarge,
     BombExplosionMedium,
@@ -66,6 +68,7 @@ enum EconomyValueType {
     TowCommand,
     TuneCommand,
     VehicleCrusherReward,
+    VehicleExportReward,
     VipColourChange,
     WalkiesWeaponParticipation,
     WalkiesWeaponVictory,
@@ -83,6 +86,8 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case AirportCustomsTaxMin:              return 500;
         case AirportCustomsTaxOwnersShare:      return customsTax / 4;
         case AirportFlight:                     return 250000;
+        case AlcoholicDrink:                    return 1000 * inputValue /* units [1-8] */;
+        case AlcoholicDrinkOwnerShare:          return 100 * inputValue /* units [1-8] */;
         case BombExplosionExtreme:              return 400000;
         case BombExplosionLarge:                return 70000;
         case BombExplosionMedium:               return 25000;
@@ -138,6 +143,7 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case TowCommand:                        return 45000;
         case TuneCommand:                       return 10000;
         case VehicleCrusherReward:              return 4000;
+        case VehicleExportReward:               return floatround(inputValue /* vehicle health [371-1000] */ * 75 * 1.216);
         case VipColourChange:                   return 10000000;
         case WalkiesWeaponParticipation:        return 250;
         case WalkiesWeaponVictory:              return 5000 * inputValue /* participant count */;

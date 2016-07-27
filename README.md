@@ -10,7 +10,8 @@ Please do read the [contribution guide](CONTRIBUTE.md) if you're considering con
 **Prerequisites**:
   - A computer running Windows 8 or later with the latest [Visual C++ redistributable]
     (https://www.microsoft.com/en-gb/download/details.aspx?id=48145) installed.
-  - [GitHub for desktop](https://desktop.github.com/) or another GitHub client must be installed.
+  - [GitHub for desktop](https://desktop.github.com/) or another GitHub client must be installed,
+    with support for [git-lfs](https://git-lfs.github.com/).
   - The [LVP Pawn Editor](https://github.com/LVPlayground/pawn-editor/releases) must be installed.
   - The ability to execute a batch file _as administrator_.
 

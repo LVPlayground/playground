@@ -66,7 +66,7 @@ class PropertyEvents {
                 SendClientMessage(playerId, Color::PropertyFeatureText,
                     "You now own the Kaufman Cabs! Being the owner, you can use the service for free,");
                 SendClientMessage(playerId, Color::PropertyFeatureText,
-                    " and you'll receive a percentage every time somebody uses the service. You can set a new taxi price using /taxiprice.");
+                    " and you'll receive a percentage every time somebody uses the service.");
             }
 
             case PoliceFeature:

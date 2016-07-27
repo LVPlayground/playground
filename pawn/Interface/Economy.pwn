@@ -63,6 +63,9 @@ enum EconomyValueType {
     ShowMessageCommand,
     SlapCommand,
     SpawnMoney,
+    TaxiPerKilometer,
+    TaxiRide,
+    TaxiRideOwnerShare,
     TeleportWithVehicle,
     TeleportWithoutVehicle,
     TowCommand,
@@ -138,6 +141,9 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case ShowMessageCommand:                return 200000;
         case SlapCommand:                       return 5000;
         case SpawnMoney:                        return 175000;
+        case TaxiPerKilometer:                  return 200;
+        case TaxiRide:                          return GetEconomyValue(TaxiPerKilometer) * inputValue /* distance */;
+        case TaxiRideOwnerShare:                return floatround(GetEconomyValue(TaxiPerKilometer) * inputValue /* distance */ * 0.1);
         case TeleportWithVehicle:               return 50000;
         case TeleportWithoutVehicle:            return 20000;
         case TowCommand:                        return 45000;

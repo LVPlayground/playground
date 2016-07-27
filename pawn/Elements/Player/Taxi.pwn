@@ -56,7 +56,6 @@ new bool:isTaxiActive[MAX_PLAYERS]
    ,Float:playerOrderedTaxiPositionX[MAX_PLAYERS]
    ,Float:playerOrderedTaxiPositionY[MAX_PLAYERS]
    ,Float:playerOrderedTaxiPositionZ[MAX_PLAYERS]
-   ,taxiPrice = 200
    ,Text: TaxiArrival[MAX_PLAYERS] = {Text:INVALID_TEXT_DRAW, ...}
    ,mayTaxi[MAX_PLAYERS];
 
@@ -157,8 +156,11 @@ TaxiArrived(playerid)
             new propertyId = PropertyManager->propertyForSpecialFeature(TaxiCompanyFeature),
                 endid = propertyId == Property::InvalidId ? Player::InvalidId : Property(propertyId)->ownerId();
 
+            new const distance = playerTaxi[playerid][3];
+            new const fare = GetEconomyValue(TaxiRide, distance);
+
             // can our player afford the fare?
-            if(GetPlayerMoney(playerid) < playerTaxi[playerid][3] && playerid != endid)
+            if(GetPlayerMoney(playerid) < fare && playerid != endid)
             {
                 CancelTaxi(playerid);
                 ShowBoxForPlayer(playerid, "You do not have enough money for the taxi fare.");
@@ -173,42 +175,37 @@ TaxiArrived(playerid)
             }
 
 
-            new
-                locateid,
-                fare;
-
-            locateid = playerTaxi[playerid][0];
+            new locateid = playerTaxi[playerid][0];
 
             // Now, if the player who owns the taxi company is connected, we give them
             // a percentage of the money made from taxi's.
-            if(Player(endid)->isConnected() && endid != playerid && !IsPlayerInMinigame(endid))
-            {
+            if(Player(endid)->isConnected() && endid != playerid && !IsPlayerInMinigame(endid)) {
+
+                new const ownerShare = GetEconomyValue(TaxiRideOwnerShare, distance);
+
                 format(str,256,"* %s (Id:%d) took a taxi to {A9C4E4}%s{CCCCCC}, you earned {A9C4E4}$%d{CCCCCC}.",
-                    PlayerName(playerid), playerid,taxiLocationName[locateid],playerTaxi[playerid][3]/10);
+                    PlayerName(playerid), playerid,taxiLocationName[locateid], ownerShare);
                 SendClientMessage(endid,Color::ConnectionMessage,str);
-                GivePlayerMoney(endid,playerTaxi[playerid][3]/10);  // XXXXXXXXXXXXXXXXXX Taxi (company owner share)
+
+                GiveRegulatedMoney(endid, TaxiRideOwnerShare, distance);
             }
 
-            fare = playerTaxi[playerid][3];
-            if(endid != playerid)
-            {
+            if(endid != playerid) {
                 format(str,256,"* Kaufman Cabs: Thank you for using our service! Your fare has come to $%d",fare);
                 SendClientMessage(playerid,Color::Green,str);
-                format(str,256,"* at a per kilometer price of $%d.",taxiPrice);
+                format(str,256,"* at a per kilometer price of $%d.", GetEconomyValue(TaxiPerKilometer));
                 SendClientMessage(playerid,Color::Green,str);
-            }else{
+            } else{
                 SendClientMessage(playerid,Color::Green,"The taxi driver has dropped you off for free because you own the company.");
             }
 
-            if(locateid != 13)
-            {
-
+            if(locateid != 13) {
                 SetPlayerInterior(playerid, 0);
                 SetPlayerPos(playerid, taxiLocations[locateid][0], taxiLocations[locateid][1], taxiLocations[locateid][2]);
             }
 
             if(playerid != endid)
-            GivePlayerMoney(playerid,-fare);  // XXXXXXXXXXXXXXXXXX Taxi
+                TakeRegulatedMoney(playerid, TaxiRide, distance);
 
             mayTaxi[playerid] = 1;
             format(str, 256,"%s (Id:%d) has /taxi'd to %s (#%d).",PlayerName(playerid),playerid, taxiLocationName[locateid], locateid);
@@ -245,11 +242,13 @@ FreeTaxi()
     }
 }
 
-SendPlayerTaxi(playerid, locateid, fare)
+SendPlayerTaxi(playerid, locateid, distance)
 {
     // Get the id of the player who owns the taxi company for flagging:
     new propertyId = PropertyManager->propertyForSpecialFeature(TaxiCompanyFeature),
         endid = propertyId == Property::InvalidId ? Player::InvalidId : Property(propertyId)->ownerId();
+
+    new const fare = GetEconomyValue(TaxiRide, distance);
 
     // do they have enough money to pay the fare?
     if(GetPlayerMoney(playerid) < fare)
@@ -264,7 +263,7 @@ SendPlayerTaxi(playerid, locateid, fare)
     ShowPlayerBox(playerid, "Kaufman cabs have sent a taxi to your destination. Use /taxi to cancel. The fare will be $%s - make sure you have enough when it arrives!", formatPrice(fare));
 
 
-    // Now, we set the location id and arrival time, oh, and the fare!
+    // Now, we set the location id and arrival time, oh, and the distance!
     playerTaxi[playerid][0] = locateid;
 
     // Right, if the player has used a taxi within the last 3 mins, we set the arrival time
@@ -276,7 +275,7 @@ SendPlayerTaxi(playerid, locateid, fare)
     else
         playerTaxi[playerid][1] = random(14-4)+4;
 
-    playerTaxi[playerid][3] = fare;
+    playerTaxi[playerid][3] = distance;
 
     ClearPlayerMenus(playerid);
 
@@ -301,14 +300,6 @@ SendPlayerTaxi(playerid, locateid, fare)
     SetPlayerSpecialAction(playerid,SPECIAL_ACTION_USECELLPHONE);
     PlayerPlaySound(playerid, 3600, 0, 0, 0);
 }
-
-// return the km price of taxis based on the /taxiprice cmd
-GetTaxiKMPrice()
-{
-    return taxiPrice;
-}
-
-
 
 //----
 // Taxi cmds
@@ -401,9 +392,7 @@ lvp_taxi(playerid,params[])
     }
 
 
-    new
-        distance,
-        fare;
+    new distance;
 
     // Has the player given a taxi ID instead of location name?
     if(IsNumeric(params))
@@ -423,9 +412,6 @@ lvp_taxi(playerid,params[])
             distance = floatround(playerToLocationDistance/50);
         }
 
-        // Now, we calculate the fare based on the taxi price per KM, multiplyed by the distance.
-        fare = GetTaxiKMPrice() * distance;
-
         // is the player already in range of the taxi destination?
         if(distance < 2 && playerid != endid)
         {
@@ -433,63 +419,7 @@ lvp_taxi(playerid,params[])
             return 1;
         }
 
-        SendPlayerTaxi(playerid, locateid, fare);
+        SendPlayerTaxi(playerid, locateid, distance);
     }
-    return 1;
-}
-
-
-
-// Command: /taxiprice
-// Level: Player
-// Parameters: amount
-// Author: Jay
-// Notes: A property flag command that sets the amount of taxi's per km.
-
-lvp_taxiprice(playerid,params[])
-{
-    new propertyId = PropertyManager->propertyForSpecialFeature(TaxiCompanyFeature),
-        endid = propertyId == Property::InvalidId ? Player::InvalidId : Property(propertyId)->ownerId();
-
-    // does the player own the taxi company?
-    if (endid != playerid)
-    return 0;
-
-    // have they used the correct params?
-    if(!params[0])
-    {
-        SendClientMessage(playerid,Color::White,"Use: /taxiprice [price]");
-        return 1;
-    }
-    // Is it a correct value?
-    if(!IsNumeric(params))
-    {
-        SendClientMessage(playerid,Color::Red,"Invalid amount! You can only set it between $0 and $100.");
-        return 1;
-    }
-
-    new
-    taxiprice,
-    str[256];
-
-    taxiprice = strval(params);
-    // is it a valid value?
-    if(taxiprice < 0 || taxiprice > 100)
-    {
-        ShowBoxForPlayer(playerid, "The KM price must be between $0 and $100.");
-        return 1;
-    }
-    // have they set it within the last 5 minutes?
-    if(Time->currentTime() - g_FlagTime[playerid][1] < 60*5)
-    {
-        ShowBoxForPlayer(playerid, "Sorry, you can only change the fare every 5 minutes.");
-        return 1;
-    }
-    // all clear, set the new price.
-    g_FlagTime[playerid][1] = Time->currentTime();
-    taxiPrice = taxiprice;
-    format(str,256,"~r~~h~%s~w~ has set the taxi kilometer price as ~y~$%d~w~ (~p~/taxiprice~w~)",
-        Player(playerid)->nicknameString(), taxiprice);
-    NewsController->show(str);
     return 1;
 }

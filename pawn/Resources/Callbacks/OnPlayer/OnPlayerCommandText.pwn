@@ -929,8 +929,11 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         {
             new Target, tName[2][MAX_PLAYER_NAME+1], Float:tCoord[3], sNear[MAX_PLAYERS];
 
-            if(GetPlayerMoney(playerid) < 15000) {
-                ShowBoxForPlayer(playerid, "This animation costs $15000." );
+            new const price = GetEconomyValue(BitchSlapCommand);
+
+            if(GetPlayerMoney(playerid) < price) {
+                format(string, sizeof(string), "This animation costs $%s.", formatPrice(price));
+                ShowBoxForPlayer(playerid, string);
                 return 1;
             }
 
@@ -971,7 +974,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
             format(string, sizeof(string), "* %s slaps %s's ass!", tName[0], tName[1]);
             SendClientMessageToAllEx(0x0099FFAA, string);
-            GivePlayerMoney(playerid, -15000);
+            TakeRegulatedMoney(playerid, BitchSlapCommand);
 
             g_LastSlapTime[playerid] = Time->currentTime();
             g_LastSlappedBy[Target] = playerid;
@@ -1334,7 +1337,9 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if( GetPlayerMoney( playerid ) > 9999 || Player(playerid)->isAdministrator()){
+        new const price = GetEconomyValue(CarDiveCommand);
+
+        if( GetPlayerMoney( playerid ) >= price || Player(playerid)->isAdministrator()){
 
             new Float:x;
             new Float:y;
@@ -1372,7 +1377,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
                     }
 
                     if (Player(playerid)->isAdministrator() == false)
-                        GivePlayerMoney( playerid, -10000 );
+                        TakeRegulatedMoney(playerid, CarDiveCommand);
 
                     new vehicleID;
                     vehicleID = GetPlayerVehicleID(pid);
@@ -1417,7 +1422,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         }
         else 
         {
-            SendClientMessage(playerid,Color::Red, "You don't have enough cash (10000 dollar)");
+            format(string, sizeof(string), "You don't have enough cash ($%s).", formatPrice(price));
+            SendClientMessage(playerid, Color::Red, string);
             return 1;
         }
     }
@@ -1457,9 +1463,12 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if( GetPlayerMoney( playerid ) < 7499 && Player(playerid)->isAdministrator() == false)
+        new const price = GetEconomyValue(DiveCommand);
+
+        if( GetPlayerMoney( playerid ) < price && Player(playerid)->isAdministrator() == false)
         {
-            SendClientMessage(playerid,Color::Red, "You don't have enough cash (7500 dollar)");
+            format(string, sizeof(string), "You don't have enough cash ($%s dollar).", formatPrice(price));
+            SendClientMessage(playerid, Color::Red, string);
             return 1;
         }
 
@@ -1469,7 +1478,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        GivePlayerMoney( playerid, -7500 );
+        TakeRegulatedMoney(playerid, DiveCommand);
 
         GiveWeapon(playerid, 46, 0 );
         GetPlayerPos(playerid, fX, fY, fZ );

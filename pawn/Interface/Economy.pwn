@@ -13,6 +13,7 @@ enum EconomyValueType {
     AirportFlight,
     AlcoholicDrink,
     AlcoholicDrinkOwnerShare,
+    BitchSlapCommand,
     BombExplosionExtreme,
     BombExplosionLarge,
     BombExplosionMedium,
@@ -27,12 +28,14 @@ enum EconomyValueType {
     BonusMinigame,
     CaptureBriefcaseParticipation,
     CaptureBriefcaseVictory,
+    CarDiveCommand,
     ChaseEscaped,
     ChaseWinner,
     CustomizationShopOwnerShare,
     DeathmatchChampion,
     DerbyParticipation,
     DerbyVictory,
+    DiveCommand,
     FightClubParticipation,
     FightClubVictory,
     GiftHuntLargePrize,
@@ -72,6 +75,7 @@ enum EconomyValueType {
     TuneCommand,
     VehicleCrusherReward,
     VehicleExportReward,
+    VehicleExportRewardOwnerShare,
     VipColourChange,
     WalkiesWeaponParticipation,
     WalkiesWeaponVictory,
@@ -82,6 +86,16 @@ enum EconomyValueType {
 
 new customsTax = 1500;
 
+// Features to manually update:
+//   - Property pricing
+//   - Weapons price (//data/ammunation.json)
+
+// Features to convert:
+//   - Delivery
+//   - Grand Theft Auto
+//   - Map zones
+//   - Properties
+
 GetEconomyValue(EconomyValueType: type, inputValue = 0) {
     switch (type) {
         case AirportCustomsTax:                 return customsTax;
@@ -91,6 +105,7 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case AirportFlight:                     return 250000;
         case AlcoholicDrink:                    return 1000 * inputValue /* units [1-8] */;
         case AlcoholicDrinkOwnerShare:          return 100 * inputValue /* units [1-8] */;
+        case BitchSlapCommand:                  return 15000;
         case BombExplosionExtreme:              return 400000;
         case BombExplosionLarge:                return 70000;
         case BombExplosionMedium:               return 25000;
@@ -105,12 +120,14 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case BonusMinigame:                     return 20000;
         case CaptureBriefcaseParticipation:     return 100;
         case CaptureBriefcaseVictory:           return 2000000;
+        case CarDiveCommand:                    return 10000;
         case ChaseEscaped:                      return 1000000;
         case ChaseWinner:                       return 2500000;
         case CustomizationShopOwnerShare:       return 1500;
         case DeathmatchChampion:                return 1000000;
         case DerbyParticipation:                return 250;
         case DerbyVictory:                      return 10000;
+        case DiveCommand:                       return 7500;
         case FightClubParticipation:            return 2500;
         case FightClubVictory:                  return 5000;
         case GiftHuntLargePrize:                return 3000000;
@@ -150,6 +167,7 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case TuneCommand:                       return 10000;
         case VehicleCrusherReward:              return 4000;
         case VehicleExportReward:               return floatround(inputValue /* vehicle health [371-1000] */ * 75 * 1.216);
+        case VehicleExportRewardOwnerShare:     return floatround(inputValue /* vehicle health [371-1000] */ * 75 * 1.216 * 0.1);
         case VipColourChange:                   return 10000000;
         case WalkiesWeaponParticipation:        return 250;
         case WalkiesWeaponVictory:              return 5000 * inputValue /* participant count */;

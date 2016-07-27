@@ -223,7 +223,7 @@ CExport__OnEnterCheckpoint( playerid )
                 playerVehExp[ playerid ]++;
 
                 // Give him his money
-                GivePlayerMoney(playerid, iPlayerReward);
+                GiveRegulatedMoney(playerid, VehicleExportReward, floatround(fHealth));
                 format( string, sizeof( string ), "You have already exported %d vehicles!", playerVehExp[ playerid ] );
                 SendClientMessage( playerid, COLOR_ORANGE, string );
                 CAchieve__Export(playerid, playerVehExp[playerid]);
@@ -236,9 +236,12 @@ CExport__OnEnterCheckpoint( playerid )
 
                 if(Player(endid)->isConnected() && endid != playerid && !IsPlayerInMinigame(endid))
                 {
-                    format(string, sizeof(string), "%s has exported a %s, you earned $%s.", PlayerName(playerid), name, formatPrice(floatround(iPlayerReward/10)));
+                    new const ownerShare = GetEconomyValue(VehicleExportRewardOwnerShare, floatround(fHealth));
+
+                    format(string, sizeof(string), "%s has exported a %s, you earned $%s.", PlayerName(playerid), name, formatPrice(ownerShare));
                     SendClientMessage(endid, COLOR_GREY, string);
-                    GivePlayerMoney(endid, floatround(iPlayerReward/10));
+
+                    TakeRegulatedMoney(endid, VehicleExportRewardOwnerShare, floatround(fHealth));
                 }
 
                 //Just a little check for the bonus time

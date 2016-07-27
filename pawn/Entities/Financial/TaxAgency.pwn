@@ -34,7 +34,7 @@ class TaxAgency {
      */
     private applyTaxesForPlayerAndReturnAmount(playerId, taxRate) {
         new taxAmount = (GetPlayerMoney(playerId) / 100) * taxRate;
-        GivePlayerMoney(playerId, -taxAmount);  // XXXXXXXXXXXXXXXXXX Tax Agency
+        GivePlayerMoney(playerId, -taxAmount);
 
         CAchieve__Tax(playerId, taxAmount);
         return taxAmount;

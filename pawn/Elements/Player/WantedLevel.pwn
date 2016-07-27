@@ -58,8 +58,11 @@ WantedLevel__OnPlayerDeath (playerid, killerid) {
                 PlayerName(killerid),killerid,iRecordName,iServerKillRecord,PlayerName(killerid));
                 SendClientMessageToAllEx(COLOR_YELLOW,iStr);
                 SendClientMessageToAllEx(Color::White,"--------------------------------------");
-                GameTextForPlayer(killerid,"~g~New Deathmatch Champion~n~~y~Congratulations~n~~w~$1000000",5000,0);
-                GivePlayerMoney(killerid,1000000);
+
+                format(iStr,sizeof(iStr),"~g~New Deathmatch Champion~n~~y~Congratulations~n~~w~$%s",formatPrice(GetEconomyValue(DeathmatchChampion)));
+                GameTextForPlayer(killerid,iStr,5000,0);
+
+                GiveRegulatedMoney(killerid,DeathmatchChampion);
                 iServerKillRecord = WantedLevel[killerid];
                 GetPlayerName(killerid,iRecordName,sizeof(iRecordName));
                 iServerChampion = killerid;
@@ -89,14 +92,18 @@ WantedLevel__OnPlayerDeath (playerid, killerid) {
 
         if(Player(endid)->isConnected() && endid != killerid)
         {
-            format(iStr,128,"* %s killed %s who had a %d star wanted level. You earned $%d.",PlayerName(killerid),PlayerName(playerid),iPlayerKills ,iPlayerKills*100);
+            new const awardShare = GetEconomyValue(WantedLevelOwnerShare, iPlayerKills);
+
+            format(iStr,128,"* %s killed %s who had a %d star wanted level. You earned $%s.",PlayerName(killerid),PlayerName(playerid),iPlayerKills,formatPrice(awardShare));
             SendClientMessage(endid,COLOR_GREY,iStr);
-            GivePlayerMoney(endid,iPlayerKills*100);
+            GiveRegulatedMoney(endid, WantedLevelOwnerShare, iPlayerKills);
         }
 
-        format(iStr,128,"* %s had a wanted level of %d stars, you earned $%d.",PlayerName(playerid),iPlayerKills,iPlayerKills * 10000);
+        new const award = GetEconomyValue(WantedLevelAward, iPlayerKills);
+
+        format(iStr,128,"* %s had a wanted level of %d stars, you earned $%s.",PlayerName(playerid),iPlayerKills,formatPrice(award));
         SendClientMessage(killerid,Color::White,iStr);
-        GivePlayerMoney(killerid,iPlayerKills*10000);
+        GiveRegulatedMoney(killerid, WantedLevelAward, iPlayerKills);
         WantedLevel[playerid] = 0;
         SetPlayerWantedLevel(playerid,0);
     }

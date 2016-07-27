@@ -28,6 +28,7 @@ enum EconomyValueType {
     ChaseEscaped,
     ChaseWinner,
     CustomizationShopOwnerShare,
+    DeathmatchChampion,
     DerbyParticipation,
     DerbyVictory,
     FightClubParticipation,
@@ -49,6 +50,7 @@ enum EconomyValueType {
     NitroTenShot,
     NitroInfinite,
     ReactionTest,
+    Ramping,
     RivershellParticipation,
     RobberyParticipation,
     RobberyVictory,
@@ -57,12 +59,16 @@ enum EconomyValueType {
     ShowMessageCommand,
     SlapCommand,
     SpawnMoney,
+    TeleportWithVehicle,
+    TeleportWithoutVehicle,
     TowCommand,
     TuneCommand,
     VehicleCrusherReward,
     VipColourChange,
     WalkiesWeaponParticipation,
     WalkiesWeaponVictory,
+    WantedLevelAward,
+    WantedLevelOwnerShare,
     WaterFightParticipation
 };
 
@@ -92,6 +98,7 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case ChaseEscaped:                      return 1000000;
         case ChaseWinner:                       return 2500000;
         case CustomizationShopOwnerShare:       return 1500;
+        case DeathmatchChampion:                return 1000000;
         case DerbyParticipation:                return 250;
         case DerbyVictory:                      return 10000;
         case FightClubParticipation:            return 2500;
@@ -113,6 +120,7 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case NitroTenShot:                      return 10000;
         case NitroInfinite:                     return 250000;
         case ReactionTest:                      return 10000;
+        case Ramping:                           return 50000;
         case RivershellParticipation:           return 250;
         case RobberyParticipation:              return 250;
         case RobberyVictory:                    return 5000 * inputValue /* participant count */;
@@ -121,12 +129,16 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case ShowMessageCommand:                return 200000;
         case SlapCommand:                       return 5000;
         case SpawnMoney:                        return 175000;
+        case TeleportWithVehicle:               return 50000;
+        case TeleportWithoutVehicle:            return 20000;
         case TowCommand:                        return 45000;
         case TuneCommand:                       return 10000;
         case VehicleCrusherReward:              return 4000;
         case VipColourChange:                   return 10000000;
         case WalkiesWeaponParticipation:        return 250;
         case WalkiesWeaponVictory:              return 5000 * inputValue /* participant count */;
+        case WantedLevelAward:                  return 10000 * inputValue /* wanted level stars */;
+        case WantedLevelOwnerShare:             return 100 * inputValue /* wanted level stars */;
         case WaterFightParticipation:           return 2500;
     }
 

@@ -182,7 +182,7 @@ CDrink__Buy(playerid, drinkid)
     new propertyId = PropertyManager->propertyForSpecialFeature(BarFeature),
         endid = propertyId == Property::InvalidId ? Player::InvalidId : Property(propertyId)->ownerId();
 
-    GivePlayerMoney(playerid, -price);
+    GivePlayerMoney(playerid, -price); // XXXXXXXXXXXXXXXXXX Drinks
     playerDrinkID[playerid] = drinkid;
     CDrink__Drink(playerid);
 
@@ -199,7 +199,7 @@ CDrink__Buy(playerid, drinkid)
         new str[256];
         format(str,256,"* %s bought a drink! You earned $%d.",PlayerName(playerid),price/10);
         SendClientMessage(endid,COLOR_GREY,str);
-        GivePlayerMoney(endid,price/10);
+        GivePlayerMoney(endid,price/10); // XXXXXXXXXXXXXXXXXX Drinks (bar owner share)
     }
     return 1;
 }

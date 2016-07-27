@@ -276,7 +276,7 @@ OnPlayerFindMoneyBag(playerid) {
 	else if (cash > MAX_MONEY_BAG_CASH)
 	    cash = MAX_MONEY_BAG_CASH;
 
-    GivePlayerMoney(playerid, cash);
+    GivePlayerMoney(playerid, cash);  // OK: Bag of Cash
 
     new szClueText[128];
     SendClientMessageToAllEx(0x00E1E1FF, "-----------------------------");

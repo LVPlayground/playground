@@ -19,12 +19,6 @@ class TeleportationManager {
     // The delay before a player can carteleport to the cruise again is 1 minute (60 seconds).
     const CarTeleportToCruiseDelay = 60;
 
-    // The price for teleporting is $20.000 dollars per teleport.
-    const DefaultTeleportPrice = 20000;
-
-    // The price for carteleporting is $50.000 dollars per teleport.
-    const CarTeleportPrice = 50000;
-
     // For every player, we save the timestamp of teleportation.
     new m_playerTeleportTime[MAX_PLAYERS];
 
@@ -44,11 +38,12 @@ class TeleportationManager {
         // We deduct no money from crew members or owners of the property with the FreeTeleportFeature.
         // Else, the money is ours!
         new propertyId = PropertyManager->propertyForSpecialFeature(FreeTeleportFeature),
-            ownerId = propertyId == Property::InvalidId ? Player::InvalidId : Property(propertyId)->ownerId(),
-            price = teleportType == DefaultTeleport ? DefaultTeleportPrice : CarTeleportPrice;
+            ownerId = propertyId == Property::InvalidId ? Player::InvalidId : Property(propertyId)->ownerId();
 
-        if (Player(playerId)->isAdministrator() == false && playerId != ownerId && subjectId != CruiseController->getCruiseLeaderId())
-            GivePlayerMoney(playerId, -price);
+        if (!Player(playerId)->isAdministrator() && playerId != ownerId && subjectId != CruiseController->getCruiseLeaderId()) {
+            TakeRegulatedMoney(playerId, teleportType == DefaultTeleport ? TeleportWithoutVehicle
+                                                                         : TeleportWithVehicle);
+        }
 
         // By saving the current time in a member variable we're able to check later on if the user
         // isn't abusing the /(c)tp commands.
@@ -279,9 +274,12 @@ class TeleportationManager {
         // doesn't apply to crew members.
         new propertyId = PropertyManager->propertyForSpecialFeature(FreeTeleportFeature),
             ownerId = propertyId == Property::InvalidId ? Player::InvalidId : Property(propertyId)->ownerId(),
-            price = teleportType == DefaultTeleport ? DefaultTeleportPrice : CarTeleportPrice, teleportPrice[12];
+            teleportPrice[12];
 
-        if (Player(playerId)->isAdministrator() == false && GetPlayerMoney(playerId) < price && playerId != ownerId
+        new const price = GetEconomyValue(teleportType == DefaultTeleport ? TeleportWithoutVehicle
+                                                                          : TeleportWithVehicle);
+
+        if (!Player(playerId)->isAdministrator() && GetPlayerMoney(playerId) < price && playerId != ownerId
             && subjectId != CruiseController->getCruiseLeaderId()) {
             FinancialUtilities->formatPrice(price, teleportPrice, sizeof(teleportPrice));
             format(message, sizeof(message),

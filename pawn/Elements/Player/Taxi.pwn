@@ -186,7 +186,7 @@ TaxiArrived(playerid)
                 format(str,256,"* %s (Id:%d) took a taxi to {A9C4E4}%s{CCCCCC}, you earned {A9C4E4}$%d{CCCCCC}.",
                     PlayerName(playerid), playerid,taxiLocationName[locateid],playerTaxi[playerid][3]/10);
                 SendClientMessage(endid,Color::ConnectionMessage,str);
-                GivePlayerMoney(endid,playerTaxi[playerid][3]/10);
+                GivePlayerMoney(endid,playerTaxi[playerid][3]/10);  // XXXXXXXXXXXXXXXXXX Taxi (company owner share)
             }
 
             fare = playerTaxi[playerid][3];
@@ -208,7 +208,7 @@ TaxiArrived(playerid)
             }
 
             if(playerid != endid)
-            GivePlayerMoney(playerid,-fare);
+            GivePlayerMoney(playerid,-fare);  // XXXXXXXXXXXXXXXXXX Taxi
 
             mayTaxi[playerid] = 1;
             format(str, 256,"%s (Id:%d) has /taxi'd to %s (#%d).",PlayerName(playerid),playerid, taxiLocationName[locateid], locateid);

@@ -716,7 +716,7 @@ class PropertyCommands {
                 Property(propertyId)->nameString(), Player(playerId)->nicknameString(), playerId, payback);
 
             SendClientMessage(currentPropertyOwner, Color::Error, message);
-            GivePlayerMoney(currentPropertyOwner, (Property(propertyId)->price() / 100) * RefundPercentage);
+            GivePlayerMoney(currentPropertyOwner, (Property(propertyId)->price() / 100) * RefundPercentage);  // XXXXXXXXXXXXXXXXXX Property Refunds
         }
 
         GivePlayerMoney(playerId, -Property(propertyId)->price());
@@ -781,7 +781,7 @@ class PropertyCommands {
                 overallPrice += Property(playerProperties[propertyIndex])->price();
             }
 
-            GivePlayerMoney(playerId, (overallPrice / 100) * Property::EarningOnPropertySellPercent);
+            GivePlayerMoney(playerId, (overallPrice / 100) * Property::EarningOnPropertySellPercent);  // XXXXXXXXXXXXXXXXXX Properties Sell
 
             FinancialUtilities->formatPrice((overallPrice / 100) * Property::EarningOnPropertySellPercent, 
                 earnings, sizeof(earnings));
@@ -814,7 +814,7 @@ class PropertyCommands {
         Property(propertyId)->setOwnerId(Player::InvalidId);
         Property(propertyId)->setPropertyAvailability(0);
         Instrumentation->recordActivity(PropertySoldActivity, Property(propertyId)->price());
-        GivePlayerMoney(playerId, (Property(propertyId)->price() / 100) * Property::EarningOnPropertySellPercent);
+        GivePlayerMoney(playerId, (Property(propertyId)->price() / 100) * Property::EarningOnPropertySellPercent);  // XXXXXXXXXXXXXXXXXX Properties Sell
 
         FinancialUtilities->formatPrice((Property(propertyId)->price() / 100) * Property::EarningOnPropertySellPercent, 
             earnings, sizeof(earnings));

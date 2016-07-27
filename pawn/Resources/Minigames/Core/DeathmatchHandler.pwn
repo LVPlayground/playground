@@ -34,10 +34,8 @@ public DeathmatchStartFunc() {
         MinigameTypeInfo[Progress] = 0;
         MinigameTypeInfo[CurrentMinigame] = STATUS_NONE;
     } else {
-        if (MinigameTypeInfo[Players] > 1) {
-            MinigameTypeInfo[CashForWinner] = MinigameTypeInfo[Players] * 2500 * (2/3);
+        if (MinigameTypeInfo[Players] > 1) 
             MinigameTypeInfo[Progress] = 2;
-        }
 
         for (new contestant = 0; contestant <= PlayerManager->highestPlayerId(); ++contestant) {
             if (Player(contestant)->isConnected() == false)

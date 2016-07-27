@@ -44,6 +44,8 @@ enum EconomyValueType {
     KilltimeVictory,
 #endif
     LyseSignUpCost,
+    MinigameParticipation,
+    MinigamePrize,
     MoneyStatue,
     NitroTwoShot,
     NitroFiveShot,
@@ -114,6 +116,8 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case KilltimeVictory:                   return 2500000;
 #endif
         case LyseSignUpCost:                    return 250;
+        case MinigameParticipation:             return 2500;
+        case MinigamePrize:                     return 2500 * inputValue /* participant count */ * (2/3);
         case MoneyStatue:                       return 50000 * inputValue /* statue kill count */;
         case NitroTwoShot:                      return 2000;
         case NitroFiveShot:                     return 5000;

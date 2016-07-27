@@ -14,8 +14,7 @@
 enum minigameInfo {
     CurrentMinigame,
     Progress,
-    Players,
-    CashForWinner
+    Players
 }
 
 new MinigameTypeInfo[minigameInfo];
@@ -35,13 +34,14 @@ bool: ResetMinigameStatus() {
     MinigameTypeInfo[CurrentMinigame] = STATUS_NONE;
     MinigameTypeInfo[Progress] = 0;
     MinigameTypeInfo[Players] = 0;
-    MinigameTypeInfo[CashForWinner] = 0;
     return true;
 }
 
 // Alright somebody has executed a minigame command (e.g. /sniper, /minigun). Let's see!
 MiniGamesSignup(playerId, minigame) {
     new notice[256], minigameMaxPlayers = ReturnMinigameMaxPlayers(minigame);
+
+    new const price = GetEconomyValue(MinigameParticipation);
 
     // Check if the player executing the commands is actually available for such an event.
     if (IsPlayerStatusMinigame(playerId) || !IsPlayerMinigameFree(playerId)) {
@@ -73,8 +73,9 @@ MiniGamesSignup(playerId, minigame) {
     }
 
     // Heyhey, every bit of fun is worth a penny :)
-    else if (GetPlayerMoney(playerId) < 2500) {
-        SendClientMessage(playerId, Color::Error, "You have to pay $2500 to sign-up for this minigame!");
+    else if (GetPlayerMoney(playerId) < price) {
+        format(notice, sizeof(notice), "You have to pay $%s to sign-up for this minigame!", formatPrice(price));
+        SendClientMessage(playerId, Color::Error, notice);
         return 1;
     }
 
@@ -90,7 +91,7 @@ MiniGamesSignup(playerId, minigame) {
 
             PlayerInfo[playerId][PlayerStatus] = minigame;
             g_VirtualWorld[playerId] = GetPlayerVirtualWorld(playerId);
-            GivePlayerMoney(playerId, -2500);
+            TakeRegulatedMoney(playerId, MinigameParticipation);
 
             // Set a timer for the DeathmatchStartFunc which will take care of actually checking
             // the amount of sign-ups, the preparation of the players for the minigame, and so on.
@@ -107,7 +108,7 @@ MiniGamesSignup(playerId, minigame) {
             NewsController->show(notice);
 
             Announcements->announceMinigameSignup(DeathmatchMinigame, ReturnMinigameName(minigame),
-                ReturnMinigameCmd(minigame), 2500, playerId);
+                ReturnMinigameCmd(minigame), price, playerId);
 
             format(notice, sizeof(notice), "~y~%s~w~ is now signing up!~n~Want to join? ~r~%s~w~!", ReturnMinigameName(minigame),
                 ReturnMinigameCmd(minigame));
@@ -120,7 +121,8 @@ MiniGamesSignup(playerId, minigame) {
                 MinigameTypeInfo[Players]++;
 
                 PlayerInfo[playerId][PlayerStatus] = minigame;
-                GivePlayerMoney(playerId, -2500);
+                TakeRegulatedMoney(playerId, MinigameParticipation);
+
                 g_VirtualWorld[playerId] = GetPlayerVirtualWorld(playerId);
 
                 format(notice, sizeof(notice), "%s (Id:%d) has signed up for %s.", Player(playerId)->nicknameString(),
@@ -160,7 +162,7 @@ MiniGamesSignout(playerId) {
 
         // Sign-out and return the sign-up money. If the game is left empty, kill it.
         else if (MinigameTypeInfo[Progress] == 1) {
-            GivePlayerMoney(playerId, 2500);
+            GiveRegulatedMoney(playerId, MinigameParticipation);
 
             MinigameTypeInfo[Players]--;
             PlayerInfo[playerId][PlayerStatus] = STATUS_NONE;
@@ -216,7 +218,7 @@ PlayerLigtUitMiniGame(playerId, reason) {
             notice = "~r~You have been disqualified because you didn't get in the car";
             GameTextForPlayer(playerId, notice, 3000, 5);
         } case LONELY:
-            GivePlayerMoney(playerId, 2500);
+            GiveRegulatedMoney(playerId, MinigameParticipation);
     }
 
     // Anyway, the player isn't participating anymore, and the playercount for the minigame decreases!
@@ -262,10 +264,11 @@ PlayerLigtUitMiniGame(playerId, reason) {
                         iHasSendMsg = 1;
                     }
 
+                    GiveRegulatedMoney(contestant, MinigamePrize, MinigameTypeInfo[Players]);
+
                     PlayerInfo[contestant][PlayerStatus] = STATUS_NONE;
                     MinigameTypeInfo[Players] = 0;
 
-                    GivePlayerMoney(contestant, MinigameTypeInfo[CashForWinner]);
                     WonMinigame[contestant]++;
 
                     SpawnPlayer(contestant);
@@ -292,10 +295,11 @@ PlayerLigtUitMiniGame(playerId, reason) {
                             ReturnMinigameName(minigame), Player(contestant)->nicknameString());
                         NewsController->show(notice);
 
+                        GiveRegulatedMoney(contestant, MinigamePrize, MinigameTypeInfo[Players]);
+
                         PlayerInfo[contestant][PlayerStatus] = STATUS_NONE;
                         MinigameTypeInfo[Players] = 0;
 
-                        GivePlayerMoney(contestant, MinigameTypeInfo[CashForWinner]);
                         WonMinigame[contestant]++;
 
                         ColorManager->releasePlayerMinigameColor(contestant);

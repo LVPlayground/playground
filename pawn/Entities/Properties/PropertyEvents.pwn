@@ -9,10 +9,6 @@
  * @author Russell Krupke <russell@sa-mp.nl>
  */
 class PropertyEvents {
-    // How much money should the owner of the vehicle modification property get when a player
-    // modifies their vehicle?
-    const MoneyForVehicleModificationPropertyOwner = 1500;
-
     /**
      * When a player modifies their vehicle, for example in a modification shop by changing the colors
      * or adding a new modification, they modify their vehicle. The owner of the cash-for-vehicle-
@@ -21,7 +17,7 @@ class PropertyEvents {
     public onVehicleModified() {
         new propertyId = PropertyManager->propertyForSpecialFeature(VehicleModificationsFeature);
         if (propertyId != Property::InvalidId && Property(propertyId)->ownerId() != Player::InvalidId)
-            GivePlayerMoney(Property(propertyId)->ownerId(), MoneyForVehicleModificationPropertyOwner);
+            GiveRegulatedMoney(Property(propertyId)->ownerId(), CustomizationShopOwnerShare);
     }
 
     /**

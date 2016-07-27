@@ -103,7 +103,6 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
 
         playerVipRoomEntryTime[playerid] = 0;
 
-        // GivePlayerMoney(playerid,-1000); // When you pickup the $ icon, GTASA by default gives you $1000, so we need to take that away!
         if(chaseData[1] == playerid && chaseData[0] == 1)
         {
             // The chase is active, they're trying to escape to the VIP room..

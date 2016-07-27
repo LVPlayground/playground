@@ -35,9 +35,6 @@ class StatuesManager {
     // The reward for a health statue kill is 5% of health at start.
     const HealthStatueReward = 5;
 
-    // The reward for a money statue kill is 50k in dollars at start.
-    const MoneyStatueReward = 50000;
-
     // For each statue we need a list of details.
     enum statueDetails {
         Float: posX, /* x-position of the statue */
@@ -306,9 +303,9 @@ class StatuesManager {
                         SetPlayerHealth(killerId, (health + ((health / 100) * (m_statueKills[killerId] * HealthStatueReward))));
                 } else if (index == 2) /* reward for money statue kill */ {
                     format(message, sizeof(message), "~r~Money Statue:~n~~y~%d Kills~n~~g~+ $%d",
-                        m_statueKills[killerId], (m_statueKills[killerId] * MoneyStatueReward));
+                        m_statueKills[killerId], GetEconomyValue(MoneyStatue, m_statueKills[killerId]));
 
-                    GivePlayerMoney(killerId, (m_statueKills[killerId] * MoneyStatueReward));
+                    GiveRegulatedMoney(killerId, MoneyStatue, m_statueKills[killerId]);
                 }
             }
             GameTextForPlayer(killerId, message, 3000, 5);

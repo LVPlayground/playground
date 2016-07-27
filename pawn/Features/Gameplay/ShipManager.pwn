@@ -358,7 +358,7 @@ class ShipManager {
         new const multiplier = Player(playerId)->isVip() ? 2 /* VIP members */
                                                          : 1 /* Regular players */;
 
-        GivePlayerMoney(playerId, ShipIdlingMoneyAmount * multiplier);
+        GiveRegulatedMoney(playerId, ShipIdleMoney, multiplier);
     }
 
     /**

@@ -14,9 +14,6 @@ scores.
 
 */
 
-// Defines
-#define REACTION_WIN 10000  // How much you win from winning the reaction test.
-
 // Enums
 enum enumReaction
 {
@@ -170,7 +167,8 @@ CReaction__OnText(playerid, text[])
         // So we've got a right answer and this should be handled, add a win and
         // give the 10.000 dollar I recon, and some nice messages as well :>
         SendClientMessage( playerid, Color::Green, "* You have won the reaction-test!" );
-        GivePlayerMoney( playerid, REACTION_WIN );
+        GiveRegulatedMoney( playerid, ReactionTest );
+
         CReaction__Win(playerid);
 
 

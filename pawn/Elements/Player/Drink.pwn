@@ -125,16 +125,6 @@ CDrink__String(int, money = 0)
     return string;
 }
 
-// CDrink__Minusify
-// Converts an int into the minus value - used for taking money and such.
-// WONT WORK WITH NEGATIVE NUMBERS!!!!
-CDrink__Minusify(int)
-{
-    new string[16]; // little hax
-    format(string, 16, "-%d", int);
-    return strval(string);
-}
-
 // CDrink__BuildMenus
 // Builds the menus at gamemode runtime
 CDrink__BuildMenus()
@@ -192,7 +182,7 @@ CDrink__Buy(playerid, drinkid)
     new propertyId = PropertyManager->propertyForSpecialFeature(BarFeature),
         endid = propertyId == Property::InvalidId ? Player::InvalidId : Property(propertyId)->ownerId();
 
-    GivePlayerMoney(playerid, CDrink__Minusify(price));
+    GivePlayerMoney(playerid, -price);
     playerDrinkID[playerid] = drinkid;
     CDrink__Drink(playerid);
 

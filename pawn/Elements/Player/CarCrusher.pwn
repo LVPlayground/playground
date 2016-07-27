@@ -54,13 +54,6 @@ CCrush__StateChange(playerid,newstate,oldstate)
     {
         if(CCrush__InArea(playerid))
         {
-            // Is the vehicle a valid crush-able vehicle?
-            if(CCrush__CalcValue(iCrushVehicle[playerid]) == -1)
-            {
-                ShowBoxForPlayer(playerid, "Hey! I'm not crushing anything like that - Get outta here!");
-                return 1;
-            }
-
             // Right, if a player tries to crush the same vehicle ID as the
             // last vehicle they crushed, likelyhood is, they are trying to
             // abuse a nearby parked vehicle, so, we don't allow it :)
@@ -70,14 +63,14 @@ CCrush__StateChange(playerid,newstate,oldstate)
                 return 1;
             }
 
-            new iValue = CCrush__CalcValue(iCrushVehicle[playerid]);
+            new iValue = GetEconomyValue(VehicleCrusherReward);
             GameTextForPlayer(playerid,"Vehicle crushed!",3000,6);
             new iStr[128];
             format(iStr,128,"Your %s has been crushed! Scrap Value: $%s.",
             VehicleModel(GetVehicleModel(iCrushVehicle[playerid]))->nameString(), formatPrice(iValue));
             ShowBoxForPlayer(playerid, iStr);
 
-            GivePlayerMoney(playerid,iValue);
+            GiveRegulatedMoney(playerid, VehicleCrusherReward);
 
             SetVehicleToRespawn(iCrushVehicle[playerid]);
 
@@ -87,37 +80,6 @@ CCrush__StateChange(playerid,newstate,oldstate)
     }
 
     return 1;
-}
-
-// CCrush__CalcValue
-// This function calculates the value of a
-// vehicle and returns it. If the vehicle is
-// an invalid crush-type, it will return-1n invalid ID.
-CCrush__CalcValue(vehicleid)
-{
-  /*  if(!GetVehicleModel(vehicleid)) return -1;
-    if(GetVehicleGroup(vehicleid) == -1) return -1;
-
-    new iVehicleValue;
-
-    switch(GetVehicleGroup(vehicleid))
-    {
-        case SPORTS:        iVehicleValue = 11000;
-        case BIKES:         return -1;
-        case LOWRIDER:      iVehicleValue = 7000;
-        case OFFROAD:       iVehicleValue = 8000;
-        case SALOONS:       iVehicleValue = 6000;
-        case CONVERTIBLES:  iVehicleValue = 8000;
-        default:            iVehicleValue = random(2000) + 4000;
-    }
-
-    new Float:iHealth = GetVehicleHealth(vehicleid,iHealth);
-    iVehicleValue = iVehicleValue + floatround(iHealth) + 2500;
-    iVehicleValue = iVehicleValue + CCrush__Modifications[vehicleid]*500;
-    iVehicleValue = randomex(iVehicleValue,iVehicleValue+CCrush__Modifications[vehicleid]+500);
-    return iVehicleValue;*/
-    #pragma unused vehicleid
-    return 4000;
 }
 
 // CCrush__InArea

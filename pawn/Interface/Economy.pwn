@@ -20,10 +20,14 @@ enum EconomyValueType {
     BombTypeDetonatorOwnersShare,
     BombTypeEngine,
     BombTypeEngineOwnersShare,
+    BonusExport,
+    BonusKill,
+    BonusMinigame,
     CaptureBriefcaseParticipation,
     CaptureBriefcaseVictory,
     ChaseEscaped,
     ChaseWinner,
+    CustomizationShopOwnerShare,
     DerbyParticipation,
     DerbyVictory,
     FightClubParticipation,
@@ -35,23 +39,27 @@ enum EconomyValueType {
     HideAndSeekSignUpCost,
     HideAndSeekPrize,
     IslandTeamDeathMatchPrize,
-    #if Feature::DisableKilltime == 0
+#if Feature::DisableKilltime == 0
     KilltimeVictory,
-    #endif
+#endif
     LyseSignUpCost,
+    MoneyStatue,
     NitroTwoShot,
     NitroFiveShot,
     NitroTenShot,
     NitroInfinite,
+    ReactionTest,
     RivershellParticipation,
     RobberyParticipation,
     RobberyVictory,
     RunWeaponsParticipation,
+    ShipIdleMoney,
     ShowMessageCommand,
     SlapCommand,
     SpawnMoney,
     TowCommand,
     TuneCommand,
+    VehicleCrusherReward,
     VipColourChange,
     WalkiesWeaponParticipation,
     WalkiesWeaponVictory,
@@ -76,10 +84,14 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case BombTypeDetonatorOwnersShare:      return 100000;
         case BombTypeEngine:                    return 1000000;
         case BombTypeEngineOwnersShare:         return 25000;
+        case BonusExport:                       return 30000;
+        case BonusKill:                         return 15000;
+        case BonusMinigame:                     return 20000;
         case CaptureBriefcaseParticipation:     return 100;
         case CaptureBriefcaseVictory:           return 2000000;
         case ChaseEscaped:                      return 1000000;
         case ChaseWinner:                       return 2500000;
+        case CustomizationShopOwnerShare:       return 1500;
         case DerbyParticipation:                return 250;
         case DerbyVictory:                      return 10000;
         case FightClubParticipation:            return 2500;
@@ -91,23 +103,27 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case HideAndSeekSignUpCost:             return 250;
         case HideAndSeekPrize:                  return 500000;
         case IslandTeamDeathMatchPrize:         return 10000;
-        #if Feature::DisableKilltime == 0
+#if Feature::DisableKilltime == 0
         case KilltimeVictory:                   return 2500000;
-        #endif
+#endif
         case LyseSignUpCost:                    return 250;
+        case MoneyStatue:                       return 50000 * inputValue /* statue kill count */;
         case NitroTwoShot:                      return 2000;
         case NitroFiveShot:                     return 5000;
         case NitroTenShot:                      return 10000;
         case NitroInfinite:                     return 250000;
+        case ReactionTest:                      return 10000;
         case RivershellParticipation:           return 250;
         case RobberyParticipation:              return 250;
         case RobberyVictory:                    return 5000 * inputValue /* participant count */;
         case RunWeaponsParticipation:           return 250;
+        case ShipIdleMoney:                     return 50 * inputValue /* VIP multiplier */;
         case ShowMessageCommand:                return 200000;
         case SlapCommand:                       return 5000;
         case SpawnMoney:                        return 175000;
         case TowCommand:                        return 45000;
         case TuneCommand:                       return 10000;
+        case VehicleCrusherReward:              return 4000;
         case VipColourChange:                   return 10000000;
         case WalkiesWeaponParticipation:        return 250;
         case WalkiesWeaponVictory:              return 5000 * inputValue /* participant count */;
@@ -115,7 +131,6 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
     }
 
     return 0;
-    #pragma unused inputValue
 }
 
 SetEconomyValue(EconomyValueType: type, value) {

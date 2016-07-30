@@ -84,16 +84,6 @@ class Announcements {
         // Announce this player's connection to people watching from IRC.
         format(m_formatBuffer, sizeof(m_formatBuffer), "%d %s", playerId, Player(playerId)->nicknameString());
         IRC->broadcast(JoinIrcMessage, m_formatBuffer);
-
-        // Announce the connection of this player to crew members on IRC, including their
-        // ID, nickname and their IP address. This is useful in case of flooders.
-        new connectionMessage[128]
-           ,playerGpci[40 /* serial/gpci-length */ + 1 /* null */];
-        gpci(playerId, playerGpci, sizeof(playerGpci));
-
-        format(connectionMessage, sizeof(connectionMessage), "%d %s %s %s", playerId,
-            Player(playerId)->ipAddressString(), Player(playerId)->nicknameString(), playerGpci);
-        IRC->broadcast(JoinIpGpciIrcMessage, connectionMessage);
     }
 
     /**

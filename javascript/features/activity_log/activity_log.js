@@ -7,6 +7,9 @@ const Feature = require('components/feature_manager/feature.js');
 const ScopedCallbacks = require('base/scoped_callbacks.js');
 const MurmurHash3 = require('features/activity_log/murmurhash3.js');
 
+// IRC tag used to show the players name, id, ip and gpci
+const JoinIpGpciTag = 'joinipgpci';
+
 // The activity log feature keeps track of many in-game events and logs them to the database. This
 // is part of an effort to gather more information with Las Venturas Playground, enabling analysis
 // of area, vehicle and weapon usage among many other statistics.
@@ -33,6 +36,9 @@ class ActivityLog extends Feature {
         this.callbacks_.addEventListener(toEventName(name), this.__proto__[toMethodName(name)].bind(this)));
 
     this.playerSessionIdMap_ = new Map(); // { playerid, sessionid )
+
+    // To be able to show the IP and GPCI on IRC
+    this.announce_ = this.defineDependency('announce');
   }
 
   // Called when a confirmed death has happened with the corrected Id of the killer, if any. The
@@ -90,6 +96,8 @@ class ActivityLog extends Feature {
 
     const numericIpAddress = this.ip2long(player.ipAddress);
     const hashedGpci = MurmurHash3.generateHash(player.gpci);
+
+    this.announce_.announceToIRC(JoinIpGpciTag, player.id, player.ipAddress, player.name, hashedGpci);
 
     this.recorder_.getIdFromWriteInsertSessionAtConnect(player.name, numericIpAddress, hashedGpci).then (result => {
       this.playerSessionIdMap_.set(player.id, result.sessionId);

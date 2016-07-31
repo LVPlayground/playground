@@ -4,8 +4,13 @@
 
 const Command = require('features/playground/command.js');
 const CommandBuilder = require('components/command_manager/command_builder.js');
-const Dialog = require('components/dialogs/dialog.js');
+const Menu = require('components/menu/menu.js');
 const PlaygroundAccessTracker = require('features/playground/playground_access_tracker.js');
+
+// Utility function to capitalize the first letter of a |string|.
+function capitalizeFirstLetter(string) {
+    return string[0].toUpperCase() + string.slice(1);
+}
 
 // A series of general commands that don't fit in any particular 
 class PlaygroundCommands {
@@ -52,6 +57,9 @@ class PlaygroundCommands {
         // The `/lvp` command offers administrators and higher a number of functions to manage the
         // server, the available commands and availability of a number of smaller features.
         server.commandManager.buildCommand('lvp')
+            .sub('access')
+                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .build(PlaygroundCommands.prototype.onPlaygroundAccessCommand.bind(this))
             .sub('party')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .parameters([
@@ -63,6 +71,90 @@ class PlaygroundCommands {
 
     // Gets the access tracker for the commands managed by this class.
     get access() { return this.access_; }
+
+    // Enables administrators and management to change access requirements to the commands that are
+    // part of this module with a dialog-based interface.
+    async onPlaygroundAccessCommand(player) {
+        let commands = [];
+
+        // Only add commands that are available to |player| by default to the |commands| array.
+        this.commands_.forEach(command => {
+            if (command.defaultPlayerLevel > player.level)
+                return;
+
+            commands.push(command);
+        });
+
+        const menu = new Menu('Command access settings', [
+            'Command',
+            'Level',
+            'Exceptions'
+        ]);
+
+        commands.forEach(command => {
+            const commandName = command.name;
+            const commandLevel = this.access_.getCommandLevel(commandName);
+            const commandExceptions = this.access_.getExceptionCount(commandName);
+
+            const levelPrefix = commandLevel !== command.defaultPlayerLevel ? '~y~' : '';
+            const level = levelPrefix + playerLevelToString(commandLevel, true /* plural */);
+
+            const exceptions = commandExceptions != 0
+                ? '~y~' + commandExceptions + ' exception' + (commandExceptions == 1 ? '' : 's')
+                : '-';
+
+            menu.addItem('/' + commandName, capitalizeFirstLetter(level), exceptions,
+                         PlaygroundCommands.prototype.displayCommandMenu.bind(this, command));
+        });
+
+        await menu.displayForPlayer(player);
+    }
+
+    // Displays a command menu for |command| to the |player|. It contains options to change the
+    // required level, as well as options to grant and revoke exceptions for the command.
+    async displayCommandMenu(command, player) {
+        const menu = new Menu('/' + command.name + ' access settings');
+
+        const exceptions = this.access_.getExceptions(command.name);
+        exceptions.sort((lhs, rhs) =>
+            lhs.name.localeCompare(rhs.name));
+
+        menu.addItem('Change required level',
+                     PlaygroundCommands.prototype.displayCommandLevelMenu.bind(this, command));
+
+        menu.addItem('Grant exception',
+                     PlaygroundCommands.prototype.grantCommandException.bind(this, command));
+
+        if (exceptions.length) {
+            menu.addItem('------------------------',
+                         PlaygroundCommands.prototype.displayCommandMenu.bind(this, command));
+
+            exceptions.forEach(subject => {
+                menu.addItem('Revoke for ' + subject.name + ' (Id: ' + subject.id + ')',
+                             PlaygroundCommands.prototype.revokeCommandException.bind(this, command,
+                                                                                      subject));
+            });
+        }
+
+        await menu.displayForPlayer(player);
+    }
+
+    // Displays a menu that allows |player| to change the required level of |command| to any level
+    // that's equal or below their own level, to avoid "losing" a command.
+    async displayCommandLevelMenu(command, player) {
+        // TODO: Implement this function.
+    }
+
+    // Grants an exception for a not yet determined player to use the |command|.
+    async grantCommandException(command, player) {
+        // TODO: Implement this function.
+        // NOTE: The |player| must be registered.
+    }
+
+    // Revokes the exception for |subject| to use the |command|.
+    async revokeCommandException(command, subject, player) {
+        // TODO: Implement this function.
+    }
 
     // Enables or disables one of the available options. The actual options are dictated by both the
     // command builder above and by the PlaygroundManager that tracks them.

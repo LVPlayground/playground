@@ -84,16 +84,22 @@ class PlaygroundAccessTracker {
     // Returns the number of exceptions that have been granted for |command|. This method has a
     // theoretical worst-case of O(n) on the number of connected players.
     getExceptionCount(command) {
+        return this.getExceptions(command).length;
+    }
+
+    // Returns the players for whom an exception has been granted for |command|.  This method has a
+    // theoretical worst-case of O(n) on the number of connected players.
+    getExceptions(command) {
         if (!this.commandLevels_.has(command))
             throw new Error('Invalid command given: ' + command);
 
-        let exceptionCount = 0;
-        this.exceptions_.forEach(exceptions => {
+        let players = [];
+        this.exceptions_.forEach((exceptions, player) => {
             if (exceptions.has(command))
-                exceptionCount++;
+                players.push(player);
         });
 
-        return exceptionCount;
+        return players;
     }
 
     // Returns whether |player| has an exception allowing them to use |command|.

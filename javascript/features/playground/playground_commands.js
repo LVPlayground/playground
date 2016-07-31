@@ -5,6 +5,7 @@
 const Command = require('features/playground/command.js');
 const CommandBuilder = require('components/command_manager/command_builder.js');
 const Menu = require('components/menu/menu.js');
+const MessageDialog = require('components/dialogs/message.js');
 const PlaygroundAccessTracker = require('features/playground/playground_access_tracker.js');
 
 // Utility function to capitalize the first letter of a |string|.
@@ -96,14 +97,14 @@ class PlaygroundCommands {
             const commandLevel = this.access_.getCommandLevel(commandName);
             const commandExceptions = this.access_.getExceptionCount(commandName);
 
-            const levelPrefix = commandLevel !== command.defaultPlayerLevel ? '~y~' : '';
-            const level = levelPrefix + playerLevelToString(commandLevel, true /* plural */);
+            const levelPrefix = commandLevel !== command.defaultPlayerLevel ? '{FFFF00}' : '';
+            const level = playerLevelToString(commandLevel, true /* plural */);
 
             const exceptions = commandExceptions != 0
-                ? '~y~' + commandExceptions + ' exception' + (commandExceptions == 1 ? '' : 's')
+                ? '{FFFF00}' + commandExceptions + ' exception' + (commandExceptions == 1 ? '': 's')
                 : '-';
 
-            menu.addItem('/' + commandName, capitalizeFirstLetter(level), exceptions,
+            menu.addItem('/' + commandName, levelPrefix + capitalizeFirstLetter(level), exceptions,
                          PlaygroundCommands.prototype.displayCommandMenu.bind(this, command));
         });
 
@@ -142,7 +143,42 @@ class PlaygroundCommands {
     // Displays a menu that allows |player| to change the required level of |command| to any level
     // that's equal or below their own level, to avoid "losing" a command.
     async displayCommandLevelMenu(command, player) {
-        // TODO: Implement this function.
+        const currentLevel = this.access_.getCommandLevel(command.name);
+        const defaultLevel = command.defaultPlayerLevel;
+
+        const menu = new Menu('/' + command.name + ' required level');
+
+        [
+            Player.LEVEL_PLAYER,
+            Player.LEVEL_ADMINISTRATOR,
+            Player.LEVEL_MANAGEMENT
+        ].forEach(level => {
+            if (level > player.level)
+                return;
+
+            const levelPrefix = currentLevel === level ? '{ADFF2F}' : '';
+            const levelSuffix = defaultLevel === level ? ' (default)' : '';
+
+            const levelName = playerLevelToString(level, true /* plural */);
+
+            menu.addItem(levelPrefix + capitalizeFirstLetter(levelName) + levelSuffix, async() => {
+                if (currentLevel === level) {
+                    return await MessageDialog.display(player, {
+                        title: 'No need to update the level',
+                        message: 'This command is already available to ' + levelName + '.'
+                    });
+                }
+
+                this.access_.setCommandLevel(command.name, level);
+
+                return await MessageDialog.display(player, {
+                    title: 'The level has been updated!',
+                    message: '/' + command.name + ' is now available to ' + levelName + '.'
+                });
+            });
+        });
+
+        await menu.displayForPlayer(player);
     }
 
     // Grants an exception for a not yet determined player to use the |command|.

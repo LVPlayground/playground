@@ -14,8 +14,15 @@ const BUTTON_CAPTION = 'Alright!';
 // text informing the user of something critical (it will obstruct their experience!), after which
 // they can dismiss it either by clicking on ESC, or by clicking on the included button.
 class Message {
-  constructor(message) {
+  static display(player, { message, title, button = 'Close' } = {}) {
+    const instance = new Message(message, title, button);
+    return instance.displayForPlayer(player);
+  }
+
+  constructor(message, title = CAPTION, button = BUTTON_CAPTION) {
     this.message_ = message;
+    this.title_ = title;
+    this.button_ = button;
   }
 
   // Displays the message to |player|. A promise will be returned that will resolve when the player

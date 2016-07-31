@@ -13,7 +13,10 @@ server and the commands offerend on the server.
 ## Commands
 The following commands are available as part of the feature:
 
-  - **/boost [player] [factor]**: Boosts the `player`'s velocity by `factor`.
+  - **/boost [player] [factor]**: Boosts the `player`'s velocity by `factor`. Only available to
+    management.
+  - **/fly**: Makes the player who executes the command fly. Only available to management.
+  - **/fly [player]**: Makes the `player` fly. Only available to management.
   - **/jetpack**: Gives you a jetpack. Must have been enabled by an administrator.
   - **/jetpack [player]**: Gives the `player` a jetpack. Only available to administrators.
   - **/jetpack [player] remove**: Removes a jetpack from `player`. Only available to administrators.

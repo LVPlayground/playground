@@ -21,8 +21,10 @@ class BoostCommand extends Command {
     // by the JavaScript code, and the command should work for all vehicles.
     onBoostCommand(player, target, factor) {
         const vehicleId = pawnInvoke('GetPlayerVehicleID', 'i', target.id);
-        if (vehicleId == 0 || vehicleId > 3000)
-            return player.sendMessage(Message.COMMAND_ERROR, target.name + ' is not driving a vehicle.');
+        if (vehicleId == 0 || vehicleId > 3000) {
+            player.sendMessage(Message.COMMAND_ERROR, target.name + ' is not driving a vehicle.');
+            return;
+        }
 
         const velocity = pawnInvoke('GetVehicleVelocity', 'iFFF', vehicleId);
         pawnInvoke('SetVehicleVelocity', 'ifff',

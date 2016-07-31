@@ -56,7 +56,7 @@ class Actor {
     // be returned to their position after the animation finishes, and |freeze| determines whether
     // the actor should be frozen after the animation finishes.
     animate({ library, name, delta = 4.1, loop = false, lock = false, freeze = false,
-              time = 0} = {}) {
+              time = 0 } = {}) {
         pawnInvoke('ApplyActorAnimation', 'issfiiiii', this.id_, library, name, delta, loop ? 1 : 0,
                                                        lock ? 1 : 0, lock ? 1 : 0, freeze ? 1 : 0,
                                                        time);

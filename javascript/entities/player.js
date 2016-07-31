@@ -98,6 +98,12 @@ class Player {
   get facingAngle() { return pawnInvoke('GetPlayerFacingAngle', 'iF', this.id_); }
   set facingAngle(value) { pawnInvoke('SetPlayerFacingAngle', 'if', this.id_, value); }
 
+  // Gets or sets the velocity of the player. Both must be used with a 3D vector.
+  get velocity() { return new Vector(...pawnInvoke('GetPlayerVelocity', 'iFFF', this.id_)); }
+  set velocity(value) {
+    pawnInvoke('SetPlayerVelocity', 'ifff', this.id_, value.x, value.y, value.z);
+  }
+
   // Gets or sets the time for this player. It will be returned, and must be set, as an array having
   // two entries: hours and minutes.
   get time() { return pawnInvoke('GetPlayerTime', 'iII', this.id); }
@@ -119,6 +125,37 @@ class Player {
   // the Player.SPECIAL_ACTION_* constants static to this class.
   get specialAction() { return pawnInvoke('GetPlayerSpecialAction', 'i', this.id_); }
   set specialAction(value) { pawnInvoke('SetPlayerSpecialAction', 'ii', this.id_, value); }
+
+  // Returns an object with the keys that the player is currently pressing. 
+  getKeys() {
+    const [keys, updown, leftright] = pawnInvoke('GetPlayerKeys', 'iIII', this.id_);
+    return {
+      aim: keys & 128 /* KEY_AIM */,
+      crouch: keys & 2 /* KEY_CROUCH */,
+      fire: keys & 4 /* KEY_JUMP */,
+      jump: keys & 32 /* SNEAK_ABOUT */,
+      sprint: keys & 8 /* PED_SPRINT */,
+
+      up: updown === -128 /* KEY_UP */,
+      down: updown === 128 /* KEY_DOWN */,
+      left: leftright === -128 /* KEY_LEFT */,
+      right: leftright === 128 /* KEY_RIGHT */
+    };
+  }
+
+  // Applies the animation from |library| and |name| to the player. The |loop| argument decides
+  // whether it should loop until the |time| runs out. |lock| determines whether the player should
+  // be returned to their position after the animation finishes, and |freeze| determines whether
+  // the player should be frozen after the animation finishes.
+  animate({ library, name, delta = 4.1, loop = false, lock = false, freeze = false,
+            time = 0, forceSync = false } = {}) {
+    pawnInvoke('ApplyAnimation', 'issfiiiiii', this.id_, library, name, delta, loop ? 1 : 0,
+                                              lock ? 1 : 0, lock ? 1 : 0, freeze ? 1 : 0,
+                                              time, forceSync ? 1 : 0);
+  }
+
+  // Gets the current animation index applying to this player.
+  get animationIndex() { return pawnInvoke('GetPlayerAnimationIndex', 'i', this.id_); }
 
   // Clears the animations applied to the player.
   clearAnimations() { pawnInvoke('ClearAnimations', 'i', this.id_); }
@@ -184,6 +221,16 @@ class Player {
       pawnInvoke('SelectTextDraw', 'ii', this.id_, (hoverColor || Color.WHITE).toNumberRGBA());
     else
       pawnInvoke('CancelSelectTextDraw', 'i', this.id_);
+  }
+
+  // Returns a vector of the position of the player's camera.
+  get cameraPosition() {
+    return new Vector(...pawnInvoke('GetPlayerCameraPos', 'iFFF', this.id_));
+  }
+
+  // Returns a vector of the front-vector of the player's camera.
+  get cameraFrontVector() {
+    return new Vector(...pawnInvoke('GetPlayerCameraFrontVector', 'iFFF', this.id_));
   }
 
   // Sets the player's camera to |position| and |target|, both of which must be vectors. The camera

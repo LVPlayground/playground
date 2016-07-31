@@ -7,115 +7,94 @@ const PlaygroundManager = require('features/playground/playground_manager.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 
 describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
-    let playgroundCommands = null;
-    let playgroundManager = null;
-    let player = null;
+    let commands = null;
+    let gunther = null;
+    let manager = null;
 
     beforeEach(() => {
-        playgroundManager = new PlaygroundManager();
-        playgroundCommands = new PlaygroundCommands(playgroundManager, new MockAnnounce());
-        player = server.playerManager.getById(0 /* Gunther */);
+        manager = new PlaygroundManager();
+        commands = new PlaygroundCommands(manager, new MockAnnounce());
+
+        gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify();
     });
 
     afterEach(() => {
-        playgroundCommands.dispose();
-        playgroundManager.dispose();
+        if (commands)
+            commands.dispose();
+        manager.dispose();
     });
 
-return; // TODO: Fix this up
+    it('should not leave any stray commands on the server', assert => {
+        assert.isAbove(server.commandManager.size, 0);
 
-    it('should maintain the options in a sorted list', assert => {
-        const sorted = playgroundManager.options.sort();
-        const options = playgroundManager.options;
+        commands.dispose();
+        commands = null;
 
-        assert.deepEqual(sorted, options);
+        assert.equal(server.commandManager.size, 0);
     });
 
-    it('should display an error message when a player tries to use /lvp', assert => {
-        assert.isTrue(player.issueCommand('/lvp'));
-        assert.equal(player.messages.length, 1);
-        assert.equal(player.messages[0], Message.format(Message.COMMAND_ERROR_INSUFFICIENT_RIGHTS,
-                                                        playerLevelToString(Player.LEVEL_ADMINISTRATOR,
-                                                        true /* plural */)));
+    it('should send a different usage message to administrators and management', async(assert) => {
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isTrue(await gunther.issueCommand('/lvp'));
+        assert.equal(gunther.messages.length, 2);
+
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
+        assert.isTrue(await gunther.issueCommand('/lvp'));
+        assert.equal(gunther.messages.length, 4);
+
+        assert.notEqual(gunther.messages[1], gunther.messages[3]);
     });
 
-    it('should enable administrators to get a list of options using /lvp set', assert => {
-        player.level = Player.LEVEL_ADMINISTRATOR;
+    const options = ['party'];
 
-        assert.isTrue(player.issueCommand('/lvp set'));
-        assert.equal(player.messages.length, 1);
-        assert.equal(player.messages[0], Message.format(Message.LVP_PLAYGROUND_OPTIONS,
-                                                        playgroundManager.options.join('/')));
+    options.forEach(option => {
+        it('should enable crew to change the "' + option + '" option', async(assert) => {
+            gunther.level = Player.LEVEL_MANAGEMENT;
 
-        player.clearMessages();
+            // Disable the option by default to start in a consistent state.
+            manager.setOptionEnabled(option, false);
 
-        assert.isTrue(player.issueCommand('/lvp set bogusfeature'));
-        assert.equal(player.messages.length, 1);
-        assert.equal(player.messages[0], Message.format(Message.LVP_PLAYGROUND_OPTIONS,
-                                                        playgroundManager.options.join('/')));
-    });
+            // (1) Reading the option's status should reflect that it's disabled.
+            assert.isTrue(await gunther.issueCommand('/lvp ' + option));
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(gunther.messages[0], Message.format(Message.LVP_PLAYGROUND_OPTION_STATUS,
+                                                             option, 'disabled', option));
 
-    it('should enable administrators to get the status of an option using /lvp set', assert => {
-        player.level = Player.LEVEL_ADMINISTRATOR;
+            gunther.clearMessages();
 
-        playgroundManager.setOptionEnabled('jetpack', true);
+            // (2) Trying to disable the option again should yield a specialized message.
+            assert.isTrue(await gunther.issueCommand('/lvp ' + option + ' off'));
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(gunther.messages[0],
+                         Message.format(Message.LVP_PLAYGROUND_OPTION_NO_CHANGE,
+                                        option, 'disabled'));
 
-        assert.isTrue(player.issueCommand('/lvp set jetpack'));
-        assert.equal(player.messages.length, 1);
-        assert.equal(player.messages[0], Message.format(Message.LVP_PLAYGROUND_OPTION_STATUS,
-                                                        'jetpack', 'enabled', 'jetpack'));
-    });
+            gunther.clearMessages();
 
-    it('should dislay an acknowledgement when not changing the value of an option', assert => {
-        player.level = Player.LEVEL_ADMINISTRATOR;
+            // (3) Enabling the option should reflect in the status being updated.
+            assert.isTrue(await gunther.issueCommand('/lvp ' + option + ' on'));
+            assert.equal(gunther.messages.length, 2);
+            assert.isTrue(
+                gunther.messages[1].includes(Message.format(Message.LVP_ANNOUNCE_ADMIN_NOTICE,
+                                                            gunther.name, gunther.id, 'enabled',
+                                                            option)));
 
-        playgroundManager.setOptionEnabled('jetpack', true);
+            assert.isTrue(manager.isOptionEnabled(option));
 
-        assert.isTrue(player.issueCommand('/lvp set jetpack on'));
-        assert.equal(player.messages.length, 1);
-        assert.equal(player.messages[0], Message.format(Message.LVP_PLAYGROUND_OPTION_NO_CHANGE,
-                                                        'jetpack', 'enabled'));
-    });
+            gunther.clearMessages();
 
-    it('should enable administrators to toggle options using /lvp set [option]', assert => {
-        const russell = server.playerManager.getById(1 /* Russell */);
+            // (4) Disabling the option again should reflect in the status being updated.
+            assert.isTrue(await gunther.issueCommand('/lvp ' + option + ' off'));
+            assert.equal(gunther.messages.length, 2);
+            assert.isTrue(
+                gunther.messages[1].includes(Message.format(Message.LVP_ANNOUNCE_ADMIN_NOTICE,
+                                                            gunther.name, gunther.id, 'disabled',
+                                                            option)));
 
-        player.level = Player.LEVEL_ADMINISTRATOR;
-
-        playgroundManager.setOptionEnabled('jetpack', false);
-        assert.isFalse(playgroundManager.isOptionEnabled('jetpack'));
-
-        assert.isTrue(player.issueCommand('/lvp set jetpack on'));
-        assert.isTrue(playgroundManager.isOptionEnabled('jetpack'));
-
-        assert.equal(russell.messages.length, 1);
-        assert.isTrue(
-            russell.messages[0].includes(Message.format(Message.LVP_ANNOUNCE_JETPACK, player.name,
-                                                        'enabled')));
-
-        assert.equal(player.messages.length, 2);
-        assert.equal(player.messages[0], russell.messages[0]);
-        assert.isTrue(
-            player.messages[1].includes(Message.format(Message.LVP_ANNOUNCE_ADMIN_NOTICE,
-                                                       player.name, player.id, 'enabled',
-                                                       'jetpack')));
-
-        player.clearMessages();
-        russell.clearMessages();
-
-        assert.isTrue(player.issueCommand('/lvp set jetpack off'));
-        assert.isFalse(playgroundManager.isOptionEnabled('jetpack'));
-
-        assert.equal(russell.messages.length, 1);
-        assert.isTrue(
-            russell.messages[0].includes(Message.format(Message.LVP_ANNOUNCE_JETPACK, player.name,
-                                                        'disabled')));
-
-        assert.equal(player.messages.length, 2);
-        assert.equal(player.messages[0], russell.messages[0]);
-        assert.isTrue(
-            player.messages[1].includes(Message.format(Message.LVP_ANNOUNCE_ADMIN_NOTICE,
-                                                       player.name, player.id, 'disabled',
-                                                       'jetpack')));
+            assert.isFalse(manager.isOptionEnabled(option));
+        });
     });
 });

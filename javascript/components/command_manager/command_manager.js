@@ -17,6 +17,9 @@ class CommandManager {
         'playercommandtext', CommandManager.prototype.onPlayerCommandText.bind(this));
   }
 
+  // Gets the number of commands that have been registered on the server.
+  get size() { return Object.keys(this.commands_).length; }
+
   // Registers |command| as a new command, which will invoke |listener| when used.
   //
   // Read the online documentation for more information on the |parameters| syntax:

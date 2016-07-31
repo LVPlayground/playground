@@ -49,69 +49,72 @@ class PlaygroundCommands {
 
         // -----------------------------------------------------------------------------------------
 
-        // TODO: Fix up the /lvp command with new stuffs.
-
+        // The `/lvp` command offers administrators and higher a number of functions to manage the
+        // server, the available commands and availability of a number of smaller features.
         server.commandManager.buildCommand('lvp')
-            .restrict(Player.LEVEL_ADMINISTRATOR)
-            .sub('set')
+            .sub('party')
+                .restrict(Player.LEVEL_MANAGEMENT)
                 .parameters([
-                    { name: 'option', type: CommandBuilder.WORD_PARAMETER, optional: true },
-                    { name: 'value', type: CommandBuilder.WORD_PARAMETER, optional: true } ])
-                .build(PlaygroundCommands.prototype.onPlaygroundCommand.bind(this))
+                    { name: 'enabled', type: CommandBuilder.WORD_PARAMETER, optional: true }
+                ])
+                .build(PlaygroundCommands.prototype.onPlaygroundOptionCommand.bind(this, 'party'))
             .build(PlaygroundCommands.prototype.onPlaygroundCommand.bind(this));
     }
 
     // Gets the access tracker for the commands managed by this class.
     get access() { return this.access_; }
 
-    // Command available to administrators for enabling or disabling an |option| as part of the
-    // playground features. Both |option| and |value| are optional parameters, and may be NULL.
-    onPlaygroundCommand(player, option, value) {
-        const validOptions = this.manager_.options;
+    // Enables or disables one of the available options. The actual options are dictated by both the
+    // command builder above and by the PlaygroundManager that tracks them.
+    onPlaygroundOptionCommand(option, player, enabled = null) {
+        const status = this.manager_.isOptionEnabled(option);
+        const statusText = status ? 'enabled' : 'disabled';
 
-        // Display the available options if the administrator doesn't provide one.
-        if ((!option && !value) || !validOptions.includes(option)) {
-            player.sendMessage(Message.LVP_PLAYGROUND_OPTIONS, validOptions.join('/'));
+        if (!enabled || !['on', 'off'].includes(enabled)) {
+            player.sendMessage(Message.LVP_PLAYGROUND_OPTION_STATUS, option, statusText, option);
             return;
         }
 
-        const currentValue = this.manager_.isOptionEnabled(option);
-        const currentValueText = currentValue ? 'enabled' : 'disabled';
+        const updatedStatus = (enabled === 'on');
+        const updatedStatusText = updatedStatus ? 'enabled' : 'disabled';
 
-        // Displays the current status of |option|, together with some information on how to toggle.
-        if (!value || !['on', 'off'].includes(value)) {
-            player.sendMessage(
-                Message.LVP_PLAYGROUND_OPTION_STATUS, option, currentValueText, option);
+        if (status === updatedStatus) {
+            player.sendMessage(Message.LVP_PLAYGROUND_OPTION_NO_CHANGE, option, statusText);
             return;
         }
 
-        const updatedValue = (value === 'on');
-        if (currentValue === updatedValue) {
-            player.sendMessage(
-                Message.LVP_PLAYGROUND_OPTION_NO_CHANGE, option, currentValueText);
-            return;
-        }
-
-        const updatedValueText = updatedValue ? 'enabled' : 'disabled';
-
-        // Enable the option with the Playground Manager, so that side-effects get applied too.
-        this.manager_.setOptionEnabled(option, updatedValue);
+        this.manager_.setOptionEnabled(option, updatedStatus);
 
         let announcement = null;
         switch (option) {
-            case 'jetpack':
-                announcement = Message.LVP_ANNOUNCE_JETPACK;
-                break;
             case 'party':
                 announcement = Message.LVP_ANNOUNCE_PARTY;
                 break;
         }
 
         if (announcement)
-            this.announce_.announceToPlayers(announcement, player.name, updatedValueText);
+            this.announce_.announceToPlayers(announcement, player.name, updatedStatusText);
 
         this.announce_.announceToAdministrators(
-            Message.LVP_ANNOUNCE_ADMIN_NOTICE, player.name, player.id, updatedValueText, option);
+            Message.LVP_ANNOUNCE_ADMIN_NOTICE, player.name, player.id, updatedStatusText, option);
+    }
+
+    // Displays some generic information for those typing `/lvp`. Administrators and higher will see
+    // a list of sub-commands that they're allowed to execute.
+    onPlaygroundCommand(player) {
+        let options = [];
+
+        if (player.isAdministrator())
+            options.push('access');
+
+        if (player.isManagement())
+            options.push('party');
+
+        player.sendMessage(Message.LVP_PLAYGROUND_HEADER);
+        if (!options.length)
+            return;
+
+        player.sendMessage(Message.COMMAND_USAGE, '/lvp [' + options.sort().join('/') + ']');
     }
 
     dispose() {

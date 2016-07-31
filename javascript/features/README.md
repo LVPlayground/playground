@@ -30,7 +30,6 @@ The following features have been implemented in JavaScript.
   - **[Gangs](gangs/)**: Provides the persistent gangs feature, as well as the `/gang` command.
   - **[Houses](houses/)**: Provide the ability for player-owned houses in the main world.
   - **[Location](location/)**: Provides functionality related to a player's location.
-  - **[Management](management/)**: Provides commands limited to the LVP Management.
   - **[Minigames](minigames/)**: Provides common infrastructure for minigame features.
   - **[Player favours](player_favours/)**: Various smaller features implemented specifically for
     the benefit of certain players.

@@ -31,6 +31,7 @@ class PlaygroundCommands {
         
         // -----------------------------------------------------------------------------------------
 
+        requireCommand('features/playground/commands/boost.js');
         requireCommand('features/playground/commands/jetpack.js');
 
         // -----------------------------------------------------------------------------------------

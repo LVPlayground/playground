@@ -11,6 +11,7 @@
     "COMMAND_ERROR_INSUFFICIENT_RIGHTS": "@error Sorry, this command is only available to %s.",
     "COMMAND_ERROR_UNKNOWN_PLAYER": "@error Sorry, no player could be found for \"%s\".",
     "COMMAND_ERROR": "@error %s",
+    "COMMAND_SUCCESS": "@success %s",
     "COMMAND_USAGE": "@usage %s",
 
     "DEBUG_FRAME_COUNTER": "{33AA33}The server averaged %d FPS in the last %d seconds.",
@@ -133,10 +134,6 @@
     "LVP_PLAYGROUND_OPTIONS": "@usage /lvp set [%s] [on/off]",
     "LVP_PLAYGROUND_OPTION_STATUS": "The {FF8282}%s{FFFFFF} option is {FF8282}%s{FFFFFF}. Type {FF8282}/lvp set %s [on/off]{FFFFFF} to change this.",
     "LVP_PLAYGROUND_OPTION_NO_CHANGE": "@error The {FF8282}%s{FFFFFF} feature has already been %s.",
-
-    "MANAGEMENT_ACCESS_HEADER": "{B1FC17}Players with Management-command access:",
-    "MANAGEMENT_ERROR": "@error %s",
-    "MANAGEMENT_SUCCESS": "@success %s",
 
     "POSITIONING_CURRENT_POSITION": "Your current position is X: %d, Y: %d Z: %d, Rotation: %d",
     "POSITIONING_OTHER_USAGE_POS": "{FF9900}Other usage{FFFFFF}: /pos [x] [y] [z]",

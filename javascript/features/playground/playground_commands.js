@@ -174,6 +174,16 @@ class PlaygroundCommands {
                 this.announce_.announceToAdministrators(
                     Message.LVP_ANNOUNCE_CMD_LEVEL, player.name, player.id, command.name, levelName)
 
+                // Make an announcement to players if the command was either granted to them, or
+                // taken away from them. We like to cause anarchy by upset mobs.
+                if (level == Player.LEVEL_PLAYER) {
+                    this.announce_.announceToPlayers(
+                        Message.LVP_ANNOUNCE_CMD_AVAILABLE, player.name, command.name);
+                } else if (currentLevel == Player.LEVEL_PLAYER) {
+                    this.announce_.announceToPlayers(
+                        Message.LVP_ANNOUNCE_CMD_REVOKED, player.name, command.name);
+                }
+
                 return await MessageDialog.display(player, {
                     title: 'The level has been updated!',
                     message: '/' + command.name + ' is now available to ' + levelName + '.'

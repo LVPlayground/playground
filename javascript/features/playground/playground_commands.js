@@ -171,6 +171,8 @@ class PlaygroundCommands {
                 }
 
                 this.access_.setCommandLevel(command.name, level);
+                this.announce_.announceToAdministrators(
+                    Message.LVP_ANNOUNCE_CMD_LEVEL, player.name, player.id, command.name, levelName)
 
                 return await MessageDialog.display(player, {
                     title: 'The level has been updated!',
@@ -217,6 +219,8 @@ class PlaygroundCommands {
         }
 
         this.access_.addException(command.name, subject);
+        this.announce_.announceToAdministrators(
+            Message.LVP_ANNOUNCE_CMD_EXCEPTION, player.name, player.id, subject.name, command.name);
 
         return await MessageDialog.display(player, {
             title: 'The exception has been granted!',
@@ -227,6 +231,9 @@ class PlaygroundCommands {
     // Revokes the exception for |subject| to use the |command|.
     async revokeCommandException(command, subject, player) {
         this.access_.removeException(command.name, subject);
+        this.announce_.announceToAdministrators(
+            Message.LVP_ANNOUNCE_CMD_REMOVED_EXCEPTION, player.name, player.id, subject.name,
+            command.name);
 
         return await MessageDialog.display(player, {
             title: 'The exception has been revoked!',

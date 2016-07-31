@@ -123,6 +123,9 @@
     
     "LVP_ANNOUNCE_ADMIN_NOTICE": "%s (Id: %d) has %s the %s option.",
     "LVP_ANNOUNCE_PARTY": "%s has %s the Pirate Ship Party mode!",
+    "LVP_ANNOUNCE_CMD_EXCEPTION": "%s (Id: %d) has allowed %s to use /%s.",
+    "LVP_ANNOUNCE_CMD_LEVEL": "%s (Id: %d) has changed the level of /%s to %s.",
+    "LVP_ANNOUNCE_CMD_REMOVED_EXCEPTION": "%s (Id: %d) has revoked %s ability to use /%s.",
     "LVP_JETPACK_ANNOUNCE": "%s (Id: %d) has %s a jetpack %s %s (Id: %d).",
     "LVP_JETPACK_NOT_AVAILABLE_VW": "@error Sorry, you can't use the /jetpack command in this world!",
     "LVP_JETPACK_GRANTED_OTHER": "@success %s (Id: %d) has been given a jetpack.",

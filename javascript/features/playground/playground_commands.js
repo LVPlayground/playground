@@ -226,7 +226,12 @@ class PlaygroundCommands {
 
     // Revokes the exception for |subject| to use the |command|.
     async revokeCommandException(command, subject, player) {
-        // TODO: Implement this function.
+        this.access_.removeException(command.name, subject);
+
+        return await MessageDialog.display(player, {
+            title: 'The exception has been revoked!',
+            message: '/' + command.name + ' is no longer available to ' + subject.name + '.'
+        });
     }
 
     // Enables or disables one of the available options. The actual options are dictated by both the

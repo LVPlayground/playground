@@ -12,9 +12,6 @@ class PlaygroundManager {
 
         // List of the options available as part of this feature. Must be alphabetically sorted.
         this.options_ = {
-            // Enables players to give themselves a jetpack using the `/jetpack` command.
-            jetpack: false,
-
             // Enables Party Mode on the Pirate Ship, which adds lights at various locations. Best
             // enjoyed during night-time for additional shineyness.
             party: false

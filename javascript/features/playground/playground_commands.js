@@ -2,17 +2,54 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const Command = require('features/playground/command.js');
 const CommandBuilder = require('components/command_manager/command_builder.js');
 const Dialog = require('components/dialogs/dialog.js');
+const PlaygroundAccessTracker = require('features/playground/playground_access_tracker.js');
 
-// Commands that enable administrators to trigger various identity features on the server.
+// A series of general commands that don't fit in any particular 
 class PlaygroundCommands {
     constructor(manager, announce) {
         this.manager_ = manager;
         this.announce_ = announce;
 
-        // The /lvp command is an informational dialog for players, and a toggle mechanism for
-        // administrators to enable or disable certain features.
+        this.access_ = new PlaygroundAccessTracker();
+        this.commands_ = new Map();
+
+        // Utility function to import, create and initialize the command in |filename|. The command
+        // will be stored in the |commands_| map, and be registered with the manager later.
+        const requireCommand = filename => {
+            const CommandImplementation = require(filename);
+            if (!CommandImplementation instanceof Command)
+                throw new Error(filename + ' does not contain a command.');
+
+            const commandInstance = new CommandImplementation(announce);
+
+            // Store the |commandInstance| in the |commands_| dictionary.
+            this.commands_.set(commandInstance.name, commandInstance);
+        };
+        
+        // -----------------------------------------------------------------------------------------
+
+        requireCommand('features/playground/commands/jetpack.js');
+
+        // -----------------------------------------------------------------------------------------
+
+        // Register each of the known commands with the access tracker and command manager. The
+        // command will be restricted based on its default access level and exceptions.
+        this.commands_.forEach((command, name) => {
+            this.access_.registerCommand(name, command.defaultPlayerLevel);
+
+            command.build(
+                server.commandManager.buildCommand(name)
+                    .restrict(PlaygroundAccessTracker.prototype.canAccessCommand.bind(this.access_,
+                                                                                      name)));
+        });
+
+        // -----------------------------------------------------------------------------------------
+
+        // TODO: Fix up the /lvp command with new stuffs.
+
         server.commandManager.buildCommand('lvp')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('set')
@@ -21,16 +58,10 @@ class PlaygroundCommands {
                     { name: 'value', type: CommandBuilder.WORD_PARAMETER, optional: true } ])
                 .build(PlaygroundCommands.prototype.onPlaygroundCommand.bind(this))
             .build(PlaygroundCommands.prototype.onPlaygroundCommand.bind(this));
-
-        // The /jetpack command enables players to get a jetpack when enabled by an administrator.
-        server.commandManager.buildCommand('jetpack')
-            .sub(CommandBuilder.PLAYER_PARAMETER)
-                .restrict(Player.LEVEL_ADMINISTRATOR)
-                .parameters([
-                    { name: 'remove', type: CommandBuilder.WORD_PARAMETER, optional: true }])
-                .build(PlaygroundCommands.prototype.onJetpackCommand.bind(this))
-            .build(PlaygroundCommands.prototype.onJetpackCommand.bind(this));
     }
+
+    // Gets the access tracker for the commands managed by this class.
+    get access() { return this.access_; }
 
     // Command available to administrators for enabling or disabling an |option| as part of the
     // playground features. Both |option| and |value| are optional parameters, and may be NULL.
@@ -82,59 +113,13 @@ class PlaygroundCommands {
             Message.LVP_ANNOUNCE_ADMIN_NOTICE, player.name, player.id, updatedValueText, option);
     }
 
-    // Command that gives the |player| a jetpack. Always available to administrators (also when
-    // specifying a different |targetPlayer|), can be enabled for all by using the `jetpack` option.
-    onJetpackCommand(player, targetPlayer, remove = null) {
-        const subject = targetPlayer || player;
-
-        // Do not allow the |player| to get a jetpack if the option has been disabled.
-        if (!this.manager_.isOptionEnabled('jetpack') && !player.isAdministrator()) {
-            player.sendMessage(Message.LVP_JETPACK_NOT_AVAILABLE);
-            return;
-        }
-
-        // Do not allow jetpacks to be spawned in virtual worlds.
-        if (!VirtualWorld.isMainWorld(subject.virtualWorld) && !player.isAdministrator()) {
-            player.sendMessage(Message.LVP_JETPACK_NOT_AVAILABLE_VW);
-            return;
-        }
-
-        // Is the administrator removing a jetpack from this player instead of granting one?
-        if (player.isAdministrator() && ['remove', 'take'].includes(remove)) {
-            subject.specialAction = Player.SPECIAL_ACTION_NONE;
-            subject.clearAnimations();
-
-            subject.sendMessage(Message.LVP_JETPACK_REMOVED, player.name, player.id);
-            if (player !== subject)
-                player.sendMessage(Message.LVP_JETPACK_REMOVED_OTHER, subject.name, subject.id);
-
-            this.announce_.announceToAdministrators(
-                Message.LVP_JETPACK_ANNOUNCE, player.name, player.id, 'removed', 'from',
-                subject.name, subject.id);
-
-            return;
-        }
-
-        // Grant a jetpack to the |subject|.
-        subject.specialAction = Player.SPECIAL_ACTION_USEJETPACK;
-
-        if (subject !== player) {
-            player.sendMessage(Message.LVP_JETPACK_GRANTED_OTHER, subject.name, subject.id);
-            subject.sendMessage(Message.LVP_JETPACK_GRANTED, player.name, player.id);
-
-            this.announce_.announceToAdministrators(
-                Message.LVP_JETPACK_ANNOUNCE, player.name, player.id, 'given', 'to', subject.name,
-                subject.id);
-
-            return;
-        }
-
-        player.sendMessage(Message.LVP_JETPACK_GRANTED_SELF);
-    }
-
     dispose() {
-        server.commandManager.removeCommand('jetpack');
         server.commandManager.removeCommand('lvp');
+
+        this.commands_.forEach(command => command.dispose());
+        this.commands_.clear();
+
+        this.access_.dispose();
     }
 }
 

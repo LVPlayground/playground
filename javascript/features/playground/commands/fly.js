@@ -94,7 +94,7 @@ class FlyCommand extends Command {
             else if (keys.aim)
                 velocityZ = -0.3;
             else
-                velocityZ = 0.01 / velocityFactor;
+                velocityZ = 0.0152 / velocityFactor;
 
             subject.velocity = new Vector(velocityX * velocityFactor,
                                           velocityY * velocityFactor,

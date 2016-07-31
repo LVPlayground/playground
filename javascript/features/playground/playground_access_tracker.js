@@ -62,8 +62,9 @@ class PlaygroundAccessTracker {
         this.commandLevels_.set(command, level);
     }
 
-    // Adds an exception that allows |player| to use the |command|. |player| must be registered.
-    addException(command, player) {
+    // Adds an exception that allows |player| to use the |command|. |player| must be registered. If
+    // |sourcePlayer| is set, an announcement will be send to the |player|.
+    addException(command, player, sourcePlayer = null) {
         if (!this.commandLevels_.has(command))
             throw new Error('Invalid command given: ' + command);
 
@@ -79,6 +80,11 @@ class PlaygroundAccessTracker {
         }
 
         exceptions.add(command);
+
+        if (sourcePlayer) {
+            player.sendMessage(Message.LVP_CMD_EXCEPTION_GRANTED, sourcePlayer.name,
+                               sourcePlayer.id, command);
+        }
     }
 
     // Returns the number of exceptions that have been granted for |command|. This method has a
@@ -117,8 +123,9 @@ class PlaygroundAccessTracker {
         return exceptions.has(command);
     }
 
-    // Removes the exception that allows |player| to use |command|.
-    removeException(command, player) {
+    // Removes the exception that allows |player| to use |command|. If |sourcePlayer| is set, an
+    // announcement will be send to the |player|.
+    removeException(command, player, sourcePlayer = null) {
         if (!this.commandLevels_.has(command))
             throw new Error('Invalid command given: ' + command);
 
@@ -130,6 +137,11 @@ class PlaygroundAccessTracker {
             return;
 
         exceptions.delete(command);
+
+        if (sourcePlayer) {
+            player.sendMessage(Message.LVP_CMD_EXCEPTION_REVOKED, sourcePlayer.name,
+                               sourcePlayer.id, command);
+        }
     }
 
     // Called when |player| has logged in to their account. Exceptions granted to them in a session
@@ -143,6 +155,8 @@ class PlaygroundAccessTracker {
 
         this.cachedExceptions_.delete(player.userId);
         this.cachedExceptionsToken_.delete(player.userId);
+
+        player.sendMessage(Message.LVP_CMD_EXCEPTION_RESTORED, cachedExceptions.size);
     }
 
     // Called when |player| disconnects from the server.

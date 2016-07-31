@@ -7,6 +7,7 @@ const CommandBuilder = require('components/command_manager/command_builder.js');
 const Menu = require('components/menu/menu.js');
 const MessageDialog = require('components/dialogs/message.js');
 const PlaygroundAccessTracker = require('features/playground/playground_access_tracker.js');
+const Question = require('components/dialogs/question.js');
 
 // Utility function to capitalize the first letter of a |string|.
 function capitalizeFirstLetter(string) {
@@ -183,8 +184,44 @@ class PlaygroundCommands {
 
     // Grants an exception for a not yet determined player to use the |command|.
     async grantCommandException(command, player) {
-        // TODO: Implement this function.
-        // NOTE: The |player| must be registered.
+        const answer = await Question.ask(player, {
+            question: 'Select a player',
+            message: 'Which player should be allowed to use /' + command.name + '?',
+            leftButton: 'Grant'
+        });
+
+        if (!answer)
+            return;  // the |player| cancelled the dialog.
+
+        const subject = server.playerManager.find({ nameOrId: answer, returnPlayer: true });
+        if (!subject) {
+            const retry = await MessageDialog.display(player, {
+                title: 'Unable to identify the target player',
+                message: 'Either no or too many players were found for "' + answer + '".',
+                leftButton: 'Cancel',
+                rightButton: 'Retry'
+            });
+
+            if (!retry)
+                return;
+
+            return await grantCommandException(command, player);
+        }
+
+        if (!subject.isRegistered()) {
+            return await MessageDialog.display(player, {
+                title: 'Unable to grant an exception',
+                message: 'Exceptions can only be granted to registered players. Consider asking ' +
+                         subject.name + ' to register?'
+            });
+        }
+
+        this.access_.addException(command.name, subject);
+
+        return await MessageDialog.display(player, {
+            title: 'The exception has been granted!',
+            message: '/' + command.name + ' is now available to ' + subject.name + '.'
+        });
     }
 
     // Revokes the exception for |subject| to use the |command|.

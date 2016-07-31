@@ -14,23 +14,24 @@ const BUTTON_CAPTION = 'Alright!';
 // text informing the user of something critical (it will obstruct their experience!), after which
 // they can dismiss it either by clicking on ESC, or by clicking on the included button.
 class Message {
-  static display(player, { message, title, button = 'Close' } = {}) {
-    const instance = new Message(message, title, button);
+  static display(player, { message, title, leftButton = 'Close', rightButton = '' } = {}) {
+    const instance = new Message(message, title, leftButton, rightButton);
     return instance.displayForPlayer(player);
   }
 
-  constructor(message, title = CAPTION, button = BUTTON_CAPTION) {
+  constructor(message, title, leftButton, rightButton) {
     this.message_ = message;
-    this.title_ = title;
-    this.button_ = button;
+    this.title_ = title || CAPTION;
+    this.leftButton_ = leftButton || BUTTON_CAPTION;
+    this.rightButton_ = rightButton || '';
   }
 
   // Displays the message to |player|. A promise will be returned that will resolve when the player
   // has closed the message's dialog. The promise will reject only when the player is not connected,
   // or disconnects while the message is shown on their screen.
   displayForPlayer(player) {
-    return Dialog.displayMessage(player, CAPTION, this.message_, BUTTON_CAPTION, '').then(result => {
-      return null;  // no need to include the info for the call-site
+    return Dialog.displayMessage(player, this.title_, this.message_, this.leftButton_, this.rightButton_).then(result => {
+      return result.response;
     });
   }
 };

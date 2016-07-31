@@ -90,7 +90,7 @@ class FlyCommand extends Command {
 
             // Go up, go down, or remain stationary.
             if (keys.fire)
-                velocityZ = 0.3;
+                velocityZ = 0.5;
             else if (keys.aim)
                 velocityZ = -0.3;
             else

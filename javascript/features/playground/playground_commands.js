@@ -229,6 +229,13 @@ class PlaygroundCommands {
             });
         }
 
+        if (subject === player) {
+            return await MessageDialog.display(player, {
+                title: 'Unable to grant an exception',
+                message: 'There is no point in granting exceptions to yourself, sorry.'
+            });
+        }
+
         this.access_.addException(command.name, subject, player /* sourcePlayer */);
         this.announce_.announceToAdministrators(
             Message.LVP_ANNOUNCE_CMD_EXCEPTION, player.name, player.id, subject.name, command.name);

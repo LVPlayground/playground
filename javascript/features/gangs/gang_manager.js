@@ -222,7 +222,7 @@ class GangManager {
     // |useGangColor| parameter is set to true, or their personal color otherwise.
     updateColorPreference(gang, player, useGangColor) {
         if (gang.usesGangColor(player) === useGangColor)
-            return;  // no need to update the value
+            return Promise.resolve();  // no need to update the value
 
         return this.database_.updateColorPreference(gang, player, useGangColor).then(() => {
             gang.setUsesGangColor(player, useGangColor);

@@ -5,8 +5,7 @@
 // The mocked log writer follows the same interface as the LogWriter class, with the exception that
 // the writes won't actually reach the backend.
 class MockLogWriter {
-    constructor() {}
-
+    writeEvent(type, event) {}
     dispose() {}
 }
 

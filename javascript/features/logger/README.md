@@ -13,3 +13,5 @@ volume of data is not appropriate for a conventional database. This feature will
 [logstash](https://www.elastic.co/products/logstash) over a [unix socket]
 (https://www.elastic.co/guide/en/logstash/5.0/plugins-inputs-unix.html), and will store the data in
 [elasticsearch](https://www.elastic.co/guide/en/logstash/5.0/plugins-outputs-elasticsearch.html).
+
+All events associated with a playing session will be associated with a unique-ish session Id.

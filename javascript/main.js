@@ -33,6 +33,7 @@ testRunner.run('.*\.test\.js').then(notifyReady).then(() => {
         communication:  require('features/communication/communication.js'),
         economy:        require('features/economy/economy.js'),
         location:       require('features/location/location.js'),
+        logger:         require('features/logger/logger.js'),
         minigames:      require('features/minigames/minigames.js'),
 
         // Gang-related features

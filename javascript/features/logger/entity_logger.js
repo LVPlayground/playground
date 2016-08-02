@@ -34,7 +34,7 @@ class EntityLogger {
         this.writer_.writeAttributedEvent(player, 'playerconnect', {
             nickname: player.name,
             gpci: player.gpci,
-            ip: player.ip;
+            ip: player.ip
         });
     }
 
@@ -58,12 +58,8 @@ class EntityLogger {
         if (!victim || !this.sessions_.has(victim))
             return;  // invalid event
 
-        const position = player.position;
-
         this.writer_.writeAttributedEvent(player, 'playergivedamage', {
-            position_x: position.x,
-            position_y: position.y,
-            position_z: position.z,
+            position: this.toRoundedArray(player.position),
 
             victim_session: this.sessions_.get(victim),
             victim_nickname: victim.name,
@@ -82,12 +78,8 @@ class EntityLogger {
         if (!killee || !this.sessions_.has(killee))
             return;  // invalid event
 
-        const position = killee.position;
-
         let record = {
-            position_x: position.x,
-            position_y: position.y,
-            position_z: position.z,
+            position: this.toRoundedArray(killee.position),
             reason: event.reason
         };
 
@@ -111,12 +103,8 @@ class EntityLogger {
         if (!player || !this.sessions_.has(player))
             return;  // invalid event
 
-        const position = player.position;
-
         let record = {
-            position_x: position.x,
-            position_y: position.y,
-            position_z: position.z,
+            position: this.toRoundedArray(player.position),
 
             amount: event.amount,
             reason: event.weaponid,
@@ -158,13 +146,8 @@ class EntityLogger {
             hit_distance: position.distanceTo(target),
             hit_type: event.hittype,
 
-            position_x: position.x,
-            position_y: position.y,
-            position_z: position.z,
-
-            target_x: target.x,
-            target_y: target.y,
-            target_z: target.z
+            position: this.toRoundedArray(position),
+            target: this.toRoundedArray(target)
         };
 
         if (event.hittype === 1 /* BULLET_HIT_TYPE_PLAYER */) {
@@ -185,6 +168,15 @@ class EntityLogger {
         this.writer_.writeAttributedEvent(player, 'playerlogin', {
             level: player.level
         });
+    }
+
+    // Converts the |vector| to an array having rounded values for the X, Y and Z coordinates.
+    toRoundedArray(vector) {
+        return [
+            Math.round(vector.x),
+            Math.round(vector.y),
+            Math.round(vector.z)
+        ];
     }
 
     dispose() {

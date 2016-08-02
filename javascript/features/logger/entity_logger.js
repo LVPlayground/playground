@@ -163,7 +163,7 @@ class EntityLogger {
         if (!player || !this.sessions_.has(player))
             return;  // invalid event
 
-        this.writer_.writeEvent('playergivedamage', {
+        this.writer_.writeEvent('text', {
             session: this.sessions_.get(player),
             nickname: player.name,
             user_id: player.userId,

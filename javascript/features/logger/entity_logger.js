@@ -68,7 +68,7 @@ class EntityLogger {
             victim_user_id: victim.userId,
 
             amount: event.amount,
-            reason: event.weaponid,
+            weaponid: event.weaponid,
             bodypart: event.bodypart
         });
     }
@@ -108,7 +108,7 @@ class EntityLogger {
             position: this.toRoundedArray(position),
 
             amount: event.amount,
-            reason: event.weaponid,
+            weaponid: event.weaponid,
             bodypart: event.bodypart
         };
 
@@ -147,7 +147,8 @@ class EntityLogger {
             position: this.toRoundedArray(position),
             target: this.toRoundedArray(target),
 
-            hit_type: event.hittype
+            hit_type: event.hittype,
+            weaponid: event.weaponid
         };
 
         if (event.hittype === 1 /* BULLET_HIT_TYPE_PLAYER */) {

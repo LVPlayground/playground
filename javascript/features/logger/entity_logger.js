@@ -58,13 +58,14 @@ class EntityLogger {
         if (!victim || !this.sessions_.has(victim))
             return;  // invalid event
 
+        const position = player.position;
+
         this.writer_.writeAttributedEvent(player, 'playergivedamage', {
-            position: this.toRoundedArray(player.position),
+            position: this.toRoundedArray(position),
+            distance: victim.position.distanceTo(position),
 
             victim_session: this.sessions_.get(victim),
-            victim_nickname: victim.name,
             victim_user_id: victim.userId,
-            victim_ip: victim.ip,
 
             amount: event.amount,
             reason: event.weaponid,
@@ -90,9 +91,7 @@ class EntityLogger {
         }
 
         record.killer_session = this.sessions_.get(killer);
-        record.killer_nickname = killer.name;
         record.killer_user_id = killer.userId;
-        record.killer_ip = killer.ip;
 
         this.writer_.writeAttributedEvent(player, 'playerkill', record);
     }
@@ -103,8 +102,10 @@ class EntityLogger {
         if (!player || !this.sessions_.has(player))
             return;  // invalid event
 
+        const position = player.position;
+
         let record = {
-            position: this.toRoundedArray(player.position),
+            position: this.toRoundedArray(position),
 
             amount: event.amount,
             reason: event.weaponid,
@@ -113,10 +114,10 @@ class EntityLogger {
 
         const victim = server.playerManager.getById(event.issuerid);
         if (victim && this.sessions_.has(victim)) {
+            record.distance = victim.position.distanceTo(position);
+
             record.victim_session = this.sessions_.get(victim);
-            record.victim_nickname = victim.name;
             record.victim_user_id = victim.userId;
-            record.victim_ip = victim.ip;
         }
 
         this.writer_.writeAttributedEvent(player, 'playertakedamage', record);
@@ -143,20 +144,19 @@ class EntityLogger {
         const target = new Vector(event.fX, event.fY, event.fZ);
 
         let record = {
-            hit_distance: position.distanceTo(target),
-            hit_type: event.hittype,
-
             position: this.toRoundedArray(position),
-            target: this.toRoundedArray(target)
+            target: this.toRoundedArray(target),
+
+            hit_type: event.hittype
         };
 
         if (event.hittype === 1 /* BULLET_HIT_TYPE_PLAYER */) {
             const victim = server.playerManager.getById(event.hitid);
             if (victim && this.sessions_.has(victim)) {
+                record.distance = victim.position.distanceTo(position);
+
                 record.victim_session = this.sessions_.get(victim);
-                record.victim_nickname = victim.name;
                 record.victim_user_id = victim.userId;
-                record.victim_ip = victim.ip;
             }
         }
 

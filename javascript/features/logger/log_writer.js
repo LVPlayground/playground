@@ -37,9 +37,7 @@ class LogWriter {
         }
 
         event.session = this.sessions_.get(player);
-        event.nickname = player.name;
         event.user_id = player.userId;
-        event.ip = player.ip;
 
         this.writeEvent(type, event);
     }

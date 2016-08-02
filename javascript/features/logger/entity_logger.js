@@ -31,7 +31,11 @@ class EntityLogger {
     // that can be used to track events for a given session.
     onPlayerConnect(player) {
         this.sessions_.set(player, SessionId.generateForPlayer(player));
-        this.writer_.writeAttributedEvent(player, 'playerconnect');
+        this.writer_.writeAttributedEvent(player, 'playerconnect', {
+            nickname: player.name,
+            gpci: player.gpci,
+            ip: player.ip;
+        });
     }
 
     // Records that |player| has disconnected from the server. This removes the session Id assigned

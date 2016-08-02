@@ -13,8 +13,8 @@ class Logger extends Feature {
     constructor(_, injectedWriter) {
         super();
 
-        this.writer_ = injectedWriter || new LogWriter();
         this.sessions_ = new WeakMap();
+        this.writer_ = injectedWriter || new LogWriter(this.sessions_);
 
         this.entityLogger_ = new EntityLogger(this.writer_, this.sessions_);
     }

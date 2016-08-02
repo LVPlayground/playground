@@ -31,24 +31,14 @@ class EntityLogger {
     // that can be used to track events for a given session.
     onPlayerConnect(player) {
         this.sessions_.set(player, SessionId.generateForPlayer(player));
-
-        this.writer_.writeEvent('playerconnect', {
-            session: this.sessions_.get(player),
-            nickname: player.name,
-            user_id: 0,
-            ip: player.ip
-        });
+        this.writer_.writeAttributedEvent(player, 'playerconnect');
     }
 
     // Records that |player| has disconnected from the server. This removes the session Id assigned
     // to the player from the set of active sessions.
     onPlayerDisconnect(player, reason) {
-        this.writer_.writeEvent('playerdisconnect', {
-            session: this.sessions_.get(player),
-            nickname: player.name,
-            user_id: player.userId,
-            ip: player.ip
-        });
+        this.writer_.writeAttributedEvent(player, 'playerdisconnect');
+        // TODO(Russell): Log |reason|.
 
         this.sessions_.delete(player);
     }
@@ -65,13 +55,7 @@ class EntityLogger {
 
         const position = player.position;
 
-        this.writer_.writeEvent('playergivedamage', {
-            session: this.sessions_.get(player),
-            nickname: player.name,
-            user_id: player.userId,
-            ip: player.ip,
-
-            // Information specific to this event.
+        this.writer_.writeAttributedEvent(player, 'playergivedamage', {
             position_x: position.x,
             position_y: position.y,
             position_z: position.z,
@@ -96,12 +80,6 @@ class EntityLogger {
         const position = killee.position;
 
         let record = {
-            session: this.sessions_.get(killee),
-            nickname: killee.name,
-            user_id: killee.userId,
-            ip: killee.ip,
-
-            // Information specific to this event.
             position_x: position.x,
             position_y: position.y,
             position_z: position.z,
@@ -110,7 +88,7 @@ class EntityLogger {
 
         const killer = server.playerManager.getById(event.killerid);
         if (!killer || !this.sessions_.has(killer)) {
-            this.writer_.writeEvent('playerdeath', record);
+            this.writer_.writeAttributedEvent(player, 'playerdeath', record);
             return;
         }
 
@@ -119,7 +97,7 @@ class EntityLogger {
         record.killer_user_id = killer.userId;
         record.killer_ip = killer.ip;
 
-        this.writer_.writeEvent('playerkill', record);
+        this.writer_.writeAttributedEvent(player, 'playerkill', record);
     }
 
     // Records that a player has taken damage from another player.
@@ -131,12 +109,6 @@ class EntityLogger {
         const position = player.position;
 
         let record = {
-            session: this.sessions_.get(player),
-            nickname: player.name,
-            user_id: player.userId,
-            ip: player.ip,
-
-            // Information specific to this event.
             position_x: position.x,
             position_y: position.y,
             position_z: position.z,
@@ -154,7 +126,7 @@ class EntityLogger {
             record.victim_ip = victim.ip;
         }
 
-        this.writer_.writeEvent('playertakedamage', record);
+        this.writer_.writeAttributedEvent(player, 'playertakedamage', record);
     }
 
     // Records that a player has said something in main chat.
@@ -163,13 +135,7 @@ class EntityLogger {
         if (!player || !this.sessions_.has(player))
             return;  // invalid event
 
-        this.writer_.writeEvent('text', {
-            session: this.sessions_.get(player),
-            nickname: player.name,
-            user_id: player.userId,
-            ip: player.ip,
-
-            // Information specific to this event.
+        this.writer_.writeAttributedEvent(player, 'text', {
             text: event.text
         });
     }
@@ -184,12 +150,6 @@ class EntityLogger {
         const target = new Vector(event.fX, event.fY, event.fZ);
 
         let record = {
-            session: this.sessions_.get(player),
-            nickname: player.name,
-            user_id: player.userId,
-            ip: player.ip,
-
-            // Information specific to this event.
             hit_distance: position.distanceTo(target),
             hit_type: event.hittype,
 
@@ -212,18 +172,12 @@ class EntityLogger {
             }
         }
 
-        this.writer_.writeEvent('playerweaponshot', record);
+        this.writer_.writeAttributedEvent(player, 'playerweaponshot', record);
     }
 
     // Records that |player| has logged in to their account.
     onPlayerLogin(player) {
-        this.writer_.writeEvent('playerlogin', {
-            session: this.sessions_.get(player),
-            nickname: player.name,
-            user_id: player.userId,
-            ip: player.ip,
-
-            // Specific to this event.
+        this.writer_.writeAttributedEvent(player, 'playerlogin', {
             level: player.level
         });
     }

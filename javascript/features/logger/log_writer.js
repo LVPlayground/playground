@@ -12,7 +12,8 @@ const LOGSTASH_SOCKET_REFRESH_INTERVAL_MS = 60 * 1000;
 // The log writer is responsible for actually writing entries to the backend. It has a mocked
 // implementation used for testing in the test/ directory that should be kept in sync.
 class LogWriter {
-    constructor() {
+    constructor(sessions) {
+        this.sessions_ = sessions;
         this.disposed_ = false;
 
         this.refreshSocketTaskRunner();
@@ -26,6 +27,21 @@ class LogWriter {
         logstash('' /* empty message */, LOGSTASH_UNIX_SOCKET);
         wait(LOGSTASH_SOCKET_REFRESH_INTERVAL_MS).then(
             LogWriter.prototype.refreshSocketTaskRunner.bind(this));
+    }
+
+    // Writes the |event| to the system log, attributed to the |player|.
+    writeAttributedEvent(player, type, event = {}) {
+        if (!this.sessions_.has(player)) {
+            console.log('Warning: no known session for player #' + player.id + ', ' + player.name);
+            return;
+        }
+
+        event.session = this.sessions_.get(player);
+        event.nickname = player.name;
+        event.user_id = player.userId;
+        event.ip = player.ip;
+
+        this.writeEvent(type, event);
     }
 
     // Writes the |event| to the system log. The timestamp will be appended automatically. Elastic
@@ -57,6 +73,7 @@ class LogWriter {
 
     dispose() {
         this.disposed_ = true;
+        this.sessions_ = null;
     }
 }
 

@@ -101,11 +101,14 @@ CDrink__RandAlcoholVolume(min, max)
     return out;
 }
 
+new priceStringBuffer[32];
+
 // CDrink__UnitsToPriceString
 // Converts the number of units to a string indicating the price.
 CDrink__UnitsToPriceString(units)
 {
-    return formatPrice(GetEconomyValue(AlcoholicDrink, units));
+    format(priceStringBuffer, sizeof(priceStringBuffer), "%s", formatPrice(GetEconomyValue(AlcoholicDrink, units)));
+    return priceStringBuffer;
 }
 
 // CDrink__BuildMenus

@@ -41,8 +41,9 @@ class EntityLogger {
     // Records that |player| has disconnected from the server. This removes the session Id assigned
     // to the player from the set of active sessions.
     onPlayerDisconnect(player, reason) {
-        this.writer_.writeAttributedEvent(player, 'playerdisconnect');
-        // TODO(Russell): Log |reason|.
+        this.writer_.writeAttributedEvent(player, 'playerdisconnect', {
+            reason: reason
+        });
 
         this.sessions_.delete(player);
     }

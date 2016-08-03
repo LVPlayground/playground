@@ -34,7 +34,8 @@ class EntityLogger {
         this.writer_.writeAttributedEvent(player, 'playerconnect', {
             nickname: player.name,
             gpci: player.gpci,
-            ip: player.ip
+            ip: player.ip,
+            players: server.playerManager.count
         });
     }
 
@@ -42,7 +43,8 @@ class EntityLogger {
     // to the player from the set of active sessions.
     onPlayerDisconnect(player, reason) {
         this.writer_.writeAttributedEvent(player, 'playerdisconnect', {
-            reason: reason
+            reason: reason,
+            players: server.playerManager.count
         });
 
         this.sessions_.delete(player);

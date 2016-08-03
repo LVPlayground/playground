@@ -20,12 +20,17 @@ class EntityLogger {
         this.callbacks_.addEventListener(
             'playertakedamage', EntityLogger.prototype.onPlayerTakeDamage.bind(this));
         this.callbacks_.addEventListener(
+            'playerweaponshot', EntityLogger.prototype.onPlayerWeaponShot.bind(this));
+
+        this.callbacks_.addEventListener(
             'playertext', EntityLogger.prototype.onPlayerText.bind(this));
         this.callbacks_.addEventListener(
-            'playerweaponshot', EntityLogger.prototype.onPlayerWeaponShot.bind(this));
+            'playercommandtext', EntityLogger.prototype.onPlayerCommandText.bind(this));
 
         server.playerManager.addObserver(this);
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Records that |player| has connected to the server. This generates a session Id for the player
     // that can be used to track events for a given session.
@@ -50,6 +55,15 @@ class EntityLogger {
         this.sessions_.delete(player);
     }
 
+    // Records that |player| has logged in to their account.
+    onPlayerLogin(player) {
+        this.writer_.writeAttributedEvent(player, 'playerlogin', {
+            level: player.level
+        });
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Records that a player has given damage to another player.
     onPlayerGiveDamage(event) {
         const player = server.playerManager.getById(event.playerid);
@@ -63,7 +77,7 @@ class EntityLogger {
         const position = player.position;
 
         this.writer_.writeAttributedEvent(player, 'playergivedamage', {
-            position: this.toRoundedArray(position),
+            position: this.vectorToArray(position),
             distance: victim.position.distanceTo(position),
 
             victim_session: this.sessions_.get(victim),
@@ -82,7 +96,7 @@ class EntityLogger {
             return;  // invalid event
 
         let record = {
-            position: this.toRoundedArray(killee.position),
+            position: this.vectorToArray(killee.position),
             reason: event.reason
         };
 
@@ -107,33 +121,22 @@ class EntityLogger {
         const position = player.position;
 
         let record = {
-            position: this.toRoundedArray(position),
+            position: this.vectorToArray(position),
 
             amount: event.amount,
             weaponid: event.weaponid,
             bodypart: event.bodypart
         };
 
-        const victim = server.playerManager.getById(event.issuerid);
-        if (victim && this.sessions_.has(victim)) {
-            record.distance = victim.position.distanceTo(position);
+        const issuer = server.playerManager.getById(event.issuerid);
+        if (issuer && this.sessions_.has(issuer)) {
+            record.distance = issuer.position.distanceTo(position);
 
-            record.victim_session = this.sessions_.get(victim);
-            record.victim_user_id = victim.userId;
+            record.issuer_session = this.sessions_.get(issuer);
+            record.issuer_user_id = issuer.userId;
         }
 
         this.writer_.writeAttributedEvent(player, 'playertakedamage', record);
-    }
-
-    // Records that a player has said something in main chat.
-    onPlayerText(event) {
-        const player = server.playerManager.getById(event.playerid);
-        if (!player || !this.sessions_.has(player))
-            return;  // invalid event
-
-        this.writer_.writeAttributedEvent(player, 'text', {
-            text: event.text
-        });
     }
 
     // Records that a player has shot a weapon at another entity.
@@ -146,8 +149,8 @@ class EntityLogger {
         const target = new Vector(event.fX, event.fY, event.fZ);
 
         let record = {
-            position: this.toRoundedArray(position),
-            target: this.toRoundedArray(target),
+            position: this.vectorToArray(position),
+            target: this.vectorToArray(target),
 
             hit_type: event.hittype,
             weaponid: event.weaponid
@@ -166,20 +169,39 @@ class EntityLogger {
         this.writer_.writeAttributedEvent(player, 'playerweaponshot', record);
     }
 
-    // Records that |player| has logged in to their account.
-    onPlayerLogin(player) {
-        this.writer_.writeAttributedEvent(player, 'playerlogin', {
-            level: player.level
+    // ---------------------------------------------------------------------------------------------
+
+    // Records that a player has said something in main chat.
+    onPlayerText(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player || !this.sessions_.has(player))
+            return;  // invalid event
+
+        this.writer_.writeAttributedEvent(player, 'text', {
+            text: event.text
         });
     }
 
-    // Converts the |vector| to an array having rounded values for the X, Y and Z coordinates.
-    toRoundedArray(vector) {
-        return [
-            Math.round(vector.x),
-            Math.round(vector.y),
-            Math.round(vector.z)
-        ];
+    // Records that a player has executed a command.
+    onPlayerCommandText(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player || !this.sessions_.has(player))
+            return;  // invalid event
+
+        const cmdtext = event.cmdtext;
+        if (!cmdtext || cmdtext.includes('/modlogin'))
+            return;  // blacklisted command- don't log passwords
+
+        this.writer_.writeAttributedEvent(player, 'cmdtext', {
+            cmdtext: cmdtext
+        });
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Converts the |vector| to an array having values for the X, Y and Z coordinates.
+    vectorToArray(vector) {
+        return [ vector.x, vector.y, vector.z ];
     }
 
     dispose() {

@@ -7,6 +7,9 @@ const RaceCommands = require('features/races/race_commands.js');
 const RaceImporter = require('features/races/race_importer.js');
 const RaceManager = require('features/races/race_manager.js');
 
+// In which directory are the race data files stored?
+const RACE_DATA_DIRECTORY = 'data/races';
+
 // This class represents the Feature that contains all racing functionality of Las Venturas
 // Playground. It also provides the interface for features depending on races.
 class Races extends Feature {
@@ -19,22 +22,9 @@ class Races extends Feature {
         this.manager_ = new RaceManager(server.database, minigames);
         this.commands_ = new RaceCommands(this.manager_);
 
-        // TODO(Russell): Import races using a glob() rather than manually.
-        [
-            'data/races/coastal_conduit.json',
-            'data/races/dangerous_mountain_tumbles.json',
-            'data/races/desert_race.json',
-            'data/races/dirty_race.json',
-            'data/races/engine_in_jeopardy.json',
-            'data/races/los_santos_blown_bikes.json',
-            'data/races/mountain_valleyside.json',
-            'data/races/nevada_aeronautics.json',
-            'data/races/quad_race.json',
-            'data/races/red_county_grove.json',
-            'data/races/san_fierro_badlands.json',
-            'data/races/stunters_xpress.json',
-
-        ].forEach(file => this.manager_.registerRace(RaceImporter.fromFile(file)));
+        // Load all the races from the /data/races/ directory. No need to specify them individually.
+        glob(RACE_DATA_DIRECTORY, '.*\.json').forEach(file =>
+            this.manager_.registerRace(RaceImporter.fromFile(RACE_DATA_DIRECTORY + '/' + file)));
 
         // Load the best times for all races from the database.
         this.manager_.loadRecordTimes();

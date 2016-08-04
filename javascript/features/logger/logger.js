@@ -23,7 +23,22 @@ class Logger extends Feature {
     // Public API of the logger.
     // ---------------------------------------------------------------------------------------------
 
-    // TODO(Russell): Define the public API for the logger.
+    // Records that |player| has passed a checkpoint of |raceId| in |time| milliseconds.
+    recordRaceCheckpointResult(player, raceId, checkpointId, time) {
+        this.writer_.writeAttributedEvent(player, 'racecheckpoint', {
+            race_id: raceId,
+            checkpoint_id: checkpointId,
+            time: time
+        });
+    }
+
+    // Records that the |player| has finished |raceId| in |time| milliseconds.
+    recordRaceResult(player, raceId, time) {
+        this.writer_.writeAttributedEvent(player, 'raceresult', {
+            race_id: raceId,
+            time: time
+        });
+    }
 
     // ---------------------------------------------------------------------------------------------
 

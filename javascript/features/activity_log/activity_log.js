@@ -96,7 +96,7 @@ class ActivityLog extends Feature {
 
     const numericIpAddress = this.ip2long(player.ipAddress);
     const hashedGpci = MurmurHash3.generateHash(player.gpci);
-    const bothHashAndNormal = hashedGpci + "|" player.gpci;
+    const bothHashAndNormal = hashedGpci + "|" + player.gpci;
 
     this.announce_.announceToIRC(JoinIpGpciTag, player.id, player.ipAddress, player.name, bothHashAndNormal);
 

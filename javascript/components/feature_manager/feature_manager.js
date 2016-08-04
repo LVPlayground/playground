@@ -119,14 +119,18 @@ class FeatureManager {
                             'unable to identify the hosting feature.');
         }
 
-        const dependency = this.loadFeature(dependencyName);
         if (this.dependencyGraph_.isCircularDependency(featureName, dependencyName)) {
             throw new Error('Cannot declare a dependency on "' + dependencyName + '": ' +
                             'circular dependencies are forbidden.');
         }
 
+        // Actually load the feature now that we know it's not a circular dependency.
+        const dependency = this.loadFeature(dependencyName);
+
         this.dependencyGraph_.createDependencyEdge(featureName, dependencyName, isFunctional);
-        return dependency;
+
+        return isFunctional ? () => this.loadedFeatures_.get(dependencyName)
+                            : dependency;
     }
 
     // ---------------------------------------------------------------------------------------------

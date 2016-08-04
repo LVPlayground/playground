@@ -93,6 +93,39 @@ describe('FeatureManager', it => {
             server.featureManager.loadFeatures(['simple', 'second']));
     });
 
+    it('should be able to hand out functional dependencies', assert => {
+        let executed = false;
+
+        class MySimpleFeature extends Feature {
+            constructor() { super(); }
+        }
+
+        class MySecondFeature extends Feature {
+            constructor() {
+                super();
+
+                const simple = this.defineDependency('simple', true /* isFunctional */);
+                assert.equal(typeof simple, 'function');
+
+                const instance = simple();
+                assert.equal(typeof instance, 'object');
+
+                assert.isTrue(instance instanceof MySimpleFeature);
+
+                executed = true;
+            }
+        }
+
+        server.featureManager.registerFeaturesForTests({
+            simple: MySimpleFeature,
+            second: MySecondFeature
+        });
+
+        server.featureManager.loadFeatures(['simple', 'second']);
+
+        assert.isTrue(executed);
+    });
+
     it('should be able to assess when features can be live reloaded', assert => {
         class MySimpleFeature extends Feature {
             constructor() { super(); }

@@ -9,7 +9,7 @@ const MockLogWriter = require = require('features/logger/test/mock_log_writer.js
 // makes sure that none of the events used during testing will reach the index.
 class MockLogger extends Logger {
     constructor() {
-        super(null, new MockLogWriter());
+        super(new MockLogWriter());
     }
 }
 

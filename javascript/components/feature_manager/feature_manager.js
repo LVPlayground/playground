@@ -66,7 +66,7 @@ class FeatureManager {
             throw new Error('The feature "' + feature + '" is not known to the server.');
 
         const featureConstructor = this.registeredFeatures_.get(feature);
-        const instance = new featureConstructor(server);
+        const instance = new featureConstructor();
 
         if (!(instance instanceof Feature))
             throw new Error('The feature "' + feature + '" does not extend the `Feature` class.');

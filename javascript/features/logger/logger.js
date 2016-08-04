@@ -10,7 +10,7 @@ const LogWriter = require('features/logger/log_writer.js');
 // purposes of gathering analytics. These provide important tools to administrators, as well as
 // data to influence prioritization of new features.
 class Logger extends Feature {
-    constructor(_, injectedWriter) {
+    constructor(injectedWriter) {
         super();
 
         this.sessions_ = new WeakMap();

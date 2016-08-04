@@ -14,8 +14,8 @@ const JoinIpGpciTag = 'joinipgpci';
 // is part of an effort to gather more information with Las Venturas Playground, enabling analysis
 // of area, vehicle and weapon usage among many other statistics.
 class ActivityLog extends Feature {
-  constructor(playground) {
-    super(playground);
+  constructor() {
+    super();
 
     this.callbacks_ = new ScopedCallbacks();
     this.recorder_ = new ActivityRecorder(server.database);

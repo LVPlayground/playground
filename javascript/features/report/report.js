@@ -8,7 +8,7 @@ const ReportCommands = require('features/report/report_commands.js');
 // Players are able to report other players in-game if they are suspecting they are using illegal
 // stuff.
 class Report extends Feature {
-    constructor () {
+    constructor() {
         super();
 
         // Be able to send a certain message to a certain public

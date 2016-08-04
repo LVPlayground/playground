@@ -27,6 +27,17 @@ class EntityLogger {
         this.callbacks_.addEventListener(
             'playercommandtext', EntityLogger.prototype.onPlayerCommandText.bind(this));
 
+        this.callbacks_.addEventListener(
+            'vehicledeath', EntityLogger.prototype.onVehicleDeath.bind(this));
+        this.callbacks_.addEventListener(
+            'vehiclemod', EntityLogger.prototype.onVehicleMod.bind(this));
+        this.callbacks_.addEventListener(
+            'vehiclepaintjob', EntityLogger.prototype.onVehiclePaintjob.bind(this));
+        this.callbacks_.addEventListener(
+            'vehiclerespray', EntityLogger.prototype.onVehicleRespray.bind(this));
+        this.callbacks_.addEventListener(
+            'vehiclesirenstatechange', EntityLogger.prototype.onVehicleSirenStateChange.bind(this));
+
         server.playerManager.addObserver(this);
     }
 
@@ -199,10 +210,87 @@ class EntityLogger {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Records that a vehicle has been destroyed.
+    onVehicleDeath(event) {
+        const vehicleId = event.vehicleid;
+        const vehicleModel = this.getVehicleModelId(vehicleId);
+
+        if (!vehicleModel)
+            return;  // invalid event
+
+        const position = pawnInvoke('GetVehiclePos', 'iFFF', vehicleId);
+        this.writer_.writeAttributedEvent(player, 'vehicledeath', {
+            vehicle_model: vehicleModel,
+            position: position
+        });
+    }
+
+    // Records that a vehicle has been modified by a particular driver.
+    onVehicleMod(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player || !this.sessions_.has(player))
+            return;  // invalid event
+
+        this.writer_.writeAttributedEvent(player, 'vehiclemod', {
+            vehicle_model: this.getVehicleModelId(event.vehicleid),
+            component_id: event.componentid
+        });
+    }
+
+    // Records that a vehicle has received a new paintjob, issued by a particular driver.
+    onVehiclePaintjob(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player || !this.sessions_.has(player))
+            return;  // invalid event
+
+        this.writer_.writeAttributedEvent(player, 'vehiclepaintjob', {
+            vehicle_model: this.getVehicleModelId(event.vehicleid),
+            paintjob_id: event.paintjobid
+        });
+    }
+
+    // Records that a vehicle has been resprayed, done by a particular driver.
+    onVehicleRespray(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player || !this.sessions_.has(player))
+            return;  // invalid event
+
+        this.writer_.writeAttributedEvent(player, 'vehiclerespray', {
+            vehicle_model: this.getVehicleModelId(event.vehicleid),
+            primary_color: event.color1,
+            secondary_color: event.color2
+        });
+    }
+
+    // Records that a vehicle has had its siren state changed, done by a particular driver.
+    onVehicleSirenStateChange(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player || !this.sessions_.has(player))
+            return;  // invalid event
+
+        this.writer_.writeAttributedEvent(player, 'vehiclesirenstatechange', {
+            vehicle_model: this.getVehicleModelId(event.vehicleid),
+            enabled: event.newstate
+        });
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Converts the |vector| to an array having values for the X, Y and Z coordinates.
     vectorToArray(vector) {
         return [ vector.x, vector.y, vector.z ];
     }
+
+    // Returns the model Id for the given |vehicleid|. The vehicle does not have to have been
+    // created by the VehicleManager in order for this to work.
+    getVehicleModelId(vehicleid) {
+        if (vehicleid < 0 || vehicleid >= 2000)
+            return 0;  // invalid vehicle
+
+        return pawnInvoke('GetVehicleModel', 'i', vehicleid);
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     dispose() {
         this.callbacks_.dispose();

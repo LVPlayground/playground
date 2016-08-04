@@ -113,14 +113,14 @@ class EntityLogger {
 
         const killer = server.playerManager.getById(event.killerid);
         if (!killer || !this.sessions_.has(killer)) {
-            this.writer_.writeAttributedEvent(player, 'playerdeath', record);
+            this.writer_.writeAttributedEvent(killee, 'playerdeath', record);
             return;
         }
 
         record.killer_session = this.sessions_.get(killer);
         record.killer_user_id = killer.userId;
 
-        this.writer_.writeAttributedEvent(player, 'playerkill', record);
+        this.writer_.writeAttributedEvent(killee, 'playerkill', record);
     }
 
     // Records that a player has taken damage from another player.

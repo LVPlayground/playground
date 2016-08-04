@@ -4,42 +4,44 @@
 
 const DependencyGraph = require('components/feature_manager/dependency_graph.js');
 
-describe('DependencyGraph', it => {
-  function Vertex() {}
+describe('DependencyGraph', (it, beforeEach) => {
+    let graph = null;
 
-  it('detects immediate circular dependencies', assert => {
-    let graph = new DependencyGraph();
-    let lhs = new Vertex(),
-        rhs = new Vertex();
+    beforeEach(() => graph = new DependencyGraph());
 
-    assert.isFalse(graph.isCircularDependency(lhs, rhs));
-    assert.isFalse(graph.isCircularDependency(rhs, lhs));
+    function Vertex() {}
 
-    graph.createDependencyEdge(lhs, rhs);
+    it('detects immediate circular dependencies', assert => {
+        const lhs = new Vertex();
+        const rhs = new Vertex();
 
-    assert.isFalse(graph.isCircularDependency(lhs, rhs));
-    assert.isTrue(graph.isCircularDependency(rhs, lhs));
+        assert.isFalse(graph.isCircularDependency(lhs, rhs));
+        assert.isFalse(graph.isCircularDependency(rhs, lhs));
 
-    graph.createDependencyEdge(rhs, lhs);
+        graph.createDependencyEdge(lhs, rhs);
 
-    assert.isTrue(graph.isCircularDependency(lhs, rhs));
-    assert.isTrue(graph.isCircularDependency(rhs, lhs));
-  });
+        assert.isFalse(graph.isCircularDependency(lhs, rhs));
+        assert.isTrue(graph.isCircularDependency(rhs, lhs));
 
-  it('detects recursive circular dependencies', assert => {
-    let graph = new DependencyGraph();
-    let lhs = new Vertex(),
-        rhs = new Vertex(),
-        bar = new Vertex();
+        graph.createDependencyEdge(rhs, lhs);
 
-    graph.createDependencyEdge(lhs, rhs);
-    graph.createDependencyEdge(rhs, bar);
+        assert.isTrue(graph.isCircularDependency(lhs, rhs));
+        assert.isTrue(graph.isCircularDependency(rhs, lhs));
+    });
 
-    assert.isFalse(graph.isCircularDependency(lhs, rhs));
-    assert.isFalse(graph.isCircularDependency(lhs, bar));
-    assert.isTrue(graph.isCircularDependency(rhs, lhs));
-    assert.isFalse(graph.isCircularDependency(rhs, bar));
-    assert.isTrue(graph.isCircularDependency(bar, lhs));
-    assert.isTrue(graph.isCircularDependency(bar, rhs));
-  });
+    it('detects recursive circular dependencies', assert => {
+        const lhs = new Vertex();
+        const rhs = new Vertex();
+        const bar = new Vertex();
+
+        graph.createDependencyEdge(lhs, rhs);
+        graph.createDependencyEdge(rhs, bar);
+
+        assert.isFalse(graph.isCircularDependency(lhs, rhs));
+        assert.isFalse(graph.isCircularDependency(lhs, bar));
+        assert.isTrue(graph.isCircularDependency(rhs, lhs));
+        assert.isFalse(graph.isCircularDependency(rhs, bar));
+        assert.isTrue(graph.isCircularDependency(bar, lhs));
+        assert.isTrue(graph.isCircularDependency(bar, rhs));
+        });
 });

@@ -11,7 +11,16 @@ class FeatureManager {
     constructor() {
         this.dependencyGraph_ = new DependencyGraph();
         this.registeredFeatures_ = {};
-        this.features_ = {};
+
+        this.loadedFeatures_ = new Map();
+    }
+
+    // Gets the number of features that have been loaded on the server.
+    get count() { return this.loadedFeatures_.size; }
+
+    // Returns the feature named |feature| for testing purposes only.
+    getFeatureForTests(feature) {
+        return this.loadedFeatures_.get(feature);
     }
 
     // Loads all the |features|. The |features| will first be registered, then loaded in random order
@@ -21,9 +30,7 @@ class FeatureManager {
         this.registeredFeatures_ = features;
 
         Object.keys(features).forEach(feature =>
-        this.ensureLoadFeature(feature));
-
-        return this.features_;
+            this.ensureLoadFeature(feature));
     }
 
     // Returns whether |feature| is a registered feature in this manager.
@@ -48,8 +55,9 @@ class FeatureManager {
     // Lazily loads the |feature| - returns the existing instance if it already had been initialized
     // in the past, or will create and initialize a new instance otherwise.
     ensureLoadFeature(feature) {
-        if (this.features_.hasOwnProperty(feature))
-            return this.features_[feature];
+        const loadedFeature = this.loadedFeatures_.get(feature);
+        if (loadedFeature)
+            return loadedFeature;
 
         if (!this.hasFeature(feature))
             throw new Error('The feature "' + feature + '" is not known to the server.');
@@ -58,7 +66,7 @@ class FeatureManager {
         if (!(instance instanceof Feature))
             throw new Error('The feature "' + feature + '" does not extend the `Feature` class.');
 
-        this.features_[feature] = instance;
+        this.loadedFeatures_.set(feature, instance);
         return instance;
     }
 
@@ -82,8 +90,11 @@ class FeatureManager {
 
     // Disposes the feature manager and all features owned by it.
     dispose() {
-        Object.values(this.features_).forEach(feature =>
-            feature.dispose());
+        for (const instance of this.loadedFeatures_.values())
+            instance.dispose();
+
+        this.loadedFeatures_.clear();
+        this.loadedFeatures_ = null;
     }
 };
 

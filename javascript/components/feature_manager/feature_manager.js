@@ -8,78 +8,83 @@ const Feature = require('components/feature_manager/feature.js');
 // The feature manager owns all the features available in the JavaScript implementation of the
 // server, provides cross-feature interfaces and access to many of the shared objects.
 class FeatureManager {
-  constructor() {
-    this.dependencyGraph_ = new DependencyGraph();
-    this.registeredFeatures_ = {};
-    this.features_ = {};
-  }
+    constructor() {
+        this.dependencyGraph_ = new DependencyGraph();
+        this.registeredFeatures_ = {};
+        this.features_ = {};
+    }
 
-  // Loads all the |features|. The |features| will first be registered, then loaded in random order
-  // (per JavaScript map semantics). When a feature defines a dependency on another feature that has
-  // not been loaded yet, it will be loaded automatically.
-  load(features) {
-    this.registeredFeatures_ = features;
+    // Loads all the |features|. The |features| will first be registered, then loaded in random order
+    // (per JavaScript map semantics). When a feature defines a dependency on another feature that has
+    // not been loaded yet, it will be loaded automatically.
+    load(features) {
+        this.registeredFeatures_ = features;
 
-    Object.keys(features).forEach(feature =>
+        Object.keys(features).forEach(feature =>
         this.ensureLoadFeature(feature));
 
-    return this.features_;
-  }
+        return this.features_;
+    }
 
-  // Returns whether |feature| is a registered feature in this manager.
-  hasFeature(feature) {
-    return this.registeredFeatures_.hasOwnProperty(feature);
-  }
+    // Returns whether |feature| is a registered feature in this manager.
+    hasFeature(feature) {
+        return this.registeredFeatures_.hasOwnProperty(feature);
+    }
 
-  // Returns whether |feature| is eligible for live reload.
-  isEligibleForLiveReload(feature) {
-    // TODO(Russell): Implement the heuristics for live reload.
-    return false;
-  }
+    // Returns whether |feature| is eligible for live reload.
+    isEligibleForLiveReload(feature) {
+        // TODO(Russell): Implement the heuristics for live reload.
+        return false;
+    }
 
-  // Live reloads the |feature|. Throws when the |feature| is not eligible for live reload.
-  liveReload(feature) {
-    if (!this.isEligibleForLiveReload(feature))
-      throw new Error('The feature "' + feature + '" is not eligible for live reload.');
+    // Live reloads the |feature|. Throws when the |feature| is not eligible for live reload.
+    liveReload(feature) {
+        if (!this.isEligibleForLiveReload(feature))
+            throw new Error('The feature "' + feature + '" is not eligible for live reload.');
 
-    // TODO(Russell): Implement live reload.
-  }
+        // TODO(Russell): Implement live reload.
+    }
 
-  // Lazily loads the |feature| - returns the existing instance if it already had been initialized
-  // in the past, or will create and initialize a new instance otherwise.
-  ensureLoadFeature(feature) {
-    if (this.features_.hasOwnProperty(feature))
-      return this.features_[feature];
+    // Lazily loads the |feature| - returns the existing instance if it already had been initialized
+    // in the past, or will create and initialize a new instance otherwise.
+    ensureLoadFeature(feature) {
+        if (this.features_.hasOwnProperty(feature))
+            return this.features_[feature];
 
-    if (!this.hasFeature(feature))
-      throw new Error('No feature named "' + feature + '" is known. Did you define it in playground.js?');
+        if (!this.hasFeature(feature))
+            throw new Error('The feature "' + feature + '" is not known to the server.');
 
-    let instance = new this.registeredFeatures_[feature](server);
-    if (!(instance instanceof Feature))
-      throw new Error('All features must extend the Feature class (failed for "' + feature + '").');
+        let instance = new this.registeredFeatures_[feature](server);
+        if (!(instance instanceof Feature))
+            throw new Error('The feature "' + feature + '" does not extend the `Feature` class.');
 
-    this.features_[feature] = instance;
-    return instance;
-  }
+        this.features_[feature] = instance;
+        return instance;
+    }
 
-  // Defines a dependency from |feature| (instance) to |dependencyName|. Throws an exception when
-  // the dependency does not exist, or a circular dependency is being created.
-  defineDependency(feature, dependencyName) {
-    if (!this.hasFeature(dependencyName))
-      throw new Error('Unable to declare a dependency on "' + dependencyName + '": feature does not exist.');
+    // Defines a dependency from |feature| (instance) to |dependencyName|. Throws an exception when
+    // the dependency does not exist, or a circular dependency is being created.
+    defineDependency(feature, dependencyName) {
+        if (!this.hasFeature(dependencyName)) {
+            throw new Error('Cannot declare dependency "' + feature + ':' + dependencyName + '": ' +
+                            'invalid dependency name.');
+        }
 
-    let dependency = this.ensureLoadFeature(dependencyName);
-    if (this.dependencyGraph_.isCircularDependency(feature, dependency))
-      throw new Error('Unable to declare a dependency on "' + dependencyName + '": this would create a circular dependency.');
+        let dependency = this.ensureLoadFeature(dependencyName);
+        if (this.dependencyGraph_.isCircularDependency(feature, dependency)) {
+            throw new Error('Cannot declare dependency "' + feature + ':' + dependencyName + '": ' +
+                            'circular dependencies are forbidden.');
+        }
 
-    this.dependencyGraph_.createDependencyEdge(feature, dependency);
-    return dependency;
-  }
+        this.dependencyGraph_.createDependencyEdge(feature, dependency);
+        return dependency;
+    }
 
-  // Disposes the feature manager and all features owned by it.
-  dispose() {
-    Object.values(this.features_).forEach(feature => feature.dispose());
-  }
+    // Disposes the feature manager and all features owned by it.
+    dispose() {
+        Object.values(this.features_).forEach(feature =>
+            feature.dispose());
+    }
 };
 
 exports = FeatureManager;

@@ -26,6 +26,14 @@ class DependencyGraph {
         dependencyNode.addDependent(feature, isFunctional);
     }
 
+    // Returns whether the |feature| has dependencies or dependents that declared a reference
+    // relationship, and therefore are in posession of this instance as opposed to a getter.
+    hasReferenceDependenciesOrDependents(feature) {
+        const featureNode = this.features_.get(feature);
+        return featureNode.referenceDependencies.size ||
+               featureNode.referenceDependents.size;
+    }
+
     // Determines whether defining a dependency from |feature| to |dependency| would create a
     // circular dependency using a depth first search, returning a boolean.
     isCircularDependency(feature, dependency, skipFastPathForTests = false) {

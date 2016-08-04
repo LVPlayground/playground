@@ -13,6 +13,12 @@ class DependencyGraphNode {
         this.referenceDependents_ = new Set();
     }
 
+    get functionalDependencies() { return this.functionalDependencies_; }
+    get functionalDependents() { return this.functionalDependents_; }
+
+    get referenceDependencies() { return this.referenceDependencies_; }
+    get referenceDependents() { return this.referenceDependents_; }
+
     // Adds a direct dependency from this node on to |dependency|.
     addDependency(dependency, isFunctional) {
         if (isFunctional)

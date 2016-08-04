@@ -90,8 +90,10 @@ class FeatureManager {
         if (!this.loadedFeatures_.has(feature))
             return true;  // the feature has not been loaded yet, this is always safe
 
-        // TODO(Russell): Implement the heuristics for live reload.
-        return false;
+        if (this.dependencyGraph_.hasReferenceDependenciesOrDependents(feature))
+            return false;  // references to the feature make live reload impossible
+
+        return true;
     }
 
     // Live reloads the |feature|. Throws when the |feature| is not eligible for live reload.

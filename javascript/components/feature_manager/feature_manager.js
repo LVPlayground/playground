@@ -31,6 +31,20 @@ class FeatureManager {
     return this.registeredFeatures_.hasOwnProperty(feature);
   }
 
+  // Returns whether |feature| is eligible for live reload.
+  isEligibleForLiveReload(feature) {
+    // TODO(Russell): Implement the heuristics for live reload.
+    return false;
+  }
+
+  // Live reloads the |feature|. Throws when the |feature| is not eligible for live reload.
+  liveReload(feature) {
+    if (!this.isEligibleForLiveReload(feature))
+      throw new Error('The feature "' + feature + '" is not eligible for live reload.');
+
+    // TODO(Russell): Implement live reload.
+  }
+
   // Lazily loads the |feature| - returns the existing instance if it already had been initialized
   // in the past, or will create and initialize a new instance otherwise.
   ensureLoadFeature(feature) {

@@ -69,6 +69,10 @@ class PlaygroundCommands {
                     { name: 'enabled', type: CommandBuilder.WORD_PARAMETER, optional: true }
                 ])
                 .build(PlaygroundCommands.prototype.onPlaygroundOptionCommand.bind(this, 'party'))
+            .sub('reload')
+                .restrict(Player.LEVEL_MANAGEMENT)
+                .parameters([ { name: 'feature', type: CommandBuilder.WORD_PARAMETER } ])
+                .build(PlaygroundCommands.prototype.onPlaygroundReloadCommand.bind(this))
             .build(PlaygroundCommands.prototype.onPlaygroundCommand.bind(this));
     }
 
@@ -294,6 +298,24 @@ class PlaygroundCommands {
             Message.LVP_ANNOUNCE_ADMIN_NOTICE, player.name, player.id, updatedStatusText, option);
     }
 
+    // Facilitates the developer's ability to reload features without having to restart the server.
+    // There are strict requirements a feature has to meet in regards to dependencies in order for
+    // it to be live reloadable.
+    onPlaygroundReloadCommand(player, feature) {
+        if (!server.featureManager.isEligibleForLiveReload(feature)) {
+            player.sendMessage(Message.LVP_RELOAD_NOT_ELIGIBLE, feature);
+            return;
+        }
+
+        server.featureManager.liveReload(feature);
+
+        this.announce_.announceToAdministrators(
+            Message.LVP_ANNOUNCE_FEATURE_RELOADED, player.name, player.id, feature);
+
+        player.sendMessage(Message.LVP_RELOAD_RELOADED, feature);
+
+    }
+
     // Displays some generic information for those typing `/lvp`. Administrators and higher will see
     // a list of sub-commands that they're allowed to execute.
     onPlaygroundCommand(player) {
@@ -303,7 +325,7 @@ class PlaygroundCommands {
             options.push('access');
 
         if (player.isManagement())
-            options.push('party');
+            options.push('party', 'reload');
 
         player.sendMessage(Message.LVP_PLAYGROUND_HEADER);
         if (!options.length)

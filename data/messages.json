@@ -128,6 +128,7 @@
     "LVP_ANNOUNCE_CMD_LEVEL": "%s (Id: %d) has changed the level of /%s to %s.",
     "LVP_ANNOUNCE_CMD_REMOVED_EXCEPTION": "%s (Id: %d) has revoked %s ability to use /%s.",
     "LVP_ANNOUNCE_CMD_REVOKED": "{ADFF2F} %s has removed the /%s command from players again.",
+    "LVP_ANNOUNCE_FEATURE_RELOADED": "%s (Id: %d) has reloaded the '%s' feature.",
     "LVP_CMD_EXCEPTION_GRANTED": "{ADFF2F}*** %s (Id: %d) has given you an exception to use /%s.",
     "LVP_CMD_EXCEPTION_RESTORED": "{ADFF2F}*** Your %d command exceptions has been restored.",
     "LVP_CMD_EXCEPTION_REVOKED": "{ADFF2F}*** %s (Id: %d) has removed your exception to use /%s.",
@@ -142,6 +143,8 @@
     "LVP_PLAYGROUND_OPTIONS": "@usage /lvp %s [on/off]",
     "LVP_PLAYGROUND_OPTION_STATUS": "The {FF8282}%s{FFFFFF} option is {FF8282}%s{FFFFFF}. Type {FF8282}/lvp %s [on/off]{FFFFFF} to change this.",
     "LVP_PLAYGROUND_OPTION_NO_CHANGE": "@error The {FF8282}%s{FFFFFF} feature has already been %s.",
+    "LVP_RELOAD_NOT_ELIGIBLE": "@error The {FF8282}%s{FFFFFF} feature is not eligible for live reloading.",
+    "LVP_RELOAD_RELOADED": "@success The %s feature has been reloaded.",
 
     "POSITIONING_CURRENT_POSITION": "Your current position is X: %d, Y: %d Z: %d, Rotation: %d",
     "POSITIONING_OTHER_USAGE_POS": "{FF9900}Other usage{FFFFFF}: /pos [x] [y] [z]",

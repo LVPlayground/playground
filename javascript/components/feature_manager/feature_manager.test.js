@@ -11,11 +11,11 @@ describe('FeatureManager', it => {
 
         class MySimpleFeature extends Feature {
             constructor() { super(); counter += 1; }
-        };
+        }
 
         class MySecondFeature extends Feature {
             constructor() { super(); counter += 10; }
-        };
+        }
 
         server.featureManager.registerFeaturesForTests({
             simple: MySimpleFeature,
@@ -36,11 +36,11 @@ describe('FeatureManager', it => {
 
                 value = this.defineDependency('second').value;
             }
-        };
+        }
 
         class MySecondFeature extends Feature {
             constructor() { super(); this.value = 42; }
-        };
+        }
 
         server.featureManager.registerFeaturesForTests({
             simple: MySimpleFeature,
@@ -59,7 +59,7 @@ describe('FeatureManager', it => {
 
                 this.defineDependency('fakeFeature');
             }
-        };
+        }
 
         server.featureManager.registerFeaturesForTests({ simple: MySimpleFeature });
 
@@ -74,7 +74,7 @@ describe('FeatureManager', it => {
 
                 this.defineDependency('second');
             }
-        };
+        }
 
         class MySecondFeature extends Feature {
             constructor() {
@@ -82,7 +82,7 @@ describe('FeatureManager', it => {
 
                 this.defineDependency('simple');
             }
-        };
+        }
 
         server.featureManager.registerFeaturesForTests({
             simple: MySimpleFeature,
@@ -92,4 +92,20 @@ describe('FeatureManager', it => {
         assert.throws(() =>
             server.featureManager.loadFeatures(['simple', 'second']));
     });
+
+    it('should be able to assess when features can be live reloaded', assert => {
+        class MySimpleFeature extends Feature {
+            constructor() { super(); }
+        }
+
+        server.featureManager.registerFeaturesForTests({
+            simple: MySimpleFeature
+        });
+
+        // Features can be live reloaded if they haven't been loaded for the first time yet.
+        assert.isTrue(server.featureManager.isEligibleForLiveReload('simple'));
+        server.featureManager.loadFeature('simple');
+        assert.isFalse(server.featureManager.isEligibleForLiveReload('simple'));
+    });
+
 });

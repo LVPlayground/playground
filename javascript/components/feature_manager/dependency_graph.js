@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const DependencyGraphNode = require('components/feature_manager/dependency_graph_node.js');
+
 // The dependency graph maintains a list of the dependencies between features, and provides the
 // necessary functionality to determine whether a circular dependency may be created.
 class DependencyGraph {
@@ -9,37 +11,45 @@ class DependencyGraph {
         this.features_ = new Map();
     }
 
-    // Creates a new dependency edge from |feature| to |dependency|. It's safe to declare dependencies
-    // multiple times, as they're stored in a set based on the instance.
-    createDependencyEdge(feature, dependency) {
-        if (!this.features_.has(feature))
-            this.features_.set(feature, new Set());
-
-        this.features_.get(feature).add(dependency);
+    // Creates a node in the dependency graph for the |feature|.
+    createNode(feature) {
+        this.features_.set(feature, new DependencyGraphNode());
     }
 
-    // Determines whether defining a dependency from |feature| to |dependency| would create a circular
-    // dependency using a depth first search, returning a boolean.
-    isCircularDependency(feature, dependency) {
+    // Creates a new dependency edge from |feature| to |dependency|. Dependencies may be declared
+    // multiple times. The |isFunctional| argument indicates whether it's a functional dependency.
+    createDependencyEdge(feature, dependency, isFunctional) {
+        const featureNode = this.features_.get(feature);
+        const dependencyNode = this.features_.get(dependency);
+
+        featureNode.addDependency(dependency, isFunctional);
+        dependencyNode.addDependent(feature, isFunctional);
+    }
+
+    // Determines whether defining a dependency from |feature| to |dependency| would create a
+    // circular dependency using a depth first search, returning a boolean.
+    isCircularDependency(feature, dependency, skipFastPathForTests = false) {
+        const featureNode = this.features_.get(feature);
+        if (featureNode.hasDependency(dependency) && !skipFastPathForTests)
+            return false;  // the dependency has already been declared
+
         const visited = new Set();
         const queue = [];
 
         queue.push(dependency);
 
         while (queue.length > 0) {
-            const dependencyInstance = queue.shift();
-            if (dependencyInstance === feature)
-                return true;
-
-            if (visited.has(dependencyInstance))
+            const node = this.features_.get(queue.shift());
+            if (visited.has(node))
                 continue;
 
-            visited.add(dependencyInstance);
+            visited.add(node);
 
-            if (this.features_.has(dependencyInstance)) {
-                for (const childDependency of this.features_.get(dependencyInstance))
-                    queue.push(childDependency);
-            }
+            if (node.hasDependency(feature))
+                return true;
+
+            for (const childDependency of node.getDependencies())
+                queue.push(childDependency);
         }
 
         return false;

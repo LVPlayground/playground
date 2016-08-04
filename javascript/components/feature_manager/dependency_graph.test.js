@@ -9,39 +9,37 @@ describe('DependencyGraph', (it, beforeEach) => {
 
     beforeEach(() => graph = new DependencyGraph());
 
-    function Vertex() {}
-
     it('detects immediate circular dependencies', assert => {
-        const lhs = new Vertex();
-        const rhs = new Vertex();
+        graph.createNode('lhs');
+        graph.createNode('rhs');
 
-        assert.isFalse(graph.isCircularDependency(lhs, rhs));
-        assert.isFalse(graph.isCircularDependency(rhs, lhs));
+        assert.isFalse(graph.isCircularDependency('lhs', 'rhs'));
+        assert.isFalse(graph.isCircularDependency('rhs', 'lhs'));
 
-        graph.createDependencyEdge(lhs, rhs);
+        graph.createDependencyEdge('lhs', 'rhs');
 
-        assert.isFalse(graph.isCircularDependency(lhs, rhs));
-        assert.isTrue(graph.isCircularDependency(rhs, lhs));
+        assert.isFalse(graph.isCircularDependency('lhs', 'rhs'));
+        assert.isTrue(graph.isCircularDependency('rhs', 'lhs'));
 
-        graph.createDependencyEdge(rhs, lhs);
+        graph.createDependencyEdge('rhs', 'lhs');
 
-        assert.isTrue(graph.isCircularDependency(lhs, rhs));
-        assert.isTrue(graph.isCircularDependency(rhs, lhs));
+        assert.isTrue(graph.isCircularDependency('lhs', 'rhs', true /* skipFastPathForTests */));
+        assert.isTrue(graph.isCircularDependency('rhs', 'lhs', true /* skipFastPathForTests */));
     });
 
     it('detects recursive circular dependencies', assert => {
-        const lhs = new Vertex();
-        const rhs = new Vertex();
-        const bar = new Vertex();
+        graph.createNode('lhs');
+        graph.createNode('rhs');
+        graph.createNode('bar');
 
-        graph.createDependencyEdge(lhs, rhs);
-        graph.createDependencyEdge(rhs, bar);
+        graph.createDependencyEdge('lhs', 'rhs');
+        graph.createDependencyEdge('rhs', 'bar');
 
-        assert.isFalse(graph.isCircularDependency(lhs, rhs));
-        assert.isFalse(graph.isCircularDependency(lhs, bar));
-        assert.isTrue(graph.isCircularDependency(rhs, lhs));
-        assert.isFalse(graph.isCircularDependency(rhs, bar));
-        assert.isTrue(graph.isCircularDependency(bar, lhs));
-        assert.isTrue(graph.isCircularDependency(bar, rhs));
-        });
+        assert.isFalse(graph.isCircularDependency('lhs', 'rhs'));
+        assert.isFalse(graph.isCircularDependency('lhs', 'bar'));
+        assert.isTrue(graph.isCircularDependency('rhs', 'lhs'));
+        assert.isFalse(graph.isCircularDependency('rhs', 'bar'));
+        assert.isTrue(graph.isCircularDependency('bar', 'lhs'));
+        assert.isTrue(graph.isCircularDependency('bar', 'rhs'));
+    });
 });

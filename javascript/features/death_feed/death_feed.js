@@ -13,7 +13,7 @@ const UNASSIGNED_PLAYER_ID = 1337;
 
 // The death feed feature powers the deaths and kills visible on the right-hand side of a player's
 // screen. It provides an API that allows the feed to be disabled for certain players.
-class DeathFeedFeature extends Feature {
+class DeathFeed extends Feature {
   constructor() {
     super();
 
@@ -27,9 +27,9 @@ class DeathFeedFeature extends Feature {
     // Listen to the events required for reliably providing this feature.
     this.callbacks_ = new ScopedCallbacks();
     this.callbacks_.addEventListener(
-        'playerresolveddeath', DeathFeedFeature.prototype.onPlayerDeath.bind(this));
+        'playerresolveddeath', DeathFeed.prototype.onPlayerDeath.bind(this));
     this.callbacks_.addEventListener(
-        'playerdisconnect', DeathFeedFeature.prototype.onPlayerDisconnect.bind(this));
+        'playerdisconnect', DeathFeed.prototype.onPlayerDisconnect.bind(this));
   }
 
   // Returns an array with the most recent deaths.
@@ -90,4 +90,4 @@ class DeathFeedFeature extends Feature {
   }
 };
 
-exports = DeathFeedFeature;
+exports = DeathFeed;

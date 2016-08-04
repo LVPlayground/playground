@@ -17,14 +17,14 @@ describe('RaceManager', (it, beforeEach, afterEach) => {
         gunther = server.playerManager.getById(0 /* Gunther */);
 
         // Load the mocked announce, but the real minigames feature, which races depend on.
-        server.featureManager.load({
+        server.featureManager.registerFeaturesForTests({
             announce: MockAnnounce,
-            deathFeed: MockDeathFeed,
+            death_feed: MockDeathFeed,
             minigames: Minigames
         });
 
         manager = new RaceManager(
-            null /* database */, server.featureManager.getFeatureForTests('minigames'));
+            null /* database */, server.featureManager.loadFeature('minigames'));
         manager.database_ = new MockRaceDatabase();
     });
 

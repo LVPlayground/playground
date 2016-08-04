@@ -8,9 +8,9 @@ const PositioningCommands = require('features/commands/positioning_commands.js')
 const IrcChatCommands = require('features/commands/irc_chat_commands.js');
 
 // Feature that provides a series of commands not immediately affiliated with a particular feature.
-// The CommandsFeature class provides the shared infrastructure, whereas groups of commands will
-// be implemented separately based on their own requirements.
-class CommandsFeature extends Feature {
+// The Commands class provides the shared infrastructure, whereas groups of commands will be
+// implemented separately based on their own requirements.
+class Commands extends Feature {
   constructor() {
     super();
 
@@ -36,4 +36,4 @@ class CommandsFeature extends Feature {
   }
 };
 
-exports = CommandsFeature;
+exports = Commands;

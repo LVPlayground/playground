@@ -27,41 +27,30 @@ testRunner.run('.*\.test\.js').then(notifyReady).then(() => {
     console.log('Passed all ' + testRunner.testCount + ' tests!');
 
     server = new Server();
-    server.featureManager.load({
+    server.featureManager.loadFeatures([
         // Foundational features
-        announce:       require('features/announce/announce.js'),
-        communication:  require('features/communication/communication.js'),
-        economy:        require('features/economy/economy.js'),
-        location:       require('features/location/location.js'),
-        logger:         require('features/logger/logger.js'),
-        minigames:      require('features/minigames/minigames.js'),
+        'announce', 'communication', 'economy', 'location', 'logger', 'minigames',
 
         // Gang-related features
-        gangChat:       require('features/gang_chat/gang_chat.js'),
-        gangs:          require('features/gangs/gangs.js'),
+        'gang_chat', 'gangs',
 
         // House-related features
-        houses:         require('features/houses/houses.js'),
+        'houses',
 
         // General smaller, self-contained features
-        friends:        require('features/friends/friends.js'),
-        playground:     require('features/playground/playground.js'),
-        report:         require('features/report/report.js'),
+        'friends', 'playground', 'report',
 
         // Player-related features
-        playerFavours:  require('features/player_favours/player_favours.js'),
+        'player_favours',
 
         // VIP-related features
-        veryImportantPlayers:  require('features/vips/vips.js'),
+        'vips',
 
+        // -----------------------------------------------------------------------------------------
 
         // v1 features - these need to be cleaned up
-        activityLog:    require('features/activity_log/activity_log.js'),
-        commands:       require('features/commands/commands_feature.js'),
-        deathFeed:      require('features/death_feed/death_feed_feature.js'),
-        debug:          require('features/debug/debug_feature.js'),
-        races:          require('features/races/races.js')
-    });
+        'activity_log', 'commands', 'death_feed', 'debug', 'races'
+    ]);
 
     // Call the OnJavaScriptLoaded callback in the Pawn code, which will trigger the gamemode in
     // beginning to work with the JavaScript code where required.

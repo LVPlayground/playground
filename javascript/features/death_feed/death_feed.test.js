@@ -2,11 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const DeathFeedFeature = require('features/death_feed/death_feed_feature.js');
+const DeathFeed = require('features/death_feed/death_feed.js');
 
-describe('DeathFeedFeature', it => {
+describe('DeathFeed', it => {
   it('should track deaths in fifo order', assert => {
-    let feature = new DeathFeedFeature(null);
+    let feature = new DeathFeed();
 
     for (let i = 1; i <= 10; ++i)
       feature.onPlayerDeath({ playerid: i, killerid: 0, reason: 0 });

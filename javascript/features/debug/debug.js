@@ -12,7 +12,7 @@ function leftPad(value, len = 2) {
 
 // The debug feature offers useful tools for administrators to debug the server or the Las Venturas
 // Playground gamemode itself. It's driven by a number of in-game comments.
-class DebugFeature extends Feature {
+class Debug extends Feature {
   constructor() {
     super();
 
@@ -165,4 +165,4 @@ class DebugFeature extends Feature {
   }
 }
 
-exports = DebugFeature;
+exports = Debug;

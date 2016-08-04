@@ -17,10 +17,12 @@ describe('FeatureManager', it => {
             constructor() { super(); counter += 10; }
         };
 
-        server.featureManager.load({
+        server.featureManager.registerFeaturesForTests({
             simple: MySimpleFeature,
             second: MySecondFeature
         });
+
+        server.featureManager.loadFeatures(['simple', 'second']);
 
         assert.equal(counter, 11);
     });
@@ -40,10 +42,12 @@ describe('FeatureManager', it => {
             constructor() { super(); this.value = 42; }
         };
 
-        server.featureManager.load({
+        server.featureManager.registerFeaturesForTests({
             simple: MySimpleFeature,
             second: MySecondFeature
         });
+
+        server.featureManager.loadFeatures(['simple', 'second']);
 
         assert.equal(value, 42);
     });
@@ -57,8 +61,10 @@ describe('FeatureManager', it => {
             }
         };
 
+        server.featureManager.registerFeaturesForTests({ simple: MySimpleFeature });
+
         assert.throws(() =>
-            server.featureManager.load({ simple: MySimpleFeature }));
+            server.featureManager.loadFeatures(['simple']));
     });
 
     it('should throw on circular dependencies', assert => {
@@ -78,11 +84,12 @@ describe('FeatureManager', it => {
             }
         };
 
-        assert.throws(() => {
-            server.featureManager.load({
-                simple: MySimpleFeature,
-                second: MySecondFeature
-            });
+        server.featureManager.registerFeaturesForTests({
+            simple: MySimpleFeature,
+            second: MySecondFeature
         });
+
+        assert.throws(() =>
+            server.featureManager.loadFeatures(['simple', 'second']));
     });
 });

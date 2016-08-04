@@ -10,8 +10,8 @@ const Feature = require('components/feature_manager/feature.js');
 class FeatureManager {
     constructor() {
         this.dependencyGraph_ = new DependencyGraph();
-        this.registeredFeatures_ = {};
 
+        this.registeredFeatures_ = new Map();
         this.loadedFeatures_ = new Map();
     }
 
@@ -27,7 +27,10 @@ class FeatureManager {
     // (per JavaScript map semantics). When a feature defines a dependency on another feature that has
     // not been loaded yet, it will be loaded automatically.
     load(features) {
-        this.registeredFeatures_ = features;
+        // TODO(Russell): require() the features in this file.
+
+        for (const [featureName, feature] of Object.entries(features))
+            this.registeredFeatures_.set(featureName, feature);
 
         Object.keys(features).forEach(feature =>
             this.ensureLoadFeature(feature));
@@ -35,7 +38,7 @@ class FeatureManager {
 
     // Returns whether |feature| is a registered feature in this manager.
     hasFeature(feature) {
-        return this.registeredFeatures_.hasOwnProperty(feature);
+        return this.registeredFeatures_.has(feature);
     }
 
     // Returns whether |feature| is eligible for live reload.
@@ -62,7 +65,9 @@ class FeatureManager {
         if (!this.hasFeature(feature))
             throw new Error('The feature "' + feature + '" is not known to the server.');
 
-        let instance = new this.registeredFeatures_[feature](server);
+        const featureConstructor = this.registeredFeatures_.get(feature);
+        const instance = new featureConstructor(server);
+
         if (!(instance instanceof Feature))
             throw new Error('The feature "' + feature + '" does not extend the `Feature` class.');
 
@@ -95,6 +100,9 @@ class FeatureManager {
 
         this.loadedFeatures_.clear();
         this.loadedFeatures_ = null;
+
+        this.registeredFeatures_.clear();
+        this.registeredFeatures_ = null;
     }
 };
 

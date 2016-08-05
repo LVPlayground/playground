@@ -20,7 +20,7 @@ class Races extends Feature {
         const minigames = this.defineDependency('minigames');
 
         // Races report checkpoint and final result times of participating players to logstash.
-        const logger = this.defineDependency('logger');
+        const logger = this.defineDependency('logger', true /* isFunctional */);
 
         this.manager_ = new RaceManager(server.database, minigames, logger);
         this.commands_ = new RaceCommands(this.manager_);

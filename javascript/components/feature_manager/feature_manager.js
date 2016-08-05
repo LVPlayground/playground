@@ -110,11 +110,60 @@ class FeatureManager {
     }
 
     // Live reloads the |feature|. Throws when the |feature| is not eligible for live reload.
+    // Returns a boolean indicating whether reloading was successful.
+    //
+    // Live reloading a feature involves clearing the require() caches for the given feature to make
+    // sure that any changed files are reloaded from disk. Then the feature is read from disk again,
+    // followed by disposing the existing feature. All dependencies declared by the feature will
+    // then be cleared, finished by reloading the feature through the regular code path again.
     liveReload(feature) {
         if (!this.isEligibleForLiveReload(feature))
             throw new Error('The feature "' + feature + '" is not eligible for live reload.');
 
-        // TODO(Russell): Implement live reload.
+        const featureDirectory = 'features/' + feature + '/';
+        const featureFilename = featureDirectory + feature + '.js';
+
+        // Clear the require() cache to be able to load the latest code for the feature.
+        require.clear(featureDirectory);
+
+        let featureConstructor = null;
+        try {
+            if (server.isTest())
+                featureConstructor = this.registeredFeatures_.get(feature);
+            else
+                featureConstructor = require(featureFilename);
+
+        } catch (exception) {
+            console.log('Unable to reload ' + feature, exception);
+            return false;
+        }
+
+        // Update the registered constructor for this feature so that loading it works again.
+        this.registeredFeatures_.set(feature, featureConstructor);
+
+        // Dispose of the existing instance of this feature if it exists.
+        {
+            const instance = this.loadedFeatures_.get(feature);
+            if (instance)
+                instance.dispose();
+
+            this.loadedFeatures_.delete(feature);
+        }
+
+        // Clear all dependencies that were defined by the old instance of |feature|.
+        this.dependencyGraph_.deleteDependencies(feature);
+
+        // Now load the new instance of the |feature| through the regular code path.
+        try {
+            this.loadFeature(feature);
+
+            console.log('[FeatureManager] ' + feature + ' has been reloaded.');
+            return true;
+
+        } catch (exception) {
+            console.log('Unable to reload ' + feature, exception);
+            return false;
+        }
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -149,6 +198,11 @@ class FeatureManager {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    // Gets the instance for |feature|. Must only be used for testing purposes.
+    getFeatureForTests(feature) {
+        return this.loadedFeatures_.get(feature);
+    }
 
     // Imports the |features| object as key-value pairs into the registered feature table.
     registerFeaturesForTests(features) {

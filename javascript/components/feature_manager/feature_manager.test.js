@@ -180,4 +180,63 @@ describe('FeatureManager', it => {
         assert.isTrue(server.featureManager.isEligibleForLiveReload('dependents_functional'));
     });
 
+    it('should be able to live reload features', assert => {
+        let constructorCounter = 0;
+        let disposeCounter = 0;
+
+        class MyCounter extends Feature {
+            constructor() {
+                super();
+
+                this.counter_ = 0;
+
+                constructorCounter++;
+            }
+
+            count() { return ++this.counter_; }
+
+            dispose() {
+                disposeCounter++;
+            }
+        }
+
+        class MyFeature extends Feature {
+            constructor() {
+                super();
+
+                this.counterFn_ = this.defineDependency('counter', true /* isFunctional */);
+            }
+
+            count() {
+                return this.counterFn_().count();
+            }
+        }
+
+        server.featureManager.registerFeaturesForTests({
+            counter: MyCounter,
+            feature: MyFeature
+        });
+
+        server.featureManager.loadFeatures(['counter', 'feature']);
+
+        assert.isTrue(server.featureManager.isEligibleForLiveReload('counter'));
+
+        assert.equal(constructorCounter, 1);
+        assert.equal(disposeCounter, 0);
+
+        const feature = server.featureManager.getFeatureForTests('feature');
+
+        assert.equal(feature.count(), 1);
+        assert.equal(feature.count(), 2);
+        assert.equal(feature.count(), 3);
+
+        assert.isTrue(server.featureManager.liveReload('counter'));
+
+        assert.equal(constructorCounter, 2);
+        assert.equal(disposeCounter, 1);
+
+        assert.equal(feature.count(), 1);
+        assert.equal(feature.count(), 2);
+        assert.equal(feature.count(), 3);
+    });
 });

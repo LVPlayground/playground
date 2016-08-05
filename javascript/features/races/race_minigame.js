@@ -233,7 +233,7 @@ class RaceMinigame extends Minigame {
             const passedCheckpointTime = highResolutionTime() - this.startTime_;
 
             playerData.recordTime(passedCheckpointIndex, passedCheckpointTime);
-            this.logger_.recordRaceCheckpointResult(
+            this.logger_().recordRaceCheckpointResult(
                 player, this.race_.id, passedCheckpointIndex, passedCheckpointTime);
         }
 
@@ -244,7 +244,7 @@ class RaceMinigame extends Minigame {
             FinishedMessage.displayForPlayer(player).then(() =>
                 this.removePlayer(player, Minigame.REASON_FINISHED));
 
-            this.logger_.recordRaceResult(
+            this.logger_().recordRaceResult(
                 player, this.race_.id, highResolutionTime() - this.startTime_)
 
             return;

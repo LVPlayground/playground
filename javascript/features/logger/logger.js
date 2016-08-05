@@ -48,6 +48,8 @@ class Logger extends Feature {
 
         this.writer_.dispose();
         this.writer_ = null;
+
+        this.sessions_ = null;
     }
 }
 

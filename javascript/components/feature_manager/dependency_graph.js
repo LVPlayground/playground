@@ -34,6 +34,14 @@ class DependencyGraph {
                featureNode.referenceDependents.size;
     }
 
+    // Deletes the dependencies that have been defined by the |feature|.
+    deleteDependencies(feature) {
+        const featureNode = this.features_.get(feature);
+
+        featureNode.functionalDependencies_.clear();
+        featureNode.referenceDependencies_.clear();
+    }
+
     // Determines whether defining a dependency from |feature| to |dependency| would create a
     // circular dependency using a depth first search, returning a boolean.
     isCircularDependency(feature, dependency, skipFastPathForTests = false) {

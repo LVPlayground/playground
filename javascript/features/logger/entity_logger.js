@@ -215,7 +215,9 @@ class EntityLogger {
         const vehicleId = event.vehicleid;
         const vehicleModel = this.getVehicleModelId(vehicleId);
 
-        if (!vehicleModel)
+        const player = server.playerManager.getById(event.playerid);
+
+        if (!vehicleModel || !player)
             return;  // invalid event
 
         const position = pawnInvoke('GetVehiclePos', 'iFFF', vehicleId);

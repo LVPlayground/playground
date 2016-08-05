@@ -7,6 +7,17 @@ const Feature = require('components/feature_manager/feature.js');
 
 // The feature manager owns all the features available in the JavaScript implementation of the
 // server, provides cross-feature interfaces and access to many of the shared objects.
+//
+// Features can define two sorts of dependencies on each other:
+//   1) Reference-based dependencies. The feature will get hold of the instance of the feature it
+//      would like to depend on.
+//   2) Function-based dependencies. The feature will get a function through which it can get the
+//      latest instance of the feature it would like to depend on.
+//
+// Features that only have functional dependencies and dependents can be live reloaded by Management
+// members. Of course, in doing so, the assumption is made that no significant API changes happened.
+//
+// TODO(Russell): Remove support for reference-based dependencies altogether.
 class FeatureManager {
     constructor() {
         this.dependencyGraph_ = new DependencyGraph();
@@ -83,6 +94,8 @@ class FeatureManager {
 
     // Returns whether |feature| is eligible for live reload. We can live reload when:
     //   1) The feature has been registered, but has not been loaded yet.
+    //   2) The feature has been loaded, and has no dependencies or dependents.
+    //   3) The feature has been loaded, and only has functional dependencies and dependents.
     isEligibleForLiveReload(feature) {
         if (!this.registeredFeatures_.has(feature))
             return false;  // the feature does not exist

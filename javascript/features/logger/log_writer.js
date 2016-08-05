@@ -16,6 +16,8 @@ class LogWriter {
         this.sessions_ = sessions;
         this.disposed_ = false;
 
+        this.warnings_ = new WeakSet();
+
         this.refreshSocketTaskRunner();
     }
 
@@ -32,7 +34,12 @@ class LogWriter {
     // Writes the |event| to the system log, attributed to the |player|.
     writeAttributedEvent(player, type, event = {}) {
         if (!this.sessions_.has(player)) {
-            console.log('Warning: no known session for player #' + player.id + ', ' + player.name);
+            if (!this.warnings_.has(player)) {
+                console.log(
+                    'Warning: no known session for player #' + player.id + ', ' + player.name);
+            }
+
+            this.warnings_.add(player);
             return;
         }
 

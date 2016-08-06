@@ -11,7 +11,7 @@ const PrivateSymbol = Symbol('Please, only use the constructor.');
 
 // Calling generateHash of this class with a given key and seed returns a decimal, unsigned int,
 // hash based on murmur3
-class MurmurHash3 {
+class Murmur3Hash {
     // Generate our murmur3-hash based on given |key| according to the algorithm
     static generateHash(key) {
         if (key.trim().length < 1 || key == null)
@@ -66,7 +66,7 @@ class MurmurHash3 {
     // Multiplies two 32bit integers and returns it as a 32bit integer
     static x86Multiply_(privateSymbol, firstInteger, secondInteger) {
         if (privateSymbol !== PrivateSymbol)
-            throw new TypeError('Private method, only MurmurHash3::generateHash should be used.');
+            throw new TypeError('Private method, only Murmur3Hash::generateHash should be used.');
 
         return ((firstInteger & 0xffff) * secondInteger) + ((((firstInteger >>> 16) * secondInteger) & 0xffff) << 16);
     }
@@ -74,7 +74,7 @@ class MurmurHash3 {
     // Rotates the given integer by the given number of bit positions
     static x86Rotl_(privateSymbol, integer, numberOfBitPositions) {
         if (privateSymbol !== PrivateSymbol)
-            throw new TypeError('Private method, only MurmurHash3::generateHash should be used.');
+            throw new TypeError('Private method, only Murmur3Hash::generateHash should be used.');
 
         return (integer << numberOfBitPositions) | (integer >>> (32 - numberOfBitPositions));
     }
@@ -82,7 +82,7 @@ class MurmurHash3 {
     // Final mix of the block and gives the murmur3-hash of it
     static x86Fmix_(privateSymbol, block) {
         if (privateSymbol !== PrivateSymbol)
-            throw new TypeError('Private method, only MurmurHash3::generateHash should be used.');
+            throw new TypeError('Private method, only Murmur3Hash::generateHash should be used.');
 
         block ^= block >>> 16;
         block  = this.x86Multiply_(privateSymbol, block, 0x85ebca6b);
@@ -94,4 +94,4 @@ class MurmurHash3 {
     }
 }
 
-exports = MurmurHash3;
+exports = Murmur3Hash;

@@ -5,7 +5,7 @@
 const ActivityRecorder = require('features/activity_log/activity_recorder.js');
 const Feature = require('components/feature_manager/feature.js');
 const ScopedCallbacks = require('base/scoped_callbacks.js');
-const MurmurHash3 = require('features/activity_log/murmurhash3.js');
+const Murmur3Hash = require('features/activity_log/murmur3hash.js');
 
 // IRC tag used to show the players name, id, ip and gpci
 const JoinIpGpciTag = 'joinipgpci';
@@ -95,7 +95,7 @@ class ActivityLog extends Feature {
       return;
 
     const numericIpAddress = this.ip2long(player.ipAddress);
-    const hashedGpci = MurmurHash3.generateHash(player.gpci);
+    const hashedGpci = Murmur3Hash.generateHash(player.gpci);
     const bothHashAndNormal = hashedGpci + "|" + player.gpci;
 
     this.announce_.announceToIRC(JoinIpGpciTag, player.id, player.ipAddress, player.name, bothHashAndNormal);

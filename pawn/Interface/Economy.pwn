@@ -42,7 +42,6 @@ enum EconomyValueType {
 #if Feature::DisableKilltime == 0
     KilltimeVictory,
 #endif
-    LyseSignUpCost,
     MapZoneReward,
     MapZoneSpeedBonus,
     MinigameParticipation,
@@ -104,30 +103,29 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case ChaseWinner:                       return 1500;
         case CustomizationShopOwnerShare:       return 150;
         case DeathDropMoneyPercentage:          return 50;
-        case DeathmatchChampion:                return 100000;
+        case DeathmatchChampion:                return 10000;
         case DeliveryDistanceReward:            return 170 * inputValue /* distance in units */;
         case DeliveryTimeReward:                return 40 * inputValue /* seconds left */;
         case DiveCommand:                       return 750;
-        case GiftHuntLargePrize:                return 300000;
-        case GiftHuntMediumPrize:               return 100000;
-        case GiftHuntSmallPrize:                return 50000;
-        case GrandTheftAutoRandomVehicleValue:  return random(254219 /* max */ - 13561 /* min */) + 13561 /* min */;
+        case GiftHuntLargePrize:                return 30000;
+        case GiftHuntMediumPrize:               return 10000;
+        case GiftHuntSmallPrize:                return 5000;
+        case GrandTheftAutoRandomVehicleValue:  return random(2542 /* max */ - 1351 /* min */) + 1356 /* min */;
 #if Feature::DisableKilltime == 0
-        case KilltimeVictory:                   return 250000;
+        case KilltimeVictory:                   return 2500;
 #endif
-        case LyseSignUpCost:                    return 25;
         case MapZoneReward:                     return 2000 - 10 * inputValue /* time taken (seconds) */;
         case MapZoneSpeedBonus:                 return 1 * inputValue /* high-speed streak count */;
         case MinigameParticipation:             return 250;
         case MinigameVictory:                   return 250 * inputValue /* participant count */;
-        case MoneyStatue:                       return 5000 * inputValue /* statue kill count */;
+        case MoneyStatue:                       return 500 * inputValue /* statue kill count */;
         case NitroTwoShot:                      return 200;
         case NitroFiveShot:                     return 500;
         case NitroTenShot:                      return 1000;
-        case NitroInfinite:                     return 25000;
+        case NitroInfinite:                     return 2500;
         case ReactionTest:                      return 1000;
         case ShipIdleMoney:                     return 5 * inputValue /* VIP multiplier */;
-        case ShowMessageCommand:                return 20000;
+        case ShowMessageCommand:                return 2000;
         case SlapCommand:                       return 500;
         case SpawnMoney:                        return 10000;
         case TaxiPerKilometer:                  return 20;
@@ -139,7 +137,7 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case VehicleCrusherReward:              return 400;
         case VehicleExportReward:               return floatround(inputValue /* vehicle health [371-1000] */ * 7.5 * 1.216);
         case VehicleExportRewardOwnerShare:     return floatround(inputValue /* vehicle health [371-1000] */ * 7.5 * 1.216 * 0.1);
-        case VipColourChange:                   return 1000000;
+        case VipColourChange:                   return 25000;
         case WantedLevelAward:                  return 1000 * inputValue /* wanted level stars */;
         case WantedLevelOwnerShare:             return 10 * inputValue /* wanted level stars */;
     }

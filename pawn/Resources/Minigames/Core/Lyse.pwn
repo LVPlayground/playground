@@ -460,7 +460,7 @@ CLyse__SignPlayerOut(playerid)
 
     if(CLyse__GetPlayerState(playerid) == LYSE_STATE_SIGNUP)
     {
-        GiveRegulatedMoney(playerid, LyseSignUpCost);
+        GiveRegulatedMoney(playerid, MinigameParticipation);
         g_LysePlayers--;
         CLyse__SetPlayerState(playerid, LYSE_STATE_NONE);
         return 1;
@@ -1155,7 +1155,7 @@ CLyse__OnCommand(playerid){
         return 1;
     }
 
-    new const price = GetEconomyValue(LyseSignUpCost);
+    new const price = GetEconomyValue(MinigameParticipation);
 
     if(GetPlayerMoney(playerid) < price)
     {
@@ -1174,7 +1174,7 @@ CLyse__OnCommand(playerid){
         GameTextForAllEx("~y~Local Yocal Sports Edition~w~ is now signing up!~n~Want to join? ~r~/lyse~w~!", 5000, 5);
     }
 
-    TakeRegulatedMoney(playerid, LyseSignUpCost);
+    TakeRegulatedMoney(playerid, MinigameParticipation);
     CLyse__SignPlayerUp(playerid);
 
     new str[128];

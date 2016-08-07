@@ -773,23 +773,10 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             }
             // End disabled check
 
-            new const price = GetEconomyValue(Ramping);
-            new cash = GetPlayerMoney(playerid);
-
-            if(cash < 50000)
-            {
-                new message[128];
-                format(message, sizeof(message), "Enabling of the ramping feature costs $%s.", formatPrice(price));
-
-                ShowBoxForPlayer(playerid, message);
-                return 1;
-            }
-
             ramping[playerid] = 1;
+
             SendClientMessage(playerid,COLOR_YELLOW, "You've enabled the ramping feature, get in a vehicle, press CTRL");
             SendClientMessage(playerid,COLOR_YELLOW, "to create a ramp and /my ramp [1-12] to change the kind of ramp.");
-
-            TakeRegulatedMoney(playerid, Ramping);
 
             return 1;
         } else if (ramping[playerid] == 1){

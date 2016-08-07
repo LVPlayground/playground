@@ -53,7 +53,6 @@ enum EconomyValueType {
     NitroTenShot,
     NitroInfinite,
     ReactionTest,
-    Ramping,
     ShipIdleMoney,
     ShowMessageCommand,
     SlapCommand,
@@ -127,7 +126,6 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case NitroTenShot:                      return 1000;
         case NitroInfinite:                     return 25000;
         case ReactionTest:                      return 1000;
-        case Ramping:                           return 5000;
         case ShipIdleMoney:                     return 5 * inputValue /* VIP multiplier */;
         case ShowMessageCommand:                return 20000;
         case SlapCommand:                       return 500;

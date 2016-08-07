@@ -12,6 +12,8 @@ SetPlayerUpForWalkWeapon(playerId) {
     new Float: y = 340.0000 + float(random(80));
     SetPlayerPos(playerId, x, y, 32);
 
+    ClearPlayerMenus(playerId);
+
     ResetPlayerWeapons(playerId);
     GiveWeapon(playerId, 24, 4000);
     GiveWeapon(playerId, 27, 4000);

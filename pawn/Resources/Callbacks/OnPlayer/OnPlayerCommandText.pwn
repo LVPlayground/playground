@@ -392,7 +392,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         }
         else
         {
-            GivePlayerMoney(playerid, -iAmount);  // OK: bagmoney
+            GivePlayerMoney(playerid, -iAmount);  // /bagmoney
             iCashAddTime[playerid] = GetTickCount();
         }
         return 1;

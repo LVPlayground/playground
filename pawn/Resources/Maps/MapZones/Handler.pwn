@@ -988,19 +988,12 @@ MapZoneCheckpointUpdate(playerid)
     DisablePlayerRaceCheckpoint(playerid);
 
     // Calculate their reward
-    new reward = 20000;
     new timetaken = Time->currentTime() - g_MapSeconds[playerid];
 
+    new const reward = max(0, GetEconomyValue(MapZoneReward, timetaken));
+    new const bonus = GetEconomyValue(MapZoneSpeedBonus, g_HSpeedCount[playerid]);
+
     g_MapSeconds[playerid] = 0;
-
-    reward = reward - timetaken*100 + g_HSpeedCount[playerid]*10;
-
-    if(reward < 0)
-        reward = 0;
-    if(reward > 100000)
-    {
-        reward = 10000;
-    }
 
     // Just for the record, tell them how long they where. Maybe we can spice it up
     // later by saving it and having a record system for each mapped zone.
@@ -1012,10 +1005,10 @@ MapZoneCheckpointUpdate(playerid)
 
     // Format the gametext
     format(str,256,"~w~%s:~n~~y~Speed Bonus: $%d~n~~b~Time Taken: %d seconds~n~~g~Reward: $%d",
-    Map_Zone[g_MapZone[playerid]][Map_Name],g_HSpeedCount[playerid]*10,timetaken,reward);
+        Map_Zone[g_MapZone[playerid]][Map_Name], bonus, timetaken, reward);
     ShowBoxForPlayer(playerid, str);
 
-    GivePlayerMoney(playerid, reward);
+    GivePlayerMoney(playerid, reward + bonus);  // economy: MapZoneReward / MapZoneSpeedBonus
 
     SetPlayerMapZone(playerid, -1); // -1 removes them from all map zones
     return 1;

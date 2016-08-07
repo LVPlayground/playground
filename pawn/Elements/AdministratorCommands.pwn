@@ -732,7 +732,7 @@ lvp_p(playerId, params[]) {
         }
 
         ResetPlayerMoney(subjectId);
-        GivePlayerMoney(subjectId, moneyAmount);
+        GivePlayerMoney(subjectId, moneyAmount);  // /p [player] cash [amount]
 
         format(g_message, sizeof(g_message), "%s (Id:%d) is now carrying $%s.",
             Player(subjectId)->nicknameString(), subjectId, formatPrice(moneyAmount));

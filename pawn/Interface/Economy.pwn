@@ -51,6 +51,8 @@ enum EconomyValueType {
     KilltimeVictory,
 #endif
     LyseSignUpCost,
+    MapZoneReward,
+    MapZoneSpeedBonus,
     MinigameParticipation,
     MinigamePrize,
     MoneyStatue,
@@ -94,7 +96,6 @@ new customsTax = 1500;
 
 // Features to convert:
 //   - Delivery
-//   - Map zones
 
 GetEconomyValue(EconomyValueType: type, inputValue = 0) {
     switch (type) {
@@ -143,6 +144,8 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case KilltimeVictory:                   return 2500000;
 #endif
         case LyseSignUpCost:                    return 250;
+        case MapZoneReward:                     return 20000 - 100 * inputValue /* time taken (seconds) */;
+        case MapZoneSpeedBonus:                 return 10 * inputValue /* high-speed streak count */;
         case MinigameParticipation:             return 2500;
         case MinigamePrize:                     return 2500 * inputValue /* participant count */ * (2/3);
         case MoneyStatue:                       return 50000 * inputValue /* statue kill count */;

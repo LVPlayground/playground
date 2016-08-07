@@ -42,6 +42,7 @@ enum EconomyValueType {
     GiftHuntLargePrize,
     GiftHuntMediumPrize,
     GiftHuntSmallPrize,
+    GrandTheftAutoRandomVehicleValue,
     HayParticipation,
     HideAndSeekSignUpCost,
     HideAndSeekPrize,
@@ -93,9 +94,7 @@ new customsTax = 1500;
 
 // Features to convert:
 //   - Delivery
-//   - Grand Theft Auto
 //   - Map zones
-//   - Properties
 
 GetEconomyValue(EconomyValueType: type, inputValue = 0) {
     switch (type) {
@@ -135,6 +134,7 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case GiftHuntLargePrize:                return 3000000;
         case GiftHuntMediumPrize:               return 1000000;
         case GiftHuntSmallPrize:                return 500000;
+        case GrandTheftAutoRandomVehicleValue:  return random(2542193 /* max */ - 135611 /* min */) + 135611 /* min */;
         case HayParticipation:                  return 250;
         case HideAndSeekSignUpCost:             return 250;
         case HideAndSeekPrize:                  return 500000;

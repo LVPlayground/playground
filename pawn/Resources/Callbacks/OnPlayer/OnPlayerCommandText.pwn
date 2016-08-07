@@ -1124,7 +1124,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             ShowBoxForPlayer(playerid, string);
         }
 
-        GivePlayerMoney(playerid, moneys);
+        GivePlayerMoney(playerid, moneys);  // /borrow
         iLoan[playerid] += moneys;
         iLoanPercent[playerid] = bankRente;
 
@@ -1240,7 +1240,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         moneys = iLoan[playerid];
 
 
-        GivePlayerMoney(playerid, 0-moneys);
+        GivePlayerMoney(playerid, 0-moneys);  // /payoff
         iLoan[playerid] = iLoan[playerid] - moneys;
 
         if( iLoan[playerid] == 0 ) 
@@ -1570,8 +1570,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         GetPlayerName( iGivePlayerID, iGivePlayerName, 24);
         GetPlayerName( playerid, iSenderName, 24);
 
-        GivePlayerMoney( playerid, ( 0 - iMoney ) );
-        GivePlayerMoney( iGivePlayerID, iMoney );
+        GivePlayerMoney( playerid, ( 0 - iMoney ) );  // /givecash (sender)
+        GivePlayerMoney( iGivePlayerID, iMoney );     // /givecash (recipient)
 
         format(string, sizeof(string), "You have sent %s (id: %d), $%d.", iGivePlayerName, iGivePlayerID, iMoney);
         SendClientMessage(playerid, COLOR_YELLOW, string);

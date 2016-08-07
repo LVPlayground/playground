@@ -14,8 +14,6 @@
 *******************************************************************************/
 
 // Defines:
-#define MAX_VEHICLE_VALUE 2542193   // The maximum amount of money the car can be worth
-#define MIN_VEHICLE_VALUE 135611    // The minimum amount of cash the car can be worth
 #define MINUTES_TO_DELIVER 15        // How long does everyone get to deliver it?
 #define COLOR_GTA 0x33FF33AA      // The color used throughout this minigame
 
@@ -47,7 +45,7 @@ CTheft__Initalize()
 
 
 	GTA_Vehicle = CTheft__ChooseRandomVehicle();
-	GTA_Value = random(MAX_VEHICLE_VALUE - MIN_VEHICLE_VALUE) + MIN_VEHICLE_VALUE;
+	GTA_Value = GetEconomyValue(GrandTheftAutoRandomVehicleValue);
 
     new vehicleModel = GetVehicleModel(GTA_Vehicle);
 
@@ -297,7 +295,7 @@ CTheft__Checkpoint(playerid)
 		new str[256];
 		format(str,256,"~g~Vehicle delivered!~n~~y~$%d",GTA_Value);
 		ShowBoxForPlayer(playerid, str);
-		GivePlayerMoney(playerid,GTA_Value);
+		GivePlayerMoney(playerid, GTA_Value);  // economy: GrandTheftAutoRandomVehicleValue
 		format(str,256,"* Grand Theft Auto: %s has delivered the vehicle to the merchant.",PlayerName(playerid));
 		CTheft__End(true,str);
 		SetPlayerChatBubble(GTA_NPCID, "Thanks for delivering the vehicle!", COLOR_LIGHTBLUE, 300, 9999);

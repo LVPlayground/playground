@@ -31,8 +31,9 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                         format(message, sizeof(message), "Your money has been stolen by %s as punishment of a %s.",
                             Player(playerid)->nicknameString(), lameKill);
 
-                        new money = GetPlayerMoney(lamerId);
-                        GivePlayerMoney(playerid, money);
+                        new amount = floatround(float(GetPlayerMoney(lamerId)) * (GetEconomyValue(DeathDropMoneyPercentage) / 100.0));
+
+                        GivePlayerMoney(playerid, amount);  // controlled w/ DeathDropMoneyPercentage
                         ResetPlayerMoney(lamerId);
                     }
 

@@ -193,7 +193,7 @@ class FixPlayerCommands {
 
         // Reset the player's money, since this is lost on respawn.
         ResetPlayerMoney(playerId);
-        GivePlayerMoney(playerId, m_playerCash[playerId]);
+        GivePlayerMoney(playerId, m_playerCash[playerId]);  // reset their money
 
         // Set the player's own skin if needed.
         new skinId = SpawnManager(playerId)->skinId();

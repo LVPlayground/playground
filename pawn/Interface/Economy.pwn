@@ -32,6 +32,7 @@ enum EconomyValueType {
     ChaseEscaped,
     ChaseWinner,
     CustomizationShopOwnerShare,
+    DeathDropMoneyPercentage,
     DeathmatchChampion,
     DerbyParticipation,
     DerbyVictory,
@@ -124,6 +125,7 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case ChaseEscaped:                      return 1000000;
         case ChaseWinner:                       return 2500000;
         case CustomizationShopOwnerShare:       return 1500;
+        case DeathDropMoneyPercentage:          return 50;
         case DeathmatchChampion:                return 1000000;
         case DerbyParticipation:                return 250;
         case DerbyVictory:                      return 10000;

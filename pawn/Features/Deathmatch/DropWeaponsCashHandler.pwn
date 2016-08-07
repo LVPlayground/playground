@@ -80,7 +80,7 @@ class DropWeaponsCashHandler {
             }
 
             if (m_pickupCashPickupId[player] == pickupId) {
-                GivePlayerMoney(playerId, m_pickupCashAmount[player]);
+                GivePlayerMoney(playerId, m_pickupCashAmount[player]);  // percentage controled w/ DeathDropMoneyPercentage
 
                 PickupController->destroyPickup(DropWeaponsCashHandler::DroppedObjectHandlerId,
                     m_pickupCashPickupId[player]);
@@ -162,7 +162,7 @@ class DropWeaponsCashHandler {
             dropPosition[2], GetPlayerVirtualWorld(playerId));
 
         // We save half of the dropped amount.
-        m_pickupCashAmount[playerId] = GetPlayerMoney(playerId) / 2;
+        m_pickupCashAmount[playerId] = floatround(float(GetPlayerMoney(playerId)) * (GetEconomyValue(DeathDropMoneyPercentage) / 100.0));
 
         m_droppedObjectTimer[playerId] = Time->currentTime();
 

@@ -20,10 +20,10 @@ class Property <propertyId (MAX_PROPERTIES)> {
     public const MaximumNameLenght = 31;
 
     // What is the maximum expense required to buy a property?
-    public const MaximumPropertyPrice = 500000000;
+    public const MaximumPropertyPrice = 50000000;
 
     // How many percent of the property price does the player receive for selling a property?
-    public const EarningOnPropertySellPercent = 70;
+    public const EarningOnPropertySellPercent = 50;
 
     // Has a property been created for this propertyId? Implicitly initialized to false (0).
     new bool: m_propertySlotInUse;

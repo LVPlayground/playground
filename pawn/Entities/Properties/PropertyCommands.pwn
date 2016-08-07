@@ -20,12 +20,12 @@ class PropertyCommands {
     //
     // If we however account for these events, the situation changes. When another player purchases
     // your property, you get a 20% refund. When you use "/sell" to sell a property, you get a
-    // whopping 70% refund. This gives us two more formulas:
+    // whopping 50% refund. This gives us two more formulas:
     //
     //   T(purchased) = (80 / earnings) * 3
-    //   T(sold)      = (30 / earnings) * 3
+    //   T(sold)      = (50 / earnings) * 3
     //
-    // For "/sell" this means a net ROI at 9 minutes given an 10% earnings percentage.
+    // For "/sell" this means a net ROI at 15 minutes given an 10% earnings percentage.
     // For someone else purchasing your property, it means a net ROI at 26 minutes.
     const DefaultEarningsPercentage = 10;
 

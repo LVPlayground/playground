@@ -140,7 +140,22 @@ public OnPlayerText(playerid, text[]) {
             playerid, Player(playerid)->nicknameString(), text);
 
     AddEcho(message);
-
+    
+    // /q Jokes Not Allowed
+      new QuitJokes[2][] = {
+         "/q","/Quit"
+ };
+ 
+     for(new i; i < sizeof(QuitJokes); i++)
+     {
+         if(strfind(text, QuitJokes[i], true) != -1) 
+         {
+             SendClientMessage(playerid, Color::Error, "Error: Quit jokes are not allowed");
+             return 0;
+         }
+     }
+ 
+ 
     // Finally: time to send the message to all players.
     for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
         if (g_Ignore[subjectId][playerid] == true)

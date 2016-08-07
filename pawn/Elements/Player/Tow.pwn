@@ -67,7 +67,7 @@ new towNames[NumberOfTowLocations][] =
 // This is the code called when the player uses the /tow command.
 lvp_tow(playerid, params[])
 {
-    new const price = GetEconomyValue(TowCommand);
+    new const price = GetEconomyValue(TeleportWithVehicle);
     new message[128];
 
     // If the player is an administrator, the following checks do not matter. Using an empty if-statement
@@ -118,7 +118,7 @@ lvp_tow(playerid, params[])
 
         // Lets take their money and tow them!
         if (Player(playerid)->isAdministrator() == false)
-            TakeRegulatedMoney(playerid, TowCommand);
+            TakeRegulatedMoney(playerid, TeleportWithVehicle);
 
         TowPlayer(playerid, location);
     }

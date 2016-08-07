@@ -392,7 +392,7 @@ waterFightRemovePlayer(playerid, bool:bLoadData = true)
     waterFightSignedUp[playerid] = false;
 
     if (waterFightGetState() == WATER_FIGHT_STATE_SIGNUP)
-        GiveRegulatedMoney(playerid, WaterFightParticipation);
+        GiveRegulatedMoney(playerid, MinigameParticipation);
 
     if(waterFightGetState() == WATER_FIGHT_STATE_RUNNING && bLoadData == true)
     {
@@ -514,14 +514,14 @@ OnWaterFightCmdText(playerid)
         return 1;
     }
 
-    new const price = GetEconomyValue(WaterFightParticipation);
+    new const price = GetEconomyValue(MinigameParticipation);
     if(GetPlayerMoney(playerid) < price)
     {
         ShowPlayerBox(playerid, "It costs $%d to join Water fights!", price);
         return 1;
     }
 
-    TakeRegulatedMoney(playerid, WaterFightParticipation);
+    TakeRegulatedMoney(playerid, MinigameParticipation);
 
     new szAdminMsg[128];
 

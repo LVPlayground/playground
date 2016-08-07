@@ -63,15 +63,13 @@ enum EconomyValueType {
     TaxiRideOwnerShare,
     TeleportWithVehicle,
     TeleportWithoutVehicle,
-    TowCommand,
     TuneCommand,
     VehicleCrusherReward,
     VehicleExportReward,
     VehicleExportRewardOwnerShare,
     VipColourChange,
     WantedLevelAward,
-    WantedLevelOwnerShare,
-    WaterFightParticipation
+    WantedLevelOwnerShare
 };
 
 new customsTax = 150;
@@ -86,25 +84,25 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case AirportCustomsTaxMax:              return 500;
         case AirportCustomsTaxMin:              return 50;
         case AirportCustomsTaxOwnersShare:      return customsTax / 4;
-        case AirportFlight:                     return 25000;
+        case AirportFlight:                     return 750;
         case AlcoholicDrink:                    return 100 * inputValue /* units [1-8] */;
         case AlcoholicDrinkOwnerShare:          return 10 * inputValue /* units [1-8] */;
-        case BitchSlapCommand:                  return 1500;
-        case BombExplosionExtreme:              return 40000;
-        case BombExplosionLarge:                return 7000;
-        case BombExplosionMedium:               return 2500;
-        case BombTypeCountdown:                 return 200000;
-        case BombTypeCountdownOwnersShare:      return 5000;
-        case BombTypeDetonator:                 return 400000;
-        case BombTypeDetonatorOwnersShare:      return 10000;
-        case BombTypeEngine:                    return 100000;
-        case BombTypeEngineOwnersShare:         return 2500;
+        case BitchSlapCommand:                  return 1000;
+        case BombExplosionExtreme:              return 4500;
+        case BombExplosionLarge:                return 3000;
+        case BombExplosionMedium:               return 2000;
+        case BombTypeCountdown:                 return 5000;
+        case BombTypeCountdownOwnersShare:      return 500;
+        case BombTypeDetonator:                 return 5000;
+        case BombTypeDetonatorOwnersShare:      return 500;
+        case BombTypeEngine:                    return 6000;
+        case BombTypeEngineOwnersShare:         return 600;
         case BonusExport:                       return 3000;
         case BonusKill:                         return 1500;
-        case BonusMinigame:                     return 2000;
+        case BonusMinigame:                     return 5000;
         case CarDiveCommand:                    return 1000;
-        case ChaseEscaped:                      return 100000;
-        case ChaseWinner:                       return 250000;
+        case ChaseEscaped:                      return 1250;
+        case ChaseWinner:                       return 1500;
         case CustomizationShopOwnerShare:       return 150;
         case DeathDropMoneyPercentage:          return 50;
         case DeathmatchChampion:                return 100000;
@@ -133,13 +131,12 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case ShipIdleMoney:                     return 5 * inputValue /* VIP multiplier */;
         case ShowMessageCommand:                return 20000;
         case SlapCommand:                       return 500;
-        case SpawnMoney:                        return 17500;
+        case SpawnMoney:                        return 10000;
         case TaxiPerKilometer:                  return 20;
         case TaxiRide:                          return GetEconomyValue(TaxiPerKilometer) * inputValue /* distance */;
         case TaxiRideOwnerShare:                return floatround(GetEconomyValue(TaxiPerKilometer) * inputValue /* distance */ * 0.1);
-        case TeleportWithVehicle:               return 5000;
-        case TeleportWithoutVehicle:            return 2000;
-        case TowCommand:                        return 4500;
+        case TeleportWithVehicle:               return 1500;
+        case TeleportWithoutVehicle:            return 1000;
         case TuneCommand:                       return 1000;
         case VehicleCrusherReward:              return 400;
         case VehicleExportReward:               return floatround(inputValue /* vehicle health [371-1000] */ * 7.5 * 1.216);
@@ -147,7 +144,6 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case VipColourChange:                   return 1000000;
         case WantedLevelAward:                  return 1000 * inputValue /* wanted level stars */;
         case WantedLevelOwnerShare:             return 10 * inputValue /* wanted level stars */;
-        case WaterFightParticipation:           return 250;
     }
 
     return 0;

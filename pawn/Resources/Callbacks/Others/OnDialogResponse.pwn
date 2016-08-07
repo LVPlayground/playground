@@ -552,7 +552,7 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
         case DIALOG_TOW_COMMAND: {
             if (response) {
                 if (!Player(playerid)->isAdministrator())
-                    TakeRegulatedMoney(playerid, TowCommand);
+                    TakeRegulatedMoney(playerid, TeleportWithVehicle);
 
                 TowPlayer(playerid, listitem);
             }

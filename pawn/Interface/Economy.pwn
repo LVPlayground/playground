@@ -26,8 +26,6 @@ enum EconomyValueType {
     BonusExport,
     BonusKill,
     BonusMinigame,
-    CaptureBriefcaseParticipation,
-    CaptureBriefcaseVictory,
     CarDiveCommand,
     ChaseEscaped,
     ChaseWinner,
@@ -39,8 +37,6 @@ enum EconomyValueType {
     DerbyParticipation,
     DerbyVictory,
     DiveCommand,
-    FightClubParticipation,
-    FightClubVictory,
     GiftHuntLargePrize,
     GiftHuntMediumPrize,
     GiftHuntSmallPrize,
@@ -64,9 +60,6 @@ enum EconomyValueType {
     NitroInfinite,
     ReactionTest,
     Ramping,
-    RivershellParticipation,
-    RobberyParticipation,
-    RobberyVictory,
     RunWeaponsParticipation,
     ShipIdleMoney,
     ShowMessageCommand,
@@ -118,8 +111,6 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case BonusExport:                       return 3000;
         case BonusKill:                         return 1500;
         case BonusMinigame:                     return 2000;
-        case CaptureBriefcaseParticipation:     return 10;
-        case CaptureBriefcaseVictory:           return 200000;
         case CarDiveCommand:                    return 1000;
         case ChaseEscaped:                      return 100000;
         case ChaseWinner:                       return 250000;
@@ -131,8 +122,6 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case DerbyParticipation:                return 25;
         case DerbyVictory:                      return 1000;
         case DiveCommand:                       return 750;
-        case FightClubParticipation:            return 250;
-        case FightClubVictory:                  return 500;
         case GiftHuntLargePrize:                return 300000;
         case GiftHuntMediumPrize:               return 100000;
         case GiftHuntSmallPrize:                return 50000;
@@ -148,7 +137,7 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case MapZoneReward:                     return 2000 - 10 * inputValue /* time taken (seconds) */;
         case MapZoneSpeedBonus:                 return 1 * inputValue /* high-speed streak count */;
         case MinigameParticipation:             return 250;
-        case MinigamePrize:                     return 250 * inputValue /* participant count */ * (2/3);
+        case MinigamePrize:                     return 250 * inputValue /* participant count */;
         case MoneyStatue:                       return 5000 * inputValue /* statue kill count */;
         case NitroTwoShot:                      return 200;
         case NitroFiveShot:                     return 500;
@@ -156,9 +145,6 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case NitroInfinite:                     return 25000;
         case ReactionTest:                      return 1000;
         case Ramping:                           return 5000;
-        case RivershellParticipation:           return 25;
-        case RobberyParticipation:              return 25;
-        case RobberyVictory:                    return 500 * inputValue /* participant count */;
         case RunWeaponsParticipation:           return 25;
         case ShipIdleMoney:                     return 5 * inputValue /* VIP multiplier */;
         case ShowMessageCommand:                return 20000;

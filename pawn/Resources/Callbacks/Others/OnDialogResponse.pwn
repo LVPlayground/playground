@@ -166,7 +166,7 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                 if (matchId < 0)
                     return SendClientMessage(playerid, Color::Error, "The FightClub is currently full.");
 
-                new const price = GetEconomyValue(FightClubParticipation);
+                new const price = GetEconomyValue(MinigameParticipation);
 
                 if (GetPlayerMoney(playerid) < price) {
                     new string[128];

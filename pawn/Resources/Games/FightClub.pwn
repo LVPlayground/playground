@@ -504,7 +504,7 @@ CFightClub__OnInvite(playerid, inviteid)
     format(string, sizeof(string), "  Use '/fight accept %d' to accept or '/fight deny %d' to deny.", matchid, matchid);
     SendClientMessage(inviteid, COLOR_YELLOW, string);
 
-    TakeRegulatedMoney(playerid, FightClubParticipation);
+    TakeRegulatedMoney(playerid, MinigameParticipation);
     return 1;
 }
 
@@ -672,7 +672,7 @@ CFightClub__OnDisconnect(playerId)
 
             // Award the prize money when the other player initiated the match.
             if (!wasPrimaryPlayer)
-                GiveRegulatedMoney(otherPlayer, FightClubParticipation);
+                GiveRegulatedMoney(otherPlayer, MinigameParticipation);
 
             format(message, sizeof(message), "* The fight has been concluded because %s has left the server.", PlayerName(playerId));
             SendClientMessage(otherPlayer, Color::Red, message);
@@ -1007,7 +1007,7 @@ CFightClub__EndMatch(matchid)
 
     CFightClub__ResetMatch(matchid);
 
-    new const prize = GetEconomyValue(FightClubVictory);
+    new const prize = GetEconomyValue(MinigamePrize, 2 /* participants */);
 
     // First of all calculate the winners / loosers
     // and process the news message
@@ -1019,7 +1019,7 @@ CFightClub__EndMatch(matchid)
         SendClientMessage (iPlayer2, Color::Red, sMessage);
         format (sMessage, sizeof (sMessage), "~r~~h~%s~w~ has beaten ~r~~h~%s~w~ in a fight with ~y~%d-%d", PlayerName(iPlayer1), PlayerName(iPlayer2), iScore1, iScore2);
 
-        GiveRegulatedMoney(iPlayer1, FightClubVictory);
+        GiveRegulatedMoney(iPlayer1, MinigamePrize, 2 /* participants */);
     }
     else if (iScore2 > iScore1)
     {
@@ -1029,7 +1029,7 @@ CFightClub__EndMatch(matchid)
         SendClientMessage (iPlayer1, Color::Red, sMessage);
         format (sMessage, sizeof (sMessage), "~r~~h~%s~w~ has beaten ~r~~h~%s~w~ in a fight with ~y~%d-%d", PlayerName(iPlayer2), PlayerName(iPlayer1), iScore2, iScore1);
 
-        GiveRegulatedMoney(iPlayer2, FightClubVictory);
+        GiveRegulatedMoney(iPlayer2, MinigamePrize, 2 /* participants */);
     }
     else
     {

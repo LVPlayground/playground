@@ -645,7 +645,7 @@ CRobbery__OnCommand(playerid)
         return 1;
     }
 
-    new const price = GetEconomyValue(RobberyParticipation);
+    new const price = GetEconomyValue(MinigameParticipation);
 
     if(GetPlayerMoney(playerid) < price) {
         new message[128];
@@ -671,7 +671,7 @@ CRobbery__OnCommand(playerid)
     format(string, 128, "%s (Id:%d) has signed up for /robbery.", PlayerName(playerid), playerid);
     Admin(playerid, string);
 
-    TakeRegulatedMoney(playerid, RobberyParticipation);
+    TakeRegulatedMoney(playerid, MinigameParticipation);
     CRobbery__PlayerJoin(playerid);
     return 1;
 }
@@ -764,7 +764,7 @@ CRobbery__Process()
                     {
                         // We must let them know.
                         ShowBoxForPlayer(i, "Not enough players have signed up for Casino Robbery. You have been refunded.");
-                        GiveRegulatedMoney(i, RobberyParticipation);
+                        GiveRegulatedMoney(i, MinigameParticipation);
                     }
                 }
                 CRobbery__ResetVars();
@@ -970,7 +970,7 @@ CRobbery__End()
         if(CRobbery__GetPlayerStatus(i) != ROBSTATUS_PLAYING) continue;
         if(CRobbery__GetPlayerTeam(i) == casinoData[winners])
         {
-            GiveRegulatedMoney(i, RobberyVictory, casinoSignupCount);
+            GiveRegulatedMoney(i, MinigamePrize, 2 /* participants */);
         }
         CRobbery__PlayerExit(i);
     }
@@ -1014,7 +1014,7 @@ CRobbery__PlayerExit(playerid)
 
     // Done the hard stuff! Now, let's give them a refund if they never got to play.
     if(CRobbery__GetStatus() == ROBSTATUS_SIGNUP) {
-        GiveRegulatedMoney(playerid, RobberyParticipation);
+        GiveRegulatedMoney(playerid, MinigameParticipation);
     } else {
         // Ugh oh. They're playing! Fuck!
 

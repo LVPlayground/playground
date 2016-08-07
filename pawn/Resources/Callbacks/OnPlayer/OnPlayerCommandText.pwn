@@ -244,7 +244,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        new const price = GetEconomyValue(RivershellParticipation);
+        new const price = GetEconomyValue(MinigameParticipation);
 
         if(GetPlayerMoney(playerid) < price)
         {
@@ -308,7 +308,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        new const price = GetEconomyValue(CaptureBriefcaseParticipation);
+        new const price = GetEconomyValue(MinigameParticipation);
         new message[128];
 
         if(GetPlayerMoney(playerid) < price)

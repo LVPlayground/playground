@@ -85,7 +85,7 @@ CShell__SignPlayerUp(playerid)
     // get team BLUE and the var gets set to true. Then, if its set to true, they
     // get team green and its set to false. Nice & easy ;)
 
-    TakeRegulatedMoney(playerid, RivershellParticipation);
+    TakeRegulatedMoney(playerid, MinigameParticipation);
 
     new message[128];
     Responses->respondMinigameSignedUp(playerid, RivershellMinigame, "Rivershell", 20);
@@ -130,7 +130,7 @@ CShell__SignPlayerOut(playerid)
     CShell__Debug("SignPlayerOut process successfull.");
 
     if (g_RivershellState == RIVERSHELL_STATE_SIGNUP)
-        GiveRegulatedMoney(playerid, RivershellParticipation);
+        GiveRegulatedMoney(playerid, MinigameParticipation);
 
     if(g_RivershellState == RIVERSHELL_STATE_RUNNING)
     {
@@ -200,7 +200,7 @@ CShell__CheckStatus()
 // CShell__End. This is called when the game is about to end, and manages
 // the process by settings relevant vars and sending an explination
 // message as to why it ended.
-CShell__End()
+CShell__End(winningTeam = -1)
 {
     CShell__Debug("CShell__End processing...");
     // is the game actually running?
@@ -210,8 +210,6 @@ CShell__End()
     // Now, we need to set the vehicles, whether they need destroying or w/e
     CShell__ProcessVehicles();
 
-    CShell__TeamCount[TEAM_BLUE] = 0;
-    CShell__TeamCount[TEAM_GREEN] = 0;
     // now we loop through players, and anyone that was taking part need to
     // be respawned.
     for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
@@ -222,7 +220,7 @@ CShell__End()
         g_RivershellPlayer[i] = false;
 
         if (g_RivershellState == RIVERSHELL_STATE_SIGNUP) {
-            GiveRegulatedMoney(i, RivershellParticipation);
+            GiveRegulatedMoney(i, MinigameParticipation);
             ShowBoxForPlayer(i, "Not enough players have signed up for Rivershell. You have been refunded.");
         }
 
@@ -230,6 +228,9 @@ CShell__End()
         // respawn them out of it in which case.
         if(g_RivershellState == RIVERSHELL_STATE_RUNNING)
         {
+            if (p_Team[i] == winningTeam)
+                GiveRegulatedMoney(i, MinigamePrize, 2 /* participants */);
+
             SetPlayerVirtualWorld(i,0);
             RemovePlayerFromVehicle(i);
             RemovePlayerFromVehicle(i);
@@ -247,8 +248,13 @@ CShell__End()
             CShell__LoadGuns(i);
             TextDrawHideForPlayer(i,Rivershell);
             g_VirtualWorld[ i ] = 0;
+            p_Team[ i ] = -1;
         }
     }
+
+    CShell__TeamCount[TEAM_BLUE] = 0;
+    CShell__TeamCount[TEAM_GREEN] = 0;
+
     g_RivershellState = RIVERSHELL_STATE_NONE;
     CShell__TextdrawUpdate();
     CShell__Debug("CShell__End process successfull.");
@@ -567,7 +573,7 @@ CShell__Checkpoint(playerid)
         if(gGreenTimesCapped == CAPS_TO_WIN) {
             format(str, sizeof(str), "~y~Rivershell~w~ has finished: ~g~~h~Green Team~w~ have won!");
             NewsController->show(str);
-            CShell__End();
+            CShell__End(TEAM_GREEN);
         }
     }
 
@@ -583,7 +589,7 @@ CShell__Checkpoint(playerid)
         if (gBlueTimesCapped == CAPS_TO_WIN) {
             format(str, sizeof(str), "~y~Rivershell~w~ has finished: ~b~~h~Blue Team~w~ have won!");
             NewsController->show(str);
-            CShell__End();
+            CShell__End(TEAM_BLUE);
         }
     }
 

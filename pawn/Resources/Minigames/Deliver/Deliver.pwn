@@ -17,7 +17,6 @@ enum TruckDeliveryPlayerEnum {
     Time,
     distn,
     TimeStart,
-    Earnings,
     CheckTime
 }
 
@@ -126,14 +125,9 @@ PrepareDelivery(playerid)
         playerToDeliveryLocationDistance = GetDistance(playerid, TruckLocationX, TruckLocationY, TruckLocationZ);
 
         TruckDeliveryPlayer[playerid][distn] = floatround(playerToDeliveryLocationDistance/50);
-
         TruckDeliveryPlayer[playerid][Time] = floatround(floatpower(TruckDeliveryPlayer[playerid][distn], 0.9)*4.5, floatround_round);
-
         TruckDeliveryPlayer[playerid][CheckTime] = TruckDeliveryPlayer[playerid][Time];
-
         TruckDeliveryPlayer[playerid][TimeStart] = Time->currentTime();
-
-        TruckDeliveryPlayer[playerid][Earnings] = 0;
 
 
         DisablePlayerCheckpoint(playerid);
@@ -189,16 +183,24 @@ DeliveryComplete(playerid)
         return 1;
     }
     DisablePlayerCheckpoint(playerid);
-    TruckDeliveryPlayer[playerid][Earnings] = (TruckDeliveryPlayer[playerid][Time] - (Time->currentTime() - TruckDeliveryPlayer[playerid][TimeStart]))*400 + TruckDeliveryPlayer[playerid][distn]*1700;
+
+    new const timeTaken = Time->currentTime() - TruckDeliveryPlayer[playerid][TimeStart];
+    new const timeLeft = TruckDeliveryPlayer[playerid][Time] - timeTaken;
+
+    new const timeReward = GetEconomyValue(DeliveryTimeReward, timeLeft);
+    new const distanceReward = GetEconomyValue(DeliveryDistanceReward, TruckDeliveryPlayer[playerid][distn]);
+
+    new const reward = timeReward + distanceReward;
+
     new str[128];
-    format(str, sizeof(str), "* You delivered the goods on time. You have received $%d!", TruckDeliveryPlayer[playerid][Earnings]);
+    format(str, sizeof(str), "* You delivered the goods on time. You have received $%s!", formatPrice(reward));
     SendClientMessage(playerid, COLOR_YELLOW, str);
-    GivePlayerMoney(playerid, TruckDeliveryPlayer[playerid][Earnings]);
+    GivePlayerMoney(playerid, reward);  // economy: DeliveryDistanceReward / DeliveryTimeReward
     SetVehicleToRespawn(GetVehicleTrailer(iVehID));
     PlayerInfo[playerid][PlayerStatus] = STATUS_NONE;
     PlayerInfo[playerid][playerInCheckpoint] = 0;
     new tstr[128];
-    format(tstr, sizeof(tstr), "~y~Delivery Complete!~n~~g~$%d!", TruckDeliveryPlayer[playerid][Earnings]);
+    format(tstr, sizeof(tstr), "~y~Delivery Complete!~n~~g~$%s!", formatPrice(reward));
     GameTextForPlayer(playerid, tstr, 5000, 0);
     DeliveryResetStuff(playerid);
     return 1;
@@ -211,6 +213,5 @@ DeliveryResetStuff(playerid)
     TruckDeliveryPlayer[playerid][Time] = 0;
     TruckDeliveryPlayer[playerid][distn] = 0;
     TruckDeliveryPlayer[playerid][TimeStart] = 0;
-    TruckDeliveryPlayer[playerid][Earnings] = 0;
     TruckDeliveryPlayer[playerid][TimeStart] = 0;
 }

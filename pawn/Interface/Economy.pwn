@@ -34,6 +34,8 @@ enum EconomyValueType {
     CustomizationShopOwnerShare,
     DeathDropMoneyPercentage,
     DeathmatchChampion,
+    DeliveryDistanceReward,
+    DeliveryTimeReward,
     DerbyParticipation,
     DerbyVictory,
     DiveCommand,
@@ -94,9 +96,6 @@ new customsTax = 1500;
 //   - Property pricing
 //   - Weapons price (//data/ammunation.json)
 
-// Features to convert:
-//   - Delivery
-
 GetEconomyValue(EconomyValueType: type, inputValue = 0) {
     switch (type) {
         case AirportCustomsTax:                 return customsTax;
@@ -127,6 +126,8 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case CustomizationShopOwnerShare:       return 1500;
         case DeathDropMoneyPercentage:          return 50;
         case DeathmatchChampion:                return 1000000;
+        case DeliveryDistanceReward:            return 1700 * inputValue /* distance in units */;
+        case DeliveryTimeReward:                return 400 * inputValue /* seconds left */;
         case DerbyParticipation:                return 250;
         case DerbyVictory:                      return 10000;
         case DiveCommand:                       return 7500;

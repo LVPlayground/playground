@@ -34,17 +34,11 @@ enum EconomyValueType {
     DeathmatchChampion,
     DeliveryDistanceReward,
     DeliveryTimeReward,
-    DerbyParticipation,
-    DerbyVictory,
     DiveCommand,
     GiftHuntLargePrize,
     GiftHuntMediumPrize,
     GiftHuntSmallPrize,
     GrandTheftAutoRandomVehicleValue,
-    HayParticipation,
-    HideAndSeekSignUpCost,
-    HideAndSeekPrize,
-    IslandTeamDeathMatchPrize,
 #if Feature::DisableKilltime == 0
     KilltimeVictory,
 #endif
@@ -60,7 +54,6 @@ enum EconomyValueType {
     NitroInfinite,
     ReactionTest,
     Ramping,
-    RunWeaponsParticipation,
     ShipIdleMoney,
     ShowMessageCommand,
     SlapCommand,
@@ -76,8 +69,6 @@ enum EconomyValueType {
     VehicleExportReward,
     VehicleExportRewardOwnerShare,
     VipColourChange,
-    WalkiesWeaponParticipation,
-    WalkiesWeaponVictory,
     WantedLevelAward,
     WantedLevelOwnerShare,
     WaterFightParticipation
@@ -119,17 +110,11 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case DeathmatchChampion:                return 100000;
         case DeliveryDistanceReward:            return 170 * inputValue /* distance in units */;
         case DeliveryTimeReward:                return 40 * inputValue /* seconds left */;
-        case DerbyParticipation:                return 25;
-        case DerbyVictory:                      return 1000;
         case DiveCommand:                       return 750;
         case GiftHuntLargePrize:                return 300000;
         case GiftHuntMediumPrize:               return 100000;
         case GiftHuntSmallPrize:                return 50000;
         case GrandTheftAutoRandomVehicleValue:  return random(254219 /* max */ - 13561 /* min */) + 13561 /* min */;
-        case HayParticipation:                  return 25;
-        case HideAndSeekSignUpCost:             return 25;
-        case HideAndSeekPrize:                  return 50000;
-        case IslandTeamDeathMatchPrize:         return 1000;
 #if Feature::DisableKilltime == 0
         case KilltimeVictory:                   return 250000;
 #endif
@@ -145,7 +130,6 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case NitroInfinite:                     return 25000;
         case ReactionTest:                      return 1000;
         case Ramping:                           return 5000;
-        case RunWeaponsParticipation:           return 25;
         case ShipIdleMoney:                     return 5 * inputValue /* VIP multiplier */;
         case ShowMessageCommand:                return 20000;
         case SlapCommand:                       return 500;
@@ -161,8 +145,6 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case VehicleExportReward:               return floatround(inputValue /* vehicle health [371-1000] */ * 7.5 * 1.216);
         case VehicleExportRewardOwnerShare:     return floatround(inputValue /* vehicle health [371-1000] */ * 7.5 * 1.216 * 0.1);
         case VipColourChange:                   return 1000000;
-        case WalkiesWeaponParticipation:        return 25;
-        case WalkiesWeaponVictory:              return 500 * inputValue /* participant count */;
         case WantedLevelAward:                  return 1000 * inputValue /* wanted level stars */;
         case WantedLevelOwnerShare:             return 10 * inputValue /* wanted level stars */;
         case WaterFightParticipation:           return 250;

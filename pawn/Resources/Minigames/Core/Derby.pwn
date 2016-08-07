@@ -195,7 +195,7 @@ static  Text:g_DerbyTextdraw[MAX_DERBIES][4];
 // These variables store genral derby / derby player information.
 
 
-static g_DerbyData[MAX_DERBIES][19];/*
+static g_DerbyData[MAX_DERBIES][20];/*
 
 General information for the derby;
 
@@ -217,7 +217,9 @@ General information for the derby;
    [15] - The minimum height limit
    [16] - The amount of objects created in a derby map
    [17] - The remaining number of seconds in this derby.
-   [18] - The derby countdown mode*/
+   [18] - The derby countdown mode
+   [19] - Total players who have ever signed up.
+   */
 
 
 static g_DerbyPlayer[MAX_PLAYERS][5];/*
@@ -310,6 +312,8 @@ CDerby__Start(iDerbyID)
         return 0;
     }
 
+    g_DerbyData[iDerbyID][19] = g_DerbyData[iDerbyID][2];
+
     // Load the derby map first so we can update the stream for each player
     CDerby__LoadDerbyMap(iDerbyID);
 
@@ -343,7 +347,7 @@ CDerby__Start(iDerbyID)
             {
                 ShowBoxForPlayer(i, "Not enough players have signed up for this derby. You have been refunded.");
                 CDerby__PlayerExit(i, LONELY);
-                GiveRegulatedMoney(i, DerbyParticipation);
+                GiveRegulatedMoney(i, MinigameParticipation);
                 return 1;
             }
         #endif
@@ -472,6 +476,7 @@ CDerby__End(iDerbyID, iTimeUp = 0)
 
     g_DerbyData[iDerbyID][2] = 0;
     g_DerbyData[iDerbyID][12] = 0;
+    g_DerbyData[iDerbyID][19] = 0;
 
     CDerby__UnloadDerbyMap(iDerbyID);
     CDerby__UnloadPickups(iDerbyID);
@@ -567,7 +572,7 @@ CDerby__PlayerExit(iPlayerID, iReason)
     // Give the player a refund if they sign out.
     if(iReason == SIGNOUT)
     {
-        GiveRegulatedMoney(iPlayerID, DerbyParticipation);
+        GiveRegulatedMoney(iPlayerID, MinigameParticipation);
     }
 
     if(iReason != SIGNOUT && iReason != DISCONNECT)
@@ -586,13 +591,13 @@ CDerby__PlayerExit(iPlayerID, iReason)
             format(szMessage, sizeof(szMessage), "~y~%s~w~ has finished: ~r~~h~%s~w~ has won!", CDerby__GetName(iDerbyID), Player(iPlayerID)->nicknameString());
             NewsController->show(szMessage);
 
-            new const prize = GetEconomyValue(DerbyVictory);
+            new const prize = GetEconomyValue(MinigameVictory, g_DerbyData[iDerbyID][19] /* participants */);
             new message[128];
 
             format(message, sizeof(message), "* You won the derby and received $%s!", formatPrice(prize));
             SendClientMessage(iPlayerID, Color::Green, message);
 
-            GiveRegulatedMoney(iPlayerID, DerbyVictory);
+            GiveRegulatedMoney(iPlayerID, MinigameVictory, g_DerbyData[iDerbyID][19] /* participants */);
 
             WonMinigame[iPlayerID]++;
         }
@@ -1371,7 +1376,7 @@ CDerby__OnCommand(playerid, params[])
         return 1;
     }
 
-    new const price = GetEconomyValue(DerbyParticipation);
+    new const price = GetEconomyValue(MinigameParticipation);
 
     // Does the player have enough money?
     if(GetPlayerMoney(playerid) < price)
@@ -1403,7 +1408,7 @@ CDerby__OnCommand(playerid, params[])
         CDerby__GetName(iDerbyID), iDerbyID);
     NewsController->show(str);
 
-    TakeRegulatedMoney(playerid, DerbyParticipation);
+    TakeRegulatedMoney(playerid, MinigameParticipation);
     return 1;
 }
 

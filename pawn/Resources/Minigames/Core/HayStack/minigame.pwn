@@ -396,7 +396,7 @@ hayOnCommand(playerid)
         return 1;
     }
 
-    new const price = GetEconomyValue(HayParticipation);
+    new const price = GetEconomyValue(MinigameParticipation);
 
     if(GetPlayerMoney(playerid) < price)
     {
@@ -411,7 +411,7 @@ hayOnCommand(playerid)
         return 1;
     }
 
-    TakeRegulatedMoney(playerid, HayParticipation);
+    TakeRegulatedMoney(playerid, MinigameParticipation);
 
     if (hayGetState() == HAY_STATE_IDLE) {
         hayInitialize();
@@ -515,7 +515,7 @@ hayRemovePlayer(playerid)
     }
     else
     {   // Player signed out so give them a refund
-        GiveRegulatedMoney(playerid, HayParticipation);
+        GiveRegulatedMoney(playerid, MinigameParticipation);
     }
 
     // Check to end the minigame if not enough people

@@ -182,7 +182,7 @@ islandDMRemovePlayer(playerid)
 
             islandDMToggleBlip(playerid, true);
             GameTextForPlayer(i, "~g~You win!", 5000, 5);
-            GiveRegulatedMoney(i, IslandTeamDeathMatchPrize);
+            GiveRegulatedMoney(i, MinigameVictory, 2 /* participants */);
             islandDMTeam[i] = NO_TEAM;
             SetPlayerTeam(i, NO_TEAM);
             SpawnPlayer(i);
@@ -216,7 +216,7 @@ islandDMRemovePlayer(playerid)
 
             islandDMToggleBlip(playerid, true);
             GameTextForPlayer(i, "~g~You win!", 5000, 5);
-            GiveRegulatedMoney(i, IslandTeamDeathMatchPrize);
+            GiveRegulatedMoney(i, MinigameVictory, 2 /* participants */);
             islandDMTeam[i] = NO_TEAM;
             SetPlayerTeam(i, NO_TEAM);
             SpawnPlayer(i);

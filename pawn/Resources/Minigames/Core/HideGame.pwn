@@ -125,6 +125,7 @@ new Menu:mLocationMenu3;
 new aHidePlayerState[MAX_PLAYERS];
 new iSeekerPlayer;
 new iHideGameSignups = 0;
+new iHideGameTotalSignups = 0;
 new iFrozenCount = 60;
 new iFrozenCountDown;
 new iHideStartTimer;
@@ -1020,7 +1021,7 @@ CHideGame__onJoinCommand( iPlayerID, params[] )
     if (CHideGame__GetPlayerState(iPlayerID) == HS_STATE_SIGNING_UP)
         return SendClientMessage(iPlayerID, Color::Red, "* Error: you've already been signed up for this minigame.");
 
-    new const price = GetEconomyValue(HideAndSeekSignUpCost);
+    new const price = GetEconomyValue(MinigameParticipation);
 
     if (GetPlayerMoney( iPlayerID ) < price) {
         new message[128];
@@ -1040,7 +1041,7 @@ CHideGame__onJoinCommand( iPlayerID, params[] )
     SendClientMessage( iPlayerID, Color::Green, "* You've succesfully signed up for the Hide and Seek minigame.");
 
     // Take their moneys :D
-    TakeRegulatedMoney(iPlayerID, HideAndSeekSignUpCost);
+    TakeRegulatedMoney(iPlayerID, MinigameParticipation);
     iHideGameSignups++;
 
     iHideGameState = HS_STATE_SIGNING_UP;
@@ -1066,7 +1067,7 @@ CHideGame__onLeaveCommand( iPlayerID )
         aHidePlayerState[ iPlayerID ] = HS_STATE_NONE;
 
         // Give them their money back.
-        GiveRegulatedMoney(iPlayerID, HideAndSeekSignUpCost);
+        GiveRegulatedMoney(iPlayerID, MinigameParticipation);
         iHideGameSignups--;
 
         // If the seeker leaves, the minigame is over.
@@ -1262,8 +1263,12 @@ CHideGame__ThrowOut( iPlayerID, iReason )
         NewsController->show(sMessage);
 
         CHideGame__ResetVariables();
-        SendClientMessage( iWinner, Color::Green, "You've won the Hide&Seek minigame and you've received $500.000!");
-        GiveRegulatedMoney(iWinner, HideAndSeekPrize);
+
+        format(sMessage, sizeof(sMessage), "You've won the Hide&Seek minigame and you've received $%s!",
+            formatPrice(GetEconomyValue(MinigameVictory, iHideGameTotalSignups)));
+
+        SendClientMessage( iWinner, Color::Green, sMessage);
+        GiveRegulatedMoney(iWinner, MinigameVictory, iHideGameTotalSignups);
 
         // Increase the amount of minigames the player has won
         WonMinigame[ iWinner ]++;
@@ -1439,6 +1444,8 @@ public CHideGame__Start()
     {
         // Game has started!
         iHideGameState = HS_STATE_PLAYING;
+
+        iHideGameTotalSignups = iHideGameSignups;
 
         for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); playerId++) {
             if (Player(playerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter() == true)

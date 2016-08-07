@@ -465,7 +465,7 @@ rwRemovePlayerFromMinigame(playerid)
     }
 
     if(rwGetState() == RW_STATE_SIGNUP)
-        GiveRegulatedMoney(playerid, RunWeaponsParticipation);
+        GiveRegulatedMoney(playerid, MinigameParticipation);
 
     ColorManager->releasePlayerMinigameColor(playerid);
     TimeController->releasePlayerOverrideTime(playerid);
@@ -550,7 +550,7 @@ rwOnCommand(playerid, params[])
         return 1;
     }
 
-    new const price = GetEconomyValue(RunWeaponsParticipation);
+    new const price = GetEconomyValue(MinigameParticipation);
 
     // Has the player got enough money to signup?
     if(GetPlayerMoney(playerid) < price)
@@ -589,7 +589,7 @@ rwOnCommand(playerid, params[])
     // All good, sign the player up and we're done.
     rwSignPlayerUp(playerid);
 
-    TakeRegulatedMoney(playerid, RunWeaponsParticipation);
+    TakeRegulatedMoney(playerid, MinigameParticipation);
 
     return 1;
 }

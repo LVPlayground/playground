@@ -57,7 +57,7 @@ CWWTW__PlayerLeft( iPlayerID )
     WWTW_PlayerData[iPlayerID][iStatus] = WWTW_STATE_NONE;
     iSignupCount--;
 
-    GiveRegulatedMoney(iPlayerID, WalkiesWeaponParticipation);
+    GiveRegulatedMoney(iPlayerID, MinigameParticipation);
     return 1;
 }
 
@@ -104,7 +104,7 @@ CWWTW__OnCommand(playerid)
         return 1;
     }
 
-    new const price = GetEconomyValue(WalkiesWeaponParticipation);
+    new const price = GetEconomyValue(MinigameParticipation);
 
     if(GetPlayerMoney(playerid) < 250)
     {
@@ -135,7 +135,7 @@ CWWTW__OnCommand(playerid)
 
     iSignupCount++;
 
-    TakeRegulatedMoney(playerid, WalkiesWeaponParticipation);
+    TakeRegulatedMoney(playerid, MinigameParticipation);
 
     WWTW_PlayerData[playerid][iStatus] = WWTW_STATE_SIGNUP;
     return 1;
@@ -200,7 +200,7 @@ public WWTW__CheckTimer()
             {
                 // We must let them know.
                 ShowBoxForPlayer(i, "Not enough players have signed up for Walkies Weapons Team War. You have been refunded.");
-                GiveRegulatedMoney(i, WalkiesWeaponParticipation);
+                GiveRegulatedMoney(i, MinigameParticipation);
             }
         }
         CWWTW__Initialize();
@@ -273,7 +273,7 @@ CWWTW__End(iWinningTeam)
         if(WWTW_PlayerData[i][iStatus] != WWTW_STATE_PLAYING) continue;
         if(WWTW_PlayerData[i][iPlayerTeam] == iWinningTeam)
         {
-            GiveRegulatedMoney(i, WalkiesWeaponVictory, iSignupCount);
+            GiveRegulatedMoney(i, MinigameVictory, iSignupCount);
         }
         CWWTW__LoadPos(i);
         CWWTW__ResetPlayerVars(i);
@@ -333,7 +333,7 @@ CWWTW__OnExit(playerid, iReason)
         if(WWTW_PlayerData[playerid][iStatus] == WWTW_STATE_SIGNUP)
         {
             ShowBoxForPlayer(playerid, "Not enough players have signed up for Walkies Weapons Team War. You have been refunded.");
-            GiveRegulatedMoney(playerid, WalkiesWeaponParticipation);
+            GiveRegulatedMoney(playerid, MinigameParticipation);
             return 1;
         }
         else

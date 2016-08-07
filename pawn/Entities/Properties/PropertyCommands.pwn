@@ -10,8 +10,28 @@
  * @author Max "Cake" Blokker <cake@sa-mp.nl>
  */
 class PropertyCommands {
-    // What is the default percentage of a property's price which the earnings should be?
+    // What is the default percentage of a property's price which the earnings should be? Properties
+    // pay out every 3 minutes, to the ROI mark of properties can be calculated through:
+    //
+    //   T(default) = (100 / earnings) * 3
+    //
+    // For example, an earnings percentage of 10% would yield a net ROI at (100/10)*3=30 minutes
+    // assuming no use of "/sell" or another player buying it.
+    //
+    // If we however account for these events, the situation changes. When another player purchases
+    // your property, you get a 20% refund. When you use "/sell" to sell a property, you get a
+    // whopping 70% refund. This gives us two more formulas:
+    //
+    //   T(purchased) = (80 / earnings) * 3
+    //   T(sold)      = (30 / earnings) * 3
+    //
+    // For "/sell" this means a net ROI at 9 minutes given an 10% earnings percentage.
+    // For someone else purchasing your property, it means a net ROI at 26 minutes.
     const DefaultEarningsPercentage = 10;
+
+    // What are the minimum and maximum earning percentages that can be assigned to properties?
+    const MinimumEarningsPercentage = 1;
+    const MaximumEarningsPercentage = 20;
 
     // What is the default percentage a player will receive after their property got bought?
     const RefundPercentage = 20;
@@ -182,13 +202,18 @@ class PropertyCommands {
                 Property(propertyId)->nameString(), propertyId, Property(propertyId)->earningsPercentage());
             SendClientMessage(playerId, Color::Information, message);
 
-            SendClientMessage(playerId, Color::Information, "  Use \"/property [Id]? earnings [1-100]\" to set the earnings.");
+            format(message, sizeof(message), "  Use \"/property [Id]? earnings [%d-%d]\" to set the earnings.",
+                MinimumEarningsPercentage, MaximumEarningsPercentage);
+            SendClientMessage(playerId, Color::Information, message);
             return 1;
         }
 
         new earningsPercentage = Command->integerParameter(params, 0);
-        if (earningsPercentage <= 0 || earningsPercentage > 100) {
-            SendClientMessage(playerId, Color::Information, "Usage: /property [Id]? earnings [1-100]");
+        if (earningsPercentage < MinimumEarningsPercentage || earningsPercentage > MaximumEarningsPercentage) {
+            format(message, sizeof(message), "Usage: /property [Id]? earnings [%d-%d]",
+                MinimumEarningsPercentage, MaximumEarningsPercentage);
+
+            SendClientMessage(playerId, Color::Information, message);
             return 1;
         }
 

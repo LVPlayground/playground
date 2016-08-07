@@ -229,7 +229,7 @@ CShell__End(winningTeam = -1)
         if(g_RivershellState == RIVERSHELL_STATE_RUNNING)
         {
             if (p_Team[i] == winningTeam)
-                GiveRegulatedMoney(i, MinigamePrize, 2 /* participants */);
+                GiveRegulatedMoney(i, MinigameVictory, 2 /* participants */);
 
             SetPlayerVirtualWorld(i,0);
             RemovePlayerFromVehicle(i);

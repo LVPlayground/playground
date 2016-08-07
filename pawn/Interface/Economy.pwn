@@ -52,7 +52,7 @@ enum EconomyValueType {
     MapZoneReward,
     MapZoneSpeedBonus,
     MinigameParticipation,
-    MinigamePrize,
+    MinigameVictory,
     MoneyStatue,
     NitroTwoShot,
     NitroFiveShot,
@@ -137,7 +137,7 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case MapZoneReward:                     return 2000 - 10 * inputValue /* time taken (seconds) */;
         case MapZoneSpeedBonus:                 return 1 * inputValue /* high-speed streak count */;
         case MinigameParticipation:             return 250;
-        case MinigamePrize:                     return 250 * inputValue /* participant count */;
+        case MinigameVictory:                   return 250 * inputValue /* participant count */;
         case MoneyStatue:                       return 5000 * inputValue /* statue kill count */;
         case NitroTwoShot:                      return 200;
         case NitroFiveShot:                     return 500;

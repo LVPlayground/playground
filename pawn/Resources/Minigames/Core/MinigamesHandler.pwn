@@ -264,7 +264,7 @@ PlayerLigtUitMiniGame(playerId, reason) {
                         iHasSendMsg = 1;
                     }
 
-                    GiveRegulatedMoney(contestant, MinigamePrize, MinigameTypeInfo[Players]);
+                    GiveRegulatedMoney(contestant, MinigameVictory, MinigameTypeInfo[Players]);
 
                     PlayerInfo[contestant][PlayerStatus] = STATUS_NONE;
                     MinigameTypeInfo[Players] = 0;
@@ -295,7 +295,7 @@ PlayerLigtUitMiniGame(playerId, reason) {
                             ReturnMinigameName(minigame), Player(contestant)->nicknameString());
                         NewsController->show(notice);
 
-                        GiveRegulatedMoney(contestant, MinigamePrize, MinigameTypeInfo[Players]);
+                        GiveRegulatedMoney(contestant, MinigameVictory, MinigameTypeInfo[Players]);
 
                         PlayerInfo[contestant][PlayerStatus] = STATUS_NONE;
                         MinigameTypeInfo[Players] = 0;

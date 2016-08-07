@@ -970,7 +970,7 @@ CRobbery__End()
         if(CRobbery__GetPlayerStatus(i) != ROBSTATUS_PLAYING) continue;
         if(CRobbery__GetPlayerTeam(i) == casinoData[winners])
         {
-            GiveRegulatedMoney(i, MinigamePrize, 2 /* participants */);
+            GiveRegulatedMoney(i, MinigameVictory, 2 /* participants */);
         }
         CRobbery__PlayerExit(i);
     }

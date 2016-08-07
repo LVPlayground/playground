@@ -1007,7 +1007,7 @@ CFightClub__EndMatch(matchid)
 
     CFightClub__ResetMatch(matchid);
 
-    new const prize = GetEconomyValue(MinigamePrize, 2 /* participants */);
+    new const prize = GetEconomyValue(MinigameVictory, 2 /* participants */);
 
     // First of all calculate the winners / loosers
     // and process the news message
@@ -1019,7 +1019,7 @@ CFightClub__EndMatch(matchid)
         SendClientMessage (iPlayer2, Color::Red, sMessage);
         format (sMessage, sizeof (sMessage), "~r~~h~%s~w~ has beaten ~r~~h~%s~w~ in a fight with ~y~%d-%d", PlayerName(iPlayer1), PlayerName(iPlayer2), iScore1, iScore2);
 
-        GiveRegulatedMoney(iPlayer1, MinigamePrize, 2 /* participants */);
+        GiveRegulatedMoney(iPlayer1, MinigameVictory, 2 /* participants */);
     }
     else if (iScore2 > iScore1)
     {
@@ -1029,7 +1029,7 @@ CFightClub__EndMatch(matchid)
         SendClientMessage (iPlayer1, Color::Red, sMessage);
         format (sMessage, sizeof (sMessage), "~r~~h~%s~w~ has beaten ~r~~h~%s~w~ in a fight with ~y~%d-%d", PlayerName(iPlayer2), PlayerName(iPlayer1), iScore2, iScore1);
 
-        GiveRegulatedMoney(iPlayer2, MinigamePrize, 2 /* participants */);
+        GiveRegulatedMoney(iPlayer2, MinigameVictory, 2 /* participants */);
     }
     else
     {

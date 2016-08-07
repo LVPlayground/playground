@@ -195,10 +195,10 @@ CBrief__Checkpoint(playerid)
                 SendClientMessageToAll(Color::Debug,"CBrief__Checkpoint - ENDGAME");
             #endif
             WonMinigame[playerid]++;
-            GiveRegulatedMoney(playerid, MinigamePrize, signedUpCount);
+            GiveRegulatedMoney(playerid, MinigameVictory, signedUpCount);
 
             format(str, sizeof(str), "You have successfully delivered the briefcase! Here is your $%s.",
-                formatPrice(GetEconomyValue(MinigamePrize, signedUpCount)));
+                formatPrice(GetEconomyValue(MinigameVictory, signedUpCount)));
 
             SendClientMessage(playerid,COLOR_PINK,str);           
             format(str, sizeof(str), "~y~Capture the Briefcase~w~ has finished: ~r~~h~%s~w~ has deliverd the briefcase!", Player(playerid)->nicknameString());

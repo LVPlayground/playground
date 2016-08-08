@@ -207,12 +207,7 @@ class ColorPicker {
 
             switch (m_colorPickerTarget[playerId]) {
                 case PlayerColor: {
-                    // TODO: Move all of this to Player::OnColorChanged.
-                    if (Player(playerId)->isAdministrator() == false)
-                        TakeRegulatedMoney(playerId, VipColourChange);
-
                     ColorManager->setPlayerCustomColor(playerId, color);
-
                     SendClientMessage(playerId, Color::Success, "Your colour has been changed!");
                 }
 

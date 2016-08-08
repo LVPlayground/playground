@@ -65,7 +65,6 @@ enum EconomyValueType {
     VehicleCrusherReward,
     VehicleExportReward,
     VehicleExportRewardOwnerShare,
-    VipColourChange,
     WantedLevelAward,
     WantedLevelOwnerShare
 };
@@ -81,7 +80,7 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case AirportCustomsTax:                 return customsTax;
         case AirportCustomsTaxMax:              return 500;
         case AirportCustomsTaxMin:              return 50;
-        case AirportCustomsTaxOwnersShare:      return customsTax / 4;
+        case AirportCustomsTaxOwnersShare:      return customsTax / 2;
         case AirportFlight:                     return 750;
         case AlcoholicDrink:                    return 100 * inputValue /* units [1-8] */;
         case AlcoholicDrinkOwnerShare:          return 10 * inputValue /* units [1-8] */;
@@ -90,54 +89,53 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case BombExplosionLarge:                return 3000;
         case BombExplosionMedium:               return 2000;
         case BombTypeCountdown:                 return 5000;
-        case BombTypeCountdownOwnersShare:      return 500;
+        case BombTypeCountdownOwnersShare:      return 1000;
         case BombTypeDetonator:                 return 5000;
-        case BombTypeDetonatorOwnersShare:      return 500;
+        case BombTypeDetonatorOwnersShare:      return 1000;
         case BombTypeEngine:                    return 6000;
-        case BombTypeEngineOwnersShare:         return 600;
+        case BombTypeEngineOwnersShare:         return 2300;
         case BonusExport:                       return 3000;
-        case BonusKill:                         return 1500;
-        case BonusMinigame:                     return 5000;
+        case BonusKill:                         return 2500;
+        case BonusMinigame:                     return 7500;
         case CarDiveCommand:                    return 1000;
-        case ChaseEscaped:                      return 1250;
-        case ChaseWinner:                       return 1500;
+        case ChaseEscaped:                      return 2500;
+        case ChaseWinner:                       return 5000;
         case CustomizationShopOwnerShare:       return 150;
         case DeathDropMoneyPercentage:          return 50;
-        case DeathmatchChampion:                return 10000;
+        case DeathmatchChampion:                return 25000;
         case DeliveryDistanceReward:            return 170 * inputValue /* distance in units */;
         case DeliveryTimeReward:                return 40 * inputValue /* seconds left */;
-        case DiveCommand:                       return 750;
-        case GiftHuntLargePrize:                return 30000;
-        case GiftHuntMediumPrize:               return 10000;
-        case GiftHuntSmallPrize:                return 5000;
+        case DiveCommand:                       return 500;
+        case GiftHuntLargePrize:                return 50000;
+        case GiftHuntMediumPrize:               return 25000;
+        case GiftHuntSmallPrize:                return 10000;
         case GrandTheftAutoRandomVehicleValue:  return random(2542 /* max */ - 1351 /* min */) + 1356 /* min */;
 #if Feature::DisableKilltime == 0
-        case KilltimeVictory:                   return 2500;
+        case KilltimeVictory:                   return 5000;
 #endif
         case MapZoneReward:                     return 2000 - 10 * inputValue /* time taken (seconds) */;
-        case MapZoneSpeedBonus:                 return 1 * inputValue /* high-speed streak count */;
+        case MapZoneSpeedBonus:                 return 2 * inputValue /* high-speed streak count */;
         case MinigameParticipation:             return 250;
-        case MinigameVictory:                   return 250 * inputValue /* participant count */;
+        case MinigameVictory:                   return 2500 * (inputValue /* participant count */ + 1);
         case MoneyStatue:                       return 500 * inputValue /* statue kill count */;
         case NitroTwoShot:                      return 200;
         case NitroFiveShot:                     return 500;
         case NitroTenShot:                      return 1000;
-        case NitroInfinite:                     return 2500;
-        case ReactionTest:                      return 1000;
-        case ShipIdleMoney:                     return 5 * inputValue /* VIP multiplier */;
-        case ShowMessageCommand:                return 2000;
+        case NitroInfinite:                     return 5000;
+        case ReactionTest:                      return 5000;
+        case ShipIdleMoney:                     return 25 * inputValue /* VIP multiplier */;
+        case ShowMessageCommand:                return 10000;
         case SlapCommand:                       return 500;
         case SpawnMoney:                        return 10000;
-        case TaxiPerKilometer:                  return 20;
+        case TaxiPerKilometer:                  return 15;
         case TaxiRide:                          return GetEconomyValue(TaxiPerKilometer) * inputValue /* distance */;
         case TaxiRideOwnerShare:                return floatround(GetEconomyValue(TaxiPerKilometer) * inputValue /* distance */ * 0.1);
-        case TeleportWithVehicle:               return 1500;
+        case TeleportWithVehicle:               return 2500;
         case TeleportWithoutVehicle:            return 1000;
-        case TuneCommand:                       return 1000;
-        case VehicleCrusherReward:              return 400;
-        case VehicleExportReward:               return floatround(inputValue /* vehicle health [371-1000] */ * 7.5 * 1.216);
-        case VehicleExportRewardOwnerShare:     return floatround(inputValue /* vehicle health [371-1000] */ * 7.5 * 1.216 * 0.1);
-        case VipColourChange:                   return 25000;
+        case TuneCommand:                       return 1250;
+        case VehicleCrusherReward:              return 2000;
+        case VehicleExportReward:               return floatround(inputValue /* vehicle health [371-1000] */ * 15 * 1.216);
+        case VehicleExportRewardOwnerShare:     return floatround(inputValue /* vehicle health [371-1000] */ * 15 * 1.216 * 0.1);
         case WantedLevelAward:                  return 1000 * inputValue /* wanted level stars */;
         case WantedLevelOwnerShare:             return 10 * inputValue /* wanted level stars */;
     }

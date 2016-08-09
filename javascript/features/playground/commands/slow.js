@@ -28,10 +28,15 @@ class SlowCommand extends Command {
     }
 
     async onSlowCommand(player, target, inputFactor) {
-        const subject = target || player;
-        const factor = inputFactor || 0.9;
+        const subject = target instanceof player ? target : player;
+        const factor = target instanceof player ? (inputFactor || 1.5) : 0.09;
 
         const name = subject === player ? 'You' : subject.name;
+
+        if (!(subject instanceof Player)) {
+            player.sendMessage(Message.COMMAND_USAGE, '/slow [player?] [factor]');
+            return;
+        }
 
         if (this.slowing_.has(subject)) {
             this.slowing_.set(subject, false);
@@ -60,7 +65,7 @@ class SlowCommand extends Command {
                 subject.velocity = new Vector(velocity.x * factor, velocity.y * factor, velocity.z);
             }
 
-            await wait(1000);
+            await wait(500);
         }
 
         this.slowing_.delete(subject);

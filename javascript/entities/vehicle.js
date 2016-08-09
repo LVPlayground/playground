@@ -95,6 +95,12 @@ class Vehicle {
     get health() { return pawnInvoke('GetVehicleHealth', 'iF', this.id_); }
     set health(value) { pawnInvoke('SetVehicleHealth', 'if', this.id_, value); }
 
+    // Gets or sets the velocity of the vehicle. Both must be used with a 3D vector.
+    get velocity() { return new Vector(...pawnInvoke('GetVehicleVelocity', 'iFFF', this.id_)); }
+    set velocity(value) {
+        pawnInvoke('SetVehicleVelocity', 'ifff', this.id_, value.x, value.y, value.z);
+    }
+
     // Repairs the vehicle. This resets the visual damage state as well.
     repair() { pawnInvoke('RepairVehicle', 'i', this.id_); }
 

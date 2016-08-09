@@ -28,8 +28,8 @@ class SlowCommand extends Command {
     }
 
     async onSlowCommand(player, target, inputFactor) {
-        const subject = target instanceof player ? target : player;
-        const factor = target instanceof player ? (inputFactor || 1.5) : 0.09;
+        const subject = target instanceof Player ? target : player;
+        const factor = target instanceof Player ? (inputFactor || 1.5) : 0.09;
 
         const name = subject === player ? 'You' : subject.name;
 
@@ -54,15 +54,12 @@ class SlowCommand extends Command {
         this.slowing_.set(subject, true);
 
         while (this.slowing_.get(subject) && subject.isConnected()) {
-            if (pawnInvoke('IsPlayerInAnyVehicle', 'i', subject.id)) {
-                const vehicleId = pawnInvoke('GetPlayerVehicleID', 'i', subject.id);
+            const vehicleId = pawnInvoke('GetPlayerVehicleID', 'i', subject.id);
+            if (vehicleId >= 0 && vehicleId <= 2000) {
                 const velocity = new Vector(...pawnInvoke('GetVehicleVelocity', 'iFFF', vehicleId));
 
                 pawnInvoke('SetVehicleVelocity', 'ifff', vehicleId, velocity.x * factor,
                                                          velocity.y * factor, velocity.z);
-            } else {
-                const velocity = subject.velocity;
-                subject.velocity = new Vector(velocity.x * factor, velocity.y * factor, velocity.z);
             }
 
             await wait(500);

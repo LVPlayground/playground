@@ -9,7 +9,8 @@ const PlaygroundCommands = require('features/playground/playground_commands.js')
 // exception that the arguments required for the constructor are automatically injected.
 class MockPlaygroundCommands extends PlaygroundCommands {
     constructor() {
-        super(null /* manager */, new MockAnnounce());
+        const mockAnnounce = new MockAnnounce();
+        super(null /* manager */, () => mockAnnounce);
     }
 };
 

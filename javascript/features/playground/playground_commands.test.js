@@ -12,8 +12,10 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
     let manager = null;
 
     beforeEach(() => {
+        const announce = new MockAnnounce();
+
         manager = new PlaygroundManager();
-        commands = new PlaygroundCommands(manager, new MockAnnounce());
+        commands = new PlaygroundCommands(manager, () => announce);
 
         gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify();

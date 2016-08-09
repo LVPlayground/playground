@@ -176,16 +176,16 @@ class PlaygroundCommands {
                 }
 
                 this.access_.setCommandLevel(command.name, level);
-                this.announce_.announceToAdministrators(
+                this.announce_().announceToAdministrators(
                     Message.LVP_ANNOUNCE_CMD_LEVEL, player.name, player.id, command.name, levelName)
 
                 // Make an announcement to players if the command was either granted to them, or
                 // taken away from them. We like to cause anarchy by upset mobs.
                 if (level == Player.LEVEL_PLAYER) {
-                    this.announce_.announceToPlayers(
+                    this.announce_().announceToPlayers(
                         Message.LVP_ANNOUNCE_CMD_AVAILABLE, player.name, command.name);
                 } else if (currentLevel == Player.LEVEL_PLAYER) {
-                    this.announce_.announceToPlayers(
+                    this.announce_().announceToPlayers(
                         Message.LVP_ANNOUNCE_CMD_REVOKED, player.name, command.name);
                 }
 
@@ -241,7 +241,7 @@ class PlaygroundCommands {
         }
 
         this.access_.addException(command.name, subject, player /* sourcePlayer */);
-        this.announce_.announceToAdministrators(
+        this.announce_().announceToAdministrators(
             Message.LVP_ANNOUNCE_CMD_EXCEPTION, player.name, player.id, subject.name, command.name);
 
         return await MessageDialog.display(player, {
@@ -253,7 +253,7 @@ class PlaygroundCommands {
     // Revokes the exception for |subject| to use the |command|.
     async revokeCommandException(command, subject, player) {
         this.access_.removeException(command.name, subject, player /* sourcePlayer */);
-        this.announce_.announceToAdministrators(
+        this.announce_().announceToAdministrators(
             Message.LVP_ANNOUNCE_CMD_REMOVED_EXCEPTION, player.name, player.id, subject.name,
             command.name);
 
@@ -292,9 +292,9 @@ class PlaygroundCommands {
         }
 
         if (announcement)
-            this.announce_.announceToPlayers(announcement, player.name, updatedStatusText);
+            this.announce_().announceToPlayers(announcement, player.name, updatedStatusText);
 
-        this.announce_.announceToAdministrators(
+        this.announce_().announceToAdministrators(
             Message.LVP_ANNOUNCE_ADMIN_NOTICE, player.name, player.id, updatedStatusText, option);
     }
 
@@ -309,7 +309,7 @@ class PlaygroundCommands {
 
         server.featureManager.liveReload(feature);
 
-        this.announce_.announceToAdministrators(
+        this.announce_().announceToAdministrators(
             Message.LVP_ANNOUNCE_FEATURE_RELOADED, player.name, player.id, feature);
 
         player.sendMessage(Message.LVP_RELOAD_RELOADED, feature);

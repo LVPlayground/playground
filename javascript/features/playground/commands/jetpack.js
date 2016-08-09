@@ -39,7 +39,7 @@ class JetpackCommand extends Command {
             if (player !== subject)
                 player.sendMessage(Message.LVP_JETPACK_REMOVED_OTHER, subject.name, subject.id);
 
-            this.announce_.announceToAdministrators(
+            this.announce_().announceToAdministrators(
                 Message.LVP_JETPACK_ANNOUNCE, player.name, player.id, 'removed', 'from',
                 subject.name, subject.id);
 
@@ -53,7 +53,7 @@ class JetpackCommand extends Command {
             player.sendMessage(Message.LVP_JETPACK_GRANTED_OTHER, subject.name, subject.id);
             subject.sendMessage(Message.LVP_JETPACK_GRANTED, player.name, player.id);
 
-            this.announce_.announceToAdministrators(
+            this.announce_().announceToAdministrators(
                 Message.LVP_JETPACK_ANNOUNCE, player.name, player.id, 'given', 'to', subject.name,
                 subject.id);
 

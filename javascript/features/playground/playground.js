@@ -13,7 +13,7 @@ class Playground extends Feature {
         super();
 
         // Used for announcing changes in feature availability to players.
-        const announce = this.defineDependency('announce');
+        const announce = this.defineDependency('announce', true /* isFunctional */);
 
         this.manager_ = new PlaygroundManager();
         this.commands_ = new PlaygroundCommands(this.manager_, announce);

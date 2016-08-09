@@ -14,13 +14,6 @@ lvp_Ignore( playerid, params[] )
 {
     Instrumentation->recordActivity(IgnorePlayerActivity);
 
-    // A new command which enables regulars to ignore other players, for
-    // whatever purpose that might be. Administrators are excluded of course.
-    if (Player(playerid)->isRegular() == false && Player(playerid)->isAdministrator() == false) {
-        SendClientMessage( playerid, Color::Red, "You can only use this command as a regular!" );
-        return 1;
-    }
-
     if(!strlen(params))
     {
         SendClientMessage( playerid, Color::White, "Use: /ignore [playerid/name]");
@@ -58,13 +51,6 @@ lvp_Ignore( playerid, params[] )
 // Creator: Peter
 lvp_Unignore( playerid, params[] )
 {
-    // Obviously, people that we ignore must be un-ignored on request. Whatever
-    // purpose that might have is unknown to me, why would you ignore someone then ._.
-    if (Player(playerid)->isRegular() == false && Player(playerid)->isAdministrator() == false) {
-        SendClientMessage( playerid, Color::Red, "You can only use this command as a regular!" );
-        return 1;
-    }
-
     if(!strlen(params))
     {
         SendClientMessage( playerid, Color::White, "Use: /unignore [playerid/name]");

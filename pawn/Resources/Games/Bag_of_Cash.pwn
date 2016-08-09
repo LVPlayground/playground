@@ -2,7 +2,7 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-#define 	MAX_MONEY_BAG_CASH      50000000
+#define 	MAX_MONEY_BAG_CASH      1000000
 #define     MIN_MONEY_BAG_CASH      1000
 #define     MONEY_BAG_PICKUP_TYPE   2
 #define     MONEY_BAG_PICKUP_MODEL  1550

@@ -123,11 +123,11 @@
     
     "LVP_ANNOUNCE_ADMIN_NOTICE": "%s (Id: %d) has %s the %s option.",
     "LVP_ANNOUNCE_PARTY": "%s has %s the Pirate Ship Party mode!",
-    "LVP_ANNOUNCE_CMD_AVAILABLE": "{ADFF2F} %s has made the /%s command available to players.",
+    "LVP_ANNOUNCE_CMD_AVAILABLE": "%s has made the /%s command available to players.",
     "LVP_ANNOUNCE_CMD_EXCEPTION": "%s (Id: %d) has allowed %s to use /%s.",
     "LVP_ANNOUNCE_CMD_LEVEL": "%s (Id: %d) has changed the level of /%s to %s.",
     "LVP_ANNOUNCE_CMD_REMOVED_EXCEPTION": "%s (Id: %d) has revoked %s ability to use /%s.",
-    "LVP_ANNOUNCE_CMD_REVOKED": "{ADFF2F} %s has removed the /%s command from players again.",
+    "LVP_ANNOUNCE_CMD_REVOKED": "%s has removed the /%s command from players again.",
     "LVP_ANNOUNCE_FEATURE_RELOADED": "%s (Id: %d) has reloaded the '%s' feature.",
     "LVP_CMD_EXCEPTION_GRANTED": "{ADFF2F}*** %s (Id: %d) has given you an exception to use /%s.",
     "LVP_CMD_EXCEPTION_RESTORED": "{ADFF2F}*** Your %d command exceptions has been restored.",

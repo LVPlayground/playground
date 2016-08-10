@@ -435,13 +435,20 @@ CBomb__Initialize()
 {
     BombMenu[0] = CreateMenu("~g~Bomb Shop", 2, 200.0, 200.0, 150.0, 150.0);
 
+    new priceString[128];
+
     AddMenuItem( BombMenu[0],   0,   "Engine Bomb");
     AddMenuItem( BombMenu[0],   0,   "Detonation Bomb");
     AddMenuItem( BombMenu[0],   0,   "Countdown bomb");
 
-    AddMenuItem( BombMenu[0],   1,   "1.000.000");
-    AddMenuItem( BombMenu[0],   1,   "4.000.000");
-    AddMenuItem( BombMenu[0],   1,   "2.000.000");
+    format(priceString, sizeof(priceString), "$%s", formatPrice(GetEconomyValue(BombTypeEngine)));
+    AddMenuItem( BombMenu[0],   1,   priceString);
+
+    format(priceString, sizeof(priceString), "$%s", formatPrice(GetEconomyValue(BombTypeDetonator)));
+    AddMenuItem( BombMenu[0],   1,   priceString);
+
+    format(priceString, sizeof(priceString), "$%s", formatPrice(GetEconomyValue(BombTypeCountdown)));
+    AddMenuItem( BombMenu[0],   1,   priceString);
 
 
     BombMenu[1] = CreateMenu("~r~Explosion Type", 2, 200.0, 200.0, 150.0, 150.0);
@@ -452,9 +459,15 @@ CBomb__Initialize()
     AddMenuItem( BombMenu[1],   0,   "Enormous Explosion");
 
     AddMenuItem( BombMenu[1],   1,   "~g~Free");
-    AddMenuItem( BombMenu[1],   1,   "~p~+ 25.000");
-    AddMenuItem( BombMenu[1],   1,   "~y~+ 70.000");
-    AddMenuItem( BombMenu[1],   1,   "~r~+ 400.000");
+
+    format(priceString, sizeof(priceString), "~p~+ $%s", formatPrice(GetEconomyValue(BombExplosionMedium)));
+    AddMenuItem( BombMenu[1],   1,   priceString);
+
+    format(priceString, sizeof(priceString), "~y~+ $%s", formatPrice(GetEconomyValue(BombExplosionLarge)));
+    AddMenuItem( BombMenu[1],   1,   priceString);
+
+    format(priceString, sizeof(priceString), "~r~+ $%s", formatPrice(GetEconomyValue(BombExplosionExtreme)));
+    AddMenuItem( BombMenu[1],   1,   priceString);
 
     return 1;
 }

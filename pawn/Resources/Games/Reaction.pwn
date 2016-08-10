@@ -98,13 +98,11 @@ CReaction__Process()
                     reactionData[clock] = GetTickCount();
                     reactionData[timer] = -1;
 
-                    for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-                    {
-                        format(string, 128, "The first one who says '%s', wins $10,000!", reactionText);
-                        SendClientMessage(i, COLOR_YELLOW, string);
+                    format(string, sizeof(string), "The first one who says '%s' wins $%s!",
+                        reactionNumbers, GetEconomyValue(ReactionTest));
 
-                    }
-                    return 1;
+                    for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
+                        SendClientMessage(i, COLOR_YELLOW, string);
 
                 } else {
                     // Math sum type
@@ -118,12 +116,11 @@ CReaction__Process()
                     reactionData[clock] = GetTickCount();
                     reactionData[timer] = -1;
 
-                    for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-                    {
-                        format(string,256,"The first one who calculates '%s', wins $10,000 !", reactionNumbers);
-                        SendClientMessage(i, COLOR_YELLOW, string);
+                    format(string, sizeof(string), "The first one who calculates '%s' wins $%s!",
+                        reactionNumbers, GetEconomyValue(ReactionTest));
 
-                    }
+                    for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
+                        SendClientMessage(i, COLOR_YELLOW, string);
 
                 }
             }

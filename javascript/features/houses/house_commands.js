@@ -58,7 +58,7 @@ class HouseCommands {
 
         // |location| is available for purchase, and the |player| does not have a house yet.
 
-        const interiorList = InteriorList.forEconomy(this.economy_, location.position);
+        const interiorList = InteriorList.forEconomy(this.economy_(), location.position);
         const interior = await InteriorSelector.select(player, 12500000, interiorList);
 
         // TODO: Verify the amount of money of |player| again.
@@ -74,7 +74,7 @@ class HouseCommands {
 
         // Certain areas are considered to be of high strategic value, and only allow for limited
         // residential activity. Houses should be maintained by players elsewhere.
-        if (this.economy_.isResidentialExclusionZone(position)) {
+        if (this.economy_().isResidentialExclusionZone(position)) {
             const rightButton = player.isManagement() ? 'Override' : '';
             const confirmation =
                 await Dialog.displayMessage(
@@ -86,8 +86,8 @@ class HouseCommands {
                 return;
         }
 
-        const minimumPrice = this.economy_.calculateHousePrice(position, 0 /* interiorValue */);
-        const maximumPrice = this.economy_.calculateHousePrice(position, 9 /* interiorValue */);
+        const minimumPrice = this.economy_().calculateHousePrice(position, 0 /* interiorValue */);
+        const maximumPrice = this.economy_().calculateHousePrice(position, 9 /* interiorValue */);
 
         const confirmation =
             await Dialog.displayMessage(player, 'Create a new house location',
@@ -101,7 +101,7 @@ class HouseCommands {
         await this.manager_.createLocation(player, position);
 
         // Announce creation of the location to other administrators.
-        this.announce_.announceToAdministrators(
+        this.announce_().announceToAdministrators(
             Message.HOUSE_ANNOUNCE_CREATED, player.name, player.id);
 
         // Display a confirmation dialog to the player to inform them of their action.
@@ -144,7 +144,7 @@ class HouseCommands {
             await this.manager_.removeLocation(closestLocation);
 
             // Announce creation of the location to other administrators.
-            this.announce_.announceToAdministrators(
+            this.announce_().announceToAdministrators(
                 Message.HOUSE_ANNOUNCE_DELETED, player.name, player.id, closestLocation.id);
 
             // Display a confirmation dialog to the player to inform them of their action.
@@ -164,7 +164,7 @@ class HouseCommands {
     async onHouseSellCommand(player) {
         const location = await this.manager_.findClosestLocation(player);
 
-        const interiorList = InteriorList.forEconomy(this.economy_, location.position);
+        const interiorList = InteriorList.forEconomy(this.economy_(), location.position);
         const interior = await InteriorSelector.select(player, 12500000, interiorList);
 
         console.log(interior);

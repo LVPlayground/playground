@@ -14,10 +14,10 @@ class Houses extends Feature {
         super();
 
         // Various actions will result in announcements being made to administrators.
-        const announce = this.defineDependency('announce');
+        const announce = this.defineDependency('announce', true /* isFunctional */);
 
         // House pricing is determined using a predefined set of algorithms.
-        const economy = this.defineDependency('economy');
+        const economy = this.defineDependency('economy', true /* isFunctional */);
 
         this.manager_ = new HouseManager(economy);
         this.manager_.loadHousesFromDatabase();

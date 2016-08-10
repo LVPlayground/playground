@@ -64,7 +64,7 @@ class HouseEntranceController {
         // own another house yet (players are limited to owning one house at a time).
         if (location.isAvailable()) {
             const minimumPrice =
-                this.economy_.calculateHousePrice(location.position, 0 /* interiorValue */);
+                this.economy_().calculateHousePrice(location.position, 0 /* interiorValue */);
 
             // The |location| is available, but the |player| owns a house.
             if (playerHouse !== null) {

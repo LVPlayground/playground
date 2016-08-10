@@ -16,10 +16,10 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         const announce = new MockAnnounce();
         const economy = new Economy();
 
-        manager = new HouseManager(economy);
+        manager = new HouseManager(() => economy);
         manager.database_ = new MockHouseDatabase();
 
-        commands = new HouseCommands(manager, announce, economy);
+        commands = new HouseCommands(manager, () => announce, () => economy);
     });
 
     afterEach(() => {

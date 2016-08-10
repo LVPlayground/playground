@@ -11,7 +11,9 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
 
     afterEach(() => manager.dispose());
     beforeEach(() => {
-        manager = new HouseManager(new Economy());
+        const economy = new Economy();
+
+        manager = new HouseManager(() => economy);
         manager.database_ = new MockHouseDatabase();
     });
 

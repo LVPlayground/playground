@@ -12,7 +12,9 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
 
     afterEach(() => manager.dispose());
     beforeEach(async(assert) => {
-        manager = new HouseManager(new Economy());
+        const economy = new Economy();
+
+        manager = new HouseManager(() => economy);
         manager.database_ = new MockHouseDatabase();
 
         controller = manager.entranceController_;
@@ -29,7 +31,7 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
         gunther.position = new Vector(200, 250, 300);
 
         const minimumPrice =
-            controller.economy_.calculateHousePrice(gunther.position, 0 /* interiorValue */);
+            controller.economy_().calculateHousePrice(gunther.position, 0 /* interiorValue */);
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(
@@ -46,7 +48,7 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
         gunther.position = new Vector(200, 250, 300);
 
         const minimumPrice =
-            controller.economy_.calculateHousePrice(gunther.position, 0 /* interiorValue */);
+            controller.economy_().calculateHousePrice(gunther.position, 0 /* interiorValue */);
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(

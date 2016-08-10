@@ -4,6 +4,11 @@
 
     // Todo: they all need to be converted to dialogs (DIALOG_STYLE_LIST)
 
+    new const airportPrice = GetEconomyValue(AirportFlight);
+    new airportPriceString[24];
+
+    FinancialUtilities->formatPrice(airportPrice, airportPriceString, sizeof(airportPriceString));
+
     // LV AIRPORT:
     AirportMenu[0] = CreateMenu("LV Airport:", 2, 0.0, 200.0, 120.0, 250.0);
 
@@ -13,9 +18,9 @@
     AddMenuItem(AirportMenu[0],0,"Liberty City");
 
     SetMenuColumnHeader(AirportMenu[0],1,"Price");
-    AddMenuItem(AirportMenu[0],1,"250.000");
-    AddMenuItem(AirportMenu[0],1,"250.000");
-    AddMenuItem(AirportMenu[0],1,"250.000");
+    AddMenuItem(AirportMenu[0],1,airportPriceString);
+    AddMenuItem(AirportMenu[0],1,airportPriceString);
+    AddMenuItem(AirportMenu[0],1,airportPriceString);
 
     // SF AIRPORT:
 
@@ -27,9 +32,9 @@
     AddMenuItem(AirportMenu[1],0,"Liberty City");
 
     SetMenuColumnHeader(AirportMenu[0],1,"Price");
-    AddMenuItem(AirportMenu[1],1,"250.000");
-    AddMenuItem(AirportMenu[1],1,"250.000");
-    AddMenuItem(AirportMenu[1],1,"250.000");
+    AddMenuItem(AirportMenu[1],1,airportPriceString);
+    AddMenuItem(AirportMenu[1],1,airportPriceString);
+    AddMenuItem(AirportMenu[1],1,airportPriceString);
 
     // LS AIRPORT:
 
@@ -41,9 +46,9 @@
     AddMenuItem(AirportMenu[2],0,"Liberty City");
 
     SetMenuColumnHeader(AirportMenu[2],1,"Price");
-    AddMenuItem(AirportMenu[2],1,"250.000");
-    AddMenuItem(AirportMenu[2],1,"250.000");
-    AddMenuItem(AirportMenu[2],1,"250.000");
+    AddMenuItem(AirportMenu[2],1,airportPriceString);
+    AddMenuItem(AirportMenu[2],1,airportPriceString);
+    AddMenuItem(AirportMenu[2],1,airportPriceString);
 
     // Liberty City:
 
@@ -55,7 +60,7 @@
     AddMenuItem(AirportMenu[3],0,"Los Santos");
 
     SetMenuColumnHeader(AirportMenu[3],1,"Price");
-    AddMenuItem(AirportMenu[3],1,"250.000");
-    AddMenuItem(AirportMenu[3],1,"250.000");
-    AddMenuItem(AirportMenu[3],1,"250.000");
+    AddMenuItem(AirportMenu[3],1,airportPriceString);
+    AddMenuItem(AirportMenu[3],1,airportPriceString);
+    AddMenuItem(AirportMenu[3],1,airportPriceString);
 

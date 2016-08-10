@@ -5,6 +5,7 @@
 const Feature = require('components/feature_manager/feature.js');
 const ObjectGroup = require('entities/object_group.js');
 const ObjectRemover = require('features/player_favours/object_remover.js');
+const ScopedEntities = require('entities/scoped_entities.js');
 
 // Implementation of a collection of features that have been implemented specifically by request of
 // a particular player. The actual features and their owners are documented in the README.md file.
@@ -25,11 +26,32 @@ class PlayerFavours extends Feature {
             text: 'LVP Houses\n{FFFFFF}Soon coming to Las Venturas Playground!',
             drawDistance: 10
         });
+
+        this.huracanActors_ = new ScopedEntities();
+        this.huracanActors_.createActor({
+            modelId: 287,
+            position: new Vector(1122.71, -2033.97, 69.89),
+            rotation: 270
+        });
+
+        this.huracanActors_.createActor({
+            modelId: 287,
+            position: new Vector(1122.71, -2040.10, 69.89),
+            rotation: 270
+        });
+
+        this.huracanActors_.createActor({
+            modelId: 116,
+            position: new Vector(1117.91, -2037.05, 78.75),
+            rotation: 270
+        });
     }
 
     // This feature has no public API.
 
     dispose() {
+        this.huracanActors_.dispose();
+
         this.housePromoLabel_.dispose();
         this.objectGroup_.dispose();
         this.objectRemover_.dispose();

@@ -84,9 +84,24 @@ class PlayerManager {
     }
 
     // Observes players connecting and disconnecting from the server. The |observer| will receive
-    // calls to the following methods: onPlayerConnect, onPlayerDisconnect.
-    addObserver(observer) {
+    // calls to the following methods: onPlayerConnect, onPlayerDisconnect. When the |replayHistory|
+    // option has been set, events for existing players will be replayed to the observer.
+    addObserver(observer, replayHistory = false) {
+        if (this.observers_.has(observer))
+            return;
+
         this.observers_.add(observer);
+
+        if (!replayHistory)
+            return;
+
+        for (const player of this.players_.values()) {
+            if (observer.__proto__.hasOwnProperty('onPlayerConnect'))
+                observer.onPlayerConnect(player);
+
+            if (observer.__proto__.hasOwnProperty('onPlayerLogin') && player.isRegistered())
+                observer.onPlayerLogin(player, {});
+        }
     }
 
     // Removes |observer| from the set of objects that will be informed about players connecting

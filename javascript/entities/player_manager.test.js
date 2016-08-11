@@ -36,6 +36,29 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         assert.equal(counter, 2);
     });
 
+    it('should fire past events for newly attached observers', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify();
+
+        let connectionCounter = 0;
+        let loginCounter = 0;
+
+        class MyObserver {
+            onPlayerConnect() { ++connectionCounter; }
+            onPlayerLogin() { ++loginCounter; }
+        }
+
+        server.playerManager.addObserver(new MyObserver(), false /* replayHistory */);
+
+        assert.equal(connectionCounter, 0);
+        assert.equal(loginCounter, 0);
+
+        server.playerManager.addObserver(new MyObserver(), true /* replayHistory */);
+
+        assert.equal(connectionCounter, server.playerManager.count);
+        assert.equal(loginCounter, 1);
+    });
+
     it('should inform observers of connecting and disconnecting players', assert => {
         let connectionCount = 0;
         let disconnectionCount = 0;

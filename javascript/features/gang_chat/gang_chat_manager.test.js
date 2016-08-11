@@ -12,7 +12,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
 
     beforeEach(() => {
         gangs = new MockGangs();
-        manager = new GangChatManager(gangs, null /* announce */, new Communication());
+        manager = new GangChatManager(() => gangs, null /* announce */, new Communication());
     });
 
     afterEach(() => manager.dispose());

@@ -14,10 +14,10 @@ class GangChat extends Feature {
 
         // The gangs feature contains the information necessary to distribute messages to the right
         // audience, i.e. the members of the gang they're part of.
-        const gangs = this.defineDependency('gangs');
+        const gangs = this.defineDependency('gangs', true /* isFunctional */);
 
         // Gang chat has to be announced to administrators watching on IRC.
-        const announce = this.defineDependency('announce');
+        const announce = this.defineDependency('announce', true /* isFunctional */);
 
         // Gang chat will register with the communication feature as a delegate.
         const communication = this.defineDependency('communication');

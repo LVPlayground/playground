@@ -125,7 +125,8 @@ class GangCommands {
                 if (!result)
                     return;  // the player disconnected from the server
 
-                this.announce_.announceToPlayers(Message.GANG_ANNOUNCE_CREATED, player.name, name);
+                this.announce_().announceToPlayers(
+                    Message.GANG_ANNOUNCE_CREATED, player.name, name);
 
                 player.sendMessage(Message.GANG_DID_CREATE, result.name);
 
@@ -187,7 +188,7 @@ class GangCommands {
         this.manager_.announceToGang(gang, player, Message.GANG_INTERNAL_ANNOUNCE_INVITATION,
                                      player.name, invitee.name, invitee.id);
 
-        this.announce_.announceToAdministrators(
+        this.announce_().announceToAdministrators(
             Message.GANG_ANNOUNCE_INVITATION, player.name, player.id, invitee.name, invitee.id,
             gang.name);
     }
@@ -223,7 +224,8 @@ class GangCommands {
             this.manager_.announceToGang(
                 gang, player, Message.GANG_INTERNAL_ANNOUNCE_JOINED, player.name, player.id);
 
-            this.announce_.announceToPlayers(Message.GANG_ANNOUNCE_JOINED, player.name, gang.name);
+            this.announce_().announceToPlayers(
+                Message.GANG_ANNOUNCE_JOINED, player.name, gang.name);
 
             this.invitations_.delete(player);
 
@@ -313,7 +315,7 @@ class GangCommands {
                 this.manager_.announceToGang(
                     gang, player, Message.GANG_INTERNAL_ANNOUNCE_KICKED, player.name, nickname);
 
-                this.announce_.announceToAdministrators(
+                this.announce_().announceToAdministrators(
                     Message.GANG_ANNOUNCE_KICKED, player.name, player.id, nickname, gang.name);
             });
 
@@ -349,7 +351,7 @@ class GangCommands {
                     this.manager_.announceToGang(
                         gang, player, Message.GANG_INTERNAL_ANNOUNCE_LEFT, player.name);
 
-                    this.announce_.announceToPlayers(Message.GANG_ANNOUNCE_LEFT,
+                    this.announce_().announceToPlayers(Message.GANG_ANNOUNCE_LEFT,
                         player.name, gang.name);
                 });
 
@@ -395,7 +397,7 @@ class GangCommands {
                 this.manager_.announceToGang(
                     gang, player, Message.GANG_INTERNAL_ANNOUNCE_LEFT, player.name);
 
-                this.announce_.announceToPlayers(Message.GANG_ANNOUNCE_LEFT,
+                this.announce_().announceToPlayers(Message.GANG_ANNOUNCE_LEFT,
                     player.name, gang.name);
             });
 
@@ -506,7 +508,7 @@ class GangCommands {
                             gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_COLOR, player.name,
                             colorName);
 
-                        this.announce_.announceToAdministrators(
+                        this.announce_().announceToAdministrators(
                             Message.GANG_ANNOUNCE_NEW_COLOR, player.name, player.id, gang.name,
                             colorName);
 
@@ -538,7 +540,7 @@ class GangCommands {
                             gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_NAME, player.name,
                             answer);
 
-                        this.announce_.announceToAdministrators(
+                        this.announce_().announceToAdministrators(
                             Message.GANG_ANNOUNCE_NEW_NAME, player.name, player.id, formerName,
                             answer);
 
@@ -568,7 +570,7 @@ class GangCommands {
                             gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_TAG, player.name,
                             answer);
 
-                        this.announce_.announceToAdministrators(
+                        this.announce_().announceToAdministrators(
                             Message.GANG_ANNOUNCE_NEW_TAG, player.name, player.id, gang.name,
                             answer);
 
@@ -592,7 +594,7 @@ class GangCommands {
                             gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_GOAL, player.name,
                             answer);
 
-                        this.announce_.announceToAdministrators(
+                        this.announce_().announceToAdministrators(
                             Message.GANG_ANNOUNCE_NEW_GOAL, player.name, player.id, gang.name,
                             answer);
 
@@ -703,7 +705,7 @@ class GangCommands {
                         gang, null, Message.GANG_INTERNAL_ANNOUNCE_KICKED, player.name,
                         member.nickname);
 
-                    this.announce_.announceToAdministrators(
+                    this.announce_().announceToAdministrators(
                         Message.GANG_ANNOUNCE_KICKED, player.name, player.id, member.nickname,
                         gang.name);
 

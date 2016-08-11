@@ -65,7 +65,7 @@ class GangChatManager {
         // Players and administrators who do not use the prefix will by default just target their
         // own gang, if they are in one.
         } else {
-            gang = this.gangs_.getGangForPlayer(player);
+            gang = this.gangs_().getGangForPlayer(player);
             if (!gang) {
                 player.sendMessage(Message.GANG_CHAT_NO_GANG);
                 return true;
@@ -78,8 +78,8 @@ class GangChatManager {
         
         // Announce the message to people watching on IRC.
         if (this.announce_) {
-            this.announce_.announceToIRC('gang', player.id, player.name, gang.id, gang.name.length,
-                                         gang.name, messageRaw);
+            this.announce_().announceToIRC(
+                'gang', player.id, player.name, gang.id, gang.name.length, gang.name, messageRaw);
         }
 
         for (let member of gang.members) {
@@ -127,7 +127,7 @@ class GangChatManager {
     findGangByTag(tag) {
         const lowerCaseTag = tag.toLowerCase();
 
-        for (const gang of this.gangs_.getGangs()) {
+        for (const gang of this.gangs_().getGangs()) {
             if (gang.tag.toLowerCase() === lowerCaseTag)
                 return gang;
         }
@@ -145,7 +145,7 @@ class GangChatManager {
         const message = Message.format(Message.GANG_CHAT_SPY, this.spyingPlayer_.name,
                                        this.spyingPlayer_.id);
 
-        this.gangs_.getGangs().forEach(gang => {
+        this.gangs_().getGangs().forEach(gang => {
             for (let member of gang.members) {
                 if (member === this.spyingPlayer_)
                     continue;

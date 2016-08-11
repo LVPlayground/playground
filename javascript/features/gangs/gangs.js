@@ -14,7 +14,7 @@ class Gangs extends Feature {
         super();
 
         // Used for announcing gang-related events to players and administrators.
-        const announce = this.defineDependency('announce');
+        const announce = this.defineDependency('announce', true /* isFunctional */);
 
         this.manager_ = new GangManager(server.database);
         this.commands_ = new GangCommands(this.manager_, announce);

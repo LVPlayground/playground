@@ -16,12 +16,14 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
     let gangCommands = null;
 
     beforeEach(() => {
+        const announce = new MockAnnounce();
+
         player = server.playerManager.getById(0 /* Gunther */);
 
         gangManager = new GangManager(null /* database */);
         gangManager.database_ = new MockGangDatabase();
 
-        gangCommands = new GangCommands(gangManager, new MockAnnounce());
+        gangCommands = new GangCommands(gangManager, () => announce);
     });
 
     afterEach(() => {

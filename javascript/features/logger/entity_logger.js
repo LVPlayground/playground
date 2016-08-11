@@ -12,6 +12,7 @@ class EntityLogger {
         this.writer_ = writer;
         this.sessions_ = sessions;
 
+        this.connections_ = new WeakMap();
         this.sessionId_ = new SessionId();
 
         this.callbacks_ = new ScopedCallbacks();
@@ -49,6 +50,8 @@ class EntityLogger {
     // that can be used to track events for a given session.
     onPlayerConnect(player) {
         this.sessions_.set(player, this.sessionId_.generate());
+        this.connections_.set(player, highResolutionTime());
+
         this.writer_.writeAttributedEvent(player, 'playerconnect', {
             nickname: player.name,
             gpci: player.gpci,
@@ -60,8 +63,13 @@ class EntityLogger {
     // Records that |player| has disconnected from the server. This removes the session Id assigned
     // to the player from the set of active sessions.
     onPlayerDisconnect(player, reason) {
+        const duration =
+            this.connections_.has(player) ? highResolutionTime() - this.connections_.get(player)
+                                          : 0;
+
         this.writer_.writeAttributedEvent(player, 'playerdisconnect', {
             reason: reason,
+            duration: duration,
             players: server.playerManager.count
         });
 

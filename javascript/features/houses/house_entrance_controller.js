@@ -4,6 +4,9 @@
 
 const ScopedEntities = require('entities/scoped_entities.js');
 
+// The radius around a house pickup within which the label will be visible.
+const HOUSE_LABEL_DRAW_DISTANCE = 30;
+
 // The house entrance controller is responsible for the entrances associated with each of the house
 // locations, regardless of whether the location has been occupied.
 class HouseEntranceController {
@@ -14,8 +17,9 @@ class HouseEntranceController {
         this.economy_ = economy;
 
         // Maps providing mappings from location to pickup, and from pickup to location.
-        this.locations_ = new Map();
         this.pickups_ = new Map();
+        this.pickupLabels_ = new Map();
+        this.locations_ = new Map();
 
         // Weak map providing a reference to the location pickup a player currently stands in.
         this.currentPickup_ = new WeakMap();
@@ -32,8 +36,19 @@ class HouseEntranceController {
                                             : 19902 /* yellow marker */
         });
 
-        this.locations_.set(location, pickup);
+        // TODO(Russell): Improve the `occupied` label for houses to mention their owner.
+        const label = this.entities_.createTextLabel({
+            text: location.isAvailable() ? 'Available'
+                                         : 'Occupied',
+            color: Color.fromRGB(255, 255, 0),
+            position: location.position.translate({ z: 0.55 }),
+            drawDistance: HOUSE_LABEL_DRAW_DISTANCE,
+            testLineOfSight: true
+        });
+
         this.pickups_.set(pickup, location);
+        this.pickupLabels_.set(pickup, label);
+        this.locations_.set(location, pickup);
     }
 
     // Removes |location| from the set of tracked locations. All entrances will be removed.
@@ -42,8 +57,9 @@ class HouseEntranceController {
         if (!pickup)
             throw new Error('An invalid |location| is being removed from the entrance controller.');
 
-        this.locations_.delete(location);
         this.pickups_.delete(pickup);
+        this.pickupLabels_.delete(pickup);
+        this.locations_.delete(location);
 
         pickup.dispose();
     }

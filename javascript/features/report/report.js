@@ -12,7 +12,7 @@ class Report extends Feature {
         super();
 
         // Be able to send a certain message to a certain public
-        const announce = this.defineDependency('announce');
+        const announce = this.defineDependency('announce', true /* isFunctional */);
 
         this.commands_ = new ReportCommands(announce);
     }

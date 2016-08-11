@@ -3,13 +3,19 @@
 // be found in the LICENSE file.
 
 const MockAnnounce = require('features/announce/test/mock_announce.js');
-const ReportCommands = require('features/report/report_commands.js');
+const Report = require('features/report/report.js');
 
-describe('ReportCommands', (it, beforeEach, afterEach) => {
-    let reportCommands = null;
+describe('Report', (it, beforeEach) => {
+    let report = null;
 
-    beforeEach(() => reportCommands = new ReportCommands(new MockAnnounce()));
-    afterEach(() => reportCommands.dispose());
+    beforeEach(() => {
+        server.featureManager.registerFeaturesForTests({
+            announce: MockAnnounce,
+            report: Report
+        });
+
+        server.featureManager.loadFeature('report');
+    });
 
     it('should report a player to the admins', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
@@ -82,5 +88,14 @@ describe('ReportCommands', (it, beforeEach, afterEach) => {
         assert.equal(lucy.messages.length, 1);
         assert.equal(lucy.messages[0],
             Message.format(Message.REPORT_MESSAGE, gunther.name, gunther.id, 'weird weapon-use'));
+    });
+
+    it('should support live reloading, and properly clean up after itself', assert => {
+        const commandCount = server.commandManager.size;
+
+        assert.isTrue(server.featureManager.isEligibleForLiveReload('report'));
+        assert.isTrue(server.featureManager.liveReload('report'));
+
+        assert.equal(server.commandManager.size, commandCount);
     });
 });

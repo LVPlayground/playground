@@ -164,6 +164,8 @@ class FeatureManager {
             console.log('Unable to reload ' + feature, exception);
             return false;
         }
+
+        return true;
     }
 
     // ---------------------------------------------------------------------------------------------

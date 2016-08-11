@@ -33,7 +33,7 @@ class ReportCommands {
                 reportedPlayer, server.clock.monotonicallyIncreasingTime());
         }
 
-        this.announce_.announceReportToAdministrators(player, reportedPlayer, reason);
+        this.announce_().announceReportToAdministrators(player, reportedPlayer, reason);
 
         // Admins already get the notice themselves due to above announce and thus know it already
         if (player.isAdministrator())

@@ -47,6 +47,8 @@ class Gang {
 
         if (this.color_ && this.usesGangColor(player))
             player.gangColor = this.color_;
+
+        player.gangId = this.id_;
     }
 
     // Returns the role |player| has in the gang, or NULL when they are not part of the gang.
@@ -89,6 +91,8 @@ class Gang {
 
         if (!player.isDisconnecting() && this.usesGangColor(player))
             player.gangColor = null;
+
+        player.gangId = null;
     }
 
     // Updates the color of this gang, as well of all in-game players, to |color|.

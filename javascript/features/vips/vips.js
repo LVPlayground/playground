@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 const Feature = require('components/feature_manager/feature.js');
-const VeryImportantPlayersManager = require('features/vips/vips_manager.js');
+const VeryImportantPlayersRoom = require('features/vips/vips_room.js');
 
 // Las Venturas Playground offers VIPs, players who've donated, an extra set
 // of commands and features in order to thank them for their tremendous support.
@@ -11,14 +11,16 @@ class VeryImportantPlayers extends Feature {
     constructor() {
         super();
 
-        this.manager_ = new VeryImportantPlayersManager();
+        this.vipRoom_ = new VeryImportantPlayersRoom();
     }
 
     // ---------------------------------------------------------------------------------------------
     // This feature has no public API.
     // ---------------------------------------------------------------------------------------------
 
-    dispose() {}
+    dispose() {
+        this.vipRoom_.dispose();
+    }
 }
 
 exports = VeryImportantPlayers;

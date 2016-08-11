@@ -41,7 +41,7 @@ class EntityLogger {
         this.callbacks_.addEventListener(
             'vehiclesirenstatechange', EntityLogger.prototype.onVehicleSirenStateChange.bind(this));
 
-        server.playerManager.addObserver(this);
+        server.playerManager.addObserver(this, true /* replayHistory */);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -305,6 +305,9 @@ class EntityLogger {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        server.playerManager.forEach(player =>
+            this.onPlayerDisconnect(player, 255 /* magic reload value */));
+
         this.callbacks_.dispose();
         this.callbacks_ = null;
 

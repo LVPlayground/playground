@@ -12,6 +12,8 @@ class EntityLogger {
         this.writer_ = writer;
         this.sessions_ = sessions;
 
+        this.sessionId_ = new SessionId();
+
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
             'playergivedamage', EntityLogger.prototype.onPlayerGiveDamage.bind(this));
@@ -46,7 +48,7 @@ class EntityLogger {
     // Records that |player| has connected to the server. This generates a session Id for the player
     // that can be used to track events for a given session.
     onPlayerConnect(player) {
-        this.sessions_.set(player, SessionId.generateForPlayer(player));
+        this.sessions_.set(player, this.sessionId_.generate());
         this.writer_.writeAttributedEvent(player, 'playerconnect', {
             nickname: player.name,
             gpci: player.gpci,

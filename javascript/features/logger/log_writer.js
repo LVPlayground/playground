@@ -45,6 +45,7 @@ class LogWriter {
 
         event.session = this.sessions_.get(player);
         event.user_id = player.userId;
+        event.gang_id = player.gangId || 0;
 
         this.writeEvent(type, event);
     }

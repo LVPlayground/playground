@@ -157,7 +157,9 @@ class FeatureManager {
         try {
             this.loadFeature(feature);
 
-            console.log('[FeatureManager] ' + feature + ' has been reloaded.');
+            if (!server.isTest())
+                console.log('[FeatureManager] ' + feature + ' has been reloaded.');
+
             return true;
 
         } catch (exception) {

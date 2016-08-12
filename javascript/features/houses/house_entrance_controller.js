@@ -36,10 +36,9 @@ class HouseEntranceController {
                                             : 19902 /* yellow marker */
         });
 
-        // TODO(Russell): Improve the `occupied` label for houses to mention their owner.
+        
         const label = this.entities_.createTextLabel({
-            text: location.isAvailable() ? 'Available'
-                                         : 'Occupied',
+            text: this.compileLocationDescription(location),
             color: Color.fromRGB(255, 255, 0),
             position: location.position.translate({ z: 0.55 }),
             drawDistance: HOUSE_LABEL_DRAW_DISTANCE,
@@ -49,6 +48,15 @@ class HouseEntranceController {
         this.pickups_.set(pickup, location);
         this.pickupLabels_.set(pickup, label);
         this.locations_.set(location, pickup);
+    }
+
+    // Compiles the description of the |location| that should be displayed in a text label above it.
+    compileLocationDescription(location) {
+        if (location.isAvailable())
+            return 'Available House';
+
+        // TODO(Russell): Improve the `occupied` label for houses to mention their owner.
+        return 'Occupied';
     }
 
     // Removes |location| from the set of tracked locations. All entrances will be removed.

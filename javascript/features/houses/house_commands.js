@@ -7,6 +7,7 @@ const IdentityBeam = require('features/houses/utils/identity_beam.js');
 const InteriorList = require('features/houses/utils/interior_list.js');
 const InteriorSelector = require('features/houses/utils/interior_selector.js');
 const Menu = require('components/menu/menu.js');
+const ParkingLotSelector = require('features/houses/utils/parking_lot_selector.js');
 
 // Maximum number of milliseconds during which the identity beam should be displayed.
 const IDENTITY_BEAM_DISPLAY_TIME_MS = 60000;
@@ -20,17 +21,24 @@ class HouseCommands {
         this.announce_ = announce;
         this.economy_ = economy;
 
-        // Command: /house [buy/create/modify/sell]
+        this.parkingLotSelector_ = new ParkingLotSelector();
+
+        // Command: /house [buy/cancel/create/modify/save/sell]
         server.commandManager.buildCommand('house')
             .restrict(Player.LEVEL_MANAGEMENT)
             .sub('buy')
                 .build(HouseCommands.prototype.onHouseBuyCommand.bind(this))
+            .sub('cancel')
+                .build(HouseCommands.prototype.onHouseCancelCommand.bind(this))
             .sub('create')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(HouseCommands.prototype.onHouseCreateCommand.bind(this))
             .sub('modify')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(HouseCommands.prototype.onHouseModifyCommand.bind(this))
+            .sub('save')
+                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .build(HouseCommands.prototype.onHouseSaveCommand.bind(this))
             .sub('sell')
                 .build(HouseCommands.prototype.onHouseSellCommand.bind(this))
             .build(HouseCommands.prototype.onHouseCommand.bind(this));
@@ -64,6 +72,15 @@ class HouseCommands {
         // TODO: Verify the amount of money of |player| again.
 
         console.log(interior);
+    }
+
+    // Called when a |player| types the `/house cancel` command in response to an interactive
+    // operation, for instance whilst adding a parking lot.
+    onHouseCancelCommand(player) {
+        if (this.parkingLotSelector_.isSelecting(player))
+            this.parkingLotSelector_.cancelSelection(player);
+        else
+            player.sendMessage(Message.HOUSE_CANCEL_UNKNOWN);
     }
 
     // Called when an administrator types `/house create`. It will confirm with them whether they
@@ -129,7 +146,21 @@ class HouseCommands {
 
         const menu = new Menu('How do you want to modify this house?');
 
-        // TODO: Add the ability to add and remove parking lots.
+        menu.addItem('Add a parking lot', async(player) => {
+            const message =
+                Message.format(Message.HOUSE_PARKING_LOT_ADD, this.parkingLotSelector_.maxDistance);
+
+            await Dialog.displayMessage(
+                player, 'Add a parking lot', message, 'Close', '' /* rightButton */);
+
+            const parkingLot = await this.parkingLotSelector_.select(player, closestLocation);
+            if (!parkingLot)
+                return;
+
+            console.log(parkingLot);
+        });
+
+        // TODO: Add the ability to remove parking lots.
         // TODO: Add the ability to evict the occupant?
 
         menu.addItem('Delete the location', async(player) => {
@@ -157,6 +188,15 @@ class HouseCommands {
 
         // Remove the identity beam that was displayed for this house.
         identityBeam.dispose();
+    }
+
+    // Called when a |player| types the `/house save` command in response to an interactive
+    // operation, for instance whilst adding a parking lot.
+    onHouseSaveCommand(player) {
+        if (this.parkingLotSelector_.isSelecting(player))
+            this.parkingLotSelector_.confirmSelection(player);
+        else
+            player.sendMessage(Message.HOUSE_SAVE_UNKNOWN);
     }
 
     // Called when a player types the `/house sell` command to sell their house. They don't have to

@@ -106,6 +106,7 @@
     "HOUSE_BUY_NO_LOCATION": "@error You need to stand in a house entrance to use this command.",
     "HOUSE_BUY_NO_MULTIPLE": "@error You already own a house, so can't buy this one as well.",
     "HOUSE_BUY_NOT_AVAILABLE": "@error The house you're standing in is already owned by %s.",
+    "HOUSE_CANCEL_UNKNOWN": "@error Unable to cancel - you're not currently in an interactive operation.",
     "HOUSE_CREATE_CONFIRM": "Houses will cost between %$ and %$ at this location. Continue?",
     "HOUSE_CREATE_CONFIRMED": "The house location has been created!",
     "HOUSE_CREATE_RESIDENTIAL_EXCLUSION_ZONE": "Sorry, no houses may be created in the residential exclusion zones!",
@@ -115,9 +116,13 @@
     "HOUSE_MODIFY_DELETE_CONFIRM": "Are you absolutely sure that you want to remove this location? Any occupants will be evicted with it.",
     "HOUSE_MODIFY_DELETE_CONFIRMED": "The house location has been deleted.",
     "HOUSE_MODIFY_NONE_NEAR": "@error You need to be close to a house in order to use this command.",
+    "HOUSE_PARKING_LOT_ADD": "Drive to the intended parking lot, which must be within %d units from the entrance.\nType `{FFA500}/house save{A9C4E4}` to save the location, or `{FFA500}/house cancel{A9C4E4}` to cancel.",
+    "HOUSE_PARKING_LOT_NOT_IN_VEHICLE": "You must be in a vehicle in order to create the parking lot. Try again?",
+    "HOUSE_PARKING_LOT_TOO_FAR": "The parking lot must be within %d units from the property (you are %d units away). Try again?",
     "HOUSE_PICKUP_CAN_PURCHASE": "{10F441}This house is available for purchase, starting at %$. Type `{DDFFDD}/house buy{10F441}` if you're interested!",
     "HOUSE_PICKUP_CANNOT_PURCHASE": "{CCCCCC}This house is available for purchase, starting at %$.",
     "HOUSE_PURCHASE_TOO_EXPENSIVE": "Sorry, you cannot purchase this house because you don't have enough money available.",
+    "HOUSE_SAVE_UNKNOWN": "@error Unable to confirm - you're not currently in an interactive operation.",
 
     "IRC_CHAT_MESSAGE_SENT": "{33AA33}Message sent to {FFFFFF}%s {33AA33}as {FFFFFF}%s{33AA33}: {FFFFFF}%s",
     

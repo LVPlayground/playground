@@ -7,7 +7,7 @@
 const INTERIOR_LIST = [
     {
         // House Id: 0
-        name: 'Unnamed house (1)',
+        name: 'Tiny Apartment',
         selectable: true,
         value: 1,
 
@@ -22,7 +22,7 @@ const INTERIOR_LIST = [
     },
     {
         // House Id: 1
-        name: 'Unnamed house (2)',
+        name: 'Small Apartment',
         selectable: true,
         value: 2,
 
@@ -37,7 +37,7 @@ const INTERIOR_LIST = [
     },
     {
         // House Id: 2
-        name: 'Hashbury House',
+        name: 'Normal House (1)',
         selectable: true,
         value: 3,
 
@@ -52,24 +52,9 @@ const INTERIOR_LIST = [
     },
     {
         // House Id: 3
-        name: 'Johnson House',
+        name: 'Normal House (2)',
         selectable: true,
         value: 4,
-
-        interior: 3,
-        exits: [ { position: [ 2495.96, -1692.80, 1014.74 ], rotation: 90 } ],
-
-        preview: {
-            position: [ [ 2492.1933, -1711.1480, 1015.5310 ], [ 2496.1657, -1705.1280, 1015.6870 ] ],
-            target: [ [ 2496.9011, -1709.4993, 1015.1863 ], [ 2494.6542, -1700.3811, 1015.2606 ] ],
-            duration: 2500
-        }
-    },
-    {
-        // House Id: 4
-        name: 'Unnamed house (3)',
-        selectable: true,
-        value: 5,
 
         interior: 8,
         exits: [ { position: [ 2365.43, -1135.30, 1050.88 ], rotation: 180 } ],
@@ -81,8 +66,23 @@ const INTERIOR_LIST = [
         }
     },
     {
+        // House Id: 4
+        name: 'Large House',
+        selectable: true,
+        value: 5,
+
+        interior: 3,
+        exits: [ { position: [ 2495.96, -1692.80, 1014.74 ], rotation: 90 } ],
+
+        preview: {
+            position: [ [ 2492.1933, -1711.1480, 1015.5310 ], [ 2496.1657, -1705.1280, 1015.6870 ] ],
+            target: [ [ 2496.9011, -1709.4993, 1015.1863 ], [ 2494.6542, -1700.3811, 1015.2606 ] ],
+            duration: 2500
+        }
+    },
+    {
         // House Id: 5
-        name: 'Grosvenor Mansion',
+        name: 'Mansion',
         selectable: true,
         value: 7,
 

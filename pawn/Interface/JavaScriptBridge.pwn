@@ -67,6 +67,8 @@ public OnSerializePlayerState(playerid, serialize, restoreOnSpawn) {
         GetPlayerFacingAngle(playerid, g_storedPlayerPositions[playerid][3]);
 
         SetPlayerWeather(playerid, g_iSavedWeatherID);
+
+        SetCameraBehindPlayer(playerid);
     }
 }
 

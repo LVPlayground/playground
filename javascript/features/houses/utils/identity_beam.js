@@ -2,26 +2,39 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const ScopedEntities = require('entities/scoped_entities.js');
+
 // Narrow red-beam. Available since SA-MP 0.3.7 RC4.
 const BEAM_OBJECT_ID = 11753;
 
 // The identity beam can be used as a way to identify the entity that's about to be edited, for
 // instance a house, property or an object that is about to be edited.
 class IdentityBeam {
-    constructor(position, { player = null, timeout = 60000 } = {}) {
+    constructor(position, { player = null, label = null, timeout = 60000 } = {}) {
         const viewingAngle = player ? player.rotation : 0;
 
-        this.primaryBeam_ = server.objectManager.createObject({
+        this.entities_ = new ScopedEntities();
+        this.entities_.createObject({
             modelId: BEAM_OBJECT_ID,
             position: position,
             rotation: new Vector(0, 0, viewingAngle % 360)
         });
 
-        this.secondaryBeam_ = server.objectManager.createObject({
+        this.entities_.createObject({
             modelId: BEAM_OBJECT_ID,
             position: position,
             rotation: new Vector(0, 0, (viewingAngle + 90) % 360)
         });
+
+        // Create a label for the identity beam if that has been requested.
+        if (label !== null) {
+            this.entities_.createTextLabel({
+                text: label,
+                position: position.translate({ z: 3 }),
+                drawDistance: 150,
+                testLineOfSight: false
+            });
+        }
 
         if (player)
             player.updateStreamerObjects();
@@ -31,11 +44,10 @@ class IdentityBeam {
     }
 
     dispose() {
-        if (this.primaryBeam_.isConnected())
-            this.primaryBeam_.dispose();
-
-        if (this.secondaryBeam_.isConnected())
-            this.secondaryBeam_.dispose();
+        if (this.entities_) {
+            this.entities_.dispose();
+            this.entities_ = null;
+        }
     }
 }
 

@@ -9,13 +9,17 @@ describe('IdentityBeam', it => {
 
     it('should create two objects on the server', assert => {
         const objectCount = server.objectManager.count;
+        const textLabelCount = server.textLabelManager.count;
+
         const beam = new IdentityBeam(position);
 
         assert.equal(server.objectManager.count, objectCount + 2);
+        assert.equal(server.textLabelManager.count, textLabelCount);
 
         beam.dispose();
 
         assert.equal(server.objectManager.count, objectCount);
+        assert.equal(server.textLabelManager.count, textLabelCount);
     });
 
     it('should personalize the beam for the target player', assert => {
@@ -23,14 +27,28 @@ describe('IdentityBeam', it => {
         gunther.rotation = 45;
 
         const beam = new IdentityBeam(position, { player: gunther });
+        const objects = Array.from(beam.entities_.objects_);
 
-        assert.isTrue(beam.hasOwnProperty('primaryBeam_'));
-        assert.equal(beam.primaryBeam_.rotation.z, 45);
+        assert.equal(objects.length, 2);
 
-        assert.isTrue(beam.hasOwnProperty('secondaryBeam_'));
-        assert.equal(beam.secondaryBeam_.rotation.z, 135);
+        assert.equal(objects[0].rotation.z, 45);
+        assert.equal(objects[1].rotation.z, 135);
 
         assert.isTrue(gunther.streamerObjectsUpdated());
+    });
+
+    it('should create a label for the beam when requested', assert => {
+        const textLabelCount = server.textLabelManager.count;
+
+        const beam = new IdentityBeam(position, {
+            label: 'Foo Bar Baz'
+        });
+
+        assert.equal(server.textLabelManager.count, textLabelCount + 1);
+
+        beam.dispose();
+
+        assert.equal(server.textLabelManager.count, textLabelCount);
     });
 
     it('should honor the timeout given for the beam', async(assert) => {

@@ -28,7 +28,8 @@ class ParkingLotRemover {
 
         parkingLots.forEach((parkingLot, id) => {
             parkingLotBeams.push(new IdentityBeam(parkingLot.position.translate({ z: -2 }), {
-                player: player
+                player: player,
+                label: 'ID: ' + id
             }));
         });
 

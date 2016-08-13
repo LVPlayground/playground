@@ -5,6 +5,9 @@
 const Dialog = require('components/dialogs/dialog.js');
 const InteriorSelectorUI = require('features/houses/utils/interior_selector_ui.js');
 
+// Number of milliseconds to wait before animating the camera within a house scene.
+const HOUSE_SCENE_PRELOAD_MS = 1000;
+
 // Private symbol ensuring that the InteriorSelector constructor won't be used.
 const PrivateSymbol = Symbol('Please use InteriorSelector.select() instead.');
 
@@ -67,7 +70,7 @@ class InteriorSelector {
         const interior = this.interiorList_[this.interiorListIndex_];
         if (interior.price > this.availableMoney_) {
             Dialog.displayMessage(this.player_, 'Unable to purchase this house',
-                                  Message.HOUSE_PURCHASE_TOO_EXPENSIVE, 'OK' /* leftButton */,
+                                  Message.HOUSE_PURCHASE_TOO_EXPENSIVE, 'Close' /* leftButton */,
                                   '' /* rightButton */);
             return;
         }
@@ -98,8 +101,10 @@ class InteriorSelector {
         const interior = this.interiorList_[index];
         const interiorPreview = interior.preview;
 
-        // Make sure that the player is in the correct interior to view this interior.
+        // Make sure that the player is in the correct interior to view this interior, and in their
+        // own virtual world so that they're not bothered by others.
         this.player_.interior = interior.interior;
+        this.player_.virtualWorld = VirtualWorld.forPlayer(this.player_);
 
         // Force-update the streamer for this player to make sure custom houses are visible.
         this.player_.updateStreamer(
@@ -110,8 +115,10 @@ class InteriorSelector {
         this.player_.setCamera(new Vector(...interiorPreview.position[0]),
                                new Vector(...interiorPreview.target[0]));
 
-        // Wait one second to give the scene a chance to load for this player.
-        wait(1000).then(() => {
+        // TODO: Somehow get rid of the waiting time before first scene is being displayed.
+
+        // Wait for some time in order to give the scene a chance to load for this player.
+        wait(HOUSE_SCENE_PRELOAD_MS).then(() => {
             if (this.interiorListIndex_ !== index)
                 return;  // the player has navigated away from this scene
 

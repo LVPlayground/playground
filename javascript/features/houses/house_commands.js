@@ -26,7 +26,7 @@ class HouseCommands {
         this.parkingLotCreator_ = new ParkingLotCreator();
         this.parkingLotRemover_ = new ParkingLotRemover();
 
-        // Command: /house [buy/cancel/create/modify/save/sell]
+        // Command: /house [buy/cancel/create/modify/remove/save/sell]
         server.commandManager.buildCommand('house')
             .restrict(Player.LEVEL_MANAGEMENT)
             .sub('buy')

@@ -243,7 +243,8 @@ class Player {
   // Sets the player's camera to |position| and |target|, both of which must be vectors. The camera
   // position is interpolated becaue this makes it play nice with spectating and camera streaming.
   setCamera(position, target) {
-    this.interpolateCamera(position, position, target, target, 100);
+    pawnInvoke('SetPlayerCameraPos', 'ifff', this.id_, position.x, position.y, position.z);
+    pawnInvoke('SetPlayerCameraLookAt', 'ifffi', this.id_, target.x, target.y, target.z, 2);
   }
 
   // Interpolates the player's camera from |positionFrom|, |targetFrom| to |positionTo|, |targetTo|,

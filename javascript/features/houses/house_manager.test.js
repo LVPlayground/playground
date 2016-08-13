@@ -21,6 +21,14 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
         await manager.loadHousesFromDatabase();
 
         assert.equal(manager.locationCount, 3);
+
+        let parkingLotCount = 0;
+
+        for (const location of manager.locations)
+            parkingLotCount += location.parkingLotCount;
+
+        assert.isAbove(parkingLotCount, 0);
+
         // TODO: Verify the other pieces of data that can be loaded.
     });
 

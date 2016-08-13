@@ -2,6 +2,13 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+// Definition of a random parking lot that will be loaded as mocked data.
+const PARKING_LOT = {
+    id: 42,
+    position: new Vector(300, 360, 400),
+    rotation: 270
+};
+
 // Mocked database class that implements the same API as the regular HouseDatabase class, but will
 // return faked data for the purposes of testing rather than consult the database.
 class MockHouseDatabase {
@@ -12,9 +19,9 @@ class MockHouseDatabase {
 
     async loadLocations() {
         return [
-            { id: 1, position: new Vector(100, 150, 200) },
-            { id: 2, position: new Vector(200, 250, 300) },
-            { id: 3, position: new Vector(300, 350, 400) }
+            { id: 1, position: new Vector(100, 150, 200), parkingLots: [] },
+            { id: 2, position: new Vector(200, 250, 300), parkingLots: [] },
+            { id: 3, position: new Vector(300, 350, 400), parkingLots: [ PARKING_LOT ] }
         ];
     }
 

@@ -14,6 +14,23 @@ const LOAD_LOCATIONS_QUERY = `
     WHERE
         location_removed IS NULL`;
 
+// Query to load the parking lots associated with the house locations.
+const LOAD_PARKING_LOTS_QUERY = `
+    SELECT
+        houses_parking_lots.house_parking_lot_id,
+        houses_parking_lots.house_location_id,
+        houses_parking_lots.position_x,
+        houses_parking_lots.position_y,
+        houses_parking_lots.position_z,
+        houses_parking_lots.rotation
+    FROM
+        houses_parking_lots
+    LEFT JOIN
+        houses_locations ON houses_locations.house_location_id = houses_parking_lots.house_location_id
+    WHERE
+        houses_parking_lots.parking_lot_removed IS NULL AND
+        houses_locations.location_removed IS NULL`;
+
 // Query to create a new house location in the database.
 const CREATE_LOCATION_QUERY = `
     INSERT INTO
@@ -53,16 +70,43 @@ const REMOVE_PARKING_LOT_QUERY = `
 class HouseDatabase {
     // Loads the existing house locations from the database, and asynchronously returns them.
     async loadLocations() {
+        let parkingLots = new Map();
         let locations = [];
 
-        const data = await server.database.query(LOAD_LOCATIONS_QUERY);
-        data.rows.forEach(location => {
-            locations.push({
-                id: location.house_location_id,
-                position: new Vector(location.entrance_x, location.entrance_y, location.entrance_z)
-            });
-        });
+        // (1) Load the parking lots from the database.
+        {
+            const data = await server.database.query(LOAD_PARKING_LOTS_QUERY);
+            data.rows.forEach(parkingLot => {
+                const locationId = parkingLot.house_location_id;
+                const position =
+                    new Vector(parkingLot.position_x, parkingLot.position_y, parkingLot.position_z);
 
+                if (!parkingLots.has(locationId))
+                    parkingLots.set(locationId, []);
+
+                parkingLots.get(locationId).push({
+                    id: parkingLot.house_parking_lot_id,
+                    position: position,
+                    rotation: parkingLot.rotation
+                });
+            });
+        }
+
+        // (2) Load the location information itself from the database.
+        {
+            const data = await server.database.query(LOAD_LOCATIONS_QUERY);
+            data.rows.forEach(location => {
+                const locationId = location.house_location_id;
+                const position =
+                    new Vector(location.entrance_x, location.entrance_y, location.entrance_z);
+
+                locations.push({
+                    id: locationId,
+                    position: position,
+                    parkingLots: parkingLots.get(locationId) || []
+                });
+            });
+        }
         return locations;
     }
 

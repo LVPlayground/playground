@@ -11,6 +11,12 @@ class HouseLocation {
 
         this.position_ = location.position;
         this.parkingLots_ = new Map();
+
+        // Load the |parkingLots| from the database to this location.
+        if (location.hasOwnProperty('parkingLots')) {
+            location.parkingLots.forEach(parkingLot =>
+                this.parkingLots_.set(parkingLot.id, parkingLot));
+        }
     }
 
     // Gets the unique Id representing this location in the database.

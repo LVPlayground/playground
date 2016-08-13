@@ -21,6 +21,9 @@ class HouseManager {
         this.entranceController_ = new HouseEntranceController(this, economy);
     }
 
+    // Gets an iterator that can be used to iterate over the house locations.
+    get locations() { return this.locations_.values(); }
+
     // Gets the number of house locations that have been made available.
     get locationCount() { return this.locations_.size; }
 

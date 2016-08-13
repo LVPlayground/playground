@@ -120,10 +120,10 @@ class EconomyCalculator {
 }
 
 // The price range based on which houses will be priced.
-EconomyCalculator.PRICE_RANGE_HOUSES = [ 500000, 25000000 ];
+EconomyCalculator.PRICE_RANGE_HOUSES = [ 750000, 45000000 ];
 
 // The value of a parking lot depending on the house's location.
-EconomyCalculator.PRICE_RANGE_PARKING_LOTS = [ 50000, 1500000 ];
+EconomyCalculator.PRICE_RANGE_PARKING_LOTS = [ 75000, 2500000 ];
 
 // The price range based on which vehicles for houses will be priced.
 EconomyCalculator.PRICE_RANGE_HOUSE_VEHICLES = [ 100000, 1500000 ];

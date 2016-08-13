@@ -4,6 +4,9 @@
 
 const Dialog = require('components/dialogs/dialog.js');
 
+// Maximum distance, in units, at which parking lots may be created around a house location.
+const MAXIMUM_PARKING_LOT_DISTANCE = 150;
+
 // Utility function allowing administrators to select a location at which a parking lot should be
 // created for a given location. There is a maximum distance at which they can be created.
 class ParkingLotSelector {
@@ -12,6 +15,11 @@ class ParkingLotSelector {
 
         // Observe disconnecting players so that we can cancel their selector.
         server.playerManager.addObserver(this);
+    }
+
+    // Gets the maximum distance between a house' entrance and its parking lots.
+    get maxDistance() {
+        return MAXIMUM_PARKING_LOT_DISTANCE;
     }
 
     // Returns whether |player| is currently selecting a parking lot.
@@ -23,8 +31,10 @@ class ParkingLotSelector {
     // displayed usage instructions for the selector.
     async select(player, location) {
         do {
-            const finishedReason = await new Promise(resolve =>
+            const finishedPromise = new Promise(resolve =>
                 this.activeSelectors_.set(player, { cancel: resolve }));
+
+            const finishedReason = await finishedPromise;
 
             this.activeSelectors_.delete(player);
 
@@ -32,21 +42,35 @@ class ParkingLotSelector {
             if (finishedReason != ParkingLotSelector.REASON_CONFIRMED)
                 return null;
 
-            const [ action, result ] = await this.doSelection(player, location);
-            switch (action) {
-                case ParkingLotSelector.ACTION_ABORT:
-                  return null;
-                case ParkingLotSelector.ACTION_RETRY:
-                  break;
-                case ParkingLotSelector.ACTION_SUCCESS:
-                  return result;
-            }
-        } while (true);
-    }
+            const position = this.getCurrentVehiclePosition(player);
+            const rotation = this.getCurrentVehicleRotation(player);
 
-    // Virtual function that does the actual selection for this selector.
-    async doSelection(player, location) {
-        throw new Error('Unable to do the selection: method must be overridden.');
+            if (!position || !rotation) {
+                const dialog =
+                    await this.displayError(player, Message.HOUSE_PARKING_LOT_NOT_IN_VEHICLE);
+
+                if (!dialog.response)
+                    return null;
+
+                continue;
+            }
+
+            const distance = position.distanceTo(location.position);
+            if (distance > MAXIMUM_PARKING_LOT_DISTANCE) {
+                const dialog =
+                    await this.displayError(player, Message.HOUSE_PARKING_LOT_TOO_FAR,
+                                            MAXIMUM_PARKING_LOT_DISTANCE, distance);
+
+                if (!dialog.response)
+                    return null;
+
+                continue;
+            }
+
+            // Success: the location of a parking lot has been chosen.
+            return { position, rotation };
+
+        } while (true);
     }
 
     // Confirms the parking lot location for |player|.
@@ -70,6 +94,24 @@ class ParkingLotSelector {
     // ---------------------------------------------------------------------------------------------
     // Private functions
 
+    // Returns the position of the vehicle the |player| currently is in, or NULL otherwise.
+    getCurrentVehiclePosition(player) {
+        const vehicleId = pawnInvoke('GetPlayerVehicleID', 'i', player.id);
+        if (vehicleId)
+            return new Vector(...pawnInvoke('GetVehiclePos', 'iFFF', vehicleId));
+
+        return null;
+    }
+
+    // Returns the rotation of the vehicle the |player| currently is in, or NULL otherwise.
+    getCurrentVehicleRotation(player) {
+        const vehicleId = pawnInvoke('GetPlayerVehicleID', 'i', player.id);
+        if (vehicleId)
+            return pawnInvoke('GetVehicleZAngle', 'iF', vehicleId);
+
+        return null;
+    }
+
     // Displays the |message| (optionally with |args|) to the |player|. Returns whether the action
     // should be retried, as the player will be offered a choice in a dialog.
     async displayError(player, message, ...args) {
@@ -91,11 +133,6 @@ class ParkingLotSelector {
         server.playerManager.removeObserver(this);
     }
 }
-
-// Actions that can be triggered by the doSelection() method.
-ParkingLotSelector.ACTION_ABORT = 0;
-ParkingLotSelector.ACTION_RETRY = 1;
-ParkingLotSelector.ACTION_SUCCESS = 2;
 
 // Reasons for which a parking lot selector can be canceled.
 ParkingLotSelector.REASON_CANCELED = 0;

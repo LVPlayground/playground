@@ -4,7 +4,6 @@
 
 const HouseLocation = require('features/houses/house_location.js');
 const ParkingLotSelector = require('features/houses/utils/parking_lot_selector.js');
-const ParkingLotSelectorCreate = require('features/houses/utils/parking_lot_selector_create.js');
 
 describe('ParkingLotSelector', (it, beforeEach, afterEach) => {
     const location = new HouseLocation({
@@ -28,7 +27,7 @@ describe('ParkingLotSelector', (it, beforeEach, afterEach) => {
     });
 
     it('should cancel when the operation is canceled', async(assert) => {
-        selector = new ParkingLotSelectorCreate();
+        selector = new ParkingLotSelector();
 
         assert.isFalse(selector.isSelecting(gunther));
 
@@ -45,7 +44,7 @@ describe('ParkingLotSelector', (it, beforeEach, afterEach) => {
     });
 
     it('should cancel selection when the player disconnects', async(assert) => {
-        selector = new ParkingLotSelectorCreate();
+        selector = new ParkingLotSelector();
 
         assert.isFalse(selector.isSelecting(gunther));
 
@@ -62,7 +61,7 @@ describe('ParkingLotSelector', (it, beforeEach, afterEach) => {
     });
 
     it('should display an error when the player is not in a vehicle', async(assert) => {
-        selector = new class extends ParkingLotSelectorCreate {
+        selector = new class extends ParkingLotSelector {
             getCurrentVehiclePosition() {
                 return null;
             }
@@ -111,7 +110,7 @@ describe('ParkingLotSelector', (it, beforeEach, afterEach) => {
         const OFFSET = 200;
         const OFFSET_SQ = OFFSET * OFFSET;
 
-        selector = new class extends ParkingLotSelectorCreate {
+        selector = new class extends ParkingLotSelector {
             getCurrentVehiclePosition() {
                 return location.position.translate({ x: OFFSET, y: OFFSET });
             }
@@ -160,7 +159,7 @@ describe('ParkingLotSelector', (it, beforeEach, afterEach) => {
     });
 
     it('should return the location when successfully chosen', async(assert) => {
-        selector = new class extends ParkingLotSelectorCreate {
+        selector = new class extends ParkingLotSelector {
             getCurrentVehiclePosition() {
                 return location.position.translate({ x: 10, y: 10 });
             }

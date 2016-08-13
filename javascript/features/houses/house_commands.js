@@ -7,7 +7,7 @@ const IdentityBeam = require('features/houses/utils/identity_beam.js');
 const InteriorList = require('features/houses/utils/interior_list.js');
 const InteriorSelector = require('features/houses/utils/interior_selector.js');
 const Menu = require('components/menu/menu.js');
-const ParkingLotSelectorCreate = require('features/houses/utils/parking_lot_selector_create.js');
+const ParkingLotSelector = require('features/houses/utils/parking_lot_selector.js');
 
 // Maximum number of milliseconds during which the identity beam should be displayed.
 const IDENTITY_BEAM_DISPLAY_TIME_MS = 60000;
@@ -21,7 +21,7 @@ class HouseCommands {
         this.announce_ = announce;
         this.economy_ = economy;
 
-        this.parkingLotCreator_ = new ParkingLotSelectorCreate();
+        this.parkingLotSelector_ = new ParkingLotSelector();
 
         // Command: /house [buy/cancel/create/modify/save/sell]
         server.commandManager.buildCommand('house')
@@ -77,8 +77,8 @@ class HouseCommands {
     // Called when a |player| types the `/house cancel` command in response to an interactive
     // operation, for instance whilst adding a parking lot.
     onHouseCancelCommand(player) {
-        if (this.parkingLotCreator_.isSelecting(player))
-            this.parkingLotCreator_.cancelSelection(player);
+        if (this.parkingLotSelector_.isSelecting(player))
+            this.parkingLotSelector_.cancelSelection(player);
         else
             player.sendMessage(Message.HOUSE_CANCEL_UNKNOWN);
     }
@@ -148,12 +148,12 @@ class HouseCommands {
 
         menu.addItem('Add a parking lot', async(player) => {
             const message =
-                Message.format(Message.HOUSE_PARKING_LOT_ADD, this.parkingLotCreator_.maxDistance);
+                Message.format(Message.HOUSE_PARKING_LOT_ADD, this.parkingLotSelector_.maxDistance);
 
             await Dialog.displayMessage(
                 player, 'Add a parking lot', message, 'Close', '' /* rightButton */);
 
-            const parkingLot = await this.parkingLotCreator_.select(player, closestLocation);
+            const parkingLot = await this.parkingLotSelector_.select(player, closestLocation);
             if (!parkingLot)
                 return;
 
@@ -206,8 +206,8 @@ class HouseCommands {
     // Called when a |player| types the `/house save` command in response to an interactive
     // operation, for instance whilst adding a parking lot.
     onHouseSaveCommand(player) {
-        if (this.parkingLotCreator_.isSelecting(player))
-            this.parkingLotCreator_.confirmSelection(player);
+        if (this.parkingLotSelector_.isSelecting(player))
+            this.parkingLotSelector_.confirmSelection(player);
         else
             player.sendMessage(Message.HOUSE_SAVE_UNKNOWN);
     }

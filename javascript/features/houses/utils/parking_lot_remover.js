@@ -27,7 +27,8 @@ class ParkingLotRemover {
         const parkingLotBeams = [];
 
         parkingLots.forEach((parkingLot, id) => {
-            parkingLotBeams.push(new IdentityBeam(parkingLot.position.translate({ z: -2 }), {
+            parkingLotBeams.push(new IdentityBeam(parkingLot.position.translate({ z: 0.1 }), {
+                modelId: 19607 /* blue downwards-pointing cone */,
                 player: player,
                 label: 'ID: ' + id
             }));

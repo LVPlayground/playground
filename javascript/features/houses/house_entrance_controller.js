@@ -40,7 +40,7 @@ class HouseEntranceController {
         const label = this.entities_.createTextLabel({
             text: this.compileLocationDescription(location),
             color: Color.fromRGB(255, 255, 0),
-            position: location.position.translate({ z: 0.55 }),
+            position: location.position.translate({ z: 0.6 }),
             drawDistance: HOUSE_LABEL_DRAW_DISTANCE,
             testLineOfSight: true
         });

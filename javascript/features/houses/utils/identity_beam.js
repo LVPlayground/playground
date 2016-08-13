@@ -10,18 +10,19 @@ const BEAM_OBJECT_ID = 11753;
 // The identity beam can be used as a way to identify the entity that's about to be edited, for
 // instance a house, property or an object that is about to be edited.
 class IdentityBeam {
-    constructor(position, { player = null, label = null, timeout = 60000 } = {}) {
+    constructor(position, { modelId = null, player = null, label = null, timeout = 60000 } = {}) {
         const viewingAngle = player ? player.rotation : 0;
+        const model = modelId || BEAM_OBJECT_ID;
 
         this.entities_ = new ScopedEntities();
         this.entities_.createObject({
-            modelId: BEAM_OBJECT_ID,
+            modelId: model,
             position: position,
             rotation: new Vector(0, 0, viewingAngle % 360)
         });
 
         this.entities_.createObject({
-            modelId: BEAM_OBJECT_ID,
+            modelId: model,
             position: position,
             rotation: new Vector(0, 0, (viewingAngle + 90) % 360)
         });
@@ -30,7 +31,7 @@ class IdentityBeam {
         if (label !== null) {
             this.entities_.createTextLabel({
                 text: label,
-                position: position.translate({ z: 3 }),
+                position: position.translate({ z: 1 }),
                 drawDistance: 150,
                 testLineOfSight: false
             });

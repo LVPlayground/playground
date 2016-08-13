@@ -82,7 +82,10 @@ CChase__Start(tID)
             format(string, sizeof(string), "%s has been identified as a VERY dangerous terrorist,", name);
             SendClientMessage(i, Color::Red, string);
             SendClientMessage(i, Color::Red, "and should be eliminated as soon as possible. The killer receives");
-            SendClientMessage(i, Color::Red, "two and a half million dollars in cash money.");
+
+            format(string, sizeof(string), "$%s as a reward.", formatPrice(GetEconomyValue(ChaseWinner)));
+            SendClientMessage(i, Color::Red, string);
+
             SendClientMessage(i, Color::White, "-------------------------------------------------------------------------------------------------------");
             CancelTaxi(tID);
 

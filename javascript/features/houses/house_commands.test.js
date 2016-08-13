@@ -154,10 +154,10 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         // TODO: Put |gunther| in a vehicle before confirming (now canceling!) the selection.
 
-        while (!commands.parkingLotSelector_.isSelecting(gunther))
+        while (!commands.parkingLotCreator_.isSelecting(gunther))
             await Promise.resolve();
 
-        commands.parkingLotSelector_.cancelSelection(gunther);
+        commands.parkingLotCreator_.cancelSelection(gunther);
 
         await commandPromise;
 

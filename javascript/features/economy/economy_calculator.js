@@ -24,12 +24,12 @@ class EconomyCalculator {
     // Gets the variance that's currently being applied to certain calculations.
     get variance() { return this.varianceValue_; }
 
-    // Calculates the price for a house. The |residentialValue| must be in range of [0, 4], the
+    // Calculates the price for a house. The |residentialValue| must be in range of [0, 5], the
     // |interiorValue| must be in range of [0, 9]. The variance factor will be included.
     calculateHousePrice(residentialValue, interiorValue) {
-        if (residentialValue < 0 || residentialValue > 4) {
+        if (residentialValue < 0 || residentialValue > 5) {
             throw new Error(
-                'The residential value must be in range of [0, 4] (was ' + residentialValue + ').');
+                'The residential value must be in range of [0, 5] (was ' + residentialValue + ').');
         }
 
         if (interiorValue < 0 || interiorValue > 9) {
@@ -55,12 +55,12 @@ class EconomyCalculator {
     }
 
     // Calculates the price for a vehicle that will be positioned at a house. The |residentialValue|
-    // must be in range of [0, 4], the |vehicleValue| must be in range of [0, 100]. The variance
+    // must be in range of [0, 5], the |vehicleValue| must be in range of [0, 100]. The variance
     // factor will be included in the vehicle's price as well.
     calculateHouseVehiclePrice(residentialValue, vehicleValue) {
-        if (residentialValue < 0 || residentialValue > 4) {
+        if (residentialValue < 0 || residentialValue > 5) {
             throw new Error(
-                'The residential value must be in range of [0, 4] (was ' + residentialValue + ').');
+                'The residential value must be in range of [0, 5] (was ' + residentialValue + ').');
         }
 
         if (vehicleValue < 0 || vehicleValue > 100) {

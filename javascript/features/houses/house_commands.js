@@ -108,7 +108,7 @@ class HouseCommands {
                     Message.format(Message.HOUSE_CREATE_RESIDENTIAL_EXCLUSION_ZONE),
                     'Close' /* leftButton */, rightButton);
 
-            if (!player.isManagement() || !confirmation.response)
+            if (!player.isManagement() || confirmation.response)
                 return;
         }
 

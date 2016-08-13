@@ -123,6 +123,7 @@
     "HOUSE_PICKUP_CAN_PURCHASE": "{10F441}This house is available for purchase, starting at %$. Type `{DDFFDD}/house buy{10F441}` if you're interested!",
     "HOUSE_PICKUP_CANNOT_PURCHASE": "{CCCCCC}This house is available for purchase, starting at %$.",
     "HOUSE_PURCHASE_TOO_EXPENSIVE": "Sorry, you cannot purchase this house because you don't have enough money available.",
+    "HOUSE_REMOVE_UNKNOWN": "@error Unable to remove - you're not currently in an interactive operation.",
     "HOUSE_SAVE_UNKNOWN": "@error Unable to confirm - you're not currently in an interactive operation.",
 
     "IRC_CHAT_MESSAGE_SENT": "{33AA33}Message sent to {FFFFFF}%s {33AA33}as {FFFFFF}%s{33AA33}: {FFFFFF}%s",

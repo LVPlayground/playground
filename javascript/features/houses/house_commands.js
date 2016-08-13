@@ -2,12 +2,14 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const CommandBuilder = require('components/command_manager/command_builder.js');
 const Dialog = require('components/dialogs/dialog.js');
 const IdentityBeam = require('features/houses/utils/identity_beam.js');
 const InteriorList = require('features/houses/utils/interior_list.js');
 const InteriorSelector = require('features/houses/utils/interior_selector.js');
 const Menu = require('components/menu/menu.js');
 const ParkingLotCreator = require('features/houses/utils/parking_lot_creator.js');
+const ParkingLotRemover = require('features/houses/utils/parking_lot_remover.js');
 
 // Maximum number of milliseconds during which the identity beam should be displayed.
 const IDENTITY_BEAM_DISPLAY_TIME_MS = 60000;
@@ -22,6 +24,7 @@ class HouseCommands {
         this.economy_ = economy;
 
         this.parkingLotCreator_ = new ParkingLotCreator();
+        this.parkingLotRemover_ = new ParkingLotRemover();
 
         // Command: /house [buy/cancel/create/modify/save/sell]
         server.commandManager.buildCommand('house')
@@ -36,6 +39,10 @@ class HouseCommands {
             .sub('modify')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(HouseCommands.prototype.onHouseModifyCommand.bind(this))
+            .sub('remove')
+                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .parameters([{ name: 'id', type: CommandBuilder.NUMBER_PARAMETER }])
+                .build(HouseCommands.prototype.onHouseRemoveCommand.bind(this))
             .sub('save')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(HouseCommands.prototype.onHouseSaveCommand.bind(this))
@@ -79,6 +86,8 @@ class HouseCommands {
     onHouseCancelCommand(player) {
         if (this.parkingLotCreator_.isSelecting(player))
             this.parkingLotCreator_.cancelSelection(player);
+        else if (this.parkingLotRemover_.isSelecting(player))
+            this.parkingLotRemover_.cancelSelection(player);
         else
             player.sendMessage(Message.HOUSE_CANCEL_UNKNOWN);
     }
@@ -171,7 +180,15 @@ class HouseCommands {
                 return;
             }
 
-            // TODO: Start the parking lot remover for the |player|.
+            await Dialog.displayMessage(
+                player, 'Remove a parking lot', Message.HOUSE_PARKING_LOT_REMOVE,
+                'Close' /* leftButton */, '' /* rightButton */);
+
+            const parkingLot = await this.parkingLotRemover_.select(player, closestLocation);
+            if (!parkingLot)
+                return;
+
+            console.log(parkingLot);
         });
 
         // TODO: Add the ability to evict the occupant?
@@ -203,6 +220,15 @@ class HouseCommands {
         identityBeam.dispose();
     }
 
+    // Called when a |player| types the `/house remove` command with the given |id|. Will find the
+    // in-progress interactive operation that should receive this value.
+    onHouseRemoveCommand(player, id) {
+        if (this.parkingLotRemover_.isSelecting(player))
+            this.parkingLotRemover_.confirmSelection(player, id);
+        else
+            player.sendMessage(Message.HOUSE_REMOVE_UNKNOWN);
+    }
+
     // Called when a |player| types the `/house save` command in response to an interactive
     // operation, for instance whilst adding a parking lot.
     onHouseSaveCommand(player) {
@@ -212,8 +238,8 @@ class HouseCommands {
             player.sendMessage(Message.HOUSE_SAVE_UNKNOWN);
     }
 
-    // Called when a player types the `/house sell` command to sell their house. They don't have to
-    // be in the house when typing this, but they will have to confirm the transaction.
+    // Called when a |player| types the `/house sell` command to sell their house. They don't have
+    // to be in the house when typing this, but they will have to confirm the transaction.
     async onHouseSellCommand(player) {
         const location = await this.manager_.findClosestLocation(player);
 
@@ -239,6 +265,12 @@ class HouseCommands {
 
     dispose() {
         server.commandManager.removeCommand('house');
+
+        this.parkingLotCreator_.dispose();
+        this.parkingLotCreator_ = null;
+
+        this.parkingLotRemover_.dispose();
+        this.parkingLotRemover_ = null;
 
         this.economy_ = null;
         this.announce_ = null;

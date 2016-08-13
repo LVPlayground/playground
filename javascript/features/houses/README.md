@@ -47,6 +47,7 @@ In addition, when interactive operations are in progress (adding or removing par
 example), the following commands can be used:
 
   - **/house cancel**: Cancel the current operation.
+  - **/house remove [id]**: Removes the object identified by `id` from the house.
   - **/house save**: Save the result of the current operation.
 
 

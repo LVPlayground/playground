@@ -3,9 +3,9 @@
 // be found in the LICENSE file.
 
 const HouseLocation = require('features/houses/house_location.js');
-const ParkingLotSelector = require('features/houses/utils/parking_lot_selector.js');
+const ParkingLotCreator = require('features/houses/utils/parking_lot_creator.js');
 
-describe('ParkingLotSelector', (it, beforeEach, afterEach) => {
+describe('ParkingLotCreator', (it, beforeEach, afterEach) => {
     const location = new HouseLocation({
         id: 0,
         position: new Vector(500, 500, 0)
@@ -18,7 +18,7 @@ describe('ParkingLotSelector', (it, beforeEach, afterEach) => {
     afterEach(() => selector.dispose());
 
     it('should throw when canceling or confirming for an invalid player', assert => {
-        selector = new ParkingLotSelector();
+        selector = new ParkingLotCreator();
 
         assert.isFalse(selector.isSelecting(gunther));
 
@@ -27,7 +27,7 @@ describe('ParkingLotSelector', (it, beforeEach, afterEach) => {
     });
 
     it('should cancel when the operation is canceled', async(assert) => {
-        selector = new ParkingLotSelector();
+        selector = new ParkingLotCreator();
 
         assert.isFalse(selector.isSelecting(gunther));
 
@@ -44,7 +44,7 @@ describe('ParkingLotSelector', (it, beforeEach, afterEach) => {
     });
 
     it('should cancel selection when the player disconnects', async(assert) => {
-        selector = new ParkingLotSelector();
+        selector = new ParkingLotCreator();
 
         assert.isFalse(selector.isSelecting(gunther));
 
@@ -61,7 +61,7 @@ describe('ParkingLotSelector', (it, beforeEach, afterEach) => {
     });
 
     it('should display an error when the player is not in a vehicle', async(assert) => {
-        selector = new class extends ParkingLotSelector {
+        selector = new class extends ParkingLotCreator {
             getCurrentVehiclePosition() {
                 return null;
             }
@@ -110,7 +110,7 @@ describe('ParkingLotSelector', (it, beforeEach, afterEach) => {
         const OFFSET = 200;
         const OFFSET_SQ = OFFSET * OFFSET;
 
-        selector = new class extends ParkingLotSelector {
+        selector = new class extends ParkingLotCreator {
             getCurrentVehiclePosition() {
                 return location.position.translate({ x: OFFSET, y: OFFSET });
             }
@@ -159,7 +159,7 @@ describe('ParkingLotSelector', (it, beforeEach, afterEach) => {
     });
 
     it('should return the location when successfully chosen', async(assert) => {
-        selector = new class extends ParkingLotSelector {
+        selector = new class extends ParkingLotCreator {
             getCurrentVehiclePosition() {
                 return location.position.translate({ x: 10, y: 10 });
             }

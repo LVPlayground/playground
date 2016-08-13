@@ -9,11 +9,11 @@ const MAXIMUM_PARKING_LOT_DISTANCE = 150;
 
 // Utility function allowing administrators to select a location at which a parking lot should be
 // created for a given location. There is a maximum distance at which they can be created.
-class ParkingLotSelector {
+class ParkingLotCreator {
     constructor() {
         this.activeSelectors_ = new WeakMap();
 
-        // Observe disconnecting players so that we can cancel their selector.
+        // Observe disconnecting players so that we can cancel their creator.
         server.playerManager.addObserver(this);
     }
 
@@ -39,7 +39,7 @@ class ParkingLotSelector {
             this.activeSelectors_.delete(player);
 
             // Bail out if the location wasn't confirmed by the player.
-            if (finishedReason != ParkingLotSelector.REASON_CONFIRMED)
+            if (finishedReason != ParkingLotCreator.REASON_CONFIRMED)
                 return null;
 
             const position = this.getCurrentVehiclePosition(player);
@@ -79,7 +79,7 @@ class ParkingLotSelector {
         if (!activeSelector)
             throw new Error('The |player| is not currently selecting a parking lot.');
 
-        activeSelector.cancel(ParkingLotSelector.REASON_CONFIRMED);
+        activeSelector.cancel(ParkingLotCreator.REASON_CONFIRMED);
     }
 
     // Cancels the parking lot selector for |player|.
@@ -88,7 +88,7 @@ class ParkingLotSelector {
         if (!activeSelector)
             throw new Error('The |player| is not currently selecting a parking lot.');
 
-        activeSelector.cancel(ParkingLotSelector.REASON_CANCELED);
+        activeSelector.cancel(ParkingLotCreator.REASON_CANCELED);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -126,7 +126,7 @@ class ParkingLotSelector {
         if (!activeSelector)
             return;
 
-        activeSelector.cancel(ParkingLotSelector.REASON_DISCONNECT);
+        activeSelector.cancel(ParkingLotCreator.REASON_DISCONNECT);
     }
 
     dispose() {
@@ -135,8 +135,8 @@ class ParkingLotSelector {
 }
 
 // Reasons for which a parking lot selector can be canceled.
-ParkingLotSelector.REASON_CANCELED = 0;
-ParkingLotSelector.REASON_CONFIRMED = 1;
-ParkingLotSelector.REASON_DISCONNECT = 2;
+ParkingLotCreator.REASON_CANCELED = 0;
+ParkingLotCreator.REASON_CONFIRMED = 1;
+ParkingLotCreator.REASON_DISCONNECT = 2;
 
-exports = ParkingLotSelector;
+exports = ParkingLotCreator;

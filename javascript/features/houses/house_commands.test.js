@@ -231,19 +231,30 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         gunther.level = Player.LEVEL_MANAGEMENT;
         gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest location
 
-        // TODO: Make sure that there's at least a parking lot for the location.
+        const location = await manager.findClosestLocation(gunther);
+        assert.equal(location.parkingLotCount, 0);
+
+        // Create a faked parking lot for this location so that it can be removed.
+        await manager.createLocationParkingLot(gunther, location, {
+            position: location.position.translate({ x: 10 }),
+            rotation: 90
+        });
+
+        assert.equal(location.parkingLotCount, 1);
 
         gunther.respondToDialog({ listitem: 1 /* Remove a parking lot */ }).then(
+            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ })).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 
         const commandPromise = gunther.issueCommand('/house modify');
 
-        // TODO: Assert that passing in an invalid Id will give the administrator another chance.
-        // TODO: Pass in a valid Id with `/house remove [id]`.
+        while (!commands.parkingLotRemover_.isSelecting(gunther))
+            await Promise.resolve();
 
+        assert.isTrue(await gunther.issueCommand('/house remove 0'));
         assert.isTrue(await commandPromise);
 
-        // TODO: Assert that the parking lot has been removed.
+        assert.equal(location.parkingLotCount, 0);
     });
 
     it('should cancel removing a parking lot when using `/house cancel`', async(assert) => {

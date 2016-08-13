@@ -2,6 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const Dialog = require('components/dialogs/dialog.js');
+const IdentityBeam = require('features/houses/utils/identity_beam.js');
+
 // Class that provides the user interface required for *removing* a previously created parking lot.
 // It will highlight the existing parking lots and verify input of the `/house remove` command.
 class ParkingLotRemover {
@@ -20,7 +23,14 @@ class ParkingLotRemover {
     // Creates a parking lot selector for |player| for |location| that enables them to remove the
     // highlighted parking lot locations.
     async select(player, location) {
-        // TODO: Display identity beams w/ labels for all parking lot locations.
+        const parkingLots = Array.from(location.parkingLots);
+        const parkingLotBeams = [];
+
+        parkingLots.forEach((parkingLot, id) => {
+            parkingLotBeams.push(new IdentityBeam(parkingLot.position.translate({ z: -2 }), {
+                player: player
+            }));
+        });
 
         let result = null;
         do {
@@ -35,15 +45,27 @@ class ParkingLotRemover {
             if (finishedReason != ParkingLotRemover.REASON_CONFIRMED)
                 break;
 
-            // TODO: Actually do something sensible here.
+            // If the selector was finalized with a valid parking lot Id, mark that as the result.
+            if (finishedResult >= 0 && finishedResult < parkingLots.length) {
+                result = finishedResult;
+                break;
+            }
 
-            break;
+            const dialog =
+                await this.displayError(player, Message.HOUSE_PARKING_LOT_INVALID_ID,
+                                        finishedResult, parkingLots.length - 1);
+
+            if (!dialog.response)
+                return null;
 
         } while (true);
 
-        // TODO: Destroy the identify beams and labels for all the locations.
+        // Dispose of the identity beams we created for the parking lots.
+        parkingLotBeams.forEach(beam => beam.dispose());
 
-        return result;
+        // Return the parking lot associated with `result`, or NULL otherwise.
+        return result !== null ? parkingLots[result]
+                               : null;
     }
 
     // Confirms the parking lot to remove for |player|.
@@ -66,6 +88,14 @@ class ParkingLotRemover {
 
     // ---------------------------------------------------------------------------------------------
     // Private functions
+
+    // Displays the |message| (optionally with |args|) to the |player|. Returns whether the action
+    // should be retried, as the player will be offered a choice in a dialog.
+    async displayError(player, message, ...args) {
+        return await Dialog.displayMessage(
+            player, 'Unable to remove the parking lot', Message.format(message, ...args),
+            'Try again' /* leftButton */, 'Cancel' /* rightButton */);
+    }
 
     // Called when |player| disconnects from the server. Cancels any active selectors.
     onPlayerDisconnect(player) {

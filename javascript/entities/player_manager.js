@@ -191,10 +191,15 @@ class PlayerManager {
     // when it exists. The call will be bound to the observer's instance.
     notifyObservers(eventName, ...args) {
         for (const observer of this.observers_) {
-            if (!observer.__proto__.hasOwnProperty(eventName))
-                continue;
+            let prototype = Object.getPrototypeOf(observer);
 
-            observer.__proto__[eventName].call(observer, ...args);
+            // Iterate up the class hierarchy to find a parent having |eventName|.
+            while (prototype && !prototype.hasOwnProperty(eventName))
+                prototype = Object.getPrototypeOf(prototype);
+
+            // If such a prototype has been found, call the |eventName| on it.
+            if (prototype)
+                prototype[eventName].call(observer, ...args);
         }
     }
 

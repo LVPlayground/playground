@@ -63,7 +63,7 @@ public KillTimeRun() {
 
         if (Player(lead)->isConnected() == false) {
             format(string, sizeof(string), "None won the killtime. The $%s has been donated to LVP's monkey sanctuary.",
-                formatPrice(2500000));
+                formatPrice(GetEconomyValue(KilltimeVictory)));
             SendClientMessageToAll(COLOR_YELLOW, string);
 
             format(string, sizeof(string), "[killtime] None -");

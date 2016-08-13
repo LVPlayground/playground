@@ -10,6 +10,8 @@ as opposed to administrators. This enables us to keep control over pricing.
 The following concepts are important for this feature:
   - **House locations** can be created by administrators around San Andreas. These define where
     players are able to purchase the houses of their liking.
+  - House locations can have zero or more **parking lots**. These are are associated with the
+    location as opposed to the house, and can be created by administrators.
   - **Houses** are the interiors linked to a _house location_. They are owned by a particular player
     and can only be accessed by a limited set of players.
 
@@ -41,6 +43,12 @@ the following options:
   - **/house sell**: Sells your house after a firm confirmation.
   - **/house**: Displays information about the command.
 
+In addition, when interactive operations are in progress (adding or removing parking lots, for
+example), the following commands can be used:
+
+  - **/house cancel**: Cancel the current operation.
+  - **/house save**: Save the result of the current operation.
+
 
 ## FAQ: Where can houses be located?
 Houses can be located throughout San Andreas, with the precise locations left at the discretion of
@@ -50,6 +58,11 @@ are excluded from this— only Management members can authorize houses to be cre
 
 ## FAQ: Can I own multiple houses?
 No.
+
+
+## FAQ: How many parking lots can my house have?
+There is no defined limit to the number of parking lots that can be added to a house, but
+administrators are encouraged to keep the number of parking lots within reason.
 
 
 ## FAQ: Who's got access to a house?

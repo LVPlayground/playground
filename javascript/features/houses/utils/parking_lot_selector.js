@@ -30,8 +30,6 @@ class ParkingLotSelector {
     // Creates a parking lot selector for |player| for |location|. The player should have been
     // displayed usage instructions for the selector.
     async select(player, location) {
-        // TODO: Set the player up for parking lot selection (i.e. put them in a vehicle).
-
         do {
             const finishedPromise = new Promise(resolve =>
                 this.activeSelectors_.set(player, { cancel: resolve }));

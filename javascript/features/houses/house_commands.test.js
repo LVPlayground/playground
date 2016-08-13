@@ -201,8 +201,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 
         assert.isTrue(await gunther.issueCommand('/house modify'));
-        
-        // TODO: Assert that |gunther| is not currently selecting a parking lot to remove.
+        assert.isFalse(commands.parkingLotRemover_.isSelecting(gunther));
     });
 
     it('should be able to remove parking lots from a location', async(assert) => {
@@ -240,12 +239,17 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         gunther.level = Player.LEVEL_MANAGEMENT;
         gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest location
 
-        // TODO: Make sure that there's at least a parking lot for the location.
+        const location = await manager.findClosestLocation(gunther);
+
+        await manager.createLocationParkingLot(gunther, location, {
+            position: new Vector(220, 250, 300),
+            rotation: 90
+        });
+
+        assert.equal(location.parkingLotCount, 1);
 
         gunther.respondToDialog({ listitem: 1 /* Remove a parking lot */ }).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
-
-        return;  // TODO: Enable the rest of this test.
 
         const commandPromise = gunther.issueCommand('/house modify');
 
@@ -254,6 +258,8 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         assert.isTrue(await gunther.issueCommand('/house cancel'));
         assert.isTrue(await commandPromise);
+
+        assert.equal(location.parkingLotCount, 1);
     });
 
     it('should not allow buying a house when the player is not standing in one', async(assert) => {

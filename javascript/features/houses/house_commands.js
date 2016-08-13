@@ -166,7 +166,14 @@ class HouseCommands {
             if (!parkingLot)
                 return;
 
-            console.log(parkingLot);
+            await this.manager_.createLocationParkingLot(player, closestLocation, parkingLot);
+
+            // TODO: Should we announce this to the other administrators? We really need
+            // announcement channels to deal with the granularity of messages.
+
+            await Dialog.displayMessage(player, 'Add a parking lot',
+                                        Message.format(Message.HOUSE_PARKING_LOT_ADDED),
+                                        'Close' /* leftButton */, '' /* rightButton */);
         });
 
         const removeParkingLotTitle =
@@ -188,7 +195,14 @@ class HouseCommands {
             if (!parkingLot)
                 return;
 
-            console.log(parkingLot);
+            await this.manager_.removeLocationParkingLot(closestLocation, parkingLot);
+
+            // TODO: Should we announce this to the other administrators? We really need
+            // announcement channels to deal with the granularity of messages.
+
+            await Dialog.displayMessage(player, 'Remove a parking lot',
+                                        Message.format(Message.HOUSE_PARKING_LOT_REMOVED),
+                                        'Close' /* leftButton */, '' /* rightButton */);
         });
 
         // TODO: Add the ability to evict the occupant?

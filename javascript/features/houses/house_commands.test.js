@@ -7,6 +7,7 @@ const HouseCommands = require('features/houses/house_commands.js');
 const HouseManager = require('features/houses/house_manager.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 const MockHouseDatabase = require('features/houses/test/mock_house_database.js');
+const ParkingLotCreator = require('features/houses/utils/parking_lot_creator.js');
 
 describe('HouseCommands', (it, beforeEach, afterEach) => {
     let commands = null;
@@ -150,18 +151,34 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ })).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 
+        const location = await manager.findClosestLocation(gunther);
+        assert.equal(location.parkingLotCount, 0);
+
         const commandPromise = gunther.issueCommand('/house modify');
 
-        // TODO: Put |gunther| in a vehicle before confirming (now canceling!) the selection.
+        // Extend the ParkingLotCreator class so that we can fake the Gunther being in a vehicle.
+        commands.parkingLotCreator_ = new class extends ParkingLotCreator {
+            getCurrentVehiclePosition(player) {
+                return location.position.translate({ x: 10, y: 10 });
+            }
+            getCurrentVehicleRotation(player) {
+                return 90;
+            }
+        };
 
         while (!commands.parkingLotCreator_.isSelecting(gunther))
             await Promise.resolve();
 
-        commands.parkingLotCreator_.cancelSelection(gunther);
+        commands.parkingLotCreator_.confirmSelection(gunther);
 
         assert.isTrue(await commandPromise);
 
-        // TODO: Confirm that the parking lot has been created.
+        assert.equal(location.parkingLotCount, 1);
+
+        const parkingLot = Array.from(location.parkingLots)[0];
+        assert.isAbove(parkingLot.id, 0);
+        assert.deepEqual(parkingLot.position, location.position.translate({ x: 10, y: 10 }));
+        assert.equal(parkingLot.rotation, 90);
     });
 
     it('should cancel adding a parking lot when using `/house cancel`', async(assert) => {

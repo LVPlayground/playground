@@ -10,6 +10,7 @@ class HouseLocation {
         this.id_ = location.id;
 
         this.position_ = location.position;
+        this.parkingLots_ = [];
     }
 
     // Gets the unique Id representing this location in the database.
@@ -17,6 +18,12 @@ class HouseLocation {
 
     // Gets the position of this house location.
     get position() { return this.position_; }
+
+    // Gets the array of parking lots associated with this location.
+    get parkingLots() { return this.parkingLots_; }
+
+    // Gets the number of parking lots associated with this location.
+    get parkingLotCount() { return this.parkingLots_.length; }
 
     // Returns whether this location is available for purchase.
     isAvailable() { return true; }

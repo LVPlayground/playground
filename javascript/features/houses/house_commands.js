@@ -160,7 +160,20 @@ class HouseCommands {
             console.log(parkingLot);
         });
 
-        // TODO: Add the ability to remove parking lots.
+        const removeParkingLotTitle =
+            'Remove a parking lot ({FFFF00}' + closestLocation.parkingLotCount + '{FFFFFF})';
+
+        menu.addItem(removeParkingLotTitle, async(player) => {
+            if (!closestLocation.parkingLotCount) {
+                await Dialog.displayMessage(player, 'Remove a parking lot',
+                                            Message.format(Message.HOUSE_PARKING_LOT_NONE),
+                                            'Close' /* leftButton */, '' /* rightButton */);
+                return;
+            }
+
+            // TODO: Start the parking lot remover for the |player|.
+        });
+
         // TODO: Add the ability to evict the occupant?
 
         menu.addItem('Delete the location', async(player) => {

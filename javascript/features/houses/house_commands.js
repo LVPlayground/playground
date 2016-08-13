@@ -10,6 +10,7 @@ const InteriorSelector = require('features/houses/utils/interior_selector.js');
 const Menu = require('components/menu/menu.js');
 const ParkingLotCreator = require('features/houses/utils/parking_lot_creator.js');
 const ParkingLotRemover = require('features/houses/utils/parking_lot_remover.js');
+const PlayerMoneyBridge = require('features/houses/utils/player_money_bridge.js');
 
 // Maximum number of milliseconds during which the identity beam should be displayed.
 const IDENTITY_BEAM_DISPLAY_TIME_MS = 60000;
@@ -73,8 +74,10 @@ class HouseCommands {
 
         // |location| is available for purchase, and the |player| does not have a house yet.
 
+        const balance = await PlayerMoneyBridge.getBalanceForPlayer(player);
+
         const interiorList = InteriorList.forEconomy(this.economy_(), location);
-        const interior = await InteriorSelector.select(player, 12500000, interiorList);
+        const interior = await InteriorSelector.select(player, balance, interiorList);
 
         // TODO: Verify the amount of money of |player| again.
 
@@ -259,8 +262,10 @@ class HouseCommands {
     async onHouseSellCommand(player) {
         const location = await this.manager_.findClosestLocation(player);
 
+        const balance = await PlayerMoneyBridge.getBalanceForPlayer(player);
+
         const interiorList = InteriorList.forEconomy(this.economy_(), location);
-        const interior = await InteriorSelector.select(player, 12500000, interiorList);
+        const interior = await InteriorSelector.select(player, balance, interiorList);
 
         console.log(interior);
 

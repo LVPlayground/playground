@@ -200,3 +200,21 @@ class BankAccount <playerId (MAX_PLAYERS)> {
         #pragma unused pickupId, extraId
     }
 };
+
+// Functions exposed to JavaScript code.
+forward OnGetPlayerBankBalance(playerId);
+public OnGetPlayerBankBalance(playerId) {
+    if (!Player(playerId)->isConnected())
+        return 0;
+
+    return BankAccount(playerId)->balance();
+}
+
+forward OnSetPlayerBankBalance(playerId, balance);
+public OnSetPlayerBankBalance(playerId, balance) {
+    if (!Player(playerId)->isConnected())
+        return;
+
+    BankAccount(playerId)->setBalance(balance);
+}
+

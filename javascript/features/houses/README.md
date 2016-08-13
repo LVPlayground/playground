@@ -66,6 +66,10 @@ There is no defined limit to the number of parking lots that can be added to a h
 administrators are encouraged to keep the number of parking lots within reason.
 
 
+## FAQ: Do I pay for a house with cash money, or my bank account?
+Payments will be made from your bank account.
+
+
 ## FAQ: Who's got access to a house?
 The owner of a house and their [friends](../friends/). Administrators can always access a house.
 Players who are not registered with Las Venturas Playground are not able to access houses.

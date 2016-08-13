@@ -5,6 +5,7 @@
 const HouseDatabase = require('features/houses/house_database.js');
 const HouseEntranceController = require('features/houses/house_entrance_controller.js');
 const HouseLocation = require('features/houses/house_location.js');
+const HouseParkingLot = require('features/houses/house_parking_lot.js');
 
 // The house manager orchestrates all details associated with housing, manages data and responds to
 // player connection and disconnection events.
@@ -54,6 +55,24 @@ class HouseManager {
         this.entranceController_.addLocation(location);
     }
 
+    // Creates a new parking lot for |location| at |parkingLot|. The |player| will be written to
+    // the database to attribute creation of the parking lot.
+    async createLocationParkingLot(player, location, parkingLot) {
+        if (!player.isRegistered())
+            throw new Error('The |player| must be registered in order to create a parking lot.');
+
+        if (!this.locations_.has(location))
+            throw new Error('The given |location| does not exist in this HouseManager.');
+
+        const houseParkingLot = new HouseParkingLot({
+            id: await this.database_.createLocationParkingLot(player, location, parkingLot),
+            position: parkingLot.position,
+            rotation: parkingLot.rotation
+        });
+
+        location.addParkingLot(houseParkingLot);
+    }
+
     // Returns the location closest to the position of |player|. The |maximumDistance| argument can
     // be provided when it must be within a certain range of the player.
     async findClosestLocation(player, maximumDistance = null) {
@@ -101,6 +120,22 @@ class HouseManager {
 
         this.locations_.delete(location);
         this.entranceController_.removeLocation(location);
+    }
+
+    // Removes the |parkingLot| from the |location|. If the location is currently occupied and a
+    // vehicle exists in the slot, it will be removed without warning to the owner.
+    async removeLocationParkingLot(location, parkingLot) {
+        if (!this.locations_.has(location))
+            throw new Error('The given |location| does not exist in this HouseManager.');
+
+        if (!location.hasParkingLot(parkingLot))
+            throw new Error('The given |parkingLot| does not belong to the |location|.');
+
+        await this.database_.removeLocationParkingLot(parkingLot);
+
+        // TODO: Remove the vehicle stored on this parking lot if the house is occupied.
+
+        location.removeParkingLot(parkingLot);
     }
 
     dispose() {

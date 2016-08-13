@@ -10,23 +10,41 @@ class HouseLocation {
         this.id_ = location.id;
 
         this.position_ = location.position;
-        this.parkingLots_ = [];
+        this.parkingLots_ = new Map();
     }
 
     // Gets the unique Id representing this location in the database.
     get id() { return this.id_; }
 
+    // Returns whether this location is available for purchase.
+    isAvailable() { return true; }
+
     // Gets the position of this house location.
     get position() { return this.position_; }
 
     // Gets the array of parking lots associated with this location.
-    get parkingLots() { return this.parkingLots_; }
+    get parkingLots() { return this.parkingLots_.values(); }
 
     // Gets the number of parking lots associated with this location.
-    get parkingLotCount() { return this.parkingLots_.length; }
+    get parkingLotCount() { return this.parkingLots_.size; }
 
-    // Returns whether this location is available for purchase.
-    isAvailable() { return true; }
+    // Adds the |parkingLot| to this location. Must only be called by the HouseManager.
+    addParkingLot(parkingLot) {
+        this.parkingLots_.set(parkingLot.id, parkingLot);
+    }
+
+    // Returns whether this location owns the |parkingLot|. Must only be called by the HouseManager.
+    hasParkingLot(parkingLot) {
+        return this.parkingLots_.has(parkingLot.id);
+    }
+
+    // Removes the |parkingLot| from this location. Must only be called by the HouseManager.
+    removeParkingLot(parkingLot) {
+        if (!this.parkingLots_.has(parkingLot.id))
+            throw new Error('The given |parkingLot| does not belong to this location.');
+
+        this.parkingLots_.delete(parkingLot.id);
+    }
 }
 
 exports = HouseLocation;

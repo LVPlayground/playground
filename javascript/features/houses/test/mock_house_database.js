@@ -7,6 +7,7 @@
 class MockHouseDatabase {
     constructor() {
         this.mockLocationId_ = 1000;
+        this.mockParkingLotId_ = 2000;
     }
 
     async loadLocations() {
@@ -21,7 +22,13 @@ class MockHouseDatabase {
         return this.mockLocationId_++;
     }
 
+    async createLocationParkingLot(player, location, parkingLot) {
+        return this.mockParkingLotId_++;
+    }
+
     async removeLocation(location) {}
+
+    async removeLocationParkingLot(parkingLot) {}
 }
 
 exports = MockHouseDatabase;

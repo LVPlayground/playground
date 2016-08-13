@@ -80,4 +80,33 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
 
         assert.equal(manager.locationCount, 0);
     });
+
+    it('should be able to create and remove parking lot locations', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify();
+
+        await manager.loadHousesFromDatabase();
+
+        const location = await manager.findClosestLocation(gunther);
+        assert.isNotNull(location);
+
+        assert.equal(location.parkingLotCount, 0);
+
+        await manager.createLocationParkingLot(gunther, location, {
+            position: new Vector(500, 500, 100),
+            rotation: 90
+        });
+
+        assert.equal(location.parkingLotCount, 1);
+
+        const parkingLot = Array.from(location.parkingLots)[0];
+
+        assert.isAbove(parkingLot.id, 0);
+        assert.deepEqual(parkingLot.position, new Vector(500, 500, 100));
+        assert.equal(parkingLot.rotation, 90);
+
+        await manager.removeLocationParkingLot(location, parkingLot);
+
+        assert.equal(location.parkingLotCount, 0);
+    });
 });

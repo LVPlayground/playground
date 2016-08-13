@@ -57,6 +57,9 @@ class SpawnManager <playerId (MAX_PLAYERS)> {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Whether the player should have their position restored on spawn.
+    new m_restoreOnSpawn;
+
     // Id of the interior in which the player should spawn next.
     new m_spawnInterior;
 
@@ -87,6 +90,7 @@ class SpawnManager <playerId (MAX_PLAYERS)> {
         m_isInFixedClassSelection = false;
         m_beforeInitialClassSelection = true;
         m_hasSeenFirstSpawn = false;
+        m_restoreOnSpawn = false;
         m_spawnInterior = -1;
     }
 
@@ -98,6 +102,13 @@ class SpawnManager <playerId (MAX_PLAYERS)> {
      */
     public skinId() {
         return (m_skinId);
+    }
+
+    /**
+     * Requests that the player's state be restored on their next spawn.
+     */
+    public requestRestoreOnSpawn() {
+        m_restoreOnSpawn = true;
     }
 
     /**
@@ -212,6 +223,12 @@ class SpawnManager <playerId (MAX_PLAYERS)> {
         // Then the annotation is launched which will set the player's initial set of weapons, plus
         // change the spawn position if needed.
         Annotation::ExpandList<OnPlayerSpawn>(playerId);
+
+        // Restore the player's state if this was requested by the JavaScript code.
+        if (m_restoreOnSpawn) {
+            OnSerializePlayerState(playerId, 0 /* serialize */, -1 /* restoreOnSpawn */);
+            m_restoreOnSpawn = false;
+        }
 
         // Finally, the OriginalOnPlayerSpawn function is launched, to set all old player settings
         // like weather, world, color, skin and more regarding their state (minigame or roaming).

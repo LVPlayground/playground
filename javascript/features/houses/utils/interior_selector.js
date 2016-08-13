@@ -32,6 +32,8 @@ class InteriorSelector {
             throw new TypeError('Illegal constructor. Use InteriorSelector.select() instead.');
 
         this.player_ = player;
+        this.player_.serializeState(true /* restoreOnSpawn */);
+
         this.availableMoney_ = availableMoney;
         this.interiorList_ = interiorList;
         this.interiorListIndex_ = 0;

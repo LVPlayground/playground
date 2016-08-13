@@ -266,12 +266,12 @@ class Player {
     pawnInvoke('PlayerPlaySound', 'iifff', this.id_, soundId, 0, 0, 0);
   }
 
-  serializeState() {
-    pawnInvoke('OnSerializePlayerState', 'ii', this.id_, 1 /* serialize */);
+  serializeState(restoreOnSpawn = false) {
+    pawnInvoke('OnSerializePlayerState', 'iii', this.id_, 1 /* serialize */, restoreOnSpawn ? 1 :0);
   }
 
   restoreState() {
-    pawnInvoke('OnSerializePlayerState', 'ii', this.id_, 0 /* serialize */);
+    pawnInvoke('OnSerializePlayerState', 'iii', this.id_, 0 /* serialize */, -1);
   }
 
   // Returns or updates the activity of this player. Updating the activity will be propagated to

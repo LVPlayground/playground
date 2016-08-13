@@ -20,8 +20,8 @@ new Float: g_storedPlayerPositions[MAX_PLAYERS][4];
 new g_storedPlayerInteriors[MAX_PLAYERS];
 new g_storedPlayerVirtualWorlds[MAX_PLAYERS];
 
-forward OnSerializePlayerState(playerid, serialize);
-public OnSerializePlayerState(playerid, serialize) {
+forward OnSerializePlayerState(playerid, serialize, restoreOnSpawn);
+public OnSerializePlayerState(playerid, serialize, restoreOnSpawn) {
     if (serialize) {
         ClearPlayerMenus(playerid);
 
@@ -45,6 +45,9 @@ public OnSerializePlayerState(playerid, serialize) {
         // TODO(Russell): This function may eventually be used for more than just races.
         PlayerState(playerid)->updateState(RacingPlayerState);
         SavePlayerGuns(playerid);
+
+        if (restoreOnSpawn)
+            SpawnManager(playerid)->requestRestoreOnSpawn();
 
     } else {  // deserialize
         LoadPlayerGuns(playerid);

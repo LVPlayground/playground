@@ -112,8 +112,10 @@ class HouseCommands {
                 return;
         }
 
-        const minimumPrice = this.economy_().calculateHousePrice(position, 0 /* interiorValue */);
-        const maximumPrice = this.economy_().calculateHousePrice(position, 9 /* interiorValue */);
+        const minimumPrice = this.economy_().calculateHousePrice(position, 0 /* parkingLotCount */,
+                                                                 0 /* interiorValue */);
+        const maximumPrice = this.economy_().calculateHousePrice(position, 0 /* parkingLotCount */,
+                                                                 9 /* interiorValue */);
 
         const confirmation =
             await Dialog.displayMessage(player, 'Create a new house location',
@@ -257,7 +259,7 @@ class HouseCommands {
     async onHouseSellCommand(player) {
         const location = await this.manager_.findClosestLocation(player);
 
-        const interiorList = InteriorList.forEconomy(this.economy_(), location.position);
+        const interiorList = InteriorList.forEconomy(this.economy_(), location);
         const interior = await InteriorSelector.select(player, 12500000, interiorList);
 
         console.log(interior);

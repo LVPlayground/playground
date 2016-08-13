@@ -73,7 +73,7 @@ class HouseCommands {
 
         // |location| is available for purchase, and the |player| does not have a house yet.
 
-        const interiorList = InteriorList.forEconomy(this.economy_(), location.position);
+        const interiorList = InteriorList.forEconomy(this.economy_(), location);
         const interior = await InteriorSelector.select(player, 12500000, interiorList);
 
         // TODO: Verify the amount of money of |player| again.

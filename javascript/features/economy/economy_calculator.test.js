@@ -53,7 +53,7 @@ describe('EconomyCalculator', (it, beforeEach, afterEach) => {
         // Returns the house price that has been determined for the three input values.
         const calculateHousePrice = (residentialValue, interiorValue, varianceValue) => {
             calculator.setVarianceValueForTests(varianceValue);
-            return calculator.calculateHousePrice(residentialValue, interiorValue);
+            return calculator.calculateHousePrice(residentialValue, 0, interiorValue);
         };
 
         const errorMargin = delta * 0.01;
@@ -87,6 +87,23 @@ describe('EconomyCalculator', (it, beforeEach, afterEach) => {
         assert.throws(() => calculateHousePrice(200, 0, 0));
         assert.throws(() => calculateHousePrice(0, 200, 0));
         assert.throws(() => calculateHousePrice(0, 0, 200));
+    });
+
+    it('should be able to consider parking lots for house pricing accordingly', assert => {
+        calculator.setVarianceValueForTests(50);
+
+        for (let residentialValue = 0; residentialValue <= 5; ++residentialValue) {
+            let previousValue = null;
+
+            for (let parkingLotCount = 0; parkingLotCount <= 3; ++parkingLotCount) {
+                const value = calculator.calculateHousePrice(residentialValue, parkingLotCount, 0);
+
+                if (previousValue)
+                    assert.isAbove(value, previousValue);
+
+                previousValue = value;
+            }
+        }
     });
 
     it('should be able to price vehicles for houses appropriately', assert => {

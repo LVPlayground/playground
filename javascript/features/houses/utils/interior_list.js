@@ -97,9 +97,11 @@ const INTERIOR_LIST = [
     }
 ];
 
-// Compiles the interior list for a given economy, to make sure accurate prices can be shared.
+// Compiles the interior list for a given economy and location, to make sure accurate prices can be
+// shared. Various factors influence the price of a property, for instance the location of the
+// house and the number of parking lots available.
 class InteriorList {
-    static forEconomy(economy, position) {
+    static forEconomy(economy, location) {
         const interiors = INTERIOR_LIST.filter(interior => interior.selectable);
 
         // Sort the |interiors| in ascending order by their price, then name.
@@ -111,8 +113,11 @@ class InteriorList {
         });
 
         // Assign prices to each of the entries in the interior list based on |economy|.
-        interiors.forEach(interior =>
-            interior.price = economy.calculateHousePrice(position, interior.value));
+        interiors.forEach(interior => {
+            interior.price =
+                economy.calculateHousePrice(location.position, location.parkingLotCount,
+                                            interior.value);
+        });
 
         return interiors;
     }

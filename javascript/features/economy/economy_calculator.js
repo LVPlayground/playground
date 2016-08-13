@@ -26,7 +26,7 @@ class EconomyCalculator {
 
     // Calculates the price for a house. The |residentialValue| must be in range of [0, 5], the
     // |interiorValue| must be in range of [0, 9]. The variance factor will be included.
-    calculateHousePrice(residentialValue, interiorValue) {
+    calculateHousePrice(residentialValue, parkingLotCount, interiorValue) {
         if (residentialValue < 0 || residentialValue > 5) {
             throw new Error(
                 'The residential value must be in range of [0, 5] (was ' + residentialValue + ').');
@@ -51,7 +51,15 @@ class EconomyCalculator {
             EconomyCalculator.PRICE_RANGE_HOUSES[1] - EconomyCalculator.PRICE_RANGE_HOUSES[0];
 
         // Return the minimum price plus the factor of the delta that should be applied.
-        return Math.round(priceMinimum + (factor / 200) * priceDelta);
+        const houseValue = Math.round(priceMinimum + (factor / 200) * priceDelta);
+
+        // Apply a fixed premium based on the `parkingLotCount`.
+        const parkingLotMinimum = EconomyCalculator.PRICE_RANGE_PARKING_LOTS[0];
+        const parkingLotDelta = EconomyCalculator.PRICE_RANGE_PARKING_LOTS[1] - parkingLotMinimum;
+
+        const parkingLotValue = parkingLotMinimum + (parkingLotDelta / 5) * residentialValue;
+
+        return houseValue + parkingLotValue * parkingLotCount;
     }
 
     // Calculates the price for a vehicle that will be positioned at a house. The |residentialValue|
@@ -113,6 +121,9 @@ class EconomyCalculator {
 
 // The price range based on which houses will be priced.
 EconomyCalculator.PRICE_RANGE_HOUSES = [ 500000, 25000000 ];
+
+// The value of a parking lot depending on the house's location.
+EconomyCalculator.PRICE_RANGE_PARKING_LOTS = [ 50000, 1500000 ];
 
 // The price range based on which vehicles for houses will be priced.
 EconomyCalculator.PRICE_RANGE_HOUSE_VEHICLES = [ 100000, 1500000 ];

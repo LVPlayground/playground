@@ -31,6 +31,24 @@ const LOAD_PARKING_LOTS_QUERY = `
         houses_parking_lots.parking_lot_removed IS NULL AND
         houses_locations.location_removed IS NULL`;
 
+// Query to load the house details from the database.
+const LOAD_HOUSES_QUERY = `
+    SELECT
+        houses_settings.house_id,
+        houses_settings.house_location_id,
+        houses_settings.house_user_id,
+        houses_settings.house_interior_id,
+        users.username
+    FROM
+        houses_settings
+    LEFT JOIN
+        houses_locations ON houses_locations.house_location_id = houses_settings.house_location_id
+    LEFT JOIN
+        users ON users.user_id = houses_settings.house_user_id
+    WHERE
+        houses_settings.house_removed IS NULL AND
+        houses_locations.location_removed IS NULL`;
+
 // Query to create a new house location in the database.
 const CREATE_LOCATION_QUERY = `
     INSERT INTO
@@ -46,6 +64,14 @@ const CREATE_PARKING_LOT_QUERY = `
         (house_location_id, position_x, position_y, position_z, rotation, parking_lot_creator_id, parking_lot_created)
     VALUES
         (?, ?, ?, ?, ?, ?, NOW())`;
+
+// Query to create a new set of house settings in the database.
+const CREATE_HOUSE_QUERY = `
+    INSERT INTO
+        houses_settings
+        (house_location_id, house_user_id, house_interior_id, house_created)
+    VALUES
+        (?, ?, ?, NOW())`;
 
 // Query to remove a previously created location from the database.
 const REMOVE_LOCATION_QUERY = `
@@ -64,6 +90,15 @@ const REMOVE_PARKING_LOT_QUERY = `
         parking_lot_removed = NOW()
     WHERE
         house_parking_lot_id = ?`;
+
+// Query to remove a previously created house from the database.
+const REMOVE_HOUSE_QUERY = `
+    UPDATE
+        houses_settings
+    SET
+        house_removed = NOW()
+    WHERE
+        house_id = ?`;
 
 // Defines the database interactions for houses that are used for loading, updating and removing
 // persistent data associated with them.
@@ -110,6 +145,25 @@ class HouseDatabase {
         return locations;
     }
 
+    // Loads the existing houses, including their settings and interior details, from the database.
+    async loadHouses() {
+        const data = await server.database.query(LOAD_HOUSES_QUERY);
+        const houses = new Map();
+
+        data.rows.forEach(row => {
+            houses.set(row.house_location_id, {
+                id: row.house_id,
+
+                ownerId: row.house_user_id,
+                ownerName: row.username,
+
+                interiorId: row.house_interior_id
+            });
+        });
+
+        return houses;
+    }
+
     // Creates a new house location at |position| created by the |player|.
     async createLocation(player, position) {
         const data = await server.database.query(
@@ -128,6 +182,21 @@ class HouseDatabase {
         return data.insertId;
     }
 
+    // Creates a new house in the database trying |interiorId| to |location|, owned by |player|.
+    async createHouse(player, location, interiorId) {
+        const data = await server.database.query(
+            CREATE_HOUSE_QUERY, location.id, player.userId, interiorId);
+
+        return {
+            id: data.insertId,
+
+            ownerId: player.userId,
+            ownerName: player.name,
+
+            interiorId: interiorId
+        };
+    }
+
     // Removes the |location| from the database.
     async removeLocation(location) {
         await server.database.query(REMOVE_LOCATION_QUERY, location.id);
@@ -136,6 +205,11 @@ class HouseDatabase {
     // Removes the |parkingLot| from the database.
     async removeLocationParkingLot(parkingLot) {
         await server.database.query(REMOVE_PARKING_LOT_QUERY, parkingLot.id);
+    }
+
+    // Removes the house tied to |location| from the database.
+    async removeHouse(location) {
+        await server.database.query(REMOVE_HOUSE_QUERY, location.settings.id);
     }
 }
 

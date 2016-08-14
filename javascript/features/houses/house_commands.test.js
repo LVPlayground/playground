@@ -137,10 +137,12 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable administrators to remove house locations', async(assert) => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-
         await manager.loadHousesFromDatabase();
-        assert.isAbove(manager.locationCount, 0);
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const locationCount = manager.locationCount;
+        
+        assert.isAbove(locationCount, 0);
 
         gunther.identify();
         gunther.level = Player.LEVEL_MANAGEMENT;
@@ -151,7 +153,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         assert.isTrue(await gunther.issueCommand('/house modify'));
 
-        assert.equal(manager.locationCount, 2);
+        assert.equal(manager.locationCount, locationCount - 1);
     });
 
     it('should enable administrators to add a parking lot', async(assert) => {

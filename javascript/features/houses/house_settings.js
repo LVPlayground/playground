@@ -4,9 +4,12 @@
 
 // This class represents the settings associated with a given house.
 class HouseSettings {
-    constructor() {
-
+    constructor(id) {
+        this.id_ = id;
     }
+
+    // Gets the internal Id of this house in the database.
+    get id() { return this.id_; }
 
     dispose() {
         

@@ -15,14 +15,30 @@ class MockHouseDatabase {
     constructor() {
         this.mockLocationId_ = 1000;
         this.mockParkingLotId_ = 2000;
+        this.mockHouseId_ = 3000;
     }
 
     async loadLocations() {
         return [
             { id: 1, position: new Vector(100, 150, 200), parkingLots: [] },
             { id: 2, position: new Vector(200, 250, 300), parkingLots: [] },
-            { id: 3, position: new Vector(300, 350, 400), parkingLots: [ PARKING_LOT ] }
+            { id: 3, position: new Vector(300, 350, 400), parkingLots: [ PARKING_LOT ] },
+            { id: 4, position: new Vector(500, 500, 500), parkingLots: [] }
         ];
+    }
+
+    async loadHouses() {
+        const houses = new Map();
+        houses.set(4 /* locationId */, {
+            id: 1024,
+
+            ownerId: 42 /* user_id */,
+            ownerName: 'Gunther',
+
+            interiorId: 0
+        });
+
+        return houses;
     }
 
     async createLocation(player, position) {
@@ -33,9 +49,22 @@ class MockHouseDatabase {
         return this.mockParkingLotId_++;
     }
 
+    async createHouse(player, location, interiorId) {
+        return {
+            id: this.mockHouseId_++,
+
+            ownerId: player.userId,
+            ownerName: player.name,
+
+            interiorId: interiorId
+        };
+    }
+
     async removeLocation(location) {}
 
     async removeLocationParkingLot(parkingLot) {}
+
+    async removeHouse(location) {}
 }
 
 exports = MockHouseDatabase;

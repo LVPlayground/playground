@@ -20,7 +20,7 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
     it('should be able to load the existing houses', async(assert) => {
         await manager.loadHousesFromDatabase();
 
-        assert.equal(manager.locationCount, 3);
+        assert.isAbove(manager.locationCount, 0);
 
         let parkingLotCount = 0;
 
@@ -28,6 +28,15 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
             parkingLotCount += location.parkingLotCount;
 
         assert.isAbove(parkingLotCount, 0);
+
+        let occupiedCount = 0;
+
+        for (const location of manager.locations) {
+            if (!location.isAvailable())
+                occupiedCount++;
+        }
+
+        assert.isAbove(occupiedCount, 0);
 
         // TODO: Verify the other pieces of data that can be loaded.
     });
@@ -49,7 +58,7 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
 
         await manager.loadHousesFromDatabase();
 
-        assert.equal(manager.locationCount, 3);
+        assert.isAbove(manager.locationCount, 0);
 
         const closestLocation = await manager.findClosestLocation(gunther);
         assert.isNotNull(closestLocation);
@@ -63,7 +72,7 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
 
         await manager.loadHousesFromDatabase();
 
-        assert.equal(manager.locationCount, 3);
+        assert.isAbove(manager.locationCount, 0);
 
         const closestLocation =
             await manager.findClosestLocation(gunther, 40 /* maximumDistance */);

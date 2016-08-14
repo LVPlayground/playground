@@ -32,11 +32,37 @@ class HouseManager {
     // Loads all defined houses from the database to the house manager, creating the House instances
     // and associated objects where required.
     async loadHousesFromDatabase() {
-        const locations = await this.database_.loadLocations();
-        locations.forEach(location =>
-            this.locations_.add(new HouseLocation(location)));
+        const locationMap = new Map();
 
-        // TODO: Load owners and bound interiors.
+        const locations = await this.database_.loadLocations();
+        locations.forEach(locationInfo => {
+            const location = new HouseLocation(locationInfo);
+            this.locations_.add(location);
+
+            locationMap.set(location.id, location);
+        });
+
+        const houses = await this.database_.loadHouses();
+        houses.forEach((house, locationId) => {
+            const location = locationMap.get(locationId);
+            if (!location) {
+                console.log(
+                    'Warning: Unassociated house (' + house.id + ') for location #' + locationId);
+                return;
+            }
+
+            if (!location.isAvailable()) {
+                console.log(
+                    'Warning: Duplicated houses (' + house.id + ') for location #' + locationId);
+                return;
+            }
+
+            const houseSettings = new HouseSettings(house);
+            const houseInterior = new HouseInterior(house);  // TODO: Is this the right thing to do?
+
+            location.setHouse(houseSettings, houseInterior);
+        });
+
         // TODO: Load the vehicles associated with houses.
         // TODO: Load the objects associated with houses.
 
@@ -90,11 +116,12 @@ class HouseManager {
         if (!location.isAvailable())
             throw new Error('The given |location| already is occupied by another player.');
 
-        // TODO: Store the created house in the database so that it can be loaded again.
-        // TODO: Create the appropriate |HouseSettings| instance.
-        // TODO: Create the appropriate |HouseInterior| instance.
+        const house = await this.database_.createHouse(player, location, interiorId);
 
-        location.setHouse(new HouseSettings(), new HouseInterior());
+        const houseSettings = new HouseSettings(house);
+        const houseInterior = new HouseInterior(house);  // TODO: Is this the right thing to do?
+
+        location.setHouse(houseSettings, houseInterior);
     }
 
     // Returns the location closest to the position of |player|. The |maximumDistance| argument can
@@ -171,7 +198,7 @@ class HouseManager {
         if (location.isAvailable())
             throw new Error('The given |location| is not currently occupied.');
 
-        // TODO: Remove the house from the database.
+        await this.database_.removeHouse(location);
 
         location.removeHouse();
     }

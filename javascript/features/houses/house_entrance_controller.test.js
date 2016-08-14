@@ -21,7 +21,7 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
 
         // All tests will depend on the basic house data to be available.
         await manager.loadHousesFromDatabase();
-        assert.equal(manager.locationCount, 3);
+        assert.isAbove(manager.locationCount, 0);
     });
 
     it('should allow players to purchase their first house', assert => {

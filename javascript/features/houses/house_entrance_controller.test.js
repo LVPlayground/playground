@@ -42,8 +42,8 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
     it('should not allow players who own a house to purchase another one', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        // Returning any non-NULL value from getHouseForPlayer() will do the trick.
-        manager.getHouseForPlayer = player => true;
+        // Returning any non-empty array from getHousesForPlayer() will do the trick.
+        manager.getHousesForPlayer = player => [true];
 
         // This will trigger the onPlayerEnterPickup event in the HouseEntranceController.
         gunther.position = new Vector(200, 250, 300);

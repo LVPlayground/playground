@@ -332,7 +332,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         gunther.level = Player.LEVEL_MANAGEMENT;
         gunther.position = new Vector(200, 250, 300);  // on the nearest location pickup
 
-        manager.getHouseForPlayer = player => true;  // any non-NULL value will do
+        manager.getHousesForPlayer = player => [true];  // any non-empty array will do
 
         assert.isTrue(await gunther.issueCommand('/house buy'));
 

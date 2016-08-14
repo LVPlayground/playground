@@ -61,8 +61,8 @@ class HouseCommands {
             return;
         }
 
-        const currentHouse = this.manager_.getHouseForPlayer(player);
-        if (currentHouse) {
+        const currentHouses = this.manager_.getHousesForPlayer(player);
+        if (currentHouses.length > 0) {
             player.sendMessage(Message.HOUSE_BUY_NO_MULTIPLE);
             return;
         }

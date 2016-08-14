@@ -82,7 +82,7 @@ class HouseEntranceController {
         // Store the |pickup| the |player| is currently standing in, powering `/house buy`.
         this.currentPickup_.set(player, pickup);
 
-        const playerHouse = this.manager_.getHouseForPlayer(player);
+        const playerHouses = this.manager_.getHousesForPlayer(player);
 
         // Offer the |player| the ability to purchase the house when it's available and they don't
         // own another house yet (players are limited to owning one house at a time).
@@ -91,8 +91,9 @@ class HouseEntranceController {
                 this.economy_().calculateHousePrice(location.position, location.parkingLotCount,
                                                     0 /* interiorValue */);
 
-            // The |location| is available, but the |player| owns a house.
-            if (playerHouse !== null) {
+            // The |location| is available, but the |player| owns a house. This requirement may be
+            // removed when we allow players to own multiple houses.
+            if (playerHouses.length > 0) {
                 player.sendMessage(Message.HOUSE_PICKUP_CANNOT_PURCHASE, minimumPrice);
                 return;
             }

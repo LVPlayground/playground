@@ -156,9 +156,9 @@ class HouseManager {
         return this.entranceController_.getCurrentLocationForPlayer(player);
     }
 
-    // Returns the house owned by |player|. Assumes that the data has been loaded already.
-    getHouseForPlayer(player) {
-        return null;
+    // Returns the houses owned by |player|. Assumes that the data has been loaded already.
+    getHousesForPlayer(player) {
+        return [];
     }
 
     // Removes the given house |location|, including the house tied to it, if any. This action can

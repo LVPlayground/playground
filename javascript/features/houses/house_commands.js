@@ -27,7 +27,7 @@ class HouseCommands {
         this.parkingLotCreator_ = new ParkingLotCreator();
         this.parkingLotRemover_ = new ParkingLotRemover();
 
-        // Command: /house [buy/cancel/create/modify/remove/save/sell]
+        // Command: /house [buy/cancel/create/enter/modify/remove/save/sell]
         server.commandManager.buildCommand('house')
             .restrict(Player.LEVEL_MANAGEMENT)
             .sub('buy')
@@ -37,6 +37,9 @@ class HouseCommands {
             .sub('create')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(HouseCommands.prototype.onHouseCreateCommand.bind(this))
+            .sub('enter')
+                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .build(HouseCommands.prototype.onHouseEnterCommand.bind(this))
             .sub('modify')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(HouseCommands.prototype.onHouseModifyCommand.bind(this))
@@ -139,6 +142,20 @@ class HouseCommands {
         Dialog.displayMessage(player, 'Create a new house location',
                               Message.format(Message.HOUSE_CREATE_CONFIRMED),
                               'Close' /* leftButton */, '' /* rightButton */);
+    }
+
+    // Called when an administrator wants to override the access restrictions to a house and gain
+    // entry to it anyway. Only works when they're standing in an entrance point.
+    async onHouseEnterCommand(player) {
+        if (this.manager_.forceEnterHouse(player)) {
+            // TODO: Should we announce this to the other administrators? We really need
+            // announcement channels to deal with the granularity of messages.
+
+            player.sendMessage(Message.HOUSE_ENTERED);
+            return;
+        }
+
+        player.sendMessage(Message.HOUSE_ENTER_NONE_NEAR);
     }
 
     // Called when an administrator types the `/house modify` command to change settings for the
@@ -278,10 +295,12 @@ class HouseCommands {
         player.sendMessage(Message.HOUSE_INFO_1);
         player.sendMessage(Message.HOUSE_INFO_2);
 
+        let options = ['buy', 'sell'];
+
         if (player.isAdministrator())
-            player.sendMessage(Message.COMMAND_USAGE, '/house [buy/create/modify/sell]');
-        else
-            player.sendMessage(Message.COMMAND_USAGE, '/house [buy/sell]');
+            options.push('create', 'enter', 'modify');
+
+        player.sendMessage(Message.COMMAND_USAGE, '/house [' + options.sort().join('/') + ']');
     }
 
     dispose() {

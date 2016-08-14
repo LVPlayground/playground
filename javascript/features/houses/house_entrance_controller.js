@@ -99,6 +99,11 @@ class HouseEntranceController {
         return false;
     }
 
+    // Makes the |player| enter the house created at |location|.
+    enterHouse(player, location) {
+        // TODO: Implement this function.
+    }
+
     // Called when the |player| enters the |pickup|, which could be one of the houses created on the
     // server. In that case we either teleport them, or show them the information dialog.
     async onPlayerEnterPickup(player, pickup) {
@@ -132,9 +137,15 @@ class HouseEntranceController {
 
         // Determines whether the |player| has access to this location.
         const hasAccess = await this.hasAccessToHouse(player, location);
+        if (hasAccess) {
+            this.enterHouse(player, location);
+            return;
+        }
 
-        // TODO: Respond to the player entering the occupied location's entrance.
-        console.log('Entered location #' + location.id + ' (access: ' + (hasAccess ? 1 : 0) + ')');
+        const message = player.isAdministrator() ? Message.HOUSE_NO_ACCESS
+                                                 : Message.HOUSE_NO_ACCESS_ADMIN;
+
+        player.sendMessage(message, location.settings.ownerName);
     }
 
     // Returns the house location the |player| is currently standing in. May return NULL.

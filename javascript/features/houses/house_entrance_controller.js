@@ -125,7 +125,7 @@ class HouseEntranceController {
 
             // The |location| is available, but the |player| owns a house. This requirement may be
             // removed when we allow players to own multiple houses.
-            if (playerHouses.length > 0) {
+            if (playerHouses.length >= this.manager_.getMaximumHouseCountForPlayer(player)) {
                 player.sendMessage(Message.HOUSE_PICKUP_CANNOT_PURCHASE, minimumPrice);
                 return;
             }

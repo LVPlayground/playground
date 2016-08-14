@@ -169,6 +169,11 @@ class HouseManager {
         return this.entranceController_.getCurrentLocationForPlayer(player);
     }
 
+    // Returns the maximum number of houses the |player| is allowed to own.
+    getMaximumHouseCountForPlayer(player) {
+        return 1;
+    }
+
     // Returns the houses owned by |player|. Assumes that the data has been loaded already.
     getHousesForPlayer(player) {
         return [];

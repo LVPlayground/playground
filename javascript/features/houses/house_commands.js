@@ -65,7 +65,7 @@ class HouseCommands {
         }
 
         const currentHouses = this.manager_.getHousesForPlayer(player);
-        if (currentHouses.length > 0) {
+        if (currentHouses.length >= this.manager_.getMaximumHouseCountForPlayer(player)) {
             player.sendMessage(Message.HOUSE_BUY_NO_MULTIPLE);
             return;
         }
@@ -81,8 +81,8 @@ class HouseCommands {
 
         const interiorList = InteriorList.forEconomy(this.economy_(), location);
         const interior = await InteriorSelector.select(player, balance, interiorList);
-
-        // TODO: Verify the amount of money of |player| again.
+        if (!interior)
+            return;
 
         console.log(interior);
     }

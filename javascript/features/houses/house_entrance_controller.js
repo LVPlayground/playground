@@ -10,11 +10,12 @@ const HOUSE_LABEL_DRAW_DISTANCE = 30;
 // The house entrance controller is responsible for the entrances associated with each of the house
 // locations, regardless of whether the location has been occupied.
 class HouseEntranceController {
-    constructor(manager, economy) {
+    constructor(manager, economy, friends) {
         this.entities_ = new ScopedEntities();
 
         this.manager_ = manager;
         this.economy_ = economy;
+        this.friends_ = friends;
 
         // Maps providing mappings from location to pickup, and from pickup to location.
         this.pickups_ = new Map();
@@ -82,9 +83,25 @@ class HouseEntranceController {
         label.dispose();
     }
 
+    // Determines whether the |player| has access to the |location|. This is the case when they're
+    // the owner or are on the friends list of the owning player.
+    async hasAccessToHouse(player, location) {
+        if (!player.isRegistered())
+            return false;  // unregistered players never have access
+
+        if (player.userId == location.settings.ownerId)
+            return true;  // the owner can always access their house
+
+        const isFriended = await this.friends_().isFriendedBy(player, location.settings.ownerId);
+        if (isFriended)
+            return true;  // the owner has added the |player| as their friend
+
+        return false;
+    }
+
     // Called when the |player| enters the |pickup|, which could be one of the houses created on the
     // server. In that case we either teleport them, or show them the information dialog.
-    onPlayerEnterPickup(player, pickup) {
+    async onPlayerEnterPickup(player, pickup) {
         const location = this.pickups_.get(pickup);
         if (!location)
             return;
@@ -113,8 +130,11 @@ class HouseEntranceController {
             return;
         }
 
+        // Determines whether the |player| has access to this location.
+        const hasAccess = await this.hasAccessToHouse(player, location);
+
         // TODO: Respond to the player entering the occupied location's entrance.
-        console.log('Entered location #' + location.id);
+        console.log('Entered location #' + location.id + ' (access: ' + (hasAccess ? 1 : 0) + ')');
     }
 
     // Returns the house location the |player| is currently standing in. May return NULL.

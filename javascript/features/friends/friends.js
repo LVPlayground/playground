@@ -27,6 +27,12 @@ class FriendsFeature extends Feature {
         return await this.friendsManager_.hasFriend(player, friendPlayer);
     }
 
+    // Asynchronously returns whether |player| is on the list of friends of |friendUserId|. The
+    // friend does not have to be online, and results will be cached.
+    async isFriendedBy(player, friendUserId) {
+        return await this.friendsManager_.isFriendedBy(player, friendUserId);
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     dispose() {

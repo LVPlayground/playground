@@ -19,7 +19,10 @@ class Houses extends Feature {
         // House pricing is determined using a predefined set of algorithms.
         const economy = this.defineDependency('economy', true /* isFunctional */);
 
-        this.manager_ = new HouseManager(economy);
+        // Friends of the owner are always allowed to enter the house.
+        const friends = this.defineDependency('friends', true /* isFunctional */);
+
+        this.manager_ = new HouseManager(economy, friends);
         this.manager_.loadHousesFromDatabase();
 
         this.commands_ = new HouseCommands(this.manager_, announce, economy);

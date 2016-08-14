@@ -4,17 +4,21 @@
 
 const Economy = require('features/economy/economy.js');
 const HouseManager = require('features/houses/house_manager.js');
+const MockFriends = require('features/friends/test/mock_friends.js');
 const MockHouseDatabase = require('features/houses/test/mock_house_database.js');
 
 describe('HouseEntranceController', (it, beforeEach, afterEach) => {
+    let friends = null;
     let manager = null;  // HouseManager
     let controller = null;  // HouseEntranceController
 
     afterEach(() => manager.dispose());
     beforeEach(async(assert) => {
         const economy = new Economy();
+        
+        friends = new MockFriends();
 
-        manager = new HouseManager(() => economy);
+        manager = new HouseManager(() => economy, () => friends);
         manager.database_ = new MockHouseDatabase();
 
         controller = manager.entranceController_;
@@ -55,5 +59,35 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.equal(
             gunther.messages[0], Message.format(Message.HOUSE_PICKUP_CANNOT_PURCHASE, minimumPrice))
+    });
+
+    it('should be able to determine whether somebody got access to a house', async(assert) => {
+        await manager.loadHousesFromDatabase();
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        const russell = server.playerManager.getById(1 /* Russell */);
+        russell.position = new Vector(500, 500, 500);
+
+        const location = await manager.findClosestLocation(russell);
+        assert.isFalse(location.isAvailable());
+        assert.equal(location.settings.ownerId, 42);
+
+        // (1) Unregistered players cannot access any house.
+        assert.isFalse(await controller.hasAccessToHouse(gunther, location));
+        assert.isFalse(await controller.hasAccessToHouse(russell, location));
+
+        gunther.identify({ userId: 43 });
+        russell.identify({ userId: 42 });
+
+        // (2) Players can always access their own house.
+        assert.isFalse(await controller.hasAccessToHouse(gunther, location));
+        assert.isTrue(await controller.hasAccessToHouse(russell, location));
+
+        friends.addFriend(russell, gunther);
+
+        // (3) Friends of the owners can always access their house.
+        assert.isTrue(await controller.hasAccessToHouse(gunther, location));
+        assert.isTrue(await controller.hasAccessToHouse(russell, location));
     });
 });

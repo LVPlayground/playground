@@ -53,6 +53,13 @@ class FriendsManager {
         return false;
     }
 
+    // Asynchronously returns whether |player| is on the list of friends of |friendUserId|. The
+    // friend does not have to be online, and results will be cached.
+    async isFriendedBy(player, friendUserId) {
+        // TODO: Implement this method.
+        return false;
+    }
+
     // Asynchronously returns the list of friends of |player|.
     async getFriends(player) {
         if (!player.isRegistered())

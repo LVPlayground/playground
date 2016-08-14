@@ -12,7 +12,7 @@ const HouseSettings = require('features/houses/house_settings.js');
 // The house manager orchestrates all details associated with housing, manages data and responds to
 // player connection and disconnection events.
 class HouseManager {
-    constructor(economy) {
+    constructor(economy, friends) {
         this.database_ = new HouseDatabase();
         this.dataLoadedPromise_ = new Promise(resolver =>
             this.dataLoadedResolver_ = resolver);
@@ -20,7 +20,7 @@ class HouseManager {
         this.locations_ = new Set();
 
         // Responsible for all entrances and exits associated with the locations.
-        this.entranceController_ = new HouseEntranceController(this, economy);
+        this.entranceController_ = new HouseEntranceController(this, economy, friends);
     }
 
     // Gets an iterator that can be used to iterate over the house locations.
@@ -199,6 +199,8 @@ class HouseManager {
 
         if (location.isAvailable())
             throw new Error('The given |location| is not currently occupied.');
+
+        // TODO: Remove the people currently in the house from the location.
 
         await this.database_.removeHouse(location);
 

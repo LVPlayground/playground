@@ -58,7 +58,7 @@ class ParkingLotRemover {
                                         finishedResult, parkingLots.length - 1);
 
             if (!dialog.response)
-                return null;
+                break;
 
         } while (true);
 

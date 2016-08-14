@@ -32,18 +32,19 @@ class HouseEntranceController {
     // create both the exterior entrances for the |location|, and when occupied, the interior exits.
     addLocation(location) {
         const pickupOffsetZ = location.isAvailable() ? 0 : -0.5;
+        const labelColour = location.isAvailable() ? Color.fromRGB(255, 255, 0)
+                                                   : Color.WHITE;
 
         const pickup = this.entities_.createPickup({
             position: location.position.translate({ z: pickupOffsetZ }),
             modelId: location.isAvailable() ? 19524 /* yellow house */
                                             : 19902 /* yellow marker */
         });
-
         
         const label = this.entities_.createTextLabel({
             text: this.compileLocationDescription(location),
-            color: Color.fromRGB(255, 255, 0),
-            position: location.position,
+            color: labelColour,
+            position: location.position.translate({ z: 0.6 }),
             drawDistance: HOUSE_LABEL_DRAW_DISTANCE,
             testLineOfSight: true
         });

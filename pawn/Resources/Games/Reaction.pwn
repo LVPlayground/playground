@@ -99,7 +99,7 @@ CReaction__Process()
                     reactionData[timer] = -1;
 
                     format(string, sizeof(string), "The first one who says '%s' wins $%s!",
-                        reactionNumbers, GetEconomyValue(ReactionTest));
+                        reactionNumbers, formatPrice(GetEconomyValue(ReactionTest)));
 
                     for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
                         SendClientMessage(i, COLOR_YELLOW, string);
@@ -117,7 +117,7 @@ CReaction__Process()
                     reactionData[timer] = -1;
 
                     format(string, sizeof(string), "The first one who calculates '%s' wins $%s!",
-                        reactionNumbers, GetEconomyValue(ReactionTest));
+                        reactionNumbers, formatPrice(GetEconomyValue(ReactionTest)));
 
                     for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
                         SendClientMessage(i, COLOR_YELLOW, string);

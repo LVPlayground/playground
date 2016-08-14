@@ -122,6 +122,8 @@ class HouseManager {
         const houseInterior = new HouseInterior(house);  // TODO: Is this the right thing to do?
 
         location.setHouse(houseSettings, houseInterior);
+
+        this.entranceController_.updateLocation(location);
     }
 
     // Returns the location closest to the position of |player|. The |maximumDistance| argument can
@@ -201,6 +203,8 @@ class HouseManager {
         await this.database_.removeHouse(location);
 
         location.removeHouse();
+
+        this.entranceController_.updateLocation(location);
     }
 
     dispose() {

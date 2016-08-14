@@ -135,17 +135,17 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
 
         const location = await manager.findClosestLocation(gunther);
         assert.isTrue(location.isAvailable());
+        assert.isFalse(manager.entranceController_.isLocationPickupOccupiedForTesting(location));
 
         await manager.createHouse(gunther, location, 1 /* interiorId */);
 
         assert.isFalse(location.isAvailable());
+        assert.isTrue(manager.entranceController_.isLocationPickupOccupiedForTesting(location));
 
         assert.equal(location.settings.ownerId, gunther.userId);
         assert.equal(location.settings.ownerName, gunther.name);
 
         assert.equal(location.interior.interiorId, 1 /* interiorId */);
-
-        // TODO: Verify that the entrance controller has been updated
     });
 
     it('should be able to remove houses from a given location', async(assert) => {
@@ -157,12 +157,15 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
 
         const location = await manager.findClosestLocation(gunther);
         assert.isFalse(location.isAvailable());
+        assert.isTrue(manager.entranceController_.isLocationPickupOccupiedForTesting(location));
 
-        await manager.removeLocation(location);
+        await manager.removeHouse(location);
 
-        assert.isFalse(location.isAvailable());
+        assert.isTrue(location.isAvailable());
+        assert.isFalse(manager.entranceController_.isLocationPickupOccupiedForTesting(location));
 
-        // TODO: Verify that the entrance controller has been updated
+        assert.isNull(location.settings);
+        assert.isNull(location.interior);
     });
 
     // TODO: it('should respawn players who are inside a removed house')

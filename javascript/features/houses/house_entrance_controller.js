@@ -50,6 +50,13 @@ class HouseEntranceController {
         this.locations_.set(location, pickup);
     }
 
+    // Updates the |location|'s state within the entrance controller, for instance because a house
+    // on the location has been purchased or sold. This is achieved by re-creating the entry.
+    updateLocation(location) {
+        this.removeLocation(location);
+        this.addLocation(location);
+    }
+
     // Compiles the description of the |location| that should be displayed in a text label above it.
     compileLocationDescription(location) {
         if (location.isAvailable())
@@ -65,11 +72,14 @@ class HouseEntranceController {
         if (!pickup)
             throw new Error('An invalid |location| is being removed from the entrance controller.');
 
+        const label = this.pickupLabels_.get(pickup);
+
         this.pickups_.delete(pickup);
         this.pickupLabels_.delete(pickup);
         this.locations_.delete(location);
 
         pickup.dispose();
+        label.dispose();
     }
 
     // Called when the |player| enters the |pickup|, which could be one of the houses created on the
@@ -119,6 +129,16 @@ class HouseEntranceController {
     // Called when the |player| leaves the pickup they were standing in.
     onPlayerLeavePickup(player) {
         this.currentPickup_.delete(player);
+    }
+
+    // Returns whether the pickup created for |location| indicates that the entrance is occupied.
+    // This method must only be used for testing purposes.
+    isLocationPickupOccupiedForTesting(location) {
+        const pickup = this.locations_.get(location);
+        if (!pickup)
+            throw new Error('An invalid |location| is being checked at the entrance controller.');
+
+        return pickup.modelId === 19902 /* yellow marker */;
     }
 
     dispose() {

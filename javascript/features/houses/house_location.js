@@ -83,11 +83,15 @@ class HouseLocation {
     }
 
     dispose() {
-        if (this.settings_)
+        if (this.settings_) {
             this.settings_.dispose();
+            this.settings_ = null;
+        }
 
-        if (this.interior_)
+        if (this.interior_) {
             this.interior_.dispose();
+            this.interior_ = null;
+        }
     }
 }
 

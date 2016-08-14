@@ -31,8 +31,10 @@ class HouseEntranceController {
     // Adds |location| to the set of locations to be tracked by the entrance controller. It will
     // create both the exterior entrances for the |location|, and when occupied, the interior exits.
     addLocation(location) {
+        const pickupOffsetZ = location.isAvailable() ? 0 : -0.5;
+
         const pickup = this.entities_.createPickup({
-            position: location.position,
+            position: location.position.translate({ z: pickupOffsetZ }),
             modelId: location.isAvailable() ? 19524 /* yellow house */
                                             : 19902 /* yellow marker */
         });
@@ -41,7 +43,7 @@ class HouseEntranceController {
         const label = this.entities_.createTextLabel({
             text: this.compileLocationDescription(location),
             color: Color.fromRGB(255, 255, 0),
-            position: location.position.translate({ z: 0.6 }),
+            position: location.position,
             drawDistance: HOUSE_LABEL_DRAW_DISTANCE,
             testLineOfSight: true
         });
@@ -101,6 +103,7 @@ class HouseEntranceController {
 
     // Makes the |player| enter the house created at |location|.
     enterHouse(player, location) {
+        player.sendMessage('You would be able to enter now, had I implemented that yet.');
         // TODO: Implement this function.
     }
 

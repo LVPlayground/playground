@@ -6,6 +6,7 @@ const ScopedEntities = require('entities/scoped_entities.js');
 
 // The JSON data file in which all the interior markers have been defined.
 const INTERIOR_MARKERS_FILE = 'data/interior_markers.json';
+const INTERIOR_MARKERS_MINIGAME_FILE = 'data/interior_markers_minigames.json';
 
 // The number of units a player will be teleported in front of the return marker. Must be larger
 // than the range of a pickup, otherwise the player may get stuck in a teleportation loop.
@@ -28,7 +29,11 @@ class InteriorManager {
 
         const markers = JSON.parse(readFile(INTERIOR_MARKERS_FILE));
         markers.forEach((marker, markerId) =>
-            this.loadMarker(marker, markerId, VirtualWorld.forInterior(markerId)));
+            this.loadMarker(marker, markerId, VirtualWorld.forInterior(markerId), false));
+
+        const minigameMarkers = JSON.parse(readFile(INTERIOR_MARKERS_MINIGAME_FILE));
+        minigameMarkers.forEach((marker, markerId) =>
+            this.loadMarker(marker, markerId, marker.virtualWorld, true));
 
         server.pickupManager.addObserver(this);
     }
@@ -42,16 +47,19 @@ class InteriorManager {
     // Loads the |marker|. Each defined marker must have an entry position and a return position,
     // which create for a linked set of markers. Each position exists of an ID, 3D vector containing
     // the actual position, rotation for the player to animate to and the destination interior Id.
-    loadMarker(marker, count, virtualWorld) {
+    loadMarker(marker, count, virtualWorld, shareVirtualWorld) {
         const entranceMarker = marker.entry;
         const entrancePosition = new Vector(...entranceMarker.position);
+        const entranceWorld = shareVirtualWorld ? virtualWorld : 0 /* main world */;
 
         const exitMarker = marker.return;
         const exitPosition = new Vector(...exitMarker.position);
+        const exitWorld = virtualWorld;
 
         const entrancePickup = this.entities_.createPickup({
             modelId: 19902 /* yellow entrance marker */,
-            position: entrancePosition
+            position: entrancePosition,
+            virtualWorld: entranceWorld
         });
 
         this.markers_.set(entrancePickup, {
@@ -65,13 +73,13 @@ class InteriorManager {
             rotation: entranceMarker.rotation % 360,
 
             interiorId: exitMarker.interiorId,
-            virtualWorld: virtualWorld
+            virtualWorld: exitWorld
         });
 
         const exitPickup = this.entities_.createPickup({
             modelId: 19902 /* yellow entrance marker */,
             position: exitPosition,
-            virtualWorld: virtualWorld
+            virtualWorld: exitWorld
         });
 
         this.markers_.set(exitPickup, {
@@ -85,7 +93,7 @@ class InteriorManager {
             rotation: entranceMarker.rotation % 360,
 
             interiorId: entranceMarker.interiorId,
-            virtualWorld: 0 /* main world */
+            virtualWorld: entranceWorld
         });
 
         // Cross-associate the markers with each other so that we can block the follow-up pickup.

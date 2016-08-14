@@ -21,8 +21,11 @@ class LocationCommands {
             return;
         }
 
-        console.log(
-            '[INTBUG] ' + player.name + ' reports "' + marker + '": ' + Math.round(player.rotation))
+        const rotation = Math.round(player.rotation);
+        const position = player.position;
+
+        console.log('[INTBUG] ' + player.name + ' reports "' + marker + '": ' + rotation + ' at ' +
+                    position.x + ', ' + position.y + ', ' + position.z);
 
         player.sendMessage(Message.INTERIOR_FACING_ANGLE_THANKS);
     }

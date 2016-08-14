@@ -1,0 +1,14 @@
+[
+  { "virtualWorld": 69,
+    "entry": { "id": "ROBBERY_ROOF_1", "position": [ 2268.07, 1619.59, 93.9124 ], "rotation": 270, "interiorId": 0 },
+    "return": { "id": "ROBBERY_ROOF_1", "position": [ 2264.49, 1619.58, 1089.5 ], "rotation": 270, "interiorId": 1 } },
+  { "virtualWorld": 69,
+    "entry": { "id": "ROBBERY_ROOF_2", "position": [ 2268.14, 1675.89, 93.9124 ], "rotation": 270, "interiorId": 0 },
+    "return": { "id": "ROBBERY_ROOF_2", "position": [ 2264.48, 1675.93, 1089.5 ], "rotation": 270, "interiorId": 1 } },
+  { "virtualWorld": 69,
+    "entry": { "id": "ROBBERY_CASINO", "position": [ 2196.92, 1676.52, 11.368 ], "rotation": 180, "interiorId": 0 },
+    "return": { "id": "ROBBERY_CASINO", "position": [ 2233.91, 1714.73, 1011.38 ], "rotation": 90, "interiorId": 1 } },
+  { "virtualWorld": 69,
+    "entry": { "id": "ROBBERY_ELEVATOR", "position": [ 2136.03, 1599.45, 1008.36 ], "rotation": 270, "interiorId": 1 },
+    "return": { "id": "ROBBERY_ELEVATOR", "position": [ 2266.51, 1647.58, 1084.23 ], "rotation": 270, "interiorId": 1 } }
+]

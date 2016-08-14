@@ -31,6 +31,7 @@ class MockHouseDatabase {
         const houses = new Map();
         houses.set(4 /* locationId */, {
             id: 1024,
+            name: 'Guntherplaza',
 
             ownerId: 42 /* user_id */,
             ownerName: 'Gunther',
@@ -52,6 +53,7 @@ class MockHouseDatabase {
     async createHouse(player, location, interiorId) {
         return {
             id: this.mockHouseId_++,
+            name: player.name + '\'s house',
 
             ownerId: player.userId,
             ownerName: player.name,

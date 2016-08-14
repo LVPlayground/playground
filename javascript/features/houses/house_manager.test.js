@@ -142,6 +142,8 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
         assert.isFalse(location.isAvailable());
         assert.isTrue(manager.entranceController_.isLocationPickupOccupiedForTesting(location));
 
+        assert.equal(location.settings.name, gunther.name + '\'s house');
+
         assert.equal(location.settings.ownerId, gunther.userId);
         assert.equal(location.settings.ownerName, gunther.name);
 

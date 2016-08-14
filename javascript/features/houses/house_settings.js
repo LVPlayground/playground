@@ -6,6 +6,7 @@
 class HouseSettings {
     constructor(house) {
         this.id_ = house.id;
+        this.name_ = house.name;
 
         this.ownerId_ = house.ownerId;
         this.ownerName_ = house.ownerName;
@@ -13,6 +14,9 @@ class HouseSettings {
 
     // Gets the internal Id of this house in the database.
     get id() { return this.id_; }
+
+    // Gets the name of this house, which can be set by the owner.
+    get name() { return this.name_; }
 
     // Gets the user Id of the player that own this house.
     get ownerId() { return this.ownerId_; }

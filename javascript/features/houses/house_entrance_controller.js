@@ -5,7 +5,7 @@
 const ScopedEntities = require('entities/scoped_entities.js');
 
 // The radius around a house pickup within which the label will be visible.
-const HOUSE_LABEL_DRAW_DISTANCE = 15;
+const HOUSE_LABEL_DRAW_DISTANCE = 20;
 
 // The house entrance controller is responsible for the entrances associated with each of the house
 // locations, regardless of whether the location has been occupied.
@@ -39,10 +39,10 @@ class HouseEntranceController {
                                         labelOffset: { z: 0.6 }
                                      }
                                    : {
-                                        pickupOffset: { z: -0.9 },
+                                        pickupOffset: { z: -0.95 },
                                         pickupModel: 19902, /* yellow marker */
                                         labelColor: Color.fromRGB(255, 255, 255),
-                                        labelOffset: { z: 0.8 }
+                                        labelOffset: { z: 1.2 }
                                      };
 
         const pickup = this.entities_.createPickup({
@@ -75,8 +75,10 @@ class HouseEntranceController {
         if (location.isAvailable())
             return 'Available House';
 
-        // TODO(Russell): Improve the `occupied` label for houses to mention their owner.
-        return 'Occupied';
+        const houseName = location.settings.name;
+        const houseOwner = location.settings.ownerName;
+
+        return houseName + '\n{FFFF00}' + houseOwner;
     }
 
     // Removes |location| from the set of tracked locations. All entrances will be removed.

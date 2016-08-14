@@ -38,6 +38,7 @@ const LOAD_HOUSES_QUERY = `
         houses_settings.house_location_id,
         houses_settings.house_user_id,
         houses_settings.house_interior_id,
+        houses_settings.house_name,
         users.username
     FROM
         houses_settings
@@ -69,9 +70,9 @@ const CREATE_PARKING_LOT_QUERY = `
 const CREATE_HOUSE_QUERY = `
     INSERT INTO
         houses_settings
-        (house_location_id, house_user_id, house_interior_id, house_created)
+        (house_location_id, house_user_id, house_interior_id, house_name, house_created)
     VALUES
-        (?, ?, ?, NOW())`;
+        (?, ?, ?, ?, NOW())`;
 
 // Query to remove a previously created location from the database.
 const REMOVE_LOCATION_QUERY = `
@@ -153,6 +154,7 @@ class HouseDatabase {
         data.rows.forEach(row => {
             houses.set(row.house_location_id, {
                 id: row.house_id,
+                name: row.house_name,
 
                 ownerId: row.house_user_id,
                 ownerName: row.username,
@@ -184,11 +186,13 @@ class HouseDatabase {
 
     // Creates a new house in the database trying |interiorId| to |location|, owned by |player|.
     async createHouse(player, location, interiorId) {
+        const name = player.name + '\'s house';
         const data = await server.database.query(
-            CREATE_HOUSE_QUERY, location.id, player.userId, interiorId);
+            CREATE_HOUSE_QUERY, location.id, player.userId, interiorId, name);
 
         return {
             id: data.insertId,
+            name: name,
 
             ownerId: player.userId,
             ownerName: player.name,

@@ -4,13 +4,16 @@
 
 // This class represents the interior information of a given house.
 class HouseInterior {
-    constructor() {
+    constructor(house) {
+        this.id_ = house.id;
 
+        this.interiorId_ = house.interiorId;
     }
 
-    dispose() {
-        
-    }
+    // Gets the interior Id (in the interior list) that this house is tied to.
+    get interiorId() { return this.interiorId_; }
+
+    dispose() {}
 }
 
 exports = HouseInterior;

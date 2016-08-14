@@ -139,12 +139,31 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
         await manager.createHouse(gunther, location, 1 /* interiorId */);
 
         assert.isFalse(location.isAvailable());
-        
+
+        assert.equal(location.settings.ownerId, gunther.userId);
+        assert.equal(location.settings.ownerName, gunther.name);
+
+        assert.equal(location.interior.interiorId, 1 /* interiorId */);
+
         // TODO: Verify that the entrance controller has been updated
-        // TODO: Verify that |player| owns the |location|.
-        // TODO: Verify that the |location| is tied to the correct interior.
     });
 
-    // TODO: it('should be able to remove houses from a given location')
+    it('should be able to remove houses from a given location', async(assert) => {
+        await manager.loadHousesFromDatabase();
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.position = new Vector(500, 500, 500);
+        gunther.identify();
+
+        const location = await manager.findClosestLocation(gunther);
+        assert.isFalse(location.isAvailable());
+
+        await manager.removeLocation(location);
+
+        assert.isFalse(location.isAvailable());
+
+        // TODO: Verify that the entrance controller has been updated
+    });
+
     // TODO: it('should respawn players who are inside a removed house')
 });

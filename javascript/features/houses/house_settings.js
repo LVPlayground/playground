@@ -4,16 +4,23 @@
 
 // This class represents the settings associated with a given house.
 class HouseSettings {
-    constructor(id) {
-        this.id_ = id;
+    constructor(house) {
+        this.id_ = house.id;
+
+        this.ownerId_ = house.ownerId;
+        this.ownerName_ = house.ownerName;
     }
 
     // Gets the internal Id of this house in the database.
     get id() { return this.id_; }
 
-    dispose() {
-        
-    }
+    // Gets the user Id of the player that own this house.
+    get ownerId() { return this.ownerId_; }
+
+    // Gets the username of the player that owns this house.
+    get ownerName() { return this.ownerName_; }
+
+    dispose() {}
 }
 
 exports = HouseSettings;

@@ -5,7 +5,7 @@
 const ScopedEntities = require('entities/scoped_entities.js');
 
 // The radius around a house pickup within which the label will be visible.
-const HOUSE_LABEL_DRAW_DISTANCE = 30;
+const HOUSE_LABEL_DRAW_DISTANCE = 15;
 
 // The house entrance controller is responsible for the entrances associated with each of the house
 // locations, regardless of whether the location has been occupied.
@@ -31,20 +31,29 @@ class HouseEntranceController {
     // Adds |location| to the set of locations to be tracked by the entrance controller. It will
     // create both the exterior entrances for the |location|, and when occupied, the interior exits.
     addLocation(location) {
-        const pickupOffsetZ = location.isAvailable() ? 0 : -0.5;
-        const labelColour = location.isAvailable() ? Color.fromRGB(255, 255, 0)
-                                                   : Color.WHITE;
+        const style =
+            location.isAvailable() ? { 
+                                        pickupOffset: { z: 0 },
+                                        pickupModel: 19524, /* yellow house */
+                                        labelColor: Color.fromRGB(255, 255, 0),
+                                        labelOffset: { z: 0.6 }
+                                     }
+                                   : {
+                                        pickupOffset: { z: -0.9 },
+                                        pickupModel: 19902, /* yellow marker */
+                                        labelColor: Color.fromRGB(255, 255, 255),
+                                        labelOffset: { z: 0.8 }
+                                     };
 
         const pickup = this.entities_.createPickup({
-            position: location.position.translate({ z: pickupOffsetZ }),
-            modelId: location.isAvailable() ? 19524 /* yellow house */
-                                            : 19902 /* yellow marker */
+            position: location.position.translate(style.pickupOffset),
+            modelId: style.pickupModel
         });
         
         const label = this.entities_.createTextLabel({
             text: this.compileLocationDescription(location),
-            color: labelColour,
-            position: location.position.translate({ z: 0.6 }),
+            color: style.labelColor,
+            position: location.position.translate(style.labelOffset),
             drawDistance: HOUSE_LABEL_DRAW_DISTANCE,
             testLineOfSight: true
         });

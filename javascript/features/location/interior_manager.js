@@ -5,7 +5,7 @@
 const ScopedEntities = require('entities/scoped_entities.js');
 
 // The JSON data file in which all the interior markers have been defined.
-const InteriorMarkersFile = 'data/interior_markers.json';
+const INTERIOR_MARKERS_FILE = 'data/interior_markers.json';
 
 // The number of units a player will be teleported in front of the return marker. Must be larger
 // than the range of a pickup, otherwise the player may get stuck in a teleportation loop.
@@ -20,95 +20,48 @@ class InteriorManager {
         this.entities_ = new ScopedEntities();
         this.markers_ = new Map();
 
+        // The pickup that a player is expected to be teleported to.
         this.expectedPickup_ = new WeakMap();
-        this.saveResolver_ = new WeakMap();
+
+        // The most recent marker that a player has entered.
+        this.latestMarker_ = new WeakMap();
+
+        const markers = JSON.parse(readFile(INTERIOR_MARKERS_FILE));
+        markers.forEach((marker, markerId) =>
+            this.loadMarker(marker, markerId, VirtualWorld.forInterior(markerId)));
 
         server.pickupManager.addObserver(this);
-
-        const markers = JSON.parse(readFile(InteriorMarkersFile));
-
-        // Allocate Virtual Worlds for each of the interiors that will be created.
-        this.virtualWorlds_ = server.virtualWorldManager.allocateBlock(markers.length);
-
-        let count = 0;
-        markers.forEach(marker =>
-            this.loadMarker(marker, ++count));
-
-        server.commandManager.registerCommand(
-            'next', this.onNextCommand.bind(this));
     }
 
-    async onCommand(entranceMarker, entrancePickup, exitMarker, exitPickup, count, player) {
-        player.sendMessage('Teleported. Face the door and type /next.');
-
-        this.expectedPickup_.set(player, entrancePickup);
-
-        player.interiorId = entranceMarker.interiorId;
-        player.virtualWorld = 0;
-        player.position = new Vector(entranceMarker.position[0], entranceMarker.position[1],
-                                     entranceMarker.position[2] + 1);
-
-        const entranceRotation = await new Promise(resolve => this.saveResolver_.set(player, resolve));
-
-        player.sendMessage('Awesome! Teleported again. Face the door and type /next once more.');
-
-        this.expectedPickup_.set(player, exitPickup);
-
-        player.interiorId = entranceMarker.interiorId;
-        player.virtualWorld = exitPickup.virtualWorld;
-        player.position = new Vector(exitMarker.position[0], exitMarker.position[1],
-                                     exitMarker.position[2] + 1);
-
-        const exitRotation = await new Promise(resolve => this.saveResolver_.set(player, resolve));
-        const record = '[' + entranceMarker.id + '] ' + entranceRotation + ' ' + exitRotation;
-
-        console.log(record);
-
-        player.sendMessage('Cool, all recorded! (' + record + ')');
-        player.sendMessage('Why don\'t you try /e' + (count + 1) + '?');
-    }
-
-    onNextCommand(player) {
-        const resolver = this.saveResolver_.get(player);
-        if (!resolver) {
-            player.sendMessage('Sorry, I don\'t know what you\'re typing /next for!');
-            return;
-        }
-
-        this.saveResolver_.delete(player);
-
-        resolver(player.facingAngle);
-    }
-
-    // Returns the number of interior markers that have been created on the map.
+    // Gets the number of interior markers that have been created on the map.
     get markerCount() { return this.markers_.size; }
+
+    // Returns the name of the latest marker the |player| has passed through.
+    getLatestMarkerForPlayer(player) { return this.latestMarker_.get(player); }
 
     // Loads the |marker|. Each defined marker must have an entry position and a return position,
     // which create for a linked set of markers. Each position exists of an ID, 3D vector containing
     // the actual position, rotation for the player to animate to and the destination interior Id.
-    loadMarker(marker, count) {
+    loadMarker(marker, count, virtualWorld) {
         const entranceMarker = marker.entry;
-        const entrancePosition = new Vector(entranceMarker.position[0], entranceMarker.position[1],
-                                            entranceMarker.position[2] + 1);
+        const entrancePosition = new Vector(...entranceMarker.position);
 
         const exitMarker = marker.return;
-        const exitPosition = new Vector(exitMarker.position[0], exitMarker.position[1],
-                                        exitMarker.position[2] + 1);
-
-        const virtualWorld = this.virtualWorlds_.allocate();
+        const exitPosition = new Vector(...exitMarker.position);
 
         const entrancePickup = this.entities_.createPickup({
             modelId: 19902 /* yellow entrance marker */,
-            position: new Vector(...entranceMarker.position),
-            virtualWorld: entranceMarker.dimension
+            position: entrancePosition
         });
 
         this.markers_.set(entrancePickup, {
+            name: entranceMarker.id + ':ENTER',
+
             // Animation direction
-            //rotation: entranceMarker.rotation,
+            rotation: exitMarker.rotation,
 
             // Destination
-            destination: exitPosition,//.translateTo2D(PositionOffset, exitMarker.rotation),
+            destination: exitPosition.translate({ z: 1 }),
             rotation: entranceMarker.rotation % 360,
 
             interiorId: exitMarker.interiorId,
@@ -117,28 +70,27 @@ class InteriorManager {
 
         const exitPickup = this.entities_.createPickup({
             modelId: 19902 /* yellow entrance marker */,
-            position: new Vector(...exitMarker.position),
+            position: exitPosition,
             virtualWorld: virtualWorld
         });
 
         this.markers_.set(exitPickup, {
+            name: exitMarker.id + ':EXIT',
+
             // Animation direction
-            //rotation: exitMarker.rotation,
+            rotation: entranceMarker.rotation,
 
             // Destination
-            destination: entrancePosition,//.translateTo2D(PositionOffset, entranceMarker.rotation),
+            destination: entrancePosition.translate({ z: 1 }),
             rotation: entranceMarker.rotation % 360,
 
             interiorId: entranceMarker.interiorId,
-            virtualWorld: entranceMarker.dimension
+            virtualWorld: 0 /* main world */
         });
 
         // Cross-associate the markers with each other so that we can block the follow-up pickup.
         this.markers_.get(exitPickup).expectedPickup = entrancePickup;
         this.markers_.get(entrancePickup).expectedPickup = exitPickup;
-
-        server.commandManager.registerCommand(
-            'e' + count, this.onCommand.bind(this, entranceMarker, entrancePickup, exitMarker, exitPickup, count));
     }
 
     // Called when a player enters a pickup. Teleport the player to the marker's destination if the
@@ -151,12 +103,14 @@ class InteriorManager {
         if (this.expectedPickup_.get(player) === pickup)
             return;  // they're expected to have stepped in this pickup
 
-        // TODO(Russell): Animate the player whilst they enter the interior.
-
         this.expectedPickup_.set(player, marker.expectedPickup);
+        this.latestMarker_.set(player, marker.name);
+
+        if ((Math.random() * 10) >= 7 /* 30% chance */)
+            player.sendMessage(Message.INTERIOR_FACING_ANGLE_PROMO);
 
         player.position = marker.destination;
-        player.facingAngle = marker.rotation;
+        player.rotation = marker.rotation;
 
         player.interiorId = marker.interiorId;
         player.virtualWorld = marker.virtualWorld;

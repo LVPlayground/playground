@@ -29,8 +29,8 @@ describe('InteriorManager', (it, beforeEach, afterEach) => {
         manager.dispose();
         assert.isBelow(server.pickupManager.count, originalPickupCount);
 
-        //manager = new InteriorManager();
-        //assert.equal(server.pickupManager.count, originalPickupCount);
+        manager = new InteriorManager();
+        assert.equal(server.pickupManager.count, originalPickupCount);
         manager = null;
     });
 

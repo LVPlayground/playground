@@ -157,6 +157,31 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.equal(manager.locationCount, locationCount - 1);
     });
 
+    it('should enable administrators to conveniently evict the current owner', async(assert) => {
+        await manager.loadHousesFromDatabase();
+        assert.isAbove(manager.locationCount, 0);
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const locationCount = manager.locationCount;
+
+        gunther.identify();
+        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.position = new Vector(500, 500, 500);
+
+        const location = await manager.findClosestLocation(gunther);
+        assert.isFalse(location.isAvailable());
+
+        gunther.respondToDialog({ listitem: 2 /* Evict the current owner */ }).then(
+            () => gunther.respondToDialog({ response: 1 /* Yes, I really want to */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/house modify'));
+
+        assert.isTrue(location.isAvailable());
+
+        assert.equal(manager.locationCount, locationCount);
+    });
+
     it('should enable administrators to add a parking lot', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 

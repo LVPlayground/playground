@@ -185,6 +185,9 @@ class HouseManager {
         if (!this.locations_.has(location))
             throw new Error('The |location| must be known to the HouseManager.');
 
+        if (!location.isAvailable())
+            await this.removeHouse(location);
+
         await this.database_.removeLocation(location);
 
         this.locations_.delete(location);

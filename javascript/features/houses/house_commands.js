@@ -247,7 +247,33 @@ class HouseCommands {
                                         'Close' /* leftButton */, '' /* rightButton */);
         });
 
-        // TODO: Add the ability to evict the occupant?
+        if (!closestLocation.isAvailable()) {
+            const ownerName = closestLocation.settings.ownerName;
+
+            menu.addItem('Evict the owner ({FFFF00}' + ownerName + '{FFFFFF})', async(player) => {
+                const confirmation =
+                    await Dialog.displayMessage(
+                        player, 'Evict the current owner',
+                        Message.format(Message.HOUSE_MODIFY_EVICT_CONFIRM, ownerName),
+                        'Yes' /* leftButton */, 'No' /* rightButton */);
+
+                if (!confirmation.response)
+                    return;
+
+                await this.manager_.removeHouse(closestLocation);
+
+                // Announce eviction of the previous owner to other administrators.
+                this.announce_().announceToAdministrators(
+                    Message.HOUSE_ANNOUNCE_EVICTED, player.name, player.id, ownerName,
+                    closestLocation.id);
+
+                // Display a confirmation dialog to the player to inform them of their action.
+                await Dialog.displayMessage(
+                    player, 'Evict the current owner',
+                    Message.format(Message.HOUSE_MODIFY_EVICT_CONFIRMED, ownerName),
+                    'Close' /* leftButton */, '' /* rightButton */);
+            });
+        }
 
         menu.addItem('Delete the location', async(player) => {
             const confirmation =

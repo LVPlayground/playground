@@ -103,6 +103,7 @@
 
     "HOUSE_ANNOUNCE_CREATED": "%s (Id: %d) has created a new house location.",
     "HOUSE_ANNOUNCE_DELETED": "%s (Id: %d) has deleted a house location (Id: %d).",
+    "HOUSE_ANNOUNCE_EVICTED": "%s (Id: %d) has evicted %s from their house (Id: %d).",
     "HOUSE_ANNOUNCE_PURCHASED": "%s (Id: %d) has purchased a house for %$.",
     "HOUSE_BUY_CONFIRMED": "The Las Venturas Playground Real Estate Council hereby congratulates you with your purchase!",
     "HOUSE_BUY_NO_LOCATION": "@error You need to stand in a house entrance to use this command.",
@@ -120,6 +121,8 @@
     "HOUSE_INFO_2": "available to the richer players on the server.",
     "HOUSE_MODIFY_DELETE_CONFIRM": "Are you absolutely sure that you want to remove this location? Any occupants will be evicted with it.",
     "HOUSE_MODIFY_DELETE_CONFIRMED": "The house location has been deleted.",
+    "HOUSE_MODIFY_EVICT_CONFIRM": "Are you absolutely sure that you want to evict the current owner ({FFA500}XX{A9C4E4})?",
+    "HOUSE_MODIFY_EVICT_CONFIRMED": "%s has been evicted from this location.",
     "HOUSE_MODIFY_NONE_NEAR": "@error You need to be close to a house in order to use this command.",
     "HOUSE_NO_ACCESS": "{10F441}Sorry, you don't have access to %s's house. Ask them to add you as a friend?",
     "HOUSE_NO_ACCESS_ADMIN": "{10F441}Sorry, you don't have access to %s's house. Type `{DDFFDD}/house enter{10F441}` to override.",

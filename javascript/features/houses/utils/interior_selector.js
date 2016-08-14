@@ -19,6 +19,9 @@ class InteriorSelector {
         if (!Array.isArray(interiorList) || !interiorList.length)
             throw new Error('You must pass a list of interiors to the interior selector.');
 
+        if (server.isTest())
+            return Promise.resolve({ id: 0, price: 50000 });
+
         const selector = new InteriorSelector(PrivateSymbol, player, availableMoney, interiorList);
         selector.displayInterior(0 /* the first interior in the list */);
 

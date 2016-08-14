@@ -113,7 +113,8 @@ class InteriorList {
         });
 
         // Assign prices to each of the entries in the interior list based on |economy|.
-        interiors.forEach(interior => {
+        interiors.forEach((interior, interiorId) => {
+            interior.id = interiorId;
             interior.price =
                 economy.calculateHousePrice(location.position, location.parkingLotCount,
                                             interior.value);

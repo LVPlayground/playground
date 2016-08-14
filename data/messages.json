@@ -103,9 +103,12 @@
 
     "HOUSE_ANNOUNCE_CREATED": "%s (Id: %d) has created a new house location.",
     "HOUSE_ANNOUNCE_DELETED": "%s (Id: %d) has deleted a house location (Id: %d).",
+    "HOUSE_ANNOUNCE_PURCHASED": "%s (Id: %d) has purchased a house for %$.",
+    "HOUSE_BUY_CONFIRMED": "The Las Venturas Playground Real Estate Council hereby congratulates you with your purchase!",
     "HOUSE_BUY_NO_LOCATION": "@error You need to stand in a house entrance to use this command.",
     "HOUSE_BUY_NO_MULTIPLE": "@error You've reached the maximum number of houses you can own, sorry.",
     "HOUSE_BUY_NOT_AVAILABLE": "@error The house you're standing in is already owned by %s.",
+    "HOUSE_BUY_NOT_ENOUGH_MONEY": "@error Sorry, you must have %$ or more available on your bank account.",
     "HOUSE_CANCEL_UNKNOWN": "@error Unable to cancel - you're not currently in an interactive operation.",
     "HOUSE_CREATE_CONFIRM": "Houses will cost between %$ and %$ at this location. Continue?",
     "HOUSE_CREATE_CONFIRMED": "The house location has been created!",

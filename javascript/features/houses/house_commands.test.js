@@ -8,6 +8,7 @@ const HouseManager = require('features/houses/house_manager.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 const MockHouseDatabase = require('features/houses/test/mock_house_database.js');
 const ParkingLotCreator = require('features/houses/utils/parking_lot_creator.js');
+const PlayerMoneyBridge = require('features/houses/utils/player_money_bridge.js');
 
 describe('HouseCommands', (it, beforeEach, afterEach) => {
     let commands = null;
@@ -321,6 +322,8 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.HOUSE_BUY_NO_LOCATION);
+
+        assert.isTrue((await manager.findClosestLocation(gunther)).isAvailable());
     });
 
     it('should not allow buying a house when the player already has one', async(assert) => {
@@ -338,6 +341,49 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         assert.equal(gunther.messages.length, 2);
         assert.equal(gunther.messages[1], Message.HOUSE_BUY_NO_MULTIPLE);
+
+        assert.isTrue((await manager.findClosestLocation(gunther)).isAvailable());
+    });
+
+    it('should not allow buying a house when the balance is not sufficient', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        await manager.loadHousesFromDatabase();
+        assert.isAbove(manager.locationCount, 0);
+
+        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.position = new Vector(200, 250, 300);  // on the nearest location pickup
+
+        assert.isTrue(await gunther.issueCommand('/house buy'));
+
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(gunther.messages[1], Message.format(Message.HOUSE_BUY_NOT_ENOUGH_MONEY, 50000))
+
+        assert.isTrue((await manager.findClosestLocation(gunther)).isAvailable());
+    });
+
+    it('should allow buying a house when all the stars finally align', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify();
+
+        await manager.loadHousesFromDatabase();
+        assert.isAbove(manager.locationCount, 0);
+
+        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.position = new Vector(200, 250, 300);  // on the nearest location pickup
+
+        PlayerMoneyBridge.setMockedBalanceForTests(100000);
+
+        gunther.respondToDialog({ response: 0 /* Yes, I get it */ });
+
+        assert.isTrue(await gunther.issueCommand('/house buy'));
+
+        assert.equal(gunther.messages.length, 2);
+
+        assert.isFalse((await manager.findClosestLocation(gunther)).isAvailable());
+        assert.equal(await PlayerMoneyBridge.getBalanceForPlayer(gunther), 50000);
+
+        PlayerMoneyBridge.setMockedBalanceForTests(null);
     });
 
     it('should clean up after itself', async(assert) => {

@@ -84,7 +84,27 @@ class HouseCommands {
         if (!interior)
             return;
 
-        console.log(interior);
+        // Revalidate that the player has sufficient money available to buy the house. This works
+        // around their bank value changes whilst they're in the interior selector.
+        const refreshedBalance = await PlayerMoneyBridge.getBalanceForPlayer(player);
+        if (interior.price > refreshedBalance) {
+            player.sendMessage(Message.HOUSE_BUY_NOT_ENOUGH_MONEY, interior.price);
+            return;
+        }
+
+        // Withdraw the cost of this house from the |player|'s bank account.
+        await PlayerMoneyBridge.setBalanceForPlayer(player, refreshedBalance - interior.price);
+
+        // Actually claim the house within the HouseManager, which writes it to the database.
+        await this.manager_.createHouse(player, location, interior.id);
+
+        this.announce_().announceToAdministrators(
+            Message.HOUSE_ANNOUNCE_PURCHASED, player.name, player.id, interior.price);
+
+        // Display a confirmation dialog to the player to inform them of their action.
+        await Dialog.displayMessage(player, 'Congratulations on your purchase!',
+                                    Message.format(Message.HOUSE_BUY_CONFIRMED),
+                                    'Close' /* leftButton */, '' /* rightButton */);
     }
 
     // Called when a |player| types the `/house cancel` command in response to an interactive

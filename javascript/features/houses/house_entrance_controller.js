@@ -25,6 +25,9 @@ class HouseEntranceController {
         // Weak map providing a reference to the location pickup a player currently stands in.
         this.currentPickup_ = new WeakMap();
 
+        // Weak map providing a reference to the location a player is currently in.
+        this.currentHouse_ = new WeakMap();
+
         server.pickupManager.addObserver(this);
     }
 
@@ -97,6 +100,39 @@ class HouseEntranceController {
         label.dispose();
     }
 
+    // ---------------------------------------------------------------------------------------------
+
+    // Makes the |player| enter the house created at |location|.
+    enterHouse(player, location) {
+        if (location.isAvailable())
+            throw new Error('The |location| must be occupied in order to enter it.');
+
+        const interiorData = location.interior.getData();
+
+        player.interiorId = interiorData.interior;
+        player.virtualWorld = VirtualWorld.forHouse(location),
+        player.position = new Vector(...interiorData.exits[0].position);
+        player.rotation = interiorData.exits[0].rotation;
+
+        this.currentHouse_.set(player, location);
+    }
+
+    // Returns the location of the current house that the player is standing in, or NULL otherwise.
+    getCurrentHouse(player) {
+        return this.currentHouse_.has(player);
+    }
+
+    // Makes the |player| leave the house that they're currently in.
+    exitHouse(player) {
+        const location = this.currentHouse_.get(player);
+        if (!location)
+            throw new Error('The |player| is not currently inside a house.');
+
+        // TODO: Implement this method.
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Determines whether the |player| has access to the |location|. This is the case when they're
     // the owner or are on the friends list of the owning player.
     async hasAccessToHouse(player, location) {
@@ -111,12 +147,6 @@ class HouseEntranceController {
             return true;  // the owner has added the |player| as their friend
 
         return false;
-    }
-
-    // Makes the |player| enter the house created at |location|.
-    enterHouse(player, location) {
-        player.sendMessage('You would be able to enter now, had I implemented that yet.');
-        // TODO: Implement this function.
     }
 
     // Called when the |player| enters the |pickup|, which could be one of the houses created on the
@@ -177,6 +207,8 @@ class HouseEntranceController {
         this.currentPickup_.delete(player);
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     // Returns whether the pickup created for |location| indicates that the entrance is occupied.
     // This method must only be used for testing purposes.
     isLocationPickupOccupiedForTesting(location) {
@@ -189,6 +221,12 @@ class HouseEntranceController {
 
     dispose() {
         server.pickupManager.removeObserver(this);
+
+        // Forcefully remove all players who currently are in a house to go outside again.
+        server.playerManager.forEach(player => {
+            if (this.currentHouse_.has(player))
+                this.exitHouse(player);
+        });
 
         this.entities_.dispose();
     }

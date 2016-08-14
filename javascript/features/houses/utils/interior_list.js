@@ -122,6 +122,14 @@ class InteriorList {
 
         return interiors;
     }
+
+    // Returns the interior that's identified by |id|, even if it's not selectable anymore.
+    static getById(interiorId) {
+        if (interiorId < 0 || interiorId >= INTERIOR_LIST.length)
+            throw new Error('The given Id (' + interiorId + ') does not map to a valid interior.');
+
+        return INTERIOR_LIST[interiorId];
+    }
 }
 
 exports = InteriorList;

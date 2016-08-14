@@ -5,6 +5,9 @@
 // Beginning of the range of virtual world ids that are private to a particular player id.
 const PRIVATE_VIRTUAL_WORLD_BASE = 100;
 
+// Beginning of the range of virtual world ids that are private to a particular house.
+const HOUSE_VIRTUAL_WORLD_BASE = 500;
+
 // Range of private virtual world that can be reserved by features for private usage. A ring-buffer
 // will be created for storing the available virtual worlds.
 const EXCLUSIVE_VIRTUAL_WORLD_BASE = 10000000;
@@ -19,6 +22,11 @@ class VirtualWorld {
   // Returns the private virtual world Id for this |player|.
   static forPlayer(player) {
     return player.id + PRIVATE_VIRTUAL_WORLD_BASE;
+  }
+
+  // Returns the private virtual world for the given |house|.
+  static forHouse(location) {
+    return location.id + HOUSE_VIRTUAL_WORLD_BASE;
   }
 
   // Acquires an exclusive Virtual World id that can be used by the feature. A description must be

@@ -166,7 +166,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         gunther.identify();
         gunther.level = Player.LEVEL_MANAGEMENT;
-        gunther.position = new Vector(500, 500, 500);
+        gunther.position = new Vector(505, 505, 500);
 
         const location = await manager.findClosestLocation(gunther);
         assert.isFalse(location.isAvailable());

@@ -219,7 +219,11 @@ class HouseManager {
         if (location.isAvailable())
             throw new Error('The given |location| is not currently occupied.');
 
-        // TODO: Remove the people currently in the house from the location.
+        // Forcefully remove all players that are currently in the locations to go outside.
+        server.playerManager.forEach(player => {
+            if (this.entranceController_.getCurrentHouse(player) === location)
+                this.entranceController_.exitHouse(player);
+        });
 
         await this.database_.removeHouse(location);
 

@@ -148,6 +148,7 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
         assert.equal(location.settings.ownerName, gunther.name);
 
         assert.equal(location.interior.interiorId, 1 /* interiorId */);
+        assert.isTrue(location.interior.getData().hasOwnProperty('name'));
     });
 
     it('should be able to remove houses from a given location', async(assert) => {

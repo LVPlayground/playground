@@ -23,9 +23,10 @@ class LocationCommands {
 
         const rotation = Math.round(player.rotation);
         const position = player.position;
+        const interior = player.interiorId;
 
         console.log('[INTBUG] ' + player.name + ' reports "' + marker + '": ' + rotation + ' at ' +
-                    position.x + ', ' + position.y + ', ' + position.z);
+                    position.x + ', ' + position.y + ', ' + position.z + ' in interior ' + interior)
 
         player.sendMessage(Message.INTERIOR_FACING_ANGLE_THANKS);
     }

@@ -23,8 +23,7 @@ enum IrcMessageType {
     DeathIrcMessage, // [playerName]
     KillIrcMessage, // [playerName] [playerId] [killerName] [killerId] [reason]
     NotConnectedIrcMessage, // [playerId]
-    AddCommandIrcMessage, // [trigger] [paramTypes] [userRight] [params] 
-    ReportIrcMessage // [playerName] [playerId] [suspectedPlayer] [cheatReason]
+    AddCommandIrcMessage // [trigger] [paramTypes] [userRight] [params]
 };
 
 /**

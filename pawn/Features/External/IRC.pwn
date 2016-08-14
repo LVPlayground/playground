@@ -59,8 +59,6 @@ class IRC {
                 m_messageBuffer = "[notconnected] ";
             case AddCommandIrcMessage:
                 m_messageBuffer = "[addcommand] ";
-            case ReportIrcMessage:
-                m_messageBuffer = "[report] ";
             default:
                 m_messageBuffer = "[unknown] ";
         }

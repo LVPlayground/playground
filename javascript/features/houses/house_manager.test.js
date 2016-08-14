@@ -117,4 +117,25 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
 
         assert.equal(location.parkingLotCount, 0);
     });
+
+    it('should be able to create houses given a location', async(assert) => {
+        await manager.loadHousesFromDatabase();
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify();
+
+        const location = await manager.findClosestLocation(gunther);
+        assert.isTrue(location.isAvailable());
+
+        await manager.createHouse(gunther, location, 1 /* interiorId */);
+
+        assert.isFalse(location.isAvailable());
+        
+        // TODO: Verify that the entrance controller has been updated
+        // TODO: Verify that |player| owns the |location|.
+        // TODO: Verify that the |location| is tied to the correct interior.
+    });
+
+    // TODO: it('should be able to remove houses from a given location')
+    // TODO: it('should respawn players who are inside a removed house')
 });

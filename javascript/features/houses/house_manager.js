@@ -4,8 +4,10 @@
 
 const HouseDatabase = require('features/houses/house_database.js');
 const HouseEntranceController = require('features/houses/house_entrance_controller.js');
+const HouseInterior = require('features/houses/house_interior.js');
 const HouseLocation = require('features/houses/house_location.js');
 const HouseParkingLot = require('features/houses/house_parking_lot.js');
+const HouseSettings = require('features/houses/house_settings.js');
 
 // The house manager orchestrates all details associated with housing, manages data and responds to
 // player connection and disconnection events.
@@ -76,6 +78,25 @@ class HouseManager {
         location.addParkingLot(houseParkingLot);
     }
 
+    // Creates a new house in |location| owned by the |player|. The house interior of the house is
+    // identified by |interiorId|, which must be included in the InteriorList.
+    async createHouse(player, location, interiorId) {
+        if (!player.isRegistered())
+            throw new Error('The |player| must be registered in order to own a house.');
+
+        if (!this.locations_.has(location))
+            throw new Error('The given |location| does not exist in this HouseManager.');
+
+        if (!location.isAvailable())
+            throw new Error('The given |location| already is occupied by another player.');
+
+        // TODO: Store the created house in the database so that it can be loaded again.
+        // TODO: Create the appropriate |HouseSettings| instance.
+        // TODO: Create the appropriate |HouseInterior| instance.
+
+        location.setHouse(new HouseSettings(), new HouseInterior());
+    }
+
     // Returns the location closest to the position of |player|. The |maximumDistance| argument can
     // be provided when it must be within a certain range of the player.
     async findClosestLocation(player, maximumDistance = null) {
@@ -141,8 +162,26 @@ class HouseManager {
         location.removeParkingLot(parkingLot);
     }
 
+    // Removes the house from |location|. Any players currently in the house will be forcefully
+    // respawned into the main world.
+    async removeHouse(location) {
+        if (!this.locations_.has(location))
+            throw new Error('The given |location| does not exist in this HouseManager.');
+
+        if (location.isAvailable())
+            throw new Error('The given |location| is not currently occupied.');
+
+        // TODO: Remove the house from the database.
+
+        location.removeHouse();
+    }
+
     dispose() {
         this.entranceController_.dispose();
+
+        for (const location of this.locations_)
+            location.dispose();
+
         this.locations_.clear();
     }
 }

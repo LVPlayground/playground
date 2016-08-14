@@ -12,6 +12,9 @@ class HouseLocation {
         this.position_ = location.position;
         this.parkingLots_ = new Map();
 
+        this.settings_ = null;
+        this.interior_ = null;
+
         // Load the |parkingLots| from the database to this location.
         if (location.hasOwnProperty('parkingLots')) {
             location.parkingLots.forEach(parkingLot =>
@@ -23,7 +26,7 @@ class HouseLocation {
     get id() { return this.id_; }
 
     // Returns whether this location is available for purchase.
-    isAvailable() { return true; }
+    isAvailable() { return !this.settings_; }
 
     // Gets the position of this house location.
     get position() { return this.position_; }
@@ -33,6 +36,12 @@ class HouseLocation {
 
     // Gets the number of parking lots associated with this location.
     get parkingLotCount() { return this.parkingLots_.size; }
+
+    // Gets the settings associated with this location. Only available when it's occupied.
+    get settings() { return this.settings_; }
+
+    // Gets the interior associated with this location. Only available when it's occupied.
+    get interior() { return this.interior_; }
 
     // Adds the |parkingLot| to this location. Must only be called by the HouseManager.
     addParkingLot(parkingLot) {
@@ -50,6 +59,35 @@ class HouseLocation {
             throw new Error('The given |parkingLot| does not belong to this location.');
 
         this.parkingLots_.delete(parkingLot.id);
+    }
+
+    // Sets the house occupying this location to |houseSettings| tied to the |houseInterior|.
+    setHouse(houseSettings, houseInterior) {
+        if (this.settings_ || this.interior_)
+            throw new Error('This location is already occupied by a house. Remove it first.');
+
+        this.settings_ = houseSettings;
+        this.interior_ = houseInterior;
+    }
+
+    // Removes the house that's associated with this location.
+    removeHouse() {
+        if (!this.settings_ || !this.interior_)
+            throw new Error('This location is not currently occupied; there is nothing to remove.');
+
+        this.settings_.dispose();
+        this.settings_ = null;
+
+        this.interior_.dispose();
+        this.interior_ = null;
+    }
+
+    dispose() {
+        if (this.settings_)
+            this.settings_.dispose();
+
+        if (this.interior_)
+            this.interior_.dispose();
     }
 }
 

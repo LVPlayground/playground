@@ -26,6 +26,16 @@ const LOAD_QUERY = `
         users_friends.user_id = ? AND
         users_friends.friend_active = 1`;
 
+// Query for loading the list of friends of a specific player.
+const GET_FRIENDS_QUERY = `
+    SELECT
+        friend_id
+    FROM
+        users_friends
+    WHERE
+        user_id = ? AND
+        friend_active = 1`;
+
 // Query for removing a friend from a player's list of friends.
 const REMOVE_QUERY = `
     UPDATE
@@ -51,6 +61,16 @@ class FriendsDatabase {
                 lastSeen: row.friend_last_seen * 1000
             });
         });
+
+        return friends;
+    }
+
+    // Gets a set of the friends of |userId|.
+    async getFriendsSet(userId) {
+        const friends = new Set();
+
+        const data = await server.database.query(GET_FRIENDS_QUERY, userId);
+        data.rows.forEach(friendId => friends.add(friendId));
 
         return friends;
     }

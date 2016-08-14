@@ -15,6 +15,13 @@ class MockFriendsDatabase {
         ];
     }
 
+    async getFriendsSet(userId) {
+        if (userId == 50)
+            return new Set([ 1000 ]);
+
+        return new Set();
+    }
+
     async addFriend(player, friend) {}
 
     async removeFriend(player, friendUserId) {}

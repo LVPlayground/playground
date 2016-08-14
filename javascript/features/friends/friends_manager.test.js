@@ -73,4 +73,29 @@ describe('FriendsManager', (it, beforeEach, afterEach) => {
         assert.notEqual(
             friendsManager.lastActive_[gunther.userId], FriendsManager.CURRENTLY_ONLINE);
     });
+
+    it('should by able to tell if one friended one without them being online', async(assert) => {
+        gunther.identify({ userId: 1000 });
+
+        assert.isTrue(await friendsManager.isFriendedBy(gunther, 50));
+
+        russell.identify({ userId: 50 });
+
+        assert.isTrue(await friendsManager.isFriendedBy(gunther, 50));
+        assert.isTrue(await friendsManager.hasFriend(russell, gunther));
+
+        await friendsManager.removeFriend(russell, 'Lucy' /* don't ask */);
+
+        assert.isFalse(await friendsManager.isFriendedBy(gunther, 50));
+        assert.isFalse(await friendsManager.hasFriend(russell, gunther));
+
+        await friendsManager.addFriend(russell, gunther);
+
+        assert.isTrue(await friendsManager.isFriendedBy(gunther, 50));
+        assert.isTrue(await friendsManager.hasFriend(russell, gunther));
+
+        russell.disconnect();
+
+        assert.isTrue(await friendsManager.isFriendedBy(gunther, 50));
+    })
 });

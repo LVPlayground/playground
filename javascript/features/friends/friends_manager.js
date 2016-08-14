@@ -14,6 +14,9 @@ class FriendsManager {
         this.lastActive_ = {};
         this.loadPromises_ = new Map();
 
+        // Cached data from a userId to the list of friends of that userId.
+        this.friendsCache_ = new Map();
+
         server.playerManager.addObserver(this);
     }
 
@@ -26,6 +29,9 @@ class FriendsManager {
             return;  // nothing to do, the relation already exists
 
         await this.database_.addFriend(player, friendPlayer);
+
+        if (this.friendsCache_.has(player.userId))
+            this.friendsCache_.get(player.userId).add(friendPlayer.userId);
 
         let friends = this.friends_.get(player);
         if (!friends)
@@ -56,8 +62,10 @@ class FriendsManager {
     // Asynchronously returns whether |player| is on the list of friends of |friendUserId|. The
     // friend does not have to be online, and results will be cached.
     async isFriendedBy(player, friendUserId) {
-        // TODO: Implement this method.
-        return false;
+        if (!this.friendsCache_.has(friendUserId))
+            this.friendsCache_.set(friendUserId, await this.database_.getFriendsSet(friendUserId));
+
+        return this.friendsCache_.get(friendUserId).has(player.userId);
     }
 
     // Asynchronously returns the list of friends of |player|.
@@ -115,6 +123,9 @@ class FriendsManager {
         }));
 
         await this.database_.removeFriend(player, removeUserId);
+
+        if (this.friendsCache_.has(player.userId))
+            this.friendsCache_.get(player.userId).delete(removeUserId);
 
         return { success: true, nickname: removeNickname }
     }

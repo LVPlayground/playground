@@ -204,6 +204,8 @@ class HouseCommands {
             await Dialog.displayMessage(
                 player, 'Add a parking lot', message, 'Close', '' /* rightButton */);
 
+            player.sendMessage(Message.HOUSE_PARKING_LOT_ADD_MSG);
+
             const parkingLot = await this.parkingLotCreator_.select(player, closestLocation);
             if (!parkingLot)
                 return;
@@ -232,6 +234,8 @@ class HouseCommands {
             await Dialog.displayMessage(
                 player, 'Remove a parking lot', Message.HOUSE_PARKING_LOT_REMOVE,
                 'Close' /* leftButton */, '' /* rightButton */);
+
+            player.sendMessage(Message.HOUSE_PARKING_LOT_REMOVE_MSG);
 
             const parkingLot = await this.parkingLotRemover_.select(player, closestLocation);
             if (!parkingLot)

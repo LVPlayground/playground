@@ -9,6 +9,7 @@
     "ANNOUNCE_REPORT": "{FFFF00}* Report by %s (Id: %d): Player: %s (Id: %d) - Reason: %s",
 
     "COMMAND_ERROR_INSUFFICIENT_RIGHTS": "@error Sorry, this command is only available to %s.",
+    "COMMAND_ERROR_INSUFFICIENT_RIGHTS_BETA": "@error Sorry, you must have a registered account in order to use this command.",
     "COMMAND_ERROR_UNKNOWN_PLAYER": "@error Sorry, no player could be found for \"%s\".",
     "COMMAND_ERROR": "@error %s",
     "COMMAND_SUCCESS": "@success %s",

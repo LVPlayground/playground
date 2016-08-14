@@ -29,6 +29,7 @@ describe('IrcChatCommands', (it, beforeEach, afterEach) => {
     it('/man should not be usable for administrators', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
+        gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
         assert.isTrue(gunther.issueCommand('/man some words'));
@@ -43,6 +44,7 @@ describe('IrcChatCommands', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const channel = '#LVP.Crew';
 
+        gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
         assert.isTrue(gunther.issueCommand('/crew test 2'));
@@ -57,6 +59,7 @@ describe('IrcChatCommands', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const channel = '#LVP.Management';
 
+        gunther.identify();
         gunther.level = Player.LEVEL_MANAGEMENT;
 
         assert.isTrue(gunther.issueCommand('/man some words'));

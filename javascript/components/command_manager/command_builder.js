@@ -199,6 +199,13 @@ class CommandBuilder {
         return true;
       }
 
+      // Bail out when a player's level is beyond Player, the command requires this but they're not
+      // registered with Las Venturas Playground. Many commands make this assumption.
+      if (this.restrictLevel_ > Player.LEVEL_PLAYER && !player.isRegistered()) {
+        player.sendMessage(Message.COMMAND_ERROR_INSUFFICIENT_RIGHTS_BETA);
+        return true;
+      }
+
       // Determine if there is a sub-command that we should delegate to. Word matching is used for
       // string values (which will be the common case for delegating commands.)
       for (let { builder, listener } of this.subCommands_) {

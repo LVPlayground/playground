@@ -42,6 +42,8 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
                            playerLevelToString(Player.LEVEL_MANAGEMENT, true /* plural */)));
 
         gunther.clearMessages();
+
+        gunther.identify();
         gunther.level = Player.LEVEL_MANAGEMENT;
 
         assert.isTrue(await gunther.issueCommand('/house'));
@@ -341,6 +343,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         await manager.loadHousesFromDatabase();
         assert.isAbove(manager.locationCount, 0);
 
+        gunther.identify();
         gunther.level = Player.LEVEL_MANAGEMENT;
 
         assert.isTrue(await gunther.issueCommand('/house buy'));
@@ -357,6 +360,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         await manager.loadHousesFromDatabase();
         assert.isAbove(manager.locationCount, 0);
 
+        gunther.identify();
         gunther.level = Player.LEVEL_MANAGEMENT;
         gunther.position = new Vector(200, 250, 300);  // on the nearest location pickup
 
@@ -376,6 +380,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         await manager.loadHousesFromDatabase();
         assert.isAbove(manager.locationCount, 0);
 
+        gunther.identify();
         gunther.level = Player.LEVEL_MANAGEMENT;
         gunther.position = new Vector(200, 250, 300);  // on the nearest location pickup
 

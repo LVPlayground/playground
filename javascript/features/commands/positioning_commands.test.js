@@ -69,6 +69,7 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
     it('/pos x y z should change the position of an administrator', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
+        gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(0, 1, 2);
 
@@ -93,6 +94,7 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
     it('/up places the crewmember on foot [distance] higher', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
+        gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(1, 2, 3);
 

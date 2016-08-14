@@ -251,6 +251,7 @@ describe('CommandBuilder', (it, beforeEach) => {
     listener(player, '');
     assert.isFalse(invoked);
 
+    player.identify();
     player.level = Player.LEVEL_ADMINISTRATOR;
 
     listener(player, '');

@@ -4,4 +4,4 @@
 
 # Required for testing.
 TestFunction
-Murmur3HashGenerateHash
+MurmurIIIHashGenerateHash

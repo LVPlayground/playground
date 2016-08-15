@@ -94,7 +94,9 @@ class Murmur3Hash {
     }
 
     static provideNativeMurmur3HashGenerateHashToPawn() {
-        provideNative('Murmur3HashGenerateHash', 's', key => Murmur3Hash.generateHash(key));
+        provideNative('MurmurIIIHashGenerateHash', 'siS', (key, maxLength) => {
+            return [Murmur3Hash.generateHash(key).toString()];
+        });
     }
 }
 

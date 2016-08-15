@@ -27,6 +27,12 @@ public DelayedKick(playerId) {
 }
 
 /**
+ * In javascript we expose the method to generate the Murmur3Hash to here so we do not need to use
+ * the slow database-function for it.
+ */
+native MurmurIIIHashGenerateHash(key[], len);
+
+/**
  * Administrators have the ability to disallow a player to play on Las Venturas Playground for a
  * certain amount of time, which is known as being banned from the server. The Ban Manager will
  * verify whether a player is allowed to play on the server when they join it. Furthermore, it also
@@ -69,6 +75,7 @@ class BanManager {
                                           "    ((subject_user_id <> 0 AND subject_user_id = ?) OR " ...
                                           "     (ban_ip_range_start <= INET_ATON(?) AND ban_ip_range_end >= INET_ATON(?)) OR " ...
                                           "      gpci_hash = murmur_hash_v3(?, 0) )" ...
+                                          //"      gpci_hash = ?)" ...
                                           "ORDER BY " ...
                                           "    log_date DESC " ...
                                           "LIMIT " ...
@@ -106,7 +113,9 @@ class BanManager {
         format(ipAddress, sizeof(ipAddress), Player(playerId)->ipAddressString());
 
         new playerGpci[128];
+           //,hashedPlayerGpci[15];
         gpci(playerId, playerGpci, sizeof(playerGpci));
+        //MurmurIIIHashGenerateHash(playerGpci, 0, hashedPlayerGpci);
 
         Database->execute(m_verifyQuery, "OnBanVerificationCompleted", playerId, /** ? **/ userId, ipAddress, ipAddress, playerGpci);
     }

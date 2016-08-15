@@ -38,4 +38,12 @@ describe('Murmur3Hash', (it) => {
 
         assert.equal(generatedHashOfTest, expectedHashOfTest)
     });
+
+    it('should provide the native Murmur3HashGenerateHash to pawn', assert => {
+        const generatedHashOfTest = pawnInvoke('Murmur3HashGenerateHash', 's', 'test');
+        const expectedHashOfTest = '3127628307'; // according to http://murmurhash.shorelabs.com/
+                                                 // use 2nd field: x86 - 32 bit
+
+        assert.equal(generatedHashOfTest, expectedHashOfTest)
+    })
 });

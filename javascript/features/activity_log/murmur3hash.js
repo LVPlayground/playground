@@ -7,7 +7,7 @@
 // TODO: Look for a correct place for this file
 
 // Private symbol ensuring that only the constructor is used.
-const PrivateSymbol = Symbol('Please, only use the constructor.');
+const PrivateSymbol = Symbol('Private method, only Murmur3Hash.generateHash should be used.');
 
 // Calling generateHash of this class with a given key and seed returns a decimal, unsigned int,
 // hash based on murmur3
@@ -66,7 +66,7 @@ class Murmur3Hash {
     // Multiplies two 32bit integers and returns it as a 32bit integer
     static x86Multiply_(privateSymbol, firstInteger, secondInteger) {
         if (privateSymbol !== PrivateSymbol)
-            throw new TypeError('Private method, only Murmur3Hash::generateHash should be used.');
+            throw new TypeError('Private method, only Murmur3Hash.generateHash should be used.');
 
         return ((firstInteger & 0xffff) * secondInteger) + ((((firstInteger >>> 16) * secondInteger) & 0xffff) << 16);
     }
@@ -74,7 +74,7 @@ class Murmur3Hash {
     // Rotates the given integer by the given number of bit positions
     static x86Rotl_(privateSymbol, integer, numberOfBitPositions) {
         if (privateSymbol !== PrivateSymbol)
-            throw new TypeError('Private method, only Murmur3Hash::generateHash should be used.');
+            throw new TypeError('Private method, only Murmur3Hash.generateHash should be used.');
 
         return (integer << numberOfBitPositions) | (integer >>> (32 - numberOfBitPositions));
     }
@@ -82,7 +82,7 @@ class Murmur3Hash {
     // Final mix of the block and gives the murmur3-hash of it
     static x86Fmix_(privateSymbol, block) {
         if (privateSymbol !== PrivateSymbol)
-            throw new TypeError('Private method, only Murmur3Hash::generateHash should be used.');
+            throw new TypeError('Private method, only Murmur3Hash.generateHash should be used.');
 
         block ^= block >>> 16;
         block  = this.x86Multiply_(privateSymbol, block, 0x85ebca6b);
@@ -91,6 +91,10 @@ class Murmur3Hash {
         block ^= block >>> 16;
 
         return block;
+    }
+
+    static provideNativeMurmur3HashGenerateHashToPawn() {
+        provideNative('Murmur3HashGenerateHash', 's', key => Murmur3Hash.generateHash(key));
     }
 }
 

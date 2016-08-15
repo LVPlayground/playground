@@ -39,6 +39,8 @@ class ActivityLog extends Feature {
 
     // To be able to show the IP and GPCI on IRC
     this.announce_ = this.defineDependency('announce');
+
+    Murmur3Hash.provideNativeMurmur3HashGenerateHashToPawn();
   }
 
   // Called when a confirmed death has happened with the corrected Id of the killer, if any. The

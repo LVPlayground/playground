@@ -10,7 +10,7 @@ as opposed to administrators. This enables us to keep control over pricing.
 The following concepts are important for this feature:
   - **House locations** can be created by administrators around San Andreas. These define where
     players are able to purchase the houses of their liking.
-  - House locations can have zero or more **parking lots**. These are are associated with the
+  - House locations can have zero or more **parking lots**. These are associated with the
     location as opposed to the house, and can be created by administrators.
   - **Houses** are the interiors linked to a _house location_. They are owned by a particular player
     and can only be accessed by a limited set of players.

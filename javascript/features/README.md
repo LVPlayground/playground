@@ -3,7 +3,7 @@ This directory contains the _features_ of Las Venturas Playground that have been
 JavaScript. Let's begin with defining some of the terminology we use here.
 
   - A **feature** is _a grouped set of capabilities_. This could be a category of commands, for
-    example teleporatation or communication, a concept, for example friends or gangs, or something
+    example teleportation or communication, a concept, for example friends or gangs, or something
     that isn't immediately available to the player, for example ways to make an announcement.
 
   - Every feature is **encapsulated**. It cannot talk to other features unless it **declares a
@@ -42,10 +42,11 @@ The following features have been implemented in JavaScript.
 _There are several other features that have to be updated and documented before being listed here._
 
 ## TODO
-The following features need to be cleaned up and properly documented>
+The following features need to be cleaned up and properly documented:
 
   - **[ActivityLog](activity_log/)**: Logs several in-game events in the database.
   - **[Commands](commands/)**: Provides generic commands to the player that don't belong elsewhere.
   - **[DeathFeed](death_feed/)**: Controls whether the _death feed_ should be visible to the player.
   - **[Debug](debug/)**: Provides generic commands related to debugging the server.
   - **[Races](races/)**: Gives players the ability to participate in races.
+  - **[VIPs](vips/)**: Defines the JavaScript portion of the VIP platform.

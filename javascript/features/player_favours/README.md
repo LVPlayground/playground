@@ -1,5 +1,5 @@
 # Feature: Player favours
-A lof of the Las Venturas Playground administrators and players are fantastic people who have spent
+A lot of the Las Venturas Playground administrators and players are fantastic people who have spent
 hundreds, if not thousands of hours improving the community. For such players, occasionally, we
 develop small bits of functionality specific to their likings.
 

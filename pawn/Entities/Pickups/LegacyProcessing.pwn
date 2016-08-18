@@ -2,10 +2,10 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
+new playerVipRoomEntryTime[MAX_PLAYERS];
+
 LegacyOnPlayerPickUpPickup(playerid, pickupid)
 {
-    new playerVipRoomEntryTime[MAX_PLAYERS];
-
     // First of all check for derby pickups
     if(CDerby__CheckPlayerPickupPickup(playerid, pickupid) == 1)
     {

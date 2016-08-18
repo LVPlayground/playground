@@ -176,7 +176,7 @@ class TeleportationManager {
 
         // Don't teleport to players who are currently spectating somebody.
         if (PlayerSpectateHandler->isSpectating(subjectId)) {
-            SendClientMessage(playerId, Color::Error, "Sorry, that player is unavailable right now!");
+            SendClientMessage(playerId, Color::Error, "This player has disallowed others from teleporting to them using /my teleport off");
             return false;
         }
 

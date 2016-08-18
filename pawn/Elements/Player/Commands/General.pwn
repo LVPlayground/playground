@@ -281,14 +281,14 @@ lvp_hasfix(playerId, params[])
 
     g_lastHasFixCommand = Time->currentTime();
     if (iHideGameState != HS_STATE_NONE && diff > 5) {
-        SendClientMessage(playerId, Color::Red, "The game is still in progress, you probably don't want to fix the minigame.");
-        SendClientMessage(playerId, Color::Red, "Type /hasfix again if you are sure nobody is playing.");
+        SendClientMessage(playerId, Color::Error, "The game is still in progress, you probably don't want to fix the minigame.");
+        SendClientMessage(playerId, Color::Error, "Type /hasfix again if you are sure nobody is playing.");
         return 1;
     }
 
     CHideGame__ResetVariables();
 
-    SendClientMessage(playerId, COLOR_YELLOW, "The Hide and Seek minigame has been reset.");
+    SendClientMessage(playerId, Color::Success, "The Hide and Seek minigame has been reset.");
     return 1;
     #pragma unused params
 }
@@ -1359,7 +1359,7 @@ MinigameHelp:
         {
             if( PlayerInfo[playerid][playerIsHidden] == 1) 
             {
-                SendClientMessage(playerid, Color::Red, "* You are already hidden!");
+                SendClientMessage(playerid, Color::Error, "* You are already hidden!");
                 return 1;
             }
 
@@ -1372,7 +1372,7 @@ MinigameHelp:
             format(notification, sizeof(notification), "%s (Id:%d) has made themself invisible.", nickname, playerid);
             Admin(playerid, notification);
 
-            SendClientMessage(playerid, COLOR_YELLOW, "* You are now hidden!");
+            SendClientMessage(playerid, Color::Success, "* You are now hidden!");
             return 1;
         }
 
@@ -1380,7 +1380,7 @@ MinigameHelp:
         {
             if( PlayerInfo[playerid][playerIsHidden] == 0) 
             {
-                SendClientMessage(playerid, Color::Red, "* You are already visible!");
+                SendClientMessage(playerid, Color::Error, "* You are already visible!");
                 return 1;
             }
 
@@ -1393,7 +1393,7 @@ MinigameHelp:
             format(notification, sizeof(notification), "%s (Id:%d) has made themself visible.", nickname, playerid);
             Admin(playerid, notification);
 
-            SendClientMessage(playerid, COLOR_YELLOW, "* You are now visible again!");
+            SendClientMessage(playerid, Color::Success, "* You are now visible again!");
             return 1;
         }
 

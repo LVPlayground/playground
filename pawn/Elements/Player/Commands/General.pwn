@@ -877,10 +877,10 @@ lvp_showmessage(playerid,params[])
 // Parameters: amount
 // Author: Jay
 // Notes: A command for the owner of the frisia, it sets the interest rate.
+new iInterestTime[MAX_PLAYERS];
+
 lvp_interest(playerid,params[])
 {
-    new iInterestTime[MAX_PLAYERS];
-
     new propertyId = PropertyManager->propertyForSpecialFeature(LoansFeature),
         endid = propertyId == Property::InvalidId ? Player::InvalidId : Property(propertyId)->ownerId();
 

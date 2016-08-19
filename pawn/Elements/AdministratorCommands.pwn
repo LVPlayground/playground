@@ -1096,9 +1096,9 @@ lvp_p(playerId, params[]) {
     SendClientMessage(playerId, Color::Information, "Usage: /p [player] [command]:");
 
     if (Player(playerId)->isAdministrator() == true) {
-        SendClientMessage(playerId, Color::Information, " achievements, armor, burn, (un)cage, cash, deathmessage, (give/take)admin, (un)freeze, god,");
-        SendClientMessage(playerId, Color::Information, " handofgod, health, hide, kill, maptp, nocaps, nuke, weapon, weaponinfo, properties, removeweapon,");
-        SendClientMessage(playerId, Color::Information, " resetspawnweapons, resetweapons, skin, spawnweapons, teleport, vallow");
+        SendClientMessage(playerId, Color::Information, " achievements, armor, burn, (un)cage, cash, deathmessage, (un)freeze, (give/take)admin, god,");
+        SendClientMessage(playerId, Color::Information, " handofgod, health, hide, kill, maptp, nocaps, nuke, weapon, weaponinfo, properties,");
+        SendClientMessage(playerId, Color::Information, " removeweapon, resetspawnweapons, resetweapons, skin, spawnweapons, teleport, vallow");
     }
 
     return 1;
@@ -1163,7 +1163,7 @@ lvp_show(playerId, params[]) {
 
     if (!strcmp(showParameter, "ts", true, 2)) {
         showInfo = true;
-        format(g_message, sizeof(g_message), "LVP has TeamSpeak! Join: ts.sa-mp.nl:9987");
+        format(g_message, sizeof(g_message), "LVP has TeamSpeak! Join: ts.sa-mp.nl");
     }
 
     if (!strcmp(showParameter, "spam", true, 4)) {

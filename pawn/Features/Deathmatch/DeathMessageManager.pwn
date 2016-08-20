@@ -65,7 +65,7 @@ class DeathMessageManager {
                 SendClientMessage(playerId, Color::Error, "This player is not registered!");
             else
                 SendClientMessage(playerId, Color::Error,
-                "You must be registered to change your death message! Register your nickname at http://www.sa-mp.nl.");
+                "You must be registered to change your death message! Register your nickname at www.sa-mp.nl");
 
             return 1;
         }

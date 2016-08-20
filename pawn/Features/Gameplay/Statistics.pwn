@@ -86,7 +86,7 @@ class Statistics {
 
         if (Player(playerId)->isRegistered() == false) {
             SendClientMessage(playerId, Color::Error,
-                "You must be registered to view your statistics! Register your nickname at http://www.sa-mp.nl.");
+                "You must be registered to view your statistics! Register your nickname at www.sa-mp.nl");
             return 1;
         }
 

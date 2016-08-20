@@ -32,7 +32,7 @@ class EnterPasswordDialog <playerId (MAX_PLAYERS)>
         // Set up the message that will be shown to the user. If this isn't the first attempt,
         // we'll show them an additional line informing them of the number of attempts left.
         new registrationMessage[512], attemptBuffer[64];
-        strcat(registrationMessage, "{FFFFFF}The nickname you're using has been registered on {FF0000}www.sa-mp.nl{FFFFFF}.\n", sizeof(registrationMessage));
+        strcat(registrationMessage, "{FFFFFF}The nickname you're using has been registered on {FF0000}www.sa-mp.nl{FFFFFF}\n", sizeof(registrationMessage));
         strcat(registrationMessage, "Please enter your password in the field below and click on \"{40FF40}Login{FFFFFF}\".", sizeof(registrationMessage));
 
         // Did the player enter an invalid password? If so, modify the message.

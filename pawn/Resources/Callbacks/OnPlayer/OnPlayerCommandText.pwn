@@ -1297,7 +1297,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     if (strcmp( cmd, "/regular", true) == 0) {
         if (Player(playerid)->isRegular() == false) {
             if (Player(playerid)->isRegistered() == false) {
-                SendClientMessage( playerid, Color::White, "Please register on www.sa-mp.nl/ before");
+                SendClientMessage( playerid, Color::White, "Please register on www.sa-mp.nl before");
                 SendClientMessage( playerid, Color::White, "even thinking about access to regular commands ;)" );
                 return 1;
             }

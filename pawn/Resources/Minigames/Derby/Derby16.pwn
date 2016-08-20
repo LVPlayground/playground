@@ -7,7 +7,7 @@
         Las Venturas Playground v2.94 A2
         
         Derby: LV Water madness by Weezy
-        http://forum.sa-mp.nl/index.php?topic=27311.msg362910#msg362910
+        https://forum.sa-mp.nl/showthread.php?tid=26061&pid=361308#pid361308
     
         Copyright (c) Las Venturas Playground 2011
         www.sa-mp.nl

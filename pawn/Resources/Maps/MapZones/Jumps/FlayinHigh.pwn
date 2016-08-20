@@ -5,7 +5,7 @@
 /**
     Las Venturas Playground v2.94.0 - Flayin' High
 
-    This map was created by LasTRace - http://forum.sa-mp.nl/index.php?topic=25253.0
+    This map was created by LasTRace - https://forum.sa-mp.nl/showthread.php?tid=24051
     
     Added by Jay on 25th June 2011 for 2.94 A2
 

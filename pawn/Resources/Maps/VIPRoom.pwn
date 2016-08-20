@@ -5,14 +5,11 @@
 /**
  * Las Venturas Playground v2.94 Alpha 2: VIP room
  *
- *  New VIP room mapped by Fuse - see http://forum.sa-mp.nl/index.php?topic=25319.0
+ *  New VIP room mapped by Fuse - see https://forum.sa-mp.nl/showthread.php?tid=24117
  *
  * This file is part of the Las Venturas Playground San Andreas: Multiplayer
  * gamemode source code. While most of our code will be freely available please
- * note that certain limitations apply. The entire license may be read at
- * the following webpage.
- *
- * http://sa-mp.nl/about/rules/source-code.html
+ * note that certain limitations apply. 
  *
  * In a nutshell; you are not allowed to copy more than a single method from
  * the Las Venturas Playground source for your own purposes. In case you wish
@@ -20,7 +17,7 @@
  * please contact the development team using development@sa-mp.nl.
  *
  *  This file contains the taxi rank mapped by LasTRace - LVP Mapper.
- *  More information can be found at this forum topic: http://forum.sa-mp.nl/index.php?topic=26498.0
+ *  More information can be found at this forum topic: https://forum.sa-mp.nl/showthread.php?tid=25286
  *
  */
 

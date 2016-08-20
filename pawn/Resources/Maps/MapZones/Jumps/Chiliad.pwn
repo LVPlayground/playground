@@ -5,7 +5,7 @@
 /**
     Las Venturas Playground v2.94.0 - Mount Chiliad Jump
 
-    This map was created by eF.Pedro - http://forum.sa-mp.nl/index.php?topic=28281.0
+    This map was created by eF.Pedro - https://forum.sa-mp.nl/showthread.php?tid=27027
     
     Added by Jay on 29th June 2011 for 2.94 A2
 

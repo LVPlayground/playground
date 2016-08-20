@@ -5,7 +5,7 @@
 /**
     Las Venturas Playground v2.94.0 - Area 69 Jump
 
-    This map was created by ef.Pedro - http://forum.sa-mp.nl/index.php?topic=28275.0
+    This map was created by ef.Pedro - https://forum.sa-mp.nl/showthread.php?tid=27021
     
     Added by Jay on 28th June 2011 for 2.94 A2
 

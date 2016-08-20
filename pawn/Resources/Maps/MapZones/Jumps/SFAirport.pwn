@@ -5,7 +5,7 @@
 /**
     Las Venturas Playground v2.94.0 - SF Airport
 
-    This map was created by ef.Pedro - http://forum.sa-mp.nl/index.php?topic=28264.0
+    This map was created by ef.Pedro - https://forum.sa-mp.nl/showthread.php?tid=27010
 
     Added by Jay on 28th June 2011 for 2.94 A2
 

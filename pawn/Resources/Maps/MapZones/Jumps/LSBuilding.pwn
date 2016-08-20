@@ -5,7 +5,7 @@
 /**
     Las Venturas Playground v2.94.0 - LS Building Jump
 
-    This map was created by LilBoy - http://forum.sa-mp.nl/index.php?topic=25211.0
+    This map was created by LilBoy - https://forum.sa-mp.nl/showthread.php?tid=24009
 
 
 **/

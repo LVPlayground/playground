@@ -20,9 +20,7 @@
  *     Cyrix404, Gibbs, Halo, Hitman, Lithirm, MacSto, nielz, Pedro, Rien, Sadik, ZheMafo
  *     Cake, Sophia, Biesmen, Harry, Xanland, Holsje, Joeri, striker
  *
- * http://www.sa-mp.nl
- * http://wiki.sa-mp.nl
- * http://trac.sa-mp.nl/lvp/
+ * https://www.sa-mp.nl/
  */
 
 // The minimum pre-compiler version for this Las Venturas Playground build is 5.4.3.

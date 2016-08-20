@@ -5,7 +5,7 @@
 /**
     Las Venturas Playground v2.94.0 - LS High Jump
 
-    This map was created by BRKHN - http://forum.sa-mp.nl/index.php?topic=25070.0
+    This map was created by BRKHN - https://forum.sa-mp.nl/showthread.php?tid=23868
     
     Added by Jay on 28th June 2011 for 2.94 A2
 

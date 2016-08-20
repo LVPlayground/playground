@@ -5,7 +5,7 @@
 /**
     Las Venturas Playground v2.94.0 - LS Airport Jump
 
-    This map was created by ef.Pedro - http://forum.sa-mp.nl/index.php?topic=28269.0
+    This map was created by ef.Pedro - https://forum.sa-mp.nl/showthread.php?tid=27015
     
     Added by Jay on 29th June 2011 for 2.94 A2
 

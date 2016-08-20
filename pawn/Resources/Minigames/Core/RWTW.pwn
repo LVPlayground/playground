@@ -10,9 +10,7 @@
     Two teams, Reds vs Blues. Teams spawn in San Fierro Airport facing eachother.
 
     First team to score whatever is defined by the minigame starter.
-
-    http://trac.sa-mp.nl/lvp/ticket/294
-
+	
 
     2nd October 2010 - James "Jay" Wilkinson
 

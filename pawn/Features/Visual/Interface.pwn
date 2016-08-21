@@ -49,7 +49,7 @@ class Interface {
         TextDrawSetSelectable(m_serverInformation[2], 0);
 
         m_unregisteredWarning = TextDrawCreate(316.0, 1.0,
-            "Your username is UNREGISTERED, your stats and money will NOT be saved! Register now at sa-mp.nl (/register)");
+            "Your nickname is UNREGISTERED, your stats and money will NOT be saved! Register now at sa-mp.nl (/register)");
         TextDrawAlignment(m_unregisteredWarning, 2);
         TextDrawBackgroundColor(m_unregisteredWarning, 255);
         TextDrawFont(m_unregisteredWarning, 1);
@@ -118,7 +118,7 @@ class Interface {
             "{B4CCE8}2. Click Register in the navigation bar\r\n" ...
             "{B4CCE8}3. Fill out the form, make sure the e-mail is valid\r\n" ...
             "{B4CCE8}4. Check your e-mail for the activation mail, click the activation link\r\n" ...
-            "{B4CCE8}5. Reconnect with your registerd username, have fun!");
+            "{B4CCE8}5. Reconnect with your registered nickname, have fun!");
 
         ShowPlayerDialog(playerId, Interface::RegisterDialogId, DIALOG_STYLE_MSGBOX,
             "Las Venturas Playground", dialogMessage, "Got it!", "");

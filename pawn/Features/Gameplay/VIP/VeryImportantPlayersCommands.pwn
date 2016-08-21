@@ -246,7 +246,7 @@ class VeryImportantPlayersCommands {
 
         if (IsPlayerInAnyVehicle(playerId)) {
             SendClientMessage(playerId, Color::Error,
-                "To prevent abuse, you should exit any vehicle and stand still to use this command.");
+                "To prevent abuse, you should exit your vehicle and stand still to use this command.");
             return 1;
         }
 

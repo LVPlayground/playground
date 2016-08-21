@@ -1018,7 +1018,7 @@ lvp_My( playerid, params[] )
 
         if(GetPlayerSpecialAction(playerid) != SPECIAL_ACTION_NONE || IsPlayerInAnyVehicle(playerid))
         {
-            ShowBoxForPlayer(playerid, "To prevent abuse, you should exit any vehicle and stand still to use this command.");
+            ShowBoxForPlayer(playerid, "To prevent abuse, you should exit your vehicle and stand still to use this command.");
             return 1;
         }
 

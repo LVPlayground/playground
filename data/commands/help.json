@@ -2,7 +2,7 @@
   "type": "message-menu",
   "title": "What can we help you with?",
   "data": {
-    "An Introduction of Las Venturas Playground": [
+    "Introduction": [
       "LVP is a freeroam server, there are lots of cool features, such as:",
       "",
       "- /race",
@@ -16,7 +16,7 @@
       "",
       "To contact an admin, use @ before your message. E.g: @how do I...?"
     ],
-    "How to earn money": [
+    "Earning Money": [
       "- Invest in properties - see /properties",
       "- Export vehicles - see /export",
       "- Win minigames - see /minigames",
@@ -25,22 +25,22 @@
       "- Find the Bag of Cash",
       "- Take out a loan - see /borrow"
     ],
-    "How to contact LVP and the Staff of LVP": [
-      "If you got questions or comments, you can use",
-      "the following ways of contacting the LVP staff.",
+    "Contacting Us": [
+      "If you have questions or comments, you can use",
+      "the following methods to contact the LVP staff:",
       "",
       "IRC: irc.gtanet.com #lvp",
       "E-mail: info@sa-mp.nl",
       "Website: www.sa-mp.nl",
       "Forum: forum.sa-mp.nl"
     ],
-    "Information about cruises": [
+    "Cruises": [
       "Cruises are recognizable by a lot of (tuned) vehicles,",
       "mostly starting at the airport, driving around through all cities.",
       "Cruise members have a special status on this server:",
       "They may not be shot! Don't ruin a cruise!"
     ],
-    "Information about communication": [
+    "Communication": [
       "Apart from the main chat, there are three other ways to communicate with players: PM, phone call and gang chat.",
       "",
       "Usage: /pm [player] message.",
@@ -48,13 +48,14 @@
       "After that you can use the call function as normal chat. End the call with /hangup.",
       "Gang chat usage: !text. All text starting with ! is only readable by your gang."
     ],
-    "Information about vehicles": [
+    "Vehicles": [
       "Vehicles are marked on your radar with small grey squares.",
       "To modify a vehicle drive to one of the garages or by using /tune.",
       "Vehicles can be spawned at all times by Crew and VIP members, but only during the cruise (/cruisecar).",
       "Regular players are able to spawn an Infernus, NRG-500 or Elegy (/inf, /nrg or /ele) once they have sprayed 100 tags."
+      "Players with 100 spray tags are able to spawn an Infernus (/inf), NRG-500 (/nrg), Elegy (/ele), Sultan (/sul), Turismo (/tur) or Vortex (/vor)"
     ],
-    "Learn about upgrading your bank account": [
+    "Banking": [
       "Go to the LV Main bank (/taxi 10 on foot or /tow 10 in a vehicle).",
       "Walk into the red marker inside the building and type",
       "'/account' to get started."

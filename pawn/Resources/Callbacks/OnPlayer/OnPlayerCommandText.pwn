@@ -230,7 +230,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         return 1;
     }
 
-    // rivershell game for admins
+    // Rivershell minigame
     if(strcmp(cmd,"/rivershell",true) == 0)
     {
         if(IsPlayerInMinigame(playerid))
@@ -280,7 +280,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         }
     }
 
-    // Brief minigame for admins
+    // Brief minigame
 
     if(strcmp(cmd, "/brief", true) == 0)
     {
@@ -505,9 +505,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 #endif
 
     // Commands for Regulars;
-    lvp_command(Ignore,         6, PlayerLevel);
-    lvp_command(Unignore,       8, PlayerLevel);
-    lvp_command(Ignored,        7, PlayerLevel);
     lvp_command(settings,       8, PlayerLevel);
 
     // Popular, large, commands:
@@ -523,6 +520,9 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(Vor,            3, PlayerLevel);
 
     // General player commands:
+	lvp_command(Ignore,         6, PlayerLevel);
+    lvp_command(Unignore,       8, PlayerLevel);
+    lvp_command(Ignored,        7, PlayerLevel);
     lvp_command(Commands,       8, PlayerLevel);
     lvp_command(cmds,           4, PlayerLevel);
     lvp_command(Minigames,      9, PlayerLevel);
@@ -1311,7 +1311,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         // Now just send an overview of commands for the player.
         SendClientMessage( playerid, COLOR_YELLOW, "Available regular commands" );
-        SendClientMessage( playerid, Color::White, "/regular /settings /ignore /unignore /ignored" );
+        SendClientMessage( playerid, Color::White, "/regular /settings" );
 
         return 1;
     }
@@ -1320,7 +1320,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     {
         if(DamageManager(playerid)->isPlayerFighting() == true)
         {
-            SendClientMessage(playerid,Color::Red,"You cannot teleport at the moment because you have recently been in a gun fight.");
+            SendClientMessage(playerid,Color::Red,"You cannot cardive at the moment because you have recently been in a gun fight.");
             return 1;
         }
 
@@ -1403,7 +1403,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             }
             else 
             {
-                SendClientMessage(playerid,Color::Red, "You can dive only once per 3 minutes");
+                SendClientMessage(playerid,Color::Red, "You can only cardive once every 3 minutes");
                 return 1;
             }
         }
@@ -1461,7 +1461,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         if( Time->currentTime() - iDiveTime[playerid] < 1*60 && Player(playerid)->isAdministrator() == false)
         {
-            SendClientMessage(playerid,Color::Red, "You can dive only once per 3 minutes");
+            SendClientMessage(playerid,Color::Red, "You can only dive once every 3 minutes");
             return 1;
         }
 

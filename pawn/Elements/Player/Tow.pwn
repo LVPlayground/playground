@@ -31,7 +31,7 @@ new Float:towLocations[NumberOfTowLocations][] =
     {2275.3425,     2452.5320,      10.5474,        90.2915}, // Police Station
     {1608.8065,     1620.8003,      10.5474,        178.2039}, // LV Airport
     {-2329.8596,    -1602.7991,     483.4960,       215.9221}, // Mt. Chilliad
-    {2532.9568,     2071.4619,      10.4708,        0.1174}, // Ammunation
+    {2532.9568,     2071.4619,      10.4708,        0.1174}, // Ammu-Nation
     {340.6580,      1905.6421,      17.3677,        83.2379}, // Area 69
     {381.2291,      2539.5469,      16.2661,        173.0934}, // Airstrip
     {1573.1437,     -1308.5918,     16.9955,        269.2577}, // Los Santos Basejumping
@@ -49,7 +49,7 @@ new towNames[NumberOfTowLocations][] =
     "Police station",
     "Las Venturas airport",
     "Mount Chilliad",
-    "Ammunation",
+    "Ammu-Nation",
     "Area 69",
     "Airstrip",
     "Los Santos basejumping",

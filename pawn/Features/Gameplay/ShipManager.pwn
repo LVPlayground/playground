@@ -77,9 +77,11 @@ class ShipManager {
 
         // Create a layer and the area for the ship itself and for the ramp in front of the ship.
         ZoneManager->createLayer(ShipManager::ShipLayerId);
-        for (new coords = 0; coords < sizeof(shipRelatedAreas); ++coords)
-            ZoneLayer(ShipManager::ShipLayerId)->createZone(shipRelatedAreas[coords][0], shipRelatedAreas[coords][2],
-                shipRelatedAreas[coords][1], shipRelatedAreas[coords][3], 45.0 /* height */);
+        for (new coords = 0; coords < sizeof(shipRelatedAreas); ++coords) {
+            ZoneLayer(ShipManager::ShipLayerId)->createZone(
+                shipRelatedAreas[coords][0], shipRelatedAreas[coords][2], shipRelatedAreas[coords][1],
+                shipRelatedAreas[coords][3], 45.0 /* height */);
+        }
 
         // Create the shiprail objects.
         this->initializeObjects();
@@ -89,7 +91,7 @@ class ShipManager {
      * Initializes the objects required for the ship manager. This will automatically mark the objects
      * as having been enabled, as they'll be visible to all players.
      */
-    public initializeObjects() {
+    private initializeObjects() {
         m_shipRailObjects[0]  = CreateDynamicObject(3524, 2024.34375, 1540.39063, 10.28570,   0.00000,   0.00000,  84.02000);
         m_shipRailObjects[1]  = CreateDynamicObject(3524, 2025.82813, 1550.33594, 10.28570,   0.00000,   0.00000,  84.02000);
         m_shipRailObjects[2]  = CreateDynamicObject(3524, 2024.31055, 1541.67578, 10.70153,   0.00000,   0.00000,  91.00000);
@@ -138,23 +140,25 @@ class ShipManager {
      */
     @switch(OnPlayerEnterZone, ShipManager::ShipLayerId)
     public onPlayerEnterShip(playerId, zoneId) {
-        if (MapObjects->isActive()) return 1;
-        if (GetPlayerVirtualWorld(playerId) != 0) return 1;
+        if (MapObjects->isActive()) {
+            return 1;
+        }
+
+        if (GetPlayerVirtualWorld(playerId) != 0) {
+            return 1;
+        }
 
         if (zoneId < 2) {
             this->respawnPlayerVehicle(playerId);
 
             if (DamageManager(playerId)->isPlayerFighting() == true
                 || LegacyIsKillTimeActivated()) {
-                SetPlayerPos(playerId, 2034.85, 1545.15, 10.82);
-                SetPlayerFacingAngle(playerId, 275.44);
-
-                if (LegacyIsKillTimeActivated()) {                
-                    ShowBoxForPlayer(playerId,
-                        "Killtime is running, so you can not access the shipzone since that would be unfair!");
+                if (LegacyIsKillTimeActivated()) {
+                    this->throwPlayerOffTheShip(playerId);
+                    ShowBoxForPlayer(playerId, "Killtime is running, so you can not access the shipzone since that would be unfair!");
                 } else {
-                    ShowBoxForPlayer(playerId,
-                        "You have recently been in a gunfight, therefore cannot enter the ship at this moment");
+                    this->throwPlayerOffTheShip(playerId);
+                    ShowBoxForPlayer(playerId, "You have recently been in a gunfight, therefore cannot enter the ship at this moment");
                 }
 
                 return 1;
@@ -183,12 +187,12 @@ class ShipManager {
         }
 
         if (zoneId == 3) {
-            new Float: position[3];
-            GetPlayerPos(playerId, position[0], position[1], position[2]);
+            new Float: positionX, Float: positionY, Float: positionZ;
+            GetPlayerPos(playerId, positionX, positionY, positionZ);
 
-            if (position[2] >= 13 && Player(playerId)->isAdministrator() == false) {
-                SetPlayerPos(playerId, position[0] + 2, position[1], 10.84);
-                SendClientMessage(playerId, Color::Error, "You cannot stand on the ship-poles.");
+            if (positionZ >= 13 && Player(playerId)->isAdministrator() == false) {
+                this->throwPlayerOffTheShip(playerId);
+                ShowBoxForPlayer(playerId, "You cannot stand on the ship-poles.");
             }
         }
 
@@ -201,13 +205,16 @@ class ShipManager {
      *
      * @param playerId Id of the player to temporarily save and remove the weapons from.
      */
-    public storeSpawnWeapons(playerId) {
-        if (Player(playerId)->isAdministrator() == true)
+    private storeSpawnWeapons(playerId) {
+        if (Player(playerId)->isAdministrator() == true) {
             return 0;
+        }
 
-        for (new weaponSlot = 0; weaponSlot < WeaponSlots; ++weaponSlot)
-            GetPlayerWeaponData(playerId, weaponSlot, m_playerSpawnWeapons_weaponId[playerId][weaponSlot],
+        for (new weaponSlot = 0; weaponSlot < WeaponSlots; ++weaponSlot) {
+            GetPlayerWeaponData(
+                playerId, weaponSlot, m_playerSpawnWeapons_weaponId[playerId][weaponSlot],
                 m_playerSpawnWeapons_ammo[playerId][weaponSlot]);
+        }
 
         m_playerSpawnWeapons_weaponId[playerId][WeaponSlots] = GetPlayerWeapon(playerId);
         ResetPlayerWeapons(playerId);
@@ -221,16 +228,20 @@ class ShipManager {
      *
      * @param playerId Id of the player to give the weapons back to.
      */
-    public restoreSpawnWeapons(playerId) {
-        if (Player(playerId)->isAdministrator() == true)
+    private restoreSpawnWeapons(playerId) {
+        if (Player(playerId)->isAdministrator() == true) {
             return 0;
+        }
 
         ResetPlayerWeapons(playerId);
         for (new weaponSlot = 0; weaponSlot < WeaponSlots; ++weaponSlot) {
-            if (m_playerSpawnWeapons_weaponId[playerId][weaponSlot] == 0 || m_playerSpawnWeapons_ammo[playerId][weaponSlot] == 0)
+            if (m_playerSpawnWeapons_weaponId[playerId][weaponSlot] == 0
+                || m_playerSpawnWeapons_ammo[playerId][weaponSlot] == 0) {
                 continue;
+            }
 
-            GiveWeapon(playerId, m_playerSpawnWeapons_weaponId[playerId][weaponSlot],
+            GiveWeapon(
+                playerId, m_playerSpawnWeapons_weaponId[playerId][weaponSlot],
                 m_playerSpawnWeapons_ammo[playerId][weaponSlot]);
         }
 
@@ -245,15 +256,16 @@ class ShipManager {
      *
      * @param playerId Id of the player to possibly respawn a vehicle for.
      */
-    public respawnPlayerVehicle(playerId) {
+    private respawnPlayerVehicle(playerId) {
         new vehicleId = GetPlayerVehicleID(playerId),
             modelId = GetVehicleModel(vehicleId);
 
         if (GetPlayerState(playerId) == PLAYER_STATE_DRIVER && Player(playerId)->isAdministrator() == false) {
-            if (VehicleModel->isAirplane(modelId) == true || VehicleModel->isHelicopter(modelId) == true)
+            if (VehicleModel->isAirplane(modelId) == true || VehicleModel->isHelicopter(modelId) == true) {
                 SendClientMessage(playerId, Color::Error, "Flyable vehicles are not allowed around the ship!");
-            else
+            } else {
                 SendClientMessage(playerId, Color::Error, "Vehicles are not allowed on the ship!");
+            }
 
             SetVehicleToRespawn(vehicleId);
 
@@ -271,8 +283,13 @@ class ShipManager {
      */
     @switch(OnPlayerLeaveZone, ShipManager::ShipLayerId)
     public onPlayerLeaveShip(playerId, zoneId) {
-        if (MapObjects->isActive()) return 1;
-        if (GetPlayerVirtualWorld(playerId) != 0) return 1;
+        if (MapObjects->isActive()) {
+            return 1;
+        }
+
+        if (GetPlayerVirtualWorld(playerId) != 0) {
+            return 1;
+        }
 
         m_activityOfPlayerOnShip[playerId] = JustLeft;
 
@@ -329,6 +346,11 @@ class ShipManager {
 
                 this->respawnPlayerVehicle(playerId);
             }
+
+            if (LegacyIsKillTimeActivated()) {                
+                this->throwPlayerOffTheShip(playerId);
+                ShowBoxForPlayer(playerId, "Killtime is running, so you can not access the shipzone since that would be unfair!");
+            }
         }
 
         return 1;
@@ -340,7 +362,7 @@ class ShipManager {
      *
      * @param playerId Id of the player who we issue money to
      */
-    public issueMoneyToPlayer(playerId) {
+    private issueMoneyToPlayer(playerId) {
         new const multiplier = Player(playerId)->isVip() ? 2 /* VIP members */
                                                          : 1 /* Regular players */;
 
@@ -365,7 +387,9 @@ class ShipManager {
 
                     SendClientMessage(playerId, Color::Success, "Shiprail enabled.");
 
-                    format(adminMessage, sizeof(adminMessage), "%s (Id:%d) has enabled the ship-rail object.", Player(playerId)->nicknameString(), playerId);
+                    format(
+                        adminMessage, sizeof(adminMessage), "%s (Id:%d) has enabled the ship-rail object.",
+                        Player(playerId)->nicknameString(), playerId);
                     Admin(playerId, adminMessage);
 
                     return 1;
@@ -374,7 +398,9 @@ class ShipManager {
 
                     SendClientMessage(playerId, Color::Success, "Shiprail {DC143C}disabled{33AA33}.");
 
-                    format(adminMessage, sizeof(adminMessage), "%s (Id:%d) has disabled the ship-rail object.", Player(playerId)->nicknameString(), playerId);
+                    format(
+                        adminMessage, sizeof(adminMessage), "%s (Id:%d) has disabled the ship-rail object.",
+                        Player(playerId)->nicknameString(), playerId);
                     Admin(playerId, adminMessage);
 
                     return 1;
@@ -399,12 +425,15 @@ class ShipManager {
      * @param enable Whether the shiprail should be enabled.
      */
     public enableShiprail(bool: enable = true) {
-        if (MapObjects->isActive()) return 1;
+        if (MapObjects->isActive()) {
+            return 1;
+        }
 
         new Float: sroX, Float: sroY, Float: sroZ;
 
-        if (IsDynamicObjectMoving(m_shipRailObjects[0]))
+        if (IsDynamicObjectMoving(m_shipRailObjects[0])) {
             return 0;
+        }
 
         if (enable && !m_isTheShiprailEnabled) {
             for (new shipRailObject = 0; shipRailObject < MAX_RAIL_OBJECTS; ++shipRailObject) {
@@ -435,8 +464,9 @@ class ShipManager {
             return;
         }
 
-        for (new shipRailObject = 0; shipRailObject < MAX_RAIL_OBJECTS; ++shipRailObject)
+        for (new shipRailObject = 0; shipRailObject < MAX_RAIL_OBJECTS; ++shipRailObject) {
             DestroyDynamicObject(m_shipRailObjects[shipRailObject]);
+        }
     }
 
     /** 
@@ -445,12 +475,26 @@ class ShipManager {
      * @param playerId Id of the player who could be on the ship
      */
     public bool: isPlayerWalkingOnShip(playerId) {
-        if (Player(playerId)->isConnected() == false)
+        if (Player(playerId)->isConnected() == false) {
             return false;
+        }
 
-        if (m_activityOfPlayerOnShip[playerId] == Walking)
+        if (m_activityOfPlayerOnShip[playerId] == Walking) {
             return true;
+        }
 
         return false;
+    }
+
+    /**
+     * Repositions the player in front of the ramp of the ship where he is just fully vulnerable.
+     *
+     * @param playerId Id of the player to throw off the ship
+     */
+    private throwPlayerOffTheShip(playerId) {
+        new randomPositionAdjustment = 3 - random(6);
+
+        SetPlayerPos(playerId, 2034.85 + randomPositionAdjustment, 1545.15 + randomPositionAdjustment, 10.82);
+        SetPlayerFacingAngle(playerId, 275.44);
     }
 };

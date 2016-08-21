@@ -433,9 +433,8 @@ class PropertyCommands {
             } else propertyId = PropertyManager->currentPropertyIdForPlayer(playerId);
         }
 
-        new message[256];
+        new message[256], ownerId = Property(propertyId)->ownerId();
         if (Command->parameterCount(params) != 1) {
-            new ownerId = Property(propertyId)->ownerId();
             if (ownerId != Player::InvalidId)
                 format(message, sizeof(message), "The current owner of this property, \"%s\" (Id:%d), is %s (Id:%d).", 
                     Property(propertyId)->nameString(), propertyId, Player(ownerId)->nicknameString(), ownerId);
@@ -452,6 +451,24 @@ class PropertyCommands {
         new newOwnerId = Command->playerParameter(params, 0, playerId);
         if (newOwnerId == Player::InvalidId)
             return 1;
+
+        if (ownerId != Player::InvalidId) {
+            format(message, sizeof(message), "The current owner of this property, \"%s\" (Id:%d), is %s (Id:%d).", 
+                Property(propertyId)->nameString(), propertyId, Player(ownerId)->nicknameString(), ownerId);
+            SendClientMessage(playerId, Color::Information, message);
+            SendClientMessage(playerId, Color::Information, "  Ask the current owner to \"/sell\" the property to unlock ownership.");
+
+            return 1;
+        }
+
+        if (newOwnerId == playerId) {
+            if (BankAccount(playerId)->balance() >= Property(propertyId)->price())
+                BankAccount(playerId)->setBalance(BankAccount(playerId)->balance() - Property(propertyId)->price());
+            else {
+                SendClientMessage(playerId, Color::Error, "Insufficient funds to own property.");
+                return 1;
+            }
+        }
 
         Property(propertyId)->setOwnerId(newOwnerId);
         Property(propertyId)->setPropertyAvailability(0);

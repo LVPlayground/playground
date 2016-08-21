@@ -39,7 +39,7 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
 
         #if Feature::DisableKilltime == 0
         } else if(sKillTime)
-            SendClientMessage(playerid,Color::Green,"It's Killtime! Shooting on the ship is temporarily allowed.");
+            SendClientMessage(playerid,Color::Green,"It's Killtime! Access to the ship is temporarily pohibited.");
         #endif
 
         return 1;

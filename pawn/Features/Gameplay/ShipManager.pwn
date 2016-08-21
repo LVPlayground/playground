@@ -144,35 +144,35 @@ class ShipManager {
         if (zoneId < 2) {
             this->respawnPlayerVehicle(playerId);
 
-            #if Feature::DisableKilltime == 0
-            if (!LegacyIsKillTimeActivated()) {
-            #endif
-                if (DamageManager(playerId)->isPlayerFighting() == true) {
-                    SetPlayerPos(playerId, 2034.85, 1545.15, 10.82);
-                    SetPlayerFacingAngle(playerId, 275.44);
+            if (DamageManager(playerId)->isPlayerFighting() == true
+                || LegacyIsKillTimeActivated()) {
+                SetPlayerPos(playerId, 2034.85, 1545.15, 10.82);
+                SetPlayerFacingAngle(playerId, 275.44);
 
+                if (LegacyIsKillTimeActivated()) {                
+                    ShowBoxForPlayer(playerId,
+                        "Killtime is running, so you can not access the shipzone since that would be unfair!");
+                } else {
                     ShowBoxForPlayer(playerId,
                         "You have recently been in a gunfight, therefore cannot enter the ship at this moment");
-
-                    return 1;
                 }
 
-                if (m_playerHealthSpawnWeaponsSaved[playerId] == false) {
-                    this->storeSpawnWeapons(playerId);
-
-                    new Float: health, Float: armour;
-                    GetPlayerHealth(playerId, health);
-                    m_playerHealthAndArmour[playerId][0] = health;
-                    SetPlayerHealth(playerId, 99999);
-
-                    GetPlayerArmour(playerId, armour);
-                    m_playerHealthAndArmour[playerId][1] = armour;
-
-                    m_playerHealthSpawnWeaponsSaved[playerId] = true;
-                }
-            #if Feature::DisableKilltime == 0
+                return 1;
             }
-            #endif
+
+            if (m_playerHealthSpawnWeaponsSaved[playerId] == false) {
+                this->storeSpawnWeapons(playerId);
+
+                new Float: health, Float: armour;
+                GetPlayerHealth(playerId, health);
+                m_playerHealthAndArmour[playerId][0] = health;
+                SetPlayerHealth(playerId, 99999);
+
+                GetPlayerArmour(playerId, armour);
+                m_playerHealthAndArmour[playerId][1] = armour;
+
+                m_playerHealthSpawnWeaponsSaved[playerId] = true;
+            }
 
             m_activityOfPlayerOnShip[playerId] = Walking;
         }
@@ -312,34 +312,20 @@ class ShipManager {
                 this->issueMoneyToPlayer(playerId);
 
             if (Player(playerId)->isAdministrator() == false) {
-                #if Feature::DisableKilltime == 0
-                if (!LegacyIsKillTimeActivated()) {
-                #endif
-                    ResetPlayerWeapons(playerId);
-                    if (m_playerHealthSpawnWeaponsSaved[playerId] == false) {
-                        this->storeSpawnWeapons(playerId);
+                ResetPlayerWeapons(playerId);
+                if (m_playerHealthSpawnWeaponsSaved[playerId] == false) {
+                    this->storeSpawnWeapons(playerId);
 
-                        new Float: health, Float: armour;
-                        GetPlayerHealth(playerId, health);
-                        m_playerHealthAndArmour[playerId][0] = health;
-                        SetPlayerHealth(playerId, 99999);
+                    new Float: health, Float: armour;
+                    GetPlayerHealth(playerId, health);
+                    m_playerHealthAndArmour[playerId][0] = health;
+                    SetPlayerHealth(playerId, 99999);
 
-                        GetPlayerArmour(playerId, armour);
-                        m_playerHealthAndArmour[playerId][1] = armour;
+                    GetPlayerArmour(playerId, armour);
+                    m_playerHealthAndArmour[playerId][1] = armour;
 
-                        m_playerHealthSpawnWeaponsSaved[playerId] = true;
-                    }
-                #if Feature::DisableKilltime == 0
-                } else {
-                    if (m_playerHealthSpawnWeaponsSaved[playerId] == true) {
-                        this->restoreSpawnWeapons(playerId);
-
-                        SetPlayerHealth(playerId, m_playerHealthAndArmour[playerId][0]);
-                        SetPlayerArmour(playerId, m_playerHealthAndArmour[playerId][1]);
-                        m_playerHealthSpawnWeaponsSaved[playerId] = false;
-                    }
+                    m_playerHealthSpawnWeaponsSaved[playerId] = true;
                 }
-                #endif
 
                 this->respawnPlayerVehicle(playerId);
             }
@@ -369,32 +355,40 @@ class ShipManager {
      */
     @switch(SetCommand, "shiprail")
     public onSetShiprailCommand(playerId, params[]) {
-        new setShiprailToState[4], adminMessage[128];
-        if (Command->parameterCount(params) >= 1) {
-            Command->stringParameter(params, 0, setShiprailToState, sizeof(setShiprailToState));
+        new adminMessage[128];
+        if (Command->parameterCount(params) == 1) {
+            new bool: shiprailState = Command->booleanParameter(params, 0);
 
-            if (strcmp(setShiprailToState, "on", true) == 0 && m_isTheShiprailEnabled == false) {
-                this->enableShiprail(true);
+            if (!IsDynamicObjectMoving(m_shipRailObjects[0])) {
+                if (shiprailState && !m_isTheShiprailEnabled) {
+                    this->enableShiprail(true);
 
-                SendClientMessage(playerId, Color::Success, "Shiprail enabled.");
+                    SendClientMessage(playerId, Color::Success, "Shiprail enabled.");
 
-                format(adminMessage, sizeof(adminMessage), "%s (Id:%d) has enabled the ship-rail object.", Player(playerId)->nicknameString(), playerId);
-                Admin(playerId, adminMessage);
+                    format(adminMessage, sizeof(adminMessage), "%s (Id:%d) has enabled the ship-rail object.", Player(playerId)->nicknameString(), playerId);
+                    Admin(playerId, adminMessage);
 
-                return 1;
-            } else if (strcmp(setShiprailToState, "off", true) == 0 && m_isTheShiprailEnabled == true) {
-                this->enableShiprail(false);
+                    return 1;
+                } else if (!shiprailState && m_isTheShiprailEnabled) {
+                    this->enableShiprail(false);
 
-                SendClientMessage(playerId, Color::Success, "Shiprail disabled.");
+                    SendClientMessage(playerId, Color::Success, "Shiprail {DC143C}disabled{33AA33}.");
 
-                format(adminMessage, sizeof(adminMessage), "%s (Id:%d) has disabled the ship-rail object.", Player(playerId)->nicknameString(), playerId);
-                Admin(playerId, adminMessage);
+                    format(adminMessage, sizeof(adminMessage), "%s (Id:%d) has disabled the ship-rail object.", Player(playerId)->nicknameString(), playerId);
+                    Admin(playerId, adminMessage);
 
-                return 1;
+                    return 1;
+                }
             }
-        }
 
-        SendClientMessage(playerId, Color::Information, "Usage: /set shiprail [on/off]");
+            if (!m_isTheShiprailEnabled) {
+                SendClientMessage(playerId, Color::Success, "The shiprail is already (being) {DC143C}disabled{33AA33}.");
+            } else if (m_isTheShiprailEnabled) {
+                SendClientMessage(playerId, Color::Success, "The shiprail is already (being) enabled.");
+            }
+        } else {
+            SendClientMessage(playerId, Color::Information, "Usage: /set shiprail [on/off]");
+        }
 
         return 1;
     }
@@ -409,22 +403,17 @@ class ShipManager {
 
         new Float: sroX, Float: sroY, Float: sroZ;
 
-        if (enable) {
-            if (m_isTheShiprailEnabled)
-                return 0;
+        if (IsDynamicObjectMoving(m_shipRailObjects[0]))
+            return 0;
 
+        if (enable && !m_isTheShiprailEnabled) {
             for (new shipRailObject = 0; shipRailObject < MAX_RAIL_OBJECTS; ++shipRailObject) {
                 GetDynamicObjectPos(m_shipRailObjects[shipRailObject], sroX, sroY, sroZ);
                 MoveDynamicObject(m_shipRailObjects[shipRailObject], sroX - 1.0, sroY, sroZ + 5.4, 3);
             }
 
             m_isTheShiprailEnabled = true;
-        }
-
-        else {
-            if (!m_isTheShiprailEnabled)
-                return 0;
-
+        } else if (!enable && m_isTheShiprailEnabled) {
             for (new shipRailObject = 0; shipRailObject < MAX_RAIL_OBJECTS; ++shipRailObject) {
                 GetDynamicObjectPos(m_shipRailObjects[shipRailObject], sroX, sroY, sroZ);
                 MoveDynamicObject(m_shipRailObjects[shipRailObject], sroX + 1.0, sroY, sroZ - 5.4, 3);

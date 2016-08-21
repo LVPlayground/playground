@@ -220,8 +220,6 @@ lvp_killtime(playerId, params[]) {
         sKillTime = true;
         KillTimeStart(duration);
 
-        ShipManager->enableShiprail(false);
-
         format(g_message, sizeof(g_message), "%s (Id:%d) has started a #%d minute KillTime in the mainworld (WorldId:%d).",
             Player(playerId)->nicknameString(), playerId, duration, World::MainWorld);
         Admin(playerId, g_message);
@@ -231,8 +229,6 @@ lvp_killtime(playerId, params[]) {
         KTTimer = -1;
 
         GameTextForAllEx("~r~KillTime is over!", 5000, 1, World::MainWorld);
-
-        ShipManager->enableShiprail();
 
         for (new player = 0; player <= PlayerManager->highestPlayerId(); player++) {
             if (Player(player)->isConnected() == false)

@@ -58,7 +58,6 @@ public KillTimeRun() {
     else {
         KillTimer(KTTimer);
         KTTimer = -1;
-        ShipManager->enableShiprail();
         sKillTime = false;
 
         if (Player(lead)->isConnected() == false) {

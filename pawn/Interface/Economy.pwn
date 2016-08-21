@@ -126,7 +126,7 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case ShipIdleMoney:                     return 25 * inputValue /* VIP multiplier */;
         case ShowMessageCommand:                return 10000;
         case SlapCommand:                       return 500;
-        case SpawnMoney:                        return 10000;
+        case SpawnMoney:                        return 100;
         case TaxiPerKilometer:                  return 15;
         case TaxiRide:                          return GetEconomyValue(TaxiPerKilometer) * inputValue /* distance */;
         case TaxiRideOwnerShare:                return floatround(GetEconomyValue(TaxiPerKilometer) * inputValue /* distance */ * 0.1);

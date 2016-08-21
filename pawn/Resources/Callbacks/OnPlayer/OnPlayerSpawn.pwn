@@ -118,12 +118,9 @@ OriginalOnPlayerSpawn(playerId) {
         if (!g_iSpawnMoney[playerId] || Player(playerId)->isLoggedIn() == false) {
             GiveRegulatedMoney(playerId, SpawnMoney);
         } else {
-            if (Player(playerId)->isAdministrator() == true)
-                GivePlayerMoney(playerId, g_iSpawnMoney[playerId]);  // administrator usage
-            else if (BankAccount(playerId)->balance() >= (g_iSpawnMoney[playerId] - defaultSpawnMoney)) {
+            if (BankAccount(playerId)->balance() >= (g_iSpawnMoney[playerId] - defaultSpawnMoney)) {
                 GivePlayerMoney(playerId, g_iSpawnMoney[playerId]);
-                BankAccount(playerId)->setBalance(BankAccount(playerId)->balance() -
-                    (g_iSpawnMoney[playerId] - defaultSpawnMoney));
+                BankAccount(playerId)->setBalance(BankAccount(playerId)->balance() - (g_iSpawnMoney[playerId] - defaultSpawnMoney));
             } else {
                 GiveRegulatedMoney(playerId, SpawnMoney);
                 g_iSpawnMoney[playerId] = defaultSpawnMoney;

@@ -1122,7 +1122,7 @@ charHelp:
         }
 
         new const MIN_START_MONEY = GetEconomyValue(SpawnMoney);
-        new const MAX_START_MONEY = 10000000;
+        new const MAX_START_MONEY = 1000000;
 
         param_shift_int(amount);
         if (amount < MIN_START_MONEY || amount > MAX_START_MONEY) {
@@ -1137,10 +1137,6 @@ charHelp:
 
         new name[MAX_PLAYER_NAME + 1];
         GetPlayerName(playerid, name, sizeof(name));
-
-        format(message, sizeof(message), "%s (Id:%d) has set their spawn money to $%s.",
-            name, playerid, formatPrice(amount));
-        Admin(playerid, message);
 
         format(message, sizeof(message), "Your spawn money has been set to $%s.",
             formatPrice(amount));

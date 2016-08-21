@@ -7,7 +7,7 @@ const Feature = require('components/feature_manager/feature.js');
 
 // The communication feature manages the low-level communicative capabilities of players, for
 // example the main chat, interactive commands and can defer to delegates for more specific chats,
-// for example administrator, gang and and VIP chats.
+// for example administrator, gang and VIP chats.
 class Communication extends Feature {
     constructor() {
         super();

@@ -52,7 +52,6 @@
       "Vehicles are marked on your radar with small grey squares.",
       "To modify a vehicle drive to one of the garages or by using /tune.",
       "Vehicles can be spawned at all times by Crew and VIP members, but only during the cruise (/cruisecar).",
-      "Regular players are able to spawn an Infernus, NRG-500 or Elegy (/inf, /nrg or /ele) once they have sprayed 100 tags."
       "Players with 100 spray tags are able to spawn an Infernus (/inf), NRG-500 (/nrg), Elegy (/ele), Sultan (/sul), Turismo (/tur) or Vortex (/vor)"
     ],
     "Banking": [

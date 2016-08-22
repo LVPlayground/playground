@@ -70,7 +70,8 @@ describe('PortalLoader', it => {
             {
                 name: 'foo',
                 entrance: { position: [1, 2, 3], facingAngle: 4, interiorId: 5, virtualWorld: 6 },
-                exit: { position: [7, 8, 9], facingAngle: 10, interiorId: 11, virtualWorld: 12 }
+                exit: { position: [7, 8, 9], facingAngle: 10, interiorId: 11, virtualWorld: 12 },
+                disabled: true
             }
         ]);
 
@@ -93,5 +94,7 @@ describe('PortalLoader', it => {
         assert.equal(portal.exitFacingAngle, 10);
         assert.equal(portal.exitInteriorId, 11);
         assert.equal(portal.exitVirtualWorld, 12);
+
+        assert.isTrue(portal.disabled);
     });
 });

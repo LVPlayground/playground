@@ -1,0 +1,7 @@
+[
+    {
+        "name": "Ammunation (Las Venturas, South)",
+        "entrance": { "position": [ 2159.51, 943.329, 9.82339 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 285.8, -85.45, 1000.54 ], "facingAngle": 90, "interiorId": 4 }
+    }
+]

@@ -7,7 +7,11 @@ const InteriorManager = require('features/location/interior_manager.js');
 describe('InteriorManager', (it, beforeEach, afterEach) => {
     let manager = null;
 
-    beforeEach(() => manager = new InteriorManager());
+    beforeEach(() => {
+        manager = new InteriorManager();
+        manager.loadPortalFile('data/portals/ammunation.json');
+    });
+
     afterEach(() => {
         if (manager)
             manager.dispose();
@@ -19,8 +23,8 @@ describe('InteriorManager', (it, beforeEach, afterEach) => {
     const AmmunationInteriorId = 4;
 
     it('should load the defined interior markers from the data file', assert => {
-        assert.isAbove(manager.markerCount, 0);
-        assert.equal(manager.markerCount % 2, 0);  // an even number
+        assert.isAbove(manager.portalCount, 0);
+        assert.equal(manager.markerCount, manager.portalCount * 2);
     });
 
     it('should dispose of the created markers when being disposed of', assert => {
@@ -30,6 +34,8 @@ describe('InteriorManager', (it, beforeEach, afterEach) => {
         assert.isBelow(server.pickupManager.count, originalPickupCount);
 
         manager = new InteriorManager();
+        manager.loadPortalFile('data/portals/ammunation.json');
+
         assert.equal(server.pickupManager.count, originalPickupCount);
         manager = null;
     });

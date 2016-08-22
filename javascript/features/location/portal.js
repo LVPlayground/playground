@@ -6,7 +6,7 @@
 // portal's points has a position, and a rotation in which the player will be facing when being
 // teleported to it. Both sides of a portal have an assigned interior and virtual world as well.
 class Portal {
-    constructor(name, entrance, exit) {
+    constructor(name, entrance, exit, disabled = false) {
         if (!Portal.validatePoint(entrance)) {
             throw new Error('The `entrance` must be an object having { position, facingAngle, ' +
                             'interior and virtualWorld }.');
@@ -28,6 +28,8 @@ class Portal {
         this.exitFacingAngle_ = exit.facingAngle;
         this.exitInteriorId_ = exit.interiorId;
         this.exitVirtualWorld_ = exit.virtualWorld;
+
+        this.disabled_ = disabled;
     }
 
     // Validates that |point| represents a dictionary with the minimal required information, which
@@ -65,6 +67,10 @@ class Portal {
 
     // Gets the virtual world in which the portal's exit should exist.
     get exitVirtualWorld() { return this.exitVirtualWorld_; }
+
+    // Gets or sets whether this portal is disabled.
+    get disabled() { return this.disabled_; }
+    set disabled(value) { this.disabled_ = value; }
 }
 
 exports = Portal;

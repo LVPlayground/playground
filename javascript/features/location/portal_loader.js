@@ -16,6 +16,9 @@ const Portal = require('features/location/portal.js');
 // Optionally, both the entrances and exits may have defined `virtualWorld` values. These default to
 // a unique, private virtual world for the portal, but can be overridden for gameplay purposes. When
 // either the entrance or the exit has a defined virtual world, so must the other.
+//
+// Finally, each portal may also define a "disabled" key. When set, the portal will not be created
+// on the server, but it will be possible for administrators to enable it.
 class PortalLoader {
     constructor() {
         this.portalIndex_ = 0;
@@ -65,7 +68,10 @@ class PortalLoader {
         const exit =
             this.createPointObject(definition.exit, VirtualWorld.forInterior(this.portalIndex_++));
 
-        return new Portal(name, entrance, exit);
+        // Presence and truthyness of the `disabled` property defines whether to disable the portal.
+        const disabled = !!definition.disabled;
+
+        return new Portal(name, entrance, exit, disabled);
     }
 
     // Creates an object representing the |point| with all data points filled in. The given

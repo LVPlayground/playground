@@ -1,25 +1,5 @@
 [
     {
-        "name": "SPECIAL1",
-        "entrance": { "position": [ -225.433, 1397.02, 69.0501 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ -224.733, 1395.82, 172.05 ], "facingAngle": 0, "interiorId": 0 }
-    },
-    {
-        "name": "SPECIAL2",
-        "entrance": { "position": [ 2896.57, 57.2165, 0 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 2980.16, 76.1581, 0 ], "facingAngle": 0, "interiorId": 0 }
-    },
-    {
-        "name": "SPECIAL3",
-        "entrance": { "position": [ -1749.35, 869.279, 24.0593 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ -1753.85, 885.679, 295.059 ], "facingAngle": 0, "interiorId": 0 }
-    },
-    {
-        "name": "SPECIAL4",
-        "entrance": { "position": [ -1753.75, 883.965, 294.645 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ -1749.38, 865.158, 24.1455 ], "facingAngle": 0, "interiorId": 0 }
-    },
-    {
         "name": "ABATOIR",
         "entrance": { "position": [ 966.608, 2160.68, 9.8222 ], "facingAngle": 180, "interiorId": 0 },
         "exit": { "position": [ 965.38, 2159.33, 1010.02 ], "facingAngle": 270, "interiorId": 1 }

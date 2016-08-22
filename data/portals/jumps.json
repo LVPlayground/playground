@@ -1,0 +1,12 @@
+[
+    {
+        "name": "Jump (San Fierro)",
+        "entrance": { "position": [ -1749.35, 869.279, 24.0593 ], "facingAngle": 0, "interiorId": 0, "virtualWorld": 0 },
+        "exit": { "position": [ -1753.85, 885.679, 295.059 ], "facingAngle": 0, "interiorId": 0, "virtualWorld": 0 }
+    },
+    {
+        "name": "Jump (Seti @ Home)",
+        "entrance": { "position": [ -225.433, 1397.02, 69.0501 ], "facingAngle": 0, "interiorId": 0, "virtualWorld": 0 },
+        "exit": { "position": [ -224.733, 1395.82, 172.05 ], "facingAngle": 0, "interiorId": 0, "virtualWorld": 0 }
+    }
+]

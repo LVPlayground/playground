@@ -165,7 +165,8 @@ class PlayerMoneyState <playerId (MAX_PLAYERS)> {
 
         // Now re-synchronize the amount of money with the player, based on what we think they
         // should be having right now. Reset their money first, then give them the new amount.
-        GivePlayerMoneyPrivate(playerId, amount);
+        ResetPlayerMoneyPrivate(playerId);
+        GivePlayerMoneyPrivate(playerId, m_cash);
 
         // Report this change to the money indicator, so we can give them visual feedback of what
         // happened. We won't show the indicator if this is a discrete money change.

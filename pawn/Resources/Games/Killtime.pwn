@@ -18,7 +18,7 @@ KillTimeStart(minutes = 5) {
     format(string, sizeof(string), "You have %d minutes before the KillTime is over. Kill them all!", minutes);
     SendClientMessageToAll(Color::White, string);
 
-    format(string, sizeof(string), "The winner gets $%s! Success!", formatPrice(2500000));
+    format(string, sizeof(string), "The winner gets $%s! Success!", formatPrice(GetEconomyValue(KilltimeVictory)));
     SendClientMessageToAll(Color::White, string);
 
     KTTime = minutes;

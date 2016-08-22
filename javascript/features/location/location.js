@@ -13,7 +13,6 @@ class Location extends Feature {
         super();
 
         this.interiorManager_ = new InteriorManager();
-
         this.locationCommands_ = new LocationCommands(this.interiorManager_);
     }
 

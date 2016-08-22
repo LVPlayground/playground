@@ -141,6 +141,9 @@ class MockPlayer {
     // which must be vectors, in |duration| milliseconds.
     interpolateCamera(positionFrom, positionTo, targetFrom, targetTo, duration) {}
 
+    // Resets the player camera to its default behaviour.
+    resetCamera() {}
+
     // Serializes the player's current state into a buffer.
     serializeState() {}
 

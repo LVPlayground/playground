@@ -32,7 +32,7 @@
 #define ROBBERY_MINPLAYERS 4    // minimum players that can join
 #define ROBBERY_MAXPLAYERS 32   // 16 players max can join
 #define ROBBERY_SIGNUPTIME 30   // how many seconds players have until the minigame starts
-#define ROBBERY_VWORLD 69       // the vworld for this game
+#define ROBBERY_VWORLD 100       // the vworld for this game
 #define ROBBERY_STEALAMOUNT teamCount[0]*25  // How muc needs to be stolen
 #define ROBBERY_BOMBTIME    10  // how long it'll take for the bomb to explode
 

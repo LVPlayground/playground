@@ -3,13 +3,13 @@
 // be found in the LICENSE file.
 
 // Beginning of the range of virtual world ids that are private to a particular player id.
-const PRIVATE_VIRTUAL_WORLD_BASE = 100;
+const PRIVATE_VIRTUAL_WORLD_BASE = 201;
 
 // Beginning of the range of virtual world ids that are private to a particular interior.
-const INTERIOR_VIRTUAL_WORLD_BASE = 500;
+const INTERIOR_VIRTUAL_WORLD_BASE = 1201;
 
 // Beginning of the range of virtual world ids that are private to a particular house.
-const HOUSE_VIRTUAL_WORLD_BASE = 1000;
+const HOUSE_VIRTUAL_WORLD_BASE = 2001;
 
 // Range of private virtual world that can be reserved by features for private usage. A ring-buffer
 // will be created for storing the available virtual worlds.

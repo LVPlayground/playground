@@ -1,23 +1,23 @@
 [
     {
         "name": "Caligula's Palace (Southern roof entrance)",
-        "entrance": { "position": [ 2268.07, 1619.59, 93.9124 ], "facingAngle": 270, "interiorId": 0 },
-        "exit": { "position": [ 2264.49, 1619.58, 1089.5 ], "facingAngle": 270, "interiorId": 1 }
+        "entrance": { "position": [ 2268.07, 1619.59, 93.9124 ], "facingAngle": 270, "interiorId": 0, "virtualWorld": 0 },
+        "exit": { "position": [ 2264.49, 1619.58, 1089.5 ], "facingAngle": 270, "interiorId": 1, "virtualWorld": 101 }
     },
     {
         "name": "Caligula's Palace (Northern roof entrance)",
-        "entrance": { "position": [ 2268.14, 1675.89, 93.9124 ], "facingAngle": 270, "interiorId": 0 },
-        "exit": { "position": [ 2264.48, 1675.93, 1089.5 ], "facingAngle": 270, "interiorId": 1 }
+        "entrance": { "position": [ 2268.14, 1675.89, 93.9124 ], "facingAngle": 270, "interiorId": 0, "virtualWorld": 0 },
+        "exit": { "position": [ 2264.48, 1675.93, 1089.5 ], "facingAngle": 270, "interiorId": 1, "virtualWorld": 101 }
     },
     {
         "name": "Caligula's Palace (Main entrance)",
-        "entrance": { "position": [ 2196.92, 1676.52, 11.368 ], "facingAngle": 180, "interiorId": 0 },
-        "exit": { "position": [ 2233.91, 1714.73, 1011.38 ], "facingAngle": 90, "interiorId": 1 }
+        "entrance": { "position": [ 2196.92, 1676.52, 11.368 ], "facingAngle": 180, "interiorId": 0, "virtualWorld": 0 },
+        "exit": { "position": [ 2233.91, 1714.73, 1011.38 ], "facingAngle": 90, "interiorId": 1, "virtualWorld": 101 }
     },
     {
         "name": "Caligula's Palace (Interior elevator)",
-        "entrance": { "position": [ 2136.03, 1599.45, 1008.36 ], "facingAngle": 270, "interiorId": 1 },
-        "exit": { "position": [ 2266.51, 1647.58, 1084.23 ], "facingAngle": 270, "interiorId": 1 }
+        "entrance": { "position": [ 2136.03, 1599.45, 1008.36 ], "facingAngle": 270, "interiorId": 1, "virtualWorld": 101 },
+        "exit": { "position": [ 2266.51, 1647.58, 1084.23 ], "facingAngle": 270, "interiorId": 1, "virtualWorld": 101 }
     },
     {
         "name": "Four Dragons Casino",

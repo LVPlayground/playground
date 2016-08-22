@@ -1,0 +1,22 @@
+[
+    {
+        "name": "TATinterior2",
+        "entrance": { "position": [ -2491.98, -38.9587, 24.817 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -204.44, -9.17, 1001.3 ], "facingAngle": 90, "interiorId": 17 }
+    },
+    {
+        "name": "TATinterior3",
+        "entrance": { "position": [ 2094.7, 2122.13, 9.8222 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -204.44, -44.35, 1001.3 ], "facingAngle": 180, "interiorId": 3 }
+    },
+    {
+        "name": "TATinteriorO",
+        "entrance": { "position": [ 2068.71, -1779.84, 12.5103 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -204.44, -27.15, 1001.3 ], "facingAngle": 270, "interiorId": 16 }
+    },
+    {
+        "name": "TATinteriorO (2)",
+        "entrance": { "position": [ 1975.79, -2036.65, 12.5753 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -204.44, -27.15, 1001.3 ], "facingAngle": 90, "interiorId": 16 }
+    }
+]

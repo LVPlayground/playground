@@ -1,0 +1,17 @@
+[
+    {
+        "name": "Gym (Las Venturas)",
+        "entrance": { "position": [ 1968.7, 2295.3, 15.4955 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 773.58, -78.2, 999.69 ], "facingAngle": 180, "interiorId": 7 }
+    },
+    {
+        "name": "Gym (Los Santos)",
+        "entrance": { "position": [ 2229.63, -1721.63, 12.6529 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 772.11, -5, 999.69 ], "facingAngle": 137, "interiorId": 5 }
+    },
+    {
+        "name": "Gym (San Fierro)",
+        "entrance": { "position": [ -2270.46, -155.957, 34.3573 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 774.21, -50.02, 999.69 ], "facingAngle": 270, "interiorId": 6 }
+    }
+]

@@ -1,0 +1,67 @@
+[
+    {
+        "name": "X7_11B",
+        "entrance": { "position": [ 1833.54, -1843.38, 12.5595 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -30.95, -91.71, 1002.55 ], "facingAngle": 90, "interiorId": 18 }
+    },
+    {
+        "name": "X7_11B (2)",
+        "entrance": { "position": [ 1315.49, -897.843, 38.571 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -30.95, -91.71, 1002.55 ], "facingAngle": 180, "interiorId": 18 }
+    },
+    {
+        "name": "X7_11B (3)",
+        "entrance": { "position": [ 2546.71, 1972.28, 9.822 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -30.95, -91.71, 1002.55 ], "facingAngle": 180, "interiorId": 18 }
+    },
+    {
+        "name": "X7_11B (4)",
+        "entrance": { "position": [ 2884.83, 2453.28, 10.061 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -30.95, -91.71, 1002.55 ], "facingAngle": 224, "interiorId": 18 }
+    },
+    {
+        "name": "X7_11S",
+        "entrance": { "position": [ -181.004, 1034.83, 18.8298 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -26.69, -57.81, 1002.55 ], "facingAngle": 22, "interiorId": 6 }
+    },
+    {
+        "name": "X7_11S (2)",
+        "entrance": { "position": [ -1562.63, -2732.98, 47.7435 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -26.69, -57.81, 1002.55 ], "facingAngle": 237, "interiorId": 6 }
+    },
+    {
+        "name": "X7_11S (3)",
+        "entrance": { "position": [ 1352.31, -1758.3, 12.5149 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -26.69, -57.81, 1002.55 ], "facingAngle": 360, "interiorId": 6 }
+    },
+    {
+        "name": "X7_11S (4)",
+        "entrance": { "position": [ 2247.66, 2396.26, 9.8218 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -26.69, -57.81, 1002.55 ], "facingAngle": 0, "interiorId": 6 }
+    },
+    {
+        "name": "X7_11S (5)",
+        "entrance": { "position": [ 2452.47, 2065.15, 9.8472 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -26.69, -57.81, 1002.55 ], "facingAngle": 180, "interiorId": 6 }
+    },
+    {
+        "name": "X7_11S (6)",
+        "entrance": { "position": [ 2194.38, 1991.02, 11.301 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -26.69, -57.81, 1002.55 ], "facingAngle": 90, "interiorId": 6 }
+    },
+    {
+        "name": "X7_11S (7)",
+        "entrance": { "position": [ 2097.76, 2224.2, 10.0579 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -26.69, -57.81, 1002.55 ], "facingAngle": 180, "interiorId": 6 }
+    },
+    {
+        "name": "X7_11S (8)",
+        "entrance": { "position": [ 1937.25, 2307.17, 9.8222 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -26.69, -57.81, 1002.55 ], "facingAngle": 90, "interiorId": 6 }
+    },
+    {
+        "name": "X711S2",
+        "entrance": { "position": [ 1000.33, -919.924, 41.2368 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -27.31, -31.38, 1002.55 ], "facingAngle": 97, "interiorId": 4 }
+    }
+]

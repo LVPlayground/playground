@@ -1,0 +1,12 @@
+[
+    {
+        "name": "The Big Spread Ranch (Western Los Santos)",
+        "entrance": { "position": [ 693.632, 1966.4, 4.5604 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ 1212.02, -25.86, 1000.09 ], "facingAngle": 198, "interiorId": 3 }
+    },
+    {
+        "name": "The Big Spread Ranch (Eastern Los Santos)",
+        "entrance": { "position": [ 2543.15, 1025.16, 9.8213 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ 1212.02, -25.86, 1000.09 ], "facingAngle": 180, "interiorId": 3 }
+    },
+]

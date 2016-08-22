@@ -1,6 +1,6 @@
 [
     {
-        "name": "ABATOIR",
+        "name": "Las Venturas Abatoir",
         "entrance": { "position": [ 966.608, 2160.68, 9.8222 ], "facingAngle": 180, "interiorId": 0 },
         "exit": { "position": [ 965.38, 2159.33, 1010.02 ], "facingAngle": 270, "interiorId": 1 }
     },
@@ -80,11 +80,6 @@
         "exit": { "position": [ 411.63, -23.33, 1000.8 ], "facingAngle": 270, "interiorId": 2 }
     },
     {
-        "name": "CASINO2",
-        "entrance": { "position": [ 1659.42, 2249.69, 10.0664 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 1133.07, -12.77, 999.75 ], "facingAngle": 0, "interiorId": 12 }
-    },
-    {
         "name": "Hoover Dam Interior",
         "entrance": { "position": [ -594.874, 2018.21, 59.6792 ], "facingAngle": 320, "interiorId": 0 },
         "exit": { "position": [ -959.671, 1955.55, 8.0804 ], "facingAngle": 180, "interiorId": 17 }
@@ -113,16 +108,6 @@
         "name": "Horse Betting Office (Los Santos)",
         "entrance": { "position": [ 1631.86, -1172.57, 23.1349 ], "facingAngle": 90, "interiorId": 0 },
         "exit": { "position": [ 834.82, 7.42, 1003.18 ], "facingAngle": 360, "interiorId": 3 }
-    },
-    {
-        "name": "LASTRIP",
-        "entrance": { "position": [ 2421.52, -1220.65, 24.6085 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 1204.81, -12.79, 1000.09 ], "facingAngle": 180, "interiorId": 2 }
-    },
-    {
-        "name": "LASTRIP (2)",
-        "entrance": { "position": [ 2506.74, 2120.39, 9.8472 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 1204.81, -12.79, 1000.09 ], "facingAngle": 0, "interiorId": 2 }
     },
     {
         "name": "MADDOGS",
@@ -203,21 +188,6 @@
         "name": "STADBLOOD",
         "entrance": { "position": [ 2727.618, -1826.647, 11.8 ], "facingAngle": 168, "interiorId": 0 },
         "exit": { "position": [ -1463.46, 941.49, 1036.64 ], "facingAngle": 306, "interiorId": 15 }
-    },
-    {
-        "name": "STRIP2",
-        "entrance": { "position": [ 693.632, 1966.4, 4.5604 ], "facingAngle": 180, "interiorId": 0 },
-        "exit": { "position": [ 1212.02, -25.86, 1000.09 ], "facingAngle": 198, "interiorId": 3 }
-    },
-    {
-        "name": "STRIP2 (2)",
-        "entrance": { "position": [ 2543.15, 1025.16, 9.8213 ], "facingAngle": 180, "interiorId": 0 },
-        "exit": { "position": [ 1212.02, -25.86, 1000.09 ], "facingAngle": 180, "interiorId": 3 }
-    },
-    {
-        "name": "TRICAS",
-        "entrance": { "position": [ 2019.49, 1007.11, 9.8213 ], "facingAngle": 90, "interiorId": 0 },
-        "exit": { "position": [ 2018.95, 1017.09, 995.88 ], "facingAngle": 270, "interiorId": 10 }
     },
     {
         "name": "UFOBAR",

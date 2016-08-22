@@ -18,5 +18,25 @@
         "name": "Caligula's Palace (Interior elevator)",
         "entrance": { "position": [ 2136.03, 1599.45, 1008.36 ], "facingAngle": 270, "interiorId": 1 },
         "exit": { "position": [ 2266.51, 1647.58, 1084.23 ], "facingAngle": 270, "interiorId": 1 }
+    },
+    {
+        "name": "Four Dragons Casino",
+        "entrance": { "position": [ 2019.49, 1007.11, 9.8213 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 2018.95, 1017.09, 995.88 ], "facingAngle": 270, "interiorId": 10 }
+    },
+    {
+        "name": "Redsands West Casino",
+        "entrance": { "position": [ 1659.42, 2249.69, 10.0664 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 1133.07, -12.77, 999.75 ], "facingAngle": 0, "interiorId": 12 }
+    },
+    {
+        "name": "The Pig Pen Casino (Los Santos)",
+        "entrance": { "position": [ 2421.52, -1220.65, 24.6085 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 1204.81, -12.79, 1000.09 ], "facingAngle": 180, "interiorId": 2 }
+    },
+    {
+        "name": "The Pig Pen Casino (Las Venturas)",
+        "entrance": { "position": [ 2506.74, 2120.39, 9.8472 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 1204.81, -12.79, 1000.09 ], "facingAngle": 0, "interiorId": 2 }
     }
 ]

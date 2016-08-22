@@ -120,36 +120,6 @@
         "exit": { "position": [ 834.82, 7.42, 1003.18 ], "facingAngle": 360, "interiorId": 3 }
     },
     {
-        "name": "GF1",
-        "entrance": { "position": [ 2402.52, -1715.28, 14.13 ], "facingAngle": 180, "interiorId": 0 },
-        "exit": { "position": [ 243.75, 304.82, 999.14 ], "facingAngle": 270, "interiorId": 1 }
-    },
-    {
-        "name": "GF2",
-        "entrance": { "position": [ -2574.04, 1152.31, 55.72 ], "facingAngle": 180, "interiorId": 0 },
-        "exit": { "position": [ 266.56, 304.95, 999.14 ], "facingAngle": 270, "interiorId": 2 }
-    },
-    {
-        "name": "GF3",
-        "entrance": { "position": [ -382.67, -1438.83, 26.12 ], "facingAngle": 270, "interiorId": 0 },
-        "exit": { "position": [ 292.89, 309.9, 999.15 ], "facingAngle": 90, "interiorId": 3 }
-    },
-    {
-        "name": "GF4",
-        "entrance": { "position": [ -1800.21, 1200.576, 25.119 ], "facingAngle": 180, "interiorId": 0 },
-        "exit": { "position": [ 300.239, 300.584, 999.15 ], "facingAngle": 0, "interiorId": 4 }
-    },
-    {
-        "name": "GF5",
-        "entrance": { "position": [ -1390.186, 2638.72, 55.98 ], "facingAngle": 180, "interiorId": 0 },
-        "exit": { "position": [ 322.25, 302.42, 999.15 ], "facingAngle": 0, "interiorId": 5 }
-    },
-    {
-        "name": "GF6",
-        "entrance": { "position": [ 2037.22, 2721.81, 11.29 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 343.74, 305.0347, 999.15 ], "facingAngle": 180, "interiorId": 6 }
-    },
-    {
         "name": "JUMP1",
         "entrance": { "position": [ 2268.07, 1619.59, 93.9124 ], "facingAngle": 270, "interiorId": 0 },
         "exit": { "position": [ 2264.49, 1619.58, 1089.5 ], "facingAngle": 270, "interiorId": 1 }

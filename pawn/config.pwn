@@ -15,7 +15,7 @@
  */
 class Version {
     public const Major = 29;
-    public const Minor = 5;
+    public const Minor = 6;
 };
 
 /**

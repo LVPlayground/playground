@@ -5,14 +5,14 @@
         "exit": { "position": [ 965.38, 2159.33, 1010.02 ], "facingAngle": 270, "interiorId": 1 }
     },
     {
-        "name": "ATRIUME",
-        "entrance": { "position": [ 1727.64, -1636.88, 19.2198 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 1726.19, -1638.01, 19.27 ], "facingAngle": 180, "interiorId": 18 }
+        "name": "Los Santos Atrium (North Entrance)",
+        "entrance": { "position": [ 1727.64, -1636.88, 19.2198 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ 1726.19, -1638.01, 19.27 ], "facingAngle": 0, "interiorId": 18 }
     },
     {
-        "name": "ATRIUMX",
-        "entrance": { "position": [ 1699.36, -1667.16, 19.2198 ], "facingAngle": 90, "interiorId": 0 },
-        "exit": { "position": [ 1700.74, -1668.48, 19.22 ], "facingAngle": 270, "interiorId": 18 }
+        "name": "Los Santos Atrium (South Entrance)",
+        "entrance": { "position": [ 1699.36, -1667.16, 19.2198 ], "facingAngle": 270, "interiorId": 0 },
+        "exit": { "position": [ 1700.74, -1668.48, 19.22 ], "facingAngle": 90, "interiorId": 18 }
     },
     {
         "name": "BAR1",
@@ -80,112 +80,27 @@
         "exit": { "position": [ 411.63, -23.33, 1000.8 ], "facingAngle": 270, "interiorId": 2 }
     },
     {
-        "name": "BURHOUS",
-        "entrance": { "position": [ 2808, -1175.99, 24.7745 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 2807.62, -1174.1, 1024.58 ], "facingAngle": 180, "interiorId": 8 }
-    },
-    {
-        "name": "CARLS",
-        "entrance": { "position": [ 2495.33, -1690.75, 13.7847 ], "facingAngle": 180, "interiorId": 0 },
-        "exit": { "position": [ 2496.05, -1692.73, 1013.75 ], "facingAngle": 0, "interiorId": 3 }
-    },
-    {
-        "name": "CARTER",
-        "entrance": { "position": [ 2540.08, -1304, 33.9877 ], "facingAngle": 270, "interiorId": 0 },
-        "exit": { "position": [ 2541.7, -1304.01, 1024.07 ], "facingAngle": 90, "interiorId": 2 }
-    },
-    {
         "name": "CASINO2",
         "entrance": { "position": [ 1659.42, 2249.69, 10.0664 ], "facingAngle": 0, "interiorId": 0 },
         "exit": { "position": [ 1133.07, -12.77, 999.75 ], "facingAngle": 0, "interiorId": 12 }
     },
     {
-        "name": "CLOTHGP",
-        "entrance": { "position": [ 1456.77, -1138.02, 23.2872 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 161.39, -96.69, 1000.81 ], "facingAngle": 219, "interiorId": 18 }
+        "name": "Hoover Dam Interior",
+        "entrance": { "position": [ -594.874, 2018.21, 59.6792 ], "facingAngle": 320, "interiorId": 0 },
+        "exit": { "position": [ -959.671, 1955.55, 8.0804 ], "facingAngle": 180, "interiorId": 17 }
     },
     {
-        "name": "CLOTHGP (2)",
-        "entrance": { "position": [ -1883.2, 865.473, 34.2601 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 161.39, -96.69, 1000.81 ], "facingAngle": 129, "interiorId": 18 }
-    },
-    {
-        "name": "CLOTHGP (3)",
-        "entrance": { "position": [ 2572.07, 1904.83, 10.0231 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 161.39, -96.69, 1000.81 ], "facingAngle": 180, "interiorId": 18 }
-    },
-    {
-        "name": "CLOTHGP (4)",
-        "entrance": { "position": [ 2090.58, 2224.2, 10.0579 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 161.39, -96.69, 1000.81 ], "facingAngle": 180, "interiorId": 18 }
-    },
-    {
-        "name": "CSCHP",
-        "entrance": { "position": [ 2244.47, -1665.36, 14.4839 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 207.74, -111.42, 1004.27 ], "facingAngle": 357, "interiorId": 15 }
-    },
-    {
-        "name": "CSCHP (2)",
-        "entrance": { "position": [ -2375.32, 910.293, 44.4578 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 207.74, -111.42, 1004.27 ], "facingAngle": 108, "interiorId": 15 }
-    },
-    {
-        "name": "CSCHP (3)",
-        "entrance": { "position": [ 1657.01, 1733.33, 10.0209 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 207.74, -111.42, 1004.27 ], "facingAngle": 90, "interiorId": 15 }
-    },
-    {
-        "name": "CSCHP (4)",
-        "entrance": { "position": [ 2102.69, 2257.49, 10.0579 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 207.74, -111.42, 1004.27 ], "facingAngle": 270, "interiorId": 15 }
-    },
-    {
-        "name": "CSDESGN",
-        "entrance": { "position": [ 461.158, -1499.98, 30.1742 ], "facingAngle": 90, "interiorId": 0 },
-        "exit": { "position": [ 227.29, -7.43, 1001.26 ], "facingAngle": 100, "interiorId": 5 }
-    },
-    {
-        "name": "CSDESGN (2)",
-        "entrance": { "position": [ -1694.76, 951.599, 24.2706 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 227.29, -7.43, 1001.26 ], "facingAngle": 92, "interiorId": 5 }
-    },
-    {
-        "name": "CSDESGN (3)",
-        "entrance": { "position": [ 2802.34, 2430.6, 10.061 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 227.29, -7.43, 1001.26 ], "facingAngle": 125, "interiorId": 5 }
-    },
-    {
-        "name": "CSEXL",
-        "entrance": { "position": [ 453.868, -1478.07, 29.9609 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 204.33, -168.7, 999.58 ], "facingAngle": 129, "interiorId": 14 }
-    },
-    {
-        "name": "CSSPRT",
-        "entrance": { "position": [ 499.637, -1360.4, 15.4261 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 207.06, -139.81, 1002.52 ], "facingAngle": 315, "interiorId": 3 }
-    },
-    {
-        "name": "CSSPRT (2)",
-        "entrance": { "position": [ 2825.74, 2407.44, 10.061 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 207.06, -139.81, 1002.52 ], "facingAngle": 125, "interiorId": 3 }
-    },
-    {
-        "name": "DAMIN",
-        "entrance": { "position": [ -594.874, 2018.21, 59.6792 ], "facingAngle": 330, "interiorId": 0 },
-        "exit": { "position": [ -959.671, 1955.55, 8.0804 ], "facingAngle": 270, "interiorId": 17 }
-    },
-    {
-        "name": "DESHOUS",
+        "name": "Verdant Meadows Flight School",
         "entrance": { "position": [ 423.99, 2536.49, 15.19 ], "facingAngle": 90, "interiorId": 0 },
         "exit": { "position": [ 422.16, 2536.52, 9.01 ], "facingAngle": 270, "interiorId": 10 }
     },
     {
-        "name": "DRIVES",
+        "name": "Driving School (San Fierro)",
         "entrance": { "position": [ -2029.72, -120.926, 34.1691 ], "facingAngle": 0, "interiorId": 0 },
         "exit": { "position": [ -2029.72, -119.55, 1034.17 ], "facingAngle": 180, "interiorId": 3 }
     },
     {
-        "name": "DRIVES2",
+        "name": "Driving School (San Fierro, 2)",
         "entrance": { "position": [ -2026.92, -101.459, 34.259 ], "facingAngle": 180, "interiorId": 0 },
         "exit": { "position": [ -2026.92, -103.48, 1034.27 ], "facingAngle": 0, "interiorId": 3 }
     },
@@ -195,12 +110,12 @@
         "exit": { "position": [ 2352.34, -1181.25, 1027 ], "facingAngle": 0, "interiorId": 5 }
     },
     {
-        "name": "GENOTB",
+        "name": "Horse Betting Office (Montgomery)",
         "entrance": { "position": [ 1288.8, 271.002, 18.5554 ], "facingAngle": 90, "interiorId": 0 },
         "exit": { "position": [ 834.82, 7.42, 1003.18 ], "facingAngle": 235, "interiorId": 3 }
     },
     {
-        "name": "GENOTB (2)",
+        "name": "Horse Betting Office (Los Santos)",
         "entrance": { "position": [ 1631.86, -1172.57, 23.1349 ], "facingAngle": 90, "interiorId": 0 },
         "exit": { "position": [ 834.82, 7.42, 1003.18 ], "facingAngle": 360, "interiorId": 3 }
     },
@@ -245,46 +160,6 @@
         "exit": { "position": [ 2264.48, 1675.93, 1089.5 ], "facingAngle": 270, "interiorId": 1 }
     },
     {
-        "name": "LACRAK",
-        "entrance": { "position": [ 2166.2, -1671.47, 14.1977 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 318.57, 1115.21, 1082.98 ], "facingAngle": 220, "interiorId": 5 }
-    },
-    {
-        "name": "LACS1",
-        "entrance": { "position": [ 2112.73, -1211.7, 22.9614 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 203.78, -49.89, 1000.8 ], "facingAngle": 180, "interiorId": 1 }
-    },
-    {
-        "name": "LACS1 (2)",
-        "entrance": { "position": [ -2491.98, -29.1065, 24.817 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 203.78, -49.89, 1000.8 ], "facingAngle": 90, "interiorId": 1 }
-    },
-    {
-        "name": "LACS1 (3)",
-        "entrance": { "position": [ 2779.12, 2453.54, 10.061 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 203.78, -49.89, 1000.8 ], "facingAngle": 125, "interiorId": 1 }
-    },
-    {
-        "name": "LAHS1B",
-        "entrance": { "position": [ -2058.97, 889.859, 60.9137 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 223.04, 1287.26, 1081.2 ], "facingAngle": 2, "interiorId": 1 }
-    },
-    {
-        "name": "LAHS2A",
-        "entrance": { "position": [ -2139.85, 1189.84, 54.7634 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 260.98, 1284.55, 1079.3 ], "facingAngle": 179, "interiorId": 4 }
-    },
-    {
-        "name": "LAHS2A (2)",
-        "entrance": { "position": [ -2152.4, 1250.16, 24.9503 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 260.98, 1284.55, 1079.3 ], "facingAngle": 2, "interiorId": 4 }
-    },
-    {
-        "name": "LAHS2A (3)",
-        "entrance": { "position": [ -1955.25, 1190.6, 44.4531 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 260.98, 1284.55, 1079.3 ], "facingAngle": 180, "interiorId": 4 }
-    },
-    {
         "name": "LASTRIP",
         "entrance": { "position": [ 2421.52, -1220.65, 24.6085 ], "facingAngle": 0, "interiorId": 0 },
         "exit": { "position": [ 1204.81, -12.79, 1000.09 ], "facingAngle": 180, "interiorId": 2 }
@@ -310,12 +185,12 @@
         "exit": { "position": [ 1299.08, -796.83, 1083.03 ], "facingAngle": 200, "interiorId": 5 }
     },
     {
-        "name": "MOTEL1",
+        "name": "Los Santos Motel",
         "entrance": { "position": [ 2232.87, -1159.71, 24.9416 ], "facingAngle": 270, "interiorId": 0 },
         "exit": { "position": [ 2214.34, -1150.51, 1024.8 ], "facingAngle": 90, "interiorId": 15 }
     },
     {
-        "name": "PAPER",
+        "name": "Las Venturas Bank",
         "entrance": { "position": [ 2412.6, 1123.81, 9.8529 ], "facingAngle": 90, "interiorId": 0 },
         "exit": { "position": [ 390.87, 173.81, 1007.39 ], "facingAngle": 270, "interiorId": 3 }
     },
@@ -350,24 +225,9 @@
         "exit": { "position": [ 238.66, 139.35, 1002.05 ], "facingAngle": 180, "interiorId": 3 }
     },
     {
-        "name": "RCPLAY",
-        "entrance": { "position": [ -2242.01, 128.521, 34.4174 ], "facingAngle": 94, "interiorId": 0 },
-        "exit": { "position": [ -2241.07, 128.52, 1034.42 ], "facingAngle": 270, "interiorId": 6 }
-    },
-    {
-        "name": "REST2",
-        "entrance": { "position": [ -857.938, 1535.56, 21.6348 ], "facingAngle": 180, "interiorId": 0 },
-        "exit": { "position": [ 441.98, -49.92, 998.69 ], "facingAngle": 323, "interiorId": 6 }
-    },
-    {
-        "name": "REST2 (2)",
-        "entrance": { "position": [ -1887.43, 749.592, 44.4658 ], "facingAngle": 180, "interiorId": 0 },
-        "exit": { "position": [ 441.98, -49.92, 998.69 ], "facingAngle": 92, "interiorId": 6 }
-    },
-    {
-        "name": "RYDER",
-        "entrance": { "position": [ 2459.43, -1690.91, 13.54 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ 2468.18, -1698.29, 1013.5 ], "facingAngle": 90, "interiorId": 2 }
+        "name": "RC Play Store",
+        "entrance": { "position": [ -2242.01, 128.521, 34.4174 ], "facingAngle": 270, "interiorId": 0 },
+        "exit": { "position": [ -2241.07, 128.52, 1034.42 ], "facingAngle": 90, "interiorId": 6 }
     },
     {
         "name": "SEXSHOP",
@@ -408,11 +268,6 @@
         "name": "TRICAS",
         "entrance": { "position": [ 2019.49, 1007.11, 9.8213 ], "facingAngle": 90, "interiorId": 0 },
         "exit": { "position": [ 2018.95, 1017.09, 995.88 ], "facingAngle": 270, "interiorId": 10 }
-    },
-    {
-        "name": "TSDINER",
-        "entrance": { "position": [ 681.579, -473.419, 15.592 ], "facingAngle": 180, "interiorId": 0 },
-        "exit": { "position": [ 681.58, -473.42, 15.59 ], "facingAngle": 180, "interiorId": 1 }
     },
     {
         "name": "UFOBAR",

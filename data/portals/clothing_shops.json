@@ -1,0 +1,87 @@
+[
+    {
+        "name": "CLOTHGP",
+        "entrance": { "position": [ 1456.77, -1138.02, 23.2872 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 161.39, -96.69, 1000.81 ], "facingAngle": 219, "interiorId": 18 }
+    },
+    {
+        "name": "CLOTHGP (2)",
+        "entrance": { "position": [ -1883.2, 865.473, 34.2601 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 161.39, -96.69, 1000.81 ], "facingAngle": 129, "interiorId": 18 }
+    },
+    {
+        "name": "CLOTHGP (3)",
+        "entrance": { "position": [ 2572.07, 1904.83, 10.0231 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 161.39, -96.69, 1000.81 ], "facingAngle": 180, "interiorId": 18 }
+    },
+    {
+        "name": "CLOTHGP (4)",
+        "entrance": { "position": [ 2090.58, 2224.2, 10.0579 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 161.39, -96.69, 1000.81 ], "facingAngle": 180, "interiorId": 18 }
+    },
+    {
+        "name": "CSCHP",
+        "entrance": { "position": [ 2244.47, -1665.36, 14.4839 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 207.74, -111.42, 1004.27 ], "facingAngle": 357, "interiorId": 15 }
+    },
+    {
+        "name": "CSCHP (2)",
+        "entrance": { "position": [ -2375.32, 910.293, 44.4578 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 207.74, -111.42, 1004.27 ], "facingAngle": 108, "interiorId": 15 }
+    },
+    {
+        "name": "CSCHP (3)",
+        "entrance": { "position": [ 1657.01, 1733.33, 10.0209 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 207.74, -111.42, 1004.27 ], "facingAngle": 90, "interiorId": 15 }
+    },
+    {
+        "name": "CSCHP (4)",
+        "entrance": { "position": [ 2102.69, 2257.49, 10.0579 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 207.74, -111.42, 1004.27 ], "facingAngle": 270, "interiorId": 15 }
+    },
+    {
+        "name": "CSDESGN",
+        "entrance": { "position": [ 461.158, -1499.98, 30.1742 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 227.29, -7.43, 1001.26 ], "facingAngle": 100, "interiorId": 5 }
+    },
+    {
+        "name": "CSDESGN (2)",
+        "entrance": { "position": [ -1694.76, 951.599, 24.2706 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 227.29, -7.43, 1001.26 ], "facingAngle": 92, "interiorId": 5 }
+    },
+    {
+        "name": "CSDESGN (3)",
+        "entrance": { "position": [ 2802.34, 2430.6, 10.061 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 227.29, -7.43, 1001.26 ], "facingAngle": 125, "interiorId": 5 }
+    },
+    {
+        "name": "CSEXL",
+        "entrance": { "position": [ 453.868, -1478.07, 29.9609 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 204.33, -168.7, 999.58 ], "facingAngle": 129, "interiorId": 14 }
+    },
+    {
+        "name": "CSSPRT",
+        "entrance": { "position": [ 499.637, -1360.4, 15.4261 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 207.06, -139.81, 1002.52 ], "facingAngle": 315, "interiorId": 3 }
+    },
+    {
+        "name": "CSSPRT (2)",
+        "entrance": { "position": [ 2825.74, 2407.44, 10.061 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 207.06, -139.81, 1002.52 ], "facingAngle": 125, "interiorId": 3 }
+    },
+    {
+        "name": "LACS1",
+        "entrance": { "position": [ 2112.73, -1211.7, 22.9614 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 203.78, -49.89, 1000.8 ], "facingAngle": 180, "interiorId": 1 }
+    },
+    {
+        "name": "LACS1 (2)",
+        "entrance": { "position": [ -2491.98, -29.1065, 24.817 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 203.78, -49.89, 1000.8 ], "facingAngle": 90, "interiorId": 1 }
+    },
+    {
+        "name": "LACS1 (3)",
+        "entrance": { "position": [ 2779.12, 2453.54, 10.061 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 203.78, -49.89, 1000.8 ], "facingAngle": 125, "interiorId": 1 }
+    }
+]

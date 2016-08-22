@@ -1,0 +1,22 @@
+[
+    {
+        "name": "STADDIRT",
+        "entrance": { "position": [ 1100.72, 1597.29, 12.54 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -1400.0179, -663.382, 1051.232 ], "facingAngle": 85, "interiorId": 4 }
+    },
+    {
+        "name": "STADSTUNT",
+        "entrance": { "position": [ 1093.99, 1597.04, 12.54 ], "facingAngle": 7, "interiorId": 0 },
+        "exit": { "position": [ -1464.942, 1556.091, 1052.53 ], "facingAngle": 0, "interiorId": 14 }
+    },
+    {
+        "name": "STAD8TRACK",
+        "entrance": { "position": [ 2779.8, -1812.735, 11.84 ], "facingAngle": 211, "interiorId": 0 },
+        "exit": { "position": [ -1407.8, -269.016, 1043.65 ], "facingAngle": 343, "interiorId": 7 }
+    },
+    {
+        "name": "STADBLOOD",
+        "entrance": { "position": [ 2727.618, -1826.647, 11.8 ], "facingAngle": 168, "interiorId": 0 },
+        "exit": { "position": [ -1463.46, 941.49, 1036.64 ], "facingAngle": 306, "interiorId": 15 }
+    }
+]

@@ -1,0 +1,37 @@
+[
+    {
+        "name": "BAR1",
+        "entrance": { "position": [ 1836.9, -1681.75, 12.3635 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 493.39, -24.92, 999.69 ], "facingAngle": 90, "interiorId": 17 }
+    },
+    {
+        "name": "BAR1 (2)",
+        "entrance": { "position": [ -2551.79, 193.778, 5.2191 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 493.39, -24.92, 999.69 ], "facingAngle": 105, "interiorId": 17 }
+    },
+    {
+        "name": "BAR1 (3)",
+        "entrance": { "position": [ 2507.44, 1242.31, 9.8334 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 493.39, -24.92, 999.69 ], "facingAngle": 360, "interiorId": 17 }
+    },
+    {
+        "name": "BAR2",
+        "entrance": { "position": [ 2309.62, -1643.63, 13.8385 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ 501.98, -67.75, 997.84 ], "facingAngle": 93, "interiorId": 11 }
+    },
+    {
+        "name": "BAR2 (2)",
+        "entrance": { "position": [ -2242.69, -88.2558, 34.3578 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 501.98, -67.75, 997.84 ], "facingAngle": 92, "interiorId": 11 }
+    },
+    {
+        "name": "BAR2 (3)",
+        "entrance": { "position": [ 2441.15, 2065.15, 9.8472 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 501.98, -67.75, 997.84 ], "facingAngle": 180, "interiorId": 11 }
+    },
+    {
+        "name": "UFO Bar",
+        "entrance": { "position": [ -88.5875, 1378.36, 9.5698 ], "facingAngle": 270, "interiorId": 0 },
+        "exit": { "position": [ -229.03, 1401.23, 26.77 ], "facingAngle": 270, "interiorId": 18 }
+    }
+]

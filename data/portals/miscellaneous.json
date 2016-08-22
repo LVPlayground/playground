@@ -1,0 +1,77 @@
+[
+    {
+        "name": "Las Venturas Abatoir",
+        "entrance": { "position": [ 966.608, 2160.68, 9.8222 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ 965.38, 2159.33, 1010.02 ], "facingAngle": 270, "interiorId": 1 }
+    },
+    {
+        "name": "Los Santos Atrium (North Entrance)",
+        "entrance": { "position": [ 1727.64, -1636.88, 19.2198 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ 1726.19, -1638.01, 19.27 ], "facingAngle": 0, "interiorId": 18 }
+    },
+    {
+        "name": "Los Santos Atrium (South Entrance)",
+        "entrance": { "position": [ 1699.36, -1667.16, 19.2198 ], "facingAngle": 270, "interiorId": 0 },
+        "exit": { "position": [ 1700.74, -1668.48, 19.22 ], "facingAngle": 90, "interiorId": 18 }
+    },
+    {
+        "name": "Hoover Dam Interior",
+        "entrance": { "position": [ -594.874, 2018.21, 59.6792 ], "facingAngle": 320, "interiorId": 0 },
+        "exit": { "position": [ -959.671, 1955.55, 8.0804 ], "facingAngle": 180, "interiorId": 17 }
+    },
+    {
+        "name": "Verdant Meadows Flight School",
+        "entrance": { "position": [ 423.99, 2536.49, 15.19 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 422.16, 2536.52, 9.01 ], "facingAngle": 270, "interiorId": 10 }
+    },
+    {
+        "name": "Driving School (San Fierro)",
+        "entrance": { "position": [ -2029.72, -120.926, 34.1691 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -2029.72, -119.55, 1034.17 ], "facingAngle": 180, "interiorId": 3 }
+    },
+    {
+        "name": "Driving School (San Fierro, 2)",
+        "entrance": { "position": [ -2026.92, -101.459, 34.259 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ -2026.92, -103.48, 1034.27 ], "facingAngle": 0, "interiorId": 3 }
+    },
+    {
+        "name": "Horse Betting Office (Montgomery)",
+        "entrance": { "position": [ 1288.8, 271.002, 18.5554 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 834.82, 7.42, 1003.18 ], "facingAngle": 235, "interiorId": 3 }
+    },
+    {
+        "name": "Horse Betting Office (Los Santos)",
+        "entrance": { "position": [ 1631.86, -1172.57, 23.1349 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 834.82, 7.42, 1003.18 ], "facingAngle": 360, "interiorId": 3 }
+    },
+    {
+        "name": "Los Santos Motel",
+        "entrance": { "position": [ 2232.87, -1159.71, 24.9416 ], "facingAngle": 270, "interiorId": 0 },
+        "exit": { "position": [ 2214.34, -1150.51, 1024.8 ], "facingAngle": 90, "interiorId": 15 }
+    },
+    {
+        "name": "Las Venturas Bank",
+        "entrance": { "position": [ 2412.6, 1123.81, 9.8529 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 390.87, 173.81, 1007.39 ], "facingAngle": 270, "interiorId": 3 }
+    },
+    {
+        "name": "Las Venturas Sex Shop",
+        "entrance": { "position": [ 2086.42, 2074.48, 10.2043 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -100.33, -24.92, 999.74 ], "facingAngle": 270, "interiorId": 3 }
+    },
+    {
+        "name": "Pleasure Dome (Roof entrance)",
+        "entrance": { "position": [ -2661.35, 1424.39, 23.0043 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ -2661.01, 1417.74, 921.31 ], "facingAngle": 15, "interiorId": 3 }
+    },
+    {
+        "name": "Pleasure Dome (Main entrance)",
+        "entrance": { "position": [ -2625.33, 1412.62, 6.1315 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ -2637.45, 1402.24, 905.46 ], "facingAngle": 0, "interiorId": 3 }
+    },
+    {
+        "name": "RC Play Store",
+        "entrance": { "position": [ -2242.01, 128.521, 34.4174 ], "facingAngle": 270, "interiorId": 0 },
+        "exit": { "position": [ -2241.07, 128.52, 1034.42 ], "facingAngle": 90, "interiorId": 6 }
+    }
+]

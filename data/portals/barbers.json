@@ -1,0 +1,37 @@
+[
+    {
+        "name": "BARBER2",
+        "entrance": { "position": [ 672.355, -496.834, 15.3751 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 418.65, -84.14, 1000.96 ], "facingAngle": 271, "interiorId": 3 }
+    },
+    {
+        "name": "BARBER2 (2)",
+        "entrance": { "position": [ -1449.87, 2591.85, 54.8378 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 418.65, -84.14, 1000.96 ], "facingAngle": 0, "interiorId": 3 }
+    },
+    {
+        "name": "BARBER2 (3)",
+        "entrance": { "position": [ 823.629, -1588.9, 12.5764 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 418.65, -84.14, 1000.96 ], "facingAngle": 142, "interiorId": 3 }
+    },
+    {
+        "name": "BARBER2 (4)",
+        "entrance": { "position": [ -2571.18, 246.698, 9.6421 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 418.65, -84.14, 1000.96 ], "facingAngle": 222, "interiorId": 3 }
+    },
+    {
+        "name": "BARBER2 (5)",
+        "entrance": { "position": [ 2080.36, 2122.13, 9.8222 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 418.65, -84.14, 1000.96 ], "facingAngle": 180, "interiorId": 3 }
+    },
+    {
+        "name": "BARBER3",
+        "entrance": { "position": [ 2723.76, -2026.72, 12.5753 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 412.02, -54.55, 1000.96 ], "facingAngle": 90, "interiorId": 12 }
+    },
+    {
+        "name": "BARBERS",
+        "entrance": { "position": [ 2070.86, -1793.84, 12.661 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 411.63, -23.33, 1000.8 ], "facingAngle": 270, "interiorId": 2 }
+    }
+]

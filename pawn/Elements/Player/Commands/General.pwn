@@ -834,8 +834,6 @@ lvp_showmessage(playerid,params[])
 
     // and finally show it, however, we only show it for people who are in
     // the same World, and are not in a minigame.
-    
-    
     new G_VWorld = GetPlayerVirtualWorld(playerid);
 
     for (new j = 0; j <= PlayerManager->highestPlayerId(); j++)

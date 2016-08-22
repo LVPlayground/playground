@@ -370,14 +370,13 @@ CFightClub__OnCommand(playerid, params[]) {
             PlayerName(Matches[matchId][player1]), PlayerName(Matches[matchId][player2]), matchId);
         NewsController->show(string);
 
+        format(string, sizeof(string), "A fight between %s (Id:%d) and %s (Id:%d) has started!",
+            PlayerName(Matches[matchId][player1]), Matches[matchId][player1], PlayerName(Matches[matchId][player2]), Matches[matchId][player2]);
+        AddEcho(string);
+
         Matches[matchId][status] = FC_STATUS_FIGHTING;
         CFightClub__StartMatch(matchId);
         Instrumentation->recordActivity(FightClubAcceptActivity);
-        
-        new str[128];
-        format(str, sizeof(str), "A fight between % sand %s has started! (VIP's can use !pm)",
-            PlayerName(Matches[matchId][player1]), PlayerName(Matches[matchId][player2]), matchId);
-        AddEcho(str);
 
         return 1;
     }

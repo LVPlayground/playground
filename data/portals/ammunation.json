@@ -1,7 +1,57 @@
 [
     {
+        "name": "Ammunation (Angle Pine)",
+        "entrance": { "position": [ -2093.51, -2464.79, 29.6404 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 296.92, -111.97, 1000.57 ], "facingAngle": 320, "interiorId": 6 }
+    },
+    {
+        "name": "Ammunation (Blueberry)",
+        "entrance": { "position": [ 242.668, -178.478, 0.6214 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 285.8, -85.45, 1000.54 ], "facingAngle": 90, "interiorId": 4 }
+    },
+    {
+        "name": "Ammunation (Bone County)",
+        "entrance": { "position": [ 777.231, 1871.47, 3.9769 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 296.92, -111.97, 1000.57 ], "facingAngle": 270, "interiorId": 6 }
+    },
+    {
+        "name": "Ammunation (El Quebrados)",
+        "entrance": { "position": [ -1508.89, 2610.8, 54.8902 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 316.53, -169.61, 998.66 ], "facingAngle": 180, "interiorId": 6 }
+    },
+    {
+        "name": "Ammunation (Fort Carson)",
+        "entrance": { "position": [ -315.676, 829.868, 13.4266 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 296.92, -111.97, 1000.57 ], "facingAngle": 270, "interiorId": 6 }
+    },
+    {
+        "name": "Ammunation (Las Venturas, East)",
+        "entrance": { "position": [ 2539.04, 2083.56, 9.8222 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 285.8, -85.45, 1000.54 ], "facingAngle": 90, "interiorId": 4 }
+    },
+    {
         "name": "Ammunation (Las Venturas, South)",
         "entrance": { "position": [ 2159.51, 943.329, 9.82339 ], "facingAngle": 0, "interiorId": 0 },
         "exit": { "position": [ 285.8, -85.45, 1000.54 ], "facingAngle": 90, "interiorId": 4 }
+    },
+    {
+        "name": "Ammunation (Los Santos, Central)",
+        "entrance": { "position": [ 1368.35, -1279.06, 12.55 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 286.15, -41.54, 1000.57 ], "facingAngle": 90, "interiorId": 1 }
+    },
+    {
+        "name": "Ammunation (Los Santos, South-East)",
+        "entrance": { "position": [ 2400.5, -1981.48, 12.5604 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 296.92, -111.97, 1000.57 ], "facingAngle": 0, "interiorId": 6 }
+    },
+    {
+        "name": "Ammunation (Palomino Creek)",
+        "entrance": { "position": [ 2333.43, 61.5173, 25.7342 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 285.8, -85.45, 1000.54 ], "facingAngle": 270, "interiorId": 4 }
+    },
+    {
+        "name": "Ammunation (San Fierro, West)",
+        "entrance": { "position": [ -2625.85, 208.345, 3.9894 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 286.15, -41.54, 1000.57 ], "facingAngle": 0, "interiorId": 1 }
     }
 ]

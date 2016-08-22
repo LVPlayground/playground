@@ -105,11 +105,6 @@
         "exit": { "position": [ -2026.92, -103.48, 1034.27 ], "facingAngle": 0, "interiorId": 3 }
     },
     {
-        "name": "GANG",
-        "entrance": { "position": [ 2351.97, -1169.86, 27.0309 ], "facingAngle": 90, "interiorId": 0 },
-        "exit": { "position": [ 2352.34, -1181.25, 1027 ], "facingAngle": 0, "interiorId": 5 }
-    },
-    {
         "name": "Horse Betting Office (Montgomery)",
         "entrance": { "position": [ 1288.8, 271.002, 18.5554 ], "facingAngle": 90, "interiorId": 0 },
         "exit": { "position": [ 834.82, 7.42, 1003.18 ], "facingAngle": 235, "interiorId": 3 }
@@ -118,16 +113,6 @@
         "name": "Horse Betting Office (Los Santos)",
         "entrance": { "position": [ 1631.86, -1172.57, 23.1349 ], "facingAngle": 90, "interiorId": 0 },
         "exit": { "position": [ 834.82, 7.42, 1003.18 ], "facingAngle": 360, "interiorId": 3 }
-    },
-    {
-        "name": "JUMP1",
-        "entrance": { "position": [ 2268.07, 1619.59, 93.9124 ], "facingAngle": 270, "interiorId": 0 },
-        "exit": { "position": [ 2264.49, 1619.58, 1089.5 ], "facingAngle": 270, "interiorId": 1 }
-    },
-    {
-        "name": "JUMP2",
-        "entrance": { "position": [ 2268.14, 1675.89, 93.9124 ], "facingAngle": 270, "interiorId": 0 },
-        "exit": { "position": [ 2264.48, 1675.93, 1089.5 ], "facingAngle": 270, "interiorId": 1 }
     },
     {
         "name": "LASTRIP",
@@ -143,11 +128,6 @@
         "name": "MADDOGS",
         "entrance": { "position": [ 1259.39, -785.332, 91.042 ], "facingAngle": 270, "interiorId": 0 },
         "exit": { "position": [ 1260.58, -785.31, 1090.96 ], "facingAngle": 90, "interiorId": 5 }
-    },
-    {
-        "name": "MAFCAS",
-        "entrance": { "position": [ 2196.92, 1676.52, 11.368 ], "facingAngle": 180, "interiorId": 0 },
-        "exit": { "position": [ 2233.91, 1714.73, 1011.38 ], "facingAngle": 90, "interiorId": 1 }
     },
     {
         "name": "MDDOGS",

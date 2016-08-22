@@ -82,16 +82,18 @@ class InteriorManager {
 
         switch (marker.type) {
             case 'entrance':
-                player.position = portal.exitPosition;
-                player.rotation = portal.exitFacingAngle;
+                player.position = portal.exitPosition.translate({ z: 1 });
+                player.rotation = portal.entranceFacingAngle;
                 player.interiorId = portal.exitInteriorId;
                 player.virtualWorld = portal.exitVirtualWorld;
+                player.resetCamera();
                 break;
             case 'exit':
-                player.position = portal.entrancePosition;
-                player.rotation = portal.entranceFacingAngle;
+                player.position = portal.entrancePosition.translate({ z: 1 });
+                player.rotation = portal.exitFacingAngle;
                 player.interiorId = portal.entranceInteriorId;
                 player.virtualWorld = portal.entranceVirtualWorld;
+                player.resetCamera();
                 break;
             default:
                 throw new Error('Unexpected marker type: ' + marker.type);

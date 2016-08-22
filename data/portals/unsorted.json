@@ -1,0 +1,1042 @@
+[
+    {
+        "name": "SPECIAL1",
+        "entrance": { "position": [ -225.433, 1397.02, 69.0501 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -224.733, 1395.82, 172.05 ], "facingAngle": 0, "interiorId": 0 }
+    },
+    {
+        "name": "SPECIAL2",
+        "entrance": { "position": [ 2896.57, 57.2165, 0 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2980.16, 76.1581, 0 ], "facingAngle": 0, "interiorId": 0 }
+    },
+    {
+        "name": "SPECIAL3",
+        "entrance": { "position": [ -1749.35, 869.279, 24.0593 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -1753.85, 885.679, 295.059 ], "facingAngle": 0, "interiorId": 0 }
+    },
+    {
+        "name": "SPECIAL4",
+        "entrance": { "position": [ -1753.75, 883.965, 294.645 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -1749.38, 865.158, 24.1455 ], "facingAngle": 0, "interiorId": 0 }
+    },
+    {
+        "name": "ABATOIR",
+        "entrance": { "position": [ 966.608, 2160.68, 9.8222 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ 965.38, 2159.33, 1010.02 ], "facingAngle": 270, "interiorId": 1 }
+    },
+    {
+        "name": "ATRIUME",
+        "entrance": { "position": [ 1727.64, -1636.88, 19.2198 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 1726.19, -1638.01, 19.27 ], "facingAngle": 180, "interiorId": 18 }
+    },
+    {
+        "name": "ATRIUMX",
+        "entrance": { "position": [ 1699.36, -1667.16, 19.2198 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 1700.74, -1668.48, 19.22 ], "facingAngle": 270, "interiorId": 18 }
+    },
+    {
+        "name": "BAR1",
+        "entrance": { "position": [ 1836.9, -1681.75, 12.3635 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 493.39, -24.92, 999.69 ], "facingAngle": 90, "interiorId": 17 }
+    },
+    {
+        "name": "BAR1 (2)",
+        "entrance": { "position": [ -2551.79, 193.778, 5.2191 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 493.39, -24.92, 999.69 ], "facingAngle": 105, "interiorId": 17 }
+    },
+    {
+        "name": "BAR1 (3)",
+        "entrance": { "position": [ 2507.44, 1242.31, 9.8334 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 493.39, -24.92, 999.69 ], "facingAngle": 360, "interiorId": 17 }
+    },
+    {
+        "name": "BAR2",
+        "entrance": { "position": [ 2309.62, -1643.63, 13.8385 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ 501.98, -67.75, 997.84 ], "facingAngle": 93, "interiorId": 11 }
+    },
+    {
+        "name": "BAR2 (2)",
+        "entrance": { "position": [ -2242.69, -88.2558, 34.3578 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 501.98, -67.75, 997.84 ], "facingAngle": 92, "interiorId": 11 }
+    },
+    {
+        "name": "BAR2 (3)",
+        "entrance": { "position": [ 2441.15, 2065.15, 9.8472 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 501.98, -67.75, 997.84 ], "facingAngle": 180, "interiorId": 11 }
+    },
+    {
+        "name": "BARBER2",
+        "entrance": { "position": [ 672.355, -496.834, 15.3751 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 418.65, -84.14, 1000.96 ], "facingAngle": 271, "interiorId": 3 }
+    },
+    {
+        "name": "BARBER2 (2)",
+        "entrance": { "position": [ -1449.87, 2591.85, 54.8378 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 418.65, -84.14, 1000.96 ], "facingAngle": 0, "interiorId": 3 }
+    },
+    {
+        "name": "BARBER2 (3)",
+        "entrance": { "position": [ 823.629, -1588.9, 12.5764 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 418.65, -84.14, 1000.96 ], "facingAngle": 142, "interiorId": 3 }
+    },
+    {
+        "name": "BARBER2 (4)",
+        "entrance": { "position": [ -2571.18, 246.698, 9.6421 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 418.65, -84.14, 1000.96 ], "facingAngle": 222, "interiorId": 3 }
+    },
+    {
+        "name": "BARBER2 (5)",
+        "entrance": { "position": [ 2080.36, 2122.13, 9.8222 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 418.65, -84.14, 1000.96 ], "facingAngle": 180, "interiorId": 3 }
+    },
+    {
+        "name": "BARBER3",
+        "entrance": { "position": [ 2723.76, -2026.72, 12.5753 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 412.02, -54.55, 1000.96 ], "facingAngle": 90, "interiorId": 12 }
+    },
+    {
+        "name": "BARBERS",
+        "entrance": { "position": [ 2070.86, -1793.84, 12.661 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 411.63, -23.33, 1000.8 ], "facingAngle": 270, "interiorId": 2 }
+    },
+    {
+        "name": "BURHOUS",
+        "entrance": { "position": [ 2808, -1175.99, 24.7745 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2807.62, -1174.1, 1024.58 ], "facingAngle": 180, "interiorId": 8 }
+    },
+    {
+        "name": "CARLS",
+        "entrance": { "position": [ 2495.33, -1690.75, 13.7847 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ 2496.05, -1692.73, 1013.75 ], "facingAngle": 0, "interiorId": 3 }
+    },
+    {
+        "name": "CARTER",
+        "entrance": { "position": [ 2540.08, -1304, 33.9877 ], "facingAngle": 270, "interiorId": 0 },
+        "exit": { "position": [ 2541.7, -1304.01, 1024.07 ], "facingAngle": 90, "interiorId": 2 }
+    },
+    {
+        "name": "CASINO2",
+        "entrance": { "position": [ 1659.42, 2249.69, 10.0664 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 1133.07, -12.77, 999.75 ], "facingAngle": 0, "interiorId": 12 }
+    },
+    {
+        "name": "CLOTHGP",
+        "entrance": { "position": [ 1456.77, -1138.02, 23.2872 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 161.39, -96.69, 1000.81 ], "facingAngle": 219, "interiorId": 18 }
+    },
+    {
+        "name": "CLOTHGP (2)",
+        "entrance": { "position": [ -1883.2, 865.473, 34.2601 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 161.39, -96.69, 1000.81 ], "facingAngle": 129, "interiorId": 18 }
+    },
+    {
+        "name": "CLOTHGP (3)",
+        "entrance": { "position": [ 2572.07, 1904.83, 10.0231 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 161.39, -96.69, 1000.81 ], "facingAngle": 180, "interiorId": 18 }
+    },
+    {
+        "name": "CLOTHGP (4)",
+        "entrance": { "position": [ 2090.58, 2224.2, 10.0579 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 161.39, -96.69, 1000.81 ], "facingAngle": 180, "interiorId": 18 }
+    },
+    {
+        "name": "CSCHP",
+        "entrance": { "position": [ 2244.47, -1665.36, 14.4839 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 207.74, -111.42, 1004.27 ], "facingAngle": 357, "interiorId": 15 }
+    },
+    {
+        "name": "CSCHP (2)",
+        "entrance": { "position": [ -2375.32, 910.293, 44.4578 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 207.74, -111.42, 1004.27 ], "facingAngle": 108, "interiorId": 15 }
+    },
+    {
+        "name": "CSCHP (3)",
+        "entrance": { "position": [ 1657.01, 1733.33, 10.0209 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 207.74, -111.42, 1004.27 ], "facingAngle": 90, "interiorId": 15 }
+    },
+    {
+        "name": "CSCHP (4)",
+        "entrance": { "position": [ 2102.69, 2257.49, 10.0579 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 207.74, -111.42, 1004.27 ], "facingAngle": 270, "interiorId": 15 }
+    },
+    {
+        "name": "CSDESGN",
+        "entrance": { "position": [ 461.158, -1499.98, 30.1742 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 227.29, -7.43, 1001.26 ], "facingAngle": 100, "interiorId": 5 }
+    },
+    {
+        "name": "CSDESGN (2)",
+        "entrance": { "position": [ -1694.76, 951.599, 24.2706 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 227.29, -7.43, 1001.26 ], "facingAngle": 92, "interiorId": 5 }
+    },
+    {
+        "name": "CSDESGN (3)",
+        "entrance": { "position": [ 2802.34, 2430.6, 10.061 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 227.29, -7.43, 1001.26 ], "facingAngle": 125, "interiorId": 5 }
+    },
+    {
+        "name": "CSEXL",
+        "entrance": { "position": [ 453.868, -1478.07, 29.9609 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 204.33, -168.7, 999.58 ], "facingAngle": 129, "interiorId": 14 }
+    },
+    {
+        "name": "CSSPRT",
+        "entrance": { "position": [ 499.637, -1360.4, 15.4261 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 207.06, -139.81, 1002.52 ], "facingAngle": 315, "interiorId": 3 }
+    },
+    {
+        "name": "CSSPRT (2)",
+        "entrance": { "position": [ 2825.74, 2407.44, 10.061 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 207.06, -139.81, 1002.52 ], "facingAngle": 125, "interiorId": 3 }
+    },
+    {
+        "name": "DAMIN",
+        "entrance": { "position": [ -594.874, 2018.21, 59.6792 ], "facingAngle": 330, "interiorId": 0 },
+        "exit": { "position": [ -959.671, 1955.55, 8.0804 ], "facingAngle": 270, "interiorId": 17 }
+    },
+    {
+        "name": "DESHOUS",
+        "entrance": { "position": [ 423.99, 2536.49, 15.19 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 422.16, 2536.52, 9.01 ], "facingAngle": 270, "interiorId": 10 }
+    },
+    {
+        "name": "DRIVES",
+        "entrance": { "position": [ -2029.72, -120.926, 34.1691 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -2029.72, -119.55, 1034.17 ], "facingAngle": 180, "interiorId": 3 }
+    },
+    {
+        "name": "DRIVES2",
+        "entrance": { "position": [ -2026.92, -101.459, 34.259 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ -2026.92, -103.48, 1034.27 ], "facingAngle": 0, "interiorId": 3 }
+    },
+    {
+        "name": "FDBURG",
+        "entrance": { "position": [ 811.982, -1616.02, 12.618 ], "facingAngle": 315, "interiorId": 0 },
+        "exit": { "position": [ 363.11, -74.88, 1000.55 ], "facingAngle": 270, "interiorId": 10 }
+    },
+    {
+        "name": "FDBURG (2)",
+        "entrance": { "position": [ 1199.13, -918.071, 42.3243 ], "facingAngle": 315, "interiorId": 0 },
+        "exit": { "position": [ 363.11, -74.88, 1000.55 ], "facingAngle": 180, "interiorId": 10 }
+    },
+    {
+        "name": "FDBURG (3)",
+        "entrance": { "position": [ -1912.27, 828.025, 34.5615 ], "facingAngle": 315, "interiorId": 0 },
+        "exit": { "position": [ 363.11, -74.88, 1000.55 ], "facingAngle": 334, "interiorId": 10 }
+    },
+    {
+        "name": "FDBURG (4)",
+        "entrance": { "position": [ -2336.95, -166.646, 34.3573 ], "facingAngle": 315, "interiorId": 0 },
+        "exit": { "position": [ 363.11, -74.88, 1000.55 ], "facingAngle": 270, "interiorId": 10 }
+    },
+    {
+        "name": "FDBURG (5)",
+        "entrance": { "position": [ -2356.48, 1008.01, 49.9036 ], "facingAngle": 315, "interiorId": 0 },
+        "exit": { "position": [ 363.11, -74.88, 1000.55 ], "facingAngle": 180, "interiorId": 10 }
+    },
+    {
+        "name": "FDBURG (6)",
+        "entrance": { "position": [ 2366.74, 2071.02, 9.8218 ], "facingAngle": 315, "interiorId": 0 },
+        "exit": { "position": [ 363.11, -74.88, 1000.55 ], "facingAngle": 90, "interiorId": 10 }
+    },
+    {
+        "name": "FDBURG (7)",
+        "entrance": { "position": [ 2472.68, 2033.88, 9.822 ], "facingAngle": 315, "interiorId": 0 },
+        "exit": { "position": [ 363.11, -74.88, 1000.55 ], "facingAngle": 90, "interiorId": 10 }
+    },
+    {
+        "name": "FDBURG (8)",
+        "entrance": { "position": [ 2169.86, 2795.79, 9.8953 ], "facingAngle": 315, "interiorId": 0 },
+        "exit": { "position": [ 363.11, -74.88, 1000.55 ], "facingAngle": 270, "interiorId": 10 }
+    },
+    {
+        "name": "FDBURG (9)",
+        "entrance": { "position": [ 1872.24, 2072.07, 9.8222 ], "facingAngle": 315, "interiorId": 0 },
+        "exit": { "position": [ 363.11, -74.88, 1000.55 ], "facingAngle": 270, "interiorId": 10 }
+    },
+    {
+        "name": "FDBURG (10)",
+        "entrance": { "position": [ 1158.43, 2072.02, 9.8222 ], "facingAngle": 315, "interiorId": 0 },
+        "exit": { "position": [ 363.11, -74.88, 1000.55 ], "facingAngle": 270, "interiorId": 10 }
+    },
+    {
+        "name": "FDCHICK",
+        "entrance": { "position": [ 172.727, 1176.68, 13.773 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 365.67, -11.61, 1000.87 ], "facingAngle": 190, "interiorId": 9 }
+    },
+    {
+        "name": "FDCHICK (2)",
+        "entrance": { "position": [ -1213.71, 1830.46, 40.9335 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 365.67, -11.61, 1000.87 ], "facingAngle": 312, "interiorId": 9 }
+    },
+    {
+        "name": "FDCHICK (3)",
+        "entrance": { "position": [ -2155.03, -2460.28, 29.8484 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 365.67, -11.61, 1000.87 ], "facingAngle": 229, "interiorId": 9 }
+    },
+    {
+        "name": "FDCHICK (4)",
+        "entrance": { "position": [ 2419.95, -1509.8, 23.1568 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 365.67, -11.61, 1000.87 ], "facingAngle": 270, "interiorId": 9 }
+    },
+    {
+        "name": "FDCHICK (5)",
+        "entrance": { "position": [ 2397.83, -1898.65, 12.7131 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 365.67, -11.61, 1000.87 ], "facingAngle": 0, "interiorId": 9 }
+    },
+    {
+        "name": "FDCHICK (6)",
+        "entrance": { "position": [ 928.525, -1352.77, 12.4344 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 365.67, -11.61, 1000.87 ], "facingAngle": 90, "interiorId": 9 }
+    },
+    {
+        "name": "FDCHICK (7)",
+        "entrance": { "position": [ -1815.84, 618.678, 34.2989 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 365.67, -11.61, 1000.87 ], "facingAngle": 208, "interiorId": 9 }
+    },
+    {
+        "name": "FDCHICK (8)",
+        "entrance": { "position": [ -2671.53, 258.344, 3.6493 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 365.67, -11.61, 1000.87 ], "facingAngle": 0, "interiorId": 9 }
+    },
+    {
+        "name": "FDCHICK (9)",
+        "entrance": { "position": [ 2638.58, 1671.18, 10.0231 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 365.67, -11.61, 1000.87 ], "facingAngle": 90, "interiorId": 9 }
+    },
+    {
+        "name": "FDCHICK (10)",
+        "entrance": { "position": [ 2393.18, 2041.66, 9.8472 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 365.67, -11.61, 1000.87 ], "facingAngle": 0, "interiorId": 9 }
+    },
+    {
+        "name": "FDCHICK (11)",
+        "entrance": { "position": [ 2838.43, 2407.26, 10.061 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 365.67, -11.61, 1000.87 ], "facingAngle": 224, "interiorId": 9 }
+    },
+    {
+        "name": "FDCHICK (12)",
+        "entrance": { "position": [ 2102.69, 2228.76, 10.0579 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 365.67, -11.61, 1000.87 ], "facingAngle": 270, "interiorId": 9 }
+    },
+    {
+        "name": "FDPIZA",
+        "entrance": { "position": [ 1367.27, 248.388, 18.6229 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 372.35, -133.55, 1000.45 ], "facingAngle": 69, "interiorId": 5 }
+    },
+    {
+        "name": "FDPIZA (2)",
+        "entrance": { "position": [ 2333.43, 75.0488, 25.7342 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 372.35, -133.55, 1000.45 ], "facingAngle": 270, "interiorId": 5 }
+    },
+    {
+        "name": "FDPIZA (3)",
+        "entrance": { "position": [ 2333.43, 75.0488, 25.7342 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 372.35, -133.55, 1000.45 ], "facingAngle": 270, "interiorId": 5 }
+    },
+    {
+        "name": "FDPIZA (4)",
+        "entrance": { "position": [ 1367.27, 248.388, 18.6229 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 372.35, -133.55, 1000.45 ], "facingAngle": 69, "interiorId": 5 }
+    },
+    {
+        "name": "FDPIZA (5)",
+        "entrance": { "position": [ 203.334, -202.532, 0.6007 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 372.35, -133.55, 1000.45 ], "facingAngle": 180, "interiorId": 5 }
+    },
+    {
+        "name": "FDPIZA (6)",
+        "entrance": { "position": [ 2105.32, -1806.49, 12.6941 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 372.35, -133.55, 1000.45 ], "facingAngle": 92, "interiorId": 5 }
+    },
+    {
+        "name": "FDPIZA (7)",
+        "entrance": { "position": [ -1808.69, 945.863, 23.8648 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 372.35, -133.55, 1000.45 ], "facingAngle": 225, "interiorId": 5 }
+    },
+    {
+        "name": "FDPIZA (8)",
+        "entrance": { "position": [ -1721.13, 1359.01, 6.1963 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 372.35, -133.55, 1000.45 ], "facingAngle": 96, "interiorId": 5 }
+    },
+    {
+        "name": "FDPIZA (9)",
+        "entrance": { "position": [ 2638.58, 1849.97, 10.0231 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 372.35, -133.55, 1000.45 ], "facingAngle": 90, "interiorId": 5 }
+    },
+    {
+        "name": "FDPIZA (10)",
+        "entrance": { "position": [ 2756.01, 2477.05, 10.061 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 372.35, -133.55, 1000.45 ], "facingAngle": 181, "interiorId": 5 }
+    },
+    {
+        "name": "FDPIZA (11)",
+        "entrance": { "position": [ 2351.89, 2532.19, 9.8222 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 372.35, -133.55, 1000.45 ], "facingAngle": 180, "interiorId": 5 }
+    },
+    {
+        "name": "FDPIZA (12)",
+        "entrance": { "position": [ 2083.49, 2224.2, 10.0579 ], "facingAngle": 360, "interiorId": 0 },
+        "exit": { "position": [ 372.35, -133.55, 1000.45 ], "facingAngle": 180, "interiorId": 5 }
+    },
+    {
+        "name": "FDREST1",
+        "entrance": { "position": [ 419.191, -1428.71, 31.8959 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 452.89, -18.18, 1000.18 ], "facingAngle": 129, "interiorId": 1 }
+    },
+    {
+        "name": "FDREST1 (2)",
+        "entrance": { "position": [ -2463.06, 132.287, 34.198 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 452.89, -18.18, 1000.18 ], "facingAngle": 319, "interiorId": 1 }
+    },
+    {
+        "name": "FDREST1 (3)",
+        "entrance": { "position": [ 2489.87, 2065.15, 9.8472 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 452.89, -18.18, 1000.18 ], "facingAngle": 180, "interiorId": 1 }
+    },
+    {
+        "name": "FDREST1 (4)",
+        "entrance": { "position": [ 1693.19, 2209.13, 10.0212 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 452.89, -18.18, 1000.18 ], "facingAngle": 180, "interiorId": 1 }
+    },
+    {
+        "name": "GANG",
+        "entrance": { "position": [ 2351.97, -1169.86, 27.0309 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 2352.34, -1181.25, 1027 ], "facingAngle": 0, "interiorId": 5 }
+    },
+    {
+        "name": "GENOTB",
+        "entrance": { "position": [ 1288.8, 271.002, 18.5554 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 834.82, 7.42, 1003.18 ], "facingAngle": 235, "interiorId": 3 }
+    },
+    {
+        "name": "GENOTB (2)",
+        "entrance": { "position": [ 1631.86, -1172.57, 23.1349 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 834.82, 7.42, 1003.18 ], "facingAngle": 360, "interiorId": 3 }
+    },
+    {
+        "name": "GF1",
+        "entrance": { "position": [ 2402.52, -1715.28, 14.13 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ 243.75, 304.82, 999.14 ], "facingAngle": 270, "interiorId": 1 }
+    },
+    {
+        "name": "GF2",
+        "entrance": { "position": [ -2574.04, 1152.31, 55.72 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ 266.56, 304.95, 999.14 ], "facingAngle": 270, "interiorId": 2 }
+    },
+    {
+        "name": "GF3",
+        "entrance": { "position": [ -382.67, -1438.83, 26.12 ], "facingAngle": 270, "interiorId": 0 },
+        "exit": { "position": [ 292.89, 309.9, 999.15 ], "facingAngle": 90, "interiorId": 3 }
+    },
+    {
+        "name": "GF4",
+        "entrance": { "position": [ -1800.21, 1200.576, 25.119 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ 300.239, 300.584, 999.15 ], "facingAngle": 0, "interiorId": 4 }
+    },
+    {
+        "name": "GF5",
+        "entrance": { "position": [ -1390.186, 2638.72, 55.98 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ 322.25, 302.42, 999.15 ], "facingAngle": 0, "interiorId": 5 }
+    },
+    {
+        "name": "GF6",
+        "entrance": { "position": [ 2037.22, 2721.81, 11.29 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 343.74, 305.0347, 999.15 ], "facingAngle": 180, "interiorId": 6 }
+    },
+    {
+        "name": "GYM1",
+        "entrance": { "position": [ 2229.63, -1721.63, 12.6529 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 772.11, -5, 999.69 ], "facingAngle": 137, "interiorId": 5 }
+    },
+    {
+        "name": "GYM2",
+        "entrance": { "position": [ -2270.46, -155.957, 34.3573 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 774.21, -50.02, 999.69 ], "facingAngle": 270, "interiorId": 6 }
+    },
+    {
+        "name": "GYM3",
+        "entrance": { "position": [ 1968.7, 2295.3, 15.4955 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 773.58, -78.2, 999.69 ], "facingAngle": 180, "interiorId": 7 }
+    },
+    {
+        "name": "JUMP1",
+        "entrance": { "position": [ 2268.07, 1619.59, 93.9124 ], "facingAngle": 270, "interiorId": 0 },
+        "exit": { "position": [ 2264.49, 1619.58, 1089.5 ], "facingAngle": 270, "interiorId": 1 }
+    },
+    {
+        "name": "JUMP2",
+        "entrance": { "position": [ 2268.14, 1675.89, 93.9124 ], "facingAngle": 270, "interiorId": 0 },
+        "exit": { "position": [ 2264.48, 1675.93, 1089.5 ], "facingAngle": 270, "interiorId": 1 }
+    },
+    {
+        "name": "LACRAK",
+        "entrance": { "position": [ 2166.2, -1671.47, 14.1977 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 318.57, 1115.21, 1082.98 ], "facingAngle": 220, "interiorId": 5 }
+    },
+    {
+        "name": "LACS1",
+        "entrance": { "position": [ 2112.73, -1211.7, 22.9614 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 203.78, -49.89, 1000.8 ], "facingAngle": 180, "interiorId": 1 }
+    },
+    {
+        "name": "LACS1 (2)",
+        "entrance": { "position": [ -2491.98, -29.1065, 24.817 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 203.78, -49.89, 1000.8 ], "facingAngle": 90, "interiorId": 1 }
+    },
+    {
+        "name": "LACS1 (3)",
+        "entrance": { "position": [ 2779.12, 2453.54, 10.061 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 203.78, -49.89, 1000.8 ], "facingAngle": 125, "interiorId": 1 }
+    },
+    {
+        "name": "LAHS1B",
+        "entrance": { "position": [ -2058.97, 889.859, 60.9137 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 223.04, 1287.26, 1081.2 ], "facingAngle": 2, "interiorId": 1 }
+    },
+    {
+        "name": "LAHS2A",
+        "entrance": { "position": [ -2139.85, 1189.84, 54.7634 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 260.98, 1284.55, 1079.3 ], "facingAngle": 179, "interiorId": 4 }
+    },
+    {
+        "name": "LAHS2A (2)",
+        "entrance": { "position": [ -2152.4, 1250.16, 24.9503 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 260.98, 1284.55, 1079.3 ], "facingAngle": 2, "interiorId": 4 }
+    },
+    {
+        "name": "LAHS2A (3)",
+        "entrance": { "position": [ -1955.25, 1190.6, 44.4531 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 260.98, 1284.55, 1079.3 ], "facingAngle": 180, "interiorId": 4 }
+    },
+    {
+        "name": "LASTRIP",
+        "entrance": { "position": [ 2421.52, -1220.65, 24.6085 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 1204.81, -12.79, 1000.09 ], "facingAngle": 180, "interiorId": 2 }
+    },
+    {
+        "name": "LASTRIP (2)",
+        "entrance": { "position": [ 2506.74, 2120.39, 9.8472 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 1204.81, -12.79, 1000.09 ], "facingAngle": 0, "interiorId": 2 }
+    },
+    {
+        "name": "MADDOGS",
+        "entrance": { "position": [ 1259.39, -785.332, 91.042 ], "facingAngle": 270, "interiorId": 0 },
+        "exit": { "position": [ 1260.58, -785.31, 1090.96 ], "facingAngle": 90, "interiorId": 5 }
+    },
+    {
+        "name": "MAFCAS",
+        "entrance": { "position": [ 2196.92, 1676.52, 11.368 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ 2233.91, 1714.73, 1011.38 ], "facingAngle": 90, "interiorId": 1 }
+    },
+    {
+        "name": "MDDOGS",
+        "entrance": { "position": [ 1298.34, -797.968, 83.1574 ], "facingAngle": 352, "interiorId": 0 },
+        "exit": { "position": [ 1299.08, -796.83, 1083.03 ], "facingAngle": 200, "interiorId": 5 }
+    },
+    {
+        "name": "MOTEL1",
+        "entrance": { "position": [ 2232.87, -1159.71, 24.9416 ], "facingAngle": 270, "interiorId": 0 },
+        "exit": { "position": [ 2214.34, -1150.51, 1024.8 ], "facingAngle": 90, "interiorId": 15 }
+    },
+    {
+        "name": "PAPER",
+        "entrance": { "position": [ 2412.6, 1123.81, 9.8529 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 390.87, 173.81, 1007.39 ], "facingAngle": 270, "interiorId": 3 }
+    },
+    {
+        "name": "PDOMES",
+        "entrance": { "position": [ -2661.35, 1424.39, 23.0043 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ -2661.01, 1417.74, 921.31 ], "facingAngle": 15, "interiorId": 3 }
+    },
+    {
+        "name": "PDOMES2",
+        "entrance": { "position": [ -2625.33, 1412.62, 6.1315 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ -2637.45, 1402.24, 905.46 ], "facingAngle": 0, "interiorId": 3 }
+    },
+    {
+        "name": "POLICE1",
+        "entrance": { "position": [ 627.642, -571.789, 16.907 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 246.78, 62.2, 1002.64 ], "facingAngle": 274, "interiorId": 6 }
+    },
+    {
+        "name": "POLICE1 (2)",
+        "entrance": { "position": [ 1554.95, -1674.99, 15.3283 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 246.78, 62.2, 1002.64 ], "facingAngle": 90, "interiorId": 6 }
+    },
+    {
+        "name": "POLICE3",
+        "entrance": { "position": [ 2337.1, 2459.05, 14.0417 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 288.75, 167.65, 1006.18 ], "facingAngle": 180, "interiorId": 3 }
+    },
+    {
+        "name": "POLICE4",
+        "entrance": { "position": [ 2286.96, 2432.21, 9.9369 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 238.66, 139.35, 1002.05 ], "facingAngle": 180, "interiorId": 3 }
+    },
+    {
+        "name": "RCPLAY",
+        "entrance": { "position": [ -2242.01, 128.521, 34.4174 ], "facingAngle": 94, "interiorId": 0 },
+        "exit": { "position": [ -2241.07, 128.52, 1034.42 ], "facingAngle": 270, "interiorId": 6 }
+    },
+    {
+        "name": "REST2",
+        "entrance": { "position": [ -857.938, 1535.56, 21.6348 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ 441.98, -49.92, 998.69 ], "facingAngle": 323, "interiorId": 6 }
+    },
+    {
+        "name": "REST2 (2)",
+        "entrance": { "position": [ -1887.43, 749.592, 44.4658 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ 441.98, -49.92, 998.69 ], "facingAngle": 92, "interiorId": 6 }
+    },
+    {
+        "name": "RYDER",
+        "entrance": { "position": [ 2459.43, -1690.91, 13.54 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2468.18, -1698.29, 1013.5 ], "facingAngle": 90, "interiorId": 2 }
+    },
+    {
+        "name": "SEXSHOP",
+        "entrance": { "position": [ 2086.42, 2074.48, 10.2043 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -100.33, -24.92, 999.74 ], "facingAngle": 270, "interiorId": 3 }
+    },
+    {
+        "name": "SFHSB1",
+        "entrance": { "position": [ -2627.09, 2309.93, 7.3504 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 140.18, 1366.58, 1082.97 ], "facingAngle": 270, "interiorId": 5 }
+    },
+    {
+        "name": "SFHSB1 (2)",
+        "entrance": { "position": [ -2684.77, 819.657, 49.0326 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 140.18, 1366.58, 1082.97 ], "facingAngle": 186, "interiorId": 5 }
+    },
+    {
+        "name": "SFHSB3",
+        "entrance": { "position": [ -2569.1, 795.796, 48.9819 ], "facingAngle": 320, "interiorId": 0 },
+        "exit": { "position": [ 82.95, 1322.44, 1082.89 ], "facingAngle": 2, "interiorId": 9 }
+    },
+    {
+        "name": "SFHSB3 (2)",
+        "entrance": { "position": [ -2539.92, 767.238, 39.0419 ], "facingAngle": 320, "interiorId": 0 },
+        "exit": { "position": [ 82.95, 1322.44, 1082.89 ], "facingAngle": 270, "interiorId": 9 }
+    },
+    {
+        "name": "SFHSM1",
+        "entrance": { "position": [ -2401.5, 869.344, 43.3889 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ -283.55, 1470.98, 1083.45 ], "facingAngle": 270, "interiorId": 15 }
+    },
+    {
+        "name": "SFHSM2",
+        "entrance": { "position": [ -2627.09, 2283.33, 7.3178 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ -260.6, 1456.62, 1083.45 ], "facingAngle": 270, "interiorId": 4 }
+    },
+    {
+        "name": "SFHSS1",
+        "entrance": { "position": [ -2084.21, 1160.33, 49.2421 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 2, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS1 (2)",
+        "entrance": { "position": [ -1913.32, 1252.89, 18.5367 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 2, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS1 (3)",
+        "entrance": { "position": [ -1820.62, 1116.27, 45.5432 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 180, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS1 (4)",
+        "entrance": { "position": [ -1742.78, 1174.34, 24.1582 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 2, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS1 (5)",
+        "entrance": { "position": [ -2157.2, 889.192, 79.0246 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 274, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS1 (6)",
+        "entrance": { "position": [ -2234.16, 830.667, 53.5143 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 92, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS1 (7)",
+        "entrance": { "position": [ -2159.69, 1048.74, 79.03 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 280, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS1 (8)",
+        "entrance": { "position": [ -2239.22, 962.248, 65.6541 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 89, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS1 (9)",
+        "entrance": { "position": [ -2112.58, 745.657, 68.582 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 180, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS1 (10)",
+        "entrance": { "position": [ -2205.27, 743.061, 49.4742 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 185, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS1 (11)",
+        "entrance": { "position": [ -2636.13, 2351.92, 7.5976 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 270, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS1 (12)",
+        "entrance": { "position": [ -2591.41, -158.542, 3.3605 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 90, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS1 (13)",
+        "entrance": { "position": [ -2558.79, -79.623, 10.0789 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 0, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS1 (14)",
+        "entrance": { "position": [ -2514.04, -170.797, 24.2706 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 270, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS1 (15)",
+        "entrance": { "position": [ -2447.62, 820.771, 34.256 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 178, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS1 (16)",
+        "entrance": { "position": [ -2338.61, 579.323, 27.0123 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 178, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS1 (17)",
+        "entrance": { "position": [ -2321.97, 819.509, 44.3052 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 178, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS1 (18)",
+        "entrance": { "position": [ -2401.48, 930.783, 44.4973 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 266, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS1 (19)",
+        "entrance": { "position": [ -2381.23, 1281.01, 22.1852 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 269, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS1 (20)",
+        "entrance": { "position": [ -2279.5, 1148.84, 61.0751 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 260, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS1 (21)",
+        "entrance": { "position": [ -2280.55, 916.429, 65.6849 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -42.58, 1405.61, 1083.45 ], "facingAngle": 260, "interiorId": 8 }
+    },
+    {
+        "name": "SFHSS2",
+        "entrance": { "position": [ -2626.29, 2359.75, 8.0058 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -68.69, 1351.97, 1079.28 ], "facingAngle": 270, "interiorId": 6 }
+    },
+    {
+        "name": "SFHSS2 (2)",
+        "entrance": { "position": [ -2591.41, -95.538, 3.4446 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -68.69, 1351.97, 1079.28 ], "facingAngle": 90, "interiorId": 6 }
+    },
+    {
+        "name": "SFHSS2 (3)",
+        "entrance": { "position": [ -2541.61, -145.321, 14.7826 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -68.69, 1351.97, 1079.28 ], "facingAngle": 0, "interiorId": 6 }
+    },
+    {
+        "name": "SFHSS2 (4)",
+        "entrance": { "position": [ -2449.72, 921.163, 57.2093 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -68.69, 1351.97, 1079.28 ], "facingAngle": 178, "interiorId": 6 }
+    },
+    {
+        "name": "SFHSS2 (5)",
+        "entrance": { "position": [ -2372.92, 692.687, 34.138 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -68.69, 1351.97, 1079.28 ], "facingAngle": 178, "interiorId": 6 }
+    },
+    {
+        "name": "STADDIRT",
+        "entrance": { "position": [ 1100.72, 1597.29, 12.54 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -1400.0179, -663.382, 1051.232 ], "facingAngle": 85, "interiorId": 4 }
+    },
+    {
+        "name": "STADSTUNT",
+        "entrance": { "position": [ 1093.99, 1597.04, 12.54 ], "facingAngle": 7, "interiorId": 0 },
+        "exit": { "position": [ -1464.942, 1556.091, 1052.53 ], "facingAngle": 0, "interiorId": 14 }
+    },
+    {
+        "name": "STAD8TRACK",
+        "entrance": { "position": [ 2779.8, -1812.735, 11.84 ], "facingAngle": 211, "interiorId": 0 },
+        "exit": { "position": [ -1407.8, -269.016, 1043.65 ], "facingAngle": 343, "interiorId": 7 }
+    },
+    {
+        "name": "STADBLOOD",
+        "entrance": { "position": [ 2727.618, -1826.647, 11.8 ], "facingAngle": 168, "interiorId": 0 },
+        "exit": { "position": [ -1463.46, 941.49, 1036.64 ], "facingAngle": 306, "interiorId": 15 }
+    },
+    {
+        "name": "STRIP2",
+        "entrance": { "position": [ 693.632, 1966.4, 4.5604 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ 1212.02, -25.86, 1000.09 ], "facingAngle": 198, "interiorId": 3 }
+    },
+    {
+        "name": "STRIP2 (2)",
+        "entrance": { "position": [ 2543.15, 1025.16, 9.8213 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ 1212.02, -25.86, 1000.09 ], "facingAngle": 180, "interiorId": 3 }
+    },
+    {
+        "name": "SVCUNT",
+        "entrance": { "position": [ -369.456, 1169.14, 19.3978 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2333.11, -1077.1, 1048.04 ], "facingAngle": 230, "interiorId": 6 }
+    },
+    {
+        "name": "SVCUNT (2)",
+        "entrance": { "position": [ 794.884, -506.702, 17.1238 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2333.11, -1077.1, 1048.04 ], "facingAngle": 180, "interiorId": 6 }
+    },
+    {
+        "name": "SVCUNT (3)",
+        "entrance": { "position": [ 2236.53, 167.997, 27.196 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2333.11, -1077.1, 1048.04 ], "facingAngle": 180, "interiorId": 6 }
+    },
+    {
+        "name": "SVCUNT (4)",
+        "entrance": { "position": [ 206.802, -112.542, 3.9815 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2333.11, -1077.1, 1048.04 ], "facingAngle": 9, "interiorId": 6 }
+    },
+    {
+        "name": "SVCUNT (5)",
+        "entrance": { "position": [ -1533.1, 2656.65, 55.275 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2333.11, -1077.1, 1048.04 ], "facingAngle": 180, "interiorId": 6 }
+    },
+    {
+        "name": "SVCUNT (6)",
+        "entrance": { "position": [ -1051.47, 1549.76, 32.496 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2333.11, -1077.1, 1048.04 ], "facingAngle": 300, "interiorId": 6 }
+    },
+    {
+        "name": "SVCUNT (7)",
+        "entrance": { "position": [ -2075.91, -2312.55, 30.1313 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2333.11, -1077.1, 1048.04 ], "facingAngle": 50, "interiorId": 6 }
+    },
+    {
+        "name": "SVCUNT (8)",
+        "entrance": { "position": [ -1438.72, -1544.58, 100.713 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2333.11, -1077.1, 1048.04 ], "facingAngle": 0, "interiorId": 6 }
+    },
+    {
+        "name": "SVHOT1",
+        "entrance": { "position": [ -2425.94, 337.87, 35.997 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2233.8, -1115.36, 1049.91 ], "facingAngle": 242, "interiorId": 5 }
+    },
+    {
+        "name": "SVLAMD",
+        "entrance": { "position": [ 1684.74, -2099, 12.8507 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2365.3, -1134.92, 1049.91 ], "facingAngle": 180, "interiorId": 8 }
+    },
+    {
+        "name": "SVLAMD (2)",
+        "entrance": { "position": [ 315.684, -1769.81, 3.6288 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2365.3, -1134.92, 1049.91 ], "facingAngle": 180, "interiorId": 8 }
+    },
+    {
+        "name": "SVLAMD (3)",
+        "entrance": { "position": [ 893.617, -1636.3, 13.9872 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2365.3, -1134.92, 1049.91 ], "facingAngle": 180, "interiorId": 8 }
+    },
+    {
+        "name": "SVLAMD (4)",
+        "entrance": { "position": [ 2449.17, 689.839, 10.471 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2365.3, -1134.92, 1049.91 ], "facingAngle": 90, "interiorId": 8 }
+    },
+    {
+        "name": "SVLAMD (5)",
+        "entrance": { "position": [ 1408.05, 1897.08, 10.5873 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2365.3, -1134.92, 1049.91 ], "facingAngle": 90, "interiorId": 8 }
+    },
+    {
+        "name": "SVLAMD (6)",
+        "entrance": { "position": [ 929.122, 2006.43, 10.4781 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2365.3, -1134.92, 1049.91 ], "facingAngle": 90, "interiorId": 8 }
+    },
+    {
+        "name": "SVLASM",
+        "entrance": { "position": [ 2111.23, -1279.71, 24.9546 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2282.91, -1140.29, 1049.91 ], "facingAngle": 180, "interiorId": 11 }
+    },
+    {
+        "name": "SVLASM (2)",
+        "entrance": { "position": [ 2483.38, -1996.19, 12.8507 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2282.91, -1140.29, 1049.91 ], "facingAngle": 180, "interiorId": 11 }
+    },
+    {
+        "name": "SVSFBG",
+        "entrance": { "position": [ 1331.94, -633.096, 108.245 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 2196.79, -1204.35, 1048.05 ], "facingAngle": 358, "interiorId": 6 }
+    },
+    {
+        "name": "SVSFBG (2)",
+        "entrance": { "position": [ -2099.68, 897.485, 75.9661 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 2196.79, -1204.35, 1048.05 ], "facingAngle": 55, "interiorId": 6 }
+    },
+    {
+        "name": "SVSFBG (3)",
+        "entrance": { "position": [ -2027.73, -40.5488, 37.8263 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 2196.79, -1204.35, 1048.05 ], "facingAngle": 180, "interiorId": 6 }
+    },
+    {
+        "name": "SVSFMD",
+        "entrance": { "position": [ -2454.44, -135.879, 25.2223 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 2270.39, -1210.45, 1046.57 ], "facingAngle": 90, "interiorId": 10 }
+    },
+    {
+        "name": "SVSFSM",
+        "entrance": { "position": [ -2213.54, 720.845, 48.4262 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2308.79, -1212.88, 1048.03 ], "facingAngle": 36, "interiorId": 6 }
+    },
+    {
+        "name": "SVSFSM (2)",
+        "entrance": { "position": [ -2700.32, 820.308, 48.999 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2308.79, -1212.88, 1048.03 ], "facingAngle": 180, "interiorId": 6 }
+    },
+    {
+        "name": "SVSFSM (3)",
+        "entrance": { "position": [ 2818.75, 2140.56, 13.7132 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2308.79, -1212.88, 1048.03 ], "facingAngle": 0, "interiorId": 6 }
+    },
+    {
+        "name": "SVVGHO1",
+        "entrance": { "position": [ 2238.99, 1285.05, 9.8253 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 2217.54, -1076.29, 1049.52 ], "facingAngle": 90, "interiorId": 1 }
+    },
+    {
+        "name": "SVVGHO1 (2)",
+        "entrance": { "position": [ 2226.03, 1837.92, 9.964 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 2217.54, -1076.29, 1049.52 ], "facingAngle": 90, "interiorId": 1 }
+    },
+    {
+        "name": "SVVGHO2",
+        "entrance": { "position": [ 1965.11, 1622.54, 11.879 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2237.59, -1080.87, 1048.07 ], "facingAngle": 270, "interiorId": 2 }
+    },
+    {
+        "name": "SVVGHO2 (2)",
+        "entrance": { "position": [ 2374.55, 2167.88, 9.8472 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2237.59, -1080.87, 1048.07 ], "facingAngle": 125, "interiorId": 2 }
+    },
+    {
+        "name": "SVVGMD",
+        "entrance": { "position": [ 1274.28, 2522.47, 9.993 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 2317.82, -1026.75, 1049.21 ], "facingAngle": 270, "interiorId": 9 }
+    },
+    {
+        "name": "TATinterior2",
+        "entrance": { "position": [ -2491.98, -38.9587, 24.817 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -204.44, -9.17, 1001.3 ], "facingAngle": 90, "interiorId": 17 }
+    },
+    {
+        "name": "TATinterior3",
+        "entrance": { "position": [ 2094.7, 2122.13, 9.8222 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -204.44, -44.35, 1001.3 ], "facingAngle": 180, "interiorId": 3 }
+    },
+    {
+        "name": "TATinteriorO",
+        "entrance": { "position": [ 2068.71, -1779.84, 12.5103 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -204.44, -27.15, 1001.3 ], "facingAngle": 270, "interiorId": 16 }
+    },
+    {
+        "name": "TATinteriorO (2)",
+        "entrance": { "position": [ 1975.79, -2036.65, 12.5753 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -204.44, -27.15, 1001.3 ], "facingAngle": 90, "interiorId": 16 }
+    },
+    {
+        "name": "TRICAS",
+        "entrance": { "position": [ 2019.49, 1007.11, 9.8213 ], "facingAngle": 90, "interiorId": 0 },
+        "exit": { "position": [ 2018.95, 1017.09, 995.88 ], "facingAngle": 270, "interiorId": 10 }
+    },
+    {
+        "name": "TSDINER",
+        "entrance": { "position": [ 681.579, -473.419, 15.592 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ 681.58, -473.42, 15.59 ], "facingAngle": 180, "interiorId": 1 }
+    },
+    {
+        "name": "UFOBAR",
+        "entrance": { "position": [ -88.5875, 1378.36, 9.5698 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -229.03, 1401.23, 26.77 ], "facingAngle": 270, "interiorId": 18 }
+    },
+    {
+        "name": "WUZIBET",
+        "entrance": { "position": [ -2155.92, 645.38, 52.37 ], "facingAngle": 270, "interiorId": 0 },
+        "exit": { "position": [ -2158.675, 642.8, 1052.4 ], "facingAngle": 134, "interiorId": 1 }
+    },
+    {
+        "name": "X7_11B",
+        "entrance": { "position": [ 1833.54, -1843.38, 12.5595 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -30.95, -91.71, 1002.55 ], "facingAngle": 90, "interiorId": 18 }
+    },
+    {
+        "name": "X7_11B (2)",
+        "entrance": { "position": [ 1315.49, -897.843, 38.571 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -30.95, -91.71, 1002.55 ], "facingAngle": 180, "interiorId": 18 }
+    },
+    {
+        "name": "X7_11B (3)",
+        "entrance": { "position": [ 2546.71, 1972.28, 9.822 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -30.95, -91.71, 1002.55 ], "facingAngle": 180, "interiorId": 18 }
+    },
+    {
+        "name": "X7_11B (4)",
+        "entrance": { "position": [ 2884.83, 2453.28, 10.061 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -30.95, -91.71, 1002.55 ], "facingAngle": 224, "interiorId": 18 }
+    },
+    {
+        "name": "X7_11S",
+        "entrance": { "position": [ -181.004, 1034.83, 18.8298 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -26.69, -57.81, 1002.55 ], "facingAngle": 22, "interiorId": 6 }
+    },
+    {
+        "name": "X7_11S (2)",
+        "entrance": { "position": [ -1562.63, -2732.98, 47.7435 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -26.69, -57.81, 1002.55 ], "facingAngle": 237, "interiorId": 6 }
+    },
+    {
+        "name": "X7_11S (3)",
+        "entrance": { "position": [ 1352.31, -1758.3, 12.5149 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -26.69, -57.81, 1002.55 ], "facingAngle": 360, "interiorId": 6 }
+    },
+    {
+        "name": "X7_11S (4)",
+        "entrance": { "position": [ 2247.66, 2396.26, 9.8218 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -26.69, -57.81, 1002.55 ], "facingAngle": 0, "interiorId": 6 }
+    },
+    {
+        "name": "X7_11S (5)",
+        "entrance": { "position": [ 2452.47, 2065.15, 9.8472 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -26.69, -57.81, 1002.55 ], "facingAngle": 180, "interiorId": 6 }
+    },
+    {
+        "name": "X7_11S (6)",
+        "entrance": { "position": [ 2194.38, 1991.02, 11.301 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -26.69, -57.81, 1002.55 ], "facingAngle": 90, "interiorId": 6 }
+    },
+    {
+        "name": "X7_11S (7)",
+        "entrance": { "position": [ 2097.76, 2224.2, 10.0579 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -26.69, -57.81, 1002.55 ], "facingAngle": 180, "interiorId": 6 }
+    },
+    {
+        "name": "X7_11S (8)",
+        "entrance": { "position": [ 1937.25, 2307.17, 9.8222 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -26.69, -57.81, 1002.55 ], "facingAngle": 90, "interiorId": 6 }
+    },
+    {
+        "name": "X711S2",
+        "entrance": { "position": [ 1000.33, -919.924, 41.2368 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ -27.31, -31.38, 1002.55 ], "facingAngle": 97, "interiorId": 4 }
+    }
+]

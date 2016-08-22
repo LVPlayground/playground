@@ -4,7 +4,6 @@
 
 const Feature = require('components/feature_manager/feature.js');
 const InteriorManager = require('features/location/interior_manager.js');
-const LocationCommands = require('features/location/location_commands.js');
 
 // The pattern selecting the appropriate files for the interior portals.
 const PORTAL_DIRECTORY = 'data/portals';
@@ -16,7 +15,6 @@ class Location extends Feature {
         super();
 
         this.interiorManager_ = new InteriorManager();
-        this.locationCommands_ = new LocationCommands(this.interiorManager_);
 
         // Load all the portal definition files and create portals for them through the interior
         // manager. Each file can contain an arbitrary amount of portas.
@@ -31,9 +29,6 @@ class Location extends Feature {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        this.locationCommands_.dispose();
-        this.locationCommands_ = null;
-
         this.interiorManager_.dispose();
         this.interiorManager_ = null;
     }

@@ -117,7 +117,7 @@ CBomb__CheckPlayer(i)
             }
 
             // Player using their /inf car can't add a bomb because of abuse
-            if (GetPlayerVirtualWorld(i) != World::MainWorld) {
+            if (!IsPlayerInMainWorld(i)) {
                 ShowBoxForPlayer(i, "Sorry, the BombShop is only available in the main world. Use /world 0!");
                 RemovePlayerFromBombShop(i);
                 return 1;

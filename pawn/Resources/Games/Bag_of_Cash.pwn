@@ -192,7 +192,7 @@ Check_Textdraw() {
         if (!Player(playerId)->isConnected())
             continue;  // npc?
 
-        new const bool: shouldDisplay = GetPlayerVirtualWorld(playerId) == World::MainWorld &&
+        new const bool: shouldDisplay = IsPlayerInMainWorld(playerId) &&
                                         !IsPlayerInMinigame(playerId) &&
                                         !IsInterfaceBlockedByJavaScript(playerId);
 

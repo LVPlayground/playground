@@ -133,19 +133,20 @@ public OnPlayerText(playerid, text[]) {
     }
 
     // Add it to the echo-feed, so it shows up on IRC as well.
-    if (GetPlayerVirtualWorld(playerid) == World::MainWorld)
+    if (IsPlayerInMainWorld(playerid)) {
         format(message, sizeof(message), "[text] %d %s %s", playerid, Player(playerid)->nicknameString(), text);
-    else 
+    } else {
         format(message, sizeof(message), "[worldchat] %d %d %s %s", GetPlayerVirtualWorld(playerid),
             playerid, Player(playerid)->nicknameString(), text);
+    }
 
     AddEcho(message);
-    
+
     // /q Jokes Not Allowed
-      new QuitJokes[2][] = {
-         "/q","/Quit"
- };
- 
+    new QuitJokes[2][] = {
+        "/q","/Quit"
+    };
+
      for(new i; i < sizeof(QuitJokes); i++)
      {
          if(strfind(text, QuitJokes[i], true) != -1) 
@@ -154,20 +155,23 @@ public OnPlayerText(playerid, text[]) {
              return 0;
          }
      }
- 
- 
+
+
     // Finally: time to send the message to all players.
     for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
         if (g_Ignore[subjectId][playerid] == true)
             continue;
 
-        if (GetPlayerVirtualWorld(subjectId) == GetPlayerVirtualWorld(playerid)) {
+        new const bool: playerInMainWorld = IsPlayerInMainWorld(playerid);
+        new const bool: subjectInMainWorld = IsPlayerInMainWorld(subjectId);
+
+        if (playerInMainWorld && subjectInMainWorld) {
             format(message, sizeof(message), "{%06x}[%d] %s: {FFFFFF}%s",
                 ColorManager->playerColor(playerid) >>> 8, playerid, Player(playerid)->nicknameString(), text);
             SendClientMessage(subjectId, Color::Information, message);
         }
 
-        else if (GetPlayerVirtualWorld(subjectId) != GetPlayerVirtualWorld(playerid)
+        else if (playerInMainWorld != subjectInMainWorld
             && PlayerSettings(subjectId)->isAllVirtualWorldChatEnabled() == true
             && Player(subjectId)->isAdministrator() == true) {
             format(message, sizeof(message), "{FFFFFF}(World: %d) {%06x}[%d] %s: {FFFFFF}%s",

@@ -106,7 +106,7 @@ class DropWeaponsCashHandler {
      */
     @list(OnPlayerDeath)
     public dropPlayerWeaponsCash(playerId, killerId, reason) {
-        if (GetPlayerVirtualWorld(playerId) != World::MainWorld)
+        if (!IsPlayerInMainWorld(playerId))
             return 0;
 
         // First we run a little loop to destroy any existing pickups, which will be bugged if we don't.

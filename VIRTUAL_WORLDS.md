@@ -15,3 +15,4 @@ The following worlds are reserved for usage by specific features.
 
   - **100**: The _Robbery_ minigame.
   - **101**: Interior of the Caligula's Palace casino.
+  - **102-199**: _Available._

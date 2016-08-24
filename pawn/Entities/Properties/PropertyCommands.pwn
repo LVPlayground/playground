@@ -262,7 +262,7 @@ class PropertyCommands {
             SendClientMessage(playerId, Color::Information,
                 "  The following features are available: no-feature, read-group-chat, vehicle-modifications, customtax-airport, bombshop");
             SendClientMessage(playerId, Color::Information,
-                "  free-teleport, loans, bar, kaufman-cabs, police, export, armour, health, weapons-ammo, health-protection");
+                "  free-teleport, loans, bar, kaufman-cabs, police, export, armour, health, weapons-ammo, health-protection, tef-rules");
 
             SendClientMessage(playerId, Color::Information, "  Use \"/property [Id]? feature [feature]\" to set the feature.");
             return 1;
@@ -279,6 +279,9 @@ class PropertyCommands {
                     "This feature is already set on another property.\r\nRe-enter the command to set it on this property!", "Continue", "");
                 return 1;
             }
+
+            Property(currentFeatureOwner)->setSpecialFeature(NoPropertyFeature);
+            Property(currentFeatureOwner)->save();
 
             Property(propertyId)->setSpecialFeature(feature);
             Property(propertyId)->save();
@@ -297,7 +300,7 @@ class PropertyCommands {
             SendClientMessage(playerId, Color::Information,
                 "  The following features are available: no-feature, read-group-chat, vehicle-modifications, customtax-airport, bombshop");
             SendClientMessage(playerId, Color::Information,
-                "  free-teleport, loans, bar, kaufman-cabs, police, export, armour, health, weapons-ammo, health-protection");
+                "  free-teleport, loans, bar, kaufman-cabs, police, export, armour, health, weapons-ammo, health-protection, tef-rules");
         }
 
         return 1;

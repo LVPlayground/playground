@@ -487,15 +487,54 @@ class PropertyManager {
 
         if (ownerId == Player::InvalidId) { // The ownerId equals Player::InvalidId meaning this property is for sale.
             format(textLabel, sizeof(textLabel),
-                "{FF8C13}%s{FFFFFF} (%d){33AA33}\r\n[ Price: {FFFFFF}%s{33AA33} ]\r\n[ Income: {FFFFFF}%s{33AA33} every 3 minutes ]\r\n[ Owner: {FFFFFF}none{33AA33} ]",
+                "{%s}%s{FFFFFF} (%d){33AA33}\r\n[ Price: {FFFFFF}%s{33AA33} ]\r\n[ Income: {FFFFFF}%s{33AA33} every 3 minutes ]\r\n[ Owner: {FFFFFF}none{33AA33} ]",
+                (Property(propertyId)->specialFeature() == TotalEpicFailureFeature ? "DC143C" : "FF8C13"),
                 Property(propertyId)->nameString(), propertyId, price, payout);
         } else { // The property has an owner!
             format(textLabel, sizeof(textLabel),
-                "{FF8C13}%s{FFFFFF} (%d){33AA33}\r\n[ Price: {FFFFFF}%s{33AA33} ]\r\n[ Income: {FFFFFF}%s{33AA33} every 3 minutes ]\r\n[ Owner: {FFFFFF}%s{33AA33} ]",
+                "{%s}%s{FFFFFF} (%d){33AA33}\r\n[ Price: {FFFFFF}%s{33AA33} ]\r\n[ Income: {FFFFFF}%s{33AA33} every 3 minutes ]\r\n[ Owner: {FFFFFF}%s{33AA33} ]",
+                (Property(propertyId)->specialFeature() == TotalEpicFailureFeature ? "DC143C" : "FF8C13"),
                 Property(propertyId)->nameString(), propertyId, price, payout, Player(ownerId)->nicknameString());
         }
 
         Update3DTextLabelText(labelId, Color::PropertyTextLabel, textLabel);
+    }
+
+    /**
+     * TEF is a cool guy. We like him. Players like him. What players also like, is to hunt for
+     * his property. He hides it, and they get to find it. Let's make it more challenging by
+     * (almost) hiding the 3D text label above the TEF property!
+     *
+     * @param propertyId Id of the property to update the 3D textlabel for.
+     * @param labelId Id of the property's textlabel.
+     */
+    public update3DTextLabelTEF(propertyId, Text3D: labelId) {
+        new Float: propertyPosition[3], price[15], payout[15], ownerId = Property(propertyId)->ownerId(),
+            textLabel[256], Text3D: newLabelId = Text3D: INVALID_3DTEXT_ID;
+
+        Property(propertyId)->positionVectors(propertyPosition[0], propertyPosition[1], propertyPosition[2]);
+
+        // Format the price and income to a correct value.
+        FinancialUtilities->formatPrice(Property(propertyId)->price(), price, sizeof(price));
+        FinancialUtilities->formatPrice(Property(propertyId)->earningsPercentage()
+            * (Property(propertyId)->price() / 100), payout, sizeof(payout));
+
+        if (ownerId == Player::InvalidId) { // The ownerId equals Player::InvalidId meaning this property is for sale.
+            format(textLabel, sizeof(textLabel),
+                "{DC143C}%s{FFFFFF} (%d){33AA33}\r\n[ Price: {FFFFFF}%s{33AA33} ]\r\n[ Income: {FFFFFF}%s{33AA33} every 3 minutes ]\r\n[ Owner: {FFFFFF}none{33AA33} ]",
+                Property(propertyId)->nameString(), propertyId, price, payout);
+        } else { // The property has an owner!
+            format(textLabel, sizeof(textLabel),
+                "{DC143C}%s{FFFFFF} (%d){33AA33}\r\n[ Price: {FFFFFF}%s{33AA33} ]\r\n[ Income: {FFFFFF}%s{33AA33} every 3 minutes ]\r\n[ Owner: {FFFFFF}%s{33AA33} ]",
+                Property(propertyId)->nameString(), propertyId, price, payout, Player(ownerId)->nicknameString());
+        }
+
+        // Delete the old label and create the new one.
+        Delete3DTextLabel(labelId);
+        newLabelId = Create3DTextLabel(textLabel, Color::PropertyTextLabel, propertyPosition[0], propertyPosition[1],
+            propertyPosition[2] + 1 /* float above the property pickup */, 4 /* draw distance */, 0 /* main world */, 1);
+
+        Property(propertyId)->setLabelId(newLabelId);
     }
 
     // ---- SUPPORTIVE FUNCTIONS REGARDING PROPERTY MANAGEMENT -------------------------------------

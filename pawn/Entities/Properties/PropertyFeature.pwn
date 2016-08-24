@@ -66,6 +66,9 @@ enum PropertyFeature {
     // addition, if owners are nearby this property, nobody will be able to buy it from them.
     HealthProtectionFeature,
 
+    // Who doesn't remember TEF's Legacy prop? Hunt and thou shall find!
+    TotalEpicFailureFeature,
+
     // The following entry should be last, as it can be used to identify the number of special
     // property features which are available in Las Venturas Playground (plus one for no feature).
     PropertyFeatureCount,
@@ -113,6 +116,8 @@ class PropertyFeature {
             return WeaponsAmmoFeature;
         if (!strcmp(string, "health-protection", false))
             return HealthProtectionFeature;
+        if (!strcmp(string, "tef-rules", false))
+            return TotalEpicFailureFeature;
 
         return InvalidPropertyFeature;
     }
@@ -141,6 +146,7 @@ class PropertyFeature {
             case HealthFeature: strins(buffer, "health", 0, bufferSize);
             case WeaponsAmmoFeature: strins(buffer, "weapons-ammo", 0, bufferSize);
             case HealthProtectionFeature: strins(buffer, "health-protection", 0, bufferSize);
+            case TotalEpicFailureFeature: strins(buffer, "tef-rules", 0, bufferSize);
         }
     }
 };

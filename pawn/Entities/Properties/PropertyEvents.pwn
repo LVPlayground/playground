@@ -96,6 +96,10 @@ class PropertyEvents {
                 SendClientMessage(playerId, Color::PropertyFeatureText,
                     "Nobody is able to buy this property if you're near it, and you'll regain some health every so often.");
             }
+
+            case TotalEpicFailureFeature:
+                SendClientMessage(playerId, Color::PropertyFeatureText,
+                    "You've found the Total Epic Failure! Congratulations! Make money while you can! :+");
         }
     }
 };

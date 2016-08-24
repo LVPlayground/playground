@@ -355,6 +355,9 @@ class Property <propertyId (MAX_PROPERTIES)> {
 
         PropertyManager->registerPropertyForSpecialFeature(propertyId, specialFeature);
         m_specialFeature = specialFeature;
+
+        if (specialFeature == TotalEpicFailureFeature)
+            PropertyManager->update3DTextLabelTEF(propertyId, m_labelId);
     }
 
     /**
@@ -366,6 +369,15 @@ class Property <propertyId (MAX_PROPERTIES)> {
      */
     public inline bool: hasPickupId(pickupId) {
         return (m_pickupId == pickupId);
+    }
+
+    /**
+     * Updates the 3D text label Id of this property.
+     *
+     * @param price The labelId this property's 3D text label should have.
+     */
+    public setLabelId(Text3D: labelId) {
+        m_labelId = labelId;
     }
 
     /**

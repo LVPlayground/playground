@@ -88,6 +88,8 @@ public DeathmatchStartFunc() {
                         case STATUS_ISLANDDM:   SetupPlayerForIslandDM(contestant);
                     }
 
+                    ClearPlayerMenus(contestant);
+
                     if (MinigameTypeInfo[CurrentMinigame] != STATUS_ISLANDDM)
                         GameTextForPlayer(contestant, "~g~Go for it!!", 3000, 5);
                 }

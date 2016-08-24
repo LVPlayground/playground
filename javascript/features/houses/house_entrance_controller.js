@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const Portal = require('features/location/portal.js');
 const ScopedEntities = require('entities/scoped_entities.js');
 
 // The radius around a house pickup within which the label will be visible.
@@ -37,8 +38,8 @@ class HouseEntranceController {
         // Map of pickups for available locations to the location.
         this.availablePickups_ = new Map();
 
-        // Map of portals to associated location.
-        this.occupiedPortals_ = new Map();
+        // Map of occupied locations to their associated portals.
+        this.occupiedLocationPortals_ = new Map();
 
         // Weak map providing a reference to the location a player is currently in, and a weak map
         // providing a reference to the house a player currently is in.
@@ -79,7 +80,37 @@ class HouseEntranceController {
             this.availablePickups_.set(pickup, location);
 
         } else {
-            // TODO: Create the portal for the |location|.
+            const interior = location.interior;
+            const interiorData = interior.getData();
+
+            if (interiorData.exits.length != 1)
+                throw new Error('Houses may only have a single exit for now.');
+
+            const entrancePoint = {
+                position: location.position,
+                facingAngle: 0 /** XXX This should be stored. **/,
+                interiorId: 0 /** XXX This should be stored. **/,
+                virtualWorld: 0 /* main world */
+            };
+
+            const exitData = interiorData.exits[0];
+            const exitPoint = {
+                position: new Vector(...exitData.position),
+                facingAngle: exitData.rotation,
+                interiorId: interiorData.interior,
+                virtualWorld: VirtualWorld.forHouse(location)
+            };
+
+            // TODO: The |portal| should have a label.
+            // TODO: The |portal| should have a custom access check.
+            // TODO: The |portal| should have event listeners.
+
+            const portal = new Portal('House ' + location.settings.id, entrancePoint, exitPoint);
+
+            // Create the portal through the Location feature's interior manager.
+            this.locationFeature_().createPortal(portal);
+
+            this.occupiedLocationPortals_.set(location, portal);
         }
     }
 
@@ -112,7 +143,14 @@ class HouseEntranceController {
                 break
 
             case 'occupied':
-                // TODO: Implement removal of occupied portals.
+                const portal = this.occupiedLocationPortals_.get(location);
+                if (!portal)
+                    throw new Error('The |location| must have an associated portal.');
+
+                this.occupiedLocationPortals_.delete(location);
+
+                // Remove the portal through the Location feature's interior manager.
+                this.locationFeature_().removePortal(portal);
                 break;
 
             default:
@@ -221,7 +259,11 @@ class HouseEntranceController {
     dispose() {
         server.pickupManager.removeObserver(this);
 
-        // TODO: Remove all entrances from the Location feature.
+        for (const portal of this.occupiedLocationPortals_.values())
+            this.locationFeature_().removePortal(portal);
+
+        this.occupiedLocationPortals_.clear();
+        this.occupiedLocationPortals_ = null;
 
         this.locationFeature_.removeReloadObserver(this);
         this.locationFeature_ = null;

@@ -13,16 +13,15 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
     let manager = null;  // HouseManager
     let controller = null;  // HouseEntranceController
 
-return;  // disabled
-
     afterEach(() => manager.dispose());
     beforeEach(async(assert) => {
-        const economy = new Economy();
-        const location = new MockLocation();
-
         friends = new MockFriends();
 
-        manager = new HouseManager(() => economy, () => friends, () => location);
+        const friendsFeature = server.featureManager.wrapInstanceForDependency(friends);
+        const economy = server.featureManager.wrapInstanceForDependency(new Economy());
+        const location = server.featureManager.wrapInstanceForDependency(new MockLocation());
+
+        manager = new HouseManager(economy, friendsFeature, location);
         manager.database_ = new MockHouseDatabase();
 
         controller = manager.entranceController_;
@@ -64,6 +63,8 @@ return;  // disabled
         assert.equal(
             gunther.messages[0], Message.format(Message.HOUSE_PICKUP_CANNOT_PURCHASE, minimumPrice))
     });
+
+return;  // disabled
 
     it('should be able to determine whether somebody got access to a house', async(assert) => {
         await manager.loadHousesFromDatabase();

@@ -15,30 +15,34 @@ const HOUSE_LABEL_DRAW_DISTANCE = 20;
 // creating an entrance and exit, still guarded by this class' permission checking.
 //
 // TODO: Re-enable the HouseEntranceController tests.
-// TODO: Re-enable the HouseCommands tests.
-// TODO: Re-enable the HouseManager tests.
 class HouseEntranceController {
-    constructor(manager, economy, friends, location) {
+    constructor(manager, economy, friends, locationFeature) {
         this.entities_ = new ScopedEntities();
 
         this.manager_ = manager;
         this.economy_ = economy;
         this.friends_ = friends;
 
-        this.location_ = location;
-        this.location_.addReloadObserver(this, HouseEntranceController.prototype.reloadLocations);
+        this.locationFeature_ = locationFeature;
+        this.locationFeature_.addReloadObserver(
+            this, HouseEntranceController.prototype.recreateLocationPortals);
 
-        // Maps of pickups to associated locations and labels.
+        // Map of locations to their current availability status.
+        this.locations_ = new Map();
+
+        // Maps of available locations to the associated labels and pickups.
+        this.availableLocationLabels_ = new Map();
+        this.availableLocationPickups_ = new Map();
+
+        // Map of pickups for available locations to the location.
         this.availablePickups_ = new Map();
-        this.availablePickupLabels_ = new Map();
 
         // Map of portals to associated location.
         this.occupiedPortals_ = new Map();
 
-        // Weak map providing a reference to the location pickup a player currently stands in.
-        this.currentPickup_ = new WeakMap();
-
-        // Weak map providing a reference to the location a player is currently in.
+        // Weak map providing a reference to the location a player is currently in, and a weak map
+        // providing a reference to the house a player currently is in.
+        this.currentLocation_ = new WeakMap();
         this.currentHouse_ = new WeakMap();
 
         server.pickupManager.addObserver(this);
@@ -49,7 +53,34 @@ class HouseEntranceController {
     // Adds |location| to the set of locations to be tracked by the entrance controller. It will
     // create both the exterior entrances for the |location|, and when occupied, the interior exits.
     addLocation(location) {
-        // TODO: Implement this method.
+        if (this.locations_.has(location))
+            throw new Error('The |location| has already been added to the entrance controller.');
+
+        this.locations_.set(location, location.isAvailable() ? 'available'
+                                                             : 'occupied');
+
+        if (location.isAvailable()) {
+            const pickup = this.entities_.createPickup({
+                position: location.position,
+                modelId: 19524 /* yellow house */
+            });
+
+            const label = this.entities_.createTextLabel({
+                position: location.position.translate({ z: 0.6 }),
+                drawDistance: HOUSE_LABEL_DRAW_DISTANCE,
+                testLineOfSight: true,
+
+                text: 'Available House',
+                color: Color.YELLOW
+            });
+
+            this.availableLocationLabels_.set(location, label);
+            this.availableLocationPickups_.set(location, pickup);
+            this.availablePickups_.set(pickup, location);
+
+        } else {
+            // TODO: Create the portal for the |location|.
+        }
     }
 
     // Updates the |location|'s state within the entrance controller, for instance because a house
@@ -61,25 +92,42 @@ class HouseEntranceController {
 
     // Removes |location| from the set of tracked locations. All entrances will be removed.
     removeLocation(location) {
-        // TODO: Implement this method.
+        if (!this.locations_.has(location))
+            throw new Error('The |location| has not yet been added to the entrance controller.');
+
+        switch (this.locations_.get(location)) {
+            case 'available':
+                const label = this.availableLocationLabels_.get(location);
+                const pickup = this.availableLocationPickups_.get(location);
+
+                if (!label || !pickup)
+                    throw new Error('The |location| must have an associated pickup/label.');
+
+                this.availableLocationLabels_.delete(location);
+                this.availableLocationPickups_.delete(location);                
+                this.availablePickups_.delete(pickup);
+
+                label.dispose();
+                pickup.dispose();
+                break
+
+            case 'occupied':
+                // TODO: Implement removal of occupied portals.
+                break;
+
+            default:
+                throw new Error('Unexpected location occupancy: ' + this.locations_.get(location));
+        }
+
+        this.locations_.delete(location);
     }
 
     // ---------------------------------------------------------------------------------------------
 
-    // Determines whether the |player| has access to the |location|. This is the case when they're
-    // the owner or are on the friends list of the owning player.
-    async hasAccessToHouse(player, location) {
-        if (!player.isRegistered())
-            return false;  // unregistered players never have access
-
-        if (player.userId == location.settings.ownerId)
-            return true;  // the owner can always access their house
-
-        const isFriended = await this.friends_().isFriendedBy(player, location.settings.ownerId);
-        if (isFriended)
-            return true;  // the owner has added the |player| as their friend
-
-        return false;
+    // Re-creates the location portals for all occupied properties. Automatically triggered when the
+    // Location feature has been reloaded on the server, thereby destroying all portals.
+    recreateLocationPortals(locationFeature) {
+        // TODO: Implement this method.
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -108,70 +156,53 @@ class HouseEntranceController {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Compiles the description of the |location| that should be displayed in a text label above it.
-    compileLocationDescription(location) {
-        if (location.isAvailable())
-            return 'Available House';
+    // Determines whether the |player| has access to the |location|. This is the case when they're
+    // the owner or are on the friends list of the owning player.
+    async hasAccessToHouse(player, location) {
+        if (!player.isRegistered())
+            return false;  // unregistered players never have access
 
-        const houseName = location.settings.name;
-        const houseOwner = location.settings.ownerName;
+        if (player.userId == location.settings.ownerId)
+            return true;  // the owner can always access their house
 
-        return houseName + '\n{FFFF00}' + houseOwner;
+        const isFriended = await this.friends_().isFriendedBy(player, location.settings.ownerId);
+        if (isFriended)
+            return true;  // the owner has added the |player| as their friend
+
+        return false;
     }
 
     // ---------------------------------------------------------------------------------------------
 
-    // Called when the |player| enters the |pickup|, which could be one of the houses created on the
-    // server. In that case we either teleport them, or show them the information dialog.
-    async OLD_onPlayerEnterPickup(player, pickup) {
-        const location = this.pickups_.get(pickup);
+    // Called when the |player| enters the |pickup| of, potentially, an available house. Advertise
+    // the house's availability to them if this is the case.
+    onPlayerEnterPickup(player, pickup) {
+        const location = this.availablePickups_.get(pickup);
         if (!location)
             return;
 
-        // Store the |pickup| the |player| is currently standing in, powering `/house buy`.
-        this.currentPickup_.set(player, pickup);
+        // Store the |location| the |player| is currently standing in, powering `/house buy`.
+        this.currentLocation_.set(player, location);
 
         const playerHouses = this.manager_.getHousesForPlayer(player);
+        const minimumPrice =
+            this.economy_().calculateHousePrice(location.position, location.parkingLotCount,
+                                                0 /* interiorValue */);
 
-        // Offer the |player| the ability to purchase the house when it's available and they don't
-        // own another house yet (players are limited to owning one house at a time).
-        if (location.isAvailable()) {
-            const minimumPrice =
-                this.economy_().calculateHousePrice(location.position, location.parkingLotCount,
-                                                    0 /* interiorValue */);
-
-            // The |location| is available, but the |player| owns a house. This requirement may be
-            // removed when we allow players to own multiple houses.
-            if (playerHouses.length >= this.manager_.getMaximumHouseCountForPlayer(player)) {
-                player.sendMessage(Message.HOUSE_PICKUP_CANNOT_PURCHASE, minimumPrice);
-                return;
-            }
-
-            // The |location| is available, and the |player| does not own the house.
-            player.sendMessage(Message.HOUSE_PICKUP_CAN_PURCHASE, minimumPrice);
+        // The |location| is available, but the |player| owns a house. This requirement may be
+        // removed when we allow players to own multiple houses.
+        if (playerHouses.length >= this.manager_.getMaximumHouseCountForPlayer(player)) {
+            player.sendMessage(Message.HOUSE_PICKUP_CANNOT_PURCHASE, minimumPrice);
             return;
         }
 
-        // Determines whether the |player| has access to this location.
-        const hasAccess = await this.hasAccessToHouse(player, location);
-        if (hasAccess) {
-            this.enterHouse(player, location);
-            return;
-        }
-
-        const message = player.isAdministrator() ? Message.HOUSE_NO_ACCESS
-                                                 : Message.HOUSE_NO_ACCESS_ADMIN;
-
-        player.sendMessage(message, location.settings.ownerName);
+        // The |location| is available, and the |player| does not own the house.
+        player.sendMessage(Message.HOUSE_PICKUP_CAN_PURCHASE, minimumPrice);
     }
 
     // Returns the house location the |player| is currently standing in. May return NULL.
     getCurrentLocationForPlayer(player) {
-        const pickup = this.currentPickup_.get(player);
-        if (pickup)
-            return this.pickups_.get(pickup);
-
-        return null;
+        return this.currentLocation_.get(player);
     }
 
     // Called when the |player| leaves the pickup they were standing in.
@@ -184,12 +215,7 @@ class HouseEntranceController {
     // Returns whether the pickup created for |location| indicates that the entrance is occupied.
     // This method must only be used for testing purposes.
     isLocationPickupOccupiedForTesting(location) {
-        for (const [portal, portalLocation] of this.occupiedPortals_) {
-            if (location == portalLocation)
-                return true;
-        }
-
-        return false;
+        return this.locations_.get(location) === 'occupied';
     }
 
     dispose() {
@@ -197,8 +223,8 @@ class HouseEntranceController {
 
         // TODO: Remove all entrances from the Location feature.
 
-        this.location_.removeReloadObserver(this);
-        this.location_ = null;
+        this.locationFeature_.removeReloadObserver(this);
+        this.locationFeature_ = null;
 
         // Forcefully remove all players who currently are in a house to go outside again.
         server.playerManager.forEach(player => {

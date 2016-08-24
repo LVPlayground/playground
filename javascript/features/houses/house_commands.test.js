@@ -372,8 +372,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         assert.isTrue(await gunther.issueCommand('/house buy'));
 
-return;
-
         assert.equal(gunther.messages.length, 2);
         assert.equal(gunther.messages[1], Message.HOUSE_BUY_NO_MULTIPLE);
 
@@ -391,8 +389,6 @@ return;
         gunther.position = new Vector(200, 250, 300);  // on the nearest location pickup
 
         assert.isTrue(await gunther.issueCommand('/house buy'));
-
-return;
 
         assert.equal(gunther.messages.length, 2);
         assert.equal(gunther.messages[1], Message.format(Message.HOUSE_BUY_NOT_ENOUGH_MONEY, 50000))
@@ -415,8 +411,6 @@ return;
         gunther.respondToDialog({ response: 0 /* Yes, I get it */ });
 
         assert.isTrue(await gunther.issueCommand('/house buy'));
-
-return;
 
         assert.equal(gunther.messages.length, 2);
 

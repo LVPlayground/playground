@@ -95,6 +95,7 @@ Color.BLUE = Color.fromRGB(0, 0, 255);
 Color.GREEN = Color.fromRGB(0, 255, 0);
 Color.RED = Color.fromRGB(255, 0, 0);
 Color.WHITE = Color.fromRGB(255, 255, 255);
+Color.YELLOW = Color.fromRGB(255, 255, 0);
 
 // Define the Color object on the global object.
 global.Color = Color;

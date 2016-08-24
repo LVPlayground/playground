@@ -143,8 +143,6 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
 
         await manager.createHouse(gunther, location, 1 /* interiorId */);
 
-return;
-
         assert.isFalse(location.isAvailable());
         assert.isTrue(manager.entranceController_.isLocationPickupOccupiedForTesting(location));
 
@@ -163,8 +161,6 @@ return;
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.position = new Vector(500, 500, 500);
         gunther.identify();
-
-return;
 
         const location = await manager.findClosestLocation(gunther);
         assert.isFalse(location.isAvailable());

@@ -28,7 +28,17 @@ class Location extends Feature {
 
     // ---------------------------------------------------------------------------------------------
 
-    // TODO: Define the public API for the Location feature.
+    // Creates the teleportation |portal| in the Interior Manager. The |portal| must be a complete
+    // instance of the Portal class.
+    createPortal(portal) {
+        this.interiorManager_.createPortal(portal, false /* isToggleable */);
+    }
+
+    // Removes the teleportation |portal| from the Interior Manager. The |portal| must be a complete
+    // instance of the Portal class that previously was added using createPortal().
+    removePortal(portal) {
+        this.interiorManager_.removePortal(portal);
+    }
 
     // ---------------------------------------------------------------------------------------------
 

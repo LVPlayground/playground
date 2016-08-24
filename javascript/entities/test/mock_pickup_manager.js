@@ -36,6 +36,9 @@ class MockPickupManager extends PickupManager {
             return lhs.squaredDistance > rhs.squaredDistance ? 1 : -1;
         });
 
+        // Remove the current position info, this is not relevant in tests.
+        this.currentPickupForPlayer_.delete(player);
+
         // Fake an `OnPlayerPickUpPickup` event for the closest pickup to the player.
         super.onPickupPickedUp({
             playerid: player.id,

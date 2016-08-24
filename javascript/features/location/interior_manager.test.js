@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const InteriorManager = require('features/location/interior_manager.js');
+const Portal = require('features/location/portal.js');
 
 describe('InteriorManager', (it, beforeEach, afterEach) => {
     let manager = null;
@@ -54,5 +55,48 @@ describe('InteriorManager', (it, beforeEach, afterEach) => {
 
         assert.equal(gunther.interiorId, AmmunationInteriorId);
         assert.notEqual(gunther.virtualWorld, 0);
+    });
+
+    it('should be able to remove portals after they have been added', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const portal = new Portal('My Portal', {
+            position: new Vector(500, 500, 500),
+            facingAngle: 180,
+            interiorId: 0,
+            virtualWorld: 0
+        }, {
+            position: new Vector(1000, 1000, 1000),
+            facingAngle: 90,
+            interiorId: 5,
+            virtualWorld: 100
+        });
+
+        assert.doesNotThrow(() => manager.createPortal(portal));
+
+        assert.equal(gunther.interiorId, 0);
+        assert.equal(gunther.virtualWorld, 0);
+
+        // Move Gunther to the entrance position of the portal.
+        gunther.position = portal.entrancePosition;
+
+        assert.equal(gunther.interiorId, 5);
+        assert.equal(gunther.virtualWorld, 100);
+
+        // Remove the expected pickup and re-position Gunther to the exit pickup, to leave it.
+        manager.expectedPickup_.delete(gunther);
+        gunther.position = portal.exitPosition;
+
+        assert.equal(gunther.interiorId, 0);
+        assert.equal(gunther.virtualWorld, 0);
+
+        // Now remove the |portal| from the manager.
+        assert.doesNotThrow(() => manager.removePortal(portal));
+
+        // Remove the expected pickup and re-position Gunther to the entrance pickup, to enter it.
+        manager.expectedPickup_.delete(gunther);
+        gunther.position = portal.entrancePosition;
+
+        assert.equal(gunther.interiorId, 0);
+        assert.equal(gunther.virtualWorld, 0);
     });
 });

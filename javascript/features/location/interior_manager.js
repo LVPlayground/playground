@@ -39,6 +39,8 @@ class InteriorManager {
             this.createPortal(portal, true /* isToggleable */));
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     // Creates the |portal| in the Interior Manager, i.e. the actual pickups that represent the
     // portal and can be used by players, together with the information required for actually
     // dealing with the event of a player entering a pickup.
@@ -65,6 +67,53 @@ class InteriorManager {
         this.portalMarkers_.set(entrancePickup, { portal, type: 'entrance', peer: exitPickup });
         this.portalMarkers_.set(exitPickup, { portal, type: 'exit', peer: entrancePickup });
     }
+
+    // Removes the |portal| from the interior manager. The associated pickups will be removed as
+    // well. Note that players who are on the opposite end of the portal will not be able to return.
+    // This method is O(n) on the number of portals created in the interior manager.
+    removePortal(portal) {
+        if (!(portal instanceof Portal))
+            throw new Error('Portals must be instances of the Portal object.');
+
+        if (!this.portals_.has(portal))
+            throw new Error('The given Portal is not known to the interior manager.');
+
+        this.portals_.delete(portal);
+
+        let entrancePickup = null;
+        let exitPickup = null;
+
+        for (const [pickup, markerInfo] of this.portalMarkers_) {
+            if (markerInfo.portal !== portal)
+                continue;
+
+            switch (markerInfo.type) {
+                case 'entrance':
+                    entrancePickup = pickup;
+                    break;
+                case 'exit':
+                    exitPickup = pickup;
+                    break;
+                default:
+                    throw new Error('Unexpected marker type: ' + marker.type);
+            }
+        }
+
+        // It's possible that there are no entrance or exit pickups when the portal had been
+        // disabled, which is possible for portals imported from a portal definition file.
+
+        if (entrancePickup) {
+            this.portalMarkers_.delete(entrancePickup);
+            entrancePickup.dispose();
+        }
+
+        if (exitPickup) {
+            this.portalMarkers_.delete(exitPickup);
+            exitPickup.dispose();        
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Called when a player enters a pickup. Teleport the player to the marker's destination if the
     // |pickup| is a portal, and the |player| is allowed to teleport.

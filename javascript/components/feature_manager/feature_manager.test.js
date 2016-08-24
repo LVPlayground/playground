@@ -239,4 +239,123 @@ describe('FeatureManager', it => {
         assert.equal(feature.count(), 2);
         assert.equal(feature.count(), 3);
     });
+
+    it('should support reload observers on functional dependencies', assert => {
+        class MyDependency extends Feature {
+            constructor() {
+                super();
+
+                this.counter_ = 0;
+            }
+
+            count() { return ++this.counter_; }
+        }
+
+        class MyFeature extends Feature {
+            constructor() {
+                super();
+
+                this.dependency_ = this.defineDependency('dependency', true /* isFunctional */);
+                this.reloadCount_ = 0;
+            }
+
+            addReloadObserver() {
+                this.dependency_.addReloadObserver(this, MyFeature.prototype.onReload);
+            }
+
+            removeReloadObserver() {
+                this.dependency_.removeReloadObserver(this);
+            }
+
+            reloadCount() { return this.reloadCount_; }
+            count() { return this.dependency_().count(); }
+            
+            onReload() {
+                this.reloadCount_++;
+            }
+        }
+
+        server.featureManager.registerFeaturesForTests({
+            dependency: MyDependency,
+            feature: MyFeature
+        });
+
+        server.featureManager.loadFeatures(['dependency', 'feature']);
+
+        assert.isTrue(server.featureManager.isEligibleForLiveReload('dependency'));
+        assert.isTrue(server.featureManager.isEligibleForLiveReload('feature'));
+
+        const feature = server.featureManager.getFeatureForTests('feature');
+        assert.equal(feature.reloadCount(), 0);
+        assert.equal(feature.count(), 1);
+        assert.equal(feature.count(), 2);
+
+        assert.isTrue(server.featureManager.liveReload('dependency'));
+        assert.equal(feature.reloadCount(), 0);
+        assert.equal(feature.count(), 1);
+        
+        feature.addReloadObserver();
+
+        assert.isTrue(server.featureManager.liveReload('dependency'));
+        assert.equal(feature.reloadCount(), 1);
+        assert.equal(feature.count(), 1);
+
+        feature.removeReloadObserver();
+
+        assert.isTrue(server.featureManager.liveReload('dependency'));
+        assert.equal(feature.reloadCount(), 1);
+        assert.equal(feature.count(), 1);
+    });
+
+    it('should invoke reload observers with the new instance', assert => {
+        let counter = 0;
+
+        class MyDependency extends Feature {
+            constructor() {
+                super();
+
+                this.counter_ = ++counter;
+            }
+
+            get counter() { return this.counter_; }
+        }
+
+        class MyFeature extends Feature {
+            constructor() {
+                super();
+
+                this.dependency_ = this.defineDependency('dependency', true /* isFunctional */);
+                this.dependency_.addReloadObserver(this, MyFeature.prototype.onReload);
+
+                this.counter_ = null;
+            }
+
+            get counter() { return this.counter_; }
+
+            onReload(dependency) {
+                this.counter_ = dependency.counter;
+            }
+
+            dispose() {
+                this.dependency_.removeReloadObserver(this);
+            }
+        }
+
+        server.featureManager.registerFeaturesForTests({
+            dependency: MyDependency,
+            feature: MyFeature
+        });
+
+        server.featureManager.loadFeatures(['dependency', 'feature']);
+
+        const feature = server.featureManager.getFeatureForTests('feature');
+
+        assert.isNull(feature.counter);
+        assert.equal(counter, 1);
+
+        assert.isTrue(server.featureManager.liveReload('dependency'));
+
+        assert.equal(feature.counter, 2);
+        assert.equal(counter, 2);
+    });
 });

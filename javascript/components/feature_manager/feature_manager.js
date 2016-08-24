@@ -27,6 +27,9 @@ class FeatureManager {
         this.loadedFeatureNames_ = new WeakMap();
         this.loadedFeatures_ = new Map();
 
+        // Map of feature names to a map of instances and callbacks that serve as reload observers.
+        this.reloadObservers_ = new Map();
+
         // Stack maintaining the features which are currently being loaded.
         this.loadingStack_ = [];
     }
@@ -156,6 +159,7 @@ class FeatureManager {
         // Now load the new instance of the |feature| through the regular code path.
         try {
             this.loadFeature(feature);
+            this.invokeReloadObservers(feature);
 
             if (!server.isTest())
                 console.log('[FeatureManager] ' + feature + ' has been reloaded.');
@@ -168,6 +172,41 @@ class FeatureManager {
         }
 
         return true;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Adds the |fn| on |instance| as an observer to reloads of the |dependencyName| feature.
+    addReloadObserver(dependencyName, instance, fn) {
+        if (!this.reloadObservers_.has(dependencyName))
+            this.reloadObservers_.set(dependencyName, new Map());
+
+        const observers = this.reloadObservers_.get(dependencyName);
+        if (observers.has(instance)) {
+            throw new Error('A reload observer for "' + dependencyName + '" has already been ' +
+                            'registered for the instance.');
+        }
+
+        observers.set(instance, fn);
+    }
+
+    // Invokes the reload observers for the |dependencyName| with the new instance.
+    invokeReloadObservers(dependencyName) {
+        if (!this.reloadObservers_.has(dependencyName))
+            return;
+
+        const featureInstance = this.loadedFeatures_.get(dependencyName);
+
+        for (const [instance, fn] of this.reloadObservers_.get(dependencyName))
+            fn.call(instance, featureInstance);
+    }
+
+    // Removes the reload observers for the |dependencyName| keyed on |instance|.
+    removeReloadObserver(dependencyName, instance) {
+        if (!this.reloadObservers_.has(dependencyName))
+            return;
+
+        this.reloadObservers_.get(dependencyName).delete(instance);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -197,8 +236,18 @@ class FeatureManager {
 
         this.dependencyGraph_.createDependencyEdge(featureName, dependencyName, isFunctional);
 
-        return isFunctional ? () => this.loadedFeatures_.get(dependencyName)
-                            : dependency;
+        if (!isFunctional)
+            return dependency;  // deprecated non-functional dependencies.
+
+        const fn = () => this.loadedFeatures_.get(dependencyName);
+
+        // Add methods to the |fn| that allow reloads of this feature to be observed.
+        fn.addReloadObserver =
+            FeatureManager.prototype.addReloadObserver.bind(this, dependencyName);
+        fn.removeReloadObserver =
+            FeatureManager.prototype.removeReloadObserver.bind(this, dependencyName);
+
+        return  fn;
     }
 
     // ---------------------------------------------------------------------------------------------

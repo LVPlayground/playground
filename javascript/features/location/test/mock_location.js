@@ -28,6 +28,12 @@ class MockLocation extends Feature {
     }
 
     // ---------------------------------------------------------------------------------------------
+    // APIs available for testing purposes
+
+    // Gets the number of portals that have been created in the interior manager.
+    get portalCount() { return this.interiorManager_.portalCount; }
+
+    // ---------------------------------------------------------------------------------------------
 
     dispose() {
         this.interiorManager_.dispose();

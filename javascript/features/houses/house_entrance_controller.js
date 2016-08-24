@@ -165,7 +165,8 @@ class HouseEntranceController {
     // Re-creates the location portals for all occupied properties. Automatically triggered when the
     // Location feature has been reloaded on the server, thereby destroying all portals.
     recreateLocationPortals(locationFeature) {
-        // TODO: Implement this method.
+        for (const portal of this.occupiedLocationPortals_.values())
+            locationFeature.createPortal(portal);
     }
 
     // ---------------------------------------------------------------------------------------------

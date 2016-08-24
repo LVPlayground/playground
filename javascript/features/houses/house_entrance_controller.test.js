@@ -9,19 +9,22 @@ const MockHouseDatabase = require('features/houses/test/mock_house_database.js')
 const MockLocation = require('features/location/test/mock_location.js');
 
 describe('HouseEntranceController', (it, beforeEach, afterEach) => {
-    let friends = null;
+    let friendsFeature = null;  // MockFriends
+    let locationFeature = null;  // MockLocation
+
     let manager = null;  // HouseManager
     let controller = null;  // HouseEntranceController
 
     afterEach(() => manager.dispose());
     beforeEach(async(assert) => {
-        friends = new MockFriends();
+        friendsFeature = new MockFriends();
+        locationFeature = new MockLocation();
 
-        const friendsFeature = server.featureManager.wrapInstanceForDependency(friends);
+        const friends = server.featureManager.wrapInstanceForDependency(friendsFeature);
         const economy = server.featureManager.wrapInstanceForDependency(new Economy());
-        const location = server.featureManager.wrapInstanceForDependency(new MockLocation());
+        const location = server.featureManager.wrapInstanceForDependency(locationFeature);
 
-        manager = new HouseManager(economy, friendsFeature, location);
+        manager = new HouseManager(economy, friends, location);
         manager.database_ = new MockHouseDatabase();
 
         controller = manager.entranceController_;
@@ -64,6 +67,24 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
             gunther.messages[0], Message.format(Message.HOUSE_PICKUP_CANNOT_PURCHASE, minimumPrice))
     });
 
+    it('should recreate the portals when the location feature reloads', async(assert) => {
+        let occupiedLocationCount = 0;
+
+        for (const location of manager.locations) {
+            if (!location.isAvailable())
+                ++occupiedLocationCount;
+        }
+
+        assert.equal(locationFeature.portalCount, occupiedLocationCount);
+
+        const reloadedLocationFeature = new MockLocation();
+
+        // Fake a reload of the Location feature that normally would be done by the Feature Manager.
+        controller.recreateLocationPortals(reloadedLocationFeature);
+
+        assert.equal(reloadedLocationFeature.portalCount, occupiedLocationCount);
+    });
+
 return;  // disabled
 
     it('should be able to determine whether somebody got access to a house', async(assert) => {
@@ -89,7 +110,7 @@ return;  // disabled
         assert.isFalse(await controller.hasAccessToHouse(gunther, location));
         assert.isTrue(await controller.hasAccessToHouse(russell, location));
 
-        friends.addFriend(russell, gunther);
+        friendsFeature.addFriend(russell, gunther);
 
         // (3) Friends of the owners can always access their house.
         assert.isTrue(await controller.hasAccessToHouse(gunther, location));

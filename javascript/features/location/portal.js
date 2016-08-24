@@ -5,6 +5,10 @@
 // A portal represents bidirectional teleportation points that teleport to each other. Both of the
 // portal's points has a position, and a rotation in which the player will be facing when being
 // teleported to it. Both sides of a portal have an assigned interior and virtual world as well.
+//
+// TODO: Portals should support labels.
+// TODO: Portals should support custom (asynchronous) permission checks.
+// TODO: Portals should support enter/exit callbacks.
 class Portal {
     constructor(name, entrance, exit, disabled = false) {
         if (!Portal.validatePoint(entrance)) {

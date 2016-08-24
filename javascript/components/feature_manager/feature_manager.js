@@ -268,6 +268,17 @@ class FeatureManager {
         }
     }
 
+    // Wraps the |featureInstance| into a functional dependency wrapper.
+    wrapInstanceForDependency(featureInstance) {
+        const fn = () => featureInstance;
+
+        // Add methods to the |fn| that would allow reloads of this feature to be observed.
+        fn.addReloadObserver = () => true;
+        fn.removeReloadObserver = () => true;
+
+        return fn;
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     // Disposes the feature manager and all features owned by it.

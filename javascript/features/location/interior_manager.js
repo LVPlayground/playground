@@ -100,7 +100,7 @@ class InteriorManager {
         }
 
         // It's possible that there are no entrance or exit pickups when the portal had been
-        // disabled, which is possible for portals imported from a portal definition file.
+        // disabled, which is possible for portals imported from a portal definition
 
         if (entrancePickup) {
             this.portalMarkers_.delete(entrancePickup);

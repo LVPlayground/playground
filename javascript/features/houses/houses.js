@@ -22,7 +22,10 @@ class Houses extends Feature {
         // Friends of the owner are always allowed to enter the house.
         const friends = this.defineDependency('friends', true /* isFunctional */);
 
-        this.manager_ = new HouseManager(economy, friends);
+        // Portals from the Location feature will be used for house entrances and exits.
+        const location = this.defineDependency('location', true /* isFunctional */);
+
+        this.manager_ = new HouseManager(economy, friends, location);
         this.manager_.loadHousesFromDatabase();
 
         this.commands_ = new HouseCommands(this.manager_, announce, economy);

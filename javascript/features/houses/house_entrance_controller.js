@@ -9,18 +9,31 @@ const HOUSE_LABEL_DRAW_DISTANCE = 20;
 
 // The house entrance controller is responsible for the entrances associated with each of the house
 // locations, regardless of whether the location has been occupied.
+//
+// Available houses will be represented with a pickup that will enable the player to purchase the
+// house when it's available. Occupied houses will use a Portal provided by the Location Feature for
+// creating an entrance and exit, still guarded by this class' permission checking.
+//
+// TODO: Re-enable the HouseEntranceController tests.
+// TODO: Re-enable the HouseCommands tests.
+// TODO: Re-enable the HouseManager tests.
 class HouseEntranceController {
-    constructor(manager, economy, friends) {
+    constructor(manager, economy, friends, location) {
         this.entities_ = new ScopedEntities();
 
         this.manager_ = manager;
         this.economy_ = economy;
         this.friends_ = friends;
 
-        // Maps providing mappings from location to pickup, and from pickup to location.
-        this.pickups_ = new Map();
-        this.pickupLabels_ = new Map();
-        this.locations_ = new Map();
+        this.location_ = location;
+        this.location_.addReloadObserver(this, HouseEntranceController.prototype.reloadLocations);
+
+        // Maps of pickups to associated locations and labels.
+        this.availablePickups_ = new Map();
+        this.availablePickupLabels_ = new Map();
+
+        // Map of portals to associated location.
+        this.occupiedPortals_ = new Map();
 
         // Weak map providing a reference to the location pickup a player currently stands in.
         this.currentPickup_ = new WeakMap();
@@ -31,39 +44,12 @@ class HouseEntranceController {
         server.pickupManager.addObserver(this);
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     // Adds |location| to the set of locations to be tracked by the entrance controller. It will
     // create both the exterior entrances for the |location|, and when occupied, the interior exits.
     addLocation(location) {
-        const style =
-            location.isAvailable() ? { 
-                                        pickupOffset: { z: 0 },
-                                        pickupModel: 19524, /* yellow house */
-                                        labelColor: Color.fromRGB(255, 255, 0),
-                                        labelOffset: { z: 0.6 }
-                                     }
-                                   : {
-                                        pickupOffset: { z: -0.95 },
-                                        pickupModel: 19902, /* yellow marker */
-                                        labelColor: Color.fromRGB(255, 255, 255),
-                                        labelOffset: { z: 1.2 }
-                                     };
-
-        const pickup = this.entities_.createPickup({
-            position: location.position.translate(style.pickupOffset),
-            modelId: style.pickupModel
-        });
-        
-        const label = this.entities_.createTextLabel({
-            text: this.compileLocationDescription(location),
-            color: style.labelColor,
-            position: location.position.translate(style.labelOffset),
-            drawDistance: HOUSE_LABEL_DRAW_DISTANCE,
-            testLineOfSight: true
-        });
-
-        this.pickups_.set(pickup, location);
-        this.pickupLabels_.set(pickup, label);
-        this.locations_.set(location, pickup);
+        // TODO: Implement this method.
     }
 
     // Updates the |location|'s state within the entrance controller, for instance because a house
@@ -73,61 +59,8 @@ class HouseEntranceController {
         this.addLocation(location);
     }
 
-    // Compiles the description of the |location| that should be displayed in a text label above it.
-    compileLocationDescription(location) {
-        if (location.isAvailable())
-            return 'Available House';
-
-        const houseName = location.settings.name;
-        const houseOwner = location.settings.ownerName;
-
-        return houseName + '\n{FFFF00}' + houseOwner;
-    }
-
     // Removes |location| from the set of tracked locations. All entrances will be removed.
     removeLocation(location) {
-        const pickup = this.locations_.get(location);
-        if (!pickup)
-            throw new Error('An invalid |location| is being removed from the entrance controller.');
-
-        const label = this.pickupLabels_.get(pickup);
-
-        this.pickups_.delete(pickup);
-        this.pickupLabels_.delete(pickup);
-        this.locations_.delete(location);
-
-        pickup.dispose();
-        label.dispose();
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
-    // Makes the |player| enter the house created at |location|.
-    enterHouse(player, location) {
-        if (location.isAvailable())
-            throw new Error('The |location| must be occupied in order to enter it.');
-
-        const interiorData = location.interior.getData();
-
-        player.interiorId = interiorData.interior;
-        player.virtualWorld = VirtualWorld.forHouse(location),
-        player.position = new Vector(...interiorData.exits[0].position);
-        player.rotation = interiorData.exits[0].rotation;
-
-        this.currentHouse_.set(player, location);
-    }
-
-    // Returns the location of the current house that the player is standing in, or NULL otherwise.
-    getCurrentHouse(player) {
-        return this.currentHouse_.has(player);
-    }
-
-    // Makes the |player| leave the house that they're currently in.
-    exitHouse(player) {
-        const location = this.currentHouse_.get(player);
-        if (!location)
-            throw new Error('The |player| is not currently inside a house.');
-
         // TODO: Implement this method.
     }
 
@@ -149,9 +82,48 @@ class HouseEntranceController {
         return false;
     }
 
+    // ---------------------------------------------------------------------------------------------
+
+    // Makes the |player| enter the |location|.
+    enterHouse(player, location) {
+        if (location.isAvailable())
+            throw new Error('The |location| must be occupied in order to enter it.');
+
+        // TODO: Implement this method.
+    }
+
+    // Returns the location of the current house that the player is standing in, or NULL otherwise.
+    getCurrentHouse(player) {
+        return this.currentHouse_.get(player);
+    }
+
+    // Makes the |player| leave the house that they're currently in.
+    exitHouse(player) {
+        const location = this.currentHouse_.get(player);
+        if (!location)
+            throw new Error('The |player| is not currently inside a house.');
+
+        // TODO: Implement this method.
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Compiles the description of the |location| that should be displayed in a text label above it.
+    compileLocationDescription(location) {
+        if (location.isAvailable())
+            return 'Available House';
+
+        const houseName = location.settings.name;
+        const houseOwner = location.settings.ownerName;
+
+        return houseName + '\n{FFFF00}' + houseOwner;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Called when the |player| enters the |pickup|, which could be one of the houses created on the
     // server. In that case we either teleport them, or show them the information dialog.
-    async onPlayerEnterPickup(player, pickup) {
+    async OLD_onPlayerEnterPickup(player, pickup) {
         const location = this.pickups_.get(pickup);
         if (!location)
             return;
@@ -212,15 +184,21 @@ class HouseEntranceController {
     // Returns whether the pickup created for |location| indicates that the entrance is occupied.
     // This method must only be used for testing purposes.
     isLocationPickupOccupiedForTesting(location) {
-        const pickup = this.locations_.get(location);
-        if (!pickup)
-            throw new Error('An invalid |location| is being checked at the entrance controller.');
+        for (const [portal, portalLocation] of this.occupiedPortals_) {
+            if (location == portalLocation)
+                return true;
+        }
 
-        return pickup.modelId === 19902 /* yellow marker */;
+        return false;
     }
 
     dispose() {
         server.pickupManager.removeObserver(this);
+
+        // TODO: Remove all entrances from the Location feature.
+
+        this.location_.removeReloadObserver(this);
+        this.location_ = null;
 
         // Forcefully remove all players who currently are in a house to go outside again.
         server.playerManager.forEach(player => {
@@ -228,6 +206,7 @@ class HouseEntranceController {
                 this.exitHouse(player);
         });
 
+        // Finally remove all the entities that were created by the entrance controller.
         this.entities_.dispose();
     }
 }

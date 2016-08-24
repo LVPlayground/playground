@@ -36,6 +36,9 @@ class PropertyCommands {
     // What is the default percentage a player will receive after their property got bought?
     const RefundPercentage = 20;
 
+    // Set the default hint for the TEF property.
+    new m_tefHint[192] = "No hint yet...";
+
     // ---- PROPERTY COMMANDS FOR ADMINISTRATORS ---------------------------------------------------
 
     /**
@@ -890,5 +893,34 @@ class PropertyCommands {
 
         return 1;
         #pragma unused params
+    }
+
+    /**
+     * An old tradition: LVP crew moving TEF's property and having the players search for it. This
+     * command will give players a small hint to the current location of this property, while crew
+     * can use it to set a new hint.
+     *
+     * @param playerId Id of the player who issued this command.
+     * @param hint String containing the new hint. Optional.
+     * @command /tefhint [hint]?
+     */
+    @command("tefhint")
+    public onTefhintCommand(playerId, params[]) {
+        if (Command->parameterCount(params) == 0) {
+            SendClientMessage(playerId, Color::Information, "Current hint to TEF's property:");
+            SendClientMessage(playerId, Color::Success, m_tefHint);
+            return 1;
+        }
+
+        if (Player(playerId)->isAdministrator() == false)
+            return 0;
+
+        new notice[256];
+        format(m_tefHint, sizeof(m_tefHint), "%s", params[1]);
+
+        format(notice, sizeof(notice), "Hint changed to: {FFFFFF}%s", m_tefHint);
+        SendClientMessage(playerId, Color::Success, notice);
+
+        return 1;
     }
 };

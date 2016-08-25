@@ -8,6 +8,7 @@ class HouseParkingLot {
         this.id_ = parkingLot.id;
         this.position_ = parkingLot.position;
         this.rotation_ = parkingLot.rotation;
+        this.interiorId_ = parkingLot.interiorId;
     }
 
     // Gets the Id of this parking lot in the database.
@@ -18,6 +19,9 @@ class HouseParkingLot {
 
     // Gets the intended rotation of the vehicle occupying this parking lot.
     get rotation() { return this.rotation_; }
+
+    // Gets the interior Id in which this parking lot should exist.
+    get interiorId() { return this.interiorId_; }
 }
 
 exports = HouseParkingLot;

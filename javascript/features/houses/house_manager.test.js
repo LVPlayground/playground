@@ -117,7 +117,8 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
 
         await manager.createLocationParkingLot(gunther, location, {
             position: new Vector(500, 500, 100),
-            rotation: 90
+            rotation: 90,
+            interiorId: 0
         });
 
         assert.equal(location.parkingLotCount, 1);

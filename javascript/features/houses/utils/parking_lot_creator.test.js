@@ -184,5 +184,6 @@ describe('ParkingLotCreator', (it, beforeEach, afterEach) => {
 
         assert.deepEqual(selectionResult.position, location.position.translate({ x: 10, y: 10 }));
         assert.equal(selectionResult.rotation, 90.0);
+        assert.equal(selectionResult.interiorId, gunther.interiorId);
     });
 });

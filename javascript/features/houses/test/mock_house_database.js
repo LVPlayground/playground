@@ -6,7 +6,8 @@
 const PARKING_LOT = {
     id: 42,
     position: new Vector(300, 360, 400),
-    rotation: 270
+    rotation: 270,
+    interiorId: 0
 };
 
 // Mocked database class that implements the same API as the regular HouseDatabase class, but will

@@ -98,7 +98,8 @@ class HouseManager {
         const houseParkingLot = new HouseParkingLot({
             id: await this.database_.createLocationParkingLot(player, location, parkingLot),
             position: parkingLot.position,
-            rotation: parkingLot.rotation
+            rotation: parkingLot.rotation,
+            interiorId: parkingLot.interiorId
         });
 
         location.addParkingLot(houseParkingLot);

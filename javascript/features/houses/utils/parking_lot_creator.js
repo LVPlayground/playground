@@ -67,8 +67,10 @@ class ParkingLotCreator {
                 continue;
             }
 
+            const interiorId = player.interiorId;
+
             // Success: the location of a parking lot has been chosen.
-            return { position, rotation };
+            return { position, rotation, interiorId };
 
         } while (true);
     }

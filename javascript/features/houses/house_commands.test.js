@@ -288,7 +288,8 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         // Create a faked parking lot for this location so that it can be removed.
         await manager.createLocationParkingLot(gunther, location, {
             position: location.position.translate({ x: 10 }),
-            rotation: 90
+            rotation: 90,
+            interiorId: 0
         });
 
         assert.equal(location.parkingLotCount, 1);
@@ -322,7 +323,8 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         await manager.createLocationParkingLot(gunther, location, {
             position: new Vector(220, 250, 300),
-            rotation: 90
+            rotation: 90,
+            interiorId: 0
         });
 
         assert.equal(location.parkingLotCount, 1);

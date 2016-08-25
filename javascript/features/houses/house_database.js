@@ -24,7 +24,8 @@ const LOAD_PARKING_LOTS_QUERY = `
         houses_parking_lots.position_x,
         houses_parking_lots.position_y,
         houses_parking_lots.position_z,
-        houses_parking_lots.rotation
+        houses_parking_lots.rotation,
+        houses_parking_lots.interior_id
     FROM
         houses_parking_lots
     LEFT JOIN
@@ -64,9 +65,9 @@ const CREATE_LOCATION_QUERY = `
 const CREATE_PARKING_LOT_QUERY = `
     INSERT INTO
         houses_parking_lots
-        (house_location_id, position_x, position_y, position_z, rotation, parking_lot_creator_id, parking_lot_created)
+        (house_location_id, position_x, position_y, position_z, rotation, interior_id, parking_lot_creator_id, parking_lot_created)
     VALUES
-        (?, ?, ?, ?, ?, ?, NOW())`;
+        (?, ?, ?, ?, ?, ?, ?, NOW())`;
 
 // Query to create a new set of house settings in the database.
 const CREATE_HOUSE_QUERY = `
@@ -125,7 +126,8 @@ class HouseDatabase {
                 parkingLots.get(locationId).push({
                     id: parkingLot.house_parking_lot_id,
                     position: position,
-                    rotation: parkingLot.rotation
+                    rotation: parkingLot.rotation,
+                    interiorId: parkingLot.interior_id
                 });
             });
         }
@@ -188,7 +190,7 @@ class HouseDatabase {
         const position = parkingLot.position;
         const data = await server.database.query(
             CREATE_PARKING_LOT_QUERY, location.id, position.x, position.y, position.z,
-            parkingLot.rotation, player.userId);
+            parkingLot.rotation, parkingLot.interiorId, player.userId);
 
         return data.insertId;
     }

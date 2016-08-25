@@ -38,6 +38,12 @@ class Location extends Feature {
         this.interiorManager_.createPortal(portal, false /* isToggleable */);
     }
 
+    // Makes |player| enter the |portal|. The given |direction| must be one of ["entrance","exit"].
+    // Permission checks will be skipped for this API.
+    enterPortal(player, portal, direction) {
+        this.interiorManager_.enterPortal(player, portal, direction);
+    }
+
     // Removes the teleportation |portal| from the Interior Manager. The |portal| must be a complete
     // instance of the Portal class that previously was added using createPortal().
     removePortal(portal) {

@@ -23,7 +23,7 @@ class InteriorManager {
         this.portalLabels_ = new Map();
         this.portalMarkers_ = new Map();
 
-        // Map of all portals on the server, to a boolean of whether they're toggleable or not.
+        // Map of all portals on the server, to an object containing settings about the portal.
         this.portals_ = new Map();
 
         // The pickup that a player is expected to enter next. Should be ignored to avoid loops.
@@ -52,9 +52,15 @@ class InteriorManager {
     // portal and can be used by players, together with the information required for actually
     // dealing with the event of a player entering a pickup.
     createPortal(portal, isToggleable = false) {
-        this.portals_.set(portal, isToggleable);
-        if (portal.disabled)
+        if (portal.disabled) {
+            this.portals_.set(portal, {
+                toggleable: isToggleable,
+                entrancePickup: null,
+                exitPickup: null
+            });
+
             return;
+        }
 
         const entrancePickup = this.portalEntities_.createPickup({
             modelId: 19902 /* yellow entrance marker */,
@@ -84,35 +90,60 @@ class InteriorManager {
 
         this.portalMarkers_.set(entrancePickup, { portal, type: 'entrance', peer: exitPickup });
         this.portalMarkers_.set(exitPickup, { portal, type: 'exit', peer: entrancePickup });
+        this.portals_.set(portal, {
+            toggleable: isToggleable,
+            entrancePickup: entrancePickup,
+            exitPickup: exitPickup
+        });
+    }
+
+    // Makes |player| enter the |portal|. The given |direction| must be one of ["entrance","exit"].
+    // Permission checks will be skipped for this API.
+    enterPortal(player, portal, direction) {
+        if (!this.portals_.has(portal))
+            throw new Error('The given Portal is not known to the interior manager.');
+
+        const { toggleable, entrancePickup, exitPickup } = this.portals_.get(portal);
+
+        switch (direction) {
+            case 'entrance':
+                this.expectedPickup_.set(player, exitPickup);
+
+                if (portal.enterFn)
+                    portal.enterFn(player);
+
+                player.position = portal.exitPosition.translate({ z: 1 });
+                player.rotation = portal.entranceFacingAngle;
+                player.interiorId = portal.exitInteriorId;
+                player.virtualWorld = portal.exitVirtualWorld;
+                player.resetCamera();
+                break;
+
+            case 'exit':
+                this.expectedPickup_.set(player, entrancePickup);
+
+                if (portal.exitFn)
+                    portal.exitFn(player);
+
+                player.position = portal.entrancePosition.translate({ z: 1 });
+                player.rotation = portal.exitFacingAngle;
+                player.interiorId = portal.entranceInteriorId;
+                player.virtualWorld = portal.entranceVirtualWorld;
+                player.resetCamera();
+                break;
+
+            default:
+                throw new Error('Unexpected direction: ' + direction);
+        }
     }
 
     // Removes the |portal| from the interior manager. The associated pickups will be removed as
     // well. Note that players who are on the opposite end of the portal will not be able to return.
-    // This method is O(n) on the number of portals created in the interior manager.
     removePortal(portal) {
         if (!this.portals_.has(portal))
             throw new Error('The given Portal is not known to the interior manager.');
 
-        this.portals_.delete(portal);
-
-        let entrancePickup = null;
-        let exitPickup = null;
-
-        for (const [pickup, markerInfo] of this.portalMarkers_) {
-            if (markerInfo.portal !== portal)
-                continue;
-
-            switch (markerInfo.type) {
-                case 'entrance':
-                    entrancePickup = pickup;
-                    break;
-                case 'exit':
-                    exitPickup = pickup;
-                    break;
-                default:
-                    throw new Error('Unexpected marker type: ' + marker.type);
-            }
-        }
+        const { toggleable, entrancePickup, exitPickup } = this.portals_.get(portal);
 
         // Remove the label that has been associated with this portal's entrance.
 
@@ -132,6 +163,8 @@ class InteriorManager {
             this.portalMarkers_.delete(exitPickup);
             exitPickup.dispose();        
         }
+
+        this.portals_.delete(portal);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -160,40 +193,16 @@ class InteriorManager {
         if (this.expectedPickup_.get(player) === pickup)
             return;  // they're expected to have stepped in this pickup
 
-        this.expectedPickup_.set(player, marker.peer);
-
         const portal = marker.portal;
 
-        switch (marker.type) {
-            case 'entrance':
-                const allowed = await this.canPlayerTeleport(player, portal);
-                if (!allowed)
-                    return;  // the player is not allowed to teleport right now
-
-                if (portal.enterFn)
-                    portal.enterFn(player);
-
-                player.position = portal.exitPosition.translate({ z: 1 });
-                player.rotation = portal.entranceFacingAngle;
-                player.interiorId = portal.exitInteriorId;
-                player.virtualWorld = portal.exitVirtualWorld;
-                player.resetCamera();
-                break;
-
-            case 'exit':
-                if (portal.exitFn)
-                    portal.exitFn(player);
-
-                player.position = portal.entrancePosition.translate({ z: 1 });
-                player.rotation = portal.exitFacingAngle;
-                player.interiorId = portal.entranceInteriorId;
-                player.virtualWorld = portal.entranceVirtualWorld;
-                player.resetCamera();
-                break;
-
-            default:
-                throw new Error('Unexpected marker type: ' + marker.type);
+        // Apply the permission check if the |player| is attempting to enter the portal.
+        if (marker.type === 'entrance') {
+            if (!await this.canPlayerTeleport(player, portal))
+                return;  // the player is not allowed to teleport right now
         }
+
+        // Make the |player| enter or exit the |portal| with the shared infrastructure.
+        this.enterPortal(player, portal, marker.type);
     }
 
     // Called when the |player| has left the |pickup|.

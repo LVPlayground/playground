@@ -210,8 +210,8 @@ class EntityLogger {
             return;  // invalid event
 
         const cmdtext = event.cmdtext;
-        if (!cmdtext || cmdtext.includes('/modlogin'))
-            return;  // blacklisted command- don't log passwords
+        if (!cmdtext || cmdtext.includes('/modlogin') || cmdtext.includes('/spm'))
+            return;  // blacklisted command- don't log passwords or secret private messages
 
         this.writer_.writeAttributedEvent(player, 'cmdtext', {
             cmdtext: cmdtext

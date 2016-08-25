@@ -21,3 +21,7 @@ The following commands are available as part of the feature:
   - **/jetpack**: Gives you a jetpack. Must have been enabled by an administrator.
   - **/jetpack [player]**: Gives the `player` a jetpack. Only available to administrators.
   - **/jetpack [player] remove**: Removes a jetpack from `player`. Only available to administrators.
+  - **/slow [player] [factor]**: Continuously slows down `player` by the given `factor`. Only
+    available to management.
+  - **/spm [player] [message]**: Sends a private message to `player` that will not be logged. Only
+    available to management.

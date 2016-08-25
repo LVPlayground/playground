@@ -42,6 +42,7 @@ class PlaygroundCommands {
         requireCommand('features/playground/commands/fly.js');
         requireCommand('features/playground/commands/jetpack.js');
         requireCommand('features/playground/commands/slow.js');
+        requireCommand('features/playground/commands/spm.js');
 
         // -----------------------------------------------------------------------------------------
 
@@ -242,8 +243,11 @@ class PlaygroundCommands {
         }
 
         this.access_.addException(command.name, subject, player /* sourcePlayer */);
-        this.announce_().announceToAdministrators(
-            Message.LVP_ANNOUNCE_CMD_EXCEPTION, player.name, player.id, subject.name, command.name);
+        if (this.access_.getCommandLevel(command.name) != Player.LEVEL_MANAGEMENT) {
+            this.announce_().announceToAdministrators(
+                Message.LVP_ANNOUNCE_CMD_EXCEPTION, player.name, player.id, subject.name,
+                command.name);
+        }
 
         return await MessageDialog.display(player, {
             title: 'The exception has been granted!',

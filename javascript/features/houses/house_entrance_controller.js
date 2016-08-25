@@ -14,8 +14,6 @@ const HOUSE_AVAILABLE_LABEL_DRAW_DISTANCE = 20;
 // Available houses will be represented with a pickup that will enable the player to purchase the
 // house when it's available. Occupied houses will use a Portal provided by the Location Feature for
 // creating an entrance and exit, still guarded by this class' permission checking.
-//
-// TODO: Re-enable the HouseEntranceController tests.
 class HouseEntranceController {
     constructor(manager, economy, friends, locationFeature) {
         this.entities_ = new ScopedEntities();

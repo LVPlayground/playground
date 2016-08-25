@@ -100,20 +100,20 @@ return;  // disabled
         assert.equal(location.settings.ownerId, 42);
 
         // (1) Unregistered players cannot access any house.
-        assert.isFalse(await controller.hasAccessToHouse(gunther, location));
-        assert.isFalse(await controller.hasAccessToHouse(russell, location));
+        assert.isFalse(await controller.hasAccessToHouse(location, gunther));
+        assert.isFalse(await controller.hasAccessToHouse(location, russell));
 
         gunther.identify({ userId: 43 });
         russell.identify({ userId: 42 });
 
         // (2) Players can always access their own house.
-        assert.isFalse(await controller.hasAccessToHouse(gunther, location));
-        assert.isTrue(await controller.hasAccessToHouse(russell, location));
+        assert.isFalse(await controller.hasAccessToHouse(location, gunther));
+        assert.isTrue(await controller.hasAccessToHouse(location, russell));
 
         friendsFeature.addFriend(russell, gunther);
 
         // (3) Friends of the owners can always access their house.
-        assert.isTrue(await controller.hasAccessToHouse(gunther, location));
-        assert.isTrue(await controller.hasAccessToHouse(russell, location));
+        assert.isTrue(await controller.hasAccessToHouse(location, gunther));
+        assert.isTrue(await controller.hasAccessToHouse(location, russell));
     });
 });

@@ -102,10 +102,12 @@ class HouseEntranceController {
             };
 
             // TODO: The |portal| should have a label.
-            // TODO: The |portal| should have a custom access check.
             // TODO: The |portal| should have event listeners.
 
-            const portal = new Portal('House ' + location.settings.id, entrancePoint, exitPoint);
+            const portal = new Portal('House ' + location.settings.id, entrancePoint, exitPoint, {
+                accessCheckFn:
+                    HouseEntranceController.prototype.hasAccessToHouse.bind(this, location)
+            });
 
             // Create the portal through the Location feature's interior manager.
             this.locationFeature_().createPortal(portal);
@@ -197,7 +199,7 @@ class HouseEntranceController {
 
     // Determines whether the |player| has access to the |location|. This is the case when they're
     // the owner or are on the friends list of the owning player.
-    async hasAccessToHouse(player, location) {
+    async hasAccessToHouse(location, player) {
         if (!player.isRegistered())
             return false;  // unregistered players never have access
 

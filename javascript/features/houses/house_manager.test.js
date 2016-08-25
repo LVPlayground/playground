@@ -177,6 +177,4 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
         assert.isNull(location.settings);
         assert.isNull(location.interior);
     });
-
-    // TODO: it('should respawn players who are inside a removed house')
 });

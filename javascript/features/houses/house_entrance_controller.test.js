@@ -133,4 +133,74 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
         assert.isTrue(await controller.hasAccessToHouse(location, gunther));
         assert.isTrue(await controller.hasAccessToHouse(location, russell));
     });
+
+    it('should be able to force-enter and force-exit players from a house', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.position = new Vector(500, 500, 500);
+
+        const location = await manager.findClosestLocation(gunther);
+        assert.isFalse(location.isAvailable());
+
+        assert.isNull(controller.getCurrentHouse(gunther));
+        assert.equal(gunther.interiorId, 0);
+        assert.equal(gunther.virtualWorld, 0);
+
+        assert.doesNotThrow(() => controller.enterHouse(gunther, location));
+
+        const interiorData = location.interior.getData();
+
+        assert.equal(controller.getCurrentHouse(gunther), location);
+        assert.equal(gunther.interiorId, interiorData.interior);
+        assert.equal(gunther.virtualWorld, VirtualWorld.forHouse(location));
+
+        assert.doesNotThrow(() => controller.exitHouse(gunther));
+
+        assert.isNull(controller.getCurrentHouse(gunther));
+        assert.equal(gunther.interiorId, 0);
+        assert.equal(gunther.virtualWorld, 0);
+    });
+
+    it('should force people out of houses when the location has been removed', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.position = new Vector(500, 500, 500);
+
+        const location = await manager.findClosestLocation(gunther);
+        assert.isFalse(location.isAvailable());
+
+        assert.doesNotThrow(() => controller.enterHouse(gunther, location));
+        assert.equal(controller.getCurrentHouse(gunther), location);
+
+        assert.notEqual(gunther.interiorId, 0);
+        assert.notEqual(gunther.virtualWorld, 0);
+
+        // Remove the location from the entrance controller.
+        controller.removeLocation(location);
+
+        assert.isNull(controller.getCurrentHouse(gunther));
+        assert.equal(gunther.interiorId, 0);
+        assert.equal(gunther.virtualWorld, 0);
+    });
+
+    it('should force people out of houses when the feature gets reloaded', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.position = new Vector(500, 500, 500);
+
+        const location = await manager.findClosestLocation(gunther);
+        assert.isFalse(location.isAvailable());
+
+        assert.doesNotThrow(() => controller.enterHouse(gunther, location));
+        assert.equal(controller.getCurrentHouse(gunther), location);
+
+        assert.notEqual(gunther.interiorId, 0);
+        assert.notEqual(gunther.virtualWorld, 0);
+
+        // Dispose of the controller. This should force all people out of their houses.
+        controller.dispose();
+
+        assert.equal(gunther.interiorId, 0);
+        assert.equal(gunther.virtualWorld, 0);
+
+        // Override the dispose() function since we can't dispose the controller twice.
+        controller.dispose = () => true;
+    });
 });

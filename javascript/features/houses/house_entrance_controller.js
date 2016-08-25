@@ -150,6 +150,14 @@ class HouseEntranceController {
                 if (!portal)
                     throw new Error('The |location| must have an associated portal.');
 
+                // Remove any players who are currently in the |location| from the house.
+                server.playerManager.forEach(player => {
+                    if (this.currentHouse_.get(player) !== location)
+                        return;
+
+                    this.exitHouse(player);
+                });
+
                 this.occupiedLocationPortals_.delete(location);
 
                 // Remove the portal through the Location feature's interior manager.
@@ -174,12 +182,15 @@ class HouseEntranceController {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Makes the |player| enter the |location|.
+    // Makes the |player| enter the |location|. Any sort of entrance restrictions will be skipped.
     enterHouse(player, location) {
         if (location.isAvailable())
             throw new Error('The |location| must be occupied in order to enter it.');
 
-        // TODO: Implement this method.
+        const portal = this.occupiedLocationPortals_.get(location);
+
+        // Trigger a force-enter through the Location feature.
+        this.locationFeature_().enterPortal(player, portal, 'entrance');
     }
 
     // Returns the location of the current house that the player is standing in, or NULL otherwise.
@@ -193,7 +204,10 @@ class HouseEntranceController {
         if (!location)
             throw new Error('The |player| is not currently inside a house.');
 
-        // TODO: Implement this method.
+        const portal = this.occupiedLocationPortals_.get(location);
+
+        // Trigger a force-leave through the Location feature.
+        this.locationFeature_().enterPortal(player, portal, 'exit');
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -277,6 +291,12 @@ class HouseEntranceController {
     dispose() {
         server.pickupManager.removeObserver(this);
 
+        // Forcefully remove all players who currently are in a house to go outside again.
+        server.playerManager.forEach(player => {
+            if (this.currentHouse_.has(player))
+                this.exitHouse(player);
+        });
+
         for (const portal of this.occupiedLocationPortals_.values())
             this.locationFeature_().removePortal(portal);
 
@@ -285,12 +305,6 @@ class HouseEntranceController {
 
         this.locationFeature_.removeReloadObserver(this);
         this.locationFeature_ = null;
-
-        // Forcefully remove all players who currently are in a house to go outside again.
-        server.playerManager.forEach(player => {
-            if (this.currentHouse_.has(player))
-                this.exitHouse(player);
-        });
 
         // Finally remove all the entities that were created by the entrance controller.
         this.entities_.dispose();

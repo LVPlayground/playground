@@ -10,19 +10,29 @@ class HouseSettings {
 
         this.ownerId_ = house.ownerId;
         this.ownerName_ = house.ownerName;
+
+        this.spawnPoint_ = house.spawnPoint;
     }
 
     // Gets the internal Id of this house in the database.
     get id() { return this.id_; }
 
-    // Gets the name of this house, which can be set by the owner.
+    // Gets or sets the name of this house, which can be set by the owner. Updating the name of a
+    // house should only be done by the HouseManager.
     get name() { return this.name_; }
+    set name(value) { this.name_ = value; }
 
     // Gets the user Id of the player that own this house.
     get ownerId() { return this.ownerId_; }
 
     // Gets the username of the player that owns this house.
     get ownerName() { return this.ownerName_; }
+
+    // Returns whether this house should be the spawn point for the owner.
+    isSpawn() { return this.spawnPoint_; }
+
+    // Updates whether the house should be the spawn point for the owner.
+    setSpawn(spawnPoint) { this.spawnPoint_ = spawnPoint; }
 
     dispose() {}
 }

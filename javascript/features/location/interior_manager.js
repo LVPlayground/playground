@@ -75,18 +75,8 @@ class InteriorManager {
         });
 
         // Create the portal's label in the world if one has been defined.
-        if (portal.label) {
-            const label = this.portalEntities_.createTextLabel({
-                position: portal.entrancePosition.translate({ z: 2.3 }),
-                drawDistance: PORTAL_LABEL_DRAW_DISTANCE,
-                testLineOfSight: true,
-
-                color: Color.WHITE,
-                text: portal.label
-            });
-
-            this.portalLabels_.set(portal, label);
-        }
+        if (portal.label)
+            this.portalLabels_.set(portal, this.createLabel(portal));
 
         this.portalMarkers_.set(entrancePickup, { portal, type: 'entrance', peer: exitPickup });
         this.portalMarkers_.set(exitPickup, { portal, type: 'exit', peer: entrancePickup });
@@ -95,6 +85,27 @@ class InteriorManager {
             entrancePickup: entrancePickup,
             exitPickup: exitPickup
         });
+    }
+
+    // Updates the |portal|'s label to be |label|. If the |label| either is not a string, or is the
+    // empty string, then the |portal| will remove its label altogether.
+    updatePortalLabel(portal, label) {
+        if (!this.portals_.has(portal))
+            throw new Error('The given Portal is not known to the interior manager.');
+
+        // Remove the existing label if one has been added already.
+        const existingLabel = this.portalLabels_.get(portal);
+        if (existingLabel)
+            existingLabel.dispose();
+
+        // Update the |portal| status depending on the value of |label|.
+        portal.label = typeof label === 'string' && label.length ? label
+                                                                 : null;
+
+        if (portal.label)
+            this.portalLabels_.set(portal, this.createLabel(portal));
+        else
+            this.portalLabels_.delete(portal);
     }
 
     // Makes |player| enter the |portal|. The given |direction| must be one of ["entrance","exit"].
@@ -210,6 +221,22 @@ class InteriorManager {
         if (this.expectedPickup_.get(player) === pickup)
             this.expectedPickup_.delete(player);
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Creates a label for the |portal|.
+    createLabel(portal) {
+        return this.portalEntities_.createTextLabel({
+            position: portal.entrancePosition.translate({ z: 2.3 }),
+            drawDistance: PORTAL_LABEL_DRAW_DISTANCE,
+            testLineOfSight: true,
+
+            color: Color.WHITE,
+            text: portal.label
+        });
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     dispose() {
         server.pickupManager.removeObserver(this);

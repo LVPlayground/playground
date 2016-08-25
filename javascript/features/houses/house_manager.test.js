@@ -195,4 +195,40 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
 
         assert.isNotNull(manager.getCurrentHouseForPlayer(gunther));
     });
+
+    it('should be able to update the name of a house', async(assert) => {
+        await manager.loadHousesFromDatabase();
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.position = new Vector(500, 500, 500);
+
+        const location = await manager.findClosestLocation(gunther);
+        assert.isFalse(location.isAvailable());
+
+        assert.equal(location.settings.name, 'Guntherplaza');
+
+        await manager.updateHouseSetting(location, 'name', 'Gunther Pro Palace');
+
+        assert.equal(location.settings.name, 'Gunther Pro Palace');
+    });
+
+    it('should be able to update whether to spawn at a house', async(assert) => {
+        await manager.loadHousesFromDatabase();
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.position = new Vector(500, 500, 500);
+
+        const location = await manager.findClosestLocation(gunther);
+        assert.isFalse(location.isAvailable());
+
+        assert.isFalse(location.settings.isSpawn());
+
+        await manager.updateHouseSetting(location, 'spawn', true);
+
+        assert.isTrue(location.settings.isSpawn());
+
+        await manager.updateHouseSetting(location, 'spawn', false);
+
+        assert.isFalse(location.settings.isSpawn());
+    });
 });

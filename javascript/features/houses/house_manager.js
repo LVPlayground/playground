@@ -127,6 +127,50 @@ class HouseManager {
         this.entranceController_.updateLocation(location);
     }
 
+    // Updates the |setting| of the |location| to |value|. The actual application of the setting
+    // update is unique to the setting that is being changed. The following settings are available:
+    //
+    //     'name'   - Updates the name of the house.
+    //     'spawn'  - Updates whether to spawn at the |location|.
+    //
+    // Updating an invalid setting will yield an exception.
+    async updateHouseSetting(location, setting, value) {
+        if (!this.locations_.has(location))
+            throw new Error('The given |location| does not exist in this HouseManager.');
+
+        if (location.isAvailable())
+            throw new Error('The given |location| does not have an house associated with it.');
+
+        switch (setting) {
+            case 'name':
+                if (typeof value !== 'string' || value.length < 3 || value.length > 32)
+                    throw new Error('A house name must be between 3 and 32 characters in length.');
+
+                await this.database_.updateHouseName(location, value);
+                await this.entranceController_.updateLocationLabel(location, value);
+
+                location.settings.name = value;
+                break;
+
+            case 'spawn':
+                if (typeof value !== 'boolean')
+                    throw new Error('The value of updating the spawn setting must be a boolean.');
+
+                await this.database_.updateHouseSpawn(location, value);
+
+                // Remove the spawn setting from all existing houses owned by the player.
+                this.getHousesForUser(location.settings.ownerId).forEach(ownedLocation =>
+                    ownedLocation.settings.setSpawn(false));
+
+                // Now update the |location| setting to whatever |value| happens to be.
+                location.settings.setSpawn(value);
+                break;
+
+            default:
+                throw new Error('Invalid setting: ' + setting);
+        }
+    }
+
     // Returns the location closest to the position of |player|. The |maximumDistance| argument can
     // be provided when it must be within a certain range of the player. Players inside of a house
     // are deliberately not considered to be close to it.
@@ -181,6 +225,11 @@ class HouseManager {
 
     // Returns the houses owned by |player|. Assumes that the data has been loaded already.
     getHousesForPlayer(player) {
+        return this.getHousesForUser(player.userId);
+    }
+
+    // Returns the houses owned by |userId|. Assumes that the data has been loaded already.
+    getHousesForUser(userId) {
         return [];
     }
 

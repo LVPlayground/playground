@@ -37,7 +37,8 @@ class MockHouseDatabase {
             ownerId: 42 /* user_id */,
             ownerName: 'Gunther',
 
-            interiorId: 0
+            interiorId: 0,
+            spawnPoint: false
         });
 
         return houses;
@@ -62,6 +63,10 @@ class MockHouseDatabase {
             interiorId: interiorId
         };
     }
+
+    async updateHouseName(location, name) {}
+
+    async updateHouseSpawn(location, spawn) {}
 
     async removeLocation(location) {}
 

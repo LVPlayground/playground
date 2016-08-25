@@ -42,6 +42,7 @@ const LOAD_HOUSES_QUERY = `
         houses_settings.house_user_id,
         houses_settings.house_interior_id,
         houses_settings.house_name,
+        houses_settings.house_spawn_point,
         users.username
     FROM
         houses_settings
@@ -76,6 +77,34 @@ const CREATE_HOUSE_QUERY = `
         (house_location_id, house_user_id, house_interior_id, house_name, house_created)
     VALUES
         (?, ?, ?, ?, NOW())`;
+
+// Query for updating the name of a given house.
+const UPDATE_NAME_SETTING_QUERY = `
+    UPDATE
+        houses_settings
+    SET
+        house_name = ?
+    WHERE
+        house_id = ?`;
+
+// Query for removing all existing spawn settings for a particular user.
+const REMOVE_SPAWN_SETTINGS_FOR_USER_QUERY = `
+    UPDATE
+        houses_settings
+    SET
+        house_spawn_point = 0
+    WHERE
+        house_user_id = ? AND
+        house_removed IS NULL`;
+
+// Query for updating the spawn setting for a given house.
+const UPDATE_SPAWN_SETTING_QUERY = `
+    UPDATE
+        houses_settings
+    SET
+        house_spawn_point = ?
+    WHERE
+        house_id = ?`;
 
 // Query to remove a previously created location from the database.
 const REMOVE_LOCATION_QUERY = `
@@ -167,7 +196,8 @@ class HouseDatabase {
                 ownerId: row.house_user_id,
                 ownerName: row.username,
 
-                interiorId: row.house_interior_id
+                interiorId: row.house_interior_id,
+                spawnPoint: !!row.house_spawn_point
             });
         });
 
@@ -210,6 +240,20 @@ class HouseDatabase {
 
             interiorId: interiorId
         };
+    }
+
+    // Updates the name of the house at |location| to |name|.
+    async updateHouseName(location, name) {
+        await server.database.query(UPDATE_NAME_SETTING_QUERY, name, location.settings.id);
+    }
+
+    // Updates the spawn position choice of the houses owned by |location|'s owner. All previous
+    // settings will be removed first, then the |location| will be updated to |spawn|.
+    async updateHouseSpawn(location, spawn) {
+        await server.database.query(
+            REMOVE_SPAWN_SETTINGS_FOR_USER_QUERY, location.settings.ownerId);
+        await server.database.query(
+            UPDATE_SPAWN_SETTING_QUERY, spawn ? 1 : 0, location.settings.id);
     }
 
     // Removes the |location| from the database.

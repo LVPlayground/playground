@@ -78,8 +78,10 @@ class Portal {
     get disabled() { return this.disabled_; }
     set disabled(value) { this.disabled_ = value; }
 
-    // Gets the label that should be displayed with this portal.
+    // Gets or sets the label that should be displayed with this portal. The label should only be
+    // updated by the InteriorManager since it may have to be recreated.
     get label() { return this.label_; }
+    set label(value) { this.label_ = value; }
 
     // Gets the access check function unique to this portal. May be asynchronous. May be NULL.
     get accessCheckFn() { return this.accessCheckFn_; }

@@ -11,7 +11,9 @@ const ScopedEntities = require('entities/scoped_entities.js');
 // may have to be prevented because they recently were in a fight, and means that we can send them
 // to their private virtual worlds avoiding needless interior fighting restrictions.
 class InteriorManager {
-    constructor() {
+    constructor(interiorAbuseManager) {
+        this.interiorAbuseManager_ = interiorAbuseManager;
+
         this.portalEntities_ = new ScopedEntities();
         this.portalLoader_ = new PortalLoader();
         this.portalMarkers_ = new Map();
@@ -115,9 +117,23 @@ class InteriorManager {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Determines if the |player| is allowed to enter the |portal|. Players can always exit a portal
+    // that they previously entered- otherwise they would be locked inside.
+    async canPlayerTeleport(player, portal) {
+        if (portal.accessCheckFn !== null && !await portal.accessCheckFn(player))
+            return false;  // the |portal|-specific check failed
+
+        if (!this.interiorAbuseManager_.canPlayerTeleport(player))
+            return false;  // the interior-abuse check failed.
+
+        return true;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Called when a player enters a pickup. Teleport the player to the marker's destination if the
     // |pickup| is a portal, and the |player| is allowed to teleport.
-    onPlayerEnterPickup(player, pickup) {
+    async onPlayerEnterPickup(player, pickup) {
         const marker = this.portalMarkers_.get(pickup);
         if (!marker)
             return;  // the |pickup| does not represent one of the portals
@@ -131,6 +147,10 @@ class InteriorManager {
 
         switch (marker.type) {
             case 'entrance':
+                const allowed = await this.canPlayerTeleport(player, portal);
+                if (!allowed)
+                    return;  // the player is not allowed to teleport right now
+
                 player.position = portal.exitPosition.translate({ z: 1 });
                 player.rotation = portal.entranceFacingAngle;
                 player.interiorId = portal.exitInteriorId;

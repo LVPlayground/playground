@@ -7,10 +7,9 @@
 // teleported to it. Both sides of a portal have an assigned interior and virtual world as well.
 //
 // TODO: Portals should support labels.
-// TODO: Portals should support custom (asynchronous) permission checks.
 // TODO: Portals should support enter/exit callbacks.
 class Portal {
-    constructor(name, entrance, exit, disabled = false) {
+    constructor(name, entrance, exit, { disabled = false, accessCheckFn = null } = {}) {
         if (!Portal.validatePoint(entrance)) {
             throw new Error('The `entrance` must be an object having { position, facingAngle, ' +
                             'interior and virtualWorld }.');
@@ -34,6 +33,7 @@ class Portal {
         this.exitVirtualWorld_ = exit.virtualWorld;
 
         this.disabled_ = disabled;
+        this.accessCheckFn_ = accessCheckFn;
     }
 
     // Validates that |point| represents a dictionary with the minimal required information, which
@@ -75,6 +75,9 @@ class Portal {
     // Gets or sets whether this portal is disabled.
     get disabled() { return this.disabled_; }
     set disabled(value) { this.disabled_ = value; }
+
+    // Gets the access check function unique to this portal. May be asynchronous.
+    get accessCheckFn() { return this.accessCheckFn_; }
 }
 
 exports = Portal;

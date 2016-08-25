@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const Feature = require('components/feature_manager/feature.js');
+const InteriorAbuseManager = require('features/location/interior_abuse_manager.js');
 const InteriorManager = require('features/location/interior_manager.js');
 const TeleportationManager = require('features/location/teleportation_manager.js');
 const TeleportationCommands = require('features/location/teleportation_commands.js');
@@ -16,7 +17,10 @@ class Location extends Feature {
     constructor() {
         super();
 
-        this.interiorManager_ = new InteriorManager();
+        this.interiorAbuseManager_ = new InteriorAbuseManager();
+
+        this.interiorManager_ = new InteriorManager(this.interiorAbuseManager_);
+
         this.teleportationManager_ = new TeleportationManager();
         this.teleportationCommands_ = new TeleportationCommands(this.teleportationManager_);
 
@@ -45,6 +49,9 @@ class Location extends Feature {
     dispose() {
         this.interiorManager_.dispose();
         this.interiorManager_ = null;
+
+        this.interiorAbuseManager_.dispose();
+        this.interiorAbuseManager_ = null;
 
         this.teleportationManager_.dispose();
         this.teleportationManager_ = null;

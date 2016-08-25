@@ -71,7 +71,7 @@ class PortalLoader {
         // Presence and truthyness of the `disabled` property defines whether to disable the portal.
         const disabled = !!definition.disabled;
 
-        return new Portal(name, entrance, exit, disabled);
+        return new Portal(name, entrance, exit, { disabled });
     }
 
     // Creates an object representing the |point| with all data points filled in. The given

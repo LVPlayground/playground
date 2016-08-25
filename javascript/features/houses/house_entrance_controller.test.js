@@ -67,6 +67,27 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
             gunther.messages[0], Message.format(Message.HOUSE_PICKUP_CANNOT_PURCHASE, minimumPrice))
     });
 
+    it('should allow players en enter a house through its portal', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify({ userId: 42 });
+
+        assert.isNull(controller.getCurrentHouse(gunther));
+
+        // This corrosponds to the location of the entry portal of one of the houses.
+        gunther.position = new Vector(500, 500, 500);
+
+        let maxticks = 10;
+
+        // Wait some ticks to make sure that the permission check has finished.
+        while (!controller.getCurrentHouse(gunther) && maxticks --> 0)
+            await Promise.resolve();
+
+        assert.equal(gunther.interiorId, 5);
+        assert.notEqual(gunther.virtualWorld, 0);
+
+        assert.isNotNull(controller.getCurrentHouse(gunther));
+    });
+
     it('should recreate the portals when the location feature reloads', async(assert) => {
         let occupiedLocationCount = 0;
 
@@ -85,11 +106,7 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
         assert.equal(reloadedLocationFeature.portalCount, occupiedLocationCount);
     });
 
-return;  // disabled
-
     it('should be able to determine whether somebody got access to a house', async(assert) => {
-        await manager.loadHousesFromDatabase();
-
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         const russell = server.playerManager.getById(1 /* Russell */);

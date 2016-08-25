@@ -151,19 +151,27 @@ class InteriorManager {
                 if (!allowed)
                     return;  // the player is not allowed to teleport right now
 
+                if (portal.enterFn)
+                    portal.enterFn(player);
+
                 player.position = portal.exitPosition.translate({ z: 1 });
                 player.rotation = portal.entranceFacingAngle;
                 player.interiorId = portal.exitInteriorId;
                 player.virtualWorld = portal.exitVirtualWorld;
                 player.resetCamera();
                 break;
+
             case 'exit':
+                if (portal.exitFn)
+                    portal.exitFn(player);
+
                 player.position = portal.entrancePosition.translate({ z: 1 });
                 player.rotation = portal.exitFacingAngle;
                 player.interiorId = portal.entranceInteriorId;
                 player.virtualWorld = portal.entranceVirtualWorld;
                 player.resetCamera();
                 break;
+
             default:
                 throw new Error('Unexpected marker type: ' + marker.type);
         }

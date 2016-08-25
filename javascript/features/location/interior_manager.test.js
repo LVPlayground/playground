@@ -60,6 +60,10 @@ describe('InteriorManager', (it, beforeEach, afterEach) => {
 
     it('should be able to remove portals after they have been added', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        let enterCounter = 0;
+        let exitCounter = 0;
+
         const portal = new Portal('My Portal', {
             position: new Vector(500, 500, 500),
             facingAngle: 180,
@@ -70,12 +74,18 @@ describe('InteriorManager', (it, beforeEach, afterEach) => {
             facingAngle: 90,
             interiorId: 5,
             virtualWorld: 100
+        }, {
+            enterFn: player => ++enterCounter,
+            exitFn: player => ++exitCounter
         });
 
         assert.doesNotThrow(() => manager.createPortal(portal));
 
         assert.equal(gunther.interiorId, 0);
         assert.equal(gunther.virtualWorld, 0);
+
+        assert.equal(enterCounter, 0);
+        assert.equal(exitCounter, 0);
 
         // Move Gunther to the entrance position of the portal.
         gunther.position = portal.entrancePosition;
@@ -86,6 +96,9 @@ describe('InteriorManager', (it, beforeEach, afterEach) => {
         assert.equal(gunther.interiorId, 5);
         assert.equal(gunther.virtualWorld, 100);
 
+        assert.equal(enterCounter, 1);
+        assert.equal(exitCounter, 0);
+
         // Remove the expected pickup and re-position Gunther to the exit pickup, to leave it.
         manager.expectedPickup_.delete(gunther);
         gunther.position = portal.exitPosition;
@@ -95,6 +108,9 @@ describe('InteriorManager', (it, beforeEach, afterEach) => {
 
         assert.equal(gunther.interiorId, 0);
         assert.equal(gunther.virtualWorld, 0);
+
+        assert.equal(enterCounter, 1);
+        assert.equal(exitCounter, 1);
 
         // Now remove the |portal| from the manager.
         assert.doesNotThrow(() => manager.removePortal(portal));
@@ -108,6 +124,9 @@ describe('InteriorManager', (it, beforeEach, afterEach) => {
 
         assert.equal(gunther.interiorId, 0);
         assert.equal(gunther.virtualWorld, 0);
+
+        assert.equal(enterCounter, 1);
+        assert.equal(exitCounter, 1);
     });
 
     it('should be possible for portals to have custom access checks', async(assert) => {

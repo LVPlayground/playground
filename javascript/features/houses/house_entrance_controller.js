@@ -102,11 +102,14 @@ class HouseEntranceController {
             };
 
             // TODO: The |portal| should have a label.
-            // TODO: The |portal| should have event listeners.
 
             const portal = new Portal('House ' + location.settings.id, entrancePoint, exitPoint, {
                 accessCheckFn:
-                    HouseEntranceController.prototype.hasAccessToHouse.bind(this, location)
+                    HouseEntranceController.prototype.hasAccessToHouse.bind(this, location),
+                enterFn:
+                    HouseEntranceController.prototype.onPlayerEnterHouse.bind(this, location),
+                exitFn:
+                    HouseEntranceController.prototype.onPlayerExitHouse.bind(this, location)
             });
 
             // Create the portal through the Location feature's interior manager.
@@ -183,7 +186,7 @@ class HouseEntranceController {
 
     // Returns the location of the current house that the player is standing in, or NULL otherwise.
     getCurrentHouse(player) {
-        return this.currentHouse_.get(player);
+        return this.currentHouse_.get(player) || null;
     }
 
     // Makes the |player| leave the house that they're currently in.
@@ -211,6 +214,16 @@ class HouseEntranceController {
             return true;  // the owner has added the |player| as their friend
 
         return false;
+    }
+
+    // Called when the |player| has entered |location| through a portal.
+    onPlayerEnterHouse(location, player) {
+        this.currentHouse_.set(player, location);
+    }
+
+    // Called when the |player| has left the |location| through a portal.
+    onPlayerExitHouse(location, player) {
+        this.currentHouse_.delete(player);
     }
 
     // ---------------------------------------------------------------------------------------------

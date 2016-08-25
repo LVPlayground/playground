@@ -7,9 +7,9 @@
 // teleported to it. Both sides of a portal have an assigned interior and virtual world as well.
 //
 // TODO: Portals should support labels.
-// TODO: Portals should support enter/exit callbacks.
 class Portal {
-    constructor(name, entrance, exit, { disabled = false, accessCheckFn = null } = {}) {
+    constructor(name, entrance, exit, { disabled = false, accessCheckFn = null, enterFn = null,
+                                        exitFn = null } = {}) {
         if (!Portal.validatePoint(entrance)) {
             throw new Error('The `entrance` must be an object having { position, facingAngle, ' +
                             'interior and virtualWorld }.');
@@ -33,7 +33,10 @@ class Portal {
         this.exitVirtualWorld_ = exit.virtualWorld;
 
         this.disabled_ = disabled;
+
         this.accessCheckFn_ = accessCheckFn;
+        this.enterFn_ = enterFn;
+        this.exitFn_ = exitFn;
     }
 
     // Validates that |point| represents a dictionary with the minimal required information, which
@@ -76,8 +79,14 @@ class Portal {
     get disabled() { return this.disabled_; }
     set disabled(value) { this.disabled_ = value; }
 
-    // Gets the access check function unique to this portal. May be asynchronous.
+    // Gets the access check function unique to this portal. May be asynchronous. May be NULL.
     get accessCheckFn() { return this.accessCheckFn_; }
+
+    // Gets the function that is to be executed when a player enters the portal. May be NULL.
+    get enterFn() { return this.enterFn_; }
+
+    // Gets the function that is to be executed when a player exits the portal. May be NULL.
+    get exitFn() { return this.exitFn_; }
 }
 
 exports = Portal;

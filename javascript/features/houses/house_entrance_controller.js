@@ -6,7 +6,7 @@ const Portal = require('features/location/portal.js');
 const ScopedEntities = require('entities/scoped_entities.js');
 
 // The radius around a house pickup within which the label will be visible.
-const HOUSE_LABEL_DRAW_DISTANCE = 20;
+const HOUSE_AVAILABLE_LABEL_DRAW_DISTANCE = 20;
 
 // The house entrance controller is responsible for the entrances associated with each of the house
 // locations, regardless of whether the location has been occupied.
@@ -68,7 +68,7 @@ class HouseEntranceController {
 
             const label = this.entities_.createTextLabel({
                 position: location.position.translate({ z: 0.6 }),
-                drawDistance: HOUSE_LABEL_DRAW_DISTANCE,
+                drawDistance: HOUSE_AVAILABLE_LABEL_DRAW_DISTANCE,
                 testLineOfSight: true,
 
                 text: 'Available House',
@@ -101,15 +101,15 @@ class HouseEntranceController {
                 virtualWorld: VirtualWorld.forHouse(location)
             };
 
-            // TODO: The |portal| should have a label.
-
             const portal = new Portal('House ' + location.settings.id, entrancePoint, exitPoint, {
                 accessCheckFn:
                     HouseEntranceController.prototype.hasAccessToHouse.bind(this, location),
                 enterFn:
                     HouseEntranceController.prototype.onPlayerEnterHouse.bind(this, location),
                 exitFn:
-                    HouseEntranceController.prototype.onPlayerExitHouse.bind(this, location)
+                    HouseEntranceController.prototype.onPlayerExitHouse.bind(this, location),
+                label:
+                    location.settings.name + '\n{FFFF00}' + location.settings.ownerName
             });
 
             // Create the portal through the Location feature's interior manager.

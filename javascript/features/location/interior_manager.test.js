@@ -168,4 +168,28 @@ describe('InteriorManager', (it, beforeEach, afterEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], permissionDeniedMessage);
     });
+
+    it('should have the ability to display a label with a portal', assert => {
+        const originalTextLabelCount = server.textLabelManager.count;
+
+        const portal = new Portal('My Portal', {
+            position: new Vector(500, 500, 500),
+            facingAngle: 180,
+            interiorId: 0,
+            virtualWorld: 0
+        }, {
+            position: new Vector(1000, 1000, 1000),
+            facingAngle: 90,
+            interiorId: 5,
+            virtualWorld: 100
+        }, {
+            label: 'Hello, world!'
+        });
+
+        assert.doesNotThrow(() => manager.createPortal(portal));
+        assert.equal(server.textLabelManager.count, originalTextLabelCount + 1);
+
+        assert.doesNotThrow(() => manager.removePortal(portal));
+        assert.equal(server.textLabelManager.count, originalTextLabelCount);
+    });
 });

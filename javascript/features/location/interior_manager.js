@@ -6,6 +6,9 @@ const Portal = require('features/location/portal.js');
 const PortalLoader = require('features/location/portal_loader.js');
 const ScopedEntities = require('entities/scoped_entities.js');
 
+// The radius around a portal's entrance within which the label will be visible.
+const PORTAL_LABEL_DRAW_DISTANCE = 20;
+
 // The default interior markers are disabled on Las Venturas Playground, instead we provide our own.
 // This enables the system to determine whether it's OK for a player to enter the interior, which
 // may have to be prevented because they recently were in a fight, and means that we can send them
@@ -16,6 +19,8 @@ class InteriorManager {
 
         this.portalEntities_ = new ScopedEntities();
         this.portalLoader_ = new PortalLoader();
+
+        this.portalLabels_ = new Map();
         this.portalMarkers_ = new Map();
 
         // Map of all portals on the server, to a boolean of whether they're toggleable or not.
@@ -66,6 +71,20 @@ class InteriorManager {
             virtualWorld: portal.exitVirtualWorld
         });
 
+        // Create the portal's label in the world if one has been defined.
+        if (portal.label) {
+            const label = this.portalEntities_.createTextLabel({
+                position: portal.entrancePosition.translate({ z: 1.2 }),
+                drawDistance: PORTAL_LABEL_DRAW_DISTANCE,
+                testLineOfSight: true,
+
+                color: Color.WHITE,
+                text: portal.label
+            });
+
+            this.portalLabels_.set(portal, label);
+        }
+
         this.portalMarkers_.set(entrancePickup, { portal, type: 'entrance', peer: exitPickup });
         this.portalMarkers_.set(exitPickup, { portal, type: 'exit', peer: entrancePickup });
     }
@@ -100,6 +119,12 @@ class InteriorManager {
                     throw new Error('Unexpected marker type: ' + marker.type);
             }
         }
+
+        // Remove the label that has been associated with this portal's entrance.
+
+        const label = this.portalLabels_.get(portal);
+        if (label)
+            label.dispose();
 
         // It's possible that there are no entrance or exit pickups when the portal had been
         // disabled, which is possible for portals imported from a portal definition

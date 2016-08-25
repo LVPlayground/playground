@@ -5,11 +5,9 @@
 // A portal represents bidirectional teleportation points that teleport to each other. Both of the
 // portal's points has a position, and a rotation in which the player will be facing when being
 // teleported to it. Both sides of a portal have an assigned interior and virtual world as well.
-//
-// TODO: Portals should support labels.
 class Portal {
-    constructor(name, entrance, exit, { disabled = false, accessCheckFn = null, enterFn = null,
-                                        exitFn = null } = {}) {
+    constructor(name, entrance, exit, { disabled = false, label = null, accessCheckFn = null,
+                                        enterFn = null, exitFn = null } = {}) {
         if (!Portal.validatePoint(entrance)) {
             throw new Error('The `entrance` must be an object having { position, facingAngle, ' +
                             'interior and virtualWorld }.');
@@ -33,6 +31,7 @@ class Portal {
         this.exitVirtualWorld_ = exit.virtualWorld;
 
         this.disabled_ = disabled;
+        this.label_ = label;
 
         this.accessCheckFn_ = accessCheckFn;
         this.enterFn_ = enterFn;
@@ -78,6 +77,9 @@ class Portal {
     // Gets or sets whether this portal is disabled.
     get disabled() { return this.disabled_; }
     set disabled(value) { this.disabled_ = value; }
+
+    // Gets the label that should be displayed with this portal.
+    get label() { return this.label_; }
 
     // Gets the access check function unique to this portal. May be asynchronous. May be NULL.
     get accessCheckFn() { return this.accessCheckFn_; }

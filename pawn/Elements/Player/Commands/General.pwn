@@ -417,7 +417,7 @@ lvp_slap(playerId, params[]) {
         return 1;
     }
 
-    if (IsCommunicationMuted()) {
+    if (IsCommunicationMuted() && !Player(playerId)->isAdministrator()) {
         SendClientMessage(playerId, Color::Error, "Sorry, an administrator is making an announcement.");
         return 1;
     }
@@ -451,7 +451,7 @@ lvp_slapb(playerId, params[]) {
         return 1;
     }
 
-    if (IsCommunicationMuted()) {
+    if (IsCommunicationMuted() && !Player(playerId)->isAdministrator()) {
         SendClientMessage(playerId, Color::Error, "Sorry, an administrator is making an announcement.");
         return 1;
     }
@@ -799,7 +799,7 @@ lvp_showmessage(playerid,params[])
         return 1;
     }
 
-    if (IsCommunicationMuted()) {
+    if (IsCommunicationMuted() && !Player(playerid)->isAdministrator()) {
         SendClientMessage(playerid, Color::Error, "Sorry, an administrator is making an announcement.");
         return 1;
     }

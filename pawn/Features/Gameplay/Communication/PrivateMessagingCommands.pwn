@@ -49,7 +49,7 @@ class PrivateMessagingCommands {
             return 1;
         }
 
-        if (IsCommunicationMuted()) {
+        if (IsCommunicationMuted() && !Player(playerId)->isAdministrator()) {
             SendClientMessage(playerId, Color::Error, "Sorry, an administrator is making an announcement.");
             return 1;
         }
@@ -96,7 +96,7 @@ class PrivateMessagingCommands {
             return 1;
         }
 
-        if (IsCommunicationMuted()) {
+        if (IsCommunicationMuted() && !Player(playerId)->isAdministrator()) {
             SendClientMessage(playerId, Color::Error, "Sorry, an administrator is making an announcement.");
             return 1;
         }
@@ -170,7 +170,7 @@ class PrivateMessagingCommands {
         if (receiverId == Player::InvalidId)
             return 1;
 
-        if (IsCommunicationMuted()) {
+        if (IsCommunicationMuted() && !Player(playerId)->isAdministrator()) {
             SendClientMessage(playerId, Color::Error, "Sorry, an administrator is making an announcement.");
             return 1;
         }

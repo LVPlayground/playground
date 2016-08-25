@@ -258,9 +258,12 @@ class PlaygroundCommands {
     // Revokes the exception for |subject| to use the |command|.
     async revokeCommandException(command, subject, player) {
         this.access_.removeException(command.name, subject, player /* sourcePlayer */);
-        this.announce_().announceToAdministrators(
-            Message.LVP_ANNOUNCE_CMD_REMOVED_EXCEPTION, player.name, player.id, subject.name,
-            command.name);
+
+        if (this.access_.getCommandLevel(command.name) != Player.LEVEL_MANAGEMENT) {
+            this.announce_().announceToAdministrators(
+                Message.LVP_ANNOUNCE_CMD_REMOVED_EXCEPTION, player.name, player.id, subject.name,
+                command.name);
+        }
 
         return await MessageDialog.display(player, {
             title: 'The exception has been revoked!',

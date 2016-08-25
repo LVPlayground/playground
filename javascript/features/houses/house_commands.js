@@ -337,12 +337,40 @@ class HouseCommands {
             return;
         }
 
-        if (location.settings.ownerId !== player.userid && !player.isAdministrator()) {
+        const isOwner = location.settings.ownerId === player.userId;
+        if (!isOwner && !player.isAdministrator()) {
             player.sendMessage(Message.HOUSE_SETTINGS_NOT_OWNER);
             return;
         }
 
-        // TODO: Display the `/house settings` dialog to the |player|.
+        const menu = new Menu('What would you like to modify?');
+
+        menu.addItem('Sell this house', async(player) => {
+            const offer = 0;  // TODO: Calculate the refund the player could be offered.
+            const message = isOwner ? Message.format(Message.HOUSE_SETTINGS_SELL_OFFER, offer)
+                                    : Message.format(Message.HOUSE_SETTINGS_SELL_CONFIRM,
+                                                     location.settings.ownerName);
+
+            const confirmation =
+                await Dialog.displayMessage(player, 'Selling the house', message, 
+                                            'Yes' /* leftButton */, 'No' /* rightButton */);
+
+            if (!confirmation.response)
+                return;
+
+            this.announce_().announceToAdministrators(
+                Message.HOUSE_ANNOUNCE_SOLD, player.name, player.id, location.settings.name,
+                location.settings.id);
+
+            await this.manager_.removeHouse(location);
+
+            // Display a confirmation dialog to the player to inform them of their action.
+            await Dialog.displayMessage(player, 'Congratulations on the sell!',
+                                        Message.format(Message.HOUSE_SETTINGS_SELL_CONFIRMED),
+                                        'Close' /* leftButton */, '' /* rightButton */);
+        });
+
+        await menu.displayForPlayer(player);
     }
 
     // Called when an administrator types the `/house` command. Gives an overview of the available

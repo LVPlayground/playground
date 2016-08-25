@@ -15,6 +15,7 @@ const PlayerMoneyBridge = require('features/houses/utils/player_money_bridge.js'
 describe('HouseCommands', (it, beforeEach, afterEach) => {
     let commands = null;
     let manager = null;
+    let maxticks = null;
 
     beforeEach(() => {
         const announce = server.featureManager.wrapInstanceForDependency(new MockAnnounce());
@@ -26,6 +27,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         manager.database_ = new MockHouseDatabase();
 
         commands = new HouseCommands(manager, announce, economy);
+        maxticks = 10;
     });
 
     afterEach(() => {
@@ -439,18 +441,44 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         manager.forceEnterHouse(gunther);
 
-        let maxticks = 10;
-
         // Wait some ticks to make sure that the permission check has finished.
         while (!manager.getCurrentHouseForPlayer(gunther) && maxticks --> 0)
             await Promise.resolve();
 
         assert.isNotNull(manager.getCurrentHouseForPlayer(gunther));
 
-        assert.isTrue(await gunther.issueCommand('/house settings'));
-        assert.equal(gunther.messages.length, 0);
-
         // TODO: Update this test once the Management-only restriction has been lifted.
+        return;
+
+        assert.isTrue(await gunther.issueCommand('/house settings'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.HOUSE_SETTINGS_NOT_OWNER);
+    });
+
+    it('should enable players to sell the houses they own', async(assert) => {
+        await manager.loadHousesFromDatabase();
+        assert.isAbove(manager.locationCount, 0);
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify({ userId: 42 });
+        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
+
+        // Wait some ticks to make sure that the permission check has finished.
+        while (!manager.getCurrentHouseForPlayer(gunther) && maxticks --> 0)
+            await Promise.resolve();
+
+        const location = manager.getCurrentHouseForPlayer(gunther);
+        assert.isNotNull(location);
+
+        assert.isFalse(location.isAvailable());
+
+        gunther.respondToDialog({ listitem: 0 /* Sell this house */}).then(
+            () => gunther.respondToDialog({ response: 1 /* Yes, I really want to */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/house settings'));
+        assert.isTrue(location.isAvailable());
     });
 
     it('should clean up after itself', async(assert) => {

@@ -27,7 +27,7 @@ class HouseCommands {
         this.parkingLotCreator_ = new ParkingLotCreator();
         this.parkingLotRemover_ = new ParkingLotRemover();
 
-        // Command: /house [buy/cancel/create/enter/modify/remove/save/sell]
+        // Command: /house [buy/cancel/create/enter/modify/remove/save/settings]
         server.commandManager.buildCommand('house')
             .restrict(Player.LEVEL_MANAGEMENT)
             .sub('buy')
@@ -50,8 +50,8 @@ class HouseCommands {
             .sub('save')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(HouseCommands.prototype.onHouseSaveCommand.bind(this))
-            .sub('sell')
-                .build(HouseCommands.prototype.onHouseSellCommand.bind(this))
+            .sub('settings')
+                .build(HouseCommands.prototype.onHouseSettingsCommand.bind(this))
             .build(HouseCommands.prototype.onHouseCommand.bind(this));
     }
 
@@ -327,18 +327,22 @@ class HouseCommands {
             player.sendMessage(Message.HOUSE_SAVE_UNKNOWN);
     }
 
-    // Called when a |player| types the `/house sell` command to sell their house. They don't have
-    // to be in the house when typing this, but they will have to confirm the transaction.
-    async onHouseSellCommand(player) {
-        const location = await this.manager_.findClosestLocation(player);
+    // Called when the |player| types `/house settings`. This enables them to change properties of
+    // the house that they're presently located in. Not to be confused with `/house modify`, which
+    // is meant to be used for the exterior aspects of a house.
+    async onHouseSettingsCommand(player) {
+        const location = this.manager_.getCurrentHouseForPlayer(player);
+        if (!location || location.isAvailable()) {
+            player.sendMessage(Message.HOUSE_SETTINGS_OUTSIDE);
+            return;
+        }
 
-        const balance = await PlayerMoneyBridge.getBalanceForPlayer(player);
+        if (location.settings.ownerId !== player.userid && !player.isAdministrator()) {
+            player.sendMessage(Message.HOUSE_SETTINGS_NOT_OWNER);
+            return;
+        }
 
-        const interiorList = InteriorList.forEconomy(this.economy_(), location);
-        const interior = await InteriorSelector.select(player, balance, interiorList);
-
-        console.log(interior);
-
+        // TODO: Display the `/house settings` dialog to the |player|.
     }
 
     // Called when an administrator types the `/house` command. Gives an overview of the available
@@ -348,7 +352,7 @@ class HouseCommands {
         player.sendMessage(Message.HOUSE_INFO_1);
         player.sendMessage(Message.HOUSE_INFO_2);
 
-        let options = ['buy', 'sell'];
+        let options = ['buy', 'settings'];
 
         if (player.isAdministrator())
             options.push('create', 'enter', 'modify');

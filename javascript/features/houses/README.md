@@ -40,7 +40,7 @@ the following options:
     predetermined by an algorithm, and cannot be modified.
   - **/house modify**: Modifies settings for the house closest to the administrator issuing the
     command. Enables creation and removal of parking spots.
-  - **/house sell**: Sells your house after a firm confirmation.
+  - **/house settings**: Enables you to change your house's settings whilst inside of it.
   - **/house**: Displays information about the command.
 
 In addition, when interactive operations are in progress (adding or removing parking lots, for
@@ -58,7 +58,7 @@ are excluded from this— only Management members can authorize houses to be cre
 
 
 ## FAQ: Can I own multiple houses?
-No.
+No. Probably in the future.
 
 
 ## FAQ: How many parking lots can my house have?

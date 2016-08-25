@@ -128,11 +128,10 @@ class HouseManager {
     }
 
     // Returns the location closest to the position of |player|. The |maximumDistance| argument can
-    // be provided when it must be within a certain range of the player.
+    // be provided when it must be within a certain range of the player. Players inside of a house
+    // are deliberately not considered to be close to it.
     async findClosestLocation(player, maximumDistance = null) {
         await this.dataLoadedPromise_;
-
-        // TODO: Return the current house if the |player| happens to be in one.
 
         const position = player.position;
 
@@ -158,7 +157,7 @@ class HouseManager {
     // whether the house could be entered successfully.
     forceEnterHouse(player) {
         const location = this.entranceController_.getCurrentLocationForPlayer(player);
-        if (location)
+        if (!location)
             return false;  // the |player| is not currently standing on a location
 
         this.entranceController_.enterHouse(player, location);

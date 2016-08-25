@@ -422,6 +422,37 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         PlayerMoneyBridge.setMockedBalanceForTests(null);
     });
 
+    it('should do the necessary checks when changing house settings', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.identify({ userId: 42 });
+
+        await manager.loadHousesFromDatabase();
+        assert.isAbove(manager.locationCount, 0);
+
+        assert.isTrue(await gunther.issueCommand('/house settings'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.HOUSE_SETTINGS_OUTSIDE);
+
+        gunther.clearMessages();
+        gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
+
+        manager.forceEnterHouse(gunther);
+
+        let maxticks = 10;
+
+        // Wait some ticks to make sure that the permission check has finished.
+        while (!manager.getCurrentHouseForPlayer(gunther) && maxticks --> 0)
+            await Promise.resolve();
+
+        assert.isNotNull(manager.getCurrentHouseForPlayer(gunther));
+
+        assert.isTrue(await gunther.issueCommand('/house settings'));
+        assert.equal(gunther.messages.length, 0);
+
+        // TODO: Update this test once the Management-only restriction has been lifted.
+    });
+
     it('should clean up after itself', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 

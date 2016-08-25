@@ -203,7 +203,7 @@ class HouseEntranceController {
     // Determines whether the |player| has access to the |location|. This is the case when they're
     // the owner or are on the friends list of the owning player.
     async hasAccessToHouse(location, player) {
-        let message = null;
+        let message = Message.HOUSE_NO_ACCESS_UNREGISTERED;
 
         if (player.isRegistered()) {
             if (player.userId == location.settings.ownerId)
@@ -214,9 +214,6 @@ class HouseEntranceController {
 
             message = player.isAdministrator() ? Message.HOUSE_NO_ACCESS_ADMIN
                                                : Message.HOUSE_NO_ACCESS;
-
-        } else {
-            message = Message.HOUSE_NO_ACCESS_UNREGISTERED;
         }
 
         player.sendMessage(message, location.settings.ownerName);
@@ -263,7 +260,7 @@ class HouseEntranceController {
 
     // Returns the house location the |player| is currently standing in. May return NULL.
     getCurrentLocationForPlayer(player) {
-        return this.currentLocation_.get(player);
+        return this.currentLocation_.get(player) || null;
     }
 
     // Called when the |player| leaves the pickup they were standing in.

@@ -25,8 +25,10 @@ class SecretPrivateMessageCommand extends Command {
             return;
         }
 
-        target.sendMessage('Secret PM from ' + player.name + ' (Id:' + player.id + '): ' + message);
-        player.sendMessage('Secret PM to ' + target.name + ' (Id:' + target.id + '): ' + message);
+        target.sendMessage(
+            '{26A69A}Secret PM from ' + player.name + ' (Id:' + player.id + '): ' + message);
+        player.sendMessage(
+            '{26A69A}Secret PM to ' + target.name + ' (Id:' + target.id + '): ' + message);
     }
 }
 

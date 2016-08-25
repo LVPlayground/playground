@@ -44,6 +44,7 @@
     "GANG_CHAT_NO_GANG_FOUND": "{29B6F6}*** Cannot find the gang to send a remote message to for tag [%s].",
     "GANG_CHAT_REMOTE_USAGE": "{29B6F6}*** Usage: !!TAG Your message",
     "GANG_CHAT_REMOTE": "{29B6F6}[%s] [%d] %s {FFFF00}*{29B6F6}: %s",
+    "GANG_CHAT_SERVER_MUTED": "@error Sorry, an administrator is making an announcement.",
     "GANG_CHAT_SPY": "{29B6F6}*** %s (Id: %d) has bought the Seti @ Home and will start receiving your gang chat!",
     "GANG_CREATE_INVALID_GOAL": "@error You must enter a valid goal when creating a gang.",
     "GANG_CREATE_INVALID_NAME": "@error You must enter a valid name when creating a gang.",

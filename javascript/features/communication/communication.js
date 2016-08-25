@@ -13,6 +13,12 @@ class Communication extends Feature {
         super();
 
         this.manager_ = new CommunicationManager();
+
+        // Provides the `IsCommunicationMuted` native function to Pawn.
+        provideNative('IsCommunicationMuted', '', () => {
+            return this.isCommunicationMuted() ? 1   /* all communication should be muted */
+                                               : 0;  /* players are free to communicate */
+        });
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -34,10 +40,19 @@ class Communication extends Feature {
         this.manager_.removeDelegate(delegate);
     }
 
+    // Returns whether all player-generated communication on the server should be muted, unless it
+    // was issued by administrators or Management members.
+    isCommunicationMuted() {
+        return this.manager_.isCommunicationMuted();
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
         this.manager_.dispose();
+
+        // Free up the `IsCommunicationMuted` command by always stating it's not.
+        provideNative('IsCommunicationMuted', '', () => 0 /* false */);
     }
 }
 

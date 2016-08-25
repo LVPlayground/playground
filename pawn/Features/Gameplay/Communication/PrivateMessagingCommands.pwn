@@ -49,6 +49,11 @@ class PrivateMessagingCommands {
             return 1;
         }
 
+        if (IsCommunicationMuted()) {
+            SendClientMessage(playerId, Color::Error, "Sorry, an administrator is making an announcement.");
+            return 1;
+        }
+
         // Store sender and correct message offset to send along to our PM manager.
         new sender[25], receiver[25], parameterOffset = 0;
         format(sender, sizeof(sender), "%s", Player(playerId)->nicknameString());
@@ -88,6 +93,11 @@ class PrivateMessagingCommands {
             PrivateMessagingManager->lastPrivateMessageSenderName(playerId));
         if (!strlen(lastMessageSenderName)) {
             SendClientMessage(playerId, Color::Error, "You aren't private chatting with anyone yet!");
+            return 1;
+        }
+
+        if (IsCommunicationMuted()) {
+            SendClientMessage(playerId, Color::Error, "Sorry, an administrator is making an announcement.");
             return 1;
         }
 
@@ -159,6 +169,11 @@ class PrivateMessagingCommands {
         new receiverId = Command->playerParameter(params, 1, playerId);
         if (receiverId == Player::InvalidId)
             return 1;
+
+        if (IsCommunicationMuted()) {
+            SendClientMessage(playerId, Color::Error, "Sorry, an administrator is making an announcement.");
+            return 1;
+        }
 
         // Store sender and correct message offset to send along to our PM manager.
         new sender[25], receiver[25], parameterOffset = 0;

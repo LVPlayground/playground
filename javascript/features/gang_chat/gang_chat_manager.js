@@ -31,6 +31,11 @@ class GangChatManager {
         if (player.isAdministrator() && text.startsWith('!!!'))
             return false;  // the administrator uses exclamation marks in a regular context
 
+        if (this.communication_.isCommunicationMuted()) {
+            player.sendMessage(Message.GANG_CHAT_SERVER_MUTED);
+            return true;
+        }
+
         const recipients = new Set();
 
         let gang = null;

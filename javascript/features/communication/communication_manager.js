@@ -30,6 +30,13 @@ class CommunicationManager {
         this.delegates_.delete(delegate);
     }
 
+    // Returns whether all communication on the server should be muted. This has to be set and re-
+    // set by an administrator or Management member.
+    isCommunicationMuted() {
+        // TODO: Hook this up with some /muteall command.
+        return false;
+    }
+
     // Called when a player sends a textual message to the server. This could be one of many things:
     // a chat message to either a specific group of people or everyone, answering a chat message,
     // communicating with another player in a phone call, or one of several other options.

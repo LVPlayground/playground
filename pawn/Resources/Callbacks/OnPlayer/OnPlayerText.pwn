@@ -78,12 +78,6 @@ public OnPlayerText(playerid, text[]) {
         return 0;
     }
 
-    // VIP chat (# - requires VIP level).
-    if (text[0] == '#' && strlen(text) > 1) {
-        VeryImportantPlayersCommands->onVipChatCommand(playerid, text);
-        return 0;
-    }
-
     // Crew chat (@).
     if (text[0] == '@' && strlen(text) > 1) {
         new prefix[MAX_PLAYER_NAME];
@@ -115,6 +109,18 @@ public OnPlayerText(playerid, text[]) {
         format(message, sizeof(message), "[adminmsg] %s %d %s", Player(playerid)->nicknameString(), playerid, text[1]);
         AddEcho(message);
 
+        return 0;
+    }
+
+    // Apply the effects of a full server mute.
+    if (IsCommunicationMuted() && !Player(playerid)->isAdministrator()) {
+        SendClientMessage(playerid, Color::Error, "Sorry, an administrator is making an announcement.");
+        return 0;
+    }
+
+    // VIP chat (# - requires VIP level).
+    if (text[0] == '#' && strlen(text) > 1) {
+        VeryImportantPlayersCommands->onVipChatCommand(playerid, text);
         return 0;
     }
 

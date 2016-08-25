@@ -4,6 +4,9 @@
 
 #include "Interface/Server/a_samp.pwn"
 
+// Provided by the Communication feature in JavaScript.
+native IsCommunicationMuted();
+
 // -------------------------------------------------------------------------------------------------
 // JavaScript is the future of the Las Venturas Playground gamemode, however, features written in
 // it will only be available after IsJavaScriptInitialized() returns true.

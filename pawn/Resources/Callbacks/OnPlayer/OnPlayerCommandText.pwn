@@ -1155,6 +1155,11 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
+        if (IsCommunicationMuted()) {
+            SendClientMessage(playerid, Color::Error, "Sorry, an administrator is making an announcement.");
+            return 1;
+        }
+
         new name[32];
         GetPlayerName(playerid, name, 32);
 

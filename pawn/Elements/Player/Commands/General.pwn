@@ -417,6 +417,11 @@ lvp_slap(playerId, params[]) {
         return 1;
     }
 
+    if (IsCommunicationMuted()) {
+        SendClientMessage(playerId, Color::Error, "Sorry, an administrator is making an announcement.");
+        return 1;
+    }
+
     TakeRegulatedMoney(playerId, SlapCommand);
 
     ExecuteSlapCommand(playerId, targetPlayerId);
@@ -443,6 +448,11 @@ lvp_slapb(playerId, params[]) {
         new message[128];
         format(message, sizeof(message), "Error: Slapping another player costs $%s.", formatPrice(price));
         SendClientMessage(playerId, Color::Warning, message);
+        return 1;
+    }
+
+    if (IsCommunicationMuted()) {
+        SendClientMessage(playerId, Color::Error, "Sorry, an administrator is making an announcement.");
         return 1;
     }
 
@@ -786,6 +796,11 @@ lvp_showmessage(playerid,params[])
     // has a showmessage been done recently?
     if(Time->currentTime() - lastShowmsg < 4) {
         SendClientMessage(playerid,Color::Red,"* A showmessage is currently active.");
+        return 1;
+    }
+
+    if (IsCommunicationMuted()) {
+        SendClientMessage(playerid, Color::Error, "Sorry, an administrator is making an announcement.");
         return 1;
     }
 

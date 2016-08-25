@@ -177,4 +177,22 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
         assert.isNull(location.settings);
         assert.isNull(location.interior);
     });
+
+    it('should be able to tell which house a player is in', async(assert) => {
+        await manager.loadHousesFromDatabase();
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify({ userId: 42 });
+
+        // Teleport Gunther to the entrance of his house, making him enter it.
+        gunther.position = new Vector(500, 500, 500);
+
+        let maxticks = 10;
+
+        // Wait some ticks to make sure that the permission check has finished.
+        while (!manager.getCurrentHouseForPlayer(gunther) && maxticks --> 0)
+            await Promise.resolve();
+
+        assert.isNotNull(manager.getCurrentHouseForPlayer(gunther));
+    });
 });

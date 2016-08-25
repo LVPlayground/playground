@@ -194,7 +194,7 @@ class HouseEntranceController {
     }
 
     // Returns the location of the current house that the player is standing in, or NULL otherwise.
-    getCurrentHouse(player) {
+    getCurrentHouseForPlayer(player) {
         return this.currentHouse_.get(player) || null;
     }
 

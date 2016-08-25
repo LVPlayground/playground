@@ -71,7 +71,7 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 42 });
 
-        assert.isNull(controller.getCurrentHouse(gunther));
+        assert.isNull(controller.getCurrentHouseForPlayer(gunther));
 
         // This corrosponds to the location of the entry portal of one of the houses.
         gunther.position = new Vector(500, 500, 500);
@@ -79,13 +79,13 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
         let maxticks = 10;
 
         // Wait some ticks to make sure that the permission check has finished.
-        while (!controller.getCurrentHouse(gunther) && maxticks --> 0)
+        while (!controller.getCurrentHouseForPlayer(gunther) && maxticks --> 0)
             await Promise.resolve();
 
         assert.equal(gunther.interiorId, 5);
         assert.notEqual(gunther.virtualWorld, 0);
 
-        assert.isNotNull(controller.getCurrentHouse(gunther));
+        assert.isNotNull(controller.getCurrentHouseForPlayer(gunther));
     });
 
     it('should recreate the portals when the location feature reloads', async(assert) => {
@@ -141,7 +141,7 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
         const location = await manager.findClosestLocation(gunther);
         assert.isFalse(location.isAvailable());
 
-        assert.isNull(controller.getCurrentHouse(gunther));
+        assert.isNull(controller.getCurrentHouseForPlayer(gunther));
         assert.equal(gunther.interiorId, 0);
         assert.equal(gunther.virtualWorld, 0);
 
@@ -149,13 +149,13 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
 
         const interiorData = location.interior.getData();
 
-        assert.equal(controller.getCurrentHouse(gunther), location);
+        assert.equal(controller.getCurrentHouseForPlayer(gunther), location);
         assert.equal(gunther.interiorId, interiorData.interior);
         assert.equal(gunther.virtualWorld, VirtualWorld.forHouse(location));
 
         assert.doesNotThrow(() => controller.exitHouse(gunther));
 
-        assert.isNull(controller.getCurrentHouse(gunther));
+        assert.isNull(controller.getCurrentHouseForPlayer(gunther));
         assert.equal(gunther.interiorId, 0);
         assert.equal(gunther.virtualWorld, 0);
     });
@@ -168,7 +168,7 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
         assert.isFalse(location.isAvailable());
 
         assert.doesNotThrow(() => controller.enterHouse(gunther, location));
-        assert.equal(controller.getCurrentHouse(gunther), location);
+        assert.equal(controller.getCurrentHouseForPlayer(gunther), location);
 
         assert.notEqual(gunther.interiorId, 0);
         assert.notEqual(gunther.virtualWorld, 0);
@@ -176,7 +176,7 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
         // Remove the location from the entrance controller.
         controller.removeLocation(location);
 
-        assert.isNull(controller.getCurrentHouse(gunther));
+        assert.isNull(controller.getCurrentHouseForPlayer(gunther));
         assert.equal(gunther.interiorId, 0);
         assert.equal(gunther.virtualWorld, 0);
     });
@@ -189,7 +189,7 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
         assert.isFalse(location.isAvailable());
 
         assert.doesNotThrow(() => controller.enterHouse(gunther, location));
-        assert.equal(controller.getCurrentHouse(gunther), location);
+        assert.equal(controller.getCurrentHouseForPlayer(gunther), location);
 
         assert.notEqual(gunther.interiorId, 0);
         assert.notEqual(gunther.virtualWorld, 0);

@@ -170,6 +170,11 @@ class HouseManager {
         return this.entranceController_.getCurrentLocationForPlayer(player);
     }
 
+    // Returns the house that the |player| is currently standing in. May return NULL.
+    getCurrentHouseForPlayer(player) {
+        return this.entranceController_.getCurrentHouseForPlayer(player);
+    }
+
     // Returns the maximum number of houses the |player| is allowed to own.
     getMaximumHouseCountForPlayer(player) {
         return 1;
@@ -222,7 +227,7 @@ class HouseManager {
 
         // Forcefully remove all players that are currently in the locations to go outside.
         server.playerManager.forEach(player => {
-            if (this.entranceController_.getCurrentHouse(player) === location)
+            if (this.entranceController_.getCurrentHouseForPlayer(player) === location)
                 this.entranceController_.exitHouse(player);
         });
 

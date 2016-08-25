@@ -127,6 +127,7 @@
     "HOUSE_MODIFY_NONE_NEAR": "@error You need to be close to a house in order to use this command.",
     "HOUSE_NO_ACCESS": "{10F441}Sorry, you don't have access to %s's house. Ask them to add you as a friend?",
     "HOUSE_NO_ACCESS_ADMIN": "{10F441}Sorry, you don't have access to %s's house. Type `{DDFFDD}/house enter{10F441}` to override.",
+    "HOUSE_NO_ACCESS_UNREGISTERED": "{DC143C}Sorry, you need to be registered to %s's house. Register on https://sa-mp.nl/!",
     "HOUSE_PARKING_LOT_ADD": "Drive a vehicle to the intended parking lot, which must be within %d units from the entrance.\nType `{FFA500}/house save{A9C4E4}` to save the location, or `{FFA500}/house cancel{A9C4E4}` to cancel.",
     "HOUSE_PARKING_LOT_ADD_MSG": "{10F441}Type `{DDFFDD}/house save{10F441}` to save the location, or `{DDFFDD}/house cancel{10F441}` to cancel.",
     "HOUSE_PARKING_LOT_ADDED": "The parking lot has been added to this location.",
@@ -142,10 +143,6 @@
     "HOUSE_PURCHASE_TOO_EXPENSIVE": "Sorry, you cannot purchase this house because you don't have enough money available.",
     "HOUSE_REMOVE_UNKNOWN": "@error Unable to remove - you're not currently in an interactive operation.",
     "HOUSE_SAVE_UNKNOWN": "@error Unable to confirm - you're not currently in an interactive operation.",
-
-    "INTERIOR_FACING_ANGLE_PROMO": "{10F441}Are you facing the wrong direction? Aim away from the door and type `{DDFFDD}/bugged{10F441}` to let us know!",
-    "INTERIOR_FACING_ANGLE_THANKS": "@success Thanks! Your report has been sent to our developers.",
-    "INTERIOR_FACING_ANGLE_UNKNOWN": "@error Sorry, it doesn't look like you passed through an interior yet.",
 
     "IRC_CHAT_MESSAGE_SENT": "{33AA33}Message sent to {FFFFFF}%s {33AA33}as {FFFFFF}%s{33AA33}: {FFFFFF}%s",
     

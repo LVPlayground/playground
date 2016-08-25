@@ -6,10 +6,14 @@
 // from different interiors or safe-zones. This ability might be disabled if they have recently been
 // in a fight, which may scare off the property owners.
 class InteriorAbuseManager {
+    constructor() {}
+
     canPlayerTeleport(player) {
         // TODO: Implement similar heuristics to the DamageManager in Pawn here.
         return true;
     }
+
+    dispose() {}
 }
 
 exports = InteriorAbuseManager;

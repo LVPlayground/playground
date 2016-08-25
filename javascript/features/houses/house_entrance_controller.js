@@ -87,7 +87,7 @@ class HouseEntranceController {
                 throw new Error('Houses may only have a single exit for now.');
 
             const entrancePoint = {
-                position: location.position,
+                position: location.position.translate({ z: -1 }),
                 facingAngle: location.facingAngle,
                 interiorId: location.interiorId,
                 virtualWorld: 0 /* main world */
@@ -95,7 +95,7 @@ class HouseEntranceController {
 
             const exitData = interiorData.exits[0];
             const exitPoint = {
-                position: new Vector(...exitData.position),
+                position: new Vector(...exitData.position).translate({ z: -1 }),
                 facingAngle: exitData.rotation,
                 interiorId: interiorData.interior,
                 virtualWorld: VirtualWorld.forHouse(location)
@@ -203,16 +203,23 @@ class HouseEntranceController {
     // Determines whether the |player| has access to the |location|. This is the case when they're
     // the owner or are on the friends list of the owning player.
     async hasAccessToHouse(location, player) {
-        if (!player.isRegistered())
-            return false;  // unregistered players never have access
+        let message = null;
 
-        if (player.userId == location.settings.ownerId)
-            return true;  // the owner can always access their house
+        if (player.isRegistered()) {
+            if (player.userId == location.settings.ownerId)
+                return true;  // the owner can always access their house
 
-        const isFriended = await this.friends_().isFriendedBy(player, location.settings.ownerId);
-        if (isFriended)
-            return true;  // the owner has added the |player| as their friend
+            if (await this.friends_().isFriendedBy(player, location.settings.ownerId))
+                return true;  // the owner has added the |player| as their friend
 
+            message = player.isAdministrator() ? Message.HOUSE_NO_ACCESS_ADMIN
+                                               : Message.HOUSE_NO_ACCESS;
+
+        } else {
+            message = Message.HOUSE_NO_ACCESS_UNREGISTERED;
+        }
+
+        player.sendMessage(message, location.settings.ownerName);
         return false;
     }
 
@@ -261,7 +268,7 @@ class HouseEntranceController {
 
     // Called when the |player| leaves the pickup they were standing in.
     onPlayerLeavePickup(player) {
-        this.currentPickup_.delete(player);
+        this.currentLocation_.delete(player);
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -52,9 +52,6 @@ class InteriorManager {
     // portal and can be used by players, together with the information required for actually
     // dealing with the event of a player entering a pickup.
     createPortal(portal, isToggleable = false) {
-        if (!(portal instanceof Portal))
-            throw new Error('Portals must be instances of the Portal object.');
-
         this.portals_.set(portal, isToggleable);
         if (portal.disabled)
             return;
@@ -74,7 +71,7 @@ class InteriorManager {
         // Create the portal's label in the world if one has been defined.
         if (portal.label) {
             const label = this.portalEntities_.createTextLabel({
-                position: portal.entrancePosition.translate({ z: 1.2 }),
+                position: portal.entrancePosition.translate({ z: 2.3 }),
                 drawDistance: PORTAL_LABEL_DRAW_DISTANCE,
                 testLineOfSight: true,
 
@@ -93,9 +90,6 @@ class InteriorManager {
     // well. Note that players who are on the opposite end of the portal will not be able to return.
     // This method is O(n) on the number of portals created in the interior manager.
     removePortal(portal) {
-        if (!(portal instanceof Portal))
-            throw new Error('Portals must be instances of the Portal object.');
-
         if (!this.portals_.has(portal))
             throw new Error('The given Portal is not known to the interior manager.');
 

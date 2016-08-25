@@ -152,7 +152,10 @@ class HouseCommands {
         if (!confirmation.response)
             return;
 
-        await this.manager_.createLocation(player, position);
+        const facingAngle = player.rotation;
+        const interiorId = player.interiorId;
+
+        await this.manager_.createLocation(player, { facingAngle, interiorId, position });
 
         // Announce creation of the location to other administrators.
         this.announce_().announceToAdministrators(

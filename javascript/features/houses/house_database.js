@@ -8,7 +8,9 @@ const LOAD_LOCATIONS_QUERY = `
         house_location_id,
         entrance_x,
         entrance_y,
-        entrance_z
+        entrance_z,
+        entrance_facing_angle,
+        entrance_interior_id
     FROM
         houses_locations
     WHERE
@@ -54,9 +56,9 @@ const LOAD_HOUSES_QUERY = `
 const CREATE_LOCATION_QUERY = `
     INSERT INTO
         houses_locations
-        (entrance_x, entrance_y, entrance_z, location_creator_id, location_created)
+        (entrance_x, entrance_y, entrance_z, entrance_facing_angle, entrance_interior_id, location_creator_id, location_created)
     VALUES
-        (?, ?, ?, ?, NOW())`;
+        (?, ?, ?, ?, ?, ?, NOW())`;
 
 // Query to create a new parking lot associated with a location in the database.
 const CREATE_PARKING_LOT_QUERY = `
@@ -136,11 +138,15 @@ class HouseDatabase {
                 const position =
                     new Vector(location.entrance_x, location.entrance_y, location.entrance_z);
 
-                locations.push({
-                    id: locationId,
-                    position: position,
-                    parkingLots: parkingLots.get(locationId) || []
-                });
+                locations.push([
+                    locationId,
+                    {
+                        position: position,
+                        facingAngle: location.entrance_facing_angle,
+                        interiorId: location.entrance_interior_id,
+                        parkingLots: parkingLots.get(locationId) || []
+                    }
+                ]);
             });
         }
         return locations;
@@ -166,10 +172,13 @@ class HouseDatabase {
         return houses;
     }
 
-    // Creates a new house location at |position| created by the |player|.
-    async createLocation(player, position) {
+    // Creates a new house location at |locationInfo| created by the |player|.
+    async createLocation(player, locationInfo) {
+        const { facingAngle, interiorId, position } = locationInfo;
+
         const data = await server.database.query(
-            CREATE_LOCATION_QUERY, position.x, position.y, position.z, player.userId);
+            CREATE_LOCATION_QUERY, position.x, position.y, position.z, facingAngle, interiorId,
+            player.userId);
 
         return data.insertId;
     }

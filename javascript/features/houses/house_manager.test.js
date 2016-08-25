@@ -21,6 +21,8 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
         manager.database_ = new MockHouseDatabase();
     });
 
+    const validLocation = { facingAngle: 0, interiorId: 0, position: new Vector(50, 50, 10) };
+
     it('should be able to load the existing houses', async(assert) => {
         await manager.loadHousesFromDatabase();
 
@@ -51,7 +53,7 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
 
         gunther.identify();
 
-        await manager.createLocation(gunther, new Vector(50, 50, 10));
+        await manager.createLocation(gunther, validLocation);
 
         assert.equal(manager.locationCount, locationCount + 1);
     });
@@ -89,7 +91,7 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
 
         assert.equal(manager.locationCount, 0);
 
-        await manager.createLocation(gunther, new Vector(50, 50, 10));
+        await manager.createLocation(gunther, validLocation);
         assert.equal(manager.locationCount, 1);
 
         const locations = Array.from(manager.locations_);

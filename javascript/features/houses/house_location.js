@@ -6,18 +6,21 @@
 // locations can be created by administrators, although the prices are to be determined by an
 // algorithm in the general economy code.
 class HouseLocation {
-    constructor(location) {
-        this.id_ = location.id;
+    constructor(id, locationInfo) {
+        this.id_ = id;
 
-        this.position_ = location.position;
+        this.position_ = locationInfo.position;
+        this.facingAngle_ = locationInfo.facingAngle;
+        this.interiorId_ = locationInfo.interiorId;
+
         this.parkingLots_ = new Map();
 
         this.settings_ = null;
         this.interior_ = null;
 
         // Load the |parkingLots| from the database to this location.
-        if (location.hasOwnProperty('parkingLots')) {
-            location.parkingLots.forEach(parkingLot =>
+        if (locationInfo.hasOwnProperty('parkingLots')) {
+            locationInfo.parkingLots.forEach(parkingLot =>
                 this.parkingLots_.set(parkingLot.id, parkingLot));
         }
     }
@@ -30,6 +33,12 @@ class HouseLocation {
 
     // Gets the position of this house location.
     get position() { return this.position_; }
+
+    // Gets the facing angle for the player when leaving this location.
+    get facingAngle() { return this.facingAngle_; }
+
+    // Gets the interior Id in which this location had been created.
+    get interiorId() { return this.interiorId_; }
 
     // Gets the array of parking lots associated with this location.
     get parkingLots() { return this.parkingLots_.values(); }

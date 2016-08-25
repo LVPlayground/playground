@@ -6,9 +6,11 @@ const HouseLocation = require('features/houses/house_location.js');
 const ParkingLotRemover = require('features/houses/utils/parking_lot_remover.js');
 
 describe('ParkingLotRemover', (it, beforeEach, afterEach) => {
-    const location = new HouseLocation({
-        id: 0,
+    const location = new HouseLocation(0 /* id */, {
+        facingAngle: 0,
+        interiorId: 0,
         position: new Vector(500, 500, 0),
+
         parkingLots: [
             {
                 id: 42,

@@ -35,8 +35,8 @@ class HouseManager {
         const locationMap = new Map();
 
         const locations = await this.database_.loadLocations();
-        locations.forEach(locationInfo => {
-            const location = new HouseLocation(locationInfo);
+        locations.forEach(([id, locationInfo]) => {
+            const location = new HouseLocation(id, locationInfo);
             this.locations_.add(location);
 
             locationMap.set(location.id, location);
@@ -73,14 +73,14 @@ class HouseManager {
         this.dataLoadedResolver_();
     }
 
-    // Creates a new house location at |position| as issued by |player|. It will immediately become
-    // available for purchase by any in-game player.
-    async createLocation(player, position) {
+    // Creates a new house location at |locationInfo| as issued by |player|. The |locationInfo| must
+    // be an object having a {position, facingAngle, interiorId}.
+    async createLocation(player, locationInfo) {
         if (!player.isRegistered())
             throw new Error('The |player| must be registered in order to create a location.');
 
-        const id = await this.database_.createLocation(player, position);
-        const location = new HouseLocation({ id, position });
+        const id = await this.database_.createLocation(player, locationInfo);
+        const location = new HouseLocation(id, locationInfo);
 
         this.locations_.add(location);
         this.entranceController_.addLocation(location);

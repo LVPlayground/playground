@@ -88,8 +88,8 @@ class HouseEntranceController {
 
             const entrancePoint = {
                 position: location.position,
-                facingAngle: 0 /** XXX This should be stored. **/,
-                interiorId: 0 /** XXX This should be stored. **/,
+                facingAngle: location.facingAngle,
+                interiorId: location.interiorId,
                 virtualWorld: 0 /* main world */
             };
 

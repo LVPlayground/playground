@@ -86,7 +86,7 @@ class HouseEntranceController {
 
             const entrancePoint = {
                 position: location.position.translate({ z: -1 }),
-                facingAngle: location.facingAngle,
+                facingAngle: exitData.rotation,
                 interiorId: location.interiorId,
                 virtualWorld: 0 /* main world */
             };
@@ -94,7 +94,7 @@ class HouseEntranceController {
             const exitData = interiorData.exits[0];
             const exitPoint = {
                 position: new Vector(...exitData.position).translate({ z: -1 }),
-                facingAngle: exitData.rotation,
+                facingAngle: location.facingAngle,
                 interiorId: interiorData.interior,
                 virtualWorld: VirtualWorld.forHouse(location)
             };

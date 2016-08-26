@@ -84,6 +84,8 @@ class HouseEntranceController {
             if (interiorData.exits.length != 1)
                 throw new Error('Houses may only have a single exit for now.');
 
+            const exitData = interiorData.exits[0];
+
             const entrancePoint = {
                 position: location.position.translate({ z: -1 }),
                 facingAngle: exitData.rotation,
@@ -91,7 +93,6 @@ class HouseEntranceController {
                 virtualWorld: 0 /* main world */
             };
 
-            const exitData = interiorData.exits[0];
             const exitPoint = {
                 position: new Vector(...exitData.position).translate({ z: -1 }),
                 facingAngle: location.facingAngle,

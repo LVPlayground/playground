@@ -41,6 +41,7 @@ class PlaygroundCommands {
         requireCommand('features/playground/commands/boost.js');
         requireCommand('features/playground/commands/fly.js');
         requireCommand('features/playground/commands/jetpack.js');
+        requireCommand('features/playground/commands/rampcar.js');
         requireCommand('features/playground/commands/slow.js');
         requireCommand('features/playground/commands/spm.js');
 

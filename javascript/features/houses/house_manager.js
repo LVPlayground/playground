@@ -197,15 +197,9 @@ class HouseManager {
         return closestLocation;
     }
 
-    // Attempts to force-enter the house the |player| is currently at the entrance of. Returns
-    // whether the house could be entered successfully.
-    forceEnterHouse(player) {
-        const location = this.entranceController_.getCurrentLocationForPlayer(player);
-        if (!location)
-            return false;  // the |player| is not currently standing on a location
-
+    // Attempts to force-enter the |player| into |location|. They do not have to presently be there.
+    forceEnterHouse(player, location) {
         this.entranceController_.enterHouse(player, location);
-        return true;
     }
 
     // Forces the |player| to exit the |location|. They do not have to presently be in there.

@@ -343,9 +343,26 @@ class HouseCommands {
             return;
         }
 
-        const menu = new Menu('What would you like to modify?');
+        const menu = new Menu('What would you like to modify?', ['Option', 'Current value']);
+        const spawnValue = location.settings.isSpawn() ? 'Yes' : 'No';
 
-        menu.addItem('Sell this house', async(player) => {
+        menu.addItem('Change the name', location.settings.name, async(player) => {
+            // TODO: Implement
+        });
+
+        menu.addItem('Set spawn position', spawnValue, async(player) => {
+            await this.manager_.updateHouseSetting(location, 'spawn', !location.settings.isSpawn());
+
+            // TODO: Clarify this message when it's an admin changing settings in another house?
+            const message = location.settings.isSpawn() ? Message.HOUSE_SETTINGS_SPAWN_ENABLED
+                                                        : Message.HOUSE_SETTINGS_SPAWN_DISABLED;
+
+            // Display a confirmation dialog to the player to inform them of their action.
+            await Dialog.displayMessage(player, 'Spawning at your house', message,
+                                        'Close' /* leftButton */, '' /* rightButton */);
+        });
+
+        menu.addItem('Sell this house', '-', async(player) => {
             const offer = 0;  // TODO: Calculate the refund the player could be offered.
             const message = isOwner ? Message.format(Message.HOUSE_SETTINGS_SELL_OFFER, offer)
                                     : Message.format(Message.HOUSE_SETTINGS_SELL_CONFIRM,

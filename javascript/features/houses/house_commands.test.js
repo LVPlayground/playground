@@ -455,6 +455,38 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.equal(gunther.messages[0], Message.HOUSE_SETTINGS_NOT_OWNER);
     });
 
+    it('should allow house spawn settings to be updated', async(assert) => {
+        await manager.loadHousesFromDatabase();
+        assert.isAbove(manager.locationCount, 0);
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify({ userId: 42 });
+        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
+
+        // Wait some ticks to make sure that the permission check has finished.
+        while (!manager.getCurrentHouseForPlayer(gunther) && maxticks --> 0)
+            await Promise.resolve();
+
+        const location = manager.getCurrentHouseForPlayer(gunther);
+        assert.isNotNull(location);
+
+        assert.isFalse(location.isAvailable());
+        assert.isFalse(location.settings.isSpawn());
+
+        gunther.respondToDialog({ listitem: 1 /* Set spawn position at this house */}).then(
+            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/house settings'));
+        assert.isTrue(location.settings.isSpawn());
+
+        gunther.respondToDialog({ listitem: 1 /* Set spawn position at this house */}).then(
+            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/house settings'));
+        assert.isFalse(location.settings.isSpawn());
+    });
+
     it('should enable players to sell the houses they own', async(assert) => {
         await manager.loadHousesFromDatabase();
         assert.isAbove(manager.locationCount, 0);
@@ -473,7 +505,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         assert.isFalse(location.isAvailable());
 
-        gunther.respondToDialog({ listitem: 0 /* Sell this house */}).then(
+        gunther.respondToDialog({ listitem: 2 /* Sell this house */}).then(
             () => gunther.respondToDialog({ response: 1 /* Yes, I really want to */ })).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 

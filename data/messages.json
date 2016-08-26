@@ -150,6 +150,8 @@
     "HOUSE_SETTINGS_SELL_CONFIRM": "You are about to sell %s's house. They won't get a refund. Are you certain?",
     "HOUSE_SETTINGS_SELL_CONFIRMED": "The house has successfully been sold. Thank you for doing business with us.",
     "HOUSE_SETTINGS_SELL_OFFER": "You are about to sell your house. The bank is offering you a {FFA500}%${A9C4E4} refund. Are you certain?",
+    "HOUSE_SETTINGS_SPAWN_DISABLED": "You won't respawn at this house anymore.",
+    "HOUSE_SETTINGS_SPAWN_ENABLED": "You will now start spawning at this house.",
 
     "IRC_CHAT_MESSAGE_SENT": "{33AA33}Message sent to {FFFFFF}%s {33AA33}as {FFFFFF}%s{33AA33}: {FFFFFF}%s",
     

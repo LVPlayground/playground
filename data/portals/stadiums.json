@@ -1,13 +1,13 @@
 [
     {
         "name": "STADDIRT",
-        "entrance": { "position": [ 1100.72, 1597.29, 12.54 ], "facingAngle": 0, "interiorId": 0 },
-        "exit": { "position": [ -1400.0179, -663.382, 1051.232 ], "facingAngle": 85, "interiorId": 4 }
+        "entrance": { "position": [ 1100.72, 1597.29, 11.54 ], "facingAngle": 0, "interiorId": 0, "virtualWorld": 0 },
+        "exit": { "position": [ -1400.0179, -663.382, 1050.232 ], "facingAngle": 85, "interiorId": 4, "virtualWorld": 0 }
     },
     {
         "name": "STADSTUNT",
-        "entrance": { "position": [ 1093.99, 1597.04, 12.54 ], "facingAngle": 7, "interiorId": 0 },
-        "exit": { "position": [ -1464.942, 1556.091, 1052.53 ], "facingAngle": 0, "interiorId": 14 }
+        "entrance": { "position": [ 1093.99, 1597.04, 11.54 ], "facingAngle": 7, "interiorId": 0, "virtualWorld": 0 },
+        "exit": { "position": [ -1464.942, 1556.091, 1051.53 ], "facingAngle": 0, "interiorId": 14, "virtualWorld": 0 }
     },
     {
         "name": "STAD8TRACK",

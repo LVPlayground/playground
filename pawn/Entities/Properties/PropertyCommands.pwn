@@ -283,8 +283,10 @@ class PropertyCommands {
                 return 1;
             }
 
-            Property(currentFeatureOwner)->setSpecialFeature(NoPropertyFeature);
-            Property(currentFeatureOwner)->save();
+            if (currentFeatureOwner != Property::InvalidId) {
+                Property(currentFeatureOwner)->setSpecialFeature(NoPropertyFeature);
+                Property(currentFeatureOwner)->save();
+            }
 
             Property(propertyId)->setSpecialFeature(feature);
             Property(propertyId)->save();

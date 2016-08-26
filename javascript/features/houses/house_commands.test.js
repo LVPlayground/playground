@@ -372,7 +372,9 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         gunther.level = Player.LEVEL_MANAGEMENT;
         gunther.position = new Vector(200, 250, 300);  // on the nearest location pickup
 
-        manager.getHousesForPlayer = player => [true];  // any non-empty array will do
+        const maximumHouseCount = manager.getMaximumHouseCountForPlayer(gunther);
+
+        manager.getHousesForPlayer = player => new Array(maximumHouseCount);
 
         assert.isTrue(await gunther.issueCommand('/house buy'));
 
@@ -438,8 +440,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         gunther.clearMessages();
         gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
-
-        manager.forceEnterHouse(gunther);
 
         // Wait some ticks to make sure that the permission check has finished.
         while (!manager.getCurrentHouseForPlayer(gunther) && maxticks --> 0)

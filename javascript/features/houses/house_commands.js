@@ -184,9 +184,11 @@ class HouseCommands {
     // Called when an administrator wants to override the access restrictions to a house and gain
     // entry to it anyway. Only works when they're standing in an entrance point.
     async onHouseEnterCommand(player) {
-        if (this.manager_.forceEnterHouse(player)) {
+        const location = await this.manager_.findClosestLocation(player, 15 /* maximumDistance */);
+        if (location) {
             // TODO: Should we announce this to the other administrators? We really need
             // announcement channels to deal with the granularity of messages.
+            this.manager_.forceEnterHouse(player, location);
 
             player.sendMessage(Message.HOUSE_ENTERED);
             return;

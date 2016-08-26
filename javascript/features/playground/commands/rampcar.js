@@ -44,18 +44,15 @@ class RampCarCommand extends Command {
         });
 
         var rampObject = this.rampCar_.createObject({
-            modelId: 13593,
+            modelId: 13645,
             position: subject.position,
             rotation: new Vector(0.0, 0.0, 0.0),
             interiorId: subject.interiorId,
             virtualWorld: subject.virtualWorld
         });
 
-        if (rampObject != GameObject.INVALID_ID)
-            rampObject.attachToVehicle(rampVehicle, new Vector(0.0, 0.0, 0.0), new Vector(0.0, 0.0, 0.0));
-
-        if (rampVehicle != Vehicle.INVALID_ID)
-            pawnInvoke('PutPlayerInVehicle', 'iii', subject.id, rampVehicle, 0);
+        rampObject.attachToVehicle(rampVehicle, new Vector(0.0, 3.0, 0.0), new Vector(0.0, 0.0, 180.0));
+        pawnInvoke('PutPlayerInVehicle', 'iii', subject.id, rampVehicle.id, 0);
     }
 
     dispose() {

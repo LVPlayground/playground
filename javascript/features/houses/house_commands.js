@@ -11,9 +11,23 @@ const Menu = require('components/menu/menu.js');
 const ParkingLotCreator = require('features/houses/utils/parking_lot_creator.js');
 const ParkingLotRemover = require('features/houses/utils/parking_lot_remover.js');
 const PlayerMoneyBridge = require('features/houses/utils/player_money_bridge.js');
+const Question = require('components/dialogs/question.js');
 
 // Maximum number of milliseconds during which the identity beam should be displayed.
 const IDENTITY_BEAM_DISPLAY_TIME_MS = 60000;
+
+// Options for asking the player what their house's name should be.
+const NAME_QUESTION = {
+    question: 'Choose your house\'s name',
+    message: 'What would you like your house to be named as?',
+    constraints: {
+        validation: /^[a-zA-Z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð\s,\.'\-~_]{3,32}$/u,
+        explanation: 'The name of your gang must be between 3 and 32 characters long and should ' +
+                     'not contain very exotic characters.',
+
+        abort: 'Sorry, a house must have a valid name!'
+    }
+};
 
 // This class provides the `/house` command available to administrators to manage parts of the
 // Houses feature on Las Venturas Playground. Most interaction occurs through dialogs.
@@ -347,7 +361,16 @@ class HouseCommands {
         const spawnValue = location.settings.isSpawn() ? 'Yes' : 'No';
 
         menu.addItem('Change the name', location.settings.name, async(player) => {
-            // TODO: Implement
+            const name = await Question.ask(player, NAME_QUESTION);
+            if (!name)
+                return;  // the player decided to not update the house's name
+
+            await this.manager_.updateHouseSetting(location, 'name', name);
+
+            // Display a confirmation dialog to the player to inform them of their action.
+            await Dialog.displayMessage(player, 'Changing the house\'s name',
+                                        Message.format(Message.HOUSE_SETTINGS_NAME, name),
+                                        'Close' /* leftButton */, '' /* rightButton */);
         });
 
         menu.addItem('Set spawn position', spawnValue, async(player) => {

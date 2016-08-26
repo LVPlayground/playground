@@ -455,6 +455,33 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.equal(gunther.messages[0], Message.HOUSE_SETTINGS_NOT_OWNER);
     });
 
+    it('should allow house name to be updated', async(assert) => {
+        await manager.loadHousesFromDatabase();
+        assert.isAbove(manager.locationCount, 0);
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify({ userId: 42 });
+        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
+
+        // Wait some ticks to make sure that the permission check has finished.
+        while (!manager.getCurrentHouseForPlayer(gunther) && maxticks --> 0)
+            await Promise.resolve();
+
+        const location = manager.getCurrentHouseForPlayer(gunther);
+        assert.isNotNull(location);
+
+        assert.isFalse(location.isAvailable());
+        assert.equal(location.settings.name, 'Guntherplaza');
+
+        gunther.respondToDialog({ listitem: 0 /* Change the house's name */}).then(
+            () => gunther.respondToDialog({ inputtext: 'Gunther Pro Palace' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/house settings'));
+        assert.equal(location.settings.name, 'Gunther Pro Palace');
+    });
+
     it('should allow house spawn settings to be updated', async(assert) => {
         await manager.loadHousesFromDatabase();
         assert.isAbove(manager.locationCount, 0);

@@ -25,35 +25,37 @@ class RampCarCommand extends Command {
     }
 
     onRampCarCommand(player, target) {
-        const vehicleId = pawnInvoke('GetPlayerVehicleID', 'i', target.id);
+        const subject = target || player;
+
+        const vehicleId = pawnInvoke('GetPlayerVehicleID', 'i', subject.id);
         if (vehicleId != 0)
             pawnInvoke('SetVehicleToRespawn', 'i', vehicleId);
 
-        var rampVehicleId = this.rampCar_.createVehicle({
+        var rampVehicle = this.rampCar_.createVehicle({
             modelId: 411,
-            position: target.position,
-            rotation: target.rotation,
+            position: subject.position,
+            rotation: subject.rotation,
             primaryColor: 126,
             secondaryColor: 1,
             siren: true,
             paintjob: null,
-            interiorId: target.interiorId,
-            virtualWorld: target.virtualWorld
+            interiorId: subject.interiorId,
+            virtualWorld: subject.virtualWorld
         });
 
         var rampObject = this.rampCar_.createObject({
             modelId: 13593,
-            position: target.position,
-            rotation: target.rotation,
-            interiorId: target.interiorId,
-            virtualWorld: target.virtualWorld
+            position: subject.position,
+            rotation: new Vector(0.0, 0.0, 0.0),
+            interiorId: subject.interiorId,
+            virtualWorld: subject.virtualWorld
         });
 
-        if (rampObject!= GameObject.INVALID_ID)
-            rampObject.attachToVehicle(rampVehicleId, new Vector(0.0, 0.0, 0.0), new Vector(0.0, 0.0, 0.0));
+        if (rampObject != GameObject.INVALID_ID)
+            rampObject.attachToVehicle(rampVehicle, new Vector(0.0, 0.0, 0.0), new Vector(0.0, 0.0, 0.0));
 
-        if (rampVehicleId != Vehicle.INVALID_ID)
-            pawnInvoke('PutPlayerInVehicle', 'iii', target.id, rampVehicleId, 0);
+        if (rampVehicle != Vehicle.INVALID_ID)
+            pawnInvoke('PutPlayerInVehicle', 'iii', subject.id, rampVehicle, 0);
     }
 
     dispose() {

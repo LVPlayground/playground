@@ -42,7 +42,7 @@ const INTERIOR_LIST = [
         value: 3,
 
         interior: 10,
-        exits: [ { position: [ 2269.85, -1210.62, 1047.56 ], rotation: 0 } ],
+        exits: [ { position: [ 2269.85, -1210.62, 1047.56 ], rotation: 90 } ],
 
         preview: {
             position: [ [ 2270.5349, -1210.3503, 1048.2172 ], [ 2247.8110, -1207.0803, 1049.6375 ] ],

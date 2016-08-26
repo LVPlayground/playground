@@ -134,7 +134,8 @@ class HouseEntranceController {
             throw new Error('The |location| must be occupied in order to update the label.');
 
         // Update the portal's label through the Location feature's interior manager.
-        this.locationFeature_().updatePortalLabel(portal, value);
+        this.locationFeature_().updatePortalLabel(
+            portal, value + '\n{FFFF00}' + location.settings.ownerName);
     }
 
     // Removes |location| from the set of tracked locations. All entrances will be removed.

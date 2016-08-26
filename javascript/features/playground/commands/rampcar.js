@@ -10,7 +10,11 @@ const ScopedEntities = require('entities/scoped_entities.js');
 class RampCarCommand extends Command {
     constructor() {
         super();
+
         this.rampCar_ = new ScopedEntities();
+        this.attachedRamps_ = new Map();
+
+        server.vehicleManager.addObserver(this);
     }
 
     get name() { return 'rampcar'; }
@@ -43,6 +47,9 @@ class RampCarCommand extends Command {
             virtualWorld: subject.virtualWorld
         });
 
+        pawnInvoke('SetVehicleNumberPlate', 'is', rampVehicle.id, 'Ramp it up!');
+        rampVehicle.addComponent(Vehicle.COMPONENT_NOS_TEN_SHOTS);
+
         var rampObject = this.rampCar_.createObject({
             modelId: 13645,
             position: subject.position,
@@ -52,11 +59,24 @@ class RampCarCommand extends Command {
         });
 
         rampObject.attachToVehicle(rampVehicle, new Vector(0.0, 3.0, 0.0), new Vector(0.0, 0.0, 180.0));
+        this.attachedRamps_.set(rampVehicle, rampObject);
+
         pawnInvoke('PutPlayerInVehicle', 'iii', subject.id, rampVehicle.id, 0);
+    }
+
+    onVehicleSpawn(vehicle) {
+        if (!this.rampCar_.hasVehicle(vehicle))
+            return;
+
+        vehicle.dispose();
+
+        this.attachedRamps_.get(vehicle).dispose();
+        this.attachedRamps_.delete(vehicle);
     }
 
     dispose() {
         this.rampCar_.dispose();
+        server.vehicleManager.removeObserver(this);
     }
 }
 

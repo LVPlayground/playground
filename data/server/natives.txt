@@ -5,6 +5,9 @@
 # native IsCommunicationMuted();
 IsCommunicationMuted
 
+# native bool: SpawnPlayerInHouse(playerId);
+SpawnPlayerInHouse
+
 # Required for testing.
 TestFunction
 MurmurIIIHashGenerateHash

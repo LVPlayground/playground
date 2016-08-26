@@ -208,6 +208,11 @@ class HouseManager {
         return true;
     }
 
+    // Forces the |player| to exit the |location|. They do not have to presently be in there.
+    forceExitHouse(player, location) {
+        this.entranceController_.exitHouse(player, location);
+    }
+
     // Returns the house location the |player| is currently standing in. May return NULL.
     getCurrentLocationForPlayer(player) {
         return this.entranceController_.getCurrentLocationForPlayer(player);
@@ -230,7 +235,16 @@ class HouseManager {
 
     // Returns the houses owned by |userId|. Assumes that the data has been loaded already.
     getHousesForUser(userId) {
-        return [];
+        const houses = [];
+
+        this.locations_.forEach(location => {
+            if (location.isAvailable() || location.settings.ownerId !== userId)
+                return;
+
+            houses.push(location);
+        });
+
+        return houses;
     }
 
     // Removes the given house |location|, including the house tied to it, if any. This action can

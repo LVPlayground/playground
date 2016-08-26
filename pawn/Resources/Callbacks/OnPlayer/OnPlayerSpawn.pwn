@@ -28,7 +28,8 @@ SetPlayerSpawnPos(playerId) {
     if (IsPlayerInMinigame(playerId))
         return 0;
 
-    SetPlayerRandomSpawnPos(playerId);
+    if (!SpawnPlayerInHouse(playerId))
+        SetPlayerRandomSpawnPos(playerId);
 
     return 1;
 }

@@ -6,6 +6,7 @@
 
 // Provided by the Communication feature in JavaScript.
 native IsCommunicationMuted();
+native bool: SpawnPlayerInHouse(playerId);
 
 // -------------------------------------------------------------------------------------------------
 // JavaScript is the future of the Las Venturas Playground gamemode, however, features written in

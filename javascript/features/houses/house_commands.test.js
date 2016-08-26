@@ -388,7 +388,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         await manager.loadHousesFromDatabase();
         assert.isAbove(manager.locationCount, 0);
 
-        gunther.identify();
+        gunther.identify({ userId: 501 });
         gunther.level = Player.LEVEL_MANAGEMENT;
         gunther.position = new Vector(200, 250, 300);  // on the nearest location pickup
 
@@ -402,7 +402,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
     it('should allow buying a house when all the stars finally align', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
+        gunther.identify({ userId: 501 });
 
         await manager.loadHousesFromDatabase();
         assert.isAbove(manager.locationCount, 0);

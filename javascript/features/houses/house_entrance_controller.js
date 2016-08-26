@@ -211,9 +211,10 @@ class HouseEntranceController {
         return this.currentHouse_.get(player) || null;
     }
 
-    // Makes the |player| leave the house that they're currently in.
-    exitHouse(player) {
-        const location = this.currentHouse_.get(player);
+    // Makes the |player| leave the house that they're currently in, unless an explicit location has
+    // been given (for instance because we would like them to spawn outside).
+    exitHouse(player, explicitLocation = null) {
+        const location = explicitLocation || this.currentHouse_.get(player);
         if (!location)
             throw new Error('The |player| is not currently inside a house.');
 

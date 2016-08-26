@@ -93,7 +93,8 @@ class PortalLoader {
             position: new Vector(...point.position),
             facingAngle: point.facingAngle,
             interiorId: point.interiorId,
-            virtualWorld: point.virtualWorld || defaultVirtualWorld
+            virtualWorld: point.hasOwnProperty('virtualWorld') ? point.virtualWorld
+                                                               : defaultVirtualWorld
         };
     }
 }

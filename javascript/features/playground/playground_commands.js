@@ -346,7 +346,11 @@ class PlaygroundCommands {
     dispose() {
         server.commandManager.removeCommand('lvp');
 
-        this.commands_.forEach(command => command.dispose());
+        this.commands_.forEach((command, name) => {
+            server.commandManager.removeCommand(name);
+            command.dispose();
+        });
+
         this.commands_.clear();
 
         this.access_.dispose();

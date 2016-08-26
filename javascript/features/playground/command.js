@@ -26,11 +26,7 @@ class Command {
         throw new Error('Command::build() must be implemented by the command: /' + this.name);
     }
 
-    // Removes the command from the command manager. May be overridden by the command, but it should
-    // be sure to call this one too when it does.
-    dispose() {
-        server.commandManager.removeCommand(this.name);
-    }
+    dispose() {}
 }
 
 exports = Command;

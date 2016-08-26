@@ -24,6 +24,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
     afterEach(() => {
         if (commands)
             commands.dispose();
+
         manager.dispose();
     });
 

@@ -188,5 +188,10 @@
         "name": "Steakhouse (Las Venturas, North)",
         "entrance": { "position": [ 1693.19, 2209.13, 10.0212 ], "facingAngle": 90, "interiorId": 0 },
         "exit": { "position": [ 455.89, -20.80, 1000.18 ], "facingAngle": 180, "interiorId": 1 }
+    },
+    {
+        "name": "TSDINER",
+        "entrance": { "position": [ 681.579, -473.419, 15.592 ], "facingAngle": 180, "interiorId": 0 },
+        "exit": { "position": [ 681.50, -446.1, -25.62 ], "facingAngle": 180, "interiorId": 1 }
     }
 ]

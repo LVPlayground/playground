@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const ObjectGroup = require('entities/object_group.js');
 const Portal = require('features/location/portal.js');
 const PortalLoader = require('features/location/portal_loader.js');
 const ScopedEntities = require('entities/scoped_entities.js');
@@ -28,6 +29,9 @@ class InteriorManager {
 
         // The pickup that a player is expected to enter next. Should be ignored to avoid loops.
         this.expectedPickup_ = new WeakMap();
+
+        // Fixes up a few unsolid pieces in interiors to make them properly usable.
+        this.objectsToFixInteriors_ = ObjectGroup.create('data/objects/fix_interiors.json');
 
         server.pickupManager.addObserver(this);
     }
@@ -172,7 +176,7 @@ class InteriorManager {
 
         if (exitPickup) {
             this.portalMarkers_.delete(exitPickup);
-            exitPickup.dispose();        
+            exitPickup.dispose();
         }
 
         this.portals_.delete(portal);

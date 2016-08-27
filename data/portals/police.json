@@ -18,5 +18,10 @@
         "name": "POLICE4",
         "entrance": { "position": [ 2286.96, 2432.21, 9.9369 ], "facingAngle": 0, "interiorId": 0 },
         "exit": { "position": [ 238.66, 139.35, 1002.05 ], "facingAngle": 180, "interiorId": 3 }
+    },
+    {
+        "name": "San Fierro Police Department (SFPD)",
+        "entrance": { "position": [ -1605.58, 710.91, 13.12 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 246.44, 107.88, 1002.47 ], "facingAngle": 0, "interiorId": 10 }
     }
 ]

@@ -21,7 +21,7 @@ class Vehicle {
 
         this.id_ = pawnInvoke('CreateVehicle', 'iffffiiii', options.modelId, options.position.x,
                               options.position.y, options.position.z, options.rotation,
-                              options.primaryColor, options.secondaryColor, -1 /* respawn delay */,
+                              options.primaryColor, options.secondaryColor, 180 /* respawn delay */,
                               options.siren ? 1 : 0);
 
         if (this.id_ == Vehicle.INVALID_ID)

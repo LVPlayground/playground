@@ -73,5 +73,10 @@
         "name": "RC Play Store",
         "entrance": { "position": [ -2242.01, 128.521, 34.4174 ], "facingAngle": 270, "interiorId": 0 },
         "exit": { "position": [ -2241.07, 128.52, 1034.42 ], "facingAngle": 90, "interiorId": 6 }
+    },
+    {
+        "name": "Old login room",
+        "entrance": { "position": [ 1952.6, 1342.96, 14.62 ], "facingAngle": 0, "interiorId": 0 },
+        "exit": { "position": [ 940.922, -18.307, 1000.18 ], "facingAngle": 270, "interiorId": 3 }
     }
 ]

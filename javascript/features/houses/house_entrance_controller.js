@@ -271,7 +271,7 @@ class HouseEntranceController {
         }
 
         if (player.userId == location.settings.ownerId) {
-            // TODO: Send a message welcoming them, reminding them abouse `/house settings`.
+            player.sendMessage(Message.HOUSE_WELCOME, player.name);
             return true;
         }
 

@@ -15,6 +15,8 @@ class GangManager {
         this.gangs_ = {};
         this.gangPlayers_ = new WeakMap();
 
+        this.observers_ = new Set();
+
         // Subscribe to notifications for connecting and disconnecting players.
         server.playerManager.addObserver(this);
     }
@@ -26,6 +28,31 @@ class GangManager {
     gangForPlayer(player) {
         return this.gangPlayers_.get(player) || null;
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Adds the |observer| as a gang mutation observer, that will be informed of changes in the
+    // members that are part of a gang. It's safe to add |observer| multiple times.
+    addObserver(observer) {
+        this.observers_.add(observer);
+    }
+
+    // Removes the |observer| from the list of gang mutation observers.
+    removeObserver(observer) {
+        this.observers_.delete(observer);
+    }
+
+    // Invokes the |method| on the attached gang observers with the given |...args|.
+    invokeObservers(method, ...args) {
+        for (const observer of this.observers_) {
+            if (!observer.__proto__.hasOwnProperty(method))
+                continue;
+
+            observer.__proto__[method].call(observer, ...args);
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Sends the |message| to the |gang|. The |excludePlayer| triggered the message and will get
     // confirmed through other means. Optionally the |args| will be applied when the |message| is an
@@ -72,6 +99,9 @@ class GangManager {
             // Associate the |gang| with the |player|.
             this.gangPlayers_.set(player, gang);
             this.gangs_[gang.id] = gang;
+
+            // Announce the |player|'s new gang to observers.
+            this.invokeObservers('onUserJoinGang', player.userId, gang.id)
 
             return gang;
         });
@@ -147,6 +177,9 @@ class GangManager {
             // Associate the |gang| with the |player|.
             this.gangPlayers_.set(player, gang);
 
+            // Announce the |player|'s new gang to observers.
+            this.invokeObservers('onUserJoinGang', player.userId, gang.id)
+
             return gang;
         });
     }
@@ -170,6 +203,9 @@ class GangManager {
             // Remove the association of the |gang| with the |player|.
             this.gangPlayers_.delete(player);
 
+            // Announce the |player|'s departure to observers.
+            this.invokeObservers('onUserLeaveGang', player.userId, gang.id);
+
             if (!gang.memberCount)
                 delete this.gangs_[gang.id];
         });
@@ -178,7 +214,10 @@ class GangManager {
     // Removes the member with |userId| from the |gang|. This method should be used if the player
     // is not currently in-game, but does have to be removed from the gang.
     removeMemberFromGang(userId, gang) {
-        return this.database_.removePlayerFromGang(userId, gang);
+        return this.database_.removePlayerFromGang(userId, gang).then(() => {
+            // Announce the |player|'s departure to observers.
+            this.invokeObservers('onUserLeaveGang', userId, gang.id);
+        });
     }
 
     // Determines which player should become the leader of the |gang| after |player| leaves, who

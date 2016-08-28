@@ -307,7 +307,7 @@ class GangCommands {
             const nickname = memberToKick.nickname;
             const promise =
                 memberToKick.player ? this.manager_.removePlayerFromGang(memberToKick.player, gang)
-                                    : this.manager_.removeMemberFromGang(memberToKick.userId);
+                                    : this.manager_.removeMemberFromGang(memberToKick.userId, gang);
 
             return promise.then(() => {
                 player.sendMessage(Message.GANG_KICK_REMOVED, nickname, gang.name);

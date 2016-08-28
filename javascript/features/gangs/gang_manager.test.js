@@ -146,6 +146,55 @@ describe('GangManager', (it, beforeEach, afterEach) => {
         });
     });
 
+    it('should issue events to attached observers when membership changes', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify();
+
+        assert.isNull(gangManager.gangForPlayer(gunther));
+
+        let joinedUserCount = 0;
+        let leftUserCount = 0;
+
+        class MyObserver {
+            onUserJoinGang(userId, gangId) {
+                joinedUserCount++;
+            }
+
+            onUserLeaveGang(userId, gangId) {
+                leftUserCount++;
+            }
+        }
+
+        const observer = new MyObserver();
+
+        // Events should be issued when a player joins or leaves a gang.
+        gangManager.addObserver(observer);
+
+        assert.equal(joinedUserCount, 0);
+        assert.equal(leftUserCount, 0);
+
+        await gangManager.createGangForPlayer(gunther, 'CC', 'name', 'goal');
+        assert.isNotNull(gangManager.gangForPlayer(gunther));
+
+        assert.equal(joinedUserCount, 1);
+        assert.equal(leftUserCount, 0);
+
+        await gangManager.removePlayerFromGang(gunther, gangManager.gangForPlayer(gunther));
+        assert.isNull(gangManager.gangForPlayer(gunther));
+
+        assert.equal(joinedUserCount, 1);
+        assert.equal(leftUserCount, 1);
+
+        // Events should no longer be issued after an observer has been removed.
+        gangManager.removeObserver(observer);
+
+        await gangManager.createGangForPlayer(gunther, 'CC', 'name', 'goal');
+        assert.isNotNull(gangManager.gangForPlayer(gunther));
+
+        assert.equal(joinedUserCount, 1);
+        assert.equal(leftUserCount, 1);
+    });
+
     it('should be able to convert to and from member roles', assert => {
         assert.equal(GangDatabase.toRoleValue('Leader'), Gang.ROLE_LEADER);
         assert.equal(GangDatabase.toRoleValue('Manager'), Gang.ROLE_MANAGER);

@@ -24,6 +24,24 @@ class Gangs extends Feature {
     // Public API of the gangs feature.
     // ---------------------------------------------------------------------------------------------
 
+    // Adds the |observer| as a gang mutation observer, that will be informed of changes in the
+    // members that are part of a gang. The |observer| can implement the following methods that will
+    // be informed of changes within a gang:
+    //
+    //     onUserJoinGang(userId, gangId)
+    //     onUserLeaveGang(userId, gangId)
+    //
+    // Events are based on users as opposed to players because mutations can happen whilst the
+    // target player is offline.
+    addObserver(observer) {
+        this.manager_.addObserver(observer);
+    }
+
+    // Removes the |observer| from the list of gang mutation observers.
+    removeObserver(observer) {
+        this.manager_.removeObserver(observer);
+    }
+
     // Returns an array with the gangs that currently exist on Las Venturas Playground.
     getGangs() {
         return this.manager_.gangs;

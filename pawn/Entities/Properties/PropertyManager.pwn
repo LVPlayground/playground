@@ -532,7 +532,7 @@ class PropertyManager {
         // Delete the old label and create the new one.
         Delete3DTextLabel(labelId);
         newLabelId = Create3DTextLabel(textLabel, Color::PropertyTextLabel, propertyPosition[0], propertyPosition[1],
-            propertyPosition[2] + 1 /* float above the property pickup */, 2 /* draw distance */, 0 /* main world */, 1);
+            propertyPosition[2] + 1 /* float above the property pickup */, 1 /* draw distance */, 0 /* main world */, 1);
 
         Property(propertyId)->setLabelId(newLabelId);
     }

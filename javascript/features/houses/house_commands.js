@@ -395,10 +395,14 @@ class HouseCommands {
                 accessMenu.addItem(label, async(player) => {
                     await this.manager_.updateHouseSetting(location, 'access', level);
 
+                    // Change casing of the |label| so that it gramatically works in the message.
+                    const confirmationLabel =
+                        label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
+
                     // Display a confirmation dialog to the player to inform them of their action.
                     await Dialog.displayMessage(
                         player, 'Changing the house\'s access level',
-                        Message.format(Message.HOUSE_SETTINGS_LEVEL, label.toLowerCase()),
+                        Message.format(Message.HOUSE_SETTINGS_LEVEL, confirmationLabel),
                         'Close' /* leftButton */, '' /* rightButton */);
                 });
             });

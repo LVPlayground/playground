@@ -138,11 +138,14 @@ public OnPlayerText(playerid, text[]) {
         return 0;
     }
 
+    new const bool: playerInMainWorld = IsPlayerInMainWorld(playerid);
+    new const playerVirtualWorld = GetPlayerVirtualWorld(playerid);
+
     // Add it to the echo-feed, so it shows up on IRC as well.
-    if (IsPlayerInMainWorld(playerid)) {
+    if (playerInMainWorld) {
         format(message, sizeof(message), "[text] %d %s %s", playerid, Player(playerid)->nicknameString(), text);
     } else {
-        format(message, sizeof(message), "[worldchat] %d %d %s %s", GetPlayerVirtualWorld(playerid),
+        format(message, sizeof(message), "[worldchat] %d %d %s %s", playerVirtualWorld,
             playerid, Player(playerid)->nicknameString(), text);
     }
 
@@ -150,36 +153,32 @@ public OnPlayerText(playerid, text[]) {
 
     // /q Jokes Not Allowed
     new QuitJokes[2][] = {
-        "/q","/Quit"
+        "/q",
+        "/quit"
     };
 
-     for(new i; i < sizeof(QuitJokes); i++)
-     {
-         if(strfind(text, QuitJokes[i], true) != -1) 
-         {
+     for (new i = 0; i < sizeof(QuitJokes); i++) {
+         if (strfind(text, QuitJokes[i], true) != -1) {
              SendClientMessage(playerid, Color::Error, "Error: Quit jokes are not allowed");
              return 0;
          }
      }
-
 
     // Finally: time to send the message to all players.
     for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
         if (g_Ignore[subjectId][playerid] == true)
             continue;
 
-        new const bool: playerInMainWorld = IsPlayerInMainWorld(playerid);
         new const bool: subjectInMainWorld = IsPlayerInMainWorld(subjectId);
+        new const subjectVirtualWorld = GetPlayerVirtualWorld(subjectId);
 
-        if (playerInMainWorld && subjectInMainWorld) {
+        if ((playerInMainWorld && subjectInMainWorld) || playerVirtualWorld == subjectVirtualWorld) {
             format(message, sizeof(message), "{%06x}[%d] %s: {FFFFFF}%s",
                 ColorManager->playerColor(playerid) >>> 8, playerid, Player(playerid)->nicknameString(), text);
             SendClientMessage(subjectId, Color::Information, message);
         }
 
-        else if (playerInMainWorld != subjectInMainWorld
-            && PlayerSettings(subjectId)->isAllVirtualWorldChatEnabled() == true
-            && Player(subjectId)->isAdministrator() == true) {
+        else if (Player(subjectId)->isAdministrator() && PlayerSettings(subjectId)->isAllVirtualWorldChatEnabled()) {
             format(message, sizeof(message), "{FFFFFF}(World: %d) {%06x}[%d] %s: {FFFFFF}%s",
                 GetPlayerVirtualWorld(playerid), ColorManager->playerColor(playerid) >>> 8, playerid,
                 Player(playerid)->nicknameString(), text);

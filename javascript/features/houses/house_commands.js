@@ -431,7 +431,8 @@ class HouseCommands {
 
         menu.addItem('Sell this house', '-', async(player) => {
             const offer = 0;  // TODO: Calculate the refund the player could be offered.
-            const message = isOwner ? Message.format(Message.HOUSE_SETTINGS_SELL_OFFER, offer)
+
+            const message = isOwner ? Message.format(Message.HOUSE_SETTINGS_SELL_OFFER)
                                     : Message.format(Message.HOUSE_SETTINGS_SELL_CONFIRM,
                                                      location.settings.ownerName);
 

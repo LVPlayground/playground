@@ -50,6 +50,14 @@ class MockFriends extends Feature {
         this.mockedFriends_.get(fromPlayer.userId).add(toPlayer.userId);
     }
 
+    // Removes |toPlayer| from the list of friends of |fromPlayer|.
+    removeFriend(fromPlayer, toPlayer) {
+        if (!this.mockedFriends_.has(fromPlayer.userId))
+            return;
+
+        this.mockedFriends_.get(fromPlayer.userId).delete(toPlayer.userId);
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     dispose() {

@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const HouseSettings = require('features/houses/house_settings.js');
 const Portal = require('features/location/portal.js');
 const ScopedEntities = require('entities/scoped_entities.js');
 
@@ -231,18 +232,43 @@ class HouseEntranceController {
     // Determines whether the |player| has access to the |location|. This is the case when they're
     // the owner or are on the friends list of the owning player.
     async hasAccessToHouse(location, player) {
-        let message = Message.HOUSE_NO_ACCESS_UNREGISTERED;
-
-        if (player.isRegistered()) {
-            if (player.userId == location.settings.ownerId)
-                return true;  // the owner can always access their house
-
-            if (await this.friends_().isFriendedBy(player, location.settings.ownerId))
-                return true;  // the owner has added the |player| as their friend
-
-            message = player.isAdministrator() ? Message.HOUSE_NO_ACCESS_ADMIN
-                                               : Message.HOUSE_NO_ACCESS;
+        if (!player.isRegistered()) {
+            player.sendMessage(Message.HOUSE_NO_ACCESS_UNREGISTERED, location.settings.ownerName);
+            return false;
         }
+
+        if (player.userId == location.settings.ownerId) {
+            // TODO: Send a message welcoming them, reminding them abouse `/house settings`.
+            return true;
+        }
+
+        let message = null;
+
+        switch (location.settings.access) {
+            case HouseSettings.ACCESS_EVERYBODY:
+                return true;
+
+            case HouseSettings.ACCESS_FRIENDS_AND_GANG:
+                // TODO: checking gang whether the players share a gang.
+                // Deliberate fall-through.
+
+            case HouseSettings.ACCESS_FRIENDS:
+                if (await this.friends_().isFriendedBy(player, location.settings.ownerId))
+                    return true;  // the owner has friended |player|
+
+                message = Message.HOUSE_NO_ACCESS_FRIENDS;
+                break;
+
+            case HouseSettings.ACCESS_PERSONAL:
+                message = Message.HOUSE_NO_ACCESS_PERSONAL;
+                break;
+
+            default:
+                throw new Error('Invalid house access value: ' + location.settings.access);
+        }
+
+        if (player.isAdministrator())
+            message = Message.HOUSE_NO_ACCESS_ADMIN;
 
         player.sendMessage(message, location.settings.ownerName);
         return false;

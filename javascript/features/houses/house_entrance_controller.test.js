@@ -4,6 +4,7 @@
 
 const Economy = require('features/economy/economy.js');
 const HouseManager = require('features/houses/house_manager.js');
+const HouseSettings = require('features/houses/house_settings.js');
 const MockFriends = require('features/friends/test/mock_friends.js');
 const MockHouseDatabase = require('features/houses/test/mock_house_database.js');
 const MockLocation = require('features/location/test/mock_location.js');
@@ -123,15 +124,48 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
         gunther.identify({ userId: 43 });
         russell.identify({ userId: 42 });
 
-        // (2) Players can always access their own house.
-        assert.isFalse(await controller.hasAccessToHouse(location, gunther));
-        assert.isTrue(await controller.hasAccessToHouse(location, russell));
+        // Access level: HouseSettings.ACCESS_EVERYBODY
+        {
+            location.settings.access = HouseSettings.ACCESS_EVERYBODY;
 
-        friendsFeature.addFriend(russell, gunther);
+            assert.isTrue(await controller.hasAccessToHouse(location, gunther));
+            assert.isTrue(await controller.hasAccessToHouse(location, russell));
+        }
 
-        // (3) Friends of the owners can always access their house.
-        assert.isTrue(await controller.hasAccessToHouse(location, gunther));
-        assert.isTrue(await controller.hasAccessToHouse(location, russell));
+        // Access level: HouseSettings.ACCESS_FRIENDS_AND_GANG
+        {
+            location.settings.access = HouseSettings.ACCESS_FRIENDS_AND_GANG;
+
+            // TODO: Implement access checking for gang members.
+        }
+
+        // Access level: HouseSettings.ACCESS_FRIENDS
+        {
+            location.settings.access = HouseSettings.ACCESS_FRIENDS;
+
+            assert.isFalse(await controller.hasAccessToHouse(location, gunther));
+            friendsFeature.addFriend(russell, gunther);
+            assert.isTrue(await controller.hasAccessToHouse(location, gunther));
+            friendsFeature.removeFriend(russell, gunther);
+            assert.isFalse(await controller.hasAccessToHouse(location, gunther));
+        }
+
+        // Access level: HouseSettings.ACCESS_PERSONAL
+        {
+            location.settings.access = HouseSettings.ACCESS_PERSONAL;
+
+            assert.isFalse(await controller.hasAccessToHouse(location, gunther));
+
+            // Being friends with the owner does not matter.
+            friendsFeature.addFriend(russell, gunther);
+
+            assert.isFalse(await controller.hasAccessToHouse(location, gunther));
+
+            // Being in the same gang as the owner does not matter.
+            // TODO: Make sure |gunther| and |russell| share a gang.
+
+            assert.isFalse(await controller.hasAccessToHouse(location, gunther));
+        }
     });
 
     it('should be able to force-enter and force-exit players from a house', async(assert) => {

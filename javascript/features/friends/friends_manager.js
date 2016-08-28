@@ -17,7 +17,7 @@ class FriendsManager {
         // Cached data from a userId to the list of friends of that userId.
         this.friendsCache_ = new Map();
 
-        server.playerManager.addObserver(this);
+        server.playerManager.addObserver(this, true /* replayHistory */);
     }
 
     // Returns a promise that will be resolved when data for the |player| has been loaded.

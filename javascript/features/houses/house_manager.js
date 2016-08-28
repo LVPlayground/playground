@@ -65,7 +65,6 @@ class HouseManager {
         });
 
         // TODO: Load the vehicles associated with houses.
-        // TODO: Load the objects associated with houses.
 
         // Create entrances and exits for each of the known |locations_|.
         this.locations_.forEach(location =>

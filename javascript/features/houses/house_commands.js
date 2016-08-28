@@ -194,7 +194,7 @@ class HouseCommands {
         const location = await this.manager_.findClosestLocation(player, 15 /* maximumDistance */);
         if (location) {
             // TODO: Should we announce this to the other administrators? We really need
-            // announcement channels to deal with the granularity of messages.
+            // announcement channels to deal with the granularity of messages. (Issue #271.)
             this.manager_.forceEnterHouse(player, location);
 
             player.sendMessage(Message.HOUSE_ENTERED);
@@ -239,7 +239,7 @@ class HouseCommands {
             await this.manager_.createLocationParkingLot(player, closestLocation, parkingLot);
 
             // TODO: Should we announce this to the other administrators? We really need
-            // announcement channels to deal with the granularity of messages.
+            // announcement channels to deal with the granularity of messages. (Issue #271.)
 
             await Dialog.displayMessage(player, 'Add a parking lot',
                                         Message.format(Message.HOUSE_PARKING_LOT_ADDED),
@@ -270,7 +270,7 @@ class HouseCommands {
             await this.manager_.removeLocationParkingLot(closestLocation, parkingLot);
 
             // TODO: Should we announce this to the other administrators? We really need
-            // announcement channels to deal with the granularity of messages.
+            // announcement channels to deal with the granularity of messages. (Issue #271.)
 
             await Dialog.displayMessage(player, 'Remove a parking lot',
                                         Message.format(Message.HOUSE_PARKING_LOT_REMOVED),
@@ -430,7 +430,7 @@ class HouseCommands {
         });
 
         menu.addItem('Sell this house', '-', async(player) => {
-            const offer = 0;  // TODO: Calculate the refund the player could be offered.
+            const offer = 0;  // TODO: Calculate the refund to offer the player. (Issue #268.)
 
             const message = isOwner ? Message.format(Message.HOUSE_SETTINGS_SELL_OFFER)
                                     : Message.format(Message.HOUSE_SETTINGS_SELL_CONFIRM,

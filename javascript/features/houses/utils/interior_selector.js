@@ -120,8 +120,6 @@ class InteriorSelector {
         this.player_.setCamera(new Vector(...interiorPreview.position[0]),
                                new Vector(...interiorPreview.target[0]));
 
-        // TODO: Somehow get rid of the waiting time before first scene is being displayed.
-
         // Wait for some time in order to give the scene a chance to load for this player.
         wait(HOUSE_SCENE_PRELOAD_MS).then(() => {
             if (this.interiorListIndex_ !== index)

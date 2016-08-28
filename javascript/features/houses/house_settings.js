@@ -14,6 +14,8 @@ class HouseSettings {
 
         this.access_ = house.access;
         this.spawnPoint_ = house.spawnPoint;
+
+        this.vehicles_ = house.vehicles;
     }
 
     // Gets the internal Id of this house in the database.

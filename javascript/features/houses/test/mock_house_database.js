@@ -12,6 +12,14 @@ const PARKING_LOT = {
     interiorId: 0
 };
 
+const OCCUPIED_PARKING_LOT = {
+    id: 60,
+    position: new Vector(500, 510, 500),
+    rotation: 90,
+    interiorId: 0
+};
+
+
 // Mocked database class that implements the same API as the regular HouseDatabase class, but will
 // return faked data for the purposes of testing rather than consult the database.
 class MockHouseDatabase {
@@ -19,6 +27,7 @@ class MockHouseDatabase {
         this.mockLocationId_ = 1000;
         this.mockParkingLotId_ = 2000;
         this.mockHouseId_ = 3000;
+        this.mockVehicleId_ = 4000;
     }
 
     async loadLocations() {
@@ -26,7 +35,7 @@ class MockHouseDatabase {
             [ 1, { facingAngle: 0, interiorId: 0, position: new Vector(100, 150, 200), parkingLots: [] } ],
             [ 2, { facingAngle: 0, interiorId: 0, position: new Vector(200, 250, 300), parkingLots: [] } ],
             [ 3, { facingAngle: 0, interiorId: 0, position: new Vector(300, 350, 400), parkingLots: [ PARKING_LOT ] } ],
-            [ 4, { facingAngle: 0, interiorId: 0, position: new Vector(500, 500, 500), parkingLots: [] } ]
+            [ 4, { facingAngle: 0, interiorId: 0, position: new Vector(500, 500, 500), parkingLots: [ OCCUPIED_PARKING_LOT ] } ]
         ];
     }
 
@@ -43,7 +52,15 @@ class MockHouseDatabase {
             interiorId: 0,
 
             access: HouseSettings.ACCESS_DEFAULT,
-            spawnPoint: false
+            spawnPoint: false,
+
+            vehicles: [
+                {
+                    id: 1337,
+                    modelId: 520,
+                    parkingLotId: 60
+                }
+            ]
         });
 
         return houses;
@@ -69,8 +86,14 @@ class MockHouseDatabase {
             interiorId: interiorId,
 
             access: HouseSettings.ACCESS_DEFAULT,
-            spawnPoint: false
+            spawnPoint: false,
+
+            vehicles: []
         };
+    }
+
+    async createVehicle(location, parkingLot, modelId) {
+        return this.mockVehicleId_++;
     }
 
     async updateHouseAccess(location, value) {}
@@ -84,6 +107,8 @@ class MockHouseDatabase {
     async removeLocationParkingLot(parkingLot) {}
 
     async removeHouse(location) {}
+
+    async removeVehicle(vehicle) {}
 }
 
 exports = MockHouseDatabase;

@@ -61,6 +61,21 @@ const LOAD_HOUSES_QUERY = `
         houses_settings.house_removed IS NULL AND
         houses_locations.location_removed IS NULL`;
 
+// Query to load the vehicles that have been associated with houses.
+const LOAD_VEHICLES_QUERY = `
+    SELECT
+        houses_settings.house_location_id,
+        houses_vehicles.house_vehicle_id,
+        houses_vehicles.house_parking_lot_id,
+        houses_vehicles.model_id
+    FROM
+        houses_settings
+    LEFT JOIN
+        houses_vehicles ON houses_vehicles.house_id = houses_settings.house_id
+    WHERE
+        houses_settings.house_removed IS NULL AND
+        houses_vehicles.house_parking_lot_id IS NOT NULL`;
+
 // Query to create a new house location in the database.
 const CREATE_LOCATION_QUERY = `
     INSERT INTO
@@ -84,6 +99,14 @@ const CREATE_HOUSE_QUERY = `
         (house_location_id, house_user_id, house_interior_id, house_name, house_created)
     VALUES
         (?, ?, ?, ?, NOW())`;
+
+// Query to create a vehicle in the database.
+const CREATE_VEHICLE_QUERY = `
+    INSERT INTO
+        houses_vehicles
+        (house_parking_lot_id, house_id, model_id, vehicle_created)
+    VALUES
+        (?, ?, ?, NOW())`;
 
 // Query for updating the access requirements of a given house.
 const UPDATE_ACCESS_SETTING_QUERY = `
@@ -149,6 +172,15 @@ const REMOVE_HOUSE_QUERY = `
     WHERE
         house_id = ?`;
 
+// Query to remove one of the vehicles associated with a house.
+const REMOVE_VEHICLE_QUERY = `
+    UPDATE
+        houses_vehicles
+    SET
+        vehicle_removed = NOW()
+    WHERE
+        house_vehicle_id = ?`;
+
 // Defines the database interactions for houses that are used for loading, updating and removing
 // persistent data associated with them.
 class HouseDatabase {
@@ -196,29 +228,56 @@ class HouseDatabase {
                 ]);
             });
         }
+
         return locations;
     }
 
     // Loads the existing houses, including their settings and interior details, from the database.
     async loadHouses() {
-        const data = await server.database.query(LOAD_HOUSES_QUERY);
         const houses = new Map();
 
-        data.rows.forEach(row => {
-            houses.set(row.house_location_id, {
-                id: row.house_id,
-                name: row.house_name,
+        // (1) Load the houses from the database.
+        {
+            const data = await server.database.query(LOAD_HOUSES_QUERY);
+            data.rows.forEach(row => {
+                houses.set(row.house_location_id, {
+                    id: row.house_id,
+                    name: row.house_name,
 
-                ownerId: row.house_user_id,
-                ownerGangId: row.gang_id,
-                ownerName: row.username,
+                    ownerId: row.house_user_id,
+                    ownerGangId: row.gang_id,
+                    ownerName: row.username,
 
-                interiorId: row.house_interior_id,
+                    interiorId: row.house_interior_id,
 
-                access: HouseDatabase.toHouseAccessValue(row.house_access),
-                spawnPoint: !!row.house_spawn_point
+                    access: HouseDatabase.toHouseAccessValue(row.house_access),
+                    spawnPoint: !!row.house_spawn_point,
+
+                    vehicles: []
+                });
             });
-        });
+        }
+
+        // (2) Load the vehicles from the database.
+        {
+            const data = await server.database.query(LOAD_VEHICLES_QUERY);
+            data.rows.forEach(row => {
+                const locationId = row.house_location_id;
+
+                if (!houses.has(locationId)) {
+                    console.log('Warning: Vehicle #' + row.house_vehicle_id + ' is associated ' +
+                                'with an invalid house (#' + row.house_id + '.');
+                    return;
+                }
+
+                houses.get(locationId).vehicles.push({
+                    id: row.house_vehicle_id,
+                    modelId: row.model_id,
+
+                    parkingLotId: row.house_parking_lot_id
+                });
+            });
+        }
 
         return houses;
     }
@@ -261,8 +320,18 @@ class HouseDatabase {
             interiorId: interiorId,
 
             access: HouseSettings.ACCESS_DEFAULT,
-            spawnPoint: false
+            spawnPoint: false,
+
+            vehicles: []
         };
+    }
+
+    // Creates a vehicle with |modelId| in the |parkingLot| associated with the house at |location|.
+    async createVehicle(location, parkingLot, modelId) {
+        const data = await server.database.query(
+            CREATE_VEHICLE_QUERY, parkingLot.id, location.settings.id, modelId);
+
+        return data.insertId;
     }
 
     // Updates the access requirements of the house at |location| to |value|.
@@ -299,6 +368,11 @@ class HouseDatabase {
     // Removes the house tied to |location| from the database.
     async removeHouse(location) {
         await server.database.query(REMOVE_HOUSE_QUERY, location.settings.id);
+    }
+
+    // Removes the |vehicle| associated with the |location| from the database.
+    async removeVehicle(vehicle) {
+        await server.database.query(REMOVE_VEHICLE_QUERY, vehicle.id);
     }
 
     // Converts the |value| to one of the house access enumeration values.

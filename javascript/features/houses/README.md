@@ -57,6 +57,14 @@ our administrators. The red zones on the [residential value map](https://sa-mp.n
 are excluded from this— only Management members can authorize houses to be created there.
 
 
+## FAQ: Who's got access to a house?
+By default, the owner of a house and their [friends](../friends/). Administrators can always access
+a house. Players who are not registered with Las Venturas Playground are not able to access houses.
+
+Owners of a house can use `/house settings` to change the access rules, having the option to either
+allow everybody, their friends and gang, just their friends or make it an entirely private house.
+
+
 ## FAQ: Can I own multiple houses?
 No. Probably in the future.
 
@@ -68,13 +76,6 @@ administrators are encouraged to keep the number of parking lots within reason.
 
 ## FAQ: Do I pay for a house with cash money, or my bank account?
 Payments will be made from your bank account.
-
-
-## FAQ: Who's got access to a house?
-The owner of a house and their [friends](../friends/). Administrators can always access a house.
-Players who are not registered with Las Venturas Playground are not able to access houses.
-
-In the future, houses may feature dedicated access lists configurable by the owner.
 
 
 ## FAQ: As an admin, can I change a house's price?

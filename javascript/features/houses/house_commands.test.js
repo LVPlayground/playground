@@ -5,6 +5,7 @@
 const Economy = require('features/economy/economy.js');
 const HouseCommands = require('features/houses/house_commands.js');
 const HouseManager = require('features/houses/house_manager.js');
+const HouseSettings = require('features/houses/house_settings.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 const MockFriends = require('features/friends/test/mock_friends.js');
 const MockHouseDatabase = require('features/houses/test/mock_house_database.js');
@@ -482,6 +483,33 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.equal(location.settings.name, 'Gunther Pro Palace');
     });
 
+    it('should allow house access levels to be updated', async(assert) => {
+        await manager.loadHousesFromDatabase();
+        assert.isAbove(manager.locationCount, 0);
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify({ userId: 42 });
+        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
+
+        // Wait some ticks to make sure that the permission check has finished.
+        while (!manager.getCurrentHouseForPlayer(gunther) && maxticks --> 0)
+            await Promise.resolve();
+
+        const location = manager.getCurrentHouseForPlayer(gunther);
+        assert.isNotNull(location);
+
+        assert.isFalse(location.isAvailable());
+        assert.equal(location.settings.access, HouseSettings.ACCESS_FRIENDS);
+
+        gunther.respondToDialog({ listitem: 1 /* Change the house's access level */}).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Everybody */  })).then(
+            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/house settings'));
+        assert.equal(location.settings.access, HouseSettings.ACCESS_EVERYBODY);
+    });
+
     it('should allow house spawn settings to be updated', async(assert) => {
         await manager.loadHousesFromDatabase();
         assert.isAbove(manager.locationCount, 0);
@@ -501,13 +529,13 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.isFalse(location.isAvailable());
         assert.isFalse(location.settings.isSpawn());
 
-        gunther.respondToDialog({ listitem: 1 /* Set spawn position at this house */}).then(
+        gunther.respondToDialog({ listitem: 2 /* Set spawn position at this house */}).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 
         assert.isTrue(await gunther.issueCommand('/house settings'));
         assert.isTrue(location.settings.isSpawn());
 
-        gunther.respondToDialog({ listitem: 1 /* Set spawn position at this house */}).then(
+        gunther.respondToDialog({ listitem: 2 /* Set spawn position at this house */}).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 
         assert.isTrue(await gunther.issueCommand('/house settings'));
@@ -532,7 +560,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         assert.isFalse(location.isAvailable());
 
-        gunther.respondToDialog({ listitem: 2 /* Sell this house */}).then(
+        gunther.respondToDialog({ listitem: 3 /* Sell this house */}).then(
             () => gunther.respondToDialog({ response: 1 /* Yes, I really want to */ })).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 

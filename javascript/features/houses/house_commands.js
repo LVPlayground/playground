@@ -4,6 +4,7 @@
 
 const CommandBuilder = require('components/command_manager/command_builder.js');
 const Dialog = require('components/dialogs/dialog.js');
+const HouseSettings = require('features/houses/house_settings.js');
 const IdentityBeam = require('features/houses/utils/identity_beam.js');
 const InteriorList = require('features/houses/utils/interior_list.js');
 const InteriorSelector = require('features/houses/utils/interior_selector.js');
@@ -360,6 +361,8 @@ class HouseCommands {
         }
 
         const menu = new Menu('What would you like to modify?', ['Option', 'Current value']);
+
+        const accessValue = this.toHouseAccessLabel(location.settings.access);
         const spawnValue = location.settings.isSpawn() ? 'Yes' : 'No';
 
         menu.addItem('Change the name', location.settings.name, async(player) => {
@@ -373,6 +376,35 @@ class HouseCommands {
             await Dialog.displayMessage(player, 'Changing the house\'s name',
                                         Message.format(Message.HOUSE_SETTINGS_NAME, name),
                                         'Close' /* leftButton */, '' /* rightButton */);
+        });
+
+        menu.addItem('Change the access level', accessValue, async(player) => {
+            const accessMenu = new Menu('Who should be able to access your house?');
+            const accessLevels = [
+                HouseSettings.ACCESS_EVERYBODY,
+                HouseSettings.ACCESS_FRIENDS_AND_GANG,
+                HouseSettings.ACCESS_FRIENDS,
+                HouseSettings.ACCESS_PERSONAL
+            ];
+
+            accessLevels.forEach(level => {
+                const labelPrefix = location.settings.access === level ? '{FFFF00}' : '';
+                const label = labelPrefix + this.toHouseAccessLabel(level);
+
+                // Add the menu item for the |level| to the sub-menu shown to the player.
+                accessMenu.addItem(label, async(player) => {
+                    await this.manager_.updateHouseSetting(location, 'access', level);
+
+                    // Display a confirmation dialog to the player to inform them of their action.
+                    await Dialog.displayMessage(
+                        player, 'Changing the house\'s access level',
+                        Message.format(Message.HOUSE_SETTINGS_LEVEL, label.toLowerCase()),
+                        'Close' /* leftButton */, '' /* rightButton */);
+                });
+            });
+
+            // Show the access sub-menu to the player.
+            await accessMenu.displayForPlayer(player);
         });
 
         menu.addItem('Set spawn position', spawnValue, async(player) => {
@@ -429,6 +461,26 @@ class HouseCommands {
 
         player.sendMessage(Message.COMMAND_USAGE, '/house [' + options.sort().join('/') + ']');
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Returns the menu label to use for enabling players to change the access level of their house.
+    toHouseAccessLabel(value) {
+        switch (value) {
+            case HouseSettings.ACCESS_EVERYBODY:
+                return 'All players';
+            case HouseSettings.ACCESS_FRIENDS_AND_GANG:
+                return 'Your friends and fellow gang members';
+            case HouseSettings.ACCESS_FRIENDS:
+                return 'Your friends';
+            case HouseSettings.ACCESS_PERSONAL:
+                return 'Only you';
+            default:
+                throw new Error('Invalid house access value: ' + value);
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     dispose() {
         server.commandManager.removeCommand('house');

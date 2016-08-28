@@ -145,6 +145,7 @@
     "HOUSE_PURCHASE_TOO_EXPENSIVE": "Sorry, you cannot purchase this house because you don't have enough money available.",
     "HOUSE_REMOVE_UNKNOWN": "@error Unable to remove - you're not currently in an interactive operation.",
     "HOUSE_SAVE_UNKNOWN": "@error Unable to confirm - you're not currently in an interactive operation.",
+    "HOUSE_SETTINGS_LEVEL": "{FFA500}%s{A9C4E4} are now able to access your house.",
     "HOUSE_SETTINGS_NAME": "Your house is now known as {FFA500}%s{A9C4E4}.",
     "HOUSE_SETTINGS_NOT_OWNER": "@error You cannot change the settings of a house you don't own!",
     "HOUSE_SETTINGS_OUTSIDE": "@error You can only change the settings of a house whilst inside of it!",

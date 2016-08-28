@@ -25,7 +25,11 @@ class EconomyCalculator {
     get variance() { return this.varianceValue_; }
 
     // Calculates the price for a house. The |residentialValue| must be in range of [0, 5], the
-    // |interiorValue| must be in range of [0, 9]. The variance factor will be included.
+    // |interiorValue| must be in range of [0, 9]. The variance factor will be included. This value
+    // is being calculated based on the following spreadsheet:
+    //
+    //   https://docs.google.com/spreadsheets/d/1rgydvkX5DEX7tXH8pvQggIOTg2RQpvfqzJEH6ZsKbyE/edit
+    //
     calculateHousePrice(residentialValue, parkingLotCount, interiorValue) {
         if (residentialValue < 0 || residentialValue > 5) {
             throw new Error(
@@ -37,29 +41,41 @@ class EconomyCalculator {
                 'The interior value must be in range of [0, 9] (was ' + interiorValue + ').');
         }
 
-        // Land value accounts for 40% of the house's price, interior value for 58.75% and the
-        // variance for 1.25%. Scale this up to a range of two hundred price points.
-        const residentialFactor = residentialValue * 20;
-        const interiorFactor = interiorValue * 13.05555555;
-        const varianceFactor = this.varianceValue_ * 0.025;
+        // The balance between the residential value, interior value and variance in the price.
+        const residentialWeight = 0.5;
+        const interiorWeight = 0.5;
 
-        const factor = residentialFactor + interiorFactor + varianceFactor;
+        // There are three bands for base residential and interior prices: remote locations (RV of
+        // 0), cheap locations (RV of 1) and other locations (RV between 2 and 5).
+        const residentialBase = residentialValue === 0 ? 150000
+                                                       : (residentialValue === 1 ? 275000
+                                                                                 : 500000);
 
-        // The minimum and price delta are determined by the constants defined on this class.
-        const priceMinimum = EconomyCalculator.PRICE_RANGE_HOUSES[0];
-        const priceDelta =
-            EconomyCalculator.PRICE_RANGE_HOUSES[1] - EconomyCalculator.PRICE_RANGE_HOUSES[0];
+        const interiorBase = residentialValue === 0 ? 350000
+                                                    : (residentialValue === 1 ? 400000
+                                                                              : 750000);
 
-        // Return the minimum price plus the factor of the delta that should be applied.
-        const houseValue = Math.round(priceMinimum + (factor / 200) * priceDelta);
+        // The calculation exponents depend on the residential and interior values.
+        const residentialExponent =
+            [1.00, 1.15, 1.20, 1.30, 1.35, 1.50][residentialValue];
+        const interiorExponent =
+            [1.07, 1.22, 1.24, 1.26, 1.35, 1.37, 1.39, 1.41, 1.42, 1.43][interiorValue];
 
-        // Apply a fixed premium based on the `parkingLotCount`.
-        const parkingLotMinimum = EconomyCalculator.PRICE_RANGE_PARKING_LOTS[0];
-        const parkingLotDelta = EconomyCalculator.PRICE_RANGE_PARKING_LOTS[1] - parkingLotMinimum;
+        // Now stuff all values together and define the residential and interior prices.
+        const residentialPrice = residentialWeight * Math.pow(residentialBase, residentialExponent);
+        const interiorPrice = interiorWeight * Math.pow(interiorBase, interiorExponent);
 
-        const parkingLotValue = parkingLotMinimum + (parkingLotDelta / 5) * residentialValue;
+        // Each parking lot is worth the max(1, residentialValue) multiplied by the base price.
+        const parkingLotPrice = parkingLotCount * (residentialBase * Math.max(1, residentialValue));
 
-        return houseValue + parkingLotValue * parkingLotCount;
+        // The fixed price is the determined price of this property, without accounting for variance
+        const fixedPrice = residentialPrice + interiorPrice + parkingLotPrice;
+
+        // The variance will either decrease or increase the price by, at most, 5%.
+        const varianceFactor = 1 + ((-50 + this.varianceValue_) / 1000);
+
+        // Return the fixed price influenced by the current |varianceFactor|.
+        return fixedPrice * varianceFactor;
     }
 
     // Calculates the price for a vehicle that will be positioned at a house. The |residentialValue|
@@ -118,12 +134,6 @@ class EconomyCalculator {
         this.disposed_ = true;
     }
 }
-
-// The price range based on which houses will be priced.
-EconomyCalculator.PRICE_RANGE_HOUSES = [ 750000, 45000000 ];
-
-// The value of a parking lot depending on the house's location.
-EconomyCalculator.PRICE_RANGE_PARKING_LOTS = [ 75000, 2500000 ];
 
 // The price range based on which vehicles for houses will be priced.
 EconomyCalculator.PRICE_RANGE_HOUSE_VEHICLES = [ 100000, 1500000 ];

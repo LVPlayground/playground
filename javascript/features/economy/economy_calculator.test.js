@@ -42,68 +42,44 @@ describe('EconomyCalculator', (it, beforeEach, afterEach) => {
     });
 
     it('should be able to price houses appropriately', assert => {
-        const minimum = EconomyCalculator.PRICE_RANGE_HOUSES[0];
-        const maximum = EconomyCalculator.PRICE_RANGE_HOUSES[1];
-        const delta = maximum - minimum;
-
-        const residentialPercentage = 0.4;
-        const interiorPercentage = 0.5875;
-        const variancePercentage = 0.0125;
-
         // Returns the house price that has been determined for the three input values.
-        const calculateHousePrice = (residentialValue, interiorValue, varianceValue) => {
+        const calculateHousePrice = (residentialValue, parkingLots, interiorValue,
+                                     varianceValue) => {
             calculator.setVarianceValueForTests(varianceValue);
-            return calculator.calculateHousePrice(residentialValue, 0, interiorValue);
+            return calculator.calculateHousePrice(residentialValue, parkingLots, interiorValue);
         };
 
-        const errorMargin = delta * 0.01;
-
-        // The minimum and maximum prices should be adhered to.
-        assert.equal(calculateHousePrice(0, 0, 0), minimum);
-        assert.equal(calculateHousePrice(4, 9, 100), maximum);
-
-        // The residential percentage should matter for the indicated percentage.
-        assert.closeTo(calculateHousePrice(4, 0, 0) - calculateHousePrice(0, 0, 0),
-                       delta * residentialPercentage, errorMargin);
-        assert.closeTo(calculateHousePrice(4, 9, 100) - calculateHousePrice(0, 9, 100),
-                       delta * residentialPercentage, errorMargin);
-
-        // The interior percentage should matter for the indicated percentage.
-        assert.closeTo(calculateHousePrice(0, 9, 0) - calculateHousePrice(0, 0, 0),
-                       delta * interiorPercentage, errorMargin);
-        assert.closeTo(calculateHousePrice(4, 9, 100) - calculateHousePrice(4, 0, 100),
-                       delta * interiorPercentage, errorMargin);
-
-        // The variance percentage should matter for the indicated percentage.
-        assert.closeTo(calculateHousePrice(0, 0, 100) - calculateHousePrice(0, 0, 0),
-                       delta * variancePercentage, errorMargin);
-        assert.closeTo(calculateHousePrice(4, 9, 100) - calculateHousePrice(4, 9, 0),
-                       delta * variancePercentage, errorMargin);
-
         // It should throw when any of the input values are out of range.
-        assert.throws(() => calculateHousePrice(-1, 0, 0));
-        assert.throws(() => calculateHousePrice(0, -1, 0));
-        assert.throws(() => calculateHousePrice(0, 0, -1));
-        assert.throws(() => calculateHousePrice(200, 0, 0));
-        assert.throws(() => calculateHousePrice(0, 200, 0));
-        assert.throws(() => calculateHousePrice(0, 0, 200));
-    });
+        assert.throws(() => calculateHousePrice(-1, 0, 0, 0));
+        assert.throws(() => calculateHousePrice(0, 0, -1, 0));
+        assert.throws(() => calculateHousePrice(0, 0, 0, -1));
+        assert.throws(() => calculateHousePrice(200, 0, 0, 0));
+        assert.throws(() => calculateHousePrice(0, 0, 200, 0));
+        assert.throws(() => calculateHousePrice(0, 0, 0, 200));
 
-    it('should be able to consider parking lots for house pricing accordingly', assert => {
-        calculator.setVarianceValueForTests(50);
+        // Change detector tests against the spreadsheet.
+        assert.closeTo(calculateHousePrice(0, 0, 0, 50), 502683.81, 1);
+        assert.closeTo(calculateHousePrice(1, 0, 1, 50), 4315644.63, 1);
+        assert.closeTo(calculateHousePrice(2, 0, 3, 50), 16083508.12, 1);
+        assert.closeTo(calculateHousePrice(3, 0, 5, 50), 68762910.64, 1);
+        assert.closeTo(calculateHousePrice(4, 0, 7, 50), 120811688.90, 1);
+        assert.closeTo(calculateHousePrice(5, 0, 9, 50), 302758437.81, 1);
 
-        for (let residentialValue = 0; residentialValue <= 5; ++residentialValue) {
-            let previousValue = null;
+        // Verify that the variance is no more than 5% of the total house price.
+        assert.closeTo(calculateHousePrice(4, 0, 2, 0), 0.95 * 34332631.99, 1);
+        assert.closeTo(calculateHousePrice(4, 0, 2, 50), 34332631.99, 1);
+        assert.closeTo(calculateHousePrice(4, 0, 2, 100), 1.05 * 34332631.99, 1);
 
-            for (let parkingLotCount = 0; parkingLotCount <= 3; ++parkingLotCount) {
-                const value = calculator.calculateHousePrice(residentialValue, parkingLotCount, 0);
+        // Verify that parking lots costs are proprtional to the residential factor.
+        const parkingLotCosts = [150000, 275000, 1000000, 1500000, 2000000, 2500000];
 
-                if (previousValue)
-                    assert.isAbove(value, previousValue);
-
-                previousValue = value;
+        parkingLotCosts.forEach((cost, residentialValue) => {
+            const base = calculateHousePrice(residentialValue, 0, 0, 50);
+            for (let count = 1; count < 3; ++count) {
+                assert.closeTo(
+                    calculateHousePrice(residentialValue, count, 0, 50), base + cost * count, 1);
             }
-        }
+        });
     });
 
     it('should be able to price vehicles for houses appropriately', assert => {

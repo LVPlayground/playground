@@ -16,12 +16,18 @@ const HOUSE_AVAILABLE_LABEL_DRAW_DISTANCE = 20;
 // house when it's available. Occupied houses will use a Portal provided by the Location Feature for
 // creating an entrance and exit, still guarded by this class' permission checking.
 class HouseEntranceController {
-    constructor(manager, economy, friends, locationFeature) {
+    constructor(manager, economy, friends, gangs, locationFeature) {
         this.entities_ = new ScopedEntities();
 
         this.manager_ = manager;
         this.economy_ = economy;
         this.friends_ = friends;
+
+        this.gangsFeature_ = gangs;
+        this.gangsFeature_.addReloadObserver(
+            this, HouseEntranceController.prototype.reattachGangObserver);
+
+        this.gangsFeature_().addObserver(this);
 
         this.locationFeature_ = locationFeature;
         this.locationFeature_.addReloadObserver(
@@ -198,6 +204,33 @@ class HouseEntranceController {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Called when the `gangs` feature on the server reloads.
+    reattachGangObserver(gangsFeature) {
+        gangsFeature.addObserver(this);
+    }
+
+    // Called when the |userId| has left a particular gang.
+    onUserJoinGang(userId, gangId) {
+        for (const location of this.occupiedLocationPortals_.keys()) {
+            if (location.settings.ownerId !== userId)
+                continue;
+
+            location.settings.ownerGangId = gangId;
+        }
+    }
+
+    // Called when the |userId| has joined the gang having Id |gangId|.
+    onUserLeaveGang(userId, gangId) {
+        for (const location of this.occupiedLocationPortals_.keys()) {
+            if (location.settings.ownerId !== userId)
+                continue;
+
+            location.settings.ownerGangId = null;
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Makes the |player| enter the |location|. Any sort of entrance restrictions will be skipped.
     enterHouse(player, location) {
         if (location.isAvailable())
@@ -334,6 +367,8 @@ class HouseEntranceController {
 
     dispose() {
         server.pickupManager.removeObserver(this);
+
+        this.gangsFeature_().removeObserver(this);
 
         // Forcefully remove all players who currently are in a house to go outside again.
         server.playerManager.forEach(player => {

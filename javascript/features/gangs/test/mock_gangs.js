@@ -11,6 +11,9 @@ class MockGangs {
         this.gangs_ = {};
     }
 
+    addObserver(observer) {}
+    removeObserver(observer) {}
+
     getGangs() { return Object.values(this.gangs_); }
     getGangForPlayer(player) {
         for (let gang of Object.values(this.gangs_)) {

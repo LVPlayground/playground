@@ -6,6 +6,7 @@ const Economy = require('features/economy/economy.js');
 const HouseManager = require('features/houses/house_manager.js');
 const HouseSettings = require('features/houses/house_settings.js');
 const MockFriends = require('features/friends/test/mock_friends.js');
+const MockGangs = require('features/gangs/test/mock_gangs.js');
 const MockHouseDatabase = require('features/houses/test/mock_house_database.js');
 const MockLocation = require('features/location/test/mock_location.js');
 
@@ -14,11 +15,12 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
 
     afterEach(() => manager.dispose());
     beforeEach(() => {
-        const friends = server.featureManager.wrapInstanceForDependency(new MockFriends());
         const economy = server.featureManager.wrapInstanceForDependency(new Economy());
+        const friends = server.featureManager.wrapInstanceForDependency(new MockFriends());
+        const gangs = server.featureManager.wrapInstanceForDependency(new MockGangs());
         const location = server.featureManager.wrapInstanceForDependency(new MockLocation());
 
-        manager = new HouseManager(economy, friends, location);
+        manager = new HouseManager(economy, friends, gangs, location);
         manager.database_ = new MockHouseDatabase();
     });
 

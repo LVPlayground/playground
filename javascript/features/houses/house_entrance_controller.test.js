@@ -6,6 +6,7 @@ const Economy = require('features/economy/economy.js');
 const HouseManager = require('features/houses/house_manager.js');
 const HouseSettings = require('features/houses/house_settings.js');
 const MockFriends = require('features/friends/test/mock_friends.js');
+const MockGangs = require('features/gangs/test/mock_gangs.js');
 const MockHouseDatabase = require('features/houses/test/mock_house_database.js');
 const MockLocation = require('features/location/test/mock_location.js');
 
@@ -22,10 +23,11 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
         locationFeature = new MockLocation();
 
         const friends = server.featureManager.wrapInstanceForDependency(friendsFeature);
+        const gangs = server.featureManager.wrapInstanceForDependency(new MockGangs());
         const economy = server.featureManager.wrapInstanceForDependency(new Economy());
         const location = server.featureManager.wrapInstanceForDependency(locationFeature);
 
-        manager = new HouseManager(economy, friends, location);
+        manager = new HouseManager(economy, friends, gangs, location);
         manager.database_ = new MockHouseDatabase();
 
         controller = manager.entranceController_;
@@ -180,6 +182,27 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
 
             assert.isFalse(await controller.hasAccessToHouse(location, gunther));
         }
+    });
+
+    it('should update house owner gang data when they join or leave a gang', async(assert) => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+        russell.identify({ userId: 42 });
+
+        russell.position = new Vector(500, 500, 500);
+
+        const location = await manager.findClosestLocation(russell);
+        assert.isFalse(location.isAvailable());
+
+        assert.equal(location.settings.ownerId, 42);
+        assert.equal(location.settings.ownerGangId, null);
+
+        controller.onUserJoinGang(russell.userId, 1501);
+
+        assert.equal(location.settings.ownerGangId, 1501);
+
+        controller.onUserLeaveGang(russell.userId, 1501);
+
+        assert.equal(location.settings.ownerGangId, null);
     });
 
     it('should be able to force-enter and force-exit players from a house', async(assert) => {

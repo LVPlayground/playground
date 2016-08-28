@@ -494,39 +494,6 @@ right(source[], len) {
     return retval;
 }
 
-now() {
-    new h, m, s, d, mo, y;
-    gettime(h, m, s);
-    getdate(y, mo, d);
-
-    new time = mktime(h, m, s, d, mo, y);
-    return time;
-}
-
-mktime(hour, minute, second, day, month, year) {
-    new timestamp = second + (minute * 60) + (hour * 3600), days_of_month[12];
-
-    if (year % 4 == 0)
-        days_of_month = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    else
-        days_of_month = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-
-    new days_this_year = 0;
-    days_this_year = day;
-    if (month > 1) {
-        for (new i = 0; i < month - 1; i++)
-            days_this_year += days_of_month[i];
-    }
-    timestamp += days_this_year * 86400;
-
-    for (new j = 1970; j < year; j++) {
-        timestamp += 31536000;
-        if (j % 4 == 0) timestamp += 86400;
-    }
-
-    return timestamp;
-}
-
 formatPrice(price) {
     new string[256], formatted[256];
 

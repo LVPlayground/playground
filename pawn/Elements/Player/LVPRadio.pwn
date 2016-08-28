@@ -56,22 +56,18 @@ radioInitializeDisplay()
 // to check to hide or update the Race Radio textdraws.
 radioProcess(playerid)
 {
-    if(iRadioPlayerTuneInTime[playerid] == 0)
-    {
+    if (!iRadioPlayerTuneInTime[playerid])
         return;
-    }
 
     // If 6 seconds have passed show the yellowish LVP RADIO colour display
-    if(Time->currentTime() - iRadioPlayerTuneInTime[playerid] >= 6)
-    {
+    if ((Time->currentTime() - iRadioPlayerTuneInTime[playerid]) >= 6) {
         TextDrawHideForPlayer(playerid, radioDisplay[ 0 ]);
         TextDrawShowForPlayer(playerid, radioDisplay[ 1 ]);
         iRadioPlayerTuneInTime[playerid] = 0;
-        return;
     }
+
     // If only 3 seconds have passed just show the grey "LVP RADIO" colour display
-    else if(now() - iRadioPlayerTuneInTime[playerid] >= 3)
-    {
+    else if ((Time->currentTime() - iRadioPlayerTuneInTime[playerid]) >= 3) {
         TextDrawShowForPlayer(playerid, radioDisplay[ 0 ]);
     }
 }
@@ -148,7 +144,7 @@ radioStreamForPlayer(playerid)
 
     PlayAudioStreamForPlayer(playerid, LVP_RADIO_STREAM_URL);
     iRadioPlayingForPlayer[playerid] = true;
-    iRadioPlayerTuneInTime[playerid] = now();
+    iRadioPlayerTuneInTime[playerid] = Time->currentTime();
 }
 
 // This function stops streaming LVP Radio for the player.

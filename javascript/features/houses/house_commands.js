@@ -33,18 +33,24 @@ const NAME_QUESTION = {
 // This class provides the `/house` command available to administrators to manage parts of the
 // Houses feature on Las Venturas Playground. Most interaction occurs through dialogs.
 class HouseCommands {
-    constructor(manager, announce, economy) {
+    constructor(manager, announce, economy, playground) {
         this.manager_ = manager;
 
         this.announce_ = announce;
         this.economy_ = economy;
+
+        this.playground_ = playground;
+        this.playground_.addReloadObserver(
+            this, HouseCommands.prototype.registerTrackedCommands);
+
+        this.registerTrackedCommands(playground());
 
         this.parkingLotCreator_ = new ParkingLotCreator();
         this.parkingLotRemover_ = new ParkingLotRemover();
 
         // Command: /house [buy/cancel/create/enter/modify/remove/save/settings]
         server.commandManager.buildCommand('house')
-            .restrict(Player.LEVEL_MANAGEMENT)
+            .restrict(player => this.playground_().canAccessCommand(player, 'house'))
             .sub('buy')
                 .build(HouseCommands.prototype.onHouseBuyCommand.bind(this))
             .sub('cancel')
@@ -484,10 +490,17 @@ class HouseCommands {
         }
     }
 
+    // Registers the `/house` command as one tracked by the `/lvp access` list.
+    registerTrackedCommands(playground) {
+        playground.registerCommand('house', Player.LEVEL_MANAGEMENT);
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
         server.commandManager.removeCommand('house');
+
+        this.playground_().unregisterCommand('house');
 
         this.parkingLotCreator_.dispose();
         this.parkingLotCreator_ = null;

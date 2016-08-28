@@ -27,10 +27,13 @@ class Houses extends Feature {
         // Portals from the Location feature will be used for house entrances and exits.
         const location = this.defineDependency('location', true /* isFunctional */);
 
+        // The `/house` command is currently restricted to Management.
+        const playground = this.defineDependency('playground', true /* isFunctional */);
+
         this.manager_ = new HouseManager(economy, friends, gangs, location);
         this.manager_.loadHousesFromDatabase();
 
-        this.commands_ = new HouseCommands(this.manager_, announce, economy);
+        this.commands_ = new HouseCommands(this.manager_, announce, economy, playground);
         this.natives_ = new HouseNatives(this.manager_);
     }
 

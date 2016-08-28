@@ -11,25 +11,35 @@ const MockFriends = require('features/friends/test/mock_friends.js');
 const MockGangs = require('features/gangs/test/mock_gangs.js');
 const MockHouseDatabase = require('features/houses/test/mock_house_database.js');
 const MockLocation = require('features/location/test/mock_location.js');
+const MockPlayground = require('features/playground/test/mock_playground.js');
 const ParkingLotCreator = require('features/houses/utils/parking_lot_creator.js');
 const PlayerMoneyBridge = require('features/houses/utils/player_money_bridge.js');
 
 describe('HouseCommands', (it, beforeEach, afterEach) => {
+    let access = null;
     let commands = null;
     let manager = null;
     let maxticks = null;
 
-    beforeEach(() => {
+    beforeEach(assert => {
         const announce = server.featureManager.wrapInstanceForDependency(new MockAnnounce());
         const friends = server.featureManager.wrapInstanceForDependency(new MockFriends());
         const gangs = server.featureManager.wrapInstanceForDependency(new MockGangs());
         const economy = server.featureManager.wrapInstanceForDependency(new Economy());
         const location = server.featureManager.wrapInstanceForDependency(new MockLocation());
+        const playground = server.featureManager.wrapInstanceForDependency(new MockPlayground());
+
+        access = playground().access;
 
         manager = new HouseManager(economy, friends, gangs, location);
         manager.database_ = new MockHouseDatabase();
 
-        commands = new HouseCommands(manager, announce, economy);
+        commands = new HouseCommands(manager, announce, economy, playground);
+
+        // Reducing the command's requirement to players is only necessary until we ship.
+        assert.equal(access.getCommandLevel('house'), Player.LEVEL_MANAGEMENT);
+        access.setCommandLevel('house', Player.LEVEL_PLAYER);
+
         maxticks = 10;
     });
 
@@ -40,31 +50,11 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         manager.dispose();
     });
 
-    it('should only be available for Management members', async(assert) => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-
-        assert.isTrue(await gunther.issueCommand('/house'));
-
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0],
-            Message.format(Message.COMMAND_ERROR_INSUFFICIENT_RIGHTS,
-                           playerLevelToString(Player.LEVEL_MANAGEMENT, true /* plural */)));
-
-        gunther.clearMessages();
-
-        gunther.identify();
-        gunther.level = Player.LEVEL_MANAGEMENT;
-
-        assert.isTrue(await gunther.issueCommand('/house'));
-        assert.equal(gunther.messages.length, 4);
-        assert.equal(gunther.messages[0], Message.HOUSE_HEADER);
-    });
-
     it('should allow for creation of house locations', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         gunther.identify();
-        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
 
         gunther.respondToDialog({ response: 1 /* Yes, confirm creation of the house */ });
 
@@ -84,7 +74,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         gunther.identify();
-        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(2000, 1567, 15);  // on the pirate ship
 
         gunther.respondToDialog({ response: 1 /* Accept that the house cannot be created */ });
@@ -118,7 +108,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         await manager.loadHousesFromDatabase();
 
         gunther.identify();
-        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
 
         assert.isTrue(await gunther.issueCommand('/house modify'));
 
@@ -133,7 +123,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         await manager.loadHousesFromDatabase();
 
         gunther.identify();
-        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest location
 
         assert.isTrue(gunther.issueCommand('/house modify'));
@@ -157,7 +147,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.isAbove(locationCount, 0);
 
         gunther.identify();
-        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest location
 
         gunther.respondToDialog({ listitem: 2 /* Delete the location */ }).then(
@@ -176,7 +166,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         const locationCount = manager.locationCount;
 
         gunther.identify();
-        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(505, 505, 500);
 
         const location = await manager.findClosestLocation(gunther);
@@ -200,7 +190,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.isAbove(manager.locationCount, 0);
 
         gunther.identify();
-        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest location
 
         gunther.respondToDialog({ listitem: 0 /* Add a parking lot */ }).then(
@@ -244,7 +234,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.isAbove(manager.locationCount, 0);
 
         gunther.identify();
-        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest location
 
         gunther.respondToDialog({ listitem: 0 /* Add a parking lot */ }).then(
@@ -267,7 +257,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.isAbove(manager.locationCount, 0);
 
         gunther.identify();
-        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest location
 
         gunther.respondToDialog({ listitem: 1 /* Remove a parking lot */ }).then(
@@ -284,7 +274,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.isAbove(manager.locationCount, 0);
 
         gunther.identify();
-        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest location
 
         const location = await manager.findClosestLocation(gunther);
@@ -321,7 +311,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.isAbove(manager.locationCount, 0);
 
         gunther.identify();
-        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest location
 
         const location = await manager.findClosestLocation(gunther);
@@ -355,7 +345,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.isAbove(manager.locationCount, 0);
 
         gunther.identify();
-        gunther.level = Player.LEVEL_MANAGEMENT;
 
         assert.isTrue(await gunther.issueCommand('/house buy'));
 
@@ -372,7 +361,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.isAbove(manager.locationCount, 0);
 
         gunther.identify();
-        gunther.level = Player.LEVEL_MANAGEMENT;
         gunther.position = new Vector(200, 250, 300);  // on the nearest location pickup
 
         const maximumHouseCount = manager.getMaximumHouseCountForPlayer(gunther);
@@ -394,7 +382,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.isAbove(manager.locationCount, 0);
 
         gunther.identify({ userId: 501 });
-        gunther.level = Player.LEVEL_MANAGEMENT;
         gunther.position = new Vector(200, 250, 300);  // on the nearest location pickup
 
         assert.isTrue(await gunther.issueCommand('/house buy'));
@@ -412,7 +399,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         await manager.loadHousesFromDatabase();
         assert.isAbove(manager.locationCount, 0);
 
-        gunther.level = Player.LEVEL_MANAGEMENT;
         gunther.position = new Vector(200, 250, 300);  // on the nearest location pickup
 
         PlayerMoneyBridge.setMockedBalanceForTests(100000);
@@ -421,7 +407,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         assert.isTrue(await gunther.issueCommand('/house buy'));
 
-        assert.equal(gunther.messages.length, 2);
+        assert.equal(gunther.messages.length, 1);
 
         assert.isFalse((await manager.findClosestLocation(gunther)).isAvailable());
         assert.equal(await PlayerMoneyBridge.getBalanceForPlayer(gunther), 50000);
@@ -431,7 +417,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
     it('should do the necessary checks when changing house settings', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.level = Player.LEVEL_MANAGEMENT;
         gunther.identify({ userId: 42 });
 
         await manager.loadHousesFromDatabase();
@@ -450,8 +435,10 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         assert.isNotNull(manager.getCurrentHouseForPlayer(gunther));
 
-        // TODO: Update this test once the Management-only restriction has been lifted.
-        return;
+        gunther.clearMessages();
+
+        // Change the owner of the house to another player.
+        manager.getCurrentHouseForPlayer(gunther).settings.ownerId_ = 5000;
 
         assert.isTrue(await gunther.issueCommand('/house settings'));
         assert.equal(gunther.messages.length, 1);
@@ -464,7 +451,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 42 });
-        gunther.level = Player.LEVEL_MANAGEMENT;
         gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
 
         // Wait some ticks to make sure that the permission check has finished.
@@ -491,7 +477,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 42 });
-        gunther.level = Player.LEVEL_MANAGEMENT;
         gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
 
         // Wait some ticks to make sure that the permission check has finished.
@@ -518,7 +503,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 42 });
-        gunther.level = Player.LEVEL_MANAGEMENT;
         gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
 
         // Wait some ticks to make sure that the permission check has finished.
@@ -550,7 +534,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 42 });
-        gunther.level = Player.LEVEL_MANAGEMENT;
         gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
 
         // Wait some ticks to make sure that the permission check has finished.

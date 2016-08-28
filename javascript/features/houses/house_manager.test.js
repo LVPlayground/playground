@@ -4,6 +4,7 @@
 
 const Economy = require('features/economy/economy.js');
 const HouseManager = require('features/houses/house_manager.js');
+const HouseSettings = require('features/houses/house_settings.js');
 const MockFriends = require('features/friends/test/mock_friends.js');
 const MockHouseDatabase = require('features/houses/test/mock_house_database.js');
 const MockLocation = require('features/location/test/mock_location.js');
@@ -194,6 +195,22 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
             await Promise.resolve();
 
         assert.isNotNull(manager.getCurrentHouseForPlayer(gunther));
+    });
+
+    it('should be able to update the access level of a house', async(assert) => {
+        await manager.loadHousesFromDatabase();
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.position = new Vector(500, 500, 500);
+
+        const location = await manager.findClosestLocation(gunther);
+        assert.isFalse(location.isAvailable());
+
+        assert.equal(location.settings.access, HouseSettings.ACCESS_FRIENDS);
+
+        await manager.updateHouseSetting(location, 'access', HouseSettings.ACCESS_EVERYBODY);
+
+        assert.equal(location.settings.access, HouseSettings.ACCESS_EVERYBODY);
     });
 
     it('should be able to update the name of a house', async(assert) => {

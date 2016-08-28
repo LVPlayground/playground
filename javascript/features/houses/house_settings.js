@@ -11,6 +11,7 @@ class HouseSettings {
         this.ownerId_ = house.ownerId;
         this.ownerName_ = house.ownerName;
 
+        this.access_ = house.access;
         this.spawnPoint_ = house.spawnPoint;
     }
 
@@ -28,6 +29,11 @@ class HouseSettings {
     // Gets the username of the player that owns this house.
     get ownerName() { return this.ownerName_; }
 
+    // Gets or sets the access level of this house. Updating the access level should only be done
+    // by the HouseManager, because it needs to be reflected in the database.
+    get access() { return this.access_; }
+    set access(value) { this.access_ = value; }
+
     // Returns whether this house should be the spawn point for the owner.
     isSpawn() { return this.spawnPoint_; }
 
@@ -36,5 +42,14 @@ class HouseSettings {
 
     dispose() {}
 }
+
+// The following values determine the access rules for houses.
+HouseSettings.ACCESS_EVERYBODY = 0;
+HouseSettings.ACCESS_FRIENDS_AND_GANG = 1;
+HouseSettings.ACCESS_FRIENDS = 2;
+HouseSettings.ACCESS_PERSONAL = 3;
+
+// The default access level that will be given to new houses.
+HouseSettings.ACCESS_DEFAULT = HouseSettings.ACCESS_FRIENDS;
 
 exports = HouseSettings;

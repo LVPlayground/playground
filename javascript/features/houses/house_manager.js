@@ -130,6 +130,7 @@ class HouseManager {
     // Updates the |setting| of the |location| to |value|. The actual application of the setting
     // update is unique to the setting that is being changed. The following settings are available:
     //
+    //     'access' - Updates the access settings for the house.
     //     'name'   - Updates the name of the house.
     //     'spawn'  - Updates whether to spawn at the |location|.
     //
@@ -142,6 +143,17 @@ class HouseManager {
             throw new Error('The given |location| does not have an house associated with it.');
 
         switch (setting) {
+            case 'access':
+                if (typeof value !== 'number' || value < HouseSettings.ACCESS_EVERYBODY ||
+                        value > HouseSettings.ACCESS_PERSONAL) {
+                    throw new Error('A house access level must be one of HouseSettings.ACCESS_*.');
+                }
+
+                await this.database_.updateHouseAccess(location, value);
+
+                location.settings.access = value;
+                break;
+
             case 'name':
                 if (typeof value !== 'string' || value.length < 3 || value.length > 32)
                     throw new Error('A house name must be between 3 and 32 characters in length.');

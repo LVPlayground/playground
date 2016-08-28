@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const HouseSettings = require('features/houses/house_settings.js');
+
 // Query to load the locations at which houses can be created from the database.
 const LOAD_LOCATIONS_QUERY = `
     SELECT
@@ -42,6 +44,7 @@ const LOAD_HOUSES_QUERY = `
         houses_settings.house_user_id,
         houses_settings.house_interior_id,
         houses_settings.house_name,
+        houses_settings.house_access,
         houses_settings.house_spawn_point,
         users.username
     FROM
@@ -77,6 +80,15 @@ const CREATE_HOUSE_QUERY = `
         (house_location_id, house_user_id, house_interior_id, house_name, house_created)
     VALUES
         (?, ?, ?, ?, NOW())`;
+
+// Query for updating the access requirements of a given house.
+const UPDATE_ACCESS_SETTING_QUERY = `
+    UPDATE
+        houses_settings
+    SET
+        house_access = ?
+    WHERE
+        house_id = ?`;
 
 // Query for updating the name of a given house.
 const UPDATE_NAME_SETTING_QUERY = `
@@ -197,6 +209,8 @@ class HouseDatabase {
                 ownerName: row.username,
 
                 interiorId: row.house_interior_id,
+
+                access: HouseDatabase.toHouseAccessValue(row.house_access),
                 spawnPoint: !!row.house_spawn_point
             });
         });
@@ -238,8 +252,18 @@ class HouseDatabase {
             ownerId: player.userId,
             ownerName: player.name,
 
-            interiorId: interiorId
+            interiorId: interiorId,
+
+            access: HouseSettings.ACCESS_DEFAULT,
+            spawnPoint: false
         };
+    }
+
+    // Updates the access requirements of the house at |location| to |value|.
+    async updateHouseAccess(location, value) {
+        await server.database.query(
+            UPDATE_ACCESS_SETTING_QUERY, HouseDatabase.toHouseAccessEnum(value),
+            location.settings.id);
     }
 
     // Updates the name of the house at |location| to |name|.
@@ -269,6 +293,38 @@ class HouseDatabase {
     // Removes the house tied to |location| from the database.
     async removeHouse(location) {
         await server.database.query(REMOVE_HOUSE_QUERY, location.settings.id);
+    }
+
+    // Converts the |value| to one of the house access enumeration values.
+    static toHouseAccessEnum(value) {
+        switch (value) {
+            case HouseSettings.ACCESS_EVERYBODY:
+                return 'Everybody';
+            case HouseSettings.ACCESS_FRIENDS_AND_GANG:
+                return 'FriendsAndGang';
+            case HouseSettings.ACCESS_FRIENDS:
+                return 'Friends';
+            case HouseSettings.ACCESS_PERSONAL:
+                return 'Personal';
+            default:
+                throw new Error('Invalid house access value: ' + value);
+        }
+    }
+
+    // Converts the |enum| to one of the house access values.
+    static toHouseAccessValue(enumeration) {
+        switch (enumeration) {
+            case 'Everybody':
+                return HouseSettings.ACCESS_EVERYBODY;
+            case 'FriendsAndGang':
+                return HouseSettings.ACCESS_FRIENDS_AND_GANG;
+            case 'Friends':
+                return HouseSettings.ACCESS_FRIENDS;
+            case 'Personal':
+                return HouseSettings.ACCESS_PERSONAL;
+            default:
+                throw new Error('Invalid house access enum: ' + enumeration);
+        }
     }
 }
 

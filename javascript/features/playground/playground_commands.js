@@ -16,11 +16,11 @@ function capitalizeFirstLetter(string) {
 
 // A series of general commands that don't fit in any particular 
 class PlaygroundCommands {
-    constructor(manager, announce) {
+    constructor(manager, access, announce) {
         this.manager_ = manager;
         this.announce_ = announce;
 
-        this.access_ = new PlaygroundAccessTracker();
+        this.access_ = access;
         this.commands_ = new Map();
 
         // Utility function to import, create and initialize the command in |filename|. The command
@@ -87,13 +87,12 @@ class PlaygroundCommands {
     async onPlaygroundAccessCommand(player) {
         let commands = [];
 
-        // Only add commands that are available to |player| by default to the |commands| array.
-        this.commands_.forEach(command => {
-            if (command.defaultPlayerLevel > player.level)
-                return;
+        for (const [command, commandLevel] of this.access_.commands) {
+            if (player.level < commandLevel)
+                continue;
 
             commands.push(command);
-        });
+        }
 
         const menu = new Menu('Command access settings', [
             'Command',
@@ -352,8 +351,6 @@ class PlaygroundCommands {
         });
 
         this.commands_.clear();
-
-        this.access_.dispose();
     }
 }
 

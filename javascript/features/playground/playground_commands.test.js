@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const PlaygroundAccessTracker = require('features/playground/playground_access_tracker.js');
 const PlaygroundCommands = require('features/playground/playground_commands.js');
 const PlaygroundManager = require('features/playground/playground_manager.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
@@ -15,7 +16,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         const announce = new MockAnnounce();
 
         manager = new PlaygroundManager();
-        commands = new PlaygroundCommands(manager, () => announce);
+        commands = new PlaygroundCommands(manager, new PlaygroundAccessTracker(), () => announce);
 
         gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify();

@@ -23,6 +23,9 @@ class PlaygroundAccessTracker {
         server.playerManager.addObserver(this);
     }
 
+    // Gets an iterator for the tracked commands mapped to their current level values.
+    get commands() { return this.commandLevels_.entries(); }
+
     // Returns whether the |player| is allowed to access the |command|.
     canAccessCommand(command, player) {
         const commandLevel = this.commandLevels_.get(command);
@@ -39,9 +42,17 @@ class PlaygroundAccessTracker {
         return exceptions.has(command);
     }
 
-    // Registers |command| that can be executed by players of |level|.
-    registerCommand(command, level) {
-        this.commandLevels_.set(command, level);
+    // Registers |command| that can be executed by players of |defaultLevel|.
+    registerCommand(command, defaultLevel) {
+        this.commandLevels_.set(command, defaultLevel);
+    }
+
+    // Removes |command| from the list of commands controlled by this access tracker.
+    unregisterCommand(command) {
+        this.commandLevels_.delete(command);
+
+        for (const exceptions of this.exceptions_.values())
+            exceptions.delete(command);
     }
 
     // Gets the player level required to execute |command|. Throws when |command| does not exist.

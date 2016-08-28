@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const MockAnnounce = require('features/announce/test/mock_announce.js');
+const PlaygroundAccessTracker = require('features/playground/playground_access_tracker.js');
 const PlaygroundCommands = require('features/playground/playground_commands.js');
 
 // The MockPlaygroundCommands class is exactly the same as the PlaygroundCommands class, with the
@@ -10,7 +11,7 @@ const PlaygroundCommands = require('features/playground/playground_commands.js')
 class MockPlaygroundCommands extends PlaygroundCommands {
     constructor() {
         const mockAnnounce = new MockAnnounce();
-        super(null /* manager */, () => mockAnnounce);
+        super(null /* manager */, new PlaygroundAccessTracker(), () => mockAnnounce);
     }
 };
 

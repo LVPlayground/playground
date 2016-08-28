@@ -46,11 +46,15 @@ const LOAD_HOUSES_QUERY = `
         houses_settings.house_name,
         houses_settings.house_access,
         houses_settings.house_spawn_point,
+        users_gangs.gang_id,
         users.username
     FROM
         houses_settings
     LEFT JOIN
         houses_locations ON houses_locations.house_location_id = houses_settings.house_location_id
+    LEFT JOIN
+        users_gangs ON users_gangs.user_id = houses_settings.house_user_id AND
+                       users_gangs.left_gang IS NULL 
     LEFT JOIN
         users ON users.user_id = houses_settings.house_user_id
     WHERE
@@ -206,6 +210,7 @@ class HouseDatabase {
                 name: row.house_name,
 
                 ownerId: row.house_user_id,
+                ownerGangId: row.gang_id,
                 ownerName: row.username,
 
                 interiorId: row.house_interior_id,
@@ -250,6 +255,7 @@ class HouseDatabase {
             name: name,
 
             ownerId: player.userId,
+            ownerGangId: player.gangId,
             ownerName: player.name,
 
             interiorId: interiorId,

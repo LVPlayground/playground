@@ -9,6 +9,7 @@ class HouseSettings {
         this.name_ = house.name;
 
         this.ownerId_ = house.ownerId;
+        this.ownerGangId_ = house.ownerGangId;
         this.ownerName_ = house.ownerName;
 
         this.access_ = house.access;
@@ -25,6 +26,10 @@ class HouseSettings {
 
     // Gets the user Id of the player that own this house.
     get ownerId() { return this.ownerId_; }
+
+    // Gets or sets the Id of the gang the house's owner is part of.
+    get ownerGangId() { return this.ownerGangId_; }
+    set ownerGangId(value) { this.ownerGangId_ = value; }
 
     // Gets the username of the player that owns this house.
     get ownerName() { return this.ownerName_; }

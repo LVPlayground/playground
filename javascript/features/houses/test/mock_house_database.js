@@ -37,6 +37,7 @@ class MockHouseDatabase {
             name: 'Guntherplaza',
 
             ownerId: 42 /* user_id */,
+            ownerGangId: null,
             ownerName: 'Gunther',
 
             interiorId: 0,
@@ -62,6 +63,7 @@ class MockHouseDatabase {
             name: player.name + '\'s house',
 
             ownerId: player.userId,
+            ownerGangId: player.gangId,
             ownerName: player.name,
 
             interiorId: interiorId,

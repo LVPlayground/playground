@@ -124,19 +124,32 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
         gunther.identify({ userId: 43 });
         russell.identify({ userId: 42 });
 
+        // (2) Russell can always access his own house.
+        assert.isTrue(await controller.hasAccessToHouse(location, russell));
+
         // Access level: HouseSettings.ACCESS_EVERYBODY
         {
             location.settings.access = HouseSettings.ACCESS_EVERYBODY;
 
             assert.isTrue(await controller.hasAccessToHouse(location, gunther));
-            assert.isTrue(await controller.hasAccessToHouse(location, russell));
         }
 
         // Access level: HouseSettings.ACCESS_FRIENDS_AND_GANG
         {
             location.settings.access = HouseSettings.ACCESS_FRIENDS_AND_GANG;
 
-            // TODO: Implement access checking for gang members.
+            assert.isFalse(await controller.hasAccessToHouse(location, gunther));
+
+            location.settings.ownerGangId = 1337;
+            gunther.gangId = 1337;
+
+            assert.isTrue(await controller.hasAccessToHouse(location, gunther));
+
+            location.settings.ownerGangId = null;
+
+            assert.isFalse(await controller.hasAccessToHouse(location, gunther));
+
+            gunther.gangId = null;
         }
 
         // Access level: HouseSettings.ACCESS_FRIENDS
@@ -162,7 +175,8 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
             assert.isFalse(await controller.hasAccessToHouse(location, gunther));
 
             // Being in the same gang as the owner does not matter.
-            // TODO: Make sure |gunther| and |russell| share a gang.
+            location.settings.ownerGangId = 1337;
+            gunther.gangId = 1337;
 
             assert.isFalse(await controller.hasAccessToHouse(location, gunther));
         }

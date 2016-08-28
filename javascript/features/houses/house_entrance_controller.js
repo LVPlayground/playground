@@ -249,7 +249,9 @@ class HouseEntranceController {
                 return true;
 
             case HouseSettings.ACCESS_FRIENDS_AND_GANG:
-                // TODO: checking gang whether the players share a gang.
+                if (location.settings.ownerGangId && location.settings.ownerGangId == player.gangId)
+                    return true;  // the owner is in the same gang as |player|
+
                 // Deliberate fall-through.
 
             case HouseSettings.ACCESS_FRIENDS:

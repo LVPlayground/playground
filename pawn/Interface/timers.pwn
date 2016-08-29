@@ -87,7 +87,6 @@ class DeprecatedTimerRuntime {
                     SetVehicleHealth (GetPlayerVehicleID (playerId), 1000.0);
             }
 
-            CTheft__Process (playerId);
             CSave__Process(playerId);
 
             CBomb__CheckPlayer (playerId);

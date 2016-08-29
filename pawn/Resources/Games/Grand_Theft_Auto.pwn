@@ -10,33 +10,27 @@
 *   the exports. The car gets marked with a yellow icon for everyone so there  *
 *   is some competiton for it!                                                 *
 *                                                                              *
-*           Author: Jay             wilkinson_929@hotmail.com                  *
+*           Authors: Russell         russell@sa-mp.nl                          *
+*                    Jay             wilkinson_929@hotmail.com                 *
+*                                                                              *
 *******************************************************************************/
 
 #define INVALID_GTA_MAP_ICON (DynamicMapIcon: -1)
-
-#define COLOR_GTA 0x33FF33AA
 
 // Defines:
 #define MERCHANT_EXPIRE_MINUTES         45  // Number of minutes after which the merchant loses interest.
 #define MERCHANT_REMOVAL_DELAY_SECONDS  20  // Number of seconds, after delivery, to remove the merchant.
 
-
-
-
 new GTA_Value = 0;
 new GTA_Vehicle = -1;
 new GTA_Merchant = Player::InvalidId;
+
+new DynamicMapIcon: GTA_MapIcon = INVALID_GTA_MAP_ICON;
 
 new bool: GTA_SetVehicleObjective[MAX_PLAYERS];
 
 new GTA_RemoveMerchantTime = -1;
 new GTA_StopMinigameTime = -1;
-
-
-
-new    DynamicMapIcon: GTA_MapIcon = INVALID_GTA_MAP_ICON; // Stores the map icon ID
-
 
 // -------------------------------------------------------------------------------------------------
 
@@ -54,6 +48,8 @@ CTheft__Initalize() {
 
     GTA_StopMinigameTime = Time->currentTime() + MERCHANT_EXPIRE_MINUTES * 60;
 
+    CTheft__UpdateMapIcon();
+
 #if ReleaseSettings::CreateMerchant == 1
     CTheft__CreateMerchant();
 #endif
@@ -63,12 +59,12 @@ CTheft__Initalize() {
 	SendClientMessageToAllEx(Color::Red, "-------------------------------------------------------------------");
 	format(message, sizeof(message), "* Grand Theft Auto: The merchant is desperately in need of the %s marked with the car on your radar",
            VehicleModel(vehicleModel)->nameString());
-	SendClientMessageToAllEx(COLOR_GTA,message);
+	SendClientMessageToAllEx(Color::MerchantAnnouncement, message);
 
 	format(message, sizeof(message), "* and is willing to pay $%s to whoever brings it to him. It's located in %s, %s.",
            formatPrice(GTA_Value), GetVehicleZone(GTA_Vehicle), GetVehicleCity(GTA_Vehicle));
 
-	SendClientMessageToAllEx(COLOR_GTA, message);
+	SendClientMessageToAllEx(Color::MerchantAnnouncement, message);
 	SendClientMessageToAllEx(Color::Red, "-------------------------------------------------------------------");
 
 	for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
@@ -80,6 +76,11 @@ CTheft__Initalize() {
 
 	format(message, sizeof(message), "[gta] %s %d", VehicleModel(vehicleModel)->nameString(), GTA_Value);
 	AddEcho(message);
+}
+
+// Returns the vehicle Id that's currently wanted by the merchant.
+CTheft__CurrentVehicleId() {
+    return GTA_Vehicle;
 }
 
 // Returns a random vehicle that the merchant is interested in. The vehicle must meet a series of
@@ -122,7 +123,7 @@ CTheft__End(bool: sendMessage, reason[]) {
         return;
 
 	if (sendMessage)
-		SendClientMessageToAllEx(COLOR_GTA, reason);
+		SendClientMessageToAllEx(Color::MerchantAnnouncement, reason);
 
     for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
         if (!Player(playerId)->isConnected())
@@ -143,6 +144,7 @@ CTheft__End(bool: sendMessage, reason[]) {
     new const localVehicleId = GTA_Vehicle;
 
     GTA_Vehicle = -1;
+    GTA_MapIcon = INVALID_GTA_MAP_ICON;
 
     SetVehicleToRespawn(localVehicleId);
 
@@ -191,6 +193,24 @@ CTheft__CheckMerchantStatus() {
 
     if (IsPlayerNPC(GTA_Merchant))
         ApplyAnimation(GTA_Merchant, "DEALER", "DEALER_IDLE_01", 4.1, 0, 1, 1, 1, 1, 1);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+// Creates or updates the map icon for the GTA Merchant. An existing map icon will be removed first.
+CTheft__UpdateMapIcon() {
+    if (GTA_Vehicle == -1 || !IsValidVehicle(GTA_Vehicle))
+        return;
+
+    if (GTA_MapIcon != INVALID_GTA_MAP_ICON)
+        DestroyDynamicMapIcon(GTA_MapIcon);
+
+    new Float: vehicleX, Float: vehicleY, Float: vehicleZ;
+
+    GetVehiclePos(GTA_Vehicle, vehicleX, vehicleY, vehicleZ);
+
+    GTA_MapIcon = CreateDynamicMapIcon(vehicleX, vehicleY, vehicleZ, 55, 0, 0, 0, -1, 99999);
+    Streamer_SetIntData(STREAMER_TYPE_MAP_ICON, GTA_MapIcon, E_STREAMER_STYLE, 1);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -249,9 +269,24 @@ CTheft__VehicleSpawn(vehicleId) {
 
 // Makes sure that the GTA vehicle has the objective marker set for the |playerId|. Called every two
 // seconds. Removal of the markers will be done by CTheft__End.
+//
+// Also responsible for updating the map icon's position if the |playerId| happens to be driving the
+// merchant vehicle, since that should remain synchronized for other players. This makes sure that
+// the position of the player has changed substantially.
 CTheft__UpdateVehicleMarkerForPlayer(playerId) {
     if (GTA_Vehicle == -1)
         return;
+
+    if (IsPlayerInVehicle(playerId, GTA_Vehicle) && GetPlayerState(playerId) == PLAYER_STATE_DRIVER) {
+        new Float: markerX, Float: markerY, Float: markerZ;
+
+        Streamer_GetFloatData(STREAMER_TYPE_MAP_ICON, GTA_MapIcon, E_STREAMER_X, markerX);
+        Streamer_GetFloatData(STREAMER_TYPE_MAP_ICON, GTA_MapIcon, E_STREAMER_Y, markerY);
+        Streamer_GetFloatData(STREAMER_TYPE_MAP_ICON, GTA_MapIcon, E_STREAMER_Z, markerZ);
+
+        if (GetVehicleDistanceFromPoint(GTA_Vehicle, markerX, markerY, markerZ) > 10)
+            CTheft__UpdateMapIcon();
+    }
 
     if (GTA_SetVehicleObjective[playerId])
         return;
@@ -273,50 +308,6 @@ CTheft__CheckMerchantExpireTimer() {
 
 // -------------------------------------------------------------------------------------------------
 
-
-
-
-
-
-// CTheft__Process
-// this is called every second from lvp's main timer, and if GTA is in progress
-// it places a map icon over the car and shows it for every player.
-CTheft__Process(i)
-{
-	if(GTA_Vehicle > -1)
-	{
-		new
-		    Float:x,
-		    Float:y,
-		    Float:z;
-
-		GetVehiclePos(GTA_Vehicle,x,y,z);
-
-		// Right then we may need to update the position of the map icon, or even create it.
-        if(GTA_MapIcon != INVALID_GTA_MAP_ICON)
-        {
-            Streamer_SetFloatData(STREAMER_TYPE_MAP_ICON, GTA_MapIcon, E_STREAMER_X, x);
-            Streamer_SetFloatData(STREAMER_TYPE_MAP_ICON, GTA_MapIcon, E_STREAMER_Y, y);
-            Streamer_SetFloatData(STREAMER_TYPE_MAP_ICON, GTA_MapIcon, E_STREAMER_Z, z);
-            Streamer_Update(i);
-        }
-        else
-        {   // Show this as a global map icon.
-            GTA_MapIcon = CreateDynamicMapIcon(x, y, z, 55, 0, 0, 0, -1, 99999);
-            Streamer_SetIntData(STREAMER_TYPE_MAP_ICON, GTA_MapIcon, E_STREAMER_STYLE, 1);
-        }
-
-
-	}
-}
-
-// End of Grand Theft Auto! Thankyou for viewing another fine piece of work
-// by Jay! <3
-
-LegacyGetGtaVehicleId() {
-    return GTA_Vehicle;
-}
-
 /**
  * Since I do need a command for debugging on the main server, I decided to add a small class with
  * a command here since that was quick and easy to do.
@@ -336,11 +327,10 @@ class GrandTheftAutoMerchant {
     @command("gotogtamv")
     public onGotoGTAMVCommand(playerId, params[]) {
         if (Player(playerId)->isConnected() && Player(playerId)->isAdministrator()) {// && Player(playerId)->isDeveloper()) {
-            new currentveh = LegacyGetGtaVehicleId(),
-                Float:vehX, Float:vehY, Float:vehZ,
+            new Float:vehX, Float:vehY, Float:vehZ,
                 message[256];
 
-            GetVehiclePos(currentveh, vehX, vehY, vehZ);
+            GetVehiclePos(GTA_Vehicle, vehX, vehY, vehZ);
             SetPlayerPos(playerId, vehX, vehY, vehZ);
 
             SendClientMessage(playerId, Color::Success, "You have been moved to the GTA Merchant vehicle. This command may onle be used for debugging purposes! Anyhow: The admins have been notified about this!");

@@ -612,7 +612,7 @@ class VehicleCommands {
 
         new vehiclePoolSize = GetVehiclePoolSize();
         for (new vehicleId = 1; vehicleId <= vehiclePoolSize; vehicleId++) {
-            if (LegacyGetGtaVehicleId() == vehicleId || Vehicle(vehicleId)->isValid() == false)
+            if (!Vehicle(vehicleId)->isValid() || CTheft__CurrentVehicleId() == vehicleId)
                 continue;
 
             if (VehicleModel->isTrailer(GetVehicleModel(vehicleId))) {

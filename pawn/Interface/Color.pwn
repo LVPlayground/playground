@@ -29,6 +29,8 @@ class Color {
     public const PropertyTycoonAnnouncement = 0xFFFF00AA;
     public const SlapAnnouncement = 0xB1FC17FF;
 
+    public const MerchantAnnouncement = 0x33FF33AA;
+
     // =============================================================================================
     //                                       ~~~~~~~~~~~~~~~~
     // Colors above this line must have been FORMALLY APROVED by Russell.

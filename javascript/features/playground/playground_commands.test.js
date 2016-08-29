@@ -8,6 +8,7 @@ const PlaygroundManager = require('features/playground/playground_manager.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 
 describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
+    let access = null;
     let commands = null;
     let gunther = null;
     let manager = null;
@@ -15,8 +16,9 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
     beforeEach(() => {
         const announce = new MockAnnounce();
 
+        access = new PlaygroundAccessTracker();
         manager = new PlaygroundManager();
-        commands = new PlaygroundCommands(manager, new PlaygroundAccessTracker(), () => announce);
+        commands = new PlaygroundCommands(manager, access, () => announce);
 
         gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify();
@@ -100,5 +102,54 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
 
             assert.isFalse(manager.isOptionEnabled(option));
         });
+    });
+
+    it('should be able to deal with remote commands', async(assert) => {
+        const COMMAND_NAME = 'aaaaaaa';
+
+        const russell = server.playerManager.getById(1 /* Russell */);
+        russell.identify();
+
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
+        // We're going to assume that this command comes first in the list.
+        access.registerCommand(COMMAND_NAME, Player.LEVEL_ADMINISTRATOR);
+
+        assert.isFalse(access.canAccessCommand(COMMAND_NAME, russell));
+        assert.equal(access.getCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
+        assert.equal(access.getDefaultCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
+
+        // Lower the level requirement of the |COMMAND_NAME| to all Players.
+        gunther.respondToDialog({ listitem: 0 /* Assumed COMMAND_NAME */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Change required level */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Player.LEVEL_PLAYER */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Yeah I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp access'));
+
+        assert.isTrue(access.canAccessCommand(COMMAND_NAME, russell));
+        assert.isFalse(access.hasException(COMMAND_NAME, russell));
+        assert.equal(access.getCommandLevel(COMMAND_NAME), Player.LEVEL_PLAYER);
+        assert.equal(access.getDefaultCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
+
+        // Revoke the access level of the |COMMAND_NAME| back to administrators.
+        access.setCommandLevel(COMMAND_NAME, Player.LEVEL_ADMINISTRATOR);
+
+        assert.isFalse(access.canAccessCommand(COMMAND_NAME, russell));
+        assert.equal(access.getCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
+        assert.equal(access.getDefaultCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
+
+        // Now grant an exception for Russell allowing him to use the command.
+        gunther.respondToDialog({ listitem: 0 /* Assumed COMMAND_NAME */ }).then(
+            () => gunther.respondToDialog({ listitem: 1 /* Grant exception */ })).then(
+            () => gunther.respondToDialog({ response: 1, inputtext: russell.name })).then(
+            () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp access'));
+
+        assert.isTrue(access.canAccessCommand(COMMAND_NAME, russell));
+        assert.isTrue(access.hasException(COMMAND_NAME, russell));
+        assert.equal(access.getCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
+        assert.equal(access.getDefaultCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
     });
 });

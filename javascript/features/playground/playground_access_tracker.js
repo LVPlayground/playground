@@ -14,7 +14,9 @@ const ExceptionReconnectTimeoutMs = 5 /* minutes */ * 60 * 1000;
 // exceptions will be remembered for up to a few minutes.
 class PlaygroundAccessTracker {
     constructor() {
+        this.commandLevelDefaults_ = new Map();
         this.commandLevels_ = new Map();
+
         this.exceptions_ = new Map();
 
         this.cachedExceptions_ = new Map();
@@ -44,11 +46,13 @@ class PlaygroundAccessTracker {
 
     // Registers |command| that can be executed by players of |defaultLevel|.
     registerCommand(command, defaultLevel) {
+        this.commandLevelDefaults_.set(command, defaultLevel);
         this.commandLevels_.set(command, defaultLevel);
     }
 
     // Removes |command| from the list of commands controlled by this access tracker.
     unregisterCommand(command) {
+        this.commandLevelDefaults_.delete(command);
         this.commandLevels_.delete(command);
 
         for (const exceptions of this.exceptions_.values())
@@ -58,6 +62,15 @@ class PlaygroundAccessTracker {
     // Gets the player level required to execute |command|. Throws when |command| does not exist.
     getCommandLevel(command) {
         const level = this.commandLevels_.get(command);
+        if (level === undefined)
+            throw new Error('Invalid command given: ' + command);
+
+        return level;
+    }
+
+    // Gets the default command level with which |command| was registered.
+    getDefaultCommandLevel(command) {
+        const level = this.commandLevelDefaults_.get(command);
         if (level === undefined)
             throw new Error('Invalid command given: ' + command);
 
@@ -203,7 +216,10 @@ class PlaygroundAccessTracker {
         server.playerManager.removeObserver(this);
 
         this.cachedExceptions_.clear();
+
+        this.commandLevelDefaults_.clear();
         this.commandLevels_.clear();
+
         this.exceptions_.clear();
     }
 }

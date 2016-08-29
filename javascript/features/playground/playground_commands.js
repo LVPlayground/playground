@@ -94,18 +94,22 @@ class PlaygroundCommands {
             commands.push(command);
         }
 
+        // Sort the |commands| in alphabetical order, since there is no guarantee that the Access
+        // Tracker maintains the commands in such order.
+        commands.sort();
+
         const menu = new Menu('Command access settings', [
             'Command',
             'Level',
             'Exceptions'
         ]);
 
-        commands.forEach(command => {
-            const commandName = command.name;
+        commands.forEach(commandName => {
             const commandLevel = this.access_.getCommandLevel(commandName);
             const commandExceptions = this.access_.getExceptionCount(commandName);
+            const defaultLevel = this.access_.getDefaultCommandLevel(commandName);
 
-            const levelPrefix = commandLevel !== command.defaultPlayerLevel ? '{FFFF00}' : '';
+            const levelPrefix = commandLevel !== defaultLevel ? '{FFFF00}' : '';
             const level = playerLevelToString(commandLevel, true /* plural */);
 
             const exceptions = commandExceptions != 0
@@ -113,48 +117,49 @@ class PlaygroundCommands {
                 : '-';
 
             menu.addItem('/' + commandName, levelPrefix + capitalizeFirstLetter(level), exceptions,
-                         PlaygroundCommands.prototype.displayCommandMenu.bind(this, command));
+                         PlaygroundCommands.prototype.displayCommandMenu.bind(this, commandName));
         });
 
         await menu.displayForPlayer(player);
     }
 
-    // Displays a command menu for |command| to the |player|. It contains options to change the
+    // Displays a command menu for |commandName| to the |player|. It contains options to change the
     // required level, as well as options to grant and revoke exceptions for the command.
-    async displayCommandMenu(command, player) {
-        const menu = new Menu('/' + command.name + ' access settings');
+    async displayCommandMenu(commandName, player) {
+        const menu = new Menu('/' + commandName + ' access settings');
 
-        const exceptions = this.access_.getExceptions(command.name);
+        const exceptions = this.access_.getExceptions(commandName);
         exceptions.sort((lhs, rhs) =>
             lhs.name.localeCompare(rhs.name));
 
         menu.addItem('Change required level',
-                     PlaygroundCommands.prototype.displayCommandLevelMenu.bind(this, command));
+                     PlaygroundCommands.prototype.displayCommandLevelMenu.bind(this, commandName));
 
         menu.addItem('Grant exception',
-                     PlaygroundCommands.prototype.grantCommandException.bind(this, command));
+                     PlaygroundCommands.prototype.grantCommandException.bind(this, commandName));
 
         if (exceptions.length) {
             menu.addItem('------------------------',
-                         PlaygroundCommands.prototype.displayCommandMenu.bind(this, command));
+                         PlaygroundCommands.prototype.displayCommandMenu.bind(this, commandName));
 
             exceptions.forEach(subject => {
-                menu.addItem('Revoke for ' + subject.name + ' (Id: ' + subject.id + ')',
-                             PlaygroundCommands.prototype.revokeCommandException.bind(this, command,
-                                                                                      subject));
+                menu.addItem(
+                    'Revoke for ' + subject.name + ' (Id: ' + subject.id + ')',
+                    PlaygroundCommands.prototype.revokeCommandException.bind(this, commandName,
+                                                                             subject));
             });
         }
 
         await menu.displayForPlayer(player);
     }
 
-    // Displays a menu that allows |player| to change the required level of |command| to any level
-    // that's equal or below their own level, to avoid "losing" a command.
-    async displayCommandLevelMenu(command, player) {
-        const currentLevel = this.access_.getCommandLevel(command.name);
-        const defaultLevel = command.defaultPlayerLevel;
+    // Displays a menu that allows |player| to change the required level of |commandName| to any
+    // level that's equal or below their own level, to avoid "losing" a command.
+    async displayCommandLevelMenu(commandName, player) {
+        const currentLevel = this.access_.getCommandLevel(commandName);
+        const defaultLevel = this.access_.getDefaultCommandLevel(commandName);
 
-        const menu = new Menu('/' + command.name + ' required level');
+        const menu = new Menu('/' + commandName + ' required level');
 
         [
             Player.LEVEL_PLAYER,
@@ -177,23 +182,23 @@ class PlaygroundCommands {
                     });
                 }
 
-                this.access_.setCommandLevel(command.name, level);
+                this.access_.setCommandLevel(commandName, level);
                 this.announce_().announceToAdministrators(
-                    Message.LVP_ANNOUNCE_CMD_LEVEL, player.name, player.id, command.name, levelName)
+                    Message.LVP_ANNOUNCE_CMD_LEVEL, player.name, player.id, commandName, levelName)
 
                 // Make an announcement to players if the command was either granted to them, or
                 // taken away from them. We like to cause anarchy by upset mobs.
                 if (level == Player.LEVEL_PLAYER) {
                     this.announce_().announceToPlayers(
-                        Message.LVP_ANNOUNCE_CMD_AVAILABLE, player.name, command.name);
+                        Message.LVP_ANNOUNCE_CMD_AVAILABLE, player.name, commandName);
                 } else if (currentLevel == Player.LEVEL_PLAYER) {
                     this.announce_().announceToPlayers(
-                        Message.LVP_ANNOUNCE_CMD_REVOKED, player.name, command.name);
+                        Message.LVP_ANNOUNCE_CMD_REVOKED, player.name, commandName);
                 }
 
                 return await MessageDialog.display(player, {
                     title: 'The level has been updated!',
-                    message: '/' + command.name + ' is now available to ' + levelName + '.'
+                    message: '/' + commandName + ' is now available to ' + levelName + '.'
                 });
             });
         });
@@ -201,11 +206,11 @@ class PlaygroundCommands {
         await menu.displayForPlayer(player);
     }
 
-    // Grants an exception for a not yet determined player to use the |command|.
-    async grantCommandException(command, player) {
+    // Grants an exception for a not yet determined player to use the |commandName|.
+    async grantCommandException(commandName, player) {
         const answer = await Question.ask(player, {
             question: 'Select a player',
-            message: 'Which player should be allowed to use /' + command.name + '?',
+            message: 'Which player should be allowed to use /' + commandName + '?',
             leftButton: 'Grant'
         });
 
@@ -224,7 +229,7 @@ class PlaygroundCommands {
             if (!retry)
                 return;
 
-            return await grantCommandException(command, player);
+            return await grantCommandException(commandName, player);
         }
 
         if (!subject.isRegistered()) {
@@ -242,32 +247,32 @@ class PlaygroundCommands {
             });
         }
 
-        this.access_.addException(command.name, subject, player /* sourcePlayer */);
-        if (this.access_.getCommandLevel(command.name) != Player.LEVEL_MANAGEMENT) {
+        this.access_.addException(commandName, subject, player /* sourcePlayer */);
+        if (this.access_.getCommandLevel(commandName) != Player.LEVEL_MANAGEMENT) {
             this.announce_().announceToAdministrators(
                 Message.LVP_ANNOUNCE_CMD_EXCEPTION, player.name, player.id, subject.name,
-                command.name);
+                commandName);
         }
 
         return await MessageDialog.display(player, {
             title: 'The exception has been granted!',
-            message: '/' + command.name + ' is now available to ' + subject.name + '.'
+            message: '/' + commandName + ' is now available to ' + subject.name + '.'
         });
     }
 
-    // Revokes the exception for |subject| to use the |command|.
-    async revokeCommandException(command, subject, player) {
-        this.access_.removeException(command.name, subject, player /* sourcePlayer */);
+    // Revokes the exception for |subject| to use the |commandName|.
+    async revokeCommandException(commandName, subject, player) {
+        this.access_.removeException(commandName, subject, player /* sourcePlayer */);
 
-        if (this.access_.getCommandLevel(command.name) != Player.LEVEL_MANAGEMENT) {
+        if (this.access_.getCommandLevel(commandName) != Player.LEVEL_MANAGEMENT) {
             this.announce_().announceToAdministrators(
                 Message.LVP_ANNOUNCE_CMD_REMOVED_EXCEPTION, player.name, player.id, subject.name,
-                command.name);
+                commandName);
         }
 
         return await MessageDialog.display(player, {
             title: 'The exception has been revoked!',
-            message: '/' + command.name + ' is no longer available to ' + subject.name + '.'
+            message: '/' + commandName + ' is no longer available to ' + subject.name + '.'
         });
     }
 

@@ -13,70 +13,74 @@
 *           Author: Jay             wilkinson_929@hotmail.com                  *
 *******************************************************************************/
 
+#define INVALID_GTA_MAP_ICON (DynamicMapIcon: -1)
+
+#define COLOR_GTA 0x33FF33AA
+
 // Defines:
+#define MERCHANT_EXPIRE_MINUTES         45  // Number of minutes after which the merchant loses interest.
 #define MERCHANT_REMOVAL_DELAY_SECONDS  20  // Number of seconds, after delivery, to remove the merchant.
 
 
-#define MINUTES_TO_DELIVER 15        // How long does everyone get to deliver it?
-#define COLOR_GTA 0x33FF33AA      // The color used throughout this minigame
 
 
-#define INVALID_GTA_MAP_ICON (DynamicMapIcon: -1)
+new GTA_Value = 0;
+new GTA_Vehicle = -1;
 
-new    GTA_Vehicle;                 // The current wanted vehicle.
-new    GTA_Value;                   // The value the vehicle is worth
-new    GTA_Time;                    // How long has the game been running for?
-new    GTA_Vparams[MAX_PLAYERS];          // Is the GTA Vehicle params showing for the player?
+new bool: GTA_SetVehicleObjective[MAX_PLAYERS];
+
+new GTA_RemoveMerchantTime = -1;
+new GTA_StopMinigameTime = -1;
+
+
+
+
 new    DynamicMapIcon: GTA_MapIcon = INVALID_GTA_MAP_ICON; // Stores the map icon ID
 new    GTA_NPCID = Player::InvalidId;   // NPC player id
-new    GTA_RemoveMerchantTime = -1;
-
-// CTheft__Begin
-// this function sets the required vars for the Grand Theft Auto minigame
-CTheft__Begin()
-{
-	GTA_Vehicle = -1;
-}
-
-// CTheft__Initialize. This function intializes the Grand Theft Auto
-// minigame and is called every hour or so.
-CTheft__Initalize()
-{
-	CTheft__End(false /* sendMessage */, "");
-
-	new str[256];
 
 
-	GTA_Vehicle = CTheft__ChooseRandomVehicle();
+// -------------------------------------------------------------------------------------------------
+
+// Initialises the GTA Merchant minigame. Called once per ninety minutes.
+CTheft__Initalize() {
+    if (GTA_Vehicle != -1)
+        CTheft__End(false /* sendMessage */, "");
+
+    GTA_Vehicle = CTheft__ChooseRandomVehicle();
 	GTA_Value = GetEconomyValue(GrandTheftAutoRandomVehicleValue);
 
     new vehicleModel = GetVehicleModel(GTA_Vehicle);
+    if (!VehicleModel->isValidVehicleModel(vehicleModel))
+        return;
 
-    if (VehicleModel->isValidVehicleModel(vehicleModel) == false)
-        return; /** prevent buffer overflows **/
+    GTA_StopMinigameTime = Time->currentTime() + MERCHANT_EXPIRE_MINUTES * 60;
 
-    #if ReleaseSettings::CreateMerchant == 1
-		CTheft__CreateMerchant();
-	#endif
+#if ReleaseSettings::CreateMerchant == 1
+    CTheft__CreateMerchant();
+#endif
 
-	SendClientMessageToAllEx(Color::Red,"-------------------------------------------------------------------");
-	format(str,256,"* Grand Theft Auto: The merchant is desperately in need of the %s marked with the car on your radar", VehicleModel(vehicleModel)->nameString());
-	SendClientMessageToAllEx(COLOR_GTA,str);
-	format(str,256,"* and is willing to pay $%s to whoever brings it to him. It's located in %s, %s.",formatPrice(GTA_Value), GetVehicleZone(GTA_Vehicle), GetVehicleCity(GTA_Vehicle));
-	SendClientMessageToAllEx(COLOR_GTA,str);
-	SendClientMessageToAllEx(Color::Red,"-------------------------------------------------------------------");
-	GTA_Time = Time->currentTime();
+    new message[128];
 
-	for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-	{
-	    if(!Player(i)->isConnected()) continue;
-	    if(IsPlayerInMinigame(i)) continue;
-		if(GetPlayerVirtualWorld(i) != 0) continue;
-		CTheft__SetParams(i,true);
-	}
+	SendClientMessageToAllEx(Color::Red, "-------------------------------------------------------------------");
+	format(message, sizeof(message), "* Grand Theft Auto: The merchant is desperately in need of the %s marked with the car on your radar",
+           VehicleModel(vehicleModel)->nameString());
+	SendClientMessageToAllEx(COLOR_GTA,message);
 
-	format(str,256,"[gta] %s %d", VehicleModel(vehicleModel)->nameString(), GTA_Value);
-	AddEcho(str);
+	format(message, sizeof(message), "* and is willing to pay $%s to whoever brings it to him. It's located in %s, %s.",
+           formatPrice(GTA_Value), GetVehicleZone(GTA_Vehicle), GetVehicleCity(GTA_Vehicle));
+
+	SendClientMessageToAllEx(COLOR_GTA, message);
+	SendClientMessageToAllEx(Color::Red, "-------------------------------------------------------------------");
+
+	for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
+        if (!Player(playerId)->isConnected())
+            continue;
+
+        CTheft__UpdateVehicleMarkerForPlayer(playerId);
+    }
+
+	format(message, sizeof(message), "[gta] %s %d", VehicleModel(vehicleModel)->nameString(), GTA_Value);
+	AddEcho(message);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -152,6 +156,25 @@ CTheft__VehicleSpawn(vehicleId) {
 
 // -------------------------------------------------------------------------------------------------
 
+// Makes sure that the GTA vehicle has the objective marker set for the |playerId|. Called every two
+// seconds. Removal of the markers will be done by CTheft__End.
+CTheft__UpdateVehicleMarkerForPlayer(playerId) {
+    if (GTA_Vehicle == -1)
+        return;
+
+    if (GTA_SetVehicleObjective[playerId])
+        return;
+
+    SetVehicleParamsForPlayer(GTA_Vehicle, playerId, true /* objective */, false /* doorslocked */);
+    GTA_SetVehicleObjective[playerId] = true;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+
+
+
+
 // CTheft__End
 // this function ends the vehicle theft minigame with a reason and option to send
 // the reason to everyone.
@@ -167,14 +190,19 @@ CTheft__End(bool: sendMessage, reason[])
 
 	// now we have to inform the player who was driving the vehicle it was over and
 	// disable his checkpoint, along with removing the vehicle objective for everyone else.
-	for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-	{
+	for (new i = 0; i <= MAX_PLAYERS; i++) {
+        GTA_SetVehicleObjective[i] = false;
+
+        if (!Player(i)->isConnected())
+            continue;
+
+        SetVehicleParamsForPlayer(GTA_Vehicle, i, false /* objective */, false /* doorslocked */);
+
 		if(IsPlayerInVehicle(i,GTA_Vehicle))
 		{
 		    DisablePlayerCheckpoint(i);
 			RemovePlayerFromVehicle(i);
 		}
-	    CTheft__SetParams(i,false);
 	}
 
 	// Important: the GTA_Vehicle variable must be set to -1
@@ -200,7 +228,7 @@ CTheft__Process(i)
 	if(GTA_Vehicle > -1)
 	{
 		// If more than 5 minutes have passed, we end it.
-		if(GTA_Time - Time->currentTime() > MINUTES_TO_DELIVER*60*1000)
+		if(Time->currentTime() > GTA_StopMinigameTime)
 		{
 			return CTheft__End(true /* sendMessage */, "* Grand Theft Auto: The merchant got tired of waiting and no longer wants the vehicle!");
 		}
@@ -212,32 +240,19 @@ CTheft__Process(i)
 
 		GetVehiclePos(GTA_Vehicle,x,y,z);
 
-
-		if(GetPlayerVirtualWorld(i) == 0 && !IsPlayerInMinigame(i))
-		{
-			CTheft__SetParams(i,true);
-		}
-		else
-		{
-			CTheft__SetParams(i,false);
-		}
-
 		// Right then we may need to update the position of the map icon, or even create it.
-		if(GTA_Vparams[i])
-		{
-			if(GTA_MapIcon != INVALID_GTA_MAP_ICON)
-			{
-				Streamer_SetFloatData(STREAMER_TYPE_MAP_ICON, GTA_MapIcon, E_STREAMER_X, x);
-				Streamer_SetFloatData(STREAMER_TYPE_MAP_ICON, GTA_MapIcon, E_STREAMER_Y, y);
-				Streamer_SetFloatData(STREAMER_TYPE_MAP_ICON, GTA_MapIcon, E_STREAMER_Z, z);
-				Streamer_Update(i);
-			}
-			else
-			{   // Show this as a global map icon.
-	        	GTA_MapIcon = CreateDynamicMapIcon(x, y, z, 55, 0, 0, 0, -1, 99999);
-			   	Streamer_SetIntData(STREAMER_TYPE_MAP_ICON, GTA_MapIcon, E_STREAMER_STYLE, 1);
-			}
-		}
+        if(GTA_MapIcon != INVALID_GTA_MAP_ICON)
+        {
+            Streamer_SetFloatData(STREAMER_TYPE_MAP_ICON, GTA_MapIcon, E_STREAMER_X, x);
+            Streamer_SetFloatData(STREAMER_TYPE_MAP_ICON, GTA_MapIcon, E_STREAMER_Y, y);
+            Streamer_SetFloatData(STREAMER_TYPE_MAP_ICON, GTA_MapIcon, E_STREAMER_Z, z);
+            Streamer_Update(i);
+        }
+        else
+        {   // Show this as a global map icon.
+            GTA_MapIcon = CreateDynamicMapIcon(x, y, z, 55, 0, 0, 0, -1, 99999);
+            Streamer_SetIntData(STREAMER_TYPE_MAP_ICON, GTA_MapIcon, E_STREAMER_STYLE, 1);
+        }
 
 
 	}
@@ -296,31 +311,6 @@ CTheft__Checkpoint(playerid)
 		ApplyAnimation(GTA_NPCID, "CLOTHES", "CLO_Buy", 4.1, 0, 1, 1, 1, 1, 1);
 		ApplyAnimation(GTA_NPCID, "CLOTHES", "CLO_Buy", 4.1, 0, 1, 1, 1, 1, 1);
     }
-	return 1;
-}
-
-// CTheft__SetParams
-// this function manages the vehicle params for the player
-// on the GTA Vehicle.
-CTheft__SetParams(playerid,bool:show)
-{
-	if(GTA_Vehicle == -1) return 0;
-
-	if(show == true && !GTA_Vparams[playerid])
-	{
-		GTA_Vparams[playerid] = true;
-		SetVehicleParamsForPlayer(GTA_Vehicle,playerid,true,false);
-	}
-	else
-	{
-		if(show == false && GTA_Vparams[playerid])
-		{
-	    	GTA_Vparams[playerid] = false;
-	    	SetVehicleParamsForPlayer(GTA_Vehicle,playerid,false,false);
-			DestroyDynamicMapIcon(GTA_MapIcon);
-			GTA_MapIcon = INVALID_GTA_MAP_ICON;
-		}
-	}
 	return 1;
 }
 

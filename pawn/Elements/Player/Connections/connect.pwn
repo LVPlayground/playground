@@ -29,7 +29,6 @@ OnPlayerLVPConnect(playerid) {
 #endif
 
     CDrink__Connect(playerid);
-    CTheft__SetParams(playerid, true);
     CCrush__Connect(playerid);
     CAchieve__OnPlayerConnect(playerid);
     InitializeMapZoneTextDrawsForPlayer(playerid);

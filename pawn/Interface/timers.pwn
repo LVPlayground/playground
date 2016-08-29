@@ -119,6 +119,8 @@ class DeprecatedTimerRuntime {
                     RemoveRamp (playerId);
             }
 
+            CTheft__UpdateVehicleMarkerForPlayer(playerId);
+
             /// @todo Remove this huge hack. It's necessary because we have no state manager, which
             ///       sucks to infinite levels. It also breaks disableGlobalCountdownForPlayer().
             countDownDisabledForPlayer = Countdown->isGlobalCountdownDisabledForPlayer(playerId);

@@ -270,7 +270,6 @@ ResetPlayerStats(playerId) {
     OnMapConnect(playerId);
     ResetPlayerWeapons(playerId);
     DamageManager(playerId)->setFighting(0);
-    GTA_Vparams[playerId] = false;
     iBriefColor[playerId] = -1;
     iPlayerInVipRoom[playerId] = false;
     iTuneTime[playerId] = 0;

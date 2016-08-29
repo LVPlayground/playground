@@ -38,7 +38,6 @@ public OnGameModeInit() {
     CHay__Initialize();         // Haystack minigame
 #endif
 
-    CTheft__Begin();                // Grand Theft Auto
     CDerby__Init();                 // Derby handler
     CWWTW__Initialize();            // Walkies Weapons Team War
     CExport__CreateMap();           // Export

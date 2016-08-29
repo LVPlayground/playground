@@ -141,6 +141,7 @@ class DeprecatedTimerRuntime {
 
     @list(TenSecondTimer)
     public onTenSecondTimerTick() {
+        CTheft__CheckMerchantExpireTimer();
         FortCarsonUpdate();
     }
 

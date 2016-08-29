@@ -4,6 +4,9 @@
 
 #include "Interface/Server/a_samp.pwn"
 
+// Provided by SA-MP, but not defined in the include files.
+native IsValidVehicle(vehicleid);
+
 // Provided by the Communication feature in JavaScript.
 native IsCommunicationMuted();
 native bool: SpawnPlayerInHouse(playerId);

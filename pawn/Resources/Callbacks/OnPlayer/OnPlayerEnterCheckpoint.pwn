@@ -19,7 +19,7 @@ public OnPlayerEnterCheckpoint(playerid) {
         return 1;
     }
 
-    CTheft__Checkpoint(playerid);
+    CTheft__EnterCheckpoint(playerid);
 
     if (g_RivershellPlayer[playerid] && g_RivershellState == RIVERSHELL_STATE_RUNNING) {
         CShell__Checkpoint(playerid);

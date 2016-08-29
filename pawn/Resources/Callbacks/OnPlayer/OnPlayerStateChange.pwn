@@ -64,21 +64,23 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
     }
 
     if (newstate == PLAYER_STATE_DRIVER) {
-        lockedVehicleId[playerid] = GetPlayerVehicleID(playerid);
+        new const vehicleId = GetPlayerVehicleID(playerid);
 
-        CTheft__EnterVehicle(playerid);
+        lockedVehicleId[playerid] = vehicleId;
+
+        CTheft__EnterVehicle(playerid, vehicleId);
         CExport__EnterVehicle(playerid);
 
         for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
             if (Player(subjectId)->isConnected() == false || Player(subjectId)->isNonPlayerCharacter() == true)
                 continue;
 
-            CBomb__EngineCheck(playerid, GetPlayerVehicleID(playerid), subjectId);
+            CBomb__EngineCheck(playerid, vehicleId, subjectId);
         }
 
-        new modelId = GetVehicleModel(GetPlayerVehicleID(playerid));
-        if ((modelId == 515 || modelId == 403 || modelId == 414) && GetPlayerVehicleID(playerid) != GTA_Vehicle) {
-            if (IsTrailerAttachedToVehicle(GetPlayerVehicleID(playerid)))
+        new modelId = GetVehicleModel(vehicleId);
+        if ((modelId == 515 || modelId == 403 || modelId == 414) && vehicleId != GTA_Vehicle) {
+            if (IsTrailerAttachedToVehicle(vehicleId))
                 SendClientMessage(playerid, Color::Warning, "Type /deliver to start the delivery minigame.");
             else
                 SendClientMessage(playerid, Color::Warning, "Find a trailer and type /deliver to start the delivery minigame.");

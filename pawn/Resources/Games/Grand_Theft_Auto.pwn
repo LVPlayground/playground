@@ -20,8 +20,8 @@
 #define INVALID_GTA_MAP_ICON (DynamicMapIcon: -1)
 
 new    GTA_Vehicle;                 // The current wanted vehicle.
-static GTA_Value;                   // The value the vehicle is worth
-static GTA_Time;                    // How long has the game been running for?
+new    GTA_Value;                   // The value the vehicle is worth
+new    GTA_Time;                    // How long has the game been running for?
 new    GTA_Vparams[MAX_PLAYERS];          // Is the GTA Vehicle params showing for the player?
 new    DynamicMapIcon: GTA_MapIcon = INVALID_GTA_MAP_ICON; // Stores the map icon ID
 new    GTA_NPCID = Player::InvalidId;   // NPC player id
@@ -38,8 +38,7 @@ CTheft__Begin()
 // minigame and is called every hour or so.
 CTheft__Initalize()
 {
-	// Is GTA Already in progress?
-	CTheft__End(false,"ohai");
+	CTheft__End(false /* sendMessage */, "");
 
 	new str[256];
 
@@ -100,46 +99,48 @@ CTheft__CheckNPCSpawn(playerid, szPlayerName[])
 
 #endif
 
-// CTheft__EnterVehicle
-// This function is called from OnPlayerStateChange and manages
-// the process of when the player enters the wanted vehicle, so is quite
-// important.
-CTheft__EnterVehicle(playerid)
-{
-	if(GTA_Vehicle != -1 && GetPlayerVehicleID(playerid) == GTA_Vehicle)
-	{
-		ShowBoxForPlayer(playerid, "Deliver the vehicle to the merchant marked red on your radar.");
-		SetPlayerCheckpoint(playerid,967.042785,2072.956054,10.820302,5.0);
-	}
+// -------------------------------------------------------------------------------------------------
+
+// Called when the |playerId| enters a vehicle. Displays a delivery advertisement if applicable.
+CTheft__EnterVehicle(playerId, vehicleId) {
+    if (vehicleId != GTA_Vehicle)
+        return;
+
+    ShowBoxForPlayer(playerId, "Deliver the vehicle to the merchant marked red on your radar.");
+    SetPlayerCheckpoint(playerId, 967.0427, 2072.9560, 10.8203, 5);
 }
 
-// CTheft__OnVehicleDeath
-// this function manages the process of when the vehicle is destroyed or whatever
-// and ends the minigame if neccassary
-CTheft__OnVehicleDeath(vehicleid)
-{
-	if(vehicleid == GTA_Vehicle)
-	{
-		CTheft__End(true,"* Grand Theft Auto The merchant no longer requires the vehicle as it has been ruined.");
-	}
+// Called when a vehicle dies. Finishes the minigame due to the vehicle's destruction if applicable.
+CTheft__OnVehicleDeath(vehicleId) {
+	if(vehicleId != GTA_Vehicle)
+        return;
+
+    CTheft__End(true /* sendMessage */, "* Grand Theft Auto The merchant no longer requires the vehicle as it has been ruined.");
 }
 
+// Called when a vehicle spawns. Finishes the minigame due to it respawning if applicable.
+CTheft__VehicleSpawn(vehicleId) {
+	if (vehicleId != GTA_Vehicle)
+        return;
+
+    CTheft__End(true /* sendMessage */, "* Grand Theft Auto: The merchant no longer requires the vehicle as it no longer exists!");
+}
+
+// -------------------------------------------------------------------------------------------------
 
 // CTheft__End
 // this function ends the vehicle theft minigame with a reason and option to send
 // the reason to everyone.
-CTheft__End(sendmsg = 1, reason[])
+CTheft__End(bool: sendMessage, reason[])
 {
 	if(GTA_Vehicle == -1)
 	{
 		return 0;
 	}
 
-	// is the send message param is true, we tell everyone the reason
-	if(sendmsg)
-	{
+	if(sendMessage)
 		SendClientMessageToAllEx(COLOR_GTA,reason);
-	}
+
 	// now we have to inform the player who was driving the vehicle it was over and
 	// disable his checkpoint, along with removing the vehicle objective for everyone else.
 	for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
@@ -178,7 +179,7 @@ CTheft__Process(i)
 		// If more than 5 minutes have passed, we end it.
 		if(GTA_Time - Time->currentTime() > MINUTES_TO_DELIVER*60*1000)
 		{
-			return CTheft__End(true,"* Grand Theft Auto: The merchant got tired of waiting and no longer wants the vehicle!");
+			return CTheft__End(true /* sendMessage */, "* Grand Theft Auto: The merchant got tired of waiting and no longer wants the vehicle!");
 		}
 
 		new
@@ -240,15 +241,6 @@ CTheft__CheckNPCKick()
 	}
 }
 
-// Vehicle has respawned so we end the game
-CTheft__VehicleSpawn(vehicleid)
-{
-	if(GTA_Vehicle != -1 && vehicleid == GTA_Vehicle)
-	{
-		CTheft__End(1,"*Grand Theft Auto: The merchant no longer requires the vehicle as it no longer exists!");
-	}
-}
-
 
 // CTheft__ChooseRandomVehicle
 // Prior to the game starting we have to choose a random vehicle.
@@ -297,7 +289,7 @@ CTheft__Checkpoint(playerid)
 		ShowBoxForPlayer(playerid, str);
 		GivePlayerMoney(playerid, GTA_Value);  // economy: GrandTheftAutoRandomVehicleValue
 		format(str,256,"* Grand Theft Auto: %s has delivered the vehicle to the merchant.",PlayerName(playerid));
-		CTheft__End(true,str);
+		CTheft__End(true /* sendMessage */, str);
 		SetPlayerChatBubble(GTA_NPCID, "Thanks for delivering the vehicle!", COLOR_LIGHTBLUE, 300, 9999);
 		ApplyAnimation(GTA_NPCID, "CLOTHES", "CLO_Buy", 4.1, 0, 1, 1, 1, 1, 1);
 		ApplyAnimation(GTA_NPCID, "CLOTHES", "CLO_Buy", 4.1, 0, 1, 1, 1, 1, 1);

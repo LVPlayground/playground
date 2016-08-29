@@ -813,7 +813,7 @@ SpawnNPCs(playerId) {
     Player(playerId)->nickname(name, sizeof(name));
 
 #if ReleaseSettings::CreateMerchant == 1
-    CTheft__CheckNPCSpawn(playerId, name);
+    CTheft__MaybeMerchantSpawn(playerId, name);
 #endif
 
     return 1;

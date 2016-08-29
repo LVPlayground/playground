@@ -14,8 +14,12 @@
 *******************************************************************************/
 
 // Defines:
+#define MERCHANT_REMOVAL_DELAY_SECONDS  20  // Number of seconds, after delivery, to remove the merchant.
+
+
 #define MINUTES_TO_DELIVER 15        // How long does everyone get to deliver it?
 #define COLOR_GTA 0x33FF33AA      // The color used throughout this minigame
+
 
 #define INVALID_GTA_MAP_ICON (DynamicMapIcon: -1)
 
@@ -25,7 +29,7 @@ new    GTA_Time;                    // How long has the game been running for?
 new    GTA_Vparams[MAX_PLAYERS];          // Is the GTA Vehicle params showing for the player?
 new    DynamicMapIcon: GTA_MapIcon = INVALID_GTA_MAP_ICON; // Stores the map icon ID
 new    GTA_NPCID = Player::InvalidId;   // NPC player id
-new    GTA_EndTime = -1;                     // Stores the time the game ended so we can destroy the NPC 15 seconds after
+new    GTA_RemoveMerchantTime = -1;
 
 // CTheft__Begin
 // this function sets the required vars for the Grand Theft Auto minigame
@@ -52,13 +56,7 @@ CTheft__Initalize()
         return; /** prevent buffer overflows **/
 
     #if ReleaseSettings::CreateMerchant == 1
-		if(GTA_NPCID != Player::InvalidId)
-		{
-		    Kick(GTA_NPCID);
-		    GTA_NPCID = Player::InvalidId;
-		}
-
-		ConnectNPC("GTA_Merchant", "npcidle");
+		CTheft__CreateMerchant();
 	#endif
 
 	SendClientMessageToAllEx(Color::Red,"-------------------------------------------------------------------");
@@ -81,23 +79,49 @@ CTheft__Initalize()
 	AddEcho(str);
 }
 
-#if ReleaseSettings::CreateMerchant == 1
+// -------------------------------------------------------------------------------------------------
 
-// CTheft__CheckNPCSpawn
-// This is called from SpawnNPCs to
-// position our GTA Merchant NPC
-CTheft__CheckNPCSpawn(playerid, szPlayerName[])
-{
-	if(!strcmp(szPlayerName, "GTA_Merchant", false, MAX_PLAYER_NAME))
-	{
-	    GTA_NPCID = playerid;
-	    SetPlayerPos(GTA_NPCID, 974.2247, 2068.2031, 10.8203);
-	    SetPlayerFacingAngle(GTA_NPCID, 359.2991);
-	    SetPlayerSkin(GTA_NPCID, 28);
-	}
+// Creates the Merchant NPC. Defined as `stock` because not all builds will include the NPC.
+stock CTheft__CreateMerchant() {
+    if(GTA_NPCID != Player::InvalidId) {
+        Kick(GTA_NPCID);
+
+        GTA_NPCID = Player::InvalidId;
+    }
+
+    ConnectNPC("GTA_Merchant", "npcidle");
 }
 
-#endif
+// Called when a non-player character spawns. Positions the player when it's the merchant.
+// Defined as `stock` because not all release builds will include the merchant's NPC.
+stock CTheft__MaybeMerchantSpawn(playerId, const characterName[]) {
+    if (strcmp(characterName, "GTA_Merchant", false, MAX_PLAYER_NAME) != 0)
+        return;
+
+    SetPlayerPos(playerId, 974.2247, 2068.2031, 10.8203);
+    SetPlayerFacingAngle(playerId, 359.2991);
+    SetPlayerSkin(playerId, 28);
+
+    GTA_NPCID = playerId;
+}
+
+// Checks the status of the Merchant non-player character. Kicks the NPC when he's no longer needed,
+// or applies an animation when he's waiting for the delivery. Called every five seconds.
+CTheft__CheckMerchantStatus() {
+    if (GTA_RemoveMerchantTime >= Time->currentTime()) {
+        if (GTA_Vehicle == -1 /* inactive */ && IsPlayerConnected(GTA_NPCID) && IsPlayerNPC(GTA_NPCID)) {
+            Kick(GTA_NPCID);
+
+            GTA_NPCID = Player::InvalidId;
+        }
+
+        GTA_RemoveMerchantTime = -1;
+    }
+
+    if (IsPlayerConnected(GTA_NPCID) && IsPlayerNPC(GTA_NPCID))
+        ApplyAnimation(GTA_NPCID, "DEALER", "DEALER_IDLE_01", 4.1, 0, 1, 1, 1, 1, 1);
+
+}
 
 // -------------------------------------------------------------------------------------------------
 
@@ -112,7 +136,7 @@ CTheft__EnterVehicle(playerId, vehicleId) {
 
 // Called when a vehicle dies. Finishes the minigame due to the vehicle's destruction if applicable.
 CTheft__OnVehicleDeath(vehicleId) {
-	if(vehicleId != GTA_Vehicle)
+	if (vehicleId != GTA_Vehicle)
         return;
 
     CTheft__End(true /* sendMessage */, "* Grand Theft Auto The merchant no longer requires the vehicle as it has been ruined.");
@@ -165,8 +189,7 @@ CTheft__End(bool: sendMessage, reason[])
 	    DestroyDynamicMapIcon(GTA_MapIcon);
 	}
 
-	// Store the time the minigame ended so we can destroy the NPC later
-	GTA_EndTime = Time->currentTime();
+	GTA_RemoveMerchantTime = Time->currentTime() + MERCHANT_REMOVAL_DELAY_SECONDS;
 	return 1;
 }
 // CTheft__Process
@@ -220,27 +243,6 @@ CTheft__Process(i)
 	}
 	return 1;
 }
-
-CTheft__CheckNPCKick()
-{
-	if(GTA_EndTime != -1 && GTA_Vehicle == -1)
-	{
-	    if(Time->currentTime() - GTA_EndTime > 20)
-	    {
-			if(IsPlayerConnected(GTA_NPCID) && IsPlayerNPC(GTA_NPCID))
-			{
-				Kick(GTA_NPCID); // valid Kick() usage.
-			}
-			GTA_NPCID = Player::InvalidId;
-			GTA_EndTime = -1;
-	    }
-	}
-	if(IsPlayerConnected(GTA_NPCID) && IsPlayerNPC(GTA_NPCID))
-	{
-		ApplyAnimation(GTA_NPCID, "DEALER", "DEALER_IDLE_01", 4.1, 0, 1, 1, 1, 1, 1);
-	}
-}
-
 
 // CTheft__ChooseRandomVehicle
 // Prior to the game starting we have to choose a random vehicle.

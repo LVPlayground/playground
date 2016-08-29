@@ -33,7 +33,7 @@ class DeprecatedTimerRuntime {
     @list(SecondTimer)
     public onSecondTimerTick() {
         if (++m_fiveSecondTicker == 5) {
-            CTheft__CheckNPCKick();
+            CTheft__CheckMerchantStatus();
 
             for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId)
                 ResetDeathFloodCountForPlayer(playerId);

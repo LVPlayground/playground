@@ -74,16 +74,21 @@ class FriendsCommands {
         friendList.push(...friends.offline);
 
         // Text of the header depends on whether the player has already add friends.
-        if (friendList.length === 0)
+        if (friendList.length === 0) {
             player.sendMessage(Message.FRIENDS_EMPTY);
-        else
+        } else {
             player.sendMessage(Message.FRIENDS_HEADER);
 
-        // Split the |friendsList| array in sets of |friendsPerRow| friends.
-        for (let i = 0; i < friendList.length; i += friendsPerRow) {
-            const rowFriendString = friendList.slice(i, i + friendsPerRow).join(', ');
+            let friendsOffset = 0;
+            do {
+                const rowFriendString =
+                    friendList.slice(friendsOffset, friendsOffset + friendsPerRow).join(', ');
 
-            player.sendMessage('{838F31}Friends{FFFFFF}: ' + rowFriendString);
+                player.sendMessage('{838F31}Friends{FFFFFF}: ' + rowFriendString);
+
+                friendsOffset += friendsPerRow;
+
+            } while (friendsOffset < friendList.length);
         }
 
         player.sendMessage(Message.FRIENDS_USAGE);

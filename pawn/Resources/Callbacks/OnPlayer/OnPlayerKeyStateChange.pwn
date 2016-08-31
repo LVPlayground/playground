@@ -92,7 +92,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
                     && !IsPlayerInMinigame(playerid) && Player(playerid)->isAdministrator() == false
                     && !iPlayerAnimation[playerid] && 
                     ((GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_NONE) || (GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_DUCK)))
-                    ClearAnimations(playerid, 0);
+                    ClearAnimations(playerid, 1);
             }
 
             if (iPlayerAnimation[playerid])
@@ -119,7 +119,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             && !IsPlayerInMinigame(playerid) && Player(playerid)->isAdministrator() == false
             && !iPlayerAnimation[playerid] && GetPlayerSpecialAction(playerid) == 0) {
             iPlayerAnimation[playerid] = 0;
-            ClearAnimations(playerid, 0);
+            ClearAnimations(playerid, 1);
         }
 
         if (CHideGame__GetPlayerState(playerid) == HS_STATE_PLAYING) {

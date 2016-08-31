@@ -21,6 +21,13 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
         // Make sure the anti-moneycheat knows about this vehicle respray.
         VehicleMoneyException->markVehicleResprayForPlayer(playerId);
 
+        // Don't set color or give out money in the case of no colorchanges
+        new previousPrimaryColor = Vehicle(vehicleId)->primaryColor()
+           ,previousSecondaryColor = Vehicle(vehicleId)->secondaryColor();
+
+        if (previousPrimaryColor == primaryColor && previousSecondaryColor == secondaryColor)
+            return false;
+
         // Update the vehicle's color internally so we stay synchronized.
         Vehicle(vehicleId)->setColors(primaryColor, secondaryColor);
 

@@ -159,6 +159,8 @@
 
     "IRC_CHAT_MESSAGE_SENT": "{33AA33}Message sent to {FFFFFF}%s {33AA33}as {FFFFFF}%s{33AA33}: {FFFFFF}%s",
     
+    "KILLTIME_START_STANDARD": "{DC143C}Killtime{FFFFFF}: When executing this command again with empty minutes and weaponId, a killtime of 2 minutes without special weapons will start.",
+
     "LVP_ANNOUNCE_ADMIN_NOTICE": "%s (Id: %d) has %s the %s option.",
     "LVP_ANNOUNCE_PARTY": "%s has %s the Pirate Ship Party mode!",
     "LVP_ANNOUNCE_CMD_AVAILABLE": "%s has made the /%s command available to players.",

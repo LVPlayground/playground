@@ -22,7 +22,7 @@ class GangChatManager {
 
     // Called when a player sends a message to the chat box. If it starts 
     onPlayerText(player, text) {
-        if (!text.startsWith('!'))
+        if (!text.startsWith('!') || text.length === 1)
             return false;  // this is not a gang-bound message
 
         if (!player.isAdministrator() && text.startsWith('!!'))

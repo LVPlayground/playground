@@ -22,6 +22,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
 
         assert.isFalse(player.issueMessage(''));
         assert.isFalse(player.issueMessage('Hello, world!'));
+        assert.isFalse(player.issueMessage('!'));
         assert.isFalse(player.issueMessage('!!message'));
         assert.isFalse(player.issueMessage('!!! omg'));
     });

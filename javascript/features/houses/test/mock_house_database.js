@@ -35,7 +35,7 @@ class MockHouseDatabase {
             [ 1, { facingAngle: 0, interiorId: 0, position: new Vector(100, 150, 200), parkingLots: [] } ],
             [ 2, { facingAngle: 0, interiorId: 0, position: new Vector(200, 250, 300), parkingLots: [] } ],
             [ 3, { facingAngle: 0, interiorId: 0, position: new Vector(300, 350, 400), parkingLots: [ PARKING_LOT ] } ],
-            [ 4, { facingAngle: 0, interiorId: 0, position: new Vector(500, 500, 500), parkingLots: [ OCCUPIED_PARKING_LOT ] } ]
+            [ 4, { facingAngle: 0, interiorId: 0, position: new Vector(500, 500, 500), parkingLots: [ OCCUPIED_PARKING_LOT, PARKING_LOT ] } ]
         ];
     }
 
@@ -92,7 +92,7 @@ class MockHouseDatabase {
         };
     }
 
-    async createVehicle(location, parkingLot, modelId) {
+    async createVehicle(location, parkingLot, vehicleInfo) {
         return this.mockVehicleId_++;
     }
 

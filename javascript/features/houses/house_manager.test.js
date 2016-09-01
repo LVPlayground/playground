@@ -51,8 +51,6 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
 
         assert.isAbove(manager.vehicleController_.count, 0);
         assert.isAbove(server.vehicleManager.count, serverVehicleCount);
-
-        // TODO: Verify the other pieces of data that can be loaded.
     });
 
     it('should be able to create new house locations', async(assert) => {
@@ -254,5 +252,60 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
         await manager.updateHouseSetting(location, 'spawn', false);
 
         assert.isFalse(location.settings.isSpawn());
+    });
+
+    it('should be able to create and remove vehicles for a house', async(assert) => {
+        await manager.loadHousesFromDatabase();
+
+        const serverVehicleCount = server.vehicleManager.count;
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.position = new Vector(500, 500, 500);
+
+        const location = await manager.findClosestLocation(gunther);
+        assert.isFalse(location.isAvailable());
+
+        assert.equal(location.parkingLotCount, 2);
+
+        const parkingLot = Array.from(location.parkingLots)[1];
+        assert.isNotNull(parkingLot);
+
+        assert.isFalse(location.settings.vehicles.has(parkingLot));
+
+        await manager.createVehicle(location, parkingLot, {
+            modelId: 520 /* Infernus */
+        });
+
+        assert.isTrue(location.settings.vehicles.has(parkingLot));
+        assert.equal(server.vehicleManager.count, serverVehicleCount + 1);
+
+        const vehicle = location.settings.vehicles.get(parkingLot);
+
+        assert.equal(vehicle.modelId, 520 /* Infernus */);
+        assert.equal(vehicle.parkingLot, parkingLot);
+
+        await manager.removeVehicle(location, parkingLot, vehicle);
+
+        assert.isFalse(location.settings.vehicles.has(parkingLot));
+        assert.equal(server.vehicleManager.count, serverVehicleCount);
+    });
+
+    it('should remove associated vehicles when removing the house', async(assert) => {
+        await manager.loadHousesFromDatabase();
+
+        const serverVehicleCount = server.vehicleManager.count;
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.position = new Vector(500, 500, 500);
+
+        const location = await manager.findClosestLocation(gunther);
+        assert.isFalse(location.isAvailable());
+
+        assert.equal(location.parkingLotCount, 2);
+        assert.equal(location.settings.vehicles.size, 1);
+
+        await manager.removeHouse(location);
+
+        assert.equal(server.vehicleManager.count, serverVehicleCount - 1);
     });
 });

@@ -326,10 +326,11 @@ class HouseDatabase {
         };
     }
 
-    // Creates a vehicle with |modelId| in the |parkingLot| associated with the house at |location|.
-    async createVehicle(location, parkingLot, modelId) {
+    // Creates a vehicle with |vehicleInfo| in the |parkingLot| associated with the house at
+    // |location|. The |vehicleInfo| must be an object having {modelId}.
+    async createVehicle(location, parkingLot, vehicleInfo) {
         const data = await server.database.query(
-            CREATE_VEHICLE_QUERY, parkingLot.id, location.settings.id, modelId);
+            CREATE_VEHICLE_QUERY, parkingLot.id, location.settings.id, vehicleInfo.modelId);
 
         return data.insertId;
     }

@@ -112,6 +112,25 @@ class DamageManager <playerId (MAX_PLAYERS)> {
     }
 
     /**
+     * Returns whether this player is currently falling, and thus should have limited command
+     * functionality. We don't count players in vehicles.
+     *
+     * @return boolean Is this player falling?
+     */
+    public bool: isPlayerFalling() {
+        if (!Player(playerId)->isConnected() || Player(playerId)->isNonPlayerCharacter()
+            || Player(playerId)->isAdministrator() || IsPlayerInAnyVehicle(playerId))
+            return false;
+
+        new animationIndex = GetPlayerAnimationIndex(playerId);
+        if (animationIndex >= 958 && animationIndex <= 979 /* parachute */ || animationIndex == 1130 /* fall */
+            || animationIndex == 1132 /* fall glide */ || animationIndex == 1195 /* jump glide */)
+            return true;
+
+        return false;
+    }
+
+    /**
      * Get the last playerId who hit a player.
      */
     public inline getLastHitId() {

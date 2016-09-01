@@ -51,6 +51,10 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     for (new i = 0; i < strlen(cmd); i++)
         cmd[i] = tolower(cmd[i]);
 
+    // Is the player currently falling? Impose limited functionality.
+    if (DamageManager(playerid)->isPlayerFalling() && !IsCommandAvailableForLimitedFunctionality(cmd))
+        return 1;
+
     // If functionality is limited for this player then we need to check with the command whitelist
     // to see if they can execute the requested command. Otherwise we block it.
     if (PlayerState(playerid)->hasLimitedFunctionality() && Player(playerid)->isAdministrator() == false &&

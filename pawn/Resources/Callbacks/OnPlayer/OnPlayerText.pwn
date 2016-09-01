@@ -69,15 +69,6 @@ public OnPlayerText(playerid, text[]) {
             text[i] = tolower(text[i]);
     }
 
-    // Unix and [MwK]LikeG6 temporary language filter.
-    if ((Account(playerid)->userId() == 68923 /* Unix */ ||
-         Account(playerid)->userId() == 77073 /* [MwK]LikeG6 */) &&
-        strfind(text, "cancer", true) != -1) {
-        // Automagically mute him for five minutes when he uses his favorite word.
-        MuteManager->mutePlayer(playerid, 5);
-        return 0;
-    }
-
     // Crew chat (@).
     if (text[0] == '@' && strlen(text) > 1) {
         new prefix[MAX_PLAYER_NAME];

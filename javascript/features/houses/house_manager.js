@@ -8,6 +8,7 @@ const HouseInterior = require('features/houses/house_interior.js');
 const HouseLocation = require('features/houses/house_location.js');
 const HouseParkingLot = require('features/houses/house_parking_lot.js');
 const HouseSettings = require('features/houses/house_settings.js');
+const HouseVehicleController = require('features/houses/house_vehicle_controller.js');
 
 // The house manager orchestrates all details associated with housing, manages data and responds to
 // player connection and disconnection events.
@@ -22,6 +23,9 @@ class HouseManager {
         // Responsible for all entrances and exits associated with the locations.
         this.entranceController_ =
             new HouseEntranceController(this, economy, friends, gangs, location);
+
+        // Responsible for all vehicles associated with the houses.
+        this.vehicleController_ = new HouseVehicleController();
     }
 
     // Gets an iterator that can be used to iterate over the house locations.
@@ -58,13 +62,16 @@ class HouseManager {
                 return;
             }
 
-            const houseSettings = new HouseSettings(house);
+            const houseSettings = new HouseSettings(house, location.parkingLotsMap);
             const houseInterior = new HouseInterior(house);  // TODO: Is this the right thing to do?
 
+            // Associate the house's settings and interior with the |location|.
             location.setHouse(houseSettings, houseInterior);
-        });
 
-        // TODO: Load the vehicles associated with houses.
+            // Create the vehicles associated with the |location| in the vehicle controller.
+            for (const vehicle of houseSettings.vehicles.values())
+                this.vehicleController_.createVehicle(location, vehicle);
+        });
 
         // Create entrances and exits for each of the known |locations_|.
         this.locations_.forEach(location =>
@@ -280,7 +287,23 @@ class HouseManager {
 
         await this.database_.removeLocationParkingLot(parkingLot);
 
-        // TODO: Remove the vehicle stored on this parking lot if the house is occupied.
+        // Remove the associated vehicle if both the location and the parking lot are occupied.
+        if (!location.isAvailable()) {
+            for (const [associatedParkingLot, vehicle] of location.settings.vehicles) {
+                if (associatedParkingLot != parkingLot)
+                    continue;
+
+                // Remove the vehicle from the database.
+                await this.database_.removeVehicle(vehicle);
+
+                // Remove the vehicle from the vehicle controller.
+                this.vehicleController_.removeVehicle(location, vehicle);
+
+                // Remove the vehicle from the house's svehicle settings.
+                location.settings.vehicles.delete(associatedParkingLot);
+                break;
+            }
+        }
 
         location.removeParkingLot(parkingLot);
     }
@@ -305,10 +328,12 @@ class HouseManager {
         location.removeHouse();
 
         this.entranceController_.updateLocation(location);
+        this.vehicleController_.removeVehiclesForLocation(location);
     }
 
     dispose() {
         this.entranceController_.dispose();
+        this.vehicleController_.dispose();
 
         for (const location of this.locations_)
             location.dispose();

@@ -43,6 +43,9 @@ class HouseLocation {
     // Gets the array of parking lots associated with this location.
     get parkingLots() { return this.parkingLots_.values(); }
 
+    // Gets the (mutable) map of parking lot Id to parking lot instance for this location.
+    get parkingLotsMap() { return this.parkingLots_; }
+
     // Gets the number of parking lots associated with this location.
     get parkingLotCount() { return this.parkingLots_.size; }
 

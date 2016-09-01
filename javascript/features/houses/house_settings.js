@@ -2,9 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const HouseVehicle = require('features/houses/house_vehicle.js');
+
 // This class represents the settings associated with a given house.
 class HouseSettings {
-    constructor(house) {
+    constructor(house, parkingLotsMap) {
         this.id_ = house.id;
         this.name_ = house.name;
 
@@ -15,7 +17,20 @@ class HouseSettings {
         this.access_ = house.access;
         this.spawnPoint_ = house.spawnPoint;
 
-        this.vehicles_ = house.vehicles;
+        this.vehicles_ = new Map();
+
+        // Load the vehicles associated with the |house| and link them to the |parkingLotsMap|.
+        house.vehicles.forEach(vehicle => {
+            const parkingLot = parkingLotsMap.get(vehicle.parkingLotId);
+            if (!parkingLot) {
+                console.log(
+                    'Warning: Unassociated vehicle (' + vehicle.id + ') for house #' + house.id);
+                return;
+            }
+
+            // Associate a new HouseVehicle instance with the given |parkingLot|.
+            this.vehicles_.set(parkingLot, new HouseVehicle(vehicle, parkingLot))
+        });
     }
 
     // Gets the internal Id of this house in the database.
@@ -46,6 +61,10 @@ class HouseSettings {
 
     // Updates whether the house should be the spawn point for the owner.
     setSpawn(spawnPoint) { this.spawnPoint_ = spawnPoint; }
+
+    // Gets the vehicles that have been created for this house. Mutable mapping from the parkingLot
+    // instance associated with the location to the HouseVehicle instance associated with the house.
+    get vehicles() { return this.vehicles_; }
 
     dispose() {}
 }

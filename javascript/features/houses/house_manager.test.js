@@ -27,6 +27,8 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
     const validLocation = { facingAngle: 0, interiorId: 0, position: new Vector(50, 50, 10) };
 
     it('should be able to load the existing houses', async(assert) => {
+        const serverVehicleCount = server.vehicleManager.count;
+
         await manager.loadHousesFromDatabase();
 
         assert.isAbove(manager.locationCount, 0);
@@ -46,6 +48,9 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
         }
 
         assert.isAbove(occupiedCount, 0);
+
+        assert.isAbove(manager.vehicleController_.count, 0);
+        assert.isAbove(server.vehicleManager.count, serverVehicleCount);
 
         // TODO: Verify the other pieces of data that can be loaded.
     });

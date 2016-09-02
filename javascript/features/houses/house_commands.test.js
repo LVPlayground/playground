@@ -528,6 +528,65 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.isFalse(location.settings.isSpawn());
     });
 
+    it('should give players a warning when their house has no parking lots', async(assert) => {
+        await manager.loadHousesFromDatabase();
+        assert.isAbove(manager.locationCount, 0);
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify({ userId: 42 });
+        gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
+
+        // Wait some ticks to make sure that the permission check has finished.
+        while (!manager.getCurrentHouseForPlayer(gunther) && maxticks --> 0)
+            await Promise.resolve();
+
+        const location = manager.getCurrentHouseForPlayer(gunther);
+        assert.isNotNull(location);
+
+        assert.isAbove(location.parkingLotCount, 0);
+
+        for (const parkingLot of location.parkingLots)
+            await manager.removeLocationParkingLot(location, parkingLot);
+
+        assert.equal(location.parkingLotCount, 0);
+
+        gunther.respondToDialog({ listitem: 3 /* Manage my vehicles */}).then(
+            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/house settings'));
+        assert.equal(gunther.lastDialog, Message.HOUSE_SETTINGS_NO_PARKING_LOTS);
+    });
+
+    it('should enable players to purchase vehicles for their house', async(assert) => {
+        await manager.loadHousesFromDatabase();
+        assert.isAbove(manager.locationCount, 0);
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify({ userId: 42 });
+        gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
+
+        // Wait some ticks to make sure that the permission check has finished.
+        while (!manager.getCurrentHouseForPlayer(gunther) && maxticks --> 0)
+            await Promise.resolve();
+
+        const location = manager.getCurrentHouseForPlayer(gunther);
+        assert.isNotNull(location);
+
+        const parkingLots = Array.from(location.parkingLots);
+        assert.isAbove(parkingLots.length, 0);
+
+        const parkingLot = parkingLots[0];
+        assert.isTrue(location.settings.vehicles.has(parkingLot));
+
+        gunther.respondToDialog({ listitem: 3 /* Manage my vehicles */}).then(
+            () => gunther.respondToDialog({ listitem: 0 /* First vehicle in the list */ })).then(
+            () => gunther.respondToDialog({ response: 1 /* Yes, remove the vehicle */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/house settings'));
+        assert.isFalse(location.settings.vehicles.has(parkingLot));
+    });
+
     it('should enable players to sell the houses they own', async(assert) => {
         await manager.loadHousesFromDatabase();
         assert.isAbove(manager.locationCount, 0);
@@ -545,7 +604,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         assert.isFalse(location.isAvailable());
 
-        gunther.respondToDialog({ listitem: 3 /* Sell this house */}).then(
+        gunther.respondToDialog({ listitem: 4 /* Sell this house */}).then(
             () => gunther.respondToDialog({ response: 1 /* Yes, I really want to */ })).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 

@@ -148,6 +148,7 @@
     "HOUSE_SAVE_UNKNOWN": "@error Unable to confirm - you're not currently in an interactive operation.",
     "HOUSE_SETTINGS_LEVEL": "{FFA500}%s{A9C4E4} are now able to access your house.",
     "HOUSE_SETTINGS_NAME": "Your house is now known as {FFA500}%s{A9C4E4}.",
+    "HOUSE_SETTINGS_NO_PARKING_LOTS": "Unfortunately your house does not have any parking lots.",
     "HOUSE_SETTINGS_NOT_OWNER": "@error You cannot change the settings of a house you don't own!",
     "HOUSE_SETTINGS_OUTSIDE": "@error You can only change the settings of a house whilst inside of it!",
     "HOUSE_SETTINGS_SELL_CONFIRM": "You are about to sell %s's house. They won't get a refund. Are you certain?",
@@ -155,6 +156,8 @@
     "HOUSE_SETTINGS_SELL_OFFER": "You are about to sell your house. The bank cannot offer you a refund yet. Are you certain?",
     "HOUSE_SETTINGS_SPAWN_DISABLED": "You won't respawn at this house anymore.",
     "HOUSE_SETTINGS_SPAWN_ENABLED": "You will now start spawning at this house.",
+    "HOUSE_SETTINGS_VEHICLE_SELL": "Do you want to dispose of the %s you've got parked there?",
+    "HOUSE_SETTINGS_VEHICLE_SOLD": "The vehicle has been removed from the parking lot by the city council.",
     "HOUSE_WELCOME": "{10F441}Welcome home, %s! Type `{DDFFDD}/house settings{10F441}` to manage your house.",
 
     "IRC_CHAT_MESSAGE_SENT": "{33AA33}Message sent to {FFFFFF}%s {33AA33}as {FFFFFF}%s{33AA33}: {FFFFFF}%s",

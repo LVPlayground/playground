@@ -370,6 +370,7 @@ class HouseCommands {
 
         const accessValue = this.toHouseAccessLabel(location.settings.access);
         const spawnValue = location.settings.isSpawn() ? 'Yes' : 'No';
+        const vehicleValue = '{FFFF00}' + location.settings.vehicles.size;
 
         menu.addItem('Change the name', location.settings.name, async(player) => {
             const name = await Question.ask(player, NAME_QUESTION);
@@ -429,6 +430,10 @@ class HouseCommands {
                                         'Close' /* leftButton */, '' /* rightButton */);
         });
 
+        menu.addItem('Manage your vehicles', vehicleValue, async(player) => {
+            await this.onHouseSettingsVehicles(player, location);
+        });
+
         menu.addItem('Sell this house', '-', async(player) => {
             const offer = 0;  // TODO: Calculate the refund to offer the player. (Issue #268.)
 
@@ -454,6 +459,68 @@ class HouseCommands {
                                         Message.format(Message.HOUSE_SETTINGS_SELL_CONFIRMED),
                                         'Close' /* leftButton */, '' /* rightButton */);
         });
+
+        await menu.displayForPlayer(player);
+    }
+
+    // Called when a player enters the Vehicle section of the `/house settings` command. Allows them
+    // to modify the vehicles that are associated with their house.
+    async onHouseSettingsVehicles(player, location) {
+        if (!location.parkingLotCount) {
+            await Dialog.displayMessage(player, 'Unable to modify your vehicles!',
+                                        Message.format(Message.HOUSE_SETTINGS_NO_PARKING_LOTS),
+                                        'Close' /* leftButton */, '' /* rightButton */);
+            return;
+        }
+
+        const menu = new Menu('Which parking lot to modify?', ['Parking lot', 'Current vehicle']);
+
+        // TODO: Enable players to select any vehicle through a vehicle selector.
+        // https://github.com/LVPlayground/playground/issues/273
+        const allowedVehicles = new Map([
+            [400, 'Landstalker'],
+            [451, 'Turismo'],
+            [480, 'Comet'],
+            [481, 'BMX'],
+            [520, 'Infernus'],
+            [521, 'FCR-900'],
+            [522, 'NRG-500'],
+            [562, 'Elegy'],
+            [587, 'Euros'],
+            [589, 'Club']
+        ]);
+
+        let index = 0;
+        for (const parkingLot of location.parkingLots) {
+            const vehicle = location.settings.vehicles.get(parkingLot);
+            const vehicleLabel = vehicle ? '{FFFF00}' + allowedVehicles.get(vehicle.modelId)
+                                         : '-';
+
+            // Add a menu item for the vehicle that may or may not be in this parking lot.
+            menu.addItem('Parking lot #' + (++index), vehicleLabel, async(player) => {
+                if (vehicle /* isOccupied */) {
+                    const message = Message.format(Message.HOUSE_SETTINGS_VEHICLE_SELL,
+                                                   allowedVehicles.get(vehicle.modelId));
+
+                    const confirmation =
+                        await Dialog.displayMessage(player, 'Dispose of your vehicle?', message, 
+                                                    'Yes' /* leftButton */, 'No' /* rightButton */);
+
+                    if (!confirmation.response)
+                        return;
+
+                    await this.manager_.removeVehicle(location, parkingLot, vehicle);
+
+                    // Display a confirmation dialog to the player to inform them of their action.
+                    await Dialog.displayMessage(player, 'The vehicle has been disposed of!',
+                                                Message.format(Message.HOUSE_SETTINGS_VEHICLE_SOLD),
+                                                'Close' /* leftButton */, '' /* rightButton */);
+                    return;
+                }
+
+                // TODO: Dialog to purchase a vehicle.
+            });
+        }
 
         await menu.displayForPlayer(player);
     }

@@ -617,7 +617,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(location.settings.vehicles.has(parkingLot));
 
         const vehicle = location.settings.vehicles.get(parkingLot);
-        assert.equal(vehicle.modelId, 520 /* Infernus */);
+        assert.equal(vehicle.modelId, 411 /* Infernus */);
     });
 
     it('should enable players to sell the houses they own', async(assert) => {

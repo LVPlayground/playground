@@ -488,7 +488,7 @@ class HouseCommands {
             [521, 'FCR-900'],
             [400, 'Landstalker'],
             [522, 'NRG-500'],
-            [520, 'Infernus'],
+            [411, 'Infernus'],
             [451, 'Turismo']
         ]);
 

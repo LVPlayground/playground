@@ -534,7 +534,8 @@ class HouseCommands {
                         });
 
                         const message =
-                            Message.format(Message.HOUSE_SETTINGS_VEHICLE_BOUGHT, modelName);
+                            Message.format('You have successfully purchased a %s! The vehicle is ' +
+                                           'waiting for you outside.', modelName);
 
                         // TODO: Inform administrators of the new vehicle.
 

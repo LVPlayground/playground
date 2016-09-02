@@ -473,24 +473,26 @@ class HouseCommands {
             return;
         }
 
+        let index = 0;
+
         const menu = new Menu('Which parking lot to modify?', ['Parking lot', 'Current vehicle']);
 
         // TODO: Enable players to select any vehicle through a vehicle selector.
         // https://github.com/LVPlayground/playground/issues/273
         const allowedVehicles = new Map([
-            [400, 'Landstalker'],
-            [451, 'Turismo'],
-            [480, 'Comet'],
             [481, 'BMX'],
-            [520, 'Infernus'],
-            [521, 'FCR-900'],
-            [522, 'NRG-500'],
+            [589, 'Club'],
+            [480, 'Comet'],
             [562, 'Elegy'],
             [587, 'Euros'],
-            [589, 'Club']
+            [521, 'FCR-900'],
+            [400, 'Landstalker'],
+            [522, 'NRG-500'],
+            [520, 'Infernus'],
+            [451, 'Turismo']
         ]);
 
-        let index = 0;
+        // Create the initial dialog, displaying a list of their parking lots.        
         for (const parkingLot of location.parkingLots) {
             const vehicle = location.settings.vehicles.get(parkingLot);
             const vehicleLabel = vehicle ? '{FFFF00}' + allowedVehicles.get(vehicle.modelId)
@@ -518,7 +520,31 @@ class HouseCommands {
                     return;
                 }
 
-                // TODO: Dialog to purchase a vehicle.
+                // Create the purchase menu that enables players to purchase a vehicle.
+                const purchaseMenu =
+                    new Menu('Which vehicle do you want to buy?', ['Vehicle', 'Price']);
+                
+                for (const [modelId, modelName] of allowedVehicles) {
+                    const price = 0;
+
+                    // TODO: Actually charge money for the vehicles.
+                    purchaseMenu.addItem(modelName, Message.formatPrice(price), async(player) => {
+                        await this.manager_.createVehicle(location, parkingLot, {
+                            modelId: modelId
+                        });
+
+                        const message =
+                            Message.format(Message.HOUSE_SETTINGS_VEHICLE_BOUGHT, modelName);
+
+                        // TODO: Inform administrators of the new vehicle.
+
+                        // Display a confirmation dialog to the player to inform them.
+                        await Dialog.displayMessage(player, 'The vehicle has been purchased!',
+                                                    message, 'Close' /* leftButton */, '');
+                    });
+                }
+
+                await purchaseMenu.displayForPlayer(player);
             });
         }
 

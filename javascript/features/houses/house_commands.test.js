@@ -573,7 +573,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.isNotNull(location);
 
         const parkingLots = Array.from(location.parkingLots);
-        assert.isAbove(parkingLots.length, 0);
+        assert.equal(parkingLots.length, 2);
 
         const parkingLot = parkingLots[0];
         assert.isTrue(location.settings.vehicles.has(parkingLot));
@@ -585,6 +585,39 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         assert.isTrue(await gunther.issueCommand('/house settings'));
         assert.isFalse(location.settings.vehicles.has(parkingLot));
+    });
+
+    it('should enable players to sell one of their vehicles', async(assert) => {
+        await manager.loadHousesFromDatabase();
+        assert.isAbove(manager.locationCount, 0);
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify({ userId: 42 });
+        gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
+
+        // Wait some ticks to make sure that the permission check has finished.
+        while (!manager.getCurrentHouseForPlayer(gunther) && maxticks --> 0)
+            await Promise.resolve();
+
+        const location = manager.getCurrentHouseForPlayer(gunther);
+        assert.isNotNull(location);
+
+        const parkingLots = Array.from(location.parkingLots);
+        assert.equal(parkingLots.length, 2);
+
+        const parkingLot = parkingLots[1];
+        assert.isFalse(location.settings.vehicles.has(parkingLot));
+
+        gunther.respondToDialog({ listitem: 3 /* Manage my vehicles */}).then(
+            () => gunther.respondToDialog({ listitem: 1 /* Second vehicle in the list */ })).then(
+            () => gunther.respondToDialog({ listitem: 8 /* Purchase an Infernus */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/house settings'));
+        assert.isTrue(location.settings.vehicles.has(parkingLot));
+
+        const vehicle = location.settings.vehicles.get(parkingLot);
+        assert.equal(vehicle.modelId, 520 /* Infernus */);
     });
 
     it('should enable players to sell the houses they own', async(assert) => {

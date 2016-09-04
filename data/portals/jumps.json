@@ -8,5 +8,10 @@
         "name": "Jump (Seti @ Home)",
         "entrance": { "position": [ -225.433, 1397.02, 69.0501 ], "facingAngle": 0, "interiorId": 0, "virtualWorld": 0 },
         "exit": { "position": [ -224.733, 1395.82, 172.05 ], "facingAngle": 0, "interiorId": 0, "virtualWorld": 0 }
+    },
+    {
+        "name": "Jump (Basejumping in LS)",
+        "entrance": { "position": [ 1571.04, -1336.91, 15.73 ], "facingAngle": 180, "interiorId": 0, "virtualWorld": 0 },
+        "exit": { "position": [ 1548.61, -1364.27, 325.47 ], "facingAngle": 290, "interiorId": 0, "virtualWorld": 0 }
     }
 ]

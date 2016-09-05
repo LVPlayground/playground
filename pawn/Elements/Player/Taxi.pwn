@@ -124,7 +124,7 @@ CancelTaxi(playerid)
 TaxiArrived(playerid)
 {
     if(!Player(playerid)->isConnected())
-    return 0;
+        return 0;
 
     if(!isTaxiActive[playerid])
         return 0;
@@ -203,6 +203,9 @@ TaxiArrived(playerid)
                 SetPlayerInterior(playerid, 0);
                 SetPlayerPos(playerid, taxiLocations[locateid][0], taxiLocations[locateid][1], taxiLocations[locateid][2]);
             }
+
+            // All /taxi destinations will be in the main world.
+            SetPlayerVirtualWorld(playerid, 0);
 
             if(playerid != endid)
                 TakeRegulatedMoney(playerid, TaxiRide, distance);

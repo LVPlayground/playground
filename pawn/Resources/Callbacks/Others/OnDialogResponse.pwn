@@ -28,10 +28,21 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                             Player(playerid)->nicknameString(), lameKill);
 
                     case 1: {
+                        new const money = GetPlayerMoney(lamerId);
+                        if (money <= 0) {
+                            format(message, sizeof(message), "Sorry, but %s does not currently have any money! Please make another choice.",
+                                Player(lamerId)->nicknameString());
+                            SendClientMessage(playerid, Color::Error, message);
+
+                            ShowPlayerDialog(playerid, DIALOG_DRIVEBY, DIALOG_STYLE_LIST, "Revenge!", "Forgive\nSteal their money\nDetonate them\nThrow them in the air\nRespawn their vehicle\nHalve their health\nRemove their weapons", "Punish", "");
+                            TogglePlayerControllable(playerid, false);
+                            return 1;
+                        }
+
                         format(message, sizeof(message), "Your money has been stolen by %s as punishment of a %s.",
                             Player(playerid)->nicknameString(), lameKill);
 
-                        new amount = floatround(float(GetPlayerMoney(lamerId)) * (GetEconomyValue(DeathDropMoneyPercentage) / 100.0));
+                        new amount = floatround(float(money) * (GetEconomyValue(DeathDropMoneyPercentage) / 100.0));
 
                         GivePlayerMoney(playerid, amount);  // controlled w/ DeathDropMoneyPercentage
                         ResetPlayerMoney(lamerId);

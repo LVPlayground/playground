@@ -229,14 +229,6 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
     if (!Player(playerid)->isConnected() || Player(playerid)->isNonPlayerCharacter())
         return 0;
 
-    // Players inside interiors (including VIP room), should not be hurt.
-    if (weaponid == WEAPON_EXPLOSION && (!IsPlayerInMainWorld(playerid) || LegacyIsPlayerInVipRoom(playerid))) {
-        new notice[128];
-        format(notice, sizeof(notice), "Possible interior bug abuser: %s (Id:%d) damaged %s (Id:%d).",
-            Player(issuerid)->nicknameString(), issuerid, Player(playerid)->nicknameString(), playerid);
-        Admin(issuerid, notice);
-    }
-
     if (issuerid != Player::InvalidId) {
         // Keep track of the last person who hit a player.
         DamageManager(playerid)->setLastHitId(issuerid);
@@ -248,9 +240,8 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
             DamageManager(playerid)->setFighting(Time->currentTime());
 
         // Deal noteworthy more damage for sniper headshots.
-        if (!ShipManager->isPlayerWalkingOnShip(playerid) && weaponid == WEAPON_SNIPER && bodypart == BODY_PART_HEAD) {
+        if (!ShipManager->isPlayerWalkingOnShip(playerid) && weaponid == WEAPON_SNIPER && bodypart == BODY_PART_HEAD)
             DamageManager(issuerid)->dealHeadShot(playerid);
-        }
     }
 
     return 1;

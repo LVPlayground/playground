@@ -282,6 +282,7 @@ class HouseCommands {
     // when the player represented by |userId| does not own any houses.
     async displayHouseGotoDialog(player, userId) {
         const houses = new Set();
+        let nickname = null;
 
         // Bail out if the |player| is not currently allowed to teleport.
         if (!this.location_().canPlayerTeleport(player)) {
@@ -297,6 +298,7 @@ class HouseCommands {
             if (location.settings.ownerId != userId)
                 continue;
 
+            nickname = location.settings.ownerName;
             houses.add(location);
         }
 
@@ -307,7 +309,7 @@ class HouseCommands {
         }
 
         // Display a menu with the player's houses. Selecting one will teleport the |player| inside.
-        const menu = new Menu('Select a house');
+        const menu = new Menu(nickname + '\'s houses');
 
         for (const location of houses) {
             menu.addItem(location.settings.name, player =>

@@ -109,7 +109,7 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case GiftHuntLargePrize:                return 50000;
         case GiftHuntMediumPrize:               return 25000;
         case GiftHuntSmallPrize:                return 10000;
-        case GrandTheftAutoRandomVehicleValue:  return random(2542 /* max */ - 1351 /* min */) + 1356 /* min */;
+        case GrandTheftAutoRandomVehicleValue:  return random(30000 /* max */ - 17500 /* min */) + 17500 /* min */;
 #if Feature::DisableKilltime == 0
         case KilltimeVictory:                   return 5000;
 #endif

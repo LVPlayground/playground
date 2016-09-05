@@ -243,17 +243,20 @@ class HouseCommands {
             if (location.isAvailable())
                 continue;
 
-            if (filter && !location.settings.ownerName.toLowerCase().includes(normalizedFilter))
+            const normalizedOwnerName = location.settings.ownerName.toLowerCase();
+
+            if (filter && !normalizedOwnerName.includes(normalizedFilter))
                 continue;
 
-            if (!housesByOwner.has(location.settings.ownerName)) {
-                housesByOwner.set(location.settings.ownerName, {
+            if (!housesByOwner.has(normalizedOwnerName)) {
+                housesByOwner.set(normalizedOwnerName, {
+                    nickname: location.settings.ownerName,
                     userId: location.settings.ownerId,
                     count: 0
                 });
             }
 
-            housesByOwner.get(location.settings.ownerName).count++;
+            housesByOwner.get(normalizedOwnerName).count++;
         }
 
         // Display an error message if an invalid |filter| had been applied.
@@ -264,13 +267,13 @@ class HouseCommands {
 
         // Fast-track to the actual dialog if only a single home owner was found.
         if (filter && housesByOwner.size === 1) {
-            const { userId, count } = Array.from(housesByOwner.values())[0];
+            const { nickname, userId, count } = Array.from(housesByOwner.values())[0];
             return await this.displayHouseGotoDialog(player, userId);
         }
 
-        // Order the owners by their nickname, then add them as a list to the |menu|.
-        Array.from(housesByOwner.keys()).sort().forEach(nickname => {
-            const { userId, count } = housesByOwner.get(nickname);
+        // Order the owners by their normalized nickname, then add them as a list to the |menu|.
+        Array.from(housesByOwner.keys()).sort().forEach(normalizedNickname => {
+            const { nickname, userId, count } = housesByOwner.get(normalizedNickname);
 
             menu.addItem(nickname, count, async(player) =>
                 await this.displayHouseGotoDialog(player, userId));

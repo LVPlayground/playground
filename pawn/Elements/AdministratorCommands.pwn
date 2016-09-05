@@ -513,6 +513,10 @@ lvp_p(playerId, params[]) {
     Command->stringParameter(params, 1, playerParameter, sizeof(playerParameter));
     parameterOffset = min(strlen(params), Command->startingIndexForParameter(params, 1) + strlen(playerParameter) + 1);
 
+    // Lowercase the |playerParameter| to enable case-insensitive sub-commands.
+    for (new i = 0; i < strlen(playerParameter); i++)
+        playerParameter[i] = tolower(playerParameter[i]);
+
     // First check whether any /p command has been registered by individual features, as this takes
     // precedence over anything defined in the massive if/else list that follows. Syntax for any
     // methods listening to this switch is: onPlayerFooCommand(playerId, subjectId, params[]).

@@ -1016,6 +1016,10 @@ lvp_My( playerid, params[] )
     if( !strlen ( szParameter ) )
         goto MyHelp;
 
+    // Lowercase the |szParameter| to enable case-insensitive sub-commands.
+    for (new i = 0; i < strlen(szParameter); i++)
+        szParameter[i] = tolower(szParameter[i]);
+
     // First check whether any /my command has been registered by individual features, as this takes
     // precedence over anything defined in the massive if/else list that follows. Syntax for any
     // methods listening to this switch is: onPlayerFooCommand(playerId, subjectId, params[]).

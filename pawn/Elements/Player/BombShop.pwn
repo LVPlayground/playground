@@ -130,8 +130,8 @@ CBomb__CheckPlayer(i)
             }
 
             TogglePlayerControllable(i, false);
-            SetPlayerVirtualWorld(i, 5957+i);
-            SetVehicleVirtualWorld(GetPlayerVehicleID(i), 5957+i);
+            SetPlayerVirtualWorld(i, GetIsolatedWorldForPlayer(i));
+            SetVehicleVirtualWorld(GetPlayerVehicleID(i), GetIsolatedWorldForPlayer(i));
 
             for (new playerid = 0; playerid <= PlayerManager->highestPlayerId(); playerid++)
             {
@@ -141,7 +141,7 @@ CBomb__CheckPlayer(i)
                 if(!IsPlayerInVehicle(playerid, GetPlayerVehicleID(i)))
                 continue;
 
-                SetPlayerVirtualWorld(playerid, 5957+i);
+                SetPlayerVirtualWorld(playerid, GetIsolatedWorldForPlayer(i));
             }
 
             SetVehiclePos(GetPlayerVehicleID(i),-2156.3550,-261.0685,36.5156);

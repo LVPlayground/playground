@@ -8,7 +8,8 @@ This file documents the reserved virtual worlds in Las Venturas Playground.
   - **100-200**: Worlds reserved for special usage.
   - **200-1200**: Player private worlds _(max 1000)_.
   - **1201-2000**: Interior private worlds _(max 799)_.
-  - **2001-5000**: House private worlds _(max 2999)_.
+  - **2001-7000**: House private worlds _(max 4999)_.
+  - **7001-8000**: Player isolated worlds _(max 999)_.
 
 ## Special Usage
 The following worlds are reserved for usage by specific features.

@@ -2,6 +2,8 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
+// -------------------------------------------------------------------------------------------------
+
 // https://github.com/LVPlayground/playground/blob/master/VIRTUAL_WORLDS.md
 bool: IsPlayerInMainWorld(playerId) {
     new const virtualWorld = GetPlayerVirtualWorld(playerId);
@@ -9,8 +11,15 @@ bool: IsPlayerInMainWorld(playerId) {
     return (virtualWorld == 0) || /* main world */
            (virtualWorld == 101) || /* Caligula's Palace Casino world */
            (virtualWorld >= 1201 && virtualWorld <= 2000) || /* interior worlds */
-           (virtualWorld >= 2001 && virtualWorld <= 5000); /* house worlds */
+           (virtualWorld >= 2001 && virtualWorld <= 7000) || /* house worlds */
+           (virtualWorld >= 7001 && virtualWorld <= 8000);   /* player isolated worlds */
 }
+
+GetIsolatedWorldForPlayer(playerId) {
+    return 7001 + playerId;
+}
+
+// -------------------------------------------------------------------------------------------------
 
 bool: LegacyIsPlayerInVipRoom(playerId) {
     return !!iPlayerInVipRoom[playerId];

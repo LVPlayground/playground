@@ -328,6 +328,9 @@ class HouseEntranceController {
         if (!location)
             return;
 
+        // Play a sound for |player| to audibly inform them that they entered a house.
+        player.playSound(1058);
+
         // Store the |location| the |player| is currently standing in, powering `/house buy`.
         this.currentLocation_.set(player, location);
 

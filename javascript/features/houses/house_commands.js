@@ -196,7 +196,7 @@ class HouseCommands {
     // entry to it anyway. Only works when they're standing in an entrance point.
     async onHouseEnterCommand(player) {
         const location = await this.manager_.findClosestLocation(player, 15 /* maximumDistance */);
-        if (location) {
+        if (location && !location.isAvailable()) {
             // TODO: Should we announce this to the other administrators? We really need
             // announcement channels to deal with the granularity of messages. (Issue #271.)
             this.manager_.forceEnterHouse(player, location);

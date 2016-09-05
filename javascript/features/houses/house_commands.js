@@ -334,7 +334,7 @@ class HouseCommands {
             player: player
         });
 
-        const menu = new Menu('How do you want to modify this house?');
+        const menu = new Menu('What do you want to modify?');
 
         menu.addItem('Add a parking lot', async(player) => {
             const message =

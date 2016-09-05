@@ -59,9 +59,23 @@ class InteriorSelectorUI {
         this.acceptButton_.displayForPlayer(player);
         this.cancelButton_.displayForPlayer(player);
 
+        this.active_ = true;
+        this.ensureSelecting();
+
         player.setSpectating(true);
-        player.setSelectTextDraw(true, BUTTON_HOVER_COLOR);
         player.toggleStatisticsDisplay(false);
+    }
+
+    // Makes sure that the player continues to have a cursor available to them for the duration of
+    // the interior selector. This method spins until the player leaves the selector or disconnects.
+    async ensureSelecting() {
+        while (this.active_) {
+            if (!this.player_.isConnected())
+                return;
+
+            this.player_.setSelectTextDraw(true, BUTTON_HOVER_COLOR);
+            await wait(1000);
+        }
     }
 
     // Formats the price as a string using underscores as the thousand separator.
@@ -108,6 +122,8 @@ class InteriorSelectorUI {
     }
 
     dispose() {
+        this.active_ = false;
+
         this.player_.setSpectating(false);
         this.player_.setSelectTextDraw(false);
         this.player_.toggleStatisticsDisplay(true);

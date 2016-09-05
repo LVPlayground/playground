@@ -33,11 +33,12 @@ const NAME_QUESTION = {
 // This class provides the `/house` command available to administrators to manage parts of the
 // Houses feature on Las Venturas Playground. Most interaction occurs through dialogs.
 class HouseCommands {
-    constructor(manager, announce, economy, playground) {
+    constructor(manager, announce, economy, location, playground) {
         this.manager_ = manager;
 
         this.announce_ = announce;
         this.economy_ = economy;
+        this.location_ = location;
 
         this.playground_ = playground;
         this.playground_.addReloadObserver(
@@ -281,6 +282,12 @@ class HouseCommands {
     // when the player represented by |userId| does not own any houses.
     async displayHouseGotoDialog(player, userId) {
         const houses = new Set();
+
+        // Bail out if the |player| is not currently allowed to teleport.
+        if (!this.location_().canPlayerTeleport(player)) {
+            player.sendMessage(Message.HOUSE_GOTO_TELEPORT_BLOCKED);
+            return;
+        }
 
         // Find the houses owned by |userId|. This operation is O(n) on the number of locations.
         for (const location of this.manager_.locations) {

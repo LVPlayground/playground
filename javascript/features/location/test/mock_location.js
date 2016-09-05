@@ -13,9 +13,19 @@ class MockLocation extends Feature {
 
         this.interiorAbuseManager_ = new InteriorAbuseManager();
         this.interiorManager_ = new InteriorManager(this.interiorAbuseManager_);
+
+        this.interiorAbusers_ = new WeakSet();
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    // Returns whether the |player| is allowed to teleport right now.
+    canPlayerTeleport(player) {
+        if (this.interiorAbusers_.has(player))
+            return false;
+
+        return this.interiorAbuseManager_.canPlayerTeleport(player);
+    }
 
     // Creates the teleportation |portal| in the Interior Manager. The |portal| must be a complete
     // instance of the Portal class.
@@ -45,6 +55,14 @@ class MockLocation extends Feature {
 
     // Gets the number of portals that have been created in the interior manager.
     get portalCount() { return this.interiorManager_.portalCount; }
+
+    // Toggles whether the |player| should be recognized as an interior abuser.
+    toggleInteriorAbuser(player, abuser = true) {
+        if (abuser)
+            this.interiorAbusers_.add(player);
+        else
+            this.interiorAbusers_.delete(player);
+    }
 
     // ---------------------------------------------------------------------------------------------
 

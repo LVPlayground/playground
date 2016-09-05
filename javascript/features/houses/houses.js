@@ -33,7 +33,7 @@ class Houses extends Feature {
         this.manager_ = new HouseManager(economy, friends, gangs, location);
         this.manager_.loadHousesFromDatabase();
 
-        this.commands_ = new HouseCommands(this.manager_, announce, economy, playground);
+        this.commands_ = new HouseCommands(this.manager_, announce, economy, location, playground);
         this.natives_ = new HouseNatives(this.manager_);
     }
 

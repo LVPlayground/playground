@@ -18,6 +18,7 @@ const PlayerMoneyBridge = require('features/houses/utils/player_money_bridge.js'
 describe('HouseCommands', (it, beforeEach, afterEach) => {
     let access = null;
     let commands = null;
+    let location = null;
     let manager = null;
     let maxticks = null;
 
@@ -26,15 +27,16 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         const friends = server.featureManager.wrapInstanceForDependency(new MockFriends());
         const gangs = server.featureManager.wrapInstanceForDependency(new MockGangs());
         const economy = server.featureManager.wrapInstanceForDependency(new Economy());
-        const location = server.featureManager.wrapInstanceForDependency(new MockLocation());
         const playground = server.featureManager.wrapInstanceForDependency(new MockPlayground());
+
+        location = server.featureManager.wrapInstanceForDependency(new MockLocation());
 
         access = playground().access;
 
         manager = new HouseManager(economy, friends, gangs, location);
         manager.database_ = new MockHouseDatabase();
 
-        commands = new HouseCommands(manager, announce, economy, playground);
+        commands = new HouseCommands(manager, announce, economy, location, playground);
 
         // Reducing the command's requirement to players is only necessary until we ship.
         assert.equal(access.getCommandLevel('house'), Player.LEVEL_ADMINISTRATOR);
@@ -431,7 +433,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(await gunther.issueCommand('/house goto'));
 
         assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.HOUSE_GOTO_NONE_FOUND)
+        assert.equal(gunther.messages[0], Message.HOUSE_GOTO_NONE_FOUND);
     });
 
     it('should immediately list houses owned by the player', async(assert) => {
@@ -451,6 +453,20 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         assert.equal(manager.getCurrentHouseForPlayer(gunther), houses[0]);
         assert.notEqual(gunther.virtualWorld, server.virtualWorldManager.mainWorld);
+    });
+
+    it('should not enable players to teleport when they might abuse it', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify({ userId: 42 });
+
+        await manager.loadHousesFromDatabase();
+
+        location().toggleInteriorAbuser(gunther, true);
+
+        assert.isTrue(await gunther.issueCommand('/house goto'));
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.HOUSE_GOTO_TELEPORT_BLOCKED)
     });
 
     it('should enable administrators to list houses owned by another player', async(assert) => {

@@ -32,6 +32,11 @@ class Location extends Feature {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Returns whether the |player| is allowed to teleport right now.
+    canPlayerTeleport(player) {
+        return this.interiorAbuseManager_.canPlayerTeleport(player);
+    }
+
     // Creates the teleportation |portal| in the Interior Manager. The |portal| must be a complete
     // instance of the Portal class.
     createPortal(portal) {

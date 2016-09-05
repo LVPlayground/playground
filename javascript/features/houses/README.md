@@ -38,6 +38,8 @@ the following options:
   - **/house buy**: Begins the purchase process for the house you're currently standing in.
   - **/house create**: Creates a new house location. The price range of houses on this location is
     predetermined by an algorithm, and cannot be modified.
+  - **/house goto [filter]**: Displays your houses and enables teleporting to them. Administrators
+    will be able to see the houses owned by others as well.
   - **/house modify**: Modifies settings for the house closest to the administrator issuing the
     command. Enables creation and removal of parking spots.
   - **/house settings**: Enables you to change your house's settings whilst inside of it.

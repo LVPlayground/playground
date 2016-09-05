@@ -415,6 +415,123 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         PlayerMoneyBridge.setMockedBalanceForTests(null);
     });
 
+    it('should not allow `/house goto` to be used by unregistered players', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        assert.isTrue(await gunther.issueCommand('/house goto'));
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.HOUSE_GOTO_UNREGISTERED);
+    });
+
+    it('should display a warning if the player does not own any houses', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify({ userId: 1338 });
+
+        assert.isTrue(await gunther.issueCommand('/house goto'));
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.HOUSE_GOTO_NONE_FOUND)
+    });
+
+    it('should immediately list houses owned by the player', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify({ userId: 42 });
+
+        await manager.loadHousesFromDatabase();
+
+        const houses = manager.getHousesForPlayer(gunther);
+        assert.equal(houses.length, 1);
+
+        // Select the first house from the list.
+        gunther.respondToDialog({ listitem: 0 /* Select the first house owned by Gunther */ });
+
+        assert.isTrue(await gunther.issueCommand('/house goto'));
+        assert.equal(gunther.messages.length, 0);
+
+        assert.equal(manager.getCurrentHouseForPlayer(gunther), houses[0]);
+        assert.notEqual(gunther.virtualWorld, server.virtualWorldManager.mainWorld);
+    });
+
+    it('should enable administrators to list houses owned by another player', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        const russell = server.playerManager.getById(1 /* Russell */);
+        russell.identify({ userId: 1338 });
+        russell.level = Player.LEVEL_ADMINISTRATOR;
+
+        await manager.loadHousesFromDatabase();
+
+        const houses = manager.getHousesForUser(42 /* Gunther */);
+        assert.equal(houses.length, 1);
+
+        // (1) Try to get the houses owned by |gunther| before he has logged in.
+        assert.isTrue(await russell.issueCommand('/house goto ' + gunther.id));
+        assert.equal(russell.messages.length, 1);
+        assert.equal(russell.messages[0], Message.HOUSE_GOTO_NONE_FOUND);
+
+        gunther.identify({ userId: 42 });
+        russell.clearMessages();
+
+        // (2) Try to get the houses owned by |gunther| now that he has logged in.
+        gunther.respondToDialog({ listitem: 0 /* first owned house */ });
+
+        assert.isTrue(await gunther.issueCommand('/house goto ' + gunther.id));
+        assert.equal(gunther.messages.length, 0);
+
+        assert.equal(manager.getCurrentHouseForPlayer(gunther), houses[0]);
+        assert.notEqual(gunther.virtualWorld, server.virtualWorldManager.mainWorld);
+    });
+
+    it('should display an overview of existing houses to administrators', async(assert) => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+        russell.identify({ userId: 1338 });
+        russell.level = Player.LEVEL_ADMINISTRATOR;
+
+        await manager.loadHousesFromDatabase();
+
+        const houses = manager.getHousesForUser(42 /* Gunther */);
+        assert.equal(houses.length, 1);
+
+        // Select Gunther from the list of house owners (he's not logged in), then teleport to the
+        // first house listed in the subsequent dialog.
+        russell.respondToDialog({ listitem: 0 /* Gunther's houses */ }).then(
+            () => russell.respondToDialog({ listitem: 0 /* first owned house */ }));
+
+        assert.isTrue(await russell.issueCommand('/house goto'));
+        assert.equal(russell.messages.length, 0);
+
+        assert.equal(manager.getCurrentHouseForPlayer(russell), houses[0]);
+        assert.notEqual(russell.virtualWorld, server.virtualWorldManager.mainWorld);
+    });
+
+    it('should be possible to filter owned houses by name', async(assert) => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+        russell.identify({ userId: 1338 });
+        russell.level = Player.LEVEL_ADMINISTRATOR;
+
+        await manager.loadHousesFromDatabase();
+
+        const houses = manager.getHousesForUser(42 /* Gunther */);
+        assert.equal(houses.length, 1);
+
+        // (1) Filtering by a non-existing owner's name should yield an error message.
+        assert.isTrue(await russell.issueCommand('/house goto TEF'));
+        assert.equal(russell.messages.length, 1);
+        assert.equal(russell.messages[0], Message.format(Message.HOUSE_GOTO_INVALID_FILTER, 'TEF'));
+
+        russell.clearMessages();
+
+        // (2) Filtering by an existing owner's name yielding one result should fast-track.
+        russell.respondToDialog({ listitem: 0 /* first owned house */ });
+
+        assert.isTrue(await russell.issueCommand('/house goto unthe'));  /* Gunther */
+        assert.equal(russell.messages.length, 0);
+
+        assert.equal(manager.getCurrentHouseForPlayer(russell), houses[0]);
+        assert.notEqual(russell.virtualWorld, server.virtualWorldManager.mainWorld);
+    });
+
     it('should do the necessary checks when changing house settings', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 42 });

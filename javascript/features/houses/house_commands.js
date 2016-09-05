@@ -48,7 +48,7 @@ class HouseCommands {
         this.parkingLotCreator_ = new ParkingLotCreator();
         this.parkingLotRemover_ = new ParkingLotRemover();
 
-        // Command: /house [buy/cancel/create/enter/modify/remove/save/settings]
+        // Command: /house [buy/cancel/create/enter/goto/modify/remove/save/settings]
         server.commandManager.buildCommand('house')
             .restrict(player => this.playground_().canAccessCommand(player, 'house'))
             .sub('buy')
@@ -61,6 +61,9 @@ class HouseCommands {
             .sub('enter')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(HouseCommands.prototype.onHouseEnterCommand.bind(this))
+            .sub('goto')
+                .parameters([{ name: 'filter', type: CommandBuilder.WORD_PARAMETER, optional: true }])
+                .build(HouseCommands.prototype.onHouseGotoCommand.bind(this))
             .sub('modify')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(HouseCommands.prototype.onHouseModifyCommand.bind(this))
@@ -202,6 +205,109 @@ class HouseCommands {
         }
 
         player.sendMessage(Message.HOUSE_ENTER_NONE_NEAR);
+    }
+
+    // Called when a player types `/house goto`. Administrators get a list of house owners to choose
+    // from, optionally |filter|ed, after which they get a list of houses owned by the subject.
+    // Players using this command will get their own dialog immediately.
+    async onHouseGotoCommand(player, filter) {
+        if (!player.isRegistered()) {
+            player.sendMessage(Message.HOUSE_GOTO_UNREGISTERED);
+            return;
+        }
+
+        if (!player.isAdministrator())
+            return await this.displayHouseGotoDialog(player, player.userId);
+
+        const potentialPlayerId = parseFloat(filter);
+
+        // Fast-path to display another player's houses when |filter| is a player Id.
+        if (!isNaN(potentialPlayerId) && isFinite(potentialPlayerId)) {
+            const subject = server.playerManager.getById(potentialPlayerId);
+            if (!subject.isRegistered()) {
+                player.sendMessage(Message.HOUSE_GOTO_NONE_FOUND);
+                return;
+            }
+
+            return await this.displayHouseGotoDialog(player, subject.userId);
+        }
+
+        const menu = new Menu('Select a house owner', ['Nickname', 'Owned houses']);
+        const housesByOwner = new Map();
+
+        // Load all occupied houses in to |housesByOwner|, keyed by the owner's nickname, valued by
+        // a dictionary containing their user Id and number of owned houses.
+        for (const location of this.manager_.locations) {
+            if (location.isAvailable())
+                continue;
+
+            if (filter && !location.settings.ownerName.includes(filter))
+                continue;
+
+            if (!housesByOwner.has(location.settings.ownerName)) {
+                housesByOwner.set(location.settings.ownerName, {
+                    userId: location.settings.ownerId,
+                    count: 0
+                });
+            }
+
+            housesByOwner.get(location.settings.ownerName).count++;
+        }
+
+        // Display an error message if an invalid |filter| had been applied.
+        if (filter && !housesByOwner.size) {
+            player.sendMessage(Message.HOUSE_GOTO_INVALID_FILTER, filter);
+            return;
+        }
+
+        // Fast-track to the actual dialog if only a single home owner was found.
+        if (filter && housesByOwner.size === 1) {
+            const { userId, count } = Array.from(housesByOwner.values())[0];
+            return await this.displayHouseGotoDialog(player, userId);
+        }
+
+        // Order the owners by their nickname, then add them as a list to the |menu|.
+        Array.from(housesByOwner.keys()).sort().forEach(nickname => {
+            const { userId, count } = housesByOwner.get(nickname);
+
+            menu.addItem(nickname, count, async(player) =>
+                await this.displayHouseGotoDialog(player, userId));
+        });
+
+        await menu.displayForPlayer(player);
+    }
+
+    // Displays the dialog that allows players to go to a specific house. An error will be shown
+    // when the player represented by |userId| does not own any houses.
+    async displayHouseGotoDialog(player, userId) {
+        const houses = new Set();
+
+        // Find the houses owned by |userId|. This operation is O(n) on the number of locations.
+        for (const location of this.manager_.locations) {
+            if (location.isAvailable())
+                continue;
+
+            if (location.settings.ownerId != userId)
+                continue;
+
+            houses.add(location);
+        }
+
+        // Display an error message if the |userId| does not own any houses.
+        if (!houses.size) {
+            player.sendMessage(Message.HOUSE_GOTO_NONE_FOUND);
+            return;
+        }
+
+        // Display a menu with the player's houses. Selecting one will teleport the |player| inside.
+        const menu = new Menu('Select a house');
+
+        for (const location of houses) {
+            menu.addItem(location.settings.name, player =>
+                this.manager_.forceEnterHouse(player, location));
+        }
+
+        await menu.displayForPlayer(player);
     }
 
     // Called when an administrator types the `/house modify` command to change settings for the

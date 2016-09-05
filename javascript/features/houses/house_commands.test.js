@@ -541,7 +541,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         // (2) Filtering by an existing owner's name yielding one result should fast-track.
         russell.respondToDialog({ listitem: 0 /* first owned house */ });
 
-        assert.isTrue(await russell.issueCommand('/house goto unthe'));  /* Gunther */
+        assert.isTrue(await russell.issueCommand('/house goto UNTHE'));  /* Gunther */
         assert.equal(russell.messages.length, 0);
 
         assert.equal(manager.getCurrentHouseForPlayer(russell), houses[0]);

@@ -234,6 +234,7 @@ class HouseCommands {
         }
 
         const menu = new Menu('Select a house owner', ['Nickname', 'Owned houses']);
+        const normalizedFilter = filter ? filter.toLowerCase() : null;
         const housesByOwner = new Map();
 
         // Load all occupied houses in to |housesByOwner|, keyed by the owner's nickname, valued by
@@ -242,7 +243,7 @@ class HouseCommands {
             if (location.isAvailable())
                 continue;
 
-            if (filter && !location.settings.ownerName.includes(filter))
+            if (filter && !location.settings.ownerName.toLowerCase().includes(normalizedFilter))
                 continue;
 
             if (!housesByOwner.has(location.settings.ownerName)) {

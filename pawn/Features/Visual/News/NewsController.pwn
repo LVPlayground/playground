@@ -57,6 +57,9 @@ class NewsController {
         if (IsPlayerInMinigame(playerId))
             return true;
 
+        if (IsInterfaceBlockedByJavaScript(playerId))
+            return true;
+
         if (m_disableMessageForPlayer[playerId])
             return true;
 

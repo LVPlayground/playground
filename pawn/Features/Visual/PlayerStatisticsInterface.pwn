@@ -301,6 +301,10 @@ public OnToggleStatisticsDisplay(playerId, display) {
     else
         PlayerStatisticsInterface->hidePlayerStatistics(playerId);
 
+    // Enable or disable news messages too as part of this interface.
+    for (new index = 0; index < NewsController::MaximumVisibleNewsMessages; ++index)
+        NewsMessage(index)->changeVisibilityForPlayer(playerId, !display);
+
     Check_Textdraw();
 }
 

@@ -179,8 +179,13 @@ CSave__SaveInfo(playerId) {
         m_playerSaveInfo[slotId][angle] = playerAngle;
     }
 
+    new virtualWorld = g_VirtualWorld[playerId];
+
+    if (IsPlayerInMainWorld(playerId))
+        virtualWorld = GetPlayerVirtualWorld(playerId);
+
     m_playerSaveInfo[slotId][interiorId] = GetPlayerInterior(playerId);
-    m_playerSaveInfo[slotId][worldId] = g_VirtualWorld[playerId];
+    m_playerSaveInfo[slotId][worldId] = virtualWorld;
     m_playerSaveInfo[slotId][rampingEnabled] = ramping[playerId];
     m_playerSaveInfo[slotId][savedWantedLevel] = WantedLevel[playerId];
     m_playerSaveInfo[slotId][savedHealth] = pHealth;

@@ -75,6 +75,8 @@ public OnPlayerText(playerid, text[]) {
 
         if (Account(playerid)->userId() == 31797 /* Luce */)
             format(prefix, sizeof(prefix), "Lady");
+        else if (Account(playerid)->userId() == 29685 /* TEF */)
+            format(prefix, sizeof(prefix), "The");
         else if (Player(playerid)->isManagement() == true)
             format(prefix, sizeof(prefix), "Manager");
         else if (Player(playerid)->isAdministrator() == true)

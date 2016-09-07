@@ -57,7 +57,7 @@ class DropWeaponsCashHandler {
                 if (m_pickupWeaponPickupId[weaponSlot][player] != pickupId)
                     continue;
 
-                new const armedWeapon = GetPlayerWeapon(player);
+                new const armedWeapon = GetPlayerWeapon(playerId);
 
                 // If the player carries no weapon in the desired weapon slot, we give him the weapon
                 // and corresponding ammo. Else, we just raise the ammo for their weapon.
@@ -67,7 +67,7 @@ class DropWeaponsCashHandler {
                 else
                     GiveWeapon(playerId, weaponId, m_pickupWeaponAmmo[weaponSlot][player]);
 
-                SetPlayerArmedWeapon(player, armedWeapon);
+                SetPlayerArmedWeapon(playerId, armedWeapon);
 
                 // Destroy the pickup and reset all values.
                 PickupController->destroyPickup(DropWeaponsCashHandler::DroppedObjectHandlerId,

@@ -37,11 +37,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         manager.database_ = new MockHouseDatabase();
 
         commands = new HouseCommands(manager, announce, economy, location, playground);
-
-        // Reducing the command's requirement to players is only necessary until we ship.
-        assert.equal(access.getCommandLevel('house'), Player.LEVEL_ADMINISTRATOR);
-        access.setCommandLevel('house', Player.LEVEL_PLAYER);
-
         maxticks = 10;
     });
 

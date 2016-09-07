@@ -706,7 +706,7 @@ class HouseCommands {
 
     // Registers the `/house` command as one tracked by the `/lvp access` list.
     registerTrackedCommands(playground) {
-        playground.registerCommand('house', Player.LEVEL_ADMINISTRATOR);
+        playground.registerCommand('house', Player.LEVEL_PLAYER);
     }
 
     // ---------------------------------------------------------------------------------------------

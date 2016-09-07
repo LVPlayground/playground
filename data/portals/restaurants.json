@@ -171,22 +171,22 @@
     },
     {
         "name": "Steakhouse (Los Santos)",
-        "entrance": { "position": [ 419.191, -1428.71, 31.8959 ], "facingAngle": 90, "interiorId": 0 },
+        "entrance": { "position": [ 419.191, -1428.71, 31.8959 ], "facingAngle": 0, "interiorId": 0 },
         "exit": { "position": [ 455.32, -21.4, 999.58 ], "facingAngle": 129, "interiorId": 1 }
     },
     {
         "name": "Steakhouse (San Fierro)",
-        "entrance": { "position": [ -2463.06, 132.287, 34.198 ], "facingAngle": 90, "interiorId": 0 },
+        "entrance": { "position": [ -2463.06, 132.287, 34.198 ], "facingAngle": 0, "interiorId": 0 },
         "exit": { "position": [ 455.32, -21.4, 999.58 ], "facingAngle": 319, "interiorId": 1 }
     },
     {
         "name": "Steakhouse (Las Venturas, East)",
-        "entrance": { "position": [ 2489.87, 2065.15, 9.8472 ], "facingAngle": 90, "interiorId": 0 },
+        "entrance": { "position": [ 2489.87, 2065.15, 9.8472 ], "facingAngle": 0, "interiorId": 0 },
         "exit": { "position": [ 455.32, -21.4, 999.58 ], "facingAngle": 180, "interiorId": 1 }
     },
     {
         "name": "Steakhouse (Las Venturas, North)",
-        "entrance": { "position": [ 1693.19, 2209.13, 10.0212 ], "facingAngle": 90, "interiorId": 0 },
+        "entrance": { "position": [ 1693.19, 2209.13, 10.0212 ], "facingAngle": 0, "interiorId": 0 },
         "exit": { "position": [ 455.32, -21.4, 999.58 ], "facingAngle": 180, "interiorId": 1 }
     },
     {

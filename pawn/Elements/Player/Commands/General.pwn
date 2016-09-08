@@ -865,11 +865,8 @@ lvp_showmessage(playerid,params[])
         if(!showMessagesEnabled[j])
             continue;
 
-        if (Player(j)->isRegular()) {
-            if (random(4) == 0) {
-                SendClientMessage(j, Color::White, "Hint: Disable these showmessages with /settings showmsg off.");
-            }
-        }
+        if (random(4) == 0)
+            SendClientMessage(j, Color::White, "Hint: Disable these showmessages with /settings showmsg off.");
 
         GameTextForPlayer(j,message,4000,5);
     }

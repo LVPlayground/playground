@@ -389,8 +389,7 @@ UpdatePlayerIngameTime(playerId) {
                 SendClientMessageToAllEx(COLOR_PINK, notice);
 
                 SendClientMessage(playerId, COLOR_PINK,
-                    "Congratulations! Now that you've reached 50 hours of in-game time, you're officially an LVP Regular.");
-                SendClientMessage(playerId, COLOR_PINK, "Check out /regular for new commands!");
+                    "Congratulations! Now that you've reached 50 hours of in-game time, you're officially a LVP Regular!");
             }
         }
     }

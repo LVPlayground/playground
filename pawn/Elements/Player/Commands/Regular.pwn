@@ -144,14 +144,6 @@ lvp_Ignored( playerid, params[] )
 // Creator: Peter
 lvp_settings(playerId, params[])
 {
-    // Since this version, regular players have the ability to modify a bunch of
-    // their own settings. They can decide whether they want to see join/news
-    // messages, etcetera. This function provides toggling capabilities.
-    if (Player(playerId)->isRegular() == false && Player(playerId)->isAdministrator() == false) {
-        SendClientMessage(playerId, Color::Error, "This function is only available for regulars!" );
-        return 1;
-    }
-
     param_shift(paramOption);
 
     // Do we have any parameters passed on?

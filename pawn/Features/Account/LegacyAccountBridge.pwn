@@ -131,7 +131,7 @@ class LegacyAccountBridge {
 
         new penaltyTime = PlayerIdlePenalty->getPlayerPenaltyTime(playerId);
         if (penaltyTime > 0 && penaltyTime < sessionTime)
-            onlineTime -= Math->floor(penaltyTime * 0.75);
+            onlineTime -= penaltyTime;
 
         // TODO: Remove the following fields.
         // * plus_points

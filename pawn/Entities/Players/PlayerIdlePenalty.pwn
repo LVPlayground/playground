@@ -7,12 +7,12 @@
  * their online time for no reason. This class determines whether they've been idle, and tracks the
  * penalty that has to be applied to their online time at the end of their session.
  *
- * In short, the first 15 minutes of idle time will be counted, after which the remaining idle time
+ * In short, the first 30 minutes of idle time will be counted, after which the remaining idle time
  * will *not* be counted towards their online time.
  */
 class PlayerIdlePenalty {
     // Allowed amount of time that a player may be idle without applying a penalty.
-    const AllowedIdleTime = 15 * 60;
+    const AllowedIdleTime = 30 * 60;
 
     // Tracks the latest known position and rotation of each player.
     new Float: m_currentPosition[MAX_PLAYERS][4];
@@ -50,7 +50,7 @@ class PlayerIdlePenalty {
 
     /**
      * Called every ten seconds. Iterates through all online players, gets their current positions
-     * and determines whether they're idle. Idle times of over 15 minutes will be considered as
+     * and determines whether they're idle. Idle times of over 30 minutes will be considered as
      * penalty time, which will not count towards a player's online time.
      */
     @list(TenSecondTimer)

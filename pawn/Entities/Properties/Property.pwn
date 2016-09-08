@@ -207,7 +207,7 @@ class Property <propertyId (MAX_PROPERTIES)> {
      */
     private createPropertyPickupWithModel(modelId) {
         return PickupController->createPickup(PropertyManager->pickupHandlerId(), modelId,
-            PersistentPickupType, m_positionVector[0], m_positionVector[1], m_positionVector[2], 0, propertyId);
+            PersistentPickupType, m_positionVector[0], m_positionVector[1], m_positionVector[2], -1, propertyId);
     }
 
     /**

@@ -64,7 +64,7 @@ class BankAccount <playerId (MAX_PLAYERS)> {
      */
     public __construct() {
         PickupController->createPickup(BankAccount::BankHandlerId, MainBankDollarPickupId,
-            PersistentPickupType, 373.8596, 173.7510, 1008.3893, 0);
+            PersistentPickupType, 373.8596, 173.7510, 1008.3893, -1);
     }
 
     /**

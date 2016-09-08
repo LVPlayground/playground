@@ -37,10 +37,10 @@ bool: IsCommandAvailableForLimitedFunctionality(command[]) {
 // All commands entered by players will end up in this callback.
 public OnPlayerCommandText(playerid, cmdtext[]) {
     if (strlen(cmdtext) == 1)
-        return 1; // we don't want crashes when the player types /
+        return 1; // we don't want crashes when the player types '/'
 
-    if (Player(playerid)->isConnected() == false)
-        return 1; // we haven't marked this player as being connected.
+    if (!Player(playerid)->isConnected())
+        return 1; // we haven't marked this player as being connected
 
     PlayerIdlePenalty->resetCurrentIdleTime(playerid);
 

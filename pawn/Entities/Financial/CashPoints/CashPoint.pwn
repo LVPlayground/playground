@@ -11,8 +11,7 @@
  *
  * @author Russell Krupke <russell@sa-mp.nl>
  */
-class CashPoint <pointId (CashPointCount)>
-{
+class CashPoint <pointId (CashPointCount)> {
     // Resource Id of the dynamic map icon.
     new DynamicMapIcon: m_mapIconId;
 
@@ -29,9 +28,8 @@ class CashPoint <pointId (CashPointCount)>
      * @param rotation The rotation to apply to the cash-point.
      * @param interiorId The interior Id this cash-point belongs to.
      */
-    public initialize(Float: positionX, Float: positionY, Float: positionZ, Float: rotation, interiorId)
-    {
+    public initialize(Float: positionX, Float: positionY, Float: positionZ, Float: rotation, interiorId) {
         m_mapIconId = CreateDynamicMapIcon(positionX, positionY, positionZ, 52, 0, 0, 0);
-        m_objectId = CreateDynamicObject(2942, positionX, positionY, positionZ, 0, 0, rotation, 0, interiorId);
+        m_objectId = CreateDynamicObject(2942, positionX, positionY, positionZ, 0, 0, rotation, -1, interiorId);
     }
 }

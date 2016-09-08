@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const Economy = require('features/economy/economy.js');
+const HouseExtension = require('features/houses/house_extension.js');
 const HouseManager = require('features/houses/house_manager.js');
 const HouseSettings = require('features/houses/house_settings.js');
 const MockFriends = require('features/friends/test/mock_friends.js');
@@ -307,5 +308,105 @@ describe('HouseManager', (it, beforeEach, afterEach) => {
         await manager.removeHouse(location);
 
         assert.equal(server.vehicleManager.count, serverVehicleCount - 1);
+    });
+
+    it('should handle house extension instances in a sensible way', async(assert) => {
+        let invocationCount = 0;
+
+        class MyExtension extends HouseExtension {
+            onQuack() {
+                invocationCount++;
+            }
+        }
+
+        const extension = new MyExtension();
+
+        manager.registerExtension(extension);
+
+        assert.equal(invocationCount, 0);
+
+        manager.invokeExtensions('onQuack');
+        assert.equal(invocationCount, 1);
+
+        manager.registerExtension(extension);
+        manager.registerExtension(extension);
+        manager.registerExtension(extension);
+
+        manager.invokeExtensions('onQuack');
+        assert.equal(invocationCount, 2);
+
+        manager.removeExtension(extension);
+
+        manager.invokeExtensions('onQuack');
+        assert.equal(invocationCount, 2);
+    });
+
+    it('should inform house extensions when houses are created and destroyed', async(assert) => {
+        await manager.loadHousesFromDatabase();
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify({ userId: 5000 });
+
+        let locationCreatedCalls = 0;
+        let locationRemovedCalls = 0;
+
+        let houseCreatedCalls = 0;
+        let houseRemovedCalls = 0;
+
+        // Create an house extension that listens to the applicable events.
+        class MyExtension extends HouseExtension {
+            onLocationCreated(location) {
+                locationCreatedCalls++;
+            }
+
+            onHouseCreated(location) {
+                houseCreatedCalls++;
+            }
+
+            onHouseRemoved(location) {
+                houseRemovedCalls++;
+            }
+
+            onLocationRemoved(location) {
+                locationRemovedCalls++;
+            }
+        }
+
+        manager.registerExtension(new MyExtension());
+
+        assert.equal(locationCreatedCalls, 0);
+        assert.equal(locationRemovedCalls, 0);
+        assert.equal(houseCreatedCalls, 0);
+        assert.equal(houseRemovedCalls, 0);
+
+        await manager.createLocation(gunther, validLocation);
+
+        assert.equal(locationCreatedCalls, 1);
+        assert.equal(locationRemovedCalls, 0);
+        assert.equal(houseCreatedCalls, 0);
+        assert.equal(houseRemovedCalls, 0);
+
+        const location = await manager.findClosestLocation(gunther);
+
+        await manager.createHouse(gunther, location, 1 /* interiorId */);
+
+        assert.equal(locationCreatedCalls, 1);
+        assert.equal(locationRemovedCalls, 0);
+        assert.equal(houseCreatedCalls, 1);
+        assert.equal(houseRemovedCalls, 0);
+
+        await manager.removeHouse(location);
+
+        assert.equal(locationCreatedCalls, 1);
+        assert.equal(locationRemovedCalls, 0);
+        assert.equal(houseCreatedCalls, 1);
+        assert.equal(houseRemovedCalls, 1);
+
+        await manager.removeLocation(location);
+
+        assert.equal(locationCreatedCalls, 1);
+        assert.equal(locationRemovedCalls, 1);
+        assert.equal(houseCreatedCalls, 1);
+        assert.equal(houseRemovedCalls, 1);
     });
 });

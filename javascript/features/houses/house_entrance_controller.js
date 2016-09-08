@@ -312,10 +312,12 @@ class HouseEntranceController {
     // Called when the |player| has entered |location| through a portal.
     onPlayerEnterHouse(location, player) {
         this.currentHouse_.set(player, location);
+        this.manager_.invokeExtensions('onPlayerEnterHouse', player, location);
     }
 
     // Called when the |player| has left the |location| through a portal.
     onPlayerExitHouse(location, player) {
+        this.manager_.invokeExtensions('onPlayerLeaveHouse', player, location);
         this.currentHouse_.delete(player);
     }
 

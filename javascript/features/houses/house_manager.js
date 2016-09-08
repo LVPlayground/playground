@@ -4,6 +4,7 @@
 
 const HouseDatabase = require('features/houses/house_database.js');
 const HouseEntranceController = require('features/houses/house_entrance_controller.js');
+const HouseExtension = require('features/houses/house_extension.js');
 const HouseInterior = require('features/houses/house_interior.js');
 const HouseLocation = require('features/houses/house_location.js');
 const HouseParkingLot = require('features/houses/house_parking_lot.js');
@@ -19,6 +20,7 @@ class HouseManager {
         this.dataLoadedPromise_ = new Promise(resolver =>
             this.dataLoadedResolver_ = resolver);
 
+        this.extensions_ = new Set();
         this.locations_ = new Set();
 
         // Responsible for all entrances and exits associated with the locations.
@@ -34,6 +36,34 @@ class HouseManager {
 
     // Gets the number of house locations that have been made available.
     get locationCount() { return this.locations_.size; }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Registers |extension| as an extension feature of the housing system. It's safe to add the
+    // |extension| multiple times, because the events will only be invoked once anyway.
+    registerExtension(extension) {
+        if (!(extension instanceof HouseExtension))
+            throw new Error('Only objects derived from HouseExtension can be registered.');
+
+        this.extensions_.add(extension);
+    }
+
+    // Removes the |extension| from the set of objects that will be informed about events. The
+    // caller is expected to dispose the |extension| when the instance is no longer required.
+    removeExtension(extension) {
+        if (!(extension instanceof HouseExtension))
+            throw new Error('Only objects derived from HouseExtension can be removed.');
+
+        this.extensions_.delete(extension);
+    }
+
+    // Calls the |methodName| on all registered house extensions, in insertion order.
+    invokeExtensions(methodName, ...args) {
+        for (const extension of this.extensions_)
+            extension.__proto__[methodName].call(extension, ...args);
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Loads all defined houses from the database to the house manager, creating the House instances
     // and associated objects where required.
@@ -92,6 +122,8 @@ class HouseManager {
 
         this.locations_.add(location);
         this.entranceController_.addLocation(location);
+
+        this.invokeExtensions('onLocationCreated', location);
     }
 
     // Creates a new parking lot for |location| at |parkingLot|. The |player| will be written to
@@ -133,6 +165,8 @@ class HouseManager {
         location.setHouse(houseSettings, houseInterior);
 
         this.entranceController_.updateLocation(location);
+
+        this.invokeExtensions('onHouseCreated', location);
     }
 
     // Creates a new vehicle in the |parkingLot| associated with the |location|. The |vehicleInfo|
@@ -301,6 +335,8 @@ class HouseManager {
         if (!location.isAvailable())
             await this.removeHouse(location);
 
+        this.invokeExtensions('onLocationRemoved', location);
+
         await this.database_.removeLocation(location);
 
         this.locations_.delete(location);
@@ -348,6 +384,8 @@ class HouseManager {
         if (location.isAvailable())
             throw new Error('The given |location| is not currently occupied.');
 
+        this.invokeExtensions('onHouseRemoved', location);
+
         // Forcefully remove all players that are currently in the locations to go outside.
         server.playerManager.forEach(player => {
             if (this.entranceController_.getCurrentHouseForPlayer(player) === location)
@@ -391,6 +429,11 @@ class HouseManager {
             location.dispose();
 
         this.locations_.clear();
+
+        for (const extension of this.extensions_)
+            extension.dispose();
+
+        this.extensions_.clear();
     }
 }
 

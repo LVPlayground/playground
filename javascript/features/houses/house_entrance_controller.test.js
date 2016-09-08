@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const Economy = require('features/economy/economy.js');
+const HouseExtension = require('features/houses/house_extension.js');
 const HouseManager = require('features/houses/house_manager.js');
 const HouseSettings = require('features/houses/house_settings.js');
 const MockFriends = require('features/friends/test/mock_friends.js');
@@ -273,5 +274,48 @@ describe('HouseEntranceController', (it, beforeEach, afterEach) => {
 
         // Override the dispose() function since we can't dispose the controller twice.
         controller.dispose = () => true;
+    });
+
+    it('should inform extensions about players entering and leaving houses', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.position = new Vector(500, 500, 500);
+
+        const currentLocation = await manager.findClosestLocation(gunther);
+        assert.isFalse(currentLocation.isAvailable());
+
+        let enteredHouse = false;
+        let leftHouse = false;
+
+        // Create an house extension that listens to the applicable events.
+        class MyExtension extends HouseExtension {
+            onPlayerEnterHouse(player, location) {
+                assert.equal(player, gunther);
+                assert.equal(location, currentLocation);
+
+                enteredHouse = true;
+            }
+
+            onPlayerLeaveHouse(player, location) {
+                assert.equal(player, gunther);
+                assert.equal(location, currentLocation);
+
+                leftHouse = true;
+            }
+        }
+
+        manager.registerExtension(new MyExtension());
+
+        assert.isFalse(enteredHouse);
+        assert.isFalse(leftHouse);
+
+        assert.doesNotThrow(() => controller.enterHouse(gunther, currentLocation));
+
+        assert.isTrue(enteredHouse);
+        assert.isFalse(leftHouse);
+
+        assert.doesNotThrow(() => controller.exitHouse(gunther));
+
+        assert.isTrue(enteredHouse);
+        assert.isTrue(leftHouse);
     });
 });

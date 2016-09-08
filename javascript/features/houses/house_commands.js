@@ -396,6 +396,9 @@ class HouseCommands {
                                         'Close' /* leftButton */, '' /* rightButton */);
         });
 
+        // Give house extensions the ability to provide their additional functionality.
+        this.manager_.invokeExtensions('onHouseModifyCommand', player, closestLocation, menu);
+
         if (!closestLocation.isAvailable()) {
             const ownerName = closestLocation.settings.ownerName;
 
@@ -552,6 +555,9 @@ class HouseCommands {
         menu.addItem('Manage your vehicles', vehicleValue, async(player) => {
             await this.onHouseSettingsVehicles(player, location);
         });
+
+        // Give house extensions the ability to provide their additional functionality.
+        this.manager_.invokeExtensions('onHouseSettingsCommand', player, location, menu);
 
         menu.addItem('Sell this house', '-', async(player) => {
             const offer = 0;  // TODO: Calculate the refund to offer the player. (Issue #268.)

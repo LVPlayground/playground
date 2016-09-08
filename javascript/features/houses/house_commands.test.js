@@ -4,6 +4,7 @@
 
 const Economy = require('features/economy/economy.js');
 const HouseCommands = require('features/houses/house_commands.js');
+const HouseExtension = require('features/houses/house_extension.js');
 const HouseManager = require('features/houses/house_manager.js');
 const HouseSettings = require('features/houses/house_settings.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
@@ -746,6 +747,85 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
         const vehicle = location.settings.vehicles.get(parkingLot);
         assert.equal(vehicle.modelId, 411 /* Infernus */);
+    });
+
+    it('should enable house extensions to add options to /house modify', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        await manager.loadHousesFromDatabase();
+        assert.isAbove(manager.locationCount, 0);
+
+        gunther.identify();
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+        gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest location
+
+        const currentLocation = await manager.findClosestLocation(gunther);
+
+        let extensionMenuItemInvoked = false;
+
+        // Create an house extension that adds a menu item to the /house modify command.
+        class MyExtension extends HouseExtension {
+            onHouseModifyCommand(player, location, menu) {
+                assert.equal(location, currentLocation);
+                assert.equal(player, gunther);
+
+                menu.addItem('Force all vehicles to be pink', player => {
+                    assert.equal(player, gunther);
+
+                    extensionMenuItemInvoked = true;
+                });
+            }
+        };
+
+        manager.registerExtension(new MyExtension());
+
+        // Force all vehicles to be pink. There is no further processing after this.
+        gunther.respondToDialog({ listitem: 2 /* All cars must be pink */});
+
+        assert.isTrue(await gunther.issueCommand('/house modify'));
+        assert.isTrue(extensionMenuItemInvoked);
+    });
+
+    it('should enable house extensions to add options to /house settings', async(assert) => {
+        await manager.loadHousesFromDatabase();
+        assert.isAbove(manager.locationCount, 0);
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify({ userId: 42 });
+        gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
+
+        // Wait some ticks to make sure that the permission check has finished.
+        while (!manager.getCurrentHouseForPlayer(gunther) && maxticks --> 0)
+            await Promise.resolve();
+
+        const currentLocation = manager.getCurrentHouseForPlayer(gunther);
+        assert.isNotNull(currentLocation);
+
+        assert.isFalse(currentLocation.isAvailable());
+
+        let extensionMenuItemInvoked = false;
+
+        // Create an house extension that adds a menu item to the /house settings command.
+        class MyExtension extends HouseExtension {
+            onHouseSettingsCommand(player, location, menu) {
+                assert.equal(location, currentLocation);
+                assert.equal(player, gunther);
+
+                menu.addItem('Purchase a cat', '-', player => {
+                    assert.equal(player, gunther);
+
+                    extensionMenuItemInvoked = true;
+                });
+            }
+        };
+
+        manager.registerExtension(new MyExtension());
+
+        // Only purchase a cat, there is no further processing after this.
+        gunther.respondToDialog({ listitem: 4 /* Purchase a cat */});
+
+        assert.isTrue(await gunther.issueCommand('/house settings'));
+        assert.isTrue(extensionMenuItemInvoked);
     });
 
     it('should enable players to sell the houses they own', async(assert) => {

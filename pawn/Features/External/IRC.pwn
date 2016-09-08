@@ -59,6 +59,8 @@ class IRC {
                 m_messageBuffer = "[notconnected] ";
             case AddCommandIrcMessage:
                 m_messageBuffer = "[addcommand] ";
+            case PlayerStatusIrcMessage:
+                m_messageBuffer = "[me]";
             default:
                 m_messageBuffer = "[unknown] ";
         }

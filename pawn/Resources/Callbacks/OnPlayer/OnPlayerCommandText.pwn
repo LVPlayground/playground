@@ -89,8 +89,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     if (Annotation::ProcessCommand(cmd, playerid, cmdtext[idx]) == 1)
         return 1;
 
-    new moneys;
-
 #if BETA_TEST == 1
         if(!strcmp(cmdtext, "/vehid", true))
         {
@@ -1066,72 +1064,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         return 1;
     }
 
-    if(strcmp(cmd, "/borrow", true) == 0){
-
-        new tmp[256]
-           ,maxAvailableLoan = 500000;
-        tmp = strtok(cmdtext, idx);
-
-        if(!tmp[0]) {
-            SendClientMessage(playerid, Color::White, "Usage: /borrow [amount]");
-            return 1;
-        }
-
-        moneys = strval(tmp);
-
-        if( moneys < 0 )
-        {
-            ShowBoxForPlayer(playerid, "You can't borrow a negative amount of money!");
-            return 1;
-        }
-
-        if( moneys < 100)
-        {
-            ShowBoxForPlayer(playerid, "You have to borrow at least $100!");
-            return 1;
-        }
-
-        if( moneys == 0 ){
-            moneys = maxAvailableLoan - iLoan[playerid];
-        }
-
-        if( iLoan[playerid] >= maxAvailableLoan ){
-            ShowBoxForPlayer(playerid, "You have already borrowed 500.000 dollar!");
-            return 1;
-        }
-
-        if( ( iLoan[playerid] + moneys ) > maxAvailableLoan )
-        {
-
-            new amountUntilLimit = maxAvailableLoan - iLoan[playerid];
-
-            format(string, sizeof(string), "You can borrow $%d before you reach your limit!", amountUntilLimit);
-            ShowBoxForPlayer(playerid, string);
-            return 1;
-        }
-
-        if(iLoan[playerid] > 0 && iLoanPercent[playerid] != bankRente){
-            format(string,sizeof(string), "The interest rate of your loan has changed to %d%%.",bankRente);
-            ShowBoxForPlayer(playerid, string);
-        }
-
-        GivePlayerMoney(playerid, moneys);  // /borrow
-        iLoan[playerid] += moneys;
-        iLoanPercent[playerid] = bankRente;
-
-        new name[24];
-        GetPlayerName(playerid, name, 24);
-
-        format(string, sizeof(string), "You have borrowed $%d at this moment,", iLoan[playerid]);
-        SendClientMessage(playerid, Color::Red, string );
-        format(string, sizeof(string), "at an interest of %d percent per minute.", iLoanPercent[playerid]);
-        SendClientMessage(playerid, Color::Red, string);
-        return 1;
-
-    }
-
-    if(strcmp(cmd, "/locations", true) == 0)
-    {
+    if (strcmp(cmd, "/locations", true) == 0) {
         SendClientMessage(playerid, Color::Green, "Taxi locations:");
         SendClientMessage(playerid, COLOR_ORANGE, "0: Pirate Ship    1: Police Station    2: LV Airport");
         SendClientMessage(playerid, COLOR_ORANGE, "3: Mount Chiliad  4: Ammu-Nation  5: Area 69");
@@ -1144,18 +1077,17 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         return 1;
     }
 
-    if(strcmp(cmd, "/me", true) == 0 ){
-        new tmp[256];
-        tmp = strtok(cmdtext, idx);
+    if (strcmp(cmd, "/me", true) == 0) {
+        new message[128];
+        message = strtok(cmdtext, idx);
 
         if (MuteManager->isMuted(playerid)) {
-            ShowBoxForPlayer(playerid, "You can't use this command whilst being muted.");
+            SendClientMessage(playerid, Color::Error, "Error: You can't use this command whilst being muted.");
             return 1;
         }
 
-        if(!tmp[0])
-        {
-            SendClientMessage(playerid, Color::White, "Usage: /me [message]");
+        if (!strlen(message)) {
+            SendClientMessage(playerid, Color::Information, "Usage: /me [message]");
             return 1;
         }
 
@@ -1164,93 +1096,111 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        new name[32];
-        GetPlayerName(playerid, name, 32);
+        SetPlayerChatBubble(playerid, right(cmdtext, (strlen(cmdtext)-4)), ColorManager->playerColor(playerid), 50, 10*1000);
 
-        new color = ColorManager->playerColor(playerid);
-
-        format(string,256,"[me] %d %s %s",playerid, name, right(cmdtext,(strlen(cmdtext)-4)));
-        AddEcho(string);
-
-        format(string,sizeof(string), "* %s %s", name, right(cmdtext,(strlen(cmdtext)-4)));
-
-        SetPlayerChatBubble(playerid, right(cmdtext,(strlen(cmdtext)-4)), color, 50, 10*1000);
-
-        new iMyWorld = GetPlayerVirtualWorld( playerid );
-
-        for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-        {
-            if (!IsPlayerConnected( i ))
+        format(string, sizeof(string), "* %s %s", Player(playerid)->nicknameString(), right(cmdtext, (strlen(cmdtext)-4)));
+        for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
+            if (!Player(subjectId)->isConnected() || g_Ignore[subjectId][playerid] == true)
                 continue;
 
-            if (g_Ignore[ i ][ playerid ] == true)
+            if (GetPlayerVirtualWorld(subjectId) != GetPlayerVirtualWorld(playerid)
+                && (!PlayerSettings(subjectId)->isAllVirtualWorldChatEnabled() || !Player(subjectId)->isAdministrator()))
                 continue;
 
-            if (GetPlayerVirtualWorld(i) != iMyWorld && (PlayerSettings(i)->isAllVirtualWorldChatEnabled() == false
-                || Player(i)->isAdministrator() == false))
-                continue;
-
-            SendClientMessage(i, color, string);
+            SendClientMessage(subjectId, ColorManager->playerColor(playerid), string);
         }
 
-        return 1;
+        format(string, sizeof(string), "%d %s %s", playerid, Player(playerid)->nicknameString(), right(cmdtext, (strlen(cmdtext)-4)));
+        IRC->broadcast(PlayerStatusIrcMessage, string);
 
+        return 1;
     }
 
-    if(strcmp(cmd, "/payoff", true) == 0) {
+    if (strcmp(cmd, "/borrow", true) == 0) {
+        new amount[128], maxAvailableLoan = 500000;
+        amount = strtok(cmdtext, idx);
 
-        new tmp[256];
-        tmp = strtok(cmdtext, idx);
-
-        if(!tmp[0]) 
-        format(tmp,sizeof(tmp),"%d",iLoan[playerid]);
-
-        moneys = strval(tmp);
-
-        // hebben we wel een lening?
-        if( iLoan[playerid] == 0 )
-        {
-            ShowBoxForPlayer(playerid, "You don't have a loan!");
+        if (!strlen(amount)) {
+            SendClientMessage(playerid, Color::Information, "Usage: /borrow [amount]");
             return 1;
         }
 
-        // minder dan 1 dollar aflossen?
-        if( moneys < 1 )
-        {
-            ShowBoxForPlayer(playerid, "You have to pay off a minimum of 1 dollar!");
+        new cashAmount = strval(amount);
+        if (cashAmount < 100) {
+            SendClientMessage(playerid, Color::Error, "Error: Borrow $100 or more.");
             return 1;
         }
 
-        // Meer dan wat je bezit aflossen?
-        if( GetPlayerMoney(playerid) < 0 )
-        {
-            ShowBoxForPlayer(playerid, "You can't pay off a loan with money which isn't yours!");
+        if (iLoan[playerid] >= cashAmount){
+            format(string, sizeof(string), "Error: You've already borrowed $%s, use /payoff first.", formatPrice(maxAvailableLoan));
+            SendClientMessage(playerid, Color::Error, string);
             return 1;
         }
 
-        if( GetPlayerMoney(playerid) < moneys ){
-            moneys = GetPlayerMoney(playerid);
-        }
-        // meer dan de lening aflossen?
-        if( moneys > iLoan[playerid] )
-        moneys = iLoan[playerid];
-
-
-        GivePlayerMoney(playerid, 0-moneys);  // /payoff
-        iLoan[playerid] = iLoan[playerid] - moneys;
-
-        if( iLoan[playerid] == 0 ) 
-        {
-            ShowBoxForPlayer(playerid, "Your loan is paid off!");
+        if ((iLoan[playerid] + cashAmount) > maxAvailableLoan) {
+            new amountUntilLimit = maxAvailableLoan - iLoan[playerid];
+            format(string, sizeof(string), "Error: You can borrow $%s before you reach the limit of $%s.",
+                formatPrice(amountUntilLimit), formatPrice(maxAvailableLoan));
+            SendClientMessage(playerid, Color::Error, string);
             return 1;
         }
-        else{
-            format(string, sizeof(string), "Your outstanding loan is $%s (%d percent interest).", formatPrice(iLoan[playerid]), iLoanPercent[ playerid ]);
-            ShowBoxForPlayer(playerid, string );
+
+        if (iLoan[playerid] > 0 && iLoanPercent[playerid] != bankRente){
+            format(string, sizeof(string), "Notice: The interest rate of your loan has changed from %d to %d percent.",
+                iLoanPercent[playerid], bankRente);
+            SendClientMessage(playerid, Color::Information, string);
+        }
+
+        GivePlayerMoney(playerid, cashAmount);
+        iLoan[playerid] += cashAmount;
+        iLoanPercent[playerid] = bankRente;
+
+        format(string, sizeof(string), "Success: You have borrowed $%s, at an interest of %d percent per minute.",
+            formatPrice(iLoan[playerid]), iLoanPercent[playerid]);
+        SendClientMessage(playerid, Color::Success, string);
+
+        return 1;
+    }
+
+    if (strcmp(cmd, "/payoff", true) == 0) {
+        new amount[128];
+        amount = strtok(cmdtext, idx);
+
+        if (iLoan[playerid] == 0) {
+            SendClientMessage(playerid, Color::Error, "Error: You don't have a loan, use /borrow first.");
+            return 1;
+        }
+
+        if (!strlen(amount)) 
+            format(amount, sizeof(amount), "%d", iLoan[playerid]);
+
+        new cashAmount = strval(amount);
+        if (cashAmount < 100) {
+            SendClientMessage(playerid, Color::Error, "Error: You have to pay off a minimum of $100.");
+            return 1;
+        }
+
+        if (GetPlayerMoney(playerid) < cashAmount) {
+            SendClientMessage(playerid, Color::Error, "Error: Insufficient funds to carry out this transaction.");
+            return 1;
+        }
+
+        if (cashAmount > iLoan[playerid])
+            cashAmount = iLoan[playerid];
+
+
+        GivePlayerMoney(playerid, -cashAmount);
+        iLoan[playerid] -= cashAmount;
+
+        if (iLoan[playerid] == 0)
+            SendClientMessage(playerid, Color::Success, "Success: Your loan is paid off.");
+        else {
+            SendClientMessage(playerid, Color::Success, "Success: Your loan is partly paid off.");
+            format(string, sizeof(string), " Your outstanding loan is $%s (%d percent interest).", formatPrice(iLoan[playerid]), iLoanPercent[playerid]);
+            SendClientMessage(playerid, Color::Information, string);
         }
 
         return 1;
-
     }
 
     if (strcmp(cmd, "/admins", true) == 0) {
@@ -1258,12 +1208,12 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         new message[128], crewCount = 0, playerLevel[30];
         for (new player = 0; player <= PlayerManager->highestPlayerId(); player++) {
-            if (Player(player)->isConnected() == false) continue;
-            if (Player(player)->isAdministrator() == false) continue;
+            if (!Player(player)->isConnected()) continue;
+            if (!Player(player)->isAdministrator()) continue;
 
-            if (Player(player)->isAdministrator() == true && Player(player)->isManagement() == false)
+            if (Player(player)->isAdministrator() && !Player(player)->isManagement())
                 format(playerLevel, sizeof(playerLevel), "Administrator");
-            else if (Player(player)->isManagement() == true)
+            else if (Player(player)->isManagement())
                 format(playerLevel, sizeof(playerLevel), "Manager");
 
             // Format the message for any general player.
@@ -1272,14 +1222,14 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
             // If the user was temp'd, show admins who temp'd the player.
             if (tempLevel[player] == 1 || tempLevel[player] == 2) {
-                if (Player(playerid)->isAdministrator() == true)
+                if (Player(playerid)->isAdministrator())
                     format(message, sizeof(message), " %s {CCCCCC}(temp'd by %s){FFFFFF} (Id:%d) - {FF8E02}%s",
                         Player(player)->nicknameString(), UserTemped[player], player, playerLevel);
             }
 
             // If a player is undercover, show this to other admins.
-            if (UndercoverAdministrator(player)->isUndercoverAdministrator() == true) {
-                if (Player(playerid)->isAdministrator() == true) {
+            if (UndercoverAdministrator(player)->isUndercoverAdministrator()) {
+                if (Player(playerid)->isAdministrator()) {
                     new originalUsername[MAX_PLAYER_NAME+1];
                     UndercoverAdministrator(player)->getOriginalUsername(originalUsername, sizeof(originalUsername));
                     format(playerLevel, sizeof(playerLevel), "Undercover %s",
@@ -1287,7 +1237,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
                     format(message, sizeof(message), " %s {CCCCCC}(%s){FFFFFF} (Id:%d) - {FF8E02}%s",
                         Player(player)->nicknameString(), originalUsername, player, playerLevel);
-                } else continue;
+                } else
+                    continue;
             }
 
             SendClientMessage(playerid, Color::Information, message);
@@ -1295,338 +1246,205 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         }
 
         if (crewCount == 0)
-            SendClientMessage(playerid, Color::Information, " There is currently no crew online!");
+            SendClientMessage(playerid, Color::Information, " There is currently no crew ingame.");
 
         return 1;
     }
 
-    // The /regular command shows a bunch of options for regular
-    // players. Extra commands and stuff, that, or the time left
-    // to go for people who aren't regulars yet.
-    if (strcmp( cmd, "/regular", true) == 0) {
-        if (Player(playerid)->isRegular() == false) {
-            if (Player(playerid)->isRegistered() == false) {
-                SendClientMessage( playerid, Color::White, "Please register on www.sa-mp.nl before");
-                SendClientMessage( playerid, Color::White, "even thinking about access to regular commands ;)" );
-                return 1;
-            }
-            else
-            {
-                format( string, sizeof( string ), "You have %d hours to go before you become a regular!", ( Player::RegularHours - gameplayhours[ playerid ] ) );
-                ShowBoxForPlayer(playerid, string);
-                return 1;
-            }
+    if (strcmp(cmd, "/cardive", true) == 0) {
+        if (Time->currentTime() - iDiveTime[playerid] < 1*60 && !Player(playerid)->isAdministrator()) {
+            SendClientMessage(playerid, Color::Error, "Error: You can use this command once every 3 minutes.");
+            return 1;
         }
 
-        // Now just send an overview of commands for the player.
-        SendClientMessage( playerid, COLOR_YELLOW, "Available regular commands" );
-        SendClientMessage( playerid, Color::White, "/regular /settings" );
+        if (DamageManager(playerid)->isPlayerFighting()) {
+            SendClientMessage(playerid, Color::Error, "Error: You can't use this command because you have recently been in a gun fight.");
+            return 1;
+        }
+
+        if (IsPlayerInMinigame(playerid)) {
+            SendClientMessage(playerid, Color::Error, "Error: You can't use this command during a minigame.");
+            return 1;
+        }
+
+        if (GetPlayerInterior(playerid) != 0 || iPlayerInVipRoom[playerid]) {
+            SendClientMessage(playerid, Color::Error, "Error: You can't use this command in interiors.");
+            return 1;
+        }
+
+        if (GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
+            SendClientMessage(playerid, Color::Error, "Error: You need to be driving a vehicle to execute this command.");
+            return 1;
+        }
+
+        new const usagePrice = GetEconomyValue(CarDiveCommand);
+        if (GetPlayerMoney(playerid) < usagePrice && !Player(playerid)->isAdministrator()) {
+            format(string, sizeof(string), "Error: Insufficient funds, you'll need: $%s.", formatPrice(usagePrice));
+            SendClientMessage(playerid, Color::Error, string);
+            return 1;
+        }
+
+        new vehicleId = GetPlayerVehicleID(playerid), Float: position[3];
+        GetVehiclePos(vehicleId, position[0], position[1], position[2]);
+        if ((position[2]+500) > 650)
+            position[2] = 0;
+
+        ClearPlayerMenus(playerid);
+        SetVehiclePos(vehicleId, position[0], position[1], position[2]+500);
+
+        TakeRegulatedMoney(playerid, CarDiveCommand);
+        iDiveTime[playerid] = Time->currentTime();
+
+        format(string, sizeof(string), "%s (Id:%d) has used /cardive.", Player(playerid)->nicknameString(), playerid);
+        Admin(playerid, string);
 
         return 1;
     }
 
-    if(strcmp(cmd, "/cardive", true) == 0 )
-    {
-        if(DamageManager(playerid)->isPlayerFighting() == true)
-        {
-            SendClientMessage(playerid,Color::Red,"You cannot cardive at the moment because you have recently been in a gun fight.");
+    if (strcmp(cmd, "/dive", true) == 0) {
+        if (Time->currentTime() - iDiveTime[playerid] < 1*60 && !Player(playerid)->isAdministrator()) {
+            SendClientMessage(playerid, Color::Error, "Error: You can use this command once every 3 minutes.");
             return 1;
         }
 
-        new const price = GetEconomyValue(CarDiveCommand);
-
-        if( GetPlayerMoney( playerid ) >= price || Player(playerid)->isAdministrator()){
-
-            new Float:x;
-            new Float:y;
-            new Float:z;
-
-            new pid = playerid;
-
-            if(Player(playerid)->isAdministrator() == true){
-                new tmp[256];
-                tmp = strtok(cmdtext, idx);
-                if(tmp[0]){
-                    if(IsNumeric(tmp))
-                    pid = strval(tmp);
-                    else
-                    pid = GetPlayerId(tmp);
-
-                    if(!Player(pid)->isConnected()){
-                        format(string,sizeof(string), "The requested player (ID:%d) is not present!", pid);
-                        SendClientMessage(playerid, Color::Red, string);
-                        return 1;
-                    }
-                }
-            }
-
-            if(Time->currentTime() - iDiveTime[playerid] > 1*60 || Player(playerid)->isAdministrator())
-            {
-
-                if(IsPlayerInAnyVehicle(pid) == 1)
-                {
-
-                    if(GetPlayerState(playerid) == PLAYER_STATE_PASSENGER && Player(playerid)->isAdministrator() == false)
-                    {
-                        SendClientMessage(playerid, Color::Red, "Only the driver can do this!");
-                        return 1;
-                    }
-
-                    if (Player(playerid)->isAdministrator() == false)
-                        TakeRegulatedMoney(playerid, CarDiveCommand);
-
-                    new vehicleID;
-                    vehicleID = GetPlayerVehicleID(pid);
-                    GetPlayerPos(pid, x, y, z);
-                    iDiveTime[playerid] = Time->currentTime();
-                    if( (z+500) > 650 )
-                    z = 150;
-                    SetVehiclePos(vehicleID, x,y,z+500);
-                    ClearPlayerMenus(playerid);
-
-                    GameTextForPlayer(pid, "Jump!!!", 2000, 5 );
-
-                    new name[24];
-                    if(pid != playerid)
-                    {
-                        new name2[24];
-                        GetPlayerName(playerid, name, 24);
-                        GetPlayerName(pid, name2, 24);
-                        if(strcmp(name2,"Peter",true) != 0)
-                        format(string,sizeof(string),"%s (Id:%d) has forced a cardive on %s (Id:%d).", name, playerid, name2, pid);
-                        Admin(playerid, string);
-                    }
-                    else
-                    {
-                        GetPlayerName(playerid, name, 24);
-                        format(string,sizeof(string),"%s (Id:%d) did a cardive.", name, playerid);
-                        Admin(playerid, string);
-                    }
-                    return 1;
-                }
-                else 
-                {
-                    SendClientMessage(playerid, 0xAA3333AA, "You've to be in a car to use this command!");
-                    return 1;
-                }
-            }
-            else 
-            {
-                SendClientMessage(playerid,Color::Red, "You can only cardive once every 3 minutes");
-                return 1;
-            }
-        }
-        else 
-        {
-            format(string, sizeof(string), "You don't have enough cash ($%s).", formatPrice(price));
-            SendClientMessage(playerid, Color::Red, string);
-            return 1;
-        }
-    }
-
-    if(strcmp(cmd, "/dive", true) == 0 )
-    {
-        if(DamageManager(playerid)->isPlayerFighting() == true)
-        {
-            SendClientMessage(playerid, Color::Red, "You cannot dive at the moment because you have recently been in a gun fight.");
+        if (DamageManager(playerid)->isPlayerFighting()) {
+            SendClientMessage(playerid, Color::Error, "Error: You can't use this command because you have recently been in a gun fight.");
             return 1;
         }
 
-        if(iPlayerInVipRoom[playerid])
-        {
-            SendClientMessage(playerid, Color::Red, "You cannot dive out of the VIP room.");
+        if (IsPlayerInMinigame(playerid)) {
+            SendClientMessage(playerid, Color::Error, "Error: You can't use this command during a minigame.");
             return 1;
         }
 
-        if (IsPlayerInMinigame(playerid))
-        {
-            SendClientMessage(playerid,Color::Red, "You cannot use /dive when you're playing a minigame.");
+        if (GetPlayerInterior(playerid) != 0 || iPlayerInVipRoom[playerid]) {
+            SendClientMessage(playerid, Color::Error, "Error: You can't use this command in interiors.");
             return 1;
         }
 
-        new Interior = GetPlayerInterior( playerid );
-        new Float:fX, Float:fY, Float:fZ;
-        GetPlayerPos( playerid, fX, fY, fZ );
-        if (Interior != 0)
-        {
-            SendClientMessage( playerid, Color::Red, "You cannot teleport in interiors!" );
+        new const usagePrice = GetEconomyValue(DiveCommand);
+        if (GetPlayerMoney(playerid) < usagePrice && !Player(playerid)->isAdministrator()) {
+            format(string, sizeof(string), "Error: Insufficient funds, you'll need: $%s.", formatPrice(usagePrice));
+            SendClientMessage(playerid, Color::Error, string);
             return 1;
         }
 
-        if (GetPlayerSpecialAction( playerid ) == SPECIAL_ACTION_USECELLPHONE)
-        {
-            SendClientMessage( playerid, Color::Red, "You cannot dive when you're on the phone!" );
-            return 1;
-        }
+        GiveWeapon(playerid, WEAPON_PARACHUTE, 1);
 
-        new const price = GetEconomyValue(DiveCommand);
+        new Float: position[3];
+        GetPlayerPos(playerid, position[0], position[1], position[2]);
+        if ((position[2]+500) > 650)
+            position[2] = 0;
 
-        if( GetPlayerMoney( playerid ) < price && Player(playerid)->isAdministrator() == false)
-        {
-            format(string, sizeof(string), "You don't have enough cash ($%s dollar).", formatPrice(price));
-            SendClientMessage(playerid, Color::Red, string);
-            return 1;
-        }
-
-        if( Time->currentTime() - iDiveTime[playerid] < 1*60 && Player(playerid)->isAdministrator() == false)
-        {
-            SendClientMessage(playerid,Color::Red, "You can only dive once every 3 minutes");
-            return 1;
-        }
+        ClearPlayerMenus(playerid);
+        SetPlayerPos(playerid, position[0], position[1], position[2]+500);
 
         TakeRegulatedMoney(playerid, DiveCommand);
-
-        GiveWeapon(playerid, 46, 0 );
-        GetPlayerPos(playerid, fX, fY, fZ );
         iDiveTime[playerid] = Time->currentTime();
-        if( (fZ+500) > 650 )
-        fZ = 0;
-        ClearPlayerMenus(playerid);
-        SetPlayerPos(playerid, fX, fY, fZ+500);
 
-        GameTextForPlayer(playerid, "Jump!!!", 2000, 5 );
-
-       new adminNotice[128], sPlayerName[MAX_PLAYER_NAME+1];
-        GetPlayerName(playerid, sPlayerName, sizeof(sPlayerName));
-        format(adminNotice, sizeof(adminNotice), "%s (Id:%d) has used /dive.", sPlayerName, playerid);
-        Admin(playerid, adminNotice);
+        format(string, sizeof(string), "%s (Id:%d) has used /dive.", Player(playerid)->nicknameString(), playerid);
+        Admin(playerid, string);
 
         return 1;
     }
 
-    if(strcmp(cmd, "/wanted", true) == 0)
-    {
-        WantedLevel__OnPlayerCommandText (playerid);
+    if (strcmp(cmd, "/wanted", true) == 0) {
+        WantedLevel__OnPlayerCommandText(playerid);
         return 1;
     }
 
-    if( strcmp( cmd, "/givecash", true) == 0 )
-    {
-        new iTmp[ 256 ], iGivePlayerID;
-        iTmp = strtok(cmdtext, idx);
+    if (strcmp(cmd, "/givecash", true) == 0) {
+        new subject[MAX_PLAYER_NAME+1], subjectId, amount[128];
+        subject = strtok(cmdtext, idx);
 
-        if( !strlen( iTmp ) )
-        {
-            SendClientMessage( playerid, Color::White, "Usage: /givecash [player] [amount]");
+        if (!strlen(subject)) {
+            SendClientMessage(playerid, Color::Information, "Usage: /givecash [player] [amount]");
             return 1;
         }
 
-        if( IsNumeric( iTmp ) )
-        {
-            iGivePlayerID = strval( iTmp );
-        }
+        if (IsNumeric(subject))
+            subjectId = strval(subject);
         else
-        {
-            iGivePlayerID = GetPlayerId( iTmp );
+            subjectId = GetPlayerId(subject);
 
-            if( iGivePlayerID == Player::InvalidId )
-            {
-                format(string,sizeof(string), "Player '%s' is not connected.", iTmp);
-                SendClientMessage(playerid, Color::Red, string);
-                return 1;
-            }
-        }
-
-        iTmp = strtok(cmdtext, idx);
-
-        if( !strlen( iTmp ) )
-        {
-            SendClientMessage( playerid, Color::White, "Usage: /givecash [player] [amount]");
+        if (subjectId == Player::InvalidId || !Player(subjectId)->isConnected()) {
+            SendClientMessage(playerid, Color::Error, "Error: This player is not connected.");
             return 1;
         }
 
-        new iMoney = strval( iTmp );
-
-        if ( !IsPlayerConnected( iGivePlayerID ) )
-        {
-            format(string, sizeof(string), "%d is not an active player.", iGivePlayerID);
-            SendClientMessage(playerid, COLOR_YELLOW, string);
+        amount = strtok(cmdtext, idx);
+        if (!strlen(amount)) {
+            SendClientMessage(playerid, Color::Information, "Usage: /givecash [player] [amount]");
             return 1;
         }
 
-        if(IsPlayerInMinigame(iGivePlayerID))
-        {
-            SendClientMessage(playerid,Color::Red,"* You can't transfer money to a player who is taking part in a minigame.");
+        if (IsPlayerInMinigame(subjectId)) {
+            SendClientMessage(playerid, Color::Error, "Error: You can't transfer money to a player who is taking part in a minigame.");
             return 1;
         }
 
-        if(iMoney <= 0)
-        {
-            SendClientMessage( playerid, Color::Red, "Error: A minimum of $1 is required." );
+        new const cashAmount = strval(amount);
+        if (cashAmount <= 0) {
+            SendClientMessage(playerid, Color::Error, "Error: A minimum of $1 is required.");
             return 1;
         }
 
-        if(GetPlayerMoney( playerid ) < iMoney)
-        {
-            SendClientMessage( playerid, Color::Red, "Error: You have insufficient funds to carry out this transaction." );
+        if (GetPlayerMoney(playerid) < cashAmount) {
+            SendClientMessage(playerid, Color::Red, "Error: Insufficient funds to carry out this transaction.");
             return 1;
         }
 
-        new iGivePlayerName[ 24 ], iSenderName[ 24 ];
-        GetPlayerName( iGivePlayerID, iGivePlayerName, 24);
-        GetPlayerName( playerid, iSenderName, 24);
+        GivePlayerMoney(playerid, -cashAmount);
+        GivePlayerMoney(subjectId, cashAmount);
 
-        GivePlayerMoney( playerid, ( 0 - iMoney ) );  // /givecash (sender)
-        GivePlayerMoney( iGivePlayerID, iMoney );     // /givecash (recipient)
+        format(string, sizeof(string), "Success: You have sent $%s to %s (Id:%d).", formatPrice(cashAmount), Player(subjectId)->nicknameString(), subjectId);
+        SendClientMessage(playerid, Color::Success, string);
 
-        format(string, sizeof(string), "You have sent %s (id: %d), $%d.", iGivePlayerName, iGivePlayerID, iMoney);
-        SendClientMessage(playerid, COLOR_YELLOW, string);
-
-        format(string, sizeof(string), "You have received $%d from %s (id: %d).", iMoney, iSenderName, playerid);
-        SendClientMessage(iGivePlayerID, COLOR_YELLOW, string);
+        format(string, sizeof(string), "Success: You have received $%s from %s (Id:%d).", formatPrice(cashAmount), Player(playerid)->nicknameString(), playerid);
+        SendClientMessage(subjectId, Color::Success, string);
 
         return 1;
     }
 
-    if(strcmp(cmd, "/back", true) == 0 ){
+    if (strcmp(cmd, "/back", true) == 0) {
+        if (GetVehicleModel(GetPlayerVehicleID(playerid)) == 432) {
+            SendClientMessage(playerid, Color::Error, "Error: You can't teleport a Rhino.");
+            return 1;
+        }
 
-        // Lets block Rhino's from being teleported into town.
-        if(GetVehicleModel(GetPlayerVehicleID(playerid)) == 432)
-            return SendClientMessage(playerid, Color::Red, "You can't tow a Rhino!");
+        if (GetVehicleModel(GetPlayerVehicleID(playerid)) == 539) {
+            SendClientMessage(playerid, Color::Error, "Error: You can't teleport a Vortex.");
+            return 1;
+        }
 
-        // Lets also block town for vortexes to prevent the annoying driveby's with it.
-        if(GetVehicleModel(GetPlayerVehicleID(playerid)) == 539)
-            return SendClientMessage(playerid, Color::Red, "You can't teleport a Vortex!");
-
-        if(isInSF[playerid])
-        {
-            if(GetPlayerInterior(playerid) != 0)
-            {
-                SendClientMessage(playerid,Color::Red,"You have to be outside any interior to use this command.");
+        if (isInSF[playerid]) {
+            if (GetPlayerInterior(playerid) != 0 || iPlayerInVipRoom[playerid]) {
+                SendClientMessage(playerid, Color::Error, "Error: You have to be outside any interior to use this command.");
                 return 1;
             }
-
-            if(Time->currentTime() - iTuneTime[playerid] < 15)
-                return SendClientMessage(playerid, Color::Red, "* You have to wait 15 seconds to use this command.");
 
             isInSF[playerid] = false;
-            new mVID = GetPlayerVehicleID(playerid);
-            SetVehiclePos(mVID, 2257.6133,2233.3518,10.4252);
+            new vehicleId = GetPlayerVehicleID(playerid);
+            SetVehiclePos(vehicleId, 2257.6133, 2233.3518, 10.4252);
 
-            SendClientMessage(playerid,Color::White,"* Welcome back to Las Venturas.");
-            return 1;
-        }
+            SendClientMessage(playerid, Color::Success, "Success: Welcome back to Las Venturas!");
+        } else
+            SendClientMessage(playerid, Color::Error, "Error: You have to use /tune before you can use /back.");
 
-        else
-        { // Ironically, this would have worked as is, perfectly, anyway
-            SendClientMessage(playerid, Color::Red, "You have to use /tune before you can use /back!");
-            return 1;
-        }
+        return 1;
     }
 
-    if (strcmp( cmd, "/export", true ) == 0)
-    {
-        CExport__OnCommand( playerid );
+    if (strcmp(cmd, "/export", true) == 0) {
+        CExport__OnCommand(playerid);
         return 1;
     }
 
 
-    if(strcmp(cmd, "/deliver", true) == 0){
+    if (strcmp(cmd, "/deliver", true) == 0) {
         PrepareDelivery(playerid);
         return 1;
     }
 
-    // End of OnPlayerCommandText callback.
-    ShowBoxForPlayer(playerid, "That command was not found. Try /commands.");
+    ShowBoxForPlayer(playerid, "Error: This command does not exist. Try /commands.");
     return 1;
 }

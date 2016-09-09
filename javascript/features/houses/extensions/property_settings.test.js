@@ -32,6 +32,7 @@ describe('PropertySettings', (it, beforeEach) => {
         assert.equal(location.settings.name, 'Guntherplaza');
 
         gunther.respondToDialog({ listitem: SETTINGS_MENU_INDEX }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Change the name */ })).then(
             () => gunther.respondToDialog({ inputtext: 'Gunther Pro Palace' })).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 

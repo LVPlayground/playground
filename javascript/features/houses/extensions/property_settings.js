@@ -4,15 +4,16 @@
 
 const Dialog = require('components/dialogs/dialog.js');
 const HouseExtension = require('features/houses/house_extension.js');
+const Menu = require('components/menu/menu.js');
 const Question = require('components/dialogs/question.js');
 
 // Options for asking the player what their house's name should be.
 const NAME_QUESTION = {
-    question: 'Choose your house\'s name',
+    question: 'Choose the new name',
     message: 'What would you like your house to be named as?',
     constraints: {
         validation: /^[a-zA-Z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð\s,\.'\-~_]{3,32}$/u,
-        explanation: 'The name of your gang must be between 3 and 32 characters long and should ' +
+        explanation: 'The name of your house must be between 3 and 32 characters long and should ' +
                      'not contain very exotic characters.',
 
         abort: 'Sorry, a house must have a valid name!'
@@ -31,17 +32,23 @@ class PropertySettings extends HouseExtension {
     // Adds a menu item to |menu| that enables the player to change the property settings of their
     // house. The updates will be applied through the HouseManager.
     onHouseSettingsCommand(player, location, menu) {
-        menu.addItem('Change the name', location.settings.name, async(player) => {
-            const name = await Question.ask(player, NAME_QUESTION);
-            if (!name)
-                return;  // the player decided to not update the house's name
+        menu.addItem('Property settings', '-', async(player) => {
+            const settingsMenu = new Menu('Select an option', ['Option', 'Current value']);
 
-            await this.manager_.updateHouseSetting(location, 'name', name);
+            settingsMenu.addItem('Change the name', location.settings.name, async(player) => {
+                const name = await Question.ask(player, NAME_QUESTION);
+                if (!name)
+                    return;  // the player decided to not update the house's name
 
-            // Display a confirmation dialog to the player to inform them of their action.
-            await Dialog.displayMessage(player, 'Changing the house\'s name',
-                                        Message.format(Message.HOUSE_SETTINGS_NAME, name),
-                                        'Close' /* leftButton */, '' /* rightButton */);
+                await this.manager_.updateHouseSetting(location, 'name', name);
+
+                // Display a confirmation dialog to the player to inform them of their action.
+                await Dialog.displayMessage(player, 'Changing the house\'s name',
+                                            Message.format(Message.HOUSE_SETTINGS_NAME, name),
+                                            'Close' /* leftButton */, '' /* rightButton */);
+            });
+
+            await settingsMenu.displayForPlayer(player);
         });
     }    
 }

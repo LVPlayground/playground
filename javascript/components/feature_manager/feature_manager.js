@@ -268,9 +268,9 @@ class FeatureManager {
         }
     }
 
-    // Wraps the |featureInstance| into a functional dependency wrapper.
-    wrapInstanceForDependency(featureInstance) {
-        const fn = () => featureInstance;
+    // Creates a dependency wrapper for the feature identified by |feature|.
+    createDependencyWrapperForFeature(feature) {
+        const fn = () => this.loadedFeatures_.get(feature);
 
         // Add methods to the |fn| that would allow reloads of this feature to be observed.
         fn.addReloadObserver = () => true;

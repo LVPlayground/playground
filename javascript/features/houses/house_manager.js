@@ -11,12 +11,15 @@ const HouseParkingLot = require('features/houses/house_parking_lot.js');
 const HouseSettings = require('features/houses/house_settings.js');
 const HouseVehicle = require('features/houses/house_vehicle.js');
 const HouseVehicleController = require('features/houses/house_vehicle_controller.js');
+const MockHouseDatabase = require('features/houses/test/mock_house_database.js');
 
 // The house manager orchestrates all details associated with housing, manages data and responds to
 // player connection and disconnection events.
 class HouseManager {
     constructor(economy, friends, gangs, location) {
-        this.database_ = new HouseDatabase();
+        this.database_ = server.isTest() ? new MockHouseDatabase()
+                                         : new HouseDatabase();
+
         this.dataLoadedPromise_ = new Promise(resolver =>
             this.dataLoadedResolver_ = resolver);
 
@@ -36,6 +39,9 @@ class HouseManager {
 
     // Gets the number of house locations that have been made available.
     get locationCount() { return this.locations_.size; }
+
+    // Gets a promise that is to be resolved when the feature is ready.
+    get ready() { return this.dataLoadedPromise_; }
 
     // ---------------------------------------------------------------------------------------------
 

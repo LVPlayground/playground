@@ -2,40 +2,26 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Economy = require('features/economy/economy.js');
+const createTestEnvironment = require('features/houses/test/test_environment.js');
+
 const HouseExtension = require('features/houses/house_extension.js');
-const HouseManager = require('features/houses/house_manager.js');
 const HouseSettings = require('features/houses/house_settings.js');
-const MockFriends = require('features/friends/test/mock_friends.js');
-const MockGangs = require('features/gangs/test/mock_gangs.js');
-const MockHouseDatabase = require('features/houses/test/mock_house_database.js');
 const MockLocation = require('features/location/test/mock_location.js');
 
-describe('HouseEntranceController', (it, beforeEach, afterEach) => {
+describe('HouseEntranceController', (it, beforeEach) => {
     let friendsFeature = null;  // MockFriends
     let locationFeature = null;  // MockLocation
 
     let manager = null;  // HouseManager
     let controller = null;  // HouseEntranceController
 
-    afterEach(() => manager.dispose());
     beforeEach(async(assert) => {
-        friendsFeature = new MockFriends();
-        locationFeature = new MockLocation();
+        ({ manager } = await createTestEnvironment());
 
-        const friends = server.featureManager.wrapInstanceForDependency(friendsFeature);
-        const gangs = server.featureManager.wrapInstanceForDependency(new MockGangs());
-        const economy = server.featureManager.wrapInstanceForDependency(new Economy());
-        const location = server.featureManager.wrapInstanceForDependency(locationFeature);
-
-        manager = new HouseManager(economy, friends, gangs, location);
-        manager.database_ = new MockHouseDatabase();
+        friendsFeature = server.featureManager.getFeatureForTests('friends');
+        locationFeature = server.featureManager.getFeatureForTests('location');
 
         controller = manager.entranceController_;
-
-        // All tests will depend on the basic house data to be available.
-        await manager.loadHousesFromDatabase();
-        assert.isAbove(manager.locationCount, 0);
     });
 
     it('should allow players to purchase their first house', assert => {

@@ -2,61 +2,38 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Economy = require('features/economy/economy.js');
+const createTestEnvironment = require('features/houses/test/test_environment.js');
+
 const HouseCommands = require('features/houses/house_commands.js');
 const HouseExtension = require('features/houses/house_extension.js');
-const HouseManager = require('features/houses/house_manager.js');
 const HouseSettings = require('features/houses/house_settings.js');
-const MockAnnounce = require('features/announce/test/mock_announce.js');
-const MockFriends = require('features/friends/test/mock_friends.js');
-const MockGangs = require('features/gangs/test/mock_gangs.js');
-const MockHouseDatabase = require('features/houses/test/mock_house_database.js');
-const MockLocation = require('features/location/test/mock_location.js');
-const MockPlayground = require('features/playground/test/mock_playground.js');
 const ParkingLotCreator = require('features/houses/utils/parking_lot_creator.js');
 const PlayerMoneyBridge = require('features/houses/utils/player_money_bridge.js');
 
-describe('HouseCommands', (it, beforeEach, afterEach) => {
-    let access = null;
+describe('HouseCommands', (it, beforeEach) => {
     let commands = null;
     let location = null;
     let manager = null;
     let maxticks = null;
 
-    beforeEach(assert => {
-        const announce = server.featureManager.wrapInstanceForDependency(new MockAnnounce());
-        const friends = server.featureManager.wrapInstanceForDependency(new MockFriends());
-        const gangs = server.featureManager.wrapInstanceForDependency(new MockGangs());
-        const economy = server.featureManager.wrapInstanceForDependency(new Economy());
-        const playground = server.featureManager.wrapInstanceForDependency(new MockPlayground());
+    beforeEach(async(assert) => {
+        ({ commands, manager } = await createTestEnvironment());
 
-        location = server.featureManager.wrapInstanceForDependency(new MockLocation());
+        location = server.featureManager.createDependencyWrapperForFeature('location');
 
-        access = playground().access;
-
-        manager = new HouseManager(economy, friends, gangs, location);
-        manager.database_ = new MockHouseDatabase();
-
-        commands = new HouseCommands(manager, announce, economy, location, playground);
         maxticks = 10;
-    });
-
-    afterEach(() => {
-        if (commands)
-            commands.dispose();
-
-        manager.dispose();
     });
 
     it('should allow for creation of house locations', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
+        const locationCount = manager.locationCount;
 
         gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
         gunther.respondToDialog({ response: 1 /* Yes, confirm creation of the house */ });
 
-        assert.equal(manager.locationCount, 0);
+        assert.equal(manager.locationCount, locationCount);
 
         assert.isTrue(await gunther.issueCommand('/house create'));
 
@@ -65,7 +42,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
             gunther.messages[0].includes(
                 Message.format(Message.HOUSE_ANNOUNCE_CREATED, gunther.name, gunther.id)));
 
-        assert.equal(manager.locationCount, 1);
+        assert.equal(manager.locationCount, locationCount + 1);
     });
 
     it('should prevent houses from being created in residential exclusion zones', async(assert) => {
@@ -85,6 +62,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
     it('should enable management members to override such restrictions', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
+        const locationCount = manager.locationCount;
 
         gunther.identify();
         gunther.level = Player.LEVEL_MANAGEMENT;
@@ -97,13 +75,11 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(await gunther.issueCommand('/house create'));
 
         assert.equal(gunther.messages.length, 1);
-        assert.equal(manager.locationCount, 1);
+        assert.equal(manager.locationCount, locationCount + 1);
     });
 
     it('should issue an error when trying to modify a non-existing house', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-
-        await manager.loadHousesFromDatabase();
 
         gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
@@ -117,8 +93,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     it('should display an identity beam when modifying a nearby house', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const objectCount = server.objectManager.count;
-
-        await manager.loadHousesFromDatabase();
 
         gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
@@ -137,8 +111,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable administrators to remove house locations', async(assert) => {
-        await manager.loadHousesFromDatabase();
-
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const locationCount = manager.locationCount;
         
@@ -157,7 +129,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable administrators to conveniently evict the current owner', async(assert) => {
-        await manager.loadHousesFromDatabase();
         assert.isAbove(manager.locationCount, 0);
 
         const gunther = server.playerManager.getById(0 /* Gunther */);
@@ -184,7 +155,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     it('should enable administrators to add a parking lot', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        await manager.loadHousesFromDatabase();
         assert.isAbove(manager.locationCount, 0);
 
         gunther.identify();
@@ -228,9 +198,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     it('should cancel adding a parking lot when using `/house cancel`', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        await manager.loadHousesFromDatabase();
-        assert.isAbove(manager.locationCount, 0);
-
         gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest location
@@ -251,9 +218,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     it('should fail when trying to remove parking lots when there are none', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        await manager.loadHousesFromDatabase();
-        assert.isAbove(manager.locationCount, 0);
-
         gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest location
@@ -267,9 +231,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
     it('should be able to remove parking lots from a location', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-
-        await manager.loadHousesFromDatabase();
-        assert.isAbove(manager.locationCount, 0);
 
         gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
@@ -305,9 +266,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     it('should cancel removing a parking lot when using `/house cancel`', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        await manager.loadHousesFromDatabase();
-        assert.isAbove(manager.locationCount, 0);
-
         gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest location
@@ -338,10 +296,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
     it('should not allow buying a house when the player is not standing in one', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-
-        await manager.loadHousesFromDatabase();
-        assert.isAbove(manager.locationCount, 0);
-
         gunther.identify();
 
         assert.isTrue(await gunther.issueCommand('/house buy'));
@@ -354,9 +308,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
     it('should not allow buying a house when the player already has one', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-
-        await manager.loadHousesFromDatabase();
-        assert.isAbove(manager.locationCount, 0);
 
         gunther.identify();
         gunther.position = new Vector(200, 250, 300);  // on the nearest location pickup
@@ -376,9 +327,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     it('should not allow buying a house when the balance is not sufficient', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        await manager.loadHousesFromDatabase();
-        assert.isAbove(manager.locationCount, 0);
-
         gunther.identify({ userId: 501 });
         gunther.position = new Vector(200, 250, 300);  // on the nearest location pickup
 
@@ -393,10 +341,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     it('should allow buying a house when all the stars finally align', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 501 });
-
-        await manager.loadHousesFromDatabase();
-        assert.isAbove(manager.locationCount, 0);
-
         gunther.position = new Vector(200, 250, 300);  // on the nearest location pickup
 
         PlayerMoneyBridge.setMockedBalanceForTests(100000);
@@ -436,8 +380,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 42 });
 
-        await manager.loadHousesFromDatabase();
-
         const houses = manager.getHousesForPlayer(gunther);
         assert.equal(houses.length, 1);
 
@@ -455,8 +397,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 42 });
 
-        await manager.loadHousesFromDatabase();
-
         location().toggleInteriorAbuser(gunther, true);
 
         assert.isTrue(await gunther.issueCommand('/house goto'));
@@ -471,8 +411,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         russell.identify({ userId: 1338 });
         russell.level = Player.LEVEL_ADMINISTRATOR;
-
-        await manager.loadHousesFromDatabase();
 
         const houses = manager.getHousesForUser(42 /* Gunther */);
         assert.equal(houses.length, 1);
@@ -500,8 +438,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         russell.identify({ userId: 1338 });
         russell.level = Player.LEVEL_ADMINISTRATOR;
 
-        await manager.loadHousesFromDatabase();
-
         const houses = manager.getHousesForUser(42 /* Gunther */);
         assert.equal(houses.length, 1);
 
@@ -521,8 +457,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         russell.identify({ userId: 1338 });
         russell.level = Player.LEVEL_ADMINISTRATOR;
-
-        await manager.loadHousesFromDatabase();
 
         const houses = manager.getHousesForUser(42 /* Gunther */);
         assert.equal(houses.length, 1);
@@ -548,9 +482,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 42 });
 
-        await manager.loadHousesFromDatabase();
-        assert.isAbove(manager.locationCount, 0);
-
         assert.isTrue(await gunther.issueCommand('/house settings'));
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.HOUSE_SETTINGS_OUTSIDE);
@@ -575,9 +506,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should allow house name to be updated', async(assert) => {
-        await manager.loadHousesFromDatabase();
-        assert.isAbove(manager.locationCount, 0);
-
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 42 });
         gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
@@ -601,9 +529,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should allow house access levels to be updated', async(assert) => {
-        await manager.loadHousesFromDatabase();
-        assert.isAbove(manager.locationCount, 0);
-
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 42 });
         gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
@@ -627,9 +552,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should allow house spawn settings to be updated', async(assert) => {
-        await manager.loadHousesFromDatabase();
-        assert.isAbove(manager.locationCount, 0);
-
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 42 });
         gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
@@ -658,9 +580,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should give players a warning when their house has no parking lots', async(assert) => {
-        await manager.loadHousesFromDatabase();
-        assert.isAbove(manager.locationCount, 0);
-
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 42 });
         gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
@@ -687,9 +606,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable players to purchase vehicles for their house', async(assert) => {
-        await manager.loadHousesFromDatabase();
-        assert.isAbove(manager.locationCount, 0);
-
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 42 });
         gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
@@ -717,9 +633,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable players to sell one of their vehicles', async(assert) => {
-        await manager.loadHousesFromDatabase();
-        assert.isAbove(manager.locationCount, 0);
-
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 42 });
         gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
@@ -751,9 +664,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
 
     it('should enable house extensions to add options to /house modify', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-
-        await manager.loadHousesFromDatabase();
-        assert.isAbove(manager.locationCount, 0);
 
         gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
@@ -787,9 +697,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable house extensions to add options to /house settings', async(assert) => {
-        await manager.loadHousesFromDatabase();
-        assert.isAbove(manager.locationCount, 0);
-
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 42 });
         gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
@@ -829,9 +736,6 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable players to sell the houses they own', async(assert) => {
-        await manager.loadHousesFromDatabase();
-        assert.isAbove(manager.locationCount, 0);
-
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 42 });
         gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
@@ -859,7 +763,7 @@ describe('HouseCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(await gunther.issueCommand('/house'));
 
         commands.dispose();
-        commands = null;
+        commands.dispose = () => {};
 
         assert.isFalse(await gunther.issueCommand('/house'));
     });

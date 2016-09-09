@@ -2,12 +2,15 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const Feature = require('components/feature_manager/feature.js');
 const Gang = require('features/gangs/gang.js');
 
 // Functional mock providing the same public API as the `gangs` feature that can be used by other
 // features that depend on it and would like to test its behaviour.
-class MockGangs {
+class MockGangs extends Feature {
     constructor() {
+        super();
+
         this.gangs_ = {};
     }
 

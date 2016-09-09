@@ -264,7 +264,7 @@ class HouseManager {
     // Returns the location closest to the position of |player|. The |maximumDistance| argument can
     // be provided when it must be within a certain range of the player. Players inside of a house
     // are deliberately not considered to be close to it.
-    async findClosestLocation(player, maximumDistance = null) {
+    async findClosestLocation(player, { maximumDistance = null, ignoreAvailable = false } = {}) {
         await this.dataLoadedPromise_;
 
         const position = player.position;
@@ -273,6 +273,9 @@ class HouseManager {
         let closestDistance = Number.MAX_SAFE_INTEGER;
 
         this.locations_.forEach(location => {
+            if (ignoreAvailable && location.isAvailable())
+                return;
+
             const distance = position.squaredDistanceTo(location.position);
             if (distance > closestDistance)
                 return;

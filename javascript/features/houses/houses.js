@@ -6,6 +6,7 @@ const Feature = require('components/feature_manager/feature.js');
 const HouseCommands = require('features/houses/house_commands.js');
 const HouseManager = require('features/houses/house_manager.js');
 const HouseNatives = require('features/houses/house_natives.js');
+const PropertySettings = require('features/houses/extensions/property_settings.js');
 
 // Houses are points on the map that players may purchase and then call their house. While the
 // house points have to be determined by administrators, players can select their own interior, get
@@ -31,6 +32,8 @@ class Houses extends Feature {
         const playground = this.defineDependency('playground', true /* isFunctional */);
 
         this.manager_ = new HouseManager(economy, friends, gangs, location);
+        this.manager_.registerExtension(new PropertySettings(this.manager_));
+
         this.manager_.loadHousesFromDatabase();
 
         this.commands_ = new HouseCommands(this.manager_, announce, economy, location, playground);

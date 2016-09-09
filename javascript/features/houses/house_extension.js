@@ -34,6 +34,13 @@ class HouseExtension {
     // Called when the |location| is about to be removed by an administrator.
     onLocationRemoved(location) {}
 
+    // ---------------------------------------------------------------------------------------------
+
+    // Callback that exists for testing purposes only. Should not be overridden by extensions.
+    onQuackForTests() {}
+
+    // ---------------------------------------------------------------------------------------------
+
     dispose() {}
 }
 

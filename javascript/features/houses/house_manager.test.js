@@ -69,7 +69,7 @@ describe('HouseManager', (it, beforeEach) => {
         assert.isAbove(manager.locationCount, 0);
 
         const closestLocation =
-            await manager.findClosestLocation(gunther, 40 /* maximumDistance */);
+            await manager.findClosestLocation(gunther, { maximumDistance: 40 });
         assert.isNull(closestLocation);
     });
 
@@ -277,7 +277,7 @@ describe('HouseManager', (it, beforeEach) => {
         let invocationCount = 0;
 
         class MyExtension extends HouseExtension {
-            onQuack() {
+            onQuackForTests() {
                 invocationCount++;
             }
         }
@@ -288,19 +288,19 @@ describe('HouseManager', (it, beforeEach) => {
 
         assert.equal(invocationCount, 0);
 
-        manager.invokeExtensions('onQuack');
+        manager.invokeExtensions('onQuackForTests');
         assert.equal(invocationCount, 1);
 
         manager.registerExtension(extension);
         manager.registerExtension(extension);
         manager.registerExtension(extension);
 
-        manager.invokeExtensions('onQuack');
+        manager.invokeExtensions('onQuackForTests');
         assert.equal(invocationCount, 2);
 
         manager.removeExtension(extension);
 
-        manager.invokeExtensions('onQuack');
+        manager.invokeExtensions('onQuackForTests');
         assert.equal(invocationCount, 2);
     });
 

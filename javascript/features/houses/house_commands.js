@@ -12,23 +12,9 @@ const Menu = require('components/menu/menu.js');
 const ParkingLotCreator = require('features/houses/utils/parking_lot_creator.js');
 const ParkingLotRemover = require('features/houses/utils/parking_lot_remover.js');
 const PlayerMoneyBridge = require('features/houses/utils/player_money_bridge.js');
-const Question = require('components/dialogs/question.js');
 
 // Maximum number of milliseconds during which the identity beam should be displayed.
 const IDENTITY_BEAM_DISPLAY_TIME_MS = 60000;
-
-// Options for asking the player what their house's name should be.
-const NAME_QUESTION = {
-    question: 'Choose your house\'s name',
-    message: 'What would you like your house to be named as?',
-    constraints: {
-        validation: /^[a-zA-Z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð\s,\.'\-~_]{3,32}$/u,
-        explanation: 'The name of your gang must be between 3 and 32 characters long and should ' +
-                     'not contain very exotic characters.',
-
-        abort: 'Sorry, a house must have a valid name!'
-    }
-};
 
 // This class provides the `/house` command available to administrators to manage parts of the
 // Houses feature on Las Venturas Playground. Most interaction occurs through dialogs.
@@ -195,7 +181,7 @@ class HouseCommands {
     // Called when an administrator wants to override the access restrictions to a house and gain
     // entry to it anyway. Only works when they're standing in an entrance point.
     async onHouseEnterCommand(player) {
-        const location = await this.manager_.findClosestLocation(player, 15 /* maximumDistance */);
+        const location = await this.manager_.findClosestLocation(player, { maximumDistance: 15 });
         if (location && !location.isAvailable()) {
             // TODO: Should we announce this to the other administrators? We really need
             // announcement channels to deal with the granularity of messages. (Issue #271.)
@@ -327,7 +313,7 @@ class HouseCommands {
     // house closest to their location, allowing them to, for example, add or remove parking lots.
     async onHouseModifyCommand(player) {
         const closestLocation =
-            await this.manager_.findClosestLocation(player, 15 /* maximumDistance */);
+            await this.manager_.findClosestLocation(player, { maximumDistance: 15 });
 
         if (!closestLocation) {
             player.sendMessage(Message.HOUSE_MODIFY_NONE_NEAR);
@@ -493,19 +479,6 @@ class HouseCommands {
         const accessValue = this.toHouseAccessLabel(location.settings.access);
         const spawnValue = location.settings.isSpawn() ? 'Yes' : 'No';
         const vehicleValue = '{FFFF00}' + location.settings.vehicles.size;
-
-        menu.addItem('Change the name', location.settings.name, async(player) => {
-            const name = await Question.ask(player, NAME_QUESTION);
-            if (!name)
-                return;  // the player decided to not update the house's name
-
-            await this.manager_.updateHouseSetting(location, 'name', name);
-
-            // Display a confirmation dialog to the player to inform them of their action.
-            await Dialog.displayMessage(player, 'Changing the house\'s name',
-                                        Message.format(Message.HOUSE_SETTINGS_NAME, name),
-                                        'Close' /* leftButton */, '' /* rightButton */);
-        });
 
         menu.addItem('Change the access level', accessValue, async(player) => {
             const accessMenu = new Menu('Who should be able to access your house?');

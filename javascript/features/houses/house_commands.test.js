@@ -505,29 +505,6 @@ describe('HouseCommands', (it, beforeEach) => {
         assert.equal(gunther.messages[0], Message.HOUSE_SETTINGS_NOT_OWNER);
     });
 
-    it('should allow house name to be updated', async(assert) => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify({ userId: 42 });
-        gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
-
-        // Wait some ticks to make sure that the permission check has finished.
-        while (!manager.getCurrentHouseForPlayer(gunther) && maxticks --> 0)
-            await Promise.resolve();
-
-        const location = manager.getCurrentHouseForPlayer(gunther);
-        assert.isNotNull(location);
-
-        assert.isFalse(location.isAvailable());
-        assert.equal(location.settings.name, 'Guntherplaza');
-
-        gunther.respondToDialog({ listitem: 0 /* Change the house's name */}).then(
-            () => gunther.respondToDialog({ inputtext: 'Gunther Pro Palace' })).then(
-            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
-
-        assert.isTrue(await gunther.issueCommand('/house settings'));
-        assert.equal(location.settings.name, 'Gunther Pro Palace');
-    });
-
     it('should allow house access levels to be updated', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 42 });
@@ -543,7 +520,7 @@ describe('HouseCommands', (it, beforeEach) => {
         assert.isFalse(location.isAvailable());
         assert.equal(location.settings.access, HouseSettings.ACCESS_FRIENDS);
 
-        gunther.respondToDialog({ listitem: 1 /* Change the house's access level */}).then(
+        gunther.respondToDialog({ listitem: 0 /* Change the house's access level */}).then(
             () => gunther.respondToDialog({ listitem: 0 /* Everybody */  })).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 
@@ -566,13 +543,13 @@ describe('HouseCommands', (it, beforeEach) => {
         assert.isFalse(location.isAvailable());
         assert.isFalse(location.settings.isSpawn());
 
-        gunther.respondToDialog({ listitem: 2 /* Set spawn position at this house */}).then(
+        gunther.respondToDialog({ listitem: 1 /* Set spawn position at this house */}).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 
         assert.isTrue(await gunther.issueCommand('/house settings'));
         assert.isTrue(location.settings.isSpawn());
 
-        gunther.respondToDialog({ listitem: 2 /* Set spawn position at this house */}).then(
+        gunther.respondToDialog({ listitem: 1 /* Set spawn position at this house */}).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 
         assert.isTrue(await gunther.issueCommand('/house settings'));
@@ -598,7 +575,7 @@ describe('HouseCommands', (it, beforeEach) => {
 
         assert.equal(location.parkingLotCount, 0);
 
-        gunther.respondToDialog({ listitem: 3 /* Manage my vehicles */}).then(
+        gunther.respondToDialog({ listitem: 2 /* Manage my vehicles */}).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 
         assert.isTrue(await gunther.issueCommand('/house settings'));
@@ -623,7 +600,7 @@ describe('HouseCommands', (it, beforeEach) => {
         const parkingLot = parkingLots[0];
         assert.isTrue(location.settings.vehicles.has(parkingLot));
 
-        gunther.respondToDialog({ listitem: 3 /* Manage my vehicles */}).then(
+        gunther.respondToDialog({ listitem: 2 /* Manage my vehicles */}).then(
             () => gunther.respondToDialog({ listitem: 0 /* First vehicle in the list */ })).then(
             () => gunther.respondToDialog({ response: 1 /* Yes, remove the vehicle */ })).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
@@ -650,7 +627,7 @@ describe('HouseCommands', (it, beforeEach) => {
         const parkingLot = parkingLots[1];
         assert.isFalse(location.settings.vehicles.has(parkingLot));
 
-        gunther.respondToDialog({ listitem: 3 /* Manage my vehicles */}).then(
+        gunther.respondToDialog({ listitem: 2 /* Manage my vehicles */}).then(
             () => gunther.respondToDialog({ listitem: 1 /* Second vehicle in the list */ })).then(
             () => gunther.respondToDialog({ listitem: 8 /* Purchase an Infernus */ })).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));

@@ -281,10 +281,13 @@ class FeatureManager {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Disposes the feature manager and all features owned by it.
+    // Disposes the feature manager and all features owned by it. The loaded features will be
+    // disposed of in a particular order that will be determined by the dependency graph.
     dispose() {
-        for (const instance of this.loadedFeatures_.values())
-            instance.dispose();
+        for (const feature of this.dependencyGraph_.determineDisposalOrder()) {
+            if (this.loadedFeatures_.has(feature))
+                this.loadedFeatures_.get(feature).dispose();
+        }
 
         this.loadedFeatures_.clear();
         this.loadedFeatures_ = null;

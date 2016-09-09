@@ -38,8 +38,15 @@ class DependencyGraph {
     deleteDependencies(feature) {
         const featureNode = this.features_.get(feature);
 
-        featureNode.functionalDependencies_.clear();
-        featureNode.referenceDependencies_.clear();
+        for (const dependencyName of featureNode.functionalDependencies)
+            this.features_.get(dependencyName).functionalDependents.delete(feature);
+
+        featureNode.functionalDependencies.clear();
+
+        for (const dependencyName of featureNode.referenceDependencies)
+            this.features_.get(dependencyName).referenceDependents.delete(feature);
+
+        featureNode.referenceDependencies.clear();
     }
 
     // Determines whether defining a dependency from |feature| to |dependency| would create a
@@ -69,6 +76,33 @@ class DependencyGraph {
         }
 
         return false;
+    }
+
+    // Determines the order in which the declared features can safely be disposed of. This considers
+    // the graph of dependencies the features have declared among each other, and makes sure that
+    // features don't get disposed before their dependencies do. The time complexity of this method
+    // is O(n^2) in the worst case on the number of loaded features.
+    determineDisposalOrder() {
+        const graph = new Map(this.features_);
+        const disposalList = [];
+
+        while (graph.size) {
+            for (const [feature, node] of graph) {
+                if (node.functionalDependents.size || node.referenceDependents.size)
+                    continue;
+
+                for (const dependencyName of node.functionalDependencies)
+                    graph.get(dependencyName).functionalDependents.delete(feature);
+
+                for (const dependencyName of node.referenceDependencies)
+                    graph.get(dependencyName).referenceDependents.delete(feature);
+
+                disposalList.push(feature);
+                graph.delete(feature);
+            }
+        }
+
+        return disposalList;
     }
 }
 

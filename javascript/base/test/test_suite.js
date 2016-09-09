@@ -36,28 +36,27 @@ class TestSuite {
   // decrease confusion and issues when people write tests.
   *executeTestGenerator() {
     for (let i = 0; i < this.tests_.length; ++i) {
-      let test = this.tests_[i];
-
-      let originalServer = global.server;
-      let carriedException = null;
+      const test = this.tests_[i];
 
       const assert = new Assert(this, test.description);
+      const originalServer = global.server;
 
-      yield new Promise(resolve => {
+      let carriedException = null;
+
+      yield Promise.resolve().then(() => {
         // (1) Install the MockServer as the global `server` object.
         global.server = new MockServer();
 
         // (2) Execute the beforeEach function, which will be considered asynchronous if it returns
         // a promise. Otherwise resolve the preparation step immediately.
         if (this.beforeEach_)
-          resolve(this.beforeEach_(assert));
-        else
-          resolve();
+          return this.beforeEach_(assert);
 
-      }).then((f) => {
+      }).then(() => {
         // (3) Execute the test case itself. This will be considered asynchronous if it returns a
         // promise. A new Assert instance will be created for each test.
         return test.fn(assert);
+
       }).catch(error => {
         // (3b) If the test threw an exception that's different from an AssertionFailedError, it's
         // a problem outside of the test framework that should be displayed consistently.
@@ -78,16 +77,26 @@ class TestSuite {
 
       }).catch(error => {
         // (5) If the afterEach() method threw an exception, store this in |carriedException| unless
-        // the test body itself already threw an exception as well.
+        // the test body itself already threw an exception.
         if (carriedException === null)
           carriedException = error;
 
       }).then(() => {
-        // (6) Dispose the global mocked server, and re-instate the original instance.
+        // (6) Dispose the global mocked server, and re-instate the original instance. This may
+        // throw because the feature can have interacted with one of the managers.
         global.server.dispose();
+
+      }).catch(error => {
+        // (7) If disposing of the environment threw an exception, store this in |carriedException|
+        // unless the test body itself already threw an exception.
+        if (carriedException === null)
+          carriedException = error;
+
+      }).then(() => {
+        // (8) Restore the original value of the |server| global.
         global.server = originalServer;
 
-        // (7) If an exception was thrown, either in the test body, or in the afterEach() method,
+        // (9) If an exception was thrown, either in the test body, or in the afterEach() method,
         // rethrow it now so that this test will be marked as flaky.
         if (carriedException !== null)
           throw carriedException;

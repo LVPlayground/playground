@@ -97,6 +97,8 @@ class MockServer {
 
     // Disposes the MockServer and uninitializes all owned objects.
     dispose() {
+        this.clock_.dispose();
+
         this.featureManager_.dispose();
         this.commandManager_.dispose();
 
@@ -107,8 +109,6 @@ class MockServer {
         this.pickupManager_.dispose();
         this.objectManager_.dispose();
         this.actorManager_.dispose();
-
-        this.clock_.dispose();
     }
 }
 

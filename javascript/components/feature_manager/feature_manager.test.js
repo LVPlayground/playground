@@ -358,4 +358,64 @@ describe('FeatureManager', it => {
         assert.equal(feature.counter, 2);
         assert.equal(counter, 2);
     });
+
+    it('should dispose of features in an order that considers dependencies', assert => {
+        let counter = 0;
+
+        let rootDisposalOrder = 0;
+        let interimDisposalOrder = 0;
+        let topLevelDisposalOrder = 0;
+
+        class MyRootFeature extends Feature {
+            constructor() {
+                super();
+            }
+
+            count() { return ++counter; }
+
+            dispose() {
+                rootDisposalOrder = this.count();
+            }
+        }
+
+        class MyInterimFeature extends Feature {
+            constructor() {
+                super();
+                this.dependency_ = this.defineDependency('root', true /* isFunctional */);
+            }
+
+            count() { return this.dependency_().count(); }
+
+            dispose() {
+                interimDisposalOrder = this.dependency_().count();
+            }
+        }
+
+        class MyTopLevelFeature extends Feature {
+            constructor() {
+                super();
+                this.dependency_ = this.defineDependency('interim', true /* isFunctional */);
+            }
+
+            dispose() {
+                topLevelDisposalOrder = this.dependency_().count();
+            }
+        }
+
+        server.featureManager.registerFeaturesForTests({
+            root: MyRootFeature,
+            interim: MyInterimFeature,
+            topLevel: MyTopLevelFeature
+        });
+
+        server.featureManager.loadFeature('topLevel');
+
+        // Destroy the featureManager and replace its `dispose` method with a placeholder so that
+        // subsequent calls are no-ops, as we can't change the behaviour of the MockServer.
+        server.featureManager.dispose();
+        server.featureManager.dispose = () => {};
+
+        assert.isAbove(rootDisposalOrder, interimDisposalOrder);
+        assert.isAbove(interimDisposalOrder, topLevelDisposalOrder);
+    });
 });

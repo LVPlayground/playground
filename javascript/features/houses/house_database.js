@@ -46,6 +46,7 @@ const LOAD_HOUSES_QUERY = `
         houses_settings.house_name,
         houses_settings.house_access,
         houses_settings.house_spawn_point,
+        houses_settings.house_welcome_message,
         users_gangs.gang_id,
         users.username
     FROM
@@ -142,6 +143,15 @@ const UPDATE_SPAWN_SETTING_QUERY = `
         houses_settings
     SET
         house_spawn_point = ?
+    WHERE
+        house_id = ?`;
+
+// Query for updating the welcome message of a given house.
+const UPDATE_WELCOME_MESSAGE_SETTING_QUERY = `
+    UPDATE
+        houses_settings
+    SET
+        house_welcome_message = ?
     WHERE
         house_id = ?`;
 
@@ -252,6 +262,7 @@ class HouseDatabase {
 
                     access: HouseDatabase.toHouseAccessValue(row.house_access),
                     spawnPoint: !!row.house_spawn_point,
+                    welcomeMessage: row.house_welcome_message,
 
                     vehicles: []
                 });
@@ -321,6 +332,7 @@ class HouseDatabase {
 
             access: HouseSettings.ACCESS_DEFAULT,
             spawnPoint: false,
+            welcomeMessage: '',
 
             vehicles: []
         };
@@ -354,6 +366,13 @@ class HouseDatabase {
             REMOVE_SPAWN_SETTINGS_FOR_USER_QUERY, location.settings.ownerId);
         await server.database.query(
             UPDATE_SPAWN_SETTING_QUERY, spawn ? 1 : 0, location.settings.id);
+    }
+
+    // Updates the welcome message that will be shown to players once they enter the |location|. The
+    // |welcomeMessage| may be an empty string.
+    async updateHouseWelcomeMessage(location, welcomeMessage) {
+        await server.database.query(
+            UPDATE_WELCOME_MESSAGE_SETTING_QUERY, welcomeMessage, location.settings.id);
     }
 
     // Removes the |location| from the database.

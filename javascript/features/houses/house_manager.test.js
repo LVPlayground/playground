@@ -222,6 +222,24 @@ describe('HouseManager', (it, beforeEach) => {
         assert.isFalse(location.settings.isSpawn());
     });
 
+    it('should be possible to update the welcome message for a house', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.position = new Vector(500, 500, 500);
+
+        const location = await manager.findClosestLocation(gunther);
+        assert.isFalse(location.isAvailable());
+
+        assert.equal(location.settings.welcomeMessage, '');
+
+        await manager.updateHouseSetting(location, 'welcome', 'hello, world!');
+
+        assert.equal(location.settings.welcomeMessage, 'hello, world!');
+
+        await manager.updateHouseSetting(location, 'welcome', '');
+
+        assert.equal(location.settings.welcomeMessage, '');
+    });
+
     it('should be able to create and remove vehicles for a house', async(assert) => {
         const serverVehicleCount = server.vehicleManager.count;
 

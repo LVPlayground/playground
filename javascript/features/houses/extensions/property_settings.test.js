@@ -39,4 +39,41 @@ describe('PropertySettings', (it, beforeEach) => {
         assert.isTrue(await gunther.issueCommand('/house settings'));
         assert.equal(location.settings.name, 'Gunther Pro Palace');
     });
+
+    it('should allow house welcome message to be updated', async(assert) => {
+        assert.equal(location.settings.welcomeMessage, '');
+
+        gunther.respondToDialog({ listitem: SETTINGS_MENU_INDEX }).then(
+            () => gunther.respondToDialog({ listitem: 1 /* Change the welcome message */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'OMG Welcome!!?!' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/house settings'));
+        assert.equal(location.settings.welcomeMessage, 'OMG Welcome!!?!');
+
+        gunther.respondToDialog({ listitem: SETTINGS_MENU_INDEX }).then(
+            () => gunther.respondToDialog({ listitem: 1 /* Change the welcome message */ })).then(
+            () => gunther.respondToDialog({ inputtext: '' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/house settings'));
+        assert.equal(location.settings.welcomeMessage, '');
+    });
+
+    it('should display the welcome message when entering ah ouse', async(assert) => {
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.HOUSE_WELCOME, gunther.name));
+
+        gunther.clearMessages();
+
+        location.settings.welcomeMessage = 'Hello, world!';
+
+        manager.forceEnterHouse(gunther, location);
+        manager.forceExitHouse(gunther, location);
+
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(gunther.messages[0],
+                     Message.format(Message.HOUSE_WELCOME_MESSAGE, gunther.name, 'Hello, world!'));
+        assert.equal(gunther.messages[1], Message.format(Message.HOUSE_WELCOME, gunther.name));
+    });
 });

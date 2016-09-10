@@ -12,11 +12,24 @@ const NAME_QUESTION = {
     question: 'Choose the new name',
     message: 'What would you like your house to be named as?',
     constraints: {
-        validation: /^[a-zA-Z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð\s,\.'\-~_]{3,32}$/u,
+        validation: Question.defaultValidation(3, 32),
         explanation: 'The name of your house must be between 3 and 32 characters long and should ' +
                      'not contain very exotic characters.',
 
         abort: 'Sorry, a house must have a valid name!'
+    }
+};
+
+// Options for asking a player what the welcome message for their house should be.
+const WELCOME_MESSAGE_QUESTION = {
+    question: 'Choose the new message',
+    message: 'What would you like your welcome message to be?',
+    constraints: {
+        validation: Question.defaultValidation(0, 100),
+        explanation: 'The welcome message of your house must be at most 100 characters long and ' +
+                     'should not contain very exotic characters.',
+
+        abort: 'Sorry, a house must have a valid welcome message!'
     }
 };
 
@@ -33,9 +46,13 @@ class PropertySettings extends HouseExtension {
     // house. The updates will be applied through the HouseManager.
     onHouseSettingsCommand(player, location, menu) {
         menu.addItem('Property settings', '-', async(player) => {
-            const settingsMenu = new Menu('Select an option', ['Option', 'Current value']);
+            const settingsMenu =
+                new Menu('How to change your property?', ['Setting', 'Current value']);
 
-            settingsMenu.addItem('Change the name', location.settings.name, async(player) => {
+            const nameValue = location.settings.name;
+            const welcomeValue = location.settings.welcomeMessage;
+
+            settingsMenu.addItem('Change the name', nameValue, async(player) => {
                 const name = await Question.ask(player, NAME_QUESTION);
                 if (!name)
                     return;  // the player decided to not update the house's name
@@ -49,9 +66,37 @@ class PropertySettings extends HouseExtension {
                 });
             });
 
+            settingsMenu.addItem('Change the welcome message', welcomeValue, async(player) => {
+                const message = await Question.ask(player, WELCOME_MESSAGE_QUESTION);
+                if (message === null)
+                    return;  // the player decided to not update the house's welcome message
+
+                await this.manager_.updateHouseSetting(location, 'welcome', message);
+
+                // Display a confirmation dialog to the player to inform them of their action.
+                await MessageBox.display(player, {
+                    title: 'The new welcome message has been stored!',
+                    message: Message.HOUSE_SETTINGS_WELCOME_MESSAGE
+                });
+            });
+
             await settingsMenu.displayForPlayer(player);
         });
-    }    
+    }
+
+    // Called when |player| enters the |location|. Displays the welcome message to them when one
+    // has been configured, or a default message otherwise. A separate message will also be shown
+    // when the |player| is the owner of the house.
+    onPlayerEnterHouse(player, location) {
+        const welcomeMessage = location.settings.welcomeMessage;
+        if (welcomeMessage.length) {
+            player.sendMessage(
+                Message.HOUSE_WELCOME_MESSAGE, location.settings.ownerName, welcomeMessage);
+        }
+
+        if (player.userId === location.settings.ownerId)
+            player.sendMessage(Message.HOUSE_WELCOME, player.name);
+    }
 }
 
 exports = PropertySettings;

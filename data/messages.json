@@ -162,7 +162,9 @@
     "HOUSE_SETTINGS_SPAWN_ENABLED": "You will now start spawning at this house.",
     "HOUSE_SETTINGS_VEHICLE_SELL": "Do you want to dispose of the %s you've got parked there?",
     "HOUSE_SETTINGS_VEHICLE_SOLD": "The vehicle has been removed from the parking lot by the city council.",
+    "HOUSE_SETTINGS_WELCOME_MESSAGE": "Your house's welcome message has been updated!",
     "HOUSE_WELCOME": "{10F441}Welcome home, %s! Type `{DDFFDD}/house settings{10F441}` to manage your house.",
+    "HOUSE_WELCOME_MESSAGE": "{10F441}%s{FFFFFF}: %s",
 
     "IRC_CHAT_MESSAGE_SENT": "{33AA33}Message sent to {FFFFFF}%s {33AA33}as {FFFFFF}%s{33AA33}: {FFFFFF}%s",
     

@@ -53,6 +53,7 @@ class MockHouseDatabase {
 
             access: HouseSettings.ACCESS_DEFAULT,
             spawnPoint: false,
+            welcomeMessage: '',
 
             vehicles: [
                 {
@@ -101,6 +102,8 @@ class MockHouseDatabase {
     async updateHouseName(location, name) {}
 
     async updateHouseSpawn(location, spawn) {}
+
+    async updateHouseWelcomeMessage(location, welcomeMessage) {}
 
     async removeLocation(location) {}
 

@@ -38,6 +38,13 @@ class Question {
         return questionInstance.finished;
     }
 
+    // Creates a default validation regular expression for an answer in range of the lengths.
+    static defaultValidation(minimumLength, maximumLength) {
+        return new RegExp('^[a-zA-Z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌ' +
+                          'ÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð!\\?\\s,\\.\'\\-~_]{' + minimumLength +
+                          ',' + maximumLength + '}$', 'u');
+    }
+
     constructor(privateSymbol, player, question, message, leftButton, constraints) {
         if (privateSymbol !== PrivateSymbol)
             throw new TypeError('Illegal constructor. Use the static methods instead.');

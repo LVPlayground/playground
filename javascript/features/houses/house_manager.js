@@ -208,9 +208,10 @@ class HouseManager {
     // Updates the |setting| of the |location| to |value|. The actual application of the setting
     // update is unique to the setting that is being changed. The following settings are available:
     //
-    //     'access' - Updates the access settings for the house.
-    //     'name'   - Updates the name of the house.
-    //     'spawn'  - Updates whether to spawn at the |location|.
+    //     'access'  - Updates the access settings for the house.
+    //     'name'    - Updates the name of the house.
+    //     'spawn'   - Updates whether to spawn at the |location|.
+    //     'welcome' - Updates the welcome message of the house.
     //
     // Updating an invalid setting will yield an exception.
     async updateHouseSetting(location, setting, value) {
@@ -252,8 +253,16 @@ class HouseManager {
                 this.getHousesForUser(location.settings.ownerId).forEach(ownedLocation =>
                     ownedLocation.settings.setSpawn(false));
 
-                // Now update the |location| setting to whatever |value| happens to be.
                 location.settings.setSpawn(value);
+                break;
+
+            case 'welcome':
+                if (typeof value !== 'string' || value.length > 100)
+                    throw new Error('A welcome message must be at most 100 characters in length.');
+
+                await this.database_.updateHouseWelcomeMessage(location, value);
+
+                location.settings.welcomeMessage = value;
                 break;
 
             default:

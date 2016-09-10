@@ -16,6 +16,7 @@ class HouseSettings {
 
         this.access_ = house.access;
         this.spawnPoint_ = house.spawnPoint;
+        this.welcomeMessage_ = house.welcomeMessage;
 
         this.vehicles_ = new Map();
 
@@ -61,6 +62,11 @@ class HouseSettings {
 
     // Updates whether the house should be the spawn point for the owner.
     setSpawn(spawnPoint) { this.spawnPoint_ = spawnPoint; }
+
+    // Gets or sets the welcome message of this house. An empty string will cause a default message
+    // to be shown to entering players instead.
+    get welcomeMessage() { return this.welcomeMessage_; }
+    set welcomeMessage(value) { this.welcomeMessage_ = value; }
 
     // Gets the vehicles that have been created for this house. Mutable mapping from the parkingLot
     // instance associated with the location to the HouseVehicle instance associated with the house.

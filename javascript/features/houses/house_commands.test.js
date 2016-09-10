@@ -389,7 +389,7 @@ describe('HouseCommands', (it, beforeEach) => {
         gunther.respondToDialog({ listitem: 0 /* Select the first house owned by Gunther */ });
 
         assert.isTrue(await gunther.issueCommand('/house goto'));
-        assert.equal(gunther.messages.length, 0);
+        assert.equal(gunther.messages.length, 1);  // welcome message
 
         assert.equal(manager.getCurrentHouseForPlayer(gunther), houses[0]);
         assert.notEqual(gunther.virtualWorld, server.virtualWorldManager.mainWorld);
@@ -429,7 +429,7 @@ describe('HouseCommands', (it, beforeEach) => {
         gunther.respondToDialog({ listitem: 0 /* first owned house */ });
 
         assert.isTrue(await gunther.issueCommand('/house goto ' + gunther.id));
-        assert.equal(gunther.messages.length, 0);
+        assert.equal(gunther.messages.length, 1);  // welcome message
 
         assert.equal(manager.getCurrentHouseForPlayer(gunther), houses[0]);
         assert.notEqual(gunther.virtualWorld, server.virtualWorldManager.mainWorld);

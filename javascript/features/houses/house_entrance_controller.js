@@ -270,10 +270,8 @@ class HouseEntranceController {
             return false;
         }
 
-        if (player.userId == location.settings.ownerId) {
-            player.sendMessage(Message.HOUSE_WELCOME, player.name);
+        if (player.userId == location.settings.ownerId)
             return true;
-        }
 
         let message = null;
 

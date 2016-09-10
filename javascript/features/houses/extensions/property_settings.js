@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Dialog = require('components/dialogs/dialog.js');
 const HouseExtension = require('features/houses/house_extension.js');
 const Menu = require('components/menu/menu.js');
+const MessageBox = require('components/dialogs/message_box.js');
 const Question = require('components/dialogs/question.js');
 
 // Options for asking the player what their house's name should be.
@@ -43,9 +43,10 @@ class PropertySettings extends HouseExtension {
                 await this.manager_.updateHouseSetting(location, 'name', name);
 
                 // Display a confirmation dialog to the player to inform them of their action.
-                await Dialog.displayMessage(player, 'Changing the house\'s name',
-                                            Message.format(Message.HOUSE_SETTINGS_NAME, name),
-                                            'Close' /* leftButton */, '' /* rightButton */);
+                await MessageBox.display(player, {
+                    title: 'The new name has been stored!',
+                    message: Message.format(Message.HOUSE_SETTINGS_NAME, name)
+                });
             });
 
             await settingsMenu.displayForPlayer(player);

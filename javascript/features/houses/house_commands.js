@@ -9,6 +9,7 @@ const IdentityBeam = require('features/houses/utils/identity_beam.js');
 const InteriorList = require('features/houses/utils/interior_list.js');
 const InteriorSelector = require('features/houses/utils/interior_selector.js');
 const Menu = require('components/menu/menu.js');
+const MessageBox = require('components/dialogs/message_box.js');
 const ParkingLotCreator = require('features/houses/utils/parking_lot_creator.js');
 const ParkingLotRemover = require('features/houses/utils/parking_lot_remover.js');
 const PlayerMoneyBridge = require('features/houses/utils/player_money_bridge.js');
@@ -113,9 +114,10 @@ class HouseCommands {
             Message.HOUSE_ANNOUNCE_PURCHASED, player.name, player.id, interior.price);
 
         // Display a confirmation dialog to the player to inform them of their action.
-        await Dialog.displayMessage(player, 'Congratulations on your purchase!',
-                                    Message.format(Message.HOUSE_BUY_CONFIRMED),
-                                    'Close' /* leftButton */, '' /* rightButton */);
+        await MessageBox.display(player, {
+            title: 'Congratulations on your purchase!',
+            message: Message.HOUSE_BUY_CONFIRMED
+        });
     }
 
     // Called when a |player| types the `/house cancel` command in response to an interactive
@@ -173,9 +175,10 @@ class HouseCommands {
             Message.HOUSE_ANNOUNCE_CREATED, player.name, player.id);
 
         // Display a confirmation dialog to the player to inform them of their action.
-        Dialog.displayMessage(player, 'Create a new house location',
-                              Message.format(Message.HOUSE_CREATE_CONFIRMED),
-                              'Close' /* leftButton */, '' /* rightButton */);
+        await MessageBox.display(player, {
+            title: 'Create a new house location',
+            message: Message.HOUSE_CREATE_CONFIRMED
+        });
     }
 
     // Called when an administrator wants to override the access restrictions to a house and gain
@@ -329,11 +332,11 @@ class HouseCommands {
         const menu = new Menu('What do you want to modify?');
 
         menu.addItem('Add a parking lot', async(player) => {
-            const message =
-                Message.format(Message.HOUSE_PARKING_LOT_ADD, this.parkingLotCreator_.maxDistance);
-
-            await Dialog.displayMessage(
-                player, 'Add a parking lot', message, 'Close', '' /* rightButton */);
+            await MessageBox.display(player, {
+                title: 'Add a parking lot',
+                message: Message.format(Message.HOUSE_PARKING_LOT_ADD,
+                                        this.parkingLotCreator_.maxDistance)
+            });
 
             player.sendMessage(Message.HOUSE_PARKING_LOT_ADD_MSG);
 
@@ -346,9 +349,10 @@ class HouseCommands {
             // TODO: Should we announce this to the other administrators? We really need
             // announcement channels to deal with the granularity of messages. (Issue #271.)
 
-            await Dialog.displayMessage(player, 'Add a parking lot',
-                                        Message.format(Message.HOUSE_PARKING_LOT_ADDED),
-                                        'Close' /* leftButton */, '' /* rightButton */);
+            await MessageBox.display(player, {
+                title: 'Add a parking lot',
+                message: Message.HOUSE_PARKING_LOT_ADDED
+            });
         });
 
         const removeParkingLotTitle =
@@ -356,15 +360,16 @@ class HouseCommands {
 
         menu.addItem(removeParkingLotTitle, async(player) => {
             if (!closestLocation.parkingLotCount) {
-                await Dialog.displayMessage(player, 'Remove a parking lot',
-                                            Message.format(Message.HOUSE_PARKING_LOT_NONE),
-                                            'Close' /* leftButton */, '' /* rightButton */);
-                return;
+                return await MessageBox.display(player, {
+                    title: 'Remove a parking lot',
+                    message: Message.HOUSE_PARKING_LOT_NONE
+                });
             }
 
-            await Dialog.displayMessage(
-                player, 'Remove a parking lot', Message.HOUSE_PARKING_LOT_REMOVE,
-                'Close' /* leftButton */, '' /* rightButton */);
+            await MessageBox.display(player, {
+                title: 'Remove a parking lot',
+                message: Message.HOUSE_PARKING_LOT_REMOVE
+            });
 
             player.sendMessage(Message.HOUSE_PARKING_LOT_REMOVE_MSG);
 
@@ -377,9 +382,10 @@ class HouseCommands {
             // TODO: Should we announce this to the other administrators? We really need
             // announcement channels to deal with the granularity of messages. (Issue #271.)
 
-            await Dialog.displayMessage(player, 'Remove a parking lot',
-                                        Message.format(Message.HOUSE_PARKING_LOT_REMOVED),
-                                        'Close' /* leftButton */, '' /* rightButton */);
+            await MessageBox.display(player, {
+                title: 'Remove a parking lot',
+                message: Message.HOUSE_PARKING_LOT_REMOVED
+            });
         });
 
         // Give house extensions the ability to provide their additional functionality.
@@ -406,10 +412,10 @@ class HouseCommands {
                     closestLocation.id);
 
                 // Display a confirmation dialog to the player to inform them of their action.
-                await Dialog.displayMessage(
-                    player, 'Evict the current owner',
-                    Message.format(Message.HOUSE_MODIFY_EVICT_CONFIRMED, ownerName),
-                    'Close' /* leftButton */, '' /* rightButton */);
+                await MessageBox.display(player, {
+                    title: 'Evict the current owner',
+                    message: Message.format(Message.HOUSE_MODIFY_EVICT_CONFIRMED, ownerName)
+                });
             });
         }
 
@@ -429,9 +435,10 @@ class HouseCommands {
                 Message.HOUSE_ANNOUNCE_DELETED, player.name, player.id, closestLocation.id);
 
             // Display a confirmation dialog to the player to inform them of their action.
-            Dialog.displayMessage(player, 'Delete the house location',
-                                  Message.format(Message.HOUSE_MODIFY_DELETE_CONFIRMED),
-                                  'Close' /* leftButton */, '' /* rightButton */);
+            await MessageBox.display(player, {
+                title: 'Delete the house location',
+                message: Message.HOUSE_MODIFY_DELETE_CONFIRMED
+            });
         });
 
         await menu.displayForPlayer(player);
@@ -502,10 +509,10 @@ class HouseCommands {
                         label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
 
                     // Display a confirmation dialog to the player to inform them of their action.
-                    await Dialog.displayMessage(
-                        player, 'Changing the house\'s access level',
-                        Message.format(Message.HOUSE_SETTINGS_LEVEL, confirmationLabel),
-                        'Close' /* leftButton */, '' /* rightButton */);
+                    await MessageBox.display(player, {
+                        title: 'Changing the access level',
+                        message: Message.format(Message.HOUSE_SETTINGS_LEVEL, confirmationLabel)
+                    });
                 });
             });
 
@@ -516,13 +523,12 @@ class HouseCommands {
         menu.addItem('Set spawn position', spawnValue, async(player) => {
             await this.manager_.updateHouseSetting(location, 'spawn', !location.settings.isSpawn());
 
-            // TODO: Clarify this message when it's an admin changing settings in another house?
-            const message = location.settings.isSpawn() ? Message.HOUSE_SETTINGS_SPAWN_ENABLED
-                                                        : Message.HOUSE_SETTINGS_SPAWN_DISABLED;
-
             // Display a confirmation dialog to the player to inform them of their action.
-            await Dialog.displayMessage(player, 'Spawning at your house', message,
-                                        'Close' /* leftButton */, '' /* rightButton */);
+            await MessageBox.display(player, {
+                title: 'Spawning at your house',
+                message: location.settings.isSpawn() ? Message.HOUSE_SETTINGS_SPAWN_ENABLED
+                                                     : Message.HOUSE_SETTINGS_SPAWN_DISABLED
+            });
         });
 
         menu.addItem('Manage your vehicles', vehicleValue, async(player) => {
@@ -553,9 +559,10 @@ class HouseCommands {
             await this.manager_.removeHouse(location);
 
             // Display a confirmation dialog to the player to inform them of their action.
-            await Dialog.displayMessage(player, 'Congratulations on the sell!',
-                                        Message.format(Message.HOUSE_SETTINGS_SELL_CONFIRMED),
-                                        'Close' /* leftButton */, '' /* rightButton */);
+            await MessageBox.display(player, {
+                title: 'Congratulations on the sell!',
+                message: Message.HOUSE_SETTINGS_SELL_CONFIRMED
+            });
         });
 
         await menu.displayForPlayer(player);
@@ -565,10 +572,10 @@ class HouseCommands {
     // to modify the vehicles that are associated with their house.
     async onHouseSettingsVehicles(player, location) {
         if (!location.parkingLotCount) {
-            await Dialog.displayMessage(player, 'Unable to modify your vehicles!',
-                                        Message.format(Message.HOUSE_SETTINGS_NO_PARKING_LOTS),
-                                        'Close' /* leftButton */, '' /* rightButton */);
-            return;
+            return await MessageBox.display(player, {
+                title: 'Unable to modify your vehicles!',
+                message: Message.HOUSE_SETTINGS_NO_PARKING_LOTS
+            });
         }
 
         let index = 0;
@@ -612,10 +619,10 @@ class HouseCommands {
                     await this.manager_.removeVehicle(location, parkingLot, vehicle);
 
                     // Display a confirmation dialog to the player to inform them of their action.
-                    await Dialog.displayMessage(player, 'The vehicle has been disposed of!',
-                                                Message.format(Message.HOUSE_SETTINGS_VEHICLE_SOLD),
-                                                'Close' /* leftButton */, '' /* rightButton */);
-                    return;
+                    return await MessageBox.display(player, {
+                        title: 'The vehicle has been disposed of!',
+                        message: Message.HOUSE_SETTINGS_VEHICLE_SOLD
+                    });
                 }
 
                 // Create the purchase menu that enables players to purchase a vehicle.
@@ -638,8 +645,10 @@ class HouseCommands {
                         // TODO: Inform administrators of the new vehicle.
 
                         // Display a confirmation dialog to the player to inform them.
-                        await Dialog.displayMessage(player, 'The vehicle has been purchased!',
-                                                    message, 'Close' /* leftButton */, '');
+                        await MessageBox.display(player, {
+                            title: 'The vehicle has been purchased!',
+                            message: message
+                        });
                     });
                 }
 

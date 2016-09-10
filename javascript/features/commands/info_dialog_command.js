@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Menu = require('components/menu/menu.js'),
-      Message = require('components/dialogs/message.js');
+const Menu = require('components/menu/menu.js');
+const MessageBox = require('components/dialogs/message_box.js');
 
 // Command driven by a JSON file that will display a dialog to the user to share information with
 // them. This class should not be instantiated, instead, use the create() method.
@@ -40,7 +40,7 @@ class MessageCommand {
     if (Array.isArray(message))
       message = message.join('\n');
 
-    this.message_ = new Message(message);
+    this.message_ = new MessageBox(message);
   }
 
   // Displays the message to the |player|. The |parameters| are ignored.
@@ -56,7 +56,7 @@ class MessageMenuCommand {
     this.menu_ = new Menu(title);
 
     Object.keys(messages).forEach(subject => {
-      const message = new Message(messages[subject].join('\n'));
+      const message = new MessageBox(messages[subject].join('\n'));
 
       this.menu_.addItem(subject, player => message.displayForPlayer(player));
     });

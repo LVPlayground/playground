@@ -5,7 +5,7 @@
 const Command = require('features/playground/command.js');
 const CommandBuilder = require('components/command_manager/command_builder.js');
 const Menu = require('components/menu/menu.js');
-const MessageDialog = require('components/dialogs/message.js');
+const MessageBox = require('components/dialogs/message_box.js');
 const PlaygroundAccessTracker = require('features/playground/playground_access_tracker.js');
 const Question = require('components/dialogs/question.js');
 
@@ -176,7 +176,7 @@ class PlaygroundCommands {
 
             menu.addItem(levelPrefix + capitalizeFirstLetter(levelName) + levelSuffix, async() => {
                 if (currentLevel === level) {
-                    return await MessageDialog.display(player, {
+                    return await MessageBox.display(player, {
                         title: 'No need to update the level',
                         message: 'This command is already available to ' + levelName + '.'
                     });
@@ -196,7 +196,7 @@ class PlaygroundCommands {
                         Message.LVP_ANNOUNCE_CMD_REVOKED, player.name, commandName);
                 }
 
-                return await MessageDialog.display(player, {
+                return await MessageBox.display(player, {
                     title: 'The level has been updated!',
                     message: '/' + commandName + ' is now available to ' + levelName + '.'
                 });
@@ -219,7 +219,7 @@ class PlaygroundCommands {
 
         const subject = server.playerManager.find({ nameOrId: answer, returnPlayer: true });
         if (!subject) {
-            const retry = await MessageDialog.display(player, {
+            const retry = await MessageBox.display(player, {
                 title: 'Unable to identify the target player',
                 message: 'Either no or too many players were found for "' + answer + '".',
                 leftButton: 'Cancel',
@@ -233,7 +233,7 @@ class PlaygroundCommands {
         }
 
         if (!subject.isRegistered()) {
-            return await MessageDialog.display(player, {
+            return await MessageBox.display(player, {
                 title: 'Unable to grant an exception',
                 message: 'Exceptions can only be granted to registered players. Consider asking ' +
                          subject.name + ' to register?'
@@ -241,7 +241,7 @@ class PlaygroundCommands {
         }
 
         if (subject === player) {
-            return await MessageDialog.display(player, {
+            return await MessageBox.display(player, {
                 title: 'Unable to grant an exception',
                 message: 'There is no point in granting exceptions to yourself, sorry.'
             });
@@ -254,7 +254,7 @@ class PlaygroundCommands {
                 commandName);
         }
 
-        return await MessageDialog.display(player, {
+        return await MessageBox.display(player, {
             title: 'The exception has been granted!',
             message: '/' + commandName + ' is now available to ' + subject.name + '.'
         });
@@ -270,7 +270,7 @@ class PlaygroundCommands {
                 commandName);
         }
 
-        return await MessageDialog.display(player, {
+        return await MessageBox.display(player, {
             title: 'The exception has been revoked!',
             message: '/' + commandName + ' is no longer available to ' + subject.name + '.'
         });

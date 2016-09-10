@@ -31,7 +31,8 @@ describe('HouseCommands', (it, beforeEach) => {
         gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
-        gunther.respondToDialog({ response: 1 /* Yes, confirm creation of the house */ });
+        gunther.respondToDialog({ response: 1 /* Yes, confirm creation of the house */ }).then(
+            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 
         assert.equal(manager.locationCount, locationCount);
 
@@ -121,7 +122,8 @@ describe('HouseCommands', (it, beforeEach) => {
         gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest location
 
         gunther.respondToDialog({ listitem: 2 /* Delete the location */ }).then(
-            () => gunther.respondToDialog({ response: 1 /* Yes, really get rid of it */ }));
+            () => gunther.respondToDialog({ response: 1 /* Yes, really get rid of it */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 
         assert.isTrue(await gunther.issueCommand('/house modify'));
 

@@ -10,6 +10,9 @@ class MockPlayer {
 
         this.name_ = event.name || 'Player' + playerId;
         this.level_ = event.level || Player.LEVEL_PLAYER;
+        this.vip_ = false;
+        this.gangId_ = null;
+
         this.interiorId_ = 0;
         this.virtualWorld_ = 0;
         this.userId_ = null;
@@ -69,6 +72,17 @@ class MockPlayer {
 
     isManagement() { return this.level_ == Player.LEVEL_MANAGEMENT; }
 
+    isRegistered() { return this.userId_ != null; }
+
+    get userId() { return this.userId_; }
+
+    // Returns whether this player is a VIP member of Las Venturas Playground.
+    isVip() { return this.vip_; }
+
+    // Gets or sets the Id of the gang this player is part of.
+    get gangId() { return this.gangId_; }
+    set gangId(value) { this.gangId_ = value; }
+
     // Gets or sets the interior the player is part of. Moving them to the wrong interior will mess up
   // their visual state significantly, as all world objects may disappear.
   get interiorId() { return this.interiorId_; }
@@ -98,10 +112,6 @@ class MockPlayer {
     // Gets or sets whether vehicle collisions should be enabled for this player.
     get vehicleCollisionsEnabled() { return this.vehicleCollisionsEnabled_; }
     set vehicleCollisionsEnabled(value) { this.vehicleCollisionsEnabled_ = value; }
-
-    isRegistered() { return this.userId_ != null; }
-
-    get userId() { return this.userId_; }
 
     // Fake implementation of the ShowPlayerDialog() native. Used to be able to mock responses to
     // dialogs and make that entire sub-system testable as well.

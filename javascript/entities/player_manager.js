@@ -161,6 +161,7 @@ class PlayerManager {
             return;  // the event has been received for an invalid player
 
         player.userId_ = event.userid;
+        player.vip_ = !!event.vip;
 
         this.notifyObservers('onPlayerLogin', player, event);
     }

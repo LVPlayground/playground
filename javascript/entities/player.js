@@ -18,6 +18,7 @@ class Player {
     this.disconnecting_ = false;
 
     this.level_ = Player.LEVEL_PLAYER;
+    this.vip_ = false;
 
     this.userId_ = null;
     this.gangId_ = null;
@@ -76,6 +77,9 @@ class Player {
 
   // Gets the user Id of the player's account if they have identified to it.
   get userId() { return this.userId_; }
+
+  // Returns whether this player is a VIP member of Las Venturas Playground.
+  isVip() { return this.vip_; }
 
   // Gets or sets the Id of the gang this player is part of.
   get gangId() { return this.gangId_; }

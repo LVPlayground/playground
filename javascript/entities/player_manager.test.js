@@ -129,6 +129,22 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         assert.equal(counter, 1);
     });
 
+    it('should store all information associated to a login with the player', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        assert.isFalse(gunther.isRegistered());
+        assert.isFalse(gunther.isVip());
+
+        server.playerManager.onPlayerLogin({
+            playerid: gunther.id,
+            userid: 42,
+            vip: 1
+        });
+
+        assert.isTrue(gunther.isRegistered());
+        assert.isTrue(gunther.isVip())
+    });
+
     it('should be able to find players by ID', assert => {
         assert.isNull(manager.getById(42));
 

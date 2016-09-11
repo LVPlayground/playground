@@ -91,7 +91,7 @@ class PropertySettings extends HouseExtension {
                     message: location.settings.isSpawn() ? Message.HOUSE_SETTINGS_SPAWN_ENABLED
                                                          : Message.HOUSE_SETTINGS_SPAWN_DISABLED
                 });
-        });
+            });
 
             await settingsMenu.displayForPlayer(player);
         });

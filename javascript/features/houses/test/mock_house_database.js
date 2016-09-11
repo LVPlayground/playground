@@ -28,6 +28,8 @@ class MockHouseDatabase {
         this.mockParkingLotId_ = 2000;
         this.mockHouseId_ = 3000;
         this.mockVehicleId_ = 4000;
+
+        this.logs_ = new Map();
     }
 
     async loadLocations() {
@@ -88,13 +90,30 @@ class MockHouseDatabase {
 
             access: HouseSettings.ACCESS_DEFAULT,
             spawnPoint: false,
+            welcomeMessage: '',
 
             vehicles: []
         };
     }
 
+    async createHouseVisitorLog(location, player) {
+        if (!this.logs_.has(location))
+            this.logs_.set(location, []);
+
+        this.logs_.get(location).push({
+            name: player.name,
+            date: server.clock.currentTime()
+        });
+    }
+
     async createVehicle(location, parkingLot, vehicleInfo) {
         return this.mockVehicleId_++;
+    }
+
+    async readVisitorLogs(location, count = 20, ignoreOwner = false) {
+        const logs = this.logs_.get(location);
+        return logs ? logs.filter(l => !ignoreOwner || l.name != 'Gunther').reverse().slice(0, count)
+                    : [];
     }
 
     async updateHouseAccess(location, value) {}

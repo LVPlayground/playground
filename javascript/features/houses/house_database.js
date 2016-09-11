@@ -101,6 +101,14 @@ const CREATE_HOUSE_QUERY = `
     VALUES
         (?, ?, ?, ?, NOW())`;
 
+// Query to create a house visitor log in the database.
+const CREATE_HOUSE_VISITOR_LOG = `
+    INSERT INTO
+        houses_visitor_logs
+        (house_id, user_id, visit_date)
+    VALUES
+        (?, ?, NOW())`;
+
 // Query to create a vehicle in the database.
 const CREATE_VEHICLE_QUERY = `
     INSERT INTO
@@ -108,6 +116,25 @@ const CREATE_VEHICLE_QUERY = `
         (house_parking_lot_id, house_id, model_id, vehicle_created)
     VALUES
         (?, ?, ?, NOW())`;
+
+// Query for reading the visitor logs for a given house.
+const READ_VISITOR_LOGS_QUERY = `
+    SELECT
+        users.username,
+        UNIX_TIMESTAMP(houses_visitor_logs.visit_date) AS visit_time
+    FROM
+        houses_visitor_logs
+    LEFT JOIN
+        houses_settings ON houses_settings.house_id = houses_visitor_logs.house_id
+    LEFT JOIN
+        users ON users.user_id = houses_visitor_logs.user_id
+    WHERE
+        houses_visitor_logs.house_id = ? AND
+        (? == 0 OR houses_settings.house_user_id != houses_visitor_logs.user_id)
+    ORDER BY
+        houses_visitor_logs.visit_date DESC
+    LIMIT
+        ?`;
 
 // Query for updating the access requirements of a given house.
 const UPDATE_ACCESS_SETTING_QUERY = `
@@ -338,6 +365,11 @@ class HouseDatabase {
         };
     }
 
+    // Creates a log entry noting that the |player| has visited the |location|.
+    async createHouseVisitorLog(location, player) {
+        await server.database.query(CREATE_HOUSE_VISITOR_LOG, location.settings.id, player.userId);
+    }
+
     // Creates a vehicle with |vehicleInfo| in the |parkingLot| associated with the house at
     // |location|. The |vehicleInfo| must be an object having {modelId}.
     async createVehicle(location, parkingLot, vehicleInfo) {
@@ -345,6 +377,18 @@ class HouseDatabase {
             CREATE_VEHICLE_QUERY, parkingLot.id, location.settings.id, vehicleInfo.modelId);
 
         return data.insertId;
+    }
+
+    // Reads the |count| most recent entry logs for the given |location|, optionally |ignoreOwner|.
+    async readVisitorLogs(location, count = 20, ignoreOwner = false) {
+        const logs = [];
+        const data = await server.database.query(
+            READ_VISITOR_LOGS_QUERY, location.settings.id, ignoreOwner ? 1 : 0, count);
+
+        data.rows.forEach(row =>
+            logs.push({ name: row.username, date: row.visit_time }));
+
+        return logs;
     }
 
     // Updates the access requirements of the house at |location| to |value|.

@@ -79,6 +79,9 @@ class MockPlayer {
     // Returns whether this player is a VIP member of Las Venturas Playground.
     isVip() { return this.vip_; }
 
+    // Sets whether the player is a VIP member. Only exposed for testing purposes.
+    setVip(value) { this.vip_ = value; }
+
     // Gets or sets the Id of the gang this player is part of.
     get gangId() { return this.gangId_; }
     set gangId(value) { this.gangId_ = value; }

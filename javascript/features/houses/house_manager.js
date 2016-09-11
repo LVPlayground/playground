@@ -34,6 +34,9 @@ class HouseManager {
         this.vehicleController_ = new HouseVehicleController();
     }
 
+    // Gets the instance of the database model class for the houses feature.
+    get database() { return this.database_; }
+
     // Gets an iterator that can be used to iterate over the house locations.
     get locations() { return this.locations_.values(); }
 

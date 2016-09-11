@@ -49,8 +49,11 @@ class PropertySettings extends HouseExtension {
             const settingsMenu =
                 new Menu('How to change your property?', ['Setting', 'Current value']);
 
+            const VIP = ' {FFFF00}**';
+
             const nameValue = location.settings.name;
             const welcomeValue = location.settings.welcomeMessage;
+            const colorValue = this.toColorDescription(location.settings.markerColor);
             const spawnValue = location.settings.isSpawn() ? '{FFFF00}Yes' : 'No';
 
             settingsMenu.addItem('Change the name', nameValue, async(player) => {
@@ -81,6 +84,36 @@ class PropertySettings extends HouseExtension {
                 });
             });
 
+            if (player.isVip()) {
+                settingsMenu.addItem('Change the entrance color' + VIP, colorValue, async(player) => {
+                    const colors = [
+                        { value: 'yellow', label: 'Yellow' },
+                        { value: 'red', label: 'Red' },
+                        { value: 'green', label: 'Green' },
+                        { value: 'blue', label: 'Blue '}
+                    ];
+
+                    const colorMenu = new Menu('Which color would you like?');
+
+                    for (const color of colors) {
+                        const labelPrefix =
+                            location.settings.markerColor === color.value ? '{FFFF00}' : '';
+
+                        colorMenu.addItem(labelPrefix + color.label, async(player) => {
+                            await this.manager_.updateHouseSetting(location, 'marker', color.value);
+
+                            // Display a confirmation dialog to inform the player of their action.
+                            await MessageBox.display(player, {
+                                title: 'Your entrance marker has been updated!',
+                                message: Message.format(Message.HOUSE_SETTINGS_COLOR, color.value)
+                            });
+                        });
+                    }
+
+                    await colorMenu.displayForPlayer(player);
+                });
+            }
+
             settingsMenu.addItem('Spawn at this house', spawnValue, async(player) => {
                 await this.manager_.updateHouseSetting(
                     location, 'spawn', !location.settings.isSpawn());
@@ -95,6 +128,22 @@ class PropertySettings extends HouseExtension {
 
             await settingsMenu.displayForPlayer(player);
         });
+    }
+
+    // Converts the |color| to a colored representation of the word to describe it.
+    toColorDescription(color) {
+        switch (color) {
+            case 'blue':
+                return '{0000FF}Blue';
+            case 'green':
+                return '{00FF00}Green';
+            case 'red':
+                return '{FF0000}Red';
+            case 'yellow':
+                return '{FFFF00}Yellow';
+            default:
+                throw new Error('Invalid color given: ' + color);
+        }
     }
 
     // Called when |player| enters the |location|. Displays the welcome message to them when one

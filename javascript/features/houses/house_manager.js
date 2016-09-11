@@ -212,6 +212,7 @@ class HouseManager {
     // update is unique to the setting that is being changed. The following settings are available:
     //
     //     'access'  - Updates the access settings for the house.
+    //     'marker'  - Updates the house's marker colour.
     //     'name'    - Updates the name of the house.
     //     'spawn'   - Updates whether to spawn at the |location|.
     //     'welcome' - Updates the welcome message of the house.
@@ -236,12 +237,22 @@ class HouseManager {
                 location.settings.access = value;
                 break;
 
+            case 'marker':
+                if (typeof value !== 'string' || !['yellow', 'red', 'green', 'blue'].includes(value))
+                    throw new Error('A given marker color is not valid.');
+
+                await this.database_.updateHouseMarkerColor(location, value);
+                await this.entranceController_.updateLocationSetting(location, 'color', value);
+
+                location.settings.markerColor = value;
+                break;
+
             case 'name':
                 if (typeof value !== 'string' || value.length < 3 || value.length > 32)
                     throw new Error('A house name must be between 3 and 32 characters in length.');
 
                 await this.database_.updateHouseName(location, value);
-                await this.entranceController_.updateLocationLabel(location, value);
+                await this.entranceController_.updateLocationSetting(location, 'label', value);
 
                 location.settings.name = value;
                 break;

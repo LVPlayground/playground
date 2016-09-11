@@ -10,6 +10,14 @@ const ScopedEntities = require('entities/scoped_entities.js');
 // The radius around a portal's entrance within which the label will be visible.
 const PORTAL_LABEL_DRAW_DISTANCE = 20;
 
+// Portals can have different colors, which are represented by the given model Ids.
+const PORTAL_COLOR_MODELS = {
+    yellow: 19902,
+    red: 19605,
+    green: 19606,
+    blue: 19607
+};
+
 // The default interior markers are disabled on Las Venturas Playground, instead we provide our own.
 // This enables the system to determine whether it's OK for a player to enter the interior, which
 // may have to be prevented because they recently were in a fight, and means that we can send them
@@ -66,8 +74,11 @@ class InteriorManager {
             return;
         }
 
+        if (!PORTAL_COLOR_MODELS.hasOwnProperty(portal.color))
+            throw new Error('The portal has an invalid color: ' + portal.color);
+
         const entrancePickup = this.portalEntities_.createPickup({
-            modelId: 19902 /* yellow entrance marker */,
+            modelId: PORTAL_COLOR_MODELS[portal.color],
             position: portal.entrancePosition,
             virtualWorld: portal.entranceVirtualWorld
         });
@@ -91,25 +102,43 @@ class InteriorManager {
         });
     }
 
-    // Updates the |portal|'s label to be |label|. If the |label| either is not a string, or is the
-    // empty string, then the |portal| will remove its label altogether.
-    updatePortalLabel(portal, label) {
+    // Updates the |portal|'s |setting| to be |value|. The following settings are recognized:
+    //
+    //   'color'  Updates the color of the portal. Must be one of {yellow, red, green, blue}.
+    //   'label'  Updates the text displayed on the portal's entrance.
+    //
+    updatePortalSetting(portal, setting, value) {
         if (!this.portals_.has(portal))
             throw new Error('The given Portal is not known to the interior manager.');
 
-        // Remove the existing label if one has been added already.
-        const existingLabel = this.portalLabels_.get(portal);
-        if (existingLabel)
-            existingLabel.dispose();
+        switch (setting) {
+            case 'color':
+                portal.color = value;
 
-        // Update the |portal| status depending on the value of |label|.
-        portal.label = typeof label === 'string' && label.length ? label
-                                                                 : null;
+                this.removePortal(portal);
+                this.createPortal(portal, false /* isToggleable */);
 
-        if (portal.label)
-            this.portalLabels_.set(portal, this.createLabel(portal));
-        else
-            this.portalLabels_.delete(portal);
+                break;
+
+            case 'label':
+                    // Remove the existing label if one has been added already.
+                const existingLabel = this.portalLabels_.get(portal);
+                if (existingLabel)
+                    existingLabel.dispose();
+
+                // Update the |portal| status depending on the value of |value|.
+                portal.label = typeof value === 'string' && value.length ? value
+                                                                         : null;
+
+                if (portal.label)
+                    this.portalLabels_.set(portal, this.createLabel(portal));
+                else
+                    this.portalLabels_.delete(portal);
+                break;
+
+            default:
+                throw new Error('Invalid setting given: ' + setting);
+        }
     }
 
     // Makes |player| enter the |portal|. The given |direction| must be one of ["entrance","exit"].
@@ -238,6 +267,16 @@ class InteriorManager {
             color: Color.WHITE,
             text: portal.label
         });
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Returns the entrance and exit marker pickups for the |portal| for testing purposes.
+    getPortalPickupsForTests(portal) {
+        if (!this.portals_.has(portal))
+            throw new Error('Invalid portal given, unable to return the pickups.');
+
+        return this.portals_.get(portal);
     }
 
     // ---------------------------------------------------------------------------------------------

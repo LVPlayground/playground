@@ -47,6 +47,7 @@ const LOAD_HOUSES_QUERY = `
         houses_settings.house_access,
         houses_settings.house_spawn_point,
         houses_settings.house_welcome_message,
+        houses_settings.house_marker_color,
         users_gangs.gang_id,
         users.username
     FROM
@@ -142,6 +143,15 @@ const UPDATE_ACCESS_SETTING_QUERY = `
         houses_settings
     SET
         house_access = ?
+    WHERE
+        house_id = ?`;
+
+// Query for updating the marker color of a given house.
+const UPDATE_MARKER_COLOR_SETTING_QUERY = `
+    UPDATE
+        house_settings
+    SET
+        house_marker_color = ?
     WHERE
         house_id = ?`;
 
@@ -290,6 +300,7 @@ class HouseDatabase {
                     access: HouseDatabase.toHouseAccessValue(row.house_access),
                     spawnPoint: !!row.house_spawn_point,
                     welcomeMessage: row.house_welcome_message,
+                    markerColor: row.house_marker_color,
 
                     vehicles: []
                 });
@@ -360,6 +371,7 @@ class HouseDatabase {
             access: HouseSettings.ACCESS_DEFAULT,
             spawnPoint: false,
             welcomeMessage: '',
+            markerColor: 'yellow',
 
             vehicles: []
         };
@@ -396,6 +408,11 @@ class HouseDatabase {
         await server.database.query(
             UPDATE_ACCESS_SETTING_QUERY, HouseDatabase.toHouseAccessEnum(value),
             location.settings.id);
+    }
+
+    // Updates the marker color of the |location| to |color|.
+    async updateHouseMarkerColor(location, color) {
+        await server.database.query(UPDATE_MARKER_COLOR_SETTING_QUERY, color, location.settings.id);
     }
 
     // Updates the name of the house at |location| to |name|.

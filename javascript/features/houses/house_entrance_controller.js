@@ -108,6 +108,7 @@ class HouseEntranceController {
             };
 
             const portal = new Portal('House ' + location.settings.id, entrancePoint, exitPoint, {
+                color: location.settings.markerColor,
                 accessCheckFn:
                     HouseEntranceController.prototype.hasAccessToHouse.bind(this, location),
                 enterFn:
@@ -132,18 +133,20 @@ class HouseEntranceController {
         this.addLocation(location);
     }
 
-    // Updates the |location|'s label to be |value|. This requires the |location| to be occupied.
-    updateLocationLabel(location, value) {
+    // Updates the |location|'s |setting| to be |value|. This requires the |location| to be occupied
+    updateLocationSetting(location, setting, value) {
         if (!this.locations_.has(location))
             throw new Error('The |location| has not yet been added to the entrance controller.');
 
         const portal = this.occupiedLocationPortals_.get(location);
         if (!portal)
-            throw new Error('The |location| must be occupied in order to update the label.');
+            throw new Error('The |location| must be occupied in order to update the settings.');
 
-        // Update the portal's label through the Location feature's interior manager.
-        this.locationFeature_().updatePortalLabel(
-            portal, value + '\n{FFFF00}' + location.settings.ownerName);
+        // Update the portal's setting through the Location feature's interior manager.
+        this.locationFeature_().updatePortalSetting(
+            portal, setting,
+            setting === 'label' ? value + '\n{FFFF00}' + location.settings.ownerName
+                                : value);
     }
 
     // Removes |location| from the set of tracked locations. All entrances will be removed.

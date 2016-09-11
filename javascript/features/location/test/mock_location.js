@@ -33,9 +33,9 @@ class MockLocation extends Feature {
         this.interiorManager_.createPortal(portal, false /* isToggleable */);
     }
 
-    // Updates the |portal|'s label to be |label|.
-    updatePortalLabel(portal, label) {
-        this.interiorManager_.updatePortalLabel(portal, label);
+    // Updates the |portal|'s |setting| to be |value|.
+    updatePortalSetting(portal, setting, value) {
+        this.interiorManager_.updatePortalSetting(portal, setting, value);
     }
 
     // Makes |player| enter the |portal|. The given |direction| must be one of ["entrance","exit"].

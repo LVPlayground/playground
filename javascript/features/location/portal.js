@@ -6,8 +6,8 @@
 // portal's points has a position, and a rotation in which the player will be facing when being
 // teleported to it. Both sides of a portal have an assigned interior and virtual world as well.
 class Portal {
-    constructor(name, entrance, exit, { disabled = false, label = null, accessCheckFn = null,
-                                        enterFn = null, exitFn = null } = {}) {
+    constructor(name, entrance, exit, { color = 'yellow', disabled = false, label = null,
+                                        accessCheckFn = null, enterFn = null, exitFn = null } = {}) {
         if (!Portal.validatePoint(entrance)) {
             throw new Error('The `entrance` must be an object having { position, facingAngle, ' +
                             'interior and virtualWorld }.');
@@ -19,6 +19,7 @@ class Portal {
         }
 
         this.name_ = name;
+        this.color_ = color;
 
         this.entrancePosition_ = entrance.position;
         this.entranceFacingAngle_ = entrance.facingAngle;
@@ -49,6 +50,11 @@ class Portal {
 
     // Gets the name of this portal.
     get name() { return this.name_; }
+
+    // Gets or sets the color of this portal. Updating the color should only be done by the Interior
+    // Manager, as the portal may have to be recreated for the change to take effect.
+    get color() { return this.color_; }
+    set color(value) { this.color_ = value; }
 
     // Gets the position of the portal's entrance point as a vector.
     get entrancePosition() { return this.entrancePosition_; }

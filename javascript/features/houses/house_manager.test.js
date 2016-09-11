@@ -190,6 +190,20 @@ describe('HouseManager', (it, beforeEach) => {
         assert.equal(location.settings.access, HouseSettings.ACCESS_EVERYBODY);
     });
 
+    it('should be able to update the marker color of a house', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.position = new Vector(500, 500, 500);
+
+        const location = await manager.findClosestLocation(gunther);
+        assert.isFalse(location.isAvailable());
+
+        assert.equal(location.settings.markerColor, 'yellow');
+
+        await manager.updateHouseSetting(location, 'marker', 'green');
+
+        assert.equal(location.settings.markerColor, 'green');
+    });
+
     it('should be able to update the name of a house', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.position = new Vector(500, 500, 500);

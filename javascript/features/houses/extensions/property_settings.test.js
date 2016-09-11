@@ -14,7 +14,7 @@ describe('PropertySettings', (it, beforeEach) => {
 
     beforeEach(async(assert) => {
         gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify({ userId: 42 });
+        gunther.identify({ userId: 42, vip: 1 });
 
         ({ manager } = await createTestEnvironment());
 
@@ -26,6 +26,35 @@ describe('PropertySettings', (it, beforeEach) => {
 
         assert.isNotNull(location);
         assert.isFalse(location.isAvailable());
+    });
+
+    it('should only display VIP menu items to those who are VIPs', async(assert) => {
+        // List of menu options that will be reserved for VIP members.
+        const restrictedOptions = [
+            'Change the entrance color'
+        ];
+
+        gunther.setVip(false);
+        {
+            gunther.respondToDialog({ listitem: SETTINGS_MENU_INDEX }).then(
+                () => gunther.respondToDialog({ response: 0 /* Close the menu */ }));
+
+            assert.isTrue(await gunther.issueCommand('/house settings'));
+
+            restrictedOptions.forEach(option =>
+                assert.isFalse(gunther.lastDialog.includes(option)));
+        }
+
+        gunther.setVip(true);
+        {
+            gunther.respondToDialog({ listitem: SETTINGS_MENU_INDEX }).then(
+                () => gunther.respondToDialog({ response: 0 /* Close the menu */ }));
+
+            assert.isTrue(await gunther.issueCommand('/house settings'));
+
+            restrictedOptions.forEach(option =>
+                assert.isTrue(gunther.lastDialog.includes(option)));
+        }
     });
 
     it('should allow house name to be updated', async(assert) => {
@@ -77,18 +106,30 @@ describe('PropertySettings', (it, beforeEach) => {
         assert.equal(gunther.messages[1], Message.format(Message.HOUSE_WELCOME, gunther.name));
     });
 
+    it('should allow VIPs to update the color of their entrance marker', async(assert) => {
+        assert.equal(location.settings.markerColor, 'yellow');
+
+        gunther.respondToDialog({ listitem: SETTINGS_MENU_INDEX }).then(
+            () => gunther.respondToDialog({ listitem: 2 /* Change the entrance color */ })).then(
+            () => gunther.respondToDialog({ listitem: 3 /* Blue */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/house settings'));
+        assert.equal(location.settings.markerColor, 'blue');
+    });
+
     it('should allow house spawn settings to be updated', async(assert) => {
         assert.isFalse(location.settings.isSpawn());
 
         gunther.respondToDialog({ listitem: SETTINGS_MENU_INDEX }).then(
-            () => gunther.respondToDialog({ listitem: 2 /* Spawn at this house */ })).then(
+            () => gunther.respondToDialog({ listitem: 3 /* Spawn at this house */ })).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 
         assert.isTrue(await gunther.issueCommand('/house settings'));
         assert.isTrue(location.settings.isSpawn());
 
         gunther.respondToDialog({ listitem: SETTINGS_MENU_INDEX }).then(
-            () => gunther.respondToDialog({ listitem: 2 /* Spawn at this house */ })).then(
+            () => gunther.respondToDialog({ listitem: 3 /* Spawn at this house */ })).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 
         assert.isTrue(await gunther.issueCommand('/house settings'));

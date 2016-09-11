@@ -56,6 +56,7 @@ class MockHouseDatabase {
             access: HouseSettings.ACCESS_DEFAULT,
             spawnPoint: false,
             welcomeMessage: '',
+            markerColor: 'yellow',
 
             vehicles: [
                 {
@@ -91,6 +92,7 @@ class MockHouseDatabase {
             access: HouseSettings.ACCESS_DEFAULT,
             spawnPoint: false,
             welcomeMessage: '',
+            markerColor: 'yellow',
 
             vehicles: []
         };
@@ -117,6 +119,8 @@ class MockHouseDatabase {
     }
 
     async updateHouseAccess(location, value) {}
+
+    async updateHouseMarkerColor(location, color) {}
 
     async updateHouseName(location, name) {}
 

@@ -43,9 +43,13 @@ class Location extends Feature {
         this.interiorManager_.createPortal(portal, false /* isToggleable */);
     }
 
-    // Updates the |portal|'s label to be |label|.
-    updatePortalLabel(portal, label) {
-        this.interiorManager_.updatePortalLabel(portal, label);
+    // Updates the |portal|'s |setting| to be |value|. The following settings are recognized:
+    //
+    //   'color'  Updates the color of the portal. Must be one of {yellow, red, green, blue}.
+    //   'label'  Updates the text displayed on the portal's entrance.
+    //
+    updatePortalSetting(portal, setting, value) {
+        this.interiorManager_.updatePortalSetting(portal, setting, value);
     }
 
     // Makes |player| enter the |portal|. The given |direction| must be one of ["entrance","exit"].

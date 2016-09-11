@@ -17,6 +17,7 @@ class HouseSettings {
         this.access_ = house.access;
         this.spawnPoint_ = house.spawnPoint;
         this.welcomeMessage_ = house.welcomeMessage;
+        this.markerColor_ = house.markerColor;
 
         this.vehicles_ = new Map();
 
@@ -67,6 +68,11 @@ class HouseSettings {
     // to be shown to entering players instead.
     get welcomeMessage() { return this.welcomeMessage_; }
     set welcomeMessage(value) { this.welcomeMessage_ = value; }
+
+    // Gets or sets the color of the marker that should be used for the house's entrance. It must
+    // be one of {yellow, red, green, blue}, which should be enforced elsewhere.
+    get markerColor() { return this.markerColor_; }
+    set markerColor(value) { this.markerColor_ = value; }
 
     // Gets the vehicles that have been created for this house. Mutable mapping from the parkingLot
     // instance associated with the location to the HouseVehicle instance associated with the house.

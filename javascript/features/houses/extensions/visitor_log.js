@@ -27,7 +27,7 @@ class VisitorLog extends HouseExtension {
         if (!player.isVip())
             return;
 
-        menu.addItem('Recent visitors', '-', async(player) => {
+        menu.addItem('Recent visitors {FFFF00}**', '-', async(player) => {
             const logs = await this.manager_.database.readVisitorLogs(location, 20 /* count */,
                                                                       true /* ignoreOwner */);
 

@@ -192,4 +192,43 @@ describe('InteriorManager', (it, beforeEach, afterEach) => {
         assert.doesNotThrow(() => manager.removePortal(portal));
         assert.equal(server.textLabelManager.count, originalTextLabelCount);
     });
+
+    it('should be possible to have portals in different colors', assert => {
+        const originalPickupCount = server.pickupManager.count;
+
+        const testCases = [
+            { value: 'yellow', modelId: 19902 },
+            { value: 'red', modelId: 19605 },
+            { value: 'green', modelId: 19606 },
+            { value: 'blue', modelId: 19607 }
+        ];
+
+        for (const testCase of testCases) {
+            const portal = new Portal('My Portal', {
+                position: new Vector(500, 500, 500),
+                facingAngle: 180,
+                interiorId: 0,
+                virtualWorld: 0
+            }, {
+                position: new Vector(1000, 1000, 1000),
+                facingAngle: 90,
+                interiorId: 5,
+                virtualWorld: 100
+            }, {
+                color: testCase.value
+            });
+
+            assert.doesNotThrow(() => manager.createPortal(portal));
+            assert.equal(server.pickupManager.count, originalPickupCount + 2);
+
+            const { entrancePickup, exitPickup } = manager.getPortalPickupsForTests(portal);
+
+            assert.equal(entrancePickup.modelId, testCase.modelId);
+            assert.equal(exitPickup.modelId, 19902 /* exits are always yellow */);
+
+            assert.doesNotThrow(() => manager.removePortal(portal));
+            assert.equal(server.pickupManager.count, originalPickupCount);
+        }
+
+    });
 });

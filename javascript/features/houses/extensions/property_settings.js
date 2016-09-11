@@ -51,6 +51,7 @@ class PropertySettings extends HouseExtension {
 
             const nameValue = location.settings.name;
             const welcomeValue = location.settings.welcomeMessage;
+            const spawnValue = location.settings.isSpawn() ? '{FFFF00}Yes' : 'No';
 
             settingsMenu.addItem('Change the name', nameValue, async(player) => {
                 const name = await Question.ask(player, NAME_QUESTION);
@@ -79,6 +80,18 @@ class PropertySettings extends HouseExtension {
                     message: Message.HOUSE_SETTINGS_WELCOME_MESSAGE
                 });
             });
+
+            settingsMenu.addItem('Spawn at this house', spawnValue, async(player) => {
+                await this.manager_.updateHouseSetting(
+                    location, 'spawn', !location.settings.isSpawn());
+
+                // Display a confirmation dialog to the player to inform them of their action.
+                await MessageBox.display(player, {
+                    title: 'Spawning at your house',
+                    message: location.settings.isSpawn() ? Message.HOUSE_SETTINGS_SPAWN_ENABLED
+                                                         : Message.HOUSE_SETTINGS_SPAWN_DISABLED
+                });
+        });
 
             await settingsMenu.displayForPlayer(player);
         });

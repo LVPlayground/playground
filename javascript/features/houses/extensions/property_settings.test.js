@@ -5,7 +5,7 @@
 const createTestEnvironment = require('features/houses/test/test_environment.js');
 
 // Zero-based index of the Property Settings menu in the `/house settings` options.
-const SETTINGS_MENU_INDEX = 3;
+const SETTINGS_MENU_INDEX = 2;
 
 describe('PropertySettings', (it, beforeEach) => {
     let gunther = null;
@@ -60,7 +60,7 @@ describe('PropertySettings', (it, beforeEach) => {
         assert.equal(location.settings.welcomeMessage, '');
     });
 
-    it('should display the welcome message when entering ah ouse', async(assert) => {
+    it('should display the welcome message when entering a house', async(assert) => {
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.format(Message.HOUSE_WELCOME, gunther.name));
 
@@ -68,12 +68,30 @@ describe('PropertySettings', (it, beforeEach) => {
 
         location.settings.welcomeMessage = 'Hello, world!';
 
-        manager.forceEnterHouse(gunther, location);
         manager.forceExitHouse(gunther, location);
+        manager.forceEnterHouse(gunther, location);
 
         assert.equal(gunther.messages.length, 2);
         assert.equal(gunther.messages[0],
                      Message.format(Message.HOUSE_WELCOME_MESSAGE, gunther.name, 'Hello, world!'));
         assert.equal(gunther.messages[1], Message.format(Message.HOUSE_WELCOME, gunther.name));
+    });
+
+    it('should allow house spawn settings to be updated', async(assert) => {
+        assert.isFalse(location.settings.isSpawn());
+
+        gunther.respondToDialog({ listitem: SETTINGS_MENU_INDEX }).then(
+            () => gunther.respondToDialog({ listitem: 2 /* Spawn at this house */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/house settings'));
+        assert.isTrue(location.settings.isSpawn());
+
+        gunther.respondToDialog({ listitem: SETTINGS_MENU_INDEX }).then(
+            () => gunther.respondToDialog({ listitem: 2 /* Spawn at this house */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/house settings'));
+        assert.isFalse(location.settings.isSpawn());
     });
 });

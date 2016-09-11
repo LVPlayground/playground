@@ -484,7 +484,6 @@ class HouseCommands {
         const menu = new Menu('What would you like to modify?', ['Option', 'Current value']);
 
         const accessValue = this.toHouseAccessLabel(location.settings.access);
-        const spawnValue = location.settings.isSpawn() ? 'Yes' : 'No';
         const vehicleValue = '{FFFF00}' + location.settings.vehicles.size;
 
         menu.addItem('Change the access level', accessValue, async(player) => {
@@ -518,17 +517,6 @@ class HouseCommands {
 
             // Show the access sub-menu to the player.
             await accessMenu.displayForPlayer(player);
-        });
-
-        menu.addItem('Set spawn position', spawnValue, async(player) => {
-            await this.manager_.updateHouseSetting(location, 'spawn', !location.settings.isSpawn());
-
-            // Display a confirmation dialog to the player to inform them of their action.
-            await MessageBox.display(player, {
-                title: 'Spawning at your house',
-                message: location.settings.isSpawn() ? Message.HOUSE_SETTINGS_SPAWN_ENABLED
-                                                     : Message.HOUSE_SETTINGS_SPAWN_DISABLED
-            });
         });
 
         menu.addItem('Manage your vehicles', vehicleValue, async(player) => {

@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const CommunicationManager = require('features/communication/communication_manager.js');
+const CommunicationNatives = require('features/communication/communication_natives.js');
 const Feature = require('components/feature_manager/feature.js');
 
 // The communication feature manages the low-level communicative capabilities of players, for
@@ -13,12 +14,7 @@ class Communication extends Feature {
         super();
 
         this.manager_ = new CommunicationManager();
-
-        // Provides the `IsCommunicationMuted` native function to Pawn.
-        provideNative('IsCommunicationMuted', '', () => {
-            return this.isCommunicationMuted() ? 1   /* all communication should be muted */
-                                               : 0;  /* players are free to communicate */
-        });
+        this.natives_ = new CommunicationNatives(this.manager_);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -49,10 +45,8 @@ class Communication extends Feature {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        this.natives_.dispose();
         this.manager_.dispose();
-
-        // Free up the `IsCommunicationMuted` command by always stating it's not.
-        provideNative('IsCommunicationMuted', '', () => 0 /* false */);
     }
 }
 

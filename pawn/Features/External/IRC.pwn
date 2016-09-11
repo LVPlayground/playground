@@ -60,7 +60,7 @@ class IRC {
             case AddCommandIrcMessage:
                 m_messageBuffer = "[addcommand] ";
             case PlayerStatusIrcMessage:
-                m_messageBuffer = "[me]";
+                m_messageBuffer = "[me] ";
             default:
                 m_messageBuffer = "[unknown] ";
         }

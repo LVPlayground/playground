@@ -34,7 +34,7 @@ describe('ModelSelector', (it, beforeEach) => {
         const resolver = ModelSelector.select(gunther, 'My selector', models);
         const selector = ModelSelector.getSelectorForPlayerForTests(gunther);
 
-        selector.resolve_(5);
+        selector.resolve_(models[5]);
 
         assert.equal(await resolver, models[5]);
     });

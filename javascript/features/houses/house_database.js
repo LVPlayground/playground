@@ -130,7 +130,7 @@ const READ_VISITOR_LOGS_QUERY = `
         users ON users.user_id = houses_visitor_logs.user_id
     WHERE
         houses_visitor_logs.house_id = ? AND
-        (? == 0 OR houses_settings.house_user_id != houses_visitor_logs.user_id)
+        (? = 0 OR houses_settings.house_user_id != houses_visitor_logs.user_id)
     ORDER BY
         houses_visitor_logs.visit_date DESC
     LIMIT

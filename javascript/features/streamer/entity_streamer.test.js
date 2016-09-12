@@ -60,6 +60,13 @@ describe('EntityStreamer', it => {
         return Array.from(entities).sort(comparator).slice(0, count);
     }
 
+    it('should store the maximum entities and streaming distance on the instance', assert => {
+        const streamer = new EntityStreamer({ maxVisible: 1337, streamingDistance: 9001 });
+
+        assert.equal(streamer.maxVisible, 1337);
+        assert.equal(streamer.streamingDistance, 9001);
+    });
+
     it('should accurately count the number of entities on the streamer', assert => {
         const streamer = new EntityStreamer({ maxVisible: 10 });
         const entities = fillStreamer(streamer, 10 /* 100 entities */);
@@ -120,6 +127,16 @@ describe('EntityStreamer', it => {
 
         assert.equal(entity.activeReferences, 0);
         assert.equal(entity.totalReferences, 0);
+    });
+
+    it('should allow for different visibility parameters', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        const streamer = new EntityStreamer({ maxVisible: 10 });
+        const entities = fillStreamer(streamer, 10 /* 100 entities */);
+
+        assert.equal((await streamer.streamForPlayer(gunther)).length, 10);
+        assert.equal((await streamer.streamForPlayer(gunther, 5 /* visible */)).length, 5);
     });
 
     it('should be able to find the entities closest to the player', async(assert) => {

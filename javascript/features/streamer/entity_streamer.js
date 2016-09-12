@@ -8,11 +8,21 @@
 class EntityStreamer {
     constructor({ maxVisible, streamingDistance = 300 } = {}) {
         this.streamer_ = new Streamer(maxVisible, streamingDistance);
+
+        this.maxVisible_ = maxVisible;
+        this.streamingDistance_ = streamingDistance;
+
         this.id_ = 0;
 
         this.entitiesByInstance_ = new Map();
         this.entitiesById_ = new Map();
     }
+
+    // Gets the maximum number of entities that should be streamed through this streamer.
+    get maxVisible() { return this.maxVisible_; }
+
+    // Gets the maximum streaming distance applying to entities in this streamer.
+    get streamingDistance() { return this.streamingDistance_; }
 
     // Gets the number of entities that have been stored in this streamer.
     get size() { return this.entitiesByInstance_.size; }
@@ -46,13 +56,15 @@ class EntityStreamer {
     }
 
     // Asynchronously returns the |maxVisible| entities that are closest to the |player|.
-    async streamForPlayer(player) {
+    async streamForPlayer(player, visible = null) {
+        visible = visible || this.maxVisible_;
+
         const position = player.position;
 
         // TODO: Select the appropriate streamer based on the player's interior Id and virtual
         // world, so that the right entities are returned for the player.
 
-        const entityIds = await this.streamer_.stream(position.x, position.y, position.z);
+        const entityIds = await this.streamer_.stream(visible, position.x, position.y, position.z);
         const entities = [];
 
         entityIds.forEach(entityId =>

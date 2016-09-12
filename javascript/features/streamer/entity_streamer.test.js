@@ -102,7 +102,8 @@ describe('EntityStreamer', it => {
         gunther.position = new Vector(52, 48, 0);
 
         const closestEntities = sortByDistance(gunther.position, entities, 10);
-        const streamedEntities = sortByDistance(gunther.position, await streamer.stream(gunther));
+        const streamedEntities =
+            sortByDistance(gunther.position, await streamer.streamForPlayer(gunther));
 
         assert.deepEqual(closestEntities, streamedEntities);
     });
@@ -119,7 +120,7 @@ describe('EntityStreamer', it => {
 
         // (1) Stream while |randomEntity| still exists in the streamer.
         {
-            const streamedEntities = await streamer.stream(gunther);
+            const streamedEntities = await streamer.streamForPlayer(gunther);
 
             assert.equal(streamedEntities.length, 1);
             assert.equal(streamedEntities[0], randomEntity);
@@ -130,7 +131,7 @@ describe('EntityStreamer', it => {
 
         // (2) Stream now that the |randomEntity| has been removed from the streamer.
         {
-            const streamedEntities = await streamer.stream(gunther);
+            const streamedEntities = await streamer.streamForPlayer(gunther);
 
             assert.equal(streamedEntities.length, 0);
         }
@@ -143,11 +144,11 @@ describe('EntityStreamer', it => {
         const streamer = new EntityStreamer({ maxVisible: 10 });
         const entities = fillStreamer(streamer, 10 /* 100 entities */);
 
-        assert.isAbove((await streamer.stream(gunther)).length, 0);
+        assert.isAbove((await streamer.streamForPlayer(gunther)).length, 0);
 
         streamer.clear();
 
         assert.equal(streamer.size, 0);
-        assert.equal((await streamer.stream(gunther)).length, 0);
+        assert.equal((await streamer.streamForPlayer(gunther)).length, 0);
     });
 });

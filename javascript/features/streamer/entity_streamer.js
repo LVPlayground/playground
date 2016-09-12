@@ -44,7 +44,7 @@ class EntityStreamer {
     }
 
     // Asynchronously returns the |maxVisible| entities that are closest to the |player|.
-    async stream(player) {
+    async streamForPlayer(player) {
         const position = player.position;
 
         // TODO: Select the appropriate streamer based on the player's interior Id and virtual

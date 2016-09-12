@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 const PriorityQueue = require('base/priority_queue.js');
-const VehicleGrid = require('features/vehicles/vehicle_grid.js');
 
 // An empty set that may be used to prevent repeated allocations. Should not be modified.
 const EMPTY_SET = new Set();
@@ -23,7 +22,6 @@ const DefaultVehiclesPerPlayer = 20;
 // each players can quickly and accurately be determined.
 class VehicleStreamer {
     constructor(vehicleLimit = DefaultVehicleLimit) {
-        this.grid_ = new VehicleGrid(DefaultStreamDistance);
         this.initialized_ = false;
 
         this.vehicleLimit_ = vehicleLimit;

@@ -96,10 +96,10 @@ class PlayerManager {
             return;
 
         for (const player of this.players_.values()) {
-            if (observer.__proto__.hasOwnProperty('onPlayerConnect'))
+            if ('onPlayerConnect' in observer)
                 observer.onPlayerConnect(player);
 
-            if (observer.__proto__.hasOwnProperty('onPlayerLogin') && player.isRegistered())
+            if ('onPlayerLogin' in observer && player.isRegistered())
                 observer.onPlayerLogin(player, {});
         }
     }
@@ -203,6 +203,9 @@ class PlayerManager {
                 prototype[eventName].call(observer, ...args);
         }
     }
+
+    // Returns an iterator that can be used to iterate over the connected players.
+    [Symbol.iterator]() { return this.players_.values(); }
 
     // Releases all references and state held by the player manager.
     dispose() {

@@ -10,6 +10,10 @@ class StoredEntity {
         this.position_ = position;
         this.interiorId_ = interiorId;
         this.virtualWorld_ = virtualWorld;
+
+        // Reference counts for this stored entity.
+        this.activeReferences_ = 0;
+        this.totalReferences_ = 0;
     }
 
     // Gets the model Id associated with this entity.
@@ -25,6 +29,31 @@ class StoredEntity {
     // Gets the Id of the virtual world to which this entity should be tied. A virtual world of -1
     // means that the entity should be streamed regardless of which virtual world the player is in.
     get virtualWorld() { return this.virtualWorld_; }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Gets the number of active references to this entity.
+    get activeReferences() { return this.activeReferences_; }
+
+    // Gets the total number of references to this entity.
+    get totalReferences() { return this.totalReferences_; }
+
+    // Declares that a new reference to this entity has been added.
+    declareReferenceAdded() {
+        ++this.activeReferences_;
+        ++this.totalReferences_;
+    }
+
+    // Declares that a reference to this entity has been deleted.
+    declareReferenceDeleted() {
+        --this.activeReferences_;
+    }
+
+    // Resets the reference information for this entity.
+    resetReferences() {
+        this.activeReferences_ = 0;
+        this.totalReferences_ = 0;
+    }
 }
 
 exports = StoredEntity;

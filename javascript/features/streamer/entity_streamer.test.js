@@ -93,6 +93,35 @@ describe('EntityStreamer', it => {
         assert.equal(streamer.size, entities.length - 1);
     });
 
+    it('should reset entity reference counts when its being added', assert => {
+        const streamer = new EntityStreamer({ maxVisible: 10 });
+        const entity = new StoredEntity({
+            modelId: 1,
+            position: new Vector(50, 50, 0),
+            interiorId: 1,
+            virtualWorld: 0
+        });
+
+        assert.equal(entity.activeReferences, 0);
+        assert.equal(entity.totalReferences, 0);
+
+        for (let i = 0; i < 10; ++i)
+            entity.declareReferenceAdded();
+
+        assert.equal(entity.activeReferences, 10);
+        assert.equal(entity.totalReferences, 10);
+
+        entity.declareReferenceDeleted();
+
+        assert.equal(entity.activeReferences, 9);
+        assert.equal(entity.totalReferences, 10);
+
+        streamer.add(entity);
+
+        assert.equal(entity.activeReferences, 0);
+        assert.equal(entity.totalReferences, 0);
+    });
+
     it('should be able to find the entities closest to the player', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 

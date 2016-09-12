@@ -22,6 +22,8 @@ class EntityStreamer {
         if (this.entitiesByInstance_.has(storedEntity))
             return;
 
+        storedEntity.resetReferences();
+
         const entityId = this.id_++;
 
         this.entitiesByInstance_.set(storedEntity, entityId);

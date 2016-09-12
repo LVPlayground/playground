@@ -65,10 +65,10 @@ class EntityStreamer {
         // world, so that the right entities are returned for the player.
 
         const entityIds = await this.streamer_.stream(visible, position.x, position.y, position.z);
-        const entities = [];
+        const entities = new Set();
 
         entityIds.forEach(entityId =>
-            entities.push(this.entitiesById_.get(entityId)));
+            entities.add(this.entitiesById_.get(entityId)));
 
         return entities;
     }

@@ -135,8 +135,8 @@ describe('EntityStreamer', it => {
         const streamer = new EntityStreamer({ maxVisible: 10 });
         const entities = fillStreamer(streamer, 10 /* 100 entities */);
 
-        assert.equal((await streamer.streamForPlayer(gunther)).length, 10);
-        assert.equal((await streamer.streamForPlayer(gunther, 5 /* visible */)).length, 5);
+        assert.equal((await streamer.streamForPlayer(gunther)).size, 10);
+        assert.equal((await streamer.streamForPlayer(gunther, 5 /* visible */)).size, 5);
     });
 
     it('should be able to find the entities closest to the player', async(assert) => {
@@ -168,8 +168,8 @@ describe('EntityStreamer', it => {
         {
             const streamedEntities = await streamer.streamForPlayer(gunther);
 
-            assert.equal(streamedEntities.length, 1);
-            assert.equal(streamedEntities[0], randomEntity);
+            assert.equal(streamedEntities.size, 1);
+            assert.equal(Array.from(streamedEntities)[0], randomEntity);
         }
 
         streamer.delete(randomEntity);
@@ -179,7 +179,7 @@ describe('EntityStreamer', it => {
         {
             const streamedEntities = await streamer.streamForPlayer(gunther);
 
-            assert.equal(streamedEntities.length, 0);
+            assert.equal(streamedEntities.size, 0);
         }
     });
 
@@ -190,11 +190,11 @@ describe('EntityStreamer', it => {
         const streamer = new EntityStreamer({ maxVisible: 10 });
         const entities = fillStreamer(streamer, 10 /* 100 entities */);
 
-        assert.isAbove((await streamer.streamForPlayer(gunther)).length, 0);
+        assert.isAbove((await streamer.streamForPlayer(gunther)).size, 0);
 
         streamer.clear();
 
         assert.equal(streamer.size, 0);
-        assert.equal((await streamer.streamForPlayer(gunther)).length, 0);
+        assert.equal((await streamer.streamForPlayer(gunther)).size, 0);
     });
 });

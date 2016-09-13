@@ -17,6 +17,21 @@ class VehicleStreamer extends EntityStreamerGlobal {
         this.vehicles_ = new Map();
     }
 
+    // ---------------------------------------------------------------------------------------------
+    // Interface of the VehicleStreamer class:
+    //
+    //     readonly attribute number maxVisible;
+    //     readonly attribute number streamingDistance;
+    //     readonly attribute number size;
+    //
+    //     async stream();
+    //
+    //     boolean add(storedEntity, lazy = false);
+    //     boolean delete(storedEntity);
+    //     void clear();
+    //
+    // ---------------------------------------------------------------------------------------------
+
     // Creates the vehicle represented by |storedVehicle|.
     createEntity(storedVehicle) {
         if (this.vehicles_.has(storedVehicle))

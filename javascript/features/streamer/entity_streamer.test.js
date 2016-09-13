@@ -80,9 +80,9 @@ describe('EntityStreamer', it => {
 
         assert.equal(streamer.size, 1);
 
-        streamer.add(entity);
-        streamer.add(entity);
-        streamer.add(entity);
+        assert.isFalse(streamer.add(entity));
+        assert.isFalse(streamer.add(entity));
+        assert.isFalse(streamer.add(entity));
 
         assert.equal(streamer.size, 1);
     });
@@ -93,9 +93,9 @@ describe('EntityStreamer', it => {
 
         assert.equal(streamer.size, entities.length);
 
-        streamer.delete(entities[0]);
-        streamer.delete(entities[0]);
-        streamer.delete(entities[0]);
+        assert.isTrue(streamer.delete(entities[0]));
+        assert.isFalse(streamer.delete(entities[0]));
+        assert.isFalse(streamer.delete(entities[0]));
 
         assert.equal(streamer.size, entities.length - 1);
     });
@@ -123,7 +123,7 @@ describe('EntityStreamer', it => {
         assert.equal(entity.activeReferences, 9);
         assert.equal(entity.totalReferences, 10);
 
-        streamer.add(entity);
+        assert.isTrue(streamer.add(entity));
 
         assert.equal(entity.activeReferences, 0);
         assert.equal(entity.totalReferences, 0);
@@ -172,7 +172,7 @@ describe('EntityStreamer', it => {
             assert.equal(Array.from(streamedEntities)[0], randomEntity);
         }
 
-        streamer.delete(randomEntity);
+        assert.isTrue(streamer.delete(randomEntity));
         assert.equal(streamer.size, entities.length - 1);
 
         // (2) Stream now that the |randomEntity| has been removed from the streamer.

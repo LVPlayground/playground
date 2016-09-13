@@ -27,10 +27,10 @@ class EntityStreamer {
     // Gets the number of entities that have been stored in this streamer.
     get size() { return this.entitiesByInstance_.size; }
 
-    // Adds |storedEntity| to this entity streamer. 
-    add(storedEntity) {
+    // Adds |storedEntity| to this entity streamer. Returns whether the entity was added.
+    add(storedEntity, lazy = false) {
         if (this.entitiesByInstance_.has(storedEntity))
-            return;
+            return false;
 
         storedEntity.resetReferences();
 
@@ -41,18 +41,20 @@ class EntityStreamer {
 
         this.streamer_.add(
             entityId, storedEntity.position.x, storedEntity.position.y, storedEntity.position.z);
+        return true;
     }
 
-    // Deletes |storedEntity| from the entity streamer.
+    // Deletes |storedEntity| from the entity streamer. Returns whether the entity was deleted.
     delete(storedEntity) {
         const entityId = this.entitiesByInstance_.get(storedEntity);
         if (entityId === undefined)
-            return;
+            return false;
 
         this.entitiesByInstance_.delete(storedEntity);
         this.entitiesById_.delete(entityId);
 
         this.streamer_.delete(entityId);
+        return true;
     }
 
     // Asynchronously returns the |maxVisible| entities that are closest to the |player|.

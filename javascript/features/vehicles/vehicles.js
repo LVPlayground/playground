@@ -4,10 +4,7 @@
 
 const Feature = require('components/feature_manager/feature.js');
 
-// Walking around in Grand Theft Auto shows vehicles everywhere around you, it's never hard to find
-// one. Traditionally, due to a limit of two thousand vehicles, this has not been the same in online
-// games. The Vehicles feature implements management commands and a vehicle streaming mechanism that
-// set of to reproduce this same feeling.
+// TODO: Add a description.
 class Vehicles extends Feature {
     constructor() {
         super();

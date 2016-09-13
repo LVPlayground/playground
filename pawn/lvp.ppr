@@ -15,7 +15,6 @@
     <DiskObject>\Elements\Player\Commands\</DiskObject>
     <DiskObject>\Elements\Player\Commands\General.pwn</DiskObject>
     <DiskObject>\Elements\Player\Commands\Regular.pwn</DiskObject>
-    <DiskObject>\Elements\Player\Commands\Testing.pwn</DiskObject>
     <DiskObject>\Elements\Player\Connections\</DiskObject>
     <DiskObject>\Elements\Player\Connections\connect.pwn</DiskObject>
     <DiskObject>\Elements\Player\Connections\disconnect.pwn</DiskObject>

@@ -171,7 +171,6 @@
 #if Feature::DisableFightClub == 0
     #include Resources/Games/FightClub.pwn
 #endif
-#include Elements/Player/Commands/Testing.pwn
 
 // Anticheat
 // ---------------------------------------

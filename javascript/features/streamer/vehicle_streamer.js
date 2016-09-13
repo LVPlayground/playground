@@ -5,7 +5,8 @@
 const EntityStreamerGlobal = require('features/streamer/entity_streamer_global.js');
 const ScopedEntities = require('entities/scoped_entities.js');
 
-// Implementation for a vehicle that's able to stream vehicles for all players.
+// Implementation for a vehicle that's able to stream vehicles for all players. This class is
+// intended to be used with stored entities that are StoredVehicle instances.
 class VehicleStreamer extends EntityStreamerGlobal {
     constructor({ maxVisible = 1000, streamingDistance = 300 } = {}) {
         super({ maxVisible, streamingDistance });
@@ -26,8 +27,8 @@ class VehicleStreamer extends EntityStreamerGlobal {
     //
     //     async stream();
     //
-    //     boolean add(storedEntity, lazy = false);
-    //     boolean delete(storedEntity);
+    //     boolean add(storedVehicle, lazy = false);
+    //     boolean delete(storedVehicle);
     //     void clear();
     //
     // ---------------------------------------------------------------------------------------------

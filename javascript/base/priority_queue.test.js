@@ -136,4 +136,15 @@ describe('PriorityQueue', it => {
         assert.equal(queue.pop().value, 1000);
         assert.equal(queue.pop().value, 10000);
     });
+
+    it('should be able to clear all stored values in the queue', assert => {
+        const queue = new PriorityQueue(ascendingComparator);
+        queue.push(5, 10, 8, 2, 8, 1);
+
+        assert.equal(queue.size(), 6);
+
+        queue.clear();
+
+        assert.equal(queue.size(), 0);
+    });
 });

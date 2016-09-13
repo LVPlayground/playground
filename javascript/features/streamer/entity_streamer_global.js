@@ -3,16 +3,33 @@
 // be found in the LICENSE file.
 
 const EntityStreamer = require('features/streamer/entity_streamer.js');
+const PriorityQueue = require('base/priority_queue.js');
+
+// Comparator that orders stored entities in ascending order by their the total reference count. 
+const TotalReferenceComparator = (lhs, rhs) => {
+    if (lhs.totalReferences === rhs.totalReferences)
+        return 0;
+
+    return lhs.totalReferences > rhs.totalReferences ? 1 : -1;
+};
 
 // Implementation of the EntityStreamer base class that adheres to a global entity limit, for
 // example vehicles and pickups. See EntityStreamerPlayer for an implementation that will instead
 // stream entities up to the limit per player.
 class EntityStreamerGlobal extends EntityStreamer {
-    constructor({ maxVisible, streamingDistance = 300, saturationRatio = 0.7 } = {}) {
+    constructor({ maxVisible, streamingDistance = 300, saturationRatio = 0.7, lru = true } = {}) {
         super({ maxVisible, streamingDistance });
 
         // The ratio of active versus disposable entities that we should try to maintain.
         this.saturationRatio_ = saturationRatio;
+
+        // Priority queue of disposable entities, sorted in ascending order by total reference
+        // count, when LRU is disabled. NULL otherwise.
+        this.disposableEntities_ = lru ? new PriorityQueue(TotalReferenceComparator)
+                                       : null;
+
+        // Total number of entities that have been created by the streamer.
+        this.activeEntities_ = 0;
 
         // Set of streamed entities for each of the connected players.
         this.playerEntities_ = new Map();
@@ -46,7 +63,7 @@ class EntityStreamerGlobal extends EntityStreamer {
         if (!super.add(storedEntity))
             return false;
 
-        if (!lazy) {
+        if (!lazy && this.activeEntities_ < this.maxVisible) {
             const streamingDistanceSquared = this.streamingDistance * this.streamingDistance;
             for (const [player, cachedEntities] of this.playerEntities_) {
                 const position = player.position;
@@ -120,9 +137,25 @@ class EntityStreamerGlobal extends EntityStreamer {
     // this is the first active reference to it.
     addEntityReference(entity) {
         if (!entity.activeReferences) {
-            // TODO: Implement a LRU list for disposable entities.
+            // If the limit of active entities has been reached, which should only be possible when
+            // a LRU is being used by the streamer, delete the least referred to entity.
+            if (this.activeEntities_ === this.maxVisible) {
+                if (!this.disposableEntities_ || !this.disposableEntities_.sizeNew)
+                    throw new Error('Reached the entity limit without anything to dispose.');
 
-            this.createEntity(entity);
+                console.log('hit lru limit: ' + this.activeEntities_ + ' // ' + this.maxVisible);
+
+                this.activeEntities_--;
+                this.deleteEntity(this.disposableEntities_.pop());
+                
+            }
+
+            // Remove the |entity| from the disposable entities if it's listed there. Create the
+            // vehicle using the actual entity streamer when that's not the case.
+            if (!this.disposableEntities_.delete(entity)) {
+                this.activeEntities_++;
+                this.createEntity(entity);
+            }
         }
 
         entity.declareReferenceAdded();
@@ -136,8 +169,13 @@ class EntityStreamerGlobal extends EntityStreamer {
         if (entity.activeReferences)
             return;  // the entity is in scope for other players, let it be
 
-        // TODO: Implement a LRU list for disposable entities.
+        // Add the |entity| to the disposable entity queue instead of destroying it when possible.
+        if (lru && this.disposableEntities_) {
+            this.disposableEntities_.push(entity);
+            return;
+        }
 
+        this.activeEntities_--;
         this.deleteEntity(entity);
     }
 
@@ -167,6 +205,9 @@ class EntityStreamerGlobal extends EntityStreamer {
 
     dispose() {
         server.playerManager.removeObserver(this);
+
+        this.disposableEntities_.clear();
+        this.disposableEntities_ = null;
 
         this.playerEntities_.clear();
         this.playerEntities_ = null;

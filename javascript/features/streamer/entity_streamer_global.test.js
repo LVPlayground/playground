@@ -10,14 +10,25 @@ describe('EntityStreamerGlobal', it => {
     class MyEntityStreamer extends EntityStreamerGlobal {
         constructor({ maxVisible = 5, streamingDistance = 300, saturationRatio = 0.7 } = {}) {
             super({ maxVisible, streamingDistance, saturationRatio });
-            this.activeEntities_ = new Set();
+            this.entities_ = new Set();
         }
 
-        get activeEntityCount() { return this.activeEntities_.size; }
-        get activeEntities() { return Array.from(this.activeEntities_.values()); }
+        get activeEntityCount() { return this.entities_.size; }
+        get activeEntities() { return Array.from(this.entities_.values()); }
 
-        createEntity(storedEntity) { this.activeEntities_.add(storedEntity); }
-        deleteEntity(storedEntity) { this.activeEntities_.delete(storedEntity); }
+        createEntity(storedEntity) {
+            if (this.entities_.has(storedEntity))
+                throw new Error('Attempting to create an entity that already exists.');
+
+            this.entities_.add(storedEntity);
+        }
+
+        deleteEntity(storedEntity) {
+            if (!this.entities_.has(storedEntity))
+                throw new Error('Attempting to delete an entity that does not exist.');
+
+            this.entities_.delete(storedEntity);
+        }
     }
 
     // Creates a new StoredEntity instance filled with random information.
@@ -84,7 +95,6 @@ describe('EntityStreamerGlobal', it => {
         for (let iteration = 0; iteration < 10; ++iteration) {
             assert.equal(entity.activeReferences, 0);
             assert.equal(entity.totalReferences, iteration);
-            assert.equal(streamer.activeEntityCount, 0);
 
             gunther.position = nearPosition;
 
@@ -92,7 +102,6 @@ describe('EntityStreamerGlobal', it => {
 
             assert.equal(entity.activeReferences, 1);
             assert.equal(entity.totalReferences, iteration + 1);
-            assert.equal(streamer.activeEntityCount, 1);
 
             gunther.position = farPosition;
 
@@ -101,7 +110,6 @@ describe('EntityStreamerGlobal', it => {
 
         assert.equal(entity.activeReferences, 0);
         assert.equal(entity.totalReferences, 10);
-        assert.equal(streamer.activeEntityCount, 0);
     });
 
     it('should aim to maintain the entity saturation ratio', async(assert) => {
@@ -126,7 +134,7 @@ describe('EntityStreamerGlobal', it => {
         assert.equal(streamer.activeEntityCount, visibilityPerPlayer);
     });
 
-    it('should be able to display the vehicles closest to all players', async(assert) => {
+    it('should be able to display the entities closest to all players', async(assert) => {
         const playerCount = server.playerManager.count;
         const streamer = new MyEntityStreamer({ maxVisible: 100 });
 
@@ -151,5 +159,112 @@ describe('EntityStreamerGlobal', it => {
             Math.floor((streamer.maxVisible * streamer.saturationRatio) / playerCount);
 
         assert.equal(streamer.activeEntityCount, visibilityPerPlayer * playerCount);
+    });
+
+    it('should maintain a lru list of disposable entities', async(assert) => {
+        const playerCount = server.playerManager.count;
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const streamer = new MyEntityStreamer();
+
+        // Create 101 entities, in which one is separated far away from the others.
+        const entity = createRandomEntity({ min: 2000, max: 2100 });
+        streamer.add(entity);
+
+        for (let i = 0; i < 100; ++i)
+            streamer.add(createRandomEntity({ min: 3000, max: 3100 }));
+
+        const visibilityPerPlayer =
+            Math.floor((streamer.maxVisible * streamer.saturationRatio) / playerCount);
+
+        // Position |gunther| near the |entity|.
+        gunther.position = entity.position;
+
+        assert.equal(streamer.activeEntityCount, 0);
+        await streamer.stream();
+        assert.equal(streamer.activeEntityCount, 1);
+        
+        // Move |gunther| out of scope of the |entity|, which should not delete it.
+        gunther.position = new Vector(3050, 3050, 0);
+
+        await streamer.stream();
+
+        assert.equal(streamer.activeEntityCount, visibilityPerPlayer + 1 /* |entity| */);
+        assert.equal(entity.activeReferences, 0);
+    });
+
+    it('should never reach the entity limit, even with lots of player movement', async(assert) => { return;
+        // Make sure that 50 players are connected to the server.
+        for (let playerId = 0; playerId < 50; ++playerId) {
+            if (server.playerManager.getById(playerId) !== null)
+                continue;
+
+            server.playerManager.onPlayerConnect({ playerid: playerId, name: 'Player' + playerId });
+        }
+
+        assert.equal(server.playerManager.count, 50);
+
+        const streamer = new MyEntityStreamer({ maxVisible: 500 });
+
+        // Now create a thousand entities in a 500x500 grid.
+        for (let i = 0; i < 1000; ++i)
+            streamer.add(createRandomEntity({ min: 0, max: 500 }), true /* lazy */);
+
+        assert.equal(streamer.activeEntityCount, 0);
+
+        // Utility function to create a random coordinate in range of [0, 500].
+        const randomCoord = () => Math.floor(Math.random() * 500);
+
+        // For 30 iterations, teleport the players to random positions within that grid and do a
+        // full stream that will rearrange the created entities. This mimics the worst-case load of
+        // streaming a thousand entities to 50 players over the course of half a minute.
+        for (let iteration = 0; iteration < 30; ++iteration) {
+            server.playerManager.forEach(player =>
+                player.position = new Vector(randomCoord(), randomCoord(), 0));
+
+            await streamer.stream();
+        }
+
+        // By this time (3000 kNN searches), it's pretty much a certainty that all entities have
+        // been referred to at least once. That means that the streamer will have maxed out.
+        assert.isAbove(streamer.activeEntityCount, 498);
+    });
+
+    it('should be able to stream 250,000 entities for 500 players without issue', async(assert) => {
+        const ENTITY_COUNT = 250000;
+        const PLAYER_COUNT = 500;
+
+        // Make sure that |PLAYER_COUNT| players are connected to the server.
+        for (let playerId = 0; playerId < PLAYER_COUNT; ++playerId) {
+            if (server.playerManager.getById(playerId) !== null)
+                continue;
+
+            server.playerManager.onPlayerConnect({ playerid: playerId, name: 'Player' + playerId });
+        }
+
+        const streamer = new MyEntityStreamer({ maxVisible: 1000, streamingDistance: 300 });
+
+        // Now create |ENTITY_COUNT| entities on a grid that's slightly smaller than the size of San
+        // Andreas. That counters the distribution bias a little bit.
+        for (let i = 0; i < ENTITY_COUNT; ++i)
+            streamer.add(createRandomEntity({ min: 0, max: 4500 }), true /* lazy */);
+
+        // Utility function to create a random coordinate in range of [0, 500].
+        const randomCoord = () => Math.floor(Math.random() * 4500);
+
+        // Position all 50 players at random positions on the smaller map.
+        server.playerManager.forEach(player =>
+            player.position = new Vector(randomCoord(), randomCoord(), 0));
+
+        // Now run the performance test...
+        const startTime = highResolutionTime();
+        await streamer.stream();
+        const endTime = highResolutionTime();
+
+        const time = Math.round((endTime - startTime) * 100) / 100;
+
+        // Output the result to the console, because that's the only sensible thing we can do.
+        console.log('[EntityStreamerGlobal] Streamed ' + ENTITY_COUNT + ' entities for ' +
+                    PLAYER_COUNT + ' players in ' + time + ' ms.');
     });
 });

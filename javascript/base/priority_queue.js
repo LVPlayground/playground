@@ -80,6 +80,11 @@ class PriorityQueue {
 
         return false;
     }
+
+    // Clears all values stored in the priority queue.
+    clear() {
+        this.values_ = [];
+    }
 }
 
 exports = PriorityQueue;

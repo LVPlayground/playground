@@ -25,7 +25,8 @@ class Streamer extends Feature {
     // Public API of the Streamer feature.
     // ---------------------------------------------------------------------------------------------
 
-    // Returns the vehicle streamer for Las Venturas Playground.
+    // Returns the vehicle streamer for Las Venturas Playground. Note that the vehicle streamer is
+    // only responsible for vehicles created in the main virtual world, in the main interior.
     getVehicleStreamer() {
         return this.vehicleStreamer_;
     }

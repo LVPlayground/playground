@@ -739,7 +739,6 @@ CFightClub__WatchMatch(playerid, matchid)
 CFightClub__StopWatch(playerid)
 {
     TogglePlayerSpectating(playerid, 0);
-    IsPlayerWatchingFC[playerid] = 0;
     aSpecInfo[playerid][specmatch] = -1;
     aSpecInfo[playerid][specplayer] = -1;
 
@@ -748,6 +747,7 @@ CFightClub__StopWatch(playerid)
         SetPlayerInterior(playerid, 0);
         SetPlayerVirtualWorld(playerid, 0);
         SpawnPlayer(playerid);
+        IsPlayerWatchingFC[playerid] = 0;
         TogglePlayerControllable(playerid, true);
     }
 

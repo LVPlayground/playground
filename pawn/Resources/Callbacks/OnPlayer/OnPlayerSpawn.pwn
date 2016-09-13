@@ -112,6 +112,10 @@ OriginalOnPlayerSpawn(playerId) {
 
     g_isAiming[playerId] = false;
 
+    // Don't give out spawnmoney when returning from watching(!) a FC-fight
+    if (IsPlayerWatchingFC[playerId])
+        return true;
+
     new const defaultSpawnMoney = GetEconomyValue(SpawnMoney);
 
     // Handle spawnmoney.

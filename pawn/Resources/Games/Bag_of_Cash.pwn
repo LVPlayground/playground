@@ -231,7 +231,7 @@ CreateMoneyBagPickup(Float:fPosX, Float:fPosY, Float:fPosZ, szClue[], amount) {
 	    iMoneyBagCash = 0;
 	}
 
-	iMoneyBagCashPickup = CreatePickup(MONEY_BAG_PICKUP_MODEL, MONEY_BAG_PICKUP_TYPE, fPosX, fPosY, fPosZ, 0);
+	iMoneyBagCashPickup = CreatePickup(MONEY_BAG_PICKUP_MODEL, MONEY_BAG_PICKUP_TYPE, fPosX, fPosY, fPosZ, -1);
 	iMoneyBagCash = amount;
 
 	new szClueText[128];

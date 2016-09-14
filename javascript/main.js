@@ -8,6 +8,7 @@ const TestRunner = require('base/test/test_runner.js');
 // Import global objects.
 require('base/color.js');
 require('base/message.js');
+require('base/time.js');
 require('base/vector.js');
 
 // Import the entities. These are global objects.

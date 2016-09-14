@@ -142,7 +142,7 @@
     "HOUSE_PARKING_LOT_NONE": "You cannot remove parking lots if there are none!",
     "HOUSE_PARKING_LOT_NOT_IN_VEHICLE": "You must be in a vehicle in order to create the parking lot. Try again?",
     "HOUSE_PARKING_LOT_REMOVE": "Find the parking lot Ids in the beams that have been created around you.\nType `{FFA500}/house remove [id]{A9C4E4}` to remove a parking lot, or `{FFA500}/house cancel{A9C4E4}` to cancel.",
-    "HOUSE_PARKING_LOT_REMOVE_MSG": "{10F441}Type `{DDFFDD}/house remove [id]{10F441}` to remove a parking lot, or `{DDFFDD}/house cancel{10F441}` to cancel.", 
+    "HOUSE_PARKING_LOT_REMOVE_MSG": "{10F441}Type `{DDFFDD}/house remove [id]{10F441}` to remove a parking lot, or `{DDFFDD}/house cancel{10F441}` to cancel.",
     "HOUSE_PARKING_LOT_REMOVED": "The parking lot has been removed from this location.",
     "HOUSE_PARKING_LOT_TOO_FAR": "The parking lot must be within %d units from the property (you are %d units away). Try again?",
     "HOUSE_PICKUP_CAN_PURCHASE": "{10F441}This house is available for purchase, starting at %$. Type `{DDFFDD}/house buy{10F441}` if you're interested!",
@@ -169,8 +169,9 @@
     "HOUSE_WELCOME_MESSAGE": "{10F441}%s says{FFFFFF}: %s",
 
     "IRC_CHAT_MESSAGE_SENT": "{33AA33}Message sent to {FFFFFF}%s {33AA33}as {FFFFFF}%s{33AA33}: {FFFFFF}%s",
-    
-    "KILLTIME_START_STANDARD": "{DC143C}Killtime{FFFFFF}: When executing this command again with empty minutes and weaponId, a killtime of 2 minutes without special weapons will start.",
+
+    "KILLTIME_USAGE": "{DC143C}Killtime{FFFFFF}: '/killtime start 4' to start a killtime of 4 minutes, no minutes = 2 minutes. '/killtime stop' to end killtime.",
+    "KILLTIME_TOPKILLER": "{DC143C}Killtime{FFFFFF}: Leading with %d kills is %s. Hurry up and get more to win the prize of $%d!",
 
     "LVP_ANNOUNCE_ADMIN_NOTICE": "%s (Id: %d) has %s the %s option.",
     "LVP_ANNOUNCE_PARTY": "%s has %s the Pirate Ship Party mode!",
@@ -199,14 +200,14 @@
 
     "POSITIONING_CURRENT_POSITION": "Your current position is X: %d, Y: %d Z: %d, Rotation: %d",
     "POSITIONING_OTHER_USAGE_POS": "{FF9900}Other usage{FFFFFF}: /pos [x] [y] [z]",
-    
+
     "RACE_ERROR_NO_RACES_AVAILABLE": "@error Sorry, there are no races available right now.",
     "RACE_ERROR_INVALID_RACE_ID": "@error Sorry, that is not a known race. Type /race for an overview!",
     "RACE_ERROR_ALREADY_ENGAGED": "@error Sorry, you can't start a race while you're already engaged in something.",
 
     "RACE_COMMAND_JOIN": "{CCD782}You have signed up for the {838F31}%s{CCD782}!",
     "RACE_COMMAND_LEFT": "{CCD782}You have left the {838F31}%s{CCD782}!",
-    
+
     "REPORT_MESSAGE": "{33AA33}Your report has been delivered to the crew{FFFFFF}: Player: %s (Id: %d) - Reason: %s",
     "REPORT_ALREADY_REPORTED": "@error We have already received a report about %s and are on it. Thank you!"
 }

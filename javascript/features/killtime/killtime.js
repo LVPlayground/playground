@@ -3,18 +3,20 @@
 // be found in the LICENSE file.
 
 const Feature = require('components/feature_manager/feature.js');
+const KilltimeManager = require('features/killtime/killtime_manager.js');
 const KilltimeCommands = require('features/killtime/killtime_commands.js');
 
-// Players are able to report other players in-game if they are suspecting they are using illegal
-// stuff.
+// Killtime is a fun element in LVP for, especially, DMers. This provides the possibility to give a prize for the
+ // player who kills the most players in the given time.
 class Killtime extends Feature {
     constructor() {
         super();
 
         // Be able to send a certain message to a certain public
-        //const announce = this.defineDependency('announce', true /* isFunctional */);
+        const announce = this.defineDependency('announce', true /* isFunctional */);
 
-        this.commands_ = new KilltimeCommands();//announce);
+        this.manager_ = new KilltimeManager(announce);
+        this.commands_ = new KilltimeCommands(this.manager_);
     }
 
     dispose() {

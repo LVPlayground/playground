@@ -48,7 +48,8 @@ class VehicleStreamer extends EntityStreamerGlobal {
             primaryColor: storedVehicle.primaryColor,
             secondaryColor: storedVehicle.secondaryColor,
             paintjob: storedVehicle.paintjob,
-            siren: stored.siren
+            siren: storedVehicle.siren,
+            respawnDelay: storedVehicle.respawnDelay
         }));
     }
 

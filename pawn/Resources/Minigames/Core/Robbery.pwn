@@ -721,7 +721,7 @@ CRobbery__OnText(playerid, text[])
         return 0;
     }
 
-    if(!strcmp(text[0], "!", true, 1)) {
+    if(!strcmp(text[0], ";", true, 1)) {
         // TEAM CHAT YAYA
         new string[256];
         new teamstr[7];
@@ -945,7 +945,7 @@ CRobbery__Start()
             playerCasinoData[i][skin] =     CRobbery__RandomSkin(playerCasinoData[i][team]);
 
             EnablePlayerInteriorWeapons(i, 1); // Allow them to fight inside
-            SendClientMessage(i, COLOR_PINK, "* Use the ! prefix to talk to your team.");
+            SendClientMessage(i, COLOR_PINK, "* Use the ; prefix to talk to your team.");
 
             CRobbery__SavePos(i);
             CRobbery__SpawnPosition(i);

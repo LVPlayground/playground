@@ -292,7 +292,7 @@ CShell__OnText(playerid, text[])
         return 0;
     }
 
-    if(!strcmp(text[0], "!", true, 1)) {
+    if(!strcmp(text[0], ";", true, 1)) {
         // TEAM CHAT YAYA !!!!!
         new string[256];
         new teamstr[7];
@@ -469,7 +469,7 @@ public CShell__Start()
         SpawnPlayer(i);
         RemovePlayerFromVehicle(i);
         SetPlayerTeam(i,p_Team[i]);
-        SendClientMessage(i, Color::Green, "* Use the ! prefix to talk to your team.");
+        SendClientMessage(i, Color::Green, "* Use the ; prefix to talk to your team.");
         CShell__TeamCount[p_Team[i]]++;
         DisablePlayerCheckpoint(i);
     }

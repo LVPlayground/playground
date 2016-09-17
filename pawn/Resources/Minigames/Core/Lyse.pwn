@@ -539,7 +539,7 @@ CLyse__Start()
 
         CLyse__SetTextdrawPhase(i, TEXTDRAW_PHASE_BASE);
 
-        SendClientMessage(i, COLOR_YELLOW, "* Use ! <message> to talk in teamchat.");
+        SendClientMessage(i, COLOR_YELLOW, "* Use ; <message> to talk in teamchat.");
 
         new
             Float:fPosX,
@@ -1087,11 +1087,11 @@ CLyse__StateUpdate(playerid,newstate)
 // Called from OnPlayerText, checks for team chat.
 CLyse__OnText(playerid, text[])
 {
-    if(CLyse__GetPlayerState(playerid) != LYSE_STATE_RUNNING)
-    return 0;
+    if (CLyse__GetPlayerState(playerid) != LYSE_STATE_RUNNING)
+        return 0;
 
 
-    if(!strcmp(text[0], "!", true, 1))
+    if(!strcmp(text[0], ";", true, 1))
     {
         new szTeamMsg[128];
 

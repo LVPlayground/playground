@@ -159,9 +159,10 @@ bool: CWWT__IsPlaying(playerId) {
 CWWTW__OnText(playerid, text[])
 {
     // He's not taking part of the minigame
-    if(WWTW_PlayerData[playerid][iStatus] != WWTW_STATE_PLAYING ) return 0;
+    if (WWTW_PlayerData[playerid][iStatus] != WWTW_STATE_PLAYING )
+        return 0;
 
-    if(!strcmp(text[0], "!", true, 1))
+    if (!strcmp(text[0], ";", true, 1))
     {
         // Team chat here
         new string[256], sTeamName[7];
@@ -249,7 +250,7 @@ CWWTW__Start()
             WWTW_PlayerData[i][iStatus] = WWTW_STATE_PLAYING;
 
             EnablePlayerInteriorWeapons(i, 2); // Allow them to fight inside
-            SendClientMessage(i, COLOR_PINK, "* Use the ! prefix to talk to your team.");
+            SendClientMessage(i, COLOR_PINK, "* Use the ; prefix to talk to your team.");
 
             CWWTW__SavePos(i);
             CWWTW__SpawnPlayer(i);

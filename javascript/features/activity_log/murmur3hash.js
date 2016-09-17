@@ -14,8 +14,11 @@ const PrivateSymbol = Symbol('Private method, only Murmur3Hash.generateHash shou
 class Murmur3Hash {
     // Generate our murmur3-hash based on given |key| according to the algorithm
     static generateHash(key) {
-        if (key.trim().length < 1 || key == null)
-            throw new Error('key should not be null or empty.');
+        if (key == null || key.trim().length < 1)
+        {
+            console.log('Error in Murmur3Hash.generateHash(' + key + '): key should not be null or empty.');
+            return 0;
+        }
 
         const remainder = key.length % 4;
         const bytes = key.length - remainder;

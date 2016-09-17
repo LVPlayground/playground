@@ -9,6 +9,7 @@ class Vehicle {
         this.manager_ = manager;
         this.modelId_ = options.modelId;
         this.siren_ = !!options.siren;
+        this.respawnDelay_ = options.respawnDelay;
 
         // TODO(Russell): Synchronize these with the OnVehicleRespray event.
         this.primaryColor_ = options.primaryColor;
@@ -21,7 +22,7 @@ class Vehicle {
 
         this.id_ = pawnInvoke('CreateVehicle', 'iffffiiii', options.modelId, options.position.x,
                               options.position.y, options.position.z, options.rotation,
-                              options.primaryColor, options.secondaryColor, 180 /* respawn delay */,
+                              options.primaryColor, options.secondaryColor, options.respawnDelay,
                               options.siren ? 1 : 0);
 
         if (this.id_ == Vehicle.INVALID_ID)
@@ -70,15 +71,18 @@ class Vehicle {
         this.secondaryColor_ = value;
     }
 
-    // Gets whether the vehicle has been forced to have a siren.
-    get siren() { return this.siren_; }
-
     // Gets or sets the paintjob that have been applied to this vehicle.
     get paintjob() { return this.paintjob_; }
     set paintjob(value) {
         pawnInvoke('ChangeVehiclePaintjob', 'ii', this.id_, value);
         this.paintjob_ = value;
     }
+
+    // Gets whether the vehicle has been forced to have a siren.
+    get siren() { return this.siren_; }
+
+    // Gets the delay, in seconds, after which the vehicle should be respawned without a driver.
+    get respawnDelay() { return this.respawnDelay_; }
 
     // Gets or sets the interior that this vehicle has been linked to.
     get interiorId() { return this.interiorId_; }

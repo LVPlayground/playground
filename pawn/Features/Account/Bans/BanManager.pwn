@@ -32,8 +32,6 @@ public DelayedKick(playerId) {
  */
 native MurmurIIIHashGenerateHash(key[], len, hash[]);
 
-native gpci(playerid, serial[], len);
-
 /**
  * Administrators have the ability to disallow a player to play on Las Venturas Playground for a
  * certain amount of time, which is known as being banned from the server. The Ban Manager will

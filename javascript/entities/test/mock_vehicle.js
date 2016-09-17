@@ -15,6 +15,7 @@ class MockVehicle {
         this.primaryColor_ = options.primaryColor;
         this.secondaryColor_ = options.secondaryColor;
         this.siren_ = options.siren;
+        this.respawnDelay_ = options.respawnDelay;
 
         this.paintjob_ = options.paintjob;
 
@@ -49,12 +50,15 @@ class MockVehicle {
     get secondaryColor() { return this.secondaryColor_; }
     set secondaryColor(value) { this.secondaryColor_ = value; }
 
-    // Gets whether the vehicle has been forced to have a siren.
-    get siren() { return this.siren_; }
-
     // Gets or sets the paintjob that have been applied to this vehicle.
     get paintjob() { return this.paintjob_; }
     set paintjob(value) { this.paintjob_ = value; }
+
+    // Gets whether the vehicle has been forced to have a siren.
+    get siren() { return this.siren_; }
+
+    // Gets the delay, in seconds, after which the vehicle should be respawned without a driver.
+    get respawnDelay() { return this.respawnDelay_; }
 
     // Gets or sets the interior that this vehicle has been linked to.
     get interiorId() { return this.interiorId_; }

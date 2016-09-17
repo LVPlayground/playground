@@ -230,9 +230,12 @@ describe('EntityStreamerGlobal', it => {
         assert.isAbove(streamer.activeEntityCount, 498);
     });
 
-    it('should be able to stream 250,000 entities for 500 players without issue', async(assert) => {
-        const ENTITY_COUNT = 250000;
-        const PLAYER_COUNT = 500;
+    it('should be able to stream 25,000 entities for 100 players without issue', async(assert) => {
+        const ENTITY_COUNT = 25000;
+        const PLAYER_COUNT = 100;
+
+        // Maximum time, in milliseconds, that streaming should take for this test to be quiet.
+        const MAX_STREAM_TIME_MS = 75;
 
         // Make sure that |PLAYER_COUNT| players are connected to the server.
         for (let playerId = 0; playerId < PLAYER_COUNT; ++playerId) {
@@ -249,7 +252,7 @@ describe('EntityStreamerGlobal', it => {
         for (let i = 0; i < ENTITY_COUNT; ++i)
             streamer.add(createRandomEntity({ min: 0, max: 4500 }), true /* lazy */);
 
-        // Utility function to create a random coordinate in range of [0, 500].
+        // Utility function to create a random coordinate in range of [0, 4500].
         const randomCoord = () => Math.floor(Math.random() * 4500);
 
         // Position all 50 players at random positions on the smaller map.
@@ -262,6 +265,9 @@ describe('EntityStreamerGlobal', it => {
         const endTime = highResolutionTime();
 
         const time = Math.round((endTime - startTime) * 100) / 100;
+
+        if (time < MAX_STREAM_TIME_MS)
+            return;
 
         // Output the result to the console, because that's the only sensible thing we can do.
         console.log('[EntityStreamerGlobal] Streamed ' + ENTITY_COUNT + ' entities for ' +

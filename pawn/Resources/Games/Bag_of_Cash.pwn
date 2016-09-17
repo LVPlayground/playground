@@ -83,7 +83,6 @@ static RandPickupLoc[RANDOM_MONEY_LOCATIONS][E_RAND_MONEY_BAG] = {
 	{389.7458,-2028.4886,34.5692,"Round and round"}, // LS Ferris Wheel
 	{343.7617,162.2469,1027.5610,"R* Model"}, // LV Mainbank
 	{1909.1781,-1202.0383,19.9806,"First gangfight"}, // LS Glen park
-	{2817.2905,-1168.2386,1029.9033,"War vet"}, // War veteran's house in LS
 	{1271.6725,295.1357,20.6563,"This is well hidden"}, // Hidden well in Montomery
 	{2058.1829,2433.8503,165.6172,"Jewels in the air"}, // LV Emerald Isle
 	{2169.0730,2159.9587,62.3551,"Yeeehaaaaw!"}, // LV Cowboy sign
@@ -98,27 +97,22 @@ static RandPickupLoc[RANDOM_MONEY_LOCATIONS][E_RAND_MONEY_BAG] = {
 	{220.1056,1822.8801,7.5257,"Map of San Andreas"}, // Map in area 51
 	{2.3492,1363.7041,9.1719,"Solar trailer park"}, // Trailer park near the ufo (has 3 solar panels)
 	{-143.9738,1230.2303,33.3366,"King ring"}, // King ring donuts in Fort Carson
-	{2496.2051,-1710.8314,1014.7422,"... street, home"}, // CJ's house
 	{1544.6656,-1353.5833,329.4738,"A nine-pointed star"}, // Basejumping building
 	{2695.7883,-1704.5995,11.8438,"Eight-track racing"}, // LR Stadium
-	{810.9623,-1098.1578,25.9063,"Soon to be burried money"}, // Open gravetomb in LS cemetary (inside the house)
 	{2051.7954,-1694.6245,13.5547,"Smokey garage"}, // Big Smoke's garage
 	{657.1237,-1866.7823,5.4609,"Beach workout"}, // Beach gym in LS
 	{154.4798,-1951.7048,51.3438,"Lighthouse"}, // LS lighthouse
-	{1804.2454,-2124.3630,13.9424,"Mr. Vialpando"}, // Cesar Vialpando's house
 	{-39.4815,52.9360,3.1172,"Old McDonald had a farm"}, // Big farm with the haystacks
 	{-549.4021,-188.6925,78.4063,"Pink slip"}, // Racingspot from singleplayer, with the logs around
 	{-1110.6401,-1637.2672,76.3672,"Smoke weed every day!"}, // The Truths farm
 	{1233.5916,-764.3138,1084.0072,"Big Poppa's gym"}, // Gym in Mad Doggs mansion
 	{-345.3311,2226.8450,41.7591,"CJ's grave"}, // Grave CJ digs in SP with Pulaski
 	{-843.8922,2748.6284,48.6324,"Teepees"}, // Tee pee motel
-	{-939.7149,2642.6033,42.4012,"Valle Oculatado boats"}, // Valle Oculatado boat house
 	{-237.1111,2663.2607,73.7261,"Feeding and seeding"}, // Giant chicken, desert
 	{2629.2583,-2107.9226,16.9531,"Fossil oil"}, // LS chemicals, near docks
 	{2573.0200,-638.4540,136.0294,"North rock"}, // North Rock is a place on east LS
 	{2601.9211,225.3947,59.7262,"Hankypanky point"}, // Hankypanky point in most northern part of LS, nearly LV
 	{2331.3889,-15.5503,29.9844,"Fleischberg"}, // Fleischberg sign in palomino creek
-	{867.6898,-24.9024,64.0308,"Fern Ridge"}, // Catalina's house
 	{245.5130,-53.8416,1.5776,"Phat Liquor"}, // Phat Liquor in Blueberry
 	{-679.6076,934.9304,16.7917,"Toreno"}, // Toreno's ranch
 	{-725.8640,1533.2802,40.1423,"Las Barrancas"}, // Las Barrancas, up in the small ruins

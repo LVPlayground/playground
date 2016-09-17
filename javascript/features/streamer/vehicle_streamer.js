@@ -43,7 +43,12 @@ class VehicleStreamer extends EntityStreamerGlobal {
             position: storedVehicle.position,
             rotation: storedVehicle.rotation,
             interiorId: storedVehicle.interiorId,
-            virtualWorld: storedVehicle.virtualWorld
+            virtualWorld: storedVehicle.virtualWorld,
+
+            primaryColor: storedVehicle.primaryColor,
+            secondaryColor: storedVehicle.secondaryColor,
+            paintjob: storedVehicle.paintjob,
+            siren: stored.siren
         }));
     }
 

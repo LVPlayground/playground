@@ -18,7 +18,7 @@ class StoredVehicle extends StoredEntity {
         this.paintjob_ = paintjob;
 
         this.siren_ = siren;
-        this.respawnDelay = respawnDelay;
+        this.respawnDelay_ = respawnDelay;
     }
 
     // Gets the rotation that this vehicle has been stored with.

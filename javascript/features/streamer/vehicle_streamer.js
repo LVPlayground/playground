@@ -19,6 +19,7 @@ class VehicleStreamer extends EntityStreamerGlobal {
     }
 
     // ---------------------------------------------------------------------------------------------
+    //
     // Interface of the VehicleStreamer class:
     //
     //     readonly attribute number maxVisible;
@@ -30,6 +31,9 @@ class VehicleStreamer extends EntityStreamerGlobal {
     //     boolean add(storedVehicle, lazy = false);
     //     boolean delete(storedVehicle);
     //     void clear();
+    //
+    // Do not use the createEntity() and deleteEntity() methods below- they are implementation
+    // details of the streamer. Use the add() and delete() methods instead.
     //
     // ---------------------------------------------------------------------------------------------
 
@@ -63,6 +67,15 @@ class VehicleStreamer extends EntityStreamerGlobal {
 
         this.vehicles_.delete(storedVehicle);
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Returns the vehicle associated with |storedVehicle|. Only to be used for testing purposes.
+    getVehicleForTesting(storedVehicle) {
+        return this.vehicles_.get(storedVehicle) || null;
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     dispose() {
         this.vehicles_.clear();

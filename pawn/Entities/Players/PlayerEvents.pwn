@@ -17,6 +17,9 @@ class PlayerEvents <playerId (MAX_PLAYERS)> {
      * @return integer Any value, as Pawn sets a requirement for public functions to return a value.
      */
     public onPlayerConnect() {
+        if (this->detectInvalidConnectionValues())
+            return Kick(playerId);
+
         PlayerManager->onPlayerConnect(playerId);
         Player(playerId)->onConnect();
 
@@ -29,6 +32,31 @@ class PlayerEvents <playerId (MAX_PLAYERS)> {
     }
 
     /**
+     * Detects invalid values in the data the player has transmitted to the server. Invalid values
+     * are often used to crash a server, which is a highly undesirable situation.
+     *
+     * @return boolean Whether invalid values were detected.
+     */
+    private bool: detectInvalidConnectionValues() {
+        new nickname[128], hash[128];
+
+        GetPlayerName(playerId, nickname, sizeof(nickname));
+        gpci(playerId, hash, sizeof(hash));
+
+        if (!(3 < strlen(nickname) <= MAX_PLAYER_NAME)) {
+            printf("Player [%d] connected with an invalid nickname.", playerId);
+            return true;  // a player's nickname must be [3, MAX_PLAYER_NAME] characters, inclusive
+        }
+
+        if (!(24 < strlen(hash) <= 64)) {
+            printf("Player [%d, %s] connected with an invalid GPCI.", playerId, nickname);
+            return true;  // a player's GPCI must be [24, 64] characters, inclusive
+        }
+
+        return false;
+    }
+
+    /**
      * After a player leaves the server, this method will be invoked allowing the gamemode to do all
      * required clean-up work. The reason parameter can have three valid values, namely (0) when the
      * player times out, (1) when they leave by closing GTA, or (2) when they are kicked or banned.
@@ -36,6 +64,9 @@ class PlayerEvents <playerId (MAX_PLAYERS)> {
      * @param reason The reason for the player's disconnection.
      */
     public onPlayerDisconnect(reason) {
+        if (!Player(playerId)->isConnected())
+            return 1;
+
         Annotation::ExpandList<OnPlayerDisconnect>(playerId);
 
         if (Player(playerId)->isNonPlayerCharacter() == false) {

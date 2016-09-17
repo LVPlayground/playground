@@ -4,38 +4,32 @@
 
 const CommandBuilder = require('components/command_manager/command_builder.js');
 
-// Here we introduce the manager for the /report-command to give users the ability to send the
-// message to the (IRC-)admins.
+// It needs to be possible for admins to start up and end the killtime. By this command we provide this functionality
+// including being able to define the length.
 class KilltimeCommands {
-    constructor() {//announce) {
-        //this.announce_ = announce;
-        this.showInformationText_ = true;
-        this.minutesUntillKilltimeEnds = -1;
+    constructor(manager) {
+        this.manager_ = manager;
 
         server.commandManager.buildCommand('killtime')
-            .restrict(Player.LEVEL_ADMINISTRATOR) // minutes
-            .sub(CommandBuilder.NUMBER_PARAMETER)
-                .parameters([{ name: 'weaponId', type: CommandBuilder.NUMBER_PARAMETER }])
-                .build(KilltimeCommands.prototype.onKilltimeCommandWithParams.bind(this))
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .sub('start')
+                .parameters([{ name: 'minutes', type: CommandBuilder.NUMBER_PARAMETER }])
+                .build(KilltimeCommands.prototype.onKilltimeStartCommand.bind(this))
+            .sub('stop')
+                .build(KilltimeCommands.prototype.onKilltimeStopCommand.bind(this))
             .build(KilltimeCommands.prototype.onKilltimeCommand.bind(this));
     }
 
-    onKilltimeCommandWithParams(player, minutes = 2, weaponId = -1) {
+    onKilltimeStartCommand(player, minutes = 2) {
+        this.manager_.start(player, minutes);
+    }
+
+    onKilltimeStopCommand(player) {
 
     }
 
     onKilltimeCommand(player) {
-        if (this.showInformationText_) {
-            player.sendMessage(Message.KILLTIME_START_STANDARD);
-            this.showInformationText_ = false;
-        }
-
-        if (this.minutesUntillKilltimeEnds == -1) {
-            this.onKilltimeCommandWithParams(player);
-            return;
-        }
-
-        this.showInformationText_ = true;
+        player.sendMessage(Message.COMMAND_USAGE, Message.KILLTIME_USAGE);
     }
 
     // Cleans up the state created by this class, i.e. unregisters the commands.

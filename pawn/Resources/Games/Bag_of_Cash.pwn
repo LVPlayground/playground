@@ -6,7 +6,7 @@
 #define     MIN_MONEY_BAG_CASH      1000
 #define     MONEY_BAG_PICKUP_TYPE   2
 #define     MONEY_BAG_PICKUP_MODEL  1550
-#define     RANDOM_MONEY_LOCATIONS  136
+#define     RANDOM_MONEY_LOCATIONS  130
 
 #define chrtoupper(%1) \
 	(((%1) > 0x60 && (%1) <= 0x7A) ? ((%1) ^ 0x20) : (%1))

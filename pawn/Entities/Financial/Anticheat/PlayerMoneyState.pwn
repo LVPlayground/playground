@@ -121,7 +121,8 @@ class PlayerMoneyState <playerId (MAX_PLAYERS)> {
                     (difference >= -12 && difference < 0) /** burger shops **/) {
                     // One of the exception systems marked this increase as being valid. Increase
                     // the player's server-sided money and proceed to the next player.
-                    PlayerMoneyState(playerId)->increase(difference);
+                    PlayerMoneyState(playerId)->increase(difference, false /* discrete */,
+                                                         true /* skipSync */);
                     continue;
                 }
             }
@@ -142,8 +143,9 @@ class PlayerMoneyState <playerId (MAX_PLAYERS)> {
      *
      * @param amount The amount of money which should be given to this player.
      * @param discrete Should we keep this increase discrete, meaning no visual feedback?
+     * @param skipSync Whether synchronization of the player's amount should be skipped.
      */
-    public increase(amount, bool: discrete = false) {
+    public increase(amount, bool: discrete = false, bool: skipSync = false) {
         if (m_cash > 0 && amount > 0) {
             // Edgy case (1): Positive cash, positive increase.
             if ((MaximumMoneyValue - m_cash) >= amount)
@@ -164,8 +166,9 @@ class PlayerMoneyState <playerId (MAX_PLAYERS)> {
         m_latestIncrease = amount;
 
         // Now re-synchronize the amount of money with the player, based on what we think they
-        // should be having right now. Reset their money first, then give them the new amount.
-        GivePlayerMoneyPrivate(playerId, m_cash - GetPlayerMoneyPrivate(playerId));
+        // should be having right now. Do this by giving them the difference (even when negative).
+        if (!skipSync)
+            GivePlayerMoneyPrivate(playerId, m_cash - GetPlayerMoneyPrivate(playerId));
 
         // Report this change to the money indicator, so we can give them visual feedback of what
         // happened. We won't show the indicator if this is a discrete money change.

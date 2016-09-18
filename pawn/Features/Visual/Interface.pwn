@@ -49,7 +49,7 @@ class Interface {
         TextDrawSetSelectable(m_serverInformation[2], 0);
 
         m_unregisteredWarning = TextDrawCreate(316.0, 1.0,
-            "Your nickname is UNREGISTERED, your stats and money will NOT be saved! Register now at sa-mp.nl (/register)");
+            "Your nickname is UNREGISTERED, your stats and money will NOT be saved! Register now at www.sa-mp.nl (/register)");
         TextDrawAlignment(m_unregisteredWarning, 2);
         TextDrawBackgroundColor(m_unregisteredWarning, 255);
         TextDrawFont(m_unregisteredWarning, 1);

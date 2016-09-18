@@ -38,6 +38,7 @@ class PlaygroundCommands {
         
         // -----------------------------------------------------------------------------------------
 
+        requireCommand('features/playground/commands/autohello.js');
         requireCommand('features/playground/commands/boost.js');
         requireCommand('features/playground/commands/fly.js');
         requireCommand('features/playground/commands/jetpack.js');

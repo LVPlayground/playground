@@ -192,6 +192,9 @@ class MockPlayer {
     get gangColor() { return this.gangColor_; }
     set gangColor(value) { this.gangColor_ = value; }
 
+    // Gets the color applied to this player.
+    get color() { return Color.WHITE; }
+
     // Identifies the player to a fake account. The options can be specified optionally.
     identify({ userId = 42, vip = 0, gangId = 0 } = {}) {
         server.playerManager.onPlayerLogin({

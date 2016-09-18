@@ -13,6 +13,7 @@ server and the commands offered on the server.
 ## Commands
 The following commands are available as part of the feature:
 
+  - **/autohello [player]**: Enables or disables automated welcomes to joining players.
   - **/boost [player] [factor]**: Boosts the `player`'s velocity by `factor`. Only available to
     management.
   - **/slow [player]**: Makes the `player` slow down. Only available to management.

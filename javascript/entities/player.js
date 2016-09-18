@@ -219,6 +219,9 @@ class Player {
     pawnInvoke('OnUpdatePlayerGangColor', 'ii', this.id_, value ? value.toNumberRGBA() : 0);
   }
 
+  // Gets the color applied to this player.
+  get color() { return Color.fromNumberRGBA(pawnInvoke('GetPlayerColor', 'i', this.id_)); }
+
   // Sets whether the player should be in spectator mode. Disabling spectator mode will force them
   // to respawn immediately after, which may be an unintended side-effect.
   setSpectating(spectating) {

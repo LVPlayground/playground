@@ -62,7 +62,7 @@ class VeryImportantPlayersCommands {
         SendClientMessage(playerId, Color::Information, "  - {40CCFF}Change player color/weather/teleportation settings, spawn armor");
         SendClientMessage(playerId, Color::Information, "  - {40CCFF}Various IRC extras like IRC <-> ingame PM'ing and VIP channel");
         SendClientMessage(playerId, Color::Information, "  - {40CCFF}VIP status on site and forum, access to ingame VIP room");
-        SendClientMessage(playerId, Color::Information, "And much more! Check http://donate.sa-mp.nl!");
+        SendClientMessage(playerId, Color::Information, "And much more! Check http://donate.sa-mp.nl");
 
         return 1;
         #pragma unused params

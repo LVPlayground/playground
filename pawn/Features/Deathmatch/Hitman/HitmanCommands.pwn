@@ -92,7 +92,7 @@ class HitmanCommands {
         HitmanTracker(playerId)->lastHitmanUsageTime() = Time->currentTime();
 
         format(message, sizeof(message),
-            "* %s has had a {A9C4E4}$%s bounty {CCCCCC}put on his head from %s {A9C4E4}(total: $%s){CCCCCC}.",
+            "* %s has had a {A9C4E4}$%s bounty {CCCCCC}put on their head from %s {A9C4E4}(total: $%s){CCCCCC}.",
             Player(victimId)->nicknameString(), formatPrice(bountyAmount), Player(playerId)->nicknameString(),
             formatPrice(HitmanTracker(victimId)->playerBounty()));
         SendClientMessageToAllEx(Color::ConnectionMessage, message);

@@ -269,7 +269,7 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source) {
     if (Player(clickedplayerid)->isRegistered() == false) {
         if (playerid == clickedplayerid)
             SendClientMessage(playerid, Color::Error,
-                "You must be registered to view your statistics! Register your nickname at http://www.sa-mp.nl.");
+                "You must be registered to view your statistics! Register your nickname at www.sa-mp.nl");
         else
             SendClientMessage(playerid, Color::Error, "This player does not seem to be registered.");
 

@@ -174,9 +174,10 @@
     "KILLTIME_AUTO_STOPPED": "{DC143C}Killtime{FFFFFF}: Time is up! The prize will be given out shortly.",
     "KILLTIME_MINIMUM_TWO_MINUTES": "{DC143C}Killtime{FFFFFF}: Sorry, there is a minimum of two minutes.",
     "KILLTIME_STARTED": "{DC143C}Killtime{FFFFFF}: The following %d minutes is killing for a prize! Are you the one with the most kills?",
-    "KILLTIME_TOPKILLER": "{DC143C}Killtime{FFFFFF}: Leading with %d kills is %s. Hurry up and get more to win the prize of $%d!",
+    "KILLTIME_TOPKILLER": "{DC143C}Killtime{FFFFFF}: Leading is: %s. Hurry up and get more to win the prize of $%d!",
     "KILLTIME_USAGE": "{DC143C}Killtime{FFFFFF}: '/killtime start 4' to start a killtime of 4 minutes, no minutes = 2 minutes. '/killtime stop' to end killtime.",
-    "KILLTIME_WINNER": "{DC143C}Killtime{FFFFFF}: The winner is %s with an amount of %d kills. Enjoy your prize of $%d!",
+    "KILLTIME_WINNER": "{DC143C}Killtime{FFFFFF}: The winner is: %s. %s",
+    "KILLTIME_ENJOY_PRIZE": "Enjoy your prize of $%d!",
 
     "LVP_ANNOUNCE_ADMIN_NOTICE": "%s (Id: %d) has %s the %s option.",
     "LVP_ANNOUNCE_PARTY": "%s has %s the Pirate Ship Party mode!",

@@ -39,25 +39,48 @@ class KilltimeManager {
 
             if (minutesPassedBy == totalMinutes) {
                 this.stop(null);
+                return;
             }
 
-            const playerName = this.getPlayerWithHighestKillsAmount();
-            const mostKillsAmount = this.scoreMap_.get(playerName);
-            this.announce_().announceToPlayers(Message.KILLTIME_TOPKILLER, mostKillsAmount, playerName, 1);
+            this.announceTopKiller_();
         }
     }
 
-    stop(player) {
-        this.isRunning_ = false;
-
-        if (player == null)
-            this.announce_().announceToPlayers(Message.KILLTIME_AUTO_STOPPED);
-        else
-            this.announce_().announceToPlayers(Message.KILLTIME_ADMIN_STOPPED);
-
+    announceTopKiller_() {
         const playerName = this.getPlayerWithHighestKillsAmount();
         const mostKillsAmount = this.scoreMap_.get(playerName);
-        this.announce_().announceToPlayers(Message.KILLTIME_WINNER, playerName, mostKillsAmount, 1);
+
+        let playerWithKillsText = playerName + ' with ' + mostKillsAmount + ' kills';
+        if (playerName == null)
+            playerWithKillsText = 'no-one yet';
+
+        this.announce_().announceToPlayers(Message.KILLTIME_TOPKILLER, playerWithKillsText, 1);
+    }
+
+    stop(player) {
+        if (!this.isRunning_)
+            return;
+
+        this.isRunning_ = false;
+        let stopMessage = Message.KILLTIME_AUTO_STOPPED;
+
+        if (player != null)
+            stopMessage = Message.KILLTIME_ADMIN_STOPPED;
+
+        this.announce_().announceToPlayers(stopMessage);
+
+        this.announceWinner_();
+    }
+
+    announceWinner_() {
+        const playerName = this.getPlayerWithHighestKillsAmount();
+        const mostKillsAmount = this.scoreMap_.get(playerName);
+
+        let playerWithKillsText = playerName + ' with ' + mostKillsAmount + ' kills';
+        if (playerName == null)
+            playerWithKillsText = 'no-one';
+
+        this.announce_().announceToPlayers(Message.KILLTIME_WINNER, playerWithKillsText, playerName != null ? Message.format(Message.KILLTIME_ENJOY_PRIZE, 1) : '');
     }
 
     onPlayerDeath(event) {

@@ -38,6 +38,9 @@ class PlayerEvents <playerId (MAX_PLAYERS)> {
      * @return boolean Whether invalid values were detected.
      */
     private bool: detectInvalidConnectionValues() {
+        if (IsPlayerNPC(playerId))
+            return false;  // NPCs send bogus data by default
+
         new nickname[128], hash[128];
 
         GetPlayerName(playerId, nickname, sizeof(nickname));

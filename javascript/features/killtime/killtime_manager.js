@@ -102,7 +102,7 @@ class KilltimeManager {
         let playerName = null;
         let highestKillsAmount = 0;
 
-        this.scoreMap_.forEach(function (name, kills) {
+        this.scoreMap_.forEach(function (kills, name) {
             if (kills > highestKillsAmount) {
                 highestKillsAmount = kills;
                 playerName = name;

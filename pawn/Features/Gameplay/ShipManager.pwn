@@ -151,15 +151,19 @@ class ShipManager {
         if (zoneId < 2) {
             this->respawnPlayerVehicle(playerId);
 
-            if (DamageManager(playerId)->isPlayerFighting() == true
-                || LegacyIsKillTimeActivated()) {
+            if (DamageManager(playerId)->isPlayerFighting() == true) {
+                //|| LegacyIsKillTimeActivated()) {
+#if Feature::DisableKilltime == 0
                 if (LegacyIsKillTimeActivated()) {
                     this->throwPlayerOffTheShip(playerId);
                     ShowBoxForPlayer(playerId, "Killtime is running, so you can not access the shipzone since that would be unfair!");
                 } else {
+#endif
                     this->throwPlayerOffTheShip(playerId);
                     ShowBoxForPlayer(playerId, "You have recently been in a gunfight, therefore cannot enter the ship at this moment");
+#if Feature::DisableKilltime == 0
                 }
+#endif
 
                 return 1;
             }
@@ -346,11 +350,12 @@ class ShipManager {
 
                 this->respawnPlayerVehicle(playerId);
             }
-
+#if Feature::DisableKilltime == 0
             if (LegacyIsKillTimeActivated()) {                
                 this->throwPlayerOffTheShip(playerId);
                 ShowBoxForPlayer(playerId, "Killtime is running, so you can not access the shipzone since that would be unfair!");
             }
+#endif
         }
 
         return 1;

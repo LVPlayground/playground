@@ -44,7 +44,7 @@ class BankAccount {
     public const RequiredHoursForPremierAccountUpgrade = 100;
 
     // What is the one-time cost of upgrading to a Premier bank account?
-    public const RequiredMoneyForPremierAccountUpgrade = 150000000;
+    public const RequiredMoneyForPremierAccountUpgrade = 25000000;
 
     // What is the pickup handler Id for the bank pickup?
     public const BankHandlerId = @counter(PickupHandler);

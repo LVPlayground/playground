@@ -10,6 +10,67 @@
  * @author Russell Krupke <russell@sa-mp.nl>
  */
 class PlayerEvents <playerId (MAX_PLAYERS)> {
+    // Maximum number of connections allowed from a single IP address.
+    const MaxConnectionsPerIp = 3;
+
+    // Time in milliseconds between two timestamps of connections originating from the same IP address.
+    const DefaultDelayConnection = 500;
+
+    // Amount of milliseconds an IP will be blocked if invalid usage is measured.
+    const BlockageDuration = 1800000;
+
+    // Keep track of the most recent connected IP address.
+    new m_lastConnectionAddress[16];
+
+    // Keep track of the most recent connection timestamp.
+    new m_lastConnectionTimestamp;
+
+    /**
+     * An incoming connection indicates a player (or NPC) who is in the progress of joining the
+     * server. This callback is used to check for invalid connection usage.
+     *
+     * Too many connections originating from the same IP blocks the connecting player.
+     * Too fast successive connections originating from the same IP temporary blocks the IP address.
+     *
+     * @param ipAddress The IP address of the joining player.
+     */
+    public onIncomingConnection(ipAddress[], port) {
+        // Stop checking if the player is connecting from the localhost, which usually implies
+        // the player is a NPC.
+        if (!strcmp(ipAddress, "127.0.0.1", true))
+            return 1;
+
+        // Count the number of players ingame who are connected from the connecting IP address. Only
+        // allow a certain number of connections from the same IP.
+        new matchedPlayers = 0;
+        for (new connectedId = 0; connectedId <= PlayerManager->highestPlayerId(); connectedId++) {
+            if (!Player(connectedId)->isConnected() || Player(connectedId)->isNonPlayerCharacter())
+                continue;
+
+            if (!strcmp(ipAddress, Player(connectedId)->ipAddressString(), true))
+                matchedPlayers++;
+        }
+
+        // Check if the maximum number of players ingame from the same IP has been reached.
+        if (matchedPlayers >= MaxConnectionsPerIp)
+            Kick(playerId); // deny player entry
+
+        // If the connecting IP resembles the penultimate connecting IP, check the time difference
+        // between both connections. When the two IPs connect in rapid order, temporary block the IP.
+        // This will result in closed connections for ingame players using the same IP address.
+        if (!strcmp(ipAddress, m_lastConnectionAddress, true)
+            && (Time->currentHighResolutionTime() - m_lastConnectionTimestamp) < DefaultDelayConnection)
+            BlockIpAddress(ipAddress, BlockageDuration); // block the IP address
+
+        // Save last incoming connection details and timestamp.
+        memcpy(m_lastConnectionAddress, ipAddress, 0, strlen(ipAddress) * 4, sizeof(m_lastConnectionAddress));
+        m_lastConnectionAddress[min(strlen(ipAddress), sizeof(m_lastConnectionAddress) - 1)] = 0;
+        m_lastConnectionTimestamp = Time->currentHighResolutionTime();
+
+        return 1;
+        #pragma unused port
+    }
+
     /**
      * The OnPlayerConnect callback will be invoked by the SA-MP server once a player has connected
      * and is able to spawn. This is the time to initialize and reset settings for the player.
@@ -141,6 +202,7 @@ class PlayerEvents <playerId (MAX_PLAYERS)> {
  * Forward each of the methods to their documented counterpart in the PlayerEvents class, where our
  * implementation will reside. The cost of introducing an additional call here is negligible.
  */
+public OnIncomingConnection(playerid, ip_address[], port) { PlayerEvents(playerid)->onIncomingConnection(ip_address, port); return 1; }
 public OnPlayerConnect(playerid) { return PlayerEvents(playerid)->onPlayerConnect(); }
 public OnPlayerDisconnect(playerid, reason) { return PlayerEvents(playerid)->onPlayerDisconnect(reason); }
 public OnPlayerUpdate(playerid) { return PlayerEvents(playerid)->onPlayerUpdate(); }

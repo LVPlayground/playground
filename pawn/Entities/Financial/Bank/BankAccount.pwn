@@ -30,7 +30,7 @@ enum BankAccountType {
  * including the available commands for administrators. This class holds the logic and status for
  * the bank account of each player, and is usable throughout the gamemode.
  */
-class BankAccount <playerId (MAX_PLAYERS)> {
+class BankAccount {
     // Maximum balance of a normal bank account: 400 million dollar.
     public const MaximumBalanceNormalAccount = 400000000;
 
@@ -50,13 +50,13 @@ class BankAccount <playerId (MAX_PLAYERS)> {
     public const BankHandlerId = @counter(PickupHandler);
 
     // What kind of bank account does this player have?
-    new BankAccountType: m_type;
+    new BankAccountType: m_type[MAX_PLAYERS];
 
     // What is the balance they currently have available in their account?
-    new m_balance;
+    new m_balance[MAX_PLAYERS];
 
     // Is the player currently in the main bank building?
-    new bool: m_inBank;
+    new bool: m_inBank[MAX_PLAYERS];
 
     /**
      * Creates the pickup necessary to determine whether someone is in the Las Venturas Playground
@@ -72,10 +72,10 @@ class BankAccount <playerId (MAX_PLAYERS)> {
      * server, as we don't want players to be able to access the funds of a player before them.
      */
     @list(OnPlayerConnect)
-    public onPlayerConnect() {
-        m_type = NormalBankAccount;
-        m_inBank = false;
-        m_balance = 0;
+    public onPlayerConnect(playerId) {
+        m_type[playerId] = NormalBankAccount;
+        m_inBank[playerId] = false;
+        m_balance[playerId] = 0;
     }
 
     /**
@@ -83,8 +83,8 @@ class BankAccount <playerId (MAX_PLAYERS)> {
      *
      * @return BankAccountType The bank account type for this player.
      */
-    public inline BankAccountType: type() {
-        return (m_type);
+    public inline BankAccountType: type(playerId) {
+        return (m_type[playerId]);
     }
 
     /**
@@ -94,14 +94,14 @@ class BankAccount <playerId (MAX_PLAYERS)> {
      *
      * @param type The type of bank account the player should have.
      */
-    public setBankAccountType(BankAccountType: type) {
-        m_type = type;
+    public setBankAccountType(playerId, BankAccountType: type) {
+        m_type[playerId] = type;
 
-        if (m_type == NormalBankAccount && m_balance > BankAccount::MaximumBalanceNormalAccount)
-            m_balance = BankAccount::MaximumBalanceNormalAccount;
+        if (m_type[playerId] == NormalBankAccount && m_balance[playerId] > BankAccount::MaximumBalanceNormalAccount)
+            m_balance[playerId] = BankAccount::MaximumBalanceNormalAccount;
 
-        if (m_type == PremierBankAccount && m_balance > BankAccount::MaximumBalancePremierAccount)
-            m_balance = BankAccount::MaximumBalancePremierAccount;
+        if (m_type[playerId] == PremierBankAccount && m_balance[playerId] > BankAccount::MaximumBalancePremierAccount)
+            m_balance[playerId] = BankAccount::MaximumBalancePremierAccount;
     }
 
     /**
@@ -110,8 +110,8 @@ class BankAccount <playerId (MAX_PLAYERS)> {
      *
      * @return integer The amount of money in the player's bank account.
      */
-    public inline balance() {
-        return (m_balance);
+    public inline balance(playerId) {
+        return (m_balance[playerId]);
     }
 
     /**
@@ -120,11 +120,11 @@ class BankAccount <playerId (MAX_PLAYERS)> {
      *
      * @return integer The maximum amount of money the player can deposit.
      */
-    public availableBalance() {
-        if (m_type == PremierBankAccount)
-            return max(0, BankAccount::MaximumBalancePremierAccount - m_balance);
+    public availableBalance(playerId) {
+        if (m_type[playerId] == PremierBankAccount)
+            return max(0, BankAccount::MaximumBalancePremierAccount - m_balance[playerId]);
 
-        return max(0, BankAccount::MaximumBalanceNormalAccount - m_balance);
+        return max(0, BankAccount::MaximumBalanceNormalAccount - m_balance[playerId]);
     }
 
     /**
@@ -133,8 +133,8 @@ class BankAccount <playerId (MAX_PLAYERS)> {
      *
      * @return integer The maximum amount of money the player can store.
      */
-    public maximumBalance() {
-        if (m_type == PremierBankAccount)
+    public maximumBalance(playerId) {
+        if (m_type[playerId] == PremierBankAccount)
             return BankAccount::MaximumBalancePremierAccount;
 
         return BankAccount::MaximumBalanceNormalAccount;
@@ -147,15 +147,15 @@ class BankAccount <playerId (MAX_PLAYERS)> {
      * @param balance The new amount of money in the player's account.
      * @return boolean Were we able to update the player's balance to the given value?
      */
-    public bool: setBalance(balance) {
+    public bool: setBalance(playerId, balance) {
         if (balance < 0)
             return false; // we don't accept negative balances.
 
-        if (m_type == NormalBankAccount)
-            m_balance = min(balance, BankAccount::MaximumBalanceNormalAccount);
+        if (m_type[playerId] == NormalBankAccount)
+            m_balance[playerId] = min(balance, BankAccount::MaximumBalanceNormalAccount);
 
-        if (m_type == PremierBankAccount)
-            m_balance = min(balance, BankAccount::MaximumBalancePremierAccount);
+        if (m_type[playerId] == PremierBankAccount)
+            m_balance[playerId] = min(balance, BankAccount::MaximumBalancePremierAccount);
 
         return true;
     }
@@ -166,8 +166,8 @@ class BankAccount <playerId (MAX_PLAYERS)> {
      *
      * @return boolean Is the player currently in the bank building?
      */
-    public inline bool: inBank() {
-        return m_inBank;
+    public inline bool: inBank(playerId) {
+        return (m_inBank[playerId]);
     }
 
     /**
@@ -178,11 +178,12 @@ class BankAccount <playerId (MAX_PLAYERS)> {
      * @param extraId Additional Id allowing features to route this pickup.
      */
     @switch(OnPlayerEnterPickup, BankAccount::BankHandlerId)
-    public onPlayerEnterBank(pickupId, extraId) {
-        m_inBank = true;
+    public onPlayerEnterBank(playerId, pickupId, extraId) {
+        m_inBank[playerId] = true;
 
         // Announce the options to them in an information box.
         ShowBoxForPlayer(playerId, "Welcome to the Las Venturas Playground Main Bank. Please type ~r~/account~w~ to get started.");
+
         #pragma unused pickupId, extraId
     }
 
@@ -194,8 +195,8 @@ class BankAccount <playerId (MAX_PLAYERS)> {
      * @param extraId Additional Id allowing features to route this pickup.
      */
     @switch(OnPlayerLeavePickup, BankAccount::BankHandlerId)
-    public onPlayerLeaveBank(pickupId, extraId) {
-        m_inBank = false;
+    public onPlayerLeaveBank(playerId, pickupId, extraId) {
+        m_inBank[playerId] = false;
 
         #pragma unused pickupId, extraId
     }
@@ -207,7 +208,7 @@ public OnGetPlayerBankBalance(playerId) {
     if (!Player(playerId)->isConnected())
         return 0;
 
-    return BankAccount(playerId)->balance();
+    return BankAccount->balance(playerId);
 }
 
 forward OnSetPlayerBankBalance(playerId, balance);
@@ -215,6 +216,5 @@ public OnSetPlayerBankBalance(playerId, balance) {
     if (!Player(playerId)->isConnected())
         return;
 
-    BankAccount(playerId)->setBalance(balance);
+    BankAccount->setBalance(playerId, balance);
 }
-

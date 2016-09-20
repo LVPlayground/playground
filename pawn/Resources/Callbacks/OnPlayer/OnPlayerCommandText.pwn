@@ -1131,7 +1131,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if (iLoan[playerid] >= cashAmount){
+        if (iLoan[playerid] >= maxAvailableLoan){
             format(string, sizeof(string), "Error: You've already borrowed $%s, use /payoff first.", formatPrice(maxAvailableLoan));
             SendClientMessage(playerid, Color::Error, string);
             return 1;

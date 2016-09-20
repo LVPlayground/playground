@@ -52,15 +52,19 @@ class PlayerEvents <playerId (MAX_PLAYERS)> {
         }
 
         // Check if the maximum number of players ingame from the same IP has been reached.
-        if (matchedPlayers >= MaxConnectionsPerIp)
+        if (matchedPlayers >= MaxConnectionsPerIp) {
+            printf("Player [%d] shares IP with %d ingame players.", playerId, matchedPlayers);
             Kick(playerId); // deny player entry
+        }
 
         // If the connecting IP resembles the penultimate connecting IP, check the time difference
         // between both connections. When the two IPs connect in rapid order, temporary block the IP.
         // This will result in closed connections for ingame players using the same IP address.
         if (!strcmp(ipAddress, m_lastConnectionAddress, true)
-            && (Time->currentHighResolutionTime() - m_lastConnectionTimestamp) < DefaultDelayConnection)
+            && (Time->currentHighResolutionTime() - m_lastConnectionTimestamp) < DefaultDelayConnection) {
+            printf("Blocking [%s] for 30 minutes due to flooding.", ipAddress);
             BlockIpAddress(ipAddress, BlockageDuration); // block the IP address
+        }
 
         // Save last incoming connection details and timestamp.
         memcpy(m_lastConnectionAddress, ipAddress, 0, strlen(ipAddress) * 4, sizeof(m_lastConnectionAddress));
@@ -107,12 +111,12 @@ class PlayerEvents <playerId (MAX_PLAYERS)> {
         GetPlayerName(playerId, nickname, sizeof(nickname));
         gpci(playerId, hash, sizeof(hash));
 
-        if (!(3 < strlen(nickname) <= MAX_PLAYER_NAME)) {
+        if (!(3 <= strlen(nickname) <= MAX_PLAYER_NAME)) {
             printf("Player [%d] connected with an invalid nickname.", playerId);
             return true;  // a player's nickname must be [3, MAX_PLAYER_NAME] characters, inclusive
         }
 
-        if (!(24 < strlen(hash) <= 64)) {
+        if (!(24 <= strlen(hash) <= 64)) {
             printf("Player [%d, %s] connected with an invalid GPCI.", playerId, nickname);
             return true;  // a player's GPCI must be [24, 64] characters, inclusive
         }

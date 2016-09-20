@@ -28,21 +28,18 @@ WantedLevel__OnPlayerDeath (playerid, killerid) {
     // Create some vars to store wanted level data in...
     new
     iWantedLevel,
-    iStr[256],
-    iKillValue;
+    iStr[256];
 
     // Now we increase the amount of kills the killer has 'in a row' and calculate
     // A wanted level using this, and set the players stars appropiately.
     WantedLevel[killerid]++;
-    iWantedLevel = GetWantedLevel(killerid,WantedLevel[killerid]);
-    SetPlayerWantedLevel(killerid,iWantedLevel);
+    iWantedLevel = GetWantedLevel(killerid, WantedLevel[killerid]);
+    SetPlayerWantedLevel(killerid, iWantedLevel);
 
     // Calculate a bounty for this player
-    iKillValue = iWantedLevel * 10000;
+    new const award = GetEconomyValue(WantedLevelAward, iWantedLevel);
 
-
-
-    // If a player has more than a 3 star wanted level, we have to process a message
+    // If a player has more than 3 kills, we have to process a message
     // to tell everyone how many kills he/she has, and how much of a bounty they have!
     if(WantedLevel[killerid] > 3)
     {
@@ -78,32 +75,29 @@ WantedLevel__OnPlayerDeath (playerid, killerid) {
         }else{
             format(iStr,sizeof(iStr),
                 "* %s (Id:%d) murdered {A9C4E4}%d players {CCCCCC}in a row and is wanted dead for {A9C4E4}$%s{CCCCCC}.",
-                PlayerName(killerid), killerid, WantedLevel[killerid],formatPrice(iKillValue),iWantedLevel);
+                PlayerName(killerid), killerid, WantedLevel[killerid],formatPrice(award));
 
             SendClientMessageToAllEx(Color::ConnectionMessage,iStr);
         }
     }
 
-    new iPlayerKills = GetWantedLevel(playerid,WantedLevel[playerid]);
-    if(iPlayerKills > 0)
+    if(iWantedLevel > 0)
     {
         new propertyId = PropertyManager->propertyForSpecialFeature(PoliceFeature),
             endid = propertyId == Property::InvalidId ? Player::InvalidId : Property(propertyId)->ownerId();
 
         if(Player(endid)->isConnected() && endid != killerid)
         {
-            new const awardShare = GetEconomyValue(WantedLevelOwnerShare, iPlayerKills);
+            new const awardShare = GetEconomyValue(WantedLevelOwnerShare, iWantedLevel);
 
-            format(iStr,128,"* %s killed %s who had a %d star wanted level. You earned $%s.",PlayerName(killerid),PlayerName(playerid),iPlayerKills,formatPrice(awardShare));
+            format(iStr,128,"* %s killed %s who had a %d star wanted level. You earned $%s.",PlayerName(killerid),PlayerName(playerid),iWantedLevel,formatPrice(awardShare));
             SendClientMessage(endid,COLOR_GREY,iStr);
-            GiveRegulatedMoney(endid, WantedLevelOwnerShare, iPlayerKills);
+            GiveRegulatedMoney(endid, WantedLevelOwnerShare, iWantedLevel);
         }
 
-        new const award = GetEconomyValue(WantedLevelAward, iPlayerKills);
-
-        format(iStr,128,"* %s had a wanted level of %d stars, you earned $%s.",PlayerName(playerid),iPlayerKills,formatPrice(award));
+        format(iStr,128,"* %s had a wanted level of %d stars, you earned $%s.",PlayerName(playerid),iWantedLevel,formatPrice(award));
         SendClientMessage(killerid,Color::White,iStr);
-        GiveRegulatedMoney(killerid, WantedLevelAward, iPlayerKills);
+        GiveRegulatedMoney(killerid, WantedLevelAward, iWantedLevel);
         WantedLevel[playerid] = 0;
         SetPlayerWantedLevel(playerid,0);
     }

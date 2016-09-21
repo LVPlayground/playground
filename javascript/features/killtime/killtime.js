@@ -20,6 +20,7 @@ class Killtime extends Feature {
     }
 
     dispose() {
+        this.manager_.dispose();
         this.commands_.dispose();
     }
 }

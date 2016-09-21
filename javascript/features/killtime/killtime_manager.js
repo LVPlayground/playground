@@ -68,8 +68,10 @@ class KilltimeManager {
             stopMessage = Message.KILLTIME_ADMIN_STOPPED;
 
         this.announce_().announceToPlayers(stopMessage);
-
         this.announceWinner_();
+
+        this.scoreMap_.clear();
+
     }
 
     announceWinner_() {
@@ -80,7 +82,8 @@ class KilltimeManager {
         if (playerName == null)
             playerWithKillsText = 'no-one';
 
-        this.announce_().announceToPlayers(Message.KILLTIME_WINNER, playerWithKillsText, playerName != null ? Message.format(Message.KILLTIME_ENJOY_PRIZE, 1) : '');
+        const prizeMessage = playerName != null ? Message.format(Message.KILLTIME_ENJOY_PRIZE, 1) : '';
+        this.announce_().announceToPlayers(Message.KILLTIME_WINNER, playerWithKillsText, prizeMessage);
     }
 
     onPlayerDeath(event) {
@@ -114,7 +117,7 @@ class KilltimeManager {
 
     // Cleans up the state created by this class
     dispose() {
-
+        this.stop(null);
     }
 }
 

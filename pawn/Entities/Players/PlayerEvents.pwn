@@ -132,9 +132,6 @@ class PlayerEvents <playerId (MAX_PLAYERS)> {
      * @param reason The reason for the player's disconnection.
      */
     public onPlayerDisconnect(reason) {
-        if (!Player(playerId)->isConnected())
-            return 1;
-
         Annotation::ExpandList<OnPlayerDisconnect>(playerId);
 
         if (Player(playerId)->isNonPlayerCharacter() == false) {

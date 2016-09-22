@@ -152,6 +152,7 @@ class VehicleStreamer extends EntityStreamerGlobal {
         server.vehicleManager.removeObserver(this);
         server.playerManager.removeObserver(this);
 
+        this.respawnTokens_.clear();
         this.vehicles_.clear();
         this.storedVehicles_.clear();
 

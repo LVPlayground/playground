@@ -11,6 +11,10 @@ class StoredEntity {
         this.interiorId_ = interiorId;
         this.virtualWorld_ = virtualWorld;
 
+        // The streamer that the entity is attached to. Not publicly exposed, but can be used by
+        // subclasses of the StoredEntity to interact with the attached streamer.
+        this.streamer_ = null;
+
         // Reference counts for this stored entity.
         this.activeReferences_ = 0;
         this.totalReferences_ = 0;
@@ -29,6 +33,27 @@ class StoredEntity {
     // Gets the Id of the virtual world to which this entity should be tied. A virtual world of -1
     // means that the entity should be streamed regardless of which virtual world the player is in.
     get virtualWorld() { return this.virtualWorld_; }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Returns whether the entity is currently attached to a streamer.
+    isAttached() { return this.streamer_ !== null; }
+
+    // Attaches the entity to the given |streamer|. Will throw when it's already attached.
+    attachToStreamer(streamer) {
+        if (this.streamer_ !== null)
+            throw new Error('This entity is already attached to a streamer.');
+
+        this.streamer_ = streamer;
+    }
+
+    // Detaches the entity from its |streamer|. Will throw when it's not attached to the |streamer|.
+    detachFromStreamer(streamer) {
+        if (this.streamer_ !== streamer)
+            throw new Error('This entity is not attached to the given |streamer|.');
+
+        this.streamer_ = null;
+    }
 
     // ---------------------------------------------------------------------------------------------
 

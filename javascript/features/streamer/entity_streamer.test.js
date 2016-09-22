@@ -129,6 +129,49 @@ describe('EntityStreamer', it => {
         assert.equal(entity.totalReferences, 0);
     });
 
+    it('should throw when attaching or detaching an entity from the invalid streamer', assert => {
+        const streamer1 = new EntityStreamer({ maxVisible: 10 });
+        const streamer2 = new EntityStreamer({ maxVisible: 10 });
+
+        const entity = new StoredEntity({
+            modelId: 1,
+            position: new Vector(50, 50, 0),
+            interiorId: 1,
+            virtualWorld: 0
+        });
+
+        assert.isFalse(entity.isAttached());
+        assert.throws(() => entity.detachFromStreamer(streamer1));
+        assert.throws(() => entity.detachFromStreamer(streamer2));
+
+        entity.attachToStreamer(streamer2);
+
+        assert.throws(() => entity.attachToStreamer(streamer1));
+
+        assert.isTrue(entity.isAttached());
+        assert.throws(() => entity.detachFromStreamer(streamer1));
+        assert.doesNotThrow(() => entity.detachFromStreamer(streamer2));
+        assert.isFalse(entity.isAttached());
+    });
+
+    it('should attach and detach entities accordingly', assert => {
+        const streamer = new EntityStreamer({ maxVisible: 10 });
+        const entity = new StoredEntity({
+            modelId: 1,
+            position: new Vector(50, 50, 0),
+            interiorId: 1,
+            virtualWorld: 0
+        });
+
+        assert.isFalse(entity.isAttached());
+
+        assert.isTrue(streamer.add(entity));
+        assert.isTrue(entity.isAttached());
+
+        assert.isTrue(streamer.delete(entity));
+        assert.isFalse(entity.isAttached());
+    });
+
     it('should allow for different visibility parameters', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 

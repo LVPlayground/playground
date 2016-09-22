@@ -32,6 +32,7 @@ class EntityStreamer {
         if (this.entitiesByInstance_.has(storedEntity))
             return false;
 
+        storedEntity.attachToStreamer(this);
         storedEntity.resetReferences();
 
         const entityId = this.id_++;
@@ -49,6 +50,8 @@ class EntityStreamer {
         const entityId = this.entitiesByInstance_.get(storedEntity);
         if (entityId === undefined)
             return false;
+
+        storedEntity.detachFromStreamer(this);
 
         this.entitiesByInstance_.delete(storedEntity);
         this.entitiesById_.delete(entityId);

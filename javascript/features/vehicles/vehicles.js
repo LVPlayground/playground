@@ -3,11 +3,20 @@
 // be found in the LICENSE file.
 
 const Feature = require('components/feature_manager/feature.js');
+const VehicleManager = require('features/vehicles/vehicle_manager.js');
 
-// TODO: Add a description.
+// The Vehicles feature is responsible for the features one might find around San Andreas. It allows
+// all players to create vehicles on demand, administrators to store and modify them persistently.
+// The vehicles will be created through the streamer, so there is no strict limit to them.
 class Vehicles extends Feature {
     constructor() {
         super();
+
+        // Used to create and destroy the vehicles available on Las Venturas Playground.
+        const streamer = this.defineDependency('streamer', true /* isFunctional */);
+
+        this.manager_ = new VehicleManager(streamer);
+        this.manager_.loadVehicles();
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -18,7 +27,10 @@ class Vehicles extends Feature {
 
     // ---------------------------------------------------------------------------------------------
 
-    dispose() {}
+    dispose() {
+        this.manager_.dispose();
+        this.manager_ = null;
+    }
 }
 
 exports = Vehicles;

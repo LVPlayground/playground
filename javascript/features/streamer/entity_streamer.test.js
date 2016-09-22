@@ -144,7 +144,7 @@ describe('EntityStreamer', it => {
         assert.throws(() => entity.detachFromStreamer(streamer1));
         assert.throws(() => entity.detachFromStreamer(streamer2));
 
-        entity.attachToStreamer(streamer2);
+        assert.doesNotThrow(() => entity.attachToStreamer(streamer2));
 
         assert.throws(() => entity.attachToStreamer(streamer1));
 
@@ -169,6 +169,13 @@ describe('EntityStreamer', it => {
         assert.isTrue(entity.isAttached());
 
         assert.isTrue(streamer.delete(entity));
+        assert.isFalse(entity.isAttached());
+
+        assert.isTrue(streamer.add(entity));
+        assert.isTrue(entity.isAttached());
+
+        streamer.clear();
+
         assert.isFalse(entity.isAttached());
     });
 

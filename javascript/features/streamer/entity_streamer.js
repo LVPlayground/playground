@@ -82,6 +82,9 @@ class EntityStreamer {
     clear() {
         this.streamer_.clear();
 
+        for (const entity of this.entitiesById_.values())
+            entity.detachFromStreamer(this);
+
         this.entitiesByInstance_.clear();
         this.entitiesById_.clear();
 
@@ -89,7 +92,7 @@ class EntityStreamer {
     }
 
     dispose() {
-        this.streamer_.clear();
+        this.clear();
         this.streamer_ = null;
     }
 }

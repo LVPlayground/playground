@@ -15,13 +15,17 @@ class VehicleStreamer extends EntityStreamerGlobal {
         // The entities that have been created by this vehicle streamer.
         this.entities_ = new ScopedEntities();
 
-        // Mapping of StoredVehicle instances to the Vehicle instance for live vehicles.
+        // Mapping of StoredVehicle instances to the Vehicle instance, and vice versa.
         this.vehicles_ = new Map();
-
-        // Mapping of Vehicle instances to the StoredVehicle instances for live vehicles.
         this.storedVehicles_ = new Map();
 
-        // Observe the Vehicle Manager to get events associated with the managed vehicles.
+        // Mapping of live vehicles to their respawn tokens, to make sure we don't accidentially
+        // respawn vehicles when activity occurs after scheduling a respawn.
+        this.respawnTokens_ = new Map();
+
+        // Observe the PlayerManager to learn about players entering or leaving vehicles, and the
+        // VehicleManager to get events associated with the managed vehicles.
+        server.playerManager.addObserver(this);
         server.vehicleManager.addObserver(this);
     }
 
@@ -81,13 +85,58 @@ class VehicleStreamer extends EntityStreamerGlobal {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Called when |vehicle| has been destroyed. Will schedule it to be respawned.
+    // Schedules the |vehicle| to be respawned after a delay of |respawnDelay| seconds.
+    async scheduleVehicleForRespawn(vehicle, respawnDelay) {
+        if (respawnDelay < 0)
+            return;  // the |vehicle| should not be automatically respawned
+
+        const token = Symbol('Respawn token for vehicle #' + vehicle.id);
+
+        this.respawnTokens_.set(vehicle, token);
+
+        await seconds(respawnDelay);
+
+        if (!vehicle.isConnected() || this.respawnTokens_.get(vehicle) !== token)
+            return;  // the |vehicle| has been removed, or the respawn token expired
+
+        this.respawnTokens_.delete(vehicle);
+
+        vehicle.respawn();
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the |player| has entered the |vehicle|. Will invalidate any respawn tokens.
+    onPlayerEnterVehicle(player, vehicle) {
+        this.respawnTokens_.delete(vehicle);
+    }
+
+    // Called when the |player| has left the |vehicle|. Will schedule it to be respawned if there
+    // are no more occupants left in the vehicle.
+    onPlayerLeaveVehicle(player, vehicle) {
+        const storedVehicle = this.storedVehicles_.get(vehicle);
+        if (!storedVehicle)
+            return;  // the |vehicle| is not part of this streamer
+
+        if (vehicle.occupantCount > 1)
+            return;  // there are still players left in the vehicle
+
+        this.scheduleVehicleForRespawn(vehicle, storedVehicle.respawnDelay);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when |vehicle| has been destroyed. Will schedule it to be respawned after a fourth of
+    // the time of the normal respawn delay, since the vehicle is useless in its current form.
     onVehicleDeath(vehicle) {
         const storedVehicle = this.storedVehicles_.get(vehicle);
         if (!storedVehicle)
             return;  // the |vehicle| is not part of this streamer
 
-        // TODO: Schedule a respawn if the vehicle is not occupied by a player.
+        if (vehicle.occupantCount > 0)
+            return;  // there are still players left in the vehicle
+
+        this.scheduleVehicleForRespawn(vehicle, storedVehicle.respawnDelay / 4);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -101,6 +150,7 @@ class VehicleStreamer extends EntityStreamerGlobal {
 
     dispose() {
         server.vehicleManager.removeObserver(this);
+        server.playerManager.removeObserver(this);
 
         this.vehicles_.clear();
         this.storedVehicles_.clear();

@@ -13,8 +13,13 @@ class MockVehicle {
         this.passengers_ = new Set();
 
         this.modelId_ = options.modelId;
+
+        this.originalPosition_ = options.position;
         this.position_ = options.position;
+
+        this.originalRotation_ = options.rotation;
         this.rotation_ = options.rotation;
+
         this.primaryColor_ = options.primaryColor;
         this.secondaryColor_ = options.secondaryColor;
         this.siren_ = options.siren;
@@ -25,6 +30,7 @@ class MockVehicle {
         this.interiorId_ = options.interiorId;
         this.virtualWorld_ = options.virtualWorld;
 
+        this.respawnCounter_ = 0;
         this.health_ = 1000;
     }
 
@@ -96,6 +102,16 @@ class MockVehicle {
     set health(value) { this.health_ = value; }
 
     // ---------------------------------------------------------------------------------------------
+
+    // Respawns a vehicle back to the state and position it was created by.
+    respawn() {
+        this.respawnCounter_++;
+        this.position_ = this.originalPosition_;
+        this.rotation_ = this.originalRotation_;
+    }
+
+    // Gets the number of times this vehicle has respawned. Only available for testing.
+    get respawnCount() { return this.respawnCounter_; }
 
     // Repairs the vehicle. This resets the visual damage state as well.
     repair() { this.health_ = 1000; }

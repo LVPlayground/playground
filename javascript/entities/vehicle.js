@@ -63,6 +63,9 @@ class Vehicle {
     // Returns whether the vehicle is currently occupied by any player.
     isOccupied() { return this.driver_ || this.passengers_.size; }
 
+    // Gets the number of occupants that are currently in the vehicle.
+    get occupantCount() { return this.passengers_.size + (this.driver_ ? 1 : 0); }
+
     // Gets the Player that is currently driving this vehicle. May be NULL.
     get driver() { return this.driver_; }
 
@@ -126,6 +129,9 @@ class Vehicle {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    // Respawns a vehicle back to the state and position it was created by.
+    respawn() { pawnInvoke('SetVehicleToRespawn', 'i', this.id_); }
 
     // Repairs the vehicle. This resets the visual damage state as well.
     repair() { pawnInvoke('RepairVehicle', 'i', this.id_); }

@@ -34,7 +34,8 @@ class StoredVehicle extends StoredEntity {
     // Gets whether this vehicle should have a siren if it doesn't have one by default.
     get siren() { return this.siren_; }
 
-    // Gets the respawn delay of the vehicle, in seconds.
+    // Gets the respawn delay of the vehicle, in seconds. A respawn delay of -1 means that the
+    // vehicle streamer will never respawn the vehicle by itself.
     get respawnDelay() { return this.respawnDelay_; }
 }
 

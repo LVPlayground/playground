@@ -39,7 +39,7 @@ InitPlayerBox(playerid)
 {
     DestroyPlayerBox(playerid);
 
-    tPlayerInformationBox[ playerid ] = TextDrawCreate(28.000000, 120.000000, "Loading...");
+    tPlayerInformationBox[ playerid ] = TextDrawCreate(28.000000, 160.000000, "Loading...");
     TextDrawBackgroundColor(tPlayerInformationBox[ playerid ], 255);
     TextDrawFont(tPlayerInformationBox[ playerid ], 2);
     TextDrawLetterSize(tPlayerInformationBox[ playerid ], 0.250000, 1.200000);

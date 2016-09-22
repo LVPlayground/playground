@@ -497,7 +497,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     {
         SendClientMessage(playerid,COLOR_LIGHTBLUE, "Donating to Las Venturas Playground is highly appreciated and offers a lot of");
         SendClientMessage(playerid,COLOR_LIGHTBLUE,"additional and fun features for players; from access to a VIP room, forum board,");
-        SendClientMessage(playerid,COLOR_LIGHTBLUE,"IRC channel, ingame ranks, commands and much more! Please visit http://donate.sa-mp.nl!");
+        SendClientMessage(playerid,COLOR_LIGHTBLUE,"IRC channel, ingame ranks, commands and much more! Please visit http://donate.sa-mp.nl");
         return 1;
     }
 
@@ -1131,7 +1131,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if (iLoan[playerid] >= cashAmount){
+        if (iLoan[playerid] >= maxAvailableLoan){
             format(string, sizeof(string), "Error: You've already borrowed $%s, use /payoff first.", formatPrice(maxAvailableLoan));
             SendClientMessage(playerid, Color::Error, string);
             return 1;

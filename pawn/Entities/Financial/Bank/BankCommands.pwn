@@ -376,7 +376,7 @@ class BankCommands {
             return true;
 
         SendClientMessage(playerId, Color::Error, "Sorry, only registered players can have a bank account!");
-        SendClientMessage(playerId, Color::Information, "* Register now on {44CCFF}http://sa-mp.nl/{FFFFFF}!");
+        SendClientMessage(playerId, Color::Information, "* Register now on {44CCFF}www.sa-mp.nl{FFFFFF}");
 
         return false;
     }

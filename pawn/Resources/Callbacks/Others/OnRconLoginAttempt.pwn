@@ -8,52 +8,36 @@
  *
  **********************************************************/
 
-public OnRconLoginAttempt(ip[], password[], success)
-{
-    // Author: Matthias
-    if(!success) // If the password was incorrect
-    {
-        for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-        {
-            if(!Player(i)->isConnected() || IsPlayerNPC(i))
-            {
-                continue;
-            }
+public OnRconLoginAttempt(ip[], password[], success) {
+    for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); playerId++) {
+        if (!Player(playerId)->isConnected() || Player(playerId)->isNonPlayerCharacter())
+            continue;
 
-            if(!strcmp(ip, Player(i)->ipAddressString(), true)) // Use strcmp to check if the IP is the same as the one trying to login.
-            {
-                // Incorrect password, increase the attemps variable.
-                iRconLoginAttempts[i]++;
+        if (strcmp(ip, Player(playerId)->ipAddressString(), true) == 0) {
+            new notice[128];
 
-                if(iRconLoginAttempts[i] == 3)
-                {
-                    // 3 incorrect passwords, ban him.
-                    new szMessage[128], pName[24];
-                    GetPlayerName(i, pName, 24);
-                    format( szMessage, 256, "%s (Id:%d) has been banned for 3 invalid RCON attempts.", pName, i);
-                    Admin(i, szMessage);
+            if (!success) {
+                iRconLoginAttempts[playerId]++;
 
-                    Player(i)->ban("Too many invalid Remote Console login attempts.");
+                if (iRconLoginAttempts[playerId] == 3) {
+                    format(notice, sizeof(notice), "%s (Id:%d) has been banned for 3 invalid RCON login attempts.",
+                        Player(playerId)->nicknameString(), playerId);
+                    Admin(playerId, notice);
 
-                    iRconLoginAttempts[i] = 0;
-                    return 1;
+                    Player(playerId)->ban("Too many invalid RCON login attempts.");
+                    iRconLoginAttempts[playerId] = 0;
                 }
+            } else {
+                format(notice, sizeof(notice), "%s (Id:%d) has logged into the RCON remote console.",
+                    Player(playerId)->nicknameString(), playerId);
+                Admin(playerId, notice);
+
+                iRconLoginAttempts[playerId] = 0;
             }
+
+            break;
         }
     }
-    else
-    {
-        for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-        {
-            if(!strcmp(ip, Player(i)->ipAddressString(), true) && !Player(i)->isNonPlayerCharacter()) // Use strcmp to check if the IP is the same as the one trying to login.
-            {
-                new szMsg[128];
-                format(szMsg, 128, "%s (Id:%d) has logged into the RCON server command console.",
-                    Player(i)->nicknameString(), i);
-                Admin(i, szMsg);
-                break;
-            }
-        }
-    }
+
     return 1;
 }

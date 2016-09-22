@@ -2,8 +2,6 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-new PlayerJoins[MAX_PLAYERS][6];
-
 OnPlayerLVPConnect(playerid) {
     if (playerid >= MAX_PLAYERS) {
         new message[128];
@@ -38,24 +36,6 @@ OnPlayerLVPConnect(playerid) {
 
     if (!strcmp(Player(playerid)->nicknameString(), iRecordName, false))
         iServerChampion = playerid;
-
-    new jfID = PlayerJoins[playerid][0] + 1;
-    PlayerJoins[playerid][jfID] = Time->currentTime();
-
-    if (jfID >= 4) {
-        if ((PlayerJoins[playerid][4] - PlayerJoins[playerid][1]) < 4) {
-            Player(playerid)->ban("Server flooder (more than four joins in a second).");
-
-            new message[128];
-            format(message, sizeof(message), "[flood] %d %s", playerid, Player(playerid)->nicknameString());
-            AddEcho(message);
-
-            PlayerJoins[playerid][0] = -1;
-        } else
-            PlayerJoins[playerid][0] -= 1;
-
-        PlayerJoins[playerid][0]++;
-    }
 
     for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
         if (Player(subjectId)->isConnected() == false)

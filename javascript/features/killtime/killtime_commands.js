@@ -13,7 +13,7 @@ class KilltimeCommands {
         server.commandManager.buildCommand('killtime')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('start')
-                .parameters([{ name: 'minutes', type: CommandBuilder.NUMBER_PARAMETER }])
+                .parameters([{ name: 'minutes', type: CommandBuilder.NUMBER_PARAMETER, optional: true }])
                 .build(KilltimeCommands.prototype.onKilltimeStartCommand.bind(this))
             .sub('stop')
                 .build(KilltimeCommands.prototype.onKilltimeStopCommand.bind(this))
@@ -21,11 +21,16 @@ class KilltimeCommands {
     }
 
     onKilltimeStartCommand(player, minutes = 2) {
-        this.manager_.start(player, minutes);
+        if (minutes < 2) {
+            player.sendMessage(Message.KILLTIME_MINIMUM_TWO_MINUTES);
+            return;
+        }
+
+        this.manager_.start(minutes);
     }
 
     onKilltimeStopCommand(player) {
-
+        this.manager_.stop(player);
     }
 
     onKilltimeCommand(player) {

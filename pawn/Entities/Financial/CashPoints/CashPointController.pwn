@@ -135,7 +135,7 @@ class CashPointController {
         // can't help them -- money not being persistent would just be confusing.
         if (Player(playerId)->isRegistered() == false) {
             SendClientMessage(playerId, Color::Error, "Sorry, only registered players can use the ATM machines!");
-            SendClientMessage(playerId, Color::Information, "* Register now on {44CCFF}http://sa-mp.nl/{FFFFFF}!");
+            SendClientMessage(playerId, Color::Information, "* Register now on {44CCFF}www.sa-mp.nl{FFFFFF}");
             return;
         }
 

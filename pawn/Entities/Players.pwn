@@ -7,7 +7,7 @@
 #include "Entities/Players/PlayerState.pwn"
 #include "Entities/Players/Player.pwn"
 #include "Entities/Players/PlayerSettings.pwn"
-#include "Entities/Players/PlayerEvents.pwn"
 #include "Entities/Players/PlayerManager.pwn"
+#include "Entities/Players/PlayerEvents.pwn"
 #include "Entities/Players/PlayerMessageLevels.pwn"
 #include "Entities/Players/PlayerIdlePenalty.pwn"

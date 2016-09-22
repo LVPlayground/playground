@@ -39,7 +39,7 @@ testRunner.run('.*\.test\.js').then(notifyReady).then(() => {
         'houses',
 
         // General smaller, self-contained features
-        'friends', 'playground', 'report',
+        'friends', /*'killtime',*/ 'playground', 'report',
 
         // Player-related features
         'player_favours',

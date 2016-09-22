@@ -54,4 +54,8 @@ describe('VehicleStreamer', it => {
         assert.equal(server.vehicleManager.count, originalVehicleCount);
         assert.isFalse(vehicle.isConnected());
     });
+
+    it('should respawn a vehicle after it has been destroyed', async(assert) => {
+        // TODO: Write this test.
+    });
 });

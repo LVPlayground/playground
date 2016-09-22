@@ -6,7 +6,8 @@ const EntityStreamerGlobal = require('features/streamer/entity_streamer_global.j
 const ScopedEntities = require('entities/scoped_entities.js');
 
 // Implementation for a vehicle that's able to stream vehicles for all players. This class is
-// intended to be used with stored entities that are StoredVehicle instances.
+// intended to be used with stored entities that are StoredVehicle instances. The vehicle streamer
+// will automatically handle respawn delays for the vehicles created through it.
 class VehicleStreamer extends EntityStreamerGlobal {
     constructor({ maxVisible = 1000, streamingDistance = 300 } = {}) {
         super({ maxVisible, streamingDistance });
@@ -14,8 +15,14 @@ class VehicleStreamer extends EntityStreamerGlobal {
         // The entities that have been created by this vehicle streamer.
         this.entities_ = new ScopedEntities();
 
-        // Mapping of storedVehicle instances to the Vehicle instance for live vehicles.
+        // Mapping of StoredVehicle instances to the Vehicle instance for live vehicles.
         this.vehicles_ = new Map();
+
+        // Mapping of Vehicle instances to the StoredVehicle instances for live vehicles.
+        this.storedVehicles_ = new Map();
+
+        // Observe the Vehicle Manager to get events associated with the managed vehicles.
+        server.vehicleManager.addObserver(this);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -42,7 +49,7 @@ class VehicleStreamer extends EntityStreamerGlobal {
         if (this.vehicles_.has(storedVehicle))
             throw new Error('Attempting to create a vehicle that already exists.');
 
-        this.vehicles_.set(storedVehicle, this.entities_.createVehicle({
+        const vehicle = this.entities_.createVehicle({
             modelId: storedVehicle.modelId,
             position: storedVehicle.position,
             rotation: storedVehicle.rotation,
@@ -53,8 +60,11 @@ class VehicleStreamer extends EntityStreamerGlobal {
             secondaryColor: storedVehicle.secondaryColor,
             paintjob: storedVehicle.paintjob,
             siren: storedVehicle.siren,
-            respawnDelay: storedVehicle.respawnDelay
-        }));
+            respawnDelay: -1 /* we handle our own respawn delay */
+        });
+
+        this.vehicles_.set(storedVehicle, vehicle);
+        this.storedVehicles_.set(vehicle, storedVehicle);
     }
 
     // Destroys the vehicle represented by |storedVehicle|.
@@ -63,9 +73,21 @@ class VehicleStreamer extends EntityStreamerGlobal {
         if (!vehicle)
             throw new Error('Attempting to delete an invalid vehicle.');
 
-        vehicle.dispose();
-
         this.vehicles_.delete(storedVehicle);
+        this.storedVehicles_.delete(vehicle);
+
+        vehicle.dispose();
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when |vehicle| has been destroyed. Will schedule it to be respawned.
+    onVehicleDeath(vehicle) {
+        const storedVehicle = this.storedVehicles_.get(vehicle);
+        if (!storedVehicle)
+            return;  // the |vehicle| is not part of this streamer
+
+        // TODO: Schedule a respawn if the vehicle is not occupied by a player.
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -78,7 +100,10 @@ class VehicleStreamer extends EntityStreamerGlobal {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        server.vehicleManager.removeObserver(this);
+
         this.vehicles_.clear();
+        this.storedVehicles_.clear();
 
         this.entities_.dispose();
         this.entities_ = null;

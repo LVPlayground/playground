@@ -18,10 +18,12 @@ OnPlayerLVPDisconnect(playerId, reason) {
     CLyse__SignPlayerOut(playerId);             // Local Yocal sports edition
     BagCash__Disconnect(playerId);
 
+#if Feature::DisableVehicleManager == 0
     if (IsPlayerInAnyVehicle(playerId) && GetPlayerState(playerId) == PLAYER_STATE_DRIVER) {
         if (IsVehicleLocked(GetPlayerVehicleID(playerId)))
             SetVehicleLocked(GetPlayerVehicleID(playerId), false);
     }
+#endif
 
     for (new i = 0; i < MAX_PLAYERS; ++i) {
         if (g_LastSlappedBy[i] == playerId)

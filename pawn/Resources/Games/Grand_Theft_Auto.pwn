@@ -78,10 +78,14 @@ CTheft__Initalize() {
 	AddEcho(message);
 }
 
+#if Feature::DisableVehicleManager == 0
+
 // Returns the vehicle Id that's currently wanted by the merchant.
 CTheft__CurrentVehicleId() {
     return GTA_Vehicle;
 }
+
+#endif
 
 // Returns a random vehicle that the merchant is interested in. The vehicle must meet a series of
 // criteria, which are documented through comments within this function's body.

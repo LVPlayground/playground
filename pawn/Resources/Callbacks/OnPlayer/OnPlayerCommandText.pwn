@@ -799,6 +799,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         return 1;
     }
 
+#if Feature::DisableVehicleManager == 0
+
     if(!strcmp(cmdtext, "/lock", true))
     {
         if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
@@ -833,7 +835,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         return 1;
     }
 
-
+#endif  // #if Feature::DisableVehicleManager == 0
 
     if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) { // To make sure they can do the anim
         if(strcmp(cmd, "/dance", true) == 0) {

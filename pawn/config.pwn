@@ -82,10 +82,13 @@ class Configuration {
  */
 class Feature {
     /** **************************************************************************************** **/
-    /// Deathmatch
+    /// Moving stuff to JavaScript defines.
 
     // Disables the Pawn version of the flight club handler.
     public const DisableFightClub = 0;
+
+    // Disables the vehicle manager code in Pawn.
+    public const DisableVehicleManager = 0;
 
     /** **************************************************************************************** **/
     /// Christmas

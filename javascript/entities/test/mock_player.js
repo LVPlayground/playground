@@ -41,6 +41,12 @@ class MockPlayer {
 
         this.connected_ = true;
         this.disconnecting_ = false;
+
+        this.vehicle_ = null;
+        this.vehicleSeat_ = null;
+
+        this.currentVehicleId_ = null;
+        this.currentVehicleSeat_ = 0;
     }
 
     get id() { return this.id_; }
@@ -106,6 +112,18 @@ class MockPlayer {
         // Fake pickup events if the player happened to have stepped in a pickup.
         server.pickupManager.onPlayerPositionChanged(this);
     }
+
+    // Gets the vehicle the player is currently driving in. May be NULL.
+    get vehicle() { return this.vehicle_; }
+
+    // Gets the seat in the |vehicle| the player is currently sitting in. May be NULL when the player
+    // is not driving a vehicle. May be one of the Vehicle.SEAT_* constants.
+    get vehicleSeat() { return this.vehicleSeat_; }
+
+    // Returns the Id of the vehicle the player is currently driving in, or the ID of the seat in
+    // which the player is sitting whilst driving the vehicle. Should only be used by the manager.
+    findVehicleId() { return this.currentVehicleId_; }
+    findVehicleSeat() { return this.currentVehicleSeat_; }
 
     // Gets or sets the special action the player is currently engaged in. The values must be one of
     // the Player.SPECIAL_ACTION_* constants static to this class.
@@ -255,6 +273,36 @@ class MockPlayer {
                 this.dialogPromiseResolve_ = resolve;
             });
         });
+    }
+
+    // Makes the player enter the given |vehicle|, optionally in the given |seat|.
+    enterVehicle(vehicle, seat = 0 /* driver */) {
+        this.currentVehicleId_ = vehicle.id;
+        this.currentVehicleSeat_ = seat;
+
+        global.dispatchEvent('playerstatechange', {
+            playerid: this.id_,
+            oldstate: Player.STATE_ON_FOOT,
+            newstate: seat === 0 ? Player.STATE_DRIVER
+                                 : Player.STATE_PASSENGER
+        });
+
+        return true;
+    }
+
+    // Makes the player leave the vehicle they're currently in.
+    leaveVehicle() {
+        if (!this.vehicle_)
+            return false;
+
+        global.dispatchEvent('playerstatechange', {
+            playerid: this.id_,
+            oldstate: this.vehicleSeat_ === 0 ? Player.STATE_DRIVER
+                                              : Player.STATE_PASSENGER,
+            newstate: Player.STATE_ON_FOOT
+        });
+
+        return true;
     }
 
     // Changes the player's state from |oldState| to |newState|.

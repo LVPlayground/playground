@@ -213,4 +213,165 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         assert.equal(actualIds.length, 3);
         assert.deepEqual(actualIds, expectedIds);
     });
+
+    it('should inform observers of players entering and leaving vehicles', assert => {
+        let enteredCounter = 0;
+        let leftCounter = 0;
+
+        class MyObserver {
+            onPlayerEnterVehicle(player, vehicle) { enteredCounter++; }
+            onPlayerLeaveVehicle(player, vehicle) { leftCounter++; }
+        }
+
+        server.playerManager.addObserver(new MyObserver());
+
+        assert.equal(enteredCounter, 0);
+        assert.equal(leftCounter, 0);
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const vehicle = server.vehicleManager.createVehicle({
+            modelId: 412 /* Infernus */,
+            position: new Vector(1000, 1500, 2000)  
+        });
+
+        assert.isTrue(gunther.enterVehicle(vehicle));
+
+        assert.equal(enteredCounter, 1);
+        assert.equal(leftCounter, 0);
+
+        assert.isTrue(gunther.leaveVehicle());
+
+        assert.equal(enteredCounter, 1);
+        assert.equal(leftCounter, 1);
+
+        assert.isTrue(gunther.enterVehicle(vehicle));
+
+        assert.equal(enteredCounter, 2);
+        assert.equal(leftCounter, 1);
+
+        gunther.disconnect();
+
+        assert.equal(enteredCounter, 2);
+        assert.equal(leftCounter, 2);
+    });
+
+    it('should keep track of the occupants of a particular vehicle', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        assert.isNull(gunther.vehicle);
+        assert.isNull(gunther.vehicleSeat);
+
+        assert.isNull(russell.vehicle);
+        assert.isNull(russell.vehicleSeat);
+
+        const vehicle = server.vehicleManager.createVehicle({
+            modelId: 412 /* Infernus */,
+            position: new Vector(1000, 1500, 2000)  
+        });
+
+        assert.isFalse(vehicle.isOccupied());
+        assert.equal(vehicle.occupantCount, 0);
+        assert.isNull(vehicle.driver);
+
+        assert.equal([...vehicle.getOccupants()].length, 0);
+        assert.equal([...vehicle.getPassengers()].length, 0);
+
+        // (1) Make |gunther| enter the vehicle as the driver.
+        assert.isTrue(gunther.enterVehicle(vehicle, Vehicle.SEAT_DRIVER));
+
+        assert.equal(gunther.vehicle, vehicle);
+        assert.equal(gunther.vehicleSeat, Vehicle.SEAT_DRIVER);
+
+        assert.isTrue(vehicle.isOccupied());
+        assert.equal(vehicle.occupantCount, 1);
+        assert.equal(vehicle.driver, gunther);
+
+        assert.equal([...vehicle.getOccupants()].length, 1);
+        assert.equal([...vehicle.getPassengers()].length, 0);
+
+        // (2) Make |russell| enter the vehicle as a passenger.
+        assert.isTrue(russell.enterVehicle(vehicle, Vehicle.SEAT_PASSENGER));
+
+        assert.equal(russell.vehicle, vehicle);
+        assert.equal(russell.vehicleSeat, Vehicle.SEAT_PASSENGER);
+
+        assert.isTrue(vehicle.isOccupied());
+        assert.equal(vehicle.occupantCount, 2);
+        assert.equal(vehicle.driver, gunther);
+
+        assert.equal([...vehicle.getOccupants()].length, 2);
+        assert.equal([...vehicle.getPassengers()].length, 1);
+
+        // (3) Make |gunther| leave the vehicle, leaving |russell| by himself.
+        assert.isTrue(gunther.leaveVehicle());
+
+        assert.isNull(gunther.vehicle);
+        assert.isNull(gunther.vehicleSeat);
+
+        assert.isTrue(vehicle.isOccupied());
+        assert.equal(vehicle.occupantCount, 1);
+        assert.isNull(vehicle.driver);
+
+        assert.equal([...vehicle.getOccupants()].length, 1);
+        assert.equal([...vehicle.getPassengers()].length, 1);
+
+        // (4) Make |russell| leave the vehicle as well.
+        assert.isTrue(russell.leaveVehicle());
+
+        assert.isNull(russell.vehicle);
+        assert.isNull(russell.vehicleSeat);
+
+        assert.isFalse(vehicle.isOccupied());
+        assert.equal(vehicle.occupantCount, 0);
+        assert.isNull(vehicle.driver);
+
+        assert.equal([...vehicle.getOccupants()].length, 0);
+        assert.equal([...vehicle.getPassengers()].length, 0);
+    });
+
+    it('should remove a player from their vehicle when they disconnect', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        assert.isNull(gunther.vehicle);
+        assert.isNull(gunther.vehicleSeat);
+
+        const vehicle = server.vehicleManager.createVehicle({
+            modelId: 412 /* Infernus */,
+            position: new Vector(1000, 1500, 2000)  
+        });
+
+        assert.isFalse(vehicle.isOccupied());
+        assert.equal(vehicle.occupantCount, 0);
+        assert.isNull(vehicle.driver);
+
+        assert.equal([...vehicle.getOccupants()].length, 0);
+        assert.equal([...vehicle.getPassengers()].length, 0);
+
+        // (1) Make |gunther| enter the vehicle as the driver.
+        assert.isTrue(gunther.enterVehicle(vehicle, Vehicle.SEAT_DRIVER));
+
+        assert.equal(gunther.vehicle, vehicle);
+        assert.equal(gunther.vehicleSeat, Vehicle.SEAT_DRIVER);
+
+        assert.isTrue(vehicle.isOccupied());
+        assert.equal(vehicle.occupantCount, 1);
+        assert.equal(vehicle.driver, gunther);
+
+        assert.equal([...vehicle.getOccupants()].length, 1);
+        assert.equal([...vehicle.getPassengers()].length, 0);
+
+        // (2) Disconnect |gunther| from the server.
+        gunther.disconnect();
+
+        assert.isNull(gunther.vehicle);
+        assert.isNull(gunther.vehicleSeat);
+
+        assert.isFalse(vehicle.isOccupied());
+        assert.equal(vehicle.occupantCount, 0);
+        assert.isNull(vehicle.driver);
+
+        assert.equal([...vehicle.getOccupants()].length, 0);
+        assert.equal([...vehicle.getPassengers()].length, 0);
+    });
 });

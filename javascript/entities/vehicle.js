@@ -11,6 +11,9 @@ class Vehicle {
         this.siren_ = !!options.siren;
         this.respawnDelay_ = options.respawnDelay;
 
+        this.driver_ = null;
+        this.passengers_ = new Set();
+
         // TODO(Russell): Synchronize these with the OnVehicleRespray event.
         this.primaryColor_ = options.primaryColor;
         this.secondaryColor_ = options.secondaryColor;
@@ -56,6 +59,23 @@ class Vehicle {
     // Gets or sets the rotation of this vehicle.
     get rotation() { return pawnInvoke('GetVehicleZAngle', 'iF', this.id_); }
     set rotation(value) { pawnInvoke('SetVehicleZAngle', 'if', this.id_, value); }
+
+    // Returns whether the vehicle is currently occupied by any player.
+    isOccupied() { return this.driver_ || this.passengers_.size; }
+
+    // Gets the Player that is currently driving this vehicle. May be NULL.
+    get driver() { return this.driver_; }
+
+    // Returns an iterator with the passengers that are currently driving in this vehicle.
+    *getPassengers() { yield this.passengers_.values(); }
+
+    // Returns an iterator with the occupants that are currently driving in this vehicle.
+    *getOccupants() {
+        if (this.driver_)
+            yield this.driver_;
+
+        yield* this.passengers_;
+    }
 
     // Gets or sets the primary colour of this vehicle.
     get primaryColor() { return this.primaryColor_; }
@@ -105,6 +125,8 @@ class Vehicle {
         pawnInvoke('SetVehicleVelocity', 'ifff', this.id_, value.x, value.y, value.z);
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     // Repairs the vehicle. This resets the visual damage state as well.
     repair() { pawnInvoke('RepairVehicle', 'i', this.id_); }
 
@@ -113,6 +135,26 @@ class Vehicle {
     addComponent(componentId) {
         pawnInvoke('AddVehicleComponent', 'ii', this.id_, componentId);
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called by the vehicle manager when |player| has entered this vehicle.
+    onPlayerEnterVehicle(player) {
+        if (player.vehicleSeat === Vehicle.SEAT_DRIVER)
+            this.driver_ = player;
+        else
+            this.passengers_.add(player);
+    }
+
+    // Called by the vehicle manager when |player| has left this vehicle.
+    onPlayerLeaveVehicle(player) {
+        if (player.vehicleSeat === Vehicle.SEAT_DRIVER)
+            this.driver_ = null;
+        else
+            this.passengers_.delete(player);
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Disposes the vehicle by removing it from the server.
     dispose() {
@@ -131,6 +173,11 @@ Vehicle.INVALID_ID = 65535;
 Vehicle.COMPONENT_NOS_SINGLE_SHOT = 1009;
 Vehicle.COMPONENT_NOS_FIVE_SHOTS = 1008;
 Vehicle.COMPONENT_NOS_TEN_SHOTS = 1010;
+
+// Constants that indicate the seat a player is occupying in the vehicle. Values above 1 are
+// possible. They indicate passenger seats in the rear seat or further beyond. (E.g. for a bus.)
+Vehicle.SEAT_DRIVER = 0;
+Vehicle.SEAT_PASSENGER = 1;
 
 // Expose the Vehicle object globally since it will be commonly used.
 global.Vehicle = Vehicle;

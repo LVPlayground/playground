@@ -29,6 +29,8 @@ class VehicleManager {
     // Gets the number of vehicles currently created on the server.
     get count() { return this.vehicles_.size; }
 
+    // ---------------------------------------------------------------------------------------------
+
     // Returns the vehicle identified by |vehicleId|, or NULL when the vehicle does not exist or
     // is not owned by the JavaScript code.
     getById(vehicleId) {
@@ -43,6 +45,8 @@ class VehicleManager {
         this.vehicles_.forEach(callback);
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     // Observes events for the vehicles owned by this manager. |observer| can be added multiple
     // times, but will receive events only once.
     addObserver(observer) {
@@ -53,6 +57,8 @@ class VehicleManager {
     removeObserver(observer) {
         this.observers_.delete(observer);
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Creates a new vehicle with the given options. The vehicle's model Id and position are
     // required, all other options can optionally be provided.
@@ -67,6 +73,8 @@ class VehicleManager {
         this.vehicles_.set(vehicle.id, vehicle);
         return vehicle;
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Called when a vehicle has spawned on the server. Observers will be informed about this event.
     onVehicleSpawn(event) {
@@ -86,6 +94,8 @@ class VehicleManager {
 
         this.notifyObservers('onVehicleDeath', vehicle);
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Notifies observers about the |eventName|, passing |...args| as the argument to the method
     // when it exists. The call will be bound to the observer's instance.

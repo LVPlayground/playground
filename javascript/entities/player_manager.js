@@ -22,6 +22,8 @@ class PlayerManager {
         this.callbacks_.addEventListener(
             'playerlogin', PlayerManager.prototype.onPlayerLogin.bind(this));
         this.callbacks_.addEventListener(
+            'playerstatechange', PlayerManager.prototype.onPlayerStateChange.bind(this));
+        this.callbacks_.addEventListener(
             'playerdisconnect', PlayerManager.prototype.onPlayerDisconnect.bind(this));
     }
 
@@ -167,6 +169,40 @@ class PlayerManager {
         this.notifyObservers('onPlayerLogin', player, event);
     }
 
+    // Called when a player's state changes. Handles players entering and leaving vehicles, and
+    // synchronizing this information with both the Player and Vehicle instances.
+    onPlayerStateChange(event) {
+        const player = this.players_.get(event.playerid);
+        if (!player)
+            return;  // the player isn't valid
+
+        if (event.oldstate === Player.STATE_DRIVER || event.oldstate === Player.STATE_PASSENGER) {
+            const vehicle = player.vehicle;
+            if (!vehicle)
+                return;  // the vehicle isn't managed by JavaScript
+
+            this.notifyObservers('onPlayerLeaveVehicle', player, vehicle);
+
+            vehicle.onPlayerLeaveVehicle(player);
+
+            player.vehicle_ = null;
+            player.vehicleSeat_ = null;
+        }
+
+        if (event.newstate === Player.STATE_DRIVER || event.newstate === Player.STATE_PASSENGER) {
+            const vehicle = server.vehicleManager.getById(player.findVehicleId());
+            if (!vehicle)
+                return;  // the vehicle isn't managed by JavaScript
+
+            player.vehicle_ = vehicle;
+            player.vehicleSeat_ = player.findVehicleSeat();
+
+            vehicle.onPlayerEnterVehicle(player);
+
+            this.notifyObservers('onPlayerEnterVehicle', player, vehicle);
+        }
+    }
+
     // Called when a player has disconnected from Las Venturas Playground. The |event| may contain
     // untrusted or incorrect data that has to be verified.
     onPlayerDisconnect(event) {
@@ -178,6 +214,16 @@ class PlayerManager {
 
         // Notify the |player| instance of the fact that the associated player is disconnecting.
         player.notifyDisconnecting();
+
+        // Remove the player from their vehicle if they're currently in one.
+        if (player.vehicle !== null) {
+            this.notifyObservers('onPlayerLeaveVehicle', player, player.vehicle);
+
+            player.vehicle.onPlayerLeaveVehicle(player);
+
+            player.vehicle_ = null;
+            player.vehicleSeat_ = null;
+        }
 
         // Remove knowledge of the |player| from the player manager.
         this.players_.delete(event.playerid);

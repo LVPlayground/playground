@@ -9,6 +9,9 @@ class MockVehicle {
         this.manager_ = manager;
         this.id_ = Math.floor(Math.random() * 10000000);
 
+        this.driver_ = null;
+        this.passengers_ = new Set();
+
         this.modelId_ = options.modelId;
         this.position_ = options.position;
         this.rotation_ = options.rotation;
@@ -42,6 +45,26 @@ class MockVehicle {
     get rotation() { return this.rotation_; }
     set rotation(value) { this.rotation_ = value; }
 
+    // Returns whether the vehicle is currently occupied by any player.
+    isOccupied() { return this.driver_ || this.passengers_.size; }
+
+    // Gets the number of occupants that are currently in the vehicle.
+    get occupantCount() { return this.passengers_.size + (this.driver_ ? 1 : 0); }
+
+    // Gets the Player that is currently driving this vehicle. May be NULL.
+    get driver() { return this.driver_; }
+
+    // Returns an iterator with the passengers that are currently driving in this vehicle.
+    *getPassengers() { yield* this.passengers_.values(); }
+
+    // Returns an iterator with the occupants that are currently driving in this vehicle.
+    *getOccupants() {
+        if (this.driver_)
+            yield this.driver_;
+
+        yield* this.passengers_;
+    }
+
     // Gets or sets the primary colour of this vehicle.
     get primaryColor() { return this.primaryColor_; }
     set primaryColor(value) { this.primaryColor_ = value; }
@@ -72,12 +95,32 @@ class MockVehicle {
     get health() { return this.health_; }
     set health(value) { this.health_ = value; }
 
+    // ---------------------------------------------------------------------------------------------
+
     // Repairs the vehicle. This resets the visual damage state as well.
     repair() { this.health_ = 1000; }
 
     // Adds |componentId| to this vehicle. No verification will be done on whether the component is
     // valid for this vehicle. Components can be added multiple times.
     addComponent(componentId) {}
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called by the vehicle manager when |player| has entered this vehicle.
+    onPlayerEnterVehicle(player) {
+        if (player.vehicleSeat === Vehicle.SEAT_DRIVER)
+            this.driver_ = player;
+        else
+            this.passengers_.add(player);
+    }
+
+    // Called by the vehicle manager when |player| has left this vehicle.
+    onPlayerLeaveVehicle(player) {
+        if (player.vehicleSeat === Vehicle.SEAT_DRIVER)
+            this.driver_ = null;
+        else
+            this.passengers_.delete(player);
+    }
 
     // ---------------------------------------------------------------------------------------------
 

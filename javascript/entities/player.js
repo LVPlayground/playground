@@ -27,6 +27,9 @@ class Player {
     this.vehicleCollisionsEnabled_ = true;
     this.activity_ = Player.PLAYER_ACTIVITY_NONE;
     this.messageLevel_ = 0;
+
+    this.vehicle_ = null;
+    this.vehicleSeat_ = null;
   }
 
   // Returns the id of this player. This attribute is read-only.
@@ -118,6 +121,18 @@ class Player {
   set velocity(value) {
     pawnInvoke('SetPlayerVelocity', 'ifff', this.id_, value.x, value.y, value.z);
   }
+
+  // Gets the vehicle the player is currently driving in. May be NULL.
+  get vehicle() { return this.vehicle_; }
+
+  // Gets the seat in the |vehicle| the player is currently sitting in. May be NULL when the player
+  // is not driving a vehicle. May be one of the Vehicle.SEAT_* constants.
+  get vehicleSeat() { return this.vehicleSeat_; }
+
+  // Returns the Id of the vehicle the player is currently driving in, or the ID of the seat in
+  // which the player is sitting whilst driving the vehicle. Should only be used by the manager.
+  findVehicleId() { return pawnInvoke('GetPlayerVehicleID', 'i', this.id_) || null; }
+  findVehicleSeat() { return pawnInvoke('GetPlayerVehicleSeat', 'i', this.id_); }
 
   // Gets or sets the time for this player. It will be returned, and must be set, as an array having
   // two entries: hours and minutes.

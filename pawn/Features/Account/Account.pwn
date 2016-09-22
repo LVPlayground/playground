@@ -164,7 +164,7 @@ class Account <playerId (MAX_PLAYERS)> {
         Annotation::ExpandList<OnPlayerLogin>(playerId);
 
         // Broadcast an OnPlayerLogin callback that can be intercepted by other scripts.
-        CallRemoteFunction("OnPlayerLogin", "iiii", playerId, m_userId, Player(playerId)->isVip(), AccountData(playerId)->gangId());
+        CallRemoteFunction("OnPlayerLogin", "iiiii", playerId, m_userId, Player(playerId)->isVip(), AccountData(playerId)->gangId(), 0 /* undercover */);
 
         sprayTagLoadSprayedTags(playerId);
     }
@@ -238,6 +238,9 @@ class Account <playerId (MAX_PLAYERS)> {
             (level == ManagementLevel ? "manager" : "administrator"));
         Admin(playerId, notice);
 
+        // Broadcast an OnPlayerLogin callback that can be intercepted by other scripts.
+        CallRemoteFunction("OnPlayerLogin", "iiiii", playerId, m_userId, Player(playerId)->isVip(), AccountData(playerId)->gangId(), 1 /* undercover */);
+
         Annotation::ExpandList<OnPlayerModLogin>(playerId);
 
         // TODO(Russell): Should this broadcast an event similar to OnPlayerLogin as well?
@@ -264,8 +267,8 @@ class Account <playerId (MAX_PLAYERS)> {
     }
 };
 
-forward OnPlayerLogin(playerid, userid, gangId);
-public OnPlayerLogin(playerid, userid, gangId) {}
+forward OnPlayerLogin(playerid, userid, gangId, undercover);
+public OnPlayerLogin(playerid, userid, gangId, undercover) {}
 
 forward OnPlayerGuestLogin(playerId);
 public OnPlayerGuestLogin(playerId) {}

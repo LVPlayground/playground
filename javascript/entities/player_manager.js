@@ -162,6 +162,7 @@ class PlayerManager {
 
         player.userId_ = event.userid;
         player.vip_ = !!event.vip;
+        player.undercover_ = !!event.undercover;
 
         this.notifyObservers('onPlayerLogin', player, event);
     }

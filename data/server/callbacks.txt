@@ -8,7 +8,7 @@ forward OnMessageLevelChange(playerid, messagelevel);
 forward OnPlayerActivityChange(playerid, activity);
 forward OnPlayerLeaveActivity(playerid);
 forward OnPlayerLevelChange(playerid, newlevel);
-forward OnPlayerLogin(playerid, userid, vip, gangid);
+forward OnPlayerLogin(playerid, userid, vip, gangid, undercover);
 forward OnPlayerResolvedDeath(playerid, killerid, reason);
 forward OnSetiOwnershipChange(playerid);
 forward OnPlayerGuestLogin(playerId);

@@ -19,6 +19,7 @@ class Player {
 
     this.level_ = Player.LEVEL_PLAYER;
     this.vip_ = false;
+    this.undercover_ = false;
 
     this.userId_ = null;
     this.gangId_ = null;
@@ -71,6 +72,9 @@ class Player {
 
   // Returns whether the player is a Management member on Las Venturas Playground.
   isManagement() { return this.level_ == Player.LEVEL_MANAGEMENT; }
+
+  // Returns whether the player is undercover, i.e. does not use their own account.
+  isUndercover() { return this.undercover_; }
 
   // Returns whether the player is registered and logged in to their account.
   isRegistered() { return this.userId_ !== null; }

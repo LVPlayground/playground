@@ -33,15 +33,17 @@ describe('VehicleStreamer', it => {
         const storedVehicle = createStoredVehicle();
 
         assert.doesNotThrow(() => streamer.add(storedVehicle));
-        assert.isNull(streamer.get(storedVehicle));
+        assert.isNull(streamer.getLiveVehicle(storedVehicle));
 
         gunther.position = storedVehicle.position.translate({ z: 2 });
         await streamer.stream();
 
         assert.equal(server.vehicleManager.count, originalVehicleCount + 1);
 
-        const vehicle = streamer.get(storedVehicle);
+        const vehicle = streamer.getLiveVehicle(storedVehicle);
         assert.isNotNull(vehicle);
+
+        assert.equal(storedVehicle, streamer.getStoredVehicle(vehicle));
 
         assert.isTrue(vehicle.isConnected());
 
@@ -74,8 +76,10 @@ describe('VehicleStreamer', it => {
         gunther.position = storedVehicle.position.translate({ z: 2 });
         await streamer.stream();
 
-        const vehicle = streamer.get(storedVehicle);
+        const vehicle = streamer.getLiveVehicle(storedVehicle);
         assert.isNotNull(vehicle);
+
+        assert.equal(storedVehicle, streamer.getStoredVehicle(vehicle));
 
         vehicle.position = new Vector(1000, 1500, 2000);
         vehicle.death();
@@ -102,8 +106,10 @@ describe('VehicleStreamer', it => {
         gunther.position = storedVehicle.position.translate({ z: 2 });
         await streamer.stream();
 
-        const vehicle = streamer.get(storedVehicle);
+        const vehicle = streamer.getLiveVehicle(storedVehicle);
         assert.isNotNull(vehicle);
+
+        assert.equal(storedVehicle, streamer.getStoredVehicle(vehicle));
 
         vehicle.position = new Vector(1000, 1500, 2000);
         

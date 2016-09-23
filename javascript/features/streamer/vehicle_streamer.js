@@ -42,7 +42,8 @@ class VehicleStreamer extends EntityStreamerGlobal {
     //     boolean add(storedVehicle, lazy = false);
     //     boolean delete(storedVehicle);
     //
-    //     Vehicle get(storedVehicle);
+    //     Vehicle getLiveVehicle(storedVehicle);
+    //     StoredVehicle getStoredVehicle(vehicle);
     //
     //     void optimise();
     //     void clear();
@@ -53,8 +54,13 @@ class VehicleStreamer extends EntityStreamerGlobal {
     // ---------------------------------------------------------------------------------------------
 
     // Returns the live vehicle that is representing the |storedVehicle|. NULL when there is none.
-    get(storedVehicle) {
+    getLiveVehicle(storedVehicle) {
         return this.vehicles_.get(storedVehicle) || null;
+    }
+
+    // Returns the StoredVehicle that is represented by the |vehicle|. NULL when there is none.
+    getStoredVehicle(vehicle) {
+        return this.storedVehicles_.get(vehicle) || null;
     }
 
     // ---------------------------------------------------------------------------------------------

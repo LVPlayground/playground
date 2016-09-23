@@ -17,7 +17,7 @@ class Streamer extends Feature {
         const streamingDistance = 300 /* units */;
 
         this.vehicleStreamer_ = new VehicleStreamer({
-            maxVisible: 500 /* max vehicles */,
+            maxVisible: 150 /* max vehicles */,
             streamingDistance
         });
 

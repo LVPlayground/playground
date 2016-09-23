@@ -193,7 +193,7 @@ describe('EntityStreamerGlobal', it => {
         assert.equal(entity.activeReferences, 0);
     });
 
-    it('should never reach the entity limit, even with lots of player movement', async(assert) => { return;
+    it('should never reach the entity limit, even with lots of player movement', async(assert) => {
         // Make sure that 50 players are connected to the server.
         for (let playerId = 0; playerId < 50; ++playerId) {
             if (server.playerManager.getById(playerId) !== null)
@@ -209,6 +209,9 @@ describe('EntityStreamerGlobal', it => {
         // Now create a thousand entities in a 500x500 grid.
         for (let i = 0; i < 1000; ++i)
             streamer.add(createRandomEntity({ min: 0, max: 500 }), true /* lazy */);
+
+        // Optimise the streamer now that the entities have been added.
+        streamer.optimise();
 
         assert.equal(streamer.activeEntityCount, 0);
 
@@ -230,12 +233,12 @@ describe('EntityStreamerGlobal', it => {
         assert.isAbove(streamer.activeEntityCount, 498);
     });
 
-    it('should be able to stream 25,000 entities for 100 players without issue', async(assert) => {
-        const ENTITY_COUNT = 25000;
+    it('should be able to stream 75,000 entities for 100 players, 10 times', async(assert) => {
+        const ENTITY_COUNT = 75000;
         const PLAYER_COUNT = 100;
 
         // Maximum time, in milliseconds, that streaming should take for this test to be quiet.
-        const MAX_STREAM_TIME_MS = 75;
+        const MAX_STREAM_TIME_MS = 125;
 
         // Make sure that |PLAYER_COUNT| players are connected to the server.
         for (let playerId = 0; playerId < PLAYER_COUNT; ++playerId) {
@@ -252,25 +255,34 @@ describe('EntityStreamerGlobal', it => {
         for (let i = 0; i < ENTITY_COUNT; ++i)
             streamer.add(createRandomEntity({ min: 0, max: 4500 }), true /* lazy */);
 
+        // Optimise the streamer now that the entities have been added.
+        streamer.optimise();
+
         // Utility function to create a random coordinate in range of [0, 4500].
         const randomCoord = () => Math.floor(Math.random() * 4500);
 
-        // Position all 50 players at random positions on the smaller map.
-        server.playerManager.forEach(player =>
-            player.position = new Vector(randomCoord(), randomCoord(), 0));
+        let totalTime = 0;
+        for (let iteration = 0; iteration < 10; ++iteration) {
+            // Position all 50 players at random positions on the smaller map.
+            server.playerManager.forEach(player =>
+                player.position = new Vector(randomCoord(), randomCoord(), 0));
 
-        // Now run the performance test...
-        const startTime = highResolutionTime();
-        await streamer.stream();
-        const endTime = highResolutionTime();
+            // Now run the performance test...
+            const startTime = highResolutionTime();
+            await streamer.stream();
+            const endTime = highResolutionTime();
 
-        const time = Math.round((endTime - startTime) * 100) / 100;
+            totalTime += endTime - startTime;
+        }
+
+        const time = Math.round(totalTime * 100) / 100;
 
         if (time < MAX_STREAM_TIME_MS)
             return;
 
         // Output the result to the console, because that's the only sensible thing we can do.
-        console.log('[EntityStreamerGlobal] Streamed ' + ENTITY_COUNT + ' entities for ' +
+        console.log('[EntityStreamerGlobal] Streamed ' + ENTITY_COUNT + ' entities ten times for ' +
                     PLAYER_COUNT + ' players in ' + time + ' ms.');
+
     });
 });

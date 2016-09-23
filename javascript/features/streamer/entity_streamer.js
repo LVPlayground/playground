@@ -45,6 +45,11 @@ class EntityStreamer {
         return true;
     }
 
+    // Optimises the streamer. Should be done after inserting a significant number of entities.
+    optimise() {
+        this.streamer_.optimise();
+    }
+
     // Deletes |storedEntity| from the entity streamer. Returns whether the entity was deleted.
     delete(storedEntity) {
         const entityId = this.entitiesByInstance_.get(storedEntity);

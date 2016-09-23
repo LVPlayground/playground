@@ -41,6 +41,8 @@ class VehicleStreamer extends EntityStreamerGlobal {
     //
     //     boolean add(storedVehicle, lazy = false);
     //     boolean delete(storedVehicle);
+    //
+    //     void optimise();
     //     void clear();
     //
     // Do not use the createEntity() and deleteEntity() methods below- they are implementation

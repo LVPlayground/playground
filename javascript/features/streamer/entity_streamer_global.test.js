@@ -234,8 +234,8 @@ describe('EntityStreamerGlobal', it => {
     });
 
     it('should be able to stream 75,000 entities for 100 players, 10 times', async(assert) => {
-        const ENTITY_COUNT = 75000;
-        const PLAYER_COUNT = 100;
+        const ENTITY_COUNT = 1000000;
+        const PLAYER_COUNT = 500;
 
         // Maximum time, in milliseconds, that streaming should take for this test to be quiet.
         const MAX_STREAM_TIME_MS = 125;
@@ -277,8 +277,8 @@ describe('EntityStreamerGlobal', it => {
 
         const time = Math.round(totalTime * 100) / 100;
 
-        if (time < MAX_STREAM_TIME_MS)
-            return;
+        //if (time < MAX_STREAM_TIME_MS)
+        //    return;
 
         // Output the result to the console, because that's the only sensible thing we can do.
         console.log('[EntityStreamerGlobal] Streamed ' + ENTITY_COUNT + ' entities ten times for ' +

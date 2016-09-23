@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 const EntityStreamer = require('features/streamer/entity_streamer.js');
-const PriorityQueue = require('base/priority_queue.js');
+const FastPriorityQueue = require('features/streamer/fast_priority_queue.js');
 
 // Comparator that orders stored entities in ascending order by their the total reference count. 
 const TotalReferenceComparator = (lhs, rhs) => {
@@ -25,7 +25,7 @@ class EntityStreamerGlobal extends EntityStreamer {
 
         // Priority queue of disposable entities, sorted in ascending order by total reference
         // count, when LRU is disabled. NULL otherwise.
-        this.disposableEntities_ = lru ? new PriorityQueue(TotalReferenceComparator)
+        this.disposableEntities_ = lru ? new FastPriorityQueue(TotalReferenceComparator)
                                        : null;
 
         // Total number of entities that have been created by the streamer.
@@ -140,10 +140,8 @@ class EntityStreamerGlobal extends EntityStreamer {
             // If the limit of active entities has been reached, which should only be possible when
             // a LRU is being used by the streamer, delete the least referred to entity.
             if (this.activeEntities_ === this.maxVisible) {
-                if (!this.disposableEntities_ || !this.disposableEntities_.sizeNew)
+                if (!this.disposableEntities_ || !this.disposableEntities_.size)
                     throw new Error('Reached the entity limit without anything to dispose.');
-
-                console.log('hit lru limit: ' + this.activeEntities_ + ' // ' + this.maxVisible);
 
                 this.activeEntities_--;
                 this.deleteEntity(this.disposableEntities_.pop());

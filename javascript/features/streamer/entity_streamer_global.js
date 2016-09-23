@@ -58,23 +58,24 @@ class EntityStreamerGlobal extends EntityStreamer {
     // ---------------------------------------------------------------------------------------------
 
     // Adds |storedEntity| to this entity streamer. Returns whether the entity was added. Reference
-    // counting will be skipped when |lazy| is set to TRUE.
+    // counting will be skipped when the |lazy| flag has been set.
     add(storedEntity, lazy = false) {
         if (!super.add(storedEntity))
             return false;
 
-        if (!lazy && this.activeEntities_ < this.maxVisible) {
-            const streamingDistanceSquared = this.streamingDistance * this.streamingDistance;
-            for (const [player, cachedEntities] of this.playerEntities_) {
-                const position = player.position;
+        if (lazy)
+            return true;
 
-                if (position.squaredDistanceTo(storedEntity.position) > streamingDistanceSquared)
-                    continue;  // the |storedEntity| is too far away for the player
+        const streamingDistanceSquared = this.streamingDistance * this.streamingDistance;
+        for (const [player, cachedEntities] of this.playerEntities_) {
+            const position = player.position;
 
-                cachedEntities.add(storedEntity);
+            if (position.squaredDistanceTo(storedEntity.position) > streamingDistanceSquared)
+                continue;  // the |storedEntity| is too far away for the player
 
-                this.addEntityReference(storedEntity);
-            }
+            cachedEntities.add(storedEntity);
+
+            this.addEntityReference(storedEntity);
         }
 
         return true;

@@ -42,12 +42,21 @@ class VehicleStreamer extends EntityStreamerGlobal {
     //     boolean add(storedVehicle, lazy = false);
     //     boolean delete(storedVehicle);
     //
+    //     Vehicle get(storedVehicle);
+    //
     //     void optimise();
     //     void clear();
     //
     // Do not use the createEntity() and deleteEntity() methods below- they are implementation
     // details of the streamer. Use the add() and delete() methods instead.
     //
+    // ---------------------------------------------------------------------------------------------
+
+    // Returns the live vehicle that is representing the |storedVehicle|. NULL when there is none.
+    get(storedVehicle) {
+        return this.vehicles_.get(storedVehicle) || null;
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     // Creates the vehicle represented by |storedVehicle|.
@@ -139,13 +148,6 @@ class VehicleStreamer extends EntityStreamerGlobal {
             return;  // there are still players left in the vehicle
 
         this.scheduleVehicleForRespawn(vehicle, storedVehicle.respawnDelay / 4);
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
-    // Returns the vehicle associated with |storedVehicle|. Only to be used for testing purposes.
-    getVehicleForTesting(storedVehicle) {
-        return this.vehicles_.get(storedVehicle) || null;
     }
 
     // ---------------------------------------------------------------------------------------------

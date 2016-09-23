@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const Feature = require('components/feature_manager/feature.js');
+const Scheduler = require('features/streamer/scheduler.js');
 const VehicleStreamer = require('features/streamer/vehicle_streamer.js');
 
 // There are various limits in both GTA: San Andreas and San Andreas: Multiplayer that limit the
@@ -19,6 +20,12 @@ class Streamer extends Feature {
             maxVisible: 1000 /* max vehicles */,
             streamingDistance
         });
+
+        this.scheduler_ = new Scheduler(this.vehicleStreamer_);
+        this.scheduler_.addStreamer(this.vehicleStreamer_);
+
+        // Starts running the scheduler until this feature gets disposed of.
+        this.scheduler_.start();
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -34,6 +41,9 @@ class Streamer extends Feature {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        this.scheduler_.dispose();
+        this.scheduler_ = null;
+
         this.vehicleStreamer_.dispose();
         this.vehicleStreamer_ = null;
     }

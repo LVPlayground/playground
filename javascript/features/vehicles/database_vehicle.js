@@ -12,8 +12,10 @@ class DatabaseVehicle extends StoredVehicle {
         this.databaseId_ = args.databaseId;
     }
 
-    // Gets the Id through which this vehicle is represented in the database. May be NULL.
+    // Gets the Id through which this vehicle is represented in the database. May be NULL. The
+    // setter of this property should only be used by the VehicleDatabase class.
     get databaseId() { return this.databaseId_; }
+    set databaseId(value) { this.databaseId_ = value; }
 
     // Returns whether this vehicle is persistent. A persistent vehicle is stored in the database
     // and will continue to exist between restarts of the gamemode.

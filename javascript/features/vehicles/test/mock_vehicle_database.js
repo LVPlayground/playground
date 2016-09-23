@@ -5,6 +5,10 @@
 // Mocked implementation of the VehicleDatabase class that does not actually interact with the
 // database. Will be used instead of the real class in tests.
 class MockVehicleDatabase {
+    constructor() {
+        this.latestVehicleId_ = 1000;
+    }
+
     async loadVehicles() {
         return [
             {
@@ -23,6 +27,12 @@ class MockVehicleDatabase {
             }
         ];
     }
+
+    async createVehicle(databaseVehicle) {
+        databaseVehicle.databaseId = this.latestVehicleId_++;
+    }
+
+    async updateVehicle(databaseVehicle) {}
 
     async deleteVehicle(databaseVehicle) {}
 }

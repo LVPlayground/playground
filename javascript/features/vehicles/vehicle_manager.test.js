@@ -10,8 +10,21 @@ describe('VehicleManager', (it, beforeEach) => {
     let manager = null;
     let vehicleStreamer = null;
 
+    // The position at which the test vehicle should be created.
+    const POSITION = new Vector(6000, 6000, 6000);
+
+    // Settings required to create a Hydra with the VehicleManager.
+    const HYDRA = {
+        modelId: 520 /* Hydra */,
+        position: POSITION,
+        rotation: 90,
+        interiorId: 0,
+        virtualWorld: 0
+    };
+
     beforeEach(async(assert) => {
         gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.position = POSITION;
 
         server.featureManager.registerFeaturesForTests({
             streamer: Streamer,
@@ -57,34 +70,21 @@ describe('VehicleManager', (it, beforeEach) => {
             virtualWorld: 0
         }));
 
-        gunther.position = new Vector(6000, 6000, 6000);
-        const vehicle = manager.createVehicle({
-            modelId: 520 /* Hydra */,
-            position: new Vector(6000, 6000, 6000),
-            rotation: 90,
-            interiorId: 0,
-            virtualWorld: 0
-        });
+        gunther.position = POSITION;
+        const vehicle = manager.createVehicle(HYDRA);
 
         assert.isNotNull(vehicle);
         assert.isTrue(vehicle.isConnected());
 
         assert.equal(vehicle.modelId, 520 /* Hydra */);
-        assert.deepEqual(vehicle.position, new Vector(6000, 6000, 6000));
+        assert.deepEqual(vehicle.position, POSITION);
         assert.equal(vehicle.rotation, 90);
         assert.equal(vehicle.interiorId, 0);
         assert.equal(vehicle.virtualWorld, 0);
     });
 
     it('should be able to tell whether it manages a vehicle', assert => {
-        gunther.position = new Vector(6000, 6000, 6000);
-        const managedVehicle = manager.createVehicle({
-            modelId: 520 /* Hydra */,
-            position: new Vector(6000, 6000, 6000),
-            rotation: 90,
-            interiorId: 0,
-            virtualWorld: 0
-        });
+        const managedVehicle = manager.createVehicle(HYDRA);
 
         assert.isTrue(managedVehicle.isConnected());
         assert.isTrue(manager.isManagedVehicle(managedVehicle));
@@ -105,15 +105,55 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.isTrue(unmanagedVehicle.isConnected());
     });
 
+    it('should be able to store new vehicles in the database', async(assert) => {
+        const managedVehicle = manager.createVehicle(HYDRA);
+        assert.isNotNull(managedVehicle);
+        assert.isTrue(managedVehicle.isConnected());
+
+        assert.isFalse(manager.isPersistentVehicle(managedVehicle));
+
+        const updatedVehicle = await manager.storeVehicle(managedVehicle);
+        assert.isNotNull(updatedVehicle);
+
+        assert.isFalse(managedVehicle.isConnected());
+        assert.isTrue(updatedVehicle.isConnected());
+
+        assert.isTrue(manager.isPersistentVehicle(updatedVehicle));
+    });
+
+    it('should be able to update existing vehicles in the database', async(assert) => {
+        gunther.position = new Vector(500, 1000, 1500);
+        await vehicleStreamer.stream();
+
+        assert.equal(manager.count, 1);
+
+        const managedDatabaseVehicle = [...manager.vehicles][0];
+        assert.isTrue(managedDatabaseVehicle.isPersistent());
+
+        const managedVehicle = manager.internalGetLiveVehicle(managedDatabaseVehicle);
+        assert.isNotNull(managedVehicle);
+        assert.isTrue(managedVehicle.isConnected());
+
+        const updatedVehicle = await manager.storeVehicle(managedVehicle);
+        assert.isNotNull(updatedVehicle);
+
+        assert.equal(manager.count, 1);
+
+        const updatedDatabaseVehicle = [...manager.vehicles][0];
+        assert.notEqual(updatedDatabaseVehicle, managedDatabaseVehicle);
+        assert.equal(updatedDatabaseVehicle.databaseId, managedDatabaseVehicle.databaseId);
+        assert.isTrue(updatedDatabaseVehicle.isPersistent());
+
+        assert.isFalse(managedVehicle.isConnected());
+        assert.isTrue(updatedVehicle.isConnected());
+    });
+
+    it('should move players over to the updated vehicle automatically', async(assert) => {
+        // TODO: Implement this test.
+    });
+
     it('should be able to delete vehicles from the game', async(assert) => {
-        gunther.position = new Vector(6000, 6000, 6000);
-        const managedVehicle = manager.createVehicle({
-            modelId: 520 /* Hydra */,
-            position: new Vector(6000, 6000, 6000),
-            rotation: 90,
-            interiorId: 0,
-            virtualWorld: 0
-        });
+        const managedVehicle = manager.createVehicle(HYDRA);
 
         assert.isTrue(managedVehicle.isConnected());
         assert.isTrue(manager.isManagedVehicle(managedVehicle));

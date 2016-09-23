@@ -67,6 +67,68 @@ class VehicleManager {
         return this.internalGetDatabaseVehicle(vehicle) !== null;
     }
 
+    // Returns whether the |vehicle| is a persistent vehicle managed by the VehicleManager.
+    isPersistentVehicle(vehicle) {
+        const databaseVehicle = this.internalGetDatabaseVehicle(vehicle);
+        if (!databaseVehicle)
+            return false;
+
+        return databaseVehicle.isPersistent();
+    }
+
+    // Stores the |vehicle| in the database. If it's a persistent vehicle already, the existing
+    // vehicle will be updated. Otherwise it will be stored as a new persistent vehicle.
+    async storeVehicle(vehicle) {
+        const databaseVehicle = this.internalGetDatabaseVehicle(vehicle);
+        if (!databaseVehicle)
+            throw new Error('The given |vehicle| is not managed by the vehicle manager.');
+
+        const occupants = new Map();
+
+        // Store the occupants of the |vehicle| so that we can teleport them back.
+        for (const player of vehicle.getOccupants()) {
+            occupants.set(player, player.vehicleSeat);
+
+            // Teleport the player out of the vehicle. This will prevent them from showing up as
+            // hidden later on: https://wiki.sa-mp.com/wiki/PutPlayerInVehicle.
+            player.position = vehicle.position.translate({ z: 2 });
+        }
+
+        // Delete the existing vehicle from the streamer immediately.
+        this.internalDeleteVehicle(databaseVehicle);
+
+        // Create the new vehicle with the appropriate settings based on the available data.
+        const newVehicle = new DatabaseVehicle({
+            databaseId: databaseVehicle.databaseId,  // may be NULL
+
+            modelId: vehicle.modelId,
+            position: vehicle.position,
+            interiorId: vehicle.interiorId,
+            virtualWorld: vehicle.virtualWorld,
+
+            primaryColor: vehicle.primaryColor,
+            secondaryColor: vehicle.secondaryColor,
+            paintjob: vehicle.paintjob,
+            siren: vehicle.siren,
+
+            respawnDelay: databaseVehicle.respawnDelay
+        });
+
+        // Create the new vehicle with the streamer immediately. It may still have the invalid
+        // databaseId property assigned if this is the first time we're creating it.
+        this.internalCreateVehicle(newVehicle);
+
+        // TODO: Put all |occupants| back in the vehicle after a small wait.
+
+        // Either create or update the |newVehicle|'s properties in the database.
+        if (newVehicle.isPersistent())
+            await this.database_.updateVehicle(newVehicle);
+        else
+            await this.database_.createVehicle(newVehicle);
+
+        return this.internalGetLiveVehicle(newVehicle);
+    }
+
     // Asynchronously deletes the |vehicle|. It will be immediately removed from the streamer, but
     // will be asynchronously deleted from the database if it's persistent.
     async deleteVehicle(vehicle) {

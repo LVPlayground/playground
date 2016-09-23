@@ -23,6 +23,8 @@ class MockVehicleDatabase {
             }
         ];
     }
+
+    async deleteVehicle(databaseVehicle) {}
 }
 
 exports = MockVehicleDatabase;

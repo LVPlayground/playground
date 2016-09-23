@@ -20,6 +20,15 @@ const LOAD_VEHICLES_QUERY = `
     WHERE
         vehicle_removed IS NULL`;
 
+// Query to flag a given vehicle as having been removed in the database.
+const DELETE_VEHICLE_QUERY = `
+    UPDATE
+        vehicles
+    SET
+        vehicle_removed = NOW()
+    WHERE
+        vehicle_id = ?`;
+
 // Class responsible for interactions of the vehicle feature with the database.
 class VehicleDatabase {
     // Asynchronously loads all vehicles from the database.
@@ -45,6 +54,11 @@ class VehicleDatabase {
         });
 
         return vehicles;
+    }
+
+    // Asynchronously deletes the |databaseVehicle| from the database.
+    async deleteVehicle(databaseVehicle) {
+        await server.database.query(DELETE_VEHICLE_QUERY, databaseVehicle.databaseId);
     }
 }
 

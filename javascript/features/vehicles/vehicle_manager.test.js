@@ -198,4 +198,15 @@ describe('VehicleManager', (it, beforeEach) => {
 
         assert.equal(server.vehicleManager.count, originalVehicleCount - 1);
     });
+
+    it('should recreate vehicles when the streamer reloads', assert => {
+        const originalStreamerSize = vehicleStreamer.size;
+
+        assert.isTrue(server.featureManager.isEligibleForLiveReload('streamer'));
+        assert.isTrue(server.featureManager.liveReload('streamer'));
+
+        const streamer = server.featureManager.loadFeature('streamer');
+        assert.notEqual(streamer.getVehicleStreamer(), vehicleStreamer);
+        assert.equal(streamer.getVehicleStreamer().size, originalStreamerSize);
+    });
 });

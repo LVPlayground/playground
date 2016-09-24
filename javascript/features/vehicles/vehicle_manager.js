@@ -22,6 +22,8 @@ class VehicleManager {
         this.vehicles_ = new Set();
 
         this.streamer_ = streamer;
+        this.streamer_.addReloadObserver(
+            this, VehicleManager.prototype.onStreamerReload.bind(this));
     }
 
     // Gets the number of vehicles that have been created by the manager.
@@ -159,6 +161,16 @@ class VehicleManager {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Called when the streamer has been reloaded. Will recreate all our vehicles.
+    onStreamerReload(streamer) {
+        const vehicleStreamer = streamer.getVehicleStreamer();
+
+        for (const databaseVehicle of this.vehicles_)
+            vehicleStreamer.add(databaseVehicle, true /* lazy */);
+
+        vehicleStreamer.optimise();
+    }
+
     // Creates the |databaseVehicle| in the vehicle streamer. The vehicle will be created lazily
     // when the |lazy| flag has been set, which means it won't automatically be streamed in.
     internalCreateVehicle(databaseVehicle, lazy) {
@@ -187,6 +199,9 @@ class VehicleManager {
     dispose() {
         for (const databaseVehicle of this.vehicles_)
             this.internalDeleteVehicle(databaseVehicle);
+
+        this.streamer_.removeReloadObserver(this);
+        this.streamer_ = null;
 
         this.vehicles_.clear();
         this.vehicles_ = null;

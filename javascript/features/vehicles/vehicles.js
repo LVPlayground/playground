@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const Feature = require('components/feature_manager/feature.js');
+const VehicleCommands = require('features/vehicles/vehicle_commands.js');
 const VehicleManager = require('features/vehicles/vehicle_manager.js');
 
 // The Vehicles feature is responsible for the features one might find around San Andreas. It allows
@@ -12,11 +13,16 @@ class Vehicles extends Feature {
     constructor() {
         super();
 
+        // Used to add commands and vehicle access to the `/lvp access` console.
+        const playground = this.defineDependency('playground', true /* isFunctional */);
+
         // Used to create and destroy the vehicles available on Las Venturas Playground.
         const streamer = this.defineDependency('streamer', true /* isFunctional */);
 
         this.manager_ = new VehicleManager(streamer);
         this.manager_.loadVehicles();
+
+        this.commands_ = new VehicleCommands(this.manager_, playground);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -28,6 +34,9 @@ class Vehicles extends Feature {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        this.commands_.dispose();
+        this.commands_ = null;
+
         this.manager_.dispose();
         this.manager_ = null;
     }

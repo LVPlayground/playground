@@ -104,7 +104,7 @@ class MockHouseDatabase {
 
         this.logs_.get(location).push({
             name: player.name,
-            date: server.clock.currentTime()
+            date: Math.floor(server.clock.currentTime() / 1000)
         });
     }
 

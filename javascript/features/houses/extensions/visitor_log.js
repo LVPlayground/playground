@@ -51,7 +51,7 @@ class VisitorLog extends HouseExtension {
     // Formats the |date|, which is a UNIX timetamp in second granularity, in a representation that
     // is relative to the server's current time.
     formatVisitDate(date) {
-        const seconds = Math.floor((server.clock.currentTime() - date) / 1000);
+        const seconds = Math.floor(server.clock.currentTime() / 1000) - date;
 
         // Handle clock skew by the server, which isn't likely, but may happen.
         if (seconds < 0)

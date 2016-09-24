@@ -242,12 +242,13 @@ class CommandBuilder {
               break;
 
             let subject = server.playerManager.find({ nameOrId: result[0], returnPlayer: true });
-            if (subject === null) {
+            if (subject === null && builder.defaultValue_ === null) {
               player.sendMessage(Message.COMMAND_ERROR_UNKNOWN_PLAYER, argumentString);
               return true;
             }
 
-            return await listener(player, argumentString.substr(result[0].length), [ ...carriedArguments, subject ]);
+            if (subject !== null)
+              return await listener(player, argumentString.substr(result[0].length), [ ...carriedArguments, subject ]);
         }
 
         // If the sub-command has a default value function defined, attempt to get its value by
@@ -255,7 +256,8 @@ class CommandBuilder {
         if (builder.defaultValue_ !== null) {
           let value = builder.defaultValue_(player);
           if (value !== null)
-            return await listener(player, argumentString, [ ...carriedArguments, value ]);
+            if (await listener(player, argumentString, [ ...carriedArguments, value ]) !== false)
+              return true;
         }
       }
 

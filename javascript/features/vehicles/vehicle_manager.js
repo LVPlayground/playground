@@ -118,7 +118,22 @@ class VehicleManager {
         // databaseId property assigned if this is the first time we're creating it.
         this.internalCreateVehicle(newVehicle);
 
-        // TODO: Put all |occupants| back in the vehicle after a small wait.
+        // Put all the |occupants| back in the vehicle after a short wait.
+        milliseconds(500).then(() => {
+            if (!this.vehicles_.has(newVehicle))
+                return;  // the |newVehicle| has been removed since
+
+            const liveVehicle = this.internalGetLiveVehicle(newVehicle);
+            if (!liveVehicle)
+                return;  // the |newVehicle| has not been created by the streamer
+
+            for (const [player, seat] of occupants) {
+                if (!player.isConnected())
+                    continue;  // the |player| has since disconnected
+
+                player.enterVehicle(liveVehicle, seat);
+            }
+        });
 
         // Either create or update the |newVehicle|'s properties in the database.
         if (newVehicle.isPersistent())

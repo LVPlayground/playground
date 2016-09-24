@@ -134,6 +134,11 @@ class Player {
   findVehicleId() { return pawnInvoke('GetPlayerVehicleID', 'i', this.id_) || null; }
   findVehicleSeat() { return pawnInvoke('GetPlayerVehicleSeat', 'i', this.id_); }
 
+  // Makes the player enter the given |vehicle|, optionally in the given |seat|.
+  enterVehicle(vehicle, seat = 0 /* driver */) {
+    pawnInvoke('PutPlayerInVehicle', 'iii', this.id_, vehicle.id, seat);
+  }
+
   // Gets or sets the time for this player. It will be returned, and must be set, as an array having
   // two entries: hours and minutes.
   get time() { return pawnInvoke('GetPlayerTime', 'iII', this.id); }

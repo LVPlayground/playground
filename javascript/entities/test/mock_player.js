@@ -97,8 +97,8 @@ class MockPlayer {
 
     // Gets or sets the interior the player is part of. Moving them to the wrong interior will mess up
   // their visual state significantly, as all world objects may disappear.
-  get interiorId() { return this.interiorId_; }
-  set interiorId(value) { this.interiorId_ = value; }
+    get interiorId() { return this.interiorId_; }
+    set interiorId(value) { this.interiorId_ = value; }
 
     // Gets or sets the virtual world the player is part of.
     get virtualWorld() { return this.virtualWorld_; }
@@ -108,6 +108,16 @@ class MockPlayer {
     get position() { return this.position_; }
     set position(value) {
         this.position_ = value;
+
+        // Fake a state change if the player is currently in a vehicle.
+        if (this.vehicle_ != null) {
+            server.playerManager.onPlayerStateChange({
+                playerid: this.id_,
+                oldstate: this.vehicleSeat_ === Vehicle.SEAT_DRIVER ? Player.STATE_DRIVER
+                                                                    : Player.STATE_PASSENGER,
+                newstate: Player.STATE_ON_FOOT
+            });
+        }
 
         // Fake pickup events if the player happened to have stepped in a pickup.
         server.pickupManager.onPlayerPositionChanged(this);
@@ -124,6 +134,21 @@ class MockPlayer {
     // which the player is sitting whilst driving the vehicle. Should only be used by the manager.
     findVehicleId() { return this.currentVehicleId_; }
     findVehicleSeat() { return this.currentVehicleSeat_; }
+
+    // Makes the player enter the given |vehicle|, optionally in the given |seat|.
+    enterVehicle(vehicle, seat = 0 /* driver */) {
+        this.currentVehicleId_ = vehicle.id;
+        this.currentVehicleSeat_ = seat;
+
+        global.dispatchEvent('playerstatechange', {
+            playerid: this.id_,
+            oldstate: Player.STATE_ON_FOOT,
+            newstate: seat === 0 ? Player.STATE_DRIVER
+                                 : Player.STATE_PASSENGER
+        });
+
+        return true;
+    }
 
     // Gets or sets the special action the player is currently engaged in. The values must be one of
     // the Player.SPECIAL_ACTION_* constants static to this class.
@@ -273,21 +298,6 @@ class MockPlayer {
                 this.dialogPromiseResolve_ = resolve;
             });
         });
-    }
-
-    // Makes the player enter the given |vehicle|, optionally in the given |seat|.
-    enterVehicle(vehicle, seat = 0 /* driver */) {
-        this.currentVehicleId_ = vehicle.id;
-        this.currentVehicleSeat_ = seat;
-
-        global.dispatchEvent('playerstatechange', {
-            playerid: this.id_,
-            oldstate: Player.STATE_ON_FOOT,
-            newstate: seat === 0 ? Player.STATE_DRIVER
-                                 : Player.STATE_PASSENGER
-        });
-
-        return true;
     }
 
     // Makes the player leave the vehicle they're currently in.

@@ -149,21 +149,52 @@ describe('VehicleManager', (it, beforeEach) => {
     });
 
     it('should move players over to the updated vehicle automatically', async(assert) => {
-        // TODO: Implement this test.
+        const russell = server.playerManager.getById(1 /* Russell */);
+        const lucy = server.playerManager.getById(2 /* Lucy */);
+
+        const vehicle = manager.createVehicle(HYDRA);
+        assert.isTrue(vehicle.isConnected());
+
+        gunther.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
+        russell.enterVehicle(vehicle, Vehicle.SEAT_PASSENGER);
+        lucy.enterVehicle(vehicle, Vehicle.SEAT_PASSENGER + 2 /* 3rd passenger */);
+
+        assert.equal(gunther.vehicle, vehicle);
+        assert.equal(russell.vehicle, vehicle);
+        assert.equal(lucy.vehicle, vehicle);
+
+        const updatedVehicle = await manager.storeVehicle(vehicle);
+        assert.isNotNull(updatedVehicle);
+
+        assert.isNull(gunther.vehicle);
+        assert.isNull(russell.vehicle);
+        assert.isNull(lucy.vehicle);
+
+        lucy.disconnect();  // the management should consider this as a signal
+
+        await server.clock.advance(500);  // half a second
+
+        assert.equal(gunther.vehicle, updatedVehicle);
+        assert.equal(gunther.vehicleSeat, Vehicle.SEAT_DRIVER);
+
+        assert.equal(russell.vehicle, updatedVehicle);
+        assert.equal(russell.vehicleSeat, Vehicle.SEAT_PASSENGER);
+
+        assert.isNull(lucy.vehicle);
     });
 
     it('should be able to delete vehicles from the game', async(assert) => {
-        const managedVehicle = manager.createVehicle(HYDRA);
+        const vehicle = manager.createVehicle(HYDRA);
 
-        assert.isTrue(managedVehicle.isConnected());
-        assert.isTrue(manager.isManagedVehicle(managedVehicle));
+        assert.isTrue(vehicle.isConnected());
+        assert.isTrue(manager.isManagedVehicle(vehicle));
 
         const originalVehicleCount = server.vehicleManager.count;
 
-        await manager.deleteVehicle(managedVehicle);
+        await manager.deleteVehicle(vehicle);
 
-        assert.isFalse(managedVehicle.isConnected());
-        assert.isFalse(manager.isManagedVehicle(managedVehicle));
+        assert.isFalse(vehicle.isConnected());
+        assert.isFalse(manager.isManagedVehicle(vehicle));
 
         assert.equal(server.vehicleManager.count, originalVehicleCount - 1);
     });

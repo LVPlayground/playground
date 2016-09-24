@@ -149,7 +149,7 @@ const UPDATE_ACCESS_SETTING_QUERY = `
 // Query for updating the marker color of a given house.
 const UPDATE_MARKER_COLOR_SETTING_QUERY = `
     UPDATE
-        house_settings
+        houses_settings
     SET
         house_marker_color = ?
     WHERE

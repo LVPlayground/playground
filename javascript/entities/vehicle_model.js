@@ -66,6 +66,9 @@ class VehicleModel {
 
             // TODO: Add additional maps for data we want to be able to key by.
         });
+
+        if (modelsById.size != 212 /* total number of vehicle models */)
+            throw new Error('Expected data for 212 vehicle models to be loaded.');
     }
 
     // ---------------------------------------------------------------------------------------------

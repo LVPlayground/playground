@@ -37,7 +37,7 @@ WantedLevel__OnPlayerDeath (playerid, killerid) {
     SetPlayerWantedLevel(killerid, iWantedLevel);
 
     // Calculate a bounty for this player
-    new const award = GetEconomyValue(WantedLevelAward, iWantedLevel);
+    new award = GetEconomyValue(WantedLevelAward, iWantedLevel);
 
     // If a player has more than 3 kills, we have to process a message
     // to tell everyone how many kills he/she has, and how much of a bounty they have!
@@ -80,6 +80,9 @@ WantedLevel__OnPlayerDeath (playerid, killerid) {
             SendClientMessageToAllEx(Color::ConnectionMessage,iStr);
         }
     }
+
+    iWantedLevel = GetWantedLevel(playerid, WantedLevel[playerid]);
+    award = GetEconomyValue(WantedLevelAward, iWantedLevel);
 
     if(iWantedLevel > 0)
     {

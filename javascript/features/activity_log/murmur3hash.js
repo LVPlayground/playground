@@ -95,7 +95,15 @@ class Murmur3Hash {
 
     static provideNativeMurmur3HashGenerateHashToPawn() {
         provideNative('MurmurIIIHashGenerateHash', 'siS', (key, maxLength) => {
-            return [Murmur3Hash.generateHash(key).toString()];
+            let result = '0';
+
+            try {
+                result = Murmur3Hash.generateHash(key).toString();
+            } catch (e) {
+                console.log('Unable to compute the murmur3 hash for ' + key, e);
+            }
+
+            return [result];
         });
     }
 }

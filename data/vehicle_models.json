@@ -1,0 +1,1275 @@
+
+[
+    {
+        "id": 400,
+        "name": "Landstalker",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 401,
+        "name": "Bravura",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 402,
+        "name": "Buffalo",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 403,
+        "name": "Linerunner",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 404,
+        "name": "Pereniel",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 405,
+        "name": "Sentinel",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 406,
+        "name": "Dumper",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 407,
+        "name": "Firetruck",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 408,
+        "name": "Trashmaster",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 409,
+        "name": "Stretch",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 410,
+        "name": "Manana",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 411,
+        "name": "Infernus",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 412,
+        "name": "Voodoo",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 413,
+        "name": "Pony",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 414,
+        "name": "Mule",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 415,
+        "name": "Cheetah",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 416,
+        "name": "Ambulance",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 417,
+        "name": "Leviathan",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 418,
+        "name": "Moonbeam",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 419,
+        "name": "Esperanto",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 420,
+        "name": "Taxi",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 421,
+        "name": "Washington",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 422,
+        "name": "Bobcat",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 423,
+        "name": "Mr Whoopee",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 424,
+        "name": "BF Injection",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 425,
+        "name": "Hunter",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 426,
+        "name": "Premier",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 427,
+        "name": "Enforcer",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 428,
+        "name": "Securicar",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 429,
+        "name": "Banshee",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 430,
+        "name": "Predator",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 431,
+        "name": "Bus",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 432,
+        "name": "Rhino",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 433,
+        "name": "Barracks",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 434,
+        "name": "Hotknife",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 435,
+        "name": "Trailer",
+        "categories": [ "UNKNOWN" ],
+        "trailer": true
+    },
+    {
+        "id": 436,
+        "name": "Previon",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 437,
+        "name": "Coach",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 438,
+        "name": "Cabbie",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 439,
+        "name": "Stallion",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 440,
+        "name": "Rumpo",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 441,
+        "name": "RC Bandit",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 442,
+        "name": "Romero",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 443,
+        "name": "Packer",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 444,
+        "name": "Monster Truck",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 445,
+        "name": "Admiral",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 446,
+        "name": "Squalo",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 447,
+        "name": "Seasparrow",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 448,
+        "name": "Pizzaboy",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 449,
+        "name": "Tram",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 450,
+        "name": "Trailer 2",
+        "categories": [ "UNKNOWN" ],
+        "trailer": true
+    },
+    {
+        "id": 451,
+        "name": "Turismo",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 452,
+        "name": "Speeder",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 453,
+        "name": "Reefer",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 454,
+        "name": "Tropic",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 455,
+        "name": "Flatbed",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 456,
+        "name": "Yankee",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 457,
+        "name": "Caddy",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 458,
+        "name": "Solair",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 459,
+        "name": "Berkley's RC Van",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 460,
+        "name": "Skimmer",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 461,
+        "name": "PCJ-600",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 462,
+        "name": "Faggio",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 463,
+        "name": "Freeway",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 464,
+        "name": "RC Baron",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 465,
+        "name": "RC Raider",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 466,
+        "name": "Glendale",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 467,
+        "name": "Oceanic",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 468,
+        "name": "Sanchez",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 469,
+        "name": "Sparrow",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 470,
+        "name": "Patriot",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 471,
+        "name": "Quad",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 472,
+        "name": "Coastguard",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 473,
+        "name": "Dinghy",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 474,
+        "name": "Hermes",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 475,
+        "name": "Sabre",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 476,
+        "name": "Rustler",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 477,
+        "name": "ZR-350",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 478,
+        "name": "Walton",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 479,
+        "name": "Regina",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 480,
+        "name": "Comet",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 481,
+        "name": "BMX",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 482,
+        "name": "Burrito",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 483,
+        "name": "Camper",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 484,
+        "name": "Marquis",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 485,
+        "name": "Baggage",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 486,
+        "name": "Dozer",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 487,
+        "name": "Maverick",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 488,
+        "name": "News Chopper",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 489,
+        "name": "Rancher",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 490,
+        "name": "FBI Rancher",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 491,
+        "name": "Virgo",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 492,
+        "name": "Greenwood",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 493,
+        "name": "Jetmax",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 494,
+        "name": "Hotring",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 495,
+        "name": "Sandking",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 496,
+        "name": "Blista Compact",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 497,
+        "name": "Police Maverick",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 498,
+        "name": "Boxville",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 499,
+        "name": "Benson",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 500,
+        "name": "Mesa",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 501,
+        "name": "RC Goblin",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 502,
+        "name": "Hotring Racer",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 503,
+        "name": "Hotring Racer 2",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 504,
+        "name": "Bloodring Banger",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 505,
+        "name": "Rancher 2",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 506,
+        "name": "Super GT",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 507,
+        "name": "Elegant",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 508,
+        "name": "Journey",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 509,
+        "name": "Bike",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 510,
+        "name": "Mountain Bike",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 511,
+        "name": "Beagle",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 512,
+        "name": "Cropdust",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 513,
+        "name": "Stunt",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 514,
+        "name": "Tanker",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 515,
+        "name": "RoadTrain",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 516,
+        "name": "Nebula",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 517,
+        "name": "Majestic",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 518,
+        "name": "Buccaneer",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 519,
+        "name": "Shamal",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 520,
+        "name": "Hydra",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 521,
+        "name": "FCR-900",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 522,
+        "name": "NRG-500",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 523,
+        "name": "HPV1000",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 524,
+        "name": "Cement Truck",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 525,
+        "name": "Tow Truck",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 526,
+        "name": "Fortune",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 527,
+        "name": "Cadrona",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 528,
+        "name": "FBI Truck",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 529,
+        "name": "Willard",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 530,
+        "name": "Forklift",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 531,
+        "name": "Tractor",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 532,
+        "name": "Combine",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 533,
+        "name": "Feltzer",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 534,
+        "name": "Remington",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 535,
+        "name": "Slamvan",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 536,
+        "name": "Blade",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 537,
+        "name": "Freight",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 538,
+        "name": "Streak",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 539,
+        "name": "Vortex",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 540,
+        "name": "Vincent",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 541,
+        "name": "Bullet",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 542,
+        "name": "Clover",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 543,
+        "name": "Sadler",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 544,
+        "name": "Firetruck 2",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 545,
+        "name": "Hustler",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 546,
+        "name": "Intruder",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 547,
+        "name": "Primo",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 548,
+        "name": "Cargobob",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 549,
+        "name": "Tampa",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 550,
+        "name": "Sunrise",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 551,
+        "name": "Merit",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 552,
+        "name": "Utility",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 553,
+        "name": "Nevada",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 554,
+        "name": "Yosemite",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 555,
+        "name": "Windsor",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 556,
+        "name": "Monster Truck 2",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 557,
+        "name": "Monster Truck 3",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 558,
+        "name": "Uranus",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 559,
+        "name": "Jester",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 560,
+        "name": "Sultan",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 561,
+        "name": "Stratum",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 562,
+        "name": "Elegy",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 563,
+        "name": "Raindance",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 564,
+        "name": "RC Tiger",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 565,
+        "name": "Flash",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 566,
+        "name": "Tahoma",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 567,
+        "name": "Savanna",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 568,
+        "name": "Bandito",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 569,
+        "name": "Freight 2",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 570,
+        "name": "Trailer 3",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 571,
+        "name": "Kart",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 572,
+        "name": "Mower",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 573,
+        "name": "Duneride",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 574,
+        "name": "Sweeper",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 575,
+        "name": "Broadway",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 576,
+        "name": "Tornado",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 577,
+        "name": "AT-400",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 578,
+        "name": "DFT-30",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 579,
+        "name": "Huntley",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 580,
+        "name": "Stafford",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 581,
+        "name": "BF-400",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 582,
+        "name": "Newsvan",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 583,
+        "name": "Tug",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 584,
+        "name": "Trailer 4",
+        "categories": [ "UNKNOWN" ],
+        "trailer": true
+    },
+    {
+        "id": 585,
+        "name": "Emperor",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 586,
+        "name": "Wayfarer",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 587,
+        "name": "Euros",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 588,
+        "name": "Hotdog",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 589,
+        "name": "Club",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 590,
+        "name": "Trailer 5",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 591,
+        "name": "Trailer 6",
+        "categories": [ "UNKNOWN" ],
+        "trailer": true
+    },
+    {
+        "id": 592,
+        "name": "Andromada",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 593,
+        "name": "Dodo",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 594,
+        "name": "RC Cam",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 595,
+        "name": "Launch",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 596,
+        "name": "LSPD",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 597,
+        "name": "SFPD",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 598,
+        "name": "LVPD",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 599,
+        "name": "Police Ranger",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 600,
+        "name": "Picador",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 601,
+        "name": "S.W.A.T. Van",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 602,
+        "name": "Alpha",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 603,
+        "name": "Phoenix",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 604,
+        "name": "Glendale 2",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 605,
+        "name": "Sadler 2",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 606,
+        "name": "Luggage Trailer",
+        "categories": [ "UNKNOWN" ],
+        "trailer": true
+    },
+    {
+        "id": 607,
+        "name": "Luggage Trailer 2",
+        "categories": [ "UNKNOWN" ],
+        "trailer": true
+    },
+    {
+        "id": 608,
+        "name": "Stair Trailer",
+        "categories": [ "UNKNOWN" ],
+        "trailer": true
+    },
+    {
+        "id": 609,
+        "name": "Boxville 2",
+        "categories": [ "UNKNOWN" ],
+        "trailer": false
+    },
+    {
+        "id": 610,
+        "name": "Farm Plow",
+        "categories": [ "UNKNOWN" ],
+        "trailer": true
+    },
+    {
+        "id": 611,
+        "name": "Utility Trailer",
+        "categories": [ "UNKNOWN" ],
+        "trailer": true
+    }
+]

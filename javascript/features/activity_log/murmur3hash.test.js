@@ -5,18 +5,12 @@
 const Murmur3Hash = require('features/activity_log/murmur3hash.js');
 
 describe('Murmur3Hash', (it) => {
-    it('generateHash should return 0 when key is empty', assert => {
-        const generatedHashOfEmptyString = Murmur3Hash.generateHash('');
-        const expectedHashOfEmptyString = 0;
-
-        assert.equal(generatedHashOfEmptyString, expectedHashOfEmptyString);
+    it('generateHash should throw an error when key is empty', assert => {
+        assert.throws(() => Murmur3Hash.generateHash(''));
     });
 
-    it('generateHash should return 0 when key is null', assert => {
-        const generatedHashOfNull = Murmur3Hash.generateHash(null);
-        const expectedHashOfNull = 0;
-
-        assert.equal(generatedHashOfNull, expectedHashOfNull);
+    it('generateHash should throw an error when key is null', assert => {
+        assert.throws(() => Murmur3Hash.generateHash(null));
     });
 
     it('should throw a typeerror when x86Multiply_ is directly called', assert => {

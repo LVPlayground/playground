@@ -17,8 +17,8 @@ const modelsByCategory = new Map();
 // are static methods available on the function to conveniently get access to them.
 class VehicleModel {
     // Returns an iterator to all known vehicle models.
-    static getAll() {
-        return modelsById.values();
+    static* getAll() {
+        yield* modelsById.values();
     }
 
     // Returns a VehicleModel instance by its |modelId|. Returns NULL when given an invalid Id.
@@ -32,9 +32,25 @@ class VehicleModel {
     }
 
     // Returns an iterator of VehicleModel instances by their |category|, which must be one of the
-    // VehicleModel.CATEGORY_* constants. Returns NULL When given an invalid category.
-    static getByCategory(category) {
-        return modelsByCategory.get(category) || null;
+    // VehicleModel.CATEGORY_* constants. Throws when given an invalid category.
+    static* getByCategory(category) {
+        const models = modelsByCategory.get(category);
+        if (!models)
+            throw new Error('Invalid category given: ' + category);
+
+        yield* models;
+    }
+
+    // Returns an iterator of VehicleModel instances by their |...categories|, which must be part
+    // of the VehicleModel.CATEGORY_* constants. Throws when given an invalid category.
+    static* getByCategories(...categories) {
+        for (const category of categories) {
+            const models = modelsByCategory.get(category);
+            if (!models)
+                throw new Error('Invalid category given: ' + category);
+
+            yield* models;
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

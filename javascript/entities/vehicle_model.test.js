@@ -97,12 +97,34 @@ describe('VehicleModel', it => {
     it('should be able to deal with vehicle categories', assert => {
         const trains = new Set([537, 538, 569, 570, 590]);
 
-        assert.isNull(VehicleModel.getByCategory(null));
-        assert.isNull(VehicleModel.getByCategory('VEHICLES TEF LIKES'));
+        assert.throws(() => VehicleModel.getByCategory(null).next());
+        assert.throws(() => VehicleModel.getByCategory('VEHICLES TEF LIKES').next());
 
         for (const modelInfo of VehicleModel.getByCategory(VehicleModel.CATEGORY_TRAINS))
             trains.delete(modelInfo.id);
         
         assert.equal(trains.size, 0);
+
+        const airborne = new Set();
+        for (const modelInfo of VehicleModel.getAll()) {
+            if (modelInfo.isAirborne())
+                airborne.add(modelInfo.id);
+        }
+
+        assert.isAbove(airborne.size, 0);
+
+        assert.throws(() => VehicleModel.getByCategories(null).next());
+        assert.throws(() => VehicleModel.getByCategories('VEHICLES TEF LIKES').next());
+        assert.throws(() =>
+            VehicleModel.getByCategories(VehicleModel.CATEGORY_AIRPLANES, 1337).next().next());
+
+        const airborneVehicles = VehicleModel.getByCategories(VehicleModel.CATEGORY_AIRPLANES,
+                                                              VehicleModel.CATEGORY_HELICOPTERS);
+        for (const modelInfo of airborneVehicles) {
+            assert.isTrue(modelInfo.isAirborne());
+            airborne.delete(modelInfo.id);
+        }
+
+        assert.equal(airborne.size, 0);
     });
 });

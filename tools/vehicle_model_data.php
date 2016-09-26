@@ -37,9 +37,11 @@ $modelNames = [
     'Utility Trailer'
 ];
 
-$modelCategories = [];  // TODO: Figure out the categories.
-
-$trailers = [ 435, 450, 584, 591, 606, 607, 608, 610, 611 ];
+$modelCategories = [
+    'RC Vehicles'   => [ 441, 464, 465, 501, 564, 594 ],
+    'Trailers'      => [ 435, 450, 584, 591, 606, 607, 608, 610, 611 ],
+    'Trains'        => [ 537, 538, 569, 570, 590 ]
+];
 
 // -------------------------------------------------------------------------------------------------
 
@@ -52,9 +54,18 @@ foreach ($modelNames as $name) {
     else
         $seenNames[$name] = 1;
 
+    $categories = [];
+    foreach ($modelCategories as $categoryName => $category) {
+        if (in_array($modelId, $category))
+            $categories[] = $categoryName;
+    }
+
+    if (!count($categories))
+        $categories[] = 'Unknown';
+
     $modelInfos[$modelId++] = [
         'name' => $name,
-        'categories' => [ 'Unknown' ]
+        'categories' => $categories
     ];
 }
 
@@ -68,8 +79,7 @@ foreach ($modelInfos as $modelId => $modelInfo) {
     echo '    {' . PHP_EOL;
     echo '        "id": ' . $modelId . ',' . PHP_EOL;
     echo '        "name": "' . $modelInfo['name'] . '",' . PHP_EOL;
-    echo '        "categories": [ "' . implode('", "', $modelInfo['categories']) . '" ],' . PHP_EOL;
-    echo '        "trailer": ' . (in_array($modelId, $trailers) ? 'true' : 'false') . PHP_EOL;
+    echo '        "categories": [ "' . implode('", "', $modelInfo['categories']) . '" ]' . PHP_EOL;
     echo '    }' . $continuationComma . PHP_EOL;
 }
 

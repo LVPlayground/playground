@@ -16,6 +16,11 @@ const modelsByCategory = new Map();
 // An instance of the VehicleModel class represents the data available for a particular model. There
 // are static methods available on the function to conveniently get access to them.
 class VehicleModel {
+    // Returns an iterator to all known vehicle models.
+    static getAll() {
+        return modelsById.values();
+    }
+
     // Returns a VehicleModel instance by its |modelId|. Returns NULL when given an invalid Id.
     static getById(modelId) {
         return modelsById.get(modelId) || null;
@@ -78,9 +83,6 @@ class VehicleModel {
         if (!Array.isArray(modelInfo.categories) || !modelInfo.categories)
             throw new Error('Vehicle model categories must be a non-empty array.', modelInfo);
 
-        if (typeof modelInfo.trailer !== 'boolean')
-            throw new Error('Vehicle model trailer flag must be a boolean.', modelInfo);
-
         this.id_ = modelInfo.id;
         this.name_ = modelInfo.name;
 
@@ -92,8 +94,6 @@ class VehicleModel {
 
             this.categories_.add(VehicleModel[categoryKey]);
         });
-
-        this.trailer_ = modelInfo.trailer;
     }
 
     // Gets the Id of the vehicle model that this instance represents.
@@ -108,12 +108,19 @@ class VehicleModel {
     // Returns whether this vehicle is part of the |category|.
     hasCategory(category) { return this.categories_.has(category); }
 
+    // Returns whether this model represents a remote controllable vehicle.
+    isRemoteControllable() { return this.categories_.has(VehicleModel.CATEGORY_RC_VEHICLES); }
+
     // Returns whether this model represents a trailer.
-    isTrailer() { return this.trailer_; }
+    isTrailer() { return this.categories_.has(VehicleModel.CATEGORY_TRAILERS); }
 }
 
 // Enumeration of the vehicle model categories that are available.
-VehicleModel.CATEGORY_UNKNOWN = 0;
+VehicleModel.CATEGORY_RC_VEHICLES = 0;
+VehicleModel.CATEGORY_TRAILERS = 1;
+VehicleModel.CATEGORY_TRAINS = 2;
+
+VehicleModel.CATEGORY_UNKNOWN = 255;
 
 // Synchronously initialise the VehicleModel data whilst loading the script.
 VehicleModel.initialise(PrivateSymbol);

@@ -40,4 +40,31 @@ describe('VehicleModel', it => {
         assert.isTrue(VehicleModel.getById(606 /* Luggage Trailer */).isTrailer());
         assert.isTrue(VehicleModel.getById(610 /* Farm Plow */).isTrailer());
     });
+
+    it('should be able to tell whether a vehicle is remote controllable', assert => {
+        assert.isFalse(VehicleModel.getById(489 /* Rancher */).isRemoteControllable());
+        assert.isFalse(VehicleModel.getById(411 /* Infernus */).isRemoteControllable());
+
+        assert.isTrue(VehicleModel.getById(441 /* RC Bandit */).isRemoteControllable());
+        assert.isTrue(VehicleModel.getById(564 /* RC Tiger */).isRemoteControllable());
+
+        for (const modelInfo of VehicleModel.getAll()) {
+            if (modelInfo.name.startsWith('RC '))
+                assert.isTrue(modelInfo.isRemoteControllable());
+            else
+                assert.isFalse(modelInfo.isRemoteControllable());
+        }
+    });
+
+    it('should be able to deal with vehicle categories', assert => {
+        const trains = new Set([537, 538, 569, 570, 590]);
+
+        assert.isNull(VehicleModel.getByCategory(null));
+        assert.isNull(VehicleModel.getByCategory('VEHICLES TEF LIKES'));
+
+        for (const modelInfo of VehicleModel.getByCategory(VehicleModel.CATEGORY_TRAINS))
+            trains.delete(modelInfo.id);
+        
+        assert.equal(trains.size, 0);
+    });
 });

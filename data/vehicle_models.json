@@ -242,7 +242,7 @@
     {
         "id": 448,
         "name": "Pizzaboy",
-        "categories": [ "Unknown" ]
+        "categories": [ "Motorbikes" ]
     },
     {
         "id": 449,
@@ -307,17 +307,17 @@
     {
         "id": 461,
         "name": "PCJ-600",
-        "categories": [ "Unknown" ]
+        "categories": [ "Motorbikes" ]
     },
     {
         "id": 462,
         "name": "Faggio",
-        "categories": [ "Unknown" ]
+        "categories": [ "Motorbikes" ]
     },
     {
         "id": 463,
         "name": "Freeway",
-        "categories": [ "Unknown" ]
+        "categories": [ "Motorbikes" ]
     },
     {
         "id": 464,
@@ -342,7 +342,7 @@
     {
         "id": 468,
         "name": "Sanchez",
-        "categories": [ "Unknown" ]
+        "categories": [ "Motorbikes" ]
     },
     {
         "id": 469,
@@ -357,7 +357,7 @@
     {
         "id": 471,
         "name": "Quad",
-        "categories": [ "Unknown" ]
+        "categories": [ "Motorbikes" ]
     },
     {
         "id": 472,
@@ -407,7 +407,7 @@
     {
         "id": 481,
         "name": "BMX",
-        "categories": [ "Unknown" ]
+        "categories": [ "Bicycles" ]
     },
     {
         "id": 482,
@@ -547,12 +547,12 @@
     {
         "id": 509,
         "name": "Bike",
-        "categories": [ "Unknown" ]
+        "categories": [ "Bicycles" ]
     },
     {
         "id": 510,
         "name": "Mountain Bike",
-        "categories": [ "Unknown" ]
+        "categories": [ "Bicycles" ]
     },
     {
         "id": 511,
@@ -607,17 +607,17 @@
     {
         "id": 521,
         "name": "FCR-900",
-        "categories": [ "Unknown" ]
+        "categories": [ "Motorbikes" ]
     },
     {
         "id": 522,
         "name": "NRG-500",
-        "categories": [ "Unknown" ]
+        "categories": [ "Motorbikes" ]
     },
     {
         "id": 523,
         "name": "HPV1000",
-        "categories": [ "Unknown" ]
+        "categories": [ "Motorbikes" ]
     },
     {
         "id": 524,
@@ -907,7 +907,7 @@
     {
         "id": 581,
         "name": "BF-400",
-        "categories": [ "Unknown" ]
+        "categories": [ "Motorbikes" ]
     },
     {
         "id": 582,
@@ -932,7 +932,7 @@
     {
         "id": 586,
         "name": "Wayfarer",
-        "categories": [ "Unknown" ]
+        "categories": [ "Motorbikes" ]
     },
     {
         "id": 587,

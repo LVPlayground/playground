@@ -79,6 +79,21 @@ describe('VehicleModel', it => {
         assert.isTrue(VehicleModel.getById(488 /* News Chopper */).isHelicopter());
     });
 
+    it('should be able to identify bikes', assert => {
+        assert.isFalse(VehicleModel.getById(489 /* Rancher */).isBike());
+        assert.isFalse(VehicleModel.getById(411 /* Infernus */).isBike());
+
+        const pizzaboy = VehicleModel.getByName('Pizzaboy');
+        assert.isTrue(pizzaboy.isBike());
+        assert.isFalse(pizzaboy.hasCategory(VehicleModel.CATEGORY_BICYCLES));
+        assert.isTrue(pizzaboy.hasCategory(VehicleModel.CATEGORY_MOTORBIKES));
+
+        const mountainBike = VehicleModel.getByName('Mountain Bike');
+        assert.isTrue(mountainBike.isBike());
+        assert.isTrue(mountainBike.hasCategory(VehicleModel.CATEGORY_BICYCLES));
+        assert.isFalse(mountainBike.hasCategory(VehicleModel.CATEGORY_MOTORBIKES));
+    });
+
     it('should be able to deal with vehicle categories', assert => {
         const trains = new Set([537, 538, 569, 570, 590]);
 

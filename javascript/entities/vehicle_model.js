@@ -120,6 +120,12 @@ class VehicleModel {
     // Returns whether this model is an airplane.
     isAirplane() { return this.categories_.has(VehicleModel.CATEGORY_AIRPLANES); }
 
+    // Returns whether tis model is a bike (either manual or motorized).
+    isBike() {
+        return this.categories_.has(VehicleModel.CATEGORY_BICYCLES) ||
+               this.categories_.has(VehicleModel.CATEGORY_MOTORBIKES);
+    }
+
     // Returns whether this model is meant for use on water.
     isBoat() { return this.categories_.has(VehicleModel.CATEGORY_BOATS); }
 
@@ -135,11 +141,13 @@ class VehicleModel {
 
 // Enumeration of the vehicle model categories that are available.
 VehicleModel.CATEGORY_AIRPLANES = 0;
-VehicleModel.CATEGORY_BOATS = 1;
-VehicleModel.CATEGORY_HELICOPTERS = 2;
-VehicleModel.CATEGORY_RC_VEHICLES = 3;
-VehicleModel.CATEGORY_TRAILERS = 4;
-VehicleModel.CATEGORY_TRAINS = 5;
+VehicleModel.CATEGORY_BICYCLES = 1;
+VehicleModel.CATEGORY_BOATS = 2;
+VehicleModel.CATEGORY_HELICOPTERS = 3;
+VehicleModel.CATEGORY_MOTORBIKES = 4;
+VehicleModel.CATEGORY_RC_VEHICLES = 5;
+VehicleModel.CATEGORY_TRAILERS = 6;
+VehicleModel.CATEGORY_TRAINS = 7;
 
 VehicleModel.CATEGORY_UNKNOWN = 255;
 

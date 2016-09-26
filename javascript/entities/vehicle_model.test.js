@@ -56,6 +56,29 @@ describe('VehicleModel', it => {
         }
     });
 
+    it('should be able to identify airborne vehicles', assert => {
+        assert.isFalse(VehicleModel.getById(489 /* Rancher */).isAirborne());
+        assert.isFalse(VehicleModel.getById(411 /* Infernus */).isAirborne());
+
+        assert.isFalse(VehicleModel.getById(489 /* Rancher */).isAirplane());
+        assert.isFalse(VehicleModel.getById(411 /* Infernus */).isAirplane());
+
+        assert.isFalse(VehicleModel.getById(489 /* Rancher */).isHelicopter());
+        assert.isFalse(VehicleModel.getById(411 /* Infernus */).isHelicopter());
+
+        const goblin = VehicleModel.getByName('RC Goblin');
+        assert.isTrue(goblin.isAirborne());
+        assert.isFalse(goblin.isAirplane());
+        assert.isTrue(goblin.isHelicopter());
+        assert.isTrue(goblin.isRemoteControllable());
+
+        assert.isTrue(VehicleModel.getById(512 /* Cropdust */).isAirplane());
+        assert.isTrue(VehicleModel.getById(553 /* Nevada */).isAirplane());
+
+        assert.isTrue(VehicleModel.getById(469 /* Sparrow */).isHelicopter());
+        assert.isTrue(VehicleModel.getById(488 /* News Chopper */).isHelicopter());
+    });
+
     it('should be able to deal with vehicle categories', assert => {
         const trains = new Set([537, 538, 569, 570, 590]);
 

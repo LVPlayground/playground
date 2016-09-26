@@ -111,6 +111,21 @@ class VehicleModel {
     // Returns whether this vehicle is part of the |category|.
     hasCategory(category) { return this.categories_.has(category); }
 
+    // Returns whether this model is meant for airborne use.
+    isAirborne() {
+        return this.categories_.has(VehicleModel.CATEGORY_AIRPLANES) ||
+               this.categories_.has(VehicleModel.CATEGORY_HELICOPTERS);
+    }
+
+    // Returns whether this model is an airplane.
+    isAirplane() { return this.categories_.has(VehicleModel.CATEGORY_AIRPLANES); }
+
+    // Returns whether this model is meant for use on water.
+    isBoat() { return this.categories_.has(VehicleModel.CATEGORY_BOATS); }
+
+    // Returns whether this model is a helicopter.
+    isHelicopter() { return this.categories_.has(VehicleModel.CATEGORY_HELICOPTERS); }
+
     // Returns whether this model represents a remote controllable vehicle.
     isRemoteControllable() { return this.categories_.has(VehicleModel.CATEGORY_RC_VEHICLES); }
 
@@ -119,9 +134,12 @@ class VehicleModel {
 }
 
 // Enumeration of the vehicle model categories that are available.
-VehicleModel.CATEGORY_RC_VEHICLES = 0;
-VehicleModel.CATEGORY_TRAILERS = 1;
-VehicleModel.CATEGORY_TRAINS = 2;
+VehicleModel.CATEGORY_AIRPLANES = 0;
+VehicleModel.CATEGORY_BOATS = 1;
+VehicleModel.CATEGORY_HELICOPTERS = 2;
+VehicleModel.CATEGORY_RC_VEHICLES = 3;
+VehicleModel.CATEGORY_TRAILERS = 4;
+VehicleModel.CATEGORY_TRAINS = 5;
 
 VehicleModel.CATEGORY_UNKNOWN = 255;
 

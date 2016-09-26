@@ -87,7 +87,7 @@
     {
         "id": 417,
         "name": "Leviathan",
-        "categories": [ "Unknown" ]
+        "categories": [ "Helicopters" ]
     },
     {
         "id": 418,
@@ -127,7 +127,7 @@
     {
         "id": 425,
         "name": "Hunter",
-        "categories": [ "Unknown" ]
+        "categories": [ "Helicopters" ]
     },
     {
         "id": 426,
@@ -152,7 +152,7 @@
     {
         "id": 430,
         "name": "Predator",
-        "categories": [ "Unknown" ]
+        "categories": [ "Boats" ]
     },
     {
         "id": 431,
@@ -232,12 +232,12 @@
     {
         "id": 446,
         "name": "Squalo",
-        "categories": [ "Unknown" ]
+        "categories": [ "Boats" ]
     },
     {
         "id": 447,
         "name": "Seasparrow",
-        "categories": [ "Unknown" ]
+        "categories": [ "Helicopters" ]
     },
     {
         "id": 448,
@@ -262,17 +262,17 @@
     {
         "id": 452,
         "name": "Speeder",
-        "categories": [ "Unknown" ]
+        "categories": [ "Boats" ]
     },
     {
         "id": 453,
         "name": "Reefer",
-        "categories": [ "Unknown" ]
+        "categories": [ "Boats" ]
     },
     {
         "id": 454,
         "name": "Tropic",
-        "categories": [ "Unknown" ]
+        "categories": [ "Boats" ]
     },
     {
         "id": 455,
@@ -302,7 +302,7 @@
     {
         "id": 460,
         "name": "Skimmer",
-        "categories": [ "Unknown" ]
+        "categories": [ "Airplanes" ]
     },
     {
         "id": 461,
@@ -322,12 +322,12 @@
     {
         "id": 464,
         "name": "RC Baron",
-        "categories": [ "RC Vehicles" ]
+        "categories": [ "Airplanes", "RC Vehicles" ]
     },
     {
         "id": 465,
         "name": "RC Raider",
-        "categories": [ "RC Vehicles" ]
+        "categories": [ "Helicopters", "RC Vehicles" ]
     },
     {
         "id": 466,
@@ -347,7 +347,7 @@
     {
         "id": 469,
         "name": "Sparrow",
-        "categories": [ "Unknown" ]
+        "categories": [ "Helicopters" ]
     },
     {
         "id": 470,
@@ -362,12 +362,12 @@
     {
         "id": 472,
         "name": "Coastguard",
-        "categories": [ "Unknown" ]
+        "categories": [ "Boats" ]
     },
     {
         "id": 473,
         "name": "Dinghy",
-        "categories": [ "Unknown" ]
+        "categories": [ "Boats" ]
     },
     {
         "id": 474,
@@ -382,7 +382,7 @@
     {
         "id": 476,
         "name": "Rustler",
-        "categories": [ "Unknown" ]
+        "categories": [ "Airplanes" ]
     },
     {
         "id": 477,
@@ -422,7 +422,7 @@
     {
         "id": 484,
         "name": "Marquis",
-        "categories": [ "Unknown" ]
+        "categories": [ "Boats" ]
     },
     {
         "id": 485,
@@ -437,12 +437,12 @@
     {
         "id": 487,
         "name": "Maverick",
-        "categories": [ "Unknown" ]
+        "categories": [ "Helicopters" ]
     },
     {
         "id": 488,
         "name": "News Chopper",
-        "categories": [ "Unknown" ]
+        "categories": [ "Helicopters" ]
     },
     {
         "id": 489,
@@ -467,7 +467,7 @@
     {
         "id": 493,
         "name": "Jetmax",
-        "categories": [ "Unknown" ]
+        "categories": [ "Boats" ]
     },
     {
         "id": 494,
@@ -487,7 +487,7 @@
     {
         "id": 497,
         "name": "Police Maverick",
-        "categories": [ "Unknown" ]
+        "categories": [ "Helicopters" ]
     },
     {
         "id": 498,
@@ -507,7 +507,7 @@
     {
         "id": 501,
         "name": "RC Goblin",
-        "categories": [ "RC Vehicles" ]
+        "categories": [ "Helicopters", "RC Vehicles" ]
     },
     {
         "id": 502,
@@ -557,17 +557,17 @@
     {
         "id": 511,
         "name": "Beagle",
-        "categories": [ "Unknown" ]
+        "categories": [ "Airplanes" ]
     },
     {
         "id": 512,
         "name": "Cropdust",
-        "categories": [ "Unknown" ]
+        "categories": [ "Airplanes" ]
     },
     {
         "id": 513,
         "name": "Stunt",
-        "categories": [ "Unknown" ]
+        "categories": [ "Airplanes" ]
     },
     {
         "id": 514,
@@ -597,12 +597,12 @@
     {
         "id": 519,
         "name": "Shamal",
-        "categories": [ "Unknown" ]
+        "categories": [ "Airplanes" ]
     },
     {
         "id": 520,
         "name": "Hydra",
-        "categories": [ "Unknown" ]
+        "categories": [ "Airplanes" ]
     },
     {
         "id": 521,
@@ -742,7 +742,7 @@
     {
         "id": 548,
         "name": "Cargobob",
-        "categories": [ "Unknown" ]
+        "categories": [ "Helicopters" ]
     },
     {
         "id": 549,
@@ -767,7 +767,7 @@
     {
         "id": 553,
         "name": "Nevada",
-        "categories": [ "Unknown" ]
+        "categories": [ "Airplanes" ]
     },
     {
         "id": 554,
@@ -817,7 +817,7 @@
     {
         "id": 563,
         "name": "Raindance",
-        "categories": [ "Unknown" ]
+        "categories": [ "Helicopters" ]
     },
     {
         "id": 564,
@@ -887,7 +887,7 @@
     {
         "id": 577,
         "name": "AT-400",
-        "categories": [ "Unknown" ]
+        "categories": [ "Airplanes" ]
     },
     {
         "id": 578,
@@ -962,12 +962,12 @@
     {
         "id": 592,
         "name": "Andromada",
-        "categories": [ "Unknown" ]
+        "categories": [ "Airplanes" ]
     },
     {
         "id": 593,
         "name": "Dodo",
-        "categories": [ "Unknown" ]
+        "categories": [ "Airplanes" ]
     },
     {
         "id": 594,
@@ -977,7 +977,7 @@
     {
         "id": 595,
         "name": "Launch",
-        "categories": [ "Unknown" ]
+        "categories": [ "Boats" ]
     },
     {
         "id": 596,

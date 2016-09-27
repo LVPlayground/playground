@@ -106,8 +106,9 @@ class AutoHelloMessageCommand extends Command {
         const message = isReconnect ? 'wb %s'
                                     : Greetings[Math.floor(Math.random() * Greetings.length)];
 
-        const greet = '{' + greeter.color.toHexRGB() + '}[' + greeter.id + '] '+ greeter.name + 
-                      ': {FFFFFF}' + message.replace('%s', player.name);
+        const greetingsMessage = message.replace('%s', player.name);
+        const greet = '{' + greeter.color.toHexRGB() + '}[' + greeter.id + '] '+ greeter.name +
+                      ': {FFFFFF}' + greetingsMessage;
 
         const virtualWorld = player.virtualWorld;
         if (greeter.virtualWorld != virtualWorld)
@@ -121,7 +122,7 @@ class AutoHelloMessageCommand extends Command {
         });
 
         // Make sure that people on IRC get to see the greeting as well.
-        this.announce_().announceToIRC('text', greeter.id, greeter.name, greet);
+        this.announce_().announceToIRC('text', greeter.id, greeter.name, greetingsMessage);
 
         // If this was a reconnection, we'll want to ignore the player for quite some time.
         if (!isReconnect)

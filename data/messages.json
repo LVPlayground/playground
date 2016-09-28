@@ -13,6 +13,7 @@
     "COMMAND_ERROR_UNKNOWN_PLAYER": "@error Sorry, no player could be found for \"%s\".",
     "COMMAND_ERROR": "@error %s",
     "COMMAND_SUCCESS": "@success %s",
+    "COMMAND_UNSUPPORTED": "@error Sorry, this functionality has not yet been implemented.",
     "COMMAND_USAGE": "@usage %s",
 
     "DEBUG_FRAME_COUNTER": "{33AA33}The server averaged %d FPS in the last %d seconds.",
@@ -215,5 +216,8 @@
     "RACE_COMMAND_LEFT": "{CCD782}You have left the {838F31}%s{CCD782}!",
 
     "REPORT_MESSAGE": "{33AA33}Your report has been delivered to the crew{FFFFFF}: Player: %s (Id: %d) - Reason: %s",
-    "REPORT_ALREADY_REPORTED": "@error We have already received a report about %s and are on it. Thank you!"
+    "REPORT_ALREADY_REPORTED": "@error We have already received a report about %s and are on it. Thank you!",
+
+    "VEHICLE_SPAWN_CREATED": "@success Your %s has been created!",
+    "VEHICLE_SPAWN_NOT_FOUND": "@error We're not sure what vehicle {FF8282}%s{FFFFFF} is..."
 }

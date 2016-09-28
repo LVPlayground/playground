@@ -14,6 +14,7 @@ regulated by the `/lvp access` command provided by the [playground](../playgroun
 Furthermore, administrators are able to use the following commands:
 
   * **/v [player]? delete**: Deletes either your own vehicle, or that of `player`.
+  * **/v [player]? respawn**: Respawns either your own vehicle, or that of `player`.
   * **/v [player]? save**: Saves either your own vehicle, or that of `player`, in the database.
 
 

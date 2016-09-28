@@ -23,6 +23,8 @@ class VehicleCommands {
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .sub('delete')
                     .build(VehicleCommands.prototype.onVehicleDeleteCommand.bind(this))
+                .sub('respawn')
+                    .build(VehicleCommands.prototype.onVehicleRespawnCommand.bind(this))
                 .sub('save')
                     .build(VehicleCommands.prototype.onVehicleSaveCommand.bind(this))
                 .build(/* deliberate fall-through */)
@@ -79,7 +81,7 @@ class VehicleCommands {
             player.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
     }
 
-    // Called when the player executes `/v delete` or `/v [player] delete`, which means they wish
+    // Called when the |player| executes `/v delete` or `/v [player] delete`, which means they wish
     // to delete the vehicle the target is currently driving.
     async onVehicleDeleteCommand(player, subject) {
         const vehicle = subject.vehicle;
@@ -97,7 +99,23 @@ class VehicleCommands {
         player.sendMessage(Message.VEHICLE_DELETED, vehicle.model.name);
     }
 
-    // Called when the player executes `/v save` or `/v [player] save`, which means they wish to
+    // Called when the |player| executes `/v respawn` or `/v [player] respawn`, which means they
+    // wish to reset the vehicle's position to its original spot.
+    onVehicleRespawnCommand(player, subject) {
+        const vehicle = subject.vehicle;
+
+        // Bail out if the |subject| is not driving a vehicle, or it's not managed by this system.
+        if (!this.manager_.isManagedVehicle(vehicle)) {
+            player.sendMessage(Message.VEHICLE_NOT_DRIVING, subject.name);
+            return;
+        }
+
+        vehicle.respawn();
+
+        player.sendMessage(Message.VEHICLE_RESPAWNED, vehicle.model.name);
+    }
+
+    // Called when the |player| executes `/v save` or `/v [player] save`, which means they wish to
     // save the vehicle in the database to make it a persistent vehicle.
     async onVehicleSaveCommand(player, subject) {
         const vehicle = subject.vehicle;

@@ -111,6 +111,8 @@ class MockVehicle {
         this.respawnCounter_++;
         this.position_ = this.originalPosition_;
         this.rotation_ = this.originalRotation_;
+
+        this.clearOccupants();
     }
 
     // Gets the number of times this vehicle has respawned. Only available for testing.
@@ -143,6 +145,18 @@ class MockVehicle {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Removes all occupants from the vehicle by issuing state change events.
+    clearOccupants() {
+        for (const player of this.getOccupants()) {
+            global.dispatchEvent('playerstatechange', {
+                playerid: player.id,
+                oldstate: player.vehicleSeat == Vehicle.SEAT_DRIVER ? Player.STATE_DRIVER
+                                                                    : Player.STATE_PASSENGER,
+                newstate: Player.STATE_ON_FOOT
+            });
+        }
+    }
+
     // Triggers an event informing the server that this vehicle has spawned.
     spawn() {
         global.dispatchEvent('vehiclespawn', {
@@ -165,15 +179,7 @@ class MockVehicle {
         this.manager_.didDisposeVehicle(this);
         this.manager_ = null;
 
-        // Issue state change callbacks throughout the gamemode for all previous occupants.
-        for (const player of this.getOccupants()) {
-            global.dispatchEvent('playerstatechange', {
-                playerid: player.id,
-                oldstate: player.vehicleSeat == Vehicle.SEAT_DRIVER ? Player.STATE_DRIVER
-                                                                    : Player.STATE_PASSENGER,
-                newstate: Player.STATE_ON_FOOT
-            });
-        }
+        this.clearOccupants();
 
         this.id_ = null;
     }

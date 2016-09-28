@@ -220,6 +220,7 @@
 
     "VEHICLE_DELETED": "@error The %s has been deleted.",
     "VEHICLE_NOT_DRIVING": "@error %s is not currently in a vehicle managed by JavaScript.",
+    "VEHICLE_RESPAWNED": "@success The %s has been respawned.",
     "VEHICLE_SAVE_REDUNDANT": "@error The %s has already been saved in the database.",
     "VEHICLE_SAVED": "@success The %s has been saved in the database.",
     "VEHICLE_SPAWN_CREATED": "@success Your %s has been created!",

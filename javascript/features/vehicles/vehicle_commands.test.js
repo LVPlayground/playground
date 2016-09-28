@@ -32,10 +32,10 @@ describe('VehicleCommands', (it, beforeEach) => {
     });
 
     // Creates a vehicle for |player| having the |modelId| and has him enter the vehicle.
-    function createVehicleForPlayer(player, { modelId = 411 /* Infernus */ } = {}) {
+    function createVehicleForPlayer(player, { modelId = 411 /* Infernus */, position = null } = {}) {
         const vehicle = manager.createVehicle({
             modelId: modelId,
-            position: player.position,
+            position: position || player.position,
             rotation: player.rotation,
             interiorId: player.interiorId,
             virtualWorld: player.virtualWorld
@@ -167,6 +167,31 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.isNull(gunther.vehicle);
 
         assert.isFalse(oldVehicle.isConnected());
+    });
+
+    it('should be able to respawn vehicles on the server', async(assert) => {
+        // Only administrators can respawn vehicles on the server.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        gunther.position = new Vector(10, 505, 995);  // within streaming radius of the vehicle
+
+        assert.isTrue(createVehicleForPlayer(gunther, {
+            position: new Vector(0, 500, 1000)
+        }));
+
+        const vehicle = gunther.vehicle;
+        assert.isNotNull(vehicle);
+        assert.isTrue(vehicle.isConnected());
+
+        vehicle.position = new Vector(1000, 2000, 3000);
+
+        assert.isTrue(await gunther.issueCommand('/v respawn'));
+
+        assert.isNull(gunther.vehicle);
+        assert.isTrue(vehicle.isConnected());
+
+        assert.equal(vehicle.respawnCount, 1);
+        assert.deepEqual(vehicle.position, new Vector(0, 500, 1000));
     });
 
     it('should be able to save vehicles to the database', async(assert) => {

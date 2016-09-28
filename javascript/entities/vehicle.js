@@ -47,6 +47,9 @@ class Vehicle {
     // Gets the Id of this vehicle as assigned by the SA-MP server.
     get id() { return this.id_; }
 
+    // Gets the VehicleModel instance representing this vehicle's model Id.
+    get model() { return VehicleModel.getById(this.modelId_); }
+
     // Gets the model Id associated with this vehicle.
     get modelId() { return this.modelId_; }
 

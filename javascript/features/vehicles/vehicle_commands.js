@@ -20,6 +20,9 @@ class VehicleCommands {
         server.commandManager.buildCommand('v')
             .restrict(player => this.playground_().canAccessCommand(player, 'v'))
             .sub(CommandBuilder.PLAYER_PARAMETER, player => player)
+                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .sub('delete')
+                    .build(VehicleCommands.prototype.onVehicleDeleteCommand.bind(this))
                 .sub('respawn')
                     .build(VehicleCommands.prototype.onVehicleRespawnCommand.bind(this))
                 .build(/* deliberate fall-through */)
@@ -74,6 +77,23 @@ class VehicleCommands {
 
         if (vehicle.isConnected())
             player.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
+    }
+
+    // Called when the player executes `/v delete` or `/v [player] delete`, which means they wish
+    // to delete the vehicle the target is currently driving.
+    async onVehicleDeleteCommand(player, subject) {
+        const vehicle = subject.vehicle;
+
+        if (!this.manager_.isManagedVehicle(vehicle)) {
+            player.sendMessage(Message.VEHICLE_NOT_DRIVING, subject.name);
+            return;
+        }
+
+        await this.manager_.deleteVehicle(vehicle);
+
+        // TODO: Make an announcement if the |vehicle| was a persistent one.
+
+        player.sendMessage(Message.VEHICLE_DELETED, vehicle.model.name);
     }
 
     // Called when the player executes `/v respawn` or `/v [player] respawn`, which means they wish

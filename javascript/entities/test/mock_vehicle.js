@@ -40,6 +40,9 @@ class MockVehicle {
     // Gets the Id of this vehicle as assigned by the SA-MP server.
     get id() { return this.id_; }
 
+    // Gets the VehicleModel instance representing this vehicle's model Id.
+    get model() { return VehicleModel.getById(this.modelId_); }
+
     // Gets the model Id associated with this vehicle.
     get modelId() { return this.modelId_; }
 
@@ -161,6 +164,16 @@ class MockVehicle {
     dispose() {
         this.manager_.didDisposeVehicle(this);
         this.manager_ = null;
+
+        // Issue state change callbacks throughout the gamemode for all previous occupants.
+        for (const player of this.getOccupants()) {
+            global.dispatchEvent('playerstatechange', {
+                playerid: player.id,
+                oldstate: player.vehicleSeat == Vehicle.SEAT_DRIVER ? Player.STATE_DRIVER
+                                                                    : Player.STATE_PASSENGER,
+                newstate: Player.STATE_ON_FOOT
+            });
+        }
 
         this.id_ = null;
     }

@@ -31,6 +31,23 @@ describe('VehicleCommands', (it, beforeEach) => {
         await manager.ready;
     });
 
+    // Creates a vehicle for |player| having the |modelId| and has him enter the vehicle.
+    function createVehicleForPlayer(player, { modelId = 411 /* Infernus */ } = {}) {
+        const vehicle = manager.createVehicle({
+            modelId: modelId,
+            position: player.position,
+            rotation: player.rotation,
+            interiorId: player.interiorId,
+            virtualWorld: player.virtualWorld
+        });
+
+        if (!vehicle)
+            return false;
+
+        player.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
+        return player.vehicle === vehicle;
+    }
+
     // TODO: We'll actually want to make this available to all the players.
     // See the following issue: https://github.com/LVPlayground/playground/issues/330
     it('should limit /v to administrators only', async(assert) => {
@@ -94,6 +111,41 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.isNotNull(gunther.vehicle);
         assert.equal(gunther.vehicle.modelId, 520 /* Hydra */);
     });
+
+    it('should be able to delete the vehicle the admin is driving in', async(assert) => {
+        // Only administrators can delete vehicles from the server.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isTrue(createVehicleForPlayer(gunther));
+
+        const vehicle = gunther.vehicle;
+        assert.isNotNull(vehicle);
+        assert.isTrue(vehicle.isConnected());
+
+        assert.isTrue(await gunther.issueCommand('/v delete'));
+
+        assert.isNull(gunther.vehicle);
+        assert.isFalse(vehicle.isConnected());
+    });
+
+    it('should be able to delete the vehicle other players are driving in', async(assert) => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        // Only administrators can delete vehicles from the server.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isTrue(createVehicleForPlayer(russell));
+
+        const vehicle = russell.vehicle;
+        assert.isNotNull(vehicle);
+        assert.isTrue(vehicle.isConnected());
+
+        assert.isTrue(await gunther.issueCommand('/v ' + russell.id + ' delete'));
+
+        assert.isNull(russell.vehicle);
+        assert.isFalse(vehicle.isConnected());
+    });
+
 
     it('should clean up the commands when being disposed of', async(assert) => {
         const originalCommandCount = server.commandManager.size;

@@ -9,6 +9,7 @@ const MESSAGE_DATA_FILE = 'data/messages.json';
 // example usage information or errors. In the message syntax, they are prepended by an at-sign.
 const MESSAGE_PREFIXES = {
   error: '{DC143C}Error{FFFFFF}: ',
+  info: '',  // TODO: Do we need a particular prefix?
   success: '{33AA33}Success{FFFFFF}: ',
   usage: '{FF9900}Usage{FFFFFF}: ',
 };

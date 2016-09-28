@@ -23,6 +23,10 @@ class VehicleCommands {
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .sub('delete')
                     .build(VehicleCommands.prototype.onVehicleDeleteCommand.bind(this))
+                .sub('health')
+                    .parameters([ { name: 'health', type: CommandBuilder.NUMBER_PARAMETER,
+                                    optional: true } ])
+                    .build(VehicleCommands.prototype.onVehicleHealthCommand.bind(this))
                 .sub('respawn')
                     .build(VehicleCommands.prototype.onVehicleRespawnCommand.bind(this))
                 .sub('save')
@@ -97,6 +101,27 @@ class VehicleCommands {
         // TODO: Make an announcement if the |vehicle| was a persistent one.
 
         player.sendMessage(Message.VEHICLE_DELETED, vehicle.model.name);
+    }
+
+    // Called when the |player| executes `/v health` or `/v [player] health`, which means they wish
+    // to either see or change the health of the vehicle.
+    onVehicleHealthCommand(player, subject, health) {
+        const vehicle = subject.vehicle;
+
+        // Bail out if the |subject| is not driving a vehicle, or it's not managed by this system.
+        if (!this.manager_.isManagedVehicle(vehicle)) {
+            player.sendMessage(Message.VEHICLE_NOT_DRIVING, subject.name);
+            return;
+        }
+
+        if (health === undefined) {
+            player.sendMessage(Message.VEHICLE_HEALTH_CURRENT, vehicle.health);
+            return;
+        }
+
+        player.sendMessage(Message.VEHICLE_HEALTH_UPDATED, vehicle.health, health);
+
+        vehicle.health = health;
     }
 
     // Called when the |player| executes `/v respawn` or `/v [player] respawn`, which means they

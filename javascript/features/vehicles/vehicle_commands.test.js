@@ -169,6 +169,28 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.isFalse(oldVehicle.isConnected());
     });
 
+    it('should be able to update and tell the health of vehicles', async(assert) => {
+        // Only administrators can manipulate vehicle health on the server.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isTrue(createVehicleForPlayer(gunther));
+        assert.isNotNull(gunther.vehicle);
+
+        gunther.vehicle.health = 950;
+
+        assert.isTrue(await gunther.issueCommand('/v health'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_HEALTH_CURRENT, 950));
+
+        gunther.clearMessages();
+
+        assert.isTrue(await gunther.issueCommand('/v health 500'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_HEALTH_UPDATED, 950, 500));
+
+        assert.equal(gunther.vehicle.health, 500);
+    });
+
     it('should be able to respawn vehicles on the server', async(assert) => {
         // Only administrators can respawn vehicles on the server.
         gunther.level = Player.LEVEL_ADMINISTRATOR;

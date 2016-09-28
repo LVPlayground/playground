@@ -146,6 +146,65 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.isFalse(vehicle.isConnected());
     });
 
+    it('should be able to delete persistent vehicles', async(assert) => {
+        // Only administrators can delete vehicles from the server.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isTrue(createVehicleForPlayer(gunther));
+        assert.isNotNull(gunther.vehicle);
+
+        assert.isFalse(manager.isPersistentVehicle(gunther.vehicle));
+
+        await manager.storeVehicle(gunther.vehicle);
+        await server.clock.advance(500);  // to re-enter the new vehicle
+
+        assert.isNotNull(gunther.vehicle);
+        assert.isTrue(manager.isPersistentVehicle(gunther.vehicle));
+
+        const oldVehicle = gunther.vehicle;
+
+        assert.isTrue(await gunther.issueCommand('/v delete'));
+        assert.isNull(gunther.vehicle);
+
+        assert.isFalse(oldVehicle.isConnected());
+    });
+
+    it('should be able to save vehicles to the database', async(assert) => {
+        // Only administrators can save vehicles in the database.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isTrue(createVehicleForPlayer(gunther));
+
+        assert.isNotNull(gunther.vehicle);
+        assert.isTrue(gunther.vehicle.isConnected());
+
+        assert.isTrue(manager.isManagedVehicle(gunther.vehicle));
+        assert.isFalse(manager.isPersistentVehicle(gunther.vehicle));
+
+        const oldVehicle = gunther.vehicle;
+
+        assert.isTrue(await gunther.issueCommand('/v save'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0], Message.format(Message.VEHICLE_SAVED, 'Infernus'));
+
+        await server.clock.advance(500);  // to re-enter the new vehicle
+
+        assert.isNotNull(gunther.vehicle);
+        assert.isTrue(gunther.vehicle.isConnected());
+
+        assert.isTrue(manager.isManagedVehicle(gunther.vehicle));
+        assert.isTrue(manager.isPersistentVehicle(gunther.vehicle));
+
+        assert.notEqual(gunther.vehicle, oldVehicle);
+
+        gunther.clearMessages();
+
+        assert.isTrue(await gunther.issueCommand('/v save'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0], Message.format(Message.VEHICLE_SAVE_REDUNDANT, 'Infernus'));
+    });
 
     it('should clean up the commands when being disposed of', async(assert) => {
         const originalCommandCount = server.commandManager.size;

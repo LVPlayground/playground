@@ -23,8 +23,8 @@ class VehicleCommands {
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .sub('delete')
                     .build(VehicleCommands.prototype.onVehicleDeleteCommand.bind(this))
-                .sub('respawn')
-                    .build(VehicleCommands.prototype.onVehicleRespawnCommand.bind(this))
+                .sub('save')
+                    .build(VehicleCommands.prototype.onVehicleSaveCommand.bind(this))
                 .build(/* deliberate fall-through */)
             .sub(CommandBuilder.WORD_PARAMETER)
                 .build(VehicleCommands.prototype.onVehicleCommand.bind(this))
@@ -84,6 +84,7 @@ class VehicleCommands {
     async onVehicleDeleteCommand(player, subject) {
         const vehicle = subject.vehicle;
 
+        // Bail out if the |subject| is not driving a vehicle, or it's not managed by this system.
         if (!this.manager_.isManagedVehicle(vehicle)) {
             player.sendMessage(Message.VEHICLE_NOT_DRIVING, subject.name);
             return;
@@ -96,10 +97,28 @@ class VehicleCommands {
         player.sendMessage(Message.VEHICLE_DELETED, vehicle.model.name);
     }
 
-    // Called when the player executes `/v respawn` or `/v [player] respawn`, which means they wish
-    // to respawn the intended vehicle back to its original spawning position.
-    onVehicleRespawnCommand(player, subject) {
-        console.log('Respawning the vehicle of ' + subject.name);
+    // Called when the player executes `/v save` or `/v [player] save`, which means they wish to
+    // save the vehicle in the database to make it a persistent vehicle.
+    async onVehicleSaveCommand(player, subject) {
+        const vehicle = subject.vehicle;
+
+        // Bail out if the |subject| is not driving a vehicle, or it's not managed by this system.
+        if (!this.manager_.isManagedVehicle(vehicle)) {
+            player.sendMessage(Message.VEHICLE_NOT_DRIVING, subject.name);
+            return;
+        }
+
+        // Bail out if the |vehicle| has already been saved in the database.
+        if (this.manager_.isPersistentVehicle(vehicle)) {
+            player.sendMessage(Message.VEHICLE_SAVE_REDUNDANT, vehicle.model.name);
+            return;
+        }
+
+        await this.manager_.storeVehicle(vehicle);
+
+        // TODO: Make an announcement to other administrators.
+
+        player.sendMessage(Message.VEHICLE_SAVED, vehicle.model.name);
     }
 
     // ---------------------------------------------------------------------------------------------

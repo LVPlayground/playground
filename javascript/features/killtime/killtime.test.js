@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const Economy = require('features/economy/economy.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 const Killtime = require('features/killtime/killtime.js');
 const KilltimeCommands = require('features/killtime/killtime_commands.js');
@@ -13,6 +14,7 @@ describe('Killtime', (it, beforeEach) => {
     beforeEach(() => {
         server.featureManager.registerFeaturesForTests({
             announce: MockAnnounce,
+            economy: Economy,
             killtime: Killtime,
             ktManager: KilltimeManager,
             ktCommands: KilltimeCommands
@@ -25,6 +27,8 @@ describe('Killtime', (it, beforeEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
         const amountOfKillsByGunther = 1;
+        const killtimeMessage = Message.format(
+            Message.KILLTIME_TOPKILLER, gunther.name + ' with ' + amountOfKillsByGunther + ' kills', 25000);
 
         russell.identify();
         russell.level = Player.LEVEL_ADMINISTRATOR;
@@ -32,74 +36,59 @@ describe('Killtime', (it, beforeEach) => {
         assert.isTrue(russell.issueCommand('/killtime start'));
         russell.clearMessages();
 
-        await server.clock.advance(59 * 6000);
+        await server.clock.advance(9 /*put 52 here for the actual situation*/ * 6000);
         russell.die(gunther);
-        await server.clock.advance(2 * 6000);
+        await server.clock.advance(52 /*put 9 here for the actual situation*/ * 6000);
 
         assert.equal(russell.messages.length, 1);
-        const killtimeMessage =
-            Message.format(Message.KILLTIME_TOPKILLER, gunther.name + ' with ' + amountOfKillsByGunther + ' kills', 1);
         assert.equal(russell.messages[0],
             Message.format(Message.ANNOUNCE_ALL, killtimeMessage));
     });
 
-/*    it('should show a message back to the player who reports a player', assert => {
-        const gunther = server.playerManager.getById(0 /!* Gunther *!/);
-        const russell = server.playerManager.getById(1 /!* Russell *!/);
+    it('should be able to be started for 3 minutes by a registered administrator', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const minutesToRun = 3;
+        const killtimeMessage = Message.format(Message.KILLTIME_STARTED, minutesToRun);
 
-        assert.isTrue(russell.issueCommand('/report 0 bullet-amount freezed'));
+        gunther.identify();
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
 
-        assert.equal(russell.messages.length, 1);
-        assert.equal(russell.messages[0],
-            Message.format(Message.REPORT_MESSAGE, gunther.name, gunther.id,
-                           'bullet-amount freezed'));
+        assert.isTrue(gunther.issueCommand('/killtime start ' + minutesToRun));
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0],
+            Message.format(Message.ANNOUNCE_ALL, killtimeMessage));
     });
 
-    it('should show a message back to only non-administrators about report-delivery', assert => {
-        const gunther = server.playerManager.getById(0 /!* Gunther *!/);
-        const russell = server.playerManager.getById(1 /!* Russell *!/);
+    it('should show the usage for administrators without any parameters', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        russell.level = Player.LEVEL_ADMINISTRATOR;
+        gunther.identify();
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
 
-        assert.isTrue(russell.issueCommand('/report 0 bullet-amount freezed'));
+        assert.isTrue(gunther.issueCommand('/killtime'));
 
-        assert.equal(russell.messages.length, 1);
-        assert.notEqual(russell.messages[0],
-            Message.format(Message.REPORT_MESSAGE, gunther.name, gunther.id,
-                           'bullet-amount freezed'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0],
+            Message.format(Message.COMMAND_USAGE, Message.KILLTIME_USAGE));
     });
 
-    it('should show an error to an other player if the reported player is reported less than 60' +
-        ' seconds ago', assert => {
-        const gunther = server.playerManager.getById(0 /!* Gunther *!/);
-        const russell = server.playerManager.getById(1 /!* Russell *!/);
-        const lucy    = server.playerManager.getById(2 /!* Lucy    *!/);
+    it('should show that at a manual stop it is stopped by an administrator without a winner', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        assert.isTrue(russell.issueCommand('/report 0 bullet-amount freezed'));
-        assert.isTrue(lucy.issueCommand('/report 0 weird weapon-use'));
+        gunther.identify();
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
 
-        assert.equal(lucy.messages.length, 1);
-        assert.equal(lucy.messages[0],
-            Message.format(Message.REPORT_ALREADY_REPORTED, gunther.name));
+        assert.isTrue(gunther.issueCommand('/killtime start'));
+        gunther.clearMessages();
+        assert.isTrue(gunther.issueCommand('/killtime stop'));
+
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(gunther.messages[0],
+            Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_ADMIN_STOPPED));
+        assert.equal(gunther.messages[1],
+            Message.format(Message.ANNOUNCE_ALL, Message.format(Message.KILLTIME_WINNER, 'no-one', '')));
     });
-
-    it('should show a message to an other player if the reported player is reported more than 60' +
-        ' seconds ago', async(assert) => {
-        const gunther = server.playerManager.getById(0 /!* Gunther *!/);
-        const russell = server.playerManager.getById(1 /!* Russell *!/);
-        const lucy    = server.playerManager.getById(2 /!* Lucy    *!/);
-
-        assert.isTrue(russell.issueCommand('/report 0 bullet-amount freezed'));
-
-        // Advance the server's time by two minutes to fake the wait having passed.
-        await server.clock.advance(120000);
-
-        assert.isTrue(lucy.issueCommand('/report 0 weird weapon-use'));
-
-        assert.equal(lucy.messages.length, 1);
-        assert.equal(lucy.messages[0],
-            Message.format(Message.REPORT_MESSAGE, gunther.name, gunther.id, 'weird weapon-use'));
-    });*/
 
     it('should support live reloading, and properly clean up after itself', assert => {
         const commandCount = server.commandManager.size;

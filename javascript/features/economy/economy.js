@@ -45,6 +45,12 @@ class Economy extends Feature {
         return this.residentialValueMap_.query(position) === 5;
     }
 
+    // Calculated and returns the prize for a few minutes of killtime. It is calculated bases on the amount of players
+    // multiplied by kills. It always returns a minimum of 25k.
+    calculateKilltimeAwardPrize(participants, kills) {
+        return this.economyCalculator_.calculateKilltimeAwardPrize(participants, kills);
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     dispose() {

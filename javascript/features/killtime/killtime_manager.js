@@ -7,8 +7,9 @@ const ScopedCallbacks = require('base/scoped_callbacks.js');
 // Managing killtime, that magic happens here. We need to keep track of who is on top, how many minutes do we still
 // have and when we have to stop. At the end we of course want to give out the correct prize to the correct person.
 class KilltimeManager {
-    constructor(announce) {
+    constructor(announce, economy) {
         this.announce_ = announce;
+        this.economy_ = economy;
         this.isRunning_ = false;
         this.scoreMap_ = new Map();
         this.callbacks_ = new ScopedCallbacks();
@@ -51,10 +52,12 @@ class KilltimeManager {
         const mostKillsAmount = this.scoreMap_.get(playerName);
 
         let playerWithKillsText = playerName + ' with ' + mostKillsAmount + ' kills';
-        if (playerName == null)
+        let prizeMoney = this.economy_().calculateKilltimeAwardPrize(this.scoreMap_.size, this.getTotalKillsAmount_());
+        if (playerName == null) {
             playerWithKillsText = 'no-one yet';
+        }
 
-        this.announce_().announceToPlayers(Message.KILLTIME_TOPKILLER, playerWithKillsText, 1);
+        this.announce_().announceToPlayers(Message.KILLTIME_TOPKILLER, playerWithKillsText, prizeMoney);
     }
 
     stop(player) {
@@ -79,10 +82,11 @@ class KilltimeManager {
         const mostKillsAmount = this.scoreMap_.get(playerName);
 
         let playerWithKillsText = playerName + ' with ' + mostKillsAmount + ' kills';
+        let prizeMoney = this.economy_().calculateKilltimeAwardPrize(this.scoreMap_.size, this.getTotalKillsAmount_());
         if (playerName == null)
             playerWithKillsText = 'no-one';
 
-        const prizeMessage = playerName != null ? Message.format(Message.KILLTIME_ENJOY_PRIZE, 1) : '';
+        const prizeMessage = playerName != null ? Message.format(Message.KILLTIME_ENJOY_PRIZE, prizeMoney) : '';
         this.announce_().announceToPlayers(Message.KILLTIME_WINNER, playerWithKillsText, prizeMessage);
     }
 
@@ -102,10 +106,16 @@ class KilltimeManager {
     }
 
     getPlayerWithHighestKillsAmount() {
+        const knownKillsAmountSet = new Set();
         let playerName = null;
         let highestKillsAmount = 0;
 
         this.scoreMap_.forEach(function (kills, name) {
+            if (knownKillsAmountSet.has(kills))
+                return null;
+            else
+                knownKillsAmountSet.add(kills);
+
             if (kills > highestKillsAmount) {
                 highestKillsAmount = kills;
                 playerName = name;
@@ -113,6 +123,16 @@ class KilltimeManager {
         });
 
         return playerName;
+    }
+
+    getTotalKillsAmount_(){
+        let totalKillsAmount = 0;
+
+        this.scoreMap_.forEach(function (kills) {
+            totalKillsAmount += kills;
+        });
+
+        return totalKillsAmount;
     }
 
     // Cleans up the state created by this class

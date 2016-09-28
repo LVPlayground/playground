@@ -130,6 +130,23 @@ class EconomyCalculator {
         this.varianceValue_ = value;
     }
 
+    // Calculates the award for 2, 1 is not possible, or more minutes of killtime. There is a minimum prize of 25k if
+    // there is not enough killing and/or participants. This way we keep the players encouraged to take part in kill-
+    // time while meanwhile keep the economy stable.
+    calculateKilltimeAwardPrize(participants, kills) {
+        let minimumPrizeMoney = 25000;
+
+        const startPrizeMoney = 1000;
+        const multiplier = participants * kills;
+
+        const calculatedPrizeMoney = startPrizeMoney * multiplier;
+
+        if (calculatedPrizeMoney < minimumPrizeMoney)
+            return minimumPrizeMoney;
+
+        return calculatedPrizeMoney;
+    }
+
     dispose() {
         this.disposed_ = true;
     }

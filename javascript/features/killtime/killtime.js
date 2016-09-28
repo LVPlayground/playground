@@ -7,7 +7,7 @@ const KilltimeManager = require('features/killtime/killtime_manager.js');
 const KilltimeCommands = require('features/killtime/killtime_commands.js');
 
 // Killtime is a fun element in LVP for, especially, DMers. This provides the possibility to give a prize for the
- // player who kills the most players in the given time.
+// player who kills the most players in the given time.
 class Killtime extends Feature {
     constructor() {
         super();
@@ -15,7 +15,10 @@ class Killtime extends Feature {
         // Be able to send a certain message to a certain public
         const announce = this.defineDependency('announce', true /* isFunctional */);
 
-        this.manager_ = new KilltimeManager(announce);
+        // Killtime prizes are calculated by our economy-feature
+        const economy = this.defineDependency('economy', true /* isFunctional */);
+
+        this.manager_ = new KilltimeManager(announce, economy);
         this.commands_ = new KilltimeCommands(this.manager_);
     }
 

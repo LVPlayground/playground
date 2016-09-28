@@ -18,6 +18,7 @@ require('entities/pickup.js');
 require('entities/player.js');
 require('entities/text_label.js');
 require('entities/vehicle.js');
+require('entities/vehicle_model.js');
 require('entities/virtual_world.js');
 
 // All tests included in the JavaScript version of Las Venturas Playground must pass before we allow

@@ -146,6 +146,52 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.isFalse(vehicle.isConnected());
     });
 
+    it('should not be able to delete vehicles for players not in a vehicle', async(assert) => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        // Only administrators can delete vehicles from the server.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        const vehicle = server.vehicleManager.createVehicle({
+            modelId: 411 /* Infernus */,
+            position: gunther.position,
+            rotation: gunther.rotation
+        });
+
+        russell.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
+
+        assert.isNotNull(russell.vehicle);
+
+        assert.isTrue(await gunther.issueCommand('/v ' + russell.name + ' delete'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0], Message.format(Message.VEHICLE_NOT_DRIVING, russell.name));
+
+        assert.isNotNull(russell.vehicle);
+    });
+
+    it('should not be able to delete unmanaged vehicles', async(assert) => {
+        // Only administrators can delete vehicles from the server.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        const vehicle = server.vehicleManager.createVehicle({
+            modelId: 411 /* Infernus */,
+            position: gunther.position,
+            rotation: gunther.rotation
+        });
+
+        gunther.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
+
+        assert.isNotNull(gunther.vehicle);
+
+        assert.isTrue(await gunther.issueCommand('/v delete'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0], Message.format(Message.VEHICLE_NOT_DRIVING, gunther.name));
+
+        assert.isNotNull(gunther.vehicle);
+    });
+
     it('should be able to delete persistent vehicles', async(assert) => {
         // Only administrators can delete vehicles from the server.
         gunther.level = Player.LEVEL_ADMINISTRATOR;

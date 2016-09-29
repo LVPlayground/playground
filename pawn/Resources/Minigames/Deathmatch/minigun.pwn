@@ -2,7 +2,7 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-#define MINIGUN_VIRTUAL_WORLD 5
+#define MINIGUN_VIRTUAL_WORLD 110
 
 SetPlayerUpForMinigun(playerId) {
     enum spawnInfo {

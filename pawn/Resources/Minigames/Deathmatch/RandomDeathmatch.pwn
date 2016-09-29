@@ -48,7 +48,7 @@ SetPlayerUpForRandomDeathmatch(playerid)
     GameTextForPlayer(playerid, "~n~~n~~y~Last man standing:~w~~n~~w~Kill them all! Do not die!", 5000, 3);
     SendClientMessage(playerid, Color::White, "* Last man standing! Takeout your enemies. Do not die.");
 
-    SetPlayerVirtualWorld(playerid, 865);
+    SetPlayerVirtualWorld(playerid, 113);
     SetPlayerWorldBounds(playerid, 1540.8296, 1418.2867, 2882.7183, 2788.8674);
     return true;
 }

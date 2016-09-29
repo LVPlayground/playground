@@ -10,5 +10,5 @@ SetPlayerUpForDildoSpanking ( playerid)
     SetPlayerWorldBounds ( playerid,-380.0000,-470.0000,2550.0000,2460.0000) ;
     ResetPlayerWeapons ( playerid) ;
     GiveWeapon ( playerid,WEAPON_DILDO,1) ;
-    SetPlayerVirtualWorld(playerid,1);
+    SetPlayerVirtualWorld(playerid, 105);
 }

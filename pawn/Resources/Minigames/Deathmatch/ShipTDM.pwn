@@ -35,7 +35,7 @@ SetupPlayerForShipTDM( playerid )
         iPlayerTeamID = random( 2 );
     }
 
-    SetPlayerVirtualWorld( playerid, 10 );
+    SetPlayerVirtualWorld( playerid, 111 );
     ResetPlayerWeapons( playerid );
 
 

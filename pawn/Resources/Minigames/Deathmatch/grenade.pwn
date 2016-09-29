@@ -13,7 +13,7 @@ SetPlayerUpForGrenadeParty( playerid )
     SetPlayerWorldBounds( playerid, -121.8499, -263.3261, 102.4352, -91.6753 );
     ResetPlayerWeapons( playerid );
     GiveWeapon( playerid, 16, 3000);
-    SetPlayerVirtualWorld(playerid,1);
+    SetPlayerVirtualWorld(playerid, 107);
     for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
     {
         ShowPlayerNameTagForPlayer( i, playerid, 0 );

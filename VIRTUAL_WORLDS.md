@@ -16,4 +16,17 @@ The following worlds are reserved for usage by specific features.
 
   - **100**: The _Robbery_ minigame.
   - **101**: Interior of the Caligula's Palace casino.
-  - **102-199**: _Available._
+  - **102**: The _Walk Weapons_ minigame (`/ww`).
+  - **103**: The _Bat Fight_ minigame (`/batfight`).
+  - **104**: The _Chainsaw Massacre_ minigame (`/massacre`).
+  - **105**: The _Dildo Spanking_ minigame (`/spankme`).
+  - **106**: The _Knockout_ minigame (`/knockout`).
+  - **107**: The _Grenada Party_ minigame (`/grenade`).
+  - **108**: The _Rocket Party_ minigame (`/rocket`).
+  - **109**: The _Sniper Madness_ minigame (`/sniper`).
+  - **110**: The _Minigun Madness_ minigame (`/minigun`).
+  - **111**: The _Ship Team Deathmatch_ minigame (`/shiptdm`).
+  - **112**: The _Sawnoff Fights_ minigame (`/sawnoff`).
+  - **113**: The _Random Deathmatch_ minigame (`/random`).
+  - **114**: The _Island Deathmatch_ minigame (`/islanddm`).
+  - **115-199**: _Available._

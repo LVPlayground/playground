@@ -10,5 +10,5 @@ SetPlayerUpForBatfight ( playerid )
     SetPlayerWorldBounds ( playerid, 1397.1653, 1297.0610, 2198.6494, 2100.2563 ) ; // moet nog verruimd worden aan de straatkant, nu geraak je klem tussen world boundry en het hek ;)
     ResetPlayerWeapons ( playerid ) ;
     GiveWeapon( playerid, WEAPON_BAT, 1) ;
-    SetPlayerVirtualWorld(playerid,1);
+    SetPlayerVirtualWorld(playerid, 103);
 }

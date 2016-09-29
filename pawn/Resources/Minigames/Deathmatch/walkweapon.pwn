@@ -2,7 +2,7 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-#define WW_VIRTUAL_WORLD 4
+#define WW_VIRTUAL_WORLD 102
 
 SetPlayerUpForWalkWeapon(playerId) {
     SetPlayerVirtualWorld(playerId, WW_VIRTUAL_WORLD);

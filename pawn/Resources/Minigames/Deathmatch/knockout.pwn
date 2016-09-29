@@ -13,4 +13,5 @@ SetPlayerUpForKnockout ( playerid )
     GameTextForPlayer ( playerid, "~y~ Let's Fight!", 3000, 5 ) ;
     GiveWeapon(playerid,1,1);
     SetPlayerTeam(playerid, NO_TEAM);
+    SetPlayerVirtualWorld(playerid, 106);
 }

@@ -31,5 +31,5 @@ SetPlayerUpForSawnoff( playerid )
     }
 
     GiveWeapon( playerid, 26, 3000);
-    SetPlayerVirtualWorld(playerid,3);
+    SetPlayerVirtualWorld(playerid, 112);
 }

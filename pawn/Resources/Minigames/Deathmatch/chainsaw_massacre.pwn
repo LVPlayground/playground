@@ -10,5 +10,5 @@ SetPlayerUpForChainsawMassacre ( playerid )
     SetPlayerWorldBounds ( playerid, -2310.0000, -2365.0000, -77.0000, -122.0000 ) ;
     ResetPlayerWeapons ( playerid ) ;
     GiveWeapon ( playerid, 9, 1) ;
-    SetPlayerVirtualWorld(playerid,1);
+    SetPlayerVirtualWorld(playerid, 104);
 }

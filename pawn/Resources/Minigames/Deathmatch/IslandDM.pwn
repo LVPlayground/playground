@@ -20,7 +20,7 @@
 #define ISLAND_DM_TEAM_A_SKIN       165     // FBI guy
 #define ISLAND_DM_TEAM_B_SKIN       287     // Army Guy
 
-#define ISLAND_DM_WORLD             4
+#define ISLAND_DM_WORLD             114
 
 static  n_IslandDMBalancer;
 static  islandDMTeam[MAX_PLAYERS] = {NO_TEAM, ...};

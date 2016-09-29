@@ -225,7 +225,13 @@ describe('VehicleCommands', (it, beforeEach) => {
         gunther.vehicle.health = 950;
 
         assert.isTrue(await gunther.issueCommand('/v health'));
-        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_HEALTH_CURRENT, 950));
+
+        gunther.clearMessages();
+
+        assert.isTrue(await gunther.issueCommand('/v health 9001'));  // must be in [0, 1000]
+        assert.equal(gunther.messages.length, 2);
         assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_HEALTH_CURRENT, 950));
 
         gunther.clearMessages();

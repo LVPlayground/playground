@@ -221,6 +221,7 @@
     "VEHICLE_DELETED": "@error The %s has been deleted.",
     "VEHICLE_HEALTH_CURRENT": "@info The vehicle's current health is {FF8282}%d{FFFFFF}.",
     "VEHICLE_HEALTH_UPDATED": "@success The vehicle's health has been updated from {FF8282}%d{FFFFFF} to {FF8282}%d{FFFFFF}.",
+    "VEHICLE_HEALTH_USAGE": "@usage /v [player]? health [0-1000]?",
     "VEHICLE_NOT_DRIVING": "@error %s is not currently in a vehicle managed by JavaScript.",
     "VEHICLE_RESPAWNED": "@success The %s has been respawned.",
     "VEHICLE_SAVE_REDUNDANT": "@error The %s has already been saved in the database.",

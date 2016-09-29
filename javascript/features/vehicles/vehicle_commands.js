@@ -114,8 +114,9 @@ class VehicleCommands {
             return;
         }
 
-        if (health === undefined) {
+        if (health === undefined || health < 0 || health > 1000) {
             player.sendMessage(Message.VEHICLE_HEALTH_CURRENT, vehicle.health);
+            player.sendMessage(Message.VEHICLE_HEALTH_USAGE);
             return;
         }
 

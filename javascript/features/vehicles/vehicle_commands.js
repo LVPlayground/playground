@@ -20,17 +20,26 @@ class VehicleCommands {
         server.commandManager.buildCommand('v')
             .restrict(player => this.playground_().canAccessCommand(player, 'v'))
             .sub(CommandBuilder.PLAYER_PARAMETER, player => player)
-                .restrict(Player.LEVEL_ADMINISTRATOR)
                 .sub('delete')
+                    .restrict(Player.LEVEL_ADMINISTRATOR)
                     .build(VehicleCommands.prototype.onVehicleDeleteCommand.bind(this))
                 .sub('health')
+                    .restrict(Player.LEVEL_ADMINISTRATOR)
                     .parameters([ { name: 'health', type: CommandBuilder.NUMBER_PARAMETER,
                                     optional: true } ])
                     .build(VehicleCommands.prototype.onVehicleHealthCommand.bind(this))
+                .sub('pin')
+                    .restrict(Player.LEVEL_MANAGEMENT)
+                    .build(VehicleCommands.prototype.onVehiclePinCommand.bind(this))
                 .sub('respawn')
+                    .restrict(Player.LEVEL_ADMINISTRATOR)
                     .build(VehicleCommands.prototype.onVehicleRespawnCommand.bind(this))
                 .sub('save')
+                    .restrict(Player.LEVEL_ADMINISTRATOR)
                     .build(VehicleCommands.prototype.onVehicleSaveCommand.bind(this))
+                .sub('unpin')
+                    .restrict(Player.LEVEL_MANAGEMENT)
+                    .build(VehicleCommands.prototype.onVehicleUnpinCommand.bind(this))
                 .build(/* deliberate fall-through */)
             .sub(CommandBuilder.WORD_PARAMETER)
                 .build(VehicleCommands.prototype.onVehicleCommand.bind(this))
@@ -125,6 +134,20 @@ class VehicleCommands {
         vehicle.health = health;
     }
 
+    // Called when a Management member executes the `/v pin` or `/v [player] pin` command, which
+    // means that they wish to pin the associated vehicle with the streamer.
+    onVehiclePinCommand(player, subject) {
+        const vehicle = subject.vehicle;
+
+        // Bail out if the |subject| is not driving a vehicle, or it's not managed by this system.
+        if (!this.manager_.pinVehicle(vehicle)) {
+            player.sendMessage(Message.VEHICLE_NOT_DRIVING, subject.name);
+            return;
+        }
+
+        player.sendMessage(Message.VEHICLE_PINNED, subject.name, vehicle.name);
+    }
+
     // Called when the |player| executes `/v respawn` or `/v [player] respawn`, which means they
     // wish to reset the vehicle's position to its original spot.
     onVehicleRespawnCommand(player, subject) {
@@ -163,6 +186,20 @@ class VehicleCommands {
         // TODO: Make an announcement to other administrators.
 
         player.sendMessage(Message.VEHICLE_SAVED, vehicle.model.name);
+    }
+
+    // Called when a Management member executes the `/v unpin` or `/v [player] unpin` command, which
+    // means that they wish to unpin the associated vehicle with from streamer.
+    onVehicleUnpinCommand(player, subject) {
+        const vehicle = subject.vehicle;
+
+        // Bail out if the |subject| is not driving a vehicle, or it's not managed by this system.
+        if (!this.manager_.unpinVehicle(vehicle)) {
+            player.sendMessage(Message.VEHICLE_NOT_DRIVING, subject.name);
+            return;
+        }
+
+        player.sendMessage(Message.VEHICLE_UNPINNED, subject.name, vehicle.name);
     }
 
     // ---------------------------------------------------------------------------------------------

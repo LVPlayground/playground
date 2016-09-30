@@ -32,6 +32,9 @@ describe('EntityStreamerGlobal', it => {
         }
     }
 
+    // Symbol that can be used as a pinning vehicle type.
+    const TestPin = Symbol();
+
     // Creates a new StoredEntity instance filled with random information.
     function createRandomEntity({ min, max } = {}) {
         return new StoredEntity({
@@ -205,17 +208,23 @@ describe('EntityStreamerGlobal', it => {
 
         streamer.add(entity);
 
+        assert.isFalse(streamer.isPinned(entity, TestPin));
+
         assert.equal(streamer.activeEntityCount, 0);
         await streamer.stream();
         assert.equal(streamer.activeEntityCount, 0);
 
-        streamer.pin(entity);
+        streamer.pin(entity, TestPin);
+
+        assert.isTrue(streamer.isPinned(entity, TestPin));
 
         assert.equal(streamer.activeEntityCount, 1);
         assert.equal(entity.activeReferences, 0);
         assert.equal(entity.totalReferences, 0);
 
-        streamer.unpin(entity);
+        streamer.unpin(entity, TestPin);
+
+        assert.isFalse(streamer.isPinned(entity, TestPin));
 
         assert.equal(streamer.activeEntityCount, 0);
         assert.equal(entity.activeReferences, 0);

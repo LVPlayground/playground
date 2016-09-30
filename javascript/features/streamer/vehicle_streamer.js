@@ -5,6 +5,9 @@
 const EntityStreamerGlobal = require('features/streamer/entity_streamer_global.js');
 const ScopedEntities = require('entities/scoped_entities.js');
 
+// Pin that will be used to keep vehicles alive that have recently been used.
+const RecentUsagePin = Symbol();
+
 // Implementation for a vehicle that's able to stream vehicles for all players. This class is
 // intended to be used with stored entities that are StoredVehicle instances. The vehicle streamer
 // will automatically handle respawn delays for the vehicles created through it.
@@ -42,8 +45,9 @@ class VehicleStreamer extends EntityStreamerGlobal {
     //     boolean add(storedVehicle, lazy = false);
     //     boolean delete(storedVehicle);
     //
-    //     void pin(storedVehicle);
-    //     void unpin(storedVehicle);
+    //     void pin(storedVehicle, type);
+    //     void isPinned(storedVehicle, type);
+    //     void unpin(storedVehicle, type);
     //
     //     Vehicle getLiveVehicle(storedVehicle);
     //     StoredVehicle getStoredVehicle(vehicle);
@@ -109,7 +113,7 @@ class VehicleStreamer extends EntityStreamerGlobal {
     async scheduleVehicleForRespawn(vehicle, storedVehicle, timeMultipler = 1) {
         const respawnTime = storedVehicle.respawnDelay * timeMultipler;
         if (respawnTime < 0 /* no automated respawn */) {
-            this.unpin(storedVehicle);
+            this.unpin(storedVehicle, RecentUsagePin);
             return;
         }
 
@@ -122,7 +126,7 @@ class VehicleStreamer extends EntityStreamerGlobal {
         if (!vehicle.isConnected() || this.respawnTokens_.get(vehicle) !== token)
             return;  // the |vehicle| has been removed, or the respawn token expired
 
-        this.unpin(storedVehicle);
+        this.unpin(storedVehicle, RecentUsagePin);
         this.respawnTokens_.delete(vehicle);
 
         vehicle.respawn();
@@ -136,7 +140,7 @@ class VehicleStreamer extends EntityStreamerGlobal {
         if (!storedVehicle)
             return;  // the |vehicle| is not part of this streamer
 
-        this.pin(storedVehicle);
+        this.pin(storedVehicle, RecentUsagePin);
         this.respawnTokens_.delete(vehicle);
     }
 

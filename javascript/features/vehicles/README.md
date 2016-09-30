@@ -19,6 +19,11 @@ Furthermore, administrators are able to use the following commands:
   * **/v [player]? respawn**: Respawns either your own vehicle, or that of `player`.
   * **/v [player]? save**: Saves either your own vehicle, or that of `player`, in the database.
 
+Finally, Management is able to use the following commands:
+
+  * **/v [player]? pin**: Prevents the vehicle from being deleted by the streamer.
+  * **/v [player]? unpin**: Puts the vehicle's lifetime under control of the streamer again.
+
 
 ## Limits
 The [Vehicle Streamer](../streamer/vehicle_streamer.js) is used to remove limits on the number of

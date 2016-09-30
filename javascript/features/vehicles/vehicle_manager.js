@@ -32,6 +32,9 @@ class VehicleManager {
     // Gets a promise that is to be resolved when the feature is ready.
     get ready() { return this.dataLoadedPromise_; }
 
+    // Gets the active vehicle streamer. Should not be cached.
+    get streamer() { return this.streamer_().getVehicleStreamer(); }
+
     // Gets an iterator with access to all DAtabaseVehicle instances.
     get vehicles() { return this.vehicles_.values(); }
 
@@ -61,17 +64,18 @@ class VehicleManager {
         });
 
         this.internalCreateVehicle(databaseVehicle, false /* lazy */);
-        return this.internalGetLiveVehicle(databaseVehicle);
+
+        return this.streamer.getLiveVehicle(databaseVehicle);
     }
 
     // Returns whether the |vehicle| is one managed by the VehicleManager.
     isManagedVehicle(vehicle) {
-        return this.internalGetDatabaseVehicle(vehicle) !== null;
+        return this.streamer.getStoredVehicle(vehicle) !== null;
     }
 
     // Returns whether the |vehicle| is a persistent vehicle managed by the VehicleManager.
     isPersistentVehicle(vehicle) {
-        const databaseVehicle = this.internalGetDatabaseVehicle(vehicle);
+        const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
         if (!databaseVehicle)
             return false;
 
@@ -81,7 +85,7 @@ class VehicleManager {
     // Stores the |vehicle| in the database. If it's a persistent vehicle already, the existing
     // vehicle will be updated. Otherwise it will be stored as a new persistent vehicle.
     async storeVehicle(vehicle) {
-        const databaseVehicle = this.internalGetDatabaseVehicle(vehicle);
+        const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
         if (!databaseVehicle)
             throw new Error('The given |vehicle| is not managed by the vehicle manager.');
 
@@ -125,7 +129,7 @@ class VehicleManager {
             if (!this.vehicles_.has(newVehicle))
                 return;  // the |newVehicle| has been removed since
 
-            const liveVehicle = this.internalGetLiveVehicle(newVehicle);
+            const liveVehicle = this.streamer.getLiveVehicle(newVehicle);
             if (!liveVehicle)
                 return;  // the |newVehicle| has not been created by the streamer
 
@@ -143,13 +147,13 @@ class VehicleManager {
         else
             await this.database_.createVehicle(newVehicle);
 
-        return this.internalGetLiveVehicle(newVehicle);
+        return this.streamer.getLiveVehicle(newVehicle);
     }
 
     // Asynchronously deletes the |vehicle|. It will be immediately removed from the streamer, but
     // will be asynchronously deleted from the database if it's persistent.
     async deleteVehicle(vehicle) {
-        const databaseVehicle = this.internalGetDatabaseVehicle(vehicle);
+        const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
         if (!databaseVehicle)
             throw new Error('The given |vehicle| is not managed by the vehicle manager.');
 
@@ -157,6 +161,33 @@ class VehicleManager {
 
         if (databaseVehicle.isPersistent())
             await this.database_.deleteVehicle(databaseVehicle);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Pins the |vehicle| in the streamer. Returns whether the |vehicle| is managed and could be
+    // pinned, even when it already was pinned.
+    pinVehicle(vehicle) {
+        const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
+        if (!databaseVehicle)
+            return false;
+
+        if (!this.streamer.isPinned(databaseVehicle, VehicleManager.MANAGEMENT_PIN))
+            this.streamer.pin(databaseVehicle, VehicleManager.MANAGEMENT_PIN);
+
+        return true;
+    }
+
+    // Unpins the |vehicle| from the streamer. Returns whether the |vehicle| is managed.
+    unpinVehicle(vehicle) {
+        const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
+        if (!databaseVehicle)
+            return false;
+
+        if (this.streamer.isPinned(databaseVehicle, VehicleManager.MANAGEMENT_PIN))
+            this.streamer.unpin(databaseVehicle, VehicleManager.MANAGEMENT_PIN);
+
+        return true;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -176,16 +207,6 @@ class VehicleManager {
     internalCreateVehicle(databaseVehicle, lazy) {
         this.vehicles_.add(databaseVehicle)
         this.streamer_().getVehicleStreamer().add(databaseVehicle, lazy);
-    }
-
-    // Returns the live Vehicle instance for the |databaseVehicle|.
-    internalGetLiveVehicle(databaseVehicle) {
-        return this.streamer_().getVehicleStreamer().getLiveVehicle(databaseVehicle);
-    }
-
-    // Returns the DatabaseVehicle instance for the given |vehicle|.
-    internalGetDatabaseVehicle(vehicle) {
-        return this.streamer_().getVehicleStreamer().getStoredVehicle(vehicle);
     }
 
     // Deletes the |databaseVehicle| from the vehicle streamer.
@@ -209,5 +230,8 @@ class VehicleManager {
         this.database_ = null;
     }
 }
+
+// Pin that will be used to keep vehicles alive by order of Management.
+VehicleManager.MANAGEMENT_PIN = Symbol();
 
 exports = VehicleManager;

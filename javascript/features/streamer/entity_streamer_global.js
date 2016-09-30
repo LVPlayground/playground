@@ -33,7 +33,7 @@ class EntityStreamerGlobal extends EntityStreamer {
                                        : null;
 
         // Set of pinned entities that should not be automatically removed by the streamer.
-        this.pinned_ = new Set();
+        this.pinned_ = new Map();
 
         // Total number of entities that have been created by the streamer.
         this.activeEntities_ = 0;
@@ -89,9 +89,15 @@ class EntityStreamerGlobal extends EntityStreamer {
     }
 
     // Pins |storedEntity| to avoid it from being destroyed until it gets unpinned. The allocated
-    // slot will be taken from the disposable entity budget. It will be created if necessary.
-    pin(storedEntity) {
-        this.pinned_.add(storedEntity);
+    // slot will be taken from the disposable entity budget. It will be created if necessary. An
+    // entity can be pinned for any number of |types|, which should be a Symbol.
+    pin(storedEntity, type) {
+        if (this.pinned_.has(storedEntity)) {
+            this.pinned_.get(storedEntity).add(type);
+            return;
+        }
+
+        this.pinned_.set(storedEntity, new Set([ type ]));
 
         // Forcefully unpin the oldest pinned entity, since we now risk overflowing the number of
         // live entities this streamer should curate. Display a warning in the console.
@@ -109,9 +115,30 @@ class EntityStreamerGlobal extends EntityStreamer {
             this.internalCreateEntity(storedEntity);
     }
 
+    // Returns whether the |storedEntity| has been pinned for the given |type|.
+    isPinned(storedEntity, type) {
+        const pins = this.pinned_.get(storedEntity);
+        if (pins && !type)
+            return true;  // check whether *any* pin exists for the |storedEntity|
+
+        if (pins && pins.has(type))
+            return true;  // check whether the specific pin exists for the |storedEntity|
+
+        return false;
+    }
+
     // Unpins the |storedEntity| to free it up for being being destroyed. It will be destroyed if
-    // there are no live references to the entity anymore.
-    unpin(storedEntity) {
+    // there are no live references to the entity anymore, and all pins have been removed.
+    unpin(storedEntity, type) {
+        const pins = this.pinned_.get(storedEntity);
+        if (!pins || !pins.has(type))
+            return;  // the vehicle is not pinned for the |type|
+
+        pins.delete(type);
+
+        if (pins.size)
+            return;  // other pins are still keeping this vehicle alive
+
         this.pinned_.delete(storedEntity);
 
         // Only delete the |storedEntity| if there are no further references to it.

@@ -4,6 +4,7 @@
 
 const MockPlayground = require('features/playground/test/mock_playground.js');
 const Streamer = require('features/streamer/streamer.js');
+const VehicleManager = require('features/vehicles/vehicle_manager.js');
 const Vehicles = require('features/vehicles/vehicles.js');
 
 describe('VehicleCommands', (it, beforeEach) => {
@@ -266,6 +267,29 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         assert.equal(vehicle.respawnCount, 1);
         assert.deepEqual(vehicle.position, new Vector(0, 500, 1000));
+    });
+
+    it('should enable Management to pin and unpin their vehicles', async(assert) => {
+        // Only Management members can pin and unpin vehicles on the server.
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
+        assert.isTrue(createVehicleForPlayer(gunther));
+        assert.isNotNull(gunther.vehicle)
+
+        const storedVehicle = manager.streamer.getStoredVehicle(gunther.vehicle);
+        assert.isNotNull(storedVehicle);
+
+        // The |storedVehicle| is pinned because |gunther| is driving it.
+        assert.isTrue(manager.streamer.isPinned(storedVehicle));
+        assert.isFalse(manager.streamer.isPinned(storedVehicle, VehicleManager.MANAGEMENT_PIN));
+
+        assert.isTrue(await gunther.issueCommand('/v pin'));
+        assert.isTrue(manager.streamer.isPinned(storedVehicle));
+        assert.isTrue(manager.streamer.isPinned(storedVehicle, VehicleManager.MANAGEMENT_PIN));
+
+        assert.isTrue(await gunther.issueCommand('/v unpin'));
+        assert.isTrue(manager.streamer.isPinned(storedVehicle));
+        assert.isFalse(manager.streamer.isPinned(storedVehicle, VehicleManager.MANAGEMENT_PIN));
     });
 
     it('should be able to save vehicles to the database', async(assert) => {

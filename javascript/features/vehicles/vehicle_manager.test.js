@@ -132,7 +132,7 @@ describe('VehicleManager', (it, beforeEach) => {
         const managedDatabaseVehicle = [...manager.vehicles][0];
         assert.isTrue(managedDatabaseVehicle.isPersistent());
 
-        const managedVehicle = manager.internalGetLiveVehicle(managedDatabaseVehicle);
+        const managedVehicle = manager.streamer.getLiveVehicle(managedDatabaseVehicle);
         assert.isNotNull(managedVehicle);
         assert.isTrue(managedVehicle.isConnected());
 
@@ -199,6 +199,26 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.isFalse(manager.isManagedVehicle(vehicle));
 
         assert.equal(server.vehicleManager.count, originalVehicleCount - 1);
+    });
+
+    it('should be able to pin and unpin managed vehicles in the streamer', assert => {
+        const vehicle = manager.createVehicle(HYDRA);
+
+        assert.isTrue(vehicle.isConnected());
+        assert.isTrue(manager.isManagedVehicle(vehicle));
+
+        const storedVehicle = Array.from(manager.vehicles).pop();
+        assert.equal(storedVehicle.modelId, vehicle.modelId);
+
+        assert.isFalse(manager.streamer.isPinned(storedVehicle));
+
+        manager.pinVehicle(vehicle);
+
+        assert.isTrue(manager.streamer.isPinned(storedVehicle));
+
+        manager.unpinVehicle(vehicle);
+
+        assert.isFalse(manager.streamer.isPinned(storedVehicle));
     });
 
     it('should recreate vehicles when the streamer reloads', assert => {

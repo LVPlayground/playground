@@ -16,6 +16,10 @@ const TotalReferenceComparator = (lhs, rhs) => {
 // Implementation of the EntityStreamer base class that adheres to a global entity limit, for
 // example vehicles and pickups. See EntityStreamerPlayer for an implementation that will instead
 // stream entities up to the limit per player.
+//
+// Stored entities can be pinned, which means that the streamer will keep them alive. In order for
+// this feature to work, the saturation ratio must allow for some space for non-streamable entities
+// so that the slots can be shared between pinned entities and disposable entities.
 class EntityStreamerGlobal extends EntityStreamer {
     constructor({ maxVisible, streamingDistance = 300, saturationRatio = 0.7, lru = true } = {}) {
         super({ maxVisible, streamingDistance });
@@ -27,6 +31,9 @@ class EntityStreamerGlobal extends EntityStreamer {
         // count, when LRU is disabled. NULL otherwise.
         this.disposableEntities_ = lru ? new FastPriorityQueue(TotalReferenceComparator)
                                        : null;
+
+        // Set of pinned entities that should not be automatically removed by the streamer.
+        this.pinned_ = new Set();
 
         // Total number of entities that have been created by the streamer.
         this.activeEntities_ = 0;
@@ -81,11 +88,47 @@ class EntityStreamerGlobal extends EntityStreamer {
         return true;
     }
 
+    // Pins |storedEntity| to avoid it from being destroyed until it gets unpinned. The allocated
+    // slot will be taken from the disposable entity budget. It will be created if necessary.
+    pin(storedEntity) {
+        this.pinned_.add(storedEntity);
+
+        // Forcefully unpin the oldest pinned entity, since we now risk overflowing the number of
+        // live entities this streamer should curate. Display a warning in the console.
+        if (this.pinned_.size > this.saturationRatio_ * this.maxVisible_) {
+            console.log('[EntityStreamerGlobal] Forcefully unpinning the oldest pinned entity.');
+
+            for (const pinnedEntity of this.pinned) {
+                this.unpin(pinnedEntity);
+                break;
+            }
+        }
+
+        // Make sure that the entity has been created if it doesn't exist yet.
+        if (!storedEntity.activeReferences)
+            this.internalCreateEntity(storedEntity);
+    }
+
+    // Unpins the |storedEntity| to free it up for being being destroyed. It will be destroyed if
+    // there are no live references to the entity anymore.
+    unpin(storedEntity) {
+        this.pinned_.delete(storedEntity);
+
+        // Only delete the |storedEntity| if there are no further references to it.
+        if (storedEntity.activeReferences)
+            return;
+
+        this.activeEntities_--;
+        this.deleteEntity(storedEntity);
+    }
+
     // Removes |storedEntity| from this entity streamer. Returns whether the entity was removed.
     // Will release all references to the entity.
     delete(storedEntity) {
         if (!super.delete(storedEntity))
             return false;
+
+        this.pinned_.delete(storedEntity);
 
         // TODO: This could be much more efficient if we maintained an entity => players set.
         for (const [player, cachedEntities] of this.playerEntities_) {
@@ -134,48 +177,56 @@ class EntityStreamerGlobal extends EntityStreamer {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Called when a reference to |entity| has been added. The |entity| may have to be created if
-    // this is the first active reference to it.
-    addEntityReference(entity) {
-        if (!entity.activeReferences) {
-            // If the limit of active entities has been reached, which should only be possible when
-            // a LRU is being used by the streamer, delete the least referred to entity.
-            if (this.activeEntities_ === this.maxVisible) {
-                if (!this.disposableEntities_ || !this.disposableEntities_.size)
-                    throw new Error('Reached the entity limit without anything to dispose.');
+    // Called when a reference to |storedEntity| has been added. The |storedEntity| may have to be
+    // created when this is the first active reference to it.
+    addEntityReference(storedEntity) {
+        if (!storedEntity.activeReferences && !this.pinned_.has(storedEntity))
+            this.internalCreateEntity(storedEntity);
 
-                this.activeEntities_--;
-                this.deleteEntity(this.disposableEntities_.pop());
-                
-            }
-
-            // Remove the |entity| from the disposable entities if it's listed there. Create the
-            // vehicle using the actual entity streamer when that's not the case.
-            if (!this.disposableEntities_.delete(entity)) {
-                this.activeEntities_++;
-                this.createEntity(entity);
-            }
-        }
-
-        entity.declareReferenceAdded();
+        storedEntity.declareReferenceAdded();
     }
 
-    // Called when a reference to |entity| has been removed. The |entity| may have to be moved to
-    // the LRU list, or potentially even removed altogether, if this was the last active reference.
-    deleteEntityReference(entity, lru = true) {
-        entity.declareReferenceDeleted();
+    // Creates the |storedEntity|. Makes sure that a slot can be allocated for the entity prior to
+    // actually creating the entity, to make sure we don't exceed the entity limit.
+    internalCreateEntity(storedEntity) {
+        // If the limit of active entities has been reached, which should only be possible when
+        // a LRU is being used by the streamer, delete the least referred to entity.
+        if (this.activeEntities_ === this.maxVisible) {
+            if (!this.disposableEntities_ || !this.disposableEntities_.size)
+                throw new Error('Reached the entity limit without anything to dispose.');
 
-        if (entity.activeReferences)
+            this.activeEntities_--;
+            this.deleteEntity(this.disposableEntities_.pop());
+            
+        }
+
+        // Remove the |storedEntity| from the disposable entities if it's listed there. Create the
+        // entity using the actual entity streamer when that's not the case.
+        if (!this.disposableEntities_ || !this.disposableEntities_.delete(storedEntity)) {
+            this.activeEntities_++;
+            this.createEntity(storedEntity);
+        }
+    }
+
+    // Called when a reference to |storedEntity| has been removed. The |storedEntity| may have to be
+    // moved to the LRU list, or even be removed altogether, if this was the last active reference.
+    deleteEntityReference(storedEntity, lru = true) {
+        storedEntity.declareReferenceDeleted();
+
+        if (storedEntity.activeReferences)
             return;  // the entity is in scope for other players, let it be
 
-        // Add the |entity| to the disposable entity queue instead of destroying it when possible.
+        if (this.pinned_.has(storedEntity))
+            return;  // the entity has been pinned, so shouldn't be deleted
+
+        // Add the |storedEntity| to the disposable entity queue instead of destroying it if we can.
         if (lru && this.disposableEntities_) {
-            this.disposableEntities_.push(entity);
+            this.disposableEntities_.push(storedEntity);
             return;
         }
 
         this.activeEntities_--;
-        this.deleteEntity(entity);
+        this.deleteEntity(storedEntity);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -188,8 +239,8 @@ class EntityStreamerGlobal extends EntityStreamer {
     // Called when the |player| has disconnected from the server.
     onPlayerDisconnect(player) {
         const cachedEntities = this.playerEntities_.get(player);
-        cachedEntities.forEach(entity =>
-            this.deleteEntityReference(entity));
+        cachedEntities.forEach(storedEntity =>
+            this.deleteEntityReference(storedEntity));
 
         this.playerEntities_.delete(player);
     }
@@ -204,6 +255,9 @@ class EntityStreamerGlobal extends EntityStreamer {
 
     dispose() {
         server.playerManager.removeObserver(this);
+
+        this.pinned_.clear();
+        this.pinned_ = null;
 
         this.disposableEntities_.clear();
         this.disposableEntities_ = null;

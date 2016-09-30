@@ -8,8 +8,9 @@ const StoredEntity = require('features/streamer/stored_entity.js');
 describe('EntityStreamerGlobal', it => {
     // Implementation of the EntityStreamerGlobal interface that just stores the instances.
     class MyEntityStreamer extends EntityStreamerGlobal {
-        constructor({ maxVisible = 5, streamingDistance = 300, saturationRatio = 0.7 } = {}) {
-            super({ maxVisible, streamingDistance, saturationRatio });
+        constructor({ maxVisible = 5, streamingDistance = 300, saturationRatio = 0.7,
+                      lru = true } = {}) {
+            super({ maxVisible, streamingDistance, saturationRatio, lru });
             this.entities_ = new Set();
         }
 
@@ -190,6 +191,71 @@ describe('EntityStreamerGlobal', it => {
         await streamer.stream();
 
         assert.equal(streamer.activeEntityCount, visibilityPerPlayer + 1 /* |entity| */);
+        assert.equal(entity.activeReferences, 0);
+    });
+
+    it('should be able to pin and unpin entities', async(assert) => {
+        const streamer = new MyEntityStreamer();
+        const entity = new StoredEntity({
+            modelId: 1,
+            position: new Vector(5000, 5500, 6000),
+            interiorId: -1,
+            virtualWorld: -1
+        });
+
+        streamer.add(entity);
+
+        assert.equal(streamer.activeEntityCount, 0);
+        await streamer.stream();
+        assert.equal(streamer.activeEntityCount, 0);
+
+        streamer.pin(entity);
+
+        assert.equal(streamer.activeEntityCount, 1);
+        assert.equal(entity.activeReferences, 0);
+        assert.equal(entity.totalReferences, 0);
+
+        streamer.unpin(entity);
+
+        assert.equal(streamer.activeEntityCount, 0);
+        assert.equal(entity.activeReferences, 0);
+        assert.equal(entity.totalReferences, 0);
+    });
+
+    it('should not delete entity when unpinning them whilst it has references', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        const streamer = new MyEntityStreamer({ lru: false });
+        const entity = new StoredEntity({
+            modelId: 1,
+            position: new Vector(5000, 5500, 6000),
+            interiorId: -1,
+            virtualWorld: -1
+        });
+
+        streamer.add(entity);
+        streamer.pin(entity);
+
+        assert.equal(streamer.activeEntityCount, 1);
+        assert.equal(entity.activeReferences, 0);
+
+        gunther.position = entity.position.translate({ x: 5, y: -5 });
+        
+        await streamer.stream();
+
+        assert.equal(streamer.activeEntityCount, 1);
+        assert.equal(entity.activeReferences, 1);
+
+        streamer.unpin(entity);
+
+        assert.equal(streamer.activeEntityCount, 1);
+        assert.equal(entity.activeReferences, 1);
+
+        gunther.position = new Vector(0, 0, 0);
+
+        await streamer.stream();
+
+        assert.equal(streamer.activeEntityCount, 0);
         assert.equal(entity.activeReferences, 0);
     });
 

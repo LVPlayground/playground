@@ -62,7 +62,7 @@ class SlowCommand extends Command {
                                                          velocity.y * factor, velocity.z);
             }
 
-            await wait(500);
+            await milliseconds(500);
         }
 
         this.slowing_.delete(subject);

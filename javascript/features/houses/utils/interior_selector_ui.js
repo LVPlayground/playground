@@ -74,7 +74,7 @@ class InteriorSelectorUI {
                 return;
 
             this.player_.setSelectTextDraw(true, BUTTON_HOVER_COLOR);
-            await wait(1000);
+            await seconds(1);
         }
     }
 

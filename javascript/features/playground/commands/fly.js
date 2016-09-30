@@ -126,7 +126,7 @@ class FlyCommand extends Command {
             // Update the animation with whatever is most recent for the player.
             this.applyFlightAnimation(subject, moving);
 
-            await wait(1000 / FramesPerSecond);
+            await seconds(1 / FramesPerSecond);
         }
 
         this.flying_.delete(subject);

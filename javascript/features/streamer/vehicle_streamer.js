@@ -42,6 +42,9 @@ class VehicleStreamer extends EntityStreamerGlobal {
     //     boolean add(storedVehicle, lazy = false);
     //     boolean delete(storedVehicle);
     //
+    //     void pin(storedVehicle);
+    //     void unpin(storedVehicle);
+    //
     //     Vehicle getLiveVehicle(storedVehicle);
     //     StoredVehicle getStoredVehicle(vehicle);
     //
@@ -102,20 +105,24 @@ class VehicleStreamer extends EntityStreamerGlobal {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Schedules the |vehicle| to be respawned after a delay of |respawnDelay| seconds.
-    async scheduleVehicleForRespawn(vehicle, respawnDelay) {
-        if (respawnDelay < 0)
-            return;  // the |vehicle| should not be automatically respawned
+    // Schedules the |vehicle| to be respawned after the delayed configured in |storedVehicle|.
+    async scheduleVehicleForRespawn(vehicle, storedVehicle, timeMultipler = 1) {
+        const respawnTime = storedVehicle.respawnDelay * timeMultipler;
+        if (respawnTime < 0 /* no automated respawn */) {
+            this.unpin(storedVehicle);
+            return;
+        }
 
         const token = Symbol('Respawn token for vehicle #' + vehicle.id);
 
         this.respawnTokens_.set(vehicle, token);
 
-        await seconds(respawnDelay);
+        await seconds(respawnTime);
 
         if (!vehicle.isConnected() || this.respawnTokens_.get(vehicle) !== token)
             return;  // the |vehicle| has been removed, or the respawn token expired
 
+        this.unpin(storedVehicle);
         this.respawnTokens_.delete(vehicle);
 
         vehicle.respawn();
@@ -125,6 +132,11 @@ class VehicleStreamer extends EntityStreamerGlobal {
 
     // Called when the |player| has entered the |vehicle|. Will invalidate any respawn tokens.
     onPlayerEnterVehicle(player, vehicle) {
+        const storedVehicle = this.storedVehicles_.get(vehicle);
+        if (!storedVehicle)
+            return;  // the |vehicle| is not part of this streamer
+
+        this.pin(storedVehicle);
         this.respawnTokens_.delete(vehicle);
     }
 
@@ -138,7 +150,7 @@ class VehicleStreamer extends EntityStreamerGlobal {
         if (vehicle.occupantCount > 1)
             return;  // there are still players left in the vehicle
 
-        this.scheduleVehicleForRespawn(vehicle, storedVehicle.respawnDelay);
+        this.scheduleVehicleForRespawn(vehicle, storedVehicle);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -153,7 +165,7 @@ class VehicleStreamer extends EntityStreamerGlobal {
         if (vehicle.occupantCount > 0)
             return;  // there are still players left in the vehicle
 
-        this.scheduleVehicleForRespawn(vehicle, storedVehicle.respawnDelay / 4);
+        this.scheduleVehicleForRespawn(vehicle, storedVehicle, 0.25 /* timeMultipler */);
     }
 
     // ---------------------------------------------------------------------------------------------

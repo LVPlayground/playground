@@ -27,10 +27,13 @@ exports = async function createTestEnvironment() {
     server.featureManager.loadFeature('houses');
 
     const houses = server.featureManager.getFeatureForTests('houses');
+    const streamer = server.featureManager.getFeatureForTests('streamer');
+
     await houses.manager_.ready;
 
     return {
         commands: houses.commands_,
-        manager: houses.manager_
+        manager: houses.manager_,
+        streamer: streamer
     };
 };

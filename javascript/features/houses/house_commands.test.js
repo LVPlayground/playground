@@ -15,9 +15,10 @@ describe('HouseCommands', (it, beforeEach) => {
     let location = null;
     let manager = null;
     let maxticks = null;
+    let streamer = null;
 
     beforeEach(async(assert) => {
-        ({ commands, manager } = await createTestEnvironment());
+        ({ commands, manager, streamer } = await createTestEnvironment());
 
         location = server.featureManager.createDependencyWrapperForFeature('location');
 
@@ -107,6 +108,7 @@ describe('HouseCommands', (it, beforeEach) => {
         assert.equal(server.objectManager.count, objectCount + 2);
 
         await server.clock.advance(180000);  // forward the clock to test the auto-expire function
+        await streamer.getVehicleStreamer().stream();
 
         assert.equal(server.objectManager.count, objectCount);
     });

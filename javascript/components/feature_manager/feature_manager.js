@@ -272,9 +272,11 @@ class FeatureManager {
     createDependencyWrapperForFeature(feature) {
         const fn = () => this.loadedFeatures_.get(feature);
 
-        // Add methods to the |fn| that would allow reloads of this feature to be observed.
-        fn.addReloadObserver = () => true;
-        fn.removeReloadObserver = () => true;
+        // Add methods to the |fn| that allow reloads of this feature to be observed.
+        fn.addReloadObserver =
+            FeatureManager.prototype.addReloadObserver.bind(this, feature);
+        fn.removeReloadObserver =
+            FeatureManager.prototype.removeReloadObserver.bind(this, feature);
 
         return fn;
     }

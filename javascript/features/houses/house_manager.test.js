@@ -9,8 +9,9 @@ const HouseSettings = require('features/houses/house_settings.js');
 
 describe('HouseManager', (it, beforeEach) => {
     let manager = null;
+    let streamer = null;
 
-    beforeEach(async() => ({ manager } = await createTestEnvironment()));
+    beforeEach(async() => ({ manager, streamer } = await createTestEnvironment()));
 
     const validLocation = { facingAngle: 0, interiorId: 0, position: new Vector(50, 50, 10) };
 
@@ -32,11 +33,7 @@ describe('HouseManager', (it, beforeEach) => {
         }
 
         assert.isAbove(occupiedCount, 0);
-
         assert.isAbove(manager.vehicleController_.count, 0);
-        assert.isAbove(server.vehicleManager.count, 0);
-
-        assert.equal(manager.vehicleController_.count, server.vehicleManager.count);
     });
 
     it('should be able to create new house locations', async(assert) => {
@@ -289,7 +286,8 @@ describe('HouseManager', (it, beforeEach) => {
     });
 
     it('should remove associated vehicles when removing the house', async(assert) => {
-        const serverVehicleCount = server.vehicleManager.count;
+        const vehicleStreamer = streamer.getVehicleStreamer();
+        const originalVehicleStreamerSize = vehicleStreamer.size;
 
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.position = new Vector(500, 500, 500);
@@ -302,7 +300,7 @@ describe('HouseManager', (it, beforeEach) => {
 
         await manager.removeHouse(location);
 
-        assert.equal(server.vehicleManager.count, serverVehicleCount - 1);
+        assert.equal(vehicleStreamer.size, originalVehicleStreamerSize - 1);
     });
 
     it('should handle house extension instances in a sensible way', async(assert) => {

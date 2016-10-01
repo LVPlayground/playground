@@ -15,7 +15,7 @@ describe('HouseVehicleController', (it, beforeEach, afterEach) => {
             streamer: Streamer
         });
 
-        server.featureManager.loadFeature('streamer')
+        server.featureManager.loadFeature('streamer');
 
         controller = new HouseVehicleController(
             server.featureManager.createDependencyWrapperForFeature('streamer'));
@@ -36,7 +36,7 @@ describe('HouseVehicleController', (it, beforeEach, afterEach) => {
     function createRandomVehicle() {
         const parkingLot = new HouseParkingLot({
             id: between(0, 10000),
-            position: new Vector(between(-3000, 3000), between(-3000, 3000), between(-10, 150)),
+            position: new Vector(between(-100, 100), between(-100, 100), between(-5, 5)),
             rotation: between(0, 360),
             interiorId: between(0, 17)
         });
@@ -51,12 +51,12 @@ describe('HouseVehicleController', (it, beforeEach, afterEach) => {
     it('should be able to create vehicles for any location', assert => {
         const serverVehicleCount = server.vehicleManager.count;
 
-        assert.equal(controller.computeVehicleCount(), 0);
+        assert.equal(controller.count, 0);
 
         for (let i = 0; i < 10; ++i)
             controller.createVehicle(location, createRandomVehicle());
 
-        assert.equal(controller.computeVehicleCount(), 10);
+        assert.equal(controller.count, 10);
         assert.equal(server.vehicleManager.count, serverVehicleCount + 10);
 
         // The controller should clean up after itself.
@@ -65,7 +65,7 @@ describe('HouseVehicleController', (it, beforeEach, afterEach) => {
 
         assert.equal(server.vehicleManager.count, serverVehicleCount);
     });
-return;
+
     it('should be able to remove individual vehicles', assert => {
         const serverVehicleCount = server.vehicleManager.count;
         const vehicle = createRandomVehicle();
@@ -104,5 +104,22 @@ return;
 
         assert.equal(controller.count, 10);
         assert.equal(server.vehicleManager.count, serverVehicleCount + 10);
+    });
+
+    it('should reattach vehicles when the streamer reloads', assert => {
+        assert.equal(controller.count, 0);
+
+        for (let i = 0; i < 10; ++i)
+            controller.createVehicle(location, createRandomVehicle());
+
+        assert.equal(controller.count, 10);
+        assert.equal(controller.streamer.size, 10);
+
+        const oldStreamer = controller.streamer;
+
+        assert.isTrue(server.featureManager.liveReload('streamer'));
+
+        assert.notEqual(controller.streamer, oldStreamer);
+        assert.equal(controller.streamer.size, 10);
     });
 });

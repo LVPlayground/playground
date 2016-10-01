@@ -110,9 +110,14 @@ class VehicleCommands {
             return;
         }
 
+        const wasPersistent = this.manager_.isPersistentVehicle(vehicle);
+
         await this.manager_.deleteVehicle(vehicle);
 
-        // TODO: Make an announcement if the |vehicle| was a persistent one.
+        if (wasPersistent) {
+            this.announce_().announceToAdministrators(Message.VEHICLE_ANNOUNCE_DELETED, player.name,
+                                                      player.id, vehicle.model.name);
+        }
 
         player.sendMessage(Message.VEHICLE_DELETED, vehicle.model.name);
     }
@@ -228,7 +233,8 @@ class VehicleCommands {
 
         await this.manager_.storeVehicle(vehicle);
 
-        // TODO: Make an announcement to other administrators.
+        this.announce_().announceToAdministrators(Message.VEHICLE_ANNOUNCE_SAVED, player.name,
+                                                  player.id, vehicle.model.name);
 
         player.sendMessage(Message.VEHICLE_SAVED, vehicle.model.name);
     }

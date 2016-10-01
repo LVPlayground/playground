@@ -32,7 +32,7 @@ testRunner.run('.*\.test\.js').then(notifyReady).then(() => {
     server = new Server();
     server.featureManager.loadFeatures([
         // Foundational features
-        'announce', 'communication', 'economy', 'location', 'logger', 'minigames', 'streamer',
+        'announce', 'communication', 'economy', 'location', 'logger', 'minigames',
 
         // Gang-related features
         'gang_chat', 'gangs',
@@ -41,7 +41,7 @@ testRunner.run('.*\.test\.js').then(notifyReady).then(() => {
         'houses',
 
         // General smaller, self-contained features
-        'friends', /*'killtime',*/ 'playground', 'report', 'vehicles',
+        'friends', /*'killtime',*/ 'playground', 'report',
 
         // Player-related features
         'player_favours',

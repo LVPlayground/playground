@@ -18,7 +18,7 @@ describe('ObjectRemover', (it, beforeEach, afterEach) => {
     afterEach(() => objectRemover.dispose());
 
     it('should remove Joe\'s Garage when players connect', assert => {
-        assert.doesNotThrow(() => objectRemover.load('data/favours/joes_garage.json'));
+        assert.doesNotThrow(() => objectRemover.load('data/favours/joe_house_objects.json'));
 
         assert.equal(gunther.removedObjectCount, 0);
 

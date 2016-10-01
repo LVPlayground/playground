@@ -241,36 +241,6 @@ class TeleportationCommands {
 // -------------------------------------------------------------------------------------------------
 // Russell haxx
 
-    @command("psay")
-    public onSayCommand(playerId, params[]) {
-        if (!Player(playerId)->isManagement())
-            return 1;
-
-        new subjectId = Command->playerParameter(params, 0, playerId);
-        if (subjectId == Player::InvalidId) {
-            SendClientMessage(playerId, Color::Error, "Usage: /psay [player!] [text]");
-            return 1;
-        }
-
-        new messageOffset = Command->startingIndexForParameter(params, 1);
-        if (messageOffset == -1) {
-            SendClientMessage(playerId, Color::Error, "Usage: /psay [player] [text!]");
-            return 1; /* invalid parameters given by the sender */
-        }
-
-        new message[128];
-        strncpy(message, params[messageOffset], sizeof(message));
-
-        new confirmation[168];
-        format(confirmation, sizeof(confirmation), "OnPlayerText(%d, \"%s\")", subjectId, message);
-        SendClientMessage(playerId, Color::Information, confirmation);
-
-        if (strlen(message))
-            CallRemoteFunction("OnPlayerText", "is", subjectId, message);
-
-        return 1;
-    }
-
     @command("pcmd")
     public onCmdCommand(playerId, params[]) {
         if (!Player(playerId)->isManagement())

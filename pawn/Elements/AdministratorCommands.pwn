@@ -50,31 +50,6 @@ lvp_fixminigames(playerId, params[]) {
     #pragma unused params
 }
 
-lvp_fakeact(playerId, params[]) {
-    if (Command->parameterCount(params) < 2) {
-        SendClientMessage(playerId, Color::Success, "This command makes a player do a fake /me message.");
-        SendClientMessage(playerId, Color::Information, "Usage: /fakeact [player] [message]");
-        return 1;
-    }
-
-    new subjectId = Command->playerParameter(params, 0, playerId);
-    if (subjectId == Player::InvalidId)
-        return 1;
-
-    new subject[MAX_PLAYER_NAME+1], parameterOffset = 0;
-    Command->stringParameter(params, 0, subject, sizeof(subject));
-    parameterOffset = min(strlen(params), Command->startingIndexForParameter(params, 0) + strlen(subject) + 1);
-
-    format(g_message, sizeof(g_message), "* %s %s", Player(subjectId)->nicknameString(), params[parameterOffset]);
-    SendClientMessageToAllEx(ColorManager->playerColor(subjectId), g_message);
-
-    format(g_message, sizeof(g_message), "%s (Id:%d) has sent a fake /me message as %s (Id:%d): %s",
-        Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId, params[parameterOffset]);
-    Admin(playerId, g_message);
-
-    return 1;
-}
-
 lvp_chase(playerId, params[]) {
     if (chaseData[0]) {
         SendClientMessage(playerId, Color::Error, "The chase minigame is already running!");

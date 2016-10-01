@@ -566,7 +566,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 #endif
     lvp_command(asay,           4, AdministratorLevel);
     lvp_command(reactiontest,  12, AdministratorLevel);
-    lvp_command(fakeact,        7, AdministratorLevel);
     lvp_command(chase,          5, AdministratorLevel);
     lvp_command(fetch,          5, AdministratorLevel);
     #if Feature::DisableKilltime == 0

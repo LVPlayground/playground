@@ -21,6 +21,9 @@ class VehicleCommands {
         // Command: /v [vehicle]? || /v [player]? [respawn]
         server.commandManager.buildCommand('v')
             .restrict(player => this.playground_().canAccessCommand(player, 'v'))
+            .sub('density')
+                .restrict(Player.LEVEL_ADMINISTRATOR)
+                    .build(VehicleCommands.prototype.onVehicleDensityCommand.bind(this))
             .sub('optimise')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .build(VehicleCommands.prototype.onVehicleOptimiseCommand.bind(this))
@@ -120,6 +123,15 @@ class VehicleCommands {
         }
 
         player.sendMessage(Message.VEHICLE_DELETED, vehicle.model.name);
+    }
+
+    // Called when the |player| executes `/v density`, which will show them the density of vehicles
+    // and models within streaming radius around their current position.
+    async onVehicleDensityCommand(player) {
+        const density = await this.manager_.streamer.query(player.position);
+
+        player.sendMessage(Message.VEHICLE_DENSITY, density.vehicles, density.models,
+                           this.manager_.streamer.streamingDistance);
     }
 
     // Called when the |player| executes `/v health` or `/v [player] health`, which means they wish

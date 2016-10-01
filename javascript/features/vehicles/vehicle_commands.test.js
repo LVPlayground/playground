@@ -218,6 +218,27 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.isFalse(oldVehicle.isConnected());
     });
 
+    it('should be able to tell the density of vehicles around the administrator', async(assert) => {
+        // Only administrators can compute the density level around them.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        // Create three vehicles of two different models around the player's position.
+        for (const modelId of [520, 520, 411]) {
+            await manager.createVehicle({
+                modelId: modelId,
+                position: gunther.position,
+                rotation: 90,
+                interiorId: gunther.interiorId,
+                virtualWorld: gunther.virtualWorld
+            });
+        }
+
+        assert.isTrue(await gunther.issueCommand('/v density'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_DENSITY, 3, 2,
+                                                         manager.streamer.streamingDistance));
+    });
+
     it('should be able to update and tell the health of vehicles', async(assert) => {
         // Only administrators can manipulate vehicle health on the server.
         gunther.level = Player.LEVEL_ADMINISTRATOR;

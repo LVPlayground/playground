@@ -222,6 +222,7 @@
     "VEHICLE_ANNOUNCE_DELETED": "%s (Id: %d) has deleted a %s from the database.",
     "VEHICLE_ANNOUNCE_OPTIMISED": "%s (Id: %d) has optimised the streamer (%dms -> %dms, in %dms)",
     "VEHICLE_DELETED": "@error The %s has been deleted.",
+    "VEHICLE_DENSITY": "@info There are %d vehicles of %d models within a radius of %d units around you.",
     "VEHICLE_HEALTH_CURRENT": "@info The vehicle's current health is {FF8282}%d{FFFFFF}.",
     "VEHICLE_HEALTH_UPDATED": "@success The vehicle's health has been updated from {FF8282}%d{FFFFFF} to {FF8282}%d{FFFFFF}.",
     "VEHICLE_HEALTH_USAGE": "@usage /v [player]? health [0-1000]?",

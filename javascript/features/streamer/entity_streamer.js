@@ -50,6 +50,18 @@ class EntityStreamer {
         this.streamer_.optimise();
     }
 
+    // Asynchronously queries the streamer for the entities located at the |position|.
+    async query(position) {
+        const entityIds =
+            await this.streamer_.stream(this.maxVisible_, position.x, position.y, position.z);
+        const entities = new Set();
+
+        entityIds.forEach(entityId =>
+            entities.add(this.entitiesById_.get(entityId)));
+
+        return entities;
+    }
+
     // Deletes |storedEntity| from the entity streamer. Returns whether the entity was deleted.
     delete(storedEntity) {
         const entityId = this.entitiesByInstance_.get(storedEntity);

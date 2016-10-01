@@ -49,6 +49,8 @@ class VehicleStreamer extends EntityStreamerGlobal {
     //     void isPinned(storedVehicle, type);
     //     void unpin(storedVehicle, type);
     //
+    //     Promise query(position);
+    //
     //     Vehicle getLiveVehicle(storedVehicle);
     //     StoredVehicle getStoredVehicle(vehicle);
     //
@@ -59,6 +61,21 @@ class VehicleStreamer extends EntityStreamerGlobal {
     // details of the streamer. Use the add() and delete() methods instead.
     //
     // ---------------------------------------------------------------------------------------------
+
+    // Queries the streamer to calculate the number of vehicles, as well as vehicle models, within
+    // streaming radius of the given |position|. Should be used sparsely.
+    async query(position) {
+        const storedVehicles = await super.query(position);
+        const models = new Set();
+
+        for (const storedVehicle of storedVehicles)
+            models.add(storedVehicle.modelId);
+        
+        return {
+            vehicles: storedVehicles.size,
+            models: models.size
+        };
+    }
 
     // Returns the live vehicle that is representing the |storedVehicle|. NULL when there is none.
     getLiveVehicle(storedVehicle) {

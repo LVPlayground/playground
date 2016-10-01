@@ -7,11 +7,11 @@ const VehicleStreamer = require('features/streamer/vehicle_streamer.js');
 
 describe('VehicleStreamer', it => {
     // Creates a StoredVehicle with a random position.
-    function createStoredVehicle({ respawnDelay = -1 } = {}) {
+    function createStoredVehicle({ modelId = 520, scope = 3000, respawnDelay = -1 } = {}) {
         return new StoredVehicle({
-            modelId: 520 /* Hydra */,
-            position: new Vector(Math.floor(Math.random() * 3000) + 3000,
-                                 Math.floor(Math.random() * 3000) + 3000,
+            modelId: modelId || Math.floor(Math.random() * 211) + 400,
+            position: new Vector(Math.floor(Math.random() * scope) - scope,
+                                 Math.floor(Math.random() * scope) - scope,
                                  Math.floor(Math.random() * 30) - 10),
             rotation: 270,
             interiorId: 0,
@@ -178,5 +178,37 @@ describe('VehicleStreamer', it => {
 
         assert.deepEqual(vehicle.position, storedVehicle.position);
         assert.equal(vehicle.respawnCount, 1);
+    });
+
+    it('should be able to query vehicles in a certain area', async(assert) => {
+        const streamer = new VehicleStreamer();
+
+        const storedVehicleModels = new Set();
+        const storedVehicles = [];
+
+        for (let i = 0; i < 500; ++i) {
+            const storedVehicle = createStoredVehicle({ scope: 100, modelId: null });
+
+            storedVehicleModels.add(storedVehicle.modelId);
+            storedVehicles.push(storedVehicle);
+
+            streamer.add(storedVehicle);
+        }
+
+        assert.equal(streamer.size, 500);
+
+        // (1) Query for a position that has vehicles in range.
+        {
+            const details = await streamer.query(new Vector(0, 0, 0));
+            assert.equal(details.vehicles, storedVehicles.length);
+            assert.equal(details.models, storedVehicleModels.size);
+        }
+
+        // (2) Query for a position that has no vehicles in range.
+        {
+            const details = await streamer.query(new Vector(1000, 1000, 1000));
+            assert.equal(details.vehicles, 0);
+            assert.equal(details.models, 0);
+        }
     });
 });

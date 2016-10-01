@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const MockAnnounce = require('features/announce/test/mock_announce.js');
 const MockPlayground = require('features/playground/test/mock_playground.js');
 const Streamer = require('features/streamer/streamer.js');
 const VehicleManager = require('features/vehicles/vehicle_manager.js');
@@ -17,6 +18,7 @@ describe('VehicleCommands', (it, beforeEach) => {
         gunther.identify();
 
         server.featureManager.registerFeaturesForTests({
+            announce: MockAnnounce,
             playground: MockPlayground,
             streamer: Streamer,
             vehicles: Vehicles
@@ -267,6 +269,19 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         assert.equal(vehicle.respawnCount, 1);
         assert.deepEqual(vehicle.position, new Vector(0, 500, 1000));
+    });
+
+    it('should enable Management to optimise the vehicle streamer', async(assert) => {
+        // Only Management members can pin and unpin vehicles on the server.
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
+        let optimised = false;
+
+        // Override the optimise() call in the streamer to verify that it actually got called.
+        manager.streamer.optimise = () => optimised = true;
+
+        assert.isTrue(await gunther.issueCommand('/v optimise'));
+        assert.isTrue(optimised);
     });
 
     it('should enable Management to pin and unpin their vehicles', async(assert) => {

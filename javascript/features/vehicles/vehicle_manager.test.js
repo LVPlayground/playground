@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const MockAnnounce = require('features/announce/test/mock_announce.js');
 const MockPlayground = require('features/playground/test/mock_playground.js');
 const Streamer = require('features/streamer/streamer.js');
 const Vehicles = require('features/vehicles/vehicles.js');
@@ -28,6 +29,7 @@ describe('VehicleManager', (it, beforeEach) => {
         gunther.position = POSITION;
 
         server.featureManager.registerFeaturesForTests({
+            announce: MockAnnounce,
             playground: MockPlayground,
             streamer: Streamer,
             vehicles: Vehicles

@@ -7,8 +7,10 @@ const CommandBuilder = require('components/command_manager/command_builder.js');
 // Responsible for providing the commands associated with vehicles. Both players and administrators
 // can create vehicles. Administrators can save, modify and delete vehicles as well.
 class VehicleCommands {
-    constructor(manager, playground) {
+    constructor(manager, announce, playground) {
         this.manager_ = manager;
+
+        this.announce_ = announce;
 
         this.playground_ = playground;
         this.playground_.addReloadObserver(
@@ -19,6 +21,9 @@ class VehicleCommands {
         // Command: /v [vehicle]? || /v [player]? [respawn]
         server.commandManager.buildCommand('v')
             .restrict(player => this.playground_().canAccessCommand(player, 'v'))
+            .sub('optimise')
+                .restrict(Player.LEVEL_MANAGEMENT)
+                .build(VehicleCommands.prototype.onVehicleOptimiseCommand.bind(this))
             .sub(CommandBuilder.PLAYER_PARAMETER, player => player)
                 .sub('delete')
                     .restrict(Player.LEVEL_ADMINISTRATOR)
@@ -132,6 +137,46 @@ class VehicleCommands {
         player.sendMessage(Message.VEHICLE_HEALTH_UPDATED, vehicle.health, health);
 
         vehicle.health = health;
+    }
+
+    // Called when a Management member executes the `/v optimise` command in an effort to optimise
+    // the vehicle streamer. It will make an announcement to administrators about the game.
+    async onVehicleOptimiseCommand(player) {
+        let streamBeforeOptimiseTime = null;
+        let streamAfterOptimiseTime = null;
+        let optimiseTime = null;
+
+        const streamer = this.manager_.streamer;
+
+        // (1) Determine the duration of a stream cycle prior to optimisation.
+        {
+            const beginTime = highResolutionTime();
+            await streamer.stream();
+
+            streamBeforeOptimiseTime = highResolutionTime() - beginTime;
+        }
+
+        // (2) Optimise the streamer.
+        {
+            const beginTime = highResolutionTime();
+            this.manager_.streamer.optimise();
+
+            optimiseTime = highResolutionTime() - beginTime;
+        }
+
+        // (3) Determine the duration of a stream cycle after optimisation.
+        {
+            const beginTime = highResolutionTime();
+            await streamer.stream();
+
+            streamAfterOptimiseTime = highResolutionTime() - beginTime;
+        }
+
+        this.announce_().announceToAdministrators(
+            Message.VEHICLE_ANNOUNCE_OPTIMISED, player.name, player.id, streamBeforeOptimiseTime,
+            streamAfterOptimiseTime, optimiseTime);
+
+        player.sendMessage(Message.VEHICLE_OPTIMISED);
     }
 
     // Called when a Management member executes the `/v pin` or `/v [player] pin` command, which

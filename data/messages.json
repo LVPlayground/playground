@@ -218,11 +218,13 @@
     "REPORT_MESSAGE": "{33AA33}Your report has been delivered to the crew{FFFFFF}: Player: %s (Id: %d) - Reason: %s",
     "REPORT_ALREADY_REPORTED": "@error We have already received a report about %s and are on it. Thank you!",
 
+    "VEHICLE_ANNOUNCE_OPTIMISED": "%s (Id:%d) has optimised the streamer (%dms -> %dms, in %dms)",
     "VEHICLE_DELETED": "@error The %s has been deleted.",
     "VEHICLE_HEALTH_CURRENT": "@info The vehicle's current health is {FF8282}%d{FFFFFF}.",
     "VEHICLE_HEALTH_UPDATED": "@success The vehicle's health has been updated from {FF8282}%d{FFFFFF} to {FF8282}%d{FFFFFF}.",
     "VEHICLE_HEALTH_USAGE": "@usage /v [player]? health [0-1000]?",
     "VEHICLE_NOT_DRIVING": "@error %s is not currently in a vehicle managed by JavaScript.",
+    "VEHICLE_OPTIMISED": "@success The vehicle streamer has been optimised.",
     "VEHICLE_PINNED": "@success %s's %s has been pinned with the streamer.",
     "VEHICLE_RESPAWNED": "@success The %s has been respawned.",
     "VEHICLE_SAVE_REDUNDANT": "@error The %s has already been saved in the database.",

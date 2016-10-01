@@ -13,6 +13,9 @@ class Vehicles extends Feature {
     constructor() {
         super();
 
+        // Used for making announcements to administrators.
+        const announce = this.defineDependency('announce', true /* isFunctional */);
+
         // Used to add commands and vehicle access to the `/lvp access` console.
         const playground = this.defineDependency('playground', true /* isFunctional */);
 
@@ -22,7 +25,7 @@ class Vehicles extends Feature {
         this.manager_ = new VehicleManager(streamer);
         this.manager_.loadVehicles();
 
-        this.commands_ = new VehicleCommands(this.manager_, playground);
+        this.commands_ = new VehicleCommands(this.manager_, announce, playground);
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -21,6 +21,7 @@ Furthermore, administrators are able to use the following commands:
 
 Finally, Management is able to use the following commands:
 
+  * **/v optimise**: Optimises the vehicle streamer. Should be used sparsely.
   * **/v [player]? pin**: Prevents the vehicle from being deleted by the streamer.
   * **/v [player]? unpin**: Puts the vehicle's lifetime under control of the streamer again.
 

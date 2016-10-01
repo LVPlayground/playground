@@ -14,11 +14,24 @@ class PlayerFavours extends Feature {
         super();
 
         this.objectRemover_ = new ObjectRemover();
-        this.objectRemover_.load('data/favours/joes_garage.json');  // Joe's Garage
-        this.objectRemover_.load('data/favours/houses_promo.json');  // LVP Houses promotion
         this.objectRemover_.load('data/favours/caligula_basement_door.json'); // Door which blocks access to basement in caligulas
-		
-        this.objectGroup_ = ObjectGroup.create('data/favours/houses_promo_new.json', 0, 0);
+
+        this.objectsGroups_ = [];
+
+        // -----------------------------------------------------------------------------------------
+        // Russell (https://sa-mp.nl/players/52872/russell.html)
+
+        this.objectRemover_.load('data/favours/russell_house_removals.json');
+        this.objectGroups_.push(ObjectGroup.create('data/favours/russell_house_objects.json', 0, 0));
+
+        // -----------------------------------------------------------------------------------------
+        // Joe (https://sa-mp.nl/players/30/joe.html)
+
+        this.objectRemover_.load('data/favours/joe_house_removals.json');
+        this.objectGroups_.push(ObjectGroup.create('data/favours/joe_house_objects.json', 0, 0));
+
+        // -----------------------------------------------------------------------------------------
+        // Huracan (https://sa-mp.nl/players/120307/huracan.html)
 
         this.huracanActors_ = new ScopedEntities();
         this.huracanActors_.createActor({
@@ -38,15 +51,23 @@ class PlayerFavours extends Feature {
             position: new Vector(1117.91, -2037.05, 78.75),
             rotation: 270
         });
+
+        // -----------------------------------------------------------------------------------------
     }
 
     // This feature has no public API.
 
     dispose() {
         this.huracanActors_.dispose();
+        this.huracanActors_ = null;
 
-        this.objectGroup_.dispose();
+        for (const objectGroup of this.objectGroups_)
+            objectGroup.dispose();
+
+        this.objectGroups_ = null;
+
         this.objectRemover_.dispose();
+        this.objectRemover_ = null;
     }
 }
 

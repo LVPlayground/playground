@@ -33,7 +33,10 @@ class Houses extends Feature {
         // The `/house` command is currently restricted to Management.
         const playground = this.defineDependency('playground', true /* isFunctional */);
 
-        this.manager_ = new HouseManager(economy, friends, gangs, location);
+        // The streamer will be used for creation of house vehicles.
+        const streamer = this.defineDependency('streamer', true /* isFunctional */);
+
+        this.manager_ = new HouseManager(economy, friends, gangs, location, streamer);
         this.manager_.registerExtension(new PropertySettings(this.manager_));
         this.manager_.registerExtension(new VisitorLog(this.manager_));
 

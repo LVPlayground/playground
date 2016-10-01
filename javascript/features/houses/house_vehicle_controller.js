@@ -2,24 +2,21 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ScopedEntities = require('entities/scoped_entities.js');
-
 // The vehicle controller is responsible for the vehicles associated with houses. The vehicles
 // themselves are stored as HouseVehicle instances, and managed by the manager.
 class HouseVehicleController {
-    constructor() {
-        this.entities_ = new ScopedEntities();
+    constructor(streamer) {
+        this.streamer_ = streamer;
+        // TODO: Listen for reload events from the streamer.
 
-        // Maps of HouseVehicle instances to the associated Vehicle entity, and vice versa.
-        this.vehicleEntities_ = new Map();
-        this.vehicleContainers_ = new Map();
-
-        // Map of |location| instances to sets of the associated vehicles.
+        // Map of HouseLocation instances to sets of the associated vehicles.
         this.locationVehicles_ = new Map();
     }
 
-    // Gets the number of vehicles that have currently been created.
-    get count() { return this.vehicleEntities_.size; }
+    // Gets the vehicle streamer that this controller operates on.
+    get streamer() { return this.streamer_().getVehicleStreamer(); }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Creates the |vehicle| associated with the |location|.
     createVehicle(location, vehicle) {
@@ -39,7 +36,7 @@ class HouseVehicleController {
 
         this.locationVehicles_.get(location).add(vehicle);
     }
-
+    
     // Removes the |vehicle| that used to be associated with the |location|.
     removeVehicle(location, vehicle) {
         const vehicles = this.locationVehicles_.get(location);
@@ -69,9 +66,22 @@ class HouseVehicleController {
             this.removeVehicle(location, vehicle));
     }
 
+    // ---------------------------------------------------------------------------------------------
+
+    // Returns the number of vehicles that have currently been created. O(n) on number of locations.
+    // This method should only be used for testing.
+    computeVehicleCount() {
+        let count = 0;
+        for (const vehicles of this.locationVehicles_)
+            count += vehicles.size;
+
+        return count;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     dispose() {
-        this.entities_.dispose();
-        this.entities_ = null;
+        // TODO: Clear our vehicles from the streamer.
     }
 }
 

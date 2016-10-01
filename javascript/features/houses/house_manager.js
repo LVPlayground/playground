@@ -16,7 +16,7 @@ const MockHouseDatabase = require('features/houses/test/mock_house_database.js')
 // The house manager orchestrates all details associated with housing, manages data and responds to
 // player connection and disconnection events.
 class HouseManager {
-    constructor(economy, friends, gangs, location) {
+    constructor(economy, friends, gangs, location, streamer) {
         this.database_ = server.isTest() ? new MockHouseDatabase()
                                          : new HouseDatabase();
 
@@ -31,7 +31,7 @@ class HouseManager {
             new HouseEntranceController(this, economy, friends, gangs, location);
 
         // Responsible for all vehicles associated with the houses.
-        this.vehicleController_ = new HouseVehicleController();
+        this.vehicleController_ = new HouseVehicleController(streamer);
     }
 
     // Gets the instance of the database model class for the houses feature.

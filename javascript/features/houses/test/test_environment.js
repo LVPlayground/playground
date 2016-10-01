@@ -9,6 +9,7 @@ const MockFriends = require('features/friends/test/mock_friends.js');
 const MockGangs = require('features/gangs/test/mock_gangs.js');
 const MockLocation = require('features/location/test/mock_location.js');
 const MockPlayground = require('features/playground/test/mock_playground.js');
+const Streamer = require('features/streamer/streamer.js');
 
 // Exports a function that fully initializes a test environment for the houses feature.
 exports = async function createTestEnvironment() {
@@ -19,7 +20,8 @@ exports = async function createTestEnvironment() {
         gangs: MockGangs,
         houses: Houses,
         location: MockLocation,
-        playground: MockPlayground
+        playground: MockPlayground,
+        streamer: Streamer
     });
 
     server.featureManager.loadFeature('houses');

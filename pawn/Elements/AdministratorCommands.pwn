@@ -1091,64 +1091,69 @@ lvp_show(playerId, params[]) {
         format(g_message, sizeof(g_message), "Be part of our community and stay updated with the latest news at forum.sa-mp.nl!");
     }
 
-    if (!strcmp(showParameter, "swear", true, 5)) {
+    else if (!strcmp(showParameter, "swear", true, 5)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "No swearing, flaming or racism! Watch your language! Read /rules");
     }
 
-    if (!strcmp(showParameter, "reg", true, 3)) {
+    else if (!strcmp(showParameter, "reg", true, 3)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "Save money and stats! Register your nickname at www.sa-mp.nl");
     }
 
-    if (!strcmp(showParameter, "report", true, 6)) {
+    else if (!strcmp(showParameter, "report", true, 6)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "Report cheaters using /report [suspected id/name] [cheat/reason]");
     }
 
-    if (!strcmp(showParameter, "caps", true, 4)) {
+    else if (!strcmp(showParameter, "caps", true, 4)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "No CAPS please!");
     }
 
-    if (!strcmp(showParameter, "beg", true, 3)) {
+    else if (!strcmp(showParameter, "beg", true, 3)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "Do not beg for money! Earn your own! Read /help");
     }
 
-    if (!strcmp(showParameter, "rules", true, 5)) {
+    else if (!strcmp(showParameter, "rules", true, 5)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "New on LVP? Read the rules! /rules");
     }
 
-    if (!strcmp(showParameter, "weaps", true, 5)) {
+    else if (!strcmp(showParameter, "weaps", true, 5)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "Weapons can be bought at Ammu-Nation: /taxi 4");
     }
 
-    if (!strcmp(showParameter, "donate", true, 6)) {
+    else if (!strcmp(showParameter, "donate", true, 6)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "VIP access is given with donations! donate.sa-mp.nl for more info!");
     }
 
-    if (!strcmp(showParameter, "nick", true, 4)) {
+    else if (!strcmp(showParameter, "nick", true, 4)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "Need a nickchange? Join irc.gtanet.com and /msg Nuwani !changenick");
     }
 
-    if (!strcmp(showParameter, "ts", true, 2)) {
+    else if (!strcmp(showParameter, "ts", true, 2)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "LVP has TeamSpeak! Join: ts.sa-mp.nl");
     }
 
-    if (!strcmp(showParameter, "spam", true, 4)) {
+    else if (!strcmp(showParameter, "spam", true, 4)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "Don't spam in the mainchat, people will see it after one time!");
     }
 
-    if (!strcmp(showParameter, "ship", true, 4)) {
+    else if (!strcmp(showParameter, "ship", true, 4)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "The pirate ship is a peace zone! Please don't hit, shoot or throw grenades on it!");
+    }
+
+    else if (!strcmp(showParameter, "interior", true, 8)) {
+        showInfo = true;
+        format(g_message, sizeof(g_message), "Running in to interiors or houses, pausing and teleporting away while being attacked or fighting are NOT allowed!");
     }
 
     if (showInfo == true) {
@@ -1164,7 +1169,7 @@ lvp_show(playerId, params[]) {
     }
 
 ShowHelp:
-    SendClientMessage(playerId, Color::Information, "Usage: /show [/beg/caps/donate/forum/nick/reg/report/rules/ship/spam/swear/ts/weaps]");
+    SendClientMessage(playerId, Color::Information, "Usage: /show [beg/caps/donate/forum/interior/nick/reg/report/rules/ship/spam/swear/ts/weaps]");
 
     return 1;
 }

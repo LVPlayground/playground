@@ -45,6 +45,17 @@ class VehicleManager {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Returns the DatabaseVehicle instance for |vehicle| when it's managed. May return NULL.
+    getManagedDatabaseVehicle(vehicle) {
+        const storedVehicle = this.streamer.getStoredVehicle(vehicle);
+        if (storedVehicle && storedVehicle instanceof DatabaseVehicle)
+            return storedVehicle;
+
+        return null;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Asynchronously loads the vehicles from the database, and creates them on the server using the
     // streamer. Will display warnings for invalid vehicle definitions.
     async loadVehicles() {

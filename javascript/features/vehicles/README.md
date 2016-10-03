@@ -10,6 +10,8 @@ regulated by the `/lvp access` command provided by the [playground](../playgroun
   * **/v**: Displays a dialog with available vehicles when not driving one, otherwise displays
     usage information for this command.
   * **/v [vehicle]**: Creates the `vehicle` and teleports the player to its driver seat.
+  * **/lock**: Locks the vehicle you're currently driving in.
+  * **/unlock**: Unlocks the vehicle you're currently driving in.
 
 Furthermore, administrators are able to use the following commands:
 
@@ -33,7 +35,12 @@ vehicles that may be created. Keep the number of vehicles in a close range to ea
 but don't worry about the total amount of vehicles spread over San Andreas.
 
 
+## FAQ: Why limit /lock and /unlock to registered players?
+In order to minimise duplication of code, the ephemeral locks (such as `/lock`) and permanent locks
+are both based on the ID of a registered player. We encourage players to register on [sa-mp.nl]
+(https://sa-mp.nl/) to maximise their in-game experience.
+
+
 ## TODO
 - Implement `/v`
-- Implement `/lock` and `/unlock`
 - Implement `/fixvehicles`

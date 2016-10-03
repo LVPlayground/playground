@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const CommandBuilder = require('components/command_manager/command_builder.js');
+const VehicleAccessManager = require('features/vehicles/vehicle_access_manager.js');
 
 // Responsible for providing the commands associated with vehicles. Both players and administrators
 // can create vehicles. Administrators can save, modify and delete vehicles as well.
@@ -18,12 +19,20 @@ class VehicleCommands {
 
         this.registerTrackedCommands(playground());
 
+        // Command: /lock
+        server.commandManager.buildCommand('lock')
+            .build(VehicleCommands.prototype.onLockCommand.bind(this));
+
+        // Command: /unlock
+        server.commandManager.buildCommand('unlock')
+            .build(VehicleCommands.prototype.onUnlockCommand.bind(this));
+
         // Command: /v [vehicle]? || /v [player]? [respawn]
         server.commandManager.buildCommand('v')
             .restrict(player => this.playground_().canAccessCommand(player, 'v'))
             .sub('density')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
-                    .build(VehicleCommands.prototype.onVehicleDensityCommand.bind(this))
+                .build(VehicleCommands.prototype.onVehicleDensityCommand.bind(this))
             .sub('optimise')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .build(VehicleCommands.prototype.onVehicleOptimiseCommand.bind(this))
@@ -52,6 +61,85 @@ class VehicleCommands {
             .sub(CommandBuilder.WORD_PARAMETER)
                 .build(VehicleCommands.prototype.onVehicleCommand.bind(this))
             .build(VehicleCommands.prototype.onVehicleCommand.bind(this));
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when a player executes `/lock`. This enables them to lock the vehicle they're
+    // currently driving in. Any other vehicles they've locked will be gracefully unlocked.
+    onLockCommand(player) {
+        const databaseVehicle = this.manager_.getManagedDatabaseVehicle(player.vehicle);
+
+        // TODO: Support /lock for vehicles associated with houses.
+        // https://github.com/LVPlayground/playground/issues/343
+
+        // Bail out if the |player| is not registered, which we require for vehicle locks.
+        if (!player.isRegistered()) {
+            player.sendMessage(Message.VEHICLE_LOCK_UNREGISTERED);
+            return;
+        }
+
+        // Bail out if the |player| is not driving a vehicle, or it's not managed by this system.
+        if (!databaseVehicle) {
+            player.sendMessage(Message.VEHICLE_NOT_DRIVING_SELF);
+            return;
+        }
+
+        // Bail out if the |player| is a passenger of the vehicle they're in.
+        if (player.vehicle.driver !== player) {
+            player.sendMessage(Message.VEHICLE_LOCK_PASSENGER);
+            return;
+        }
+
+        // Bail out if the vehicle is already locked for the player.
+        if (this.manager_.access.isLocked(databaseVehicle, VehicleAccessManager.LOCK_PLAYER)) {
+            player.sendMessage(Message.VEHICLE_LOCK_REDUNDANT, player.vehicle.model.name);
+            return;
+        }
+
+        // Restrict access to the |databaseVehicle| to |player|.
+        this.manager_.access.restrictToPlayer(databaseVehicle, player);
+
+        player.sendMessage(Message.VEHICLE_LOCKED, player.vehicle.model.name);
+    }
+
+    // Called when a player executes `/unlock`. This enables them to free up a vehicle again if they
+    // decide others can access it after all.
+    onUnlockCommand(player) {
+        const databaseVehicle = this.manager_.getManagedDatabaseVehicle(player.vehicle);
+
+        // TODO: Support /unlock for vehicles associated with houses.
+        // https://github.com/LVPlayground/playground/issues/343
+
+        // Bail out if the |player| is not registered, which we require for vehicle locks.
+        if (!player.isRegistered()) {
+            player.sendMessage(Message.VEHICLE_UNLOCK_UNREGISTERED);
+            return;
+        }
+
+        // Bail out if the |player| is not driving a vehicle, or it's not managed by this system.
+        if (!databaseVehicle) {
+            player.sendMessage(Message.VEHICLE_NOT_DRIVING_SELF);
+            return;
+        }
+
+        // Bail out if the |player| is a passenger of the vehicle they're in, unless they're an
+        // administrator in which case we allow them to override it.
+        if (player.vehicle.driver !== player && !player.isAdministrator()) {
+            player.sendMessage(Message.VEHICLE_UNLOCK_PASSENGER);
+            return;
+        }
+
+        // Bail out if the |databaseVehicle| is not actually locked right now.
+        if (!this.manager_.access.isLocked(databaseVehicle)) {
+            player.sendMessage(Message.VEHICLE_UNLOCK_REDUNDANT);
+            return;
+        }
+
+        // Unlocks the |databaseVehicle| so that it can be used by anyone.
+        this.manager_.access.unlock(databaseVehicle);
+
+        player.sendMessage(Message.VEHICLE_UNLOCKED, player.vehicle.model.name);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -283,6 +371,9 @@ class VehicleCommands {
         this.unregisterTrackedCommands(this.playground_());
 
         server.commandManager.removeCommand('v');
+
+        server.commandManager.removeCommand('lock');
+        server.commandManager.removeCommand('unlock');
     }
 }
 

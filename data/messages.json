@@ -226,7 +226,12 @@
     "VEHICLE_HEALTH_CURRENT": "@info The vehicle's current health is {FF8282}%d{FFFFFF}.",
     "VEHICLE_HEALTH_UPDATED": "@success The vehicle's health has been updated from {FF8282}%d{FFFFFF} to {FF8282}%d{FFFFFF}.",
     "VEHICLE_HEALTH_USAGE": "@usage /v [player]? health [0-1000]?",
+    "VEHICLE_LOCK_PASSENGER": "@error You can only lock a vehicle when you're the driver!",
+    "VEHICLE_LOCK_REDUNDANT": "@success The %s had already been locked for you!",
+    "VEHICLE_LOCK_UNREGISTERED": "@error Sorry, only registered players can lock vehicles. Register now on www.sa-mp.nl!",
+    "VEHICLE_LOCKED": "@success The %s has been locked!",
     "VEHICLE_NOT_DRIVING": "@error %s is not currently in a vehicle managed by JavaScript.",
+    "VEHICLE_NOT_DRIVING_SELF": "@error You need to be in a public vehicle in order to use this command.",
     "VEHICLE_OPTIMISED": "@success The vehicle streamer has been optimised.",
     "VEHICLE_PINNED": "@success %s's %s has been pinned with the streamer.",
     "VEHICLE_RESPAWNED": "@success The %s has been respawned.",
@@ -234,5 +239,9 @@
     "VEHICLE_SAVED": "@success The %s has been saved in the database.",
     "VEHICLE_SPAWN_CREATED": "@success Your %s has been created!",
     "VEHICLE_SPAWN_NOT_FOUND": "@error We're not sure what vehicle {FF8282}%s{FFFFFF} is...",
+    "VEHICLE_UNLOCK_PASSENGER": "@error You can only unlock a vehicle when you're the driver!",
+    "VEHICLE_UNLOCK_REDUNDANT": "@error No need to unlock your vehicle because it's not locked!",
+    "VEHICLE_UNLOCK_UNREGISTERED": "@error Sorry, only registered players can unlock vehicles. Register now on www.sa-mp.nl!",
+    "VEHICLE_UNLOCKED": "@success The %s has been unlocked!",
     "VEHICLE_UNPINNED": "@success %s's %s has been unpinned from the streamer."
 }

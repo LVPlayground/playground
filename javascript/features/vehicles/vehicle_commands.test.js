@@ -15,7 +15,7 @@ describe('VehicleCommands', (it, beforeEach) => {
 
     beforeEach(async(assert) => {
         gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
+        gunther.identify({ userId: 42 });
 
         server.featureManager.registerFeaturesForTests({
             announce: MockAnnounce,
@@ -50,6 +50,137 @@ describe('VehicleCommands', (it, beforeEach) => {
         player.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
         return player.vehicle === vehicle;
     }
+
+    it('should be able to /lock vehicles on the server', async(assert) => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+        assert.isFalse(russell.isRegistered());
+
+        assert.isTrue(createVehicleForPlayer(russell));
+        assert.isNotNull(russell.vehicle);
+
+        const vehicle = russell.vehicle;
+
+        const databaseVehicle = manager.getManagedDatabaseVehicle(vehicle);
+        assert.isNotNull(databaseVehicle);
+
+        assert.isFalse(manager.access.isLocked(databaseVehicle));
+        assert.isTrue(manager.access.canAccessVehicle(russell, databaseVehicle));
+        assert.isTrue(manager.access.canAccessVehicle(gunther, databaseVehicle));
+
+        // (1) Unregistered players should not be able to use this command.
+        {
+            assert.isTrue(await russell.issueCommand('/lock'));
+            assert.equal(russell.messages.length, 1);
+            assert.equal(russell.messages[0], Message.VEHICLE_LOCK_UNREGISTERED);
+
+            russell.clearMessages();
+            russell.identify({ userId: 8951 });
+        }
+
+        // (2) Registered players shouldn't be able to lock vehicles they're not driving.
+        {
+            russell.leaveVehicle();
+            russell.enterVehicle(vehicle, Vehicle.SEAT_PASSENGER);
+
+            assert.isTrue(await russell.issueCommand('/lock'));
+            assert.equal(russell.messages.length, 1);
+            assert.equal(russell.messages[0], Message.VEHICLE_LOCK_PASSENGER);
+
+            russell.clearMessages();
+        }
+
+        // (3) Registered players should be able to lock the vehicle they're driving.
+        {
+            russell.leaveVehicle();
+            russell.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
+
+            assert.isTrue(await russell.issueCommand('/lock'));
+            assert.equal(russell.messages.length, 1);
+            assert.equal(russell.messages[0],
+                         Message.format(Message.VEHICLE_LOCKED, russell.vehicle.model.name));
+
+            assert.isTrue(manager.access.isLocked(databaseVehicle));
+            assert.isTrue(manager.access.canAccessVehicle(russell, databaseVehicle));
+            assert.isFalse(manager.access.canAccessVehicle(gunther, databaseVehicle));
+
+            russell.clearMessages();
+        }
+
+        // (4) It should realize that it's already locked.
+        {
+            assert.isTrue(await russell.issueCommand('/lock'));
+            assert.equal(russell.messages.length, 1);
+            assert.equal(russell.messages[0],
+                         Message.format(Message.VEHICLE_LOCK_REDUNDANT, russell.vehicle.model.name))
+        }
+    });
+
+    it('should be able to /unlock vehicles on the server', async(assert) => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+        assert.isFalse(russell.isRegistered());
+
+        assert.isTrue(createVehicleForPlayer(russell));
+        assert.isNotNull(russell.vehicle);
+
+        const vehicle = russell.vehicle;
+
+        const databaseVehicle = manager.getManagedDatabaseVehicle(vehicle);
+        assert.isNotNull(databaseVehicle);
+
+        // (1) Unregistered players should not be able to use this command.
+        {
+            assert.isTrue(await russell.issueCommand('/unlock'));
+            assert.equal(russell.messages.length, 1);
+            assert.equal(russell.messages[0], Message.VEHICLE_UNLOCK_UNREGISTERED);
+
+            russell.clearMessages();
+            russell.identify({ userId: 8951 });
+        }
+
+        manager.access.restrictToPlayer(databaseVehicle, russell);
+
+        assert.isTrue(manager.access.isLocked(databaseVehicle));
+        assert.isTrue(manager.access.canAccessVehicle(russell, databaseVehicle));
+        assert.isFalse(manager.access.canAccessVehicle(gunther, databaseVehicle));
+
+        // (2) Registered players shouldn't be able to lock vehicles they're not driving.
+        {
+            russell.leaveVehicle();
+            russell.enterVehicle(vehicle, Vehicle.SEAT_PASSENGER);
+
+            assert.isTrue(await russell.issueCommand('/unlock'));
+            assert.equal(russell.messages.length, 1);
+            assert.equal(russell.messages[0], Message.VEHICLE_UNLOCK_PASSENGER);
+
+            russell.clearMessages();
+        }
+
+        // (3) Registered players should be able to unlock the vehicle they're driving.
+        {
+            russell.leaveVehicle();
+            russell.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
+
+            assert.isTrue(await russell.issueCommand('/unlock'));
+            assert.equal(russell.messages.length, 1);
+            assert.equal(russell.messages[0],
+                         Message.format(Message.VEHICLE_UNLOCKED, russell.vehicle.model.name));
+
+            assert.isFalse(manager.access.isLocked(databaseVehicle));
+            assert.isTrue(manager.access.canAccessVehicle(russell, databaseVehicle));
+            assert.isTrue(manager.access.canAccessVehicle(gunther, databaseVehicle));
+
+            russell.clearMessages();
+        }
+
+        // (4) It should realize that it's already unlocked.
+        {
+            assert.isTrue(await russell.issueCommand('/unlock'));
+            assert.equal(russell.messages.length, 1);
+            assert.equal(
+                russell.messages[0],
+                Message.format(Message.VEHICLE_UNLOCK_REDUNDANT, russell.vehicle.model.name));
+        }
+    });
 
     // TODO: We'll actually want to make this available to all the players.
     // See the following issue: https://github.com/LVPlayground/playground/issues/330
@@ -371,6 +502,6 @@ describe('VehicleCommands', (it, beforeEach) => {
         commands.dispose();
         commands.dispose = () => true;
 
-        assert.equal(server.commandManager.size, originalCommandCount - 1);
+        assert.equal(server.commandManager.size, originalCommandCount - 3);
     });
 });

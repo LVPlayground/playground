@@ -74,9 +74,13 @@ class VehicleAccessManager {
         this.synchronizeVehicle(storedVehicle);
     }
 
-    // Returns whether the given |storedVehicle| has been locked.
-    isLocked(storedVehicle) {
-        return this.lockedVehicles_.has(storedVehicle);
+    // Returns whether the given |storedVehicle| has been locked, optionally with the |type|.
+    isLocked(storedVehicle, type = null) {
+        const lock = this.lockedVehicles_.get(storedVehicle);
+        if (!lock)
+            return false;  // the vehicle isn't locked
+
+        return !type || lock.type === type;
     }
 
     // Removes all locks from the |storedVehicle|.

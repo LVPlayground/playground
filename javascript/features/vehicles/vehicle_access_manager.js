@@ -43,7 +43,7 @@ class VehicleAccessManager {
     // ---------------------------------------------------------------------------------------------
 
     // Creates a lock limiting the vehicle to the specific |player|.
-    restrictToPlayer(storedVehicle, player) {
+    restrictToPlayer(storedVehicle, player, sync = true) {
         if (!player.isRegistered())
             throw new Error('Vehicles can only be locked for registered players.');
 
@@ -52,26 +52,29 @@ class VehicleAccessManager {
             userId: player.userId
         });
 
-        this.synchronizeVehicle(storedVehicle);
+        if (sync)
+            this.synchronizeVehicle(storedVehicle);
     }
 
     // Creates a level-based lock on the |storedVehicle|.
-    restrictToPlayerLevel(storedVehicle, minimumLevel) {
+    restrictToPlayerLevel(storedVehicle, minimumLevel, sync = true) {
         this.lockedVehicles_.set(storedVehicle, {
             type: VehicleAccessManager.LOCK_PLAYER_LEVEL,
             minimumLevel: minimumLevel
         });
 
-        this.synchronizeVehicle(storedVehicle);
+        if (sync)
+            this.synchronizeVehicle(storedVehicle);
     }
 
     // Creates a VIP-based lock on the |storedVehicle|.
-    restrictToVip(storedVehicle) {
+    restrictToVip(storedVehicle, sync = true) {
         this.lockedVehicles_.set(storedVehicle, {
             type: VehicleAccessManager.LOCK_VIP
         });
 
-        this.synchronizeVehicle(storedVehicle);
+        if (sync)
+            this.synchronizeVehicle(storedVehicle);
     }
 
     // Returns whether the given |storedVehicle| has been locked, optionally with the |type|.

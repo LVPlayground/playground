@@ -185,7 +185,11 @@ class VehicleStreamer extends EntityStreamerGlobal {
         this.unpin(storedVehicle, RecentUsagePin);
         this.respawnTokens_.delete(vehicle);
 
-        vehicle.respawn();
+        if (storedVehicle.deathFn)
+            storedVehicle.deathFn(vehicle, storedVehicle);
+
+        if (vehicle.isConnected())
+            vehicle.respawn();
     }
 
     // ---------------------------------------------------------------------------------------------

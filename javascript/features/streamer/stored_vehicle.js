@@ -9,7 +9,7 @@ const StoredEntity = require('features/streamer/stored_entity.js');
 class StoredVehicle extends StoredEntity {
     constructor({ modelId, position, rotation, interiorId, virtualWorld, primaryColor = -1,
                   secondaryColor = -1, paintjob = null, siren = false, respawnDelay = 180,
-                  respawnFn = null, accessFn = null } = {}) {
+                  deathFn = null, respawnFn = null, accessFn = null } = {}) {
         super({ modelId, position, interiorId, virtualWorld });
 
         this.rotation_ = rotation;
@@ -21,6 +21,7 @@ class StoredVehicle extends StoredEntity {
         this.siren_ = siren;
         this.respawnDelay_ = respawnDelay;
 
+        this.deathFn_ = deathFn;
         this.respawnFn_ = respawnFn;
         this.accessFn_ = accessFn;
     }
@@ -41,6 +42,9 @@ class StoredVehicle extends StoredEntity {
     // Gets the respawn delay of the vehicle, in seconds. A respawn delay of -1 means that the
     // vehicle streamer will never respawn the vehicle by itself.
     get respawnDelay() { return this.respawnDelay_; }
+
+    // Gets the function that should be executed when the vehicle has died, just before it respawns.
+    get deathFn() { return this.deathFn_; }
 
     // Gets the function that should be executed when the vehicle has respawned. Avoids needing to
     // observe all vehicle respawns in each user of the vehicle streamer.

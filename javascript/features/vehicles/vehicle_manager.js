@@ -79,7 +79,7 @@ class VehicleManager {
             secondaryColor: Math.floor(Math.random() * MaximumVehicleColorValue),
 
             // Make the VehicleAccessManager the authority on whether a player can access it.
-            respawnFn: VehicleManager.prototype.onVehicleSpawn.bind(this),
+            deathFn: VehicleManager.prototype.onVehicleDeath.bind(this),
             accessFn: this.access_.accessFn
         });
 
@@ -140,7 +140,7 @@ class VehicleManager {
             respawnDelay: databaseVehicle.respawnDelay,
 
             // Make the VehicleAccessManager the authority on whether a player can access it.
-            respawnFn: VehicleManager.prototype.onVehicleSpawn.bind(this),
+            deathFn: VehicleManager.prototype.onVehicleDeath.bind(this),
             accessFn: this.access_.accessFn
         });
 
@@ -216,12 +216,12 @@ class VehicleManager {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Called when a vehicle managed by this VehicleManager has been respawned.
-    onVehicleSpawn(vehicle, databaseVehicle) {
-        // TODO: Correctly clear non-permanent access that has been granted to the |vehicle|.
-
+    // Called when a vehicle managed by this VehicleManager is about to respawn.
+    onVehicleDeath(vehicle, databaseVehicle) {
         if (this.access_.isLocked(databaseVehicle))
-            this.access_.unlock(databaseVehicle);        
+            this.access_.delete(databaseVehicle);
+
+        // TODO: Correctly clear non-permanent access that has been granted to the |vehicle|.
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -29,6 +29,38 @@ describe('VehicleAccessManager', (it, beforeEach, afterEach) => {
             manager.dispose();
     });
 
+    it('should be able to restrict vehicles to registered players', assert => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        assert.isFalse(gunther.isRegistered());
+
+        assert.isFalse(manager.isLocked(storedVehicle));
+        assert.isTrue(manager.canAccessVehicle(gunther, storedVehicle));
+        assert.isTrue(manager.canAccessVehicle(russell, storedVehicle));
+
+        assert.throws(() => manager.restrictToPlayer(storedVehicle, gunther));
+
+        gunther.identify({ userId: 5101 });
+
+        assert.doesNotThrow(() => manager.restrictToPlayer(storedVehicle, gunther));
+
+        assert.isTrue(manager.isLocked(storedVehicle));
+        assert.isTrue(manager.canAccessVehicle(gunther, storedVehicle));
+        assert.isFalse(manager.canAccessVehicle(russell, storedVehicle));
+
+        russell.identify({ userId: 9003 });
+
+        assert.isTrue(manager.isLocked(storedVehicle));
+        assert.isTrue(manager.canAccessVehicle(gunther, storedVehicle));
+        assert.isFalse(manager.canAccessVehicle(russell, storedVehicle));
+
+        manager.unlock(storedVehicle);
+
+        assert.isFalse(manager.isLocked(storedVehicle));
+        assert.isTrue(manager.canAccessVehicle(gunther, storedVehicle));
+        assert.isTrue(manager.canAccessVehicle(russell, storedVehicle));
+    });
+
     it('should be able to restrict vehicles to a minimum player level', assert => {
         assert.equal(gunther.level, Player.LEVEL_PLAYER);
 

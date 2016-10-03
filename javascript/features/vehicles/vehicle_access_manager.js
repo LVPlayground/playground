@@ -21,19 +21,17 @@ class VehicleAccessManager {
             return true;  // no known locks for the |storedVehicle|
 
         switch (lock.type) {
+            // Requires the |player| to be the sole person allowed to enter the vehicle.
+            case VehicleAccessManager.LOCK_PLAYER:
+                return player.isRegistered() && player.userId === lock.userId;
+
             // Requires the |player| to have a minimum level for accessing the vehicle.
             case VehicleAccessManager.LOCK_PLAYER_LEVEL:
-                if (player.level < lock.minimumLevel)
-                    return false;
-
-                break;
+                return player.level >= lock.minimumLevel;
 
             // Requires the |player| to have VIP rights on the server for accessing the vehicle.
             case VehicleAccessManager.LOCK_VIP:
-                if (!player.isVip())
-                    return false;
-
-                break;
+                return player.isVip();
 
             default:
                 throw new Error('Unrecognized lock type: ' + lock.type);
@@ -43,6 +41,19 @@ class VehicleAccessManager {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    // Creates a lock limiting the vehicle to the specific |player|.
+    restrictToPlayer(storedVehicle, player) {
+        if (!player.isRegistered())
+            throw new Error('Vehicles can only be locked for registered players.');
+
+        this.lockedVehicles_.set(storedVehicle, {
+            type: VehicleAccessManager.LOCK_PLAYER,
+            userId: player.userId
+        });
+
+        this.synchronizeVehicle(storedVehicle);
+    }
 
     // Creates a level-based lock on the |storedVehicle|.
     restrictToPlayerLevel(storedVehicle, minimumLevel) {
@@ -98,6 +109,7 @@ class VehicleAccessManager {
 }
 
 // The different kinds of locks that exists.
+VehicleAccessManager.LOCK_PLAYER = Symbol('Player-based lock');
 VehicleAccessManager.LOCK_PLAYER_LEVEL = Symbol('Player level-based lock');
 VehicleAccessManager.LOCK_VIP = Symbol('VIP-based lock');
 

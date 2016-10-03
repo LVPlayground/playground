@@ -8,7 +8,8 @@ const StoredEntity = require('features/streamer/stored_entity.js');
 // the vehicle, on demand, within the vehicle streamer.
 class StoredVehicle extends StoredEntity {
     constructor({ modelId, position, rotation, interiorId, virtualWorld, primaryColor = -1,
-                  secondaryColor = -1, paintjob = null, siren = false, respawnDelay = 180 } = {}) {
+                  secondaryColor = -1, paintjob = null, siren = false, respawnDelay = 180,
+                  accessFn = null } = {}) {
         super({ modelId, position, interiorId, virtualWorld });
 
         this.rotation_ = rotation;
@@ -19,6 +20,8 @@ class StoredVehicle extends StoredEntity {
 
         this.siren_ = siren;
         this.respawnDelay_ = respawnDelay;
+
+        this.accessFn_ = accessFn;
     }
 
     // Gets the rotation that this vehicle has been stored with.
@@ -37,6 +40,10 @@ class StoredVehicle extends StoredEntity {
     // Gets the respawn delay of the vehicle, in seconds. A respawn delay of -1 means that the
     // vehicle streamer will never respawn the vehicle by itself.
     get respawnDelay() { return this.respawnDelay_; }
+
+    // Gets the function that should be executed to decide whether a player has access to enter the
+    // vehicle or not. Will be called each time the vehicle streams in for a player. May be NULL.
+    get accessFn() { return this.accessFn_; }
 }
 
 exports = StoredVehicle;

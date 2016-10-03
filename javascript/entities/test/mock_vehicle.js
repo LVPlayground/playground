@@ -32,6 +32,8 @@ class MockVehicle {
 
         this.respawnCounter_ = 0;
         this.health_ = 1000;
+
+        this.locked_ = new WeakSet();
     }
 
     // Returns whether this vehicle has been created on the server.
@@ -127,6 +129,17 @@ class MockVehicle {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Locks the vehicle for the |player|.
+    lockForPlayer(player) { this.locked_.add(player); }
+
+    // Unlocks the vehicle for the |player|.
+    unlockForPlayer(player) { this.locked_.delete(player); }
+
+    // For testing. Returns whether the vehicle is locked for the |player|.
+    isLockedForPlayer(player) { return this.locked_.has(player); }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Called by the vehicle manager when |player| has entered this vehicle.
     onPlayerEnterVehicle(player) {
         if (player.vehicleSeat === Vehicle.SEAT_DRIVER)
@@ -157,6 +170,24 @@ class MockVehicle {
         }
     }
 
+    // Streams the vehicle in for the |player|.
+    streamInForPlayer(player) {
+        global.dispatchEvent('vehiclestreamin', {
+            vehicleid: this.id_,
+            forplayerid: player.id
+        });
+    }
+
+    // Streams the vehicle out for the |player|.
+    streamOutForPlayer(player) {
+        this.locked_.delete(player);
+
+        global.dispatchEvent('vehiclestreamout', {
+            vehicleid: this.id_,
+            forplayerid: player.id
+        });
+    }
+
     // Triggers an event informing the server that this vehicle has spawned.
     spawn() {
         global.dispatchEvent('vehiclespawn', {
@@ -178,6 +209,8 @@ class MockVehicle {
     dispose() {
         this.manager_.didDisposeVehicle(this);
         this.manager_ = null;
+
+        this.locked_ = null;
 
         this.clearOccupants();
 

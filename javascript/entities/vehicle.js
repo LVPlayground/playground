@@ -147,6 +147,18 @@ class Vehicle {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Locks the vehicle for the |player|.
+    lockForPlayer(player) {
+        pawnInvoke('SetVehicleParamsForPlayer', 'iiii', this.id_, player.id, 0, 1 /* locked */);
+    }
+
+    // Unlocks the vehicle for the |player|.
+    unlockForPlayer(player) {
+        pawnInvoke('SetVehicleParamsForPlayer', 'iiii', this.id_, player.id, 0, 1 /* unlocked */);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Called by the vehicle manager when |player| has entered this vehicle.
     onPlayerEnterVehicle(player) {
         if (player.vehicleSeat === Vehicle.SEAT_DRIVER)

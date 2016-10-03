@@ -7,7 +7,8 @@ const VehicleStreamer = require('features/streamer/vehicle_streamer.js');
 
 describe('VehicleStreamer', it => {
     // Creates a StoredVehicle with a random position.
-    function createStoredVehicle({ modelId = 520, scope = 3000, respawnDelay = -1 } = {}) {
+    function createStoredVehicle({ modelId = 520, scope = 3000, respawnDelay = -1,
+                                   accessFn = null } = {}) {
         return new StoredVehicle({
             modelId: modelId || Math.floor(Math.random() * 211) + 400,
             position: new Vector(Math.floor(Math.random() * scope) - scope,
@@ -20,7 +21,8 @@ describe('VehicleStreamer', it => {
             secondaryColor: 8,
             paintjob: 2,
             siren: true,
-            respawnDelay: respawnDelay
+            respawnDelay: respawnDelay,
+            accessFn: accessFn
         });
     }
 
@@ -210,5 +212,39 @@ describe('VehicleStreamer', it => {
             assert.equal(details.vehicles, 0);
             assert.equal(details.models, 0);
         }
+    });
+
+    it('should be able to lock vehicles based on an access function', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        // Toggles whether the vehicle should be locked for Gunther.
+        let locked = true;
+
+        const streamer = new VehicleStreamer();
+        const storedVehicle = createStoredVehicle({
+            accessFn: player => {
+                return !locked;
+            }
+        });
+
+        assert.doesNotThrow(() => streamer.add(storedVehicle));
+
+        gunther.position = storedVehicle.position;
+
+        await streamer.stream();
+
+        const vehicle = streamer.getLiveVehicle(storedVehicle);
+        assert.isNotNull(vehicle);
+
+        vehicle.streamInForPlayer(gunther);
+        assert.isTrue(vehicle.isLockedForPlayer(gunther));
+
+        vehicle.streamOutForPlayer(gunther);
+        assert.isFalse(vehicle.isLockedForPlayer(gunther));
+
+        locked = false;
+
+        vehicle.streamInForPlayer(gunther);
+        assert.isFalse(vehicle.isLockedForPlayer(gunther));
     });
 });

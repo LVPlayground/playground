@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const EntityStreamerGlobal = require('features/streamer/entity_streamer_global.js');
+const ScopedCallbacks = require('base/scoped_callbacks.js');
 const ScopedEntities = require('entities/scoped_entities.js');
 
 // Pin that will be used to keep vehicles alive that have recently been used.
@@ -30,6 +31,11 @@ class VehicleStreamer extends EntityStreamerGlobal {
         // VehicleManager to get events associated with the managed vehicles.
         server.playerManager.addObserver(this);
         server.vehicleManager.addObserver(this);
+
+        // Observe the `vehiclestreamin` event to provide automatic locking of doors.
+        this.callbacks_ = new ScopedCallbacks();
+        this.callbacks_.addEventListener(
+            'vehiclestreamin', VehicleStreamer.prototype.onVehicleStreamIn.bind(this));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -176,6 +182,29 @@ class VehicleStreamer extends EntityStreamerGlobal {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Called when the vehicle streams in for a particular player. Will check whether the player has
+    // access to enter the vehicle, and lock the doors if they don't.
+    onVehicleStreamIn(event) {
+        const player = server.playerManager.getById(event.forplayerid);
+        const vehicle = server.vehicleManager.getById(event.vehicleid);
+
+        if (!player || !vehicle)
+            return;  // invalid data was supplied in the |event|
+
+        const storedVehicle = this.storedVehicles_.get(vehicle);
+        if (!storedVehicle)
+            return;  // the |vehicle| is not managed by this streamer
+
+        if (!storedVehicle.accessFn)
+            return;  // the |vehicle| does not provide a function for access checking.
+
+        const hasAccess = storedVehicle.accessFn(player);
+        if (!hasAccess)
+            vehicle.lockForPlayer(player);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Called when |vehicle| has been destroyed. Will schedule it to be respawned after a fourth of
     // the time of the normal respawn delay, since the vehicle is useless in its current form.
     onVehicleDeath(vehicle) {
@@ -192,6 +221,9 @@ class VehicleStreamer extends EntityStreamerGlobal {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        this.callbacks_.dispose();
+        this.callbacks_ = null;
+
         server.vehicleManager.removeObserver(this);
         server.playerManager.removeObserver(this);
 

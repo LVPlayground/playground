@@ -198,7 +198,7 @@ class VehicleStreamer extends EntityStreamerGlobal {
         if (!storedVehicle.accessFn)
             return;  // the |vehicle| does not provide a function for access checking.
 
-        const hasAccess = storedVehicle.accessFn(player);
+        const hasAccess = storedVehicle.accessFn(player, storedVehicle);
         if (!hasAccess)
             vehicle.lockForPlayer(player);
     }

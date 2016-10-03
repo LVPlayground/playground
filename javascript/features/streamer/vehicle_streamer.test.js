@@ -222,7 +222,8 @@ describe('VehicleStreamer', it => {
 
         const streamer = new VehicleStreamer();
         const storedVehicle = createStoredVehicle({
-            accessFn: player => {
+            accessFn: (player, storedVehicleArg) => {
+                assert.equal(storedVehicle, storedVehicleArg);
                 return !locked;
             }
         });

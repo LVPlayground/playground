@@ -238,6 +238,16 @@ class VehicleStreamer extends EntityStreamerGlobal {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Called when the |vehicle| has spawned. Will call the vehicle's spawn function if it exists.
+    onVehicleSpawn(vehicle) {
+        const storedVehicle = this.storedVehicles_.get(vehicle);
+        if (!storedVehicle)
+            return;  // the |vehicle| is not part of this streamer
+
+        if (storedVehicle.respawnFn)
+            storedVehicle.respawnFn(vehicle, storedVehicle);
+    }
+
     // Called when |vehicle| has been destroyed. Will schedule it to be respawned after a fourth of
     // the time of the normal respawn delay, since the vehicle is useless in its current form.
     onVehicleDeath(vehicle) {

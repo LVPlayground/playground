@@ -8,7 +8,7 @@ const VehicleStreamer = require('features/streamer/vehicle_streamer.js');
 describe('VehicleStreamer', it => {
     // Creates a StoredVehicle with a random position.
     function createStoredVehicle({ modelId = 520, scope = 3000, respawnDelay = -1,
-                                   accessFn = null } = {}) {
+                                   respawnFn = null, accessFn = null } = {}) {
         return new StoredVehicle({
             modelId: modelId || Math.floor(Math.random() * 211) + 400,
             position: new Vector(Math.floor(Math.random() * scope) - scope,
@@ -21,8 +21,8 @@ describe('VehicleStreamer', it => {
             secondaryColor: 8,
             paintjob: 2,
             siren: true,
-            respawnDelay: respawnDelay,
-            accessFn: accessFn
+
+            respawnDelay, respawnFn, accessFn
         });
     }
 
@@ -103,8 +103,13 @@ describe('VehicleStreamer', it => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
 
+        let respawnCount = 0;
+
         const streamer = new VehicleStreamer();
-        const storedVehicle = createStoredVehicle({ respawnDelay: 40 });
+        const storedVehicle = createStoredVehicle({
+            respawnDelay: 40,
+            respawnFn: (vehicle, storedVehicle) => ++respawnCount
+        });
 
         assert.doesNotThrow(() => streamer.add(storedVehicle));
         assert.equal(streamer.size, 1);
@@ -132,6 +137,7 @@ describe('VehicleStreamer', it => {
 
         assert.deepEqual(vehicle.position, new Vector(1000, 1500, 2000));
         assert.equal(vehicle.respawnCount, 0);
+        assert.equal(respawnCount, 0);
 
         // (2) Have Gunther leave the vehicle as its driver.
         gunther.leaveVehicle();
@@ -145,6 +151,7 @@ describe('VehicleStreamer', it => {
 
         assert.deepEqual(vehicle.position, new Vector(1000, 1500, 2000));
         assert.equal(vehicle.respawnCount, 0);
+        assert.equal(respawnCount, 0);
 
         // (3) Have Russell leave the vehicle as its passenger.
         russell.leaveVehicle();
@@ -158,6 +165,7 @@ describe('VehicleStreamer', it => {
 
         assert.deepEqual(vehicle.position, new Vector(1000, 1500, 2000));
         assert.equal(vehicle.respawnCount, 0);
+        assert.equal(respawnCount, 0);
 
         // (4) Have Gunther enter the vehicle again, as the driver.
         gunther.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
@@ -171,6 +179,7 @@ describe('VehicleStreamer', it => {
 
         assert.deepEqual(vehicle.position, new Vector(1000, 1500, 2000));
         assert.equal(vehicle.respawnCount, 0);
+        assert.equal(respawnCount, 0);
 
         // (5) Have Gunther leave the vehicle again, as the driver.
         gunther.leaveVehicle();
@@ -184,6 +193,7 @@ describe('VehicleStreamer', it => {
 
         assert.deepEqual(vehicle.position, storedVehicle.position);
         assert.equal(vehicle.respawnCount, 1);
+        assert.equal(respawnCount, 1);
     });
 
     it('should be able to query vehicles in a certain area', async(assert) => {

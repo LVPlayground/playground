@@ -115,6 +115,10 @@ class MockVehicle {
         this.rotation_ = this.originalRotation_;
 
         this.clearOccupants();
+
+        global.dispatchEvent('vehiclespawn', {
+            vehicleid: this.id_
+        });
     }
 
     // Gets the number of times this vehicle has respawned. Only available for testing.

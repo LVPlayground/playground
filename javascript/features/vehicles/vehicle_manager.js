@@ -79,6 +79,7 @@ class VehicleManager {
             secondaryColor: Math.floor(Math.random() * MaximumVehicleColorValue),
 
             // Make the VehicleAccessManager the authority on whether a player can access it.
+            respawnFn: VehicleManager.prototype.onVehicleSpawn.bind(this),
             accessFn: this.access_.accessFn
         });
 
@@ -136,7 +137,11 @@ class VehicleManager {
             paintjob: vehicle.paintjob,
             siren: vehicle.siren,
 
-            respawnDelay: databaseVehicle.respawnDelay
+            respawnDelay: databaseVehicle.respawnDelay,
+
+            // Make the VehicleAccessManager the authority on whether a player can access it.
+            respawnFn: VehicleManager.prototype.onVehicleSpawn.bind(this),
+            accessFn: this.access_.accessFn
         });
 
         // Create the new vehicle with the streamer immediately. It may still have the invalid
@@ -207,6 +212,16 @@ class VehicleManager {
             this.streamer.unpin(databaseVehicle, VehicleManager.MANAGEMENT_PIN);
 
         return true;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when a vehicle managed by this VehicleManager has been respawned.
+    onVehicleSpawn(vehicle, databaseVehicle) {
+        // TODO: Correctly clear non-permanent access that has been granted to the |vehicle|.
+
+        if (this.access_.isLocked(databaseVehicle))
+            this.access_.unlock(databaseVehicle);        
     }
 
     // ---------------------------------------------------------------------------------------------

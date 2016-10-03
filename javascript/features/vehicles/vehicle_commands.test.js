@@ -370,6 +370,75 @@ describe('VehicleCommands', (it, beforeEach) => {
                                                          manager.streamer.streamingDistance));
     });
 
+    it('should enable administrators to enter vehicles close to them', async(assert) => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        // Only administrators can forcefully enter vehicles.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        // (1) It should bail out when there are no vehicles nearby.
+        {
+            assert.isTrue(await gunther.issueCommand('/v enter'));
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(gunther.messages[0], Message.VEHICLE_ENTER_NONE_NEAR);
+
+            gunther.clearMessages();
+        }
+
+        // Create a vehicle that's reasonable close to Gunther his position.
+        const vehicle = await manager.createVehicle({
+            modelId: 411 /* Infernus */,
+            position: gunther.position.translate({ x: 3, y: -5 }),
+            rotation: 90,
+            interiorId: gunther.interiorId,
+            virtualWorld: gunther.virtualWorld
+        });
+
+        assert.isNotNull(vehicle);
+
+        // (2) It should bail out when being given an invalid seat.
+        {
+            assert.isTrue(await gunther.issueCommand('/v enter 9001'));
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(gunther.messages[0], Message.VEHICLE_ENTER_SEAT_INVALID);
+
+            gunther.clearMessages();
+        }
+
+        // Make Russell enter the vehicle in the passenger seat.
+        russell.enterVehicle(vehicle, Vehicle.SEAT_PASSENGER);
+
+        // (3) It should bail out when trying to enter in a seat that's already occupied.
+        {
+            assert.isTrue(await gunther.issueCommand('/v enter 1'));
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(
+                gunther.messages[0],
+                Message.format(Message.VEHICLE_ENTER_SEAT_OCCUPIED, russell.vehicle.model.name));
+
+            gunther.clearMessages();
+        }
+
+        // (4) It should enter the vehicle when the seat is available.
+        {
+            assert.isTrue(await gunther.issueCommand('/v enter'));
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(gunther.messages[0],
+                         Message.format(Message.VEHICLE_ENTERED, russell.vehicle.model.name));
+
+            gunther.clearMessages();
+        }
+
+        // (5) It should bail out when Gunther already is in another vehicle.
+        {
+            assert.isTrue(await gunther.issueCommand('/v enter'));
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(
+                gunther.messages[0],
+                Message.format(Message.VEHICLE_ENTER_ALREADY_DRIVING, russell.vehicle.model.name));
+        }
+    });
+
     it('should be able to update and tell the health of vehicles', async(assert) => {
         // Only administrators can manipulate vehicle health on the server.
         gunther.level = Player.LEVEL_ADMINISTRATOR;

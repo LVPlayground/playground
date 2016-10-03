@@ -5,6 +5,9 @@
 const CommandBuilder = require('components/command_manager/command_builder.js');
 const VehicleAccessManager = require('features/vehicles/vehicle_access_manager.js');
 
+// The maximum distance from the player to the vehicle closest to them, in units.
+const MaximumVehicleDistance = 10;
+
 // Responsible for providing the commands associated with vehicles. Both players and administrators
 // can create vehicles. Administrators can save, modify and delete vehicles as well.
 class VehicleCommands {
@@ -33,6 +36,11 @@ class VehicleCommands {
             .sub('density')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(VehicleCommands.prototype.onVehicleDensityCommand.bind(this))
+            .sub('enter')
+                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .parameters([ { name: 'seat', type: CommandBuilder.NUMBER_PARAMETER,
+                                optional: true } ])
+                .build(VehicleCommands.prototype.onVehicleEnterCommand.bind(this))
             .sub('optimise')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .build(VehicleCommands.prototype.onVehicleOptimiseCommand.bind(this))
@@ -216,10 +224,54 @@ class VehicleCommands {
     // Called when the |player| executes `/v density`, which will show them the density of vehicles
     // and models within streaming radius around their current position.
     async onVehicleDensityCommand(player) {
-        const density = await this.manager_.streamer.query(player.position);
+        const areaInfo = await this.manager_.streamer.query(player.position);
 
-        player.sendMessage(Message.VEHICLE_DENSITY, density.vehicles, density.models,
+        player.sendMessage(Message.VEHICLE_DENSITY, areaInfo.vehicles, areaInfo.models,
                            this.manager_.streamer.streamingDistance);
+    }
+
+    // Called when the |player| executes `/v enter [seat]?`, which means they'd like to enter the
+    // vehicle closest to them in the given seat. Only available to administrators.
+    async onVehicleEnterCommand(player, seat) {
+        // Bail out if |player| is already driving a vehicle.
+        if (player.vehicle) {
+            player.sendMessage(Message.VEHICLE_ENTER_ALREADY_DRIVING, player.vehicle.model.name);
+            return;
+        }
+
+        seat = seat || 0;
+
+        // Bail out if the given |seat| is not valid for this vehicle.
+        // TODO: This should pull the number of seats from the model information instead.
+        if (seat < 0 || seat >= 8) {
+            player.sendMessage(Message.VEHICLE_ENTER_SEAT_INVALID);
+            return;
+        }
+
+        const position = player.position;
+        const areaInfo = await this.manager_.streamer.query(position);
+
+        // Make sure that there is a vehicle close enough to the |player|.
+        if (!areaInfo.closestVehicle ||
+                areaInfo.closestVehicle.position.distanceTo(position) > MaximumVehicleDistance) {
+            player.sendMessage(Message.VEHICLE_ENTER_NONE_NEAR);
+            return;
+        }
+
+        // Make sure that the |seat| the |player| wants to sit in is available.
+        for (const occupant of areaInfo.closestVehicle.getOccupants()) {
+            if (occupant.vehicleSeat !== seat)
+                continue;
+
+            player.sendMessage(
+                Message.VEHICLE_ENTER_SEAT_OCCUPIED, areaInfo.closestVehicle.model.name);
+            return;
+        }
+
+        // Make the |player| enter the closest vehicle in their area.
+        player.enterVehicle(areaInfo.closestVehicle, seat);
+
+        player.sendMessage(Message.VEHICLE_ENTERED, areaInfo.closestVehicle.model.name);
     }
 
     // Called when the |player| executes `/v health` or `/v [player] health`, which means they wish

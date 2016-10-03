@@ -16,6 +16,7 @@ regulated by the `/lvp access` command provided by the [playground](../playgroun
 Furthermore, administrators are able to use the following commands:
 
   * **/v density**: Displays the density of vehicles within streaming radius around you.
+  * **/v enter [seat?]**: Enters the vehicle closest to you, optionally in `seat` (0-8).
   * **/v [player]? delete**: Deletes either your own vehicle, or that of `player`.
   * **/v [player]? health [0-1000]?**: Displays or updates the health of either your own vehicle, or
   that of `player`.

@@ -71,17 +71,31 @@ class VehicleStreamer extends EntityStreamerGlobal {
     // ---------------------------------------------------------------------------------------------
 
     // Queries the streamer to calculate the number of vehicles, as well as vehicle models, within
-    // streaming radius of the given |position|. Should be used sparsely.
+    // streaming radius of the given |position|. It also finds the closest live vehicle to the
+    // position, which can be used for commands. Should be used sparsely.
     async query(position) {
         const storedVehicles = await super.query(position);
         const models = new Set();
 
         for (const storedVehicle of storedVehicles)
             models.add(storedVehicle.modelId);
+
+        let closestVehicle = null;
+        let closestDistance = Number.MAX_SAFE_INTEGER;
+
+        for (const vehicle of this.vehicles_.values()) {
+            const squaredDistance = vehicle.position.distanceTo(position);
+            if (squaredDistance > closestDistance)
+                continue;
+
+            closestVehicle = vehicle;
+            closestDistance = squaredDistance;
+        }
         
         return {
             vehicles: storedVehicles.size,
-            models: models.size
+            models: models.size,
+            closestVehicle: closestVehicle
         };
     }
 

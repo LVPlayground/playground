@@ -11,8 +11,13 @@ describe('VehicleAccessManager', (it, beforeEach, afterEach) => {
 
     beforeEach(() => {
         // Structure that more or less mimics the API of the streamer.
-        const fakeStreamer = new class {
-
+        const fakeStreamer = {
+            getVehicleStreamer: () => {
+                return {
+                    synchronizeAccess: storedVehicle => {}
+                };
+            }
+            
         };
 
         gunther = server.playerManager.getById(0 /* Gunther */);

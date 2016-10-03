@@ -14,9 +14,6 @@ class VehicleAccessManager {
     // Gets the bound access check function that can be used to check against this manager.
     get accessFn() { return VehicleAccessManager.prototype.canAccessVehicle.bind(this); }
 
-    // Gets the active vehicle streamer. Should not be cached.
-    get streamer() { return this.streamer_().getVehicleStreamer(); }
-
     // Returns whether the |player| can access the |storedVehicle|.
     canAccessVehicle(player, storedVehicle) {
         const lock = this.lockedVehicles_.get(storedVehicle);
@@ -81,7 +78,7 @@ class VehicleAccessManager {
 
     // Synchronizes access to the |storedVehicle| for all in-game players.
     synchronizeVehicle(storedVehicle) {
-        // TODO: Implement this method.
+        this.streamer_().getVehicleStreamer().synchronizeAccess(storedVehicle);
     }
 
     // ---------------------------------------------------------------------------------------------

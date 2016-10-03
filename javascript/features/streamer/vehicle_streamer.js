@@ -60,6 +60,8 @@ class VehicleStreamer extends EntityStreamerGlobal {
     //     Vehicle getLiveVehicle(storedVehicle);
     //     StoredVehicle getStoredVehicle(vehicle);
     //
+    //     bool synchronizeAccess(storedVehicle);
+    //
     //     void optimise();
     //     void clear();
     //
@@ -91,6 +93,23 @@ class VehicleStreamer extends EntityStreamerGlobal {
     // Returns the StoredVehicle that is represented by the |vehicle|. NULL when there is none.
     getStoredVehicle(vehicle) {
         return this.storedVehicles_.get(vehicle) || null;
+    }
+
+    // Synchronizes access to the vehicles for the |storedVehicle|.
+    synchronizeAccess(storedVehicle) {
+        const vehicle = this.vehicles_.get(storedVehicle);
+        if (!vehicle)
+            return false;  // the |storedVehicle| is not live
+
+        for (const player of server.playerManager) {
+            const hasAccess =
+                !storedVehicle.accessFn || storedVehicle.accessFn(player, storedVehicle);
+
+            if (!hasAccess)
+                vehicle.lockForPlayer(player);
+            else
+                vehicle.unlockForPlayer(player);
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

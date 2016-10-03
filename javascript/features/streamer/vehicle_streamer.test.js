@@ -248,4 +248,41 @@ describe('VehicleStreamer', it => {
         vehicle.streamInForPlayer(gunther);
         assert.isFalse(vehicle.isLockedForPlayer(gunther));
     });
+
+    it('should be able to synchronize access to the vehicle', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        // Toggles whether the vehicle should be locked for Gunther.
+        let locked = true;
+
+        const streamer = new VehicleStreamer();
+        const storedVehicle = createStoredVehicle({
+            accessFn: (player, storedVehicleArg) => {
+                assert.equal(storedVehicle, storedVehicleArg);
+                return !locked;
+            }
+        });
+
+        assert.doesNotThrow(() => streamer.add(storedVehicle));
+
+        gunther.position = storedVehicle.position;
+
+        await streamer.stream();
+
+        const vehicle = streamer.getLiveVehicle(storedVehicle);
+        assert.isNotNull(vehicle);
+
+        vehicle.streamInForPlayer(gunther);
+        assert.isTrue(vehicle.isLockedForPlayer(gunther));
+
+        locked = false;
+
+        streamer.synchronizeAccess(storedVehicle);
+        assert.isFalse(vehicle.isLockedForPlayer(gunther));
+
+        locked = true;
+
+        streamer.synchronizeAccess(storedVehicle);
+        assert.isTrue(vehicle.isLockedForPlayer(gunther));
+    });
 });

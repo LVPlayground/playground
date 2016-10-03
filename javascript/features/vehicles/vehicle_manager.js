@@ -4,6 +4,7 @@
 
 const DatabaseVehicle = require('features/vehicles/database_vehicle.js');
 const MockVehicleDatabase = require('features/vehicles/test/mock_vehicle_database.js');
+const VehicleAccessManager = require('features/vehicles/vehicle_access_manager.js');
 const VehicleDatabase = require('features/vehicles/vehicle_database.js');
 
 // The maximum value that can be given to a vehicle's color.
@@ -13,6 +14,7 @@ const MaximumVehicleColorValue = 255;
 // is not to be confused with the global VehicleManager for the entire JavaScript gamemode.
 class VehicleManager {
     constructor(streamer) {
+        this.access_ = new VehicleAccessManager(streamer);
         this.database_ = server.isTest() ? new MockVehicleDatabase()
                                          : new VehicleDatabase();
 
@@ -26,6 +28,9 @@ class VehicleManager {
             this, VehicleManager.prototype.onStreamerReload.bind(this));
     }
 
+    // Gets the vehicle access manager, determining whether a player can enter a particular vehicle.
+    get access() { return this.access_; }
+
     // Gets the number of vehicles that have been created by the manager.
     get count() { return this.vehicles_.size; }
 
@@ -35,7 +40,7 @@ class VehicleManager {
     // Gets the active vehicle streamer. Should not be cached.
     get streamer() { return this.streamer_().getVehicleStreamer(); }
 
-    // Gets an iterator with access to all DAtabaseVehicle instances.
+    // Gets an iterator with access to all DatabaseVehicle instances.
     get vehicles() { return this.vehicles_.values(); }
 
     // ---------------------------------------------------------------------------------------------
@@ -60,7 +65,10 @@ class VehicleManager {
 
             // Automatically assign a random, but fixed color to the vehicle.
             primaryColor: Math.floor(Math.random() * MaximumVehicleColorValue),
-            secondaryColor: Math.floor(Math.random() * MaximumVehicleColorValue)
+            secondaryColor: Math.floor(Math.random() * MaximumVehicleColorValue),
+
+            // Make the VehicleAccessManager the authority on whether a player can access it.
+            accessFn: this.access_.accessFn
         });
 
         this.internalCreateVehicle(databaseVehicle, false /* lazy */);
@@ -212,6 +220,8 @@ class VehicleManager {
     // Deletes the |databaseVehicle| from the vehicle streamer.
     internalDeleteVehicle(databaseVehicle) {
         this.streamer_().getVehicleStreamer().delete(databaseVehicle);
+
+        this.access_.delete(databaseVehicle);
         this.vehicles_.delete(databaseVehicle);
     }
 

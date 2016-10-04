@@ -15,7 +15,7 @@
  */
 class Version {
     public const Major = 30;
-    public const Minor = 2;
+    public const Minor = 3;
 };
 
 /**
@@ -88,7 +88,7 @@ class Feature {
     public const DisableFightClub = 0;
 
     // Disables the vehicle manager code in Pawn.
-    public const DisableVehicleManager = 0;
+    public const DisableVehicleManager = 1;
 
     /** **************************************************************************************** **/
     /// Christmas

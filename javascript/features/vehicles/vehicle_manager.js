@@ -156,6 +156,7 @@ class VehicleManager {
 
             modelId: vehicle.modelId,
             position: vehicle.position,
+            rotation: vehicle.rotation,
             interiorId: vehicle.interiorId,
             virtualWorld: vehicle.virtualWorld,
 

@@ -14,6 +14,9 @@ class MockVehicleDatabase {
             {
                 databaseId: 42,
 
+                accessType: 'everyone',
+                accessValue: 0,
+
                 modelId: 412 /* Infernus */,
                 position: new Vector(500, 1000, 1500),
                 rotation: 90,
@@ -33,6 +36,8 @@ class MockVehicleDatabase {
     }
 
     async updateVehicle(databaseVehicle) {}
+
+    async updateVehicleAccess(databaseVehicle) {}
 
     async deleteVehicle(databaseVehicle) {}
 }

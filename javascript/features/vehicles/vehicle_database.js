@@ -6,6 +6,8 @@
 const LOAD_VEHICLES_QUERY = `
     SELECT
         vehicle_id,
+        vehicle_access_type,
+        vehicle_access_value,
         model_id,
         position_x,
         position_y,
@@ -24,16 +26,18 @@ const LOAD_VEHICLES_QUERY = `
 const CREATE_VEHICLE_QUERY = `
     INSERT INTO
         vehicles
-        (model_id, position_x, position_y, position_z, rotation, primary_color, secondary_color,
-         paintjob, interior_id, vehicle_created)
+        (vehicle_access_type, vehicle_access_value, model_id, position_x, position_y, position_z,
+         rotation, primary_color, secondary_color, paintjob, interior_id, vehicle_created)
     VALUES
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`;
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`;
 
 // Query to update the details of an existing persistent vehicle in the database.
 const UPDATE_VEHICLE_QUERY = `
     UPDATE
         vehicles
     SET
+        vehicle_access_type = ?,
+        vehicle_access_value = ?,
         model_id = ?,
         position_x = ?,
         position_y = ?,
@@ -43,6 +47,16 @@ const UPDATE_VEHICLE_QUERY = `
         secondary_color = ?,
         paintjob = ?,
         interior_id = ?
+    WHERE
+        vehicle_id = ?`;
+
+// Query to update just the vehicle's access rights.
+const UPDATE_VEHICLE_ACCESS_QUERY = `
+    UPDATE
+        vehicles
+    SET
+        vehicle_access_type = ?,
+        vehicle_access_value = ?
     WHERE
         vehicle_id = ?`;
 
@@ -66,6 +80,9 @@ class VehicleDatabase {
             vehicles.push({
                 databaseId: info.vehicle_id,
 
+                accessType: info.vehicle_access_type,
+                accessValue: info.vehicle_access_value,
+
                 modelId: info.model_id,
                 position: new Vector(info.position_x, info.position_y, info.position_z),
                 rotation: info.rotation,
@@ -84,20 +101,28 @@ class VehicleDatabase {
 
     // Asynchronously creates the |databaseVehicle| in the database.
     async createVehicle(databaseVehicle) {
-        const data = await server.database.query(CREATE_VEHICLE_QUERY, databaseVehicle.modelId,
-            databaseVehicle.position.x, databaseVehicle.position.y, databaseVehicle.position.z,
-            databaseVehicle.rotation, databaseVehicle.primaryColor, databaseVehicle.secondaryColor,
-            databaseVehicle.paintjob, databaseVehicle.interiorId);
+        const data = await server.database.query(CREATE_VEHICLE_QUERY, databaseVehicle.accessType,
+            databaseVehicle.accessValue, databaseVehicle.modelId, databaseVehicle.position.x,
+            databaseVehicle.position.y, databaseVehicle.position.z, databaseVehicle.rotation,
+            databaseVehicle.primaryColor, databaseVehicle.secondaryColor, databaseVehicle.paintjob,
+            databaseVehicle.interiorId);
 
         databaseVehicle.databaseId = data.insertId;
     }
 
     // Asynchronously updates the |databaseVehicle| in the database.
     async updateVehicle(databaseVehicle) {
-        await server.database.query(UPDATE_VEHICLE_QUERY, databaseVehicle.modelId,
-            databaseVehicle.position.x, databaseVehicle.position.y, databaseVehicle.position.z,
-            databaseVehicle.rotation, databaseVehicle.primaryColor, databaseVehicle.secondaryColor,
-            databaseVehicle.paintjob, databaseVehicle.interiorId, databaseVehicle.databaseId);
+        await server.database.query(UPDATE_VEHICLE_QUERY, databaseVehicle.accessType,
+            databaseVehicle.accessValue, databaseVehicle.modelId, databaseVehicle.position.x,
+            databaseVehicle.position.y, databaseVehicle.position.z, databaseVehicle.rotation,
+            databaseVehicle.primaryColor, databaseVehicle.secondaryColor, databaseVehicle.paintjob,
+            databaseVehicle.interiorId, databaseVehicle.databaseId);
+    }
+
+    // Asynchronously updates the |databaseVehicle|'s access values in the database.
+    async updateVehicleAccess(databaseVehicle) {
+        await server.database.query(UPDATE_VEHICLE_ACCESS_QUERY, databaseVehicle.accessType,
+            databaseVehicle.accessValue, databaseVehicle.databaseId);
     }
 
     // Asynchronously deletes the |databaseVehicle| from the database.

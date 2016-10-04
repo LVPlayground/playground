@@ -106,7 +106,7 @@ class VehicleCommands {
         }
 
         // Restrict access to the |databaseVehicle| to |player|.
-        this.manager_.access.restrictToPlayer(databaseVehicle, player);
+        this.manager_.access.restrictToPlayer(databaseVehicle, player.userId);
 
         player.sendMessage(Message.VEHICLE_LOCKED, player.vehicle.model.name);
     }
@@ -361,6 +361,7 @@ class VehicleCommands {
             return;
         }
 
+        // TODO: This should end up calling VehicleManager.onVehicleDeath().
         vehicle.respawn();
 
         player.sendMessage(Message.VEHICLE_RESPAWNED, vehicle.model.name);

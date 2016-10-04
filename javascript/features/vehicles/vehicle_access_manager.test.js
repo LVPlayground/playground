@@ -38,11 +38,9 @@ describe('VehicleAccessManager', (it, beforeEach, afterEach) => {
         assert.isTrue(manager.canAccessVehicle(gunther, storedVehicle));
         assert.isTrue(manager.canAccessVehicle(russell, storedVehicle));
 
-        assert.throws(() => manager.restrictToPlayer(storedVehicle, gunther));
-
         gunther.identify({ userId: 5101 });
 
-        assert.doesNotThrow(() => manager.restrictToPlayer(storedVehicle, gunther));
+        manager.restrictToPlayer(storedVehicle, 5101);
 
         assert.isTrue(manager.isLocked(storedVehicle));
         assert.isTrue(manager.canAccessVehicle(gunther, storedVehicle));

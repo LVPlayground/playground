@@ -2,9 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const DatabaseVehicle = require('features/vehicles/database_vehicle.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 const MockPlayground = require('features/playground/test/mock_playground.js');
 const Streamer = require('features/streamer/streamer.js');
+const VehicleAccessManager = require('features/vehicles/vehicle_access_manager.js');
 const Vehicles = require('features/vehicles/vehicles.js');
 
 describe('VehicleManager', (it, beforeEach) => {
@@ -221,6 +223,95 @@ describe('VehicleManager', (it, beforeEach) => {
         manager.unpinVehicle(vehicle);
 
         assert.isFalse(manager.streamer.isPinned(storedVehicle));
+    });
+
+    it('should apply vehicle access settings when creating them', async(assert) => {
+        gunther.identify({ userId: 5198 });
+
+        const vehicle = manager.createVehicle(HYDRA);
+        assert.isTrue(vehicle.isConnected());
+
+        const databaseVehicle = manager.getManagedDatabaseVehicle(vehicle);
+        assert.isNotNull(databaseVehicle);
+
+        assert.equal(databaseVehicle.accessType, DatabaseVehicle.ACCESS_TYPE_EVERYONE);
+        assert.equal(databaseVehicle.accessValue, 0);
+
+        // Update the values directly. They should carry over when storing the vehicle.
+        databaseVehicle.accessType = DatabaseVehicle.ACCESS_TYPE_PLAYER;
+        databaseVehicle.accessValue = gunther.userId;
+
+        const updatedVehicle = await manager.storeVehicle(vehicle);
+
+        const updatedDatabaseVehicle = manager.getManagedDatabaseVehicle(updatedVehicle);
+        assert.isNotNull(updatedDatabaseVehicle);
+
+        // Make sure that the values were carried over appropriately.
+        assert.equal(updatedDatabaseVehicle.accessType, DatabaseVehicle.ACCESS_TYPE_PLAYER);
+        assert.equal(updatedDatabaseVehicle.accessValue, gunther.userId);
+
+        // Make sure that the given rights were applied in the VehicleAccessManager.
+        assert.isTrue(
+            manager.access.isLocked(updatedDatabaseVehicle, VehicleAccessManager.LOCK_PLAYER));
+    });
+
+    it('should be able to update vehicle access settings', async(assert) => {
+        const vehicle = manager.createVehicle(HYDRA);
+        assert.isTrue(vehicle.isConnected());
+
+        const databaseVehicle = manager.getManagedDatabaseVehicle(vehicle);
+        assert.isNotNull(databaseVehicle);
+
+        assert.equal(databaseVehicle.accessType, DatabaseVehicle.ACCESS_TYPE_EVERYONE);
+        assert.equal(databaseVehicle.accessValue, 0);
+
+        await manager.updateVehicleAccess(vehicle, DatabaseVehicle.ACCESS_TYPE_PLAYER_VIP, 0);
+
+        assert.equal(databaseVehicle.accessType, DatabaseVehicle.ACCESS_TYPE_PLAYER_VIP);
+        assert.equal(databaseVehicle.accessValue, 0);
+
+        // Make sure that the given rights were applied in the VehicleAccessManager.
+        assert.isTrue(
+            manager.access.isLocked(databaseVehicle, VehicleAccessManager.ACCESS_TYPE_PLAYER_VIP));
+    });
+
+    it('should reset vehicle access settings when they respawn', async(assert) => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        gunther.identify({ userId: 8432 });
+        russell.identify({ userId: 1451 });
+
+        const vehicle = manager.createVehicle(HYDRA);
+        assert.isTrue(vehicle.isConnected());
+
+        const databaseVehicle = manager.getManagedDatabaseVehicle(vehicle);
+        assert.isNotNull(databaseVehicle);
+
+        await manager.updateVehicleAccess(
+            vehicle, DatabaseVehicle.ACCESS_TYPE_PLAYER, gunther.userId);
+
+        // Make sure that the given rights were applied in the VehicleAccessManager.
+        assert.isTrue(manager.access.isLocked(databaseVehicle, VehicleAccessManager.LOCK_PLAYER));
+
+        assert.isTrue(manager.access.canAccessVehicle(gunther, databaseVehicle));
+        assert.isFalse(manager.access.canAccessVehicle(russell, databaseVehicle));
+
+        // Pretend as if Russell is locking the vehicle. Normally this wouldn't be possible, unless
+        // Russell was an administrator and used the `/v enter` command.
+        manager.access.restrictToPlayer(databaseVehicle, russell.userId);
+
+        assert.isFalse(manager.access.canAccessVehicle(gunther, databaseVehicle));
+        assert.isTrue(manager.access.canAccessVehicle(russell, databaseVehicle));
+
+        // Now make sure that the |databaseVehicle| respawns, which should reset the original access
+        // rights, overriding the ephemeral changes.
+        vehicle.death();
+
+        await server.clock.advance(180 * 1000);  // 3 minutes, the respawn duration
+        await Promise.resolve();  // flush the streamer
+
+        assert.isTrue(manager.access.canAccessVehicle(gunther, databaseVehicle));
+        assert.isFalse(manager.access.canAccessVehicle(russell, databaseVehicle));
     });
 
     it('should recreate vehicles when the streamer reloads', assert => {

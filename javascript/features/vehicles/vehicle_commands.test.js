@@ -137,7 +137,7 @@ describe('VehicleCommands', (it, beforeEach) => {
             russell.identify({ userId: 8951 });
         }
 
-        manager.access.restrictToPlayer(databaseVehicle, russell);
+        manager.access.restrictToPlayer(databaseVehicle, russell.userId);
 
         assert.isTrue(manager.access.isLocked(databaseVehicle));
         assert.isTrue(manager.access.canAccessVehicle(russell, databaseVehicle));

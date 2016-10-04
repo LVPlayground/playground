@@ -71,6 +71,9 @@ class VehicleManager {
         const databaseVehicle = new DatabaseVehicle({
             databaseId: null /* non-persistent vehicle */,
 
+            accessType: DatabaseVehicle.ACCESS_TYPE_EVERYONE,
+            accessValue: 0,
+
             // Include the arguments as passed to this method.
             modelId, position, rotation, interiorId, virtualWorld,
 
@@ -102,6 +105,20 @@ class VehicleManager {
         return databaseVehicle.isPersistent();
     }
 
+    // Updates the |vehicle|'s |accessType| and |accessValue| in all places where it's stored.
+    async updateVehicleAccess(vehicle, accessType, accessValue) {
+        const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
+        if (!databaseVehicle)
+            throw new Error('The given |vehicle| is not managed by the vehicle manager.');
+
+        databaseVehicle.accessType = accessType;
+        databaseVehicle.accessValue = accessValue;
+
+        this.enforceVehicleAccess(databaseVehicle);
+
+        await this.database_.updateVehicleAccess(databaseVehicle);
+    }
+
     // Stores the |vehicle| in the database. If it's a persistent vehicle already, the existing
     // vehicle will be updated. Otherwise it will be stored as a new persistent vehicle.
     async storeVehicle(vehicle) {
@@ -127,6 +144,9 @@ class VehicleManager {
         const newVehicle = new DatabaseVehicle({
             databaseId: databaseVehicle.databaseId,  // may be NULL
 
+            accessType: databaseVehicle.accessType,
+            accessValue: databaseVehicle.accessValue,
+
             modelId: vehicle.modelId,
             position: vehicle.position,
             interiorId: vehicle.interiorId,
@@ -143,6 +163,9 @@ class VehicleManager {
             deathFn: VehicleManager.prototype.onVehicleDeath.bind(this),
             accessFn: this.access_.accessFn
         });
+
+        // Set the vehicle access policies before the vehicle gets spawned.
+        this.enforceVehicleAccess(newVehicle, false /* sync */);
 
         // Create the new vehicle with the streamer immediately. It may still have the invalid
         // databaseId property assigned if this is the first time we're creating it.
@@ -218,10 +241,7 @@ class VehicleManager {
 
     // Called when a vehicle managed by this VehicleManager is about to respawn.
     onVehicleDeath(vehicle, databaseVehicle) {
-        if (this.access_.isLocked(databaseVehicle))
-            this.access_.delete(databaseVehicle);
-
-        // TODO: Correctly clear non-permanent access that has been granted to the |vehicle|.
+        this.enforceVehicleAccess(databaseVehicle, false /* sync */);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -249,6 +269,32 @@ class VehicleManager {
 
         this.access_.delete(databaseVehicle);
         this.vehicles_.delete(databaseVehicle);
+    }
+
+    // Enforces the access rules for the |databaseVehicle| with the Vehicle Access manager.
+    enforceVehicleAccess(databaseVehicle, sync = true) {
+        switch (databaseVehicle.accessType) {
+            case DatabaseVehicle.ACCESS_TYPE_EVERYONE:
+                if (sync)
+                    this.access_.unlock(databaseVehicle);
+                else
+                    this.access_.delete(databaseVehicle);
+                break;
+            case DatabaseVehicle.ACCESS_TYPE_PLAYER:
+                this.access_.restrictToPlayer(databaseVehicle, databaseVehicle.accessValue, sync);
+                break;
+            case DatabaseVehicle.ACCESS_TYPE_PLAYER_LEVEL:
+                this.access_.restrictToPlayerLevel(
+                    databaseVehicle, databaseVehicle.accessValue, sync);
+                break;
+            case DatabaseVehicle.ACCESS_TYPE_PLAYER_VIP:
+                this.access_.restrictToVip(databaseVehicle, sync);
+                break;
+            default:
+                console.log('Warning: invalid access type given for vehicle ' +
+                            databaseVehicle.id + ': ' + databaseVehicle.accessType);
+                break;
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

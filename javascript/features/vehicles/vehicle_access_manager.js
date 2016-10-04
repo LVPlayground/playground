@@ -42,14 +42,11 @@ class VehicleAccessManager {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Creates a lock limiting the vehicle to the specific |player|.
-    restrictToPlayer(storedVehicle, player, sync = true) {
-        if (!player.isRegistered())
-            throw new Error('Vehicles can only be locked for registered players.');
-
+    // Creates a lock limiting the vehicle to players having the specific |userId|.
+    restrictToPlayer(storedVehicle, userId, sync = true) {
         this.lockedVehicles_.set(storedVehicle, {
             type: VehicleAccessManager.LOCK_PLAYER,
-            userId: player.userId
+            userId: userId
         });
 
         if (sync)

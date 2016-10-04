@@ -418,7 +418,7 @@ class VehicleCommands {
             return;
         }
 
-        player.sendMessage(Message.VEHICLE_UNPINNED, subject.name, vehicle.name);
+        player.sendMessage(Message.VEHICLE_UNPINNED, subject.name, vehicle.model.name);
     }
 
     // ---------------------------------------------------------------------------------------------

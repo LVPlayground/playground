@@ -439,6 +439,37 @@ describe('VehicleCommands', (it, beforeEach) => {
         }
     });
 
+    it('should have comprehensive output when requesting help', async(assert) => {
+        gunther.level = Player.LEVEL_PLAYER;
+        {
+            assert.isTrue(await gunther.issueCommand('/v help'));
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(gunther.messages[0], Message.VEHICLE_HELP_SPAWN);
+
+            gunther.clearMessages();
+        }
+        
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+        {
+            assert.isTrue(await gunther.issueCommand('/v help'));
+            assert.equal(gunther.messages.length, 3);
+            assert.equal(gunther.messages[0], Message.VEHICLE_HELP_SPAWN);
+            assert.isFalse(gunther.messages[1].includes('optimise'));
+            assert.isFalse(gunther.messages[2].includes('unpin'));
+
+            gunther.clearMessages();
+        }
+
+        gunther.level = Player.LEVEL_MANAGEMENT;
+        {
+            assert.isTrue(await gunther.issueCommand('/v help'));
+            assert.equal(gunther.messages.length, 3);
+            assert.equal(gunther.messages[0], Message.VEHICLE_HELP_SPAWN);
+            assert.isTrue(gunther.messages[1].includes('optimise'));
+            assert.isTrue(gunther.messages[2].includes('unpin'));
+        }
+    });
+
     it('should be able to update and tell the health of vehicles', async(assert) => {
         // Only administrators can manipulate vehicle health on the server.
         gunther.level = Player.LEVEL_ADMINISTRATOR;

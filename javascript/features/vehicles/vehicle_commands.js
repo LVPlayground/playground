@@ -30,7 +30,9 @@ class VehicleCommands {
         server.commandManager.buildCommand('unlock')
             .build(VehicleCommands.prototype.onUnlockCommand.bind(this));
 
-        // Command: /v [vehicle]? || /v [player]? [respawn]
+        // Command: /v [vehicle]?
+        //          /v [density/help/enter/optimise]
+        //          /v [player]? [delete/health/pin/respawn/save/unpin]
         server.commandManager.buildCommand('v')
             .restrict(player => this.playground_().canAccessCommand(player, 'v'))
             .sub('density')
@@ -41,6 +43,8 @@ class VehicleCommands {
                 .parameters([ { name: 'seat', type: CommandBuilder.NUMBER_PARAMETER,
                                 optional: true } ])
                 .build(VehicleCommands.prototype.onVehicleEnterCommand.bind(this))
+            .sub('help')
+                .build(VehicleCommands.prototype.onVehicleHelpCommand.bind(this))
             .sub('optimise')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .build(VehicleCommands.prototype.onVehicleOptimiseCommand.bind(this))
@@ -294,6 +298,26 @@ class VehicleCommands {
         player.sendMessage(Message.VEHICLE_HEALTH_UPDATED, vehicle.health, health);
 
         vehicle.health = health;
+    }
+
+    // Called when the |player| executes `/v help`. Displays more information about the command, as
+    // well as the available sub-commands to the |player|.
+    onVehicleHelpCommand(player) {
+        player.sendMessage(Message.VEHICLE_HELP_SPAWN);
+
+        if (!player.isAdministrator())
+            return;
+
+        const globalOptions = ['density', 'enter', 'help'];
+        const vehicleOptions = ['delete', 'health', 'respawn', 'save'];
+
+        if (player.isManagement()) {
+            globalOptions.push('optimise');
+            vehicleOptions.push('pin', 'unpin');
+        }
+
+        player.sendMessage(Message.VEHICLE_HELP_GLOBAL, globalOptions.sort().join('/'));
+        player.sendMessage(Message.VEHICLE_HELP_VEHICLE, vehicleOptions.sort().join('/'));
     }
 
     // Called when a Management member executes the `/v optimise` command in an effort to optimise

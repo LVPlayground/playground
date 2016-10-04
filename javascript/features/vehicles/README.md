@@ -10,6 +10,7 @@ regulated by the `/lvp access` command provided by the [playground](../playgroun
   * **/v**: Displays a dialog with available vehicles when not driving one, otherwise displays
     usage information for this command.
   * **/v [vehicle]**: Creates the `vehicle` and teleports the player to its driver seat.
+  * **/v help**: Displays useful information about the `/v` command.
   * **/lock**: Locks the vehicle you're currently driving in.
   * **/unlock**: Unlocks the vehicle you're currently driving in.
 

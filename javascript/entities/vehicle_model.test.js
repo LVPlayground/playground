@@ -33,6 +33,16 @@ describe('VehicleModel', it => {
         assert.equal(VehicleModel.getByName('Tram').id, 449);
     });
 
+    it('should be able to find vehicles by their name in a fuzzy way', assert => {
+        assert.isNull(VehicleModel.getByName('hYdRa', false /* fuzzy */));
+        assert.isNull(VehicleModel.getByName('feRNu', false /* fuzzy */));
+        assert.isNull(VehicleModel.getByName('RAM', false /* fuzzy */));
+
+        assert.equal(VehicleModel.getByName('hYdRa', true /* fuzzy */).id, 520);
+        assert.equal(VehicleModel.getByName('feRNu', true /* fuzzy */).id, 411);
+        assert.equal(VehicleModel.getByName('RAM', true /* fuzzy */).id, 449);
+    });
+
     it('should be able to tell whether a vehicle is a trailer', assert => {
         assert.isFalse(VehicleModel.getById(489 /* Rancher */).isTrailer());
         assert.isFalse(VehicleModel.getById(411 /* Infernus */).isTrailer());

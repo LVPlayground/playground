@@ -171,12 +171,11 @@ class VehicleCommands {
 
         let vehicleModel = null;
 
-        // TODO: Allow fuzzy searches for the |modelIdentifier| as a vehicle model name.
         const potentialModelId = modelIdentifier.toSafeInteger();
         if (potentialModelId && potentialModelId >= 400 && potentialModelId <= 611)
             vehicleModel = VehicleModel.getById(potentialModelId);
         else
-            vehicleModel = VehicleModel.getByName(modelIdentifier);
+            vehicleModel = VehicleModel.getByName(modelIdentifier, true /* fuzzy */);
         
         if (!vehicleModel) {
             player.sendMessage(Message.VEHICLE_SPAWN_NOT_FOUND, modelIdentifier);

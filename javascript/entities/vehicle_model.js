@@ -27,8 +27,23 @@ class VehicleModel {
     }
 
     // Returns a VehicleModel instance by its |modelName|. Returns NULL when given an invalid name.
-    static getByName(modelName) {
-        return modelsByName.get(modelName) || null;
+    // Optionally a |fuzzy| search can be done too.
+    static getByName(modelName, fuzzy = false) {
+        if (!fuzzy)
+            return modelsByName.get(modelName) || null;
+
+        const matches = [];
+
+        const lowerCaseModelName = modelName.toLowerCase();
+        for (const model of modelsById.values()) {
+            if (model.name.toLowerCase().includes(lowerCaseModelName))
+                matches.push(model);
+        }
+
+        if (matches.length == 1)
+            return matches[0];
+
+        return null;
     }
 
     // Returns an iterator of VehicleModel instances by their |category|, which must be one of the

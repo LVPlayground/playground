@@ -233,7 +233,7 @@ describe('VehicleCommands', (it, beforeEach) => {
             gunther.clearMessages();
         }
 
-        const commandPromise = gunther.issueCommand('/v Hydra');
+        const commandPromise = gunther.issueCommand('/v YDRa');  // odd spelling for "Hydra"
 
         await Promise.resolve();  // to trigger the command
         await server.clock.advance(350);  // to enter the vehicle

@@ -147,9 +147,6 @@ class VehicleManager {
             player.position = vehicle.position.translate({ z: 2 });
         }
 
-        // Delete the existing vehicle from the streamer immediately.
-        this.internalDeleteVehicle(databaseVehicle);
-
         // Create the new vehicle with the appropriate settings based on the available data.
         const newVehicle = new DatabaseVehicle({
             databaseId: databaseVehicle.databaseId,  // may be NULL
@@ -174,6 +171,9 @@ class VehicleManager {
             accessFn: this.access_.accessFn
         });
 
+        // Delete the existing vehicle from the streamer immediately.
+        this.internalDeleteVehicle(databaseVehicle);
+
         // Set the vehicle access policies before the vehicle gets spawned.
         this.enforceVehicleAccess(newVehicle, false /* sync */);
 
@@ -182,7 +182,7 @@ class VehicleManager {
         this.internalCreateVehicle(newVehicle);
 
         // Put all the |occupants| back in the vehicle after a short wait.
-        milliseconds(500).then(() => {
+        milliseconds(100).then(() => {
             if (!this.vehicles_.has(newVehicle))
                 return;  // the |newVehicle| has been removed since
 

@@ -196,8 +196,6 @@ class VehicleCommands {
         if (!vehicle)
             return;
 
-        await milliseconds(350);
-
         if (vehicle.isConnected())
             player.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
     }

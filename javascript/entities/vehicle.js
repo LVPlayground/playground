@@ -154,7 +154,7 @@ class Vehicle {
 
     // Unlocks the vehicle for the |player|.
     unlockForPlayer(player) {
-        pawnInvoke('SetVehicleParamsForPlayer', 'iiii', this.id_, player.id, 0, 1 /* unlocked */);
+        pawnInvoke('SetVehicleParamsForPlayer', 'iiii', this.id_, player.id, 0, 0 /* unlocked */);
     }
 
     // ---------------------------------------------------------------------------------------------

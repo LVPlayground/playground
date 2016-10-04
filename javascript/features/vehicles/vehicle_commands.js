@@ -399,12 +399,6 @@ class VehicleCommands {
             return;
         }
 
-        // Bail out if the |vehicle| has already been saved in the database.
-        if (this.manager_.isPersistentVehicle(vehicle)) {
-            player.sendMessage(Message.VEHICLE_SAVE_REDUNDANT, vehicle.model.name);
-            return;
-        }
-
         await this.manager_.storeVehicle(vehicle);
 
         this.announce_().announceToAdministrators(Message.VEHICLE_ANNOUNCE_SAVED, player.name,

@@ -587,13 +587,6 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.isTrue(manager.isPersistentVehicle(gunther.vehicle));
 
         assert.notEqual(gunther.vehicle, oldVehicle);
-
-        gunther.clearMessages();
-
-        assert.isTrue(await gunther.issueCommand('/v save'));
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(
-            gunther.messages[0], Message.format(Message.VEHICLE_SAVE_REDUNDANT, 'Infernus'));
     });
 
     it('should clean up the commands when being disposed of', async(assert) => {

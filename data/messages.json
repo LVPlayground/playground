@@ -243,7 +243,6 @@
     "VEHICLE_OPTIMISED": "@success The vehicle streamer has been optimised.",
     "VEHICLE_PINNED": "@success %s's %s has been pinned with the streamer.",
     "VEHICLE_RESPAWNED": "@success The %s has been respawned.",
-    "VEHICLE_SAVE_REDUNDANT": "@error The %s has already been saved in the database.",
     "VEHICLE_SAVED": "@success The %s has been saved in the database.",
     "VEHICLE_SPAWN_CREATED": "@success Your %s has been created!",
     "VEHICLE_SPAWN_NOT_FOUND": "@error We're not sure what vehicle {FF8282}%s{FFFFFF} is...",

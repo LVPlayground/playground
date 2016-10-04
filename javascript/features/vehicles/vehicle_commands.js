@@ -8,6 +8,11 @@ const VehicleAccessManager = require('features/vehicles/vehicle_access_manager.j
 // The maximum distance from the player to the vehicle closest to them, in units.
 const MaximumVehicleDistance = 10;
 
+// The maximum number of unique models and vehicles in the area local to the player. Used for
+// deciding whether it's save to store a vehicle at the given position.
+const MaximumModelsInArea = 50;
+const MaximumVehiclesInArea = 90;
+
 // Responsible for providing the commands associated with vehicles. Both players and administrators
 // can create vehicles. Administrators can save, modify and delete vehicles as well.
 class VehicleCommands {
@@ -396,6 +401,15 @@ class VehicleCommands {
         // Bail out if the |subject| is not driving a vehicle, or it's not managed by this system.
         if (!this.manager_.isManagedVehicle(vehicle)) {
             player.sendMessage(Message.VEHICLE_NOT_DRIVING, subject.name);
+            return;
+        }
+
+        // Bail out if there are too many models or vehicles in the area already.
+        const areaInfo = await this.manager_.streamer.query(vehicle.position);
+
+        if (areaInfo.vehicles > MaximumVehiclesInArea || areaInfo.models > MaximumModelsInArea) {
+            player.sendMessage(Message.VEHICLE_SAVE_TOO_BUSY, areaInfo.vehicles,
+                               MaximumVehiclesInArea, areaInfo.models, MaximumModelsInArea);
             return;
         }
 

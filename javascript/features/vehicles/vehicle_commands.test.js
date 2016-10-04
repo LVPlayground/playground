@@ -559,6 +559,33 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.isFalse(manager.streamer.isPinned(storedVehicle, VehicleManager.MANAGEMENT_PIN));
     });
 
+    it('should not save vehicles when the area is too busy', async(assert) => {
+        // Only administrators can save vehicles in the database.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isTrue(createVehicleForPlayer(gunther));
+
+        assert.isNotNull(gunther.vehicle);
+        assert.isTrue(gunther.vehicle.isConnected());
+
+        // Create a hundred other vehicles in the area.
+        for (let i = 0; i < 100; ++i) {
+            manager.createVehicle({
+                modelId: (i % 2 == 0 ? 411 /* Infernus */ : 520 /* Hydra */),
+                position: gunther.vehicle.position,
+                rotation: 90,
+                interiorId: gunther.interiorId,
+                virtualWorld: gunther.virtualWorld
+            });
+        }
+
+        // Make sure that trying to save Gunther's current vehicle fails.
+        assert.isTrue(await gunther.issueCommand('/v save'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0], Message.format(Message.VEHICLE_SAVE_TOO_BUSY, 101, 90, 2, 50));
+    });
+
     it('should be able to save vehicles to the database', async(assert) => {
         // Only administrators can save vehicles in the database.
         gunther.level = Player.LEVEL_ADMINISTRATOR;

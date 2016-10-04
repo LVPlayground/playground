@@ -119,6 +119,16 @@ class VehicleManager {
         await this.database_.updateVehicleAccess(databaseVehicle);
     }
 
+    // Respawns the |vehicle|. If the vehicle is a managed vehicle, the access settings for the
+    // vehicle will be reset prior to the actual respawn.
+    respawnVehicle(vehicle) {
+        const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
+        if (databaseVehicle)
+            this.enforceVehicleAccess(databaseVehicle, false /* sync */);
+
+        vehicle.respawn();
+    }
+
     // Stores the |vehicle| in the database. If it's a persistent vehicle already, the existing
     // vehicle will be updated. Otherwise it will be stored as a new persistent vehicle.
     async storeVehicle(vehicle) {

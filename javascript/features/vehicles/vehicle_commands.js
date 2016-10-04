@@ -361,8 +361,7 @@ class VehicleCommands {
             return;
         }
 
-        // TODO: This should end up calling VehicleManager.onVehicleDeath().
-        vehicle.respawn();
+        this.manager_.respawnVehicle(vehicle);
 
         player.sendMessage(Message.VEHICLE_RESPAWNED, vehicle.model.name);
     }

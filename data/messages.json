@@ -232,6 +232,7 @@
     "VEHICLE_DENSITY": "@info There are %d vehicles of %d models within a radius of %d units around you.",
     "VEHICLE_ENTER_ALREADY_DRIVING": "@error You're already driving an %s - leave the vehicle first!",
     "VEHICLE_ENTER_NONE_NEAR": "@error There is no vehicle close enough near you to enter.",
+    "VEHICLE_ENTER_RESTRICTED": "@error This command may not be used for vehicles restricted to a player.",
     "VEHICLE_ENTER_SEAT_INVALID": "@error This vehicle doesn't have the vehicle you'd like to sit in!",
     "VEHICLE_ENTER_SEAT_OCCUPIED": "@error That seat in the %s is already occupied!",
     "VEHICLE_ENTERED": "@success You have been teleported in to the %s!",

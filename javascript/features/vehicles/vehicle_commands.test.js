@@ -195,12 +195,6 @@ describe('VehicleCommands', (it, beforeEach) => {
                      Message.format(Message.COMMAND_ERROR_INSUFFICIENT_RIGHTS, 'specific players'));
     });
 
-    it('should not yet support the vehicle chooser dialog', async(assert) => {
-        assert.isTrue(await gunther.issueCommand('/v'));
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.COMMAND_UNSUPPORTED);
-    });
-
     it('should support spawning vehicles by their model Id', async(assert) => {
         for (const invalidModel of ['-15', '42', '399', '612', '1337']) {
             assert.isTrue(await gunther.issueCommand('/v ' + invalidModel));
@@ -327,7 +321,7 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         // Restrict to VIP members
         {
-            assert.isTrue(await gunther.issueCommand('/v access vips'));
+            assert.isTrue(await gunther.issueCommand('/v access VIPs'));
             assert.equal(databaseVehicle.accessType, DatabaseVehicle.ACCESS_TYPE_PLAYER_VIP);
             assert.equal(databaseVehicle.accessValue, 0);
         }
@@ -344,7 +338,7 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         // Restrict to Management
         {
-            assert.isTrue(await gunther.issueCommand('/v access management'));
+            assert.isTrue(await gunther.issueCommand('/v access manAGEment'));
             assert.equal(databaseVehicle.accessType, DatabaseVehicle.ACCESS_TYPE_PLAYER_LEVEL);
             assert.equal(databaseVehicle.accessValue, Player.LEVEL_MANAGEMENT);
         }
@@ -500,7 +494,23 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         assert.isNotNull(vehicle);
 
-        // (2) It should bail out when being given an invalid seat.
+        // (2) It should bail out when the vehicle is restricted to a player.
+        {
+            const databaseVehicle = manager.getManagedDatabaseVehicle(vehicle);
+            assert.isNotNull(databaseVehicle);
+
+            databaseVehicle.accessType = DatabaseVehicle.ACCESS_TYPE_PLAYER;
+
+            assert.isTrue(await gunther.issueCommand('/v enter'));
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(gunther.messages[0], Message.VEHICLE_ENTER_RESTRICTED);
+
+            databaseVehicle.accessType = DatabaseVehicle.ACCESS_TYPE_EVERYONE;
+
+            gunther.clearMessages();
+        }
+
+        // (3) It should bail out when being given an invalid seat.
         {
             assert.isTrue(await gunther.issueCommand('/v enter 9001'));
             assert.equal(gunther.messages.length, 1);
@@ -512,7 +522,7 @@ describe('VehicleCommands', (it, beforeEach) => {
         // Make Russell enter the vehicle in the passenger seat.
         russell.enterVehicle(vehicle, Vehicle.SEAT_PASSENGER);
 
-        // (3) It should bail out when trying to enter in a seat that's already occupied.
+        // (4) It should bail out when trying to enter in a seat that's already occupied.
         {
             assert.isTrue(await gunther.issueCommand('/v enter 1'));
             assert.equal(gunther.messages.length, 1);
@@ -523,7 +533,7 @@ describe('VehicleCommands', (it, beforeEach) => {
             gunther.clearMessages();
         }
 
-        // (4) It should enter the vehicle when the seat is available.
+        // (5) It should enter the vehicle when the seat is available.
         {
             assert.isTrue(await gunther.issueCommand('/v enter'));
             assert.equal(gunther.messages.length, 1);
@@ -533,7 +543,7 @@ describe('VehicleCommands', (it, beforeEach) => {
             gunther.clearMessages();
         }
 
-        // (5) It should bail out when Gunther already is in another vehicle.
+        // (6) It should bail out when Gunther already is in another vehicle.
         {
             assert.isTrue(await gunther.issueCommand('/v enter'));
             assert.equal(gunther.messages.length, 1);

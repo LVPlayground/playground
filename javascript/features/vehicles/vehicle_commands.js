@@ -37,8 +37,8 @@ class VehicleCommands {
             .build(VehicleCommands.prototype.onUnlockCommand.bind(this));
 
         // Command: /v [vehicle]?
-        //          /v [density/help/enter/optimise/reset]
-        //          /v [player]? [delete/health/pin/respawn/save/unpin]
+        //          /v [density/enter/help/optimise/reset]
+        //          /v [player]? [access/delete/health/pin/respawn/save/unpin]
         server.commandManager.buildCommand('v')
             .restrict(player => this.playground_().canAccessCommand(player, 'v'))
             .sub('density')
@@ -174,15 +174,10 @@ class VehicleCommands {
     // part of a vehicle's name. The vehicle will be created for them.
     async onVehicleCommand(player, modelIdentifier) {
         if (!modelIdentifier) {
-            // Display the `help` subcommand if the |player| is currently driving a vehicle.
-            if (player.vehicle)
-                return this.onVehicleHelpCommand(player);
-
             // TODO: Implement a fancy vehicle selection dialog.
             //     https://github.com/LVPlayground/playground/issues/330
             //     https://github.com/LVPlayground/playground/issues/273
-            player.sendMessage(Message.COMMAND_UNSUPPORTED);
-            return;
+            return this.onVehicleHelpCommand(player);
         }
 
         let vehicleModel = null;
@@ -222,6 +217,8 @@ class VehicleCommands {
     // Called when the |player| executes `/v access` or `/v [player] access`, which means they wish
     // to view or change the required access level of the vehicle.
     async onVehicleAccessCommand(player, subject, level) {
+        if (level) level = level.toLowerCase();
+
         const vehicle = subject.vehicle;
         const databaseVehicle = this.manager_.getManagedDatabaseVehicle(vehicle);
 
@@ -374,6 +371,14 @@ class VehicleCommands {
             return;
         }
 
+        // Make sure that the closest vehicle is not restricted to a particular player.
+        const databaseVehicle = this.manager_.getManagedDatabaseVehicle(areaInfo.closestVehicle);
+        if (databaseVehicle && databaseVehicle.accessType == DatabaseVehicle.ACCESS_TYPE_PLAYER &&
+            databaseVehicle.accessValue != player.userId /* it may be the |player|'s vehicle */) {
+            player.sendMessage(Message.VEHICLE_ENTER_RESTRICTED);
+            return;
+        }
+
         // Make sure that the |seat| the |player| wants to sit in is available.
         for (const occupant of areaInfo.closestVehicle.getOccupants()) {
             if (occupant.vehicleSeat !== seat)
@@ -421,7 +426,7 @@ class VehicleCommands {
             return;
 
         const globalOptions = ['density', 'enter', 'help', 'reset'];
-        const vehicleOptions = ['delete', 'health', 'respawn', 'save'];
+        const vehicleOptions = ['access', 'delete', 'health', 'respawn', 'save'];
 
         if (player.isManagement()) {
             globalOptions.push('optimise');
@@ -532,10 +537,14 @@ class VehicleCommands {
             return;
         }
 
+        const wasPersistent = this.manager_.isPersistentVehicle(vehicle);
+
         await this.manager_.storeVehicle(vehicle);
 
-        this.announce_().announceToAdministrators(Message.VEHICLE_ANNOUNCE_SAVED, player.name,
-                                                  player.id, vehicle.model.name);
+        if (!wasPersistent) {
+            this.announce_().announceToAdministrators(Message.VEHICLE_ANNOUNCE_SAVED, player.name,
+                                                      player.id, vehicle.model.name);
+        }
 
         player.sendMessage(Message.VEHICLE_SAVED, vehicle.model.name);
     }

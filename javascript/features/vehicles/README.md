@@ -51,4 +51,3 @@ Because the word `create` adds little value. Get used to the new command! :-)
 ## TODO
 - Implement `/v access`
 - Implement support for trailers in the streamer.
-- Implement the vehicle association list and limits for player vehicles.

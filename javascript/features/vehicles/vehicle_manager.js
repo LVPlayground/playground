@@ -21,7 +21,13 @@ class VehicleManager {
         this.dataLoadedPromise_ = new Promise(resolver =>
             this.dataLoadedResolver_ = resolver);
 
+        // Set of all DatabaseVehicle instances owned by this VehicleManager.
         this.vehicles_ = new Set();
+
+        // Map of Player instances to a set of their associated vehicles, and DatabaseVehicle
+        // instances to the Player they've been associated with.
+        this.associatedVehicles_ = new WeakMap();
+        this.associatedPlayers_ = new Map();
 
         this.streamer_ = streamer;
         this.streamer_.addReloadObserver(
@@ -67,7 +73,7 @@ class VehicleManager {
 
     // Creates a vehicle with |modelId| at given location. It will be eagerly created by the
     // streamer if any player is within streaming range of the vehicle.
-    createVehicle({ modelId, position, rotation, interiorId, virtualWorld }) {
+    createVehicle({ player = null, modelId, position, rotation, interiorId, virtualWorld }) {
         const databaseVehicle = new DatabaseVehicle({
             databaseId: null /* non-persistent vehicle */,
 
@@ -85,6 +91,34 @@ class VehicleManager {
             deathFn: VehicleManager.prototype.onVehicleDeath.bind(this),
             accessFn: this.access_.accessFn
         });
+
+        // Associate the vehicle with the |player| when set.
+        if (player) {
+            this.associatedPlayers_.set(databaseVehicle, player);
+
+            if (!this.associatedVehicles_.has(player))
+                this.associatedVehicles_.set(player, new Set());
+
+            const associatedVehicles = this.associatedVehicles_.get(player);
+
+            // Respawn the oldest unoccupied vehicle created by the |player| when they exceed their
+            // vehicle limit. This means it's possible to exceed their limit.
+            const limit = this.getVehicleLimitForPlayer(player);
+
+            for (const existingVehicle of associatedVehicles) {
+                if (associatedVehicles.size < limit)
+                    break;  // no need to free up another vehicle
+
+                const liveVehicle = this.streamer.getLiveVehicle(existingVehicle);
+                if (liveVehicle && liveVehicle.isOccupied())
+                    continue;  // the vehicle is occupied, ignore it
+
+                this.internalDeleteVehicle(existingVehicle);
+            }
+
+            // Now associate the |databaseVehicle| with the |player|.
+            associatedVehicles.add(databaseVehicle);
+        }
 
         this.internalCreateVehicle(databaseVehicle, false /* lazy */);
 
@@ -250,8 +284,27 @@ class VehicleManager {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Called when a vehicle managed by this VehicleManager is about to respawn.
+    // Gets the maximum number of ephemeral vehicles to be created for |player|.
+    getVehicleLimitForPlayer(player) {
+        if (player.isManagement())
+            return 10;
+
+        if (player.isAdministrator())
+            return 5;
+
+        return 1;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when a vehicle managed by this VehicleManager is about to respawn. Deletes ephemeral
+    // vehicles from the server before their respawn is complete.
     onVehicleDeath(vehicle, databaseVehicle) {
+        if (this.associatedPlayers_.has(databaseVehicle)) {
+            this.internalDeleteVehicle(databaseVehicle);
+            return;
+        }
+
         this.enforceVehicleAccess(databaseVehicle, false /* sync */);
     }
 
@@ -277,6 +330,15 @@ class VehicleManager {
     // Deletes the |databaseVehicle| from the vehicle streamer.
     internalDeleteVehicle(databaseVehicle) {
         this.streamer_().getVehicleStreamer().delete(databaseVehicle);
+
+        const associatedPlayer = this.associatedPlayers_.get(databaseVehicle);
+        if (associatedPlayer) {
+            this.associatedPlayers_.delete(databaseVehicle);
+
+            const associatedVehicles = this.associatedVehicles_.get(associatedPlayer);
+            if (associatedVehicles)
+                associatedVehicles.delete(associatedPlayer);
+        }
 
         this.access_.delete(databaseVehicle);
         this.vehicles_.delete(databaseVehicle);

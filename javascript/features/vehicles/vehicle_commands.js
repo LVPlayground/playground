@@ -185,10 +185,9 @@ class VehicleCommands {
             return;
         }
 
-        // TODO: Destroy earlier vehicles if this player already has one attributed to them.
-        // TODO: Make sure that the vehicle destroys itself on respawn.
-
         const vehicle = this.manager_.createVehicle({
+            player: player,  // associates the vehicle with the |player|
+
             modelId: vehicleModel.id,
             position: player.position,
             rotation: player.rotation,

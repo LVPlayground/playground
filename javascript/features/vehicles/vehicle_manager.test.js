@@ -314,6 +314,106 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.isFalse(manager.access.canAccessVehicle(russell, databaseVehicle));
     });
 
+    it('should limit ephemeral vehicles to a single one for players', assert => {
+        assert.equal(manager.getVehicleLimitForPlayer(gunther), 1);
+
+        const firstVehicle = manager.createVehicle({
+            player: gunther,
+
+            modelId: 411 /* Infernus */,
+            position: gunther.position,
+            rotation: 90,
+            interiorId: gunther.interiorId,
+            virtualWorld: gunther.virtualWorld
+        });
+
+        assert.isNotNull(firstVehicle);
+        assert.isTrue(firstVehicle.isConnected());
+
+        const secondVehicle = manager.createVehicle({
+            player: gunther,
+
+            modelId: 520 /* Hydra */,
+            position: gunther.position,
+            rotation: 90,
+            interiorId: gunther.interiorId,
+            virtualWorld: gunther.virtualWorld
+        });
+
+        assert.isNotNull(secondVehicle);
+        assert.isTrue(secondVehicle.isConnected());
+
+        // The Infernus should not have been destroyed.
+        assert.isFalse(firstVehicle.isConnected());
+    });
+
+    it('should limit the ephemeral vehicles to five for administrators', assert => {
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.equal(manager.getVehicleLimitForPlayer(gunther), 5);
+
+        const vehicles = [];
+        for (let i = 0; i < manager.getVehicleLimitForPlayer(gunther); ++i) {
+            vehicles.push(manager.createVehicle({
+                player: gunther,
+
+                modelId: 411 /* Infernus */,
+                position: gunther.position,
+                rotation: 90,
+                interiorId: gunther.interiorId,
+                virtualWorld: gunther.virtualWorld
+            }));
+        }
+
+        vehicles.forEach(vehicle =>
+            assert.isTrue(vehicle.isConnected()));
+
+        // Make |gunther| enter the oldest vehicle, so that it'll be ignored for pruning.
+        gunther.enterVehicle(vehicles[0], Vehicle.SEAT_DRIVER);
+
+        const newVehicle = manager.createVehicle({
+            player: gunther,
+
+            modelId: 520 /* Hydra */,
+            position: gunther.position,
+            rotation: 90,
+            interiorId: gunther.interiorId,
+            virtualWorld: gunther.virtualWorld
+        });
+
+        assert.isTrue(vehicles[0].isConnected());
+        assert.equal(gunther.vehicle, vehicles[0]);
+
+        // The second vehicle should have been removed.
+        assert.isFalse(vehicles[1].isConnected());
+    });
+
+    it('should delete ephemeral vehicles on respawn', async(assert) => {
+        const vehicle = manager.createVehicle({
+            player: gunther,
+
+            modelId: 411 /* Infernus */,
+            position: gunther.position,
+            rotation: 90,
+            interiorId: gunther.interiorId,
+            virtualWorld: gunther.virtualWorld
+        });
+
+        assert.isNotNull(vehicle);
+        assert.isTrue(vehicle.isConnected());
+
+        gunther.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
+        assert.equal(gunther.vehicle, vehicle);
+
+        gunther.leaveVehicle(vehicle);
+        assert.isNull(gunther.vehicle);
+
+        await server.clock.advance(180 * 1000);  // 3 minutes, the respawn duration
+        await Promise.resolve();  // flush the streamer
+
+        assert.isFalse(vehicle.isConnected());
+    });
+
     it('should recreate vehicles when the streamer reloads', assert => {
         const originalStreamerSize = vehicleStreamer.size;
 

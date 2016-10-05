@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const DatabaseVehicle = require('features/vehicles/database_vehicle.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 const MockPlayground = require('features/playground/test/mock_playground.js');
 const Streamer = require('features/streamer/streamer.js');
@@ -244,6 +245,109 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         assert.isNotNull(gunther.vehicle);
         assert.equal(gunther.vehicle.modelId, 520 /* Hydra */);
+    });
+
+    it('should be able to display the current access restrictions of a vehicle', async(assert) => {
+        // Only administrators can display the restrictions of a vehicle.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isTrue(createVehicleForPlayer(gunther));
+        assert.isNotNull(gunther.vehicle);
+
+        const vehicle = gunther.vehicle;
+
+        // No restrictions.
+        {
+            await manager.updateVehicleAccess(vehicle, DatabaseVehicle.ACCESS_TYPE_EVERYONE, 0);
+
+            assert.isTrue(await gunther.issueCommand('/v access'));
+            assert.equal(gunther.messages.length, 2);
+            assert.equal(
+                gunther.messages[0],
+                Message.format(Message.VEHICLE_ACCESS_UNRESTRICTED, vehicle.model.name));
+
+            gunther.clearMessages();
+        }
+
+        // Restricted to VIPs.
+        {
+            await manager.updateVehicleAccess(vehicle, DatabaseVehicle.ACCESS_TYPE_PLAYER_VIP, 0);
+
+            assert.isTrue(await gunther.issueCommand('/v access'));
+            assert.equal(gunther.messages.length, 2);
+            assert.equal(
+                gunther.messages[0],
+                Message.format(Message.VEHICLE_ACCESS_RESTRICTED, vehicle.model.name,
+                               'VIP members'));
+
+            gunther.clearMessages();
+        }
+
+        // Restricted to administrators.
+        {
+            await manager.updateVehicleAccess(
+                vehicle, DatabaseVehicle.ACCESS_TYPE_PLAYER_LEVEL, Player.LEVEL_ADMINISTRATOR);
+
+            assert.isTrue(await gunther.issueCommand('/v access'));
+            assert.equal(gunther.messages.length, 2);
+            assert.equal(
+                gunther.messages[0],
+                Message.format(Message.VEHICLE_ACCESS_RESTRICTED, vehicle.model.name,
+                               'administrators'));
+
+            gunther.clearMessages();
+        }
+
+        // Restricted to a particular player.
+        {
+            await manager.updateVehicleAccess(vehicle, DatabaseVehicle.ACCESS_TYPE_PLAYER, 123456);
+
+            assert.isTrue(await gunther.issueCommand('/v access'));
+            assert.equal(gunther.messages.length, 2);
+            assert.equal(
+                gunther.messages[0],
+                Message.format(Message.VEHICLE_ACCESS_RESTRICTED, vehicle.model.name,
+                               'a particular player'));
+
+            gunther.clearMessages();
+        }
+    });
+
+    it('should be able to restrict access to a vehicle', async(assert) => {
+        // Only administrators can change the restrictions of a vehicle.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isTrue(createVehicleForPlayer(gunther));
+        assert.isNotNull(gunther.vehicle);
+
+        const databaseVehicle = manager.getManagedDatabaseVehicle(gunther.vehicle);
+        const vehicle = gunther.vehicle;
+
+        assert.equal(databaseVehicle.accessType, DatabaseVehicle.ACCESS_TYPE_EVERYONE);
+
+        // Restrict to VIP members
+        {
+            assert.isTrue(await gunther.issueCommand('/v access vips'));
+            assert.equal(databaseVehicle.accessType, DatabaseVehicle.ACCESS_TYPE_PLAYER_VIP);
+            assert.equal(databaseVehicle.accessValue, 0);
+        }
+
+        // Restrict to administrators
+        {
+            assert.isTrue(await gunther.issueCommand('/v access administrators'));
+            assert.equal(databaseVehicle.accessType, DatabaseVehicle.ACCESS_TYPE_PLAYER_LEVEL);
+            assert.equal(databaseVehicle.accessValue, Player.LEVEL_ADMINISTRATOR);
+        }
+
+        // Only Management can restrict vehicles to Management.
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
+        // Restrict to Management
+        {
+            assert.isTrue(await gunther.issueCommand('/v access management'));
+            assert.equal(databaseVehicle.accessType, DatabaseVehicle.ACCESS_TYPE_PLAYER_LEVEL);
+            assert.equal(databaseVehicle.accessValue, Player.LEVEL_MANAGEMENT);
+        }
     });
 
     it('should be able to delete the vehicle the admin is driving in', async(assert) => {

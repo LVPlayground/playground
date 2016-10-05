@@ -19,9 +19,11 @@ Furthermore, administrators are able to use the following commands:
   * **/v density**: Displays the density of vehicles within streaming radius around you.
   * **/v enter [seat?]**: Enters the vehicle closest to you, optionally in `seat` (0-8).
   * **/v reset**: Resets the server to its original vehicle layout.
+  * **/v [player]? access [players/vips/administrators/management]?**: Restricts the vehicle to a
+    particular `level`.
   * **/v [player]? delete**: Deletes either your own vehicle, or that of `player`.
   * **/v [player]? health [0-1000]?**: Displays or updates the health of either your own vehicle, or
-  that of `player`.
+    that of `player`.
   * **/v [player]? respawn**: Respawns either your own vehicle, or that of `player`.
   * **/v [player]? save**: Saves either your own vehicle, or that of `player`, in the database.
 
@@ -49,5 +51,4 @@ Because the word `create` adds little value. Get used to the new command! :-)
 
 
 ## TODO
-- Implement `/v access`
 - Implement support for trailers in the streamer.

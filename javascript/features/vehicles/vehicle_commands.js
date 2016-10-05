@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const CommandBuilder = require('components/command_manager/command_builder.js');
+const DatabaseVehicle = require('features/vehicles/database_vehicle.js');
 const VehicleAccessManager = require('features/vehicles/vehicle_access_manager.js');
 
 // The maximum distance from the player to the vehicle closest to them, in units.
@@ -57,6 +58,11 @@ class VehicleCommands {
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(VehicleCommands.prototype.onVehicleResetCommand.bind(this))
             .sub(CommandBuilder.PLAYER_PARAMETER, player => player)
+                .sub('access')
+                    .restrict(Player.LEVEL_ADMINISTRATOR)
+                    .parameters([ { name: 'level', type: CommandBuilder.WORD_PARAMETER,
+                                    optional: true } ])
+                    .build(VehicleCommands.prototype.onVehicleAccessCommand.bind(this))
                 .sub('delete')
                     .restrict(Player.LEVEL_ADMINISTRATOR)
                     .build(VehicleCommands.prototype.onVehicleDeleteCommand.bind(this))
@@ -168,6 +174,13 @@ class VehicleCommands {
     // part of a vehicle's name. The vehicle will be created for them.
     async onVehicleCommand(player, modelIdentifier) {
         if (!modelIdentifier) {
+            // Display the `help` subcommand if the |player| is currently driving a vehicle.
+            if (player.vehicle)
+                return this.onVehicleHelpCommand(player);
+
+            // TODO: Implement a fancy vehicle selection dialog.
+            //     https://github.com/LVPlayground/playground/issues/330
+            //     https://github.com/LVPlayground/playground/issues/273
             player.sendMessage(Message.COMMAND_UNSUPPORTED);
             return;
         }
@@ -204,6 +217,101 @@ class VehicleCommands {
 
         if (vehicle.isConnected())
             player.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
+    }
+
+    // Called when the |player| executes `/v access` or `/v [player] access`, which means they wish
+    // to view or change the required access level of the vehicle.
+    async onVehicleAccessCommand(player, subject, level) {
+        const vehicle = subject.vehicle;
+        const databaseVehicle = this.manager_.getManagedDatabaseVehicle(vehicle);
+
+        // Bail out if the |subject| is not driving a vehicle, or it's not managed by this system.
+        if (!databaseVehicle) {
+            player.sendMessage(Message.VEHICLE_NOT_DRIVING, subject.name);
+            return;
+        }
+
+        const availableOptions = ['players', 'vips', 'administrators'];
+        if (player.isManagement())
+            availableOptions.push('management');
+
+        // Bail out if the |level| is empty, or not included in the |availableOptions|.
+        if (!availableOptions.includes(level)) {
+            let restriction = null;
+
+            switch (databaseVehicle.accessType) {
+                case DatabaseVehicle.ACCESS_TYPE_EVERYONE:
+                    break;
+                case DatabaseVehicle.ACCESS_TYPE_PLAYER:
+                    restriction = 'a particular player';
+                    break;
+                case DatabaseVehicle.ACCESS_TYPE_PLAYER_LEVEL:
+                    switch (databaseVehicle.accessValue) {
+                        case Player.LEVEL_PLAYER:
+                            restriction = 'players';
+                            break;
+                        case Player.LEVEL_ADMINISTRATOR:
+                            restriction = 'administrators';
+                            break;
+                        case Player.LEVEL_MANAGEMENT:
+                            restriction = 'Management members';
+                            break;
+                    }
+                    break;
+                case DatabaseVehicle.ACCESS_TYPE_PLAYER_VIP:
+                    restriction = 'VIP members';
+                    break;
+            }
+
+            player.sendMessage(restriction ? Message.VEHICLE_ACCESS_RESTRICTED
+                                           : Message.VEHICLE_ACCESS_UNRESTRICTED,
+                               vehicle.model.name, restriction);
+            player.sendMessage(Message.VEHICLE_ACCESS_USAGE, availableOptions.join('/'));
+            return;
+        }
+
+        let accessType = DatabaseVehicle.ACCESS_TYPE_EVERYONE;
+        let accessValue = 0;
+
+        let restriction = null;
+
+        switch (level) {
+            // Allows everybody to access the |vehicle|.
+            case 'players':
+                break;
+
+            // Allows VIP members to access the |vehicle|.
+            case 'vips':
+                accessType = DatabaseVehicle.ACCESS_TYPE_PLAYER_VIP;
+                restriction = 'VIP members';
+                break;
+
+            // Allows all administrators and Management members to access the |vehicle|.
+            case 'administrators':
+                accessType = DatabaseVehicle.ACCESS_TYPE_PLAYER_LEVEL;
+                accessValue = Player.LEVEL_ADMINISTRATOR;
+                restriction = 'administrators';
+                break;
+
+            // Allows all Management members to access the |vehicle|.
+            case 'management':
+                accessType = DatabaseVehicle.ACCESS_TYPE_PLAYER_LEVEL;
+                accessValue = Player.LEVEL_MANAGEMENT;
+                restriction = 'Management members';
+                break;
+        }
+
+        // Update the access value with the manager. This will update the database if necessary.
+        await this.manager_.updateVehicleAccess(vehicle, accessType, accessValue);
+
+        const announcement =
+            Message.format(restriction ? Message.VEHICLE_ANNOUNCE_ACCESS
+                                       : Message.VEHICLE_ANNOUNCE_ACCESS_LIFTED,
+                           player.name, player.id, vehicle.model.name, restriction);
+
+        this.announce_().announceToAdministrators(announcement);
+
+        player.sendMessage(Message.VEHICLE_ACCESS_CHANGED, vehicle.model.name);
     }
 
     // Called when the |player| executes `/v delete` or `/v [player] delete`, which means they wish

@@ -60,6 +60,7 @@ class VehicleStreamer extends EntityStreamerGlobal {
     //     Vehicle getLiveVehicle(storedVehicle);
     //     StoredVehicle getStoredVehicle(vehicle);
     //
+    //     void respawnUnoccupiedVehicles();
     //     bool synchronizeAccess(storedVehicle);
     //
     //     void optimise();
@@ -107,6 +108,22 @@ class VehicleStreamer extends EntityStreamerGlobal {
     // Returns the StoredVehicle that is represented by the |vehicle|. NULL when there is none.
     getStoredVehicle(vehicle) {
         return this.storedVehicles_.get(vehicle) || null;
+    }
+
+    // Respawns all vehicles that are not currently occupied by a player.
+    respawnUnoccupiedVehicles() {
+        for (const [storedVehicle, vehicle] of this.vehicles_) {
+            if (vehicle.occupantCount > 0)
+                continue;  // ignore occupied vehicles
+
+            this.respawnTokens_.delete(vehicle);
+
+            if (storedVehicle.deathFn)
+                storedVehicle.deathFn(vehicle, storedVehicle);
+
+            if (vehicle.isConnected())
+                vehicle.respawn();
+        }
     }
 
     // Synchronizes access to the vehicles for the |storedVehicle|.

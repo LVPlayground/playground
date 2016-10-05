@@ -36,7 +36,7 @@ class VehicleCommands {
             .build(VehicleCommands.prototype.onUnlockCommand.bind(this));
 
         // Command: /v [vehicle]?
-        //          /v [density/help/enter/optimise]
+        //          /v [density/help/enter/optimise/reset]
         //          /v [player]? [delete/health/pin/respawn/save/unpin]
         server.commandManager.buildCommand('v')
             .restrict(player => this.playground_().canAccessCommand(player, 'v'))
@@ -53,6 +53,9 @@ class VehicleCommands {
             .sub('optimise')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .build(VehicleCommands.prototype.onVehicleOptimiseCommand.bind(this))
+            .sub('reset')
+                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .build(VehicleCommands.prototype.onVehicleResetCommand.bind(this))
             .sub(CommandBuilder.PLAYER_PARAMETER, player => player)
                 .sub('delete')
                     .restrict(Player.LEVEL_ADMINISTRATOR)
@@ -310,7 +313,7 @@ class VehicleCommands {
         if (!player.isAdministrator())
             return;
 
-        const globalOptions = ['density', 'enter', 'help'];
+        const globalOptions = ['density', 'enter', 'help', 'reset'];
         const vehicleOptions = ['delete', 'health', 'respawn', 'save'];
 
         if (player.isManagement()) {
@@ -374,6 +377,16 @@ class VehicleCommands {
         }
 
         player.sendMessage(Message.VEHICLE_PINNED, subject.name, vehicle.name);
+    }
+
+    // Called when the |player| requests the vehicle layout to be reset.
+    onVehicleResetCommand(player) {
+        this.manager_.streamer.respawnUnoccupiedVehicles();
+
+        this.announce_().announceToAdministrators(
+            Message.VEHICLE_ANNOUNCE_RESET, player.name, player.id);
+
+        player.sendMessage(Message.VEHICLE_RESET);
     }
 
     // Called when the |player| executes `/v respawn` or `/v [player] respawn`, which means they

@@ -498,6 +498,43 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.equal(gunther.vehicle.health, 500);
     });
 
+    it('should be able to reset the vehicle layout on the server', async(assert) => {
+        // Only administrators can reset vehicles on the server.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isTrue(createVehicleForPlayer(gunther));
+        assert.isNotNull(gunther.vehicle);
+
+        const vehicle = manager.createVehicle({
+            modelId: 411 /* Infernus */,
+            position: gunther.position,
+            rotation: 90,
+            interiorId: gunther.interiorId,
+            virtualWorld: gunther.virtualWorld
+        });
+
+        assert.isNotNull(vehicle);
+        assert.isTrue(vehicle.isConnected());
+
+        assert.deepEqual(gunther.vehicle.position, gunther.position);
+        assert.deepEqual(vehicle.position, gunther.position);
+
+        gunther.vehicle.position = new Vector(200, 300, 400);
+        vehicle.position = new Vector(100, 500, 900);
+
+        assert.notDeepEqual(gunther.vehicle.position, gunther.position);
+        assert.notDeepEqual(vehicle.position, gunther.position);
+
+        assert.isTrue(await gunther.issueCommand('/v reset'));
+
+        // Gunther's vehicle is occupied so should be left alone. The |vehicle| should respawn.
+        assert.notDeepEqual(gunther.vehicle.position, gunther.position);
+        assert.deepEqual(vehicle.position, gunther.position);
+
+        assert.equal(gunther.vehicle.respawnCount, 0);
+        assert.equal(vehicle.respawnCount, 1);
+    });
+
     it('should be able to respawn vehicles on the server', async(assert) => {
         // Only administrators can respawn vehicles on the server.
         gunther.level = Player.LEVEL_ADMINISTRATOR;

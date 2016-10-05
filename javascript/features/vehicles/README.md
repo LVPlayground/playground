@@ -18,6 +18,7 @@ Furthermore, administrators are able to use the following commands:
 
   * **/v density**: Displays the density of vehicles within streaming radius around you.
   * **/v enter [seat?]**: Enters the vehicle closest to you, optionally in `seat` (0-8).
+  * **/v reset**: Resets the server to its original vehicle layout.
   * **/v [player]? delete**: Deletes either your own vehicle, or that of `player`.
   * **/v [player]? health [0-1000]?**: Displays or updates the health of either your own vehicle, or
   that of `player`.
@@ -43,6 +44,11 @@ are both based on the ID of a registered player. We encourage players to registe
 (https://sa-mp.nl/) to maximise their in-game experience.
 
 
+## FAQ: Why did we remove `/v create`?
+Because the word `create` adds little value. Get used to the new command! :-)
+
+
 ## TODO
-- Implement `/v`
-- Implement `/fixvehicles`
+- Implement `/v access`
+- Implement support for trailers in the streamer.
+- Implement the vehicle association list and limits for player vehicles.

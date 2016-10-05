@@ -234,6 +234,23 @@ class VehicleStreamer extends EntityStreamerGlobal {
         this.scheduleVehicleForRespawn(vehicle, storedVehicle);
     }
 
+    // Called when the level of |player| has changed. Their access to limited vehicles has to be
+    // updated to make sure it's in sync with their new level.
+    onPlayerLevelChange(player) {
+        for (const [storedVehicle, vehicle] of this.vehicles_) {
+            if (!vehicle.inRangeForPlayer(player))
+                continue;  // the vehicle is not visible for the |player|
+
+            const hasAccess =
+                !storedVehicle.accessFn || storedVehicle.accessFn(player, storedVehicle);
+
+            if (!hasAccess)
+                vehicle.lockForPlayer(player);
+            else
+                vehicle.unlockForPlayer(player);
+        }
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     // Called when the vehicle streams in for a particular player. Will check whether the player has

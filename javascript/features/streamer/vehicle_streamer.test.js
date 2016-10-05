@@ -299,4 +299,40 @@ describe('VehicleStreamer', it => {
         streamer.synchronizeAccess(storedVehicle);
         assert.isTrue(vehicle.isLockedForPlayer(gunther));
     });
+
+    it('should synchronize vehicle access on player level changes', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        const streamer = new VehicleStreamer();
+        const storedVehicle = createStoredVehicle({
+            accessFn: (player, storedVehicleArg) => {
+                assert.equal(storedVehicle, storedVehicleArg);
+
+                // Only administrators are allowed to access this vehicle.
+                return player.level === Player.LEVEL_ADMINISTRATOR;
+            }
+        });
+
+        assert.doesNotThrow(() => streamer.add(storedVehicle));
+
+        gunther.position = storedVehicle.position;
+
+        await streamer.stream();
+
+        const vehicle = streamer.getLiveVehicle(storedVehicle);
+        assert.isNotNull(vehicle);
+
+        vehicle.streamInForPlayer(gunther);
+
+        assert.equal(gunther.level, Player.LEVEL_PLAYER);
+        assert.isTrue(vehicle.isLockedForPlayer(gunther));
+
+        server.playerManager.onPlayerLevelChange({
+            playerid: gunther.id,
+            newlevel: 2 /* Administrator */
+        })
+
+        assert.equal(gunther.level, Player.LEVEL_ADMINISTRATOR);
+        assert.isFalse(vehicle.isLockedForPlayer(gunther));
+    });
 });

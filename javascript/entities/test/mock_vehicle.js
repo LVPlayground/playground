@@ -144,6 +144,13 @@ class MockVehicle {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Returns whether the vehicle is currently within streaming range of |player|.
+    inRangeForPlayer(player) {
+        return player.position.squaredDistanceTo(this.position_) < (300 * 300);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Called by the vehicle manager when |player| has entered this vehicle.
     onPlayerEnterVehicle(player) {
         if (player.vehicleSeat === Vehicle.SEAT_DRIVER)

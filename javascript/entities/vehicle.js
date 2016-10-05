@@ -159,6 +159,13 @@ class Vehicle {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Returns whether the vehicle is currently within streaming range of |player|.
+    inRangeForPlayer(player) {
+        return !!pawnInvoke('IsVehicleStreamedIn', 'ii', this.id_, player.id);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Called by the vehicle manager when |player| has entered this vehicle.
     onPlayerEnterVehicle(player) {
         if (player.vehicleSeat === Vehicle.SEAT_DRIVER)

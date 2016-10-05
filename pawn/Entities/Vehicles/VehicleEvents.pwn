@@ -194,14 +194,17 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
             SetVehicleZAngle(vehicleId, vehicleSpawnPosition[3]);
         }
 
+#if Feature::DisableVehicleManager == 0
         // If a player does not have access to enter a vehicle, lock its doors.
         if (VehicleAccessManager->isPlayerAllowedInVehicle(playerId, vehicleId) == false)
             SetVehicleParamsForPlayer(vehicleId, playerId, 0, 1);
+#endif  // Feature::DisableVehicleManager == 0
 
         Annotation::ExpandList<OnVehicleStreamIn>(vehicleId, playerId);
         return 1;
     }
 
+#if Feature::DisableVehicleManager == 0
     /**
      * When a player enters a vehicle, either as the driver or as one of the passengers, we'll have
      * to check whether they're actually allowed in the vehicle. Keep in mind that this method will
@@ -220,6 +223,7 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
         return true;
         #pragma unused isPassenger
     }
+#endif  // Feature::DisableVehicleManager == 0
 
     /**
      * This method will be invoked when a player leaves a vehicle. We may have to clean up after them,
@@ -306,6 +310,7 @@ public OnVehicleStreamIn(vehicleid, forplayerid) {
     return 1;
 }
 
+#if Feature::DisableVehicleManager == 0
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
     if (Player(playerid)->isConnected() == false || Player(playerid)->isNonPlayerCharacter() == true
         || Vehicle(vehicleid)->isValid() == false)
@@ -313,6 +318,7 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 
     return _: VehicleEvents(vehicleid)->onPlayerEnterVehicle(playerid, !!ispassenger);
 }
+#endif  // Feature::DisableVehicleManager == 0
 
 public OnPlayerExitVehicle(playerid, vehicleid) {
     if (Player(playerid)->isConnected() == false || Player(playerid)->isNonPlayerCharacter() == true

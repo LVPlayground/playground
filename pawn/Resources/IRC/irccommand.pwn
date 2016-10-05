@@ -75,7 +75,10 @@ RunDeprecatedIrcCommand(line[]) {
 
         ColorManager->storeExistingPlayerCustomColor(pid);
         ColorManager->setPlayerCustomColor(pid, Color::AdministratorColor);
+
+#if Feature::DisableVehicleManager == 0
         VehicleAccessManager->synchronizePlayerVehicleAccess(pid);
+#endif  // Feature::DisableVehicleManager == 0
 
         tempLevel[pid] = 2;
         format(UserTemped[pid], sizeof(UserTemped[]), "%s", szName);
@@ -107,7 +110,10 @@ RunDeprecatedIrcCommand(line[]) {
 
         Player(pid)->setLevel(PlayerLevel);
         ColorManager->restorePreviousPlayerCustomColor(pid);
+
+#if Feature::DisableVehicleManager == 0
         VehicleAccessManager->synchronizePlayerVehicleAccess(pid);
+#endif  // Feature::DisableVehicleManager == 0
 
         tempLevel[pid] = 0;
         UserTemped [pid] = "";

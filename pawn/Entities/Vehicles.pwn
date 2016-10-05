@@ -6,15 +6,19 @@
 
 #include "Entities/Vehicles/VehicleModel.pwn"
 #include "Entities/Vehicles/VehicleModelData.pwn"
+
+#if Feature::DisableVehicleManager == 0
 #include "Entities/Vehicles/VehicleSeat.pwn"
+#endif  // Feature::DisableVehicleManager == 0
+
 #include "Entities/Vehicles/Vehicle.pwn"
 #include "Entities/Vehicles/VehicleManager.pwn"
 
 #if Feature::DisableVehicleManager == 0
 #include "Entities/Vehicles/VehicleStorageManager.pwn"
+#include "Entities/Vehicles/VehicleAccessManager.pwn"
 #endif  // Feature::DisableVehicleManager == 0
 
-#include "Entities/Vehicles/VehicleAccessManager.pwn"
 #include "Entities/Vehicles/RcVehicleManager.pwn"
 
 #if Feature::DisableVehicleManager == 0

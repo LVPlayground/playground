@@ -195,6 +195,9 @@ class VehicleCommands {
     // Called when the player executes one of the quick vehicle commands, for example `/inf` and
     // `/ele`. This will create a personal vehicle for them.
     async onQuickVehicleCommand(modelId, player) {
+        // TODO: This should just be an alias for `/v [modelId]` when the spray tag requirement
+        // has been dropped, or at least changed into a progressive model.
+
         const allowed = this.playground_().canAccessCommand(player, 'v') ||
                         this.hasFinishedSprayTagCollection_(player);
 
@@ -203,41 +206,7 @@ class VehicleCommands {
             return;
         }
 
-        if (player.vehicle) {
-            player.sendMessage(Message.VEHICLE_QUICK_ALREADY_DRIVING);
-            return;
-        }
-
-        if (player.interiorId != 0 /* outside */ || player.virtualWorld != 0 /* main world */) {
-            player.sendMessage(Message.VEHICLE_QUICK_MAIN_WORLD);
-            return;
-        }
-
-        if (!this.abuse_().canSpawnVehicle(player)) {
-            player.sendMessage(Message.VEHICLE_SPAWN_REJECTED);
-            return;
-        }
-
-        const vehicleModel = VehicleModel.getById(modelId);
-        const vehicle = this.manager_.createVehicle({
-            player: player,  // associates the vehicle with the |player|
-
-            modelId: vehicleModel.id,
-            position: player.position,
-            rotation: player.rotation,
-            interiorId: player.interiorId,
-            virtualWorld: player.virtualWorld
-        });
-
-        // TODO: Give the |vehicle| a custom number plate. (Yellow for VIPs?)
-        // TODO: Give the |vehicle| nitro?
-
-        // Inform the player of their new vehicle having been created.
-        player.sendMessage(Message.VEHICLE_SPAWN_CREATED, vehicleModel.name);
-
-        // If the |vehicle| is live, teleport the |player| to the driver seat after a minor delay.
-        if (vehicle && vehicle.isConnected())
-            player.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
+        await this.onVehicleCommand(player, String(modelId));
     }
 
     // ---------------------------------------------------------------------------------------------

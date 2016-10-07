@@ -348,9 +348,14 @@ describe('VehicleManager', (it, beforeEach) => {
     });
 
     it('should limit the ephemeral vehicles to five for administrators', assert => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+        russell.identify();
+
         gunther.level = Player.LEVEL_ADMINISTRATOR;
+        russell.level = Player.LEVEL_PLAYER;
 
         assert.equal(manager.getVehicleLimitForPlayer(gunther), 5);
+        assert.equal(manager.getVehicleLimitForPlayer(russell), 1);
 
         const vehicles = [];
         for (let i = 0; i < manager.getVehicleLimitForPlayer(gunther); ++i) {
@@ -365,8 +370,22 @@ describe('VehicleManager', (it, beforeEach) => {
             }));
         }
 
+        // Create a vehicle for |russell| that should be left alone.
+        const russellVehicle = manager.createVehicle({
+            player: russell,
+
+            modelId: 520 /* Hydra */,
+            position: russell.position,
+            rotation: 270,
+            interiorId: russell.interiorId,
+            virtualWorld: russell.virtualWorld
+
+        });
+
         vehicles.forEach(vehicle =>
             assert.isTrue(vehicle.isConnected()));
+
+        assert.isTrue(russellVehicle.isConnected());
 
         // Make |gunther| enter the oldest vehicle, so that it'll be ignored for pruning.
         gunther.enterVehicle(vehicles[0], Vehicle.SEAT_DRIVER);
@@ -386,6 +405,9 @@ describe('VehicleManager', (it, beforeEach) => {
 
         // The second vehicle should have been removed.
         assert.isFalse(vehicles[1].isConnected());
+
+        // Russell's vehicle should've been left alone.
+        assert.isTrue(russellVehicle.isConnected());
     });
 
     it('should delete ephemeral vehicles on respawn', async(assert) => {

@@ -177,7 +177,11 @@ class VehicleStreamer extends EntityStreamerGlobal {
         this.vehicles_.delete(storedVehicle);
         this.storedVehicles_.delete(vehicle);
 
-        vehicle.dispose();
+        if (storedVehicle.deathFn)
+            storedVehicle.deathFn(vehicle, storedVehicle);
+
+        if (vehicle.isConnected())
+            vehicle.dispose();
     }
 
     // ---------------------------------------------------------------------------------------------

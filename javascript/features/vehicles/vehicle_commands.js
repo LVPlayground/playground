@@ -252,6 +252,21 @@ class VehicleCommands {
             return this.onVehicleHelpCommand(player);
         }
 
+        if (player.vehicle) {
+            player.sendMessage(Message.VEHICLE_QUICK_ALREADY_DRIVING);
+            return;
+        }
+
+        if (player.interiorId != 0 /* outside */ || player.virtualWorld != 0 /* main world */) {
+            player.sendMessage(Message.VEHICLE_QUICK_MAIN_WORLD);
+            return;
+        }
+
+        if (!this.abuse_().canSpawnVehicle(player)) {
+            player.sendMessage(Message.VEHICLE_SPAWN_REJECTED);
+            return;
+        }
+
         let vehicleModel = null;
 
         const potentialModelId = modelIdentifier.toSafeInteger();

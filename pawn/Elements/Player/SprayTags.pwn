@@ -37,7 +37,11 @@ new      n_TagsPlayerSprayed[MAX_PLAYERS];                 // Number of tags a p
 
 new      iSprayCanTime[MAX_PLAYERS];                       // Stores the time in which a player begins to spray and ends.
 
+#if Feature::DisableVehicleManager == 0
+
 new      sprayTagPlayerVehicle[MAX_PLAYERS] = {Vehicle::InvalidId, ...};                // Stores the vehicle ID for the spawned vehicle, which is the reward a player gets for collecting all 100 tags.
+
+#endif  // Feature::DisableVehicleManager == 0
 
 // This variable stores when the player has last used the inf command
 // We only allow players to spawn infernuses every 3 minutes to prevent abuse
@@ -56,6 +60,7 @@ enum    E_SPRAY_TAG
 }
 new sprayTag[MAX_SPRAY_TAGS][E_SPRAY_TAG];
 
+#if Feature::DisableVehicleManager == 0
 
 enum SprayTagVehicle {
     SPRAY_TAG_ELEGY,
@@ -65,6 +70,8 @@ enum SprayTagVehicle {
     SPRAY_TAG_TURISMO,
     SPRAY_TAG_VORTEX
 };
+
+#endif  // Feature::DisableVehicleManager == 0
 
 //-------------------
 
@@ -223,11 +230,13 @@ sprayTagGetPlayerCount(playerid)
     return n_TagsPlayerSprayed[playerid];
 }
 
+#if Feature::DisableVehicleManager == 0
 // Return vehicle id of the /inf car a player is driving
 sprayTagGetPlayerVehicleid(playerid)
 {
-    return sprayTagPlayerVehicle[playerid];
+    return -1; //sprayTagPlayerVehicle[playerid];
 }
+#endif  // Feature::DisableVehicleManager == 0
 
 sprayTagHasPlayerSprayedAll(playerid)
 {
@@ -286,11 +295,13 @@ sprayTagResetData(playerid)
     n_TagsPlayerSprayed[playerid] = 0;
     iSprayCanTime[playerid] = 0;
 
+#if Feature::DisableVehicleManager == 0
     if(sprayTagPlayerVehicle[playerid] != Vehicle::InvalidId)
     {
         VehicleManager->destroyVehicle(sprayTagPlayerVehicle[playerid]);
         sprayTagPlayerVehicle[playerid] = Vehicle::InvalidId;
     }
+#endif  // Feature::DisableVehicleManager == 0
 }
 
 // This is called when a player sprays a spray tag
@@ -458,6 +469,8 @@ public OnSprayTagPlayerDataAvailable(resultId, playerId) {
     DatabaseResult(resultId)->free();
 }
 
+#if Feature::DisableVehicleManager == 0
+
 // This function is called when a player types the /inf or /nrg commands,
 // which is an unlockable command for players who spray all 100 tags.
 sprayTagOnVehicleCommand(playerid, params[], SprayTagVehicle: vehicleType)
@@ -585,3 +598,5 @@ sprayTagOnVehicleSpawn(vehicleid)
         }
     }
 }
+
+#endif  // Feature::DisableVehicleManager == 0

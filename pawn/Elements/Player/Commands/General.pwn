@@ -196,6 +196,8 @@ lvp_Teles(playerid, params[])
     return 1;
 }
 
+#if Feature::DisableVehicleManager == 0
+
 // Spawn an Elegy. Only if players have sprayed all 100 tags.
 // This is handled in Elements/Player/SprayTags.pwn
 lvp_Ele(playerid, params[])
@@ -237,6 +239,8 @@ lvp_Vor(playerid, params[])
 {
     return sprayTagOnVehicleCommand(playerid, params, SPRAY_TAG_VORTEX);
 }
+
+#endif  // Feature::DisableVehicleManager == 0
 
 // /cmds
 lvp_cmds(playerid, params[])

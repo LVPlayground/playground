@@ -513,6 +513,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(cd,             2, PlayerLevel);
     lvp_command(World,          5, PlayerLevel);
 
+#if Feature::DisableVehicleManager == 0
     // Spawn vehicle commands.
     lvp_command(Ele,            3, PlayerLevel);
     lvp_command(Inf,            3, PlayerLevel);
@@ -520,6 +521,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(Sul,            3, PlayerLevel);
     lvp_command(Tur,            3, PlayerLevel);
     lvp_command(Vor,            3, PlayerLevel);
+#endif  // Feature::DisableVehicleManager == 0
 
     // General player commands:
 	lvp_command(Ignore,         6, PlayerLevel);

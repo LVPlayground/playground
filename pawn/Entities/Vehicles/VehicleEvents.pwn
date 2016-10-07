@@ -136,7 +136,9 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
         SetVehicleVirtualWorld(vehicleId, 0 /* World::MainWorld */);
 
         // Further handling for other features.
+#if Feature::DisableVehicleManager == 0
         sprayTagOnVehicleSpawn(vehicleId);
+#endif  // Feature::DisableVehicleManager == 0
         CBomb__ResetVehicleData(vehicleId);
         CCrush__Reset(vehicleId);
         CShell__VehicleSpawn(vehicleId);

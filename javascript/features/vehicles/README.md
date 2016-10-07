@@ -14,6 +14,15 @@ regulated by the `/lvp access` command provided by the [playground](../playgroun
   * **/lock**: Locks the vehicle you're currently driving in.
   * **/unlock**: Unlocks the vehicle you're currently driving in.
 
+Players having collected all spray tags are able to use the following commands:
+
+  * **/ele**: Spawns an Elegy.
+  * **/inf**: Spawns an Infernus.
+  * **/nrg**: Spawns a NRG-500.
+  * **/sul**: Spawns a Sultan.
+  * **/tur**: Spawns a Turismo.
+  * **/vor**: Spawns a Vortex.
+
 Furthermore, administrators are able to use the following commands:
 
   * **/v density**: Displays the density of vehicles within streaming radius around you.

@@ -14,6 +14,16 @@ const MaximumVehicleDistance = 10;
 const MaximumModelsInArea = 50;
 const MaximumVehiclesInArea = 90;
 
+// Mapping of vehicle commands to model Ids that should be created for quick access.
+const QuickVehicleCommands = {
+    ele: 562,
+    inf: 411,
+    nrg: 522,
+    sul: 560,
+    tur: 451,
+    vor: 539
+};
+
 // Responsible for providing the commands associated with vehicles. Both players and administrators
 // can create vehicles. Administrators can save, modify and delete vehicles as well.
 class VehicleCommands {
@@ -35,6 +45,12 @@ class VehicleCommands {
         // Command: /unlock
         server.commandManager.buildCommand('unlock')
             .build(VehicleCommands.prototype.onUnlockCommand.bind(this));
+
+        // Quick vehicle commands.
+        for (const [command, modelId] of Object.entries(QuickVehicleCommands)) {
+            server.commandManager.buildCommand(command)
+                .build(VehicleCommands.prototype.onQuickVehicleCommand.bind(this, modelId));
+        }
 
         // Command: /v [vehicle]?
         //          /v [density/enter/help/optimise/reset]
@@ -170,6 +186,34 @@ class VehicleCommands {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Called when the player executes one of the quick vehicle commands, for example `/inf` and
+    // `/ele`. This will create a personal vehicle for them.
+    async onQuickVehicleCommand(modelId, player) {
+        // TODO: Verify that the |player| can use this command.
+        // TODO: Should the ability to use /v be able to override this?
+        // TODO: Disable when |player| is currently in a vehicle.
+
+        const vehicleModel = VehicleModel.getById(modelId);
+        const vehicle = this.manager_.createVehicle({
+            player: player,  // associates the vehicle with the |player|
+
+            modelId: vehicleModel.id,
+            position: player.position,
+            rotation: player.rotation,
+            interiorId: player.interiorId,
+            virtualWorld: player.virtualWorld
+        });
+
+        // Inform the player of their new vehicle having been created.
+        player.sendMessage(Message.VEHICLE_SPAWN_CREATED, vehicleModel.name);
+
+        // If the |vehicle| is live, teleport the |player| to the driver seat after a minor delay.
+        if (vehicle && vehicle.isConnected())
+            player.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Called when a player executes `/v` or `/v [vehicle]`, which can be either a vehicle Id or
     // part of a vehicle's name. The vehicle will be created for them.
     async onVehicleCommand(player, modelIdentifier) {
@@ -207,10 +251,7 @@ class VehicleCommands {
         player.sendMessage(Message.VEHICLE_SPAWN_CREATED, vehicleModel.name);
 
         // If the |vehicle| is live, teleport the |player| to the driver seat after a minor delay.
-        if (!vehicle)
-            return;
-
-        if (vehicle.isConnected())
+        if (vehicle && vehicle.isConnected())
             player.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
     }
 
@@ -579,6 +620,9 @@ class VehicleCommands {
 
     dispose() {
         this.unregisterTrackedCommands(this.playground_());
+
+        for (const command of Object.keys(QuickVehicleCommands))
+            server.commandManager.removeCommand(command);
 
         server.commandManager.removeCommand('v');
 

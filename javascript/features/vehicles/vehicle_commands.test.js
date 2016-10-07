@@ -183,6 +183,31 @@ describe('VehicleCommands', (it, beforeEach) => {
         }
     });
 
+    it('should enable players to use the quick vehicle commands', async(assert) => {
+        assert.equal(manager.getVehicleLimitForPlayer(gunther), 1);
+
+        const commands = ['ele', 'inf', 'nrg', 'sul', 'tur', 'vor'];
+        let previousVehicle = null;
+
+        for (const command of commands) {
+            assert.isTrue(await gunther.issueCommand('/' + command));
+            assert.equal(gunther.messages.length, 1);
+
+            if (previousVehicle)
+                assert.isFalse(previousVehicle.isConnected());
+
+            assert.isNotNull(gunther.vehicle);
+            assert.isTrue(gunther.vehicle.model.name.toLowerCase().includes(command));
+
+            previousVehicle = gunther.vehicle;
+
+            // Teleport |gunther| out of their vehicle.
+            gunther.position = gunther.vehicle.position;
+
+            gunther.clearMessages();
+        }
+    });
+
     // TODO: We'll actually want to make this available to all the players.
     // See the following issue: https://github.com/LVPlayground/playground/issues/330
     it('should limit /v to administrators only', async(assert) => {
@@ -773,6 +798,6 @@ describe('VehicleCommands', (it, beforeEach) => {
         commands.dispose();
         commands.dispose = () => true;
 
-        assert.equal(server.commandManager.size, originalCommandCount - 3);
+        assert.equal(server.commandManager.size, originalCommandCount - 9);
     });
 });

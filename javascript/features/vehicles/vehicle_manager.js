@@ -133,7 +133,7 @@ class VehicleManager {
     // Returns whether the |vehicle| is a persistent vehicle managed by the VehicleManager.
     isPersistentVehicle(vehicle) {
         const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
-        if (!databaseVehicle)
+        if (!databaseVehicle || !(databaseVehicle instanceof DatabaseVehicle))
             return false;
 
         return databaseVehicle.isPersistent();
@@ -142,7 +142,7 @@ class VehicleManager {
     // Updates the |vehicle|'s |accessType| and |accessValue| in all places where it's stored.
     async updateVehicleAccess(vehicle, accessType, accessValue) {
         const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
-        if (!databaseVehicle)
+        if (!databaseVehicle || !(databaseVehicle instanceof DatabaseVehicle))
             throw new Error('The given |vehicle| is not managed by the vehicle manager.');
 
         databaseVehicle.accessType = accessType;
@@ -157,7 +157,7 @@ class VehicleManager {
     // vehicle will be reset prior to the actual respawn.
     respawnVehicle(vehicle) {
         const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
-        if (databaseVehicle)
+        if (databaseVehicle && databaseVehicle instanceof DatabaseVehicle)
             this.enforceVehicleAccess(databaseVehicle, false /* sync */);
 
         vehicle.respawn();
@@ -167,7 +167,7 @@ class VehicleManager {
     // vehicle will be updated. Otherwise it will be stored as a new persistent vehicle.
     async storeVehicle(vehicle) {
         const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
-        if (!databaseVehicle)
+        if (!databaseVehicle || !(databaseVehicle instanceof DatabaseVehicle))
             throw new Error('The given |vehicle| is not managed by the vehicle manager.');
 
         const occupants = new Map();
@@ -246,7 +246,7 @@ class VehicleManager {
     // will be asynchronously deleted from the database if it's persistent.
     async deleteVehicle(vehicle) {
         const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
-        if (!databaseVehicle)
+        if (!databaseVehicle || !(databaseVehicle instanceof DatabaseVehicle))
             throw new Error('The given |vehicle| is not managed by the vehicle manager.');
 
         this.internalDeleteVehicle(databaseVehicle);

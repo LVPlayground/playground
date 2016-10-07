@@ -12,11 +12,12 @@ describe('HouseEntranceController', (it, beforeEach) => {
     let friendsFeature = null;  // MockFriends
     let locationFeature = null;  // MockLocation
 
+    let abuse = null;  // Abuse
     let manager = null;  // HouseManager
     let controller = null;  // HouseEntranceController
 
     beforeEach(async(assert) => {
-        ({ manager } = await createTestEnvironment());
+        ({ abuse, manager } = await createTestEnvironment());
 
         friendsFeature = server.featureManager.getFeatureForTests('friends');
         locationFeature = server.featureManager.getFeatureForTests('location');
@@ -88,10 +89,10 @@ describe('HouseEntranceController', (it, beforeEach) => {
 
         assert.equal(locationFeature.portalCount, occupiedLocationCount);
 
-        const reloadedLocationFeature = new MockLocation();
+        server.featureManager.liveReload('location');
 
-        // Fake a reload of the Location feature that normally would be done by the Feature Manager.
-        controller.recreateLocationPortals(reloadedLocationFeature);
+        const reloadedLocationFeature = server.featureManager.getFeatureForTests('location');
+        assert.notEqual(reloadedLocationFeature, locationFeature);
 
         assert.equal(reloadedLocationFeature.portalCount, occupiedLocationCount);
     });

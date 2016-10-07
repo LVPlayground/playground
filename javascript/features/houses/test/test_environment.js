@@ -4,6 +4,7 @@
 
 const Economy = require('features/economy/economy.js');
 const Houses = require('features/houses/houses.js');
+const MockAbuse = require('features/abuse/test/mock_abuse.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 const MockFriends = require('features/friends/test/mock_friends.js');
 const MockGangs = require('features/gangs/test/mock_gangs.js');
@@ -14,6 +15,7 @@ const Streamer = require('features/streamer/streamer.js');
 // Exports a function that fully initializes a test environment for the houses feature.
 exports = async function createTestEnvironment() {
     server.featureManager.registerFeaturesForTests({
+        abuse: MockAbuse,
         announce: MockAnnounce,
         economy: Economy,
         friends: MockFriends,
@@ -26,12 +28,14 @@ exports = async function createTestEnvironment() {
 
     server.featureManager.loadFeature('houses');
 
+    const abuse = server.featureManager.getFeatureForTests('abuse');
     const houses = server.featureManager.getFeatureForTests('houses');
     const streamer = server.featureManager.getFeatureForTests('streamer');
 
     await houses.manager_.ready;
 
     return {
+        abuse: abuse,
         commands: houses.commands_,
         manager: houses.manager_,
         streamer: streamer

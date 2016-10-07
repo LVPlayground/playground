@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const DatabaseVehicle = require('features/vehicles/database_vehicle.js');
+const MockAbuse = require('features/abuse/test/mock_abuse.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 const MockPlayground = require('features/playground/test/mock_playground.js');
 const Streamer = require('features/streamer/streamer.js');
@@ -10,6 +11,7 @@ const VehicleManager = require('features/vehicles/vehicle_manager.js');
 const Vehicles = require('features/vehicles/vehicles.js');
 
 describe('VehicleCommands', (it, beforeEach) => {
+    let abuse = null;
     let commands = null;
     let gunther = null;
     let playground = null;
@@ -20,6 +22,7 @@ describe('VehicleCommands', (it, beforeEach) => {
         gunther.identify({ userId: 42 });
 
         server.featureManager.registerFeaturesForTests({
+            abuse: MockAbuse,
             announce: MockAnnounce,
             playground: MockPlayground,
             streamer: Streamer,
@@ -28,6 +31,8 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         const vehicles = server.featureManager.loadFeature('vehicles');
         
+        abuse = server.featureManager.loadFeature('abuse');
+
         playground = server.featureManager.loadFeature('playground');
         playground.access.addException('v', gunther);
 
@@ -271,6 +276,20 @@ describe('VehicleCommands', (it, beforeEach) => {
             assert.isNull(gunther.vehicle);
 
             gunther.clearMessages();
+            gunther.interiorId = 0;
+        }
+
+        // (6) Players must not have been refused from spawning vehicles.
+        {
+            abuse.toggleSpawnVehicleForTests(gunther, false);
+
+            assert.isTrue(await gunther.issueCommand('/inf'));
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(gunther.messages[0], Message.VEHICLE_SPAWN_REJECTED);
+            assert.isNull(gunther.vehicle);
+
+            gunther.clearMessages();
+            abuse.toggleSpawnVehicleForTests(gunther, true);
         }
     });
 

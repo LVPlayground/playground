@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const DatabaseVehicle = require('features/vehicles/database_vehicle.js');
+const MockAbuse = require('features/abuse/test/mock_abuse.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 const MockPlayground = require('features/playground/test/mock_playground.js');
 const Streamer = require('features/streamer/streamer.js');
@@ -31,6 +32,7 @@ describe('VehicleManager', (it, beforeEach) => {
         gunther.position = POSITION;
 
         server.featureManager.registerFeaturesForTests({
+            abuse: MockAbuse,
             announce: MockAnnounce,
             playground: MockPlayground,
             streamer: Streamer,

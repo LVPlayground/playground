@@ -2,15 +2,17 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const InteriorAbuseManager = require('features/location/interior_abuse_manager.js');
 const InteriorManager = require('features/location/interior_manager.js');
+const MockAbuse = require('features/abuse/test/mock_abuse.js');
 const Portal = require('features/location/portal.js');
 
 describe('InteriorManager', (it, beforeEach, afterEach) => {
     let manager = null;
 
     beforeEach(() => {
-        manager = new InteriorManager(new InteriorAbuseManager());
+        const abuse = new MockAbuse();
+
+        manager = new InteriorManager(() => abuse);
         manager.loadPortalFile('data/portals/ammunation.json');
     });
 

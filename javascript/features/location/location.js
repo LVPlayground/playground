@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 const Feature = require('components/feature_manager/feature.js');
-const InteriorAbuseManager = require('features/location/interior_abuse_manager.js');
 const InteriorManager = require('features/location/interior_manager.js');
 
 // The pattern selecting the appropriate files for the interior portals.
@@ -15,8 +14,6 @@ class Location extends Feature {
     constructor() {
         super();
 
-        this.interiorAbuseManager_ = new InteriorAbuseManager();
-
         this.interiorManager_ = new InteriorManager(this.interiorAbuseManager_);
 
         // Load all the portal definition files and create portals for them through the interior
@@ -26,11 +23,6 @@ class Location extends Feature {
     }
 
     // ---------------------------------------------------------------------------------------------
-
-    // Returns whether the |player| is allowed to teleport right now.
-    canPlayerTeleport(player) {
-        return this.interiorAbuseManager_.canPlayerTeleport(player);
-    }
 
     // Creates the teleportation |portal| in the Interior Manager. The |portal| must be a complete
     // instance of the Portal class.
@@ -64,9 +56,6 @@ class Location extends Feature {
     dispose() {
         this.interiorManager_.dispose();
         this.interiorManager_ = null;
-
-        this.interiorAbuseManager_.dispose();
-        this.interiorAbuseManager_ = null;
     }
 }
 

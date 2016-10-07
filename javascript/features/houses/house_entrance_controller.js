@@ -16,9 +16,10 @@ const HOUSE_AVAILABLE_LABEL_DRAW_DISTANCE = 20;
 // house when it's available. Occupied houses will use a Portal provided by the Location Feature for
 // creating an entrance and exit, still guarded by this class' permission checking.
 class HouseEntranceController {
-    constructor(manager, economy, friends, gangs, locationFeature) {
+    constructor(manager, abuse, economy, friends, gangs, locationFeature) {
         this.entities_ = new ScopedEntities();
 
+        this.abuse_ = abuse;
         this.manager_ = manager;
         this.economy_ = economy;
         this.friends_ = friends;
@@ -271,6 +272,11 @@ class HouseEntranceController {
         if (!player.isRegistered()) {
             player.sendMessage(Message.HOUSE_NO_ACCESS_UNREGISTERED, location.settings.ownerName);
             return false;
+        }
+
+        if (!this.abuse_().canTeleport(player)) {
+            player.sendMessage(Message.HOUSE_NO_TELEPORT, location.settings.ownerName);
+            return;
         }
 
         if (player.userId == location.settings.ownerId)

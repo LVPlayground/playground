@@ -27,9 +27,10 @@ const QuickVehicleCommands = {
 // Responsible for providing the commands associated with vehicles. Both players and administrators
 // can create vehicles. Administrators can save, modify and delete vehicles as well.
 class VehicleCommands {
-    constructor(manager, announce, playground) {
+    constructor(manager, abuse, announce, playground) {
         this.manager_ = manager;
 
+        this.abuse_ = abuse;
         this.announce_ = announce;
 
         this.playground_ = playground;
@@ -212,7 +213,10 @@ class VehicleCommands {
             return;
         }
 
-        // TODO: Connect to the AbuseManager to determine whether they've been fighting.
+        if (!this.abuse_().canSpawnVehicle(player)) {
+            player.sendMessage(Message.VEHICLE_SPAWN_REJECTED);
+            return;
+        }
 
         const vehicleModel = VehicleModel.getById(modelId);
         const vehicle = this.manager_.createVehicle({

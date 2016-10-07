@@ -20,9 +20,10 @@ const IDENTITY_BEAM_DISPLAY_TIME_MS = 60000;
 // This class provides the `/house` command available to administrators to manage parts of the
 // Houses feature on Las Venturas Playground. Most interaction occurs through dialogs.
 class HouseCommands {
-    constructor(manager, announce, economy, location, playground) {
+    constructor(manager, abuse, announce, economy, location, playground) {
         this.manager_ = manager;
 
+        this.abuse_ = abuse;
         this.announce_ = announce;
         this.economy_ = economy;
         this.location_ = location;
@@ -278,7 +279,7 @@ class HouseCommands {
         let nickname = null;
 
         // Bail out if the |player| is not currently allowed to teleport.
-        if (!this.location_().canPlayerTeleport(player)) {
+        if (!this.abuse_().canTeleport(player)) {
             player.sendMessage(Message.HOUSE_GOTO_TELEPORT_BLOCKED);
             return;
         }

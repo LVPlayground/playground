@@ -11,6 +11,7 @@ const ParkingLotCreator = require('features/houses/utils/parking_lot_creator.js'
 const PlayerMoneyBridge = require('features/houses/utils/player_money_bridge.js');
 
 describe('HouseCommands', (it, beforeEach) => {
+    let abuse = null;
     let commands = null;
     let location = null;
     let manager = null;
@@ -18,7 +19,7 @@ describe('HouseCommands', (it, beforeEach) => {
     let streamer = null;
 
     beforeEach(async(assert) => {
-        ({ commands, manager, streamer } = await createTestEnvironment());
+        ({ abuse, commands, manager, streamer } = await createTestEnvironment());
 
         location = server.featureManager.createDependencyWrapperForFeature('location');
 
@@ -401,7 +402,7 @@ describe('HouseCommands', (it, beforeEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 42 });
 
-        location().toggleInteriorAbuser(gunther, true);
+        abuse.toggleTeleportForTests(gunther, false);
 
         assert.isTrue(await gunther.issueCommand('/house goto'));
 

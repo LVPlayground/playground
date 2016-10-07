@@ -32,7 +32,8 @@ testRunner.run('.*\.test\.js').then(notifyReady).then(() => {
     server = new Server();
     server.featureManager.loadFeatures([
         // Foundational features
-        'announce', 'communication', 'economy', 'location', 'logger', 'minigames', 'streamer',
+        'abuse', 'announce', 'communication', 'economy', 'location', 'logger', 'minigames',
+        'streamer',
 
         // Gang-related features
         'gang_chat', 'gangs',

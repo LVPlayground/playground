@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 const Feature = require('components/feature_manager/feature.js');
-const InteriorAbuseManager = require('features/location/interior_abuse_manager.js');
 const InteriorManager = require('features/location/interior_manager.js');
 
 // Mocked version of the Location feature providing the API interfaces.
@@ -11,21 +10,13 @@ class MockLocation extends Feature {
     constructor() {
         super();
 
-        this.interiorAbuseManager_ = new InteriorAbuseManager();
-        this.interiorManager_ = new InteriorManager(this.interiorAbuseManager_);
+        // Used to determine whether a player is able to teleport or not.
+        const abuse = this.defineDependency('abuse', true /* isFunctional */);
 
-        this.interiorAbusers_ = new WeakSet();
+        this.interiorManager_ = new InteriorManager(abuse);
     }
 
     // ---------------------------------------------------------------------------------------------
-
-    // Returns whether the |player| is allowed to teleport right now.
-    canPlayerTeleport(player) {
-        if (this.interiorAbusers_.has(player))
-            return false;
-
-        return this.interiorAbuseManager_.canPlayerTeleport(player);
-    }
 
     // Creates the teleportation |portal| in the Interior Manager. The |portal| must be a complete
     // instance of the Portal class.
@@ -56,22 +47,11 @@ class MockLocation extends Feature {
     // Gets the number of portals that have been created in the interior manager.
     get portalCount() { return this.interiorManager_.portalCount; }
 
-    // Toggles whether the |player| should be recognized as an interior abuser.
-    toggleInteriorAbuser(player, abuser = true) {
-        if (abuser)
-            this.interiorAbusers_.add(player);
-        else
-            this.interiorAbusers_.delete(player);
-    }
-
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
         this.interiorManager_.dispose();
         this.interiorManager_ = null;
-
-        this.interiorAbuseManager_.dispose();
-        this.interiorAbuseManager_ = null;
     }
 }
 

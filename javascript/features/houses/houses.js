@@ -17,6 +17,9 @@ class Houses extends Feature {
     constructor() {
         super();
 
+        // Determines whether a player is allowed to teleport into a house right now.
+        const abuse = this.defineDependency('abuse', true /* isFunctional */);
+
         // Various actions will result in announcements being made to administrators.
         const announce = this.defineDependency('announce', true /* isFunctional */);
 
@@ -36,13 +39,15 @@ class Houses extends Feature {
         // The streamer will be used for creation of house vehicles.
         const streamer = this.defineDependency('streamer', true /* isFunctional */);
 
-        this.manager_ = new HouseManager(economy, friends, gangs, location, streamer);
+        this.manager_ = new HouseManager(abuse, economy, friends, gangs, location, streamer);
         this.manager_.registerExtension(new PropertySettings(this.manager_));
         this.manager_.registerExtension(new VisitorLog(this.manager_));
 
         this.manager_.loadHousesFromDatabase();
 
-        this.commands_ = new HouseCommands(this.manager_, announce, economy, location, playground);
+        this.commands_ = new HouseCommands(
+            this.manager_, abuse, announce, economy, location, playground);
+
         this.natives_ = new HouseNatives(this.manager_);
     }
 

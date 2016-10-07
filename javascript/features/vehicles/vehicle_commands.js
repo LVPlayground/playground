@@ -38,6 +38,11 @@ class VehicleCommands {
 
         this.registerTrackedCommands(playground());
 
+        // Function that checks whether the |player| has sprayed all tags. Will be overridden by
+        // tests to prevent accidentially hitting the Pawn code.
+        this.hasFinishedSprayTagCollection_ = player =>
+            !!pawnInvoke('OnHasFinishedSprayTagCollection', 'i', player.id);
+
         // Command: /lock
         server.commandManager.buildCommand('lock')
             .build(VehicleCommands.prototype.onLockCommand.bind(this));
@@ -189,9 +194,16 @@ class VehicleCommands {
     // Called when the player executes one of the quick vehicle commands, for example `/inf` and
     // `/ele`. This will create a personal vehicle for them.
     async onQuickVehicleCommand(modelId, player) {
-        // TODO: Verify that the |player| can use this command.
-        // TODO: Should the ability to use /v be able to override this?
+        const allowed = this.playground_().canAccessCommand(player, 'v') ||
+                        this.hasFinishedSprayTagCollection_(player);
+
+        if (!allowed) {
+            player.sendMessage(Message.VEHICLE_QUICK_SPRAY_TAGS);
+            return;
+        }
+
         // TODO: Disable when |player| is currently in a vehicle.
+        // TODO: Disable when |player| is not outside in the main world.
 
         const vehicleModel = VehicleModel.getById(modelId);
         const vehicle = this.manager_.createVehicle({
@@ -203,6 +215,9 @@ class VehicleCommands {
             interiorId: player.interiorId,
             virtualWorld: player.virtualWorld
         });
+
+        // TODO: Give the |vehicle| a custom number plate. (Yellow for VIPs?)
+        // TODO: Give the |vehicle| nitro?
 
         // Inform the player of their new vehicle having been created.
         player.sendMessage(Message.VEHICLE_SPAWN_CREATED, vehicleModel.name);

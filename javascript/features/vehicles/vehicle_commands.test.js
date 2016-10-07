@@ -12,6 +12,7 @@ const Vehicles = require('features/vehicles/vehicles.js');
 describe('VehicleCommands', (it, beforeEach) => {
     let commands = null;
     let gunther = null;
+    let playground = null;
     let manager = null;
 
     beforeEach(async(assert) => {
@@ -26,11 +27,13 @@ describe('VehicleCommands', (it, beforeEach) => {
         });
 
         const vehicles = server.featureManager.loadFeature('vehicles');
-        const playground = server.featureManager.loadFeature('playground');
-
+        
+        playground = server.featureManager.loadFeature('playground');
         playground.access.addException('v', gunther);
 
         commands = vehicles.commands_;
+        commands.hasFinishedSprayTagCollection_ = player => false;
+
         manager = vehicles.manager_;
         await manager.ready;
     });
@@ -180,6 +183,62 @@ describe('VehicleCommands', (it, beforeEach) => {
             assert.equal(
                 russell.messages[0],
                 Message.format(Message.VEHICLE_UNLOCK_REDUNDANT, russell.vehicle.model.name));
+        }
+    });
+
+    it('should enable the quick vehicle commands based on their requirements', async(assert) => {
+        let finishedSprayTagCollection = false;
+
+        const toggleCommand = enabled => {
+            if (enabled)
+                playground.access.addException('v', gunther);
+            else
+                playground.access.removeException('v', gunther);
+        };
+
+        const toggleSprayTags = enabled =>
+            finishedSprayTagCollection = enabled;
+
+        // Now make sure that we're in control of the spray tag access check.
+        commands.hasFinishedSprayTagCollection_ = player => finishedSprayTagCollection;
+
+        // (1) Players who can neither use `/v`, nor have all spray tags, can use these commands.
+        {
+            toggleCommand(false);
+            toggleSprayTags(false);
+
+            assert.isTrue(await gunther.issueCommand('/inf'));
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(gunther.messages[0], Message.VEHICLE_QUICK_SPRAY_TAGS);
+            assert.isNull(gunther.vehicle);
+
+            gunther.clearMessages();
+        }
+
+        // (2) Players who are allowed to use `/v` can use the commands.
+        {
+            toggleCommand(true);
+            toggleSprayTags(false);
+
+            assert.isTrue(await gunther.issueCommand('/inf'));
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(
+                gunther.messages[0], Message.format(Message.VEHICLE_SPAWN_CREATED, 'Infernus'));
+            assert.isNotNull(gunther.vehicle);
+
+            gunther.clearMessages();
+        }
+
+        // (3) Players who have collected all spray tags can use the commands.
+        {
+            toggleCommand(false);
+            toggleSprayTags(true);
+
+            assert.isTrue(await gunther.issueCommand('/nrg'));
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(
+                gunther.messages[0], Message.format(Message.VEHICLE_SPAWN_CREATED, 'NRG-500'));
+            assert.isNotNull(gunther.vehicle);
         }
     });
 

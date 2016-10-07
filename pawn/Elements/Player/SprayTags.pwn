@@ -247,6 +247,12 @@ sprayTagHasPlayerSprayedAll(playerid)
     return 0;
 }
 
+// Used by JavaScript for the quick vehicle commands.
+forward OnHasFinishedSprayTagCollection(playerId);
+public OnHasFinishedSprayTagCollection(playerId) {
+    return sprayTagGetPlayerCount(playerId) == sprayTagGetCount();
+}
+
 // This is called from OnPlayerConnect and
 // updates all spray tags for a player by setting them as either
 // sprayed or not.

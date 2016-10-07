@@ -227,6 +227,7 @@ describe('VehicleCommands', (it, beforeEach) => {
             assert.isNotNull(gunther.vehicle);
 
             gunther.clearMessages();
+            gunther.leaveVehicle();
         }
 
         // (3) Players who have collected all spray tags can use the commands.
@@ -239,6 +240,37 @@ describe('VehicleCommands', (it, beforeEach) => {
             assert.equal(
                 gunther.messages[0], Message.format(Message.VEHICLE_SPAWN_CREATED, 'NRG-500'));
             assert.isNotNull(gunther.vehicle);
+
+            gunther.clearMessages();
+            gunther.leaveVehicle();
+        }
+
+        // (4) Players may not be in a vehicle when using this command.
+        {
+            assert.isTrue(createVehicleForPlayer(gunther));
+            assert.isNotNull(gunther.vehicle);
+
+            const originalVehicle = gunther.vehicle;
+
+            assert.isTrue(await gunther.issueCommand('/inf'));
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(gunther.messages[0], Message.VEHICLE_QUICK_ALREADY_DRIVING);
+            assert.equal(gunther.vehicle, originalVehicle);
+
+            gunther.clearMessages();
+            gunther.leaveVehicle();
+        }
+
+        // (5) Players must be outside in the main world in order to use the command.
+        {
+            gunther.interiorId = 7;
+
+            assert.isTrue(await gunther.issueCommand('/inf'));
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(gunther.messages[0], Message.VEHICLE_QUICK_MAIN_WORLD);
+            assert.isNull(gunther.vehicle);
+
+            gunther.clearMessages();
         }
     });
 

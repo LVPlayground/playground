@@ -250,6 +250,8 @@
     "VEHICLE_NOT_DRIVING_SELF": "@error You need to be in a public vehicle in order to use this command.",
     "VEHICLE_OPTIMISED": "@success The vehicle streamer has been optimised.",
     "VEHICLE_PINNED": "@success %s's %s has been pinned with the streamer.",
+    "VEHICLE_QUICK_ALREADY_DRIVING": "@error Sorry, but you're already driving a vehicle!",
+    "VEHICLE_QUICK_MAIN_WORLD": "@error Sorry, but you need to be outside in the main world to use this command!",
     "VEHICLE_QUICK_SPRAY_TAGS": "@error Sorry, you need to collect all spray tags to use this command!",
     "VEHICLE_RESET": "@success The vehicle layout has been reset.",
     "VEHICLE_RESPAWNED": "@success The %s has been respawned.",

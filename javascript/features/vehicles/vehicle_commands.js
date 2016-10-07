@@ -202,8 +202,17 @@ class VehicleCommands {
             return;
         }
 
-        // TODO: Disable when |player| is currently in a vehicle.
-        // TODO: Disable when |player| is not outside in the main world.
+        if (player.vehicle) {
+            player.sendMessage(Message.VEHICLE_QUICK_ALREADY_DRIVING);
+            return;
+        }
+
+        if (player.interiorId != 0 /* outside */ || player.virtualWorld != 0 /* main world */) {
+            player.sendMessage(Message.VEHICLE_QUICK_MAIN_WORLD);
+            return;
+        }
+
+        // TODO: Connect to the AbuseManager to determine whether they've been fighting.
 
         const vehicleModel = VehicleModel.getById(modelId);
         const vehicle = this.manager_.createVehicle({

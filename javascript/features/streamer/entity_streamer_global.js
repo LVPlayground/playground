@@ -111,7 +111,7 @@ class EntityStreamerGlobal extends EntityStreamer {
         }
 
         // Make sure that the entity has been created if it doesn't exist yet.
-        if (!storedEntity.activeReferences)
+        if (!storedEntity.isConnected())
             this.internalCreateEntity(storedEntity);
     }
 
@@ -144,6 +144,8 @@ class EntityStreamerGlobal extends EntityStreamer {
         // Only delete the |storedEntity| if there are no further references to it.
         if (storedEntity.activeReferences)
             return;
+
+        storedEntity.setLiveEntity(null);
 
         this.activeEntities_--;
         this.deleteEntity(storedEntity);
@@ -222,16 +224,19 @@ class EntityStreamerGlobal extends EntityStreamer {
             if (!this.disposableEntities_ || !this.disposableEntities_.size)
                 throw new Error('Reached the entity limit without anything to dispose.');
 
+            const disposableEntity = this.disposableEntities_.pop();
+            disposableEntity.setLiveEntity(null);
+            
+            this.deleteEntity(disposableEntity);
             this.activeEntities_--;
-            this.deleteEntity(this.disposableEntities_.pop());
             
         }
 
         // Remove the |storedEntity| from the disposable entities if it's listed there. Create the
         // entity using the actual entity streamer when that's not the case.
         if (!this.disposableEntities_ || !this.disposableEntities_.delete(storedEntity)) {
+            storedEntity.setLiveEntity(this.createEntity(storedEntity));
             this.activeEntities_++;
-            this.createEntity(storedEntity);
         }
     }
 
@@ -252,8 +257,10 @@ class EntityStreamerGlobal extends EntityStreamer {
             return;
         }
 
-        this.activeEntities_--;
+        storedEntity.setLiveEntity(null);
+        
         this.deleteEntity(storedEntity);
+        this.activeEntities_--;
     }
 
     // ---------------------------------------------------------------------------------------------

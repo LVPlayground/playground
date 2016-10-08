@@ -166,6 +166,8 @@ class VehicleStreamer extends EntityStreamerGlobal {
 
         this.vehicles_.set(storedVehicle, vehicle);
         this.storedVehicles_.set(vehicle, storedVehicle);
+
+        return vehicle;
     }
 
     // Destroys the vehicle represented by |storedVehicle|.

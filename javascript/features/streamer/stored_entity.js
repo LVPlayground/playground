@@ -18,7 +18,16 @@ class StoredEntity {
         // Reference counts for this stored entity.
         this.activeReferences_ = 0;
         this.totalReferences_ = 0;
+
+        // Whether or not this stored entity has been created on the server.
+        this.liveEntity_ = null;
     }
+
+    // Returns whether this stored entity is connected ("created") on the server.
+    isConnected() { return this.liveEntity_ !== null; }
+
+    // Gets the live entity that represents this stored entity.
+    get liveEntity() { return this.liveEntity_; }
 
     // Gets the model Id associated with this entity.
     get modelId() { return this.modelId_; }
@@ -62,6 +71,11 @@ class StoredEntity {
 
     // Gets the total number of references to this entity.
     get totalReferences() { return this.totalReferences_; }
+
+    // Updates the live Entity that represents this stored entity.
+    setLiveEntity(liveEntity) {
+        this.liveEntity_ = liveEntity;
+    }
 
     // Declares that a new reference to this entity has been added.
     declareReferenceAdded() {

@@ -65,8 +65,12 @@ class VehicleManager {
     // Asynchronously loads the vehicles from the database, and creates them on the server using the
     // streamer. Will display warnings for invalid vehicle definitions.
     async loadVehicles() {
-        for (const vehicleInfo of await this.database_.loadVehicles())
-            this.internalCreateVehicle(new DatabaseVehicle(vehicleInfo), true /* lazy */);
+        for (const vehicleInfo of await this.database_.loadVehicles()) {
+            const databaseVehicle = new DatabaseVehicle(vehicleInfo);
+
+            this.enforceVehicleAccess(databaseVehicle, false /* sync */);
+            this.internalCreateVehicle(databaseVehicle, true /* lazy */);
+        }
 
         this.dataLoadedResolver_();
     }

@@ -581,16 +581,17 @@ class VehicleCommands {
             return;
         }
 
+        const wasPersistent = this.manager_.isPersistentVehicle(vehicle);
+
         // Bail out if there are too many models or vehicles in the area already.
         const areaInfo = await this.manager_.streamer.query(vehicle.position);
 
-        if (areaInfo.vehicles > MaximumVehiclesInArea || areaInfo.models > MaximumModelsInArea) {
+        if ((areaInfo.vehicles > MaximumVehiclesInArea || areaInfo.models > MaximumModelsInArea) &&
+                !wasPersistent /* persistent vehicles are already counted for */) {
             player.sendMessage(Message.VEHICLE_SAVE_TOO_BUSY, areaInfo.vehicles,
                                MaximumVehiclesInArea, areaInfo.models, MaximumModelsInArea);
             return;
         }
-
-        const wasPersistent = this.manager_.isPersistentVehicle(vehicle);
 
         await this.manager_.storeVehicle(vehicle);
 

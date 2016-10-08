@@ -936,7 +936,10 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.isTrue(manager.isManagedVehicle(gunther.vehicle));
         assert.isTrue(manager.isPersistentVehicle(gunther.vehicle));
 
-        assert.notEqual(gunther.vehicle, oldVehicle);
+        assert.notStrictEqual(gunther.vehicle, oldVehicle);
+
+        assert.equal(gunther.vehicle.primaryColor, oldVehicle.primaryColor);
+        assert.equal(gunther.vehicle.secondaryColor, oldVehicle.secondaryColor);
     });
 
     it('should clean up the commands when being disposed of', async(assert) => {

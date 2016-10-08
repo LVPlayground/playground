@@ -129,6 +129,19 @@ class CommandBuilder {
     return new CommandBuilder(CommandBuilder.SUB_COMMAND, this, subCommand, defaultValue);
   }
 
+  // Returns whether one of the registered sub commands will be able to handle the |command|.
+  canHandleCommand(command) {
+    for (const subCommand of this.subCommands_) {
+      if (subCommand.builder.command_ === command)
+        return true;  // exact match
+
+      if (typeof subCommand.builder.command_ !== 'string')
+        return true;  // fuzzy match, no way to be sure
+    }
+
+    return false;
+  }
+
   // Internal API for adding |subCommand| to the list of known sub-commands. The |listener| will be
   // invoked when the |subCommand| is executed by the user.
   registerSubCommand(builder, listener) {
@@ -241,13 +254,20 @@ class CommandBuilder {
             if (result === null)
               break;
 
-            let subject = server.playerManager.find({ nameOrId: result[0], returnPlayer: true });
-            if (subject === null && builder.defaultValue_ === null) {
+            const subject = server.playerManager.find({ nameOrId: result[0], returnPlayer: true });
+            if (!subject && !builder.defaultValue_) {
               player.sendMessage(Message.COMMAND_ERROR_UNKNOWN_PLAYER, argumentString);
               return true;
             }
 
-            if (subject !== null)
+            // Disambiguates between "/v 123 delete" and "/v Darkfire delete" (unconnected players)
+            // and "/v 123" (spawn by invalid model ID) and "/v Darkfire" (spawn by invalid model).
+            if (!subject && !builder.canHandleCommand(result[0]) && argumentString.length > result[0].length) {
+              player.sendMessage(Message.COMMAND_ERROR_UNKNOWN_PLAYER, result[0]);
+              return true;
+            }
+
+            if (subject)
               return await listener(player, argumentString.substr(result[0].length), [ ...carriedArguments, subject ]);
         }
 

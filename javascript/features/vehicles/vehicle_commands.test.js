@@ -495,6 +495,43 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.isFalse(vehicle.isConnected());
     });
 
+    it('should warn when trying to delete the vehicle of a non-existing player', async(assert) => {
+        // Only administrators can delete vehicles from the server.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isTrue(createVehicleForPlayer(gunther));
+
+        const vehicle = gunther.vehicle;
+        assert.isNotNull(vehicle);
+        assert.isTrue(vehicle.isConnected());
+
+        // Try to delete the vehicle through another player's Id.
+        {
+            assert.isNull(server.playerManager.getById(123));
+            assert.isTrue(await gunther.issueCommand('/v 123 delete'));
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(gunther.messages[0],
+                         Message.format(Message.COMMAND_ERROR_UNKNOWN_PLAYER, '123'));
+
+            assert.isNotNull(gunther.vehicle);
+            assert.isTrue(vehicle.isConnected());
+
+            gunther.clearMessages();
+        }
+
+        // Try to delete the vehicle through another player's name.
+        {
+            assert.isNull(server.playerManager.getByName('Darkfire'));
+            assert.isTrue(await gunther.issueCommand('/v Darkfire delete'));
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(gunther.messages[0],
+                         Message.format(Message.COMMAND_ERROR_UNKNOWN_PLAYER, 'Darkfire'));
+
+            assert.isNotNull(gunther.vehicle);
+            assert.isTrue(vehicle.isConnected());
+        }
+    });
+
     it('should be able to delete the vehicle other players are driving in', async(assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
 

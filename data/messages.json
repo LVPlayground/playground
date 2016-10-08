@@ -231,7 +231,7 @@
     "VEHICLE_ANNOUNCE_OPTIMISED": "%s (Id: %d) has optimised the streamer (%dms -> %dms, in %dms)",
     "VEHICLE_ANNOUNCE_RESET": "%s (Id: %d) has reset the vehicle layout.",
     "VEHICLE_ANNOUNCE_SAVED": "%s (Id: %d) has stored a %s in the database.",
-    "VEHICLE_DELETED": "@error The %s has been deleted.",
+    "VEHICLE_DELETED": "@success The %s has been deleted.",
     "VEHICLE_DENSITY": "@info There are %d vehicles of %d models within a radius of %d units around you.",
     "VEHICLE_ENTER_ALREADY_DRIVING": "@error You're already driving an %s - leave the vehicle first!",
     "VEHICLE_ENTER_NONE_NEAR": "@error There is no vehicle close enough near you to enter.",

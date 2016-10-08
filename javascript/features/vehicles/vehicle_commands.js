@@ -541,7 +541,7 @@ class VehicleCommands {
             return;
         }
 
-        player.sendMessage(Message.VEHICLE_PINNED, subject.name, vehicle.name);
+        player.sendMessage(Message.VEHICLE_PINNED, subject.name, vehicle.model.name);
     }
 
     // Called when the |player| requests the vehicle layout to be reset.

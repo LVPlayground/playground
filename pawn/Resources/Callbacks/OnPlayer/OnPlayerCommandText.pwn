@@ -1305,7 +1305,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     }
 
     if (strcmp(cmd, "/dive", true) == 0) {
-        if (Time->currentTime() - iDiveTime[playerid] < 1*60 && !Player(playerid)->isAdministrator()) {
+        if ((Time->currentTime() - iDiveTime[playerid]) < 3 * 60 && !Player(playerid)->isAdministrator()) {
             SendClientMessage(playerid, Color::Error, "Error: You can use this command once every 3 minutes.");
             return 1;
         }

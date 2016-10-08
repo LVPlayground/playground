@@ -243,7 +243,7 @@ class EntityStreamerGlobal extends EntityStreamer {
         if (storedEntity.activeReferences)
             return;  // the entity is in scope for other players, let it be
 
-        if (this.pinned_.has(storedEntity))
+        if (lru && this.pinned_.has(storedEntity))
             return;  // the entity has been pinned, so shouldn't be deleted
 
         // Add the |storedEntity| to the disposable entity queue instead of destroying it if we can.

@@ -587,7 +587,7 @@ class VehicleCommands {
         const areaInfo = await this.manager_.streamer.query(vehicle.position);
 
         if ((areaInfo.vehicles > MaximumVehiclesInArea || areaInfo.models > MaximumModelsInArea) &&
-                !wasPersistent /* persistent vehicles are already counted for */) {
+                !wasPersistent /* persistent vehicles are usually already counted for */) {
             player.sendMessage(Message.VEHICLE_SAVE_TOO_BUSY, areaInfo.vehicles,
                                MaximumVehiclesInArea, areaInfo.models, MaximumModelsInArea);
             return;

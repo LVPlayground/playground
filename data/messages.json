@@ -243,7 +243,7 @@
     "VEHICLE_HEALTH_UPDATED": "@success The vehicle's health has been updated from {FF8282}%d{FFFFFF} to {FF8282}%d{FFFFFF}.",
     "VEHICLE_HEALTH_USAGE": "@usage /v [player]? health [0-1000]?",
     "VEHICLE_HELP_GLOBAL": "@usage /v [%s]",
-    "VEHICLE_HELP_SPAWN": "@usage /v [vehicleModel]",
+    "VEHICLE_HELP_SPAWN": "@usage /v [model]",
     "VEHICLE_HELP_VEHICLE": "@usage /v [player]? [%s]",
     "VEHICLE_LOCK_PASSENGER": "@error You can only lock a vehicle when you're the driver!",
     "VEHICLE_LOCK_REDUNDANT": "@success The %s had already been locked for you!",

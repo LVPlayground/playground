@@ -101,20 +101,27 @@ class VehicleManager {
 
             const associatedVehicles = this.associatedVehicles_.get(player);
 
+            const deletionList = [];
+
             // Respawn the oldest unoccupied vehicle created by the |player| when they exceed their
             // vehicle limit. This means it's possible to exceed their limit.
             const limit = this.getVehicleLimitForPlayer(player);
+            let count = associatedVehicles.size;
 
             for (const existingVehicle of associatedVehicles) {
-                if (associatedVehicles.size < limit)
+                if (count < limit)
                     break;  // no need to free up another vehicle
 
                 const liveVehicle = this.streamer.getLiveVehicle(existingVehicle);
                 if (liveVehicle && liveVehicle.isOccupied())
                     continue;  // the vehicle is occupied, ignore it
 
-                this.internalDeleteVehicle(existingVehicle);
+                deletionList.push(existingVehicle);
+                count--;
             }
+
+            deletionList.forEach(existingVehicle =>
+                this.internalDeleteVehicle(existingVehicle));
 
             // Now associate the |databaseVehicle| with the |player|.
             associatedVehicles.add(databaseVehicle);

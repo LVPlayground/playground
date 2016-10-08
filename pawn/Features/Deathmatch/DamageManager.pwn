@@ -242,6 +242,10 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
         // Deal noteworthy more damage for sniper headshots.
         if (!ShipManager->isPlayerWalkingOnShip(playerid) && weaponid == WEAPON_SNIPER && bodypart == BODY_PART_HEAD)
             DamageManager(issuerid)->dealHeadShot(playerid);
+
+        // Play the hitsound if the player enabled it.
+        if (PlayerSettings(issuerid)->isPlayerHitSoundEnabled())
+            PlayerPlaySound(issuerid, 17802, 0, 0, 0);
     }
 
     return 1;

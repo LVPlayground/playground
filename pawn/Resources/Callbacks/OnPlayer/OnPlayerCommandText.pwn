@@ -578,6 +578,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(set,            3, AdministratorLevel);
     lvp_command(fixminigames,  12, AdministratorLevel);
 
+    lvp_command(hs,             2, PlayerLevel);
+
     // ----------------------------
 
     if(!strcmp(cmdtext, "/waterfight", true))

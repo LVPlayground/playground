@@ -1179,6 +1179,20 @@ ShowHelp:
     return 1;
 }
 
+lvp_hs(playerId, params[]) {
+    if (PlayerSettings(playerId)->isPlayerHitSoundEnabled()) {
+        SendClientMessage(playerId, Color::Success, "You have disabled your hit sound.");
+        PlayerSettings(playerId)->setPlayerHitSoundEnabled(false);
+
+    } else {
+        SendClientMessage(playerId, Color::Success, "You have enabled your hit sound.");
+        PlayerSettings(playerId)->setPlayerHitSoundEnabled(true);
+    }
+
+    return 1;
+    #pragma unused params
+}
+
 lvp_reactiontest(playerId, params[]) {
     CReaction__OnCommand(playerId);
 

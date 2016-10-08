@@ -259,7 +259,7 @@
     "VEHICLE_RESET": "@success The vehicle layout has been reset.",
     "VEHICLE_RESPAWNED": "@success The %s has been respawned.",
     "VEHICLE_SAVE_TOO_BUSY": "@error Sorry, this area is too busy! There already are %d vehicles (max: %d) and %d models (max: %d).",
-    "VEHICLE_SAVED": "@success The %s has been saved in the database.",
+    "VEHICLE_SAVED": "@success The %s has been %s in the database.",
     "VEHICLE_SPAWN_CREATED": "@success Your %s has been created!",
     "VEHICLE_SPAWN_NOT_FOUND": "@error We're not sure what vehicle {FF8282}%s{FFFFFF} is...",
     "VEHICLE_SPAWN_REJECTED": "@error Sorry, you're not allowed to spawn vehicles right now!",

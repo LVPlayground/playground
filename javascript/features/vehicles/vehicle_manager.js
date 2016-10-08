@@ -82,7 +82,7 @@ class VehicleManager {
             databaseId: null /* non-persistent vehicle */,
 
             accessType: DatabaseVehicle.ACCESS_TYPE_EVERYONE,
-            accessValue: 0,
+            accessValue: 0 /* unused for ACCESS_TYPE_EVERYONE */,
 
             // Include the arguments as passed to this method.
             modelId, position, rotation, interiorId, virtualWorld,
@@ -104,7 +104,6 @@ class VehicleManager {
                 this.associatedVehicles_.set(player, new Set());
 
             const associatedVehicles = this.associatedVehicles_.get(player);
-
             const deletionList = [];
 
             // Respawn the oldest unoccupied vehicle created by the |player| when they exceed their

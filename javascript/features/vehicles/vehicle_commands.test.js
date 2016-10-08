@@ -926,7 +926,7 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.isTrue(await gunther.issueCommand('/v save'));
         assert.equal(gunther.messages.length, 2);
         assert.equal(
-            gunther.messages[1], Message.format(Message.VEHICLE_SAVED, 'Infernus'));
+            gunther.messages[1], Message.format(Message.VEHICLE_SAVED, 'Infernus', 'saved'));
 
         await server.clock.advance(500);  // to re-enter the new vehicle
 

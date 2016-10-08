@@ -600,7 +600,8 @@ class VehicleCommands {
                                                       player.id, vehicle.model.name);
         }
 
-        player.sendMessage(Message.VEHICLE_SAVED, vehicle.model.name);
+        player.sendMessage(
+            Message.VEHICLE_SAVED, vehicle.model.name, (wasPersistent ? 'updated' : 'saved'));
     }
 
     // Called when a Management member executes the `/v unpin` or `/v [player] unpin` command, which

@@ -31,7 +31,7 @@ OnPlayerWorldCommand(playerId, params[]) {
     }
 
     if (worldId != -1 && World->isWorldValid(worldId) == true) {
-        if (DamageManager(playerId)->isPlayerFighting() == true) {
+        if (!IsPlayerAllowedToTeleport(playerId)) {
             SendClientMessage(playerId, Color::Error, "You can't change worlds while you are fighting.");
             return 1;
         }

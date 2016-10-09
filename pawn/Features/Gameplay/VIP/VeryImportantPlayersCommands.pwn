@@ -250,7 +250,7 @@ class VeryImportantPlayersCommands {
             return 1;
         }
 
-        if (DamageManager(playerId)->isPlayerFighting() == true) {
+        if (!IsPlayerAllowedToTeleport(playerId)) {
             SendClientMessage(playerId, Color::Error, "You can't change your look while fighting.");
             return 1;
         }

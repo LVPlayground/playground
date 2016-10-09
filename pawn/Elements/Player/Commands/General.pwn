@@ -582,7 +582,7 @@ lvp_locate(playerid,params[])
 #if Feature::DisableFightClub == 0
     if(CFightClub__IsPlayerFighting(iPlayerID))
     {
-        format(szMessage,128,"%s is currently fighting in the FightClub, use '/fight watch %d' to watch him!", PlayerName(iPlayerID), PlayerMatch[iPlayerID]);
+        format(szMessage,128,"%s is currently fighting in the FightClub, use '/fight watch %d' to watch them!", PlayerName(iPlayerID), PlayerMatch[iPlayerID]);
         SendClientMessage(playerid,COLOR_ORANGE,szMessage);
         return 1;
     }
@@ -657,9 +657,8 @@ lvp_locate(playerid,params[])
 // Author: Jay
 lvp_tune(playerid,params[])
 {
-    if(DamageManager(playerid)->isPlayerFighting() == true)
-    {
-        ShowBoxForPlayer(playerid, "You cannot use this command because you have recently been in a gun fight.");
+    if (!IsPlayerAllowedToTeleport(playerid)) {
+        ShowBoxForPlayer(playerid, "You cannot use this command because you have recently been in a fight.");
         return 1;
     }
 
@@ -1030,9 +1029,8 @@ lvp_My( playerid, params[] )
 
     if(!strcmp(szParameter, "skin", true, 4))
     {
-        if(DamageManager(playerid)->isPlayerFighting() == true)
-        {
-            SendClientMessage(playerid, Color::Red, "* You cannot use this command at the moment because you have recently been in a gun fight.");
+        if (!IsPlayerAllowedToTeleport(playerid)) {
+            SendClientMessage(playerid, Color::Red, "* You cannot use this command at the moment because you have recently been in a fight.");
             return 1;
         }
 

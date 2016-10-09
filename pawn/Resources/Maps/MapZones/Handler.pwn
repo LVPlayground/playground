@@ -1141,7 +1141,7 @@ lvp_jump(playerid, params[]) {
     if (VehicleModel(GetVehicleModel(GetPlayerVehicleID(playerid)))->isNitroInjectionAvailable() == false)
         return ShowBoxForPlayer(playerid, "You cannot teleport to a jumpzone in this type of vehicle!");
 
-    if (DamageManager(playerid)->isPlayerFighting() == true)
+    if (!IsPlayerAllowedToTeleport(playerid))
         return ShowBoxForPlayer(playerid,
             "You can't teleport to a jumpzone because you've recently been in a gunfight! Try again in a few seconds.");
 

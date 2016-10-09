@@ -9,6 +9,7 @@ native gpci(playerid, serial[], len);
 native IsValidVehicle(vehicleid);
 
 // Provided by the Communication feature in JavaScript.
+native IsPlayerAllowedToTeleport(playerId);
 native IsCommunicationMuted();
 native bool: SpawnPlayerInHouse(playerId);
 

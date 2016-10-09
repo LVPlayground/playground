@@ -88,7 +88,7 @@ lvp_tow(playerid, params[])
     else if (!CanPlayerUseTow(playerid))
         return SendClientMessage(playerid, Color::Red, "You already used /tow less than 3 minutes ago! You must wait a bit more.");
 
-    else if (DamageManager(playerid)->isPlayerFighting())
+    else if (!IsPlayerAllowedToTeleport(playerid))
         return SendClientMessage(playerid, Color::Red, "You can't use /tow because you've recently been in a fight.");
 
     else if (LegacyIsPlayerInBombShop(playerid))

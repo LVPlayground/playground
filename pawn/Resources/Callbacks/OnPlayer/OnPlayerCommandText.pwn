@@ -1262,7 +1262,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if (DamageManager(playerid)->isPlayerFighting()) {
+        if (!IsPlayerAllowedToTeleport(playerid)) {
             SendClientMessage(playerid, Color::Error, "Error: You can't use this command because you have recently been in a gun fight.");
             return 1;
         }
@@ -1312,7 +1312,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if (DamageManager(playerid)->isPlayerFighting()) {
+        if (!IsPlayerAllowedToTeleport(playerid)) {
             SendClientMessage(playerid, Color::Error, "Error: You can't use this command because you have recently been in a gun fight.");
             return 1;
         }

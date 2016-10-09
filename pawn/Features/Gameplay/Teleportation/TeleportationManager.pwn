@@ -184,7 +184,7 @@ class TeleportationManager {
         // a player anywhere at any moment. That's why we allow them to teleport even when the player
         // is in a minigame or something.
         if (teleportType != SecretTeleport) {
-            if (DamageManager(playerId)->isPlayerFighting() == true) {
+            if (!IsPlayerAllowedToTeleport(playerId)) {
                 SendClientMessage(playerId, Color::Error, "Because of recent fighting activities, you aren't able to teleport.");
                 return false;
             }

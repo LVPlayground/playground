@@ -109,15 +109,6 @@ CBomb__CheckPlayer(i)
                 }
             #endif
 
-#if Feature::DisableVehicleManager == 0
-            // Player using their /inf car can't add a bomb because of abuse
-            if (GetPlayerVehicleID(i) == sprayTagGetPlayerVehicleid(i)) {
-                ShowBoxForPlayer(i, "Sorry, you can't add carbombs to spawned vehicles!");
-                RemovePlayerFromBombShop(i);
-                return 1;
-            }
-#endif  // Feature::DisableVehicleManager == 0
-
             // Player using their /inf car can't add a bomb because of abuse
             if (!IsPlayerInMainWorld(i)) {
                 ShowBoxForPlayer(i, "Sorry, the BombShop is only available in the main world. Use /world 0!");

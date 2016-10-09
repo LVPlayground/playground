@@ -15,7 +15,7 @@
  */
 class Version {
     public const Major = 30;
-    public const Minor = 5;
+    public const Minor = 6;
 };
 
 /**
@@ -86,9 +86,6 @@ class Feature {
 
     // Disables the Pawn version of the flight club handler.
     public const DisableFightClub = 0;
-
-    // Disables the vehicle manager code in Pawn.
-    public const DisableVehicleManager = 1;
 
     /** **************************************************************************************** **/
     /// Christmas

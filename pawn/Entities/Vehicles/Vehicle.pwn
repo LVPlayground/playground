@@ -170,11 +170,6 @@ class Vehicle <vehicleId (MAX_VEHICLES)> {
      * sure that the isValid() method no longer will return true.
      */
     public onDestroyed() {
-#if Feature::DisableVehicleManager == 0
-        if (this->isPersistent())
-            VehicleStorageManager->requestRemoveVehicle(vehicleId);
-#endif
-
         m_databaseId = Vehicle::InvalidId;
         m_flags = 0;
     }

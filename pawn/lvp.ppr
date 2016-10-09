@@ -84,18 +84,13 @@
     <DiskObject>\Entities\Properties\PropertyStorageManager.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles\</DiskObject>
-    <DiskObject>\Entities\Vehicles\LegacyBridge.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles\LegalModifications.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles\RcVehicleManager.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles\Vehicle.pwn</DiskObject>
-    <DiskObject>\Entities\Vehicles\VehicleAccessManager.pwn</DiskObject>
-    <DiskObject>\Entities\Vehicles\VehicleCommands.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles\VehicleEvents.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles\VehicleManager.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles\VehicleModel.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles\VehicleModelData.pwn</DiskObject>
-    <DiskObject>\Entities\Vehicles\VehicleSeat.pwn</DiskObject>
-    <DiskObject>\Entities\Vehicles\VehicleStorageManager.pwn</DiskObject>
     <DiskObject>\Entities\Weapons.pwn</DiskObject>
     <DiskObject>\Entities\Weapons\</DiskObject>
     <DiskObject>\Entities\Weapons\WeaponUtilities.pwn</DiskObject>
@@ -200,7 +195,6 @@
     <DiskObject>\Features\Gameplay\Teleportation\TeleportationCommands.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Teleportation\TeleportationManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Vehicles\</DiskObject>
-    <DiskObject>\Features\Gameplay\Vehicles\AdminVehicleAccessManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Vehicles\Cruise\</DiskObject>
     <DiskObject>\Features\Gameplay\Vehicles\Cruise\CruiseCommands.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Vehicles\Cruise\CruiseController.pwn</DiskObject>

@@ -95,10 +95,6 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
         if (lockedVehicleId[playerid] == GTA_Vehicle && !IsPlayerInMinigame(playerid))
             DisablePlayerCheckpoint(playerid);
 
-#if Feature::DisableVehicleManager == 0
-        SetVehicleLocked(lockedVehicleId[playerid], false);
-#endif
-
         if (g_InExportVeh[playerid] && !IsPlayerInMinigame(playerid)) {
             g_PlayerCpVisible[playerid] = false;
             PlayerInfo[playerid][LastCheckType] = CP_TYPE_NONE;

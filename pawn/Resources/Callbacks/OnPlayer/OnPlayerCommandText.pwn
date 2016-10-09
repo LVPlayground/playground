@@ -513,16 +513,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(cd,             2, PlayerLevel);
     lvp_command(World,          5, PlayerLevel);
 
-#if Feature::DisableVehicleManager == 0
-    // Spawn vehicle commands.
-    lvp_command(Ele,            3, PlayerLevel);
-    lvp_command(Inf,            3, PlayerLevel);
-    lvp_command(Nrg,            3, PlayerLevel);
-    lvp_command(Sul,            3, PlayerLevel);
-    lvp_command(Tur,            3, PlayerLevel);
-    lvp_command(Vor,            3, PlayerLevel);
-#endif  // Feature::DisableVehicleManager == 0
-
     // General player commands:
 	lvp_command(Ignore,         6, PlayerLevel);
     lvp_command(Unignore,       8, PlayerLevel);
@@ -801,44 +791,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         return 1;
     }
-
-#if Feature::DisableVehicleManager == 0
-
-    if(!strcmp(cmdtext, "/lock", true))
-    {
-        if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
-        {
-            ShowBoxForPlayer(playerid, "You need to be driving a vehicle to lock it.");
-            return 1;
-        }
-        if(IsVehicleLocked(GetPlayerVehicleID(playerid)))
-        {
-            ShowBoxForPlayer(playerid, "This vehicle is already locked.");
-            return 1;
-        }
-        SetVehicleLocked(GetPlayerVehicleID(playerid), true);
-        ShowBoxForPlayer(playerid, "Vehicle locked!");
-        return 1;
-    }
-
-    if(!strcmp(cmdtext, "/unlock", true))
-    {
-        if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
-        {
-            ShowBoxForPlayer(playerid, "You need to be driving a vehicle to unlock it.");
-            return 1;
-        }
-        if(!IsVehicleLocked(GetPlayerVehicleID(playerid)))
-        {
-            ShowBoxForPlayer(playerid, "This vehicle is already unlocked.");
-            return 1;
-        }
-        SetVehicleLocked(GetPlayerVehicleID(playerid), false);
-        ShowBoxForPlayer(playerid, "Vehicle unlocked!");
-        return 1;
-    }
-
-#endif  // #if Feature::DisableVehicleManager == 0
 
     if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) { // To make sure they can do the anim
         if(strcmp(cmd, "/dance", true) == 0) {

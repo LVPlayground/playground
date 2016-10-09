@@ -136,9 +136,6 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
         SetVehicleVirtualWorld(vehicleId, 0 /* World::MainWorld */);
 
         // Further handling for other features.
-#if Feature::DisableVehicleManager == 0
-        sprayTagOnVehicleSpawn(vehicleId);
-#endif  // Feature::DisableVehicleManager == 0
         CBomb__ResetVehicleData(vehicleId);
         CCrush__Reset(vehicleId);
         CShell__VehicleSpawn(vehicleId);
@@ -196,36 +193,9 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
             SetVehicleZAngle(vehicleId, vehicleSpawnPosition[3]);
         }
 
-#if Feature::DisableVehicleManager == 0
-        // If a player does not have access to enter a vehicle, lock its doors.
-        if (VehicleAccessManager->isPlayerAllowedInVehicle(playerId, vehicleId) == false)
-            SetVehicleParamsForPlayer(vehicleId, playerId, 0, 1);
-#endif  // Feature::DisableVehicleManager == 0
-
         Annotation::ExpandList<OnVehicleStreamIn>(vehicleId, playerId);
         return 1;
     }
-
-#if Feature::DisableVehicleManager == 0
-    /**
-     * When a player enters a vehicle, either as the driver or as one of the passengers, we'll have
-     * to check whether they're actually allowed in the vehicle. Keep in mind that this method will
-     * be invoked *before* the player has entered said vehicle.
-     *
-     * @param playerId Id of the player who has entered this vehicle.
-     * @param isPassenger Whether the player has entered the vehicle as a passenger.
-     */
-    public bool: onPlayerEnterVehicle(playerId, bool: isPassenger) {
-        // If a player does not have access to enter a vehicle, remove them from it.
-        if (VehicleAccessManager->isPlayerAllowedInVehicle(playerId, vehicleId) == false) {
-            VehicleAccessManager->denyPlayerVehicleAccess(playerId);
-            return false;
-        }
-
-        return true;
-        #pragma unused isPassenger
-    }
-#endif  // Feature::DisableVehicleManager == 0
 
     /**
      * This method will be invoked when a player leaves a vehicle. We may have to clean up after them,
@@ -311,16 +281,6 @@ public OnVehicleStreamIn(vehicleid, forplayerid) {
     VehicleEvents(vehicleid)->onVehicleStreamIn(forplayerid);
     return 1;
 }
-
-#if Feature::DisableVehicleManager == 0
-public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
-    if (Player(playerid)->isConnected() == false || Player(playerid)->isNonPlayerCharacter() == true
-        || Vehicle(vehicleid)->isValid() == false)
-        return 0; // don't handle invalid players, NPCs or invalid vehicles.
-
-    return _: VehicleEvents(vehicleid)->onPlayerEnterVehicle(playerid, !!ispassenger);
-}
-#endif  // Feature::DisableVehicleManager == 0
 
 public OnPlayerExitVehicle(playerid, vehicleid) {
     if (Player(playerid)->isConnected() == false || Player(playerid)->isNonPlayerCharacter() == true

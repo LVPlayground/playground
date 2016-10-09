@@ -89,16 +89,8 @@ class VehicleManager {
             return false;
 
         new modelId = Vehicle(vehicleId)->modelId();
-        if (VehicleModel(modelId)->isStaticVehicle()) {
-#if Feature::DisableVehicleManager == 0
-            // Whilst we cannot remove the vehicle from the gamemode right now, we can attempt to
-            // remove it from the database --if it is persistent-- so it'll be gone after a restart.
-            if (Vehicle(vehicleId)->isPersistent() == true)
-                VehicleStorageManager->requestRemoveVehicle(vehicleId);
-#endif
-
+        if (VehicleModel(modelId)->isStaticVehicle())
             return false;
-        }
 
         // If a remote controllable vehicle is being destroyed, make sure to mark it as such so that
         // we won't try to find it anymore if any player tries to enter a vehicle.

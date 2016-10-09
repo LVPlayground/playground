@@ -95,13 +95,6 @@ class RcVehicleManager {
         if (vehicleId == Vehicle::InvalidId)
             return false;
 
-#if Feature::DisableVehicleManager == 0
-        // Now check whether the player is allowed to enter the vehicle. By manually calling the
-        // callback, we can re-use the existing code paths for all other vehicles.
-        if (VehicleEvents(vehicleId)->onPlayerEnterVehicle(playerId, false) == false)
-            return false;
-#endif  // Feature::DisableVehicleManager == 0
-
         // Finally, put the player in the vehicle.
         PutPlayerInVehicle(playerId, vehicleId, 0);
         return true;

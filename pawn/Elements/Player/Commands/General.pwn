@@ -196,52 +196,6 @@ lvp_Teles(playerid, params[])
     return 1;
 }
 
-#if Feature::DisableVehicleManager == 0
-
-// Spawn an Elegy. Only if players have sprayed all 100 tags.
-// This is handled in Elements/Player/SprayTags.pwn
-lvp_Ele(playerid, params[])
-{
-    return sprayTagOnVehicleCommand(playerid, params, SPRAY_TAG_ELEGY);
-}
-
-// Spawn an Infernus. Only if players have sprayed all 100 tags.
-// This is handled in Elements/Player/SprayTags.pwn
-lvp_Inf(playerid, params[])
-{
-    return sprayTagOnVehicleCommand(playerid, params, SPRAY_TAG_INFERNUS);
-}
-
-// Spawn an NRG. Only if players have sprayed all 100 tags.
-// This is handled in Elements/Player/SprayTags.pwn
-lvp_Nrg(playerid, params[])
-{
-    return sprayTagOnVehicleCommand(playerid, params, SPRAY_TAG_NRG);
-}
-
-// Spawn a Sultan. Only if players have sprayed all 100 tags.
-// This is handled in Elements/Player/SprayTags.pwn
-lvp_Sul(playerid, params[])
-{
-    return sprayTagOnVehicleCommand(playerid, params, SPRAY_TAG_SULTAN);
-}
-
-// Spawn a Turismo. Only if players have sprayed all 100 tags.
-// This is handled in Elements/Player/SprayTags.pwn
-lvp_Tur(playerid, params[])
-{
-    return sprayTagOnVehicleCommand(playerid, params, SPRAY_TAG_TURISMO);
-}
-
-// Spawns a Vortex. Only if players have sprayed all 100 tags.
-// This is handled in Elements/Player/SprayTags.pwn
-lvp_Vor(playerid, params[])
-{
-    return sprayTagOnVehicleCommand(playerid, params, SPRAY_TAG_VORTEX);
-}
-
-#endif  // Feature::DisableVehicleManager == 0
-
 // /cmds
 lvp_cmds(playerid, params[])
 {

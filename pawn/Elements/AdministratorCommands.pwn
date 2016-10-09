@@ -1020,9 +1020,6 @@ lvp_p(playerId, params[]) {
 
         ColorManager->storeExistingPlayerCustomColor(subjectId);
         ColorManager->setPlayerCustomColor(subjectId, Color::AdministratorColor);
-#if Feature::DisableVehicleManager == 0
-        VehicleAccessManager->synchronizePlayerVehicleAccess(subjectId);
-#endif  // Feature::DisableVehicleManager == 0
 
         SendClientMessage(subjectId, Color::Success, "An administrator has granted you admin rights!");
 
@@ -1056,10 +1053,6 @@ lvp_p(playerId, params[]) {
         UserTemped[subjectId] = "";
 
         ColorManager->restorePreviousPlayerCustomColor(subjectId);
-
-#if Feature::DisableVehicleManager == 0
-        VehicleAccessManager->synchronizePlayerVehicleAccess(subjectId);
-#endif  // Feature::DisableVehicleManager == 0
 
         format(g_message, sizeof(g_message), "%s (Id:%d) is no admin anymore.",
             Player(subjectId)->nicknameString(), subjectId);

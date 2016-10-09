@@ -158,14 +158,8 @@ CExport__OnEnterCheckpoint( playerid )
                 }
             }
 
-#if Feature::DisableVehicleManager == 0
-            new const personalVehicle = sprayTagPlayerVehicle[playerid]
-#else
-            new const personalVehicle = -1;
-#endif  // Feature::DisableVehicleManager == 0
-
             // Check if it's not the GTA Vehicle
-            if(playerVehicleID  == GTA_Vehicle || playerVehicleID == personalVehicle ||
+            if(playerVehicleID  == GTA_Vehicle ||
                 (Vehicle(playerVehicleID)->isOpenWorldVehicle() == true && Vehicle(playerVehicleID)->isPersistent() == false)) {
                 SendClientMessage(playerid, Color::Error, "Error: You can't export this vehicle.");
                 return 1;

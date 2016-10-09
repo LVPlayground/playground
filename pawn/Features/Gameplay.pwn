@@ -60,10 +60,6 @@
 // use the ship safely and well.
 #include "Features/Gameplay/ShipManager.pwn"
 
-#if Feature::DisableVehicleManager == 0
-#include "Features/Gameplay/Vehicles/AdminVehicleAccessManager.pwn"
-#endif  // Feature::DisableVehicleManager == 0
-
 // Peter has his own car, yeah!
 #include "Features/Gameplay/Vehicles/PeterVehicleFeature.pwn"
 

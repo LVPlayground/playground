@@ -185,6 +185,8 @@ OnPlayerWorldCommand(playerId, params[]) {
 l_GotoWorld(playerId, worldId) {
     new message[128], vehicleId, trailerId;
 
+    ClearPlayerMenus(playerId);
+
     if (IsPlayerInAnyVehicle(playerId) && GetPlayerState(playerId) == PLAYER_STATE_DRIVER) {
         vehicleId = GetPlayerVehicleID(playerId);
         if (IsTrailerAttachedToVehicle(vehicleId))

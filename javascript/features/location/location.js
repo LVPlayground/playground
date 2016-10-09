@@ -14,7 +14,10 @@ class Location extends Feature {
     constructor() {
         super();
 
-        this.interiorManager_ = new InteriorManager(this.interiorAbuseManager_);
+        // Determines whether a player is allowed to teleport into an interior right now.
+        const abuse = this.defineDependency('abuse', true /* isFunctional */);
+
+        this.interiorManager_ = new InteriorManager(abuse);
 
         // Load all the portal definition files and create portals for them through the interior
         // manager. Each file can contain an arbitrary amount of portas.

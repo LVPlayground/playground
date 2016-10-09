@@ -3,11 +3,14 @@
 // be found in the LICENSE file.
 
 const Feature = require('components/feature_manager/feature.js');
+const FightTracker = require('features/abuse/fight_tracker.js');
 
 // Implementation of the feature that keep track of whether a player is abusing.
 class Abuse extends Feature {
     constructor() {
         super();
+
+        this.fightTracker_ = new FightTracker();
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -25,7 +28,10 @@ class Abuse extends Feature {
 
     // ---------------------------------------------------------------------------------------------
 
-    dispose() {}
+    dispose() {
+        this.fightTracker_.dispose();
+        this.fightTracker_ = null;
+    }
 }
 
 exports = Abuse;

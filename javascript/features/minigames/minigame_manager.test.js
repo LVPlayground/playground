@@ -219,7 +219,7 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         minigame.driver_.state = Minigame.STATE_RUNNING;
 
         gunther.die();
-        assert.isFalse(gunther.spawn());
+        assert.isFalse(gunther.respawn());
 
         const reason = await minigame.waitUntilFinished();
 
@@ -245,7 +245,7 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         minigame.driver_.state = Minigame.STATE_RUNNING;
 
         gunther.die();
-        assert.isTrue(gunther.spawn());
+        assert.isTrue(gunther.respawn());
 
         assert.isTrue(manager.isPlayerEngaged(gunther));
         assert.equal(manager.getMinigamesForCategory(category).length, 1);

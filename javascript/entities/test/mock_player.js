@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const MockVehicle = require('entities/test/mock_vehicle.js');
+
 // Mocked player. Has the same interface and abilities as a real Player object, except that it does
 // not rely on the SA-MP server to be available, nor communicates with Pawn.
 class MockPlayer {
@@ -241,6 +243,18 @@ class MockPlayer {
     // Gets the color applied to this player.
     get color() { return Color.WHITE; }
 
+    // Respawns the player.
+    respawn() {
+        let defaultPrevented = false;
+
+        global.dispatchEvent('playerspawn', {
+            preventDefault: () => defaultPrevented = true,
+            playerid: this.id_
+        });
+
+        return defaultPrevented;
+    }
+
     // Identifies the player to a fake account. The options can be specified optionally.
     identify({ userId = 42, vip = 0, gangId = 0 } = {}) {
         server.playerManager.onPlayerLogin({
@@ -257,7 +271,7 @@ class MockPlayer {
         let defaultPrevented = false;
 
         // TODO(Russell): Should this talk directly to the CommunicationManager?
-        self.dispatchEvent('playertext', {
+        global.dispatchEvent('playertext', {
             preventDefault: () => defaultPrevented = true,
 
             playerid: this.id_,
@@ -334,17 +348,49 @@ class MockPlayer {
         });
     }
 
-    // Triggers an event indicating that the player has respawned. Returns whether the event has
-    // been cancelled by something that handled it.
-    spawn() {
-        let defaultPrevented = false;
+    // Makes this player fire a shot. All related events will be fired. The |target| may either be
+    // a Player or a Vehicle instance, or NULL when the shot didn't hit anything.
+    shoot({ target = null, weaponid = 28 /* Uzi */, hitOffset = null, damageAmount = null,
+            bodypart = 3 /* BODY_PART_CHEST */ } = {}) {
+        let hitType = 0 /* BULLET_HIT_TYPE_NONE */;
 
-        global.dispatchEvent('playerspawn', {
-            preventDefault: () => defaultPrevented = true,
-            playerid: this.id_
+        if (target instanceof MockPlayer)
+            hitType = 1 /* BULLET_HIT_TYPE_PLAYER */;
+        else if (target instanceof MockVehicle)
+            hitType = 2 /* BULLET_HIT_TYPE_VEHICLE */;
+
+        hitOffset = hitOffset || new Vector(5, 5, 2);
+
+        global.dispatchEvent('playerweaponshot', {
+            playerid: this.id_,
+            weaponid: weaponid,
+            hittype: hitType,
+            hitid: target ? target.id : -1,
+            fX: hitOffset.x,
+            fY: hitOffset.y,
+            fZ: hitOffset.z
         });
 
-        return defaultPrevented;
+        if (!(target instanceof MockPlayer))
+            return;
+
+        let damage = damageAmount || Math.floor(Math.random() * 100) + 10;
+
+        global.dispatchEvent('playergivedamage', {
+            playerid: this.id_,
+            damagedid: target.id,
+            amount: damage,
+            weaponid: weaponid,
+            bodypart: bodypart
+        });
+
+        global.dispatchEvent('playertakedamage', {
+            playerid: target.id,
+            issuerid: this.id_,
+            amount: damage,
+            weaponid: weaponid,
+            bodypart: bodypart
+        });
     }
 
     // Disconnects the player from the server. They will be removed from the PlayerManager too.

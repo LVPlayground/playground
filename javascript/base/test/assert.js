@@ -357,6 +357,14 @@ class Assert {
     this.reportFailure('expected ' + this.toString(actual) + ' to be close (~' + delta + ') to ' + this.toString(expected));
   }
 
+  // Asserts Math.abs(actual - expected) > delta
+  notCloseTo(actual, expected, delta) {
+    if (Math.abs(actual - expected) > delta)
+      return;
+
+    this.reportFailure('expected ' + this.toString(actual) + ' to not be close (~' + delta + ') to ' + this.toString(expected));
+  }
+
   // Creates a failure because the current place in the code execution should not be reached.
   notReached() {
     this.reportFailure('the code was unexpectedly reached');

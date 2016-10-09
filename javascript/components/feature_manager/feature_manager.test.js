@@ -145,13 +145,23 @@ describe('FeatureManager', it => {
         class MyReferenceDependency extends Feature {}
         class MyFunctionalDependency extends Feature {}
 
+        class MyOptOutFeature extends Feature {
+            constructor() {
+                super();
+
+                this.disableLiveReload();
+            }
+        }
+
         server.featureManager.registerFeaturesForTests({
             dependencies_none: MyDependencyLessFeature,
             dependencies_references: MyFeatureWithReferenceDependencies,
             dependencies_functional: MyFeatureWithFunctionalDependencies,
 
             dependents_references: MyReferenceDependency,
-            dependents_functional: MyFunctionalDependency
+            dependents_functional: MyFunctionalDependency,
+
+            opt_out: MyOptOutFeature
         });
 
         server.featureManager.loadFeature('dependencies_none');
@@ -178,6 +188,11 @@ describe('FeatureManager', it => {
         // Features can be live reloaded if they only have functional dependen{ts,sies}.
         assert.isTrue(server.featureManager.isEligibleForLiveReload('dependencies_functional'));
         assert.isTrue(server.featureManager.isEligibleForLiveReload('dependents_functional'));
+
+        server.featureManager.loadFeature('opt_out');
+
+        // Features can opt out of live reloading, even without dependencies.
+        assert.isFalse(server.featureManager.isEligibleForLiveReload('opt_out'));
     });
 
     it('should be able to live reload features', assert => {

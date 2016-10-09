@@ -97,14 +97,18 @@ class FeatureManager {
 
     // Returns whether |feature| is eligible for live reload. We can live reload when:
     //   1) The feature has been registered, but has not been loaded yet.
-    //   2) The feature has been loaded, and has no dependencies or dependents.
-    //   3) The feature has been loaded, and only has functional dependencies and dependents.
+    //   2) The feature has been loaded, and has *not* opted out of live reload.
+    //   3) The feature has been loaded, and has no dependencies or dependents.
+    //   4) The feature has been loaded, and only has functional dependencies and dependents.
     isEligibleForLiveReload(feature) {
         if (!this.registeredFeatures_.has(feature))
             return false;  // the feature does not exist
 
         if (!this.loadedFeatures_.has(feature))
             return true;  // the feature has not been loaded yet, this is always safe
+
+        if (!this.loadedFeatures_.get(feature).isLiveReloadEnabled())
+            return false;  // the feature has opted out of live reload
 
         if (this.dependencyGraph_.hasReferenceDependenciesOrDependents(feature))
             return false;  // references to the feature make live reload impossible

@@ -4,13 +4,23 @@
 
 // The Feature class must be the base class of all features.
 class Feature {
-    constructor() {}
+    constructor() {
+        this.liveReloadEnabled_ = true;
+    }
+
+    // Returns whether live reload has been enabled for this feature.
+    isLiveReloadEnabled() { return this.liveReloadEnabled_; }
 
     // Defines a dependency on |featureName|. An exception will be thrown if the dependency could
     // not be declared, or when a circular dependency would be created. This method is safe to be
     // called any number of times.
     defineDependency(featureName, isFunctional) {
         return server.featureManager.defineDependency(this, featureName, isFunctional);
+    }
+
+    // Defines that the feature is not eligible for live reload.
+    disableLiveReload() {
+        this.liveReloadEnabled_ = false;
     }
 
     // To be called when the feature shuts down. All known resources associated with the feature

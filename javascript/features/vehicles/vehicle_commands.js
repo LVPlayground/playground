@@ -199,7 +199,8 @@ class VehicleCommands {
         // has been dropped, or at least changed into a progressive model.
 
         const allowed = this.playground_().canAccessCommand(player, 'v') ||
-                        this.hasFinishedSprayTagCollection_(player);
+                        await Promise.resolve().then(() =>
+                            this.hasFinishedSprayTagCollection_(player));
 
         if (!allowed) {
             player.sendMessage(Message.VEHICLE_QUICK_SPRAY_TAGS);

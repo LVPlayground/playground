@@ -13,10 +13,10 @@ class Killtime extends Feature {
         super();
 
         // Be able to send a certain message to a certain public
-        const announce = this.defineDependency('announce', true /* isFunctional */);
+        const announce = this.defineDependency('announce');
 
         // Killtime prizes are calculated by our economy-feature
-        const economy = this.defineDependency('economy', true /* isFunctional */);
+        const economy = this.defineDependency('economy');
 
         this.manager_ = new KilltimeManager(announce, economy);
         this.commands_ = new KilltimeCommands(this.manager_);

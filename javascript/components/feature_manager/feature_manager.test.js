@@ -34,7 +34,7 @@ describe('FeatureManager', it => {
             constructor() {
                 super();
 
-                value = this.defineDependency('second').value;
+                value = this.defineDependency('second')().value;
             }
         }
 
@@ -126,14 +126,6 @@ describe('FeatureManager', it => {
     it('should be able to assess when features can be live reloaded', assert => {
         class MyDependencyLessFeature extends Feature {}
 
-        class MyFeatureWithReferenceDependencies extends Feature {
-            constructor() {
-                super();
-
-                this.defineDependency('dependents_references');
-            }
-        }
-
         class MyFeatureWithFunctionalDependencies extends Feature {
             constructor() {
                 super();
@@ -142,7 +134,6 @@ describe('FeatureManager', it => {
             }
         }
 
-        class MyReferenceDependency extends Feature {}
         class MyFunctionalDependency extends Feature {}
 
         class MyOptOutFeature extends Feature {
@@ -155,10 +146,7 @@ describe('FeatureManager', it => {
 
         server.featureManager.registerFeaturesForTests({
             dependencies_none: MyDependencyLessFeature,
-            dependencies_references: MyFeatureWithReferenceDependencies,
             dependencies_functional: MyFeatureWithFunctionalDependencies,
-
-            dependents_references: MyReferenceDependency,
             dependents_functional: MyFunctionalDependency,
 
             opt_out: MyOptOutFeature
@@ -168,16 +156,6 @@ describe('FeatureManager', it => {
 
         // Features without dependencies can always be live reloaded.
         assert.isTrue(server.featureManager.isEligibleForLiveReload('dependencies_none'));
-
-        // Features can be live reloaded if they haven't been loaded for the first time yet.
-        assert.isTrue(server.featureManager.isEligibleForLiveReload('dependencies_references'));
-        assert.isTrue(server.featureManager.isEligibleForLiveReload('dependents_references'));
-
-        server.featureManager.loadFeature('dependencies_references');
-
-        // Features cannot be live reloaded when they have reference-based dependen{ts,sies}.
-        assert.isFalse(server.featureManager.isEligibleForLiveReload('dependencies_references'));
-        assert.isFalse(server.featureManager.isEligibleForLiveReload('dependents_references'));
 
         server.featureManager.loadFeature('dependents_functional');
 

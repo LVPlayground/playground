@@ -8,16 +8,10 @@ const Feature = require('components/feature_manager/feature.js');
 // The feature manager owns all the features available in the JavaScript implementation of the
 // server, provides cross-feature interfaces and access to many of the shared objects.
 //
-// Features can define two sorts of dependencies on each other:
-//   1) Reference-based dependencies. The feature will get hold of the instance of the feature it
-//      would like to depend on.
-//   2) Function-based dependencies. The feature will get a function through which it can get the
-//      latest instance of the feature it would like to depend on.
+// Features can define dunction-based dependencies. The feature will get a function through which it
+// can get the latest instance of the feature it would like to depend on.
 //
-// Features that only have functional dependencies and dependents can be live reloaded by Management
-// members. Of course, in doing so, the assumption is made that no significant API changes happened.
-//
-// TODO(Russell): Remove support for reference-based dependencies altogether.
+// Features that do not explicitly opt out of live-reloading can do so.
 class FeatureManager {
     constructor() {
         this.dependencyGraph_ = new DependencyGraph();
@@ -99,7 +93,6 @@ class FeatureManager {
     //   1) The feature has been registered, but has not been loaded yet.
     //   2) The feature has been loaded, and has *not* opted out of live reload.
     //   3) The feature has been loaded, and has no dependencies or dependents.
-    //   4) The feature has been loaded, and only has functional dependencies and dependents.
     isEligibleForLiveReload(feature) {
         if (!this.registeredFeatures_.has(feature))
             return false;  // the feature does not exist
@@ -109,9 +102,6 @@ class FeatureManager {
 
         if (!this.loadedFeatures_.get(feature).isLiveReloadEnabled())
             return false;  // the feature has opted out of live reload
-
-        if (this.dependencyGraph_.hasReferenceDependenciesOrDependents(feature))
-            return false;  // references to the feature make live reload impossible
 
         return true;
     }
@@ -216,9 +206,8 @@ class FeatureManager {
     // ---------------------------------------------------------------------------------------------
 
     // Defines a dependency from |feature| (instance) to |dependencyName|. Throws an exception when
-    // the dependency does not exist, or a circular dependency is being created. If |isFunctional|
-    // is set to true, a function will be returned as opposed to the instance.
-    defineDependency(feature, dependencyName, isFunctional = false) {
+    // the dependency does not exist, or a circular dependency is being created.
+    defineDependency(feature, dependencyName) {
         if (!this.registeredFeatures_.has(dependencyName)) {
             throw new Error('Cannot declare a dependency on "' + dependencyName + '": ' +
                             'invalid dependency name.');
@@ -238,10 +227,7 @@ class FeatureManager {
         // Actually load the feature now that we know it's not a circular dependency.
         const dependency = this.loadFeature(dependencyName);
 
-        this.dependencyGraph_.createDependencyEdge(featureName, dependencyName, isFunctional);
-
-        if (!isFunctional)
-            return dependency;  // deprecated non-functional dependencies.
+        this.dependencyGraph_.createDependencyEdge(featureName, dependencyName);
 
         const fn = () => this.loadedFeatures_.get(dependencyName);
 

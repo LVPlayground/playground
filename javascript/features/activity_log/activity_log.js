@@ -38,7 +38,7 @@ class ActivityLog extends Feature {
     this.playerSessionIdMap_ = new Map(); // { playerid, sessionid )
 
     // To be able to show the IP and GPCI on IRC
-    this.announce_ = this.defineDependency('announce', true /* isFunctional */);
+    this.announce_ = this.defineDependency('announce');
 
     Murmur3Hash.provideNativeMurmur3HashGenerateHashToPawn();
   }

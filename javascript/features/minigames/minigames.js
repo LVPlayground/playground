@@ -12,10 +12,10 @@ class Minigames extends Feature {
         super();
 
         // Minigames depend on the announce feature to announce availability and participation.
-        const announce = this.defineDependency('announce', true /* isFunctional */);
+        const announce = this.defineDependency('announce');
 
         // Minigames depend on the death feed in order to be able to hide this for players.
-        const deathFeed = this.defineDependency('death_feed', true /* isFunctional */);
+        const deathFeed = this.defineDependency('death_feed');
 
         this.manager_ = new MinigameManager(announce, deathFeed);
     }

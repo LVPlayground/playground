@@ -14,16 +14,16 @@ class Vehicles extends Feature {
         super();
 
         // Used for determining whether a player can spawn a vehicle.
-        const abuse = this.defineDependency('abuse', true /* isFunctional */);
+        const abuse = this.defineDependency('abuse');
 
         // Used for making announcements to administrators.
-        const announce = this.defineDependency('announce', true /* isFunctional */);
+        const announce = this.defineDependency('announce');
 
         // Used to add commands and vehicle access to the `/lvp access` console.
-        const playground = this.defineDependency('playground', true /* isFunctional */);
+        const playground = this.defineDependency('playground');
 
         // Used to create and destroy the vehicles available on Las Venturas Playground.
-        const streamer = this.defineDependency('streamer', true /* isFunctional */);
+        const streamer = this.defineDependency('streamer');
 
         this.manager_ = new VehicleManager(streamer);
         this.manager_.loadVehicles();

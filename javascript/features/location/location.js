@@ -15,7 +15,7 @@ class Location extends Feature {
         super();
 
         // Determines whether a player is allowed to teleport into an interior right now.
-        const abuse = this.defineDependency('abuse', true /* isFunctional */);
+        const abuse = this.defineDependency('abuse');
 
         this.interiorManager_ = new InteriorManager(abuse);
 

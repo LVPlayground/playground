@@ -18,26 +18,26 @@ class Houses extends Feature {
         super();
 
         // Determines whether a player is allowed to teleport into a house right now.
-        const abuse = this.defineDependency('abuse', true /* isFunctional */);
+        const abuse = this.defineDependency('abuse');
 
         // Various actions will result in announcements being made to administrators.
-        const announce = this.defineDependency('announce', true /* isFunctional */);
+        const announce = this.defineDependency('announce');
 
         // House pricing is determined using a predefined set of algorithms.
-        const economy = this.defineDependency('economy', true /* isFunctional */);
+        const economy = this.defineDependency('economy');
 
         // Friends and gangs can influence the access rules of particular houses.
-        const friends = this.defineDependency('friends', true /* isFunctional */);
-        const gangs = this.defineDependency('gangs', true /* isFunctional */);
+        const friends = this.defineDependency('friends');
+        const gangs = this.defineDependency('gangs');
 
         // Portals from the Location feature will be used for house entrances and exits.
-        const location = this.defineDependency('location', true /* isFunctional */);
+        const location = this.defineDependency('location');
 
         // The `/house` command is currently restricted to Management.
-        const playground = this.defineDependency('playground', true /* isFunctional */);
+        const playground = this.defineDependency('playground');
 
         // The streamer will be used for creation of house vehicles.
-        const streamer = this.defineDependency('streamer', true /* isFunctional */);
+        const streamer = this.defineDependency('streamer');
 
         this.manager_ = new HouseManager(abuse, economy, friends, gangs, location, streamer);
         this.manager_.registerExtension(new PropertySettings(this.manager_));

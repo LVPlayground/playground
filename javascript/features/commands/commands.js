@@ -25,7 +25,7 @@ class Commands extends Feature {
     this.positioningCommands_ = new PositioningCommands();
 
     // Needed to easily send a message to IRC
-    const announce = this.defineDependency('announce', true /* isFunctional */);
+    const announce = this.defineDependency('announce');
 
     // Load the irc-chat commands to send a message to a channel
     this.ircChatCommands_ = new IrcChatCommands(announce);

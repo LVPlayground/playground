@@ -21,10 +21,10 @@ class Races extends Feature {
         this.disableLiveReload();
 
         // Races depend on the minigame system to provide lifetime management.
-        const minigames = this.defineDependency('minigames', true /* isFunctional */);
+        const minigames = this.defineDependency('minigames');
 
         // Races report checkpoint and final result times of participating players to logstash.
-        const logger = this.defineDependency('logger', true /* isFunctional */);
+        const logger = this.defineDependency('logger');
 
         this.manager_ = new RaceManager(server.database, minigames, logger);
         this.commands_ = new RaceCommands(this.manager_);

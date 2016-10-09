@@ -5,6 +5,9 @@
 # native IsPlayerAllowedToTeleport(playerId);
 IsPlayerAllowedToTeleport
 
+# native IsPersistentVehicle(vehicleId);
+IsPersistentVehicle
+
 # native IsCommunicationMuted();
 IsCommunicationMuted
 

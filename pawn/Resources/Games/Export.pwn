@@ -158,10 +158,15 @@ CExport__OnEnterCheckpoint( playerid )
                 }
             }
 
+            // Check that the vehicle is persistent.
+            if (!IsPersistentVehicle(playerVehicleID)) {
+                SendClientMessage(playerid, Color::Error, "Error: Sorry, only permanent vehicles can be exported.");
+                return 1;
+            }
+
             // Check if it's not the GTA Vehicle
-            if(playerVehicleID  == GTA_Vehicle ||
-                (Vehicle(playerVehicleID)->isOpenWorldVehicle() == true && Vehicle(playerVehicleID)->isPersistent() == false)) {
-                SendClientMessage(playerid, Color::Error, "Error: You can't export this vehicle.");
+            if (playerVehicleID  == GTA_Vehicle) {
+                SendClientMessage(playerid, Color::Error, "Error: Sorry, you can't export the vehicle wanted by the merchant.");
                 return 1;
             }
 

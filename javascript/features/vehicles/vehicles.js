@@ -5,6 +5,7 @@
 const Feature = require('components/feature_manager/feature.js');
 const VehicleCommands = require('features/vehicles/vehicle_commands.js');
 const VehicleManager = require('features/vehicles/vehicle_manager.js');
+const VehicleNatives = require('features/vehicles/vehicle_natives.js');
 
 // The Vehicles feature is responsible for the features one might find around San Andreas. It allows
 // all players to create vehicles on demand, administrators to store and modify them persistently.
@@ -28,12 +29,17 @@ class Vehicles extends Feature {
         this.manager_ = new VehicleManager(streamer);
         this.manager_.loadVehicles();
 
+        this.natives_ = new VehicleNatives(this.manager_);
+
         this.commands_ = new VehicleCommands(this.manager_, abuse, announce, playground);
     }
 
     dispose() {
         this.commands_.dispose();
         this.commands_ = null;
+
+        this.natives_.dispose();
+        this.natives_ = null;
 
         this.manager_.dispose();
         this.manager_ = null;

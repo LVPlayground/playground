@@ -10,6 +10,7 @@ native IsValidVehicle(vehicleid);
 
 // Provided by the Communication feature in JavaScript.
 native IsPlayerAllowedToTeleport(playerId);
+native IsPersistentVehicle(vehicleId);
 native IsCommunicationMuted();
 native bool: SpawnPlayerInHouse(playerId);
 

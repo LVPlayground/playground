@@ -68,8 +68,11 @@ class BanCommands {
 
         new administrator[MAX_PLAYER_NAME+1], message[256];
         Player(playerId)->nickname(administrator, sizeof(administrator));
-        if (UndercoverAdministrator(playerId)->isUndercoverAdministrator() == true)
+        if (UndercoverAdministrator(playerId)->isUndercoverAdministrator()) {
             UndercoverAdministrator(playerId)->getOriginalUsername(administrator, sizeof(administrator));
+
+            BanManager->setUndercoverKicked(playerId, true);
+        }
 
         format(message, sizeof(message), "%s (Id:%d) has been banned by %s (Id:%d) for %d days: %s",
             Player(subjectId)->nicknameString(), subjectId, administrator, playerId, duration, params[parameterOffset]);
@@ -119,8 +122,11 @@ class BanCommands {
 
         new administrator[MAX_PLAYER_NAME+1], message[256];
         Player(playerId)->nickname(administrator, sizeof(administrator));
-        if (UndercoverAdministrator(playerId)->isUndercoverAdministrator() == true)
+        if (UndercoverAdministrator(playerId)->isUndercoverAdministrator()) {
             UndercoverAdministrator(playerId)->getOriginalUsername(administrator, sizeof(administrator));
+
+            BanManager->setUndercoverKicked(playerId, true);
+        }
 
         format(message, sizeof(message), "%s (Id:%d) has been kicked by %s (Id:%d): %s",
             Player(subjectId)->nicknameString(), subjectId, administrator, playerId, params[parameterOffset]);

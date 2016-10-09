@@ -54,6 +54,9 @@ class BanManager {
     // Maintain a boolean indicating whether the player was banned automatically.
     new bool: m_automaticallyBanned[MAX_PLAYERS];
 
+    // Maintain a boolean indicating whether the player was kicked by an undercover administrator.
+    new bool: m_undercoverKicked[MAX_PLAYERS];
+
     /**
      * Create prepared statements for the queries which will be used for the Ban Manager when the
      * gamemode starts up. This saves us from doing the processing later on. Note that we don't
@@ -97,6 +100,7 @@ class BanManager {
     @list(OnPlayerConnect)
     public onPlayerConnect(playerId) {
         m_automaticallyBanned[playerId] = false;
+        m_undercoverKicked[playerId] = false;
     }
 
     /**
@@ -255,6 +259,14 @@ class BanManager {
      * @param playerId Id of the player to check this for.
      */
     public bool: wasAutomaticallyBanned(playerId) {
-        return (m_automaticallyBanned[playerId]);
+        return m_automaticallyBanned[playerId];
+    }
+
+    public setUndercoverKicked(playerId, bool: undercover) {
+        m_undercoverKicked[playerId] = undercover;
+    }
+
+    public bool: wasUndercoverKicked(playerId) {
+        return m_undercoverKicked[playerId];
     }
 };

@@ -170,7 +170,12 @@ class VehicleManager {
         if (databaseVehicle && databaseVehicle instanceof DatabaseVehicle)
             this.enforceVehicleAccess(databaseVehicle, false /* sync */);
 
-        vehicle.respawn();
+        while (vehicle) {
+            const trailer = vehicle.trailer;
+
+            vehicle.respawn();
+            vehicle = trailer;
+        }
     }
 
     // Stores the |vehicle| in the database. If it's a persistent vehicle already, the existing

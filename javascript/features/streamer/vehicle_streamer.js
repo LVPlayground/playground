@@ -214,12 +214,13 @@ class VehicleStreamer extends EntityStreamerGlobal {
             const trailer = vehicle.trailer;
 
             storedVehicle = this.storedVehicles_.get(vehicle);
+            if (storedVehicle) {
+                this.unpin(storedVehicle, RecentUsagePin);
+                this.respawnTokens_.delete(vehicle);
 
-            this.unpin(storedVehicle, RecentUsagePin);
-            this.respawnTokens_.delete(vehicle);
-
-            if (storedVehicle.deathFn)
-                storedVehicle.deathFn(vehicle, storedVehicle);
+                if (storedVehicle.deathFn)
+                    storedVehicle.deathFn(vehicle, storedVehicle);
+            }
 
             if (vehicle.isConnected())
                 vehicle.respawn();

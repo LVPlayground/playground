@@ -13,7 +13,7 @@ class RaceManager {
         this.database_ = new RaceDatabase(database);
         this.logger_ = logger;
 
-        this.minigameCategory_ = minigames.createCategory('races');
+        this.minigameCategory_ = minigames().createCategory('races');
         this.minigames_ = minigames;
 
         // Catalogue containing all races that can be started by players.
@@ -89,7 +89,7 @@ class RaceManager {
         player.sendMessage(Message.RACE_COMMAND_JOIN, race.name);
 
         // First try to join the player in an existing race of their choice.
-        for (let minigame of this.minigames_.getMinigamesForCategory(this.minigameCategory_)) {
+        for (let minigame of this.minigames_().getMinigamesForCategory(this.minigameCategory_)) {
             if (minigame.state != Minigame.STATE_SIGN_UP)
                 continue;  // the minigame is not accepting sign-ups anymore
 
@@ -98,14 +98,14 @@ class RaceManager {
 
             // The current |minigame| represents the race the player would like to participate in
             // and is still accepting sign-ups, so make it happen.
-            this.minigames_.addPlayerToMinigame(this.minigameCategory_, minigame, player);
+            this.minigames_().addPlayerToMinigame(this.minigameCategory_, minigame, player);
             return;
         }
 
         const raceMinigame = new RaceMinigame(race, this.database_, this.logger_);
 
         // Alternatively we create a new race that the player will be invited to join in to.
-        this.minigames_.createMinigame(this.minigameCategory_, raceMinigame, player);
+        this.minigames_().createMinigame(this.minigameCategory_, raceMinigame, player);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -113,7 +113,7 @@ class RaceManager {
     dispose() {
         this.raceCatalogue_ = null;
 
-        this.minigames_.deleteCategory(this.minigameCategory_);
+        this.minigames_().deleteCategory(this.minigameCategory_);
         this.minigames_ = null;
 
         this.database_.dispose();

@@ -43,8 +43,9 @@ class MinigameManager {
             'playerstatechange', MinigameManager.prototype.onPlayerStateChange.bind(this));
     }
 
-    // Gets the death feed feature available to drivers to toggle a player's death feed.
-    get deathFeed() { return this.deathFeed_; }
+    // Gets the death feed feature available to drivers to toggle a player's death feed. Should not
+    // be cached because the underlying DeathFeed implementation may change.
+    get deathFeed() { return this.deathFeed_(); }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -142,8 +143,8 @@ class MinigameManager {
             // TODO(Russell): Skip the sign-up phase when the |player| is the only eligable player
             // on the server for joining this minigame.
         } else {
-            this.announce_.announceMinigame(player, settings.name, settings.command);
-            this.announce_.announceMinigameParticipation(player, settings.name, settings.command);
+            this.announce_().announceMinigame(player, settings.name, settings.command);
+            this.announce_().announceMinigameParticipation(player, settings.name, settings.command);
 
             if (!server.isTest())
                 wait(SignupTimeoutMilliseconds).then(() => driver.load());
@@ -171,7 +172,7 @@ class MinigameManager {
             // Associate the |driver| with the |player|.
             this.players_.set(player, driver);
 
-            this.announce_.announceMinigameParticipation(player, settings.name, settings.command);
+            this.announce_().announceMinigameParticipation(player, settings.name, settings.command);
             return;
         }
 

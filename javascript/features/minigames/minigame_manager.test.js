@@ -17,9 +17,10 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         gunther = server.playerManager.getById(0 /* Gunther */);
         russell = server.playerManager.getById(1 /* Russell */);
 
+        const announce = new MockAnnounce();
         deathFeed = new MockDeathFeed();
 
-        manager = new MinigameManager(new MockAnnounce(), deathFeed);
+        manager = new MinigameManager(() => announce, () => deathFeed);
     });
 
     afterEach(() => manager.dispose());

@@ -20,7 +20,7 @@ class GangChat extends Feature {
         const announce = this.defineDependency('announce', true /* isFunctional */);
 
         // Gang chat will register with the communication feature as a delegate.
-        const communication = this.defineDependency('communication');
+        const communication = this.defineDependency('communication', true /* isFunctional */);
 
         this.manager_ = new GangChatManager(gangs, announce, communication);
     }

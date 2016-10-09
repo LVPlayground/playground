@@ -16,8 +16,12 @@ class Races extends Feature {
     constructor() {
         super();
 
+        // This feature hasn't been designed to handle changing interactions with the Minigames. It
+        // is possible to update this, but it'd be a fair amount of work.
+        this.disableLiveReload();
+
         // Races depend on the minigame system to provide lifetime management.
-        const minigames = this.defineDependency('minigames');
+        const minigames = this.defineDependency('minigames', true /* isFunctional */);
 
         // Races report checkpoint and final result times of participating players to logstash.
         const logger = this.defineDependency('logger', true /* isFunctional */);

@@ -11,8 +11,17 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
     let manager = null;
 
     beforeEach(() => {
+        server.featureManager.registerFeaturesForTests({
+            communication: Communication
+        });
+
+        server.featureManager.loadFeature('communication');
+
+        const communication =
+            server.featureManager.createDependencyWrapperForFeature('communication');
+
         gangs = new MockGangs();
-        manager = new GangChatManager(() => gangs, null /* announce */, new Communication());
+        manager = new GangChatManager(() => gangs, null /* announce */, communication);
     });
 
     afterEach(() => manager.dispose());

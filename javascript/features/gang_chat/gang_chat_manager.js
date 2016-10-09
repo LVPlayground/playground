@@ -17,7 +17,10 @@ class GangChatManager {
         this.callbacks_.addEventListener(
             'setiownershipchange', GangChatManager.prototype.onSetiOwnershipChange.bind(this));
 
-        this.communication_.addDelegate(this);
+        this.communication_().addDelegate(this);
+
+        this.communication_.addReloadObserver(
+            this, GangChatManager.prototype.onCommunicationReload.bind(this));
     }
 
     // Called when a player sends a message to the chat box. If it starts 
@@ -31,7 +34,7 @@ class GangChatManager {
         if (player.isAdministrator() && text.startsWith('!!!'))
             return false;  // the administrator uses exclamation marks in a regular context
 
-        if (this.communication_.isCommunicationMuted() && !player.isAdministrator()) {
+        if (this.communication_().isCommunicationMuted() && !player.isAdministrator()) {
             player.sendMessage(Message.GANG_CHAT_SERVER_MUTED);
             return true;
         }
@@ -160,8 +163,17 @@ class GangChatManager {
         });
     }
 
+    // Called when the `communication` feature has been reloaded.
+    onCommunicationReload() {
+        this.communication_().addDelegate(this);
+    }
+
     dispose() {
-        this.communication_.removeDelegate(this);
+        this.communication_().removeDelegate(this);
+
+        this.communication_.removeReloadObserver(this);
+        this.communication_ = null;
+
         this.callbacks_.dispose();
     }
 }

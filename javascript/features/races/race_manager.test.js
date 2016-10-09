@@ -23,8 +23,12 @@ describe('RaceManager', (it, beforeEach, afterEach) => {
             minigames: Minigames
         });
 
+        server.featureManager.loadFeature('minigames');
+
         manager = new RaceManager(
-            null /* database */, server.featureManager.loadFeature('minigames'));
+            null /* database */,
+            server.featureManager.createDependencyWrapperForFeature('minigames'));
+
         manager.database_ = new MockRaceDatabase();
     });
 
@@ -59,7 +63,7 @@ describe('RaceManager', (it, beforeEach, afterEach) => {
 
     it('should delete the minigame category when being disposed of', assert => {
         const category = manager.minigameCategory_;
-        const minigames = manager.minigames_;
+        const minigames = manager.minigames_();
 
         assert.doesNotThrow(() => minigames.getMinigamesForCategory(category));
 

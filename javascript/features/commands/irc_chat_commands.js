@@ -30,7 +30,7 @@ class IrcChatCommands {
     sendMessageToPlayerAndIrc(player, channel, message, ircTag) {
         player.sendMessage(Message.IRC_CHAT_MESSAGE_SENT, channel, player.name, message);
 
-        this.announce_.announceToIRC(ircTag, player.name, message);
+        this.announce_().announceToIRC(ircTag, player.name, message);
     }
 
     onCrewCommand(player, message) {

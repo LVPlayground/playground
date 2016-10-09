@@ -9,7 +9,8 @@ describe('IrcChatCommands', (it, beforeEach, afterEach) => {
     let ircChatCommands = null;
 
     beforeEach(() => {
-        ircChatCommands = new IrcChatCommands(new MockAnnounce());
+        const announce = new MockAnnounce();
+        ircChatCommands = new IrcChatCommands(() => announce);
     });
 
     afterEach(() => {

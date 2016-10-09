@@ -655,7 +655,7 @@ class HouseCommands {
         player.sendMessage(Message.HOUSE_INFO_1);
         player.sendMessage(Message.HOUSE_INFO_2);
 
-        let options = ['buy', 'settings'];
+        let options = ['buy', 'goto', 'settings'];
 
         if (player.isAdministrator())
             options.push('create', 'enter', 'modify');

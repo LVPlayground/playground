@@ -31,14 +31,6 @@ class Vehicles extends Feature {
         this.commands_ = new VehicleCommands(this.manager_, abuse, announce, playground);
     }
 
-    // ---------------------------------------------------------------------------------------------
-    // Public API of the vehicles feature.
-    // ---------------------------------------------------------------------------------------------
-
-    // TODO(Russell): Define the public API of the vehicles class.
-
-    // ---------------------------------------------------------------------------------------------
-
     dispose() {
         this.commands_.dispose();
         this.commands_ = null;

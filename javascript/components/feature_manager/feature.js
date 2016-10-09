@@ -25,9 +25,7 @@ class Feature {
 
     // To be called when the feature shuts down. All known resources associated with the feature
     // will be disposed and removed from the gamemode as well.
-    dispose() {
-        // TODO(Russell): Make sure that the dependencies are disposed of first.
-    }
+    dispose() {}
 }
 
 exports = Feature;

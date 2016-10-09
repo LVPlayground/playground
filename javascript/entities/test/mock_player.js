@@ -407,9 +407,8 @@ class MockPlayer {
     }
 
     updateStreamerObjects() { this.streamerObjectsUpdated_ = true; }
-    streamerObjectsUpdated() { return this.streamerObjectsUpdated_; }
 
-    // TODO: Add new getters and setters as required.
+    streamerObjectsUpdated() { return this.streamerObjectsUpdated_; }
 }
 
 exports = MockPlayer;

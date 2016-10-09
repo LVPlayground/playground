@@ -57,7 +57,3 @@ are both based on the ID of a registered player. We encourage players to registe
 
 ## FAQ: Why did we remove `/v create`?
 Because the word `create` adds little value. Get used to the new command! :-)
-
-
-## TODO
-- Implement support for trailers in the streamer.

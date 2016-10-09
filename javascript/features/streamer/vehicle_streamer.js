@@ -205,14 +205,23 @@ class VehicleStreamer extends EntityStreamerGlobal {
         if (!vehicle.isConnected() || this.respawnTokens_.get(vehicle) !== token)
             return;  // the |vehicle| has been removed, or the respawn token expired
 
-        this.unpin(storedVehicle, RecentUsagePin);
-        this.respawnTokens_.delete(vehicle);
+        // Respawn not just the |vehicle|, but also all trailers attached to it.
+        while (vehicle) {
+            const trailer = vehicle.trailer;
 
-        if (storedVehicle.deathFn)
-            storedVehicle.deathFn(vehicle, storedVehicle);
+            storedVehicle = this.storedVehicles_.get(vehicle);
 
-        if (vehicle.isConnected())
-            vehicle.respawn();
+            this.unpin(storedVehicle, RecentUsagePin);
+            this.respawnTokens_.delete(vehicle);
+
+            if (storedVehicle.deathFn)
+                storedVehicle.deathFn(vehicle, storedVehicle);
+
+            if (vehicle.isConnected())
+                vehicle.respawn();
+
+            vehicle = trailer;
+        }
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -227,6 +236,20 @@ class VehicleStreamer extends EntityStreamerGlobal {
         this.respawnTokens_.delete(vehicle);
     }
 
+    // Called when the |trailer| has been attached to the |vehicle|. If the |trailer| is managed
+    // by the vehicle streamer, this will be considered as it being in use.
+    onTrailerAttached(vehicle, trailer) {
+        while (vehicle) {
+            const storedVehicle = this.storedVehicles_.get(vehicle);
+            if (storedVehicle && this.isPinned(storedVehicle)) {
+                this.onPlayerEnterVehicle(null /* player */, trailer);
+                break;
+            }
+
+            vehicle = vehicle.parent;
+        }
+    }
+
     // Called when the |player| has left the |vehicle|. Will schedule it to be respawned if there
     // are no more occupants left in the vehicle.
     onPlayerLeaveVehicle(player, vehicle) {
@@ -238,6 +261,12 @@ class VehicleStreamer extends EntityStreamerGlobal {
             return;  // there are still players left in the vehicle
 
         this.scheduleVehicleForRespawn(vehicle, storedVehicle);
+    }
+
+    // Called when the |trailer| has been detached from the |vehicle|. If the |trailer| is managed
+    // by the vehicle streamer, this will free it up for respawn.
+    onTrailerDetached(vehicle, trailer) {
+        this.onPlayerLeaveVehicle(null /* player */, trailer);
     }
 
     // Called when the level of |player| has changed. Their access to limited vehicles has to be

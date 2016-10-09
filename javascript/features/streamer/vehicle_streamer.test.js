@@ -7,13 +7,15 @@ const VehicleStreamer = require('features/streamer/vehicle_streamer.js');
 
 describe('VehicleStreamer', it => {
     // Creates a StoredVehicle with a random position.
-    function createStoredVehicle({ modelId = 520, scope = 3000, respawnDelay = -1,
+    function createStoredVehicle({ modelId = 520, position = null, scope = 3000, respawnDelay = -1,
                                    respawnFn = null, accessFn = null } = {}) {
+        position = position || new Vector(Math.floor(Math.random() * scope) - scope,
+                                          Math.floor(Math.random() * scope) - scope,
+                                          Math.floor(Math.random() * 30) - 10);
+
         return new StoredVehicle({
             modelId: modelId || Math.floor(Math.random() * 211) + 400,
-            position: new Vector(Math.floor(Math.random() * scope) - scope,
-                                 Math.floor(Math.random() * scope) - scope,
-                                 Math.floor(Math.random() * 30) - 10),
+            position: position,
             rotation: 270,
             interiorId: 0,
             virtualWorld: 0,
@@ -334,5 +336,71 @@ describe('VehicleStreamer', it => {
 
         assert.equal(gunther.level, Player.LEVEL_ADMINISTRATOR);
         assert.isFalse(vehicle.isLockedForPlayer(gunther));
+    });
+
+    it('should pin trailers for recent usage as well', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        const storedVehicle = createStoredVehicle({ position: gunther.position, respawnDelay: 60 });
+        const storedTrailer = createStoredVehicle({ position: gunther.position, respawnDelay: 90 });
+
+        const streamer = new VehicleStreamer();
+        assert.doesNotThrow(() => streamer.add(storedVehicle));
+        assert.doesNotThrow(() => streamer.add(storedTrailer));
+
+        const vehicle = storedVehicle.liveEntity;
+        const trailer = storedTrailer.liveEntity;
+
+        assert.isNotNull(vehicle);
+        assert.isNotNull(trailer);
+
+        // (1) Trailers should respawn with the vehicle they were attached to.
+        {
+            assert.isFalse(streamer.isPinned(storedVehicle));
+            assert.isFalse(streamer.isPinned(storedTrailer));
+
+            gunther.enterVehicle(vehicle);
+
+            assert.isTrue(streamer.isPinned(storedVehicle));
+            assert.isFalse(streamer.isPinned(storedTrailer));
+
+            vehicle.attachTrailer(trailer);
+
+            assert.isTrue(streamer.isPinned(storedVehicle));
+            assert.isTrue(streamer.isPinned(storedTrailer));
+
+            gunther.leaveVehicle();
+
+            await server.clock.advance(60 * 1000);  // 60 seconds, the vehicle's respawn delay
+
+            assert.equal(vehicle.respawnCount, 1);
+            assert.equal(trailer.respawnCount, 1);
+
+            assert.isNull(vehicle.trailer);
+            assert.isNull(trailer.parent);
+
+            assert.isFalse(streamer.isPinned(storedVehicle));
+            assert.isFalse(streamer.isPinned(storedTrailer));
+        }
+
+        // (2) Trailers should (delay) respawn when they got detached from a vehicle.
+        {
+            assert.isFalse(streamer.isPinned(storedVehicle));
+            assert.isFalse(streamer.isPinned(storedTrailer));
+
+            gunther.enterVehicle(vehicle);
+
+            vehicle.attachTrailer(trailer);
+            vehicle.detachTrailer();
+
+            assert.isTrue(vehicle.isOccupied());
+            assert.isTrue(streamer.isPinned(storedVehicle));
+            assert.isTrue(streamer.isPinned(storedTrailer));
+
+            await server.clock.advance(90 * 1000);  // 90 seconds, the trailer's respawn delay
+
+            assert.equal(vehicle.respawnCount, 1 /* carry over */);
+            assert.equal(trailer.respawnCount, 2 /* respawn, plus carry over */);
+        }
     });
 });

@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const AbuseNatives = require('features/abuse/abuse_natives.js');
 const AreaPolicy = require('features/abuse/area_policy.js');
 const Feature = require('components/feature_manager/feature.js');
 const FightTracker = require('features/abuse/fight_tracker.js');
@@ -16,6 +17,7 @@ class Abuse extends Feature {
         super();
 
         this.fightTracker_ = new FightTracker();
+        this.natives_ = new AbuseNatives(this);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -61,6 +63,9 @@ class Abuse extends Feature {
     dispose() {
         this.fightTracker_.dispose();
         this.fightTracker_ = null;
+
+        this.natives_.dispose();
+        this.natives_ = null;
     }
 }
 

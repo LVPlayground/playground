@@ -635,9 +635,12 @@ describe('VehicleCommands', (it, beforeEach) => {
         }
 
         assert.isTrue(await gunther.issueCommand('/v density'));
-        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages.length, 2);
         assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_DENSITY, 3, 2,
                                                          manager.streamer.streamingDistance));
+        assert.equal(gunther.messages[1], Message.format(Message.VEHICLE_DENSITY_TOTAL,
+                                                         manager.streamer.size,
+                                                         manager.streamer.streamedSize));
     });
 
     it('should enable administrators to enter vehicles close to them', async(assert) => {

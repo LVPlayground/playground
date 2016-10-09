@@ -233,6 +233,7 @@
     "VEHICLE_ANNOUNCE_SAVED": "%s (Id: %d) has stored a %s in the database.",
     "VEHICLE_DELETED": "@success The %s has been deleted.",
     "VEHICLE_DENSITY": "@info There are %d vehicles of %d models within a radius of %d units around you.",
+    "VEHICLE_DENSITY_TOTAL": "@info There are %d vehicles in total, %d of which have been streamed in.",
     "VEHICLE_ENTER_ALREADY_DRIVING": "@error You're already driving an %s - leave the vehicle first!",
     "VEHICLE_ENTER_NONE_NEAR": "@error There is no vehicle close enough near you to enter.",
     "VEHICLE_ENTER_RESTRICTED": "@error This command may not be used for vehicles restricted to a player.",

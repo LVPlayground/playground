@@ -394,6 +394,8 @@ class VehicleCommands {
 
         player.sendMessage(Message.VEHICLE_DENSITY, areaInfo.vehicles, areaInfo.models,
                            this.manager_.streamer.streamingDistance);
+        player.sendMessage(Message.VEHICLE_DENSITY_TOTAL, this.manager_.streamer.size,
+                           this.manager_.streamer.streamedSize)
     }
 
     // Called when the |player| executes `/v enter [seat]?`, which means they'd like to enter the

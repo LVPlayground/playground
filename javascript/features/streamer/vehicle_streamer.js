@@ -38,11 +38,15 @@ class VehicleStreamer extends EntityStreamerGlobal {
             'vehiclestreamin', VehicleStreamer.prototype.onVehicleStreamIn.bind(this));
     }
 
+    // Gets the number of vehicles that are currently streamed in.
+    get streamedSize() { return this.vehicles_.size; }
+
     // ---------------------------------------------------------------------------------------------
     //
     // Interface of the VehicleStreamer class:
     //
     //     readonly attribute number maxVisible;
+    //     readonly attribute number streamedSize;
     //     readonly attribute number streamingDistance;
     //     readonly attribute number size;
     //

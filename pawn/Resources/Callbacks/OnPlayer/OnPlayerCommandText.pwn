@@ -1243,8 +1243,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         new vehicleId = GetPlayerVehicleID(playerid), Float: position[3];
         GetVehiclePos(vehicleId, position[0], position[1], position[2]);
-        if ((position[2]+500) > 650)
-            position[2] = 0;
+        if (position[2] > 750)
+            position[2] = 750;
 
         ClearPlayerMenus(playerid);
         SetVehiclePos(vehicleId, position[0], position[1], position[2]+500);
@@ -1290,8 +1290,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         new Float: position[3];
         GetPlayerPos(playerid, position[0], position[1], position[2]);
-        if ((position[2]+500) > 650)
-            position[2] = 0;
+        if (position[2] > 750)
+            position[2] = 750;
 
         ClearPlayerMenus(playerid);
         SetPlayerPos(playerid, position[0], position[1], position[2]+500);

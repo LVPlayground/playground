@@ -54,6 +54,9 @@ public DeathmatchStartFunc() {
 
                 // Enough sign-ups, do some magic for every contestant.
                 else if (MinigameTypeInfo[Players] > 1) {
+                    if (LegacyIsPlayerInBombShop(contestant))
+                        RemovePlayerFromBombShop(contestant);
+
                     ClearPlayerMenus(contestant);
                     RemovePlayerFromVehicle(contestant);
 

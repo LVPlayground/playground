@@ -199,6 +199,9 @@ CLyse__GeneratePlayerTeam(iPlayerID)
 // Store the data pre to a player signing up to Lyse
 CLyse__StorePlayerData(iPlayerID)
 {
+    if (LegacyIsPlayerInBombShop(iPlayerID))
+        RemovePlayerFromBombShop(iPlayerID);
+
     CShell__SaveGuns(iPlayerID);        // Sue me.
 
     GetPlayerPos(iPlayerID,

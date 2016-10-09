@@ -54,15 +54,11 @@ enum vBomb
 new VehicleBomb[MAX_VEHICLES][vBomb];
 
 bool: LegacyIsVehicleBombAdded(vehicleId) {
-    if (VehicleBomb[vehicleId][VehicleArmed])
-        return true;
-    else return false;
+    return !!VehicleBomb[vehicleId][VehicleArmed];
 }
 
 bool: LegacyIsPlayerInBombShop(playerId) {
-    if (IsPlayerInBombShop[playerId])
-        return true;
-    else return false;
+    return !!IsPlayerInBombShop[playerId];
 }
 
 // CBomb__CheckPlayer. Checks if a player is in a bomb shop, and if so

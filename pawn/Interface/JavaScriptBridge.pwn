@@ -23,6 +23,9 @@ new g_storedPlayerVirtualWorlds[MAX_PLAYERS];
 forward OnSerializePlayerState(playerid, serialize, restoreOnSpawn);
 public OnSerializePlayerState(playerid, serialize, restoreOnSpawn) {
     if (serialize) {
+        if (LegacyIsPlayerInBombShop(playerid))
+            RemovePlayerFromBombShop(playerid);
+
         ClearPlayerMenus(playerid);
 
         TogglePlayerSpectating(playerid, 0);

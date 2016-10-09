@@ -1520,6 +1520,9 @@ CDerby__GetVehicle(iDerbyID)
 // This function saves the players info prior to them starting the minigame.
 CDerby__SavePlayerData(iPlayerID)
 {
+    if (LegacyIsPlayerInBombShop(iPlayerID))
+        RemovePlayerFromBombShop(iPlayerID);
+
     new
         Float:fPosX,
         Float:fPosY,

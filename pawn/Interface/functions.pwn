@@ -131,6 +131,9 @@ RemovePlayerFromAnyGame(playerId) {
 }
 
 SavePlayerGameState(playerId) {
+    if (LegacyIsPlayerInBombShop(playerId))
+        RemovePlayerFromBombShop(playerId);
+
     GetPlayerPos(playerId, g_aSavedPlayerPosition[playerId][fSavedPosX], g_aSavedPlayerPosition[playerId][fSavedPosY],
         g_aSavedPlayerPosition[playerId][fSavedPosZ]);
 

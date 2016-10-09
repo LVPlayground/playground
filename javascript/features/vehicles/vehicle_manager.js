@@ -135,9 +135,11 @@ class VehicleManager {
         return this.streamer.getLiveVehicle(databaseVehicle);
     }
 
-    // Returns whether the |vehicle| is one managed by the VehicleManager.
+    // Returns whether the |vehicle| is one managed by the VehicleManager. This will only return
+    // TRUE when the vehicle is stored by the streamer, and managed by us.
     isManagedVehicle(vehicle) {
-        return this.streamer.getStoredVehicle(vehicle) !== null;
+        const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
+        return databaseVehicle && databaseVehicle instanceof DatabaseVehicle;
     }
 
     // Returns whether the |vehicle| is a persistent vehicle managed by the VehicleManager.

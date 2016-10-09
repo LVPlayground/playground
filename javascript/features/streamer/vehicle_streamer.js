@@ -322,6 +322,12 @@ class VehicleStreamer extends EntityStreamerGlobal {
         if (!storedVehicle)
             return;  // the |vehicle| is not part of this streamer
 
+        if (vehicle.interiorId != storedVehicle.interiorId)
+            vehicle.interiorId = storedVehicle.interiorId;
+
+        if (vehicle.virtualWorld != storedVehicle.virtualWorld)
+            vehicle.virtualWorld = storedVehicle.virtualWorld;
+
         if (storedVehicle.respawnFn)
             storedVehicle.respawnFn(vehicle, storedVehicle);
     }

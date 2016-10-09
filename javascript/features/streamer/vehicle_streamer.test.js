@@ -403,4 +403,27 @@ describe('VehicleStreamer', it => {
             assert.equal(trailer.respawnCount, 2 /* respawn, plus carry over */);
         }
     });
+
+    it('should reset the virtual world and interior on respawn', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        const storedVehicle = createStoredVehicle({ position: gunther.position, respawnDelay: 60 });
+
+        const streamer = new VehicleStreamer();
+        assert.doesNotThrow(() => streamer.add(storedVehicle));
+
+        const vehicle = storedVehicle.liveEntity;
+        assert.isNotNull(vehicle);
+
+        gunther.enterVehicle(vehicle);
+        gunther.vehicle.interiorId = 7;
+        gunther.vehicle.virtualWorld = 42;
+        gunther.leaveVehicle();
+
+        await server.clock.advance(60 * 1000);  // 60 seconds, the vehicle's respawn delay
+
+        assert.equal(vehicle.respawnCount, 1);
+        assert.equal(vehicle.interiorId, storedVehicle.virtualWorld);;
+        assert.equal(vehicle.virtualWorld, storedVehicle.virtualWorld);
+    });
 });

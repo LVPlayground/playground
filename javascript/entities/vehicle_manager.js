@@ -4,11 +4,15 @@
 
 const ScopedCallbacks = require('base/scoped_callbacks.js');
 
+// Number of milliseconds before running a trailer status update.
+const TrailerStatusUpdateTimeMs = 1250;
+
 // The vehicle manager is in control of all vehicles that have been created by the JavaScript code
 // of Las Venturas Playground. It deliberately does not provide access to the Pawn vehicles.
 class VehicleManager {
     constructor(vehicleConstructor = Vehicle) {
         this.vehicleConstructor_ = vehicleConstructor;
+        this.disposed_ = false;
 
         this.observers_ = new Set();
         this.vehicles_ = new Map();
@@ -24,6 +28,8 @@ class VehicleManager {
         // TODO(Russell): Handle OnVehiclePaintjob
         // TODO(Russell): Handle OnVehicleRespray
         // TODO(Russell): Handle OnVehicleSirenStateChange
+
+        this.processTrailerUpdates();
     }
 
     // Gets the number of vehicles currently created on the server.
@@ -82,6 +88,9 @@ class VehicleManager {
         if (!vehicle)
             return;  // the vehicle isn't owned by the JavaScript code
 
+        if (vehicle.trailer)
+            this.detachTrailer(vehicle);
+
         this.notifyObservers('onVehicleSpawn', vehicle);
     }
 
@@ -97,10 +106,51 @@ class VehicleManager {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Iterates over all live vehicles to determine whether they've got a trailer. When they do,
+    // mark the relationship between the vehicles.
+    async processTrailerUpdates() {
+        while (!this.disposed_) {
+            for (const vehicle of this.vehicles_.values()) {
+                const trailer = this.vehicles_.get(vehicle.findTrailerId()) || null;
+                if (trailer === vehicle.trailer)
+                    continue;
+
+                if (vehicle.trailer)
+                    this.detachTrailer(vehicle);
+
+                if (trailer)
+                    this.attachTrailer(vehicle, trailer);
+            }
+
+            await milliseconds(TrailerStatusUpdateTimeMs);
+        }
+    }
+
+    // To be called by vehicles when Vehicle.attach() is called.
+    attachTrailer(vehicle, trailer) {
+        vehicle.trailer = trailer;
+        vehicle.trailer.parent = vehicle;
+
+        this.notifyObservers('onTrailerAttached', vehicle, trailer);
+    }
+
+    // To be called by vehicles when Vehicle.detach() is called.
+    detachTrailer(vehicle) {
+        const formerTrailer = vehicle.trailer;
+
+        vehicle.trailer.parent = null;
+        vehicle.trailer = null;
+
+        if (formerTrailer.isConnected())
+            this.notifyObservers('onTrailerDetached', vehicle, formerTrailer);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Notifies observers about the |eventName|, passing |...args| as the argument to the method
     // when it exists. The call will be bound to the observer's instance.
     notifyObservers(eventName, ...args) {
-        for (let observer of this.observers_) {
+        for (const observer of this.observers_) {
             if (observer.__proto__.hasOwnProperty(eventName))
                 observer.__proto__[eventName].call(observer, ...args);
             else if (observer.hasOwnProperty(eventName))
@@ -114,11 +164,18 @@ class VehicleManager {
         if (!this.vehicles_.has(vehicle.id))
             throw new Error('The vehicle with Id #' + vehicle.id + ' is not known to the manager.');
 
+        if (vehicle.trailer) {
+            vehicle.trailer.parent = null;
+            vehicle.trailer = null;
+        }
+
         this.vehicles_.delete(vehicle.id);
     }
 
     // Releases all references and state held by the vehicle manager.
     dispose() {
+        this.disposed_ = true;
+
         this.callbacks_.dispose();
         this.callbacks_ = null;
 

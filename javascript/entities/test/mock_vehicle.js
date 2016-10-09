@@ -33,6 +33,10 @@ class MockVehicle {
         this.respawnCounter_ = 0;
         this.health_ = 1000;
 
+        this.trailer_ = null;
+        this.trailerId_ = 0;
+        this.parent_ = null;
+
         this.locked_ = new WeakSet();
     }
 
@@ -50,7 +54,12 @@ class MockVehicle {
 
     // Gets or sets the position of this vehicle.
     get position() { return this.position_; }
-    set position(value) { this.position_ = value; }
+    set position(value) {
+        this.position_ = value;
+
+        if (this.trailer_)
+            this.trailer_.position = value;
+    }
 
     // Gets or sets the rotation of this vehicle.
     get rotation() { return this.rotation_; }
@@ -96,15 +105,57 @@ class MockVehicle {
 
     // Gets or sets the interior that this vehicle has been linked to.
     get interiorId() { return this.interiorId_; }
-    set interiorId(value) { this.interiorId_ = value; }
+    set interiorId(value) {
+        this.interiorId_ = value;
+
+        if (this.trailer_)
+            this.trailer_.interiorId = value;
+    }
 
     // Gets or sets the virtual world this vehicle is tied to.
     get virtualWorld() { return this.virtualWorld_; }
-    set virtualWorld(value) { this.virtualWorld_ = value; }
+    set virtualWorld(value) {
+        this.virtualWorld_ = value;
+
+        if (this.trailer_)
+            this.trailer_.virtualWorld = value;
+    }
 
     // Gets or sets the health of this vehicle. Should generally be between 0 and 1000.
     get health() { return this.health_; }
     set health(value) { this.health_ = value; }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Attaches this vehicle to the given |trailer|.
+    attachTrailer(trailer) {
+        if (this.trailer_)
+            this.manager_.detachTrailer(this);
+
+        this.manager_.attachTrailer(this, trailer);
+    }
+
+    // Detaches this vehicle from its current trailer.
+    detachTrailer() {
+        if (!this.trailer_)
+            return;
+
+        this.manager_.detachTrailer(this);
+    }
+
+    // Gets or sets the trailer that is attached to this vehicle.
+    get trailer() { return this.trailer_; }
+    set trailer(value) { this.trailer_ = value; }
+
+    // Gets or sets the parent vehicle, that is, the vehicle that has this one as a trailer.
+    get parent() { return this.parent_; }
+    set parent(value) { this.parent_ = value; }
+
+    // Finds the Id of the trailer attached to this vehicle. Should be used sparsely.
+    findTrailerId() { return this.trailerId_; }
+
+    // Sets the trailer Id for this vehicle. Should only be used for testing.
+    setTrailerId(trailerId) { this.trailerId_ = trailerId; }
 
     // ---------------------------------------------------------------------------------------------
 

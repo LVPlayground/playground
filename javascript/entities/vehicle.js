@@ -28,6 +28,9 @@ class Vehicle {
                               options.primaryColor, options.secondaryColor, options.respawnDelay,
                               options.siren ? 1 : 0);
 
+        this.trailer_ = null;
+        this.parent_ = null;
+
         if (this.id_ == Vehicle.INVALID_ID)
             throw new Error('Unable to create the vehicle on the SA-MP server.');
 
@@ -57,6 +60,9 @@ class Vehicle {
     get position() { return new Vector(...pawnInvoke('GetVehiclePos', 'iFFF', this.id_)); }
     set position(value) {
         pawnInfoke('SetVehiclePos', 'ifff', this.id_, value.x, value.y, value.z);
+
+        if (this.trailer_)
+            pawnInvoke('AttachTrailerToVehicle', 'ii', this.trailer_.id, this.id_);
     }
 
     // Gets or sets the rotation of this vehicle.
@@ -115,11 +121,23 @@ class Vehicle {
     set interiorId(value) {
         pawnInvoke('LinkVehicleToInterior', 'ii', this.id_, value);
         this.interiorId_ = value;
+
+        if (this.trailer_) {
+            this.trailer_.interiorId = value;
+            pawnInvoke('AttachTrailerToVehicle', 'ii', this.trailer_.id, this.id_);
+        }
     }
 
     // Gets or sets the virtual world this vehicle is tied to.
     get virtualWorld() { return pawnInvoke('GetVehicleVirtualWorld', 'i', this.id_); }
-    set virtualWorld(value) { pawnInvoke('SetVehicleVirtualWorld', 'ii', this.id_, value); }
+    set virtualWorld(value) {
+        pawnInvoke('SetVehicleVirtualWorld', 'ii', this.id_, value);
+
+        if (this.trailer_) {
+            this.trailer_.virtualWorld = value;
+            pawnInvoke('AttachTrailerToVehicle', 'ii', this.trailer_.id, this.id_);
+        }
+    }
 
     // Gets or sets the health of this vehicle. Should generally be between 0 and 1000.
     get health() { return pawnInvoke('GetVehicleHealth', 'iF', this.id_); }
@@ -130,6 +148,37 @@ class Vehicle {
     set velocity(value) {
         pawnInvoke('SetVehicleVelocity', 'ifff', this.id_, value.x, value.y, value.z);
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Attaches this vehicle to the given |trailer|.
+    attachTrailer(trailer) {
+        if (this.trailer_)
+            this.manager_.detachTrailer(this);
+
+        pawnInvoke('AttachTrailerToVehicle', 'ii', trailer.id, this.id_);
+        this.manager_.attachTrailer(this, trailer);
+    }
+
+    // Detaches this vehicle from its current trailer.
+    detachTrailer() {
+        if (!this.trailer_)
+            return;
+
+        pawnInvoke('DetachTrailerFromVehicle', 'i', this.id_);
+        this.manager_.detachTrailer(this);
+    }
+
+    // Gets or sets the trailer that is attached to this vehicle.
+    get trailer() { return this.trailer_; }
+    set trailer(value) { this.trailer_ = value; }
+
+    // Gets or sets the parent vehicle, that is, the vehicle that has this one as a trailer.
+    get parent() { return this.parent_; }
+    set parent(value) { this.parent_ = value; }
+
+    // Finds the Id of the trailer attached to this vehicle. Should be used sparsely.
+    findTrailerId() { return pawnInvoke('GetVehicleTrailer', 'i', this.id_); }
 
     // ---------------------------------------------------------------------------------------------
 

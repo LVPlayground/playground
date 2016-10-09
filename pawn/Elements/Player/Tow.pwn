@@ -88,6 +88,15 @@ lvp_tow(playerid, params[])
     else if (!CanPlayerUseTow(playerid))
         return SendClientMessage(playerid, Color::Red, "You already used /tow less than 3 minutes ago! You must wait a bit more.");
 
+    else if (DamageManager(playerid)->isPlayerFighting())
+        return SendClientMessage(playerid, Color::Red, "You can't use /tow because you've recently been in a fight.");
+
+    else if (LegacyIsPlayerInBombShop(playerid))
+        return SendClientMessage(playerid, Color::Red, "You can't use /tow because you're in a bomb shop!");
+
+    else if (IsPlayerInMinigame(playerid))
+        return SendClientMessage(playerid, Color::Red, "You can't use /tow because you're in a minigame. Use \"/leave\" first.");
+
     // And what if he's just a passenger?
     else if (GetPlayerVehicleSeat(playerid) > 0)
         return SendClientMessage(playerid, Color::Red, "You have to be driving the vehicle to use this command!");

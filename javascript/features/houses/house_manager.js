@@ -32,6 +32,8 @@ class HouseManager {
 
         // Responsible for all vehicles associated with the houses.
         this.vehicleController_ = new HouseVehicleController(streamer);
+
+        server.playerManager.addObserver(this);
     }
 
     // Gets the instance of the database model class for the houses feature.
@@ -471,7 +473,31 @@ class HouseManager {
         location.settings.vehicles.delete(parkingLot);
     }
 
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the |player| has logged in to their account. Will check whether house names have
+    // to be updated (in case the player changed their nickname).
+    async onPlayerLogin(player) {
+        if (player.isUndercover())
+            return;  // skip this update when the |player| is undercover
+
+        for (const location of this.getHousesForPlayer(player)) {
+            if (location.settings.ownerName == player.name)
+                continue;
+
+            location.settings.ownerName = player.name;
+
+            // Make sure that the updated name is reflected on their entrance.
+            await this.entranceController_.updateLocationSetting(
+                location, 'label', location.settings.name);
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     dispose() {
+        server.playerManager.removeObserver(this);
+
         this.entranceController_.dispose();
         this.vehicleController_.dispose();
 

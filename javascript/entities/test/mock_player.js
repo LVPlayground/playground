@@ -260,12 +260,13 @@ class MockPlayer {
     }
 
     // Identifies the player to a fake account. The options can be specified optionally.
-    identify({ userId = 42, vip = 0, gangId = 0 } = {}) {
+    identify({ userId = 42, vip = 0, gangId = 0, undercover = 0 } = {}) {
         server.playerManager.onPlayerLogin({
             playerid: this.id_,
             userid: userId,
             vip: vip,
-            gangid: gangId
+            gangid: gangId,
+            undercover: undercover
         });
     }
 

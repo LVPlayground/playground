@@ -50,8 +50,10 @@ class HouseSettings {
     get ownerGangId() { return this.ownerGangId_; }
     set ownerGangId(value) { this.ownerGangId_ = value; }
 
-    // Gets the username of the player that owns this house.
+    // Gets the username of the player that owns this house. Should only be updated by the
+    // HouseManager when it's been detected that a player changed their nickname.
     get ownerName() { return this.ownerName_; }
+    set ownerName(value) { this.ownerName_ = value; }
 
     // Gets or sets the access level of this house. Updating the access level should only be done
     // by the HouseManager, because it needs to be reflected in the database.

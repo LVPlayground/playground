@@ -401,6 +401,35 @@ describe('HouseManager', (it, beforeEach) => {
         assert.equal(houseRemovedCalls, 1);
     });
 
+    it('should update house owner names when a player logs in with another name', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify();
+
+        const houses = manager.getHousesForPlayer(gunther);
+        assert.equal(houses.length, 1);
+
+        // (1) Make sure that the initial status of the house is correct.
+        {
+            assert.equal(houses[0].settings.ownerName, gunther.name);
+        }
+
+        // (2) Make sure that the name will be updated when gunther's has, and he logs in again.
+        {
+            gunther.name = 'Guntah';
+            gunther.identify();
+
+            assert.equal(houses[0].settings.ownerName, 'Guntah');
+        }
+
+        // (3) Make sure that the name *won't* be updated when Gunther's undercover.
+        {
+            gunther.name = 'Goontahr';
+            gunther.identify({ undercover: 1 });
+
+            assert.equal(houses[0].settings.ownerName, 'Guntah');
+        }
+    });
+
     it('should impose limits based on the player details', assert => {
         // This is a change detector test.
 

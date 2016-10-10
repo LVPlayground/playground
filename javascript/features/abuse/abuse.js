@@ -36,6 +36,10 @@ class Abuse extends Feature {
         const currentTime = server.clock.monotonicallyIncreasingTime();
         const policy = AreaPolicy.getForPosition(player.position);
 
+        // Administrators can override teleportation limitations.
+        if (player.isAdministrator())
+            return { allowed: true };
+
         // Should having fired your weapon temporarily block teleportation?
         if (policy.firingWeaponBlocksTeleporation) {
             const lastShotTime = this.fightTracker_.getLastShotTime(player);

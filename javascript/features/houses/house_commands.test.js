@@ -4,6 +4,7 @@
 
 const createTestEnvironment = require('features/houses/test/test_environment.js');
 
+const Abuse = require('features/abuse/abuse.js');
 const HouseCommands = require('features/houses/house_commands.js');
 const HouseExtension = require('features/houses/house_extension.js');
 const HouseSettings = require('features/houses/house_settings.js');
@@ -443,14 +444,17 @@ describe('HouseCommands', (it, beforeEach) => {
 
     it('should not enable players to teleport when they might abuse it', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify({ userId: 42 });
+        const russell = server.playerManager.getById(1 /* Russell */);
 
-        abuse.toggleTeleportForTests(gunther, false);
+        gunther.identify({ userId: 42 });
+        gunther.shoot({ target: russell });
 
         assert.isTrue(await gunther.issueCommand('/house goto'));
 
         assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.HOUSE_GOTO_TELEPORT_BLOCKED)
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.HOUSE_GOTO_TELEPORT_BLOCKED, Abuse.REASON_DAMAGE_ISSUED));
     });
 
     it('should enable administrators to list houses owned by another player', async(assert) => {

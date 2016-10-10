@@ -73,4 +73,19 @@ describe('Abuse', (it, beforeEach) => {
         assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
         assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: true }).allowed);
     });
+
+    it('should override teleportation limits for administrators', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
+
+        gunther.shoot({ target: russell });
+
+        assert.isFalse(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
+
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
+    });
 });

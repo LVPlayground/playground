@@ -329,6 +329,49 @@ describe('HouseCommands', (it, beforeEach) => {
         assert.isTrue((await manager.findClosestLocation(gunther)).isAvailable());
     });
 
+    it('should not allow buying a house when the player has another one near', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        gunther.identify({ userId: 8751 });
+        gunther.setVip(true);
+        gunther.level = Player.LEVEL_PLAYER;
+
+        assert.equal(manager.getHousesForPlayer(gunther).length, 0);
+
+        // Change detector tests.
+        assert.equal(manager.getMaximumHouseCountForPlayer(gunther), 3);
+        assert.equal(manager.getMinimumHouseDistance(gunther), 500);
+
+        // Create and buy a random house near the one we'd like |gunther| to buy.
+        {
+            gunther.position = new Vector(210, 240, 310);
+
+            await manager.createLocation(gunther, {
+                facingAngle: (gunther.rotation + 180) % 360,
+                interiorId: gunther.interiorId,
+                position: gunther.position
+            });
+
+            const location = await manager.findClosestLocation(gunther);
+            assert.isNotNull(location);
+
+            await manager.createHouse(gunther, location, 1 /* random interior */);
+
+            assert.equal(manager.getHousesForPlayer(gunther).length, 1);
+        }
+
+        // Now try to `/house buy` a house very close to the one we just created.
+        {
+            gunther.position = new Vector(200, 250, 300);  // on the nearest location pickup
+
+            assert.isTrue(await gunther.issueCommand('/house buy'));
+            assert.equal(gunther.messages.length, 2);
+            assert.equal(gunther.messages[1],
+                         Message.format(Message.HOUSE_BUY_TOO_CLOSE,
+                                        manager.getMinimumHouseDistance(gunther)));
+        }
+    });
+
     it('should not allow buying a house when the balance is not sufficient', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 

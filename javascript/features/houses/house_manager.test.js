@@ -400,4 +400,36 @@ describe('HouseManager', (it, beforeEach) => {
         assert.equal(houseCreatedCalls, 1);
         assert.equal(houseRemovedCalls, 1);
     });
+
+    it('should impose limits based on the player details', assert => {
+        // This is a change detector test.
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        {
+            assert.equal(gunther.level, Player.LEVEL_PLAYER);
+            assert.isFalse(gunther.isVip());
+
+            assert.equal(manager.getMaximumHouseCountForPlayer(gunther), 1);
+            assert.equal(manager.getMinimumHouseDistance(gunther), 500);
+        }
+        {
+            gunther.setVip(true);
+
+            assert.equal(gunther.level, Player.LEVEL_PLAYER);
+            assert.isTrue(gunther.isVip());
+
+            assert.equal(manager.getMaximumHouseCountForPlayer(gunther), 3);
+            assert.equal(manager.getMinimumHouseDistance(gunther), 500);
+        }
+        {
+            gunther.level = Player.LEVEL_MANAGEMENT;
+
+            assert.equal(gunther.level, Player.LEVEL_MANAGEMENT);
+            assert.isTrue(gunther.isVip());
+
+            assert.equal(manager.getMaximumHouseCountForPlayer(gunther), 100);
+            assert.equal(manager.getMinimumHouseDistance(gunther), 5);
+        }
+    });
+
 });

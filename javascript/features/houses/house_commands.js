@@ -77,18 +77,34 @@ class HouseCommands {
             return;
         }
 
-        const currentHouses = this.manager_.getHousesForPlayer(player);
-        if (currentHouses.length >= this.manager_.getMaximumHouseCountForPlayer(player)) {
-            player.sendMessage(Message.HOUSE_BUY_NO_MULTIPLE);
-            return;
-        }
-
         if (!location.isAvailable()) {
             player.sendMessage(Message.HOUSE_BUY_NOT_AVAILABLE, location.owner);
             return;
         }
 
-        // |location| is available for purchase, and the |player| does not have a house yet.
+        const currentHouses = this.manager_.getHousesForPlayer(player);
+        if (currentHouses.length > 0) {
+            if (currentHouses.length >= this.manager_.getMaximumHouseCountForPlayer(player)) {
+                player.sendMessage(Message.HOUSE_BUY_NO_MULTIPLE);
+                return;
+            }
+
+            let distanceToClosestHouse = Number.MAX_SAFE_INTEGER;
+            currentHouses.forEach(existingHouse => {
+                const distance = location.position.distanceTo(existingHouse.position);
+
+                distanceToClosestHouse = Math.min(distanceToClosestHouse, distance);
+            });
+
+            const minimumDistance = this.manager_.getMinimumHouseDistance(player);
+            if (distanceToClosestHouse < minimumDistance) {
+                player.sendMessage(Message.HOUSE_BUY_TOO_CLOSE, minimumDistance);
+                return;
+            }
+        }
+
+        // |location| is available for purchase, and the |player| hasn't exceeded their house limit
+        // nor has an house in the immediate environment.
 
         const balance = await PlayerMoneyBridge.getBalanceForPlayer(player);
 

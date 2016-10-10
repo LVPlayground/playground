@@ -114,6 +114,7 @@
     "HOUSE_BUY_NO_MULTIPLE": "@error You've reached the maximum number of houses you can own, sorry.",
     "HOUSE_BUY_NOT_AVAILABLE": "@error The house you're standing in is already owned by %s.",
     "HOUSE_BUY_NOT_ENOUGH_MONEY": "@error Sorry, you must have %$ or more available on your bank account.",
+    "HOUSE_BUY_TOO_CLOSE": "@error Sorry, your houses need to be at least %d units away from each other.",
     "HOUSE_CANCEL_UNKNOWN": "@error Unable to cancel - you're not currently in an interactive operation.",
     "HOUSE_CREATE_CONFIRM": "Houses will cost between %$ and %$ at this location. Continue?",
     "HOUSE_CREATE_CONFIRMED": "The house location has been created!",

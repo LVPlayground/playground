@@ -25,8 +25,9 @@ class PlayerSpectateHandler {
     // Save the player's position on first /watch usage.
     new Float: m_playerPosition[MAX_PLAYERS][3];
 
-    // Save the player's interior on first /watch usage.
+    // Save the player's interior and Virtual World on first /watch usage.
     new m_playerInterior[MAX_PLAYERS];
+    new m_playerVirtualWorld[MAX_PLAYERS];
 
     // Track if the player's position/interior needs to be set on spawn.
     new bool: m_resetPosition[MAX_PLAYERS];
@@ -46,6 +47,7 @@ class PlayerSpectateHandler {
             GetPlayerPos(playerId, m_playerPosition[playerId][0], m_playerPosition[playerId][1],
                 m_playerPosition[playerId][2]);
             m_playerInterior[playerId] = GetPlayerInterior(playerId);
+            m_playerVirtualWorld[playerId] = GetPlayerVirtualWorld(playerId);
 
             m_isSpectating[playerId] = true;
             TogglePlayerSpectating(playerId, true);
@@ -265,6 +267,7 @@ class PlayerSpectateHandler {
         SetPlayerVirtualWorld(playerId, World::MainWorld);
         SetPlayerPos(playerId, m_playerPosition[playerId][0], m_playerPosition[playerId][1], m_playerPosition[playerId][2]);
         SetPlayerInterior(playerId, m_playerInterior[playerId]);
+        SetPlayerVirtualWorld(playerId, m_playerVirtualWorld[playerId]);
 
         m_resetPosition[playerId] = false;
 

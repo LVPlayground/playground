@@ -57,7 +57,8 @@ class PickupStreamer extends EntityStreamerGlobal {
             modelId: storedPickup.modelId,
             position: storedPickup.position,
             virtualWorld: storedPickup.virtualWorld,
-            type: storedPickup.type
+            type: storedPickup.type,
+            respawnDelay: storedPickup.respawnDelay
         });
 
         this.pickups_.set(storedPickup, pickup);

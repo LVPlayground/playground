@@ -14,7 +14,7 @@ describe('MockPickup', (it, beforeEach, afterEach) => {
         const virtualWorld = 42;
 
         pickup = new MockPickup(
-            { didDisposePickup: () => 1 }, modelId, type, position, virtualWorld);
+            { didDisposePickup: () => 1 }, modelId, type, position, virtualWorld, -1);
     });
 
     afterEach(() => {
@@ -30,20 +30,25 @@ describe('MockPickup', (it, beforeEach, afterEach) => {
         const position = new Vector(1000, 1750, 15);
         const virtualWorld = 42;
 
-        assert.throws(() => new MockPickup(manager, null, type, position, virtualWorld));
-        assert.throws(() => new MockPickup(manager, 'hello', type, position, virtualWorld));
+        assert.throws(() => new MockPickup(manager, null, type, position, virtualWorld, -1));
+        assert.throws(() => new MockPickup(manager, 'hello', type, position, virtualWorld, -1));
         // TODO(Russell): Validate that the modelId is actually valid for a pickup.
 
-        assert.throws(() => new MockPickup(manager, modelId, null, position, virtualWorld));
-        assert.throws(() => new MockPickup(manager, modelId, 'fly', position, virtualWorld));
+        assert.throws(() => new MockPickup(manager, modelId, null, position, virtualWorld, -1));
+        assert.throws(() => new MockPickup(manager, modelId, 'fly', position, virtualWorld, -1));
 
-        assert.throws(() => new MockPickup(manager, modelId, type, null, virtualWorld));
-        assert.throws(() => new MockPickup(manager, modelId, type, 'upside down', virtualWorld));
-        assert.throws(() => new MockPickup(manager, modelId, type, [0, 1, 2], virtualWorld));
+        assert.throws(() => new MockPickup(manager, modelId, type, null, virtualWorld, -1));
+        assert.throws(() => new MockPickup(manager, modelId, type, 'upside', virtualWorld, -1));
+        assert.throws(() => new MockPickup(manager, modelId, type, [0, 1, 2], virtualWorld, -1));
 
-        assert.throws(() => new MockPickup(manager, modelId, type, position, null));
-        assert.throws(() => new MockPickup(manager, modelId, type, position, -15));
-        assert.throws(() => new MockPickup(manager, modelId, type, position, 4000000000));
+        assert.throws(() => new MockPickup(manager, modelId, type, position, null, -1));
+        assert.throws(() => new MockPickup(manager, modelId, type, position, -15, -1));
+        assert.throws(() => new MockPickup(manager, modelId, type, position, 4000000000, -1));
+
+        assert.throws(() => new MockPickup(manager, modelId, type, position, virtualWorld, -2));
+        assert.throws(() => new MockPickup(manager, modelId, type, position, virtualWorld, 'yay'));
+        assert.throws(() =>
+            new MockPickup(manager, modelId, type, position, virtualWorld, 4000000000));
     });
 
     it('should allow getting the model Id of the pickup as a number', assert => {

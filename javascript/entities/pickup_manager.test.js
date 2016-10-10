@@ -236,4 +236,30 @@ describe('PickupManager', (it, beforeEach) => {
         assert.equal(observer.enteredCount, 1);
         assert.equal(observer.leftCount, 0);
     });
+
+    it('should enable pickups to automagically respawn', async(assert) => {
+        const pickup = manager.createPickup({
+            modelId: 1225,
+            position: new Vector(100, 200, 300),
+            respawnDelay: 180
+        });
+
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        assert.isNotNull(pickup.id);
+        assert.isTrue(pickup.isConnected());
+        assert.isFalse(pickup.isRespawning());
+
+        pickup.pickUpByPlayer(gunther);
+
+        assert.isNull(pickup.id);
+        assert.isTrue(pickup.isConnected());
+        assert.isTrue(pickup.isRespawning());
+
+        await server.clock.advance(180 * 1000);  // the respawn delay
+
+        assert.isNotNull(pickup.id);
+        assert.isTrue(pickup.isConnected());
+        assert.isFalse(pickup.isRespawning());
+    });
 });

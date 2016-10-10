@@ -33,8 +33,10 @@ class PickupManager {
 
     // Creates a new pickup with the given options. The |modelId| and |position| are required, all
     // other arguments may optionally be supplied. Pickups are immutable after creation.
-    createPickup({ modelId, position, type = Pickup.TYPE_PERSISTENT, virtualWorld = 0 } = {}) {
-        const pickup = new this.pickupConstructor_(this, modelId, type, position, virtualWorld);
+    createPickup({ modelId, position, type = Pickup.TYPE_PERSISTENT, virtualWorld = 0,
+                   respawnDelay = -1 } = {}) {
+        const pickup = new this.pickupConstructor_(
+            this, modelId, type, position, virtualWorld, respawnDelay);
 
         this.pickups_.set(pickup.id, pickup);
 
@@ -77,6 +79,15 @@ class PickupManager {
 
         // Fire the `onPlayerEnterPickup` event because they freshly entered the pickup.
         this.notifyObservers('onPlayerEnterPickup', player, pickup);
+
+        // Schedule a respawn for the |pickup| since a player has picked it up.
+        if (pickup.respawnDelay != -1) {
+            this.currentPickupForPlayer_.delete(player);
+            this.pickups_.delete(pickup.id);
+
+            pickup.scheduleRespawn();
+            return;
+        }
 
         // Spin until the player leaves the pickup, has entered a different pickup, has disconnected
         // from Las Venturas Playground or the pickup has been destroyed.
@@ -121,6 +132,12 @@ class PickupManager {
             throw new Error('Attempting to dispose an invalid pickup: ' + pickup);
 
         this.pickups_.delete(pickup.id);
+    }
+
+    // Will reassociate the |pickup| with this PickupManager. Should only be used by the Pickup
+    // implementation after the pickup has successfully respawned.
+    didRecreatePickup(pickup) {
+        this.pickups_.set(pickup.id, pickup);
     }
 
     // Removes all existing pickups from the server.

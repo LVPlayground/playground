@@ -90,18 +90,23 @@ The following properties are available for pickups:
   - `pickup.id`: Gets the internal Id assigned to the pickup. _Immutable._
   - `pickup.modelId`: Gets the model Id that's representing the pickup. _Immutable._
   - `pickup.position`: Gets the position of the pickup as a vector. _Immutable._
+  - `pickup.respawnDelay`: Gets the respawn delay of the pickup in seconds. _Immutable_.
   - `pickup.type`: Gets the behavioural type of the pickup. _Immutable._
   - `pickup.virtualWorld`: Gets the virtual world the pickup resides in. _Immutable._
 
 The following methods are available for pickups:
   - `pickup.dispose()`: Removes the pickup from the server.
   - `pickup.isConnected()`: Returns whether the pickup still exists on the server.
+  - `pickup.isRespawning()`: Returns whether the pickup is in process of being respawned.
 
 The following constants are available for pickups:
   - `Pickup.TYPE_PERSISTENT`: Pickup _type_ that will trigger the event when a player walks in to
     it. The pickup will not disappear, nor will trigger default effects.
   - `Pickup.TYPE_VEHICLE`: Pickup _type_ that will only trigger when the player drives in to it with
     a vehicle. The pickup will disappear afterwards.
+
+Las Venturas Playground implements automatic respawning for pickups. This will delete the pickup
+once it has been picked up by a player, and automatically recreate it after a given delay.
 
 #### Observing pickup events
 Your feature can observe the [PickupManager](pickup_manager.js) to be notified when players enter or

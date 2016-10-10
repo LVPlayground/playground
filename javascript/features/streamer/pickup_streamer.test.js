@@ -6,13 +6,14 @@ const PickupStreamer = require('features/streamer/pickup_streamer.js');
 const StoredPickup = require('features/streamer/stored_pickup.js');
 
 describe('PickupStreamer', it => {
-    function createStoredPickup({ position, enterFn = null, leaveFn = null } = {}) {
+    function createStoredPickup({ position, respawnDelay = -1, enterFn = null,
+                                  leaveFn = null } = {}) {
         return new StoredPickup({
             modelId: 1242 /* armour */,
             type: Pickup.TYPE_PERSISTENT,
             virtualWorld: -1,
 
-            position, enterFn, leaveFn
+            position, respawnDelay, enterFn, leaveFn
         });
     }
 
@@ -90,5 +91,37 @@ describe('PickupStreamer', it => {
 
         assert.equal(enterCount, 1);
         assert.equal(leaveCount, 1);
+    });
+
+    it('should honor pickup respawn delays', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.position = new Vector(2000, 2000, 2000);
+
+        const streamer = new PickupStreamer();
+        const storedPickup = createStoredPickup({
+            position: new Vector(2010, 2010, 2010),
+            respawnDelay: 180
+        });
+
+        assert.doesNotThrow(() => streamer.add(storedPickup));
+        assert.isNotNull(storedPickup.liveEntity);
+
+        const pickup = storedPickup.liveEntity;
+
+        assert.isNotNull(pickup.id);
+        assert.isTrue(pickup.isConnected());
+        assert.isFalse(pickup.isRespawning());
+
+        pickup.pickUpByPlayer(gunther);
+
+        assert.isNull(pickup.id);
+        assert.isTrue(pickup.isConnected());
+        assert.isTrue(pickup.isRespawning());
+
+        await server.clock.advance(180 * 1000);  // 3 minutes
+
+        assert.isNotNull(pickup.id);
+        assert.isTrue(pickup.isConnected());
+        assert.isFalse(pickup.isRespawning());
     });
 });

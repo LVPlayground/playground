@@ -7,10 +7,12 @@ const StoredEntity = require('features/streamer/stored_entity.js');
 // Details about a stored pickup. This contains all the necessary information in order to create
 // the pickup, on demand, within the pickup streamer.
 class StoredPickup extends StoredEntity {
-    constructor({ modelId, type, position, virtualWorld, enterFn = null, leaveFn = null } = {}) {
+    constructor({ modelId, type, position, virtualWorld, respawnDelay = -1, enterFn = null,
+                  leaveFn = null } = {}) {
         super({ modelId, position, interiorId: 0 /* ignored */, virtualWorld });
 
         this.type_ = type;
+        this.respawnDelay_ = respawnDelay;
 
         this.enterFn_ = enterFn;
         this.leaveFn_ = leaveFn;
@@ -18,6 +20,9 @@ class StoredPickup extends StoredEntity {
 
     // Gets the type of pickup that this should be spawned as.
     get type() { return this.type_; }
+
+    // Gets the respawn delay of this pickup, in seconds.
+    get respawnDelay() { return this.respawnDelay_; }
 
     // Gets the function that is to be executed when a player enters this pickup.
     get enterFn() { return this.enterFn_; }

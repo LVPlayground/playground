@@ -12,6 +12,7 @@ class MockPlayer {
 
         this.name_ = event.name || 'Player' + playerId;
         this.level_ = event.level || Player.LEVEL_PLAYER;
+        this.rconAdmin_ = false;
         this.vip_ = false;
         this.undercover_ = false;
         this.gangId_ = null;
@@ -82,6 +83,9 @@ class MockPlayer {
     isManagement() { return this.level_ == Player.LEVEL_MANAGEMENT; }
 
     isUndercover() { return this.undercover_; }
+
+    isRconAdmin() { return this.rconAdmin_; }
+    setRconAdmin(value) { this.rconAdmin_ = value; }
 
     isRegistered() { return this.userId_ != null; }
 

@@ -79,6 +79,9 @@ class Player {
   // Returns whether the player is undercover, i.e. does not use their own account.
   isUndercover() { return this.undercover_; }
 
+  // Returns whether the player is logged in to the SA-MP remote console.
+  isRconAdmin() { return pawnInvoke('IsPlayerAdmin', 'i', this.id_); }
+
   // Returns whether the player is registered and logged in to their account.
   isRegistered() { return this.userId_ !== null; }
 

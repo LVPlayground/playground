@@ -22,7 +22,7 @@ class IrcChatCommands {
             .build(IrcChatCommands.prototype.onCrewCommand.bind(this));
 
         server.commandManager.buildCommand('man')
-            .restrict(Player.LEVEL_MANAGEMENT)
+            .restrict(player => player.isManagement() || player.isRconAdmin())
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(IrcChatCommands.prototype.onManCommand.bind(this));
     }

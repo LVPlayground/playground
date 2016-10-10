@@ -28,10 +28,6 @@ public OnRconLoginAttempt(ip[], password[], success) {
                     iRconLoginAttempts[playerId] = 0;
                 }
             } else {
-                format(notice, sizeof(notice), "%s (Id:%d) has logged into the RCON remote console.",
-                    Player(playerId)->nicknameString(), playerId);
-                Admin(playerId, notice);
-
                 iRconLoginAttempts[playerId] = 0;
             }
 

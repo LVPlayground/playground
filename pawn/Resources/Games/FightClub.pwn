@@ -705,7 +705,8 @@ CFightClub__OnDisconnect(playerId)
 //==============================================
 CFightClub__WatchMatch(playerid, matchid)
 {
-    if(Matches[matchid][status] != FC_STATUS_FIGHTING) return SendClientMessage(playerid, Color::Red, "* Sorry, this match isn't running anymore");
+    if(Matches[matchid][status] != FC_STATUS_FIGHTING)
+        return SendClientMessage(playerid, Color::Red, "* Sorry, this match isn't running anymore");
 
     new string[256];
     new iPlayer1 = Matches[matchid][player1];
@@ -713,6 +714,9 @@ CFightClub__WatchMatch(playerid, matchid)
     new locid = Matches[matchid][location];
     new vWorld = Matches[matchid][fcworld];
     new Int = Interiors[locid][0];
+
+    if (LegacyIsPlayerInBombShop(playerid))
+        RemovePlayerFromBombShop(playerid);
 
     SetPlayerInterior(playerid, Int); // Interior
     SetPlayerVirtualWorld(playerid, vWorld); // World

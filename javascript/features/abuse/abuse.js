@@ -11,13 +11,16 @@ const FightTracker = require('features/abuse/fight_tracker.js');
 const FightingCoolDownPeriodMs = 10000;
 
 // Time period, in milliseconds, a player needs to wait between time limited teleportations.
-const TeleportCoolDownPeriodMs = 60000;
+const TeleportCoolDownPeriodMs = 180000;  // 3 minutes
 
 // Implementation of the feature that keep track of whether a player is abusing. It tracks the
 // fighting activities of a player and applies limitations based on area policies.
 class Abuse extends Feature {
     constructor() {
         super();
+
+        // Stores the last time, in milliseconds, a teleportation was reported for a player.
+        this.lastTeleportTime_ = new WeakMap();
 
         this.fightTracker_ = new FightTracker();
 
@@ -37,21 +40,29 @@ class Abuse extends Feature {
         if (policy.firingWeaponBlocksTeleporation) {
             const lastShotTime = this.fightTracker_.getLastShotTime(player);
             if (lastShotTime && (currentTime - lastShotTime) < FightingCoolDownPeriodMs)
-                return { allowed: false };
+                return { allowed: false, reason: Abuse.REASON_FIRED_WEAPON };
         }
 
         // Should having issued damage to another player temporarily block teleportation?
         if (policy.issuingDamageBlocksTeleport) {
             const issuedDamageTime = this.fightTracker_.getLastIssuedDamageTime(player);
             if (issuedDamageTime && (currentTime - issuedDamageTime) < FightingCoolDownPeriodMs)
-                return { allowed: false };
+                return { allowed: false, reason: Abuse.REASON_DAMAGE_ISSUED };
         }
 
         // Should having taken damage from another player temporarily block teleportation?
         if (policy.takingDamageBlocksTeleport) {
             const takenDamageTime = this.fightTracker_.getLastTakenDamageTime(player);
             if (takenDamageTime && (currentTime - takenDamageTime) < FightingCoolDownPeriodMs)
-                return { allowed: false };
+                return { allowed: false, reason: Abuse.REASON_DAMAGE_TAKEN };
+        }
+
+        // Should the teleport be time limited?
+        if (policy.enforceTeleportationTimeLimit || enforceTimeLimit) {
+            const lastTeleportTime = this.lastTeleportTime_.get(player);
+            if (lastTeleportTime && (currentTime - lastTeleportTime) < TeleportCoolDownPeriodMs) {
+                return { allowed: false, reason: Abuse.REASON_TIME_LIMIT };
+            }
         }
 
         return { allowed: true };
@@ -59,7 +70,8 @@ class Abuse extends Feature {
 
     // Reports that the |player| has been teleported through an activity that's time limited.
     reportTeleport(player, { timeLimited = false } = {}) {
-        // TODO: Actually register the last teleportation time when |timeLimited| is set.
+        if (timeLimited)
+            this.lastTeleportTime_.set(player, server.clock.monotonicallyIncreasingTime());
     }
 
     // Returns whether the |player| is allowed to spawn a vehicle right now. The implementation of
@@ -80,5 +92,11 @@ class Abuse extends Feature {
         this.natives_ = null;
     }
 }
+
+// Textual descriptions about why an action has been denied.
+Abuse.REASON_FIRED_WEAPON = 'recently fired a weapon';
+Abuse.REASON_DAMAGE_ISSUED = 'recently hurt another player';
+Abuse.REASON_DAMAGE_TAKEN = 'recently got hurt by another player';
+Abuse.REASON_TIME_LIMIT = 'can only teleport once three minutes';
 
 exports = Abuse;

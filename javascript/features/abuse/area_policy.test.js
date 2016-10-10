@@ -11,6 +11,14 @@ describe('AreaPolicy', it => {
 
         assert.notStrictEqual(lasVenturasPolicy, sanAndreasPolicy);
 
+        // Change detector tests.
+
+        assert.isFalse(lasVenturasPolicy.enforceTeleportationTimeLimit);
+        assert.isFalse(sanAndreasPolicy.enforceTeleportationTimeLimit);
+
+        assert.isFalse(lasVenturasPolicy.firingWeaponBlocksTeleporation);
+        assert.isFalse(sanAndreasPolicy.firingWeaponBlocksTeleporation);
+
         assert.isTrue(lasVenturasPolicy.issuingDamageBlocksTeleport);
         assert.isTrue(sanAndreasPolicy.issuingDamageBlocksTeleport);
 

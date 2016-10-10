@@ -51,4 +51,26 @@ describe('Abuse', (it, beforeEach) => {
             assert.isFalse(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
         }
     });
+
+    it('should be able to enforce a time limit on teleportations', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
+        assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: true }).allowed);
+
+        abuse.reportTeleport(gunther, { timeLimited: false });
+
+        assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
+        assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: true }).allowed);
+
+        abuse.reportTeleport(gunther, { timeLimited: true });
+
+        assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
+        assert.isFalse(abuse.canTeleport(gunther, { enforceTimeLimit: true }).allowed);
+
+        await server.clock.advance(3 * 60 * 1000);  // 60 seconds, the time limit
+
+        assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
+        assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: true }).allowed);
+    });
 });

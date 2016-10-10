@@ -51,7 +51,7 @@ class FlyCommand extends Command {
             return;
         }
 
-        if (subject.interiorId != 0) {
+        if (subject.interiorId != 0 && !player.isManagement()) {
             player.sendMessage(Message.COMMAND_ERROR, name + ' is currently in an interior, ' +
                                'but you can only fly outside!');
             return;

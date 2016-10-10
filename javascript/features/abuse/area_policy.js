@@ -23,6 +23,9 @@ class AreaPolicy {
         this.policy_ = policy;
     }
 
+    // Gets whether time limits should be enforced for teleportation.
+    get enforceTeleportationTimeLimit() { return this.policy_.enforceTeleportationTimeLimit; }
+
     // Gets whether firing your weapon should temporarily block the ability to teleport.
     get firingWeaponBlocksTeleporation() { return this.policy_.firingWeaponBlocksTeleporation; }
 
@@ -37,6 +40,7 @@ class AreaPolicy {
 
 // Policy specific to the city of Las Venturas.
 const LasVenturasPolicy = new AreaPolicy(PrivateSymbol, {
+    enforceTeleportationTimeLimit: false,
     firingWeaponBlocksTeleporation: false,
     issuingDamageBlocksTeleport: true,
     takingDamageBlocksTeleport: true
@@ -44,6 +48,7 @@ const LasVenturasPolicy = new AreaPolicy(PrivateSymbol, {
 
 // Policy that applies to all of San Andreas not covered by more specific policies.
 const SanAndreasPolicy = new AreaPolicy(PrivateSymbol, {
+    enforceTeleportationTimeLimit: false,
     firingWeaponBlocksTeleporation: false,
     issuingDamageBlocksTeleport: true,
     takingDamageBlocksTeleport: false

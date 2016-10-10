@@ -298,8 +298,7 @@ class HouseCommands {
 
         // Bail out if the |player| is not currently allowed to teleport.
         if (!teleportStatus.allowed) {
-            player.sendMessage(Message.HOUSE_GOTO_TELEPORT_BLOCKED);
-            // TODO: Do something sensible with the |teleportStatus|.
+            player.sendMessage(Message.HOUSE_GOTO_TELEPORT_BLOCKED, teleportStatus.reason);
             return;
         }
 

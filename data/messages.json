@@ -123,7 +123,7 @@
     "HOUSE_ENTERED": "@success Your have successfully forced your way in to this house.",
     "HOUSE_GOTO_INVALID_FILTER": "@error Sorry, the filter '%s' yielded no house owners.",
     "HOUSE_GOTO_NONE_FOUND": "@error Sorry, but you don't own any houses yet!",
-    "HOUSE_GOTO_TELEPORT_BLOCKED": "@error Sorry, but you're not able to teleport right now.",
+    "HOUSE_GOTO_TELEPORT_BLOCKED": "@error Sorry, you can't teleport right now because you %s.",
     "HOUSE_GOTO_UNREGISTERED": "@error Sorry, you need to be registered to go to houses. Register on https://sa-mp.nl/!",
     "HOUSE_HEADER": "{B1FC17}Houses on Las Venturas Playground",
     "HOUSE_INFO_1": "Personalized, player-owned houses spread throughout San Andreas that are",

@@ -31,8 +31,17 @@ class AbuseNatives {
         if (teleportStatus.allowed)
             return TELEPORT_STATUS_ALLOWED;
 
-        // TODO: Tell Pawn about more detailed failure statuses.
-        return TELEPORT_STATUS_REJECTED_FIGHTING;
+        switch (teleportStatus.reason) {
+            case Abuse.REASON_FIRED_WEAPON:
+            case Abuse.REASON_DAMAGE_ISSUED:
+            case Abuse.REASON_DAMAGE_TAKEN:
+                return TELEPORT_STATUS_REJECTED_FIGHTING;
+
+            case Abuse.REASON_TIME_LIMIT:
+                return TELEPORT_STATUS_REJECTED_TIME_LIMIT;
+        }
+
+        return TELEPORT_STATUS_REJECTED_OTHER;
     }
 
     // Reports that the |playerId| has been teleported, optionally |timeLimited|.

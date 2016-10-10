@@ -16,12 +16,13 @@ class MockAbuse extends Abuse {
     // ---------------------------------------------------------------------------------------------
     // Public API of the Abuse feature.
 
-    // Returns whether the |player| is allowed to teleport right now.
-    canTeleport(player) {
+    // Returns whether the |player| is allowed to teleport right now. The |enforceTimeLimit| option
+    // may be set to indicate that the player should adhere to the teleportation time limit.
+    canTeleport(player, ...args) {
         if (this.disableTeleport_.has(player))
             return this.disableTeleport_.get(player);
 
-        return super.canTeleport(player);
+        return super.canTeleport(player, ...args);
     }
 
     // Returns whether the |player| is allowed to spawn a vehicle right now.

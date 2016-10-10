@@ -294,9 +294,12 @@ class HouseCommands {
         const houses = new Set();
         let nickname = null;
 
+        const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: true });
+
         // Bail out if the |player| is not currently allowed to teleport.
-        if (!this.abuse_().canTeleport(player)) {
+        if (!teleportStatus.allowed) {
             player.sendMessage(Message.HOUSE_GOTO_TELEPORT_BLOCKED);
+            // TODO: Do something sensible with the |teleportStatus|.
             return;
         }
 
@@ -322,8 +325,10 @@ class HouseCommands {
         const menu = new Menu(nickname + '\'s houses');
 
         for (const location of houses) {
-            menu.addItem(location.settings.name, player =>
-                this.manager_.forceEnterHouse(player, location));
+            menu.addItem(location.settings.name, player => {
+                this.abuse_().reportTeleport(player, { timeLimited: true });
+                this.manager_.forceEnterHouse(player, location);
+            });
         }
 
         await menu.displayForPlayer(player);

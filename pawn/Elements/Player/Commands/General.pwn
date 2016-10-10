@@ -614,7 +614,7 @@ lvp_locate(playerid,params[])
 // Author: Jay
 lvp_tune(playerid,params[])
 {
-    if (!IsPlayerAllowedToTeleport(playerid)) {
+    if (GetPlayerTeleportStatus(playerid, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED) {
         ShowBoxForPlayer(playerid, "You cannot use this command because you have recently been in a fight.");
         return 1;
     }
@@ -668,6 +668,8 @@ lvp_tune(playerid,params[])
             case 2: SetVehiclePos(GetPlayerVehicleID(playerid), 2644.1753,-2007.4167,13.2542);
             default: goto l_Tune;
         }
+
+        ReportPlayerTeleport(playerid, 0 /* timeLimited */);
 
         ClearPlayerMenus(playerid);
         PlayerInfo[playerid][playerInCheckpoint] = 0;
@@ -986,7 +988,7 @@ lvp_My( playerid, params[] )
 
     if(!strcmp(szParameter, "skin", true, 4))
     {
-        if (!IsPlayerAllowedToTeleport(playerid)) {
+        if (GetPlayerTeleportStatus(playerid, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED) {
             SendClientMessage(playerid, Color::Red, "* You cannot use this command at the moment because you have recently been in a fight.");
             return 1;
         }

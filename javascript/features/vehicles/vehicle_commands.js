@@ -232,7 +232,7 @@ class VehicleCommands {
             return;
         }
 
-        if (!this.abuse_().canSpawnVehicle(player)) {
+        if (!this.abuse_().canSpawnVehicle(player).allowed) {
             player.sendMessage(Message.VEHICLE_SPAWN_REJECTED);
             return;
         }

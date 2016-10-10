@@ -22,16 +22,16 @@ describe('Abuse', (it, beforeEach) => {
         // Both issuing and taking damage temporarily blocks teleportation in Las Venturas.
         {
             gunther.position = new Vector(2000, 2000, 0);
-            assert.isTrue(abuse.canTeleport(gunther));
+            assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
 
             gunther.shoot();
-            assert.isTrue(abuse.canTeleport(gunther));
+            assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
 
             russell.shoot({ target: gunther });
-            assert.isFalse(abuse.canTeleport(gunther));
+            assert.isFalse(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
 
             gunther.shoot({ target: russell });
-            assert.isFalse(abuse.canTeleport(gunther));
+            assert.isFalse(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
         }
 
         await server.clock.advance(60000);  // arbitrary amount
@@ -39,16 +39,16 @@ describe('Abuse', (it, beforeEach) => {
         // Only issuing damage temporarily blocks teleportation outside of Las Venturas.
         {
             gunther.position = new Vector(0, 0, 0);
-            assert.isTrue(abuse.canTeleport(gunther));
+            assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
 
             gunther.shoot();
-            assert.isTrue(abuse.canTeleport(gunther));
+            assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
 
             russell.shoot({ target: gunther });
-            assert.isTrue(abuse.canTeleport(gunther));
+            assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
 
             gunther.shoot({ target: russell });
-            assert.isFalse(abuse.canTeleport(gunther));
+            assert.isFalse(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
         }
     });
 });

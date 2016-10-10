@@ -2,8 +2,11 @@
 # Use of this source code is governed by the MIT license, a copy of which can
 # be found in the LICENSE file.
 
-# native IsPlayerAllowedToTeleport(playerId);
-IsPlayerAllowedToTeleport
+# native GetPlayerTeleportStatus(playerId, timeLimited);
+GetPlayerTeleportStatus
+
+# native ReportPlayerTeleport(playerId, timeLimited);
+ReportPlayerTeleport
 
 # native IsPersistentVehicle(vehicleId);
 IsPersistentVehicle

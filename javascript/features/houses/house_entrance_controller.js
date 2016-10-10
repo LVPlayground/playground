@@ -274,7 +274,7 @@ class HouseEntranceController {
             return false;
         }
 
-        if (!this.abuse_().canTeleport(player)) {
+        if (!this.abuse_().canTeleport(player, { enforceTimeLimit: false }).allowed) {
             player.sendMessage(Message.HOUSE_NO_TELEPORT, location.settings.ownerName);
             return;
         }
@@ -318,6 +318,8 @@ class HouseEntranceController {
 
     // Called when the |player| has entered |location| through a portal.
     onPlayerEnterHouse(location, player) {
+        this.abuse_().reportTeleport(player, { timeLimited: false });
+
         this.currentHouse_.set(player, location);
         this.manager_.invokeExtensions('onPlayerEnterHouse', player, location);
     }

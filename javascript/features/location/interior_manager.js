@@ -219,7 +219,7 @@ class InteriorManager {
         if (portal.accessCheckFn !== null && !await portal.accessCheckFn(player))
             return false;  // the |portal|-specific check failed
 
-        if (!this.abuse_().canTeleport(player)) {
+        if (!this.abuse_().canTeleport(player, { enforceTimeLimit: false }).allowed) {
             player.sendMessage(Message.LOCATION_NO_TELEPORT);
             return false;
         }
@@ -245,6 +245,8 @@ class InteriorManager {
         if (marker.type === 'entrance') {
             if (!await this.canPlayerTeleport(player, portal))
                 return;  // the player is not allowed to teleport right now
+
+            this.abuse_().reportTeleport(player, { timeLimited: false });
         }
 
         // Make the |player| enter or exit the |portal| with the shared infrastructure.

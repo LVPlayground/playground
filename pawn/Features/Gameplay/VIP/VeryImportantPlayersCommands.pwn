@@ -250,7 +250,7 @@ class VeryImportantPlayersCommands {
             return 1;
         }
 
-        if (!IsPlayerAllowedToTeleport(playerId)) {
+        if (GetPlayerTeleportStatus(playerId, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED) {
             SendClientMessage(playerId, Color::Error, "You can't change your look while fighting.");
             return 1;
         }

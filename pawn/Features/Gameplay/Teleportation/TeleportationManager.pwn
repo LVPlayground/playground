@@ -64,6 +64,8 @@ class TeleportationManager {
             }
         }
 
+        ReportPlayerTeleport(playerId, 0 /* timeLimited */);
+
         // For crew members only: the ability to teleport to players within interiors.
         if (teleportType == SecretTeleport)
             SetPlayerInterior(playerId, GetPlayerInterior(subjectId));
@@ -184,7 +186,7 @@ class TeleportationManager {
         // a player anywhere at any moment. That's why we allow them to teleport even when the player
         // is in a minigame or something.
         if (teleportType != SecretTeleport) {
-            if (!IsPlayerAllowedToTeleport(playerId)) {
+            if (GetPlayerTeleportStatus(playerId, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED) {
                 SendClientMessage(playerId, Color::Error, "Because of recent fighting activities, you aren't able to teleport.");
                 return false;
             }

@@ -1214,7 +1214,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if (!IsPlayerAllowedToTeleport(playerid)) {
+        if (GetPlayerTeleportStatus(playerid, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED) {
             SendClientMessage(playerid, Color::Error, "Error: You can't use this command because you have recently been in a gun fight.");
             return 1;
         }
@@ -1246,6 +1246,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         if (position[2] > 750)
             position[2] = 750;
 
+        ReportPlayerTeleport(playerid, 0 /* timeLimited */);
+
         ClearPlayerMenus(playerid);
         SetVehiclePos(vehicleId, position[0], position[1], position[2]+500);
 
@@ -1264,7 +1266,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if (!IsPlayerAllowedToTeleport(playerid)) {
+        if (GetPlayerTeleportStatus(playerid, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED) {
             SendClientMessage(playerid, Color::Error, "Error: You can't use this command because you have recently been in a gun fight.");
             return 1;
         }
@@ -1292,6 +1294,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         GetPlayerPos(playerid, position[0], position[1], position[2]);
         if (position[2] > 750)
             position[2] = 750;
+
+        ReportPlayerTeleport(playerid, 0 /* timeLimited */);
 
         ClearPlayerMenus(playerid);
         SetPlayerPos(playerid, position[0], position[1], position[2]+500);

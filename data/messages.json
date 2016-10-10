@@ -128,6 +128,8 @@
     "HOUSE_HEADER": "{B1FC17}Houses on Las Venturas Playground",
     "HOUSE_INFO_1": "Personalized, player-owned houses spread throughout San Andreas that are",
     "HOUSE_INFO_2": "available to the richer players on the server.",
+    "HOUSE_INTERIOR_INVALID": "@error The given house interior (\"%d\") is not valid.",
+    "HOUSE_INTERIOR_TELEPORTED": "@success You have been teleported to %s.",
     "HOUSE_MODIFY_DELETE_CONFIRM": "Are you absolutely sure that you want to remove this location? Any occupants will be evicted with it.",
     "HOUSE_MODIFY_DELETE_CONFIRMED": "The house location has been deleted.",
     "HOUSE_MODIFY_EVICT_CONFIRM": "Are you absolutely sure that you want to evict the current owner ({FFA500}%s{A9C4E4})?",

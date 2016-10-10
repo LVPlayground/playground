@@ -123,6 +123,11 @@ class InteriorList {
         return interiors;
     }
 
+    // Returns whether the interior referred to by |interiorId| is valid.
+    static isValid(interiorId) {
+        return interiorId >= 0 && interiorId < INTERIOR_LIST.length;
+    }
+
     // Returns the interior that's identified by |id|, even if it's not selectable anymore.
     static getById(interiorId) {
         if (interiorId < 0 || interiorId >= INTERIOR_LIST.length)

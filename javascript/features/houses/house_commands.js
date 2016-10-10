@@ -37,7 +37,7 @@ class HouseCommands {
         this.parkingLotCreator_ = new ParkingLotCreator();
         this.parkingLotRemover_ = new ParkingLotRemover();
 
-        // Command: /house [buy/cancel/create/enter/goto/modify/remove/save/settings]
+        // Command: /house [buy/cancel/create/enter/goto/interior/modify/remove/save/settings]
         server.commandManager.buildCommand('house')
             .restrict(player => this.playground_().canAccessCommand(player, 'house'))
             .sub('buy')
@@ -53,6 +53,10 @@ class HouseCommands {
             .sub('goto')
                 .parameters([{ name: 'filter', type: CommandBuilder.WORD_PARAMETER, optional: true }])
                 .build(HouseCommands.prototype.onHouseGotoCommand.bind(this))
+            .sub('interior')
+                .restrict(Player.LEVEL_MANAGEMENT)
+                .parameters([{ name: 'id', type: CommandBuilder.NUMBER_PARAMETER }])
+                .build(HouseCommands.prototype.onHouseInteriorCommand.bind(this))
             .sub('modify')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(HouseCommands.prototype.onHouseModifyCommand.bind(this))
@@ -331,6 +335,25 @@ class HouseCommands {
         }
 
         await menu.displayForPlayer(player);
+    }
+
+    // Called when a Management member uses `/house interior` to teleport to a particular house
+    // interior. Restrictions will be ignored, and there won't be a way back for them.
+    onHouseInteriorCommand(player, interiorId) {
+        if (!InteriorList.isValid(interiorId)) {
+            player.sendMessage(Message.HOUSE_INTERIOR_INVALID, interiorId);
+            return;
+        }
+
+        const interiorData = InteriorList.getById(interiorId);
+
+        player.position = new Vector(...interiorData.exits[0].position);
+        player.rotation = interiorData.exits[0].rotation;
+
+        player.interiorId = interiorData.interior;
+        player.virtualWorld = VirtualWorld.forPlayer(player);
+
+        player.sendMessage(Message.HOUSE_INTERIOR_TELEPORTED, interiorData.name);
     }
 
     // Called when an administrator types the `/house modify` command to change settings for the
@@ -679,6 +702,8 @@ class HouseCommands {
 
         if (player.isAdministrator())
             options.push('create', 'enter', 'modify');
+        if (player.isManagement())
+            options.push('interior');
 
         player.sendMessage(Message.COMMAND_USAGE, '/house [' + options.sort().join('/') + ']');
     }

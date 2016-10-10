@@ -8,6 +8,7 @@ const Abuse = require('features/abuse/abuse.js');
 const HouseCommands = require('features/houses/house_commands.js');
 const HouseExtension = require('features/houses/house_extension.js');
 const HouseSettings = require('features/houses/house_settings.js');
+const InteriorList = require('features/houses/utils/interior_list.js');
 const ParkingLotCreator = require('features/houses/utils/parking_lot_creator.js');
 const PlayerMoneyBridge = require('features/houses/utils/player_money_bridge.js');
 
@@ -298,6 +299,36 @@ describe('HouseCommands', (it, beforeEach) => {
         assert.isTrue(await commandPromise);
 
         assert.equal(location.parkingLotCount, 1);
+    });
+
+    it('should enable Management members to teleport to interiors', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        gunther.level = Player.LEVEL_MANAGEMENT;
+        gunther.identify();
+
+        const interiorData = InteriorList.getById(1);
+
+        // (1) It should give an error on invalid interior Ids.
+        {
+            assert.isTrue(await gunther.issueCommand('/house interior -1'));
+
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(gunther.messages[0], Message.format(Message.HOUSE_INTERIOR_INVALID, -1));
+
+            gunther.clearMessages();
+        }
+
+        // (2) It should teleport the player when given a correct Id.
+        {
+            assert.isTrue(await gunther.issueCommand('/house interior 1'));
+
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(gunther.messages[0],
+                         Message.format(Message.HOUSE_INTERIOR_TELEPORTED, interiorData.name));
+
+            assert.deepEqual(gunther.position, new Vector(...interiorData.exits[0].position));
+        }
     });
 
     it('should not allow buying a house when the player is not standing in one', async(assert) => {

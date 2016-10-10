@@ -40,6 +40,7 @@ the following options:
     predetermined by an algorithm, and cannot be modified.
   - **/house goto [filter]**: Displays your houses and enables teleporting to them. Administrators
     will be able to see the houses owned by others as well.
+  - **/house interior [id]**: Enables Management to quickly teleport to the given interior Id.
   - **/house modify**: Modifies settings for the house closest to the administrator issuing the
     command. Enables creation and removal of parking spots.
   - **/house settings**: Enables you to change your house's settings whilst inside of it.
@@ -68,7 +69,9 @@ allow everybody, their friends and gang, just their friends or make it an entire
 
 
 ## FAQ: Can I own multiple houses?
-No. Probably in the future.
+Yes. Regular players will be able to own a single house, but VIP members will be able to own up to
+three houses. The houses must be at least 500 units away from each other. Management members are
+allowed to own up to a hundred houses, with no distance restrictions.
 
 
 ## FAQ: How many parking lots can my house have?

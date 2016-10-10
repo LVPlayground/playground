@@ -51,6 +51,12 @@ class FlyCommand extends Command {
             return;
         }
 
+        if (subject.interiorId != 0) {
+            player.sendMessage(Message.COMMAND_ERROR, name + ' is currently in an interior, ' +
+                               'but you can only fly outside!');
+            return;
+        }
+
         if (subject === player)
             player.sendMessage(Message.COMMAND_SUCCESS, 'You are about to take off, enjoy!');
         else

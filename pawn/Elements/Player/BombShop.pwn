@@ -478,6 +478,10 @@ CBomb__EngineCheck(playerid,vehicleid,i)
         {
             return SendClientMessage(VehicleBomb[vehicleid][armer],Color::Red, "Your bomb didn't go off because the vehicle is too close to the ship!");
         }
+        else if (x >= 2051.78 && x <= 2115.57 && y >= 2146.78 && y <= 2202.01)
+        {
+            return SendClientMessage(VehicleBomb[vehicleid][armer],Color::Red, "Your bomb didn't go off because the vehicle is too close to Fight Club!");
+        }
         else
         {
             DisarmVehicle(vehicleid,1,i); // explode the vehicle ;)
@@ -539,6 +543,11 @@ CBomb__DetonateCheck(playerid,newkeys)
                         ShowBoxForPlayer(playerid, "Your vehicle is too close to the ship and therefore did not detonate.");
                         continue;
                     }
+                    if (fPosX >= 2051.78 && fPosX <= 2115.57 && fPosY >= 2146.78 && fPosY <= 2202.01)
+                    {
+                        ShowBoxForPlayer(playerid, "Your vehicle is too close to Fight Club and therefore did not detonate.");
+                        continue;
+                    }
 
                     if (GetVehicleVirtualWorld(vid) != GetPlayerVirtualWorld(playerid)) {
                         ShowBoxForPlayer(playerid, "Your vehicle is in another world and therefore did not detonate.");
@@ -583,6 +592,11 @@ CBomb__CheckCountdownDetonation(playerid, vid)
     if (x >= 1950.5 && x <= 2070.47 && y >= 1480.0 && y <= 1620.70)
     {
         ShowBoxForPlayer(playerid, "Your vehicle is too close to the ship and therefore did not detonate.");
+        return;
+    }
+    if (x >= 2051.78 && x <= 2115.57 && y >= 2146.78 && y <= 2202.01)
+    {
+        ShowBoxForPlayer(playerid, "Your vehicle is too close to Fight Club and therefore did not detonate.");
         return;
     }
 

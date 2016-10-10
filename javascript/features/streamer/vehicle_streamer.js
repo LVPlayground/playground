@@ -9,12 +9,20 @@ const ScopedEntities = require('entities/scoped_entities.js');
 // Pin that will be used to keep vehicles alive that have recently been used.
 const RecentUsagePin = Symbol();
 
+// Time, in seconds, between detecting moved unoccupied vehicles.
+const UnoccupiedVehicleStatusUpdateSec = 45;
+
+// Units, in change of position, following which an unoccupied vehicle will be scheduled for respawn
+const UnoccupiedRespawnThreshold = 1.5;
+
 // Implementation for a vehicle that's able to stream vehicles for all players. This class is
 // intended to be used with stored entities that are StoredVehicle instances. The vehicle streamer
 // will automatically handle respawn delays for the vehicles created through it.
 class VehicleStreamer extends EntityStreamerGlobal {
     constructor({ maxVisible = 1000, streamingDistance = 300 } = {}) {
         super({ maxVisible, streamingDistance });
+
+        this.disposed_ = false;
 
         // The entities that have been created by this vehicle streamer.
         this.entities_ = new ScopedEntities();
@@ -31,6 +39,9 @@ class VehicleStreamer extends EntityStreamerGlobal {
         // VehicleManager to get events associated with the managed vehicles.
         server.playerManager.addObserver(this);
         server.vehicleManager.addObserver(this);
+
+        // Process unoccupied vehicle status updates for the lifetime of the streamer.
+        this.processUnoccupiedVehicleUpdates();
 
         // Observe the `vehiclestreamin` event to provide automatic locking of doors.
         this.callbacks_ = new ScopedCallbacks();
@@ -231,6 +242,32 @@ class VehicleStreamer extends EntityStreamerGlobal {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Processes the status of unoccupied vehicles that may have been moved by players, without
+    // actually having been entered. Will schedule them for respawn.
+    async processUnoccupiedVehicleUpdates() {
+        while (!this.disposed_) {
+            for (const [storedVehicle, vehicle] of this.vehicles_) {
+                if (vehicle.isOccupied())
+                    continue;  // ignore occupied vehicles
+
+                if (this.respawnTokens_.has(vehicle))
+                    continue;  // ignore vehicles already scheduled for respawn
+
+                if (vehicle.position.closeTo(storedVehicle.position, UnoccupiedRespawnThreshold) &&
+                        vehicle.virtualWorld == storedVehicle.virtualWorld &&
+                        vehicle.interiorId == storedVehicle.interiorId) {
+                    continue;  // the vehicle is still roughly where it was
+                }
+
+                this.scheduleVehicleForRespawn(vehicle, storedVehicle, 0.5 /* timeMultipler */);
+            }
+
+            await seconds(UnoccupiedVehicleStatusUpdateSec);
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Called when the |player| has entered the |vehicle|. Will invalidate any respawn tokens.
     onPlayerEnterVehicle(player, vehicle) {
         const storedVehicle = this.storedVehicles_.get(vehicle);
@@ -342,12 +379,14 @@ class VehicleStreamer extends EntityStreamerGlobal {
         if (vehicle.occupantCount > 0)
             return;  // there are still players left in the vehicle
 
-        this.scheduleVehicleForRespawn(vehicle, storedVehicle, 0.25 /* timeMultipler */);
+        this.scheduleVehicleForRespawn(vehicle, storedVehicle, 0.5 /* timeMultipler */);
     }
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        this.disposed_ = true;
+
         this.callbacks_.dispose();
         this.callbacks_ = null;
 

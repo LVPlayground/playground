@@ -95,10 +95,10 @@ describe('VehicleStreamer', it => {
         assert.deepEqual(vehicle.position, new Vector(1000, 1500, 2000));
         assert.equal(vehicle.respawnCount, 0);
 
-        await server.clock.advance(10 * 1000);  // 10 seconds, a fourth of the respawn delay
+        await server.clock.advance(20 * 1000);  // 10 seconds, half of the respawn delay
 
-        assert.deepEqual(vehicle.position, storedVehicle.position);
         assert.equal(vehicle.respawnCount, 1);
+        assert.deepEqual(vehicle.position, storedVehicle.position);
     });
 
     it('should respawn a vehicle after the last player leaves', async(assert) => {
@@ -423,7 +423,58 @@ describe('VehicleStreamer', it => {
         await server.clock.advance(60 * 1000);  // 60 seconds, the vehicle's respawn delay
 
         assert.equal(vehicle.respawnCount, 1);
-        assert.equal(vehicle.interiorId, storedVehicle.virtualWorld);;
+        assert.equal(vehicle.interiorId, storedVehicle.interiorId);
         assert.equal(vehicle.virtualWorld, storedVehicle.virtualWorld);
+    });
+
+    it('should recognize moved unoccupied vehicles and schedule them to respawn', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        const storedVehicle = createStoredVehicle({ position: gunther.position, respawnDelay: 60 });
+
+        const streamer = new VehicleStreamer();
+        assert.doesNotThrow(() => streamer.add(storedVehicle));
+
+        const vehicle = storedVehicle.liveEntity;
+        assert.isNotNull(vehicle);
+
+        // (1) Based on position changes.
+        {
+            assert.deepEqual(vehicle.position, storedVehicle.position);
+            vehicle.position = vehicle.position.translate({ x: 10, y: -5, z: 10 });
+            assert.notDeepEqual(vehicle.position, storedVehicle.position);
+
+            await server.clock.advance(45 * 1000);  // unoccupied vehicle update cycle
+            await server.clock.advance(60 * 1000);  // 60 seconds, the the vehicle's respawn delay
+
+            assert.equal(vehicle.respawnCount, 1);
+            assert.deepEqual(vehicle.position, storedVehicle.position);
+        }
+
+        // (2) Based on interior changes.
+        {
+            assert.deepEqual(vehicle.interiorId, storedVehicle.interiorId);
+            vehicle.interiorId = 7;
+            assert.notDeepEqual(vehicle.interiorId, storedVehicle.interiorId);
+
+            await server.clock.advance(45 * 1000);  // unoccupied vehicle update cycle
+            await server.clock.advance(60 * 1000);  // 60 seconds, the the vehicle's respawn delay
+
+            assert.equal(vehicle.respawnCount, 2);
+            assert.deepEqual(vehicle.interiorId, storedVehicle.interiorId);
+        }
+
+        // (3) Based on Virtual World changes.
+        {
+            assert.deepEqual(vehicle.virtualWorld, storedVehicle.virtualWorld);
+            vehicle.virtualWorld = 42;
+            assert.notDeepEqual(vehicle.virtualWorld, storedVehicle.virtualWorld);
+
+            await server.clock.advance(45 * 1000);  // unoccupied vehicle update cycle
+            await server.clock.advance(60 * 1000);  // 60 seconds, the the vehicle's respawn delay
+
+            assert.equal(vehicle.respawnCount, 3);
+            assert.deepEqual(vehicle.virtualWorld, storedVehicle.virtualWorld);
+        }
     });
 });

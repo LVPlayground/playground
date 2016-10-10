@@ -13,6 +13,11 @@ class Vector {
     get y() { return this.y_; }
     get z() { return this.z_; }
 
+    // Returns whether this vector is close to the other |vector|, with a given |maxDistance|.
+    closeTo(vector, maxDistance = 1) {
+        return this.squaredDistanceTo(vector) <= (maxDistance * maxDistance);
+    }
+
     // Computes the distance from this vector to |vector| in a 2D space.
     distanceTo2D(vector) {
         const diffX = Math.abs(this.x_ - vector.x);

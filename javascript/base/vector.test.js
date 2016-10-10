@@ -101,4 +101,11 @@ describe('Vector', it => {
         assertVectorCloseTo(assert, vector.translate({ x: 4, y: 4, z: 4 }), new Vector(8, 12, 16));
         assertVectorCloseTo(assert, vector.translate({ x: -4, y: -4, z: -4 }), new Vector(0, 4, 8));
     });
+
+    it('should be able to tell whether vectors are close to each other', assert => {
+        const vector = new Vector(4, 8, 12);
+
+        assert.isTrue(vector.closeTo(new Vector(5, 9, 13), 5));
+        assert.isFalse(vector.closeTo(new Vector(5, 9, 13), 1));
+    });
 });

@@ -81,9 +81,11 @@ class PlayerInfoHandler {
             return 1;
         }
 
+        new const Float: packetLoss = NetStats_PacketLossPercent(subjectId);
+
         new labelText[128];
-        format(labelText, sizeof(labelText), "{B4CCE8}Ping: {FF8E02}%d - {B4CCE8}FPS: {FF8E02}%d",
-            GetPlayerPing(subjectId), PlayerManager->framesPerSecond(subjectId));
+        format(labelText, sizeof(labelText), "{B4CCE8}Ping: {FF8E02}%d {B4CCE8}- FPS: {FF8E02}%d\n{B4CCE8}PL: {FF8E02}%.1f%%",
+            GetPlayerPing(subjectId), PlayerManager->framesPerSecond(subjectId), packetLoss);
 
         UpdatePlayer3DTextLabelText(playerId, m_playerInfoLabelId[playerId][subjectId], Color::White, labelText);
 

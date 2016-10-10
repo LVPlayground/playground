@@ -780,6 +780,8 @@ ClearPlayerMenus(playerId) {
     if (IsPlayerInBombShop[playerId])
         RemovePlayerFromBombShop(playerId);
 
+    ShowPlayerDialog(playerId, -1, DIALOG_STYLE_MSGBOX, "Las Venturas Playground", "You shouldn't see this.", "Close", "");
+
     for (new i; i < MAX_MENUS; i++) {
         if (!IsValidMenu(Menu: i))
             continue;

@@ -7,6 +7,7 @@ const HouseCommands = require('features/houses/house_commands.js');
 const HouseManager = require('features/houses/house_manager.js');
 const HouseNatives = require('features/houses/house_natives.js');
 
+const Pickups = require('features/houses/extensions/pickups.js');
 const PropertySettings = require('features/houses/extensions/property_settings.js');
 const VisitorLog = require('features/houses/extensions/visitor_log.js');
 
@@ -40,6 +41,7 @@ class Houses extends Feature {
         const streamer = this.defineDependency('streamer');
 
         this.manager_ = new HouseManager(abuse, economy, friends, gangs, location, streamer);
+        this.manager_.registerExtension(new Pickups(this.manager_));
         this.manager_.registerExtension(new PropertySettings(this.manager_));
         this.manager_.registerExtension(new VisitorLog(this.manager_));
 

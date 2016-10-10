@@ -540,6 +540,11 @@ CBomb__DetonateCheck(playerid,newkeys)
                         continue;
                     }
 
+                    if (GetVehicleVirtualWorld(vid) != GetPlayerVirtualWorld(playerid)) {
+                        ShowBoxForPlayer(playerid, "Your vehicle is in another world and therefore did not detonate.");
+                        continue;
+                    }
+
                     GameTextForPlayer(playerid,"~w~~n~~n~~n~Vehicle Detonated!",5000,5);
 
                     DisarmVehicle(vid);

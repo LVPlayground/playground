@@ -10,6 +10,11 @@ public OnJavaScriptLoaded() {
     Annotation::ExpandList<OnJavaScriptLoaded>();
 }
 
+forward OnJavaScriptVehicleDestroyed(vehicleId);
+public OnJavaScriptVehicleDestroyed(vehicleId) {
+    CBomb__VehicleDeath(vehicleId);
+}
+
 // TODO(Russell): Remove this once there are users of the OnJavaScriptLoaded annotation.
 class Foo {
     @list(OnJavaScriptLoaded)

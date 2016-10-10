@@ -42,6 +42,8 @@ describe('VehicleManager', (it, beforeEach) => {
         const vehicles = server.featureManager.loadFeature('vehicles');
 
         manager = vehicles.manager_;
+        manager.reportVehicleDestroyed_ = vehicle => false;
+
         await manager.ready;
 
         vehicleStreamer = server.featureManager.loadFeature('streamer').getVehicleStreamer();

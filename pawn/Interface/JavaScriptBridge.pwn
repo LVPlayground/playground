@@ -27,6 +27,7 @@ public OnSerializePlayerState(playerid, serialize, restoreOnSpawn) {
             RemovePlayerFromBombShop(playerid);
 
         ClearPlayerMenus(playerid);
+        ClearPlayerDialogs(playerid);
 
         TogglePlayerSpectating(playerid, 0);
 

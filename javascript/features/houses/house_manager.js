@@ -86,6 +86,8 @@ class HouseManager {
             const location = new HouseLocation(id, locationInfo);
             this.locations_.add(location);
 
+            this.invokeExtensions('onLocationCreated', location);
+
             locationMap.set(location.id, location);
         });
 
@@ -113,6 +115,8 @@ class HouseManager {
             // Create the vehicles associated with the |location| in the vehicle controller.
             for (const vehicle of houseSettings.vehicles.values())
                 this.vehicleController_.createVehicle(location, vehicle);
+
+            this.invokeExtensions('onHouseCreated', location);
         });
 
         // Create entrances and exits for each of the known |locations_|.

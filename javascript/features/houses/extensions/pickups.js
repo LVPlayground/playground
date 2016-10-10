@@ -3,39 +3,57 @@
 // be found in the LICENSE file.
 
 const HouseExtension = require('features/houses/house_extension.js');
-const ScopedEntities = require('entities/scoped_entities.js');
 
 // Extension that allows players to place health and armour pickups in their house.
 class Pickups extends HouseExtension {
-    constructor(manager) {
+    constructor(manager, streamer) {
         super();
 
         this.manager_ = manager;
 
-        // Manages the pickups that will be created for the players.
-        this.entities_ = new ScopedEntities();
+        this.streamer_ = streamer;
+        this.streamer_.addReloadObserver(this, Pickups.prototype.onStreamerReloaded);
     }
+
+    // Gets the global instance of the PickupStreamer. Value should not be cached.
+    get streamer() { return this.streamer_().getPickupStreamer(); }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Adds a menu item to |menu| that enables the player to select their desired pickups.
     onHouseSettingsCommand(player, location, menu) {
-        // TODO: Display the menu.
+        if (!player.isManagement())
+            return;  // this feature hasn't launched yet
     }
 
-    // Called when the |player| has entered the house at |location|. This is where the necessary
-    // pickups for the |location| will be created, if needed.
-    onPlayerEnterHouse(player, location) {
-        // TODO: Create the health and armour pickups if necessary.
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when a house has been created in the |location|. The pickups, when available, will
+    // be created on behalf of the location.
+    onHouseCreated(location) {
+        // TODO: Create the pickups with the streamer.
     }
 
-    // Called when the |player| has left the house at |location|. This is where we'll destroy the
-    // pickups that were created for the |location|, if there were any.
-    onPlayerLeaveHouse(player, location) {
-        // TODO: Destroy the health and armour pickups if necessary.
+    // Called when the house in the |location| is about to be removed. Remove any pickups from the
+    // streamer that were created as part of it.
+    onHouseRemoved(location) {
+        // TODO: Remove the streamups from the streamer.
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the streamer has been reloaded. All pickups that were created as part of houses
+    // should be re-added to the new instance.
+    onStreamerReloaded() {
+        // TODO: Recreate all previously added pickups with the streamer.
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        this.entities_.dispose();
-        this.entities_ = null;
+        this.streamer_.removeReloadObserver(this);
+
+        // TODO: Remove all the created pickups from the streamer.
     }
 }
 

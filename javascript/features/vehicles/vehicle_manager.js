@@ -178,6 +178,10 @@ class VehicleManager {
             vehicle.respawn();
             vehicle = trailer;
         }
+
+        // Delete the |vehicle| if it wasn't a persistent vehicle.
+        if (!databaseVehicle.isPersistent())
+            this.internalDeleteVehicle(databaseVehicle);
     }
 
     // Stores the |vehicle| in the database. If it's a persistent vehicle already, the existing

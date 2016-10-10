@@ -838,15 +838,44 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.isNotNull(vehicle);
         assert.isTrue(vehicle.isConnected());
 
-        vehicle.position = new Vector(1000, 2000, 3000);
+        assert.isTrue(await gunther.issueCommand('/v save'));
+        assert.isFalse(vehicle.isConnected());
 
+        await server.clock.advance(500);  // to re-enter the new vehicle
+
+        const newVehicle = gunther.vehicle;
+        assert.isNotNull(newVehicle);
+
+        newVehicle.position = new Vector(1000, 2000, 3000);
+
+        assert.isTrue(manager.isPersistentVehicle(newVehicle));
         assert.isTrue(await gunther.issueCommand('/v respawn'));
 
         assert.isNull(gunther.vehicle);
-        assert.isTrue(vehicle.isConnected());
+        assert.isTrue(newVehicle.isConnected());
 
-        assert.equal(vehicle.respawnCount, 1);
-        assert.deepEqual(vehicle.position, new Vector(0, 500, 1000));
+        assert.equal(newVehicle.respawnCount, 1);
+        assert.deepEqual(newVehicle.position, new Vector(0, 500, 1000));
+    });
+
+    it('should destroy ephemeral vehicles when respawning them', async(assert) => {
+        // Only administrators can respawn vehicles on the server.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        gunther.position = new Vector(10, 505, 995);  // within streaming radius of the vehicle
+
+        assert.isTrue(createVehicleForPlayer(gunther, {
+            position: new Vector(0, 500, 1000)
+        }));
+
+        const vehicle = gunther.vehicle;
+        assert.isNotNull(vehicle);
+
+        assert.isFalse(manager.isPersistentVehicle(vehicle));
+        assert.isTrue(await gunther.issueCommand('/v respawn'));
+
+        assert.isNull(gunther.vehicle);
+        assert.isFalse(vehicle.isConnected());
     });
 
     it('should enable Management to optimise the vehicle streamer', async(assert) => {

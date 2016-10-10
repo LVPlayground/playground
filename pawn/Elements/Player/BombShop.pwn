@@ -752,7 +752,61 @@ CBomb__ResetVehicleData(vehicleid)
 
 }
 
+CBomb__CreateExplosion(vehicleId) {
+    new const virtualWorld = GetVehicleVirtualWorld(vehicleId);
+    new Float: vehicleHealth;
 
+    GetVehicleHealth(vehicleId, vehicleHealth);
+
+    switch (VehicleBomb[vehicleId][ExplosionType]) {
+        case EXPLODE_TYPE_SMALL:
+            SetVehicleHealth(vehicleId, vehicleHealth - 350);
+        case EXPLODE_TYPE_MEDIUM:
+            SetVehicleHealth(vehicleId, vehicleHealth - 500);
+        case EXPLODE_TYPE_LARGE:
+            SetVehicleHealth(vehicleId, 0);
+        case EXPLODE_TYPE_MASSIVE:
+            SetVehicleHealth(vehicleId, 0);
+    }
+
+    new Float: x, Float: y, Float: z;
+    GetVehiclePos(vehicleId, x, y, z);
+
+    for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
+        if (!IsPlayerConnected(playerId) || IsPlayerNPC(playerId))
+            continue;  // the |playerId| is either not connected, or is an NPC
+
+        if (GetPlayerVirtualWorld(playerId) != virtualWorld)
+            continue;  // the |playerId| is in a different Virtual World
+
+        if (!IsPlayerInRangeOfPoint(playerId, 300.0, x, y, z))
+            continue;  // the |playerId| is too far away to see the explosion
+
+        switch (VehicleBomb[vehicleId][ExplosionType]) {
+            case EXPLODE_TYPE_SMALL: {
+                CreateExplosionForPlayer(playerId, x, y, z, 11, 2);
+            }
+            case EXPLODE_TYPE_MEDIUM: {
+                CreateExplosionForPlayer(playerId, x, y, z, 2, 3);
+                CreateExplosionForPlayer(playerId, x, y, z, 8, 6);
+            }
+            case EXPLODE_TYPE_LARGE: {
+                CreateExplosionForPlayer(playerId, x, y, z, 10, 6);
+                CreateExplosionForPlayer(playerId, x, y, z, 8, 6);
+                CreateExplosionForPlayer(playerId, x, y, z, 10, 10);
+                CreateExplosionForPlayer(playerId, x, y, z, 6, 15);
+            }
+            case EXPLODE_TYPE_MASSIVE: {
+                CreateExplosionForPlayer(playerId, x, y, z, 10, 6);
+                CreateExplosionForPlayer(playerId, x, y, z, 10, 10);
+                CreateExplosionForPlayer(playerId, x, y, z, 8, 3);
+                CreateExplosionForPlayer(playerId, x, y, z, 2, 3);
+                CreateExplosionForPlayer(playerId, x, y, z, 2, 350);
+                CreateExplosionForPlayer(playerId, x, y, z, 6, 350);
+            }
+        }
+    }
+}
 
 // DisarmVehicle. This manages the vehicle bombs, and whether
 // or not the vehicle needs to explode. It also has support to be called
@@ -858,48 +912,7 @@ DisarmVehicle(vehicleid, explode=1, i=-1)
         // is the explode is set to 1, we blow up the vehicle :>
         if(explode)
         {
-            SetVehicleHealth(vehicleid,0);
-            switch(VehicleBomb[vehicleid][ExplosionType])
-            {
-                case EXPLODE_TYPE_SMALL:
-                {
-                    CreateExplosion(x,y,z,11,2.0);
-                    SetVehicleHealth(vehicleid,vhp-350.0);
-                }
-                case EXPLODE_TYPE_MEDIUM:
-                {
-                    CreateExplosion(x,y,z,10,10);
-                    //  CreateExplosion(x,y,z,10,10);
-                    //  CreateExplosion(x,y,z,8,6.0);
-                    SetVehicleHealth(vehicleid,vhp-500.0);
-
-                }
-                case EXPLODE_TYPE_LARGE:
-                {
-                    CreateExplosion(x,y,z,10,6.0);
-                    CreateExplosion(x,y,z,10,10);
-                    //  CreateExplosion(x,y,z,2,350.0);
-                    //                  CreateExplosion(x,y,z,8,6.0);
-                    //                  CreateExplosion(x,y,z,10,10);
-                    CreateExplosion(x,y,z,6,15.0);
-                    SetVehicleHealth(vehicleid,0.0);
-
-                }
-                case EXPLODE_TYPE_MASSIVE:
-                {
-                    CreateExplosion(x,y,z,10,10);
-                    CreateExplosion(x,y,z,10,6.0);
-                    //                  CreateExplosion(x,y,z,10,10);
-                    //                  CreateExplosion(x,y,z,8,350.0);
-                    CreateExplosion(x,y,z,8,3.0);
-                    //                  CreateExplosion(x,y,z,2,350.0);
-                    CreateExplosion(x,y,z,2,3.0);
-                    CreateExplosion(x,y,z,2,350.0);
-                    //                  CreateExplosion(x,y,z,6,350.0);
-                    //                  CreateExplosion(x,y,z,2,1111350.0);
-                    SetVehicleHealth(vehicleid,0.0);
-                }
-            }
+            CBomb__CreateExplosion(vehicleid);
         }
     }else{
         // otherwise, a loop has been assigned to the function, we can continue
@@ -944,48 +957,8 @@ DisarmVehicle(vehicleid, explode=1, i=-1)
                 }
                 }
             }
-            SetVehicleHealth(vehicleid,0);
-            switch(VehicleBomb[vehicleid][ExplosionType])
-            {
-                case EXPLODE_TYPE_SMALL:
-                {
-                    CreateExplosion(x,y,z,11,2.0);
-                    SetVehicleHealth(vehicleid,vhp-200.0);
-                }
-                case EXPLODE_TYPE_MEDIUM:
-                {
-                    CreateExplosion(x,y,z,2,3.0);
-                    CreateExplosion(x,y,z,10,10);
-                    CreateExplosion(x,y,z,8,6.0);
-                    SetVehicleHealth(vehicleid,vhp-300.0);
 
-
-                }
-                case EXPLODE_TYPE_LARGE:
-                {
-                    CreateExplosion(x,y,z,10,6.0);
-                    CreateExplosion(x,y,z,2,350.0);
-                    CreateExplosion(x,y,z,8,6.0);
-                    CreateExplosion(x,y,z,10,10);
-                    CreateExplosion(x,y,z,6,15.0);
-                    SetVehicleHealth(vehicleid,0.0);
-
-                }
-                case EXPLODE_TYPE_MASSIVE:
-                {
-                    CreateExplosion(x,y,z,10,6.0);
-                    CreateExplosion(x,y,z,10,10);
-                    CreateExplosion(x,y,z,8,350.0);
-                    CreateExplosion(x,y,z,8,3.0);
-                    CreateExplosion(x,y,z,2,350.0);
-                    CreateExplosion(x,y,z,2,3.0);
-                    CreateExplosion(x,y,z,2,350.0);
-                    CreateExplosion(x,y,z,6,350.0);
-                    CreateExplosion(x,y,z,2,1111350.0);
-                    SetVehicleHealth(vehicleid,0.0);
-                    SetVehicleHealth(vehicleid,-4000.0);
-                }
-            }
+            CBomb__CreateExplosion(vehicleid);
         }
     }
 

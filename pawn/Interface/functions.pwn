@@ -774,7 +774,7 @@ GameTextForAllEx(const message[], time, style, playerWorldId = -1) {
 }
 
 ClearPlayerMenus(playerId) {
-    if (Player(playerId)->isConnected() == false || g_PlayerMenu[playerId] == 0)
+    if (!Player(playerId)->isConnected())
         return 0;
 
     if (IsPlayerInBombShop[playerId])

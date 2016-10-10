@@ -298,12 +298,17 @@ lvp_t(playerId, params[]) {
     };
 
     if (IsPlayerInAnyVehicle(playerId)) {
-        SetVehiclePos(GetPlayerVehicleID(playerId), locations[locationId][0], locations[locationId][1], locations[locationId][2]);
-        LinkVehicleToInterior(GetPlayerVehicleID(playerId), 0);
+        new const vehicleId = GetPlayerVehicleID(playerId);
+
+        SetVehiclePos(vehicleId, locations[locationId][0], locations[locationId][1], locations[locationId][2]);
+        LinkVehicleToInterior(vehicleId, 0);
+        SetVehicleVirtualWorld(playerId, 0);
     } else {
         SetPlayerPos(playerId, locations[locationId][0], locations[locationId][1], locations[locationId][2]);
         SetPlayerInterior(playerId, 0);
     }
+
+    SetPlayerVirtualWorld(playerId, 0);
 
     format(g_message, sizeof(g_message), "%s (Id:%d) has quick taxied to %s (#%d).",
         Player(playerId)->nicknameString(), playerId, locationName[locationId], locationId);

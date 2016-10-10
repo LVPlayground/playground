@@ -109,6 +109,9 @@ lvp_tow(playerid, params[])
     else if (GetVehicleModel(GetPlayerVehicleID(playerid)) == 539)
         return SendClientMessage(playerid, Color::Red, "You can't teleport a Vortex!");
 
+    else if (VehicleModel(GetVehicleModel(GetPlayerVehicleID(playerid)))->isAirplane())
+        return SendClientMessage(playerid, Color::Red, "You can't teleport airplanes!");
+
     new location = Command->integerParameter(params, 0);
 
     if (Command->parameterCount(params) < 1)

@@ -1045,8 +1045,12 @@ lvp_p(playerId, params[]) {
             return 1;
         }
 
+        new const bool: wasVip = Player(subjectId)->isLoggedIn() ? (AccountData(subjectId)->isVip())
+                                                                 : false;
+
         Player(subjectId)->setLevel(PlayerLevel);
-        Player(subjectId)->setIsVip(false);
+        Player(subjectId)->setIsVip(wasVip);
+
         UndercoverAdministrator(subjectId)->setIsUndercoverAdministrator(false);
 
         tempLevel[subjectId] = 0;

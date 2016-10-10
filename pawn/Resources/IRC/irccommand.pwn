@@ -104,7 +104,12 @@ RunDeprecatedIrcCommand(line[]) {
         format(str,256,"%s (IRC) has taken admin rights from %s (Id:%d).", szName, PlayerName (pid), pid);
         Admin(Player::InvalidId, str);
 
+        new const bool: wasVip = Player(pid)->isLoggedIn() ? (AccountData(pid)->isVip())
+                                                           : false;
+
+        Player(pid)->setIsVip(wasVip);
         Player(pid)->setLevel(PlayerLevel);
+
         ColorManager->restorePreviousPlayerCustomColor(pid);
 
         tempLevel[pid] = 0;

@@ -43,6 +43,10 @@ class MockHouseDatabase {
 
     async loadHouses() {
         const houses = new Map();
+
+        const features = new Map();
+        features.set('health', new Vector(2000, 3000, 4000));
+
         houses.set(4 /* locationId */, {
             id: 1024,
             name: 'Guntherplaza',
@@ -58,6 +62,7 @@ class MockHouseDatabase {
             welcomeMessage: '',
             markerColor: 'yellow',
 
+            features: features,
             vehicles: [
                 {
                     id: 1337,
@@ -94,9 +99,12 @@ class MockHouseDatabase {
             welcomeMessage: '',
             markerColor: 'yellow',
 
+            features: new Map(),
             vehicles: []
         };
     }
+
+    async createHouseFeature(location, feature, position) {}
 
     async createHouseVisitorLog(location, player) {
         if (!this.logs_.has(location))
@@ -133,6 +141,8 @@ class MockHouseDatabase {
     async removeLocationParkingLot(parkingLot) {}
 
     async removeHouse(location) {}
+
+    async removeHouseFeature(location, feature) {}
 
     async removeVehicle(vehicle) {}
 }

@@ -63,6 +63,26 @@ const LOAD_HOUSES_QUERY = `
         houses_settings.house_removed IS NULL AND
         houses_locations.location_removed IS NULL`;
 
+// Query to load the additional features that have been purchased for player houses.
+const LOAD_HOUSE_FEATURES_QUERY = `
+    SELECT
+        houses_settings.house_location_id,
+        houses_features.house_feature_id,
+        houses_features.position_x,
+        houses_features.position_y,
+        houses_features.position_z,
+        houses_features.feature
+    FROM
+        houses_features
+    LEFT JOIN
+        houses_settings ON houses_settings.house_id = houses_features.house_id
+    LEFT JOIN
+        houses_locations ON houses_locations.house_location_id = houses_settings.house_location_id
+    WHERE
+        houses_features.feature_removed IS NULL AND
+        houses_settings.house_removed IS NULL AND
+        houses_locations.location_removed IS NULL`;
+
 // Query to load the vehicles that have been associated with houses.
 const LOAD_VEHICLES_QUERY = `
     SELECT
@@ -71,12 +91,18 @@ const LOAD_VEHICLES_QUERY = `
         houses_vehicles.house_parking_lot_id,
         houses_vehicles.model_id
     FROM
-        houses_settings
+        houses_vehicles
     LEFT JOIN
-        houses_vehicles ON houses_vehicles.house_id = houses_settings.house_id
+        houses_settings ON houses_settings.house_id = houses_vehicles.house_id
+    LEFT JOIN
+        houses_locations ON houses_locations.house_location_id = houses_settings.house_location_id
+    LEFT JOIN
+        houses_parking_lots ON houses_parking_lots.house_parking_lot_id = houses_vehicles.house_parking_lot_id
     WHERE
+        houses_vehicles.vehicle_removed IS NULL AND
         houses_settings.house_removed IS NULL AND
-        houses_vehicles.house_parking_lot_id IS NOT NULL`;
+        houses_locations.location_removed IS NULL AND
+        houses_parking_lots.parking_lot_removed IS NULL`;
 
 // Query to create a new house location in the database.
 const CREATE_LOCATION_QUERY = `
@@ -101,6 +127,14 @@ const CREATE_HOUSE_QUERY = `
         (house_location_id, house_user_id, house_interior_id, house_name, house_created)
     VALUES
         (?, ?, ?, ?, NOW())`;
+
+// Query to create a new feature associated with a given house, at a given position.
+const CREATE_HOUSE_FEATURE_QUERY = `
+    INSERT INTO
+        houses_features
+        (house_id, feature, position_x, position_y, position_z, feature_created)
+    VALUES
+        (?, ?, ?, ?, ?, NOW())`;
 
 // Query to create a house visitor log in the database.
 const CREATE_HOUSE_VISITOR_LOG = `
@@ -219,6 +253,16 @@ const REMOVE_HOUSE_QUERY = `
     WHERE
         house_id = ?`;
 
+// Query to remove a given feature from a house in the database.
+const REMOVE_HOUSE_FEATURE_QUERY = `
+    UPDATE
+        houses_features
+    SET
+        feature_removed = NOW()
+    WHERE
+        house_id = ? AND
+        feature = ?`;
+
 // Query to remove one of the vehicles associated with a house.
 const REMOVE_VEHICLE_QUERY = `
     UPDATE
@@ -302,12 +346,37 @@ class HouseDatabase {
                     welcomeMessage: row.house_welcome_message,
                     markerColor: row.house_marker_color,
 
+                    features: new Map(),
                     vehicles: []
                 });
             });
         }
 
-        // (2) Load the vehicles from the database.
+        // (2) Load the additional features from the database.
+        {
+            const data = await server.database.query(LOAD_HOUSE_FEATURES_QUERY);
+            data.rows.forEach(row => {
+                const locationId = row.house_location_id;
+
+                const house = houses.get(locationId);
+                if (!house) {
+                    console.log('Warning: Feature #' + row.house_feature_id + ' is associated ' +
+                                'with an invalid house (#' + row.house_id + '.');
+                    return;
+                }
+
+                if (house.features.has(row.feature)) {
+                    console.log('Warning: Feature #' + row.house_feature_id + ' is redundant ' +
+                                'with a previously defined feature (house #' + row.house_id + '.');
+                    return;
+                }
+
+                house.features.set(
+                    row.feature, new Vector(row.position_x, row.position_y, row.position_z));
+            });   
+        }
+
+        // (3) Load the vehicles from the database.
         {
             const data = await server.database.query(LOAD_VEHICLES_QUERY);
             data.rows.forEach(row => {
@@ -373,8 +442,15 @@ class HouseDatabase {
             welcomeMessage: '',
             markerColor: 'yellow',
 
+            features: new Map(),
             vehicles: []
         };
+    }
+
+    // Creates a new |feature| for the given |location|, at |position|.
+    async createHouseFeature(location, feature, position) {
+        await server.database.query(CREATE_HOUSE_FEATURE_QUERY, location.settings.id, feature,
+                                    position.x, position.y, position.z);
     }
 
     // Creates a log entry noting that the |player| has visited the |location|.
@@ -449,6 +525,11 @@ class HouseDatabase {
     // Removes the house tied to |location| from the database.
     async removeHouse(location) {
         await server.database.query(REMOVE_HOUSE_QUERY, location.settings.id);
+    }
+
+    // Removes the |feature| from the |location| in the database.
+    async removeHouseFeature(location, feature) {
+        await server.database.query(REMOVE_HOUSE_FEATURE_QUERY, location.settings.id, feature);
     }
 
     // Removes the |vehicle| associated with the |location| from the database.

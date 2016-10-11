@@ -10,13 +10,17 @@ class HouseInterior {
         this.id_ = house.id;
 
         this.interiorId_ = house.interiorId;
+        this.features_ = house.features;
     }
 
     // Gets the interior Id (in the interior list) that this house is tied to.
     get interiorId() { return this.interiorId_; }
 
+    // Gets access to the map in which the features available to this house are stored.
+    get features() { return this.features_; }
+
     // Gets an object with the data associated with the assigned interior Id. Will throw if the
-    // stored interior is not valid anymore, which should never happen.
+    // stored interior is not valid, which should never happen.
     getData() {
         return InteriorList.getById(this.interiorId_);
     }

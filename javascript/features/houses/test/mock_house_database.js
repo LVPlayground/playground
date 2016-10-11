@@ -43,10 +43,6 @@ class MockHouseDatabase {
 
     async loadHouses() {
         const houses = new Map();
-
-        const features = new Map();
-        features.set('health', new Vector(2000, 3000, 4000));
-
         houses.set(4 /* locationId */, {
             id: 1024,
             name: 'Guntherplaza',
@@ -62,7 +58,7 @@ class MockHouseDatabase {
             welcomeMessage: '',
             markerColor: 'yellow',
 
-            features: features,
+            features: new Map([ ['feature_name', new Vector(4000, 5000, 6000)] ]),
             vehicles: [
                 {
                     id: 1337,

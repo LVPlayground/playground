@@ -5,7 +5,7 @@
 const createTestEnvironment = require('features/houses/test/test_environment.js');
 
 // Zero-based index of the Visitor Log menu in the `/house settings` options.
-const SETTINGS_MENU_INDEX = 3;
+const SETTINGS_MENU_INDEX = 4;
 
 describe('VisitorLog', (it, beforeEach) => {
     let gunther = null;

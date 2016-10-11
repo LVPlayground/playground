@@ -20,6 +20,9 @@ describe('HouseCommands', (it, beforeEach) => {
     let maxticks = null;
     let streamer = null;
 
+    // Offset in the `/house settings` menu of the last non-VIP entry.
+    const SETTINGS_OFFSET = 3;
+
     beforeEach(async(assert) => {
         ({ abuse, commands, manager, streamer } = await createTestEnvironment());
 
@@ -761,7 +764,7 @@ describe('HouseCommands', (it, beforeEach) => {
         manager.registerExtension(new MyExtension());
 
         // Only purchase a cat, there is no further processing after this.
-        gunther.respondToDialog({ listitem: 3 /* Purchase a cat */});
+        gunther.respondToDialog({ listitem: SETTINGS_OFFSET + 1 /* Purchase a cat */});
 
         assert.isTrue(await gunther.issueCommand('/house settings'));
         assert.isTrue(extensionMenuItemInvoked);
@@ -781,7 +784,7 @@ describe('HouseCommands', (it, beforeEach) => {
 
         assert.isFalse(location.isAvailable());
 
-        gunther.respondToDialog({ listitem: 3 /* Sell this house */}).then(
+        gunther.respondToDialog({ listitem: SETTINGS_OFFSET + 1 /* Sell this house */}).then(
             () => gunther.respondToDialog({ response: 1 /* Yes, I really want to */ })).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 

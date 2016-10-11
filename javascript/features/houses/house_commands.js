@@ -610,7 +610,9 @@ class HouseCommands {
         if (!location.parkingLotCount) {
             return await MessageBox.display(player, {
                 title: 'Unable to modify your vehicles!',
-                message: Message.HOUSE_SETTINGS_NO_PARKING_LOTS
+                message: Message.HOUSE_SETTINGS_NO_PARKING_LOTS,
+                leftButton: 'Yes',
+                rightButton: 'No'
             });
         }
 

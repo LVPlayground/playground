@@ -69,7 +69,7 @@ class PickupStreamer extends EntityStreamerGlobal {
 
     // Destroys the pickup represented by |storedPickup|.
     deleteEntity(storedPickup) {
-        const pickup = this.pickups_.get(storedVehicle);
+        const pickup = this.pickups_.get(storedPickup);
         if (!pickup)
             throw new Error('Attempting to delete an invalid pickup.');
 

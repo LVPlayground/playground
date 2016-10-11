@@ -530,7 +530,7 @@ describe('HouseCommands', (it, beforeEach) => {
             () => russell.respondToDialog({ listitem: 0 /* first owned house */ }));
 
         assert.isTrue(await russell.issueCommand('/house goto'));
-        assert.equal(russell.messages.length, 0);
+        assert.equal(russell.messages.length, 1);
 
         assert.equal(manager.getCurrentHouseForPlayer(russell), houses[0]);
         assert.notEqual(russell.virtualWorld, server.virtualWorldManager.mainWorld);
@@ -555,7 +555,7 @@ describe('HouseCommands', (it, beforeEach) => {
         russell.respondToDialog({ listitem: 0 /* first owned house */ });
 
         assert.isTrue(await russell.issueCommand('/house goto UNTHE'));  /* Gunther */
-        assert.equal(russell.messages.length, 0);
+        assert.equal(russell.messages.length, 1);
 
         assert.equal(manager.getCurrentHouseForPlayer(russell), houses[0]);
         assert.notEqual(russell.virtualWorld, server.virtualWorldManager.mainWorld);

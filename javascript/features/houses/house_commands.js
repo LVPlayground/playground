@@ -331,6 +331,10 @@ class HouseCommands {
             menu.addItem(location.settings.name, player => {
                 this.abuse_().reportTeleport(player, { timeLimited: true });
                 this.manager_.forceEnterHouse(player, location);
+
+                // Announce creation of the location to other administrators.
+                this.announce_().announceToAdministrators(
+                    Message.HOUSE_ANNOUNCE_TELEPORTED, player.name, player.id);
             });
         }
 

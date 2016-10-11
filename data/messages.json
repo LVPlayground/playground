@@ -109,6 +109,7 @@
     "HOUSE_ANNOUNCE_EVICTED": "%s (Id: %d) has evicted %s from their house (Id: %d).",
     "HOUSE_ANNOUNCE_PURCHASED": "%s (Id: %d) has purchased a house for %$.",
     "HOUSE_ANNOUNCE_SOLD": "%s (Id: %d) has sold the %s house (Id: %d).",
+    "HOUSE_ANNOUNCE_TELEPORTED": "%s (Id: %d) has teleported to one of their houses.",
     "HOUSE_BUY_CONFIRMED": "The Las Venturas Playground Real Estate Council hereby congratulates you with your purchase!",
     "HOUSE_BUY_NO_LOCATION": "@error You need to stand in a house entrance to use this command.",
     "HOUSE_BUY_NO_MULTIPLE": "@error You've reached the maximum number of houses you can own, sorry.",

@@ -11,10 +11,14 @@ describe('Pickups', (it, beforeEach) => {
     let gunther = null;
     let location = null;
     let manager = null;
+    let russell = null;
 
     beforeEach(async(assert) => {
         gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify({ userId: 42 });
+
+        russell = server.playerManager.getById(1 /* Russell */);
+        russell.identify({ userId: 12356 });
 
         ({ manager } = await createTestEnvironment());
 
@@ -87,8 +91,6 @@ describe('Pickups', (it, beforeEach) => {
 
         server.pickupManager.addObserver(new class {
             onPlayerEnterPickup(player, pickup) {
-                assert.equal(player, gunther);
-
                 healthPickup = pickup;
             }
         });
@@ -108,12 +110,28 @@ describe('Pickups', (it, beforeEach) => {
         assert.isNotNull(healthPickup);
         assert.equal(healthPickup.modelId, 1240);
 
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.HOUSE_PICKUP_HEALTH_RESTORED);
-
         assert.equal(gunther.health, 100);
-
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.HOUSE_PICKUP_HEALTH_RESTORED_SELF);
+        
         assert.isTrue(healthPickup.isRespawning());
+        assert.isTrue(healthPickup.isConnected());
+
+        await server.clock.advance(3 * 60 * 1000);  // the respawn delay of the pickups
+
+        assert.isFalse(healthPickup.isRespawning());
+        assert.isTrue(healthPickup.isConnected());
+
+        russell.health = 50;
+        russell.position = location.interior.features.get('health');
+
+        assert.equal(russell.health, 100);
+        assert.equal(russell.messages.length, 1);
+        assert.equal(russell.messages[0],
+                     Message.format(Message.HOUSE_PICKUP_HEALTH_RESTORED, gunther.name));
+        
+        assert.isTrue(healthPickup.isRespawning());
+        assert.isTrue(healthPickup.isConnected());
     });
 
     it('should restore the armour of the player when entering a armour pickup', async(assert) => {
@@ -121,8 +139,6 @@ describe('Pickups', (it, beforeEach) => {
 
         server.pickupManager.addObserver(new class {
             onPlayerEnterPickup(player, pickup) {
-                assert.equal(player, gunther);
-
                 armourPickup = pickup;
             }
         });
@@ -142,12 +158,28 @@ describe('Pickups', (it, beforeEach) => {
         assert.isNotNull(armourPickup);
         assert.equal(armourPickup.modelId, 1242);
 
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.HOUSE_PICKUP_ARMOUR_RESTORED);
-
         assert.equal(gunther.armour, 100);
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.HOUSE_PICKUP_ARMOUR_RESTORED_SELF);
 
         assert.isTrue(armourPickup.isRespawning());
+        assert.isTrue(armourPickup.isConnected());
+
+        await server.clock.advance(3 * 60 * 1000);  // the respawn delay of the pickups
+
+        assert.isFalse(armourPickup.isRespawning());
+        assert.isTrue(armourPickup.isConnected());
+
+        russell.armour = 50;
+        russell.position = location.interior.features.get('armour');
+
+        assert.equal(russell.armour, 100);
+        assert.equal(russell.messages.length, 1);
+        assert.equal(russell.messages[0],
+                     Message.format(Message.HOUSE_PICKUP_ARMOUR_RESTORED, gunther.name));
+        
+        assert.isTrue(armourPickup.isRespawning());
+        assert.isTrue(armourPickup.isConnected());
     });
 
     it('should recreate all pickups when the streamer reloads', async(assert) => {

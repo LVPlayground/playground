@@ -180,7 +180,7 @@ class Pickups extends HouseExtension {
 
             modelId, position, respawnDelay,
 
-            enterFn: Pickups.prototype.onFeatureActivate.bind(this, feature)
+            enterFn: Pickups.prototype.onFeatureActivate.bind(this, location, feature)
         });
 
         this.locations_.get(location).set(feature, storedPickup);
@@ -209,15 +209,30 @@ class Pickups extends HouseExtension {
     // ---------------------------------------------------------------------------------------------
 
     // Called when the |feature| has to be activated for the |player|.
-    onFeatureActivate(feature, player) {
+    onFeatureActivate(location, feature, player) {
+        const isOwner = player.userId == location.settings.ownerId;
+        const owner = location.settings.ownerName;
+
         switch (feature) {
             case 'health':
-                player.sendMessage(Message.HOUSE_PICKUP_HEALTH_RESTORED);
+                if (isOwner) {
+                    player.sendMessage(Message.HOUSE_PICKUP_HEALTH_RESTORED_SELF);
+                } else {
+                    player.sendMessage(Message.HOUSE_PICKUP_HEALTH_RESTORED, owner);
+                    // TODO: Send a notification to the owner if they're currently in-game.
+                }
+
                 player.health = 100;
                 break;
 
             case 'armour':
-                player.sendMessage(Message.HOUSE_PICKUP_ARMOUR_RESTORED);
+                if (isOwner) {
+                    player.sendMessage(Message.HOUSE_PICKUP_ARMOUR_RESTORED_SELF);
+                } else {
+                    player.sendMessage(Message.HOUSE_PICKUP_ARMOUR_RESTORED, owner);
+                    // TODO: Send a notification to the owner if they're currently in-game.
+                }
+
                 player.armour = 100;
                 break;
 

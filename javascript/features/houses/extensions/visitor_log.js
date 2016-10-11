@@ -92,6 +92,9 @@ class VisitorLog extends HouseExtension {
         if (!player.isRegistered())
             return;  // unregistered players should not be able to enter houses
 
+        if (player.isUndercover())
+            return;  // undercover administrators won't be logged
+
         if (!this.recentVisitors_.has(player))
             this.recentVisitors_.set(player, new WeakSet());
 

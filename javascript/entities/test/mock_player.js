@@ -17,6 +17,9 @@ class MockPlayer {
         this.undercover_ = false;
         this.gangId_ = null;
 
+        this.health_ = 100;
+        this.armour_ = 100;
+
         this.interiorId_ = 0;
         this.virtualWorld_ = 0;
         this.userId_ = null;
@@ -128,6 +131,14 @@ class MockPlayer {
         // Fake pickup events if the player happened to have stepped in a pickup.
         server.pickupManager.onPlayerPositionChanged(this);
     }
+
+    // Gets or sets the health of the player.
+    get health() { return this.health_ }
+    set health(value) { this.health_ = value; }
+
+    // Gets or sets the armour level of the player.
+    get armour() { return this.armour_; }
+    set armour(value) { this.armour_ = value; }
 
     // Gets the vehicle the player is currently driving in. May be NULL.
     get vehicle() { return this.vehicle_; }

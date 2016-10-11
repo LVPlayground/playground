@@ -119,6 +119,14 @@ class Player {
   get facingAngle() { return pawnInvoke('GetPlayerFacingAngle', 'iF', this.id_); }
   set facingAngle(value) { pawnInvoke('SetPlayerFacingAngle', 'if', this.id_, value); }
 
+  // Gets or sets the health of the player.
+  get health() { return pawnInvoke('GetPlayerHealth', 'iF', this.id_); }
+  set health(value) { pawnInvoke('SetPlayerHealth', 'if', this.id_, value); }
+
+  // Gets or sets the armour level of the player.
+  get armour() { return pawnInvoke('GetPlayerArmour', 'iF', this.id_); }
+  set armour(value) { pawnInvoke('SetPlayerArmour', 'if', this.id_, value); }
+
   // Gets or sets the velocity of the player. Both must be used with a 3D vector.
   get velocity() { return new Vector(...pawnInvoke('GetPlayerVelocity', 'iFFF', this.id_)); }
   set velocity(value) {

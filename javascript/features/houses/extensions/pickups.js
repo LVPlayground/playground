@@ -7,6 +7,7 @@ const confirm = require('components/dialogs/confirm.js');
 
 const HouseExtension = require('features/houses/house_extension.js');
 const Menu = require('components/menu/menu.js');
+const PlayerMoneyBridge = require('features/houses/utils/player_money_bridge.js');
 const StoredPickup = require('features/streamer/stored_pickup.js');
 
 // Delay, in seconds, after which a health pickup in a house respawns.
@@ -72,8 +73,20 @@ class Pickups extends HouseExtension {
                         return;
                     }
 
-                    // TODO: Ask the Economy feature for the price of this pickup.
-                    const price = 25000000;
+                    // Determine the price of the |feature| based on the house's location in San
+                    // Andreas, as well as the value of the given |feature| itself.
+                    const price =
+                        this.economy_().calculateHouseFeaturePrice(location.position, feature);
+
+                    const balance = await PlayerMoneyBridge.getBalanceForPlayer(player);
+                    if (balance < price) {
+                        return await alert(player, {
+                            title: 'The pickup is too expensive!',
+                            message: Message.format(
+                                Message.HOUSE_SETTINGS_PICKUP_EXPENSIVE, normalizedName, price,
+                                balance)
+                        });
+                    }
 
                     const confirmed = await confirm(player, {
                         title: 'Do you want to purchase this pickup?',
@@ -84,7 +97,7 @@ class Pickups extends HouseExtension {
                     if (!confirmed)
                         return await pickupMenu.displayForPlayer(player);
 
-                    // TODO: Take the money from the |player|.
+                    await PlayerMoneyBridge.setBalanceForPlayer(player, balance - price);
 
                     // TODO: Should we enable the player to choose the position?
                     const position = new Vector(...location.interior.getData().features[feature]);

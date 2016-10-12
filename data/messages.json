@@ -169,6 +169,7 @@
     "HOUSE_SETTINGS_NO_VISITORS": "Unfortunately nobody has visited your house yet.",
     "HOUSE_SETTINGS_NOT_OWNER": "@error You cannot change the settings of a house you don't own!",
     "HOUSE_SETTINGS_OUTSIDE": "@error You can only change the settings of a house whilst inside of it!",
+    "HOUSE_SETTINGS_PICKUP_EXPENSIVE": "Sorry, but you can't afford the {FFA500}%s{A9C4E4}! It costs {FFA500}%${A9C4E4},\nbut your balance is only {FFA500}%${A9C4E4}.",
     "HOUSE_SETTINGS_PICKUP_PURCHASE": "Do you want to buy a {FFA500}%s{A9C4E4} for {FFA500}%${A9C4E4}?\nThe pickup can be used once every three minutes.",
     "HOUSE_SETTINGS_PICKUP_PURCHASED": "You have successfully purchased a {FFA500}%s{A9C4E4}!",
     "HOUSE_SETTINGS_PICKUP_REMOVE": "Are you sure that you want to remove the {FFA500}%s{A9C4E4} from your house?",

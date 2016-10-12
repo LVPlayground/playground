@@ -31,6 +31,16 @@ class Economy extends Feature {
             /* interiorValue */    interiorValue);
     }
 
+    // Calculates the price for the given |feature| for a house at |position|.
+    calculateHouseFeaturePrice(position, feature) {
+        // TODO: Enable having different prices for different |feature|s.
+        const featureValue = 2;  // [0, 5]
+
+        return this.economyCalculator_.calculateHouseFeaturePrice(
+            /* residentialValue */ this.residentialValueMap_.query(position),
+            /* parkingLotCount */  featureValue);
+    }
+
     // Calculates and returns the price of placing a vehicle with |modelId| at the |position|.
     // A variance factor will be applied to the price.
     calculateHouseVehiclePrice(position, modelId) {

@@ -78,6 +78,14 @@ class EconomyCalculator {
         return fixedPrice * varianceFactor;
     }
 
+    // Calculates the price for a feature of value |featureValue|, which must be in range of [0, 5],
+    // at a location having |residentialValue|, which must be in range of [0, 5] as well. The
+    // variance factor will be included in the feature's price as well.
+    calculateHouseFeaturePrice(residentialValue, featureValue) {
+        // TODO: Decide on a sensible formula for the feature's price.
+        return 25000000;
+    }
+
     // Calculates the price for a vehicle that will be positioned at a house. The |residentialValue|
     // must be in range of [0, 5], the |vehicleValue| must be in range of [0, 100]. The variance
     // factor will be included in the vehicle's price as well.

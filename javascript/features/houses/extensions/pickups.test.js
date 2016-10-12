@@ -4,6 +4,8 @@
 
 const createTestEnvironment = require('features/houses/test/test_environment.js');
 
+const PlayerMoneyBridge = require('features/houses/utils/player_money_bridge.js');
+
 // Zero-based index of the Pickup Settings menu in the `/house settings` options.
 const SETTINGS_MENU_INDEX = 3;
 
@@ -20,6 +22,9 @@ describe('Pickups', (it, beforeEach) => {
         russell = server.playerManager.getById(1 /* Russell */);
         russell.identify({ userId: 12356 });
 
+        // Give Gunther 25 million dollars to spend on house pickups.
+        PlayerMoneyBridge.setMockedBalanceForTests(25000000);
+
         ({ manager } = await createTestEnvironment());
 
         // The `/house settings` command is only available when the player is in a house.
@@ -35,6 +40,19 @@ describe('Pickups', (it, beforeEach) => {
         assert.equal(location.settings.owner, gunther);
 
         gunther.clearMessages();
+    });
+
+    it('should not enable pickups purchases if they have insufficient balance', async(assert) => {
+        PlayerMoneyBridge.setMockedBalanceForTests(0 /* no more monies */);
+
+        assert.isFalse(location.interior.features.has('health'));
+
+        gunther.respondToDialog({ listitem: SETTINGS_MENU_INDEX }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Purchase a Health Pickup */ })).then(
+            () => gunther.respondToDialog({ response: 1 /* How much money do I need?!! */ }));
+
+        assert.isTrue(await gunther.issueCommand('/house settings'));
+        assert.isFalse(location.interior.features.has('health'));
     });
 
     it('should enable players to purchase and sell health pickups', async(assert) => {

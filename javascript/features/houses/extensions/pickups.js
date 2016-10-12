@@ -211,29 +211,39 @@ class Pickups extends HouseExtension {
     // Called when the |feature| has to be activated for the |player|.
     onFeatureActivate(location, feature, player) {
         const isOwner = player.userId == location.settings.ownerId;
-        const owner = location.settings.ownerName;
+
+        const ownerName = location.settings.ownerName;
+        const owner = location.settings.owner;
 
         switch (feature) {
             case 'health':
+                player.health = 100;
+
                 if (isOwner) {
                     player.sendMessage(Message.HOUSE_PICKUP_HEALTH_RESTORED_SELF);
-                } else {
-                    player.sendMessage(Message.HOUSE_PICKUP_HEALTH_RESTORED, owner);
-                    // TODO: Send a notification to the owner if they're currently in-game.
+                    break;
                 }
 
-                player.health = 100;
+                // The player does not own the house, send a different message and inform the owner.
+                player.sendMessage(Message.HOUSE_PICKUP_HEALTH_RESTORED, ownerName);
+                if (owner)
+                   owner.sendMessage(Message.HOUSE_PICKUP_HEALTH_USED, player.name, player.id);
+
                 break;
 
             case 'armour':
+                player.armour = 100;
+
                 if (isOwner) {
                     player.sendMessage(Message.HOUSE_PICKUP_ARMOUR_RESTORED_SELF);
-                } else {
-                    player.sendMessage(Message.HOUSE_PICKUP_ARMOUR_RESTORED, owner);
-                    // TODO: Send a notification to the owner if they're currently in-game.
+                    break;
                 }
 
-                player.armour = 100;
+                // The player does not own the house, send a different message and inform the owner.
+                player.sendMessage(Message.HOUSE_PICKUP_ARMOUR_RESTORED, ownerName);
+                if (owner)
+                    owner.sendMessage(Message.HOUSE_PICKUP_ARMOUR_USED, player.name, player.id);
+            
                 break;
 
             default:

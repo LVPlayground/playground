@@ -401,7 +401,7 @@ describe('HouseManager', (it, beforeEach) => {
         assert.equal(houseRemovedCalls, 1);
     });
 
-    it('should update house owner names when a player logs in with another name', async(assert) => {
+    it('should update house owner names when a player logs in with another name', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify();
 
@@ -428,6 +428,26 @@ describe('HouseManager', (it, beforeEach) => {
 
             assert.equal(houses[0].settings.ownerName, 'Guntah');
         }
+    });
+
+    it('should keep track of the owner\'s Player object when they are online', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        const houses = manager.getHousesForUser(42 /* Gunther's user Id */);
+        assert.equal(houses.length, 1);
+
+        const house = houses[0];
+
+        assert.isNull(house.settings.owner);
+
+        gunther.identify();
+
+        assert.isNotNull(house.settings.owner);
+        assert.equal(house.settings.owner, gunther);
+
+        gunther.disconnect();
+
+        assert.isNull(house.settings.owner);
     });
 
     it('should impose limits based on the player details', assert => {

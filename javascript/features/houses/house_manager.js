@@ -33,7 +33,9 @@ class HouseManager {
         // Responsible for all vehicles associated with the houses.
         this.vehicleController_ = new HouseVehicleController(streamer);
 
-        server.playerManager.addObserver(this);
+        // Start listening to player events when the House data has been loaded from the database.
+        this.dataLoadedPromise_.then(() =>
+            server.playerManager.addObserver(this, true /* replayHistory */));
     }
 
     // Gets the instance of the database model class for the houses feature.
@@ -486,6 +488,8 @@ class HouseManager {
             return;  // skip this update when the |player| is undercover
 
         for (const location of this.getHousesForPlayer(player)) {
+            location.settings.owner = player;
+
             if (location.settings.ownerName == player.name)
                 continue;
 
@@ -495,6 +499,13 @@ class HouseManager {
             await this.entranceController_.updateLocationSetting(
                 location, 'label', location.settings.name);
         }
+    }
+
+    // Called when the |player| has disconnected from the server. If they own houses, the owner
+    // properties of their houses will be set to NULL again.
+    onPlayerDisconnect(player) {
+        for (const location of this.getHousesForPlayer(player))
+            location.settings.owner = null;
     }
 
     // ---------------------------------------------------------------------------------------------

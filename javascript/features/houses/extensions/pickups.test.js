@@ -31,6 +31,9 @@ describe('Pickups', (it, beforeEach) => {
         assert.isNotNull(location);
         assert.isFalse(location.isAvailable());
 
+        assert.isNotNull(location.settings.owner);
+        assert.equal(location.settings.owner, gunther);
+
         gunther.clearMessages();
     });
 
@@ -117,6 +120,8 @@ describe('Pickups', (it, beforeEach) => {
         assert.isTrue(healthPickup.isRespawning());
         assert.isTrue(healthPickup.isConnected());
 
+        gunther.clearMessages();
+
         await server.clock.advance(3 * 60 * 1000);  // the respawn delay of the pickups
 
         assert.isFalse(healthPickup.isRespawning());
@@ -130,6 +135,10 @@ describe('Pickups', (it, beforeEach) => {
         assert.equal(russell.messages[0],
                      Message.format(Message.HOUSE_PICKUP_HEALTH_RESTORED, gunther.name));
         
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0],
+                     Message.format(Message.HOUSE_PICKUP_HEALTH_USED, russell.name, russell.id));
+
         assert.isTrue(healthPickup.isRespawning());
         assert.isTrue(healthPickup.isConnected());
     });
@@ -165,6 +174,8 @@ describe('Pickups', (it, beforeEach) => {
         assert.isTrue(armourPickup.isRespawning());
         assert.isTrue(armourPickup.isConnected());
 
+        gunther.clearMessages();
+
         await server.clock.advance(3 * 60 * 1000);  // the respawn delay of the pickups
 
         assert.isFalse(armourPickup.isRespawning());
@@ -178,6 +189,10 @@ describe('Pickups', (it, beforeEach) => {
         assert.equal(russell.messages[0],
                      Message.format(Message.HOUSE_PICKUP_ARMOUR_RESTORED, gunther.name));
         
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0],
+                     Message.format(Message.HOUSE_PICKUP_ARMOUR_USED, russell.name, russell.id));
+
         assert.isTrue(armourPickup.isRespawning());
         assert.isTrue(armourPickup.isConnected());
     });

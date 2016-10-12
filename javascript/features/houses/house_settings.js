@@ -10,6 +10,7 @@ class HouseSettings {
         this.id_ = house.id;
         this.name_ = house.name;
 
+        this.owner_ = null;
         this.ownerId_ = house.ownerId;
         this.ownerGangId_ = house.ownerGangId;
         this.ownerName_ = house.ownerName;
@@ -42,6 +43,11 @@ class HouseSettings {
     // house should only be done by the HouseManager.
     get name() { return this.name_; }
     set name(value) { this.name_ = value; }
+
+    // Gets or sets the Player object of the owner when they're connected to the server. This
+    // property should only be updated by the HouseManager, that keeps track of this data.
+    get owner() { return this.owner_; }
+    set owner(value) { this.owner_ = value; }
 
     // Gets the user Id of the player that own this house.
     get ownerId() { return this.ownerId_; }

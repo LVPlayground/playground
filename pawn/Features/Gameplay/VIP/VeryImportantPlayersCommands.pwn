@@ -187,7 +187,7 @@ class VeryImportantPlayersCommands {
      * @param playerId Id of the player who is changing their colour.
      * @param subjectId Id of the player who this command should be applied to.
      * @param params Any further text that the player passed to the command. Unused.
-     * @command /my color
+     * @command /my color [reset]?
      */
     @switch(PlayerCommand, "color")
     public onPlayerColorCommand(playerId, subjectId, params[]) {
@@ -208,8 +208,16 @@ class VeryImportantPlayersCommands {
         if (playerId != subjectId)
             return 0; /* VIPs don't need admins to change their color for them */
 
-        if (Player(playerId)->isVip() == false && Player(playerId)->isAdministrator() == false) {
+        if (!Player(playerId)->isVip() && !Player(playerId)->isAdministrator()) {
             SendClientMessage(playerId, Color::Error, "This is a VIP only command. For more information, check out \"/donate\"!");
+            return 1;
+        }
+
+        // Handle the case where the player typed "/my color reset" to be subject to randomness again.
+        if (Command->parameterCount(params) == 1 && !strcmp(params, "reset", true, 5)) {
+            ColorManager->releasePlayerCustomColor(playerId);
+
+            SendClientMessage(playerId, Color::Success, "Your custom color has been reset!");
             return 1;
         }
 

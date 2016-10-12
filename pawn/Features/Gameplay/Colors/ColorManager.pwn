@@ -150,6 +150,11 @@ class ColorManager {
         this->synchronizePlayerColorIndex(playerId);
     }
 
+    public releasePlayerCustomColor(playerId) {
+        m_playerColorStack[playerId][CustomColorIndex] = InvalidColorId;
+        this->synchronizePlayerColorIndex(playerId);
+    }
+
     /**
      * Stores a copy of the current player's custom color in a local buffer. This is necessary
      * because giving a player temporary administrator rights shouldn't override the

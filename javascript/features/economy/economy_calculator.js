@@ -81,9 +81,32 @@ class EconomyCalculator {
     // Calculates the price for a feature of value |featureValue|, which must be in range of [0, 5],
     // at a location having |residentialValue|, which must be in range of [0, 5] as well. The
     // variance factor will be included in the feature's price as well.
+    //
+    //   https://docs.google.com/spreadsheets/d/1rgydvkX5DEX7tXH8pvQggIOTg2RQpvfqzJEH6ZsKbyE/edit
+    //
     calculateHouseFeaturePrice(residentialValue, featureValue) {
-        // TODO: Decide on a sensible formula for the feature's price.
-        return 25000000;
+        if (residentialValue < 0 || residentialValue > 5) {
+            throw new Error(
+                'The residential value must be in range of [0, 5] (was ' + residentialValue + ').');
+        }
+
+        if (featureValue < 0 || featureValue > 5) {
+            throw new Error(
+                'The feature value must be in range of [0, 5] (was ' + featureValue + ').');
+        }
+
+        const residentialBase = [185000, 125000, 130000, 100000, 90000, 45000][residentialValue];
+        const residentialExponent = [1.00, 1.15, 1.20, 1.30, 1.35, 1.50][residentialValue];
+        const featureExponent = [1.00, 1.05, 1.09, 1.11, 1.14, 1.16][featureValue];
+
+        const residentialPrice = Math.pow(residentialBase, residentialExponent);
+        const featurePrice = Math.pow(residentialPrice, featureExponent);
+
+        // The variance will either decrease or increase the price by, at most, 5%.
+        const varianceFactor = 1 + ((-50 + this.varianceValue_) / 1000);
+
+        // Return the feature's price influenced by the current |varianceFactor|.
+        return featurePrice * varianceFactor;
     }
 
     // Calculates the price for a vehicle that will be positioned at a house. The |residentialValue|

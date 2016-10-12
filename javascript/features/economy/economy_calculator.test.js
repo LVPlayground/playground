@@ -82,6 +82,35 @@ describe('EconomyCalculator', (it, beforeEach, afterEach) => {
         });
     });
 
+    it('should be able to price features for houses appropriately', assert => {
+        // Returns the house price that has been determined for the three input values.
+        const calculateFeaturePrice = (residentialValue, featureValue, varianceValue) => {
+            calculator.setVarianceValueForTests(varianceValue);
+            return calculator.calculateHouseFeaturePrice(residentialValue, featureValue);
+        };
+
+        // It should throw when any of the input values are out of range.
+        assert.throws(() => calculateFeaturePrice(-1, 0, 0));
+        assert.throws(() => calculateFeaturePrice(0, -1, 0));
+        assert.throws(() => calculateFeaturePrice(0, 0, -1));
+        assert.throws(() => calculateFeaturePrice(200, 0, 0));
+        assert.throws(() => calculateFeaturePrice(0, 200, 0));
+        assert.throws(() => calculateFeaturePrice(0, 0, 200));
+
+        // Change detector tests against the spreadsheet.
+        assert.closeTo(calculateFeaturePrice(0, 0, 50), 185000.00, 1);
+        assert.closeTo(calculateFeaturePrice(1, 1, 50), 1427311.75, 1);
+        assert.closeTo(calculateFeaturePrice(2, 2, 50), 4886950.10, 1);
+        assert.closeTo(calculateFeaturePrice(3, 3, 50), 16405897.73, 1);
+        assert.closeTo(calculateFeaturePrice(4, 4, 50), 42128812.92, 1);
+        assert.closeTo(calculateFeaturePrice(5, 5, 50), 124907861.77, 1);
+
+        // Verify that the variance is no more than 5% of the total feature price.
+        assert.closeTo(calculateFeaturePrice(4, 2, 0), 0.95 * 19505983.51, 1);
+        assert.closeTo(calculateFeaturePrice(4, 2, 50), 19505983.51, 1);
+        assert.closeTo(calculateFeaturePrice(4, 2, 100), 1.05 * 19505983.51, 1);
+    });
+
     it('should be able to price vehicles for houses appropriately', assert => {
         const minimum = EconomyCalculator.PRICE_RANGE_HOUSE_VEHICLES[0];
         const maximum = EconomyCalculator.PRICE_RANGE_HOUSE_VEHICLES[1];

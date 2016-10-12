@@ -9,7 +9,7 @@ const PlayerMoneyBridge = require('features/houses/utils/player_money_bridge.js'
 // Zero-based index of the Pickup Settings menu in the `/house settings` options.
 const SETTINGS_MENU_INDEX = 3;
 
-describe('Pickups', (it, beforeEach) => {
+describe('Pickups', (it, beforeEach, afterEach) => {
     let gunther = null;
     let location = null;
     let manager = null;
@@ -41,6 +41,8 @@ describe('Pickups', (it, beforeEach) => {
 
         gunther.clearMessages();
     });
+
+    afterEach(() => PlayerMoneyBridge.setMockedBalanceForTests(null));
 
     it('should not enable pickups purchases if they have insufficient balance', async(assert) => {
         PlayerMoneyBridge.setMockedBalanceForTests(0 /* no more monies */);

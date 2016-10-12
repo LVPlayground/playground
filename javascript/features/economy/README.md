@@ -12,8 +12,13 @@ The returned price will be a value between $1,000,000 and $25,000,000, plus a fi
 available parking lot depending on the house's position.
 
 
+## API: calculateHouseFeaturePrice(position, feature)
+Calculates the price for adding the `feature` to a house at the given `position`. The returned price
+will be a value between $185,000 and $125,000,000, plus the variable part of the price.
+
+
 ## API: calculateHouseVehiclePrice(position, modelId)
-Calculates the price for placing a vehicle with `modelId`  at the `position` near someone's house.
+Calculates the price for placing a vehicle with `modelId` at the `position` near someone's house.
 A variance will be applied to the price as well.
 
 The returned price will be a value between $100,000 and $1,500,000.

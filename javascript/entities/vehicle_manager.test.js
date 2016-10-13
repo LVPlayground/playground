@@ -5,14 +5,10 @@
 const MockVehicle = require('entities/test/mock_vehicle.js');
 const VehicleManager = require('entities/vehicle_manager.js');
 
-describe('VehicleManager', (it, beforeEach, afterEach) => {
+describe('VehicleManager', (it, beforeEach) => {
     let manager = null;
 
-    beforeEach(() => manager = new VehicleManager(MockVehicle /* vehicleConstructor */));
-    afterEach(() => {
-        if (manager)
-            manager.dispose();
-    });
+    beforeEach(() => manager = server.vehicleManager);
 
     // Observer recording all calls that can be used with the VehicleManager.
     class MyVehicleObserver {
@@ -99,7 +95,7 @@ describe('VehicleManager', (it, beforeEach, afterEach) => {
         assert.isTrue(vehicle.isConnected());
 
         manager.dispose();
-        manager = null;
+        manager.dispose = () => null;
 
         assert.isFalse(vehicle.isConnected());
     });
@@ -312,5 +308,45 @@ describe('VehicleManager', (it, beforeEach, afterEach) => {
 
         assert.equal(manager.count, 0);
         assert.equal(manager.remoteControllableCount, 0);
+    });
+
+    it('should enable players to enter and exit remote controllable vehicles', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        const vehicle = manager.createVehicle({ modelId: 441, position: new Vector(200, 300, 50) });
+        assert.isTrue(vehicle.model.isRemoteControllable());
+
+        gunther.position = vehicle.position.translate({ x: 1, y: -1 });
+        russell.position = vehicle.position.translate({ x: -1, y: 1 });
+
+        // (1) Make Gunther send the key press necessary to enter the vehicle.
+        {
+            assert.isNull(gunther.vehicle);
+
+            gunther.keyPress(16 /* VEHICLE_ENTER_EXIT */);
+
+            assert.isNotNull(gunther.vehicle);
+            assert.equal(gunther.vehicle, vehicle);
+        }
+
+        // (2) Make Russell send the key press as well, forcing Gunther out of the vehicle.
+        {
+            assert.isNull(russell.vehicle);
+
+            russell.keyPress(16 /* VEHICLE_ENTER_EXIT */);
+
+            assert.isNull(gunther.vehicle);
+
+            assert.isNotNull(russell.vehicle);
+            assert.equal(russell.vehicle, vehicle);
+        }
+
+        // (2) Make Gunther send the key press necessary to exit the vehicle.
+        {
+            russell.keyPress(16 /* VEHICLE_ENTER_EXIT */);
+
+            assert.isNull(russell.vehicle);
+        }
     });
 });

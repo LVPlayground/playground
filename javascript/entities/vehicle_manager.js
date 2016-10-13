@@ -4,6 +4,9 @@
 
 const ScopedCallbacks = require('base/scoped_callbacks.js');
 
+// Range, in units, that enter and exit keys will work around a remote controllable vehicle.
+const RemoteControllableVehicleRange = 2;
+
 // Number of milliseconds before running a trailer status update.
 const TrailerStatusUpdateTimeMs = 1250;
 
@@ -111,6 +114,58 @@ class VehicleManager {
             return;  // the vehicle isn't owned by the JavaScript code
 
         this.notifyObservers('onVehicleDeath', vehicle);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called by the Player Manager when the player potentially requests to enter or exit their
+    // vehicle. Applies the special processing needed in order to support RC Vehicles.
+    onPlayerVehicleEnterExit(player) {
+        const currentVehicle = player.vehicle;
+
+        if (currentVehicle) {
+            if (!currentVehicle.model.isRemoteControllable())
+                return;  // the |player| is driving a vehicle, but it's not a RC vehicle.
+
+            player.leaveVehicle();
+            return;
+        }
+
+        const squaredMaximum = RemoteControllableVehicleRange * RemoteControllableVehicleRange;
+        const position = player.position;
+
+        const nearbyVehicles = [];
+
+        for (const vehicle of this.rcVehicles_) {
+            const squaredDistance = position.squaredDistanceTo(vehicle.position);
+            if (squaredDistance > squaredMaximum)
+                continue;
+
+            nearbyVehicles.push({ vehicle, squaredDistance });
+        }
+
+        if (!nearbyVehicles.length)
+            return;  // there are no remote controllable vehicles near the |player|
+
+        // Sort the |nearbyVehicles| so that we select the vehicle closest to the |player|.
+        nearbyVehicles.sort((lhs, rhs) => {
+            if (lhs.squaredDistance === rhs.squaredDistance)
+                return 0;
+
+            return lhs.squaredDistance > rhs.squaredDistance ? 1 : -1;
+        });
+
+        const { vehicle } = nearbyVehicles[0];
+
+        // TODO: Figure out a way to check whether the |player| has got access to the |vehicle|.
+        // Should we perhaps cache locked status with each vehicle?
+
+        // Eject the vehicle's current driver, if there is one.
+        if (vehicle.driver)
+            vehicle.driver.leaveVehicle();
+
+        // Make the |player| enter the vehicle by teleporting them in.
+        player.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
     }
 
     // ---------------------------------------------------------------------------------------------

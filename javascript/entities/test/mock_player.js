@@ -409,6 +409,16 @@ class MockPlayer {
         });
     }
 
+    // Makes this player press a particular key. The value of both |newkeys| and |oldkeys| can be
+    // found on the SA-MP wiki: https://wiki.sa-mp.com/wiki/Keys
+    keyPress(newkeys, oldkeys = 0) {
+        global.dispatchEvent('playerkeystatechange', {
+            playerid: this.id_,
+            newkeys: newkeys,
+            oldkeys: oldkeys
+        });
+    }
+
     // Disconnects the player from the server. They will be removed from the PlayerManager too.
     disconnect(reason = 0) {
         server.playerManager.onPlayerDisconnect({

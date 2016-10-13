@@ -150,6 +150,9 @@ class Player {
     pawnInvoke('PutPlayerInVehicle', 'iii', this.id_, vehicle.id, seat);
   }
 
+  // Makes the player leave the vehicle they're currently in.
+  leaveVehicle() { this.position = this.position; }
+
   // Gets or sets the time for this player. It will be returned, and must be set, as an array having
   // two entries: hours and minutes.
   get time() { return pawnInvoke('GetPlayerTime', 'iII', this.id); }

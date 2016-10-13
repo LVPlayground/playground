@@ -4,6 +4,8 @@
 
 const ScopedCallbacks = require('base/scoped_callbacks.js');
 
+const VEHICLE_ENTER_EXIT = 16;  // also KEY_SECONDARY_ATTACK
+
 // The player manager keeps track of all players connected to Las Venturas Playground. Features may
 // choose to observe the manager in order to receive notifications when someone connects or
 // disconnects from the server. Non-player characters are treated identical to players.
@@ -17,6 +19,8 @@ class PlayerManager {
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
             'playerconnect', PlayerManager.prototype.onPlayerConnect.bind(this));
+        this.callbacks_.addEventListener(
+            'playerkeystatechange', PlayerManager.prototype.onPlayerKeyStateChange.bind(this));
         this.callbacks_.addEventListener(
             'playerlevelchange', PlayerManager.prototype.onPlayerLevelChange.bind(this));
         this.callbacks_.addEventListener(
@@ -131,6 +135,21 @@ class PlayerManager {
 
         // Notify the observers of the |player|'s connection.
         this.notifyObservers('onPlayerConnect', player);
+    }
+
+    // Called when a player changes the keys they're pressing. Which is frequent.
+    onPlayerKeyStateChange(event) {
+        const player = this.players_.get(event.playerid);
+        if (!player)
+            return;  // the event has been received for an invalid player
+
+        const newkeys = event.newkeys;
+        const oldkeys = event.oldkeys;
+
+        // Called when the |player| requests to enter or exit a vehicle. Special handling is
+        // required when the player is in or near a remote controllable vehicle.
+        if ((newkeys & VEHICLE_ENTER_EXIT) === VEHICLE_ENTER_EXIT)
+            server.vehicleManager.onPlayerVehicleEnterExit(player);
     }
 
     // Called when a player's level on the server changes, for example because they log in to their

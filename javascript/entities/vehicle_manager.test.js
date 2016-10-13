@@ -245,7 +245,7 @@ describe('VehicleManager', (it, beforeEach, afterEach) => {
         assert.isNull(trailer.parent);
     });
 
-    it('should magically carry over trailers when teleporting the vehicle', async(assert) => {
+    it('should magically carry over trailers when teleporting the vehicle', assert => {
         const vehicle = manager.createVehicle({ modelId: 411, position: new Vector(0, 0, 0) });
         const trailer = manager.createVehicle({ modelId: 611, position: new Vector(0, 0, 0) });
 
@@ -266,5 +266,51 @@ describe('VehicleManager', (it, beforeEach, afterEach) => {
             vehicle.virtualWorld = 100;
             assert.equal(trailer.virtualWorld, vehicle.virtualWorld);
         }
+    });
+
+    it('should keep track of the remote controllable vehicles', assert => {
+        assert.equal(manager.count, 0);
+        assert.equal(manager.remoteControllableCount, 0);
+
+        // RC Vehicles
+        const rcVehicles = [
+            manager.createVehicle({ modelId: 441, position: new Vector(0, 0, 0) }),
+            manager.createVehicle({ modelId: 464, position: new Vector(0, 0, 0) }),
+            manager.createVehicle({ modelId: 465, position: new Vector(0, 0, 0) }),
+            manager.createVehicle({ modelId: 501, position: new Vector(0, 0, 0) }),
+            manager.createVehicle({ modelId: 564, position: new Vector(0, 0, 0) }),
+            manager.createVehicle({ modelId: 594, position: new Vector(0, 0, 0) })
+        ];
+
+        rcVehicles.forEach(vehicle =>
+            assert.isTrue(vehicle.model.isRemoteControllable()));
+
+        assert.equal(manager.count, rcVehicles.length);
+        assert.equal(manager.remoteControllableCount, rcVehicles.length);
+
+        // Regular vehicles
+        const regularVehicles = [
+            manager.createVehicle({ modelId: 568, position: new Vector(0, 0, 0) }),
+            manager.createVehicle({ modelId: 573, position: new Vector(0, 0, 0) }),
+            manager.createVehicle({ modelId: 400, position: new Vector(0, 0, 0) }),
+            manager.createVehicle({ modelId: 444, position: new Vector(0, 0, 0) }),
+            manager.createVehicle({ modelId: 556, position: new Vector(0, 0, 0) })
+        ];
+
+        regularVehicles.forEach(vehicle =>
+            assert.isFalse(vehicle.model.isRemoteControllable()));
+
+        assert.equal(manager.count, regularVehicles.length + rcVehicles.length);
+        assert.equal(manager.remoteControllableCount, rcVehicles.length);
+
+        rcVehicles.forEach(vehicle => vehicle.dispose());
+
+        assert.equal(manager.count, regularVehicles.length);
+        assert.equal(manager.remoteControllableCount, 0);
+
+        regularVehicles.forEach(vehicle => vehicle.dispose());
+
+        assert.equal(manager.count, 0);
+        assert.equal(manager.remoteControllableCount, 0);
     });
 });

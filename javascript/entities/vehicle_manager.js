@@ -15,7 +15,9 @@ class VehicleManager {
         this.disposed_ = false;
 
         this.observers_ = new Set();
+
         this.vehicles_ = new Map();
+        this.rcVehicles_ = new Set();
 
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
@@ -34,6 +36,9 @@ class VehicleManager {
 
     // Gets the number of vehicles currently created on the server.
     get count() { return this.vehicles_.size; }
+
+    // Gets the number of remote controllable vehicles currently created on the server.
+    get remoteControllableCount() { return this.rcVehicles_.size; }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -77,6 +82,10 @@ class VehicleManager {
         });
 
         this.vehicles_.set(vehicle.id, vehicle);
+
+        if (vehicle.model.isRemoteControllable())
+            this.rcVehicles_.add(vehicle);
+
         return vehicle;
     }
 
@@ -168,6 +177,9 @@ class VehicleManager {
             vehicle.trailer.parent = null;
             vehicle.trailer = null;
         }
+
+        if (vehicle.model.isRemoteControllable())
+            this.rcVehicles_.delete(vehicle);
 
         this.vehicles_.delete(vehicle.id);
     }

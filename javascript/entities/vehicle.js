@@ -14,6 +14,8 @@ class Vehicle {
         this.driver_ = null;
         this.passengers_ = new Set();
 
+        this.locks_ = new WeakSet();
+
         // TODO(Russell): Synchronize these with the OnVehicleRespray event.
         this.primaryColor_ = options.primaryColor;
         this.secondaryColor_ = options.secondaryColor;
@@ -199,11 +201,16 @@ class Vehicle {
     // Locks the vehicle for the |player|.
     lockForPlayer(player) {
         pawnInvoke('SetVehicleParamsForPlayer', 'iiii', this.id_, player.id, 0, 1 /* locked */);
+        this.locks_.add(player);
     }
+
+    // Returns whether the vehicle is locked for |player|.
+    isLockedForPlayer(player) { return this.locks_.has(player); }
 
     // Unlocks the vehicle for the |player|.
     unlockForPlayer(player) {
         pawnInvoke('SetVehicleParamsForPlayer', 'iiii', this.id_, player.id, 0, 0 /* unlocked */);
+        this.locks_.delete(player);
     }
 
     // ---------------------------------------------------------------------------------------------

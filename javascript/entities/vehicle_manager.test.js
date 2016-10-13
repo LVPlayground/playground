@@ -320,6 +320,8 @@ describe('VehicleManager', (it, beforeEach) => {
         gunther.position = vehicle.position.translate({ x: 1, y: -1 });
         russell.position = vehicle.position.translate({ x: -1, y: 1 });
 
+        vehicle.lockForPlayer(russell);
+
         // (1) Make Gunther send the key press necessary to enter the vehicle.
         {
             assert.isNull(gunther.vehicle);
@@ -330,8 +332,26 @@ describe('VehicleManager', (it, beforeEach) => {
             assert.equal(gunther.vehicle, vehicle);
         }
 
-        // (2) Make Russell send the key press as well, forcing Gunther out of the vehicle.
+        // (2) Make Russell send the key press as well, forcing Gunther out of the vehicle. However,
+        //     he cannot enter the vehicle because it's locked for him.
         {
+            assert.isNull(russell.vehicle);
+
+            assert.isTrue(vehicle.isLockedForPlayer(russell));
+
+            russell.keyPress(16 /* VEHICLE_ENTER_EXIT */);
+
+            assert.isNull(russell.vehicle);
+
+            assert.isNotNull(gunther.vehicle);
+            assert.equal(gunther.vehicle, vehicle);
+
+            vehicle.unlockForPlayer(russell);
+        }
+
+        // (3) Now that Russell's got access, send the keys to make him enter again.
+        {
+            assert.isFalse(vehicle.isLockedForPlayer(russell));
             assert.isNull(russell.vehicle);
 
             russell.keyPress(16 /* VEHICLE_ENTER_EXIT */);
@@ -342,7 +362,7 @@ describe('VehicleManager', (it, beforeEach) => {
             assert.equal(russell.vehicle, vehicle);
         }
 
-        // (2) Make Gunther send the key press necessary to exit the vehicle.
+        // (4) Make Gunther send the key press necessary to exit the vehicle.
         {
             russell.keyPress(16 /* VEHICLE_ENTER_EXIT */);
 

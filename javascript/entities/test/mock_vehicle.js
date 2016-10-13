@@ -187,11 +187,11 @@ class MockVehicle {
     // Locks the vehicle for the |player|.
     lockForPlayer(player) { this.locked_.add(player); }
 
-    // Unlocks the vehicle for the |player|.
-    unlockForPlayer(player) { this.locked_.delete(player); }
-
     // For testing. Returns whether the vehicle is locked for the |player|.
     isLockedForPlayer(player) { return this.locked_.has(player); }
+
+    // Unlocks the vehicle for the |player|.
+    unlockForPlayer(player) { this.locked_.delete(player); }
 
     // ---------------------------------------------------------------------------------------------
 

@@ -139,7 +139,10 @@ class VehicleManager {
         for (const vehicle of this.rcVehicles_) {
             const squaredDistance = position.squaredDistanceTo(vehicle.position);
             if (squaredDistance > squaredMaximum)
-                continue;
+                continue;  // the vehicle is out of range
+
+            if (vehicle.isLockedForPlayer(player))
+                continue;  // they do not have access to the vehicle
 
             nearbyVehicles.push({ vehicle, squaredDistance });
         }
@@ -156,9 +159,6 @@ class VehicleManager {
         });
 
         const { vehicle } = nearbyVehicles[0];
-
-        // TODO: Figure out a way to check whether the |player| has got access to the |vehicle|.
-        // Should we perhaps cache locked status with each vehicle?
 
         // Eject the vehicle's current driver, if there is one.
         if (vehicle.driver)

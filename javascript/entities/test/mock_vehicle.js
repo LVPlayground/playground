@@ -30,6 +30,8 @@ class MockVehicle {
         this.interiorId_ = options.interiorId;
         this.virtualWorld_ = options.virtualWorld;
 
+        this.numberPlate_ = options.numberPlate;
+
         this.respawnCounter_ = 0;
         this.health_ = 1000;
 
@@ -124,6 +126,10 @@ class MockVehicle {
     // Gets or sets the health of this vehicle. Should generally be between 0 and 1000.
     get health() { return this.health_; }
     set health(value) { this.health_ = value; }
+
+    // Gets or sets the numberplate text of this vehicle. May be NULL.
+    get numberPlate() { return this.numberPlate_; }
+    set numberPlate(value) { this.numberPlate_ = value; }
 
     // ---------------------------------------------------------------------------------------------
 

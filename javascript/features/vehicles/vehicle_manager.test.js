@@ -87,6 +87,8 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.isTrue(vehicle.isConnected());
 
         assert.equal(vehicle.modelId, 520 /* Hydra */);
+        assert.isNull(vehicle.numberPlate);
+
         assert.deepEqual(vehicle.position, POSITION);
         assert.equal(vehicle.rotation, 90);
         assert.equal(vehicle.interiorId, 0);
@@ -333,6 +335,7 @@ describe('VehicleManager', (it, beforeEach) => {
 
         assert.isNotNull(firstVehicle);
         assert.isTrue(firstVehicle.isConnected());
+        assert.equal(firstVehicle.numberPlate, gunther.name);
 
         const secondVehicle = manager.createVehicle({
             player: gunther,
@@ -347,7 +350,7 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.isNotNull(secondVehicle);
         assert.isTrue(secondVehicle.isConnected());
 
-        // The Infernus should not have been destroyed.
+        // The Infernus should now have been destroyed.
         assert.isFalse(firstVehicle.isConnected());
     });
 

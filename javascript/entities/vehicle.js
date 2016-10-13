@@ -23,6 +23,8 @@ class Vehicle {
         // TODO(Russell): Synchronize these with the OnVehiclePaintjob event.
         this.paintjob_ = options.paintjob;
 
+        this.numberPlate_ = options.numberPlate;
+
         this.interiorId_ = options.interiorId || 0;
 
         this.id_ = pawnInvoke('CreateVehicle', 'iffffiiii', options.modelId, options.position.x,
@@ -38,6 +40,9 @@ class Vehicle {
 
         if (options.paintjob)
             this.paintjob = options.paintjob;
+
+        if (options.numberPlate)
+            this.numberPlate = options.numberPlate;
 
         if (options.interiorId)
             this.interiorId = options.interiorId;
@@ -144,6 +149,13 @@ class Vehicle {
     // Gets or sets the health of this vehicle. Should generally be between 0 and 1000.
     get health() { return pawnInvoke('GetVehicleHealth', 'iF', this.id_); }
     set health(value) { pawnInvoke('SetVehicleHealth', 'if', this.id_, value); }
+
+    // Gets or sets the numberplate text of this vehicle. May be NULL.
+    get numberPlate() { return this.numberPlate_; }
+    set numberPlate(value) {
+        pawnInvoke('SetVehicleNumberPlate', 'is', this.id_, value);
+        this.numberPlate_ = value;
+    }
 
     // Gets or sets the velocity of the vehicle. Both must be used with a 3D vector.
     get velocity() { return new Vector(...pawnInvoke('GetVehicleVelocity', 'iFFF', this.id_)); }

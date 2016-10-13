@@ -8,8 +8,8 @@ const StoredEntity = require('features/streamer/stored_entity.js');
 // the vehicle, on demand, within the vehicle streamer.
 class StoredVehicle extends StoredEntity {
     constructor({ modelId, position, rotation, interiorId, virtualWorld, primaryColor = -1,
-                  secondaryColor = -1, paintjob = null, siren = false, respawnDelay = 180,
-                  deathFn = null, respawnFn = null, accessFn = null } = {}) {
+                  secondaryColor = -1, paintjob = null, numberPlate = null, siren = false,
+                  respawnDelay = 180, deathFn = null, respawnFn = null, accessFn = null } = {}) {
         super({ modelId, position, interiorId, virtualWorld });
 
         this.rotation_ = rotation;
@@ -17,6 +17,7 @@ class StoredVehicle extends StoredEntity {
         this.primaryColor_ = primaryColor;
         this.secondaryColor_ = secondaryColor;
         this.paintjob_ = paintjob;
+        this.numberPlate_ = numberPlate;
 
         this.siren_ = siren;
         this.respawnDelay_ = respawnDelay;
@@ -35,6 +36,9 @@ class StoredVehicle extends StoredEntity {
 
     // Gets the paintjob that should be applied to this vehicle.
     get paintjob() { return this.paintjob_; }
+
+    // Gets the text that should be displayed on the vehicle's number plate.
+    get numberPlate() { return this.numberPlate_; }
 
     // Gets whether this vehicle should have a siren if it doesn't have one by default.
     get siren() { return this.siren_; }

@@ -96,6 +96,9 @@ class VehicleManager {
             primaryColor: Math.floor(Math.random() * MaximumVehicleColorValue),
             secondaryColor: Math.floor(Math.random() * MaximumVehicleColorValue),
 
+            // Personalize the vehicle's number plate when |player| is set.
+            numberPlate: player ? player.name : null,
+
             // Make the VehicleAccessManager the authority on whether a player can access it.
             deathFn: VehicleManager.prototype.onVehicleDeath.bind(this),
             accessFn: this.access_.accessFn

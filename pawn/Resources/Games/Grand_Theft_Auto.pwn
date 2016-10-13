@@ -94,12 +94,6 @@ CTheft__ChooseRandomVehicle() {
         if (GetVehicleVirtualWorld(vehicleId) != 0)
             continue;  // only vehicles in the main world may apply
 
-        if (Vehicle(vehicleId)->isAdministratorVehicle())
-            continue;  // administrator-restricted vehicles are excluded
-
-        if (Vehicle(vehicleId)->isVeryImportantPlayerVehicle())
-            continue;  // VIP-restricted vehicles are excluded
-
         new Float: vehicleHealth;
         GetVehicleHealth(vehicleId, vehicleHealth);
 

@@ -2,36 +2,10 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-/**
- * The vehicle flags determine what kind of vehicle it is, exactly. Should it be stored to the
- * database, is it locked for everyone but administrators and 
- */
 enum VehicleFlags {
-    // Is the vehicle stored in this slot valid?
     ValidVehicleFlag,
-
-    // Is this vehicle persistent? This means that it has been stored in the database, and we need
-    // to ask the vehicle storage manager to update it on any changes made to the vehicle.
-    PersistentVehicleFlag,
-
-    // The definition of an "open world" vehicle is one that isn't associated with any specific
-    // feature and has been created by an administrator. Only these vehicles can be removed using
-    // the generic /v and /vehicle commands.
+    PersistentVehicleFlag,  // DEPRECATED @ October 13th, 2016
     OpenWorldVehicle,
-
-    // DO NOT ADD ANY MORE FLAGS ABOVE THIS LINE. STUFF WILL GO BAD IF YOU DO.
-
-    // ---------------------------------------------------------------------------------------------
-    // Persistent vehicle flags
-
-    // Adds a nitrous oxide engine to the vehicle, also known as NOS.
-    NitrousOxideEngineVehicleFlag,
-
-    // Marks the vehicle as being only available for VIP members and crew of LVP.
-    VeryImportantPlayerVehicle,
-
-    // Marks the vehicle as being only available to administrators of LVP.
-    AdministratorVehicle,
 };
 
 /**
@@ -53,9 +27,6 @@ class Vehicle <vehicleId (MAX_VEHICLES)> {
     // What is the Id we give to invalid paintjobs? This needs to be in the range of [0, 255] because
     // of the way we store it, and it can't be [0, 1, 2] because these are valid paintjobs.
     public const InvalidPaintjobId = 3;
-
-    // What is the Id of this vehicle in the database, if it's a persistent vehicle?
-    new m_databaseId;
 
     // What are the flags that currently apply to this vehicle? This is used to store whether it
     // should be locked for certain groups, should be stored, etcetera.
@@ -92,16 +63,6 @@ class Vehicle <vehicleId (MAX_VEHICLES)> {
         return (vehicleId >= 0 && vehicleId < MAX_VEHICLES && this->hasFlag(ValidVehicleFlag));
     }
 
-    /**
-     * Retrieve whether this vehicle should be treated as a persistent vehicle. Persistent vehicles
-     * will be stored in the database and loaded when the gamemode starts up.
-     *
-     * @return boolean Should this vehicle be persistent?
-     */
-    public inline bool: isPersistent() {
-        return this->hasFlag(PersistentVehicleFlag);
-    }
-
     // ---- PUBLIC FUNCTIONAL METHODS --------------------------------------------------------------
 
     /**
@@ -114,7 +75,6 @@ class Vehicle <vehicleId (MAX_VEHICLES)> {
      */
     public initialize(primaryColor, secondaryColor, interiorId) {
         m_flags = 0;
-        m_databaseId = Vehicle::InvalidId;
 
         this->toggleFlag(ValidVehicleFlag, true);
 
@@ -126,117 +86,14 @@ class Vehicle <vehicleId (MAX_VEHICLES)> {
     }
 
     /**
-     * Applies persistent flags from the vehicle which have been loaded from the database. These
-     * contain features such as whether the vehicle has NOS and what it's access level is.
-     *
-     * @param flags The flags which should be applied to this vehicle.
-     */
-    public applyPersistentFlags(flags) {
-        if (Cell->getBitValue(flags, NitrousOxideEngineVehicleFlag) == 1)
-            this->setHasNitrousOxideEngine(true);
-
-        if (Cell->getBitValue(flags, VeryImportantPlayerVehicle) == 1)
-            this->setVeryImportantPlayerVehicle(true);
-
-        if (Cell->getBitValue(flags, AdministratorVehicle) == 1)
-            this->setAdministratorVehicle(true);
-
-        // TODO: I'm sure there's some bit magic we can do here to make it easier, and handle the
-        // individual feature cases afterwards.
-    }
-
-    /**
-     * Compiles an integer representing the persistent flags for this vehicle. These will be restored
-     * when the vehicle has been loaded again from the database.
-     *
-     * @return integer The flags which persistently apply to this vehicle.
-     */
-    public persistentFlags() {
-        new flags = 0;
-        if (this->hasFlag(NitrousOxideEngineVehicleFlag))
-            Cell->setBitValue(flags, NitrousOxideEngineVehicleFlag, true);
-
-        if (this->hasFlag(VeryImportantPlayerVehicle))
-            Cell->setBitValue(flags, VeryImportantPlayerVehicle, true);
-
-        if (this->hasFlag(AdministratorVehicle))
-            Cell->setBitValue(flags, AdministratorVehicle, true);
-
-        return flags;
-    }
-
-    /**
      * Clean up the vehicle's current state after it has been removed from the gamemode. This makes
      * sure that the isValid() method no longer will return true.
      */
     public onDestroyed() {
-        m_databaseId = Vehicle::InvalidId;
         m_flags = 0;
     }
 
     // ---- PUBLIC GETTER AND SETTER METHODS -------------------------------------------------------
-
-    /**
-     * Returns the Id of this vehicle as it has been stored in the database, if it is a persistent
-     * vehicle which we either loaded or was created during this session.
-     *
-     * @return integer Id of this vehicle in the database, or Vehicle::InvalidId.
-     */
-    public databaseId() {
-        return (m_databaseId);
-    }
-
-    /**
-     * Changes the database Id which this vehicle has been associated with. This method should only
-     * be called from the VehicleStorageManager, which' responsibility is to load and store all
-     * the vehicles in the database.
-     *
-     * @param databaseId Id this vehicle is represented with in the database.
-     */
-    public setDatabaseId(databaseId) {
-        this->toggleFlag(PersistentVehicleFlag, true);
-        m_databaseId = databaseId;
-    }
-
-    /**
-     * Returns whether access to this vehicle should be restricted to VIPs on Las Venturas Playground.
-     * We give VIPs some additional goodies because they donated to the server.
-     *
-     * @return boolean Is access to this vehicle restricted to VIPs?
-     */
-    public inline bool: isVeryImportantPlayerVehicle() {
-        return this->hasFlag(VeryImportantPlayerVehicle);
-    }
-
-    /**
-     * Sets whether this vehicle should be restricted to VIPs on the server. This setting will
-     * persist in case the vehicle is a persistent vehicle.
-     *
-     * @param restricted Should access to the vehicle be restricted?
-     */
-    public setVeryImportantPlayerVehicle(bool: restricted) { 
-        this->toggleFlag(VeryImportantPlayerVehicle, restricted);
-    }
-
-    /**
-     * Returns whether access to this vehicle should be restricted to administrators and Management
-     * members of the server. This will be strictly enforced.
-     *
-     * @return boolean Is access to this vehicle restricted to administrators?
-     */
-    public inline bool: isAdministratorVehicle() {
-        return this->hasFlag(AdministratorVehicle);
-    }
-
-    /**
-     * Sets whether access to this vehicle should be restricted to administrators. The setting will
-     * persist between sessions in case the vehicle is persistent itself.
-     *
-     * @param restricted Should access to the vehicle be restricted?
-     */
-    public setAdministratorVehicle(bool: restricted) {
-        this->toggleFlag(AdministratorVehicle, restricted);
-    }
 
     /**
      * Retrieve the primary color of a vehicle. As SA-MP does not provide a native function for
@@ -249,34 +106,12 @@ class Vehicle <vehicleId (MAX_VEHICLES)> {
     }
 
     /**
-     * Set the primary color of this vehicle. It's important that we use this method instead of
-     * the native provided by SA-MP, as we'd like the status of this vehicle to be up to date.
-     *
-     * @param primaryColor The primary color to change into for this vehicle.
-     */
-    public setPrimaryColor(primaryColor) {
-        ChangeVehicleColor(vehicleId, primaryColor, Cell->getByteValue(m_colorsPaintJobAndInterior, 1));
-        Cell->setByteValue(m_colorsPaintJobAndInterior, 0, primaryColor);
-    }
-
-    /**
      * Retrieve the secondary color given to a vehicle.
      *
      * @return integer The secondary color of this vehicle.
      */
     public inline secondaryColor() {
         return (Cell->getByteValue(m_colorsPaintJobAndInterior, 1));
-    }
-
-    /**
-     * Update the secondary color. Like updating the primary color, this method is provided in order
-     * to allow us to keep up to date with the data.
-     *
-     * @param secondaryColor The secondary color to change into for this vehicle.
-     */
-    public setSecondaryColor(secondaryColor) {
-        ChangeVehicleColor(vehicleId, Cell->getByteValue(m_colorsPaintJobAndInterior, 0), secondaryColor);
-        Cell->setByteValue(m_colorsPaintJobAndInterior, 1, secondaryColor);
     }
 
     /**
@@ -347,36 +182,6 @@ class Vehicle <vehicleId (MAX_VEHICLES)> {
      */
     public inline markOpenWorldVehicle() {
         this->toggleFlag(OpenWorldVehicle, true);
-    }
-
-    /**
-     * Returns whether this vehicle is equipped with a nitrous oxide engine.
-     *
-     * @return boolean Whether this vehicle has a NOS engine.
-     */
-    public inline bool: hasNitrousOxideEngine() {
-        return this->hasFlag(NitrousOxideEngineVehicleFlag);
-    }
-
-    /**
-     * Sets whether this vehicle should be equipped with a nitrous oxide engine, better known as
-     * NOS. This will persist on a vehicle, and we'll re-add NOS when the vehicle respawns.
-     *
-     * @param engine Should the vehicle have a nitrous engine?
-     */
-    public setHasNitrousOxideEngine(bool: engine) {
-        if (this->hasNitrousOxideEngine() == engine)
-            return; // no change in behaviour.
-
-        new modelId = this->modelId();
-        if (VehicleModel(modelId)->isNitroInjectionAvailable() == false)
-            return; // this vehicle cannot have nitro.
-
-        this->toggleFlag(NitrousOxideEngineVehicleFlag, engine);
-        if (engine == true /** give the vehicle nitro **/)
-            AddVehicleComponent(vehicleId, 1010);
-        else /** remove nitro from the vehicle **/
-            RemoveVehicleComponent(vehicleId, 1010);
     }
 
     /**

@@ -107,16 +107,12 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
      */
     public onVehicleSpawn() {
         // Remove vehicles created with /v create which have not been saved yet.
-        if (Vehicle(vehicleId)->isOpenWorldVehicle() == true && Vehicle(vehicleId)->isPersistent() == false) {
+        if (Vehicle(vehicleId)->isOpenWorldVehicle() == true) {
             VehicleManager->destroyVehicle(vehicleId);
             CBomb__ResetVehicleData(vehicleId);
             CCrush__Reset(vehicleId);
             return 1;
         }
-
-        // If the vehicle had a nitrous oxide engine, we have to recreate it.
-        if (Vehicle(vehicleId)->hasNitrousOxideEngine() == true)
-            AddVehicleComponent(vehicleId, 1010);
 
         // Since SA:MP might respawn the vehicle at an old position, set the vehicle at its currently
         // saved position and rotation.

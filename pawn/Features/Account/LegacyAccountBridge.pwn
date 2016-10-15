@@ -68,13 +68,11 @@ class LegacyAccountBridge {
         // mutable: stats_drivebys
         MyDrivebys[playerId] = DatabaseResult(resultId)->readInteger("stats_drivebys");
 
-#if Feature::DisableFightClub == 0
         // mutable: stats_fc_kills
         CFightClub__SetKillCount(playerId, DatabaseResult(resultId)->readInteger("stats_fc_kills"));
 
         // mutable: stats_fc_deaths
         CFightClub__SetDeathCount(playerId, DatabaseResult(resultId)->readInteger("stats_fc_deaths"));
-#endif
 
         // mutable: death_message
         new deathMessage[128];

@@ -116,7 +116,7 @@ public OnPlayerDeath(playerid, killerid, reason) {
     ClearPlayerMenus(playerid);
     iPlayerSesDeaths[playerid]++;
 
-#if Feature::DisableFightClub == 0
+#if Feature::DisableFights == 0
     // An admin might use /kill in a fight, in which case we don't reset the killerid.
     if (preventKillLamers[playerid] && CFightClub__IsPlayerFighting(playerid))
         preventKillLamers[playerid] = 0;
@@ -226,6 +226,7 @@ public OnPlayerDeath(playerid, killerid, reason) {
     if (CRobbery__GetPlayerStatus(playerid) == ROBSTATUS_PLAYING)
         return 1;
 
+#if Feature::DisableFights == 0
     // WWTW
     if (WWTW_PlayerData[playerid][iStatus] == WWTW_STATE_PLAYING) {
         CWWTW__OnDeath(playerid);
@@ -238,7 +239,6 @@ public OnPlayerDeath(playerid, killerid, reason) {
         return 1;
     }
 
-#if Feature::DisableFightClub == 0
     // Fightclub
     if (CFightClub__IsPlayerFighting(playerid)) {
         CFightClub__OnDeath(playerid, killerid);

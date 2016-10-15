@@ -19,7 +19,11 @@ lvp_Minigames(playerid, params[])
         return 1;
     }
 
+#if Feature::DisableFights == 0
     ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nDeathmatch\nRace\nRobbery\nBriefcase\nRivershell\nLYSE\nWWTW\nRWTW\nHaystack\nWaterfight", "Play!", "Cancel");
+#else
+    ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nRobbery\nBriefcase\nRivershell\nLYSE\nHaystack", "Play!", "Cancel");
+#endif
 
     #pragma unused params
     return 1;
@@ -89,14 +93,13 @@ lvp_minigaming(playerid, params[]) {
             continue;
         }
 
-#if Feature::DisableFightClub == 0
+#if Feature::DisableFights == 0
         if (CFightClub__IsPlayerFighting(subjectId)) {
             format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s (/fight watch %d)\t-", minigaming,
                 ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId), PlayerMatch[subjectId]);
             continue;
         }
-#endif
 
         if (waterFightIsPlayerPlaying(subjectId)) {
             format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t-", minigaming,
@@ -116,6 +119,7 @@ lvp_minigaming(playerid, params[]) {
                 rwGetPlayerTeam(subjectId) == RW_TEAM_RED ? "Red Team" : "Blue Team");
             continue;
         }
+#endif
 
 #if Feature::DisableHay == 0
         if (hayHasPlayerSignedUp(subjectId)) {
@@ -157,6 +161,7 @@ lvp_minigaming(playerid, params[]) {
             continue;
         }
 
+#if Feature::DisableFights == 0
         if (WWTW_PlayerData[subjectId][iStatus] == 2) {
             Color->toString(Color::MinigameTransparentRed, colorBuffer[0], sizeof(colorBuffer[]));
             Color->toString(Color::MinigameTransparentBlue, colorBuffer[1], sizeof(colorBuffer[]));
@@ -168,6 +173,7 @@ lvp_minigaming(playerid, params[]) {
                 WWTW_PlayerData[subjectId][iPlayerTeam] == WWTW_TEAMATTACK ? "Attackers" : "Defenders");
             continue;
         }
+#endif
     }
 
     if (!strlen(minigaming))
@@ -189,7 +195,11 @@ lvp_minigaming(playerid, params[]) {
 // Shows a list of available teleports such as stunt zones and taxi destinations
 lvp_Teles(playerid, params[])
 {
+#if Feature::DisableFights == 0
     ShowPlayerDialog(playerid, DIALOG_TELES_MAIN, DIALOG_STYLE_LIST, "LVP Teles", "Jumps\r\nTune shops\r\nTaxi Destinations\r\nRaces\r\nDerbies\r\nDM\r\nAll Mini-Games", "Select", "Close");
+#else
+    ShowPlayerDialog(playerid, DIALOG_TELES_MAIN, DIALOG_STYLE_LIST, "LVP Teles", "Jumps\r\nTune shops\r\nTaxi Destinations\r\nRaces\r\nDerbies\r\nAll Mini-Games", "Select", "Close");
+#endif
 
     #pragma unused params
 
@@ -536,7 +546,7 @@ lvp_locate(playerid,params[])
     if(IsPlayerInMinigame(iPlayerID))
     format(szMessage,128,"%s is taking part in the %s minigame, somewhat near", PlayerName(iPlayerID), GetPlayerMinigameName(iPlayerID));
 
-#if Feature::DisableFightClub == 0
+#if Feature::DisableFights == 0
     if(CFightClub__IsPlayerFighting(iPlayerID))
     {
         format(szMessage,128,"%s is currently fighting in the FightClub, use '/fight watch %d' to watch them!", PlayerName(iPlayerID), PlayerMatch[iPlayerID]);
@@ -1400,6 +1410,8 @@ lvp_Robbery(playerid, params[])
     #pragma unused params
 }
 
+#if Feature::DisableFights == 0
+
 // Command: /wtww
 // Parameters: None
 // Author: Matthias
@@ -1419,7 +1431,6 @@ lvp_Rwtw(playerid, params[])
     return rwOnCommand(playerid, params);
 }
 
-#if Feature::DisableFightClub == 0
 // This command was created by Martijnc a while back in the old
 // command syntax. It has been cleaned up here, and is in testing. This
 // will only be used in future versions, and will not be included in LVP 2.90.

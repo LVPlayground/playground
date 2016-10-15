@@ -191,7 +191,14 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: 
         // Players inside interiors (including VIP room), should not be hurt, various minigames are
         // exceptions to this rule.
         if (GetPlayerInterior(hitid) != 0 || LegacyIsPlayerInVipRoom(hitid)) {
-            if (!CFightClub__IsPlayerFighting(playerid) && !CWWT__IsPlaying(playerid) && !CRobbery__IsPlaying(playerid))
+            new bool: inFight = CRobbery__IsPlaying(playerid);
+
+#if Feature::DisableFights == 0
+            inFight |= CFightClub__IsPlayerFighting(playerid) ||
+                       CWWT__IsPlaying(playerid);
+#endif
+
+            if (!inFight)
                 return 0;
         }
     }

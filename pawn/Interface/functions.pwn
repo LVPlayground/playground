@@ -56,10 +56,12 @@ RemovePlayerFromAnyGame(playerId) {
         return 1;
     }
 
+#if Feature::DisableFights == 0
     if (rwIsPlayerSignedUp(playerId)) {
         rwRemovePlayerFromMinigame(playerId);
         return 1;
     }
+#endif
 
 #if Feature::DisableHay == 0
     if (hayHasPlayerSignedUp(playerId)) {
@@ -68,6 +70,7 @@ RemovePlayerFromAnyGame(playerId) {
     }
 #endif
 
+#if Feature::DisableFights == 0
     if (waterFightIsPlayerSignedUp(playerId)) {
         waterFightRemovePlayer(playerId);
         return 1;
@@ -77,6 +80,7 @@ RemovePlayerFromAnyGame(playerId) {
         MinigameLeave(playerId);
         return 1;
     }
+#endif
 
     if (CDerby__GetPlayerState(playerId) == DERBY_STATE_SIGNUP) {
         CDerby__PlayerExit(playerId, SIGNOUT);
@@ -113,6 +117,7 @@ RemovePlayerFromAnyGame(playerId) {
         return 1;
     }
 
+#if Feature::DisableFights == 0
     if (WWTW_PlayerData[playerId][iStatus] != WWTW_STATE_NONE) {
         if (WWTW_PlayerData[playerId][iStatus] == WWTW_STATE_SIGNUP)
             CWWTW__PlayerLeft(playerId);
@@ -121,6 +126,7 @@ RemovePlayerFromAnyGame(playerId) {
 
         return 1;
     }
+#endif
 
     if (CRobbery__GetPlayerStatus(playerId) == ROBSTATUS_SIGNUP) {
         CRobbery__PlayerExit(playerId);
@@ -200,18 +206,22 @@ ResetPlayerStats(playerId) {
         g_Ignore[subjectId][playerId] = false;
     }
     g_VirtualWorld[playerId] = 0;
-#if Feature::DisableFightClub == 0
+#if Feature::DisableFights == 0
     IsPlayerWatchingFC[playerId] = false;
 #endif
     for (new i =0; i < MAX_INTERIORS; i++) g_AllowWeapons[i][playerId] = false;
     iPlayerRampTime[playerId] = 0;
     iPlayerSesDeaths[playerId] = 0;
+#if Feature::DisableFights == 0
     waterFightOnDisconnect(playerId);
+#endif
     iPlayerSesKills[playerId] = 0;
 #if Feature::DisableHay == 0
     hayResetPlayerData(playerId);
 #endif
+#if Feature::DisableFights == 0
     rwRemovePlayerFromMinigame(playerId);
+#endif
     DestroyPlayerBox(playerId);
     CTaxi_ResetMayTaxi(playerId);
     ResetTeleCheatData(playerId);
@@ -235,9 +245,9 @@ ResetPlayerStats(playerId) {
     IsPlayerInBombShop[playerId] = false;
     DetonateVehicle[playerId] = -1;
     bombDetonation[playerId] = 10;
-    #if Feature::DisableKilltime == 0
+#if Feature::DisableKilltime == 0
     KTKills[playerId] = false;
-    #endif
+#endif
     iLoan[playerId] = 0;
     iLoanPercent[playerId] = 0;
     PlayerInfo[playerId][playerTJailSes] = 0;
@@ -245,7 +255,7 @@ ResetPlayerStats(playerId) {
     isCaged[playerId] = false;
     PlayerInfo[playerId][playerIsHidden] = false;
     ColorManager->setPlayerMarkerHidden(playerId, false);
-#if Feature::DisableFightClub == 0
+#if Feature::DisableFights == 0
     CFightClub__SetKillCount(playerId, 0);
     CFightClub__SetDeathCount(playerId, 0);
 #endif
@@ -963,7 +973,7 @@ LegacyFixPlayer(playerId) {
     isCaged[playerId] = 0;
     PlayerInfo[playerId][playerIsHidden] = 0;
 
-#if Feature::DisableFightClub == 0
+#if Feature::DisableFights == 0
     if (PlayerMatch[playerId] != -1)
         CFightClub__TerminateMatch(PlayerMatch[playerId]);
 #endif

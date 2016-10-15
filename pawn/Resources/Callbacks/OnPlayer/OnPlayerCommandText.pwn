@@ -181,7 +181,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         }
     }
 
-#if Feature::DisableFightClub == 0
+#if Feature::DisableFights == 0
     // Prevents players from using commands whilst fighting in the FightClub
     if (CFightClub__GetPlayerStatus(playerid) == FC_STATUS_FIGHTING && Player(playerid)->isAdministrator() == false)
     {
@@ -226,11 +226,13 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         return 1;
     }
 
+#if Feature::DisableFights == 0
     if(!strcmp(cmd, "/dm", true))
     {
         ShowDeathmatchDialog(playerid);
         return 1;
     }
+#endif
 
     // Rivershell minigame
     if(strcmp(cmd,"/rivershell",true) == 0)
@@ -502,7 +504,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     }
 
     // Commands for testing:
-#if Feature::DisableFightClub == 0
+#if Feature::DisableFights == 0
     lvp_command(Fight,          5, PlayerLevel);
 #endif
 
@@ -540,8 +542,10 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(tune,           4, PlayerLevel);
     lvp_command(My,             2, PlayerLevel);
     lvp_command(Robbery,        7, PlayerLevel);
+#if Feature::DisableFights == 0
     lvp_command(Wwtw,           4, PlayerLevel);
     lvp_command(Rwtw,           4, PlayerLevel);
+#endif
     lvp_command(minigaming,    10, PlayerLevel);
 
     // Commands for administrators:
@@ -552,7 +556,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(announce,       8, AdministratorLevel);
     lvp_command(hasfix,         6, AdministratorLevel);
 
-#if Feature::DisableFightClub == 0
+#if Feature::DisableFights == 0
     lvp_command(resetfc,        7, AdministratorLevel);
     lvp_command(resetmatch,    10, AdministratorLevel);
 #endif
@@ -560,23 +564,28 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(reactiontest,  12, AdministratorLevel);
     lvp_command(chase,          5, AdministratorLevel);
     lvp_command(fetch,          5, AdministratorLevel);
-    #if Feature::DisableKilltime == 0
+#if Feature::DisableKilltime == 0
     lvp_command(killtime,       8, AdministratorLevel);
-    #endif
+#endif
     lvp_command(forward,        7, AdministratorLevel);
     lvp_command(stopchase,      9, AdministratorLevel);
     lvp_command(set,            3, AdministratorLevel);
+
+#if Feature::DisableFights == 0
     lvp_command(fixminigames,  12, AdministratorLevel);
+#endif
 
     lvp_command(hs,             2, PlayerLevel);
 
     // ----------------------------
 
+#if Feature::DisableFights == 0
     if(!strcmp(cmdtext, "/waterfight", true))
     {
         OnWaterFightCmdText(playerid);
         return 1;
     }
+#endif
 
     // There's plenty of people missing here?
     if(strcmp(cmd, "/credits", true) == 0) 
@@ -593,6 +602,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         return 1;
     }
 
+#if Feature::DisableFights == 0
 
     if(strcmp(cmd, "/batfight", true) == 0) 
     {
@@ -748,6 +758,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         MiniGamesSignup(playerid, STATUS_RANDOMDM);
         return 1;
     }
+
+#endif
 
 #if Feature::DisableHay == 0
     if(!strcmp(cmd, "/haystack", true))

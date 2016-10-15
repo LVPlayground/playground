@@ -351,7 +351,7 @@ CAchieve__Export(playerid, cars) {
         CAchieve__Achieved(playerid, EXP50);
 }
 
-#if Feature::DisableFightClub == 0
+#if Feature::DisableFights == 0
 CAchieve__FightClub(killerid, kills) {
     switch(kills) {
         case 100: CAchieve__Achieved(killerid, FC100);

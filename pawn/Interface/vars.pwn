@@ -72,7 +72,7 @@ new g_AirportPickup[4];
 new Menu:AirportMenu[4];
 new AirTime[MAX_PLAYERS];
 new firstJoin[MAX_PLAYERS];
-#if Feature::DisableFightClub == 0
+#if Feature::DisableFights == 0
 new FCPickup;
 new FCDPickup;
 #endif
@@ -151,7 +151,10 @@ enum ePlayerInfo {
     iPlayerTeam,
     iStatus
 }
+
+#if Feature::DisableFights == 0
 new WWTW_PlayerData[MAX_PLAYERS][ePlayerInfo];
+#endif
 
 // -------------------------------------------------------------------------------------------------
 // Temporary variable holding the killerId of a death in case we set the player's health to 0.

@@ -4,7 +4,8 @@
 
 new g_message[256];
 
-#if Feature::DisableFightClub == 0
+#if Feature::DisableFights == 0
+
 lvp_resetfc(playerId, params[]) {
     CFightClub__TerminateAllMatches();
 
@@ -31,7 +32,6 @@ lvp_resetmatch(playerId, params[]) {
 
     return 1;
 }
-#endif
 
 lvp_fixminigames(playerId, params[]) {
     new bool: success = ResetMinigameStatus();
@@ -49,6 +49,8 @@ lvp_fixminigames(playerId, params[]) {
     return 1;
     #pragma unused params
 }
+
+#endif
 
 lvp_chase(playerId, params[]) {
     if (chaseData[0]) {

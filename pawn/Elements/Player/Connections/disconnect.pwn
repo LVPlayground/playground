@@ -14,7 +14,9 @@ OnPlayerLVPDisconnect(playerId, reason) {
 
     CChase__Disconnect(playerId);               // Chase handler
     CDerby__Disconnect(playerId);               // Derby handler.
+#if Feature::DisableFights == 0
     CWWTW__OnDisconnect(playerId);              // Walkies Weapons Team War minigame
+#endif
     CLyse__SignPlayerOut(playerId);             // Local Yocal sports edition
     BagCash__Disconnect(playerId);
 
@@ -32,11 +34,12 @@ OnPlayerLVPDisconnect(playerId, reason) {
     if (playerId == iServerChampion)
         iServerChampion = Player::InvalidId;
 
-#if Feature::DisableFightClub == 0
+#if Feature::DisableFights == 0
     CFightClub__OnDisconnect(playerId);
-#endif
 
     MinigameLeave(playerId, true);
+#endif
+
     ResetPlayerStats(playerId);
 
     return 1;

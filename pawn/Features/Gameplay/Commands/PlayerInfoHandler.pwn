@@ -170,10 +170,15 @@ class PlayerInfoHandler {
         if (Player(playerId)->isNonPlayerCharacter() == true)
             return 0;
 
+        new bool: inFight = false;
+#if Feature::DisableFights == 0
+        inFight = !!CFightClub__IsPlayerFighting(playerId);
+#endif
+
         // If the player is participating in a minigame (excluding FightClub fights), we hide
         // the other player's their 3D labels.
         if ((PlayerSpectateHandler->isSpectating(playerId) == true
-            || (IsPlayerInMinigame(playerId) && !CFightClub__IsPlayerFighting(playerId)))
+            || (IsPlayerInMinigame(playerId) && !inFight))
             && PlayerSettings(playerId)->isPlayerInfoEnabled() == true && m_labelsHidden[playerId] == false) {
             for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
                 if (Player(subjectId)->isNonPlayerCharacter() == true)

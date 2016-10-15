@@ -41,7 +41,10 @@ class DeprecatedTimerRuntime {
             m_fiveSecondTicker = 0;
         }
 
+#if Feature::DisableFights == 0
         waterFightProcess();
+#endif
+
         CReaction__Process();
         IRCCommand ();
         CDerby__Process();
@@ -53,14 +56,17 @@ class DeprecatedTimerRuntime {
         CChase__Process();
         CBrief__CheckEmpty();
         CShell__CheckStatus();
+
+#if Feature::DisableFights == 0
         rwProcess();
+#endif
 
 #if Feature::DisableHay == 0
         hayProcess();
 #endif
 
         ProcessMapZoneRaces();
-#if Feature::DisableFightClub == 0
+#if Feature::DisableFights == 0
         CFightClub__Process();
 #endif
 

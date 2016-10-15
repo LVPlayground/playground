@@ -196,7 +196,7 @@ class TeleportationManager {
                 return false;
             }
 
-#if Feature::DisableFightClub == 0
+#if Feature::DisableFights == 0
             if (CFightClub__IsPlayerFighting(subjectId)) {
                 SendClientMessage(playerId, Color::Error, "This player is currently in the Fightclub, use \"/fight watch\".");
                 return false;

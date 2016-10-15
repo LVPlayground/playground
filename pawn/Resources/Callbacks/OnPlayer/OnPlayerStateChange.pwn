@@ -33,8 +33,10 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
         }
     }
 
+#if Feature::DisableFights == 0
     MinigameStateChange(playerid, newstate, oldstate);
     waterFightStateChange(playerid);
+#endif
 
     CCrush__StateChange(playerid, newstate, oldstate);
 

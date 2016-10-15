@@ -120,7 +120,10 @@ public OnPlayerText(playerid, text[]) {
     if (CRobbery__OnText(playerid, text)) return 0;
     if (CShell__OnText(playerid, text)) return 0;
     if (CLyse__OnText(playerid, text)) return 0;
+
+#if Feature::DisableFights == 0
     if (CWWTW__OnText(playerid, text)) return 0;
+#endif
 
     // Phone calls.
     if (CallManager->isCalling(playerid) == true) {

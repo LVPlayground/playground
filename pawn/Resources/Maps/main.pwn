@@ -23,5 +23,7 @@
 
     #include    Resources/Maps/ScrapYard.pwn
     #include    Resources/Maps/TaxiRank.pwn
+
+#if Feature::DisableFights == 0
     #include    Resources/Maps/IslandDM.pwn
-    //#include    Resources/Maps/VIPRoom.pwn
+#endif

@@ -45,7 +45,7 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
         return 1;
     }
 
-#if Feature::DisableFightClub == 0
+#if Feature::DisableFights == 0
     // FightClub 'FCDPickup' (duel or watch)
     // Author: iou
     if(pickupid == FCDPickup)

@@ -84,8 +84,11 @@ class Feature {
     /** **************************************************************************************** **/
     /// Moving stuff to JavaScript defines.
 
-    // Disables the Pawn version of the flight club handler.
-    public const DisableFightClub = 0;
+    // Disables the Pawn of everything related to DM fights.
+    public const DisableFights = 0;
+
+    // Be able to switch it off in preperation of the rewrite of it in javascript
+    public const DisableKilltime = 0;
 
     /** **************************************************************************************** **/
     /// Christmas
@@ -108,9 +111,4 @@ class Feature {
     // The Hay minigame is a very nice-to-have game, but it hogs CPU.
     public const DisableHay = 0;
 
-    /** **************************************************************************************** **/
-    /// KillTime
-
-    // Be able to switch it off in preperation of the rewrite of it in javascript
-    public const DisableKilltime = 0;
 };

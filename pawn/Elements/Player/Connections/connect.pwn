@@ -22,7 +22,7 @@ OnPlayerLVPConnect(playerid) {
     RemoveBuildingForPlayer(playerid, 1776, 0.0, 0.0, 0.0, 6000.0);
     RemoveBuildingForPlayer(playerid, 620, 1043.1797, 1660.6484, 6.2188, 0.25);
 
-#if Feature::DisableFightClub == 0
+#if Feature::DisableFights == 0
     CFightClub__OnConnect(playerid);
 #endif
 

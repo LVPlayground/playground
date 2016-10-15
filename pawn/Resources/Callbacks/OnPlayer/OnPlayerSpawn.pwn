@@ -58,10 +58,12 @@ OriginalOnPlayerSpawn(playerId) {
         return 1;
     }
 
+#if Feature::DisableFights == 0
     if (rwIsPlayerSignedUp(playerId)) {
         rwSpawnPlayer(playerId);
         return 1;
     }
+#endif
 
     if (CLyse__GetPlayerState(playerId) == LYSE_STATE_RUNNING) {
         CLyse__SpawnPlayer(playerId);
@@ -73,7 +75,7 @@ OriginalOnPlayerSpawn(playerId) {
         return 1;
     }
 
-#if Feature::DisableFightClub == 0
+#if Feature::DisableFights == 0
     if (CFightClub__IsPlayerFighting(playerId)) {
         CFightClub__OnSpawn(playerId);
         return 1;
@@ -96,12 +98,14 @@ OriginalOnPlayerSpawn(playerId) {
     if (Drivebyer[playerId] > -1)
         TogglePlayerControllable(playerId, false);
 
+#if Feature::DisableFights == 0
     // Remove the player from a minigame. If the player isn't in any minigame, make sure the skin
     // and color are correct.
     if (IsPlayerStatusMinigame(playerId))
         PlayerLigtUitMiniGame(playerId, KILLED);
     else
         ColorManager->releasePlayerMinigameColor(playerId);
+#endif
 
     // Set the player's world.
     SetPlayerVirtualWorld(playerId, g_VirtualWorld[playerId]);
@@ -112,9 +116,11 @@ OriginalOnPlayerSpawn(playerId) {
 
     g_isAiming[playerId] = false;
 
+#if Feature::DisableFights == 0
     // Don't give out spawnmoney when returning from watching(!) a FC-fight
     if (IsPlayerWatchingFC[playerId])
         return true;
+#endif
 
     new const defaultSpawnMoney = GetEconomyValue(SpawnMoney);
 

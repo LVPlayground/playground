@@ -2,15 +2,6 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-#define FINISH     0
-#define ONFOOT     1
-#define KILLED     2
-#define TOOSLOW    3
-#define DISCONNECT 4
-#define LONELY     5
-#define LEFT       6
-#define SIGNOUT    7
-
 enum minigameInfo {
     CurrentMinigame,
     Progress,
@@ -18,6 +9,17 @@ enum minigameInfo {
 }
 
 new MinigameTypeInfo[minigameInfo];
+
+new DeathmatchTimer;
+
+// A simple function to check for the player's availability regarding minigames.
+IsPlayerStatusMinigame(playerId, bool: justDisconnected = false) {
+    if (Player(playerId)->isConnected() == true || justDisconnected) {
+        if (PlayerInfo[playerId][PlayerStatus] <= 19 && PlayerInfo[playerId][PlayerStatus] != STATUS_NONE)
+            return 1 ;
+    }
+    return 0;
+}
 
 // Resets the minigame status in case one of the games reached an inconsistent state. Will verify
 // that it indeed is safe to reset the status by asserting that no players are engaged in a minigame
@@ -323,15 +325,6 @@ PlayerLigtUitMiniGame(playerId, reason) {
     return 1;
 }
 
-// A simple function to check for the player's availability regarding minigames.
-IsPlayerStatusMinigame(playerId, bool: justDisconnected = false) {
-    if (Player(playerId)->isConnected() == true || justDisconnected) {
-        if (PlayerInfo[playerId][PlayerStatus] <= 19 && PlayerInfo[playerId][PlayerStatus] != STATUS_NONE)
-            return 1 ;
-    }
-    return 0;
-}
-
 IsPlayerMinigameFree(playerId) {
     if (Player(playerId)->isConnected() == false)
         return 0;
@@ -419,7 +412,7 @@ IsPlayerInMinigame(playerId) {
     if (WWTW_PlayerData[playerId][iStatus] > 1)
         return 1;
 
-#if Feature::DisableFightClub == 0
+#if Feature::DisableFights == 0
     if (CFightClub__IsPlayerFighting(playerId))
         return 1;
 #endif

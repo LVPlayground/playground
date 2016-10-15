@@ -137,6 +137,18 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 
         case DIALOG_MINIGAMES: {
             if (response) {
+#if Feature::DisableFights == 1
+                switch (listitem) {
+                    case 0: CDerby__ShowMainDialog(playerid);
+                    case 1: CRobbery__MenuActivate(playerid);
+                    case 2: CBrief__MenuActivate(playerid);
+                    case 3: CShell__MenuActivate(playerid);
+                    case 4: CLyse__MenuActivate(playerid);
+#if Feature::DisableHay == 0
+                    case 5: hayMenuActivate(playerid);
+#endif
+                }
+#else
                 switch (listitem) {
                     case 0: CDerby__ShowMainDialog(playerid);
                     case 1: ShowDeathmatchDialog(playerid);
@@ -151,6 +163,7 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 #endif
                     case 10: OnWaterFightCmdText(playerid);
                 }
+#endif
             }
             return 1;
         }
@@ -167,7 +180,7 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
             return 1;
         }
 
-#if Feature::DisableFightClub == 0
+#if Feature::DisableFights == 0
         case DIALOG_FIGHTCLUB: {
             if (response) {
                 if (CFightClub__HasPlayerInvited(playerid))
@@ -501,10 +514,12 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                 return 1;
             }
 
+#if Feature::DisableFights == 0
             if (listitem == 5) {
                 ShowDeathmatchDialog(playerid);
                 return 1;
             }
+#endif
 
             if (listitem == 6) {
                 ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nDeathmatch\nRace\nRobbery\nBriefcase\nRivershell\nLYSE\nWWTW\nRWTW\nHaystack\nWaterfight", "Play!", "Cancel");
@@ -532,6 +547,7 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
             return lvp_taxi(playerid, string);
         }
 
+#if Feature::DisableFights == 0
         case DIALOG_MINIGAME_DM: {
             if (!response)
                 return 1;
@@ -559,6 +575,7 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 
             return 1;
         }
+#endif
 
         case DIALOG_TOW_COMMAND: {
             if (response) {
@@ -572,4 +589,5 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
     }
 
     return 1;
+    #pragma unused inputtext
 }

@@ -158,7 +158,9 @@ CSave__SaveInfo(playerId) {
         m_playerSaveInfo[slotId][positionY] = g_PlayerPos[playerId][1];
         m_playerSaveInfo[slotId][positionZ] = g_PlayerPos[playerId][2];
         m_playerSaveInfo[slotId][angle] = playerAngle;
-    } else if(IsPlayerStatusMinigame(playerId)) {
+    }
+#if Feature::DisableFights == 0
+    else if(IsPlayerStatusMinigame(playerId)) {
         if (WWTW_PlayerData[playerId][iStatus] == WWTW_STATE_PLAYING || CRobbery__GetPlayerStatus(playerId) > ROBSTATUS_NONE) {
             m_playerSaveInfo[slotId][positionX] = g_aSavedPlayerPosition[playerId][fSavedPosX];
             m_playerSaveInfo[slotId][positionY] = g_aSavedPlayerPosition[playerId][fSavedPosY];
@@ -172,6 +174,7 @@ CSave__SaveInfo(playerId) {
         }
     } else if (IsPlayerInMinigame(playerId) && !IsPlayerStatusMinigame(playerId))
         m_playerSaveInfo[slotId][respawn] = true;
+#endif
     else {
         m_playerSaveInfo[slotId][positionX] = x;
         m_playerSaveInfo[slotId][positionY] = y;

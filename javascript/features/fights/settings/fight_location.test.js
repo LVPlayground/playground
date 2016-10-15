@@ -58,8 +58,8 @@ describe('FightLocation', it => {
                 assert.isAboveOrEqual(spawn.position.y, -20000);
                 assert.isBelowOrEqual(spawn.position.y, 20000);
 
-                assert.isAboveOrEqual(spawn.position.z, -20000);
-                assert.isBelowOrEqual(spawn.position.z, 20000);
+                assert.isAboveOrEqual(spawn.position.z, -100);
+                assert.isBelowOrEqual(spawn.position.z, 1500);
 
                 assert.equal(typeof spawn.rotation, 'number');
 
@@ -72,6 +72,33 @@ describe('FightLocation', it => {
             assert.equal(location.maxParties, counter);
 
             // TODO: Verify the type of |boundaries|.
+
+            assert.isBelowOrEqual(location.objects.length, 150);
+            for (const object of location.objects) {
+                assert.isAboveOrEqual(object.modelId, 0);
+                assert.isBelowOrEqual(object.modelId, 20000);
+
+                assert.isTrue(object.position instanceof Vector);
+                assert.isTrue(object.rotation instanceof Vector);
+
+                assert.isAboveOrEqual(object.position.x, -20000);
+                assert.isBelowOrEqual(object.position.x, 20000);
+
+                assert.isAboveOrEqual(object.position.y, -20000);
+                assert.isBelowOrEqual(object.position.y, 20000);
+
+                assert.isAboveOrEqual(object.position.z, -100);
+                assert.isBelowOrEqual(object.position.z, 1500);
+
+                assert.isAboveOrEqual(object.rotation.x, 0);
+                assert.isBelowOrEqual(object.rotation.x, 360);
+
+                assert.isAboveOrEqual(object.rotation.y, 0);
+                assert.isBelowOrEqual(object.rotation.y, 360);
+
+                assert.isAboveOrEqual(object.rotation.z, 0);
+                assert.isBelowOrEqual(object.rotation.z, 360);
+            }
         }
     });
 });

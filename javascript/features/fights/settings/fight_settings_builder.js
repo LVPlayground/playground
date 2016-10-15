@@ -13,6 +13,7 @@ const FightStrategy = require('features/fights/settings/fight_strategy.js');
 class FightSettingsBuilder {
     constructor() {
         this.location_ = FightLocation.getById(1 /* LV FightClub */);
+        this.timeLimit_ = 600;  // 10 minutes
 
         this.distribution_ = FightDistribution.createIndividualDistribution();
         this.strategy_ = FightStrategy.createDeathmatchStrategy(1 /* rounds */);
@@ -33,6 +34,7 @@ class FightSettingsBuilder {
         this.teamDamagePolicy_ = FightSettings.TEAM_DAMAGE_POLICY_DEFAULT;
         this.visibilityPolicy_ = FightSettings.VISIBILITY_POLICY_VISIBLE;
 
+        this.minHeight_ = null;
         this.recording_ = false;
     }
 
@@ -40,6 +42,7 @@ class FightSettingsBuilder {
     build() {
         return new FightSettings({
             location: this.location_,
+            timeLimit: this.timeLimit_,
             distribution: this.distribution_,
             strategy: this.strategy_,
             signUp: this.signUp_,
@@ -51,6 +54,7 @@ class FightSettingsBuilder {
             mainWorld: this.mainWorld_,
             teamDamagePolicy: this.teamDamagePolicy_,
             visibilityPolicy: this.visibilityPolicy_,
+            minHeight: this.minHeight_,
             recording: this.recording_
         });
     }
@@ -58,6 +62,10 @@ class FightSettingsBuilder {
     // Gets or sets the location at which the fight should take place.
     get location() { return this.location_; }
     set location(value) { this.location_ = value; }
+
+    // Gets or sets the time limit to apply to the fight.
+    get timeLimit() { return this.timeLimit_; }
+    set timeLimit(value) { this.timeLimit_ = value; }
 
     // Gets or sets the distribution that should be applied to players in this fight.
     get distribution() { return this.distribution_; }
@@ -111,6 +119,10 @@ class FightSettingsBuilder {
     // Gets or sets the visibility policy for players participating in the match.
     get visibilityPolicy() { return this.visibilityPolicy_; }
     set visibilityPolicy(value) { this.visibilityPolicy_ = value; }
+
+    // Gets or sets the minimum height players must remain above whilst in the fight.
+    get minHeight() { return this.minHeight_; }
+    set minHeight(value) { this.minHeight_ = value; }
 
     // Gets or sets whether the fight should be recorded for future viewing.
     get recording() { return this.recording_; }

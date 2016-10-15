@@ -39,6 +39,7 @@ describe('FightSettings', it => {
         const builder = new FightSettingsBuilder();
 
         builder.location = FightLocation.getById(1 /* LV FightClub */);
+        builder.timeLimit = 300;
         builder.distribution = FightDistribution.createBalancedTeamDistribution([ 121, 122 ]);
         builder.strategy = FightStrategy.createContinuousStrategy(4 /* lives */);
         builder.signUp = FightSignUp.createPublicAnnouncement('Name', '/command', 30 /* seconds */);
@@ -52,11 +53,13 @@ describe('FightSettings', it => {
         builder.mainWorld = true;
         builder.teamDamagePolicy = FightSettings.TEAM_DAMAGE_POLICY_PREVENT;
         builder.visibilityPolicy = FightSettings.VISIBILITY_POLICY_TEAM;
+        builder.minHeight = 150;
         builder.recording = true;
 
         const settings = builder.build();
 
         assert.equal(settings.location, builder.location);
+        assert.equal(settings.timeLimit, 300);
         {
             assert.isTrue(settings.distribution.isBalancedTeams());
             assert.equal(settings.distribution.type, FightDistribution.TYPE_BALANCED_TEAMS);
@@ -89,6 +92,7 @@ describe('FightSettings', it => {
         assert.isTrue(settings.inMainWorld());
         assert.equal(settings.teamDamagePolicy, builder.teamDamagePolicy);
         assert.equal(settings.visibilityPolicy, builder.visibilityPolicy);
+        assert.equal(settings.minHeight, 150);
         assert.isTrue(settings.shouldRecord());
     });
 });

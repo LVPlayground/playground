@@ -71,15 +71,27 @@ class FightLocation {
 
         this.spawnPositions_ = new Set();
 
-        locationInfo.spawn_positions.forEach(positionData => {
+        locationInfo.spawn_positions.forEach(positionInfo => {
             this.spawnPositions_.add({
-                position: new Vector(...positionData.position),
-                rotation: positionData.rotation
+                position: new Vector(...positionInfo.position),
+                rotation: positionInfo.rotation
             });
         });
 
         // TODO: This should use some sort of Rect class.
         this.boundaries_ = locationInfo.boundaries;
+
+        this.objects_ = [];
+
+        if (locationInfo.hasOwnProperty('objects')) {
+            locationInfo.objects.forEach(objectInfo => {
+                this.objects_.push({
+                    modelId: objectInfo.modelId,
+                    position: new Vector(...objectInfo.position),
+                    rotation: new Vector(...objectInfo.rotation)
+                });
+            });
+        }
     }
 
     // Gets the internal Id as which this location is known.
@@ -103,6 +115,9 @@ class FightLocation {
 
     // Gets the world boundaries, if any, that should be applied to the fight.
     get boundaries() { return this.boundaries_; }
+
+    // Gets an array with the objects that should be created for this location.
+    get objects() { return this.objects_; }
 }
 
 // Synchronously initialise the FightLocation data whilst loading the script.

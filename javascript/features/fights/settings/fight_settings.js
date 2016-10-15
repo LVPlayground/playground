@@ -5,9 +5,11 @@
 // Contains all the immutable details about a fight that's yet to be had. FightSettings objects can
 // be stored to and created from database information.
 class FightSettings {
-    constructor({ location, distribution, strategy, signUp, weapons, health, armour, time, weather,
-                  mainWorld, teamDamagePolicy, visibilityPolicy, recording }) {
+    constructor({ location, timeLimit, distribution, strategy, signUp, weapons, health, armour,
+                  time, weather, mainWorld, teamDamagePolicy, visibilityPolicy, minHeight,
+                  recording }) {
         this.location_ = location;
+        this.timeLimit_ = timeLimit;
 
         this.distribution_ = distribution;
         this.strategy_ = strategy;
@@ -25,6 +27,8 @@ class FightSettings {
         this.teamDamagePolicy_ = teamDamagePolicy;
         this.visibilityPolicy_ = visibilityPolicy;
 
+        this.minHeight_ = minHeight;
+
         this.recording_ = recording;
 
         // Freeze and seal this object to prevent any modifications from being made.
@@ -34,6 +38,9 @@ class FightSettings {
 
     // Gets the FightLocation instance at which this fight will be taking place.
     get location() { return this.location_; }
+
+    // Gets the time limit of the fight, in seconds.
+    get timeLimit() { return this.timeLimit_; }
 
     // Gets the FightDistribution instance that describes the player distribution for this fight.
     get distribution() { return this.distribution_; }
@@ -69,6 +76,10 @@ class FightSettings {
 
     // Gets the visibility policy that should apply to players during the fight.
     get visibilityPolicy() { return this.visibilityPolicy_; }
+
+    // Gets the minimum height a player has to be at in order to not be considered dead. This is
+    // used for fights in which the player has to remain on a floating platform of sorts.
+    get minHeight() { return this.minHeight_; }
 
     // Gets whether the fight should be recorded for future playback.
     shouldRecord() { return this.recording_; }

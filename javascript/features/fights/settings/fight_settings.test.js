@@ -2,11 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const FightLocation = require('features/fights/fight_location.js');
-const FightSettings = require('features/fights/fight_settings.js');
-const FightSettingsBuilder = require('features/fights/fight_settings_builder.js');
-const FightSignUp = require('features/fights/fight_sign_up.js');
-const FightStrategy = require('features/fights/fight_strategy.js');
+const FightDistribution = require('features/fights/settings/fight_distribution.js');
+const FightLocation = require('features/fights/settings/fight_location.js');
+const FightSettings = require('features/fights/settings/fight_settings.js');
+const FightSettingsBuilder = require('features/fights/settings/fight_settings_builder.js');
+const FightSignUp = require('features/fights/settings/fight_sign_up.js');
+const FightStrategy = require('features/fights/settings/fight_strategy.js');
 
 describe('FightSettings', it => {
     it('should be an immutable object', assert => {
@@ -18,6 +19,9 @@ describe('FightSettings', it => {
         assert.isTrue(Object.isSealed(settings));
 
         const immutableObjects = [
+            FightDistribution.createIndividualDistribution(),
+            FightDistribution.createBalancedTeamDistribution(),
+            FightDistribution.createRandomTeamDistribution(),
             FightSignUp.createInvitationForPlayer(null /* player */, 30 /* expire time */),
             FightSignUp.createPublicChallenge(30 /* expire time */),
             FightSignUp.createPublicAnnouncement('Name', '/command', 30 /* seconds */),
@@ -35,9 +39,9 @@ describe('FightSettings', it => {
         const builder = new FightSettingsBuilder();
 
         builder.location = FightLocation.getById(1 /* LV FightClub */);
+        builder.distribution = FightDistribution.createBalancedTeamDistribution([ 121, 122 ]);
         builder.strategy = FightStrategy.createContinuousStrategy(4 /* lives */);
         builder.signUp = FightSignUp.createPublicAnnouncement('Name', '/command', 30 /* seconds */);
-        builder.teams = true;
         builder.addWeapon(24 /* Desert Eagle */, 64);
         builder.addWeapon(28 /* Micro UZI */, 320);
         builder.health = 50;
@@ -54,6 +58,11 @@ describe('FightSettings', it => {
 
         assert.equal(settings.location, builder.location);
         {
+            assert.isTrue(settings.distribution.isBalancedTeams());
+            assert.equal(settings.distribution.type, FightDistribution.TYPE_BALANCED_TEAMS);
+            assert.deepEqual(settings.distribution.forceSkins, [ 121, 122 ]);
+        }
+        {
             assert.isTrue(settings.strategy.isContinuous());
             assert.equal(settings.strategy.type, FightStrategy.TYPE_CONTINUOUS);
             assert.equal(settings.strategy.lives, 4);
@@ -66,7 +75,6 @@ describe('FightSettings', it => {
             assert.equal(settings.signUp.name, 'Name');
             assert.equal(settings.signUp.command, '/command');
         }
-        assert.isTrue(settings.isTeamBased());
         {
             const weapons = settings.weapons;
             assert.deepEqual(weapons.next(), { done: false, value: [ 24, 64 ] });

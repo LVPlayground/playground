@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const FightLocation = require('features/fights/fight_location.js');
+const FightLocation = require('features/fights/settings/fight_location.js');
 
 describe('FightLocation', it => {
     it('should be able to load location data', assert => {

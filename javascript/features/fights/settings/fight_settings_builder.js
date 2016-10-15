@@ -2,10 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const FightLocation = require('features/fights/fight_location.js');
-const FightSettings = require('features/fights/fight_settings.js');
-const FightSignUp = require('features/fights/fight_sign_up.js');
-const FightStrategy = require('features/fights/fight_strategy.js');
+const FightDistribution = require('features/fights/settings/fight_distribution.js');
+const FightLocation = require('features/fights/settings/fight_location.js');
+const FightSettings = require('features/fights/settings/fight_settings.js');
+const FightSignUp = require('features/fights/settings/fight_sign_up.js');
+const FightStrategy = require('features/fights/settings/fight_strategy.js');
 
 // Builder for the FightSettings object, which only stores immutable data and therefore isn't easy
 // to work with. Default values for all settings are defined here.
@@ -13,9 +14,9 @@ class FightSettingsBuilder {
     constructor() {
         this.location_ = FightLocation.getById(1 /* LV FightClub */);
 
+        this.distribution_ = FightDistribution.createIndividualDistribution();
         this.strategy_ = FightStrategy.createDeathmatchStrategy(1 /* rounds */);
         this.signUp_ = FightSignUp.createPublicChallenge(20 /* expire time, in seconds */);
-        this.teams_ = false;
 
         this.weapons_ = new Map();
 
@@ -39,9 +40,9 @@ class FightSettingsBuilder {
     build() {
         return new FightSettings({
             location: this.location_,
+            distribution: this.distribution_,
             strategy: this.strategy_,
             signUp: this.signUp_,
-            teams: this.teams_,
             weapons: this.weapons_,
             health: this.health_,
             armour: this.armour_,
@@ -58,6 +59,10 @@ class FightSettingsBuilder {
     get location() { return this.location_; }
     set location(value) { this.location_ = value; }
 
+    // Gets or sets the distribution that should be applied to players in this fight.
+    get distribution() { return this.distribution_; }
+    set distribution(value) { this.distribution_ = value; }
+
     // Gets or sets the strategy that should be applied to this fight.
     get strategy() { return this.strategy_; }
     set strategy(value) { this.strategy_ = value; }
@@ -65,10 +70,6 @@ class FightSettingsBuilder {
     // Gets or sets the type of sign up that should be applied to this fight.
     get signUp() { return this.signUp_; }
     set signUp(value) { this.signUp_ = value; }
-
-    // Gets or sets whether this fight is team-based (true) or individual-based (false).
-    get teams() { return this.teams_; }
-    set teams(value) { this.teams_ = value; }
 
     // Gets an iterator to the weapons that have been added for the fight.
     get weapons() { return this.weapons_.entries(); }

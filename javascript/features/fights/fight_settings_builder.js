@@ -15,6 +15,7 @@ class FightSettingsBuilder {
 
         this.strategy_ = FightStrategy.createDeathmatchStrategy(1 /* rounds */);
         this.signUp_ = FightSignUp.createPublicChallenge(20 /* expire time, in seconds */);
+        this.teams_ = false;
 
         this.weapons_ = new Map();
 
@@ -40,6 +41,7 @@ class FightSettingsBuilder {
             location: this.location_,
             strategy: this.strategy_,
             signUp: this.signUp_,
+            teams: this.teams_,
             weapons: this.weapons_,
             health: this.health_,
             armour: this.armour_,
@@ -63,6 +65,10 @@ class FightSettingsBuilder {
     // Gets or sets the type of sign up that should be applied to this fight.
     get signUp() { return this.signUp_; }
     set signUp(value) { this.signUp_ = value; }
+
+    // Gets or sets whether this fight is team-based (true) or individual-based (false).
+    get teams() { return this.teams_; }
+    set teams(value) { this.teams_ = value; }
 
     // Gets an iterator to the weapons that have been added for the fight.
     get weapons() { return this.weapons_.entries(); }

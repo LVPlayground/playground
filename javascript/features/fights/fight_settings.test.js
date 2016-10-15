@@ -37,6 +37,7 @@ describe('FightSettings', it => {
         builder.location = FightLocation.getById(1 /* LV FightClub */);
         builder.strategy = FightStrategy.createContinuousStrategy(4 /* lives */);
         builder.signUp = FightSignUp.createPublicAnnouncement('Name', '/command', 30 /* seconds */);
+        builder.teams = true;
         builder.addWeapon(24 /* Desert Eagle */, 64);
         builder.addWeapon(28 /* Micro UZI */, 320);
         builder.health = 50;
@@ -65,7 +66,7 @@ describe('FightSettings', it => {
             assert.equal(settings.signUp.name, 'Name');
             assert.equal(settings.signUp.command, '/command');
         }
-        assert.isNull(settings.strategy.rounds);
+        assert.isTrue(settings.isTeamBased());
         {
             const weapons = settings.weapons;
             assert.deepEqual(weapons.next(), { done: false, value: [ 24, 64 ] });

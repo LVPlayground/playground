@@ -5,10 +5,11 @@
 // Contains all the immutable details about a fight that's yet to be had. FightSettings objects can
 // be stored to and created from database information.
 class FightSettings {
-    constructor({ location, strategy, weapons, health, armour, time, weather, mainWorld,
+    constructor({ location, strategy, signUp, weapons, health, armour, time, weather, mainWorld,
                   teamDamagePolicy, visibilityPolicy, recording }) {
         this.location_ = location;
         this.strategy_ = strategy;
+        this.signUp_ = signUp;
 
         this.weapons_ = weapons;
 
@@ -34,6 +35,9 @@ class FightSettings {
 
     // Gets the FightStrategy instance that describes the strategy of this fight.
     get strategy() { return this.strategy_; }
+
+    // Gets the FightSignUp instance that describes the sign-up flow of this fight.
+    get signUp() { return this.signUp_; }
 
     // Gets an iterator for weapon Ids to an amount of ammo that should be granted for this fight.
     get weapons() { return this.weapons_.entries(); }

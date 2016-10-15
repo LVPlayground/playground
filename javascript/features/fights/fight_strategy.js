@@ -11,14 +11,14 @@ class FightStrategy {
     // Creates a new continuous fighting strategy, where players will respawn immediately after they
     // die. Players will receive |lives| lives during the match. The match ends when the other
     // players or teams have exhausted their lives.
-    static createContinuousStrategy(lives = 1) {
+    static createContinuousStrategy(lives) {
         return new FightStrategy(
             PrivateSymbol, FightStrategy.TYPE_CONTINUOUS, lives, null /* rounds */);
     }
 
     // Creates a new deathmatch fighting strategy, where players will all spawn at the same time.
     // Players that die will have to wait until the round's winner has been decided.
-    static createDeathmatchStrategy(rounds = 1) {
+    static createDeathmatchStrategy(rounds) {
         return new FightStrategy(
             PrivateSymbol, FightStrategy.TYPE_DEATHMATCH, null /* lives */, rounds);
     }
@@ -43,6 +43,9 @@ class FightStrategy {
 
     // Returns whether this strategy represents a deathmatch fight.
     isDeathmatch() { return this.type_ === FightStrategy.TYPE_DEATHMATCH; }
+
+    // Gets the type of strategy that should be applied to the fight.
+    get type() { return this.type_; }
 
     // Gets the number of lives each player receives in continuous fights. May be NULL.
     get lives() { return this.lives_; }

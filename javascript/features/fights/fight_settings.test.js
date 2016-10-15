@@ -5,6 +5,7 @@
 const FightLocation = require('features/fights/fight_location.js');
 const FightSettings = require('features/fights/fight_settings.js');
 const FightSettingsBuilder = require('features/fights/fight_settings_builder.js');
+const FightSignUp = require('features/fights/fight_sign_up.js');
 const FightStrategy = require('features/fights/fight_strategy.js');
 
 describe('FightSettings', it => {
@@ -16,17 +17,18 @@ describe('FightSettings', it => {
         assert.isTrue(Object.isFrozen(settings));
         assert.isTrue(Object.isSealed(settings));
 
-        {
-            const continuousStrategy = FightStrategy.createContinuousStrategy();
-            assert.isTrue(Object.isFrozen(continuousStrategy));
-            assert.isTrue(Object.isSealed(continuousStrategy));
-        }
+        const immutableObjects = [
+            FightSignUp.createInvitationForPlayer(null /* player */, 30 /* expire time */),
+            FightSignUp.createPublicChallenge(30 /* expire time */),
+            FightSignUp.createPublicAnnouncement('Name', '/command', 30 /* seconds */),
+            FightStrategy.createContinuousStrategy(1 /* lives */),
+            FightStrategy.createDeathmatchStrategy(1 /* rounds */)
+        ];
 
-        {
-            const deathmatchStrategy = FightStrategy.createDeathmatchStrategy();
-            assert.isTrue(Object.isFrozen(deathmatchStrategy));
-            assert.isTrue(Object.isSealed(deathmatchStrategy));
-        }
+        immutableObjects.forEach(object => {
+            assert.isTrue(Object.isFrozen(object));
+            assert.isTrue(Object.isSealed(object));
+        });
     });
 
     it('should reflect the options passed in to the builder', assert => {
@@ -34,6 +36,7 @@ describe('FightSettings', it => {
 
         builder.location = FightLocation.getById(1 /* LV FightClub */);
         builder.strategy = FightStrategy.createContinuousStrategy(4 /* lives */);
+        builder.signUp = FightSignUp.createPublicAnnouncement('Name', '/command', 30 /* seconds */);
         builder.addWeapon(24 /* Desert Eagle */, 64);
         builder.addWeapon(28 /* Micro UZI */, 320);
         builder.health = 50;
@@ -49,8 +52,19 @@ describe('FightSettings', it => {
         const settings = builder.build();
 
         assert.equal(settings.location, builder.location);
-        assert.isTrue(settings.strategy.isContinuous());
-        assert.equal(settings.strategy.lives, 4);
+        {
+            assert.isTrue(settings.strategy.isContinuous());
+            assert.equal(settings.strategy.type, FightStrategy.TYPE_CONTINUOUS);
+            assert.equal(settings.strategy.lives, 4);
+            assert.isNull(settings.strategy.rounds);
+        }
+        {
+            assert.isTrue(settings.signUp.isPublicAnnouncement());
+            assert.equal(settings.signUp.type, FightSignUp.TYPE_PUBLIC_ANNOUNCE);
+            assert.isNull(settings.signUp.player);
+            assert.equal(settings.signUp.name, 'Name');
+            assert.equal(settings.signUp.command, '/command');
+        }
         assert.isNull(settings.strategy.rounds);
         {
             const weapons = settings.weapons;

@@ -23,6 +23,8 @@ class FightSettingsBuilder {
 
         this.weather_ = 1;  // sunny
 
+        this.mainWorld_ = false;  // private virtual world
+
         this.teamDamagePolicy_ = FightSettings.TEAM_DAMAGE_POLICY_DEFAULT;
         this.visibilityPolicy_ = FightSettings.VISIBILITY_POLICY_VISIBLE;
 
@@ -39,6 +41,7 @@ class FightSettingsBuilder {
             armour: this.armour_,
             time: { hours: this.timeHours_, minutes: this.timeMinutes_ },
             weather: this.weather_,
+            mainWorld: this.mainWorld_,
             teamDamagePolicy: this.teamDamagePolicy_,
             visibilityPolicy: this.visibilityPolicy_,
             recording: this.recording_
@@ -81,6 +84,10 @@ class FightSettingsBuilder {
     // Gets or sets the weather that should be active during the match.
     get weather() { return this.weather_; }
     set weather(value) { this.weather_ = value; }
+
+    // Gets or sets whether the fight should take place in the main world.
+    get mainWorld() { return this.mainWorld_; }
+    set mainWorld(value) { this.mainWorld_ = value; }
 
     // Gets or sets the team damage policy for team-oriented fights.
     get teamDamagePolicy() { return this.teamDamagePolicy_; }

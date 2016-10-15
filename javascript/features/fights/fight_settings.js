@@ -5,8 +5,8 @@
 // Contains all the immutable details about a fight that's yet to be had. FightSettings objects can
 // be stored to and created from database information.
 class FightSettings {
-    constructor({ location, strategy, weapons, health, armour, time, weather, teamDamagePolicy,
-                  visibilityPolicy, recording }) {
+    constructor({ location, strategy, weapons, health, armour, time, weather, mainWorld,
+                  teamDamagePolicy, visibilityPolicy, recording }) {
         this.location_ = location;
         this.strategy_ = strategy;
 
@@ -17,6 +17,7 @@ class FightSettings {
 
         this.time_ = time;
         this.weather_ = weather;
+        this.mainWorld_ = mainWorld;
 
         this.teamDamagePolicy_ = teamDamagePolicy;
         this.visibilityPolicy_ = visibilityPolicy;
@@ -49,6 +50,9 @@ class FightSettings {
 
     // Gets the weather that should be applied during this fight.
     get weather() { return this.weather_; }
+
+    // Returns whether the fight should take place in the main world.
+    inMainWorld() { return this.mainWorld_; }
 
     // Gets the team damage policy that should apply to players shooting others in their own team
     // for the duration of the fight.

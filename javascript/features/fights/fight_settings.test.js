@@ -41,6 +41,7 @@ describe('FightSettings', it => {
         builder.timeHours = 18;
         builder.timeMinutes = 15;
         builder.weather = 8;  // rainy
+        builder.mainWorld = true;
         builder.teamDamagePolicy = FightSettings.TEAM_DAMAGE_POLICY_PREVENT;
         builder.visibilityPolicy = FightSettings.VISIBILITY_POLICY_TEAM;
         builder.recording = true;
@@ -62,6 +63,7 @@ describe('FightSettings', it => {
         assert.equal(settings.time.hours, builder.timeHours);
         assert.equal(settings.time.minutes, builder.timeMinutes);
         assert.equal(settings.weather, builder.weather);
+        assert.isTrue(settings.inMainWorld());
         assert.equal(settings.teamDamagePolicy, builder.teamDamagePolicy);
         assert.equal(settings.visibilityPolicy, builder.visibilityPolicy);
         assert.isTrue(settings.shouldRecord());

@@ -4,12 +4,15 @@
 
 const FightLocation = require('features/fights/fight_location.js');
 const FightSettings = require('features/fights/fight_settings.js');
+const FightStrategy = require('features/fights/fight_strategy.js');
 
 // Builder for the FightSettings object, which only stores immutable data and therefore isn't easy
 // to work with. Default values for all settings are defined here.
 class FightSettingsBuilder {
     constructor() {
         this.location_ = FightLocation.getById(1 /* LV FightClub */);
+        this.strategy_ = FightStrategy.createDeathmatchStrategy(1 /* rounds */);
+
         this.weapons_ = new Map();
 
         this.health_ = 100;
@@ -30,6 +33,7 @@ class FightSettingsBuilder {
     build() {
         return new FightSettings({
             location: this.location_,
+            strategy: this.strategy_,
             weapons: this.weapons_,
             health: this.health_,
             armour: this.armour_,
@@ -44,6 +48,10 @@ class FightSettingsBuilder {
     // Gets or sets the location at which the fight should take place.
     get location() { return this.location_; }
     set location(value) { this.location_ = value; }
+
+    // Gets or sets the strategy that should be applied to this fight.
+    get strategy() { return this.strategy_; }
+    set strategy(value) { this.strategy_ = value; }
 
     // Gets an iterator to the weapons that have been added for the fight.
     get weapons() { return this.weapons_.entries(); }

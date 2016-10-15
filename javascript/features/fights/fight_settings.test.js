@@ -5,6 +5,7 @@
 const FightLocation = require('features/fights/fight_location.js');
 const FightSettings = require('features/fights/fight_settings.js');
 const FightSettingsBuilder = require('features/fights/fight_settings_builder.js');
+const FightStrategy = require('features/fights/fight_strategy.js');
 
 describe('FightSettings', it => {
     it('should be an immutable object', assert => {
@@ -14,12 +15,25 @@ describe('FightSettings', it => {
 
         assert.isTrue(Object.isFrozen(settings));
         assert.isTrue(Object.isSealed(settings));
+
+        {
+            const continuousStrategy = FightStrategy.createContinuousStrategy();
+            assert.isTrue(Object.isFrozen(continuousStrategy));
+            assert.isTrue(Object.isSealed(continuousStrategy));
+        }
+
+        {
+            const deathmatchStrategy = FightStrategy.createDeathmatchStrategy();
+            assert.isTrue(Object.isFrozen(deathmatchStrategy));
+            assert.isTrue(Object.isSealed(deathmatchStrategy));
+        }
     });
 
     it('should reflect the options passed in to the builder', assert => {
         const builder = new FightSettingsBuilder();
 
         builder.location = FightLocation.getById(1 /* LV FightClub */);
+        builder.strategy = FightStrategy.createContinuousStrategy(4 /* lives */);
         builder.addWeapon(24 /* Desert Eagle */, 64);
         builder.addWeapon(28 /* Micro UZI */, 320);
         builder.health = 50;
@@ -34,6 +48,9 @@ describe('FightSettings', it => {
         const settings = builder.build();
 
         assert.equal(settings.location, builder.location);
+        assert.isTrue(settings.strategy.isContinuous());
+        assert.equal(settings.strategy.lives, 4);
+        assert.isNull(settings.strategy.rounds);
         {
             const weapons = settings.weapons;
             assert.deepEqual(weapons.next(), { done: false, value: [ 24, 64 ] });

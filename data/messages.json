@@ -196,7 +196,7 @@
     "KILLTIME_WINNER": "{DC143C}Killtime{FFFFFF}: The winner is: %s. %s",
     "KILLTIME_ENJOY_PRIZE": "Enjoy your prize of $%d!",
 
-    "LOCATION_NO_TELEPORT": "@error Sorry, the owner has locked the door because you cannot teleport right now!",
+    "LOCATION_NO_TELEPORT": "@error Sorry, the owner has locked the door because %s!",
 
     "LVP_ANNOUNCE_ADMIN_NOTICE": "%s (Id: %d) has %s the %s option.",
     "LVP_ANNOUNCE_PARTY": "%s has %s the Pirate Ship Party mode!",

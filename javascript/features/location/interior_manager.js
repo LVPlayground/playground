@@ -219,8 +219,11 @@ class InteriorManager {
         if (portal.accessCheckFn !== null && !await portal.accessCheckFn(player))
             return false;  // the |portal|-specific check failed
 
-        if (!this.abuse_().canTeleport(player, { enforceTimeLimit: false }).allowed) {
-            player.sendMessage(Message.LOCATION_NO_TELEPORT);
+        const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: false });
+
+        // Bail out if the |player| is not currently allowed to teleport.
+        if (!teleportStatus.allowed) {
+            player.sendMessage(Message.LOCATION_NO_TELEPORT, teleportStatus.reason);
             return false;
         }
 

@@ -140,7 +140,7 @@
     "HOUSE_NO_ACCESS_FRIENDS": "{10F441}Sorry, you don't have access to %s's house. Ask them to add you as a friend?",
     "HOUSE_NO_ACCESS_PERSONAL": "{10F441}Sorry, you don't have access to %s's house.",
     "HOUSE_NO_ACCESS_UNREGISTERED": "{DC143C}Sorry, you need to be registered to %s's house. Register on https://sa-mp.nl/!",
-    "HOUSE_NO_TELEPORT": "{10F441}Sorry, %s won't let you in because you cannot teleport right now.",
+    "HOUSE_NO_TELEPORT": "@error Sorry, you can't enter this house right now because %s.",
     "HOUSE_PARKING_LOT_ADD": "Drive a vehicle to the intended parking lot, which must be within %d units from the entrance.\nType `{FFA500}/house save{A9C4E4}` to save the location, or `{FFA500}/house cancel{A9C4E4}` to cancel.",
     "HOUSE_PARKING_LOT_ADD_MSG": "{10F441}Type `{DDFFDD}/house save{10F441}` to save the location, or `{DDFFDD}/house cancel{10F441}` to cancel.",
     "HOUSE_PARKING_LOT_ADDED": "The parking lot has been added to this location.",

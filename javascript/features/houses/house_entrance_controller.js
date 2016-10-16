@@ -274,9 +274,11 @@ class HouseEntranceController {
             return false;
         }
 
-        if (!this.abuse_().canTeleport(player, { enforceTimeLimit: false }).allowed) {
-            player.sendMessage(Message.HOUSE_NO_TELEPORT, location.settings.ownerName);
-            return;
+        const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: false });
+
+        if (!teleportStatus.allowed) {
+            player.sendMessage(Message.HOUSE_NO_TELEPORT, teleportStatus.reason);
+            return false;
         }
 
         if (player.userId == location.settings.ownerId)

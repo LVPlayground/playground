@@ -1092,7 +1092,7 @@ lvp_show(playerId, params[]) {
     if (Command->parameterCount(params) != 1)
         goto ShowHelp;
 
-    new showParameter[8], bool: showInfo = false;
+    new showParameter[12], bool: showInfo = false;
     Command->stringParameter(params, 0, showParameter, sizeof(showParameter));
 
     if (!strcmp(showParameter, "forum", true, 5)) {

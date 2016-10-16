@@ -41,7 +41,7 @@ class AreaPolicy {
 // Policy specific to the city of Las Venturas.
 const LasVenturasPolicy = new AreaPolicy(PrivateSymbol, {
     enforceTeleportationTimeLimit: false,
-    firingWeaponBlocksTeleporation: false,
+    firingWeaponBlocksTeleporation: true,
     issuingDamageBlocksTeleport: true,
     takingDamageBlocksTeleport: true
 });
@@ -49,9 +49,9 @@ const LasVenturasPolicy = new AreaPolicy(PrivateSymbol, {
 // Policy that applies to all of San Andreas not covered by more specific policies.
 const SanAndreasPolicy = new AreaPolicy(PrivateSymbol, {
     enforceTeleportationTimeLimit: false,
-    firingWeaponBlocksTeleporation: false,
+    firingWeaponBlocksTeleporation: true,
     issuingDamageBlocksTeleport: true,
-    takingDamageBlocksTeleport: false
+    takingDamageBlocksTeleport: true
 });
 
 // -------------------------------------------------------------------------------------------------

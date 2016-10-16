@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const AbuseConstants = require('features/abuse/abuse_constants.js');
 const AbuseNatives = require('features/abuse/abuse_natives.js');
 const AreaPolicy = require('features/abuse/area_policy.js');
 const Feature = require('components/feature_manager/feature.js');
@@ -44,28 +45,28 @@ class Abuse extends Feature {
         if (policy.firingWeaponBlocksTeleporation) {
             const lastShotTime = this.fightTracker_.getLastShotTime(player);
             if (lastShotTime && (currentTime - lastShotTime) < FightingCoolDownPeriodMs)
-                return { allowed: false, reason: Abuse.REASON_FIRED_WEAPON };
+                return { allowed: false, reason: AbuseConstants.REASON_FIRED_WEAPON };
         }
 
         // Should having issued damage to another player temporarily block teleportation?
         if (policy.issuingDamageBlocksTeleport) {
             const issuedDamageTime = this.fightTracker_.getLastIssuedDamageTime(player);
             if (issuedDamageTime && (currentTime - issuedDamageTime) < FightingCoolDownPeriodMs)
-                return { allowed: false, reason: Abuse.REASON_DAMAGE_ISSUED };
+                return { allowed: false, reason: AbuseConstants.REASON_DAMAGE_ISSUED };
         }
 
         // Should having taken damage from another player temporarily block teleportation?
         if (policy.takingDamageBlocksTeleport) {
             const takenDamageTime = this.fightTracker_.getLastTakenDamageTime(player);
             if (takenDamageTime && (currentTime - takenDamageTime) < FightingCoolDownPeriodMs)
-                return { allowed: false, reason: Abuse.REASON_DAMAGE_TAKEN };
+                return { allowed: false, reason: AbuseConstants.REASON_DAMAGE_TAKEN };
         }
 
         // Should the teleport be time limited?
         if (policy.enforceTeleportationTimeLimit || enforceTimeLimit) {
             const lastTeleportTime = this.lastTeleportTime_.get(player);
             if (lastTeleportTime && (currentTime - lastTeleportTime) < TeleportCoolDownPeriodMs) {
-                return { allowed: false, reason: Abuse.REASON_TIME_LIMIT };
+                return { allowed: false, reason: AbuseConstants.REASON_TIME_LIMIT };
             }
         }
 
@@ -96,11 +97,5 @@ class Abuse extends Feature {
         this.natives_ = null;
     }
 }
-
-// Textual descriptions about why an action has been denied.
-Abuse.REASON_FIRED_WEAPON = 'recently fired a weapon';
-Abuse.REASON_DAMAGE_ISSUED = 'recently hurt another player';
-Abuse.REASON_DAMAGE_TAKEN = 'recently got hurt by another player';
-Abuse.REASON_TIME_LIMIT = 'can only teleport once three minutes';
 
 exports = Abuse;

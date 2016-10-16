@@ -359,8 +359,12 @@ class VehicleManager {
     // Deletes the |databaseVehicle| from the vehicle streamer.
     internalDeleteVehicle(databaseVehicle) {
         const vehicle = this.streamer.getLiveVehicle(databaseVehicle);
-        if (vehicle)
-            Promise.resolve().then(() => this.reportVehicleDestroyed_(vehicle));
+        if (vehicle) {
+            const vehicleId = vehicle.id;
+
+            Promise.resolve().then(() =>
+                this.reportVehicleDestroyed_(vehicleId));
+        }
 
         this.streamer_().getVehicleStreamer().delete(databaseVehicle);
 

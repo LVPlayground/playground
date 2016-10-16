@@ -61,7 +61,8 @@ const LOAD_HOUSES_QUERY = `
         users ON users.user_id = houses_settings.house_user_id
     WHERE
         houses_settings.house_removed IS NULL AND
-        houses_locations.location_removed IS NULL`;
+        houses_locations.location_removed IS NULL AND
+        users.username IS NOT NULL`;
 
 // Query to load the additional features that have been purchased for player houses.
 const LOAD_HOUSE_FEATURES_QUERY = `

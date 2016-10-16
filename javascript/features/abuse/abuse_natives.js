@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const AbuseConstants = require('features/abuse/abuse_constants.js');
+
 const TELEPORT_STATUS_ALLOWED = 0;
 const TELEPORT_STATUS_REJECTED_FIGHTING = 1;
 const TELEPORT_STATUS_REJECTED_TIME_LIMIT = 2;
@@ -32,12 +34,12 @@ class AbuseNatives {
             return TELEPORT_STATUS_ALLOWED;
 
         switch (teleportStatus.reason) {
-            case Abuse.REASON_FIRED_WEAPON:
-            case Abuse.REASON_DAMAGE_ISSUED:
-            case Abuse.REASON_DAMAGE_TAKEN:
+            case AbuseConstants.REASON_FIRED_WEAPON:
+            case AbuseConstants.REASON_DAMAGE_ISSUED:
+            case AbuseConstants.REASON_DAMAGE_TAKEN:
                 return TELEPORT_STATUS_REJECTED_FIGHTING;
 
-            case Abuse.REASON_TIME_LIMIT:
+            case AbuseConstants.REASON_TIME_LIMIT:
                 return TELEPORT_STATUS_REJECTED_TIME_LIMIT;
         }
 

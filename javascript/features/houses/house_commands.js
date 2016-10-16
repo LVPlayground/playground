@@ -235,7 +235,7 @@ class HouseCommands {
         // Fast-path to display another player's houses when |filter| is a player Id.
         if (!isNaN(potentialPlayerId) && isFinite(potentialPlayerId)) {
             const subject = server.playerManager.getById(potentialPlayerId);
-            if (!subject.isRegistered()) {
+            if (!subject || !subject.isRegistered()) {
                 player.sendMessage(Message.HOUSE_GOTO_NONE_FOUND);
                 return;
             }

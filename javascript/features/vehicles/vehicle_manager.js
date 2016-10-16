@@ -21,10 +21,10 @@ class VehicleManager {
         this.dataLoadedPromise_ = new Promise(resolver =>
             this.dataLoadedResolver_ = resolver);
 
-        // Function tells the Pawn code that |vehicle| has been destroyed. Will be overridden by
+        // Function tells the Pawn code that |vehicleId| has been destroyed. Will be overridden by
         // tests to prevent accidentially hitting the Pawn code.
-        this.reportVehicleDestroyed_ = vehicle =>
-            !!pawnInvoke('OnJavaScriptVehicleDestroyed', 'i', vehicle.id);
+        this.reportVehicleDestroyed_ = vehicleId =>
+            !!pawnInvoke('OnJavaScriptVehicleDestroyed', 'i', vehicleId);
 
         // Set of all DatabaseVehicle instances owned by this VehicleManager.
         this.vehicles_ = new Set();

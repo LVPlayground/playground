@@ -40,7 +40,7 @@ describe('VehicleCommands', (it, beforeEach) => {
         commands.hasFinishedSprayTagCollection_ = player => false;
 
         manager = vehicles.manager_;
-        manager.reportVehicleDestroyed_ = vehicle => false;
+        manager.reportVehicleDestroyed_ = vehicleId => false;
 
         await manager.ready;
     });

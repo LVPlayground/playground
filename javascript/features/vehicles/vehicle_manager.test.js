@@ -42,7 +42,7 @@ describe('VehicleManager', (it, beforeEach) => {
         const vehicles = server.featureManager.loadFeature('vehicles');
 
         manager = vehicles.manager_;
-        manager.reportVehicleDestroyed_ = vehicle => false;
+        manager.reportVehicleDestroyed_ = vehicleId => false;
 
         await manager.ready;
 

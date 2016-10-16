@@ -25,7 +25,7 @@ describe('Abuse', (it, beforeEach) => {
             assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
 
             gunther.shoot();
-            assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
+            assert.isFalse(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
 
             russell.shoot({ target: gunther });
             assert.isFalse(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
@@ -42,10 +42,10 @@ describe('Abuse', (it, beforeEach) => {
             assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
 
             gunther.shoot();
-            assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
+            assert.isFalse(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
 
             russell.shoot({ target: gunther });
-            assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
+            assert.isFalse(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
 
             gunther.shoot({ target: russell });
             assert.isFalse(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);

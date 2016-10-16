@@ -16,13 +16,13 @@ describe('AreaPolicy', it => {
         assert.isFalse(lasVenturasPolicy.enforceTeleportationTimeLimit);
         assert.isFalse(sanAndreasPolicy.enforceTeleportationTimeLimit);
 
-        assert.isFalse(lasVenturasPolicy.firingWeaponBlocksTeleporation);
-        assert.isFalse(sanAndreasPolicy.firingWeaponBlocksTeleporation);
+        assert.isTrue(lasVenturasPolicy.firingWeaponBlocksTeleporation);
+        assert.isTrue(sanAndreasPolicy.firingWeaponBlocksTeleporation);
 
         assert.isTrue(lasVenturasPolicy.issuingDamageBlocksTeleport);
         assert.isTrue(sanAndreasPolicy.issuingDamageBlocksTeleport);
 
         assert.isTrue(lasVenturasPolicy.takingDamageBlocksTeleport);
-        assert.isFalse(sanAndreasPolicy.takingDamageBlocksTeleport);
+        assert.isTrue(sanAndreasPolicy.takingDamageBlocksTeleport);
     });
 });

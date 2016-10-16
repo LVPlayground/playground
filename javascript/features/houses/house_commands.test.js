@@ -489,7 +489,7 @@ describe('HouseCommands', (it, beforeEach) => {
         assert.equal(
             gunther.messages[0],
             Message.format(Message.HOUSE_GOTO_TELEPORT_BLOCKED,
-                           AbuseConstants.REASON_DAMAGE_ISSUED));
+                           AbuseConstants.REASON_FIRED_WEAPON));
     });
 
     it('should enable administrators to list houses owned by another player', async(assert) => {

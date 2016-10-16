@@ -357,6 +357,8 @@ class HouseCommands {
         player.interiorId = interiorData.interior;
         player.virtualWorld = VirtualWorld.forPlayer(player);
 
+        player.resetCamera();
+
         player.sendMessage(Message.HOUSE_INTERIOR_TELEPORTED, interiorData.name);
     }
 

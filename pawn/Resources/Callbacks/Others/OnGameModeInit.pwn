@@ -28,6 +28,8 @@ public OnGameModeInit() {
 
 // *************************************************************************************************
 
+    SetTimer("CExport__NewWantedVehicle", 10000, 0);  // Initialise exports ten seconds from now
+
     CChase__Initialize();           // Chase
     CDrink__Initialize();           // Drink
     CBomb__Initialize();            // Bomb shop

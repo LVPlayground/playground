@@ -59,6 +59,8 @@ class ClassManager {
      * @return boolean Is the skin available in class selection?
      */
     public bool: isSkinAvailableForClassSelection(skinId) {
+        if (skinId == 121 /* Russell */) return false;
+
         for (new index = 0; index < MaximumClassId; ++index) {
             if (m_skinForClassId[index] == skinId)
                 return true;

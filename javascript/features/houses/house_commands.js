@@ -329,8 +329,9 @@ class HouseCommands {
 
         for (const location of houses) {
             menu.addItem(location.settings.name, player => {
-                this.abuse_().reportTeleport(player, { timeLimited: true });
                 this.manager_.forceEnterHouse(player, location);
+
+                this.abuse_().reportTimeLimitedTeleport(player);
 
                 // Announce creation of the location to other administrators.
                 this.announce_().announceToAdministrators(

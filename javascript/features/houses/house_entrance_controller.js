@@ -320,8 +320,6 @@ class HouseEntranceController {
 
     // Called when the |player| has entered |location| through a portal.
     onPlayerEnterHouse(location, player) {
-        this.abuse_().reportTeleport(player, { timeLimited: false });
-
         this.currentHouse_.set(player, location);
         this.manager_.invokeExtensions('onPlayerEnterHouse', player, location);
     }

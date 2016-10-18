@@ -40,36 +40,38 @@ class Abuse extends Feature {
     canTeleport(player, { enforceTimeLimit = false } = {}) {
         const currentTime = server.clock.monotonicallyIncreasingTime();
 
-        // Administrators can override teleportation limitations.
+        // (1) Administrators might be able to override teleportation limitations.
         if (player.isAdministrator() && this.getSetting('tp_blocker_admin_override'))
             return { allowed: true };
 
-        const blockerDamageIssued = this.getSetting('tp_blocker_damage_issued_time');
-        const blockerDamageTaken = this.getSetting('tp_blocker_damage_taken_time');
-        const blockerWeaponFired = this.getSetting('tp_blocker_weapon_fire_time');
+        const blockerWeaponFired = this.getSetting('tp_blocker_weapon_fire_time') * 1000;  // ms
+        const blockerDamageIssued = this.getSetting('tp_blocker_damage_issued_time') * 1000;  // ms
+        const blockerDamageTaken = this.getSetting('tp_blocker_damage_taken_time') * 1000;  // ms
 
-        // Should having fired your weapon temporarily block teleportation?
-        if (blockerDamageIssued > 0) {
-            const lastShotTime = this.fightTracker_.getLastShotTime(player);
-            if (lastShotTime && (currentTime - lastShotTime) < blockerDamageIssued)
+        // (2) Should having fired your weapon temporarily block teleportation?
+        if (blockerWeaponFired > 0) {
+            const weaponFireTime = this.fightTracker_.getLastShotTime(player);
+            if (weaponFireTime && (currentTime - weaponFireTime) < blockerWeaponFired)
                 return { allowed: false, reason: AbuseConstants.REASON_FIRED_WEAPON };
         }
 
-        // Should having issued damage to another player temporarily block teleportation?
-        if (blockerDamageTaken > 0) {
+        // (3) Should having issued damage to another player temporarily block teleportation?
+        if (blockerDamageIssued > 0) {
             const issuedDamageTime = this.fightTracker_.getLastIssuedDamageTime(player);
-            if (issuedDamageTime && (currentTime - issuedDamageTime) < blockerDamageTaken)
+            if (issuedDamageTime && (currentTime - issuedDamageTime) < blockerDamageIssued)
                 return { allowed: false, reason: AbuseConstants.REASON_DAMAGE_ISSUED };
         }
 
-        // Should having taken damage from another player temporarily block teleportation?
-        if (blockerWeaponFired > 0) {
+        // (4) Should having taken damage from another player temporarily block teleportation?
+        if (blockerDamageTaken > 0) {
             const takenDamageTime = this.fightTracker_.getLastTakenDamageTime(player);
-            if (takenDamageTime && (currentTime - takenDamageTime) < blockerWeaponFired)
+            if (takenDamageTime && (currentTime - takenDamageTime) < blockerDamageTaken)
                 return { allowed: false, reason: AbuseConstants.REASON_DAMAGE_TAKEN };
         }
 
+        // -----------------------------------------------------------------------------------------
         // TODO: Generalize this code.
+
         if (enforceTimeLimit) {
             const lastTeleportTime = this.lastTeleportTime_.get(player);
             if (lastTeleportTime && (currentTime - lastTeleportTime) < TeleportCoolDownPeriodMs) {
@@ -77,13 +79,15 @@ class Abuse extends Feature {
             }
         }
 
+        // -----------------------------------------------------------------------------------------
+
+        // (5) Otherwise the |player| is allowed to do whatever they wanted to do.
         return { allowed: true };
     }
 
     // Reports that the |player| has been teleported through an activity that's time limited.
-    reportTeleport(player, { timeLimited = false } = {}) {
-        if (timeLimited)
-            this.lastTeleportTime_.set(player, server.clock.monotonicallyIncreasingTime());
+    reportTimeLimitedTeleport(player) {
+        this.lastTeleportTime_.set(player, server.clock.monotonicallyIncreasingTime());
     }
 
     // Returns whether the |player| is allowed to spawn a vehicle right now. The implementation of

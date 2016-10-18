@@ -52,7 +52,8 @@ class AbuseNatives {
         if (!player)
             return;  // the |playerId| does not represent a connected player
 
-        this.abuse_.reportTeleport(player, { timeLimited: !!timeLimited });
+        if (timeLimited)
+            this.abuse_.reportTimeLimitedTeleport(player);
     }
 
     // ---------------------------------------------------------------------------------------------

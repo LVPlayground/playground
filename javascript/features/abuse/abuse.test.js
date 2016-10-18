@@ -60,12 +60,7 @@ describe('Abuse', (it, beforeEach) => {
         assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
         assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: true }).allowed);
 
-        abuse.reportTeleport(gunther, { timeLimited: false });
-
-        assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
-        assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: true }).allowed);
-
-        abuse.reportTeleport(gunther, { timeLimited: true });
+        abuse.reportTimeLimitedTeleport(gunther, { timeLimited: true });
 
         assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
         assert.isFalse(abuse.canTeleport(gunther, { enforceTimeLimit: true }).allowed);

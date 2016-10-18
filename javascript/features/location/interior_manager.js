@@ -248,8 +248,6 @@ class InteriorManager {
         if (marker.type === 'entrance') {
             if (!await this.canPlayerTeleport(player, portal))
                 return;  // the player is not allowed to teleport right now
-
-            this.abuse_().reportTeleport(player, { timeLimited: false });
         }
 
         // Make the |player| enter or exit the |portal| with the shared infrastructure.

@@ -709,7 +709,7 @@ class GangCommands {
                         Message.GANG_ANNOUNCE_KICKED, player.name, player.id, member.nickname,
                         gang.name);
 
-                    if (member.player.isConnected())
+                    if (member.player && member.player.isConnected())
                         member.player.sendMessage(Message.GANG_KICKED, player.name, gang.name);
 
                     return Dialog.displayMessage(

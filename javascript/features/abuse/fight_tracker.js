@@ -10,8 +10,8 @@ const ScopedCallbacks = require('base/scoped_callbacks.js');
 class FightTracker {
     constructor() {
         this.lastShot_ = new WeakMap();
-        this.lastIssuedDamage_ = new WeakMap();
-        this.lastTakenDamage_ = new WeakMap();
+        this.lastDamageIssued_ = new WeakMap();
+        this.lastDamageTaken_ = new WeakMap();
 
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
@@ -27,18 +27,18 @@ class FightTracker {
     // ---------------------------------------------------------------------------------------------
 
     // Gets the time, in milliseconds, at which the |player| last fired a shot.
-    getLastShotTime(player) {
+    getLastWeaponFiredTime(player) {
         return this.lastShot_.get(player) || 0;
     }
 
     // Gets the time, in milliseconds, at which the |player| last issued damage to another player.
-    getLastIssuedDamageTime(player) {
-        return this.lastIssuedDamage_.get(player) || 0;
+    getLastDamageIssuedTime(player) {
+        return this.lastDamageIssued_.get(player) || 0;
     }
 
     // Gets the time, in milliseconds, at which the |player| last took damage from another player.
-    getLastTakenDamageTime(player) {
-        return this.lastTakenDamage_.get(player) || 0;
+    getLastDamageTakenTime(player) {
+        return this.lastDamageTaken_.get(player) || 0;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -47,7 +47,7 @@ class FightTracker {
     onPlayerGiveDamage(event) {
         const player = server.playerManager.getById(event.playerid);
         if (player)
-            this.lastIssuedDamage_.set(player, server.clock.monotonicallyIncreasingTime());
+            this.lastDamageIssued_.set(player, server.clock.monotonicallyIncreasingTime());
     }
 
     // Fight statistics have to be reset when the player spawns.
@@ -57,15 +57,16 @@ class FightTracker {
             return;  // the |event| is not valid
 
         this.lastShot_.delete(player);
-        this.lastIssuedDamage_.delete(player);
-        this.lastTakenDamage_.delete(player);
+
+        this.lastDamageIssued_.delete(player);
+        this.lastDamageTaken_.delete(player);
     }
 
     // Called when the player the |event| describes has taken damage from somebody.
     onPlayerTakeDamage(event) {
         const player = server.playerManager.getById(event.playerid);
         if (player)
-            this.lastTakenDamage_.set(player, server.clock.monotonicallyIncreasingTime());
+            this.lastDamageTaken_.set(player, server.clock.monotonicallyIncreasingTime());
     }
 
     // Called when the player the |event| describes has fired a shot.

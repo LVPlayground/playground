@@ -9,5 +9,6 @@ exports = [
     new Setting('abuse', 'tp_blocker_admin_override', Setting.TYPE_BOOLEAN, true, 'Should administrators override teleportation restrictions?'),
     new Setting('abuse', 'tp_blocker_damage_issued_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block teleportation after issuing damage.'),
     new Setting('abuse', 'tp_blocker_damage_taken_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block teleportation after having taken damage.'),
+    new Setting('abuse', 'tp_blocker_usage_throttle_time', Setting.TYPE_NUMBER, 180, 'Number of seconds that should be between teleportations.'),
     new Setting('abuse', 'tp_blocker_weapon_fire_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block teleportation after firing your weapon.'),
 ];

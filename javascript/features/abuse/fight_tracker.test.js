@@ -18,10 +18,10 @@ describe('FightTracker', (it, beforeEach, afterEach) => {
         {
             gunther.shoot();
 
-            assert.closeTo(tracker.getLastShotTime(gunther),
+            assert.closeTo(tracker.getLastWeaponFiredTime(gunther),
                            server.clock.monotonicallyIncreasingTime(), 5);
-            assert.equal(tracker.getLastIssuedDamageTime(gunther), 0);
-            assert.equal(tracker.getLastTakenDamageTime(gunther), 0);
+            assert.equal(tracker.getLastDamageIssuedTime(gunther), 0);
+            assert.equal(tracker.getLastDamageTakenTime(gunther), 0);
         }
 
         await server.clock.advance(10000);  // arbitrary amount
@@ -30,11 +30,11 @@ describe('FightTracker', (it, beforeEach, afterEach) => {
         {
             gunther.shoot({ target: russell });
 
-            assert.closeTo(tracker.getLastShotTime(gunther),
+            assert.closeTo(tracker.getLastWeaponFiredTime(gunther),
                            server.clock.monotonicallyIncreasingTime(), 5);
-            assert.closeTo(tracker.getLastIssuedDamageTime(gunther),
+            assert.closeTo(tracker.getLastDamageIssuedTime(gunther),
                            server.clock.monotonicallyIncreasingTime(), 5);
-            assert.equal(tracker.getLastTakenDamageTime(gunther), 0);
+            assert.equal(tracker.getLastDamageTakenTime(gunther), 0);
         }
 
         await server.clock.advance(10000);  // arbitrary amount
@@ -43,11 +43,11 @@ describe('FightTracker', (it, beforeEach, afterEach) => {
         {
             russell.shoot({ target: gunther });
 
-            assert.notCloseTo(tracker.getLastShotTime(gunther),
+            assert.notCloseTo(tracker.getLastWeaponFiredTime(gunther),
                               server.clock.monotonicallyIncreasingTime(), 5);
-            assert.notCloseTo(tracker.getLastIssuedDamageTime(gunther),
+            assert.notCloseTo(tracker.getLastDamageIssuedTime(gunther),
                               server.clock.monotonicallyIncreasingTime(), 5);
-            assert.closeTo(tracker.getLastTakenDamageTime(gunther),
+            assert.closeTo(tracker.getLastDamageTakenTime(gunther),
                            server.clock.monotonicallyIncreasingTime(), 5);
         }
     });
@@ -59,17 +59,17 @@ describe('FightTracker', (it, beforeEach, afterEach) => {
         gunther.shoot({ target: russell });
         russell.shoot({ target: gunther });
 
-        assert.closeTo(tracker.getLastShotTime(gunther),
+        assert.closeTo(tracker.getLastWeaponFiredTime(gunther),
                        server.clock.monotonicallyIncreasingTime(), 5);
-        assert.closeTo(tracker.getLastIssuedDamageTime(gunther),
+        assert.closeTo(tracker.getLastDamageIssuedTime(gunther),
                        server.clock.monotonicallyIncreasingTime(), 5);
-        assert.closeTo(tracker.getLastTakenDamageTime(gunther),
+        assert.closeTo(tracker.getLastDamageTakenTime(gunther),
                        server.clock.monotonicallyIncreasingTime(), 5);
 
         gunther.respawn();
 
-        assert.equal(tracker.getLastShotTime(gunther), 0);
-        assert.equal(tracker.getLastIssuedDamageTime(gunther), 0);
-        assert.equal(tracker.getLastTakenDamageTime(gunther), 0);
+        assert.equal(tracker.getLastWeaponFiredTime(gunther), 0);
+        assert.equal(tracker.getLastDamageIssuedTime(gunther), 0);
+        assert.equal(tracker.getLastDamageTakenTime(gunther), 0);
     });
 });

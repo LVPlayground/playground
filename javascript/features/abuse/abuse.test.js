@@ -3,13 +3,15 @@
 // be found in the LICENSE file.
 
 const MockAbuse = require('features/abuse/test/mock_abuse.js');
+const Settings = require('features/settings/settings.js');
 
 describe('Abuse', (it, beforeEach) => {
     let abuse = null;
 
     beforeEach(() => {
         server.featureManager.registerFeaturesForTests({
-            abuse: MockAbuse
+            abuse: MockAbuse,
+            settings: Settings
         });
 
         abuse = server.featureManager.loadFeature('abuse');

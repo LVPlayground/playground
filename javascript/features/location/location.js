@@ -19,6 +19,9 @@ class Location extends Feature {
 
         this.interiorManager_ = new InteriorManager(abuse);
 
+        if (server.isTest())
+            return;  // don't load the actual data files in tests
+
         // Load all the portal definition files and create portals for them through the interior
         // manager. Each file can contain an arbitrary amount of portas.
         glob(PORTAL_DIRECTORY, '.*\.json').forEach(filename =>

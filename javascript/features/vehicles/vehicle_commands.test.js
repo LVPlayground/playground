@@ -6,6 +6,7 @@ const DatabaseVehicle = require('features/vehicles/database_vehicle.js');
 const MockAbuse = require('features/abuse/test/mock_abuse.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 const MockPlayground = require('features/playground/test/mock_playground.js');
+const Settings = require('features/settings/settings.js');
 const Streamer = require('features/streamer/streamer.js');
 const VehicleManager = require('features/vehicles/vehicle_manager.js');
 const Vehicles = require('features/vehicles/vehicles.js');
@@ -25,6 +26,7 @@ describe('VehicleCommands', (it, beforeEach) => {
             abuse: MockAbuse,
             announce: MockAnnounce,
             playground: MockPlayground,
+            settings: Settings,
             streamer: Streamer,
             vehicles: Vehicles
         });

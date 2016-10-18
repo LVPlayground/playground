@@ -5,12 +5,18 @@
 const InteriorManager = require('features/location/interior_manager.js');
 const MockAbuse = require('features/abuse/test/mock_abuse.js');
 const Portal = require('features/location/portal.js');
+const Settings = require('features/settings/settings.js');
 
 describe('InteriorManager', (it, beforeEach, afterEach) => {
     let manager = null;
 
     beforeEach(() => {
-        const abuse = new MockAbuse();
+        server.featureManager.registerFeaturesForTests({
+            abuse: MockAbuse,
+            settings: Settings
+        });
+
+        const abuse = server.featureManager.loadFeature('abuse');
 
         manager = new InteriorManager(() => abuse);
         manager.loadPortalFile('data/portals/ammunation.json');

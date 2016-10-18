@@ -4,12 +4,8 @@
 
 const AbuseConstants = require('features/abuse/abuse_constants.js');
 const AbuseNatives = require('features/abuse/abuse_natives.js');
-const AreaPolicy = require('features/abuse/area_policy.js');
 const Feature = require('components/feature_manager/feature.js');
 const FightTracker = require('features/abuse/fight_tracker.js');
-
-// Time period, in milliseconds, a player has to cool down after being involved in a fight.
-const FightingCoolDownPeriodMs = 10000;
 
 // Time period, in milliseconds, a player needs to wait between time limited teleportations.
 const TeleportCoolDownPeriodMs = 180000;  // 3 minutes
@@ -20,6 +16,11 @@ class Abuse extends Feature {
     constructor() {
         super();
 
+        // The settings for the Abuse system are configurable at runtime.
+        this.settings_ = this.defineDependency('settings');
+
+        // -----------------------------------------------------------------------------------------
+
         // Stores the last time, in milliseconds, a teleportation was reported for a player.
         this.lastTeleportTime_ = new WeakMap();
 
@@ -28,6 +29,9 @@ class Abuse extends Feature {
         this.natives_ = new AbuseNatives(this);
     }
 
+    // Gets the value of the setting in the `abuse` category named |name|.
+    getSetting(name) { return this.settings_().getValue('abuse/' + name); }
+
     // ---------------------------------------------------------------------------------------------
     // Public API of the Abuse feature.
 
@@ -35,35 +39,38 @@ class Abuse extends Feature {
     // may be set to indicate that the player should adhere to the teleportation time limit.
     canTeleport(player, { enforceTimeLimit = false } = {}) {
         const currentTime = server.clock.monotonicallyIncreasingTime();
-        const policy = AreaPolicy.getForPosition(player.position);
 
         // Administrators can override teleportation limitations.
-        if (player.isAdministrator())
+        if (player.isAdministrator() && this.getSetting('tp_blocker_admin_override'))
             return { allowed: true };
 
+        const blockerDamageIssued = this.getSetting('tp_blocker_damage_issued_time');
+        const blockerDamageTaken = this.getSetting('tp_blocker_damage_taken_time');
+        const blockerWeaponFired = this.getSetting('tp_blocker_weapon_fire_time');
+
         // Should having fired your weapon temporarily block teleportation?
-        if (policy.firingWeaponBlocksTeleporation) {
+        if (blockerDamageIssued > 0) {
             const lastShotTime = this.fightTracker_.getLastShotTime(player);
-            if (lastShotTime && (currentTime - lastShotTime) < FightingCoolDownPeriodMs)
+            if (lastShotTime && (currentTime - lastShotTime) < blockerDamageIssued)
                 return { allowed: false, reason: AbuseConstants.REASON_FIRED_WEAPON };
         }
 
         // Should having issued damage to another player temporarily block teleportation?
-        if (policy.issuingDamageBlocksTeleport) {
+        if (blockerDamageTaken > 0) {
             const issuedDamageTime = this.fightTracker_.getLastIssuedDamageTime(player);
-            if (issuedDamageTime && (currentTime - issuedDamageTime) < FightingCoolDownPeriodMs)
+            if (issuedDamageTime && (currentTime - issuedDamageTime) < blockerDamageTaken)
                 return { allowed: false, reason: AbuseConstants.REASON_DAMAGE_ISSUED };
         }
 
         // Should having taken damage from another player temporarily block teleportation?
-        if (policy.takingDamageBlocksTeleport) {
+        if (blockerWeaponFired > 0) {
             const takenDamageTime = this.fightTracker_.getLastTakenDamageTime(player);
-            if (takenDamageTime && (currentTime - takenDamageTime) < FightingCoolDownPeriodMs)
+            if (takenDamageTime && (currentTime - takenDamageTime) < blockerWeaponFired)
                 return { allowed: false, reason: AbuseConstants.REASON_DAMAGE_TAKEN };
         }
 
-        // Should the teleport be time limited?
-        if (policy.enforceTeleportationTimeLimit || enforceTimeLimit) {
+        // TODO: Generalize this code.
+        if (enforceTimeLimit) {
             const lastTeleportTime = this.lastTeleportTime_.get(player);
             if (lastTeleportTime && (currentTime - lastTeleportTime) < TeleportCoolDownPeriodMs) {
                 return { allowed: false, reason: AbuseConstants.REASON_TIME_LIMIT };

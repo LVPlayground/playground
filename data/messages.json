@@ -278,7 +278,7 @@
     "VEHICLE_SAVED": "@success The %s has been %s in the database.",
     "VEHICLE_SPAWN_CREATED": "@success Your %s has been created!",
     "VEHICLE_SPAWN_NOT_FOUND": "@error We're not sure what vehicle {FF8282}%s{FFFFFF} is...",
-    "VEHICLE_SPAWN_REJECTED": "@error Sorry, you're not allowed to spawn vehicles right now!",
+    "VEHICLE_SPAWN_REJECTED": "@error Sorry, you can't spawn this vehicle right now because you %s.",
     "VEHICLE_UNLOCK_PASSENGER": "@error You can only unlock a vehicle when you're the driver!",
     "VEHICLE_UNLOCK_REDUNDANT": "@error No need to unlock your vehicle because it's not locked!",
     "VEHICLE_UNLOCK_UNREGISTERED": "@error Sorry, only registered players can unlock vehicles. Register now on www.sa-mp.nl!",

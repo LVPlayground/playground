@@ -232,9 +232,10 @@ class VehicleCommands {
             return;
         }
 
-        if (!this.abuse_().canSpawnVehicle(player).allowed) {
-            player.sendMessage(Message.VEHICLE_SPAWN_REJECTED);
-            return;
+        const spawnStatus = this.abuse_().canSpawnVehicle(player);
+        if (!spawnStatus.allowed) {
+            player.sendMessage(Message.VEHICLE_SPAWN_REJECTED, spawnStatus.reason);
+            return false;
         }
 
         let vehicleModel = null;
@@ -262,6 +263,9 @@ class VehicleCommands {
 
         // Inform the player of their new vehicle having been created.
         player.sendMessage(Message.VEHICLE_SPAWN_CREATED, vehicleModel.name);
+
+        // Report that the |player| has spawned a vehicle. This rate-limits their usage too.
+        this.abuse_().reportSpawnedVehicle(player);
 
         // If the |vehicle| is live, teleport the |player| to the driver seat after a minor delay.
         if (vehicle && vehicle.isConnected())

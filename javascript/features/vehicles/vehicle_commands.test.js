@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const AbuseConstants = require('features/abuse/abuse_constants.js');
 const DatabaseVehicle = require('features/vehicles/database_vehicle.js');
 const MockAbuse = require('features/abuse/test/mock_abuse.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
@@ -239,7 +240,21 @@ describe('VehicleCommands', (it, beforeEach) => {
             gunther.leaveVehicle();
         }
 
-        // (3) Players who have collected all spray tags can use the commands.
+        // (3) Players are only allowed to spawn such vehicles once per three minutes.
+        {
+            assert.isTrue(await gunther.issueCommand('/nrg'));
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(
+                gunther.messages[0], Message.format(Message.VEHICLE_SPAWN_REJECTED,
+                                                    'can only do so once per 3 minutes'));
+            assert.isNull(gunther.vehicle);
+
+            gunther.clearMessages();
+        }
+
+        await server.clock.advance(180 * 1000);
+
+        // (4) Players who have collected all spray tags can use the commands.
         {
             toggleCommand(false);
             toggleSprayTags(true);
@@ -254,7 +269,7 @@ describe('VehicleCommands', (it, beforeEach) => {
             gunther.leaveVehicle();
         }
 
-        // (4) Players may not be in a vehicle when using this command.
+        // (5) Players may not be in a vehicle when using this command.
         {
             assert.isTrue(createVehicleForPlayer(gunther));
             assert.isNotNull(gunther.vehicle);
@@ -270,7 +285,7 @@ describe('VehicleCommands', (it, beforeEach) => {
             gunther.leaveVehicle();
         }
 
-        // (5) Players must be outside in the main world in order to use the command.
+        // (6) Players must be outside in the main world in order to use the command.
         {
             gunther.interiorId = 7;
 
@@ -283,17 +298,19 @@ describe('VehicleCommands', (it, beforeEach) => {
             gunther.interiorId = 0;
         }
 
-        // (6) Players must not have been refused from spawning vehicles.
+        await server.clock.advance(180 * 1000);
+
+        // (7) Players must not have been refused from spawning vehicles.
         {
-            abuse.toggleSpawnVehicleForTests(gunther, false);
+            gunther.shoot();
 
             assert.isTrue(await gunther.issueCommand('/inf'));
             assert.equal(gunther.messages.length, 1);
-            assert.equal(gunther.messages[0], Message.VEHICLE_SPAWN_REJECTED);
+            assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_SPAWN_REJECTED,
+                                                             AbuseConstants.REASON_FIRED_WEAPON));
             assert.isNull(gunther.vehicle);
 
             gunther.clearMessages();
-            abuse.toggleSpawnVehicleForTests(gunther, true);
         }
     });
 
@@ -319,6 +336,9 @@ describe('VehicleCommands', (it, beforeEach) => {
             gunther.position = gunther.vehicle.position;
 
             gunther.clearMessages();
+
+            // Forward the clock so that the player is allowed to use spawn vehicles again.
+            await server.clock.advance(180 * 1000);
         }
     });
 

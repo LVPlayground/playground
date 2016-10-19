@@ -38,10 +38,10 @@ class AbuseNatives {
             case AbuseConstants.REASON_DAMAGE_ISSUED:
             case AbuseConstants.REASON_DAMAGE_TAKEN:
                 return TELEPORT_STATUS_REJECTED_FIGHTING;
-
-            case AbuseConstants.REASON_TIME_LIMIT:
-                return TELEPORT_STATUS_REJECTED_TIME_LIMIT;
         }
+
+        if (AbuseConstants.isTimeLimit(teleportStatus.reason))
+            return TELEPORT_STATUS_REJECTED_TIME_LIMIT;
 
         return TELEPORT_STATUS_REJECTED_OTHER;
     }
@@ -53,7 +53,7 @@ class AbuseNatives {
             return;  // the |playerId| does not represent a connected player
 
         if (timeLimited)
-            this.abuse_.reportTimeLimitedTeleport(player);
+            this.abuse_.reportTimeThrottledTeleport(player);
     }
 
     // ---------------------------------------------------------------------------------------------

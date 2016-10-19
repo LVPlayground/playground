@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const AbuseConstants = require('features/abuse/abuse_constants.js');
 const MockAbuse = require('features/abuse/test/mock_abuse.js');
 const Settings = require('features/settings/settings.js');
 
@@ -60,7 +61,7 @@ describe('Abuse', (it, beforeEach) => {
         assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
         assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: true }).allowed);
 
-        abuse.reportTimeLimitedTeleport(gunther, { timeLimited: true });
+        abuse.reportTimeThrottledTeleport(gunther, { timeLimited: true });
 
         assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
         assert.isFalse(abuse.canTeleport(gunther, { enforceTimeLimit: true }).allowed);
@@ -84,5 +85,23 @@ describe('Abuse', (it, beforeEach) => {
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
         assert.isTrue(abuse.canTeleport(gunther, { enforceTimeLimit: false }).allowed);
+    });
+
+    it('should be able to format time limits', assert => {
+        const mappings = {
+            1: 'second',
+            2: '2 seconds',
+            60: 'minute',
+            61: '1:01 minutes',
+            120: '2 minutes',
+            121: '2:01 minutes',
+            3600: 'hour',
+            7500: '2 hours'
+        };
+
+        for (const [seconds, description] of Object.entries(mappings)) {
+            assert.equal(AbuseConstants.REASON_TIME_LIMIT(seconds * 1000),
+                         'can only do so once per ' + description);
+        }
     });
 });

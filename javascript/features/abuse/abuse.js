@@ -35,48 +35,72 @@ class Abuse extends Feature {
         const time = server.clock.monotonicallyIncreasingTime();
 
         // (1) Administrators might be able to override teleportation limitations.
-        if (player.isAdministrator() && this.getSetting('tp_blocker_admin_override'))
+        if (player.isAdministrator() && this.getSetting('teleportation_admin_override'))
             return { allowed: true };
 
         const blockerUsageThrottle =
-            enforceTimeLimit ? this.getSetting('tp_blocker_usage_throttle_time') * 1000  // ms
+            enforceTimeLimit ? this.getSetting('teleportation_throttle_time') * 1000  // ms
                              : 0 /* no throttle will be applied */;
 
         // (2) Might be subject to the per-player teleportation usage throttle.
         if (!this.mitigator_.satisfiesTimeThrottle(player, time, blockerUsageThrottle, 'tp'))
-            return { allowed: false, reason: AbuseConstants.REASON_TIME_LIMIT };
+            return { allowed: false, reason: AbuseConstants.REASON_TIME_LIMIT(blockerUsageThrottle) };
 
-        const blockerWeaponFired = this.getSetting('tp_blocker_weapon_fire_time') * 1000;  // ms
-        const blockerDamageIssued = this.getSetting('tp_blocker_damage_issued_time') * 1000;  // ms
-        const blockerDamageTaken = this.getSetting('tp_blocker_damage_taken_time') * 1000;  // ms
-
-        // (3) Should having fired your weapon temporarily block teleportation?
-        if (!this.mitigator_.satisfiesWeaponFireConstraint(player, time, blockerWeaponFired))
-            return { allowed: false, reason: AbuseConstants.REASON_FIRED_WEAPON };
-
-        // (4) Should having issued damage to another player temporarily block teleportation?
-        if (!this.mitigator_.satisfiesDamageIssuedConstraint(player, time, blockerDamageIssued))
-            return { allowed: false, reason: AbuseConstants.REASON_DAMAGE_ISSUED };
-
-        // (5) Should having taken damage from another player temporarily block teleportation?
-        if (!this.mitigator_.satisfiesDamageTakenConstraint(player, time, blockerDamageTaken))
-            return { allowed: false, reason: AbuseConstants.REASON_DAMAGE_TAKEN };
-
-        // (6) Otherwise the |player| is allowed to teleport to wherever they wanted to go.
-        return { allowed: true };
+        return this.internalProcessFightingConstraints(player, time);
     }
 
-    // Reports that the |player| has been teleported through an activity that's time limited.
-    reportTimeLimitedTeleport(player) {
+    // Reports that the |player| has been teleported through an activity that's time throttled.
+    reportTimeThrottledTeleport(player) {
         this.mitigator_.reportTimeThrottleUsage(player, 'tp');
     }
 
-    // Returns whether the |player| is allowed to spawn a vehicle right now. The implementation of
-    // this method defers to whether the |player| is allowed to teleport.
+    // ---------------------------------------------------------------------------------------------
+
+    // Returns whether the |player| is allowed to spawn a vehicle right now. Constraints similar to
+    // teleportation apply, but the actual variables can be configured separately.
     canSpawnVehicle(player) {
-        // TODO: Spawning vehicles should be time limited as well, but it should maintain a
-        // different counter from the teleportation time limit.
-        return this.canTeleport(player, { enforceTimeLimit: false });
+        const time = server.clock.monotonicallyIncreasingTime();
+
+        // (1) Administrators might be able to override the vehicle spawning limitations.
+        if (player.isAdministrator() && this.getSetting('spawn_vehicle_admin_override'))
+            return { allowed: true };
+
+        const blockerUsageThrottle = this.getSetting('spawn_vehicle_throttle_time') * 1000  // ms
+
+        // (2) Might be subject to the per-player vehicle spawning throttle.
+        if (!this.mitigator_.satisfiesTimeThrottle(player, time, blockerUsageThrottle, 'vehicle'))
+            return { allowed: false, reason: AbuseConstants.REASON_TIME_LIMIT(blockerUsageThrottle) };
+
+        return this.internalProcessFightingConstraints(player, time);
+    }
+
+    // Reports that the |player| has spawned a vehicle through one of the commands.
+    reportSpawnedVehicle(player) {
+        this.mitigator_.reportTimeThrottleUsage(player, 'vehicle');
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Processes the common fighting-related constraints for |player|. Not to be used externally.
+    internalProcessFightingConstraints(player, time) {
+        const blockerWeaponFired = this.getSetting('blocker_weapon_fire_time') * 1000;  // ms
+        const blockerDamageIssued = this.getSetting('blocker_damage_issued_time') * 1000;  // ms
+        const blockerDamageTaken = this.getSetting('blocker_damage_taken_time') * 1000;  // ms
+
+        // (3) Should having fired your weapon temporarily block the action?
+        if (!this.mitigator_.satisfiesWeaponFireConstraint(player, time, blockerWeaponFired))
+            return { allowed: false, reason: AbuseConstants.REASON_FIRED_WEAPON };
+
+        // (4) Should having issued damage to another player temporarily block the action?
+        if (!this.mitigator_.satisfiesDamageIssuedConstraint(player, time, blockerDamageIssued))
+            return { allowed: false, reason: AbuseConstants.REASON_DAMAGE_ISSUED };
+
+        // (5) Should having taken damage from another player temporarily block the action?
+        if (!this.mitigator_.satisfiesDamageTakenConstraint(player, time, blockerDamageTaken))
+            return { allowed: false, reason: AbuseConstants.REASON_DAMAGE_TAKEN };
+
+        // (6) Otherwise the |player| is allowed to do whatever they wanted to do.
+        return { allowed: true };
     }
 
     // ---------------------------------------------------------------------------------------------

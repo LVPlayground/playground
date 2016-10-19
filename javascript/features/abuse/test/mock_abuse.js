@@ -36,13 +36,13 @@ class MockAbuse extends Abuse {
     // ---------------------------------------------------------------------------------------------
 
     // Toggles whether |player| can teleport. Only available for tests.
-    toggleTeleportForTests(player, enabled) {
-        this.disableTeleport_.set(player, enabled);
+    toggleTeleportForTests(player, reason) {
+        this.disableTeleport_.set(player, reason);
     }
 
     // Toggles whether |player| can spawn a vehicle. Only avaiable for tests.
-    toggleSpawnVehicleForTests(player, enabled) {
-        this.disableSpawnVehicle_.set(player, enabled);
+    toggleSpawnVehicleForTests(player, reason) {
+        this.disableSpawnVehicle_.set(player, reason);
     }
 
     // ---------------------------------------------------------------------------------------------

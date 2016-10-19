@@ -38,6 +38,9 @@ class Player {
   // Returns whether the player is still connected to the server.
   isConnected() { return this.connected_; }
 
+  // Returns whether the player is connected, but has minimized their game.
+  isMinimized() { return isPlayerMinimized(this.id_); }
+
   // Returns whether the player is currently in process of disconnecting.
   isDisconnecting() { return this.disconnecting_; }
 

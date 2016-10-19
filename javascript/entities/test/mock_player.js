@@ -46,6 +46,7 @@ class MockPlayer {
         this.streamerObjectsUpdated_ = false;
 
         this.connected_ = true;
+        this.minimized_ = false;
         this.disconnecting_ = false;
 
         this.vehicle_ = null;
@@ -58,6 +59,9 @@ class MockPlayer {
     get id() { return this.id_; }
 
     isConnected() { return this.connected_; }
+
+    isMinimized() { return this.minimized_; }
+    setMinimized(minimized) { this.minimized_ = minimized; }
 
     isDisconnecting() { return this.disconnecting_; }
 

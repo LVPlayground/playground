@@ -181,7 +181,7 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: 
             return 0;
 
         // A paused player should not be able to take damage.
-        if (Player(hitid)->isMinimized())
+        if (IsPlayerMinimized(hitid))
             return 0;
 
         // Crew members using god-mode should not be able to take damage.

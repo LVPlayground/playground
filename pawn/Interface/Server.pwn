@@ -8,6 +8,9 @@
 native gpci(playerid, serial[], len);
 native IsValidVehicle(vehicleid);
 
+// Provided by the PlaygroundJS plugin.
+native IsPlayerMinimized(playerId);
+
 // Provided by the Communication feature in JavaScript.
 native GetPlayerTeleportStatus(playerId, timeLimited);
 native ReportPlayerTeleport(playerId, timeLimited);

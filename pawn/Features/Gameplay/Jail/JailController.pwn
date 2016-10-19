@@ -248,7 +248,7 @@ class JailController {
 
             // If the player has minimized their game, increase their jail time so they won't be
             // unjailed without actually having to sit out the punishment.
-            if (Player(playerId)->isMinimized() == true) {
+            if (IsPlayerMinimized(playerId)) {
                 if (m_playerMinimizedRemainingTime[playerId] == 0)
                     m_playerMinimizedRemainingTime[playerId] = remainingTime;
 
@@ -267,7 +267,7 @@ class JailController {
 
             // Automatically unjail them when they served their jail time. We'll have compensated
             // for potential minimizing of Grand Theft Auto: San Andreas now.
-            if (remainingTime < 0 && Player(playerId)->isMinimized() == false) {
+            if (remainingTime < 0 && !IsPlayerMinimized(playerId)) {
                 SendClientMessage(playerId, Color::Success, "You have been released from jail because your punishment is over.");
                 this->unjailPlayer(playerId);
                 continue;

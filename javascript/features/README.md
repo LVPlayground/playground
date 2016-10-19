@@ -37,6 +37,7 @@ The following features have been implemented in JavaScript.
   - **[Playground](playground/)**: Features created for the identity of Las Venturas Playground.
   - **[Report](report/)**: Give the ability to players to report other players when they use illegal
     stuff.
+  - **[Settings](settings/)**: Framework providing fast, categorized and persistent settings.
   - **[Vehicles](vehicles/)**: Manages all vehicles around Las Venturas Playground.
 
 _There are several other features that have to be updated and documented before being listed here._

@@ -11,6 +11,12 @@ native IsValidVehicle(vehicleid);
 // Provided by the PlaygroundJS plugin.
 native IsPlayerMinimized(playerId);
 
+// The OnPlayerUpdate callback should never reach Pawn. If the following message is seen on the
+// console, it means that PlaygroundJS' interception of the callback is failing.
+public OnPlayerUpdate(playerid) {
+    printf("OnPlayerUpdate routed to Pawn -- please contact Russell!");
+}
+
 // Provided by the Communication feature in JavaScript.
 native GetPlayerTeleportStatus(playerId, timeLimited);
 native ReportPlayerTeleport(playerId, timeLimited);

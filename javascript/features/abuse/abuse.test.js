@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const Abuse = require('features/abuse/abuse.js');
 const AbuseConstants = require('features/abuse/abuse_constants.js');
-const MockAbuse = require('features/abuse/test/mock_abuse.js');
 const Settings = require('features/settings/settings.js');
 
 describe('Abuse', (it, beforeEach) => {
@@ -11,7 +11,7 @@ describe('Abuse', (it, beforeEach) => {
 
     beforeEach(() => {
         server.featureManager.registerFeaturesForTests({
-            abuse: MockAbuse,
+            abuse: Abuse,
             settings: Settings
         });
 

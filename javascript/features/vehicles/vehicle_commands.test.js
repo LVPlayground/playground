@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const Abuse = require('features/abuse/abuse.js');
 const AbuseConstants = require('features/abuse/abuse_constants.js');
 const DatabaseVehicle = require('features/vehicles/database_vehicle.js');
-const MockAbuse = require('features/abuse/test/mock_abuse.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 const MockPlayground = require('features/playground/test/mock_playground.js');
 const Settings = require('features/settings/settings.js');
@@ -24,7 +24,7 @@ describe('VehicleCommands', (it, beforeEach) => {
         gunther.identify({ userId: 42 });
 
         server.featureManager.registerFeaturesForTests({
-            abuse: MockAbuse,
+            abuse: Abuse,
             announce: MockAnnounce,
             playground: MockPlayground,
             settings: Settings,

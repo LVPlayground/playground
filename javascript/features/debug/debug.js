@@ -50,6 +50,11 @@ class Debug extends Feature {
         .parameters([ { name: 'command', type: CommandBuilder.SENTENCE_PARAMETER } ])
         .build(this.__proto__.eval.bind(this));
 
+    // /idlers
+    server.commandManager.buildCommand('idlers')
+        .restrict(Player.LEVEL_ADMINISTRATOR)
+        .build(this.__proto__.idlers.bind(this));
+
     // /pattach
     server.commandManager.buildCommand('pattach')
         .restrict(Player.LEVEL_MANAGEMENT)
@@ -133,6 +138,21 @@ class Debug extends Feature {
     eval(command);
   }
 
+  // Lists the players who currently have minimized their game.
+  idlers(player) {
+    const idlers = [];
+
+    for (const player of server.playerManager) {
+      if (player.isIdle())
+        idlers.push(player.name);
+    }
+
+    if (!idlers.length)
+      players.sendMessage('Nobody minimized their game.');
+    else
+      player.sendMessage('Minimized: ' + idlers.sort().join(', '));
+  }
+
   // Called when the |player| disconnects from the server.
   onPlayerDisconnect(player) {
     if (!this.attachedObjects_.has(player))
@@ -162,6 +182,28 @@ class Debug extends Feature {
     this.onPlayerDisconnect(subject);
 
     player.sendMessage('Done!');
+  }
+
+  dispose() {
+    server.playerManager.removeObserver(this);
+
+    for (const [player, objects] of this.attachedObjects_) {
+      for (const objectId of objects)
+        pawnInvoke('DestroyObject', 'i', objectId);
+    }
+
+    this.attachedObjects_.clear();
+    this.attachedObjects_ = null;
+
+    server.commandManager.removeCommand('serverfps')
+    server.commandManager.removeCommand('trace')
+    server.commandManager.removeCommand('sound')
+    server.commandManager.removeCommand('int')
+    server.commandManager.removeCommand('cam')
+    server.commandManager.removeCommand('eval')
+    server.commandManager.removeCommand('idlers')
+    server.commandManager.removeCommand('pattach')
+    server.commandManager.removeCommand('pdetach')
   }
 }
 

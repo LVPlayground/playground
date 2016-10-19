@@ -109,4 +109,36 @@ describe('Settings', (it, beforeEach) => {
 
         assert.equal(invocations, 2);
     });
+
+    it('should interact with the database in the expected manner', async(assert) => {
+        await Promise.resolve();  // asynchronous part of the constructor
+
+        assert.equal(settings.database_.loadCalls, 1);
+
+        const original = settings.getValue('abuse/blocker_damage_issued_time');
+        assert.equal(typeof original, 'number');
+
+        assert.equal(settings.database_.writeCalls, 0);
+        assert.equal(settings.database_.deleteCalls, 0);
+
+        // (1) Update a setting to something that's not its default value.
+        {
+            settings.setValue('abuse/blocker_damage_issued_time', 42);
+
+            await Promise.resolve();
+
+            assert.equal(settings.database_.writeCalls, 1);
+            assert.equal(settings.database_.deleteCalls, 0);
+        }
+
+        // (2) Update a setting back to its default value.
+        {
+            settings.setValue('abuse/blocker_damage_issued_time', original);
+
+            await Promise.resolve();
+
+            assert.equal(settings.database_.writeCalls, 1);
+            assert.equal(settings.database_.deleteCalls, 1);
+        }
+    });
 });

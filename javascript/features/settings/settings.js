@@ -5,6 +5,9 @@
 const Feature = require('components/feature_manager/feature.js');
 const Setting = require('features/settings/setting.js');
 const SettingList = require('features/settings/setting_list.js');
+const SettingsDatabase = require('features/settings/settings_database.js');
+
+const MockSettingsDatabase = require('features/settings/test/mock_settings_database.js');
 
 // Provides the ability to get and set settings that should persist between server restarts. Values
 // that have been changed from their defaults will be stored in the database.
@@ -12,23 +15,39 @@ class Settings extends Feature {
     constructor() {
         super();
 
+        // The database instance used to read and write persistent values.
+        this.database_ = server.isTest() ? new MockSettingsDatabase()
+                                         : new SettingsDatabase();
+
         // Map of setting identifiers (as "category/name") to the corresponding Setting instance.
         this.settings_ = new Map();
 
         // Map of setting identifiers to a map of instances to listeners.
         this.observers_ = new Map();
 
-        // TODO: Load setting values that have been overridden from the database.
-
         // Import the settings from the |SettingList| in to the local state.
         for (const setting of SettingList)
             this.settings_.set(setting.identifier, setting);
+
+        // Load the existing persistent values from the database, and apply them to the local state.
+        Promise.resolve(this.database_.loadSettings()).then(settings => {
+            for (const [identifier, value] of settings) {
+                try {
+                    this.setValue(identifier, value);
+                } catch (exception) {
+                    console.log('Warning: Unable to restore the setting of ' + identifier + ': ' +
+                                exception);
+                }
+            }
+        });
     }
 
     // ---------------------------------------------------------------------------------------------
 
     // Gets an iterator with the Settings that are available on Las Venturas Playground.
     getSettings() { return this.settings_.values(); }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Adds an observer for the setting |identifier|. It'll be keyed on the |instance|, and the
     // |listener| will be invoked whenever the value is updated. Will throw on invalid identifiers.
@@ -68,6 +87,8 @@ class Settings extends Feature {
         if (!observers.size)
             this.observers_.delete(identifier);
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Gets the value currently assigned to the |identifier|. Will throw when the |identifier| is
     // not known to the settings system, since we can't return anything sensible in that case.
@@ -112,8 +133,11 @@ class Settings extends Feature {
 
         setting.value = value;
 
-        // TODO: Store the |value| in the database, or delete it when it's the same as the default
-        // value for the setting.
+        // Either delete or write the new |value| from or to the database. Don't block on it.
+        if (value === setting.defaultValue)
+            this.database_.deleteSetting(setting);
+        else
+            this.database_.writeSetting(setting);
     }
 
     // ---------------------------------------------------------------------------------------------

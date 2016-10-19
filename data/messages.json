@@ -206,6 +206,8 @@
     "LVP_ANNOUNCE_CMD_REMOVED_EXCEPTION": "%s (Id: %d) has revoked %s ability to use /%s.",
     "LVP_ANNOUNCE_CMD_REVOKED": "%s has removed the /%s command from players again.",
     "LVP_ANNOUNCE_FEATURE_RELOADED": "%s (Id: %d) has reloaded the '%s' feature.",
+    "LVP_ANNOUNCE_SETTING_TOGGLED": "%s (Id: %d) has %s the '%s' setting.",
+    "LVP_ANNOUNCE_SETTING_UPDATED_NUM": "%s (Id: %d) has updated the '%s' setting to '%d'.",
     "LVP_CMD_EXCEPTION_GRANTED": "{ADFF2F}*** %s (Id: %d) has given you an exception to use /%s.",
     "LVP_CMD_EXCEPTION_RESTORED": "{ADFF2F}*** Your %d command exceptions has been restored.",
     "LVP_CMD_EXCEPTION_REVOKED": "{ADFF2F}*** %s (Id: %d) has removed your exception to use /%s.",

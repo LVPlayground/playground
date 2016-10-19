@@ -422,8 +422,7 @@ class PlaygroundCommands {
 
         menu.addItem(enableLabel, async(player) => {
             this.settings_().setValue(setting.identifier, true);
-
-            // TODO: Distribute an update to administrators.
+            this.announceSettingChangeToAdministrators(player, setting);
 
             return await MessageBox.display(player, {
                 title: 'The setting has been enabled!',
@@ -433,8 +432,7 @@ class PlaygroundCommands {
 
         menu.addItem(disableLabel, async(player) => {
             this.settings_().setValue(setting.identifier, false);
-
-            // TODO: Distribute an update to administrators.
+            this.announceSettingChangeToAdministrators(player, setting);
 
             return await MessageBox.display(player, {
                 title: 'The setting has been disabled!',
@@ -465,13 +463,31 @@ class PlaygroundCommands {
         }
 
         this.settings_().setValue(setting.identifier, answer.toSafeInteger());
-
-        // TODO: Distribute an update to administrators.
+        this.announceSettingChangeToAdministrators(player, setting);
 
         return await MessageBox.display(player, {
             title: 'The setting has been disabled!',
             message: Message.format(Message.LVP_SETTING_UPDATED, setting.identifier, answer)
         });
+    }
+
+    // Announces the updated value for the |setting|, as made by |player|, to administrators.
+    announceSettingChangeToAdministrators(player, setting) {
+        switch (setting.type) {
+            case Setting.TYPE_BOOLEAN:
+                this.announce_().announceToAdministrators(
+                    Message.LVP_ANNOUNCE_SETTING_TOGGLED, player.name, player.id,
+                    (setting.value ? 'enabled' : 'disabled'), setting.identifier);
+
+                break;
+
+            case Setting.TYPE_NUMBER:
+                this.announce_().announceToAdministrators(
+                    Message.LVP_ANNOUNCE_SETTING_UPDATED_NUM, player.name, player.id,
+                    setting.identifier, setting.value);
+
+                break;
+        }
     }
 
     // Displays some generic information for those typing `/lvp`. Administrators and higher will see

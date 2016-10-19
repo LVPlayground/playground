@@ -172,6 +172,12 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(await gunther.issueCommand('/lvp settings'));
         assert.isFalse(settings.getValue('abuse/spawn_vehicle_admin_override'));
 
+        assert.equal(gunther.messages.length, 1);
+        assert.isTrue(gunther.messages[0].includes('abuse/spawn_vehicle_admin_override'));
+        assert.isTrue(gunther.messages[0].includes('disabled'));
+
+        gunther.clearMessages();
+
         // Enable the `spawn_vehicle_admin_override` section in the `abuse` section.
         gunther.respondToDialog({ listitem: 0 /* Assumed `abuse` */ }).then(
             () => gunther.respondToDialog({ listitem: 3 /* Assumed to be the override */ })).then(
@@ -180,6 +186,10 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
 
         assert.isTrue(await gunther.issueCommand('/lvp settings'));
         assert.isTrue(settings.getValue('abuse/spawn_vehicle_admin_override'));
+
+        assert.equal(gunther.messages.length, 1);
+        assert.isTrue(gunther.messages[0].includes('abuse/spawn_vehicle_admin_override'));
+        assert.isTrue(gunther.messages[0].includes('enabled'));
     });
 
     it('should be able to change numeric settings', async(assert) => {
@@ -193,12 +203,18 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         // Disable the `spawn_vehicle_admin_override` section in the `abuse` section.
         gunther.respondToDialog({ listitem: 0 /* Assumed `abuse` */ }).then(
             () => gunther.respondToDialog({ listitem: 0 /* Assumed to be the damage time */ })).then(
-            () => gunther.respondToDialog({ response: 1, inputtext: '20' })).then(
+            () => gunther.respondToDialog({ response: 1, inputtext: '2000' })).then(
             () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
 
         assert.equal(settings.getValue('abuse/blocker_damage_issued_time'), 10);
         assert.isTrue(await gunther.issueCommand('/lvp settings'));
-        assert.equal(settings.getValue('abuse/blocker_damage_issued_time'), 20);
+        assert.equal(settings.getValue('abuse/blocker_damage_issued_time'), 2000);
+
+        assert.equal(gunther.messages.length, 1);
+        assert.isTrue(gunther.messages[0].includes('abuse/blocker_damage_issued_time'));
+        assert.isTrue(gunther.messages[0].includes('2,000'));
+
+        gunther.clearMessages();
 
         // Enable the `spawn_vehicle_admin_override` section in the `abuse` section.
         gunther.respondToDialog({ listitem: 0 /* Assumed `abuse` */ }).then(
@@ -208,5 +224,9 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
 
         assert.isTrue(await gunther.issueCommand('/lvp settings'));
         assert.equal(settings.getValue('abuse/blocker_damage_issued_time'), 10);
+
+        assert.equal(gunther.messages.length, 1);
+        assert.isTrue(gunther.messages[0].includes('abuse/blocker_damage_issued_time'));
+        assert.isTrue(gunther.messages[0].includes('10'));
     });
 });

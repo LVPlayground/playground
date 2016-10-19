@@ -2,14 +2,15 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const FightTracker = require('features/abuse/fight_tracker.js');
-
 // The Abuse Mitigator makes decisions on whether certain actions may take place, based on the
 // knowledge available to it. It uses a variety of sub-systems for this.
 class AbuseMitigator {
     constructor() {
-        this.fightTracker_ = new FightTracker();
         this.throttlers_ = new Map();
+
+        this.weaponFireTime_ = new WeakMap();
+        this.damageIssuedTime_ = new WeakMap();
+        this.damageTakenTime_ = new WeakMap();
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -32,36 +33,48 @@ class AbuseMitigator {
         if (!this.throttlers_.has(throttler))
             this.throttlers_.set(throttler, new WeakMap());
 
-        this.throttlers_.get(throttler).set(player, server.clock.monotonicallyIncreasingTime());        
+        this.throttlers_.get(throttler).set(player, server.clock.monotonicallyIncreasingTime());
     }
 
     // ---------------------------------------------------------------------------------------------
 
     // Returns whether the |player| hasn't fired a weapon in the past |minimumElapsedTime| ms.
     satisfiesWeaponFireConstraint(player, currentTime, minimumElapsedTime) {
-        const weaponFireTime = this.fightTracker_.getLastWeaponFiredTime(player);
+        const weaponFireTime = this.weaponFireTime_.get(player);
         return !weaponFireTime || (currentTime - weaponFireTime) >= minimumElapsedTime;
+    }
+
+    // Reports that |player| has fired their weapon.
+    reportWeaponFire(player) {
+        this.weaponFireTime_.set(player, server.clock.monotonicallyIncreasingTime());
     }
 
     // Returns whether the |player| hasn't issued damage in the past |minimumElapsedTime| ms.
     satisfiesDamageIssuedConstraint(player, currentTime, minimumElapsedTime) {
-        const damageIssuedTime = this.fightTracker_.getLastDamageIssuedTime(player);
+        const damageIssuedTime = this.damageIssuedTime_.get(player);
         return !damageIssuedTime || (currentTime - damageIssuedTime) >= minimumElapsedTime;
+    }
+
+    // Reports that |player| has issued damage to another player.
+    reportDamageIssued(player) {
+        this.damageIssuedTime_.set(player, server.clock.monotonicallyIncreasingTime());
     }
 
     // Returns whether the |player| hasn't taken damage in the past |minimumElapsedTime| ms.
     satisfiesDamageTakenConstraint(player, currentTime, minimumElapsedTime) {
-        const damageTakenTime = this.fightTracker_.getLastDamageTakenTime(player);
+        const damageTakenTime = this.damageTakenTime_.get(player);
         return !damageTakenTime || (currentTime - damageTakenTime) >= minimumElapsedTime;
+    }
+
+    // Reports that |player| has taken damage from another player.
+    reportDamageTaken(player) {
+        this.damageTakenTime_.set(player, server.clock.monotonicallyIncreasingTime());
     }
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
         this.throttlers_.clear();
-
-        this.fightTracker_.dispose();
-        this.fightTracker_ = null;
     }
 }
 

@@ -4,11 +4,10 @@
 
 const AbuseMitigator = require('features/abuse/abuse_mitigator.js');
 
-describe('AbuseMitigator', (it, beforeEach, afterEach) => {
+describe('AbuseMitigator', (it, beforeEach) => {
     let mitigator = null;
 
-    beforeEach(() => mitigator = new AbuseMitigator());
-    afterEach(() => mitigator.dispose());
+    beforeEach(() => mitigator = server.featureManager.loadFeature('abuse').mitigator_);
 
     it('should properly support the time throttling-related mitigations', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
@@ -50,15 +49,15 @@ describe('AbuseMitigator', (it, beforeEach, afterEach) => {
         }
     });
 
-    it('should properly support the fighting-related mitigations', assert => {
+    it('should properly support the fighting-related mitigations', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
 
-        const time = server.clock.monotonicallyIncreasingTime();
-        const futureTime = time + 2000 /* two seconds beyond |time| */;
-
         // satisfiesWeaponFireConstraint
         {
+            const time = server.clock.monotonicallyIncreasingTime();
+            const futureTime = time + 2000 /* two seconds beyond |time| */;
+
             assert.isTrue(mitigator.satisfiesWeaponFireConstraint(gunther, time, 1500));
             assert.isTrue(mitigator.satisfiesWeaponFireConstraint(russell, time, 1500));
 
@@ -70,11 +69,13 @@ describe('AbuseMitigator', (it, beforeEach, afterEach) => {
             assert.isTrue(mitigator.satisfiesWeaponFireConstraint(gunther, futureTime, 1500));
         }
 
-        gunther.respawn();
-        russell.respawn();
+        await server.clock.advance(60000);  // one minute later...
 
         // satisfiesDamageIssuedConstraint
         {
+            const time = server.clock.monotonicallyIncreasingTime();
+            const futureTime = time + 2000 /* two seconds beyond |time| */;
+
             assert.isTrue(mitigator.satisfiesDamageIssuedConstraint(gunther, time, 1500));
             assert.isTrue(mitigator.satisfiesDamageIssuedConstraint(russell, time, 1500));
 
@@ -91,11 +92,13 @@ describe('AbuseMitigator', (it, beforeEach, afterEach) => {
             assert.isTrue(mitigator.satisfiesDamageIssuedConstraint(gunther, futureTime, 1500));
         }
 
-        gunther.respawn();
-        russell.respawn();
+        await server.clock.advance(60000);  // one minute later...
 
         // satisfiesDamageTakenConstraint
         {
+            const time = server.clock.monotonicallyIncreasingTime();
+            const futureTime = time + 2000 /* two seconds beyond |time| */;
+
             assert.isTrue(mitigator.satisfiesDamageTakenConstraint(gunther, time, 1500));
             assert.isTrue(mitigator.satisfiesDamageTakenConstraint(russell, time, 1500));
 

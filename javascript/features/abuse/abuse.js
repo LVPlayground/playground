@@ -5,6 +5,7 @@
 const AbuseConstants = require('features/abuse/abuse_constants.js');
 const AbuseMitigator = require('features/abuse/abuse_mitigator.js');
 const AbuseNatives = require('features/abuse/abuse_natives.js');
+const DamageManager = require('features/abuse/damage_manager.js');
 const Feature = require('components/feature_manager/feature.js');
 
 // Time period, in milliseconds, a player needs to wait between time limited teleportations.
@@ -20,6 +21,8 @@ class Abuse extends Feature {
         this.settings_ = this.defineDependency('settings');
 
         this.mitigator_ = new AbuseMitigator();
+        this.damageManager_ = new DamageManager(this.mitigator_, this.settings_);
+
         this.natives_ = new AbuseNatives(this);
     }
 

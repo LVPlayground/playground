@@ -135,7 +135,16 @@ class Debug extends Feature {
   // Evaluates the |command| on behalf of |player|.
   eval(player, command) {
     console.log('[JavaScript] Evaluating: ' + command);
-    eval(command);
+
+    const output = '' + JSON.stringify(eval(command), null, '    ');
+    const lines = output.split('\n');
+
+    for (let i = 0; i < Math.min(8, lines.length); ++i) {
+      player.sendMessage('>> ' + lines[i]);
+    }
+
+    if (lines.length > 8)
+      player.sendMessage('>> Omitted ' + (lines.length - 8) + ' lines.');
   }
 
   // Lists the players who currently have minimized their game.

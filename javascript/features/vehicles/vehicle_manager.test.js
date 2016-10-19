@@ -2,12 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Abuse = require('features/abuse/abuse.js');
 const DatabaseVehicle = require('features/vehicles/database_vehicle.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 const MockPlayground = require('features/playground/test/mock_playground.js');
-const Settings = require('features/settings/settings.js');
-const Streamer = require('features/streamer/streamer.js');
 const VehicleAccessManager = require('features/vehicles/vehicle_access_manager.js');
 const Vehicles = require('features/vehicles/vehicles.js');
 
@@ -33,11 +30,8 @@ describe('VehicleManager', (it, beforeEach) => {
         gunther.position = POSITION;
 
         server.featureManager.registerFeaturesForTests({
-            abuse: Abuse,
             announce: MockAnnounce,
             playground: MockPlayground,
-            settings: Settings,
-            streamer: Streamer,
             vehicles: Vehicles
         });
 

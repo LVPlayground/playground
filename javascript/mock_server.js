@@ -20,6 +20,10 @@ const MockPlayer = require('entities/test/mock_player.js');
 const MockTextLabel = require('entities/test/mock_text_label.js');
 const MockVehicle = require('entities/test/mock_vehicle.js');
 
+const Abuse = require('features/abuse/abuse.js');
+const Settings = require('features/settings/settings.js');
+const Streamer = require('features/streamer/streamer.js');
+
 // The MockServer is a mocked implementation of the Server class that creates a mocked environment
 // having mocked connected players. It will automatically be created before running a test, and
 // will be disposed afterwards. There should not be any need to instantiate this class manually.
@@ -38,6 +42,13 @@ class MockServer {
         this.textLabelManager_ = new TextLabelManager(MockTextLabel /* textLabelConstructor */);
         this.vehicleManager_ = new VehicleManager(MockVehicle /* vehicleConstructor */);
         this.virtualWorldManager_ = new VirtualWorldManager();
+
+        // Register features whose production versions are suitable for testing.
+        this.featureManager_.registerFeaturesForTests({
+            abuse: Abuse,
+            settings: Settings,
+            streamer: Streamer
+        });
 
         // Connect a series of fake players to the server.
         [

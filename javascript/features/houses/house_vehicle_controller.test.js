@@ -5,16 +5,11 @@
 const HouseParkingLot = require('features/houses/house_parking_lot.js');
 const HouseVehicle = require('features/houses/house_vehicle.js');
 const HouseVehicleController = require('features/houses/house_vehicle_controller.js');
-const Streamer = require('features/streamer/streamer.js');
 
 describe('HouseVehicleController', (it, beforeEach, afterEach) => {
     let controller = null;
 
     beforeEach(() => {
-        server.featureManager.registerFeaturesForTests({
-            streamer: Streamer
-        });
-
         server.featureManager.loadFeature('streamer');
 
         controller = new HouseVehicleController(

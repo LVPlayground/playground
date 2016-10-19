@@ -2,21 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Abuse = require('features/abuse/abuse.js');
 const AbuseConstants = require('features/abuse/abuse_constants.js');
-const Settings = require('features/settings/settings.js');
 
 describe('Abuse', (it, beforeEach) => {
     let abuse = null;
 
-    beforeEach(() => {
-        server.featureManager.registerFeaturesForTests({
-            abuse: Abuse,
-            settings: Settings
-        });
-
-        abuse = server.featureManager.loadFeature('abuse');
-    });
+    beforeEach(() => abuse = server.featureManager.loadFeature('abuse'));
 
     it('should allow or deny teleportation based on fighting activities', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);

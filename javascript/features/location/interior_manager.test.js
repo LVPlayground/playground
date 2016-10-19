@@ -2,20 +2,13 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Abuse = require('features/abuse/abuse.js');
 const InteriorManager = require('features/location/interior_manager.js');
 const Portal = require('features/location/portal.js');
-const Settings = require('features/settings/settings.js');
 
 describe('InteriorManager', (it, beforeEach, afterEach) => {
     let manager = null;
 
     beforeEach(() => {
-        server.featureManager.registerFeaturesForTests({
-            abuse: Abuse,
-            settings: Settings
-        });
-
         const abuse = server.featureManager.loadFeature('abuse');
 
         manager = new InteriorManager(() => abuse);

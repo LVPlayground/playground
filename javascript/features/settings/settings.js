@@ -19,7 +19,7 @@ class Settings extends Feature {
 
         // Import the settings from the |SettingList| in to the local state.
         for (const setting of SettingList)
-            this.settings_.set(setting.category + '/' + setting.name, setting);
+            this.settings_.set(setting.identifier, setting);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ class Settings extends Feature {
 
                 break;
             case Setting.TYPE_NUMBER:
-                if (typeof value !== 'boolean')
+                if (typeof value !== 'number')
                     throw new Error('The value for ' + identifier + ' must be a number.');
                 break;
 

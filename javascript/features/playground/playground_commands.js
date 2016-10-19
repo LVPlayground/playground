@@ -8,6 +8,7 @@ const Menu = require('components/menu/menu.js');
 const MessageBox = require('components/dialogs/message_box.js');
 const PlaygroundAccessTracker = require('features/playground/playground_access_tracker.js');
 const Question = require('components/dialogs/question.js');
+const Setting = require('features/settings/setting.js');
 
 // Utility function to capitalize the first letter of a |string|.
 function capitalizeFirstLetter(string) {
@@ -16,9 +17,10 @@ function capitalizeFirstLetter(string) {
 
 // A series of general commands that don't fit in any particular 
 class PlaygroundCommands {
-    constructor(manager, access, announce) {
+    constructor(manager, access, announce, settings) {
         this.manager_ = manager;
         this.announce_ = announce;
+        this.settings_ = settings;
 
         this.access_ = access;
         this.commands_ = new Map();
@@ -77,6 +79,9 @@ class PlaygroundCommands {
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .parameters([ { name: 'feature', type: CommandBuilder.WORD_PARAMETER } ])
                 .build(PlaygroundCommands.prototype.onPlaygroundReloadCommand.bind(this))
+            .sub('settings')
+                .restrict(Player.LEVEL_MANAGEMENT)
+                .build(PlaygroundCommands.prototype.onPlaygroundSettingsCommand.bind(this))
             .build(PlaygroundCommands.prototype.onPlaygroundCommand.bind(this));
     }
 
@@ -330,6 +335,145 @@ class PlaygroundCommands {
 
     }
 
+    // Displays a series of menus to Management members that want to inspect or make changes to how
+    // certain features on the server work, for example, the abuse and housing systems.
+    async onPlaygroundSettingsCommand(player) {
+        const categories = new Map();
+        const menu = new Menu('Choose a category of settings', ['Category', 'Settings']);
+
+        // Identify the categories of settings that exist on the server.
+        for (const setting of this.settings_().getSettings()) {
+            if (!categories.has(setting.category))
+                categories.set(setting.category, new Set());
+
+            categories.get(setting.category).add(setting);
+        }
+
+        const sortedCategories = Array.from(categories.keys()).sort();
+        for (const category of sortedCategories) {
+            const settings = categories.get(category);
+            const settingsLabel = settings.size == 1 ? '1 setting'
+                                                     : settings.size + ' settings';
+
+            // Adds a menu item to display the entries in the |category|.
+            menu.addItem(category, settingsLabel, async(player) => {
+                const sortedSettings = 
+                    Array.from(settings).sort((lhs, rhs) => lhs.name.localeCompare(rhs.name));
+
+                const innerMenu = new Menu('Choose a setting', ['Setting', 'Value']);
+                for (const setting of sortedSettings) {
+                    let valueLabel = 'null';
+
+                    switch (setting.type) {
+                        case Setting.TYPE_BOOLEAN:
+                            valueLabel = setting.value ? 'enabled' : 'disabled';
+                            if (setting.value != setting.defaultValue) {
+                                valueLabel = '{FFFF00}' + valueLabel + '{FFFFFF} (default: ' +
+                                             (setting.defaultValue ? 'enabled' : 'disabled') + ')';
+                            }
+
+                            break;
+
+                        case Setting.TYPE_NUMBER:
+                            valueLabel = '' + setting.value;
+                            if (setting.value != setting.defaultValue) {
+                                valueLabel = '{FFFF00}' + valueLabel + '{FFFFFF} (default: ' +
+                                             setting.defaultValue + ')';
+                            }
+
+                            break;
+
+                        default:
+                            throw new Error('Invalid setting type for ' + setting.name);
+                    }
+
+                    // Add a menu item for the particular setting, that will in turn defer to a
+                    // function that allows the particular setting to be changed.
+                    innerMenu.addItem(setting.name, valueLabel, async(player) => {
+                        switch (setting.type) {
+                            case Setting.TYPE_BOOLEAN:
+                                await this.handleBooleanSettingModification(player, setting);
+                                break;
+
+                            case Setting.TYPE_NUMBER:
+                                await this.handleNumberSettingModification(player, setting);
+                                break;
+                        }
+                    });
+                }
+
+                await innerMenu.displayForPlayer(player);
+            });
+        }
+
+        await menu.displayForPlayer(player);
+    }
+
+    // Handles the |player| modifying the |setting|, which represents a boolean value.
+    async handleBooleanSettingModification(player, setting) {
+        const menu = new Menu(setting.description);
+
+        // Create creative labels that describe both the current value, the new value and the
+        // default value that was configured for the setting in its entirety.
+        const enableLabel = (setting.value ? '{FFFF00}' : '') + 'Enable' +
+                            (setting.defaultValue ? ' {FFFFFF}(default)' : '');
+        const disableLabel = (!setting.value ? '{FFFF00}' : '') + 'Disable' +
+                             (!setting.defaultValue ? ' {FFFFFF}(default)' : '');
+
+        menu.addItem(enableLabel, async(player) => {
+            this.settings_().setValue(setting.identifier, true);
+
+            // TODO: Distribute an update to administrators.
+
+            return await MessageBox.display(player, {
+                title: 'The setting has been enabled!',
+                message: Message.format(Message.LVP_SETTING_TOGGLED, setting.identifier, 'enabled')
+            });
+        });
+
+        menu.addItem(disableLabel, async(player) => {
+            this.settings_().setValue(setting.identifier, false);
+
+            // TODO: Distribute an update to administrators.
+
+            return await MessageBox.display(player, {
+                title: 'The setting has been disabled!',
+                message: Message.format(Message.LVP_SETTING_TOGGLED, setting.identifier, 'disabled')
+            });
+        });
+
+        await menu.displayForPlayer(player);
+    }
+
+    // Handles the |player| modifying the |setting|, which represents a numeric value.
+    async handleNumberSettingModification(player, setting) {
+        const answer = await Question.ask(player, {
+            question: 'Update the ' + setting.identifier + ' setting',
+            message: setting.description + '\nThe default value is {FFA500}' +
+                     setting.defaultValue + '{A9C4E4}',
+            leftButton: 'Update'
+        });
+
+        if (!answer)
+            return;  // the |player| cancelled the dialog.
+
+        if (!answer.isSafeInteger()) {
+            return await MessageBox.display(player, {
+                title: 'Invalid value for the ' + setting.identifier + ' setting!',
+                message: Message.format(Message.LVP_SETTING_INVALID_NUMBER, answer)
+            });
+        }
+
+        this.settings_().setValue(setting.identifier, answer.toSafeInteger());
+
+        // TODO: Distribute an update to administrators.
+
+        return await MessageBox.display(player, {
+            title: 'The setting has been disabled!',
+            message: Message.format(Message.LVP_SETTING_UPDATED, setting.identifier, answer)
+        });
+    }
+
     // Displays some generic information for those typing `/lvp`. Administrators and higher will see
     // a list of sub-commands that they're allowed to execute.
     onPlaygroundCommand(player) {
@@ -339,7 +483,7 @@ class PlaygroundCommands {
             options.push('access');
 
         if (player.isManagement())
-            options.push('party', 'reload');
+            options.push('party', 'reload', 'settings');
 
         player.sendMessage(Message.LVP_PLAYGROUND_HEADER);
         if (!options.length)

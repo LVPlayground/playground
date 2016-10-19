@@ -16,10 +16,13 @@ class Playground extends Feature {
         // Used for announcing changes in feature availability to players.
         const announce = this.defineDependency('announce');
 
+        // The Playground feature provides an interface in the mutable settings.
+        const settings = this.defineDependency('settings');
+
         this.access_ = new PlaygroundAccessTracker();
 
         this.manager_ = new PlaygroundManager();
-        this.commands_ = new PlaygroundCommands(this.manager_, this.access_, announce);
+        this.commands_ = new PlaygroundCommands(this.manager_, this.access_, announce, settings);
 
         // Activate the features that should be activated by default.
         this.manager_.initialize();

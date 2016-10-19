@@ -22,6 +22,9 @@ class Setting {
     // Gets the name of the setting within the category.
     get name() { return this.name_; }
 
+    // Gets an identifier for the setting that contains both its category and its name.
+    get identifier() { return this.category_ + '/' + this.name_; }
+
     // Gets the type of the setting. This is one of the Setting.TYPE_ constants.
     get type() { return this.type_; }
 
@@ -36,7 +39,8 @@ class Setting {
     get description() { return this.description_; }
 }
 
-// Variable types of the settings that are known.
+// Variable types of the settings that are known. Update the `/lvp settings` command display when
+// adding or removing types from here as well.
 Setting.TYPE_BOOLEAN = 0;
 Setting.TYPE_NUMBER = 1;
 

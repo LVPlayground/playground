@@ -15,10 +15,11 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
 
     beforeEach(() => {
         const announce = new MockAnnounce();
+        const settings = server.featureManager.loadFeature('settings');
 
         access = new PlaygroundAccessTracker();
         manager = new PlaygroundManager();
-        commands = new PlaygroundCommands(manager, access, () => announce);
+        commands = new PlaygroundCommands(manager, access, () => announce, () => settings);
 
         gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify();
@@ -151,5 +152,61 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(access.hasException(COMMAND_NAME, russell));
         assert.equal(access.getCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
         assert.equal(access.getDefaultCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
+    });
+
+    it('should be able to change boolean settings', async(assert) => {
+        const settings = server.featureManager.loadFeature('settings');
+
+        const russell = server.playerManager.getById(1 /* Russell */);
+        russell.identify();
+
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
+        // Disable the `spawn_vehicle_admin_override` section in the `abuse` section.
+        gunther.respondToDialog({ listitem: 0 /* Assumed `abuse` */ }).then(
+            () => gunther.respondToDialog({ listitem: 3 /* Assumed to be the override */ })).then(
+            () => gunther.respondToDialog({ listitem: 1 /* Disable */ })).then(
+            () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
+
+        assert.isTrue(settings.getValue('abuse/spawn_vehicle_admin_override'));
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.isFalse(settings.getValue('abuse/spawn_vehicle_admin_override'));
+
+        // Enable the `spawn_vehicle_admin_override` section in the `abuse` section.
+        gunther.respondToDialog({ listitem: 0 /* Assumed `abuse` */ }).then(
+            () => gunther.respondToDialog({ listitem: 3 /* Assumed to be the override */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Disable */ })).then(
+            () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.isTrue(settings.getValue('abuse/spawn_vehicle_admin_override'));
+    });
+
+    it('should be able to change numeric settings', async(assert) => {
+        const settings = server.featureManager.loadFeature('settings');
+
+        const russell = server.playerManager.getById(1 /* Russell */);
+        russell.identify();
+
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
+        // Disable the `spawn_vehicle_admin_override` section in the `abuse` section.
+        gunther.respondToDialog({ listitem: 0 /* Assumed `abuse` */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Assumed to be the damage time */ })).then(
+            () => gunther.respondToDialog({ response: 1, inputtext: '20' })).then(
+            () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
+
+        assert.equal(settings.getValue('abuse/blocker_damage_issued_time'), 10);
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(settings.getValue('abuse/blocker_damage_issued_time'), 20);
+
+        // Enable the `spawn_vehicle_admin_override` section in the `abuse` section.
+        gunther.respondToDialog({ listitem: 0 /* Assumed `abuse` */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Assumed to be the damage time */ })).then(
+            () => gunther.respondToDialog({ response: 1, inputtext: '10' })).then(
+            () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(settings.getValue('abuse/blocker_damage_issued_time'), 10);
     });
 });

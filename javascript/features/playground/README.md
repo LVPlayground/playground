@@ -9,6 +9,7 @@ server and the commands offered on the server.
 
   - **/lvp access**: Changes access rights for one of the commands in this feature.
   - **/lvp party [on/off]**: Toggles the Party Mode on or off. Only available to Management.
+  - **/lvp settings**: Enables Management to change various run-time settings on the server.
 
 ## Commands
 The following commands are available as part of the feature:

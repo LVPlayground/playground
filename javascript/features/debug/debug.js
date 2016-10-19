@@ -143,7 +143,7 @@ class Debug extends Feature {
     const idlers = [];
 
     for (const player of server.playerManager) {
-      if (player.isIdle())
+      if (player.isMinimized())
         idlers.push(player.name);
     }
 

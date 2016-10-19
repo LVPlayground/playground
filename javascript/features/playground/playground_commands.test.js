@@ -173,7 +173,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.isFalse(settings.getValue('abuse/spawn_vehicle_admin_override'));
 
         assert.equal(gunther.messages.length, 1);
-        assert.isTrue(gunther.messages[0].includes('abuse/spawn_vehicle_admin_override'));
+        assert.isTrue(gunther.messages[0].includes('spawn_vehicle_admin_override'));
         assert.isTrue(gunther.messages[0].includes('disabled'));
 
         gunther.clearMessages();
@@ -188,7 +188,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(settings.getValue('abuse/spawn_vehicle_admin_override'));
 
         assert.equal(gunther.messages.length, 1);
-        assert.isTrue(gunther.messages[0].includes('abuse/spawn_vehicle_admin_override'));
+        assert.isTrue(gunther.messages[0].includes('spawn_vehicle_admin_override'));
         assert.isTrue(gunther.messages[0].includes('enabled'));
     });
 
@@ -211,7 +211,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.equal(settings.getValue('abuse/blocker_damage_issued_time'), 2000);
 
         assert.equal(gunther.messages.length, 1);
-        assert.isTrue(gunther.messages[0].includes('abuse/blocker_damage_issued_time'));
+        assert.isTrue(gunther.messages[0].includes('blocker_damage_issued_time'));
         assert.isTrue(gunther.messages[0].includes('2,000'));
 
         gunther.clearMessages();
@@ -226,7 +226,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.equal(settings.getValue('abuse/blocker_damage_issued_time'), 10);
 
         assert.equal(gunther.messages.length, 1);
-        assert.isTrue(gunther.messages[0].includes('abuse/blocker_damage_issued_time'));
+        assert.isTrue(gunther.messages[0].includes('blocker_damage_issued_time'));
         assert.isTrue(gunther.messages[0].includes('10'));
     });
 });

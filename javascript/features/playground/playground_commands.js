@@ -477,14 +477,14 @@ class PlaygroundCommands {
             case Setting.TYPE_BOOLEAN:
                 this.announce_().announceToAdministrators(
                     Message.LVP_ANNOUNCE_SETTING_TOGGLED, player.name, player.id,
-                    (setting.value ? 'enabled' : 'disabled'), setting.identifier);
+                    (setting.value ? 'enabled' : 'disabled'), setting.name);
 
                 break;
 
             case Setting.TYPE_NUMBER:
                 this.announce_().announceToAdministrators(
                     Message.LVP_ANNOUNCE_SETTING_UPDATED_NUM, player.name, player.id,
-                    setting.identifier, setting.value);
+                    setting.name, setting.value);
 
                 break;
         }

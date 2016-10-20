@@ -1065,9 +1065,17 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        SetPlayerChatBubble(playerid, right(cmdtext, (strlen(cmdtext)-4)), ColorManager->playerColor(playerid), 50, 10*1000);
+        if (SpamTracker->isSpamming(playerid)) {
+            SendClientMessage(playerid, Color::Error, "Please don't spam PM.");
+            return 1;
+        }
 
-        format(string, sizeof(string), "* %s %s", Player(playerid)->nicknameString(), right(cmdtext, (strlen(cmdtext)-4)));
+        new actionText[256];
+        actionText = right(cmdtext, (strlen(cmdtext)-4));
+
+        SetPlayerChatBubble(playerid, actionText, ColorManager->playerColor(playerid), 50, 10*1000);
+
+        format(string, sizeof(string), "* %s %s", Player(playerid)->nicknameString(), actionText);
         for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
             if (!Player(subjectId)->isConnected() || g_Ignore[subjectId][playerid] == true)
                 continue;
@@ -1079,8 +1087,10 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             SendClientMessage(subjectId, ColorManager->playerColor(playerid), string);
         }
 
-        format(string, sizeof(string), "%d %s %s", playerid, Player(playerid)->nicknameString(), right(cmdtext, (strlen(cmdtext)-4)));
+        format(string, sizeof(string), "%d %s %s", playerid, Player(playerid)->nicknameString(), actionText);
         IRC->broadcast(PlayerStatusIrcMessage, string);
+
+        SpamTracker->record(playerid, actionText);
 
         return 1;
     }

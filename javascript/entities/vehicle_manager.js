@@ -27,6 +27,8 @@ class VehicleManager {
             'vehiclespawn', VehicleManager.prototype.onVehicleSpawn.bind(this));
         this.callbacks_.addEventListener(
             'vehicledeath', VehicleManager.prototype.onVehicleDeath.bind(this));
+        this.callbacks_.addEventListener(
+            'vehiclestreamin', VehicleManager.prototype.onVehicleStreamIn.bind(this));
 
         // TODO(Russell): Handle OnVehicleDamangeStatusUpdate
         // TODO(Russell): Handle OnVehicleMod
@@ -114,6 +116,19 @@ class VehicleManager {
             return;  // the vehicle isn't owned by the JavaScript code
 
         this.notifyObservers('onVehicleDeath', vehicle);
+    }
+
+    // Called when a vehicle has streamed in for a particular player. The vehicle needs to be re-
+    // locked if a lock was in place for the particular player.
+    onVehicleStreamIn(event) {
+        const player = server.playerManager.getById(event.forplayerid);
+        const vehicle = this.vehicles_.get(event.vehicleid);
+
+        if (!player || !vehicle)
+            return;  // either the player or the vehicle are not recognized
+
+        if (vehicle.isLockedForPlayer(player))
+            vehicle.lockForPlayer(player);
     }
 
     // ---------------------------------------------------------------------------------------------

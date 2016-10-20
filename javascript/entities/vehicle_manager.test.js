@@ -369,4 +369,35 @@ describe('VehicleManager', (it, beforeEach) => {
             assert.isNull(russell.vehicle);
         }
     });
+
+    it('should reapply locks to vehicles when they stream in for a player', assert => {
+        const vehicle = manager.createVehicle({ modelId: 441, position: new Vector(200, 300, 50) });
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        let counter = 0;
+
+        // Override the |lockForPlayer| method for the |vehicle| so that we can instrument it. The
+        // parent method will still be called, so that normal functionality continues to work.
+        vehicle.lockForPlayer = (function(player) {
+            this.__proto__.lockForPlayer.call(this, player);
+            counter++;
+
+        }).bind(vehicle);
+
+        vehicle.lockForPlayer(gunther);
+        assert.isTrue(vehicle.isLockedForPlayer(gunther));
+        assert.equal(counter, 1);
+
+        vehicle.streamInForPlayer(gunther);
+        assert.isTrue(vehicle.isLockedForPlayer(gunther));
+        assert.equal(counter, 2);
+
+        vehicle.unlockForPlayer(gunther);
+        assert.isFalse(vehicle.isLockedForPlayer(gunther));
+        assert.equal(counter, 2);
+
+        vehicle.streamInForPlayer(gunther);
+        assert.isFalse(vehicle.isLockedForPlayer(gunther));
+        assert.equal(counter, 2);
+    });
 });

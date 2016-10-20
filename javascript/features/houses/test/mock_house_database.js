@@ -51,6 +51,8 @@ class MockHouseDatabase {
             ownerGangId: null,
             ownerName: 'Gunther',
 
+            purchaseTime: Math.floor(Date.now() / 1000),
+
             interiorId: 0,
 
             access: HouseSettings.ACCESS_DEFAULT,
@@ -87,6 +89,8 @@ class MockHouseDatabase {
             ownerId: player.userId,
             ownerGangId: player.gangId,
             ownerName: player.name,
+
+            purchaseTime: Math.floor(Date.now() / 1000),
 
             interiorId: interiorId,
 

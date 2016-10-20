@@ -31,6 +31,15 @@ class Economy extends Feature {
             /* interiorValue */    interiorValue);
     }
 
+    // Calculates the value of a house after it has been in possession of a particular player for
+    // |ownershipSeconds| seconds. Different from normal economics, the value of a house increases
+    // as the player owns it for a longer amount of time, to discourage players from switching
+    // houses very frequently (which will turn out expensive for them).
+    calculateHouseValue(position, parkingLotCount, interiorValue, ownershipSeconds) {
+        // TODO: Implement this calculation.
+        return 25;
+    }
+
     // Calculates the price for the given |feature| for a house at |position|.
     calculateHouseFeaturePrice(position, feature) {
         // TODO: Enable having different prices for different |feature|s.
@@ -55,8 +64,8 @@ class Economy extends Feature {
         return this.residentialValueMap_.query(position) === 5;
     }
 
-    // Calculated and returns the prize for a few minutes of killtime. It is calculated bases on the amount of players
-    // multiplied by kills. It always returns a minimum of 25k.
+    // Calculated and returns the prize for a few minutes of killtime. It is calculated bases on the
+    // amount of players multiplied by kills. It always returns a minimum of 25k.
     calculateKilltimeAwardPrize(participants, kills) {
         return this.economyCalculator_.calculateKilltimeAwardPrize(participants, kills);
     }

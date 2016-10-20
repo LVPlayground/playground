@@ -28,8 +28,13 @@ describe('HouseManager', (it, beforeEach) => {
         let occupiedCount = 0;
 
         for (const location of manager.locations) {
-            if (!location.isAvailable())
-                occupiedCount++;
+            if (location.isAvailable())
+                continue;
+
+            // Make sure that the purchase time was read from the database.
+            assert.closeTo(location.settings.purchaseTime, Date.now() / 1000, 5);
+
+            occupiedCount++;
         }
 
         assert.isAbove(occupiedCount, 0);
@@ -125,6 +130,7 @@ describe('HouseManager', (it, beforeEach) => {
         assert.isTrue(location.isAvailable());
         assert.isFalse(manager.entranceController_.isLocationPickupOccupiedForTesting(location));
 
+        await server.clock.advance(60 * 1000);  // ensure that we can test for a fresh purchase time
         await manager.createHouse(gunther, location, 1 /* interiorId */);
 
         assert.isFalse(location.isAvailable());
@@ -134,6 +140,8 @@ describe('HouseManager', (it, beforeEach) => {
 
         assert.equal(location.settings.ownerId, gunther.userId);
         assert.equal(location.settings.ownerName, gunther.name);
+
+        assert.closeTo(location.settings.purchaseTime, Date.now() / 1000, 5);
 
         assert.equal(location.interior.interiorId, 1 /* interiorId */);
         assert.isTrue(location.interior.getData().hasOwnProperty('name'));

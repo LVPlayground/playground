@@ -785,12 +785,25 @@ describe('HouseCommands', (it, beforeEach) => {
 
         assert.isFalse(location.isAvailable());
 
+        // Give |gunther| a mocked balance of 150 million dollars on their bank account.
+        PlayerMoneyBridge.setMockedBalanceForTests(150000000);
+        {
+            const balance = await PlayerMoneyBridge.getBalanceForPlayer(gunther);
+            assert.equal(balance, 150000000);
+        }
+
         gunther.respondToDialog({ listitem: SETTINGS_OFFSET + 1 /* Sell this house */}).then(
             () => gunther.respondToDialog({ response: 1 /* Yes, I really want to */ })).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 
         assert.isTrue(await gunther.issueCommand('/house settings'));
         assert.isTrue(location.isAvailable());
+
+        // Gunther should have been refunded money from the bank for selling their house.
+        {
+            const balance = await PlayerMoneyBridge.getBalanceForPlayer(gunther);
+            assert.isAbove(balance, 150000000);
+        }
     });
 
     it('should clean up after itself', async(assert) => {

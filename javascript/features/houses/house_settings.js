@@ -15,6 +15,8 @@ class HouseSettings {
         this.ownerGangId_ = house.ownerGangId;
         this.ownerName_ = house.ownerName;
 
+        this.purchaseTime_ = house.purchaseTime;
+
         this.access_ = house.access;
         this.spawnPoint_ = house.spawnPoint;
         this.welcomeMessage_ = house.welcomeMessage;
@@ -60,6 +62,9 @@ class HouseSettings {
     // HouseManager when it's been detected that a player changed their nickname.
     get ownerName() { return this.ownerName_; }
     set ownerName(value) { this.ownerName_ = value; }
+
+    // Gets the UNIX timestamp, in seconds, at which the house was bought by the player.
+    get purchaseTime() { return this.purchaseTime_; }
 
     // Gets or sets the access level of this house. Updating the access level should only be done
     // by the HouseManager, because it needs to be reflected in the database.

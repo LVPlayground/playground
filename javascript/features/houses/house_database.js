@@ -48,6 +48,7 @@ const LOAD_HOUSES_QUERY = `
         houses_settings.house_spawn_point,
         houses_settings.house_welcome_message,
         houses_settings.house_marker_color,
+        UNIX_TIMESTAMP(houses_settings.house_created) AS house_created,
         users_gangs.gang_id,
         users.username
     FROM
@@ -340,6 +341,8 @@ class HouseDatabase {
                     ownerGangId: row.gang_id,
                     ownerName: row.username,
 
+                    purchaseTime: row.house_created,
+
                     interiorId: row.house_interior_id,
 
                     access: HouseDatabase.toHouseAccessValue(row.house_access),
@@ -435,6 +438,8 @@ class HouseDatabase {
             ownerId: player.userId,
             ownerGangId: player.gangId,
             ownerName: player.name,
+
+            purchaseTime: Math.floor(Date.now() / 1000),
 
             interiorId: interiorId,
 

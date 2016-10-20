@@ -15,7 +15,10 @@ const ParkingLotRemover = require('features/houses/utils/parking_lot_remover.js'
 const PlayerMoneyBridge = require('features/houses/utils/player_money_bridge.js');
 
 // Maximum number of milliseconds during which the identity beam should be displayed.
-const IDENTITY_BEAM_DISPLAY_TIME_MS = 60000;
+const IdentityBeamDisplayTimeMs = 60000;
+
+// Maximum amount of money that a player can store in their bank account.
+const PlayerBankAccountLimit = 500000000;
 
 // This class provides the `/house` command available to administrators to manage parts of the
 // Houses feature on Las Venturas Playground. Most interaction occurs through dialogs.
@@ -376,7 +379,7 @@ class HouseCommands {
 
         // Create a beam for |player| at the house's entrance to clarify what's being edited.
         const identityBeam = new IdentityBeam(closestLocation.position.translate({ z: -10 }), {
-            timeout: IDENTITY_BEAM_DISPLAY_TIME_MS,
+            timeout: IdentityBeamDisplayTimeMs,
             player: player
         });
 
@@ -578,9 +581,11 @@ class HouseCommands {
         this.manager_.invokeExtensions('onHouseSettingsCommand', player, location, menu);
 
         menu.addItem('Sell this house', '-', async(player) => {
-            const offer = 0;  // TODO: Calculate the refund to offer the player. (Issue #268.)
+            const offer = this.economy_().calculateHouseValue(
+                location.position, location.parkingLotCount, location.interior.getData().value,
+                Math.floor(server.clock.currentTime() / 1000) - location.settings.purchaseTime);
 
-            const message = isOwner ? Message.format(Message.HOUSE_SETTINGS_SELL_OFFER)
+            const message = isOwner ? Message.format(Message.HOUSE_SETTINGS_SELL_OFFER, offer)
                                     : Message.format(Message.HOUSE_SETTINGS_SELL_CONFIRM,
                                                      location.settings.ownerName);
 
@@ -597,10 +602,19 @@ class HouseCommands {
 
             await this.manager_.removeHouse(location);
 
+            if (isOwner) {
+                const balance = await PlayerMoneyBridge.getBalanceForPlayer(player);
+                const newBalance = Math.min(PlayerBankAccountLimit, balance + offer);
+
+                await PlayerMoneyBridge.setBalanceForPlayer(player, newBalance);
+            }
+
             // Display a confirmation dialog to the player to inform them of their action.
             await MessageBox.display(player, {
                 title: 'Congratulations on the sell!',
-                message: Message.HOUSE_SETTINGS_SELL_CONFIRMED
+                message: Message.format(
+                    (isOwner ? Message.HOUSE_SETTINGS_SELL_CONFIRMED
+                             : Message.HOUSE_SETTINGS_SELL_CONFIRMED_ADMIN), offer)
             });
         });
 

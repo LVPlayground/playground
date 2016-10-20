@@ -28,7 +28,7 @@ class EconomyCalculator {
     // |interiorValue| must be in range of [0, 9]. The variance factor will be included. This value
     // is being calculated based on the following spreadsheet:
     //
-    //   https://docs.google.com/spreadsheets/d/1rgydvkX5DEX7tXH8pvQggIOTg2RQpvfqzJEH6ZsKbyE/edit
+    //   https://docs.google.com/spreadsheets/d/1R01tp9WF_lHS3JP2DDqsLKhZOM7illJa3DF4gK3t3yY/edit
     //
     calculateHousePrice(residentialValue, parkingLotCount, interiorValue) {
         if (residentialValue < 0 || residentialValue > 5) {
@@ -78,11 +78,37 @@ class EconomyCalculator {
         return fixedPrice * varianceFactor;
     }
 
+    // Calculates the current house value based on the |purchasePrice| and the |ownershipDuration|.
+    // The value will be influenced by the variance factor by up to 5%.
+    //
+    //   https://docs.google.com/spreadsheets/d/1R01tp9WF_lHS3JP2DDqsLKhZOM7illJa3DF4gK3t3yY/edit
+    //
+    calculateHouseValue(purchasePrice, ownershipDuration) {
+        const BaseRefundPercentage = 35;
+        const MaximumRefundPercentage = 70;
+
+        const MaximizeRefundPeriod = 30 /* days */ * 86400;
+
+        // Determine the refund percentage based on the |ownershipDuration|.
+        const refundPercentage =
+            Math.min(MaximumRefundPercentage,
+                     BaseRefundPercentage + ((MaximumRefundPercentage - BaseRefundPercentage) *
+                        (ownershipDuration / MaximizeRefundPeriod)));
+
+        // Calculate the refund based on the |purchasePrice| and the |refundPercentage|.
+        const refund = purchasePrice * (refundPercentage / 100);
+
+        // The variance will either decrease or increase the refund by, at most, 5%.
+        const varianceFactor = 1 + ((-50 + this.varianceValue_) / 1000);
+
+        return refund * varianceFactor;
+    }
+
     // Calculates the price for a feature of value |featureValue|, which must be in range of [0, 5],
     // at a location having |residentialValue|, which must be in range of [0, 5] as well. The
     // variance factor will be included in the feature's price as well.
     //
-    //   https://docs.google.com/spreadsheets/d/1rgydvkX5DEX7tXH8pvQggIOTg2RQpvfqzJEH6ZsKbyE/edit
+    //  https://docs.google.com/spreadsheets/d/1R01tp9WF_lHS3JP2DDqsLKhZOM7illJa3DF4gK3t3yY/edit
     //
     calculateHouseFeaturePrice(residentialValue, featureValue) {
         if (residentialValue < 0 || residentialValue > 5) {

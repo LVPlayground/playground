@@ -82,6 +82,33 @@ describe('EconomyCalculator', (it, beforeEach, afterEach) => {
         });
     });
 
+    it('should be able to determine the value for a house appropriately', assert => {
+        // Returns the value for a house based on its purchase price and ownership days,
+        const calculateHousePrice = (purchasePrice, ownershipDays, varianceValue) => {
+            calculator.setVarianceValueForTests(varianceValue);
+            return calculator.calculateHouseValue(purchasePrice, ownershipDays * 86400);
+        };
+
+        const PurchasePrice = 80643816.73;
+        const MaximumRefundValue = 0.7 * PurchasePrice;
+
+        // Change detector tests against the spreadsheet.
+        assert.closeTo(calculateHousePrice(PurchasePrice,   0.5, 50), 28695758.12, 1);
+        assert.closeTo(calculateHousePrice(PurchasePrice,     1, 50), 29166180.38, 1);
+        assert.closeTo(calculateHousePrice(PurchasePrice,     3, 50), 31047869.44, 1);
+        assert.closeTo(calculateHousePrice(PurchasePrice,     7, 50), 34811247.56, 1);
+        assert.closeTo(calculateHousePrice(PurchasePrice,    14, 50), 41397159.25, 1);
+        assert.closeTo(calculateHousePrice(PurchasePrice, 30.25, 50), 56450671.71, 1);
+        assert.closeTo(calculateHousePrice(PurchasePrice, 60.50, 50), 56450671.71, 1);
+        assert.closeTo(calculateHousePrice(PurchasePrice, 90.75, 50), 56450671.71, 1);
+
+        // Verify that the variance is no more than 5% of the total house price.
+        assert.closeTo(calculateHousePrice(PurchasePrice, 100,   0), 0.95 * MaximumRefundValue, 1);
+        assert.closeTo(calculateHousePrice(PurchasePrice, 100,  50), MaximumRefundValue, 1);
+        assert.closeTo(calculateHousePrice(PurchasePrice, 100, 100), 1.05 * MaximumRefundValue, 1);
+
+    });
+
     it('should be able to price features for houses appropriately', assert => {
         // Returns the house price that has been determined for the three input values.
         const calculateFeaturePrice = (residentialValue, featureValue, varianceValue) => {

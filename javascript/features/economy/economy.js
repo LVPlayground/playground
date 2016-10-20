@@ -32,18 +32,29 @@ class Economy extends Feature {
     }
 
     // Calculates the value of a house after it has been in possession of a particular player for
-    // |ownershipSeconds| seconds. Different from normal economics, the value of a house increases
+    // |ownershipDuration| seconds. Different from normal economics, the value of a house increases
     // as the player owns it for a longer amount of time, to discourage players from switching
     // houses very frequently (which will turn out expensive for them).
-    calculateHouseValue(position, parkingLotCount, interiorValue, ownershipSeconds) {
-        // TODO: Implement this calculation.
-        return 25;
+    calculateHouseValue(position, parkingLotCount, interiorValue, ownershipDuration) {
+        return this.economyCalculator_.calculateHouseValue(
+            /* purchasePrice */     this.calculateHousePrice(
+                                        position, parkingLotCount, interiorValue),
+            /* ownershipDuration */ ownershipDuration);
     }
 
     // Calculates the price for the given |feature| for a house at |position|.
     calculateHouseFeaturePrice(position, feature) {
-        // TODO: Enable having different prices for different |feature|s.
-        const featureValue = 2;  // [0, 5]
+        let featureValue = null;
+
+        switch (feature) {
+            case 'health':  // health pickup
+            case 'armour':  // armour pickup
+                featureValue = 2;
+                break;
+
+            default:
+                throw new Error('Unrecognized house feature: ' + feature);
+        }
 
         return this.economyCalculator_.calculateHouseFeaturePrice(
             /* residentialValue */ this.residentialValueMap_.query(position),

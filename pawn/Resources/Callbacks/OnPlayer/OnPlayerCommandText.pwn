@@ -1066,7 +1066,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         }
 
         if (SpamTracker->isSpamming(playerid)) {
-            SendClientMessage(playerid, Color::Error, "Please don't spam PM.");
+            SendClientMessage(playerid, Color::Error, "Please don't spam /me.");
             return 1;
         }
 

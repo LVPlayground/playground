@@ -621,7 +621,7 @@ CFightClub__OnDeath(playerid, killerid)
         if(Matches[matchid][rounds] < 1) // If no more rounds, EndMatch
         {
             Matches[matchid][status] = FC_STATUS_NONE; // Prevent StartMatch on OnSpawn
-            CFightClub__EndMatch(matchid); // EndMatch
+            CFightClub__EndMatch(matchid, playerid); // EndMatch
         }
     }
     return 1;
@@ -1002,7 +1002,7 @@ CFightClub__StartMatch(matchid)
     return 1;
 }
 
-CFightClub__EndMatch(matchid)
+CFightClub__EndMatch(matchid, deathPlayerId)
 {
 
     new iPlayer1 = Matches[matchid][player1];
@@ -1051,15 +1051,16 @@ CFightClub__EndMatch(matchid)
 
     NewsController->show(sMessage);
 
-    new Float: fPlayerHealth;
     if(IsPlayerConnected(iPlayer1))
     {
         SetPlayerVirtualWorld(iPlayer1, 0);
         SetPlayerInterior(iPlayer1, 0);
         ResetWorldBounds(iPlayer1);
-        GetPlayerHealth(iPlayer1, fPlayerHealth);
-        if (fPlayerHealth > 0)
+
+        if (iPlayer1 != deathPlayerId) {
+            SetPlayerHealth(iPlayer1, 100);
             SpawnPlayer(iPlayer1);
+        }
     }
 
     if(IsPlayerConnected(iPlayer2))
@@ -1067,9 +1068,11 @@ CFightClub__EndMatch(matchid)
         SetPlayerVirtualWorld(iPlayer2, 0);
         SetPlayerInterior(iPlayer2, 0);
         ResetWorldBounds(iPlayer2);
-        GetPlayerHealth(iPlayer2, fPlayerHealth);
-        if (fPlayerHealth > 0)
+
+        if (iPlayer2 != deathPlayerId) {
+            SetPlayerHealth(iPlayer2, 100);
             SpawnPlayer(iPlayer2);
+        }
     }
 
     // Everyone who spectates should stop spectating.

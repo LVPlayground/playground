@@ -4,6 +4,7 @@
 
 const AbuseConstants = require('features/abuse/abuse_constants.js');
 const AbuseMitigator = require('features/abuse/abuse_mitigator.js');
+const AbuseMonitor = require('features/abuse/abuse_monitor.js');
 const AbuseNatives = require('features/abuse/abuse_natives.js');
 const DamageManager = require('features/abuse/damage_manager.js');
 const Feature = require('components/feature_manager/feature.js');
@@ -17,10 +18,15 @@ class Abuse extends Feature {
     constructor() {
         super();
 
+        // The announce feature enables abuse to be reported to administrators.
+        this.announce_ = this.defineDependency('announce');
+
         // The settings for the Abuse system are configurable at runtime.
         this.settings_ = this.defineDependency('settings');
 
         this.mitigator_ = new AbuseMitigator();
+        this.monitor_ = new AbuseMonitor(this.announce_, this.settings_);
+
         this.damageManager_ = new DamageManager(this.mitigator_, this.settings_);
 
         this.natives_ = new AbuseNatives(this);
@@ -111,6 +117,12 @@ class Abuse extends Feature {
     dispose() {
         this.natives_.dispose();
         this.natives_ = null;
+
+        this.damageManager_.dispose();
+        this.damageManager_ = null;
+
+        this.monitor_.dispose();
+        this.monitor_ = null;
 
         this.mitigator_.dispose();
         this.mitigator_ = null;

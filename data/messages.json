@@ -1,6 +1,8 @@
 {
     "TEST_MESSAGE": "Hello, world!",
 
+    "ABUSE_ANNOUNCE_DETECTED": "%s (Id: %d) has just abused %s (%s time).",
+
     "ANNOUNCE_ADMINISTRATORS": "{FFFF00}Admin notice{FFFFFF}: %s",
     "ANNOUNCE_ALL": "{80CBC4}*** %s",
     "ANNOUNCE_MINIGAME": "{CCD782}Sign up for the {838F31}%s{CCD782}! Type {838F31}%s{CCD782} to join.",

@@ -21,6 +21,8 @@ const MockTextLabel = require('entities/test/mock_text_label.js');
 const MockVehicle = require('entities/test/mock_vehicle.js');
 
 const Abuse = require('features/abuse/abuse.js');
+const Communication = require('features/communication/communication.js');
+const MockAnnounce = require('features/announce/test/mock_announce.js');
 const Settings = require('features/settings/settings.js');
 const Streamer = require('features/streamer/streamer.js');
 
@@ -46,6 +48,8 @@ class MockServer {
         // Register features whose production versions are suitable for testing.
         this.featureManager_.registerFeaturesForTests({
             abuse: Abuse,
+            announce: MockAnnounce,  // TODO: Move functionality to |communication|. See #309.
+            communication: Communication,
             settings: Settings,
             streamer: Streamer
         });

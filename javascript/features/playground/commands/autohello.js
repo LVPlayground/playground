@@ -18,15 +18,28 @@ const IgnoreTimeout = 60;
 // List of greetings that will randomly be selected from when a player logs in.
 const Greetings = [
     'Hey %s',
+    'hey %s',
+    'heya %s :)',
     'Hello %s',
+    'hello, %s',
     'Howdy, %s!',
     'Hiya %s',
     'Yo %s',
+    'yo %s',
     'Hi %s',
+    'hi %s',
+    'hi %s!',
     'What\'s up, %s?',
     'What\'s new, %s?',
     'How are you doing, %s?',
     'g\'day, %s',
+    '%s! Hi :)',
+    'good to see you %s',
+    'sup %s?',
+    'sup, %s?',
+    'morning, %s',
+    'Here\'s %s!',
+    'oi %s'
 ];
 
 // Command: /autohello [player?]

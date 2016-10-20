@@ -86,7 +86,11 @@ class AutoHelloMessageCommand extends Command {
     }
 
     // Called when the |player| has identified to their account. This is where we might say hi.
+    // Administrators who log in with an undercover account will be excluded.
     onPlayerLogin(player) {
+        if (player.isUndercover())
+            return;
+
         if (!this.greeters_.size || this.ignored_.has(player.userId))
             return;
 

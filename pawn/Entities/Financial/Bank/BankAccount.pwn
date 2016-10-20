@@ -17,25 +17,20 @@ enum BankAccountType {
  * each and every registered player, and Premier accounts which are available for the more regular
  * players on the server. Both will persist the player's balance between playing sessions.
  *
- * Normal bank accounts have a maximum balance of 400 million dollars and are free to use at any
- * bank or cash point in San Andreas.
+ * Normal bank are free to use at any bank or cash point in San Andreas.
  *
- * Premier bank accounts have a maximum balance of 2 billion dollars but can be used anywhere and at
- * any time. However, when the player deposits money, 10% of that amount will go to the bank. Any
- * earnings from properties will directly be deposited in the player's bank account. Players are
- * able to upgrade to Premier accounts when they have a hundred hours of in-game time and are
- * willing to pay a one time fee of 150 million dollars.
+ * Premier bank accounts can be used anywhere and at any time. However, when the player deposits
+ * money, 10% of that amount will go to the bank. Any earnings from properties will directly be
+ * deposited in the player's bank account. Players are able to upgrade to Premier accounts when they
+ * have a hundred hours of in-game time and are willing to pay a one time fee of 25 million dollars.
  *
  * The commands for interacting with bank accounts are available in the BankCommands.pwn file,
  * including the available commands for administrators. This class holds the logic and status for
  * the bank account of each player, and is usable throughout the gamemode.
  */
 class BankAccount {
-    // Maximum balance of a normal bank account: 400 million dollar.
-    public const MaximumBalanceNormalAccount = 400000000;
-
-    // Maximum balance of a Premier bank account: 2 billion dollar.
-    public const MaximumBalancePremierAccount = 2000000000;
+    // Maximum balance of any kind of bank account.
+    public const MaximumBalance = 500000000;
 
     // Percentage of the deposit which will go to the bank for Premier accounts.
     public const PremierDepositTransactionCostPercentage = 10.0;
@@ -97,11 +92,8 @@ class BankAccount {
     public setBankAccountType(playerId, BankAccountType: type) {
         m_type[playerId] = type;
 
-        if (m_type[playerId] == NormalBankAccount && m_balance[playerId] > BankAccount::MaximumBalanceNormalAccount)
-            m_balance[playerId] = BankAccount::MaximumBalanceNormalAccount;
-
-        if (m_type[playerId] == PremierBankAccount && m_balance[playerId] > BankAccount::MaximumBalancePremierAccount)
-            m_balance[playerId] = BankAccount::MaximumBalancePremierAccount;
+        if (m_balance[playerId] > BankAccount::MaximumBalance)
+            m_balance[playerId] = BankAccount::MaximumBalance;
     }
 
     /**
@@ -121,10 +113,7 @@ class BankAccount {
      * @return integer The maximum amount of money the player can deposit.
      */
     public availableBalance(playerId) {
-        if (m_type[playerId] == PremierBankAccount)
-            return max(0, BankAccount::MaximumBalancePremierAccount - m_balance[playerId]);
-
-        return max(0, BankAccount::MaximumBalanceNormalAccount - m_balance[playerId]);
+        return max(0, BankAccount::MaximumBalance - m_balance[playerId]);
     }
 
     /**
@@ -134,10 +123,8 @@ class BankAccount {
      * @return integer The maximum amount of money the player can store.
      */
     public maximumBalance(playerId) {
-        if (m_type[playerId] == PremierBankAccount)
-            return BankAccount::MaximumBalancePremierAccount;
-
-        return BankAccount::MaximumBalanceNormalAccount;
+        return BankAccount::MaximumBalance;
+        #pragma unused playerId
     }
 
     /**
@@ -151,11 +138,7 @@ class BankAccount {
         if (balance < 0)
             return false; // we don't accept negative balances.
 
-        if (m_type[playerId] == NormalBankAccount)
-            m_balance[playerId] = min(balance, BankAccount::MaximumBalanceNormalAccount);
-
-        if (m_type[playerId] == PremierBankAccount)
-            m_balance[playerId] = min(balance, BankAccount::MaximumBalancePremierAccount);
+        m_balance[playerId] = min(balance, BankAccount::MaximumBalance);
 
         return true;
     }

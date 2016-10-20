@@ -265,7 +265,7 @@ class BankCommands {
         if (this->isPlayerEligibleForPremierAccount(playerId) == false) {
             SendClientMessage(playerId, Color::Error, "You are currently not eligible for an upgrade to a Premier account.");
             SendClientMessage(playerId, Color::Information, "In order to open a Premier account, you need to have been in-game for over a 100 hours");
-            SendClientMessage(playerId, Color::Information, "and have a minimum of 150 million dollars in your bank account.");
+            SendClientMessage(playerId, Color::Information, "and have a minimum of 25 million dollars in your bank account.");
             return 1;
         }
 

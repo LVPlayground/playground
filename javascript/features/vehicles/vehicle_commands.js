@@ -4,6 +4,7 @@
 
 const CommandBuilder = require('components/command_manager/command_builder.js');
 const DatabaseVehicle = require('features/vehicles/database_vehicle.js');
+const Menu = require('components/menu/menu.js');
 const VehicleAccessManager = require('features/vehicles/vehicle_access_manager.js');
 
 // The maximum distance from the player to the vehicle closest to them, in units.
@@ -241,10 +242,31 @@ class VehicleCommands {
         let vehicleModel = null;
 
         const potentialModelId = modelIdentifier.toSafeInteger();
-        if (potentialModelId && potentialModelId >= 400 && potentialModelId <= 611)
+        if (potentialModelId && potentialModelId >= 400 && potentialModelId <= 611) {
             vehicleModel = VehicleModel.getById(potentialModelId);
-        else
-            vehicleModel = VehicleModel.getByName(modelIdentifier, true /* fuzzy */);
+        } else {
+            const vehicleModels = VehicleModel.getByName(
+                modelIdentifier, true /* fuzzy */, true /* all */);
+
+            if (vehicleModels.length == 1) {
+                vehicleModel = vehicleModels[0];
+            } else if (vehicleModels.length > 1) {
+                const disambiguationDialog =
+                    new Menu('Please disambiguate the vehicle!', ['Name', 'Model ID']);
+
+                // Sort the vehicles it found by name, alphabetically.
+                vehicleModels.sort((lhs, rhs) => lhs.name.localeCompare(rhs));
+
+                for (const model of vehicleModels)
+                    disambiguationDialog.addItem(model.name, model.id);
+                
+                const decision = await disambiguationDialog.displayForPlayer(player);
+                if (!decision || !decision.item[1])
+                    return;  // the player closed or mocked with the disambiguation dialog
+
+                vehicleModel = VehicleModel.getById(decision.item[1]);
+            }
+        }
         
         if (!vehicleModel) {
             player.sendMessage(Message.VEHICLE_SPAWN_NOT_FOUND, modelIdentifier);

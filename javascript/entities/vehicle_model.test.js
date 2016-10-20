@@ -43,6 +43,14 @@ describe('VehicleModel', it => {
         assert.equal(VehicleModel.getByName('RAM', true /* fuzzy */).id, 449);
     });
 
+    it('should be able to find all vehicles with a given name', assert => {
+        const vehicles = VehicleModel.getByName('Firetruck', true /* fuzzy */, true /* all */);
+        assert.equal(vehicles.length, 2);
+
+        assert.equal(vehicles[0].id, 407);
+        assert.equal(vehicles[1].id, 544);
+    });
+
     it('should be able to tell whether a vehicle is a trailer', assert => {
         assert.isFalse(VehicleModel.getById(489 /* Rancher */).isTrailer());
         assert.isFalse(VehicleModel.getById(411 /* Infernus */).isTrailer());

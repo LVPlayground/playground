@@ -27,8 +27,9 @@ class VehicleModel {
     }
 
     // Returns a VehicleModel instance by its |modelName|. Returns NULL when given an invalid name.
-    // Optionally a |fuzzy| search can be done too.
-    static getByName(modelName, fuzzy = false) {
+    // Optionally a |fuzzy| search can be done too. An array with all matches will be returned when
+    // the |all| property has been set.
+    static getByName(modelName, fuzzy = false, all = false) {
         if (!fuzzy)
             return modelsByName.get(modelName) || null;
 
@@ -39,6 +40,9 @@ class VehicleModel {
             if (model.name.toLowerCase().includes(lowerCaseModelName))
                 matches.push(model);
         }
+
+        if (all)
+            return matches;
 
         if (matches.length == 1)
             return matches[0];

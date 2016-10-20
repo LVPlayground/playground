@@ -394,6 +394,26 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.equal(gunther.vehicle.modelId, 520 /* Hydra */);
     });
 
+    it('should display a disambiguation dialog when the model is ambiguous', async(assert) => {
+        assert.equal(
+            VehicleModel.getByName('Firetruck', true /* fuzzy */, true /* all */).length, 2);
+
+        gunther.respondToDialog({ listitem: 1 /* Firetruck 2 */ });
+
+        const commandPromise = gunther.issueCommand('/v Firetruck');
+
+        await Promise.resolve();  // to trigger the command
+        await server.clock.advance(350);  // to enter the vehicle
+        await commandPromise;
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0], Message.format(Message.VEHICLE_SPAWN_CREATED, 'Firetruck 2'));
+
+        assert.isNotNull(gunther.vehicle);
+        assert.equal(gunther.vehicle.modelId, 544 /* Firetruck 2 */);
+    });
+
     it('should be able to display the current access restrictions of a vehicle', async(assert) => {
         // Only administrators can display the restrictions of a vehicle.
         gunther.level = Player.LEVEL_ADMINISTRATOR;

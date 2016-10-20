@@ -136,6 +136,13 @@ class Debug extends Feature {
   eval(player, command) {
     console.log('[JavaScript] Evaluating: ' + command);
 
+    // Utility functions that are often used with the `/eval` command.
+    const cm = server.commandManager;
+    const fm = server.featureManager;
+    const p = playerId => server.playerManager.getById(playerId);
+    const vid = playerId => pawnInvoke('GetPlayerVehicleID', 'i', playerId);
+    const v = playerId => server.playerManager.getById(playerId).vehicle;
+
     try {
       const output = '' + JSON.stringify(eval(command), null, '    ');
       const lines = output.split('\n');

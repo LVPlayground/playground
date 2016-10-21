@@ -7,8 +7,10 @@ const ScopedCallbacks = require('base/scoped_callbacks.js');
 // The Damage Manager is responsible for tracking all damage done on Las Venturas Playground. It
 // observes fights, decides whether damage should be dealt and interacts with the mitigator.
 class DamageManager {
-    constructor(mitigator, settings) {
+    constructor(mitigator, monitor, settings) {
         this.mitigator_ = mitigator;
+        this.monitor_ = monitor;
+
         this.settings_ = settings;
 
         this.callbacks_ = new ScopedCallbacks();
@@ -40,13 +42,25 @@ class DamageManager {
         this.mitigator_.reportDamageTaken(player);
     }
 
+// forward OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ);
+
     // Called when the player the |event| describes has fired a shot.
     onPlayerWeaponShot(event) {
         const player = server.playerManager.getById(event.playerid);
         if (!player)
-            return;  // the |event| was not received for a valid player
+            return;  // the |event| was not received for a valid |player|
 
         this.mitigator_.reportWeaponFire(player);
+
+        if (event.hittype == 1 /* BULLET_HIT_TYPE_PLAYER */) {
+            const target = server.playerManager.getById(event.hitid);
+            if (!target || target.isNonPlayerCharacter())
+                return;  // the |event| does not describe a valid |target|
+
+            // Give the AbuseMonitor a chance to investigate the shot.
+            this.monitor_.onPlayerShootPlayer(
+                player, target, new Vector(event.fX, event.fY, event.fZ), event.weaponid);
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -27,7 +27,7 @@ class Abuse extends Feature {
         this.mitigator_ = new AbuseMitigator();
         this.monitor_ = new AbuseMonitor(this.announce_, this.settings_);
 
-        this.damageManager_ = new DamageManager(this.mitigator_, this.settings_);
+        this.damageManager_ = new DamageManager(this.mitigator_, this.monitor_, this.settings_);
 
         this.natives_ = new AbuseNatives(this);
     }

@@ -93,6 +93,19 @@ class AbuseMonitor {
         }
     }
 
+    // Called when the |player| has fired their weapon at |target|. The |targetOffset| describes the
+    // offset of the shot relative to |target|. The |weaponId| describes the weapon that fired.
+    onPlayerShootPlayer(player, target, targetOffset, weaponId) {
+        // TODO: Disable for players with a high packet-loss percentage.
+        // TODO: Disable for players with a high ping.
+        // TODO: Disable for players who are in or surfing on a vehicle.
+        // TODO: Disable for particular weapons (e.g. miniguns).
+
+        // TODO: Recognize continuous shots.
+        // TODO: Recognize teleportation shots.
+        // TODO: Recognize out-of-range shots.
+    }
+
     // Called when the |player| enters the |vehicle|. Will report them for abuse when the vehicle
     // was locked for them, and entry therefore shouldn't have been possible.
     onPlayerEnterVehicle(player, vehicle) {

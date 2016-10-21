@@ -12,6 +12,7 @@ class Player {
     this.id_ = playerId;
     this.name_ = pawnInvoke('GetPlayerName', 'iS', playerId);
     this.ipAddress_ = pawnInvoke('GetPlayerIp', 'iS', playerId);
+    this.nonPlayerCharacter_ = !!pawnInvoke('IsPlayerNPC', 'i', playerId);
     this.gpci_ = pawnInvoke('gpci', 'iS', playerId);
 
     this.connected_ = true;
@@ -37,6 +38,9 @@ class Player {
 
   // Returns whether the player is still connected to the server.
   isConnected() { return this.connected_; }
+
+  // Returns whether the player is a non-player character.
+  isNonPlayerCharacter() { return this.nonPlayerCharacter_; }
 
   // Returns whether the player is connected, but has minimized their game.
   isMinimized() { return isPlayerMinimized(this.id_); }
@@ -172,6 +176,10 @@ class Player {
   // Gets or sets the drunk level of this player.
   get drunkLevel() { return pawnInvoke('GetPlayerDrunkLevel', 'i', this.id_); }
   set drunkLevel(value) { pawnInvoke('SetPlayerDrunkLevel', 'ii', this.id_, value); }
+
+  // Kicks the player from the server. The user of this function is responsible for making sure
+  // that the reason for the kick is properly recorded.
+  kick() { pawnInvoke('Kick', 'i', this.id_); }
 
   // Gets or sets the special action the player is currently engaged in. The values must be one of
   // the Player.SPECIAL_ACTION_* constants static to this class.

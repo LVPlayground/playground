@@ -13,6 +13,30 @@ describe('AbuseMonitor', (it, beforeEach) => {
         settings = server.featureManager.loadFeature('settings');
     });
 
+    it('should be able to detect and kick fake non-player characters', assert => {
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        russell.identify();
+        russell.level = Player.LEVEL_ADMINISTRATOR;
+
+        // Connect the evil bot to the server. They should be kicked immediately after.
+        server.playerManager.onPlayerConnect({
+            playerid: 42,
+            name: 'EvilBot',
+            ip: '42.42.42.42',
+            npc: true
+        });
+
+        assert.isNull(server.playerManager.getById(42 /* evilbot */));
+
+        assert.equal(russell.messages.length, 1);
+        assert.isTrue(
+            russell.messages[0].includes(
+                Message.format(Message.ABUSE_ANNOUNCE_KICKED, 'EvilBot', 42,
+                               'illegal non-player character')));
+
+    });
+
     it('should be able to detect and report illegal vehicle entry', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
@@ -70,7 +94,6 @@ describe('AbuseMonitor', (it, beforeEach) => {
             const statistics = monitor.getPlayerStatistics(gunther);
             assert.equal(statistics.get('illegal vehicle entry'), 14);
         }
-
     });
 
     it('should gather and have names for all sorts of abuse', assert => {
@@ -90,12 +113,19 @@ describe('AbuseMonitor', (it, beforeEach) => {
                 assert.equal(typeof monitor.getTypeDescription(type), 'string');
         }
 
-        // (2) Verify that all types are included in the statistics.
+        // (2) Verify that most types are included in the statistics.
         {
             const statistics = monitor.getPlayerStatistics(gunther);
+            const excluded = new Set([
+                AbuseMonitor.TYPE_ILLEGAL_NON_PLAYER_CHARACTER,  // checked once on connect
+            ]);
 
-            for (const type of types)
+            for (const type of types) {
+                if (excluded.has(type))
+                    continue;
+
                 assert.isTrue(statistics.has(monitor.getTypeDescription(type)));
+            }
         }
     });
 });

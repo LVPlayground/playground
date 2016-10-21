@@ -17,13 +17,15 @@ class MockPlayer {
         this.undercover_ = false;
         this.gangId_ = null;
 
+        this.nonPlayerCharacter_ = event.npc || false;
+
         this.health_ = 100;
         this.armour_ = 100;
 
         this.interiorId_ = 0;
         this.virtualWorld_ = 0;
         this.userId_ = null;
-        this.ipAddress_ = event.ipAddress || '127.0.0.1';
+        this.ipAddress_ = event.ip || '127.0.0.1';
         this.position_ = new Vector(0, 0, 0);
         this.specialAction_ = Player.SPECIAL_ACTION_NONE;
 
@@ -59,6 +61,10 @@ class MockPlayer {
     get id() { return this.id_; }
 
     isConnected() { return this.connected_; }
+
+    // Returns whether the player is a non-player character.
+    isNonPlayerCharacter() { return this.nonPlayerCharacter_; }
+    setNonPlayerCharacter(value) { this.nonPlayerCharacter_ = value; }
 
     isMinimized() { return this.minimized_; }
     setMinimized(minimized) { this.minimized_ = minimized; }
@@ -170,6 +176,10 @@ class MockPlayer {
 
         return true;
     }
+
+    // Kicks the player from the server. The user of this function is responsible for making sure
+    // that the reason for the kick is properly recorded.
+    kick() { this.disconnect(2 /* reason */); }
 
     // Gets or sets the special action the player is currently engaged in. The values must be one of
     // the Player.SPECIAL_ACTION_* constants static to this class.

@@ -74,6 +74,29 @@ describe('GangManager', (it, beforeEach, afterEach) => {
 
     });
 
+    it('should be able to purchase additional encryption time for the gang', async(assert) => {
+        const player = server.playerManager.getById(0 /* Gunther */);
+        assert.isNotNull(player);
+
+        player.identify({ userId: MockGangDatabase.CC_LEADER_USER_ID });
+
+        const gang = await gangManager.createGangForPlayer(player, 'CC', 'name', 'goal');
+        assert.isNotNull(gang);
+
+        assert.isTrue(gang.hasPlayer(player));
+        assert.equal(gang.getPlayerRole(player), Gang.ROLE_LEADER);
+
+        assert.equal(gang.chatEncryptionExpiry, 0);
+
+        await gangManager.updateChatEncryption(gang, player, 3600 /* an hour */);
+        assert.closeTo(
+            gang.chatEncryptionExpiry, (server.clock.currentTime() / 1000) + 3600, 5); // 1 hour
+
+        await gangManager.updateChatEncryption(gang, player, 7200 /* two hours */);
+        assert.closeTo(
+            gang.chatEncryptionExpiry, (server.clock.currentTime() / 1000) + 10800, 5); // 3 hours
+    });
+
     it('should be able to update member preferences in regards to gang color', assert => {
         const player = server.playerManager.getById(0 /* Gunther */);
         assert.isNotNull(player);

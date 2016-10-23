@@ -10,7 +10,8 @@ const mockedGangInfo = {
         tag: 'HKO',
         name: 'Hello Kitty Online',
         goal: 'Spreading love and peace',
-        color: 0xFF3399FF
+        color: 0xFF3399FF,
+        chatEncryptionExpiry: 0
     }
 };
 
@@ -61,7 +62,8 @@ class MockGangDatabase {
                 tag: tag,
                 name: name,
                 goal: goal,
-                color: null
+                color: null,
+                chatEncryptionExpiry: 0
             });
         }
 
@@ -129,6 +131,8 @@ class MockGangDatabase {
 
         return Promise.reject(new Error('No special behaviour implemented.'));
     }
+
+    async purchaseChatEncryption(gang, player, encryptionTime) { }
 
     updateColor(gang, color) {
         return Promise.resolve(true);

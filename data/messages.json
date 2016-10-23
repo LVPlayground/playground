@@ -89,6 +89,8 @@
     "GANG_LEAVE_PROMO_CONFIRMATION": "Are you sure that you want to leave the %s gang? %s (now a %s) will be promoted to its leader.",
     "GANG_MEMBERS_HEADER": "{B1FC17}Members of the [%s] %s gang:",
     "GANG_NOT_IN_GANG": "@error You need to be part of a gang in order to be able to use this command.",
+    "GANG_SETTINGS_ENC_TIME_BOUGHT": "You have purchased %s of chat encryption time for %$!",
+    "GANG_SETTINGS_ENC_TIME_MONEY": "This encryption package costs %$, but you only have %$!",
     "GANG_SETTINGS_MEMBER_KICKED": "%s has been kicked from your gang.",
     "GANG_SETTINGS_NAME_TAKEN": "Sorry, the name you chose is being used by another gang.",
     "GANG_SETTINGS_NEW_COLOR": "Your gang's color has been changed to \"%s\".",

@@ -7,6 +7,7 @@ const Gang = require('features/gangs/gang.js');
 const GangCommands = require('features/gangs/gang_commands.js');
 const GangManager = require('features/gangs/gang_manager.js');
 const MockGangDatabase = require('features/gangs/test/mock_gang_database.js');
+const PlayerMoneyBridge = require('features/gangs/util/player_money_bridge.js');
 
 describe('GangCommands', (it, beforeEach, afterEach) => {
     let player = null;
@@ -40,7 +41,8 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
             tag: tag,
             name: name,
             goal: goal || 'Testing gang',
-            color: color
+            color: color,
+            chatEncryptionExpiry: 0
         });
 
         return gangManager.gangs_[gangId];
@@ -596,7 +598,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(player.issueCommand('/gang settings'));
         assert.equal(player.messages.length, 0);
 
-        player.respondToDialog({ listitem: 1 /* Gang color */ }).then(() =>
+        player.respondToDialog({ listitem: 1 /* Member color */ }).then(() =>
             player.respondToDialog({ response: 0 /* Ok */}));
 
         return gangCommands.settingsPromiseForTesting_.then(() => {
@@ -608,6 +610,61 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         });
     });
 
+    it('should enable managers to purchase gang chat encryption time', async(assert) => {
+        const gang = createGang();
+
+        player.identify({ userId: 1337 });
+
+        addPlayerToGang(player, gang, Gang.ROLE_MANAGER);
+
+        PlayerMoneyBridge.setMockedBalanceForTests(25000000);  // give the |player| 25M
+
+        assert.equal(gang.chatEncryptionExpiry, 0);
+
+        for (let days = 1; days < 3; ++days) {
+            player.respondToDialog({ listitem: 0 /* Gang Chat Encryption */ }).then(() =>
+                player.respondToDialog({ response: 1, listitem: 1 /* one day */ })).then(() =>
+                player.respondToDialog({ response: 1 /* Yeah I got it */}));
+
+            assert.isTrue(player.issueCommand('/gang settings'));
+            assert.equal(player.messages.length, 0);
+
+            await gangCommands.settingsPromiseForTesting_;
+
+            // Verify that the |chatEncryptionExpiry| property has been updated with a day.
+            assert.closeTo(
+                gang.chatEncryptionExpiry, (server.clock.currentTime() / 1000) + 86400 * days, 5);
+        }
+
+        PlayerMoneyBridge.setMockedBalanceForTests(null);
+    });
+
+    it('should do balance checks when purchasing gang chat encryption time', async(assert) => {
+        const gang = createGang();
+
+        player.identify({ userId: 1337 });
+
+        addPlayerToGang(player, gang, Gang.ROLE_MANAGER);
+
+        PlayerMoneyBridge.setMockedBalanceForTests(12500);  // make sure the |player| has few monies
+
+        assert.equal(gang.chatEncryptionExpiry, 0);
+
+        player.respondToDialog({ listitem: 0 /* Gang Chat Encryption */ }).then(() =>
+            player.respondToDialog({ response: 1, listitem: 1 /* one day */ })).then(() =>
+            player.respondToDialog({ response: 1 /* Yeah I got it */}));
+
+        assert.isTrue(player.issueCommand('/gang settings'));
+        assert.equal(player.messages.length, 0);
+
+        await gangCommands.settingsPromiseForTesting_;
+
+        assert.equal(gang.chatEncryptionExpiry, 0);
+        assert.equal(
+            player.lastDialog, Message.format(Message.GANG_SETTINGS_ENC_TIME_MONEY, 300000, 12500));
+
+        PlayerMoneyBridge.setMockedBalanceForTests(null);
+    });
 
     it('should not enable leaders to change the name to an existing one', assert => {
         const gang = createGang({ name: 'Candy Crush' });
@@ -621,7 +678,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(player.issueCommand('/gang settings'));
         assert.equal(player.messages.length, 0);
 
-        player.respondToDialog({ listitem: 2 /* Gang name */ }).then(() =>
+        player.respondToDialog({ listitem: 3 /* Gang name */ }).then(() =>
             player.respondToDialog({ inputtext: 'Hello Kitty Online' })).then(() =>
             player.respondToDialog({ response: 0 /* Ok */}));
 
@@ -645,7 +702,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(player.issueCommand('/gang settings'));
         assert.equal(player.messages.length, 0);
 
-        player.respondToDialog({ listitem: 2 /* Gang name */ }).then(() =>
+        player.respondToDialog({ listitem: 3 /* Gang name */ }).then(() =>
             player.respondToDialog({ inputtext: 'Thundering Offline Kittens' })).then(() =>
             player.respondToDialog({ response: 0 /* Ok */}));
 
@@ -670,7 +727,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(player.issueCommand('/gang settings'));
         assert.equal(player.messages.length, 0);
 
-        player.respondToDialog({ listitem: 3 /* Gang tag */ }).then(() =>
+        player.respondToDialog({ listitem: 4 /* Gang tag */ }).then(() =>
             player.respondToDialog({ inputtext: 'HKO' })).then(() =>
             player.respondToDialog({ response: 0 /* Ok */}));
 
@@ -694,7 +751,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(player.issueCommand('/gang settings'));
         assert.equal(player.messages.length, 0);
 
-        player.respondToDialog({ listitem: 3 /* Gang tag */ }).then(() =>
+        player.respondToDialog({ listitem: 4 /* Gang tag */ }).then(() =>
             player.respondToDialog({ inputtext: 'GG' })).then(() =>
             player.respondToDialog({ response: 0 /* Ok */}));
 
@@ -718,7 +775,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(player.issueCommand('/gang settings'));
         assert.equal(player.messages.length, 0);
 
-        player.respondToDialog({ listitem: 4 /* Gang goal */ }).then(() =>
+        player.respondToDialog({ listitem: 5 /* Gang goal */ }).then(() =>
             player.respondToDialog({ inputtext: 'We rule more!' })).then(() =>
             player.respondToDialog({ response: 0 /* Ok */}));
 

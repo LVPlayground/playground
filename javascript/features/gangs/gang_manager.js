@@ -249,6 +249,18 @@ class GangManager {
         });
     }
 
+    // Purchases additional encryption |time|, in seconds, for the |gang|'s chat.
+    async updateChatEncryption(gang, player, encryptionTime) {
+        const currentTimeSeconds = Math.floor(server.clock.currentTime() / 1000);
+
+        if (gang.chatEncryptionExpiry < currentTimeSeconds)
+            gang.chatEncryptionExpiry = currentTimeSeconds + encryptionTime;
+        else
+            gang.chatEncryptionExpiry += encryptionTime;
+
+        await this.database_.purchaseChatEncryption(gang, player, encryptionTime);
+    }
+
     // Update the |gang|'s color, as well as the color of all its in-game members, to |color|. Will
     // return a promise that will be resolved when the color has been updated.
     updateColor(gang, color) {

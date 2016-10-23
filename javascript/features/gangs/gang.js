@@ -12,6 +12,8 @@ class Gang {
         this.goal_ = info.goal;
         this.color_ = info.color;
 
+        this.chatEncryptionExpiry_ = info.chatEncryptionExpiry;
+
         this.members_ = new Map();
     }
 
@@ -32,6 +34,11 @@ class Gang {
 
     // Gets the color of members of this gang.
     get color() { return this.color_; }
+
+    // Gets or sets the expiry time, in seconds since the UNIX epoch, at which the chat encryption
+    // for this gang expires. Should only be updated by the GangManager.
+    get chatEncryptionExpiry() { return this.chatEncryptionExpiry_; }
+    set chatEncryptionExpiry(value) { this.chatEncryptionExpiry_ = value; }
 
     // Gets an iterable of the members in this gang. Must be used with `for of`.
     get members() { return this.members_.keys(); }

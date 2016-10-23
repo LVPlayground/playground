@@ -24,6 +24,45 @@ class Clock {
         return highResolutionTime();
     }
 
+    // Formats the given |date|, in seconds, relative to the current date.
+    formatRelativeTime(date, { allowFutureTimes = true } = {}) {
+        const seconds = Math.floor(this.currentTime() / 1000) - date;
+        const suffix = seconds < 0 ? ' from now'
+                                   : ' ago';
+
+        // Handle clock skew by the server, which isn't likely, but may happen.
+        if (seconds < 0 && !allowFutureTimes)
+            return 'In the future!';
+
+        // Handle visits that have occurred less than two minutes ago, which we consider to be now.
+        if (seconds < 60 && !allowFutureTimes)
+            return "Just now!";
+
+        // Otherwise, create separate buckets for minutes, hours, days, weeks, months and years.
+        const minutes = Math.floor(Math.abs(seconds) / 60);
+        if (minutes < 60)
+            return minutes + ' minute' + (minutes == 1 ? '' : 's') + suffix;
+
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24)
+            return hours + ' hour' + (hours == 1 ? '' : 's') + suffix;
+
+        const days = Math.floor(hours / 24);
+        if (days < 7)
+            return days + ' day' + (days == 1 ? '' : 's') + suffix;
+
+        const weeks = Math.floor(days / 7);
+        if (weeks <= 4 && days < 30.25)
+            return weeks + ' week' + (weeks == 1 ? '' : 's') + suffix;
+
+        const months = Math.floor(days / 30.25);
+        if (months < 12)
+            return months + ' month' + (months == 1 ? '' : 's') + suffix;
+
+        const years = Math.floor(months / 12);
+        return years + ' year' + (years == 1 ? '' : 's') + suffix;
+    }
+
     // Disposes of the instance.
     dispose() {}
 }

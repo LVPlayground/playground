@@ -2,12 +2,15 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const alert = require('components/dialogs/alert.js');
+
 const ColorPicker = require('components/dialogs/color_picker.js');
 const CommandBuilder = require('components/command_manager/command_builder.js');
 const Dialog = require('components/dialogs/dialog.js');
 const Gang = require('features/gangs/gang.js');
 const GangDatabase = require('features/gangs/gang_database.js');
 const Menu = require('components/menu/menu.js');
+const PlayerMoneyBridge = require('features/gangs/util/player_money_bridge.js');
 const Question = require('components/dialogs/question.js');
 const QuestionSequence = require('components/dialogs/question_sequence.js');
 
@@ -469,11 +472,14 @@ class GangCommands {
             return;
         }
 
+        const isLeader = gang.getPlayerRole(player) === Gang.ROLE_LEADER;
+        const isManager = isLeader || gang.getPlayerRole(player) === Gang.ROLE_MANAGER;
+
         // Create a "gang has been created" promise that tests can use to observe progress.
         this.settingsPromiseForTesting_ = new Promise(resolve => resolveForTests = resolve);
 
         let menu = new Menu('Which setting do you want to change?', ['Option', 'Current value']);
-        if (gang.getPlayerRole(player) === Gang.ROLE_LEADER) {
+        if (isLeader) {
             menu.addItem('Member settings', '-', () => {
                 this.manager_.getFullMemberList(gang).then(members => {
                     let memberMenu =
@@ -521,7 +527,61 @@ class GangCommands {
 
                 }).then(() => resolveForTests());
             });
+        }
 
+        if (isManager) {
+            let encryptionLabel = '';
+            if (!gang.chatEncryptionExpiry) {
+                encryptionLabel = '{FF0000}No encryption';
+            } else {
+                const timeDiff = server.clock.formatRelativeTime(gang.chatEncryptionExpiry);
+                encryptionLabel = timeDiff.includes('from now') ? '{00FF00}Secure until ' + timeDiff
+                                                                : '{FF0000}Expired ' + timeDiff;
+            }
+
+            menu.addItem('Gang chat encryption', encryptionLabel, async() => {
+                const purchaseMenu = new Menu('How much encryption time to buy?', ['Time', 'Price'])
+                const prices = [
+                    [ '1 hour',    25000,    3600 ],
+                    [ '1 day',    300000,   86400 ],
+                    [ '1 week',  1750000,  604800 ],
+                    [ '1 month', 5500000, 2613600 ]
+                ];
+
+                const currentBalance = await PlayerMoneyBridge.getBalanceForPlayer(player);
+
+                for (const [label, price, seconds] of prices) {
+                    const pricePrefix = (price < currentBalance ? '{00FF00}' : '{FF0000}');
+                    const priceLabel = pricePrefix + Message.formatPrice(price);
+
+                    purchaseMenu.addItem(label, priceLabel, async(player) => {
+                        const balance = await PlayerMoneyBridge.getBalanceForPlayer(player);
+                        if (balance < price) {
+                            return await alert(player, {
+                                title: 'Unable to purchase the additional time',
+                                message: Message.format(Message.GANG_SETTINGS_ENC_TIME_MONEY,
+                                                        price, balance)
+                            });
+                        }
+
+                        await PlayerMoneyBridge.setBalanceForPlayer(player, balance - price);
+                        await this.manager_.updateChatEncryption(gang, player, seconds);
+
+                        await alert(player, {
+                            title: 'The encryption package has been purchased',
+                            message: Message.format(Message.GANG_SETTINGS_ENC_TIME_BOUGHT,
+                                                    label, price)
+                        });
+                    });
+                }
+
+                await purchaseMenu.displayForPlayer(player);
+
+                resolveForTests();
+            });
+        }
+
+        if (isLeader) {
             menu.addItem('Gang name', gang.name, () => {
                 Question.ask(player, NAME_QUESTION).then(answer => {
                     if (!answer)

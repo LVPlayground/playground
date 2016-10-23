@@ -9,11 +9,23 @@ const LOAD_GANG_FOR_PLAYER_QUERY = `
     SELECT
         users_gangs.user_role,
         users_gangs.user_use_gang_color,
-        gangs.*
+        gangs.*,
+        UNIX_TIMESTAMP(gang_chat_encryption.encryption_expire) AS encryption_expire
     FROM
         users_gangs
     LEFT JOIN
         gangs ON gangs.gang_id = users_gangs.gang_id
+    LEFT JOIN
+        (
+            SELECT
+                gang_chat_encryption.gang_id,
+                MAX(gang_chat_encryption.encryption_expire) AS encryption_expire
+            FROM
+                gang_chat_encryption
+            GROUP BY
+                gang_chat_encryption.gang_id
+        ) AS gang_chat_encryption ON
+             gang_chat_encryption.gang_id = users_gangs.gang_id
     WHERE
         users_gangs.user_id = ? AND
         users_gangs.gang_id = ? AND
@@ -138,6 +150,14 @@ const GANG_UPDATE_ROLE_QUERY = `
         users_gangs.gang_id = ? AND
         users_gangs.left_gang IS NULL`;
 
+// Query to purchase additional encryption time for the gang's communications.
+const PURCHASE_CHAT_ENCRYPTION_QUERY = `
+    INSERT INTO
+        gang_chat_encryption
+        (gang_id, user_id, purchase_date, purchase_amount, encryption_expire)
+    VALUES
+        (?, ?, NOW(), ?, ?)`;
+
 // Query to update the color of a gang.
 const GANG_UPDATE_COLOR_QUERY = `
     UPDATE
@@ -208,7 +228,8 @@ class GangDatabase {
                     tag: info.gang_tag,
                     name: info.gang_name,
                     goal: info.gang_goal,
-                    color: info.gang_color ? Color.fromNumberRGBA(info.gang_color) : null
+                    color: info.gang_color ? Color.fromNumberRGBA(info.gang_color) : null,
+                    chatEncryptionExpiry: info.encryption_expire || 0
                 }
             };
         });
@@ -270,7 +291,8 @@ class GangDatabase {
                 tag: tag,
                 name: name,
                 goal: goal,
-                color: null
+                color: null,
+                chatEncryptionExpiry: 0
             };
         });
     }
@@ -336,6 +358,14 @@ class GangDatabase {
     updateRoleForUserId(userId, gang, role) {
         return this.database_.query(GANG_UPDATE_ROLE_QUERY, GangDatabase.toRoleString(role),
                                     userId, gang.id);
+    }
+
+    // Asynchronously creates an entry in the database where the |player| member of the |gang| has
+    // purchased an additional |encryptionTime| seconds of gang chat encryption.
+    async purchaseChatEncryption(gang, player, encryptionTime) {
+        await this.database_.query(
+            PURCHASE_CHAT_ENCRYPTION_QUERY, gang.id, player.id, encryptionTime,
+            gang.chatEncryptionExpiry);
     }
 
     // Updates the color of the |gang| to |color|. Returns a promise that will be resolved when the

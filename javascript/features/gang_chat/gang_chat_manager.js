@@ -65,6 +65,10 @@ class GangChatManager {
                 return true;
             }
 
+            // Determine whether the gang's chat should be encrypted. This doesn't matter for the
+            // admin's message formatting, but does for the Seti@Home owner.
+            isEncrypted = gang.chatEncryptionExpiry > Math.floor(server.clock.currentTime() / 1000);
+
             messageRaw = text.substr(firstSpaceIndex).trim();
             message = Message.format(Message.GANG_CHAT_REMOTE, gang.tag, player.id, player.name,
                                      messageRaw);

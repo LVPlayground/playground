@@ -226,4 +226,61 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
 
         assert.isFalse(gunther.issueMessage('!!!what happened'));
     });
+
+    it('should warn the new Seti@Home owner of gangs having chat encryption', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        const gang = gangs.createGang({ chatEncryptionExpiry: 86400 });
+        gang.addPlayer(gunther);
+
+        manager.onSetiOwnershipChange({ playerid: russell.id });
+
+        assert.equal(gunther.messages.length, 0);
+
+        assert.equal(russell.messages.length, 1);
+        assert.equal(russell.messages[0], Message.format(Message.GANG_CHAT_SPY_ENC, 'HKO'));
+    });
+
+    it('should identify gang chat messages that are encrypted', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        const gang = gangs.createGang({ chatEncryptionExpiry: 0 /* not encrypted */ });
+        gang.addPlayer(gunther);
+
+        assert.isTrue(gunther.issueMessage('!unencrypted'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.GANG_CHAT, gang.tag, gunther.id,
+                                                         gunther.name, 'unencrypted'));
+
+        gunther.clearMessages();
+
+        // Fake the |gang| having purchased a day worth of message encryption.
+        gang.chatEncryptionExpiry = Math.floor(server.clock.currentTime() / 1000) + 86400;
+
+        assert.isTrue(gunther.issueMessage('!encrypted'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.GANG_CHAT_ENCRYPTED, gang.tag,
+                                                         gunther.id, gunther.name, 'encrypted'));
+    });
+
+    it('should not send encrypted gang chat messages to the Seti@Home owner', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        const gang = gangs.createGang({ chatEncryptionExpiry: 86400 });
+        gang.addPlayer(gunther);
+
+        manager.onSetiOwnershipChange({ playerid: russell.id });
+
+        assert.equal(gunther.messages.length, 0);
+
+        assert.equal(russell.messages.length, 1);
+        russell.clearMessages();
+
+        assert.isTrue(gunther.issueMessage('!this message is encrypted'));
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(russell.messages.length, 0);
+    });
 });

@@ -41,6 +41,8 @@ class GangChatManager {
 
         const recipients = new Set();
 
+        let isEncrypted = false;
+
         let gang = null;
 
         let messageRaw = null;
@@ -79,9 +81,14 @@ class GangChatManager {
                 return true;
             }
 
+            // Determine whether the gang's chat should be encrypted.
+            isEncrypted = gang.chatEncryptionExpiry > Math.floor(server.clock.currentTime() / 1000);
+
             messageRaw = text.substr(1).trim();
             message =
-                Message.format(Message.GANG_CHAT, gang.tag, player.id, player.name, messageRaw);
+                Message.format((isEncrypted ? Message.GANG_CHAT_ENCRYPTED
+                                            : Message.GANG_CHAT),
+                               gang.tag, player.id, player.name, messageRaw);
         }
         
         // Announce the message to people watching on IRC.
@@ -113,8 +120,10 @@ class GangChatManager {
             recipients.add(onlinePlayer);
         });
 
+        
+
         // Distribute the message to the player who is spying on the gang chat.
-        if (this.spyingPlayer_ !== null) {
+        if (this.spyingPlayer_ !== null && !isEncrypted) {
             if (!this.spyingPlayer_.isConnected()) {
                 this.spyingPlayer_ = null;
                 return true;
@@ -150,10 +159,18 @@ class GangChatManager {
         if (!this.spyingPlayer_)
             return;
 
+        const currentTimeSec = Math.floor(server.clock.currentTime() / 1000);
         const message = Message.format(Message.GANG_CHAT_SPY, this.spyingPlayer_.name,
                                        this.spyingPlayer_.id);
 
+        const encryptedGangs = [];
+
         this.gangs_().getGangs().forEach(gang => {
+            if (gang.chatEncryptionExpiry > currentTimeSec) {
+                encryptedGangs.push(gang);
+                return;  // the |gang| has encrypted their communications
+            }
+
             for (let member of gang.members) {
                 if (member === this.spyingPlayer_)
                     continue;
@@ -161,6 +178,16 @@ class GangChatManager {
                 member.sendMessage(message);
             }
         });
+
+        if (!encryptedGangs.length)
+            return;
+
+        const sortedEncryptedGangs = encryptedGangs.sort((lhs, rhs) =>
+            lhs.tag.localeCompare(rhs.tag));
+
+        // Inform the spying player of gangs that have encrypted their chat.
+        this.spyingPlayer_.sendMessage(
+            Message.GANG_CHAT_SPY_ENC, sortedEncryptedGangs.map(g => g.tag).join(', '));
     }
 
     // Called when the `communication` feature has been reloaded.

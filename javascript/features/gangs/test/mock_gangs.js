@@ -27,15 +27,21 @@ class MockGangs extends Feature {
         return null;
     }
 
-    createGang({ tag = 'HKO', name = 'Hello Kitty Online', color = null } = {}) {
+    createGang({ tag = 'HKO', name = 'Hello Kitty Online', color = null,
+                 chatEncryptionExpiry = 0 } = {}) {
         const gangId = Math.floor(Math.random() * 1000000);
+
+        // The |chatEncryptionExpiry| for this function is relative to the current time.
+        if (chatEncryptionExpiry)
+            chatEncryptionExpiry += Math.floor(server.clock.currentTime() / 1000);
 
         this.gangs_[gangId] = new Gang({
             id: gangId,
             tag: tag,
             name: name,
             goal: '',
-            color: color
+            color: color,
+            chatEncryptionExpiry: chatEncryptionExpiry
         });
 
         return this.gangs_[gangId];

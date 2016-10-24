@@ -23,11 +23,15 @@ class MuteManager {
      *
      * @param playerId Id of the player who needs to get muted.
      * @param duration Amount of minutes to mute the player, where 0 means permanently.
+     * @param silent Whether the |playerId| should NOT be informed of the mute.
      */
-    public mutePlayer(playerId, duration) {
+    public mutePlayer(playerId, duration, bool: silent = false) {
         m_isMuted[playerId] = true;
         m_muteDuration[playerId] = duration;
         m_holdMuteTimestamp[playerId] = Time->currentTime();
+
+        if (silent)
+            return;
 
         new message[128];
         if (duration == -1) {

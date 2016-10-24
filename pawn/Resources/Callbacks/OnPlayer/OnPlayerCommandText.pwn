@@ -551,6 +551,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     // Commands for administrators:
     lvp_command(clear,          5, AdministratorLevel);
     lvp_command(show,           4, AdministratorLevel);
+    lvp_command(showreport,    10, AdministratorLevel);
     lvp_command(p,              1, AdministratorLevel);
     lvp_command(t,              1, AdministratorLevel);
     lvp_command(announce,       8, AdministratorLevel);

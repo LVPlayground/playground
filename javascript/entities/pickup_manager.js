@@ -56,7 +56,7 @@ class PickupManager {
 
     // Called when a player has picked up a pickup. The event is untrusted, so all given properties
     // will be checked before it will be forwarded to listeners.
-    async onPickupPickedUp(event) {
+    onPickupPickedUp(event) {
         const player = server.playerManager.getById(event.playerid);
         if (!player)
             return;  // the event was received for an invalid player
@@ -89,31 +89,36 @@ class PickupManager {
             return;
         }
 
-        // Spin until the player leaves the pickup, has entered a different pickup, has disconnected
-        // from Las Venturas Playground or the pickup has been destroyed.
-        while (true) {
-            await wait(PickupPositionValidationFrequency);
+        // Run the watch function in an anonymous asynchronous function. This avoids blocking the
+        // `onplayerpickuppickup` event until the player walks in another one again.
+        (async() => {
+            // Spin until the player leaves the pickup, has entered a different pickup, has
+            // disconnected from Las Venturas Playground or the pickup has been destroyed.
+            while (true) {
+                await wait(PickupPositionValidationFrequency);
 
-            if (!player.isConnected() || !pickup.isConnected())
-                break;  // either the player or the pickup is not valid anymore
+                if (!player.isConnected() || !pickup.isConnected())
+                    break;  // either the player or the pickup is not valid anymore
 
-            if (this.currentPickupForPlayer_.get(player) !== pickup)
-                break;  // the player has picked up another pickup since
+                if (this.currentPickupForPlayer_.get(player) !== pickup)
+                    break;  // the player has picked up another pickup since
 
-            if (player.position.squaredDistanceTo(pickup.position) > PickupPositionValidDistanceSq)
-                break;  // the player has moved away from the pickup since
-        }
+                if (player.position.squaredDistanceTo(pickup.position) > PickupPositionValidDistanceSq)
+                    break;  // the player has moved away from the pickup since
+            }
 
-        // Fire the `onPlayerLeavePickup` event if they're still standing in the pickup and both
-        // the player and the pickup are still valid entities on the server.
-        const currentPickup = this.currentPickupForPlayer_.get(player);
-        if (currentPickup !== pickup)
-            return;  // the player picked up another pickup since
+            // Fire the `onPlayerLeavePickup` event if they're still standing in the pickup and both
+            // the player and the pickup are still valid entities on the server.
+            const currentPickup = this.currentPickupForPlayer_.get(player);
+            if (currentPickup !== pickup)
+                return;  // the player picked up another pickup since
 
-        if (player.isConnected() && pickup.isConnected())
-            this.notifyObservers('onPlayerLeavePickup', player, pickup);
+            if (player.isConnected() && pickup.isConnected())
+                this.notifyObservers('onPlayerLeavePickup', player, pickup);
 
-        this.currentPickupForPlayer_.delete(player);
+            this.currentPickupForPlayer_.delete(player);
+            
+        })();
     }
 
     // Notifies observers about the |eventName|, passing |...args| as the argument to the method

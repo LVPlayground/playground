@@ -41,8 +41,7 @@ class EntityStreamerGlobal extends EntityStreamer {
         // Set of streamed entities for each of the connected players.
         this.playerEntities_ = new Map();
 
-        // Observe the player manager for connecting and disconnecting players.
-        server.playerManager.addObserver(this, true /* replayHistory */);
+        // It's important that derived classes make this instance observe the Player Manager.
     }
 
     // Gets the saturation ratio that the streamer is intending to maintain.
@@ -288,8 +287,6 @@ class EntityStreamerGlobal extends EntityStreamer {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        server.playerManager.removeObserver(this);
-
         this.pinned_.clear();
         this.pinned_ = null;
 

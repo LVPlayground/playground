@@ -19,6 +19,7 @@ class PickupStreamer extends EntityStreamerGlobal {
         this.storedPickups_ = new Map();
 
         server.pickupManager.addObserver(this);
+        server.playerManager.addObserver(this, true /* replayHistory */);
     }
 
     // Gets the number of pickups that are currently streamed in.
@@ -106,6 +107,7 @@ class PickupStreamer extends EntityStreamerGlobal {
     dispose() {
         super.dispose();
 
+        server.playerManager.removeObserver(this);
         server.pickupManager.removeObserver(this);
 
         this.entities_.dispose();

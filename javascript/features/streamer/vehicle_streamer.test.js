@@ -293,12 +293,12 @@ describe('VehicleStreamer', it => {
 
         locked = false;
 
-        streamer.synchronizeAccess(storedVehicle);
+        streamer.synchronizeAccessForVehicle(storedVehicle);
         assert.isFalse(vehicle.isLockedForPlayer(gunther));
 
         locked = true;
 
-        streamer.synchronizeAccess(storedVehicle);
+        streamer.synchronizeAccessForVehicle(storedVehicle);
         assert.isTrue(vehicle.isLockedForPlayer(gunther));
     });
 

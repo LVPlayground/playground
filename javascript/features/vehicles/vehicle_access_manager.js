@@ -93,7 +93,7 @@ class VehicleAccessManager {
 
     // Synchronizes access to the |storedVehicle| for all in-game players.
     synchronizeVehicle(storedVehicle) {
-        this.streamer_().getVehicleStreamer().synchronizeAccess(storedVehicle);
+        this.streamer_().getVehicleStreamer().synchronizeAccessForVehicle(storedVehicle);
     }
 
     // ---------------------------------------------------------------------------------------------

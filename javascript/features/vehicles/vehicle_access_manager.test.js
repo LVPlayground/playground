@@ -14,7 +14,7 @@ describe('VehicleAccessManager', (it, beforeEach, afterEach) => {
         const fakeStreamer = {
             getVehicleStreamer: () => {
                 return {
-                    synchronizeAccess: storedVehicle => {}
+                    synchronizeAccessForVehicle: storedVehicle => {}
                 };
             }
             

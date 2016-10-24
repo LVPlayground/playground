@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 const EntityStreamerGlobal = require('features/streamer/entity_streamer_global.js');
-const ScopedCallbacks = require('base/scoped_callbacks.js');
 const ScopedEntities = require('entities/scoped_entities.js');
 
 // Pin that will be used to keep vehicles alive that have recently been used.
@@ -37,16 +36,11 @@ class VehicleStreamer extends EntityStreamerGlobal {
 
         // Observe the PlayerManager to learn about players entering or leaving vehicles, and the
         // VehicleManager to get events associated with the managed vehicles.
-        server.playerManager.addObserver(this);
+        server.playerManager.addObserver(this, true /* replayHistory */);
         server.vehicleManager.addObserver(this);
 
         // Process unoccupied vehicle status updates for the lifetime of the streamer.
         this.processUnoccupiedVehicleUpdates();
-
-        // Observe the `vehiclestreamin` event to provide automatic locking of doors.
-        this.callbacks_ = new ScopedCallbacks();
-        this.callbacks_.addEventListener(
-            'vehiclestreamin', VehicleStreamer.prototype.onVehicleStreamIn.bind(this));
     }
 
     // Gets the number of vehicles that are currently streamed in.
@@ -76,7 +70,9 @@ class VehicleStreamer extends EntityStreamerGlobal {
     //     StoredVehicle getStoredVehicle(vehicle);
     //
     //     void respawnUnoccupiedVehicles();
-    //     bool synchronizeAccess(storedVehicle);
+    //
+    //     void synchronizeAccessForVehicle(storedVehicle);
+    //     void synchronizeAccessForPlayer(player);
     //
     //     void optimise();
     //     void clear();
@@ -142,12 +138,25 @@ class VehicleStreamer extends EntityStreamerGlobal {
     }
 
     // Synchronizes access to the vehicles for the |storedVehicle|.
-    synchronizeAccess(storedVehicle) {
+    synchronizeAccessForVehicle(storedVehicle) {
         const vehicle = this.vehicles_.get(storedVehicle);
         if (!vehicle)
-            return false;  // the |storedVehicle| is not live
+            return;  // the |storedVehicle| is not live
 
         for (const player of server.playerManager) {
+            const hasAccess =
+                !storedVehicle.accessFn || storedVehicle.accessFn(player, storedVehicle);
+
+            if (!hasAccess)
+                vehicle.lockForPlayer(player);
+            else
+                vehicle.unlockForPlayer(player);
+        }
+    }
+
+    // Synchronizes access to the vehicles for the |player|.
+    synchronizeAccessForPlayer(player) {
+        for (const [storedVehicle, vehicle] of this.vehicles_) {
             const hasAccess =
                 !storedVehicle.accessFn || storedVehicle.accessFn(player, storedVehicle);
 
@@ -183,6 +192,8 @@ class VehicleStreamer extends EntityStreamerGlobal {
 
         this.vehicles_.set(storedVehicle, vehicle);
         this.storedVehicles_.set(vehicle, storedVehicle);
+
+        this.synchronizeAccessForVehicle(storedVehicle);
 
         return vehicle;
     }
@@ -313,44 +324,14 @@ class VehicleStreamer extends EntityStreamerGlobal {
         this.onPlayerLeaveVehicle(null /* player */, trailer);
     }
 
-    // Called when the level of |player| has changed. Their access to limited vehicles has to be
-    // updated to make sure it's in sync with their new level.
-    onPlayerLevelChange(player) {
-        for (const [storedVehicle, vehicle] of this.vehicles_) {
-            if (!vehicle.inRangeForPlayer(player))
-                continue;  // the vehicle is not visible for the |player|
-
-            const hasAccess =
-                !storedVehicle.accessFn || storedVehicle.accessFn(player, storedVehicle);
-
-            if (!hasAccess)
-                vehicle.lockForPlayer(player);
-            else
-                vehicle.unlockForPlayer(player);
-        }
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
-    // Called when the vehicle streams in for a particular player. Will check whether the player has
-    // access to enter the vehicle, and lock the doors if they don't.
-    onVehicleStreamIn(event) {
-        const player = server.playerManager.getById(event.forplayerid);
-        const vehicle = server.vehicleManager.getById(event.vehicleid);
-
-        if (!player || !vehicle)
-            return;  // invalid data was supplied in the |event|
-
-        const storedVehicle = this.storedVehicles_.get(vehicle);
-        if (!storedVehicle)
-            return;  // the |vehicle| is not managed by this streamer
-
-        if (!storedVehicle.accessFn)
-            return;  // the |vehicle| does not provide a function for access checking.
-
-        const hasAccess = storedVehicle.accessFn(player, storedVehicle);
-        if (!hasAccess)
-            vehicle.lockForPlayer(player);
+    // Called when the |player| connects to the server, logs in to their account or has their level
+    // changing because of an in-game event. Will synchronize access to special vehicles on their
+    // behalf, to make sure locked vehicles stay in sync.
+    onPlayerLevelChange(player) { this.synchronizeAccessForPlayer(player); }
+    onPlayerLogin(player) { this.synchronizeAccessForPlayer(player); }
+    onPlayerConnect(player) {
+        this.synchronizeAccessForPlayer(player);
+        super.onPlayerConnect(player);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -388,9 +369,6 @@ class VehicleStreamer extends EntityStreamerGlobal {
 
     dispose() {
         this.disposed_ = true;
-
-        this.callbacks_.dispose();
-        this.callbacks_ = null;
 
         server.vehicleManager.removeObserver(this);
         server.playerManager.removeObserver(this);

@@ -11,7 +11,10 @@ describe('EntityStreamerGlobal', it => {
         constructor({ maxVisible = 5, streamingDistance = 300, saturationRatio = 0.7,
                       lru = true } = {}) {
             super({ maxVisible, streamingDistance, saturationRatio, lru });
+
             this.entities_ = new Set();
+
+            server.playerManager.addObserver(this, true /* replayHistory */);
         }
 
         get activeEntityCount() { return this.entities_.size; }
@@ -29,6 +32,11 @@ describe('EntityStreamerGlobal', it => {
                 throw new Error('Attempting to delete an entity that does not exist.');
 
             this.entities_.delete(storedEntity);
+        }
+
+        dispose() {
+            server.playerManager.removeObserver(this);
+            super.dispose();
         }
     }
 

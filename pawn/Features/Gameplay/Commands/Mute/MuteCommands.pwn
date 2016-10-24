@@ -25,7 +25,7 @@ class MuteCommands {
             return 0;
 
         if (Command->parameterCount(params) == 0) {
-            SendClientMessage(playerId, Color::Information, "Usage: /mute [player] [duration=3 (-1 = permanent)]");
+            SendClientMessage(playerId, Color::Information, "Usage: /mute [player] [duration=2 (-1 = permanent)]");
             SendClientMessage(playerId, Color::Information, "  When no duration is given, the player will be muted permanently.");
             return 1;
         }
@@ -39,11 +39,11 @@ class MuteCommands {
             return 1;
         }
 
-        new duration = 3 /* default value */;
+        new duration = 2 /* default value */;
         if (Command->parameterCount(params) >= 2) {
             duration = Command->integerParameter(params, 1);
             if (duration < -1 || duration > 300)
-                duration = 3;
+                duration = 2;
         }
 
         MuteManager->mutePlayer(offenderId, duration);
@@ -163,7 +163,7 @@ class MuteCommands {
      */
     @switch(RemoteCommand, "mute")
     public onRemoteMuteCommand(params[]) {
-        new admin[15], offenderId, duration = 3;
+        new admin[15], offenderId, duration = 2;
         Command->stringParameter(params, 0, admin, sizeof(admin));
         offenderId = Command->integerParameter(params, 1);
 

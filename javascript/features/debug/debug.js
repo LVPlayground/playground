@@ -5,6 +5,8 @@
 const CommandBuilder = require('components/command_manager/command_builder.js');
 const Feature = require('components/feature_manager/feature.js');
 
+const InteriorList = require('features/debug/interiors.js');
+
 // Utility function to return |value| in |len| digits, left-padded with zeros when necessary.
 function leftPad(value, len = 2) {
   return ('0' + value).slice(-2);
@@ -115,9 +117,20 @@ class Debug extends Feature {
     server.playerManager.forEach(p => p.playSound(soundId));
   }
 
-  // Changes the interior of |player| to |id|.
+  // Teleports the player to the interior identified by |id|. Only available to administrators.
   int(player, id) {
-    player.interior = id;
+    if (id < 0 || id >= InteriorList.length) {
+      player.sendMessage(Message.COMMAND_USAGE, '/int [0-' + (InteriorList.length - 1) + ']');
+      return;
+    }
+
+    const interiorInfo = InteriorList[id];
+
+    player.position = interiorInfo.position;
+    player.rotation = interiorInfo.rotation;
+    player.interiorId = interiorInfo.interior;
+
+    player.sendMessage(Message.COMMAND_SUCCESS, 'You have been teleported to ' + interiorInfo.name);
   }
 
   // Has the player spectate their current position.

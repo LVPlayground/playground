@@ -9,6 +9,7 @@ server and the commands offered on the server.
 
   - **/lvp access**: Changes access rights for one of the commands in this feature.
   - **/lvp party [on/off]**: Toggles the Party Mode on or off. Only available to Management.
+  - **/lvp profile [milliseconds]**: Enables Management to create a CPU profile of the gamemode.
   - **/lvp settings**: Enables Management to change various run-time settings on the server.
 
 ## Commands

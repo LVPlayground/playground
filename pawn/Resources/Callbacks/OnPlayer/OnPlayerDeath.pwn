@@ -258,17 +258,25 @@ public OnPlayerDeath(playerid, killerid, reason) {
     }
 
     // Lame kill
-    if (killerid != Player::InvalidId && (reason == 28 /* UZI */ || reason == 29 /* MP5 */ ||
-        reason == 32 /* TEC-9 */ || VehicleModel(GetVehicleModel(GetPlayerVehicleID(killerid)))->isHelicopter() == true)) {
-        if (GetPlayerState(killerid) != PLAYER_STATE_DRIVER || g_VirtualWorld[killerid] != 0 || IsPlayerInMinigame(killerid))
-            return 0;
+    new const bool: isLameKill =
+        killerid != Player::InvalidId &&
+        IsPlayerInMainWorld(killerid) &&
+        GetPlayerState(killerid) == PLAYER_STATE_DRIVER &&
+        (
+            reason == 28 /* UZI */ ||
+            reason == 29 /* MP5 */ ||
+            reason == 32 /* TEC-9 */ ||
+            GetVehicleModel(GetPlayerVehicleID(killerid)) == 464 /* RC Baron */ ||
+            VehicleModel(GetVehicleModel(GetPlayerVehicleID(killerid)))->isHelicopter()
+        );
 
+    if (isLameKill) {
         new Float:distanceBetweenPlayers = GetDistanceBetweenPlayers(playerid, killerid);
-        #if Feature::DisableKilltime == 0
+#if Feature::DisableKilltime == 0
         if (PlayerInfo[killerid][PlayerStatus] != STATUS_CHASE && !sKillTime && distanceBetweenPlayers < 100.0)
-        #else
+#else
         if (PlayerInfo[killerid][PlayerStatus] != STATUS_CHASE && distanceBetweenPlayers < 100.0)
-        #endif
+#endif
             return OnPlayerLameKill(playerid, killerid);
     }
 

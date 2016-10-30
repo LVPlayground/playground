@@ -30,7 +30,7 @@ enum BankAccountType {
  */
 class BankAccount {
     // Maximum balance of any kind of bank account.
-    public const MaximumBalance = 500000000;
+    public const MaximumBalance = 2000000000;
 
     // Percentage of the deposit which will go to the bank for Premier accounts.
     public const PremierDepositTransactionCostPercentage = 10.0;

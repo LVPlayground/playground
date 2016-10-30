@@ -78,12 +78,12 @@ REMEMBER TO MAKE IT RESET IN CAchieve__OnPlayerConnect
 #define FC300           52
 #define FC400           53
 #define FC500           54
-#define DRIFT5000       55
-#define DRIFT8000       56
-#define DRIFT10000      57
-#define DRIFT15000      58
-#define DRIFT20000      59
-#define DRIFT30000      60
+//#define DRIFT5000       55
+//#define DRIFT8000       56
+//#define DRIFT10000      57
+//#define DRIFT15000      58
+//#define DRIFT20000      59
+//#define DRIFT30000      60
 #define SPRAY15         61
 #define SPRAY30         62
 #define SPRAY60         63
@@ -147,11 +147,11 @@ new sAchievements[TotalAchievements][128] = {
     "The pwnage has just started (Get 400 FightClub kills)",
     "I ARE PWNZ (Get 500 FightClub kills)",
     "Do you have a driver license? (Get 5000 drift points)",
-    "Sunday driver (Get 8000 drift points)",
-    "Don't drink and drive! (Get 10000 drift points)",
-    "You saw too much The Fast and the Furios (Get 15000 drift points)",
-    "Tokyo Drift (Get 20000 drift points)",
-    "Poor tires (Get 30000 drift points)",
+    "" /* Broken */, //"Sunday driver (Get 8000 drift points)",
+    "" /* Broken */, //"Don't drink and drive! (Get 10000 drift points)",
+    "" /* Broken */, //"You saw too much The Fast and the Furios (Get 15000 drift points)",
+    "" /* Broken */, //"Tokyo Drift (Get 20000 drift points)",
+    "" /* Broken */, //"Poor tires (Get 30000 drift points)",
     "Just startin' (Spray 15 tags)",
     "Taggin' up the Turf (Spray 30 tags)",
     "Gettin' your name out there (Spray 60 tags)",

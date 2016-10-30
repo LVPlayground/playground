@@ -18,7 +18,7 @@ class GangManager {
         this.observers_ = new Set();
 
         // Subscribe to notifications for connecting and disconnecting players.
-        server.playerManager.addObserver(this);
+        server.playerManager.addObserver(this, true /* replayHistory */);
     }
 
     // Gets an array having the Gang instances for each of the gangs for in-game representation.

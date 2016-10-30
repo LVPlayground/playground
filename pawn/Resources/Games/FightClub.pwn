@@ -515,7 +515,8 @@ CFightClub__OnInvite(playerid, inviteid)
 CFightClub__OnSpawn(playerid)
 {
     new matchid = PlayerMatch[playerid];
-    if(Matches[matchid][status] != FC_STATUS_FIGHTING) return 0; // If match is currently not running, ignore this crap
+    if (Matches[matchid][status] != FC_STATUS_FIGHTING)
+        return 0; // If match is currently not running, ignore this crap
 
     CFightClub__StartMatch(matchid);
     return 1;
@@ -1252,6 +1253,9 @@ CFightClub__Process()
 
             if(iCount > -1)
             {
+                TogglePlayerControllable(iPlayer1, 0);
+                TogglePlayerControllable(iPlayer2, 0);
+
                 if (iCount == 6) {  format (sgText, sizeof (sgText), "~r~%d", iCount); iSound = 1058; }
                 if (iCount == 5) {  format (sgText, sizeof (sgText), "~r~%d", iCount); iSound = 1058; }
                 if (iCount == 4) {  format (sgText, sizeof (sgText), "~r~%d", iCount); iSound = 1058; }

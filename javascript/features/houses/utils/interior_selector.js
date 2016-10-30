@@ -44,8 +44,11 @@ class InteriorSelector {
         this.userInterface_ = new InteriorSelectorUI(player, availableMoney, this, interiorList);
 
         this.resolve_ = null;
+        this.done_ = false;
+
         this.finished_ = new Promise(resolve => {
             this.resolve_ = resolve;
+            this.done_ = true;
 
         }).then(selection => {
             this.dispose();  // self-dispose the selector
@@ -124,6 +127,9 @@ class InteriorSelector {
         wait(HOUSE_SCENE_PRELOAD_MS).then(() => {
             if (this.interiorListIndex_ !== index)
                 return;  // the player has navigated away from this scene
+
+            if (this.done_)
+                return;  // the player has closed the interior selector
 
             // Interpolate the player's camera to a different position to add interactivity.
             this.player_.interpolateCamera(

@@ -237,8 +237,8 @@ class BankCommands {
             SendClientMessage(playerId, Color::HighlightBlue, "/account normal{FFFFFF} - downgrade your account back to a Normal account.");
         } else {
             SendClientMessage(playerId, Color::Information, "Please type {40CCFF}/account premier{FFFFFF} to upgrade to a Premier account. Your new limit would be");
-            SendClientMessage(playerId, Color::Information, "2 billion dollar and you wouldn't need cash points anymore. However, the bank will");
-            SendClientMessage(playerId, Color::Information, "take {40CCFF}10%%{FFFFFF} of all your deposits, it'll cost you {40CCFF}150 million{FFFFFF} dollar and you need to");
+            SendClientMessage(playerId, Color::Information, "500 million dollar and you wouldn't need cash points anymore. However, the bank will");
+            SendClientMessage(playerId, Color::Information, "take {40CCFF}10%%{FFFFFF} of all your deposits, it'll cost you {40CCFF}25 million{FFFFFF} dollar and you need to");
             SendClientMessage(playerId, Color::Information, "have been in-game for a hundred hours or more.");
         }
 

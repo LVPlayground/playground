@@ -117,7 +117,10 @@ class InteriorSelectorUI {
     displayInterior(index) {
         const interior = this.interiorList_[index];
 
-        this.title_.updateTextForPlayer(this.player_, interior.name);
+        const vipSuffix = interior.vip ? ' ~y~]]'
+                                       : '';
+
+        this.title_.updateTextForPlayer(this.player_, interior.name + vipSuffix);
         this.updatePriceDisplay(interior.price);
     }
 

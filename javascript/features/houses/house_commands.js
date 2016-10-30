@@ -115,7 +115,7 @@ class HouseCommands {
 
         const balance = await PlayerMoneyBridge.getBalanceForPlayer(player);
 
-        const interiorList = InteriorList.forEconomy(this.economy_(), location);
+        const interiorList = InteriorList.forEconomy(player, this.economy_(), location);
         const interior = await InteriorSelector.select(player, balance, interiorList);
         if (!interior)
             return;

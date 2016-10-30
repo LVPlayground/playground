@@ -54,6 +54,9 @@ describe('InteriorList', it => {
     });
 
     it('should maintain some sensible ordering for selectable interiors', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.setVip(true);
+
         const economy = new Economy();
         const position = new Vector(0, 0, 0);
         const parkingLotCount = 0;
@@ -61,7 +64,6 @@ describe('InteriorList', it => {
         const InteriorNames = [
             'Hotel Room (1)',
             'Hotel Room (2)',
-            'RC Playground',
             'Small Apartment',
             'Normal House (1)',
             'Normal House (2)',
@@ -76,9 +78,30 @@ describe('InteriorList', it => {
         ];
 
         let actualNames = [];
-        for (const interior of InteriorList.forEconomy(economy, { position, parkingLotCount }))
+        for (const interior of InteriorList.forEconomy(gunther, economy, { position, parkingLotCount }))
             actualNames.push(interior.name);
 
         assert.deepEqual(InteriorNames, actualNames);
+    });
+
+    it('should offer a different selection of houses to VIPs', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        gunther.setVip(true);
+
+        const economy = new Economy();
+        const position = new Vector(0, 0, 0);
+        const parkingLotCount = 0;
+
+        let guntherNames = [];
+        for (const interior of InteriorList.forEconomy(gunther, economy, { position, parkingLotCount }))
+            guntherNames.push(interior.name);
+
+        let russellNames = [];
+        for (const interior of InteriorList.forEconomy(russell, economy, { position, parkingLotCount }))
+            russellNames.push(interior.name);
+
+        assert.notDeepEqual(guntherNames, russellNames);
     });
 });

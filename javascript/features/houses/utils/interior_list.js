@@ -135,6 +135,7 @@ const INTERIOR_LIST = [
         // House Id: 6
         name: 'Love Nest',
         selectable: true,
+        vip: true,
         value: 7,
 
         interior: 3,
@@ -240,6 +241,7 @@ const INTERIOR_LIST = [
         // House Id: 11
         name: 'Pleasure Dome',
         selectable: true,
+        vip: true,
         value: 9,
 
         interior: 3,
@@ -281,7 +283,7 @@ const INTERIOR_LIST = [
     {
         // House Id: 13 - PRIVATE INTERIOR
         name: 'RC Playground',
-        selectable: true,
+        selectable: false,
         value: 1,
 
         interior: 10,
@@ -305,8 +307,16 @@ const INTERIOR_LIST = [
 // shared. Various factors influence the price of a property, for instance the location of the
 // house and the number of parking lots available.
 class InteriorList {
-    static forEconomy(economy, location) {
-        const interiors = INTERIOR_LIST.filter(interior => interior.selectable);
+    static forEconomy(player, economy, location) {
+        const interiors = INTERIOR_LIST.filter(interior => {
+            if (!interior.selectable)
+                return false;  // the |interior| is not publicly selectable
+
+            if (interior.vip && !player.isVip())
+                return false;  // the |interior| is restricted to VIPs
+
+            return true;
+        });
 
         // Sort the |interiors| in ascending order by their price, then name.
         interiors.sort((lhs, rhs) => {

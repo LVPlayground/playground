@@ -12,6 +12,7 @@ const HouseSettings = require('features/houses/house_settings.js');
 const HouseVehicle = require('features/houses/house_vehicle.js');
 const HouseVehicleController = require('features/houses/house_vehicle_controller.js');
 const MockHouseDatabase = require('features/houses/test/mock_house_database.js');
+const ObjectGroup = require('entities/object_group.js');
 
 // The house manager orchestrates all details associated with housing, manages data and responds to
 // player connection and disconnection events.
@@ -25,6 +26,8 @@ class HouseManager {
 
         this.extensions_ = new Set();
         this.locations_ = new Set();
+
+        this.objects_ = ObjectGroup.create('data/objects/houses.json');
 
         // Responsible for all entrances and exits associated with the locations.
         this.entranceController_ =
@@ -523,6 +526,9 @@ class HouseManager {
 
         for (const extension of this.extensions_)
             extension.dispose();
+
+        this.objects_.dispose();
+        this.objects_ = null;
 
         this.extensions_.clear();
     }

@@ -7,7 +7,7 @@
 const INTERIOR_LIST = [
     {
         // House Id: 0
-        name: 'Tiny Apartment',
+        name: 'Hotel Room (1)',
         selectable: true,
         value: 1,
 
@@ -91,7 +91,7 @@ const INTERIOR_LIST = [
     },
     {
         // House Id: 4
-        name: 'Large House',
+        name: 'Large House (1)',
         selectable: true,
         value: 5,
 
@@ -128,6 +128,174 @@ const INTERIOR_LIST = [
         preview: {
             position: [ [ 223.7313, 1039.7102, 1085.4797 ], [ 236.5699, 1023.7124, 1085.0833 ] ],
             target: [ [ 227.8049, 1036.8125, 1085.3808 ], [ 235.9511, 1028.6695, 1084.8752 ] ],
+            duration: 2500
+        }
+    },
+    {
+        // House Id: 6
+        name: 'Love Nest',
+        selectable: true,
+        value: 7,
+
+        interior: 3,
+        exits: [ { position: [ 965.42, -53.14, 1001.12 ], rotation: 90 } ],
+
+        features: {
+            health: [ 964.06, -43.48, 1001.12 ],
+            armour: [ 965.56, -43.48, 1001.12 ],
+            safe: [ 964.06, -55.46, 1001.12 ]
+        },
+
+        preview: {
+            position: [ [ 970.0973, -44.0323, 1002.1073 ], [ 956.8461, -49.9488, 1002.5203 ] ],
+            target: [ [ 965.2565, -45.2136, 1001.6937 ], [ 959.1083, -54.3666, 1001.9163 ] ],
+            duration: 2500
+        }
+    },
+    {
+        // House Id: 7
+        name: 'Hotel Room (2)',
+        selectable: true,
+        value: 1,
+
+        interior: 2,
+        exits: [ { position: [ 266.83, 305.09, 999.15 ], rotation: 270 } ],
+
+        features: {
+            health: [ 272.24, 307.95, 999.15 ],
+            armour: [ 273.11, 307.34, 999.15 ],
+            safe: [ 268.59, 308.39, 999.15 ]
+        },
+
+        preview: {
+            position: [ [ 266.1524, 303.5067, 999.1154 ], [ 274.0281, 307.4882, 1000.5545 ] ],
+            target: [ [ 270.6696, 305.5942, 999.6029 ], [ 269.3267, 306.1802, 999.4656 ] ],
+            duration: 2500
+        }
+    },
+    {
+        // House Id: 8
+        name: 'Large House (2)',
+        selectable: true,
+        value: 5,
+
+        interior: 9,
+        exits: [ { position: [ 2317.87, -1026.48, 1050.22 ], rotation: 0 } ],
+
+        features: {
+            health: [ 2324.84, -1018.80, 1050.22 ],
+            armour: [ 2026.34, -1018.80, 1050.22 ],
+            safe: [ 2322.73, -1024.89, 1050.21 ]
+        },
+
+        preview: {
+            position: [ [ 2321.0895, -1023.6378, 1051.2923 ], [ 2320.9318, -1009.3960, 1052.1678 ] ],
+            target: [ [ 2325.7675, -1021.8966, 1051.0021 ], [ 2319.8088, -1014.0153, 1050.6184 ] ],
+            duration: 2500
+        }
+    },
+    {
+        // House Id: 9
+        name: 'Large House (3)',
+        selectable: true,
+        value: 5,
+
+        interior: 12,
+        exits: [ { position: [ 2324.40, -1148.88, 1050.71 ], rotation: 0 } ],
+
+        features: {
+            health: [ 2329.96, -1143.43, 1050.49 ],
+            armour: [ 2329.96, -1141.93, 1050.49 ],
+            safe: [ 2329.96, -1139.28, 1050.49 ]
+        },
+
+        preview: {
+            position: [ [ 2331.4084, -1147.4014, 1050.4755 ], [ 2328.6647, -1135.6943, 1054.4753 ] ],
+            target: [ [ 2327.8935, -1143.8627, 1050.8269 ], [ 2325.4677, -1139.3072, 1053.1616 ] ],
+            duration: 2500
+        }
+    },
+    {
+        // House Id: 10
+        name: 'Normal House (3)',
+        selectable: true,
+        value: 4,
+
+        interior: 5,
+        exits: [ { position: [ 226.75, 1114.29, 1081.00 ], rotation: 270 } ],
+
+        features: {
+            health: [ 238.10, 1110.36, 1081.00 ],
+            armour: [ 239.60, 1110.36, 1081.00 ],
+            safe: [ 247.74, 1113.61, 1080.99 ]
+        },
+
+        preview: {
+            position: [ [ 226.7456, 1115.1162, 1080.9959 ], [ 247.6953, 1112.6324, 1081.7178 ] ],
+            target: [ [ 231.6206, 1114.0130, 1081.1287 ], [ 243.8945, 1115.8752, 1081.5225 ] ],
+            duration: 2500
+        }
+    },
+    {
+        // House Id: 11
+        name: 'Pleasure Dome',
+        selectable: true,
+        value: 9,
+
+        interior: 3,
+        exits: [ { position: [ -2636.79, 1402.81, 906.46 ], rotation: 30 } ],
+
+        features: {
+            health: [ -2666.14, 1428.85, 906.46 ],
+            armour: [ -2667.64, 1428.85, 906.46 ],
+            safe: [ -2654.42, 1424.56, 906.46 ]
+        },
+
+        preview: {
+            position: [ [ -2677.8393, 1420.6900, 919.7935 ], [ -2641.6391, 1405.5695, 908.1486 ] ],
+            target: [ [ -2673.7119, 1418.9016, 917.6106 ], [ -2646.4299, 1406.6981, 909.0295 ] ],
+            duration: 2500
+        }
+    },
+    {
+        // House Id: 12
+        name: 'Hotel Reception',
+        selectable: true,
+        value: 7,
+
+        interior: 18,
+        exits: [ { position: [ 1726.83, -1638.65, 20.22 ], rotation: 180 } ],
+
+        features: {
+            health: [ 1721.17, -1643.88, 20.23 ],
+            armour: [ 1719.67, -1643.88, 20.23 ],
+            safe: [ 1731.59, -1653.76, 20.23 ]
+        },
+
+        preview: {
+            position: [ [ 1724.5875, -1654.5982, 21.0136 ], [ 1713.5572, -1671.6555, 37.3206 ] ],
+            target: [ [ 1720.0672, -1656.1031, 22.5311 ], [ 1715.3537, -1667.9216, 34.5223 ] ],
+            duration: 2500
+        }
+    },
+    {
+        // House Id: 13 - PRIVATE INTERIOR
+        name: 'RC Playground',
+        selectable: true,
+        value: 1,
+
+        interior: 10,
+        exits: [ { position: [ -1131.76, 1057.83, 1346.41 ], rotation: 270 } ],
+
+        features: {
+            health: [ -1126.49, 1051.77, 1345.71 ],
+            armour: [ -1126.49, 1050.27, 1345.71 ],
+            safe: [ -1132.80, 1051.77, 1345.71 ]
+        },
+
+        preview: {
+            position: [ [ -1135.7145, 1057.5029, 1347.5469 ], [ -981.0269, 1032.7276, 1364.8944 ] ],
+            target: [ [ -1130.7149, 1057.5639, 1347.5430 ], [ -985.3702, 1034.7103, 1363.4093 ] ],
             duration: 2500
         }
     }

@@ -156,7 +156,7 @@ const PURCHASE_CHAT_ENCRYPTION_QUERY = `
         gang_chat_encryption
         (gang_id, user_id, purchase_date, purchase_amount, encryption_expire)
     VALUES
-        (?, ?, NOW(), ?, ?)`;
+        (?, ?, NOW(), ?, FROM_UNIXTIME(?))`;
 
 // Query to update the color of a gang.
 const GANG_UPDATE_COLOR_QUERY = `

@@ -44,13 +44,25 @@ class Scheduler {
             // GlobalStreamerTickMs, not [GlobalStreamerTickMs + execution time].
             for (const streamer of this.globalStreamers_) {
                 if (streamer.size > 0)
-                    await streamer.stream();
+                    await this.safeStream(streamer);
 
                 await milliseconds(GlobalStreamerTickMs / this.globalStreamers_.size);
             }
 
             // TODO: Make sure that we don't flood the server by continuously streaming.
             // TODO: Support per-player entity streamers in this method.
+        }
+    }
+
+    // Safely streams the |streamer|. Will not break the entire streamer on an exception.
+    async safeStream(streamer) {
+        try {
+            await streamer.stream();
+        } catch (exception) {
+            if (server.isTest())
+                return;  // don't spam the console while running tests
+
+            console.log('ERROR: Unexpected promise rejection by the |streamer|.', exception);
         }
     }
 

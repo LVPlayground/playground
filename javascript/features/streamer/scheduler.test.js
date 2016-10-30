@@ -86,7 +86,7 @@ describe('Scheduler', (it, beforeEach, afterEach) => {
         await Promise.resolve();
         await server.clock.advance(1000);
 
-        assert.equal(scheduler.counter, 11);
+        assert.equal(scheduler.counter, 10);
         assert.equal(streamCounter, 1);
     });
 
@@ -110,5 +110,38 @@ describe('Scheduler', (it, beforeEach, afterEach) => {
         assert.equal(scheduler.counter, 9);
 
         scheduler = null;
+    });
+
+    it('should not blow up when a streamer throws an exception', async(assert) => {
+        let counter = 0;
+
+        class MyStreamer extends EntityStreamerGlobal {
+            async stream() {
+                counter++;
+                throw new Error('Something went terribly wrong!');
+            }
+
+            createEntity(storedEntity) {}
+            deleteEntity(storedEntity) {}
+        }
+
+        assert.equal(scheduler.counter, 0);
+
+        const streamer = new MyStreamer({ maxVisible: 10 });
+        streamer.add(new StoredEntity({
+            modelId: 1,
+            position: new Vector(0, 0, 0),
+            interiorId: -1,
+            virtualWorld: -1
+        }));
+
+        scheduler.addStreamer(streamer);
+        scheduler.start();
+
+        for (let i = 0; i < 10; ++i)
+            await server.clock.advance(1000);  // one second
+
+        assert.isAbove(counter, 1);
+        assert.equal(counter, scheduler.counter);
     });
 });

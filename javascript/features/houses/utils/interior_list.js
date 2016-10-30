@@ -308,13 +308,14 @@ const INTERIOR_LIST = [
 // house and the number of parking lots available.
 class InteriorList {
     static forEconomy(player, economy, location) {
-        const interiors = INTERIOR_LIST.filter(interior => {
+        const interiors = INTERIOR_LIST.filter((interior, index) => {
             if (!interior.selectable)
                 return false;  // the |interior| is not publicly selectable
 
             if (interior.vip && !player.isVip())
                 return false;  // the |interior| is restricted to VIPs
 
+            interior.id = index;
             return true;
         });
 
@@ -328,7 +329,6 @@ class InteriorList {
 
         // Assign prices to each of the entries in the interior list based on |economy|.
         interiors.forEach((interior, interiorId) => {
-            interior.id = interiorId;
             interior.price =
                 economy.calculateHousePrice(location.position, location.parkingLotCount,
                                             interior.value);

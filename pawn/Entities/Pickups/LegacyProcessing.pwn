@@ -103,6 +103,11 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
 
         playerVipRoomEntryTime[playerid] = 0;
 
+        if (GetPlayerTeleportStatus(playerid, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED) {
+            SendClientMessage(playerid, Color::Red, "You cannot use this command because you have recently been in a fight.");
+            return 1;
+        }
+
         if(chaseData[1] == playerid && chaseData[0] == 1)
         {
             // The chase is active, they're trying to escape to the VIP room..

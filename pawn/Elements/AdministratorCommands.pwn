@@ -968,7 +968,11 @@ lvp_p(playerId, params[]) {
             return 1;
         }
 
-        GodHelp:
+GodHelp:
+        format(g_message, sizeof(g_message), "%s (Id: %d) currently has god mode {FFFF00}%s{FFFFFF}.",
+            Player(subjectId)->nicknameString(), subjectId, (g_bPlayerGodmode[subjectId] ? "enabled": "disabled"));
+
+        SendClientMessage(playerId, Color::Information, g_message);
         SendClientMessage(playerId, Color::Information, "Usage: /p [player] god [on/off]");
 
         return 1;

@@ -48,7 +48,6 @@ class InteriorSelector {
 
         this.finished_ = new Promise(resolve => {
             this.resolve_ = resolve;
-            this.done_ = true;
 
         }).then(selection => {
             this.dispose();  // self-dispose the selector
@@ -148,6 +147,8 @@ class InteriorSelector {
     dispose() {
         this.userInterface_.dispose();
         this.userInterface_ = null;
+
+        this.done_ = true;
     }
 }
 

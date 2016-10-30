@@ -146,7 +146,7 @@ new sAchievements[TotalAchievements][128] = {
     "Oh, you are becoming pro? (Get 300 FightClub kills)",
     "The pwnage has just started (Get 400 FightClub kills)",
     "I ARE PWNZ (Get 500 FightClub kills)",
-    "Do you have a driver license? (Get 5000 drift points)",
+    "" /* Broken */, //"Do you have a driver license? (Get 5000 drift points)",
     "" /* Broken */, //"Sunday driver (Get 8000 drift points)",
     "" /* Broken */, //"Don't drink and drive! (Get 10000 drift points)",
     "" /* Broken */, //"You saw too much The Fast and the Furios (Get 15000 drift points)",

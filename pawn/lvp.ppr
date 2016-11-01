@@ -142,7 +142,6 @@
     <DiskObject>\Features\Environment\Area\</DiskObject>
     <DiskObject>\Features\Environment\Area\CasinoArea.pwn</DiskObject>
     <DiskObject>\Features\Environment\Area\PayAndSprayShops.pwn</DiskObject>
-    <DiskObject>\Features\Environment\InformationBeaconController.pwn</DiskObject>
     <DiskObject>\Features\Environment\MapObjects.pwn</DiskObject>
     <DiskObject>\Features\Environment\Services\</DiskObject>
     <DiskObject>\Features\Environment\Services\Gunther.pwn</DiskObject>

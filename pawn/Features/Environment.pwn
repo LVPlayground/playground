@@ -22,7 +22,4 @@
 
 #include "Features/Environment/Time/TimeController.pwn"
 
-// The information beacons are part of the LVP environment to help out players.
-//#include "Features/Environment/InformationBeaconController.pwn"
-
 #include "Features/Environment/MapObjects.pwn"

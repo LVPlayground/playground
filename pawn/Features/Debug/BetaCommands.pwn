@@ -202,9 +202,7 @@ class BetaCommands {
         Command->stringParameter(params, 0, layerName, sizeof(layerName));
 
         new layerId = -1;
-        if (strcmp(layerName, "cashpoints", true, 10) == 0)
-            layerId = CashPointController::CashPointLayerId;
-        else if (strcmp(layerName, "casino", true, 6) == 0)
+        if (strcmp(layerName, "casino", true, 6) == 0)
             layerId = CasinoArea::CasinoLayerId;
         else if (strcmp(layerName, "paynspray", true, 9) == 0)
             layerId = PayAndSprayShops::ZoneLayerId;

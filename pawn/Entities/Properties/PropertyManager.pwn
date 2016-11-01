@@ -262,7 +262,7 @@ class PropertyManager {
 
             // Players with a normal bank account, or who disabled receiving earnings in their bank
             // account, will receive the earnings in cash.
-            if (BankAccount(playerId)->type() != PremierBankAccount || PlayerSettings(playerId)->areEarningsToBankAccountDisabled() == true) {
+            if (PlayerSettings(playerId)->areEarningsToBankAccountDisabled()) {
                 GivePlayerMoney(playerId, payoutAmount[playerId]);
 
                 format(message, sizeof(message),
@@ -275,19 +275,13 @@ class PropertyManager {
 
             // Players with a Premier bank account will have the money deposited in their bank account
             // automatically, but again with a certain percentage of costs for the bank.
-            new actualPayout = Math->round(float(payoutAmount[playerId]) * (100.0 - BankAccount::PremierDepositTransactionCostPercentage) / 100.0);
-            if (BankAccount(playerId)->availableBalance() >= actualPayout) {
+            if (BankAccount(playerId)->availableBalance() >= payoutAmount[playerId]) {
                 // The player has sufficient balance available to receive this sum on their bank.
-                BankAccount(playerId)->setBalance(BankAccount(playerId)->balance() + actualPayout);
+                BankAccount(playerId)->setBalance(BankAccount(playerId)->balance() + payoutAmount[playerId]);
 
                 format(message, sizeof(message),
                     "You have earned {40CCFF}$%s{FFFFFF} with your properties, which has been deposited into your bank account.",
                     formatPrice(payoutAmount[playerId]));
-                SendClientMessage(playerId, Color::Information, message);
-
-                format(message, sizeof(message),
-                    "The bank has taken {40CCFF}%.0f%%{FFFFFF} commission because of your Premier account.",
-                    BankAccount::PremierDepositTransactionCostPercentage);
                 SendClientMessage(playerId, Color::Information, message);
 
             } else {

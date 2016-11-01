@@ -1010,12 +1010,5 @@ GetPlayerIngameHours(playerId) {
     return gameplayhours[playerId];
 }
 
-GetPlayerIngameTime(playerId) {
-    if (playerId < 0 || playerId >= MAX_PLAYERS)
-        return 0;
-
-    return 3600 * gameplayhours[playerId] + 60 * gameplayminutes[playerId] + gameplayseconds[playerId];
-}
-
 forward OnPlayerLeaveActivity(playerid);
 public OnPlayerLeaveActivity(playerid) {}

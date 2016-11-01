@@ -173,16 +173,6 @@ class AccountData <playerId (MAX_PLAYERS)> {
         if (customColor != 0 && Player(playerId)->isVip())
             ColorManager->setPlayerCustomColor(playerId, customColor);
 
-        // mutable: money_bank_type
-        new bankAccountTypeBuffer[24],
-            BankAccountType: bankAccountType = NormalBankAccount;
-
-        DatabaseResult(resultId)->readString("money_bank_type", bankAccountTypeBuffer);
-        if (strcmp("Premier", bankAccountTypeBuffer, false, 7)== 0)
-            bankAccountType = PremierBankAccount;
-
-        BankAccount(playerId)->setBankAccountType(bankAccountType);
-
         // mutable: money_bank
         BankAccount(playerId)->setBalance(DatabaseResult(resultId)->readInteger("money_bank"));
 

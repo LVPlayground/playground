@@ -61,9 +61,6 @@ class Statistics {
     // Amount of carbombs a player bought in total.
     new m_carBombs[MAX_PLAYERS];
 
-    // The player's bank account type: Normal or Premier.
-    new m_bankType[MAX_PLAYERS][12];
-
     // Bank balance of a player.
     new m_bankBalance[MAX_PLAYERS][16];
 
@@ -220,12 +217,6 @@ class Statistics {
         // Detonated carbombs.
         m_carBombs[playerId] = MyCarBombs[playerId];
 
-        // Bank type.
-        if (BankAccount(playerId)->type() == PremierBankAccount)
-            format(m_bankType[playerId], sizeof(m_bankType), "Premier");
-        else
-            format(m_bankType[playerId], sizeof(m_bankType), "Normal");
-
         // Bank balance.
         FinancialUtilities->formatPrice(BankAccount(playerId)->balance(), m_bankBalance[playerId],
             sizeof(m_bankBalance));
@@ -247,8 +238,8 @@ class Statistics {
             n_SprayTagCount, m_wonMinigames[playerId], m_exportedCars[playerId], m_reactionTests[playerId]);
 
         format(dialogMessage, sizeof(dialogMessage),
-            "%s{B4CCE8}Carbombs detonated: {FF8E02}%d\r\n{B4CCE8}Bank account type: {FF8E02}%s\r\n{B4CCE8}Bank balance: {FF8E02}%s",
-            dialogMessage, m_carBombs[playerId], m_bankType[playerId], m_bankBalance[playerId]);
+            "%s{B4CCE8}Carbombs detonated: {FF8E02}%d\r\n{B4CCE8}Bank balance: {FF8E02}%s",
+            dialogMessage, m_carBombs[playerId], m_bankBalance[playerId]);
 
         ShowPlayerDialog(viewerId, Statistics::DialogId, DIALOG_STYLE_MSGBOX, dialogCaption, dialogMessage, "Got it!", "");
 

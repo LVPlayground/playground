@@ -7,10 +7,6 @@
 #include "Entities/Financial/Anticheat/PlayerMoneyState.pwn"
 
 #include "Entities/Financial/Bank/BankAccount.pwn"
-
-#include "Entities/Financial/CashPoints/CashPointController.pwn"
-#include "Entities/Financial/CashPoints/CashPoint.pwn"
-
 #include "Entities/Financial/Bank/BankCommands.pwn"
 
 #include "Entities/Financial/FinancialUtilities.pwn"

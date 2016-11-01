@@ -2,50 +2,12 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-/**
- * Las Venturas Playground has two kinds of bank accounts. The normal accounts are available for
- * each player, whereas they can upgrade to a Premier bank account as they gain more experience
- * on the server. Both types of account will persist the balance between sessions.
- */
-enum BankAccountType {
-    NormalBankAccount,
-    PremierBankAccount
-};
-
-/**
- * There are two kinds of bank accounts on Las Venturas Playground: normal accounts, available to
- * each and every registered player, and Premier accounts which are available for the more regular
- * players on the server. Both will persist the player's balance between playing sessions.
- *
- * Normal bank are free to use at any bank or cash point in San Andreas.
- *
- * Premier bank accounts can be used anywhere and at any time. However, when the player deposits
- * money, 10% of that amount will go to the bank. Any earnings from properties will directly be
- * deposited in the player's bank account. Players are able to upgrade to Premier accounts when they
- * have a hundred hours of in-game time and are willing to pay a one time fee of 25 million dollars.
- *
- * The commands for interacting with bank accounts are available in the BankCommands.pwn file,
- * including the available commands for administrators. This class holds the logic and status for
- * the bank account of each player, and is usable throughout the gamemode.
- */
 class BankAccount {
     // Maximum balance of any kind of bank account.
     public const MaximumBalance = 2000000000;
 
-    // Percentage of the deposit which will go to the bank for Premier accounts.
-    public const PremierDepositTransactionCostPercentage = 10.0;
-
-    // How many hours does a player need to have before they can upgrade to a Premier account?
-    public const RequiredHoursForPremierAccountUpgrade = 100;
-
-    // What is the one-time cost of upgrading to a Premier bank account?
-    public const RequiredMoneyForPremierAccountUpgrade = 25000000;
-
     // What is the pickup handler Id for the bank pickup?
     public const BankHandlerId = @counter(PickupHandler);
-
-    // What kind of bank account does this player have?
-    new BankAccountType: m_type[MAX_PLAYERS];
 
     // What is the balance they currently have available in their account?
     new m_balance[MAX_PLAYERS];
@@ -68,32 +30,8 @@ class BankAccount {
      */
     @list(OnPlayerConnect)
     public onPlayerConnect(playerId) {
-        m_type[playerId] = NormalBankAccount;
         m_inBank[playerId] = false;
         m_balance[playerId] = 0;
-    }
-
-    /**
-     * Returns the kind of bank account this player has.
-     *
-     * @return BankAccountType The bank account type for this player.
-     */
-    public inline BankAccountType: type(playerId) {
-        return (m_type[playerId]);
-    }
-
-    /**
-     * Updates the bank account type for this player. This should only be used when the player logs
-     * in to their account, upgrades their account or an Administrator does the latter for them.
-     * After changing the type, the balance will be capped at the maximum value of the new type.
-     *
-     * @param type The type of bank account the player should have.
-     */
-    public setBankAccountType(playerId, BankAccountType: type) {
-        m_type[playerId] = type;
-
-        if (m_balance[playerId] > BankAccount::MaximumBalance)
-            m_balance[playerId] = BankAccount::MaximumBalance;
     }
 
     /**

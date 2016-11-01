@@ -110,10 +110,6 @@ class LegacyAccountBridge {
      * @param querySize The maximum size of the array buffer.
      */
     public CreateQuery(playerId, query[], querySize) {
-        new bankAccountType[8];
-        format(bankAccountType, sizeof(bankAccountType), "%s",
-            BankAccount(playerId)->type() == NormalBankAccount ? "Normal" : "Premier");
-
         new customColor = 0;
         if (Player(playerId)->isVip() == true) {
             // We first need to release any previously set custom color. This operation will only
@@ -154,7 +150,6 @@ class LegacyAccountBridge {
                 "death_count = %d, " ...
 
                 "money_bank = %d, " ...
-                "money_bank_type = \"%s\", " ...
                 "money_cash = %d, " ...
                 "money_debt = %d, " ...
                 "money_bounty = %d, " ...
@@ -198,7 +193,6 @@ class LegacyAccountBridge {
 
                 // Financial information
                 BankAccount(playerId)->balance(),
-                bankAccountType,
                 GetPlayerMoney(playerId),
                 iLoan[playerId],
                 HitmanTracker(playerId)->playerBounty(),

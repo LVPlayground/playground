@@ -314,9 +314,6 @@ lvp_stats(playerid, params[])
     format(szStatMsg, 128, "Vehicles: %d Properties: %d", VehicleManager->vehicleCount(), iProperties);
     SendClientMessage(playerid, Color::Green, szStatMsg);
 
-    format(szStatMsg, 128, "ATMs: %d", CashPointController->count());
-    SendClientMessage(playerid, Color::Green, szStatMsg);
-
     return 1;
 }
 

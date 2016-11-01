@@ -246,7 +246,7 @@ CExport__OnEnterCheckpoint( playerid )
                     format(string, sizeof(string), "%s has exported a %s, you earned $%s.", PlayerName(playerid), name, formatPrice(ownerShare));
                     SendClientMessage(endid, COLOR_GREY, string);
 
-                    TakeRegulatedMoney(endid, VehicleExportRewardOwnerShare, floatround(fHealth));
+                    GiveRegulatedMoney(endid, VehicleExportRewardOwnerShare, floatround(fHealth));
                 }
 
                 //Just a little check for the bonus time

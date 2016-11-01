@@ -379,31 +379,6 @@
     <DiskObject>\Resources\Minigames\Derby\Derby7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby9.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race10.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race12.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race13.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race14.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race15.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race17.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race18.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race19.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race21.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race22.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race23.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race24.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race25.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race26.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race27.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race28.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race29.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race30.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race31.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race32.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race33.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race7.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race8.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Race\Race9.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

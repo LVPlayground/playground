@@ -14,7 +14,6 @@ enum _: PlayerSettingKey {
     TeleportationDisabledSettingKey = 1,
     MapTeleportationEnabledSettingKey = 2,
     EarningsToBankAccountDisabledSettingKey = 3,
-    AdminVehicleAccessDisabledSettingKey = 4,
     AllVirtualWorldChatEnabledSettingKey = 5,
     PlayerInfoEnabledSettingKey = 6,
     PlayerHitSoundEnabledSettingKey = 7
@@ -158,24 +157,6 @@ class PlayerSettings <playerId (MAX_PLAYERS)> {
      */
     public setEarningsToBankAccountDisabled(bool: disabled) {
         this->toggleSetting(EarningsToBankAccountDisabledSettingKey, !!disabled);
-    }
-
-    /**
-     * Returns whether this player should have access to admin vehicles.
-     *
-     * @return boolean Should admin vehicle access be allowed for this player?
-     */
-    public bool: isAdminVehicleAccessDisabled() {
-        return this->hasSetting(AdminVehicleAccessDisabledSettingKey);
-    }
-
-    /**
-     * Toggles whether received a player should have access to admin vehicles.
-     *
-     * @param disabled Whether this feauture should be disabled.
-     */
-    public setAdminVehicleAccessDisabled(bool: disabled) {
-        this->toggleSetting(AdminVehicleAccessDisabledSettingKey, !!disabled);
     }
 
     /**

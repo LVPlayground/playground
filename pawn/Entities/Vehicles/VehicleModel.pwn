@@ -290,44 +290,4 @@ class VehicleModel <modelId (NumberOfVehicleModels)> {
         // related to vehicle modifications, we can be stricter in this regard.
         return true;
     }
-
-    /**
-     * Attempts to find the vehicle model based on textual input. The input could be a model Id,
-     * which would be in the range of a valid model Id ([400, 612]), but it could also be the
-     * (partial) name for a vehicle in which case we have to iterate over all vehicles.
-     *
-     * When doing a (partial) search for a name, the input string needs to be at least three
-     * characters in length. The returned result is greedy: the first hit will immediatly return.
-     *
-     * @param string The textual input which should be interpret as a vehicle model.
-     * @return integer The model Id, or VehicleModel::InvalidId if we can't find anything.
-     */
-    public static vehicleModelByString(string[]) {
-        if (IsNumeric(string)) {
-            new probablyModelId = strval(string);
-            if (VehicleModel(probablyModelId)->isValidVehicleModel())
-                return probablyModelId; // the user gave valid numeric input!
-
-            // The user entered a number, but outside the range of a valid vehicle model Id.
-            return VehicleModel::InvalidId;
-        }
-
-        // The text entered by the user wasn't numeric, so we have to do a fuzzy match over all the
-        // vehicle model names we know of. "Hydra", "HYDRA", "hydr" and "ydra" should all return 520.
-        new queryLength = strlen(string);
-        if (strlen(string) < 3)
-            return VehicleModel::InvalidId;
-
-        // Iterate over all the models known to us..
-        for (new modelId = VehicleModel::LowestModelId; modelId <= VehicleModel::HighestModelId; ++modelId) {
-            new modelNameLength = strlen(VehicleModel(modelId)->nameString());
-            for (new length = 0, maximumIndex = (modelNameLength - queryLength); length <= maximumIndex; ++length) {
-                if (strcmp(string, VehicleModel(modelId)->nameString()[length], true, queryLength) == 0)
-                    return modelId;
-            }
-        }
-
-        // We couldn't find a vehicle, so inform the caller of this result.
-        return VehicleModel::InvalidId;
-    }
 };

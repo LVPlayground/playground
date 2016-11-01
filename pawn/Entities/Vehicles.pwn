@@ -10,6 +10,4 @@
 #include "Entities/Vehicles/Vehicle.pwn"
 #include "Entities/Vehicles/VehicleManager.pwn"
 
-#include "Entities/Vehicles/RcVehicleManager.pwn"
-
 #include "Entities/Vehicles/VehicleEvents.pwn"

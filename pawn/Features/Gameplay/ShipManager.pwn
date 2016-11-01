@@ -271,9 +271,6 @@ class ShipManager {
                 SendClientMessage(playerId, Color::Error, "Vehicles are not allowed on the ship!");
             }
 
-            if (VehicleModel(modelId)->isRemoteControllableVehicle())
-                RcVehicleManager->requestLeaveVehicle(playerId, vehicleId);
-
             SetVehicleToRespawn(vehicleId);
 
             return 1;

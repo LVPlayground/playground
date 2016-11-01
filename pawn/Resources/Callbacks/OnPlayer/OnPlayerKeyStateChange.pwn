@@ -17,24 +17,6 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
     Annotation::ExpandList<OnPlayerKeyStateChange>(playerid, newkeys, oldkeys);
 
-    // Determine whether this player is trying to enter or exit a remote controllable vehicle.
-    // The RC Vehicle Manager has methods for controlling exactly that.
-    if ((newkeys & KEY_SECONDARY_ATTACK) == KEY_SECONDARY_ATTACK) {
-        if (IsPlayerInAnyVehicle(playerid)) {
-            new vehicleId = GetPlayerVehicleID(playerid),
-                vehicleModel = GetVehicleModel(vehicleId);
-
-            // Is the player trying to exit an RC vehicle?
-            if (VehicleModel(vehicleModel)->isRemoteControllableVehicle() == true) {
-                RcVehicleManager->requestLeaveVehicle(playerid, vehicleId);
-                return 1;
-            }
-
-        // Otherwise the player may be trying to enter an RC vehicle.
-        } else if (RcVehicleManager->requestEnterVehicle(playerid) == true)
-            return 1;
-    }
-
     // Spraytags
     if (sprayTagOnKeyStateChange(playerid, newkeys, oldkeys))
         return 1;

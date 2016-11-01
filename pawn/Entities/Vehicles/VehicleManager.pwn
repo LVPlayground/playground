@@ -60,11 +60,6 @@ class VehicleManager {
         // of how many vehicle models have been created on Las Venturas Playground.
         VehicleModel(modelId)->increaseReferenceCount();
 
-        // If this vehicle is a remote controllable vehicle, we need to register it with the RC
-        // vehicle manager to make sure players are able to enter it.
-        if (VehicleModel(modelId)->isRemoteControllableVehicle() == true)
-            RcVehicleManager->registerRemoteControllableVehicle(vehicleId);
-
         // Set up the correct environment for this vehicle.
         LinkVehicleToInterior(vehicleId, interiorId);
         SetVehicleVirtualWorld(vehicleId, worldId);
@@ -91,11 +86,6 @@ class VehicleManager {
         new modelId = Vehicle(vehicleId)->modelId();
         if (VehicleModel(modelId)->isStaticVehicle())
             return false;
-
-        // If a remote controllable vehicle is being destroyed, make sure to mark it as such so that
-        // we won't try to find it anymore if any player tries to enter a vehicle.
-        if (VehicleModel(modelId)->isRemoteControllableVehicle() == true)
-            RcVehicleManager->removeRemoteControllableVehicle(vehicleId);
 
         // Inform the vehicle itself about it being destroyed, giving it a chance to update its
         // state in the database if it's a persistent vehicle.

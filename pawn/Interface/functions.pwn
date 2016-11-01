@@ -313,8 +313,6 @@ ResetPlayerStats(playerId) {
     ResetWeaponCheatCount(playerId);
     playerArmour[playerId] = 0.0;
     iPlayerSawnoffWeapon[playerId] = 0;
-    banWarning[playerId] = 0;
-    tpWarning[playerId] = 0;
     DeliveryResetStuff(playerId);
     ResetPlayerGameStateVariables(playerId);
     g_iTimeInfCommandLastUsed[playerId] = 0;

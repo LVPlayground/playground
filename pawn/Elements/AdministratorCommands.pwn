@@ -396,45 +396,7 @@ TimeHelp:
         return 1;
     }
 
-    if (Player(playerId)->isAdministrator() == false)
-        goto SetHelp;
-
-    if (!strcmp(setParameter, "ramping", true, 10)) {
-        if (Command->parameterCount(params) < 2)
-            goto RampHelp;
-
-        new rampingBoolean[4];
-        Command->stringParameter(params, 1, rampingBoolean, sizeof(rampingBoolean));
-
-        if (!strcmp(rampingBoolean, "on", true, 2)) {
-            RampingEnabled = true;
-            SendClientMessage(playerId, Color::Success, "The global ramping feature has been enabled.");
-
-            format(g_message, sizeof(g_message), "%s (Id:%d) has enabled the global ramping feature.",
-                Player(playerId)->nicknameString(), playerId);
-            Admin(playerId, g_message);
-
-            return 1;
-        }
-
-        if (!strcmp(rampingBoolean, "off", true, 3)) {
-            RampingEnabled = false;
-            SendClientMessage(playerId, Color::Success, "The global ramping feature has been disabled.");
-
-            format(g_message, sizeof(g_message), "%s (Id:%d) has disabled the global ramping feature.",
-                Player(playerId)->nicknameString(), playerId);
-            Admin(playerId, g_message);
-
-            return 1;
-        }
-
-        RampHelp:
-        SendClientMessage(playerId, Color::Information, "Usage: /set ramping [on/off]");
-
-        return 1;
-    }
-
-    if (Player(playerId)->isManagement() == false)
+    if (!Player(playerId)->isManagement())
         goto SetHelp;
 
 
@@ -469,11 +431,8 @@ TimeHelp:
         return 1;
     }
 
-    SetHelp:
-    if (Player(playerId)->isManagement() == true)
-        SendClientMessage(playerId, Color::Information, "Usage: /set [gravity/ramping/shiprail/time/weather]");
-    else if (Player(playerId)->isAdministrator() == true)
-        SendClientMessage(playerId, Color::Information, "Usage: /set [ramping/shiprail/time/weather]");
+SetHelp:
+    SendClientMessage(playerId, Color::Information, "Usage: /set [gravity/shiprail/time/weather]");
 
     return 1;
 }

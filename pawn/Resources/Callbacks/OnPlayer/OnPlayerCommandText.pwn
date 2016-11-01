@@ -772,15 +772,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     if(strcmp(cmd, "/ramping", true) == 0){
 
         if(ramping[playerid] == 0){
-
-            // Check if ramping is disabled
-            if ( RampingEnabled == false )
-            {
-                SendClientMessage(playerid,Color::Red, "Ramping has been temporary disabled by an administrator. Try again later.");
-                return 1;
-            }
-            // End disabled check
-
             ramping[playerid] = 1;
 
             SendClientMessage(playerid,COLOR_YELLOW, "You've enabled the ramping feature, get in a vehicle, press CTRL");
@@ -1002,7 +993,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         }
 
         // have they used the cmd within the last 5 mins?
-        if(Time->currentTime() - g_FlagTime[playerid][0] < 60*5)
+        if(Time->currentTime() - g_FlagTime[playerid] < 60*5)
         {
             ShowBoxForPlayer(playerid, "You can only change the airport custom tax every five minutes.");
             return 1;
@@ -1030,7 +1021,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             Player(playerid)->nicknameString(), ctax);
         NewsController->show(message);
 
-        g_FlagTime[playerid][0] = Time->currentTime();
+        g_FlagTime[playerid] = Time->currentTime();
         return 1;
     }
 

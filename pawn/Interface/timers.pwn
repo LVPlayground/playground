@@ -157,10 +157,6 @@ class DeprecatedTimerRuntime {
                 continue;
 
             CAchieve__CheckIngameHours(playerId);
-            if (banWarning[playerId] >= 1)
-                banWarning[playerId] --;
-            if (tpWarning[playerId] >= 1)
-                tpWarning[playerId] --;
         }
 
         TaxUpdate();

@@ -75,13 +75,6 @@ IsVehicleRampingValid(n_Model)
 // Called from OnPlayerKeyStateChange
 OnPlayerPressRampKey(playerid)
 {
-    // Is Ramping disabled, globally?
-    if ( RampingEnabled == false )
-    {
-        SendClientMessage(playerid,Color::Red, "* Ramping has been temporary disabled by an administrator.");
-        return;
-    }
-
     // Is ramping enabled for this player?
     if(!ramping[playerid] || !IsVehicleRampingValid(GetVehicleModel(GetPlayerVehicleID(playerid))))
         return;

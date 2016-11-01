@@ -135,14 +135,12 @@ enum PickupSpawnInfo {
     Float: PickupZ
 };
 
-new Float: gHealthPickups[3][PickupSpawnInfo] = {
-    {-2666.1936,1428.7739,906.4609},
+new Float: gHealthPickups[2][PickupSpawnInfo] = {
     {2023.1903, 1304.9056, 10.8203},
     {2169.0876, 2116.3635, 10.8203}
 };
-new Float: gArmorPickups[4][PickupSpawnInfo] = {
+new Float: gArmorPickups[3][PickupSpawnInfo] = {
     {2016.0073, 1104.0162, 10.8203},
-    {-2669.0249, 1428.7522, 906.4609},
     {1491.0803, 2773.4373, 15.9706},
     {2088.6541, 1450.2456, 10.8203}
 };

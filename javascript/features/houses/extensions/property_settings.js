@@ -112,6 +112,10 @@ class PropertySettings extends HouseExtension {
 
                     await colorMenu.displayForPlayer(player);
                 });
+
+                // TODO: Menu item for changing the audio stream URL.
+                // -- TODO: Make sure to "renew" the stream for players currently in the house when
+                //          the value of the audio stream URL has changed.
             }
 
             settingsMenu.addItem('Spawn at this house', spawnValue, async(player) => {
@@ -158,6 +162,16 @@ class PropertySettings extends HouseExtension {
 
         if (player.userId === location.settings.ownerId)
             player.sendMessage(Message.HOUSE_WELCOME, player.name);
+
+        if (location.settings.hasAudioStream())
+            player.playAudioStream(location.settings.streamUrl);
+    }
+
+    // Called when the |player| has left the |location|. The audio stream will be stopped when the
+    // house has a valid stream, to make sure the user stops listening to the.. enforced music.
+    onPlayerLeaveHouse(player, location) {
+        if (location.settings.hasAudioStream())
+            player.stopAudioStream();
     }
 }
 

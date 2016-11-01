@@ -135,4 +135,16 @@ describe('PropertySettings', (it, beforeEach) => {
         assert.isTrue(await gunther.issueCommand('/house settings'));
         assert.isFalse(location.settings.isSpawn());
     });
+
+    it('should start and stop the audio stream for a location when expected', async(assert) => {
+        manager.forceExitHouse(gunther, location);
+
+        location.settings.streamUrl = 'http://example.com/mystream.mp3';
+
+        assert.isNull(gunther.streamUrl);
+        manager.forceEnterHouse(gunther, location);
+        assert.equal(gunther.streamUrl, 'http://example.com/mystream.mp3');
+        manager.forceExitHouse(gunther, location);
+        assert.isNull(gunther.streamUrl);
+    });
 });

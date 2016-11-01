@@ -58,6 +58,7 @@ class MockHouseDatabase {
             access: HouseSettings.ACCESS_DEFAULT,
             spawnPoint: false,
             welcomeMessage: '',
+            streamUrl: '',
             markerColor: 'yellow',
 
             features: new Map([ ['feature_name', new Vector(4000, 5000, 6000)] ]),
@@ -97,6 +98,7 @@ class MockHouseDatabase {
             access: HouseSettings.ACCESS_DEFAULT,
             spawnPoint: false,
             welcomeMessage: '',
+            streamUrl: '',
             markerColor: 'yellow',
 
             features: new Map(),
@@ -133,6 +135,8 @@ class MockHouseDatabase {
     async updateHouseName(location, name) {}
 
     async updateHouseSpawn(location, spawn) {}
+
+    async updateHouseStreamUrl(location, streamUrl) {}
 
     async updateHouseWelcomeMessage(location, welcomeMessage) {}
 

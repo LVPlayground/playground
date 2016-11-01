@@ -47,6 +47,7 @@ const LOAD_HOUSES_QUERY = `
         houses_settings.house_access,
         houses_settings.house_spawn_point,
         houses_settings.house_welcome_message,
+        houses_settings.house_stream_url,
         houses_settings.house_marker_color,
         UNIX_TIMESTAMP(houses_settings.house_created) AS house_created,
         users_gangs.gang_id,
@@ -228,6 +229,15 @@ const UPDATE_WELCOME_MESSAGE_SETTING_QUERY = `
     WHERE
         house_id = ?`;
 
+// Query for updating the audio stream URL of a given house.
+const UPDATE_STREAM_URL_SETTING_QUERY = `
+    UPDATE
+        houses_settings
+    SET
+        house_stream_url = ?
+    WHERE
+        house_id = ?`;
+
 // Query to remove a previously created location from the database.
 const REMOVE_LOCATION_QUERY = `
     UPDATE
@@ -348,6 +358,7 @@ class HouseDatabase {
                     access: HouseDatabase.toHouseAccessValue(row.house_access),
                     spawnPoint: !!row.house_spawn_point,
                     welcomeMessage: row.house_welcome_message,
+                    streamUrl: row.house_stream_url,
                     markerColor: row.house_marker_color,
 
                     features: new Map(),
@@ -446,6 +457,7 @@ class HouseDatabase {
             access: HouseSettings.ACCESS_DEFAULT,
             spawnPoint: false,
             welcomeMessage: '',
+            streamUrl: '',
             markerColor: 'yellow',
 
             features: new Map(),
@@ -516,6 +528,12 @@ class HouseDatabase {
     async updateHouseWelcomeMessage(location, welcomeMessage) {
         await server.database.query(
             UPDATE_WELCOME_MESSAGE_SETTING_QUERY, welcomeMessage, location.settings.id);
+    }
+
+    // Updates the audio stream URL for the |location|. The |streamUrl| may be an empty string.
+    async updateHouseStreamUrl(location, streamUrl) {
+        await server.database.query(
+            UPDATE_STREAM_URL_SETTING_QUERY, streamUrl, location.settings.id);
     }
 
     // Removes the |location| from the database.

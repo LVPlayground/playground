@@ -320,6 +320,14 @@ class Player {
     pawnInvoke('SetCameraBehindPlayer', 'i', this.id_);
   }
 
+  // Plays the audio stream at |streamUrl| for the player.
+  playAudioStream(streamUrl) {
+    pawnInvoke('PlayAudioStreamForPlayer', 'isffffi', this.id_, streamUrl, 0, 0, 0, 50, 0);
+  }
+
+  // Stops the playback of any audio stream for the player.
+  stopAudioStream() { pawnInvoke('StopAudioStreamForPlayer', 'i', this.id_); }
+
   // Plays |soundId| for the player at their current position.
   playSound(soundId) {
     pawnInvoke('PlayerPlaySound', 'iifff', this.id_, soundId, 0, 0, 0);

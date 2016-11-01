@@ -226,6 +226,7 @@ class HouseManager {
     //     'marker'  - Updates the house's marker colour.
     //     'name'    - Updates the name of the house.
     //     'spawn'   - Updates whether to spawn at the |location|.
+    //     'stream'  - Updates the audio stream URL for the |location|.
     //     'welcome' - Updates the welcome message of the house.
     //
     // Updating an invalid setting will yield an exception.
@@ -279,6 +280,15 @@ class HouseManager {
                     ownedLocation.settings.setSpawn(false));
 
                 location.settings.setSpawn(value);
+                break;
+
+            case 'stream':
+                if (typeof value !== 'string' || value.length > 255)
+                    throw new Error('An audio stream URL must be at most 255 characters in length.');
+
+                await this.database_.updateHouseStreamUrl(location, value);
+
+                location.settings.streamUrl = value;
                 break;
 
             case 'welcome':

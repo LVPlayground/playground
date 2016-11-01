@@ -20,6 +20,7 @@ class HouseSettings {
         this.access_ = house.access;
         this.spawnPoint_ = house.spawnPoint;
         this.welcomeMessage_ = house.welcomeMessage;
+        this.streamUrl_ = house.streamUrl;
         this.markerColor_ = house.markerColor;
 
         this.vehicles_ = new Map();
@@ -81,6 +82,14 @@ class HouseSettings {
     // to be shown to entering players instead.
     get welcomeMessage() { return this.welcomeMessage_; }
     set welcomeMessage(value) { this.welcomeMessage_ = value; }
+
+    // Gets or sets the audio stream URL for this house. An empty string will prevent any music from
+    // playing when anyone enters the house.
+    get streamUrl() { return this.streamUrl_; }
+    set streamUrl(value) { this.streamUrl_ = value; }
+
+    // Returns whether the house has a stream Url that can be played when players enter the house.
+    hasAudioStream() { return this.streamUrl_ && this.streamUrl_.startsWith('http'); }
 
     // Gets or sets the color of the marker that should be used for the house's entrance. It must
     // be one of {yellow, red, green, blue}, which should be enforced elsewhere.

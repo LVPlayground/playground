@@ -241,6 +241,24 @@ describe('HouseManager', (it, beforeEach) => {
         assert.isFalse(location.settings.isSpawn());
     });
 
+    it('should be able to update the audio stream URL for house', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.position = new Vector(500, 500, 500);
+
+        const location = await manager.findClosestLocation(gunther);
+        assert.isFalse(location.isAvailable());
+
+        assert.equal(location.settings.streamUrl, '');
+
+        await manager.updateHouseSetting(location, 'stream', 'http://example.com/foo.mp3');
+
+        assert.equal(location.settings.streamUrl, 'http://example.com/foo.mp3');
+
+        await manager.updateHouseSetting(location, 'stream', '');
+
+        assert.equal(location.settings.streamUrl, '');
+    });
+
     it('should be possible to update the welcome message for a house', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.position = new Vector(500, 500, 500);

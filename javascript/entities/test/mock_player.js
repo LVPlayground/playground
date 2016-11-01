@@ -51,6 +51,8 @@ class MockPlayer {
         this.minimized_ = false;
         this.disconnecting_ = false;
 
+        this.streamUrl_ = null;
+
         this.vehicle_ = null;
         this.vehicleSeat_ = null;
 
@@ -239,6 +241,15 @@ class MockPlayer {
 
     // Restores the player's previous state from a buffer.
     restoreState() {}
+
+    // Plays the audio stream at |streamUrl| for the player.
+    playAudioStream(streamUrl) { this.streamUrl_ = streamUrl; }
+
+    // Stops the playback of any audio stream for the player.
+    stopAudioStream() { this.streamUrl_ = null; }
+
+    // For testing: gets the URL of the audio stream the player is currently listening to.
+    get streamUrl() { return this.streamUrl_; }
 
     // Fake playing a sound for this player. Stores the soundId in |lastPlayedSound_|.
     playSound(soundId) {

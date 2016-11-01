@@ -9,7 +9,7 @@ enum ZoneInfoEnum {
     Float:zonePosy2,
     Float:zonePosz1,
     Float:zonePosz2,
-    ZoneName[64]
+    ZoneName[27]
 }
 
 new ZoneInfo[375][ZoneInfoEnum] = {

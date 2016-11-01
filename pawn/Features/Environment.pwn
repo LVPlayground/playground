@@ -21,5 +21,3 @@
 #include "Features/Environment/Area/PayAndSprayShops.pwn"
 
 #include "Features/Environment/Time/TimeController.pwn"
-
-#include "Features/Environment/MapObjects.pwn"

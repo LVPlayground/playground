@@ -140,10 +140,6 @@ class ShipManager {
      */
     @switch(OnPlayerEnterZone, ShipManager::ShipLayerId)
     public onPlayerEnterShip(playerId, zoneId) {
-        if (MapObjects->isActive()) {
-            return 1;
-        }
-
         if (GetPlayerVirtualWorld(playerId) != 0) {
             return 1;
         }
@@ -287,10 +283,6 @@ class ShipManager {
      */
     @switch(OnPlayerLeaveZone, ShipManager::ShipLayerId)
     public onPlayerLeaveShip(playerId, zoneId) {
-        if (MapObjects->isActive()) {
-            return 1;
-        }
-
         if (GetPlayerVirtualWorld(playerId) != 0) {
             return 1;
         }
@@ -430,10 +422,6 @@ class ShipManager {
      * @param enable Whether the shiprail should be enabled.
      */
     public enableShiprail(bool: enable = true) {
-        if (MapObjects->isActive()) {
-            return 1;
-        }
-
         new Float: sroX, Float: sroY, Float: sroZ;
 
         if (IsDynamicObjectMoving(m_shipRailObjects[0])) {
@@ -457,21 +445,6 @@ class ShipManager {
         }
 
         return 1;
-    }
-
-    /**
-     * Toggles functionality of the ship manager depending on whether the map objects experiment has
-     * been |enabled|. This may result in destruction of a number of objects.
-     */
-    public toggleMapObjects(bool: enabled) {
-        if (!enabled) {
-            this->initializeObjects();
-            return;
-        }
-
-        for (new shipRailObject = 0; shipRailObject < MAX_RAIL_OBJECTS; ++shipRailObject) {
-            DestroyDynamicObject(m_shipRailObjects[shipRailObject]);
-        }
     }
 
     /** 

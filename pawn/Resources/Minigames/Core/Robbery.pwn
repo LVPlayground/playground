@@ -68,14 +68,6 @@ enum enumCasino
     end
 }
 
-/*enum enumCasinoCars
-{
-    first,
-    last,
-    first2,
-    last2
-}*/
-
 // STATIC Variables -- can only be accessed from this file (create Get<X> functions)
 static playerCasinoData[MAX_PLAYERS][enumCasinoPlayer];
 static casinoData[enumCasino];

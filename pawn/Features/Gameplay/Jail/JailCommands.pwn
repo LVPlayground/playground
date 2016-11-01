@@ -167,44 +167,4 @@ class JailCommands {
         return 1;
         #pragma unused params
     }
-
-    // ---------------------------------------------------------------------------------------------
-
-    /**
-     * Allows players to be jailed through remote commands, for example commands originating from
-     * IRC or an administrator using RCON (including the website).
-     *
-     * @param params Additional parameters passed on to this method.
-     * @remotecommand jail [player] [duration=2]
-     */
-    @switch(RemoteCommand, "newjail")
-    public onRemoteJailCommand(params[]) {
-        // TODO: Implement this command.
-        #pragma unused params
-    }
-
-    /**
-     * Allows remote administrators to unjail any player by their Id or nickname.
-     * 
-     * @param params Additional parameters passed on to this method.
-     * @remotecommand unjail [player]
-     */
-    @switch(RemoteCommand, "newunjail")
-    public onRemoteUnjailCommand(params[]) {
-        // TODO: Implement this command.
-        #pragma unused params
-    }
-
-    /**
-     * Allows remote administrators to get an overview of which players are currently in jail. We'll
-     * include extra information here making it easier for them to unjail these players.
-     *
-     * @param params Additional parameters passed on to this method.
-     * @remotecommand jailed
-     */
-    @switch(RemoteCommand, "newjailed")
-    public onRemoteJailedCommand(params[]) {
-        // TODO: Implement this command.
-        #pragma unused params
-    }
 };

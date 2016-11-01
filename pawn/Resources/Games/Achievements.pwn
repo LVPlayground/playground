@@ -90,7 +90,7 @@ REMEMBER TO MAKE IT RESET IN CAchieve__OnPlayerConnect
 #define SPRAY90         64
 #define SPRAY100        65
 
-new sAchievements[TotalAchievements][128] = {
+new sAchievements[TotalAchievements][72] = {
     "Fast Guy (3 reactiontest wins in a row)",
     "Quick Boss (5 reactiontest wins in a row)",
     "Reactiontest King (10 reactiontest wins in a row)",

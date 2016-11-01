@@ -35,15 +35,3 @@ class RemoteCommand {
         return !!RunDeprecatedIrcCommand(commandText);
     }
 };
-
-/**
- * This function handles a San Andreas: Multiplayer callback that will be invoked when someone
- * sends a command to the server through SA-MP's remote control feature. We defer to the
- * RemoteCommand class to handle it accordingly.
- *
- * @param cmd The command that has been issued over the protocol.
- * @return integer Were we able to handle the command (1) or not (0)?
- */
-public OnRconCommand(cmd[]) {
-    return _: RemoteCommand->onCommand(cmd);
-}

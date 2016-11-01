@@ -14,17 +14,17 @@
 #define map_add_race_checkpoint(%1,%2,%3)               AddMapZoneCheckpoint(nMapID, %1, %2, %3)
 #define map_add_checkpoint(%1,%2,%3)                    AddMapZoneCheckpoint(nMapID, %1, %2, %3)
 
-#define MAX_MAP_AREAS           50              // The max amount of map areas supported. Increase when adding more!
+#define MAX_MAP_AREAS           23              // The max amount of map areas supported. Increase when adding more!
 #define MAX_MAP_MODELS          100             //  How many object models per map? Increase when adding more.
 #define MAX_MAP_MOVE_OBJECTS    10              // How many objects can be moveable in a map, max? (increase when adding more!)
 #define MAP_WORLD_ID                300         // Standard world id
 #define MAX_MAP_RACE_CHECKPOINTS    20          // Maximum number of race checkpoints for a map
 #define MAP_RACE_COUNTDOWN_START    60          // How many seconds until the map zone race starts. Its 10 just for testing for quickness, but should be 60
-#define MAX_MAP_VEHICLES        60
+#define MAX_MAP_VEHICLES        53
 
 enum mapinfoenum
 {
-    Map_Name[256],                      // The map's name
+    Map_Name[18],                       // The map's name
     Vehicle_Id[MAX_MAP_VEHICLES],
     Map_MaxPlayers,                     // Max amount of players the map can hold
     Map_Created,                        // Determines if the map exists
@@ -60,13 +60,13 @@ enum mapinfoenum
 new     Map_Zone[MAX_MAP_AREAS][mapinfoenum];   // The var for the enum
 new     g_MapCount;                                 // Determines how many maps are loaded.
 new     g_MapPlayerCount[MAX_MAP_AREAS];        // Determines how many players are at the mapped area.
-static  g_MapSeconds[MAX_PLAYERS];                    // Determines how long a player was in a map.
+new  g_MapSeconds[MAX_PLAYERS];                    // Determines how long a player was in a map.
 new     Float:g_PlayerPos[MAX_PLAYERS][3];            // Saves the previous pos the player was in.
 new     g_MapZone[MAX_PLAYERS] = {-1, ...};                           // The id of the map zone the player is in.
 new     g_HSpeedCount[MAX_PLAYERS];                       // The count for the amount of high speed bonuses in 1 jump.
 new     g_MapTP[MAX_PLAYERS];                             // How long ago did the player use the /map command?
 new m_playerVehicleId[MAX_PLAYERS] = {Vehicle::InvalidId, ...};
-static Float:fPlayerMapHealth[MAX_PLAYERS];           // Stores the players vehicle health before they goto a map zone.
+new Float:fPlayerMapHealth[MAX_PLAYERS];           // Stores the players vehicle health before they goto a map zone.
 
 InitializeMapZoneTextDrawsForPlayer(playerId) {
     for (new areaId = 0; areaId < MAX_MAP_AREAS; ++areaId) {

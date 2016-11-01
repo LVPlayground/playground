@@ -271,7 +271,6 @@
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerCommandText.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerDeath.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerEnterCheckpoint.pwn</DiskObject>
-    <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerEnterDynamicRaceCheckpoint.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerEnterRaceCheckpoint.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerExitedMenu.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerInteriorChange.pwn</DiskObject>

@@ -219,7 +219,6 @@
 #include Resources/Callbacks/OnPlayer/OnPlayerExitedMenu.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerEnterCheckpoint.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerLeaveCheckpoint.pwn
-#include Resources/Callbacks/OnPlayer/OnPlayerEnterDynamicRaceCheckpoint.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerEnterRaceCheckpoint.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerKeyStateChange.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerText.pwn

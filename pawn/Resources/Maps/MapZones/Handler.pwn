@@ -328,8 +328,7 @@ OnPlayerEnterPrimaryMapZoneCheckpoint(playerid, iMapID)
 // This function is called from OnPlayerEnterDynamicRaceCheckpoint
 // and checks for when a player enters the first initial race checkpoint.
 // When they do, we prompt for them to start the race.
-CheckMapZoneDynamicCheckpoint(playerid, DynamicRaceCP: checkpointid)
-{
+public OnPlayerEnterDynamicRaceCP(playerid, DynamicRaceCP: checkpointid) {
     for(new iMapID = 0; iMapID < g_MapCount; iMapID++)
     {
         if(!IsMapZoneRaceEnabled(iMapID))

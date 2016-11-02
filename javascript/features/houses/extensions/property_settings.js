@@ -23,13 +23,26 @@ const NAME_QUESTION = {
 // Options for asking a player what the welcome message for their house should be.
 const WELCOME_MESSAGE_QUESTION = {
     question: 'Choose the new message',
-    message: 'What would you like your welcome message to be?',
+    message: 'What would you like your welcome message to be? (Leave empty to disable.)',
     constraints: {
         validation: Question.defaultValidation(0, 100),
         explanation: 'The welcome message of your house must be at most 100 characters long and ' +
                      'should not contain very exotic characters.',
 
         abort: 'Sorry, a house must have a valid welcome message!'
+    }
+};
+
+// Options for asking the player what audio stream URL they would like to play.
+const STREAM_URL_QUESTION = {
+    question: 'Choose the audio stream URL',
+    message: 'What is the URL of the MP3 file to play? (Leave empty to disable.)',
+    constraints: {
+        validation: /(^$|(^https?:\/\/(.+?)mp3$))/,
+        explanation: 'The audio stream URL of your house must be at most 256 characters long, ' +
+                     'begin with "http://" and end with "mp3".',
+
+        abort: 'Sorry, a house must have a valid audio stream URL!'
     }
 };
 
@@ -53,7 +66,6 @@ class PropertySettings extends HouseExtension {
 
             const nameValue = location.settings.name;
             const welcomeValue = location.settings.welcomeMessage;
-            const colorValue = this.toColorDescription(location.settings.markerColor);
             const spawnValue = location.settings.isSpawn() ? '{FFFF00}Yes' : 'No';
 
             settingsMenu.addItem('Change the name', nameValue, async(player) => {
@@ -85,6 +97,10 @@ class PropertySettings extends HouseExtension {
             });
 
             if (player.isVip()) {
+                const colorValue = this.toColorDescription(location.settings.markerColor);
+                const streamValue = location.settings.hasAudioStream() ? location.settings.streamUrl
+                                                                       : '{CCCCCC}None';
+
                 settingsMenu.addItem('Change the entrance color' + VIP, colorValue, async(player) => {
                     const colors = [
                         { value: 'yellow', label: 'Yellow' },
@@ -113,9 +129,32 @@ class PropertySettings extends HouseExtension {
                     await colorMenu.displayForPlayer(player);
                 });
 
-                // TODO: Menu item for changing the audio stream URL.
-                // -- TODO: Make sure to "renew" the stream for players currently in the house when
-                //          the value of the audio stream URL has changed.
+                settingsMenu.addItem('Change the audio stream' + VIP, streamValue, async(player) => {
+                    const stream = await Question.ask(player, STREAM_URL_QUESTION);
+                    if (stream === null)
+                        return;  // the player decided to not update the house's audio stream
+
+                    const hasStream = !!stream.length;
+
+                    await this.manager_.updateHouseSetting(location, 'stream', stream);
+
+                    // Synchronize the audio playback for any player that may be in the |location|.
+                    server.playerManager.forEach(visitor => {
+                        if (this.manager_.getCurrentHouseForPlayer(visitor) !== location)
+                            return;  // the |visitor| is not in the |location|
+
+                        if (hasStream)
+                            visitor.playAudioStream(stream);
+                        else
+                            visitor.stopAudioStream();
+                    });
+
+                    // Display a confirmation dialog to the player to inform them of their action.
+                    await MessageBox.display(player, {
+                        title: 'The audio stream has been updated!',
+                        message: Message.HOUSE_SETTINGS_WELCOME_MESSAGE
+                    });
+                });
             }
 
             settingsMenu.addItem('Spawn at this house', spawnValue, async(player) => {

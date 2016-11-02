@@ -118,18 +118,42 @@ describe('PropertySettings', (it, beforeEach) => {
         assert.equal(location.settings.markerColor, 'blue');
     });
 
+    it('should allow VIPs to update the audio stream URL of their house', async(assert) => {
+        assert.isFalse(location.settings.hasAudioStream());
+        assert.isNull(gunther.streamUrl);
+
+        gunther.respondToDialog({ listitem: SETTINGS_MENU_INDEX }).then(
+            () => gunther.respondToDialog({ listitem: 3 /* Change the stream URL */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'https://example.com/foo.mp3' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/house settings'));
+        assert.isTrue(location.settings.hasAudioStream());
+        assert.equal(location.settings.streamUrl, 'https://example.com/foo.mp3');
+        assert.equal(gunther.streamUrl, 'https://example.com/foo.mp3');
+
+        gunther.respondToDialog({ listitem: SETTINGS_MENU_INDEX }).then(
+            () => gunther.respondToDialog({ listitem: 3 /* Change the stream URL */ })).then(
+            () => gunther.respondToDialog({ inputtext: '' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/house settings'));
+        assert.isFalse(location.settings.hasAudioStream());
+        assert.isNull(gunther.streamUrl);
+    });
+
     it('should allow house spawn settings to be updated', async(assert) => {
         assert.isFalse(location.settings.isSpawn());
 
         gunther.respondToDialog({ listitem: SETTINGS_MENU_INDEX }).then(
-            () => gunther.respondToDialog({ listitem: 3 /* Spawn at this house */ })).then(
+            () => gunther.respondToDialog({ listitem: 4 /* Spawn at this house */ })).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 
         assert.isTrue(await gunther.issueCommand('/house settings'));
         assert.isTrue(location.settings.isSpawn());
 
         gunther.respondToDialog({ listitem: SETTINGS_MENU_INDEX }).then(
-            () => gunther.respondToDialog({ listitem: 3 /* Spawn at this house */ })).then(
+            () => gunther.respondToDialog({ listitem: 4 /* Spawn at this house */ })).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 
         assert.isTrue(await gunther.issueCommand('/house settings'));

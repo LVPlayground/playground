@@ -9,6 +9,7 @@ const TestRunner = require('base/test/test_runner.js');
 require('base/color.js');
 require('base/message.js');
 require('base/number_util.js');
+require('base/rect.js');
 require('base/string_util.js');
 require('base/time.js');
 require('base/vector.js');

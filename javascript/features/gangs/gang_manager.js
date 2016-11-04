@@ -4,13 +4,15 @@
 
 const Gang = require('features/gangs/gang.js');
 const GangDatabase = require('features/gangs/gang_database.js');
+const GangZones = require('features/gangs/gang_zones.js');
 
 // The gang manager is responsible for managing all current information associated with gangs
 // whose players are logged in to Las Venturas Playground. It also mediates between the commands,
 // feature API and persistent storage in the database.
 class GangManager {
-    constructor(database) {
+    constructor(database, settings) {
         this.database_ = new GangDatabase(database);
+        this.zones_ = new GangZones(this, settings);
 
         this.gangs_ = {};
         this.gangPlayers_ = new WeakMap();
@@ -366,6 +368,9 @@ class GangManager {
     // Cleans up all state stored by the gang manager.
     dispose() {
         server.playerManager.removeObserver(this);
+
+        this.zones_.dispose();
+        this.zones_ = null;
     }
 }
 

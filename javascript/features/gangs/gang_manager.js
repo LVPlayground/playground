@@ -14,7 +14,7 @@ class GangManager {
         this.database_ = new GangDatabase(database);
         this.zones_ = new GangZones(this, settings);
 
-        this.gangs_ = {};
+        this.gangs_ = new Map();
         this.gangPlayers_ = new WeakMap();
 
         this.observers_ = new Set();
@@ -24,7 +24,7 @@ class GangManager {
     }
 
     // Gets an array having the Gang instances for each of the gangs for in-game representation.
-    get gangs() { return Object.values(this.gangs_); }
+    get gangs() { return Array.from(this.gangs_.values()); }
 
     // Returns the Gang that |player| is part of. Returns NULL when they are not part of a gang.
     gangForPlayer(player) {
@@ -100,7 +100,7 @@ class GangManager {
 
             // Associate the |gang| with the |player|.
             this.gangPlayers_.set(player, gang);
-            this.gangs_[gang.id] = gang;
+            this.gangs_.set(gang.id, gang);
 
             // Announce the |player|'s new gang to observers.
             this.invokeObservers('onUserJoinGang', player.userId, gang.id)
@@ -209,7 +209,7 @@ class GangManager {
             this.invokeObservers('onUserLeaveGang', player.userId, gang.id);
 
             if (!gang.memberCount)
-                delete this.gangs_[gang.id];
+                this.gangs_.delete(gang.id);
         });
     }
 
@@ -336,11 +336,11 @@ class GangManager {
 
             const gangInfo = result.gang;
 
-            let gang = null;
-            if (!this.gangs_.hasOwnProperty(gangInfo.id))
-                gang = this.gangs_[gangInfo.id] = new Gang(gangInfo);
-            else
-                gang = this.gangs_[gangInfo.id];
+            let gang = this.gangs_.get(gangInfo.id);
+            if (!gang) {
+                gang = new Gang(gangInfo);
+                this.gangs_.set(gangInfo.id, gang);
+            }
 
             // Associate the |player| with the |gang|, for the appropriate role.
             gang.addPlayer(player, result.role, result.useGangColor);

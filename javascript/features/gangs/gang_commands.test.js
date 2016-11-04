@@ -36,16 +36,16 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
     function createGang({tag = 'HKO', name = 'Hello Kitty Online', goal = '', color = null} = {}) {
         const gangId = Math.floor(Math.random() * 1000000);
 
-        gangManager.gangs_[gangId] = new Gang({
+        gangManager.gangs_.set(gangId, new Gang({
             id: gangId,
             tag: tag,
             name: name,
             goal: goal || 'Testing gang',
             color: color,
             chatEncryptionExpiry: 0
-        });
+        }));
 
-        return gangManager.gangs_[gangId];
+        return gangManager.gangs_.get(gangId);
     }
 
     // Utility function for adding a given player to a given gang.

@@ -51,7 +51,7 @@ class MockGangDatabase {
     }
 
     async createGangWithLeader(player, tag, name, goal) {
-        if (tag === 'CC') {
+        if (['CC', 'GCH', 'hKo'].includes(tag)) {
             return {
                 id: MockGangDatabase.CC_GANG_ID,
                 tag: tag,
@@ -62,7 +62,7 @@ class MockGangDatabase {
             };
         }
 
-        throw new Error('No special behaviour implemented.');
+        throw new Error('No special behaviour implemented for "' + tag + '".');
     }
 
     async getFullMemberList(gang) {

@@ -16,10 +16,7 @@ class Gangs extends Feature {
         // Used for announcing gang-related events to players and administrators.
         const announce = this.defineDependency('announce');
 
-        // Used for storing the settings for gang zones.
-        const settings = this.defineDependency('settings');
-
-        this.manager_ = new GangManager(settings);
+        this.manager_ = new GangManager();
         this.commands_ = new GangCommands(this.manager_, announce);
     }
 

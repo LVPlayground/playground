@@ -19,7 +19,7 @@ class Gangs extends Feature {
         // Used for storing the settings for gang zones.
         const settings = this.defineDependency('settings');
 
-        this.manager_ = new GangManager(server.database, settings);
+        this.manager_ = new GangManager(settings);
         this.commands_ = new GangCommands(this.manager_, announce);
     }
 

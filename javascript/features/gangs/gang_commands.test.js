@@ -4,39 +4,31 @@
 
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 const Gang = require('features/gangs/gang.js');
-const GangCommands = require('features/gangs/gang_commands.js');
-const GangManager = require('features/gangs/gang_manager.js');
-const MockGangDatabase = require('features/gangs/test/mock_gang_database.js');
+const Gangs = require('features/gangs/gangs.js');
 const PlayerMoneyBridge = require('features/gangs/util/player_money_bridge.js');
 
-describe('GangCommands', (it, beforeEach, afterEach) => {
+describe('GangCommands', (it, beforeEach) => {
+    let commands = null;
+    let manager = null;
     let player = null;
 
-    // The GangManager instance to use for the tests. Will be reset after each test.
-    let gangManager = null;
-    let gangCommands = null;
-
     beforeEach(() => {
-        const announce = new MockAnnounce();
+        server.featureManager.registerFeaturesForTests({
+            gangs: Gangs
+        });
 
+        const gangs = server.featureManager.loadFeature('gangs');
+
+        commands = gangs.commands_;
+        manager = gangs.manager_;
         player = server.playerManager.getById(0 /* Gunther */);
-
-        gangManager = new GangManager(null /* database */);
-        gangManager.database_ = new MockGangDatabase();
-
-        gangCommands = new GangCommands(gangManager, () => announce);
-    });
-
-    afterEach(() => {
-        gangCommands.dispose();
-        gangManager.dispose();
     });
 
     // Utility function to create a gang with the given information.
     function createGang({tag = 'HKO', name = 'Hello Kitty Online', goal = '', color = null} = {}) {
         const gangId = Math.floor(Math.random() * 1000000);
 
-        gangManager.gangs_.set(gangId, new Gang({
+        manager.gangs_.set(gangId, new Gang({
             id: gangId,
             tag: tag,
             name: name,
@@ -45,18 +37,18 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
             chatEncryptionExpiry: 0
         }));
 
-        return gangManager.gangs_.get(gangId);
+        return manager.gangs_.get(gangId);
     }
 
     // Utility function for adding a given player to a given gang.
     function addPlayerToGang(player, gang, role) {
-        gangManager.gangPlayers_.set(player, gang);
+        manager.gangPlayers_.set(player, gang);
         gang.addPlayer(player, role);
     }
 
     // Utility function for removing a player from a given gang.
     function removePlayerFromGang(player, gang) {
-        gangManager.gangPlayers_.delete(player);
+        manager.gangPlayers_.delete(player);
         gang.removePlayer(player);
     }
 
@@ -78,11 +70,8 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.equal(player.messages[0], Message.GANGS_ALREADY_SET);
     });
 
-    it('should not allow players to create a gang that already exists', assert => {
+    it('should not allow players to create a gang that already exists', async(assert) => {
         player.identify();
-
-        assert.isTrue(player.issueCommand('/gang create'));
-        assert.equal(player.messages.length, 0);
 
         // Three questions will be asked: the name, tag and goal of the gang.
         player.respondToDialog({ inputtext: 'Homely Kitchen Olives' }).then(() =>
@@ -90,33 +79,32 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
             player.respondToDialog({ inputtext: 'Eating Italian food' })).then(() =>
             player.respondToDialog({ response: 0 }));
 
-        return gangCommands.createdPromiseForTesting_.then(() => {
-            assert.isNull(gangManager.gangForPlayer(player));
-            assert.equal(player.lastDialog, 'The gang is too similar to [HKO] Hello Kitty Online');
-        });
+        assert.isTrue(await player.issueCommand('/gang create'));
+        assert.equal(player.messages.length, 0);
+
+        assert.isNull(manager.gangForPlayer(player));
+        assert.equal(player.lastDialog, 'The gang is too similar to [HKO] Hello Kitty Online');
     });
 
-    it('should allow players to create a new gang', assert => {
+    it('should allow players to create a new gang', async(assert) => {
         player.identify();
-
-        assert.isTrue(player.issueCommand('/gang create'));
-        assert.equal(player.messages.length, 0);
 
         // Three questions will be asked: the name, tag and goal of the gang.
         player.respondToDialog({ inputtext: 'Creative Creatures' }).then(() =>
             player.respondToDialog({ inputtext: 'CC' })).then(() =>
             player.respondToDialog({ inputtext: 'Creating my own gang' }));
 
-        return gangCommands.createdPromiseForTesting_.then(() => {
-            const gang = gangManager.gangForPlayer(player);
+        assert.isTrue(await player.issueCommand('/gang create'));
+        assert.equal(player.messages.length, 2);
 
-            assert.isNotNull(gang);
-            assert.equal(gang.tag, 'CC');
-            assert.equal(gang.name, 'Creative Creatures');
-            assert.equal(gang.goal, 'Creating my own gang');
+        const gang = manager.gangForPlayer(player);
 
-            assert.isTrue(gang.hasPlayer(player));
-        })
+        assert.isNotNull(gang);
+        assert.equal(gang.tag, 'CC');
+        assert.equal(gang.name, 'Creative Creatures');
+        assert.equal(gang.goal, 'Creating my own gang');
+
+        assert.isTrue(gang.hasPlayer(player));
     });
 
     it('should not allow invitations when the player is not in a gang', assert => {
@@ -228,7 +216,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
             russell.messages[0], Message.format(Message.GANG_JOIN_IN_GANG, russellGang.name));
     });
 
-    it('should allow registered players not in a gang to accept an invitation', assert => {
+    it('should allow registered players not in a gang to accept an invitation', async(assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         russell.level = Player.LEVEL_ADMINISTRATOR;
 
@@ -243,18 +231,16 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         russell.clearMessages();
 
-        assert.isTrue(russell.issueCommand('/gang join'));
+        assert.isTrue(await russell.issueCommand('/gang join'));
 
-        return gangCommands.joinPromiseForTesting_.then(() => {
-            const gang = gangManager.gangForPlayer(russell);
+        const gang = manager.gangForPlayer(russell);
 
-            assert.isNotNull(gang);
-            assert.isTrue(gang.hasPlayer(russell));
-            assert.isTrue(gang.hasPlayer(player));
+        assert.isNotNull(gang);
+        assert.isTrue(gang.hasPlayer(russell));
+        assert.isTrue(gang.hasPlayer(player));
 
-            assert.isAboveOrEqual(russell.messages.length, 1);
-            assert.equal(russell.messages[0], Message.format(Message.GANG_DID_JOIN, gang.name));
-        });
+        assert.isAboveOrEqual(russell.messages.length, 1);
+        assert.equal(russell.messages[0], Message.format(Message.GANG_DID_JOIN, gang.name));
     });
 
     it('should not allow people not in a gang to kick people', assert => {
@@ -275,7 +261,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.equal(player.messages[0], Message.GANG_KICK_NO_MANAGER);
     });
 
-    it('should not allow managers to kick leaders or other managers', assert => {
+    it('should not allow managers to kick leaders or other managers', async(assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         const gang = createGang({ tag: 'HKO' });
 
@@ -284,36 +270,28 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         addPlayerToGang(russell, gang, Gang.ROLE_MANAGER);
         addPlayerToGang(player, gang, Gang.ROLE_MANAGER);
 
-        assert.isTrue(player.issueCommand('/gang kick ' + russell.name));
-        assert.equal(player.messages.length, 0);
+        assert.isTrue(await player.issueCommand('/gang kick ' + russell.name));
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.GANG_KICK_NOT_ALLOWED);
 
-        return gangCommands.kickPromiseForTesting_.then(() => {
-            assert.equal(player.messages.length, 1);
-            assert.equal(player.messages[0], Message.GANG_KICK_NOT_ALLOWED);
-
-            assert.isTrue(gang.hasPlayer(russell));
-        });
+        assert.isTrue(gang.hasPlayer(russell));
     });
 
-    it('should not allow managers and leaders to kick themselves', assert => {
+    it('should not allow managers and leaders to kick themselves', async(assert) => {
         const gang = createGang({ tag: 'HKO2' });
 
         player.identify();
 
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
 
-        assert.isTrue(player.issueCommand('/gang kick ' + player.name));
-        assert.equal(player.messages.length, 0);
+        assert.isTrue(await player.issueCommand('/gang kick ' + player.name));
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.GANG_KICK_SELF_NOT_ALLOWED);
 
-        return gangCommands.kickPromiseForTesting_.then(() => {
-            assert.equal(player.messages.length, 1);
-            assert.equal(player.messages[0], Message.GANG_KICK_SELF_NOT_ALLOWED);
-
-            assert.isTrue(gang.hasPlayer(player));
-        });
+        assert.isTrue(gang.hasPlayer(player));
     });
 
-    it('should allow managers and leaders to kick people from the gang', assert => {
+    it('should allow managers and leaders to kick people from the gang', async(assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         const gang = createGang({ tag: 'HKO2' });
 
@@ -323,19 +301,15 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         addPlayerToGang(russell, gang, Gang.ROLE_LEADER);
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
 
-        assert.isTrue(player.issueCommand('/gang kick ' + russell.name));
-        assert.equal(player.messages.length, 0);
+        assert.isTrue(await player.issueCommand('/gang kick ' + russell.name));
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0],
+                     Message.format(Message.GANG_KICK_REMOVED, russell.name, gang.name));
 
-        return gangCommands.kickPromiseForTesting_.then(() => {
-            assert.equal(player.messages.length, 1);
-            assert.equal(player.messages[0],
-                         Message.format(Message.GANG_KICK_REMOVED, russell.name, gang.name));
-
-            assert.isFalse(gang.hasPlayer(russell));
-        });
+        assert.isFalse(gang.hasPlayer(russell));
     });
 
-    it('should allow managers and leaders to kick online people by id from the gang', assert => {
+    it('should allow managers to kick online people by id from the gang', async(assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         const gang = createGang({ tag: 'HKO2' });
 
@@ -345,33 +319,25 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         addPlayerToGang(russell, gang, Gang.ROLE_LEADER);
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
 
-        assert.isTrue(player.issueCommand('/gang kick ' + russell.id));
-        assert.equal(player.messages.length, 0);
+        assert.isTrue(await player.issueCommand('/gang kick ' + russell.id));
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0],
+                     Message.format(Message.GANG_KICK_REMOVED, russell.name, gang.name));
 
-        return gangCommands.kickPromiseForTesting_.then(() => {
-            assert.equal(player.messages.length, 1);
-            assert.equal(player.messages[0],
-                         Message.format(Message.GANG_KICK_REMOVED, russell.name, gang.name));
-
-            assert.isFalse(gang.hasPlayer(russell));
-        });
+        assert.isFalse(gang.hasPlayer(russell));
     });
 
-    it('should allow managers and leaders to kick offline people from the gang', assert => {
+    it('should allow managers and leaders to kick offline people from the gang', async(assert) => {
         const gang = createGang({ tag: 'HKO3' });
 
         player.identify();
 
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
 
-        assert.isTrue(player.issueCommand('/gang kick fflineplaye'));
-        assert.equal(player.messages.length, 0);
-
-        return gangCommands.kickPromiseForTesting_.then(() => {
-            assert.equal(player.messages.length, 1);
-            assert.equal(player.messages[0],
-                         Message.format(Message.GANG_KICK_REMOVED, 'OfflinePlayer', gang.name));
-        });
+        assert.isTrue(await player.issueCommand('/gang kick fflineplaye'));
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0],
+                     Message.format(Message.GANG_KICK_REMOVED, 'OfflinePlayer', gang.name));
     });
 
     it('should not allow players to leave a gang if they aren\'t in one', assert => {
@@ -381,98 +347,88 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.equal(player.messages[0], Message.GANG_NOT_IN_GANG);
     });
 
-    it('should allow players to leave the gang as members', assert => {
+    it('should allow players to leave the gang as members', async(assert) => {
         player.identify();
 
         addPlayerToGang(player, createGang(), Gang.ROLE_MEMBER);
 
-        const gang = gangManager.gangForPlayer(player);
+        const gang = manager.gangForPlayer(player);
         assert.isNotNull(gang);
-
-        assert.isTrue(player.issueCommand('/gang leave'));
 
         player.respondToDialog({ response: 1 /* Yes */ });
 
-        return gangCommands.leavePromiseForTesting_.then(() => {
-            assert.isNull(gangManager.gangForPlayer(player));
-            assert.isFalse(gang.hasPlayer(player));
-        });
+        assert.isTrue(await player.issueCommand('/gang leave'));
+
+        assert.isNull(manager.gangForPlayer(player));
+        assert.isFalse(gang.hasPlayer(player));
     });
 
-    it('should allow players to abort leaving their gang if they change their mind', assert => {
+    it('should allow players to abort leaving their gang', async(assert) => {
         player.identify();
 
         addPlayerToGang(player, createGang(), Gang.ROLE_MEMBER);
 
-        const gang = gangManager.gangForPlayer(player);
+        const gang = manager.gangForPlayer(player);
         assert.isNotNull(gang);
-
-        assert.isTrue(player.issueCommand('/gang leave'));
 
         player.respondToDialog({ response: 0 /* No */ });
 
-        return gangCommands.leavePromiseForTesting_.then(() => {
-            assert.strictEqual(gangManager.gangForPlayer(player), gang);
-        });
+        assert.isTrue(await player.issueCommand('/gang leave'));
+
+        assert.strictEqual(manager.gangForPlayer(player), gang);
     });
 
-    it('should allow leaders to leave their gang if they are the only member', assert => {
+    it('should allow leaders to leave their gang if they are the only member', async(assert) => {
         player.identify();
 
         addPlayerToGang(player, createGang(), Gang.ROLE_LEADER);
 
-        const gang = gangManager.gangForPlayer(player);
+        const gang = manager.gangForPlayer(player);
         assert.isNotNull(gang);
-
-        assert.isTrue(player.issueCommand('/gang leave'));
 
         player.respondToDialog({ response: 1 /* Yes */ });
 
-        return gangCommands.leavePromiseForTesting_.then(() => {
-            assert.isNull(gangManager.gangForPlayer(player));
-            assert.isFalse(gang.hasPlayer(player));
-        });
+        assert.isTrue(await player.issueCommand('/gang leave'));
+
+        assert.isNull(manager.gangForPlayer(player));
+        assert.isFalse(gang.hasPlayer(player));
     });
 
-    it('should allow leaders to leave their gang after confirming succession', assert => {
+    it('should allow leaders to leave their gang after confirming succession', async(assert) => {
         player.identify();
 
         addPlayerToGang(player, createGang({ tag: 'CC' }), Gang.ROLE_LEADER);
 
-        const gang = gangManager.gangForPlayer(player);
+        const gang = manager.gangForPlayer(player);
         assert.isNotNull(gang);
-
-        assert.isTrue(player.issueCommand('/gang leave'));
 
         player.respondToDialog({ response: 1 /* Yes */ });
 
-        return gangCommands.leavePromiseForTesting_.then(() => {
-            assert.isTrue(player.lastDialog.includes('MrNextLeader'));
-            assert.isTrue(player.lastDialog.includes('Manager'));
+        assert.isTrue(await player.issueCommand('/gang leave'));
 
-            assert.isNull(gangManager.gangForPlayer(player));
-            assert.isFalse(gang.hasPlayer(player));
-        });
+        assert.isTrue(player.lastDialog.includes('MrNextLeader'));
+        assert.isTrue(player.lastDialog.includes('Manager'));
+
+        assert.isNull(manager.gangForPlayer(player));
+        assert.isFalse(gang.hasPlayer(player));
     });
 
-    it('should allow leaders to cancel leaving their gang', assert => {
+    it('should allow leaders to cancel leaving their gang', async(assert) => {
         player.identify();
 
         addPlayerToGang(player, createGang({ tag: 'CC' }), Gang.ROLE_LEADER);
 
-        const gang = gangManager.gangForPlayer(player);
+        const gang = manager.gangForPlayer(player);
         assert.isNotNull(gang);
-
-        assert.isTrue(player.issueCommand('/gang leave'));
 
         player.respondToDialog({ response: 0 /* No */ });
 
-        return gangCommands.leavePromiseForTesting_.then(() => {
-            assert.strictEqual(gangManager.gangForPlayer(player), gang);
-        });
+        assert.isTrue(await player.issueCommand('/gang leave'));
+
+        assert.strictEqual(manager.gangForPlayer(player), gang);
     });
 
-    it('should enable players to list the members of their gang', assert => {
+    it('should enable players to list the members of their gang', async(assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         const gang = createGang({ tag: 'CC' });
 
@@ -482,20 +438,18 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
         addPlayerToGang(russell, gang, Gang.ROLE_MEMBER);
 
-        assert.isTrue(player.issueCommand('/gang members'));
+        assert.isTrue(await player.issueCommand('/gang members'));
 
-        return gangCommands.membersPromiseForTesting_.then(() => {
-            assert.equal(player.messages.length, 3);
+        assert.equal(player.messages.length, 3);
 
-            assert.isTrue(player.messages[0].includes(gang.tag));
-            assert.isTrue(player.messages[0].includes(gang.name));
+        assert.isTrue(player.messages[0].includes(gang.tag));
+        assert.isTrue(player.messages[0].includes(gang.name));
 
-            assert.isTrue(player.messages[1].includes(player.name));
-            assert.isTrue(player.messages[1].includes('Id:')); /* Gunther is |player| */
+        assert.isTrue(player.messages[1].includes(player.name));
+        assert.isTrue(player.messages[1].includes('Id:')); /* Gunther is |player| */
 
-            assert.isTrue(player.messages[2].includes(russell.name));
-            assert.isTrue(player.messages[2].includes('Id:')); /* Russell is |russell| */
-        });
+        assert.isTrue(player.messages[2].includes(russell.name));
+        assert.isTrue(player.messages[2].includes('Id:')); /* Russell is |russell| */
     });
 
     it('should only allow leaders to see and amend the gang settings', assert => {
@@ -516,25 +470,22 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(player.lastDialog.includes('My color'));  // Member option
     });
 
-    it('should not enable leaders to edit their own settings', assert => {
+    it('should not enable leaders to edit their own settings', async(assert) => {
         player.identify();
 
         addPlayerToGang(player, createGang(), Gang.ROLE_LEADER);
-
-        assert.isTrue(player.issueCommand('/gang settings'));
-        assert.equal(player.messages.length, 0);
 
         player.respondToDialog({ listitem: 0 /* Gang members */ }).then(() =>
             player.respondToDialog({ listitem: 0 /* The |player| */ })).then(() =>
             player.respondToDialog({ response: 0 /* Ok */}));
 
-        return gangCommands.settingsPromiseForTesting_.then(() => {
-            assert.equal(player.messages.length, 0);
-            assert.equal(player.lastDialog, Message.GANG_SETTINGS_SELF_CHANGE);
-        });
+        assert.isTrue(await player.issueCommand('/gang settings'));
+
+        assert.equal(player.messages.length, 0);
+        assert.equal(player.lastDialog, Message.GANG_SETTINGS_SELF_CHANGE);
     });
 
-    it('should enable leaders to change the role of other members', assert => {
+    it('should enable leaders to change the role of other members', async(assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         const gang = createGang();
 
@@ -544,23 +495,19 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
         addPlayerToGang(russell, gang, Gang.ROLE_MANAGER);
 
-        assert.isTrue(player.issueCommand('/gang settings'));
-        assert.equal(player.messages.length, 0);
-
         player.respondToDialog({ listitem: 0 /* Gang members */ }).then(() =>
             player.respondToDialog({ listitem: 1 /* The |russell| */ })).then(() =>
-            player.respondToDialog({ listitem: 0 /* Promote to leader */}));
+            player.respondToDialog({ listitem: 0 /* Promote to leader */})).then(() =>
+            player.respondToDialog({ response: 0 /* Ok */}));
 
-        return gangCommands.settingsPromiseForTesting_.then(() => {
-            assert.equal(player.messages.length, 1);
-            assert.equal(player.lastDialog,
-                Message.format(Message.GANG_SETTINGS_ROLE_UPDATED, russell.name, 'leader'));
+        assert.isTrue(await player.issueCommand('/gang settings'));
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.lastDialog,
+            Message.format(Message.GANG_SETTINGS_ROLE_UPDATED, russell.name, 'leader'));
 
-            assert.equal(gang.getPlayerRole(russell), Gang.ROLE_LEADER);
-        });
+        assert.equal(gang.getPlayerRole(russell), Gang.ROLE_LEADER);
     });
-
-    it('should enable leaders to kick other members from the gang', assert => {
+    it('should enable leaders to kick other members from the gang', async(assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         const gang = createGang();
 
@@ -570,23 +517,20 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
         addPlayerToGang(russell, gang, Gang.ROLE_MANAGER);
 
-        assert.isTrue(player.issueCommand('/gang settings'));
-        assert.equal(player.messages.length, 0);
-
         player.respondToDialog({ listitem: 0 /* Gang members */ }).then(() =>
             player.respondToDialog({ listitem: 1 /* The |russell| */ })).then(() =>
-            player.respondToDialog({ listitem: 2 /* Kick from gang */}));
+            player.respondToDialog({ listitem: 2 /* Kick from gang */})).then(() =>
+            player.respondToDialog({ response: 0 /* Ok */}));
 
-        return gangCommands.settingsPromiseForTesting_.then(() => {
-            assert.equal(player.messages.length, 1);
-            assert.equal(player.lastDialog,
-                Message.format(Message.GANG_SETTINGS_MEMBER_KICKED, russell.name));
+        assert.isTrue(await player.issueCommand('/gang settings'));
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.lastDialog,
+            Message.format(Message.GANG_SETTINGS_MEMBER_KICKED, russell.name));
 
-            assert.isFalse(gang.hasPlayer(russell));
-        });
+        assert.isFalse(gang.hasPlayer(russell));
     });
 
-    it('should enable leaders to change the color of their gang', assert => {
+    it('should enable leaders to change the color of their gang', async(assert) => {
         const gang = createGang();
 
         player.identify();
@@ -595,19 +539,16 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         assert.equal(gang.color, null);
 
-        assert.isTrue(player.issueCommand('/gang settings'));
-        assert.equal(player.messages.length, 0);
-
         player.respondToDialog({ listitem: 1 /* Member color */ }).then(() =>
             player.respondToDialog({ response: 0 /* Ok */}));
 
-        return gangCommands.settingsPromiseForTesting_.then(() => {
-            assert.deepEqual(gang.color, Color.RED /* defined in color_manager.js */);
+        assert.isTrue(await player.issueCommand('/gang settings'));
 
-            assert.equal(player.messages.length, 1);
-            assert.equal(player.lastDialog,
-                Message.format(Message.GANG_SETTINGS_NEW_COLOR, '0x' + gang.color.toHexRGB()));
-        });
+        assert.deepEqual(gang.color, Color.RED /* defined in color_manager.js */);
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.lastDialog,
+            Message.format(Message.GANG_SETTINGS_NEW_COLOR, '0x' + gang.color.toHexRGB()));
     });
 
     it('should enable managers to purchase gang chat encryption time', async(assert) => {
@@ -626,10 +567,8 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
                 player.respondToDialog({ response: 1, listitem: 1 /* one day */ })).then(() =>
                 player.respondToDialog({ response: 1 /* Yeah I got it */}));
 
-            assert.isTrue(player.issueCommand('/gang settings'));
+            assert.isTrue(await player.issueCommand('/gang settings'));
             assert.equal(player.messages.length, 0);
-
-            await gangCommands.settingsPromiseForTesting_;
 
             // Verify that the |chatEncryptionExpiry| property has been updated with a day.
             assert.closeTo(
@@ -654,10 +593,8 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
             player.respondToDialog({ response: 1, listitem: 1 /* one day */ })).then(() =>
             player.respondToDialog({ response: 1 /* Yeah I got it */}));
 
-        assert.isTrue(player.issueCommand('/gang settings'));
+        assert.isTrue(await player.issueCommand('/gang settings'));
         assert.equal(player.messages.length, 0);
-
-        await gangCommands.settingsPromiseForTesting_;
 
         assert.equal(gang.chatEncryptionExpiry, 0);
         assert.equal(
@@ -666,7 +603,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         PlayerMoneyBridge.setMockedBalanceForTests(null);
     });
 
-    it('should not enable leaders to change the name to an existing one', assert => {
+    it('should not enable leaders to change the name to an existing one', async(assert) => {
         const gang = createGang({ name: 'Candy Crush' });
 
         player.identify();
@@ -674,23 +611,20 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
 
         assert.equal(gang.name, 'Candy Crush');
-
-        assert.isTrue(player.issueCommand('/gang settings'));
-        assert.equal(player.messages.length, 0);
 
         player.respondToDialog({ listitem: 3 /* Gang name */ }).then(() =>
             player.respondToDialog({ inputtext: 'Hello Kitty Online' })).then(() =>
             player.respondToDialog({ response: 0 /* Ok */}));
 
-        return gangCommands.settingsPromiseForTesting_.then(() => {
-            assert.equal(gang.name, 'Candy Crush');
+        assert.isTrue(await player.issueCommand('/gang settings'));
+        assert.equal(player.messages.length, 0);
 
-            assert.equal(player.messages.length, 0);
-            assert.equal(player.lastDialog, Message.GANG_SETTINGS_NAME_TAKEN);
-        });
+        assert.equal(player.lastDialog, Message.GANG_SETTINGS_NAME_TAKEN);
+
+        assert.equal(gang.name, 'Candy Crush');
     });
 
-    it('should enable leaders to change the name of their gang', assert => {
+    it('should enable leaders to change the name of their gang', async(assert) => {
         const gang = createGang({ name: 'Candy Crush' });
 
         player.identify();
@@ -699,23 +633,20 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         assert.equal(gang.name, 'Candy Crush');
 
-        assert.isTrue(player.issueCommand('/gang settings'));
-        assert.equal(player.messages.length, 0);
-
         player.respondToDialog({ listitem: 3 /* Gang name */ }).then(() =>
             player.respondToDialog({ inputtext: 'Thundering Offline Kittens' })).then(() =>
             player.respondToDialog({ response: 0 /* Ok */}));
 
-        return gangCommands.settingsPromiseForTesting_.then(() => {
-            assert.equal(gang.name, 'Thundering Offline Kittens');
+        assert.isTrue(await player.issueCommand('/gang settings'));
+        assert.equal(player.messages.length, 1);
 
-            assert.equal(player.messages.length, 1);
-            assert.equal(player.lastDialog,
-                Message.format(Message.GANG_SETTINGS_NEW_NAME, 'Thundering Offline Kittens'));
-        });
+        assert.equal(player.lastDialog,
+            Message.format(Message.GANG_SETTINGS_NEW_NAME, 'Thundering Offline Kittens'));
+
+        assert.equal(gang.name, 'Thundering Offline Kittens');
     });
 
-    it('should not enable leaders to change the tag to an existing one', assert => {
+    it('should not enable leaders to change the tag to an existing one', async(assert) => {
         const gang = createGang({ tag: 'CC' });
 
         player.identify();
@@ -723,23 +654,20 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
 
         assert.equal(gang.tag, 'CC');
-
-        assert.isTrue(player.issueCommand('/gang settings'));
-        assert.equal(player.messages.length, 0);
 
         player.respondToDialog({ listitem: 4 /* Gang tag */ }).then(() =>
             player.respondToDialog({ inputtext: 'HKO' })).then(() =>
             player.respondToDialog({ response: 0 /* Ok */}));
 
-        return gangCommands.settingsPromiseForTesting_.then(() => {
-            assert.equal(gang.tag, 'CC');
+        assert.isTrue(await player.issueCommand('/gang settings'));
+        assert.equal(player.messages.length, 0);
 
-            assert.equal(player.messages.length, 0);
-            assert.equal(player.lastDialog, Message.GANG_SETTINGS_TAG_TAKEN);
-        });
+        assert.equal(player.lastDialog, Message.GANG_SETTINGS_TAG_TAKEN);
+
+        assert.equal(gang.tag, 'CC');
     });
 
-    it('should enable leaders to change the tag of their gang', assert => {
+    it('should enable leaders to change the tag of their gang', async(assert) => {
         const gang = createGang({ tag: 'CC' });
 
         player.identify();
@@ -748,22 +676,19 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         assert.equal(gang.tag, 'CC');
 
-        assert.isTrue(player.issueCommand('/gang settings'));
-        assert.equal(player.messages.length, 0);
-
         player.respondToDialog({ listitem: 4 /* Gang tag */ }).then(() =>
             player.respondToDialog({ inputtext: 'GG' })).then(() =>
             player.respondToDialog({ response: 0 /* Ok */}));
 
-        return gangCommands.settingsPromiseForTesting_.then(() => {
-            assert.equal(gang.tag, 'GG');
+        assert.isTrue(await player.issueCommand('/gang settings'));
+        assert.equal(player.messages.length, 1);
 
-            assert.equal(player.messages.length, 1);
-            assert.equal(player.lastDialog, Message.format(Message.GANG_SETTINGS_NEW_TAG, 'GG'));
-        });
+        assert.equal(player.lastDialog, Message.format(Message.GANG_SETTINGS_NEW_TAG, 'GG'));
+
+        assert.equal(gang.tag, 'GG');
     });
 
-    it('should enable leaders to change the goal of their gang', assert => {
+    it('should enable leaders to change the goal of their gang', async(assert) => {
         const gang = createGang({ tag: 'CC', goal: 'We rule!' });
 
         player.identify();
@@ -772,23 +697,20 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         assert.equal(gang.goal, 'We rule!');
 
-        assert.isTrue(player.issueCommand('/gang settings'));
-        assert.equal(player.messages.length, 0);
-
         player.respondToDialog({ listitem: 5 /* Gang goal */ }).then(() =>
             player.respondToDialog({ inputtext: 'We rule more!' })).then(() =>
             player.respondToDialog({ response: 0 /* Ok */}));
 
-        return gangCommands.settingsPromiseForTesting_.then(() => {
-            assert.equal(gang.goal, 'We rule more!');
+        assert.isTrue(await player.issueCommand('/gang settings'));
+        assert.equal(player.messages.length, 1);
 
-            assert.equal(player.messages.length, 1);
-            assert.equal(player.lastDialog,
-                         Message.format(Message.GANG_SETTINGS_NEW_GOAL, 'We rule more!'));
-        });
+        assert.equal(player.lastDialog,
+                     Message.format(Message.GANG_SETTINGS_NEW_GOAL, 'We rule more!'));
+
+        assert.equal(gang.goal, 'We rule more!');
     });
 
-    it('should enable members to choose whether to use the gang color or their own', assert => {
+    it('should enable members to choose whether to use the gang color', async(assert) => {
         const gang = createGang({ tag: 'CC', goal: 'We rule!' });
 
         player.identify();
@@ -797,16 +719,14 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
 
         assert.isTrue(gang.usesGangColor(player));
 
-        assert.isTrue(player.issueCommand('/gang settings'));
-        assert.equal(player.messages.length, 0);
-
         player.respondToDialog({ listitem: 0 /* Gang goal */ }).then(() =>
             player.respondToDialog({ listitem: 1 /* use personal color */ })).then(() =>
             player.respondToDialog({ response: 0 /* Ok */}));
 
-        return gangCommands.settingsPromiseForTesting_.then(() => {
-            assert.isFalse(gang.usesGangColor(player));
-        });
+        assert.isTrue(await player.issueCommand('/gang settings'));
+        assert.equal(player.messages.length, 0);
+
+        assert.isFalse(gang.usesGangColor(player));
     });
 
     it('should be able to display information about the gang command', assert => {
@@ -846,7 +766,7 @@ describe('GangCommands', (it, beforeEach, afterEach) => {
         const gangColor = Color.fromRGB(255, 13, 255);
         createGang({ color: gangColor });
 
-        assert.equal(gangManager.gangs.length, 1);
+        assert.equal(manager.gangs.length, 1);
 
         assert.isTrue(player.issueCommand('/gangs'));
 

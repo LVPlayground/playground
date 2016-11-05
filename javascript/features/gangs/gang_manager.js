@@ -165,64 +165,57 @@ class GangManager {
 
     // Adds |player| to the |gang|. This will also be reflected in the database. A promise will be
     // returned that will be resolved when the removal has been completed.
-    addPlayerToGang(player, gang) {
+    async addPlayerToGang(player, gang) {
         if (!player.isRegistered())
-            return Promise.reject(new Error('The player must registered in order to join a gang.'));
+            throw new Error('The player must registered in order to join a gang.');
 
         if (this.gangPlayers_.has(player))
-            return Promise.reject(new Error('The player already is part of a gang.'));
+            throw new Error('The player already is part of a gang.');
 
-        return this.database_.addPlayerToGang(player, gang).then(result => {
-            if (!player.isConnected())
-                return null;  // the player is not connected to the server anymore
+        await this.database_.addPlayerToGang(player, gang);
+        if (!player.isConnected())
+            return null;  // the player is not connected to the server anymore
 
-            // Associate the |player| with the |gang| as its leader.
-            gang.addPlayer(player, Gang.ROLE_MEMBER);
+        // Associate the |player| with the |gang| as its leader.
+        gang.addPlayer(player, Gang.ROLE_MEMBER);
 
-            // Associate the |gang| with the |player|.
-            this.gangPlayers_.set(player, gang);
+        // Associate the |gang| with the |player|.
+        this.gangPlayers_.set(player, gang);
 
-            // Announce the |player|'s new gang to observers.
-            this.invokeObservers('onUserJoinGang', player.userId, gang.id)
+        // Announce the |player|'s new gang to observers.
+        this.invokeObservers('onUserJoinGang', player.userId, gang.id)
 
-            return gang;
-        });
+        return gang;
     }
 
     // Removes |player| from the |gang|. This will also be reflected in the database. A promise will
     // be returned that will be resolved when the removal has been completed.
-    removePlayerFromGang(player, gang) {
+    async removePlayerFromGang(player, gang) {
         if (!gang.hasPlayer(player))
-            return Promise.reject(new Error('The |player| is not part of the |gang|.'));
+            throw new Error('The |player| is not part of the |gang|.');
 
-        return this.database_.removePlayerFromGang(player.userId, gang).then(result => {
-            if (!result) {
-                // There is nothing we can do in this case, just output a warning to the log.
-                console.log('[GangManager] Failed to remove the affiliation of ' + player.name +
-                            ' with gang ' + gang.name + ' from the database.');
-            }
+        await this.database_.removePlayerFromGang(player.userId, gang);
 
-            // Remove the association of |player| with the |gang|.
-            gang.removePlayer(player);
+        // Remove the association of |player| with the |gang|.
+        gang.removePlayer(player);
 
-            // Remove the association of the |gang| with the |player|.
-            this.gangPlayers_.delete(player);
+        // Remove the association of the |gang| with the |player|.
+        this.gangPlayers_.delete(player);
 
-            // Announce the |player|'s departure to observers.
-            this.invokeObservers('onUserLeaveGang', player.userId, gang.id);
+        // Announce the |player|'s departure to observers.
+        this.invokeObservers('onUserLeaveGang', player.userId, gang.id);
 
-            if (!gang.memberCount)
-                this.gangs_.delete(gang.id);
-        });
+        if (!gang.memberCount)
+            this.gangs_.delete(gang.id);
     }
 
     // Removes the member with |userId| from the |gang|. This method should be used if the player
     // is not currently in-game, but does have to be removed from the gang.
-    removeMemberFromGang(userId, gang) {
-        return this.database_.removePlayerFromGang(userId, gang).then(() => {
-            // Announce the |player|'s departure to observers.
-            this.invokeObservers('onUserLeaveGang', userId, gang.id);
-        });
+    async removeMemberFromGang(userId, gang) {
+        await this.database_.removePlayerFromGang(userId, gang);
+
+        // Announce the |player|'s departure to observers.
+        this.invokeObservers('onUserLeaveGang', userId, gang.id);
     }
 
     // Determines which player should become the leader of the |gang| after |player| leaves, who
@@ -230,28 +223,28 @@ class GangManager {
     //     (1) Current leaders next to |player|.
     //     (2) The manager with the longest tenure in the gang.
     //     (3) The member with the longest tenure in the gang.
-    determineSuccessionAfterDeparture(player, gang) {
+    async determineSuccessionAfterDeparture(player, gang) {
         if (!gang.hasPlayer(player))
-            return Promise.reject(new Error('The |player| is not part of the |gang|.'));
+            throw new Error('The |player| is not part of the |gang|.');
 
         if (gang.getPlayerRole(player) !== Gang.ROLE_LEADER)
-            return Promise.reject(new Error('The |player| is not a leader of the |gang|.'));
+            throw new Error('The |player| is not a leader of the |gang|.');
 
         return this.database_.determineSuccessionAfterDeparture(player, gang);
     }
 
     // Updates the role of |userId| in |gang| to |role|. If the player with |userId| is currently
     // part of the |gang|, they will be told about the change.
-    updateRoleForUserId(userId, gang, role) {
-        return this.database_.updateRoleForUserId(userId, gang, role).then(() => {
-            for (const player of gang.members) {
-                if (player.userId !== userId)
-                    continue;
+    async updateRoleForUserId(userId, gang, role) {
+        await this.database_.updateRoleForUserId(userId, gang, role);
 
-                gang.addPlayer(player, role);
-                return;
-            }
-        });
+        for (const player of gang.members) {
+            if (player.userId !== userId)
+                continue;
+
+            gang.addPlayer(player, role);
+            return;
+        }
     }
 
     // Purchases additional encryption |time|, in seconds, for the |gang|'s chat.
@@ -268,57 +261,53 @@ class GangManager {
 
     // Update the |gang|'s color, as well as the color of all its in-game members, to |color|. Will
     // return a promise that will be resolved when the color has been updated.
-    updateColor(gang, color) {
-        return this.database_.updateColor(gang, color).then(() => {
-            gang.updateColor(color);
-        });
+    async updateColor(gang, color) {
+        await this.database_.updateColor(gang, color);
+
+        gang.updateColor(color);
     }
 
     // Updates the preference of |player| within |gang| to use the common gang color when the
     // |useGangColor| parameter is set to true, or their personal color otherwise.
-    updateColorPreference(gang, player, useGangColor) {
+    async updateColorPreference(gang, player, useGangColor) {
         if (gang.usesGangColor(player) === useGangColor)
-            return Promise.resolve();  // no need to update the value
+            return;  // no need to update the value
 
-        return this.database_.updateColorPreference(gang, player, useGangColor).then(() => {
-            gang.setUsesGangColor(player, useGangColor);
-        });
+        await this.database_.updateColorPreference(gang, player, useGangColor);
+
+        gang.setUsesGangColor(player, useGangColor);
     }
 
     // Updates the |gang|'s name to be |name|. Will return a promise when the operation has
     // completed, TRUE means the tag has been changed, FALSE means another gang owns it.
-    updateName(gang, name) {
-        return this.database_.doesNameExist(name).then(exists => {
-            if (exists)
-                return false;  // name is owned by another gang
+    async updateName(gang, name) {
+        if (await this.database_.doesNameExist(name))
+            return false;  // name is owned by another gang
 
-            return this.database_.updateName(gang, name).then(() => {
-                gang.name = name;
-                return true;
-            });
-        });
+        await this.database_.updateName(gang, name);
+
+        gang.name = name;
+        return true;
     }
 
     // Updates the |gang|'s tag to be |tag|. Will return a promise when the operation has completed,
     // TRUE means the tag has been changed, FALSE means another gang owns it.
-    updateTag(gang, tag) {
-        return this.database_.doesTagExist(tag).then(exists => {
-            if (exists)
-                return false;  // tag is owned by another gang
+    async updateTag(gang, tag) {
+        if (await this.database_.doesTagExist(tag))
+            return false;  // tag is owned by another gang
 
-            return this.database_.updateTag(gang, tag).then(() => {
-                gang.tag = tag;
-                return true;
-            });
-        });
+        await this.database_.updateTag(gang, tag);
+
+        gang.tag = tag;
+        return true;
     }
 
     // Updates the |gang|'s goal to be |goal| in both the local state and in the database. Returns
     // a promise that will be resolved when the goal has been updated.
-    updateGoal(gang, goal) {
-        return this.database_.updateGoal(gang, goal).then(() => {
-            gang.goal = goal;
-        });
+    async updateGoal(gang, goal) {
+        await this.database_.updateGoal(gang, goal);
+
+        gang.goal = goal;
     }
 
     // Called when |player| has logged in to their Las Venturas Playground account. Will check with
@@ -365,7 +354,7 @@ class GangManager {
         gang.removePlayer(player);
 
         if (!gang.memberCount)
-            delete this.gangs_[gang.id];
+            this.gangs_.delete(gang.id);
     }
 
     // Cleans up all state stored by the gang manager.

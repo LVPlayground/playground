@@ -208,195 +208,180 @@ const GANG_UPDATE_GOAL_QUERY = `
 // The gang database is responsible for interacting with the MySQL database for queries related to
 // gangs, e.g. loading, storing and updating the gang and player information.
 class GangDatabase {
-    constructor(database) {
-        this.database_ = database;
-    }
-
     // Loads information for |gangId| from the perspective of |userId| from the database. Returns a
     // promise that will be resolved when the information is available.
-    loadGangForPlayer(userId, gangId) {
-        return this.database_.query(LOAD_GANG_FOR_PLAYER_QUERY, userId, gangId).then(results => {
-            if (results.rows.length !== 1)
-                return null;
+    async loadGangForPlayer(userId, gangId) {
+        const results = await server.database.query(LOAD_GANG_FOR_PLAYER_QUERY, userId, gangId);
+        if (results.rows.length !== 1)
+            return null;
 
-            const info = results.rows[0];
-            return {
-                role: GangDatabase.toRoleValue(info.user_role),
-                useGangColor: info.user_use_gang_color,
-                gang: {
-                    id: info.gang_id,
-                    tag: info.gang_tag,
-                    name: info.gang_name,
-                    goal: info.gang_goal,
-                    color: info.gang_color ? Color.fromNumberRGBA(info.gang_color) : null,
-                    chatEncryptionExpiry: info.encryption_expire || 0
-                }
-            };
-        });
+        const info = results.rows[0];
+        return {
+            role: GangDatabase.toRoleValue(info.user_role),
+            useGangColor: info.user_use_gang_color,
+            gang: {
+                id: info.gang_id,
+                tag: info.gang_tag,
+                name: info.gang_name,
+                goal: info.gang_goal,
+                color: info.gang_color ? Color.fromNumberRGBA(info.gang_color) : null,
+                chatEncryptionExpiry: info.encryption_expire || 0
+            }
+        };
     }
 
     // Returns a promise that will be resolved with an object indicating whether any gang exists
     // having the |tag| or |name|. Both the tag and name will be lowercased.
-    doesGangExists(tag, name) {
+    async doesGangExists(tag, name) {
         tag = tag.toLowerCase();
         name = name.toLowerCase();
 
-        return this.database_.query(GANG_EXISTS_QUERY, tag, name).then(results => {
-            if (results.rows.length === 0)
-                return { available: true };
+        const results = await server.database.query(GANG_EXISTS_QUERY, tag, name);
+        if (results.rows.length === 0)
+            return { available: true };
 
-            const info = results.rows[0];
-            return {
-                available: false,
-                tag: info.gang_tag,
-                name: info.gang_name
-            };
-        });
+        const info = results.rows[0];
+        return {
+            available: false,
+            tag: info.gang_tag,
+            name: info.gang_name
+        };
     }
 
     // Returns a promise that will be resolved with a boolean indicating whether any existing gang
     // (with members) is using the given |name|.
-    doesNameExist(name) {
-        return this.database_.query(NAME_EXISTS_QUERY, name.toLowerCase()).then(results => {
-            return results.rows.length > 0;
-        });
+    async doesNameExist(name) {
+        const results = await server.database.query(NAME_EXISTS_QUERY, name.toLowerCase());
+        return results.rows.length > 0;
     }
 
     // Returns a promise that will be resolved with a boolean indicating whether any existing gang
     // (with members) is using the given |tag|.
-    doesTagExist(tag) {
-        return this.database_.query(TAG_EXISTS_QUERY, tag.toLowerCase()).then(results => {
-            return results.rows.length > 0;
-        });
+    async doesTagExist(tag) {
+        const results = await server.database.query(TAG_EXISTS_QUERY, tag.toLowerCase());
+        return results.rows.length > 0;
     }
 
     // Creates a gang having the |tag|, named |name| pursuing |goal|, and returns a promise that
     // will be resolved with the gang's information when the operation has completed. The |player|
     // shall be stored in the database as the gang's leader.
-    createGangWithLeader(player, tag, name, goal) {
+    async createGangWithLeader(player, tag, name, goal) {
         let gangId = null;
 
-        return this.database_.query(GANG_CREATE_QUERY, tag, name, goal).then(results => {
-            if (results.insertId === null)
-                throw new Error('Unexpectedly got NULL as the inserted Id.');
+        const results = await server.database.query(GANG_CREATE_QUERY, tag, name, goal);
+        if (results.insertId === null)
+            throw new Error('Unexpectedly got NULL as the inserted Id.');
 
-            gangId = results.insertId;
+        gangId = results.insertId;
 
-            return this.database_.query(
-                GANG_CREATE_MEMBER_QUERY, player.userId, results.insertId, 'Leader');
+        await server.database.query(
+            GANG_CREATE_MEMBER_QUERY, player.userId, results.insertId, 'Leader');
 
-        }).then(results => {
-            return {
-                id: gangId,
-                tag: tag,
-                name: name,
-                goal: goal,
-                color: null,
-                chatEncryptionExpiry: 0
-            };
-        });
+        return {
+            id: gangId,
+            tag: tag,
+            name: name,
+            goal: goal,
+            color: null,
+            chatEncryptionExpiry: 0
+        };
     }
 
     // Gets a full list of members for |gang|. Returns a promise that will be resolved with the
     // members when the operation has completed.
-    getFullMemberList(gang) {
-        return this.database_.query(GANG_MEMBERS_QUERY, gang.id).then(results => {
-            let gangMembers = [];
+    async getFullMemberList(gang) {
+        const results = await server.database.query(GANG_MEMBERS_QUERY, gang.id);
 
-            results.rows.forEach(row => {
-                gangMembers.push({
-                    role: GangDatabase.toRoleValue(row.user_role),
-                    userId: row.user_id,
-                    username: row.username,
-                });
+        let gangMembers = [];
+
+        results.rows.forEach(row => {
+            gangMembers.push({
+                role: GangDatabase.toRoleValue(row.user_role),
+                userId: row.user_id,
+                username: row.username,
             });
-
-            return gangMembers;
         });
+
+        return gangMembers;
     }
 
     // Adds |player| to |gang|. Returns a promise that will be resolved when the information has
     // been stored in the database.
-    addPlayerToGang(player, gang) {
+    async addPlayerToGang(player, gang) {
         const userId = player.userId;
         const gangId = gang.id;
 
-        return this.database_.query(GANG_CREATE_MEMBER_QUERY, userId, gangId, 'Member');
+        await server.database.query(GANG_CREATE_MEMBER_QUERY, userId, gangId, 'Member');
     }
 
     // Removes the |userId| from the |gang|. Returns a promise that will be resolved with a boolean
     // reflecting whether the information in the database has been updated.
-    removePlayerFromGang(userId, gang) {
-        const gangId = gang.id;
-
-        return this.database_.query(GANG_REMOVE_MEMBER_QUERY, userId, gangId).then(results => {
-            return results.affectedRows >= 1;
-        });
+    async removePlayerFromGang(userId, gang) {
+        const results = await server.database.query(GANG_REMOVE_MEMBER_QUERY, userId, gang.id);
+        return results.affectedRows >= 1;
     }
 
     // Determines the best person to lead the |gang| after |player| has left. Returns a promise that
     // will be resolved with the userId, name and current role of the newly suggested leader.
-    determineSuccessionAfterDeparture(player, gang) {
-        const userId = player.userId;
-        const gangId = gang.id;
+    async determineSuccessionAfterDeparture(player, gang) {
+        const results =
+            await server.database.query(GANG_DETERMINE_NEXT_LEADER, player.userId, gang.id);
 
-        return this.database_.query(GANG_DETERMINE_NEXT_LEADER, userId, gangId).then(results => {
-            if (results.rows.length === 0)
-                return null;
+        if (results.rows.length === 0)
+            return null;
 
-            const successor = results.rows[0];
-            return {
-                userId: successor.user_id,
-                username: successor.username,
-                role: successor.user_role  // string used for presentation
-            };
-        });
+        const successor = results.rows[0];
+        return {
+            userId: successor.user_id,
+            username: successor.username,
+            role: successor.user_role  // string used for presentation
+        };
     }
 
     // Updates the role of |userId| in |gang| to |role|. Returns a promise that will be resolved
     // without value when this operation has completed.
-    updateRoleForUserId(userId, gang, role) {
-        return this.database_.query(GANG_UPDATE_ROLE_QUERY, GangDatabase.toRoleString(role),
-                                    userId, gang.id);
+    async updateRoleForUserId(userId, gang, role) {
+        await server.database.query(GANG_UPDATE_ROLE_QUERY, GangDatabase.toRoleString(role),
+                                   userId, gang.id);
     }
 
     // Asynchronously creates an entry in the database where the |player| member of the |gang| has
     // purchased an additional |encryptionTime| seconds of gang chat encryption.
     async purchaseChatEncryption(gang, player, encryptionTime) {
-        await this.database_.query(
+        await server.database.query(
             PURCHASE_CHAT_ENCRYPTION_QUERY, gang.id, player.id, encryptionTime,
             gang.chatEncryptionExpiry);
     }
 
     // Updates the color of the |gang| to |color|. Returns a promise that will be resolved when the
     // database has been updated with the new information.
-    updateColor(gang, color) {
-        return this.database_.query(GANG_UPDATE_COLOR_QUERY, color.toNumberRGBA(), gang.id);
+    async updateColor(gang, color) {
+        await server.database.query(GANG_UPDATE_COLOR_QUERY, color.toNumberRGBA(), gang.id);
     }
 
     // Updates the color preferences of |player| in |gang| to |useGangColor|. Returns a promise that
     // will be resolved when the database has been updated with the new information.
-    updateColorPreference(gang, player, useGangColor) {
-        return this.database_.query(
+    async updateColorPreference(gang, player, useGangColor) {
+        await server.database.query(
             GANG_UPDATE_COLOR_PREFERENCES_QUERY, useGangColor ? 1 : 0, player.userId, gang.id);
     }
 
     // Updates the name of the |gang| to |name|. Returns a promise that will be resolved when the
     // database has been updated with the new information.
-    updateName(gang, name) {
-        return this.database_.query(GANG_UPDATE_NAME_QUERY, name, gang.id);
+    async updateName(gang, name) {
+        await server.database.query(GANG_UPDATE_NAME_QUERY, name, gang.id);
     }
 
     // Updates the tag of the |gang| to |tag|. Returns a promise that will be resolved when the
     // database has been updated with the new information.
-    updateTag(gang, tag) {
-        return this.database_.query(GANG_UPDATE_TAG_QUERY, tag, gang.id);
+    async updateTag(gang, tag) {
+        await server.database.query(GANG_UPDATE_TAG_QUERY, tag, gang.id);
     }
 
     // Updates the goal of the |gang| to |goal|. Returns a promise that will be resolved when the
     // database has been updated with the new information.
-    updateGoal(gang, goal) {
-        return this.database_.query(GANG_UPDATE_GOAL_QUERY, goal, gang.id);
+    async updateGoal(gang, goal) {
+        await server.database.query(GANG_UPDATE_GOAL_QUERY, goal, gang.id);
     }
 
     // Utility function for converting a role string to a Gang.ROLE_* value.

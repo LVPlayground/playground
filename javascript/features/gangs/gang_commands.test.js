@@ -598,7 +598,7 @@ describe('GangCommands', (it, beforeEach) => {
 
         assert.equal(gang.chatEncryptionExpiry, 0);
         assert.equal(
-            player.lastDialog, Message.format(Message.GANG_SETTINGS_ENC_TIME_MONEY, 300000, 12500));
+            player.lastDialog, Message.format(Message.GANG_SETTINGS_ENC_TIME_MONEY, 1500000, 12500))
 
         PlayerMoneyBridge.setMockedBalanceForTests(null);
     });

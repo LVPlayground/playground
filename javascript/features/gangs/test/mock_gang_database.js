@@ -18,7 +18,7 @@ const mockedGangInfo = {
 // Mocked version of the GangDatabase. Provides the same interface, but will result mocked
 // information without actually hitting the MySQL database.
 class MockGangDatabase {
-    loadGangForPlayer(userId, gangId) {
+    async loadGangForPlayer(userId, gangId) {
         let gangInfo = null;
 
         switch (userId) {
@@ -26,133 +26,114 @@ class MockGangDatabase {
                 gangInfo = { role: Gang.ROLE_MEMBER, useGangColor: false,
                              gang: mockedGangInfo.hko };
                 break;
+
             case MockGangDatabase.HKO_LEADER_USER_ID:
                 gangInfo = { role: Gang.ROLE_LEADER, useGangColor: true, gang: mockedGangInfo.hko };
                 break;
         }
 
-        return Promise.resolve(gangInfo);
+        return gangInfo;
     }
 
-    doesGangExists(tag, name) {
+    async doesGangExists(tag, name) {
         if (tag === 'HKO')
-            return Promise.resolve({ available: false, tag: 'HKO', name: 'Hello Kitty Online' });
+            return { available: false, tag: 'HKO', name: 'Hello Kitty Online' };
 
-        return Promise.resolve({ available: true });
+        return { available: true };
     }
 
-    doesNameExist(name) {
-        if (name === 'Hello Kitty Online')
-            return Promise.resolve(true);
-
-        return Promise.resolve(false);
+    async doesNameExist(name) {
+        return name === 'Hello Kitty Online';
     }
 
-    doesTagExist(tag) {
-        if (tag === 'HKO')
-            return Promise.resolve(true);
-
-        return Promise.resolve(false);
+    async doesTagExist(tag) {
+        return tag === 'HKO';
     }
 
-    createGangWithLeader(player, tag, name, goal) {
+    async createGangWithLeader(player, tag, name, goal) {
         if (tag === 'CC') {
-            return Promise.resolve({
+            return {
                 id: MockGangDatabase.CC_GANG_ID,
                 tag: tag,
                 name: name,
                 goal: goal,
                 color: null,
                 chatEncryptionExpiry: 0
-            });
+            };
         }
 
-        return Promise.reject(new Error('No special behaviour implemented.'));
+        throw new Error('No special behaviour implemented.');
     }
 
-    getFullMemberList(gang) {
+    async getFullMemberList(gang) {
         if (gang.tag === 'CC') {
-            return Promise.resolve([
+            return [
                 { role: Gang.ROLE_LEADER, userId: 42, username: 'Gunther' },
                 { role: Gang.ROLE_MEMBER, userId: 1338, username: 'Harry' },
                 { role: Gang.ROLE_MEMBER, userId: 1337, username: 'Russell' },
                 { role: Gang.ROLE_MEMBER, userId: 1339, username: 'Sander' }
-            ]);
+            ];
         }
 
         if (gang.tag === 'HKO') {
-            return Promise.resolve([
+            return [
                 { role: Gang.ROLE_MANAGER, userId: 42, username: 'Gunther' },
                 { role: Gang.ROLE_MANAGER, userId: 1337, username: 'Russell' }
-            ]);
+            ];
         }
 
         if (gang.tag === 'HKO2') {
-            return Promise.resolve([
+            return [
                 { role: Gang.ROLE_LEADER, userId: 42, username: 'Gunther' },
                 { role: Gang.ROLE_LEADER, userId: 1337, username: 'Russell' }
-            ]);
+            ];
         }
 
         if (gang.tag === 'HKO3') {
-            return Promise.resolve([
+            return [
                 { role: Gang.ROLE_LEADER, userId: 42, username: 'Gunther' },
                 { role: Gang.ROLE_MEMBER, userId: 1521, username: 'OfflinePlayer' }
-            ]);
+            ];
         }
 
-        return Promise.reject(new Error('No special behaviour implemented.'));
+        throw new Error('No special behaviour implemented.');
     }
 
-    addPlayerToGang(player, gang) {
-        return Promise.resolve(true);
-    }
+    async addPlayerToGang(player, gang) {}
 
-    removePlayerFromGang(userId, gang) {
-        return Promise.resolve(true);
-    }
+    async removePlayerFromGang(userId, gang) {}
 
-    determineSuccessionAfterDeparture(player, gang) {
+    async determineSuccessionAfterDeparture(player, gang) {
         if (gang.tag === 'HKO')
-            return Promise.resolve(null /* the only member */);
+            return null /* the only member */;
 
         if (gang.tag === 'CC')
-            return Promise.resolve({ userId: 42, username: 'MrNextLeader', role: 'Manager' });
+            return { userId: 42, username: 'MrNextLeader', role: 'Manager' };
 
-        return Promise.reject(new Error('No special behaviour implemented.'));
+        throw new Error('No special behaviour implemented.');
     }
 
-    updateRoleForUserId(userId, gang, role) {
+    async updateRoleForUserId(userId, gang, role) {
         if (gang.tag == 'CC' && userId == 42)
-            return Promise.resolve();  // `CC` case in determineSuccessionAfterDeparture()
+            return;  // `CC` case in determineSuccessionAfterDeparture()
 
         if (gang.tag == 'HKO' && userId == 1337)
-            return Promise.resolve();  // kick member from gang through `/gang settings` case
+            return;  // kick member from gang through `/gang settings` case
 
-        return Promise.reject(new Error('No special behaviour implemented.'));
+        throw new Error('No special behaviour implemented.');
     }
 
-    async purchaseChatEncryption(gang, player, encryptionTime) { }
+    async purchaseChatEncryption(gang, player, encryptionTime) {}
 
-    updateColor(gang, color) {
-        return Promise.resolve(true);
-    }
+    async updateColor(gang, color) {}
 
-    updateColorPreference(gang, player, useGangColor) {
-        return Promise.resolve(true);
-    }
+    async updateColorPreference(gang, player, useGangColor) {}
 
-    updateName(gang, name) {
-        return Promise.resolve(true);
-    }
+    async updateName(gang, name) {}
 
-    updateTag(gang, tag) {
-        return Promise.resolve(true);
-    }
+    async updateTag(gang, tag) {}
 
-    updateGoal(gang, goal) {
-        return Promise.resolve(true);
-    }
+    async updateGoal(gang, goal) {}
 }
 
 // Magic userId values that can be used by the database.

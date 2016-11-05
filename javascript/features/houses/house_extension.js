@@ -8,6 +8,9 @@
 class HouseExtension {
     constructor() {}
 
+    // Called when the houses feature has finished loading data from the database.
+    onLoaded() {}
+
     // Called when the |location| has been created by an administrator.
     onLocationCreated(location) {}
 

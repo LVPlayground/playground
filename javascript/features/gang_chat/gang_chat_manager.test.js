@@ -4,6 +4,7 @@
 
 const Communication = require('features/communication/communication.js');
 const GangChatManager = require('features/gang_chat/gang_chat_manager.js');
+const GangTester = require('features/gangs/test/gang_tester.js');
 
 describe('GangChatManager', (it, beforeEach, afterEach) => {
     let gangs = null;
@@ -20,18 +21,6 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
     });
 
     afterEach(() => manager.dispose());
-
-    // Creates a gang for the |player|. Uses the GangManager directly.
-    async function createGang(player, { tag = 'GCH', name = 'Gang Chat Helper',
-                                        chatEncryptionExpiry = 0 } = {}) {
-        const gang = await gangs.manager_.createGangForPlayer(player, tag, name, 'goal');
-
-        if (chatEncryptionExpiry)
-            await gangs.manager_.updateChatEncryption(gang, player, chatEncryptionExpiry);
-
-        return gang;
-    }
-
 
     it('should ignore messages that are not meant for gang chat', assert => {
         const player = server.playerManager.getById(0 /* Gunther */);
@@ -59,7 +48,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
 
         player.identify();
 
-        const gang = await createGang(player);
+        const gang = await GangTester.createGang(player);
 
         const expectedMessage =
             Message.format(Message.GANG_CHAT, gang.tag, player.id, player.name, 'hello');
@@ -90,7 +79,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
 
         player.identify();
 
-        const gang = await createGang(player);
+        const gang = await GangTester.createGang(player);
 
         russell.level = Player.LEVEL_ADMINISTRATOR;
         russell.messageLevel = 2 /* see gang chat */;
@@ -127,7 +116,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
 
         player.identify();
 
-        const gang = await createGang(player);
+        const gang = await GangTester.createGang(player);
 
         russell.level = Player.LEVEL_ADMINISTRATOR;
         russell.messageLevel = 0 /* do not see gang chat */;
@@ -150,7 +139,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
 
         player.identify();
 
-        const gang = await createGang(player);
+        const gang = await GangTester.createGang(player);
 
         manager.onSetiOwnershipChange({ playerid: russell.id });
 
@@ -183,7 +172,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
 
         player.identify();
 
-        const gang = await createGang(player);
+        const gang = await GangTester.createGang(player);
 
         russell.level = Player.LEVEL_ADMINISTRATOR;
 
@@ -212,7 +201,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
 
         player.identify();
 
-        const gang = await createGang(player, { tag: 'hKo' });
+        const gang = await GangTester.createGang(player, { tag: 'hKo' });
 
         russell.level = Player.LEVEL_ADMINISTRATOR;
         russell.messageLevel = 0 /* do not see gang chat */;
@@ -246,7 +235,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
 
         gunther.identify();
 
-        const gang = await createGang(gunther, { chatEncryptionExpiry: 86400 });
+        const gang = await GangTester.createGang(gunther, { chatEncryptionExpiry: 86400 });
 
         manager.onSetiOwnershipChange({ playerid: russell.id });
 
@@ -260,7 +249,8 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify();
 
-        const gang = await createGang(gunther, { chatEncryptionExpiry: 0 /* not encrypted */ });
+        const gang =
+            await GangTester.createGang(gunther, { chatEncryptionExpiry: 0 /* not encrypted */ });
 
         assert.isTrue(gunther.issueMessage('!unencrypted'));
         assert.equal(gunther.messages.length, 1);
@@ -284,7 +274,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
 
         gunther.identify();
 
-        const gang = await createGang(gunther, { chatEncryptionExpiry: 86400 });
+        const gang = await GangTester.createGang(gunther, { chatEncryptionExpiry: 86400 });
 
         manager.onSetiOwnershipChange({ playerid: russell.id });
 

@@ -37,8 +37,12 @@ class HouseManager {
         this.vehicleController_ = new HouseVehicleController(streamer);
 
         // Start listening to player events when the House data has been loaded from the database.
-        this.dataLoadedPromise_.then(() =>
-            server.playerManager.addObserver(this, true /* replayHistory */));
+        this.dataLoadedPromise_.then(() => {
+            server.playerManager.addObserver(this, true /* replayHistory */);
+
+            // Inform the house extensions of the fact that all data has been loaded.
+            this.invokeExtensions('onLoaded');
+        });
     }
 
     // Gets the instance of the database model class for the houses feature.

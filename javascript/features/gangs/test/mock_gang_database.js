@@ -51,7 +51,7 @@ class MockGangDatabase {
     }
 
     async createGangWithLeader(player, tag, name, goal) {
-        if (['CC', 'GCH', 'hKo'].includes(tag)) {
+        if (['CC', 'GT', 'hKo'].includes(tag)) {
             return {
                 id: MockGangDatabase.CC_GANG_ID,
                 tag: tag,

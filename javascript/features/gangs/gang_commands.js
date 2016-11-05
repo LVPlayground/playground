@@ -473,10 +473,10 @@ class GangCommands {
             menu.addItem('Gang chat encryption', encryptionLabel, async() => {
                 const purchaseMenu = new Menu('How much encryption time to buy?', ['Time', 'Price'])
                 const prices = [
-                    [ '1 hour',    25000,    3600 ],
-                    [ '1 day',    300000,   86400 ],
-                    [ '1 week',  1750000,  604800 ],
-                    [ '1 month', 5500000, 2613600 ]
+                    [ '1 hour',    200000,    3600 ],
+                    [ '1 day',    1500000,   86400 ],
+                    [ '1 week',   7500000,  604800 ],
+                    [ '1 month', 25000000, 2613600 ]
                 ];
 
                 const currentBalance = await PlayerMoneyBridge.getBalanceForPlayer(player);

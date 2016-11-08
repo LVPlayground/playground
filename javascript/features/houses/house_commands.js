@@ -17,9 +17,6 @@ const PlayerMoneyBridge = require('features/houses/utils/player_money_bridge.js'
 // Maximum number of milliseconds during which the identity beam should be displayed.
 const IdentityBeamDisplayTimeMs = 60000;
 
-// Maximum amount of money that a player can store in their bank account.
-const PlayerBankAccountLimit = 500000000;
-
 // This class provides the `/house` command available to administrators to manage parts of the
 // Houses feature on Las Venturas Playground. Most interaction occurs through dialogs.
 class HouseCommands {
@@ -604,9 +601,8 @@ class HouseCommands {
 
             if (isOwner) {
                 const balance = await PlayerMoneyBridge.getBalanceForPlayer(player);
-                const newBalance = Math.min(PlayerBankAccountLimit, balance + offer);
 
-                await PlayerMoneyBridge.setBalanceForPlayer(player, newBalance);
+                await PlayerMoneyBridge.setBalanceForPlayer(player, balance + offer);
             }
 
             // Display a confirmation dialog to the player to inform them of their action.

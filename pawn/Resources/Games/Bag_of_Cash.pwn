@@ -6,7 +6,7 @@
 #define     MIN_MONEY_BAG_CASH      1000
 #define     MONEY_BAG_PICKUP_TYPE   2
 #define     MONEY_BAG_PICKUP_MODEL  1550
-#define     RANDOM_MONEY_LOCATIONS  130
+#define     RANDOM_MONEY_LOCATIONS  129
 
 #define chrtoupper(%1) \
 	(((%1) > 0x60 && (%1) <= 0x7A) ? ((%1) ^ 0x20) : (%1))
@@ -105,7 +105,6 @@ static RandPickupLoc[RANDOM_MONEY_LOCATIONS][E_RAND_MONEY_BAG] = {
 	{-39.4815,52.9360,3.1172,"Old McDonald had a farm"}, // Big farm with the haystacks
 	{-549.4021,-188.6925,78.4063,"Pink slip"}, // Racingspot from singleplayer, with the logs around
 	{-1110.6401,-1637.2672,76.3672,"Smoke weed every day!"}, // The Truths farm
-	{1233.5916,-764.3138,1084.0072,"Big Poppa's gym"}, // Gym in Mad Doggs mansion
 	{-345.3311,2226.8450,41.7591,"CJ's grave"}, // Grave CJ digs in SP with Pulaski
 	{-843.8922,2748.6284,48.6324,"Teepees"}, // Tee pee motel
 	{-237.1111,2663.2607,73.7261,"Feeding and seeding"}, // Giant chicken, desert

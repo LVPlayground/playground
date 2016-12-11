@@ -36,9 +36,9 @@ describe('Killtime', (it, beforeEach) => {
         assert.isTrue(russell.issueCommand('/killtime start'));
         russell.clearMessages();
 
-        await server.clock.advance(9 /*put 52 here for the actual situation*/ * 6000);
+        await server.clock.advance(59 * 1000);
         russell.die(gunther);
-        await server.clock.advance(52 /*put 9 here for the actual situation*/ * 6000);
+        await server.clock.advance(2 * 1000);
 
         assert.equal(russell.messages.length, 1);
         assert.equal(russell.messages[0],

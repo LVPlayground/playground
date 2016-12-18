@@ -31,6 +31,11 @@ class PlayerFavours extends Feature {
         this.objectGroups_.push(ObjectGroup.create('data/favours/joe_house_objects.json', 0, 0));
 
         // -----------------------------------------------------------------------------------------
+        // Houdini (https://forum.sa-mp.nl/user-19296.html)
+
+        this.objectGroups_.push(ObjectGroup.create('data/favours/houdini_house_tower.json', 0, 0));
+
+        // -----------------------------------------------------------------------------------------
         // Huracan (https://sa-mp.nl/players/120307/huracan.html)
 
         this.huracanActors_ = new ScopedEntities();

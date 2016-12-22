@@ -39,12 +39,12 @@ class PrivateMessagingCommands {
             return 1;
         }
 
-        if (LegacyIsPlayerIgnored(playerId, receiverId) == true) {
+        if (LegacyIsPlayerIgnored(playerId, receiverId)) {
             SendClientMessage(playerId, Color::Error, "You're currently ignoring this player. Use /unignore!");
             return 1;
         }
 
-        if (LegacyIsPlayerIgnored(receiverId, playerId) == true) {
+        if (LegacyIsPlayerIgnored(receiverId, playerId)) {
             SendClientMessage(playerId, Color::Error, "This player is currently ignoring you.");
             return 1;
         }

@@ -35,10 +35,7 @@ LegacySetValidKillerVariables(forPlayerId, killerId, reasonId) {
 }
 
 bool: LegacyIsPlayerIgnored(playerId, subjectId) {
-    if (g_Ignore[playerId][subjectId])
-        return true;
-    else
-        return false;
+    return !!g_Ignore[playerId][subjectId];
 }
 
 RemovePlayerFromAnyGame(playerId) {

@@ -1069,7 +1069,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         format(string, sizeof(string), "* %s %s", Player(playerid)->nicknameString(), actionText);
         for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
-            if (!Player(subjectId)->isConnected() || g_Ignore[subjectId][playerid] == true)
+            if (!Player(subjectId)->isConnected() || g_Ignore[subjectId][playerid])
                 continue;
 
             if (GetPlayerVirtualWorld(subjectId) != GetPlayerVirtualWorld(playerid)

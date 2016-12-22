@@ -162,7 +162,7 @@ public OnPlayerText(playerid, text[]) {
 
     // Finally: time to send the message to all players.
     for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
-        if (g_Ignore[subjectId][playerid] == true)
+        if (g_Ignore[subjectId][playerid])
             continue;
 
         new const bool: subjectInMainWorld = IsPlayerInMainWorld(subjectId);

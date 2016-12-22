@@ -154,15 +154,15 @@ class GiftHunting {
                 GiveWeapon(playerId, 4, 1);
             }
             case 8: { /* Money (large prize) */
-                format(presentName, sizeof(presentName), "$%s", formatPrice(GetEconomyValue(GiftHuntLargePrize));
+                format(presentName, sizeof(presentName), "$%s", formatPrice(GetEconomyValue(GiftHuntLargePrize)));
                 GiveRegulatedMoney(playerId, GiftHuntLargePrize);
             }
             case 9: { /* Money (medium prize) */
-                format(presentName, sizeof(presentName), "$%s", formatPrice(GetEconomyValue(GiftHuntMediumPrize));
+                format(presentName, sizeof(presentName), "$%s", formatPrice(GetEconomyValue(GiftHuntMediumPrize)));
                 GiveRegulatedMoney(playerId, GiftHuntMediumPrize);
             }
             case 10: { /* Money (small prize) */
-                format(presentName, sizeof(presentName), "$%s", formatPrice(GetEconomyValue(GiftHuntSmallPrize));
+                format(presentName, sizeof(presentName), "$%s", formatPrice(GetEconomyValue(GiftHuntSmallPrize)));
                 GiveRegulatedMoney(playerId, GiftHuntSmallPrize);
             }
         }

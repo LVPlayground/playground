@@ -1068,7 +1068,7 @@ lvp_show(playerId, params[]) {
 
     else if (!strcmp(showParameter, "swear", true, 5)) {
         showInfo = true;
-        format(g_message, sizeof(g_message), "No swearing, flaming or racism! Watch your language! Read /rules");
+        format(g_message, sizeof(g_message), "No excessive swearing, flaming, or racism! Watch your language! Read /rules");
     }
 
     else if (!strcmp(showParameter, "reg", true, 3)) {

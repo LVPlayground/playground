@@ -23,7 +23,7 @@ IRCCommand()
     // Due to a bug that crashed the server, we're going to add this little check
     for(new i = 0;i<strlen(line);i++)
     { // I know it's not optimized but tbh, it's not super important for this
-        if(line[i] == 37) line[i] = 176; // Convert % to ° (better than nothing)
+        if(line[i] == 37) line[i] = 176; // Convert % to Â° (better than nothing)
     }
 
     return _: RemoteCommand->onCommand(line);
@@ -35,15 +35,6 @@ RunDeprecatedIrcCommand(line[]) {
     new idx;
 
     cmd = strtok(line, idx);
-
-    // Command: FixNpcs
-    // Reconnects the NPCs.
-    if(!strcmp(cmd, "fixnpcs", true))
-    {
-        ServiceController->resetServices();
-        AddEcho("Done.");
-        return 1;
-    }
 
     if(strcmp(cmd,"givetempadmin",true) == 0)
     {
@@ -266,7 +257,6 @@ RunDeprecatedIrcCommand(line[]) {
     }
 
     if (strcmp( cmd, "jail", true ) == 0) {
-        // Felle: updated the jail command, entirely based on !mute
         // syntax sent from Nuwani is: jail ircnick playerid minutes
         new tmp[256];
         tmp = strtok(line, idx);
@@ -294,7 +284,8 @@ RunDeprecatedIrcCommand(line[]) {
 
         // *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *
 
-        // get the minutes. if no minutes selected (-1) - the ID is muted until someone unmutes them.
+        // get the minutes. if no minutes selected (-1) - the ID is jailed for JailController::DefaultPunishmentDuration
+        // in case already in jail: jail for the given amount of minutes, keep in jail for given amount.
         new duration = JailController::DefaultPunishmentDuration,
             bool: wasJailed = JailController->isPlayerJailed(pid);
 
@@ -354,29 +345,6 @@ RunDeprecatedIrcCommand(line[]) {
         format(string, sizeof(string), "%s (IRC) released %s (Id:%d) from jail.", unjailedBy, Player(pid)->nicknameString(), pid);
         Admin(Player::InvalidId, string);
 
-        return 1;
-    }
-
-    if(strcmp(cmd, "getid", true) == 0){
-        new tmp[256];
-        tmp = strtok(line, idx);
-
-        if(!tmp[0]) 
-        {
-            // AdminError("Usage: !getid [playerName]");
-            return 1;
-        }
-
-        new pid = GetPlayerId(tmp);
-        if(pid != Player::InvalidId)
-        {
-            format(string, sizeof(string), "[getid] %s %d", tmp, pid);
-        }
-        else{
-            format(string, sizeof(string), "[getidnone] %s", tmp);
-        }
-
-        AddEcho(string);
         return 1;
     }
 

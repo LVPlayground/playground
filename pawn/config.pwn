@@ -95,7 +95,7 @@ class Feature {
 
     // Christmas-themed decoration objects are placed throughout Las Venturas; they include a tree
     // near The Ship and a few vehicles.
-    public const EnableChristmasDecorations = 1;
+    public const EnableChristmasDecorations = 0;
 
     // Grants temporary VIP rights to all registered players during the festive period. The rights
     // will not persist between sessions, and the user should be tempted to donate.
@@ -103,7 +103,7 @@ class Feature {
 
     // A present is dropped somewhere in Las Venturas; when a player picks it up, he receives a 
     // random gift.
-    public const EnableGiftHunting = 1;
+    public const EnableGiftHunting = 0;
 
     /** **************************************************************************************** **/
     /// Minigames

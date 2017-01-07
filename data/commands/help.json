@@ -11,8 +11,9 @@
       "- /teles",
       "- /derby",
       "- /minigames",
+      "- /house",
       "",
-      "Make sure to check out: /help, /cmds and /rules",
+      "Make sure to check out: /cmds, /help and /rules",
       "",
       "To contact an admin, use @ before your message. E.g: @how do I...?"
     ],
@@ -43,7 +44,7 @@
     "Communication": [
       "Apart from the main chat, there are three other ways to communicate with players: PM, phone call and gang chat.",
       "",
-      "Usage: /pm [player] message.",
+      "Usage: /pm [player] [message].",
       "Usage: /call [player]. The other person needs to type /answer.",
       "After that you can use the call function as normal chat. End the call with /hangup.",
       "Gang chat usage: !text. All text starting with ! is only readable by your gang."
@@ -51,7 +52,7 @@
     "Vehicles": [
       "Vehicles are marked on your radar with small grey squares.",
       "To modify a vehicle drive to one of the garages or by using /tune.",
-      "Vehicles can be spawned at all times by Crew and VIP members, but only during the cruise (/cruisecar).",
+      "Vehicles can be spawned at all times by Crew and VIP members, but only during the cruise (/cruise car).",
       "Players with 100 spray tags are able to spawn an Infernus (/inf), NRG-500 (/nrg), Elegy (/ele), Sultan (/sul), Turismo (/tur) or Vortex (/vor)"
     ],
     "Banking": [

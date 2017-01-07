@@ -4,7 +4,7 @@
 
 /**
  * You're either a freeroamer or a figher, but in both situations you'd like to have some basic
- * information available about yourself and other players. Information like FPS and ping percentage,
+ * information available about yourself and other players. Information like Ping, FPS & Packetloss,
  * which can greatly help improving everyone's experience. Commands are available to either hide or
  * show this info.
  *
@@ -84,7 +84,7 @@ class PlayerInfoHandler {
         new const Float: packetLoss = NetStats_PacketLossPercent(subjectId);
 
         new labelText[128];
-        format(labelText, sizeof(labelText), "{B4CCE8}Ping: {FF8E02}%d {B4CCE8}- FPS: {FF8E02}%d\n{B4CCE8}PL: {FF8E02}%.1f%%",
+        format(labelText, sizeof(labelText), "{B4CCE8}Ping: {FF8E02}%d {B4CCE8}- FPS: {FF8E02}%d\n{B4CCE8}Packetloss: {FF8E02}%.1f%%",
             GetPlayerPing(subjectId), PlayerManager->framesPerSecond(subjectId), packetLoss);
 
         UpdatePlayer3DTextLabelText(playerId, m_playerInfoLabelId[playerId][subjectId], Color::White, labelText);
@@ -235,7 +235,7 @@ class PlayerInfoHandler {
 
         new message[128];
         if (Command->parameterCount(params) == 0) {
-            format(message, sizeof(message), "The Player Info feature (FPS/ping) currently is %s{FFFFFF} for you.",
+            format(message, sizeof(message), "The Player Info feature (Ping, FPS & Packetloss) is currently %s{FFFFFF} for you.",
                 (PlayerSettings(subjectId)->isPlayerInfoEnabled() ?
                     "{33AA33}enabled" : "{DC143C}disabled"));
 

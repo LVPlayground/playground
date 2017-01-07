@@ -139,7 +139,7 @@ radioStreamForPlayer(playerid)
     if(GetPVarInt(playerid, "iPlayerRadioDisplayMsg") == 0)
     {
         SetPVarInt(playerid, "iPlayerRadioDisplayMsg", 1);
-        ShowBoxForPlayer(playerid, "Tuned in to ~y~LVP RADIO~w~. Use the ~p~/audiomsg~w~ command to hide radio chat messages. Use ~p~/radio~w~ to toggle radio options.");
+        ShowBoxForPlayer(playerid, "Tuned in to ~y~LVP RADIO~w~. Use ~p~/audiomsg~w~ to hide radio chat messages. Use ~p~/radio~w~ to toggle radio options.");
     }
 
     PlayAudioStreamForPlayer(playerid, LVP_RADIO_STREAM_URL);

@@ -1420,6 +1420,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         return 1;
     }
 
-    ShowBoxForPlayer(playerid, "Error: This command does not exist. Try /commands.");
+    ShowBoxForPlayer(playerid, "Error: This command does not exist. Try /commands or /help");
     return 1;
 }

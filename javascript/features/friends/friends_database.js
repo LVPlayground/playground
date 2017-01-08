@@ -24,7 +24,8 @@ const LOAD_QUERY = `
         users_mutable ON users_mutable.user_id = users_friends.friend_id
     WHERE
         users_friends.user_id = ? AND
-        users_friends.friend_active = 1`;
+        users_friends.friend_active = 1 AND
+        users.username IS NOT NULL`;
 
 // Query for loading the list of friends of a specific player.
 const GET_FRIENDS_QUERY = `

@@ -120,6 +120,16 @@ class PrivateMessagingCommands {
                 return 1;
             }
 
+            if (LegacyIsPlayerIgnored(playerId, lastMessageSenderId)) {
+                SendClientMessage(playerId, Color::Error, "You're currently ignoring this player. Use /unignore!");
+                return 1;
+            }
+
+            if (LegacyIsPlayerIgnored(lastMessageSenderId, playerId)) {
+                SendClientMessage(playerId, Color::Error, "This player is currently ignoring you.");
+                return 1;
+            }
+
             new sender[25];
             format(sender, sizeof(sender), "%s", Player(playerId)->nicknameString());
 

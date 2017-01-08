@@ -81,7 +81,7 @@ CTheft__Initalize() {
 // Returns a random vehicle that the merchant is interested in. The vehicle must meet a series of
 // criteria, which are documented through comments within this function's body.
 CTheft__ChooseRandomVehicle() {
-    new const vehicleCount = VehicleManager->vehicleCount();
+    new const vehicleCount = GetVehiclePoolSize();
 
     for (new maximumIterations = vehicleCount; maximumIterations > 0; --maximumIterations) {
         new const vehicleId = random(vehicleCount);

@@ -188,14 +188,10 @@ class DeprecatedTimerRuntime {
 };
 
 StartTimers() {
-#if Feature::DisableHay == 0
     SetTimer("QuickTimer", 100, 1);
-#endif
 }
 
 forward QuickTimer();
 public QuickTimer() {
-#if Feature::DisableHay == 0
     CHay__Process();
-#endif
 }

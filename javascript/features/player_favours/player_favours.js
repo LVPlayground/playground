@@ -23,6 +23,12 @@ class PlayerFavours extends Feature {
 
         this.objectRemover_.load('data/favours/russell_house_removals.json');
         this.objectGroups_.push(ObjectGroup.create('data/favours/russell_house_objects.json', 0, 0));
+		
+	    // -----------------------------------------------------------------------------------------
+        // Jasmine (https://forum.sa-mp.nl/thread-33720.html)
+
+        this.objectRemover_.load('data/favours/jasmine_house_tower.json');
+        this.objectGroups_.push(ObjectGroup.create('data/favours/jasmine_house_tower.json', 0, 0));
 
         // -----------------------------------------------------------------------------------------
         // Joe (https://sa-mp.nl/players/30/joe.html)

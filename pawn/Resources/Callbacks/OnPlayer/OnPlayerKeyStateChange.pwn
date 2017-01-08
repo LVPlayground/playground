@@ -21,11 +21,9 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
     if (sprayTagOnKeyStateChange(playerid, newkeys, oldkeys))
         return 1;
 
-#if Feature::DisableHay == 0
     // Haystack
     if (hayOnPlayerPunch(playerid, newkeys, oldkeys))
         return 1;
-#endif
 
     // Drinking
     CDrink__OnKey(playerid, newkeys);

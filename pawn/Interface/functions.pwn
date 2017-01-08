@@ -60,12 +60,10 @@ RemovePlayerFromAnyGame(playerId) {
     }
 #endif
 
-#if Feature::DisableHay == 0
     if (hayHasPlayerSignedUp(playerId)) {
         hayRemovePlayer(playerId);
         return 1;
     }
-#endif
 
 #if Feature::DisableFights == 0
     if (waterFightIsPlayerSignedUp(playerId)) {
@@ -213,9 +211,7 @@ ResetPlayerStats(playerId) {
     waterFightOnDisconnect(playerId);
 #endif
     iPlayerSesKills[playerId] = 0;
-#if Feature::DisableHay == 0
     hayResetPlayerData(playerId);
-#endif
 #if Feature::DisableFights == 0
     rwRemovePlayerFromMinigame(playerId);
 #endif

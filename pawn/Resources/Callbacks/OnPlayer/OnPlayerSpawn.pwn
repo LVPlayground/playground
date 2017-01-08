@@ -48,10 +48,8 @@ OriginalOnPlayerSpawn(playerId) {
     if (CRobbery__Spawn(playerId))
         return 1;
 
-#if Feature::DisableHay == 0
     if (hayOnPlayerSpawn(playerId))
         return 1;
-#endif
 
     if (CLyse__GetPlayerState(playerId) == LYSE_STATE_RUNNING) {
         CLyse__SpawnPlayer(playerId);

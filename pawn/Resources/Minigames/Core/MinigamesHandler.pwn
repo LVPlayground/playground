@@ -362,10 +362,8 @@ IsPlayerMinigameFree(playerId) {
     if (waterFightIsPlayerSignedUp(playerId))
         return 0;
 
-#if Feature::DisableHay == 0
     if (hayHasPlayerSignedUp(playerId))
         return 0;
-#endif
 
     return 1;
 }

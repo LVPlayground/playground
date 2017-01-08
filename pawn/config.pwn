@@ -106,9 +106,5 @@ class Feature {
     public const EnableGiftHunting = 0;
 
     /** **************************************************************************************** **/
-    /// Minigames
-
-    // The Hay minigame is a very nice-to-have game, but it hogs CPU.
-    public const DisableHay = 0;
 
 };

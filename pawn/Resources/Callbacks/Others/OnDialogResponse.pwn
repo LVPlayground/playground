@@ -144,9 +144,7 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                     case 2: CBrief__MenuActivate(playerid);
                     case 3: CShell__MenuActivate(playerid);
                     case 4: CLyse__MenuActivate(playerid);
-#if Feature::DisableHay == 0
                     case 5: hayMenuActivate(playerid);
-#endif
                 }
 #else
                 switch (listitem) {

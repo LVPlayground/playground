@@ -35,9 +35,7 @@
 #include Resources/Minigames/Core/WaterFight.pwn
 #endif
 
-#if Feature::DisableHay == 0
 #include Resources/Minigames/Core/HayStack/Core.pwn
-#endif
 
 // Converts the type of minigame a player is playing to a MinigameType enumeration value.
 MinigameType: GetPlayerMinigameType(playerId) {
@@ -52,10 +50,8 @@ MinigameType: GetPlayerMinigameType(playerId) {
         return WaterFightMinigame;
 #endif
 
-#if Feature::DisableHay == 0
     if (hayHasPlayerSignedUp(playerId))
         return HayStackMinigame;
-#endif
 
     if (isPlayerBrief[playerId])
         return CaptureBriefcaseMinigame;
@@ -152,12 +148,10 @@ GetPlayerMinigameName(playerId) {
     }
 #endif
 
-#if Feature::DisableHay == 0
     if (hayHasPlayerSignedUp(playerId)) {
         notice = "HayStack";
         goto l_Success;
     }
-#endif
 
     if (IsPlayerInMapZone(playerId)) {
         format(notice, sizeof(notice), "%s", Map_Zone[GetPlayerMapZone(playerId)][Map_Name]);
@@ -207,10 +201,8 @@ IsPlayerInMinigame(playerId) {
     if (IsPlayerInMapZone(playerId))
         return 1;
 
-#if Feature::DisableHay == 0
     if (hayHasPlayerSignedUp(playerId) && hayGetState() > 1)
         return 1;
-#endif
 
     if (CLyse__GetPlayerState(playerId) > 1)
         return 1;
@@ -256,10 +248,8 @@ IsPlayerMinigameFree(playerId) {
     if (CHideGame__GetPlayerState(playerId) > 0)
         return 0;
 
-#if Feature::DisableHay == 0
     if (hayHasPlayerSignedUp(playerId))
         return 0;
-#endif
 
     return 1;
 }

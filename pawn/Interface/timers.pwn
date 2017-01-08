@@ -61,9 +61,7 @@ class DeprecatedTimerRuntime {
         rwProcess();
 #endif
 
-#if Feature::DisableHay == 0
         hayProcess();
-#endif
 
         ProcessMapZoneRaces();
 #if Feature::DisableFights == 0
@@ -97,9 +95,7 @@ class DeprecatedTimerRuntime {
 
             CBomb__CheckPlayer (playerId);
             CDerby__PlayerProcess (playerId);
-#if Feature::DisableHay == 0
             hayPlayerProcess(playerId);
-#endif
             TeleportCheatProcess(playerId);
             ProcessPlayerBox(playerId);
             CheckPlayerClubAudioStream(playerId);

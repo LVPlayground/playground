@@ -121,14 +121,12 @@ lvp_minigaming(playerid, params[]) {
         }
 #endif
 
-#if Feature::DisableHay == 0
         if (hayHasPlayerSignedUp(subjectId)) {
             format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t-", minigaming,
                 ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId));
             continue;
         }
-#endif
 
         if (CLyse__GetPlayerState(subjectId) != LYSE_STATE_NONE) {
             Color->toString(Color::MinigameTransparentBlue, colorBuffer[0], sizeof(colorBuffer[]));

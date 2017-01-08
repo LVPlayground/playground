@@ -36,9 +36,7 @@ public OnGameModeInit() {
     CRobbery__Initialize();         // Robbery
     CShell__CheckStatus();          // Rivershell
 
-#if Feature::DisableHay == 0
     CHay__Initialize();         // Haystack minigame
-#endif
 
     CDerby__Init();                 // Derby handler
 #if Feature::DisableFights == 0

@@ -1132,9 +1132,19 @@ lvp_show(playerId, params[]) {
     }
 
     if (showInfo == true) {
-        SendClientMessageToAllEx(Color::Red, "-------------------");
-        SendClientMessageToAllEx(Color::Warning, g_message);
-        SendClientMessageToAllEx(Color::Red, "-------------------");
+        new const bool: automated = !!IsPlayerNPC(playerId);
+
+        for (new receiverId = 0; receiverId <= PlayerManager->highestPlayerId(); ++receiverId) {
+            if (Player(receiverId)->isConnected() == false || IsPlayerInMinigame(receiverId))
+                continue;
+
+            if (automated && PlayerSettings(receiverId)->areAutomatedAnnouncementsDisabled())
+                continue;
+
+            SendClientMessage(receiverId, Color::Red, "-------------------");
+            SendClientMessage(receiverId, Color::Warning, g_message);
+            SendClientMessage(receiverId, Color::Red, "-------------------");
+        }
 
         format(g_message, sizeof(g_message), "%s (Id:%d) has done /show %s.",
             Player(playerId)->nicknameString(), playerId, showParameter);

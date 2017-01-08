@@ -16,7 +16,8 @@ enum _: PlayerSettingKey {
     EarningsToBankAccountDisabledSettingKey = 3,
     AllVirtualWorldChatEnabledSettingKey = 5,
     PlayerInfoEnabledSettingKey = 6,
-    PlayerHitSoundEnabledSettingKey = 7
+    PlayerHitSoundEnabledSettingKey = 7,
+    PlayerDisableAutomatedAnnouncementsKey = 8,
 };
 
 // Assert that we don't put more than 32 items in the PlayerSettingKey enum.
@@ -201,6 +202,14 @@ class PlayerSettings <playerId (MAX_PLAYERS)> {
 
     public setPlayerHitSoundEnabled(bool: enabled) {
         this->toggleSetting(PlayerHitSoundEnabledSettingKey, !!enabled);
+    }
+
+    public bool: areAutomatedAnnouncementsDisabled() {
+        return this->hasSetting(PlayerDisableAutomatedAnnouncementsKey);
+    }
+
+    public setAutomatedAnnouncementsDisabled(bool: disabled) {
+        this->toggleSetting(PlayerDisableAutomatedAnnouncementsKey, !!disabled);
     }
 
     // TODO: Implement other settings.

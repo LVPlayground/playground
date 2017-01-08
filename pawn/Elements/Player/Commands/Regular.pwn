@@ -148,7 +148,7 @@ lvp_settings(playerId, params[])
 
     // Do we have any parameters passed on?
     if (!strlen(paramOption)) {
-        SendClientMessage(playerId, Color::Information, "Usage: /settings [newsmsg/showmsg] [on/off]");
+        SendClientMessage(playerId, Color::Information, "Usage: /settings [infomsg/newsmsg/showmsg] [on/off]");
         return 1;
     }
 
@@ -185,6 +185,35 @@ lvp_settings(playerId, params[])
                 "{33AA33}enabled"));
         SendClientMessage(playerId, Color::Success, message);
 
+        return 1;
+    }
+
+    // For automated announcements (i.e. those by Gunther)
+    if (!strcmp(paramOption, "infomsg", true, 7)) {
+        param_shift(optionToggle);
+
+        new message[128];
+
+        if (Command->parameterCount(optionToggle) == 0) {
+            format(message, sizeof(message), "Showing info announcements to you currently is %s{FFFFFF}.",
+                (PlayerSettings(playerId)->areAutomatedAnnouncementsDisabled() ?
+                    "{DC143C}disabled" :
+                    "{33AA33}enabled"));
+
+            SendClientMessage(playerId, Color::Information, message);
+            SendClientMessage(playerId, Color::Information, "Usage: /settings infomsg [on/off]" );
+            return 1;
+        }
+
+        new const bool: enabled = Command->booleanParameter(optionToggle, 0);
+        PlayerSettings(playerId)->setAutomatedAnnouncementsDisabled(!enabled);
+
+        format(message, sizeof(message), "Showing info announcements to you is now %s{33AA33}.",
+            (PlayerSettings(playerId)->areAutomatedAnnouncementsDisabled() ?
+                    "{DC143C}disabled" :
+                    "{33AA33}enabled"));
+
+        SendClientMessage(playerId, Color::Success, message);
         return 1;
     }
 

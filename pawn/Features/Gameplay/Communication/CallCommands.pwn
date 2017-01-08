@@ -28,6 +28,11 @@ class CallCommands {
             return 1;
         }
 
+        if (IsPlayerInMinigame(playerId)) {
+            SendClientMessage(playerId, Color::Error, "You're currently playing a minigame and cannot use the phone.");
+            return 1;
+        }
+
         if (CallManager->isCalling(playerId) == true || GetPlayerSpecialAction(playerId) == 11) {
             SendClientMessage(playerId, Color::Error, "You're currently talking on the phone, use \"/hangup\" first.");
             return 1;

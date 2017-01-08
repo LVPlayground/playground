@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ScopedCallbacks = require('base/scoped_callbacks.js');
+const ColorPickerManager = require('components/dialogs/color_picker_manager.js');
 
 // Private symbol ensuring that the ColorPicker constructor won't be used.
 const PrivateSymbol = Symbol('Please use the static methods.');
@@ -15,11 +15,12 @@ class ColorPicker {
     // either selected a color, or dismissed the dialog. 
     static show(player) {
         const colorPicker = new ColorPicker(PrivateSymbol, player);
+        ColorPickerManager.register(player, colorPicker);
 
-        // Immediately show the color picker to the user.
-        colorPicker.showPicker();
-
-        return colorPicker.finished;
+        return colorPicker.showPicker().then(color => {
+            ColorPickerManager.unregister(player);
+            return color;
+        });
     }
 
     constructor(privateSymbol, player) {
@@ -29,46 +30,28 @@ class ColorPicker {
         this.player_ = player;
 
         this.resolve_ = null;
-        this.reject_ = null;
-
         this.finished_ = new Promise((resolve, reject) => {
             this.resolve_ = resolve;
-            this.reject_ = reject;
         });
-
-        this.callbacks_ = new ScopedCallbacks();
-        this.callbacks_.addEventListener(
-            'colorpickerresponse', ColorPicker.prototype.onColorPicked.bind(this));
     }
-
-    // Returns the promise that is to be resolved or rejected when the color has been picked.
-    get finished() { return this.finished_; }
 
     // Displays the color picker to the user. Sends a request to Pawn to display it immediately,
     // which will respond to JavaScript through an event that will be listened to.
     showPicker() {
-        if (server.isTest()) {
-            this.onColorPicked({ playerid: this.player_.id, color: Color.RED.toNumberRGBA() });
-            return;
-        }
+        Promise.resolve().then(() => {
+            if (server.isTest())
+                this.didSelectColor(Color.RED);
+            else
+                pawnInvoke('OnColorPickerRequest', 'i', this.player_.id);
+        });
 
-        Promise.resolve().then(() =>
-            pawnInvoke('OnColorPickerRequest', 'i', this.player_.id));
+        return this.finished_;
     }
 
     // Called when a color has been picked for a player. Will resolve the promise if that player
     // happens to be the one this instance exists for.
-    onColorPicked(event) {
-        const player = server.playerManager.getById(event.playerid);
-        if (!player) {
-            console.log('[ColorPicker] Received a `colorpicked` event for an invalid player: ' +
-                         event.playerid);
-            return;
-        }
-
-        this.callbacks_.dispose();
-        this.resolve_(event.color != 0 ? Color.fromNumberRGBA(event.color)
-                                       : null /* dismissed */);
+    didSelectColor(color) {
+        this.resolve_(color);
     }
 }
 

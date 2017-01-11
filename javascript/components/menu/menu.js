@@ -65,7 +65,7 @@ class Menu {
         return { player: player, item: selectedItem.labels };
     }
 
-   // ----------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------
 
     // Builds the content string for the menu in accordance with the syntax required for SA-MP's
     // DIALOG_STYLE_{LIST, TABLIST_HEADERS} dialog display styles.

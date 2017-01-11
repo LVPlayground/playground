@@ -33,7 +33,7 @@ const TAG_QUESTION = {
     question: 'Choose your gang\'s tag',
     message: 'What should we use as the gang\'s tag (without brackets)?',
     constraints: {
-        validation: /^[a-zA-Z0-9,\.\-_]{1,5}/,
+        validation: /^[a-zA-Z0-9,\.\-_]{1,5}$/,
         explanation: 'The tag of your gang must be between 1 and 5 characters long (without the ' +
                      'brackets) and be a valid username.',
 

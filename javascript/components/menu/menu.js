@@ -15,83 +15,73 @@ const Dialog = require('components/dialogs/dialog.js');
 // automatically split a dialog up in multiple dialogs when it doesn't fit in a single box. However,
 // keep in mind that this does not provide a great user experience.
 class Menu {
-  constructor(title, columns = []) {
-    if (!Array.isArray(columns) || columns.length > Menu.MAX_COLUMN_COUNT)
-      throw new Error('Columns must be defined in an array with no more than ' + MAX_COLUMN_COUNT + ' entries.');
+    constructor(title, columns = []) {
+        if (!Array.isArray(columns) || columns.length > Menu.MAX_COLUMN_COUNT)
+            throw new Error('Menus cannot have more than ' + Menu.MAX_COLUMN_COUNT + ' columns.');
 
-    this.title_ = title;
-    this.columns_ = columns;
-    this.items_ = [];
-  }
+        this.title_ = title;
+        this.columns_ = columns;
+        this.items_ = [];
+    }
 
-  // -----------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
 
-  // Adds a new item to the menu. One argument must be passed for each of the columns in the menu,
-  // and optionally one more for the event listener associated with this menu item.
-  addItem() {
-    let columnCount = Math.max(1, this.columns_.length);
-    if (arguments.length < columnCount)
-      throw new Error('Expected ' + columnCount + ' labels, got ' + arguments.length);
+    // Adds a new item to the menu. One argument must be passed for each of the columns in the menu,
+    // and optionally one more for the event listener associated with this menu item.
+    addItem() {
+        const columnCount = Math.max(1, this.columns_.length);
 
-    let listener = null;
-    if (arguments.length >= columnCount && typeof arguments[columnCount] == 'function')
-      listener = arguments[columnCount];
+        if (arguments.length < columnCount)
+            throw new Error('Expected ' + columnCount + ' labels, got ' + arguments.length);
 
-    this.items_.push({
-      labels: Array.prototype.slice.call(arguments, 0, columnCount),
-      listener: listener
-    });
-  }
+        let listener = null;
+        if (arguments.length >= columnCount && typeof arguments[columnCount] == 'function')
+            listener = arguments[columnCount];
 
-  // -----------------------------------------------------------------------------------------------
+        this.items_.push({
+            labels: Array.prototype.slice.call(arguments, 0, columnCount),
+            listener: listener
+        });
+    }
 
-  // Displays the menu to |player|. A promise will be returned that will resolve when the dialog
-  // has dismissed from their screen (even when they didn't make a selection). The promise will be
-  // rejected when the |player| is not connected, or disconnects during the lifetime of the menu.
-  displayForPlayer(player) {
-    const isList = this.columns_.length == 0;
+    // Displays the menu to |player|. A promise will be returned that will resolve when the dialog
+    // has dismissed from their screen, even when they didn't make a selection. The promise will be
+    // resolved with NULL when the player disconnects before submitting a response.
+    async displayForPlayer(player) {
+        const isList = this.columns_.length == 0;
+        const result = await Dialog.displayMenu(
+            player, isList, this.title_, this.buildContent(), 'Select', 'Cancel');
 
-    return new Promise(resolve => {
-      let menu = Dialog.displayMenu(player, isList, this.title_, this.buildContent(), 'Select', 'Cancel');
-
-      // TODO(Russell): Handle pagination of menus.
-
-      resolve(menu.then(result => {
-        if (result.response != Dialog.PRIMARY_BUTTON)
-          return null;
+        if (!result || result.response != Dialog.PRIMARY_BUTTON)
+            return null;
 
         if (result.item < 0 || result.item >= this.items_.length)
-          throw new Error('An out-of-bounds menu item has been selected by the player.');
+            throw new Error('An out-of-bounds menu item has been selected by the player.');
 
-        let item = this.items_[result.item];
-        if (item.listener) {
-          return new Promise(async(resolve) => {
-            await item.listener(player);
-            resolve();
+        const selectedItem = this.items_[result.item];
+        if (selectedItem.listener)
+            await selectedItem.listener(player);
 
-          }).then(() => { return { player: player, item: item.labels } });
-        }
+        return { player: player, item: selectedItem.labels };
+    }
 
-        return { player: player, item: item.labels };
-      }));
-    });
-  }
+   // ----------------------------------------------------------------------------------------------
 
-  // Builds the content string for the menu in accordance with the syntax required for SA-MP's
-  // DIALOG_STYLE_{LIST, TABLIST_HEADERS} dialog display styles.
-  // http://wiki.sa-mp.com/wiki/Dialog_Styles#5_-_DIALOG_STYLE_TABLIST_HEADERS
-  buildContent() {
-    const rows = [];
+    // Builds the content string for the menu in accordance with the syntax required for SA-MP's
+    // DIALOG_STYLE_{LIST, TABLIST_HEADERS} dialog display styles.
+    // http://wiki.sa-mp.com/wiki/Dialog_Styles#5_-_DIALOG_STYLE_TABLIST_HEADERS
+    buildContent() {
+        const rows = [];
 
-    if (this.columns_.length > 0)
-      rows.push(this.columns_.join('\t'));
+        if (this.columns_.length > 0)
+            rows.push(this.columns_.join('\t'));
 
-    // Append each of the items to the rows to print.
-    this.items_.forEach(item =>
-        rows.push(item.labels.join('\t')));
+        // Append each of the items to the rows to print.
+        this.items_.forEach(item =>
+            rows.push(item.labels.join('\t')));
 
-    return rows.join('\n');
-  }
+        return rows.join('\n');
+    }
 };
 
 // Maximum number of columns that can be added to a menu.

@@ -667,6 +667,38 @@ describe('GangCommands', (it, beforeEach) => {
         assert.equal(gang.tag, 'CC');
     });
 
+    it('should not enable leaders to change the tag to an invalid one', async(assert) => {
+        const gang = createGang({ tag: 'CC' });
+
+        player.identify();
+
+        addPlayerToGang(player, gang, Gang.ROLE_LEADER);
+
+        assert.equal(gang.tag, 'CC');
+
+        // Duplicated from gang_commands.js
+        const errorMessage = 'The tag of your gang must be between 1 and 5 characters long ' +
+            '(without the brackets) and be a valid username.';
+
+        // List of tags that should not be accepted by the filter.
+        const invalidTags = [
+            'GEORGETESTEDTHIS',
+            '$',
+        ];
+
+        for (const tag of invalidTags) {
+            player.respondToDialog({ listitem: 4 /* Gang tag */ }).then(() =>
+                player.respondToDialog({ inputtext: tag })).then(() =>
+                player.respondToDialog({ response: 0 /* Ok */}));
+
+            assert.isTrue(await player.issueCommand('/gang settings'));
+            assert.equal(player.messages.length, 0);
+
+            assert.equal(player.lastDialog, errorMessage);
+            assert.equal(gang.tag, 'CC');
+        }
+    });
+
     it('should enable leaders to change the tag of their gang', async(assert) => {
         const gang = createGang({ tag: 'CC' });
 

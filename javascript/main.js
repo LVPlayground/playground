@@ -28,8 +28,10 @@ require('entities/virtual_world.js');
 // the gamemode to be started. Without this requirement, certain features may break unexpectedly.
 const testRunner = new TestRunner();
 
-testRunner.run('.*\.test\.js').then(notifyReady).then(() => {
-    console.log('Passed all ' + testRunner.testCount + ' tests!');
+testRunner.run('.*\.test\.js').then(time => {
+    console.log('Passed all ' + testRunner.testCount + ' tests in ' + time + 'ms!');
+
+    notifyReady();  // allow the SA-MP server to start accepting connections
 
     server = new Server();
     server.featureManager.loadFeatures([

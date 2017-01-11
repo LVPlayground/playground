@@ -54,11 +54,13 @@ class TestRunner {
   run(pattern) {
     this.loadTestSuites(pattern);
 
+    const start = highResolutionTime();
+
     return new Promise((resolve, reject) => {
       let currentSuiteIndex = 0,
           failures = [];
 
-      let runNextSuite = () => {
+      const runNextSuite = () => {
         if (currentSuiteIndex >= this.testSuites_.length) {
           // Report to the test runner that running the tests has finished.
           try {
@@ -69,7 +71,7 @@ class TestRunner {
 
           // Either resolve or reject the promise based on the number of failing tests.
           failures.length > 0 ? reject(failures)
-                              : resolve();
+                              : resolve(highResolutionTime() - start);
           return;
         }
 

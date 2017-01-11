@@ -15,13 +15,19 @@ const Dialog = require('components/dialogs/dialog.js');
 // automatically split a dialog up in multiple dialogs when it doesn't fit in a single box. However,
 // keep in mind that this does not provide a great user experience.
 class Menu {
-    constructor(title, columns = []) {
+    constructor(title, columns = [], { pageSize = 50 } = {}) {
         if (!Array.isArray(columns) || columns.length > Menu.MAX_COLUMN_COUNT)
             throw new Error('Menus cannot have more than ' + Menu.MAX_COLUMN_COUNT + ' columns.');
+
+        if (pageSize < 1 || pageSize > Menu.MAX_ROW_COUNT)
+            throw new Error('Menu pages must have between 1 and ' + Menu.MAX_ROW_COUNT + ' rows.');
 
         this.title_ = title;
         this.columns_ = columns;
         this.items_ = [];
+
+        this.pageSize_ = pageSize;
+        this.pageCount_ = 1;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -42,43 +48,82 @@ class Menu {
             labels: Array.prototype.slice.call(arguments, 0, columnCount),
             listener: listener
         });
+
+        // Recompute the number of pages that this menu exists of.
+        this.pageCount_ = Math.ceil(this.items_.length / this.pageSize_);
     }
 
     // Displays the menu to |player|. A promise will be returned that will resolve when the dialog
     // has dismissed from their screen, even when they didn't make a selection. The promise will be
-    // resolved with NULL when the player disconnects before submitting a response.
-    async displayForPlayer(player) {
-        const isList = this.columns_.length == 0;
-        const result = await Dialog.displayMenu(
-            player, isList, this.title_, this.buildContent(), 'Select', 'Cancel');
+    // resolved with NULL when the player disconnects before submitting a response. The |page|
+    // argument is one-based -- optimised for display as opposed to array indices.
+    async displayForPlayer(player, page = 1) {
+        for (; page <= this.pageCount_; ++page) {
+            const title = this.buildTitle(page);
+            const label = this.buildButtonLabel(page);
+            const content = this.buildContent(page);
 
-        if (!result || result.response != Dialog.PRIMARY_BUTTON)
-            return null;
+            const result = await Dialog.displayMenu(
+                player, !this.includeHeader(), title, content, 'Select', label);
 
-        if (result.item < 0 || result.item >= this.items_.length)
-            throw new Error('An out-of-bounds menu item has been selected by the player.');
+            if (!result)
+                return null;  // the player has disconnected
 
-        const selectedItem = this.items_[result.item];
-        if (selectedItem.listener)
-            await selectedItem.listener(player);
+            if (result.response != Dialog.PRIMARY_BUTTON)
+                continue;  // proceed to the next page
 
-        return { player: player, item: selectedItem.labels };
+            if (result.item < 0 || result.item >= this.pageSize_)
+                throw new Error('An out-of-bounds menu item has been selected by the player.');
+
+            const selectedItem = this.items_[((page - 1) * this.pageSize_) + result.item];
+            if (selectedItem.listener)
+                await selectedItem.listener(player);
+
+            return { player, item: selectedItem.labels };
+        }
+
+        // We're out of pages that can be displayed to the player.
+        return null;
     }
 
-    // ----------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
+    // Methods private to the Menu class.
 
-    // Builds the content string for the menu in accordance with the syntax required for SA-MP's
-    // DIALOG_STYLE_{LIST, TABLIST_HEADERS} dialog display styles.
+    // Returns whether the menu should be displayed with a header indicating the columns.
+    includeHeader() {
+        return this.columns_.length > 0;
+    }
+
+    // Builds the title for the menu at the given |page|. Menus having multiple pages will have an
+    // indicator appended to the title to identify where the player is.
+    buildTitle(page) {
+        if (this.pageCount_ == 1)
+            return this.title_;
+
+        return this.title_ + ' (page ' + page + ' of ' + this.pageCount_ + ')';
+    }
+
+    // Builds the label for the right-side button. For menus that do not utilize pagination this
+    // will simply be "Cancel", for menus with pagination it may be ">>>" (next) instead.
+    buildButtonLabel(page) {
+        if (this.pageCount_ == page)
+            return 'Cancel';
+
+        return '>>>';
+    }
+
+    // Builds the content for the menu at the given |page|. Headers will be repeated on every page,
+    // whereas a page only displays the relevant items. The string accords to the following syntax:
     // http://wiki.sa-mp.com/wiki/Dialog_Styles#5_-_DIALOG_STYLE_TABLIST_HEADERS
-    buildContent() {
+    buildContent(page) {
+        const offset = (page - 1) * this.pageSize_;
         const rows = [];
 
-        if (this.columns_.length > 0)
+        if (this.includeHeader())
             rows.push(this.columns_.join('\t'));
 
-        // Append each of the items to the rows to print.
-        this.items_.forEach(item =>
-            rows.push(item.labels.join('\t')));
+        for (const item of this.items_.slice(offset, offset + this.pageSize_))
+            rows.push(item.labels.join('\t'));
 
         return rows.join('\n');
     }
@@ -86,5 +131,8 @@ class Menu {
 
 // Maximum number of columns that can be added to a menu.
 Menu.MAX_COLUMN_COUNT = 4;
+
+// Maximum number of rows that can be displayed on a single menu page.
+Menu.MAX_ROW_COUNT = 100;
 
 exports = Menu;

@@ -37,6 +37,7 @@ class MockPlayer {
         this.lastDialogId_ = null;
         this.lastDialogTitle_ = null;
         this.lastDialogStyle_ = null;
+        this.lastDialogLabel_ = null;
         this.lastDialogMessage_ = null;
         
         this.lastPlayedSound_ = null;
@@ -204,6 +205,7 @@ class MockPlayer {
         this.lastDialogId_ = dialogId;
         this.lastDialogTitle_ = caption;
         this.lastDialogStyle_ = style;
+        this.lastDialogLabel_ = rightButton;
         this.lastDialogMessage_ = message;
 
         this.dialogPromiseResolve_();
@@ -213,6 +215,7 @@ class MockPlayer {
     get lastDialog() { return this.lastDialogMessage_; }
     get lastDialogTitle() { return this.lastDialogTitle_; }
     get lastDialogStyle() { return this.lastDialogStyle_; }
+    get lastDialogLabel() { return this.lastDialogLabel_; }
 
     // Sends |message| to the player. It will be stored in the local messages array and can be
     // retrieved through the |messages| getter.

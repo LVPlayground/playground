@@ -19,6 +19,20 @@ describe('Menu', it => {
         });
     });
 
+    it('should support page sizes between 1 and 100 rows', assert => {
+        assert.doesNotThrow(() => new Menu('My Menu', [], { pageSize:   1 }));
+        assert.doesNotThrow(() => new Menu('My Menu', [], { pageSize:  50 }));
+        assert.doesNotThrow(() => new Menu('My Menu', [], { pageSize: 100 }));
+
+        assert.throws(() => {
+            new Menu('My Menu', [], { pageSize: 0 });
+        });
+
+        assert.throws(() => {
+            new Menu('My Menu', [], { pageSize: 101 });
+        });
+    });
+
     it('should throw for invalid user input', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
@@ -114,5 +128,59 @@ describe('Menu', it => {
 
         assert.deepEqual(result, { player: gunther, item: ['Bar', '$20'] });
         assert.strictEqual(listenerResult, 1);
+    });
+
+    it('should automatically paginate menus with more items than the page size', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        // To test the functionality of the listener as well.
+        let listenerResult = null;
+
+        const menu = new Menu('My Menu', ['Item', 'Price'], { pageSize: 2 });
+        menu.addItem('Foo', '$10', player => listenerResult = 0);
+        menu.addItem('Bar', '$20', player => listenerResult = 1);
+
+        menu.addItem('Baz', '$30', player => listenerResult = 2);
+        menu.addItem('Qux', '$40', player => listenerResult = 3);
+
+        menu.addItem('Corge', '$50', player => listenerResult = 4);
+        menu.addItem('Grault', '$60', player => listenerResult = 5);
+
+        const resultPromise = menu.displayForPlayer(gunther);
+
+        // Page 1 (Foo, Bar)
+        {
+            assert.equal(gunther.lastDialogTitle, 'My Menu (page 1 of 3)');
+            assert.equal(gunther.lastDialogStyle, DIALOG_STYLE_TABLIST_HEADERS);
+            assert.equal(gunther.lastDialogLabel, '>>>');
+            assert.equal(gunther.lastDialog, 'Item\tPrice\nFoo\t$10\nBar\t$20');
+
+            await gunther.respondToDialog({ response: 0 /* next page */, listitem: 0 });
+        }
+
+        // Page 2 (Baz, Qux)
+        {
+            assert.equal(gunther.lastDialogTitle, 'My Menu (page 2 of 3)');
+            assert.equal(gunther.lastDialogStyle, DIALOG_STYLE_TABLIST_HEADERS);
+            assert.equal(gunther.lastDialogLabel, '>>>');
+            assert.equal(gunther.lastDialog, 'Item\tPrice\nBaz\t$30\nQux\t$40');
+
+            await gunther.respondToDialog({ response: 0 /* next page */, listitem: 0 });
+        }
+
+        // Page 3 (Corge, Grault)
+        {
+            assert.equal(gunther.lastDialogTitle, 'My Menu (page 3 of 3)');
+            assert.equal(gunther.lastDialogStyle, DIALOG_STYLE_TABLIST_HEADERS);
+            assert.equal(gunther.lastDialogLabel, 'Cancel');
+            assert.equal(gunther.lastDialog, 'Item\tPrice\nCorge\t$50\nGrault\t$60');
+
+            gunther.respondToDialog({ response: 1, listitem: 1 /* Grault */ });
+        }
+
+        const result = await resultPromise;
+
+        assert.deepEqual(result, { player: gunther, item: ['Grault', '$60'] });
+        assert.strictEqual(listenerResult, 5);
     });
 });

@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const PlayerDisconnectError = require('base/errors/player_disconnect_error.js');
-
 // The dialog manager manages allocation of the dialog ids to individual dialogs that should be
 // shown to users. The SA-MP server imposes a maximum of 32767 dialogs to exist at any given time,
 // but the dynamic nature of JavaScript allows us to intelligently get around that.
@@ -67,9 +65,7 @@ class DialogManager {
 
     let dialogId = this.playerDialogs_[playerId];
     if (this.dialogs_.hasOwnProperty(dialogId)) {
-      // Reject the promise with a PlayerDisconnectError.
-      this.dialogs_[dialogId].reject(new PlayerDisconnectError);
-
+      this.dialogs_[dialogId].resolve(null);
       delete this.dialogs_[dialogId];
     }
 

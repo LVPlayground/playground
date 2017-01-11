@@ -345,7 +345,7 @@ FortCarsonUpdate() {
     GetPlayerHealth(ownerId, health);
 
     if (health < 100)
-        SetPlayerHealth(ownerId, health + 2);
+        SetPlayerHealth(ownerId, Math->min(100.0, health + 2));
 
     // LVP HQ.
     propertyId = PropertyManager->propertyForSpecialFeature(HealthProtectionFeature);
@@ -356,7 +356,7 @@ FortCarsonUpdate() {
 
     GetPlayerHealth(ownerId, health);
     if (health < 100)
-        SetPlayerHealth(ownerId, health + 2);
+        SetPlayerHealth(ownerId, Math->min(100.0, health + 2));
 
     // Ammunation.
     propertyId = PropertyManager->propertyForSpecialFeature(ArmourFeature);
@@ -369,7 +369,7 @@ FortCarsonUpdate() {
     GetPlayerArmour(ownerId, armour);
 
     if (armour < 100)
-        SetPlayerArmour(ownerId, armour + 2);
+        SetPlayerArmour(ownerId, Math->min(100.0, armour + 2));
 
     return 1;
 }

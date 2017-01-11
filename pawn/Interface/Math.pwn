@@ -42,4 +42,8 @@ class Math {
     public inline random(minimum, maximum) {
         return (minimum + random(maximum - minimum));
     }
+
+    public inline min(Float: a, Float: b) {
+        return ((a) < (b) ? (a) : (b));
+    }
 };

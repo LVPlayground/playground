@@ -26,16 +26,16 @@ class MenuBuilder {
   // DIALOG_STYLE_{LIST, TABLIST_HEADERS} dialog display styles.
   // http://wiki.sa-mp.com/wiki/Dialog_Styles#5_-_DIALOG_STYLE_TABLIST_HEADERS
   buildContent() {
-    let content = '';
+    const rows = [];
 
-    // Append the column headers, unless the menu represents a list.
     if (!this.isList())
-      content += this.menu_.columns_.join('\t') + '\n';
+      rows.push(this.menu_.columns_.join('\t'));
 
-    // Append each of the items to the |content| variable.
-    this.menu_.items_.forEach(item => content += item.labels.join('\t') + '\n');
+    // Append each of the items to the rows to print.
+    this.menu_.items_.forEach(item =>
+        rows.push(item.labels.join('\t')));
 
-    return content;
+    return rows.join('\n');
   }
 };
 

@@ -36,7 +36,7 @@ describe('Menu', it => {
 
         assert.equal(gunther.lastDialogTitle, 'My Menu');
         assert.equal(gunther.lastDialogStyle, DIALOG_STYLE_LIST);
-        assert.equal(gunther.lastDialog, 'Foo\nBar\nBaz\n');
+        assert.equal(gunther.lastDialog, 'Foo\nBar\nBaz');
 
         assert.deepEqual(result, { player: gunther, item: ['Foo'] });
         assert.strictEqual(listenerResult, 0);
@@ -59,7 +59,7 @@ describe('Menu', it => {
 
         assert.equal(gunther.lastDialogTitle, 'My Menu');
         assert.equal(gunther.lastDialogStyle, DIALOG_STYLE_TABLIST_HEADERS);
-        assert.equal(gunther.lastDialog, 'Item\nFoo\nBar\nBaz\n');
+        assert.equal(gunther.lastDialog, 'Item\nFoo\nBar\nBaz');
 
         assert.deepEqual(result, { player: gunther, item: ['Foo'] });
         assert.strictEqual(listenerResult, 0);
@@ -82,7 +82,7 @@ describe('Menu', it => {
 
         assert.equal(gunther.lastDialogTitle, 'My Menu');
         assert.equal(gunther.lastDialogStyle, DIALOG_STYLE_TABLIST_HEADERS);
-        assert.equal(gunther.lastDialog, 'Item\tPrice\nFoo\t$10\nBar\t$20\nBaz\t$30\n');
+        assert.equal(gunther.lastDialog, 'Item\tPrice\nFoo\t$10\nBar\t$20\nBaz\t$30');
 
         assert.deepEqual(result, { player: gunther, item: ['Bar', '$20'] });
         assert.strictEqual(listenerResult, 1);

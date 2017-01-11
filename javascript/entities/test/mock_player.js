@@ -34,8 +34,11 @@ class MockPlayer {
             this.dialogPromiseResolve_ = resolve;
         });
 
-        this.lastDialogMessage_ = null;
         this.lastDialogId_ = null;
+        this.lastDialogTitle_ = null;
+        this.lastDialogStyle_ = null;
+        this.lastDialogMessage_ = null;
+        
         this.lastPlayedSound_ = null;
 
         this.messages_ = [];
@@ -199,6 +202,8 @@ class MockPlayer {
     // dialogs and make that entire sub-system testable as well.
     showDialog(dialogId, style, caption, message, leftButton, rightButton) {
         this.lastDialogId_ = dialogId;
+        this.lastDialogTitle_ = caption;
+        this.lastDialogStyle_ = style;
         this.lastDialogMessage_ = message;
 
         this.dialogPromiseResolve_();
@@ -206,6 +211,8 @@ class MockPlayer {
 
     // Gets the most recent message that has been displayed in a dialog to the player.
     get lastDialog() { return this.lastDialogMessage_; }
+    get lastDialogTitle() { return this.lastDialogTitle_; }
+    get lastDialogStyle() { return this.lastDialogStyle_; }
 
     // Sends |message| to the player. It will be stored in the local messages array and can be
     // retrieved through the |messages| getter.

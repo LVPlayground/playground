@@ -65,7 +65,7 @@ class DialogManager {
 
     let dialogId = this.playerDialogs_[playerId];
     if (this.dialogs_.hasOwnProperty(dialogId)) {
-      this.dialogs_[dialogId].resolve(null);
+      this.dialogs_[dialogId].resolve({ response: 1 /* dismissed */, listitem: 0, inputtext: '' });
       delete this.dialogs_[dialogId];
     }
 

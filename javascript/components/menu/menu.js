@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 const Dialog = require('components/dialogs/dialog.js');
-const MenuBuilder = require('components/menu/menu_builder.js');
 
 // The menu class represents a user-visible dialog from which they can choose an option. Optionally,
 // the menu can have up to four columns, each of which must have a set header. The width of columns
@@ -50,9 +49,10 @@ class Menu {
   // has dismissed from their screen (even when they didn't make a selection). The promise will be
   // rejected when the |player| is not connected, or disconnects during the lifetime of the menu.
   displayForPlayer(player) {
+    const isList = this.columns_.length == 0;
+
     return new Promise(resolve => {
-      let builder = new MenuBuilder(this),
-          menu = Dialog.displayMenu(player, builder.isList(), builder.buildCaption(), builder.buildContent(), 'Select', 'Cancel');
+      let menu = Dialog.displayMenu(player, isList, this.title_, this.buildContent(), 'Select', 'Cancel');
 
       // TODO(Russell): Handle pagination of menus.
 
@@ -75,6 +75,22 @@ class Menu {
         return { player: player, item: item.labels };
       }));
     });
+  }
+
+  // Builds the content string for the menu in accordance with the syntax required for SA-MP's
+  // DIALOG_STYLE_{LIST, TABLIST_HEADERS} dialog display styles.
+  // http://wiki.sa-mp.com/wiki/Dialog_Styles#5_-_DIALOG_STYLE_TABLIST_HEADERS
+  buildContent() {
+    const rows = [];
+
+    if (this.columns_.length > 0)
+      rows.push(this.columns_.join('\t'));
+
+    // Append each of the items to the rows to print.
+    this.items_.forEach(item =>
+        rows.push(item.labels.join('\t')));
+
+    return rows.join('\n');
   }
 };
 

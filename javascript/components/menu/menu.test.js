@@ -19,6 +19,34 @@ describe('Menu', it => {
         });
     });
 
+    it('should throw for invalid user input', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        const menu = new Menu('My Menu');
+        menu.addItem('Foo');
+
+        // The menu only has one option, selecting the 43rd is not valid.
+        gunther.respondToDialog({ response: 1, listitem: 42 /* Invalid item */ });
+
+        try {
+            const result = await menu.displayForPlayer(gunther);
+            assert.notReached();  // the function is expected to throw.
+
+        } catch (exception) {}
+    });
+
+    it('should resolve with NULL when the menu is dismissed', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        const menu = new Menu('My Menu');
+        menu.addItem('Foo');
+
+        // A response of zero indicates that the player has dismissed the dialog.
+        gunther.respondToDialog({ response: 0 /* dismissed */, listitem: 0 });
+
+        assert.isNull(await menu.displayForPlayer(gunther));
+    });
+
     it('should support single-column lists without a header', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 

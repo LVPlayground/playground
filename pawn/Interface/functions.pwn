@@ -394,12 +394,12 @@ UpdatePlayerIngameTime(playerId) {
 
             if (gameplayhours[playerId] == 50) {
                 new notice[128];
-                format(notice, sizeof(notice), "*** %s (Id:%d) has been promoted to LVP Regular!!",
+                format(notice, sizeof(notice), "*** %s (Id:%d) has been promoted to LVP Regular!",
                     Player(playerId)->nicknameString(), playerId);
                 SendClientMessageToAllEx(COLOR_PINK, notice);
 
                 SendClientMessage(playerId, COLOR_PINK,
-                    "Congratulations! Now that you've reached 50 hours of in-game time, you're officially a LVP Regular!");
+                    "Congratulations! Now that you've reached 50 hours of in-game time, you're officially an LVP Regular!");
             }
         }
     }

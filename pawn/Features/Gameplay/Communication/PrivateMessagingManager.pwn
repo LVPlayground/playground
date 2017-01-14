@@ -123,7 +123,7 @@ class PrivateMessagingManager {
 
         // Only show the /r or /reply message to people who haven't played on LVP a lot yet.
         if (Player(receiverId)->isRegular() == false)
-            SendClientMessage(receiverId, Color::ConnectionMessage, "* Use {A9C4E4}/r or /reply {CCCCCC}to quickly reply to the message.");
+            SendClientMessage(receiverId, Color::ConnectionMessage, "* Use {A9C4E4}/r {CCCCCC}or {A9C4E4}/reply {CCCCCC}to quickly reply to the message.");
 
         // Broadcast message on IRC.
         format(notice, sizeof(notice), "%s %d %s %d %s", sender, senderId, receiver, receiverId, message);

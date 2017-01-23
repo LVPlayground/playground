@@ -375,8 +375,8 @@ FortCarsonUpdate() {
 }
 
 ShowServerMessage() {
-    new serverMessageCommands[8][12] = {"beg", "donate", "report", "rules", "forum", "reg", "swear", "weaps"};
-    lvp_show(GetPlayerId("Gunther"), serverMessageCommands[random(8)]);
+    new serverMessageCommands[8][12] = {"beg", "donate", "report", "rules", "forum", "reg", "swear", "weaps", "ts"};
+    lvp_show(GetPlayerId("Gunther"), serverMessageCommands[random(9)]);
 }
 
 UpdatePlayerIngameTime(playerId) {

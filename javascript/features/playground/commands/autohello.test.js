@@ -4,7 +4,7 @@
 
 const MockPlaygroundCommands = require('features/playground/test/mock_playground_commands.js');
 
-describe('SecretPrivateMessageCommand', (it, beforeEach, afterEach) => {
+describe('AutoHello', (it, beforeEach, afterEach) => {
     let commands = null;
     let gunther = null;
 

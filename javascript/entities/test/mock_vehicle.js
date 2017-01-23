@@ -138,6 +138,7 @@ class MockVehicle {
         if (this.trailer_)
             this.manager_.detachTrailer(this);
 
+        this.trailerId_ = trailer.id;
         this.manager_.attachTrailer(this, trailer);
     }
 
@@ -146,6 +147,7 @@ class MockVehicle {
         if (!this.trailer_)
             return;
 
+        this.trailerId_ = 0;
         this.manager_.detachTrailer(this);
     }
 

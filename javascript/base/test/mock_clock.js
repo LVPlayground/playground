@@ -21,10 +21,10 @@ class MockClock {
 
         // Maintain a prioritized queue of the pending timers in ascending order.
         this.timers_ = new PriorityQueue((lhs, rhs) => {
-            if (lhs === rhs)
+            if (lhs.time === rhs.time)
                 return 0;
 
-            return lhs > rhs ? 1 : -1;
+            return lhs.time > rhs.time ? 1 : -1;
         });
 
         if (existingInstance !== null)
@@ -56,24 +56,19 @@ class MockClock {
 
         this.offset_ += milliseconds;
 
-        return this.resolveTimerIfNecessary(this.monotonicallyIncreasingTime());
+        return this.resolveTimerIfNecessary();
     }
 
     // Returns a promise that will be resolved when the timer at the top of the stack has been
     // invoked when this is appropriate on the current time advancement.
-    resolveTimerIfNecessary(currentMonotonicallyIncreasingTime) {
-        return new Promise(resolve => {
-            if (this.timers_.isEmpty())
-                return resolve();
-
-            if (this.timers_.peek().time > currentMonotonicallyIncreasingTime)
-                return resolve();
+    async resolveTimerIfNecessary() {
+        while (!this.timers_.isEmpty()) {
+            if (this.timers_.peek().time > this.monotonicallyIncreasingTime())
+                return;
 
             const timer = this.timers_.pop();
-            timer.resolver();
-
-            resolve(this.resolveTimerIfNecessary(currentMonotonicallyIncreasingTime));
-        });
+            await timer.resolver();
+        }
     }
 
     // Automatically called when using the wait() method. Will wait for |milliseconds|, which can

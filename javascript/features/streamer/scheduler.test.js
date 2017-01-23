@@ -35,7 +35,7 @@ describe('Scheduler', (it, beforeEach, afterEach) => {
         for (let i = 0; i < 10; ++i)
             await server.clock.advance(1000);  // one second
 
-        assert.equal(scheduler.counter, 9);
+        assert.equal(scheduler.counter, 11);
         assert.equal(streamCounter, 0);
     });
 
@@ -63,7 +63,7 @@ describe('Scheduler', (it, beforeEach, afterEach) => {
         for (let i = 0; i < 10; ++i)
             await server.clock.advance(1000);  // one second
 
-        assert.equal(scheduler.counter, 9);
+        assert.equal(scheduler.counter, 11);
         assert.equal(streamCounter, 0);
 
         // Now add an entity to the streamer, which should trigger the scheduler.
@@ -77,7 +77,7 @@ describe('Scheduler', (it, beforeEach, afterEach) => {
         // Trigger the streaming check another time.
         await server.clock.advance(1500);
 
-        assert.equal(scheduler.counter, 10);
+        assert.equal(scheduler.counter, 12);
         assert.equal(streamCounter, 1);
 
         // Clear the entities from the streamer so that it gets ignored again.
@@ -86,7 +86,7 @@ describe('Scheduler', (it, beforeEach, afterEach) => {
         await Promise.resolve();
         await server.clock.advance(1000);
 
-        assert.equal(scheduler.counter, 10);
+        assert.equal(scheduler.counter, 13);
         assert.equal(streamCounter, 1);
     });
 
@@ -99,7 +99,7 @@ describe('Scheduler', (it, beforeEach, afterEach) => {
         for (let i = 0; i < 10; ++i)
             await server.clock.advance(1000);  // one second
 
-        assert.equal(scheduler.counter, 9);
+        assert.equal(scheduler.counter, 11);
 
         scheduler.dispose();
 
@@ -107,7 +107,7 @@ describe('Scheduler', (it, beforeEach, afterEach) => {
         for (let i = 0; i < 10; ++i)
             await server.clock.advance(1000);  // one second
 
-        assert.equal(scheduler.counter, 9);
+        assert.equal(scheduler.counter, 11);
 
         scheduler = null;
     });

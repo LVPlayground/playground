@@ -364,12 +364,21 @@ describe('VehicleStreamer', it => {
             assert.isTrue(streamer.isPinned(storedVehicle));
             assert.isFalse(streamer.isPinned(storedTrailer));
 
+            assert.isNull(vehicle.trailer);
+            assert.isNull(trailer.parent);
+
             vehicle.attachTrailer(trailer);
+
+            assert.isNotNull(vehicle.trailer);
+            assert.isNotNull(trailer.parent);
 
             assert.isTrue(streamer.isPinned(storedVehicle));
             assert.isTrue(streamer.isPinned(storedTrailer));
 
             gunther.leaveVehicle();
+
+            assert.isTrue(streamer.isPinned(storedVehicle));
+            assert.isTrue(streamer.isPinned(storedTrailer));
 
             await server.clock.advance(60 * 1000);  // 60 seconds, the vehicle's respawn delay
 

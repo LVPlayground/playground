@@ -23,7 +23,7 @@ class PlayerFavours extends Feature {
 
         this.objectRemover_.load('data/favours/russell_house_removals.json');
         this.objectGroups_.push(ObjectGroup.create('data/favours/russell_house_objects.json', 0, 0));
-		
+
 	    // -----------------------------------------------------------------------------------------
         // Jasmine (https://forum.sa-mp.nl/thread-33720.html)
 
@@ -64,6 +64,23 @@ class PlayerFavours extends Feature {
         });
 
         // -----------------------------------------------------------------------------------------
+        // [ER]Luka (https://sa-mp.nl/players/123358/er-luka.html) and
+        // ToxicCookie (https://sa-mp.nl/players/119454/toxiccookie.html)
+
+        this.lukaAndToxicccokieActors_ = new ScopedEntities();
+        this.lukaAndToxicccokieActors_.createActor({
+            modelId: 240,
+            position: new Vector(-378.03, 2242.15, 46.09),
+            rotation: 103
+        });
+
+        this.lukaAndToxicccokieActors_.createActor({
+            modelId: 106,
+            position: new Vector(-384.11, 2206.16, 45.67),
+            rotation: 276
+        });
+
+        // -----------------------------------------------------------------------------------------
     }
 
     // This feature has no public API.
@@ -71,6 +88,9 @@ class PlayerFavours extends Feature {
     dispose() {
         this.huracanActors_.dispose();
         this.huracanActors_ = null;
+
+        this.lukaAndToxicccokieActors_.dispose();
+        this.lukaAndToxicccokieActors_ = null;
 
         for (const objectGroup of this.objectGroups_)
             objectGroup.dispose();

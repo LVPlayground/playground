@@ -61,7 +61,7 @@ class VehicleCommands {
 
         // Command: /v [vehicle]?
         //          /v [density/enter/help/optimise/reset]
-        //          /v [player]? [access/delete/health/pin/respawn/save/unpin]
+        //          /v [player]? [access/color/delete/health/pin/respawn/save/unpin]
         server.commandManager.buildCommand('v')
             .restrict(player => this.playground_().canAccessCommand(player, 'v'))
             .sub('density')
@@ -86,6 +86,13 @@ class VehicleCommands {
                     .parameters([ { name: 'level', type: CommandBuilder.WORD_PARAMETER,
                                     optional: true } ])
                     .build(VehicleCommands.prototype.onVehicleAccessCommand.bind(this))
+                .sub('color')
+                    .restrict(Player.LEVEL_ADMINISTRATOR)
+                    .parameters([ { name: 'primary', type: CommandBuilder.NUMBER_PARAMETER,
+                                    optional: true },
+                                  { name: 'secondary', type: CommandBuilder.NUMBER_PARAMETER,
+                                    optional: true }])
+                    .build(VehicleCommands.prototype.onVehicleColorCommand.bind(this))
                 .sub('delete')
                     .restrict(Player.LEVEL_ADMINISTRATOR)
                     .build(VehicleCommands.prototype.onVehicleDeleteCommand.bind(this))
@@ -259,7 +266,7 @@ class VehicleCommands {
 
                 for (const model of vehicleModels)
                     disambiguationDialog.addItem(model.name, model.id);
-                
+
                 const decision = await disambiguationDialog.displayForPlayer(player);
                 if (!decision || !decision.item[1])
                     return;  // the player closed or mocked with the disambiguation dialog
@@ -267,7 +274,7 @@ class VehicleCommands {
                 vehicleModel = VehicleModel.getById(decision.item[1]);
             }
         }
-        
+
         if (!vehicleModel) {
             player.sendMessage(Message.VEHICLE_SPAWN_NOT_FOUND, modelIdentifier);
             return;
@@ -391,6 +398,30 @@ class VehicleCommands {
         player.sendMessage(Message.VEHICLE_ACCESS_CHANGED, vehicle.model.name);
     }
 
+    // Called when the |player| executes `/v color` or `/v [player] color`, which means they wish
+    // to either see or change the primary and secondary color of the vehicle.
+    onVehicleColorCommand(player, subject, primary, secondary) {
+        const vehicle = subject.vehicle;
+
+        // Bail out if the |subject| is not driving a vehicle, or it's not managed by this system.
+        if (!this.manager_.isManagedVehicle(vehicle)) {
+            player.sendMessage(Message.VEHICLE_NOT_DRIVING, subject.name);
+            return;
+        }
+
+        if ((primary === undefined || primary < 0 || primary > 255) ||
+            (secondary === undefined || secondary < 0 || secondary > 255)) {
+            player.sendMessage(Message.VEHICLE_COLOR_CURRENT, vehicle.primaryColor, vehicle.secondaryColor);
+            player.sendMessage(Message.VEHICLE_COLOR_USAGE);
+            return;
+        }
+
+        player.sendMessage(Message.VEHICLE_COLOR_UPDATED, primary, secondary);
+
+        vehicle.primaryColor = primary;
+        vehicle.secondaryColor = secondary;
+    }
+
     // Called when the |player| executes `/v delete` or `/v [player] delete`, which means they wish
     // to delete the vehicle the target is currently driving.
     async onVehicleDeleteCommand(player, subject) {
@@ -508,7 +539,7 @@ class VehicleCommands {
             return;
 
         const globalOptions = ['density', 'enter', 'help', 'reset'];
-        const vehicleOptions = ['access', 'delete', 'health', 'respawn', 'save'];
+        const vehicleOptions = ['access', 'color', 'delete', 'health', 'respawn', 'save'];
 
         if (player.isManagement()) {
             globalOptions.push('optimise');

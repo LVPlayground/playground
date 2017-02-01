@@ -27,7 +27,7 @@ describe('VehicleCommands', (it, beforeEach) => {
         });
 
         const vehicles = server.featureManager.loadFeature('vehicles');
-        
+
         abuse = server.featureManager.loadFeature('abuse');
 
         playground = server.featureManager.loadFeature('playground');
@@ -775,7 +775,7 @@ describe('VehicleCommands', (it, beforeEach) => {
 
             gunther.clearMessages();
         }
-        
+
         gunther.level = Player.LEVEL_ADMINISTRATOR;
         {
             assert.isTrue(await gunther.issueCommand('/v help'));
@@ -1019,5 +1019,65 @@ describe('VehicleCommands', (it, beforeEach) => {
         commands.dispose = () => true;
 
         assert.equal(server.commandManager.size, originalCommandCount - 9);
+    });
+
+    it('should be able to update and tell the color(s) of vehicles', async(assert) => {
+        // Only administrators can manipulate vehicle color(s) on the server.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isTrue(await gunther.issueCommand('/v color'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_NOT_DRIVING, 'Gunther'));
+
+        assert.isTrue(createVehicleForPlayer(gunther));
+        assert.isNotNull(gunther.vehicle);
+
+        gunther.vehicle.primaryColor = 142;
+        gunther.vehicle.secondaryColor = 241;
+
+        assert.isTrue(await gunther.issueCommand('/v color'));
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(gunther.messages[1], Message.format(Message.VEHICLE_COLOR_CURRENT, 142, 241));
+
+        gunther.clearMessages();
+
+        assert.isTrue(await gunther.issueCommand('/v color 300'));  // must be in [0, 255]
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_COLOR_USAGE));
+        assert.equal(gunther.vehicle.primaryColor, 142);
+
+        gunther.clearMessages();
+
+        assert.isTrue(await gunther.issueCommand('/v color 120'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_COLOR_UPDATED, 120, 241));
+        assert.equal(gunther.vehicle.primaryColor, 120);
+
+        gunther.clearMessages();
+        gunther.vehicle.primaryColor = 142;
+
+        assert.isTrue(await gunther.issueCommand('/v color 120 300'));  // must be in [0, 255]
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_COLOR_USAGE));
+        assert.equal(gunther.vehicle.primaryColor, 142);
+        assert.equal(gunther.vehicle.secondaryColor, 241);
+
+        gunther.clearMessages();
+
+        assert.isTrue(await gunther.issueCommand('/v color 120 210'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_COLOR_UPDATED, 120, 210));
+        assert.equal(gunther.vehicle.primaryColor, 120);
+        assert.equal(gunther.vehicle.secondaryColor, 210);
+
+        gunther.clearMessages();
+        gunther.vehicle.primaryColor = 142;
+        gunther.vehicle.secondaryColor = 241;
+
+        assert.isTrue(await gunther.issueCommand('/v color _ 210'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_COLOR_CURRENT, 142, 241));
+        assert.equal(gunther.vehicle.primaryColor, 142);
+        assert.equal(gunther.vehicle.secondaryColor, 241);
     });
 });

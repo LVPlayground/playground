@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 // Represents and encapsulates the lifetime of a Vehicle on the San Andreas: Multiplayer server.
-// Provides quick and idiomatic access to the vehicle's properties. 
+// Provides quick and idiomatic access to the vehicle's properties.
 class Vehicle {
     constructor(manager, options) {
         this.manager_ = manager;
@@ -108,6 +108,13 @@ class Vehicle {
     set secondaryColor(value) {
         pawnInvoke('ChangeVehicleColor', 'iii', this.id_, this.primaryColor_, value);
         this.secondaryColor_ = value;
+    }
+
+    // Sets both colors of this vehicle at once instead of having to pawnInvoke twice
+    setColors(primaryColor, secondaryColor) {
+        pawnInvoke('ChangeVehicleColor', 'iii', this.id_, primaryColor, secondaryColor);
+        this.primaryColor_ = primaryColor;
+        this.secondaryColor_ = secondaryColor;
     }
 
     // Gets or sets the paintjob that have been applied to this vehicle.

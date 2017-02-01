@@ -95,6 +95,12 @@ class MockVehicle {
     get secondaryColor() { return this.secondaryColor_; }
     set secondaryColor(value) { this.secondaryColor_ = value; }
 
+    // Sets both colors of this vehicle at once instead of having to pawnInvoke twice
+    setColors(primaryColor, secondaryColor) {
+        this.primaryColor_ = primaryColor;
+        this.secondaryColor_ = secondaryColor;
+    }
+
     // Gets or sets the paintjob that have been applied to this vehicle.
     get paintjob() { return this.paintjob_; }
     set paintjob(value) { this.paintjob_ = value; }

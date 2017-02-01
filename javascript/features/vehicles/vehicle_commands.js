@@ -409,17 +409,30 @@ class VehicleCommands {
             return;
         }
 
-        if ((primary === undefined || primary < 0 || primary > 255) ||
-            (secondary === undefined || secondary < 0 || secondary > 255)) {
+        if (primary === undefined && secondary === undefined) {
             player.sendMessage(Message.VEHICLE_COLOR_CURRENT, vehicle.primaryColor, vehicle.secondaryColor);
+            return;
+        }
+
+        if (primary < 0 || primary > 255) {
             player.sendMessage(Message.VEHICLE_COLOR_USAGE);
             return;
+        } else {
+            if (secondary === undefined) {
+                vehicle.primaryColor = primary;
+                player.sendMessage(Message.VEHICLE_COLOR_UPDATED, primary, vehicle.secondaryColor);
+                return;
+            }
+
+            if (secondary < 0 || secondary > 255) {
+                player.sendMessage(Message.VEHICLE_COLOR_USAGE);
+                return;
+            }
         }
 
         player.sendMessage(Message.VEHICLE_COLOR_UPDATED, primary, secondary);
 
-        vehicle.primaryColor = primary;
-        vehicle.secondaryColor = secondary;
+        vehicle.setColors(primary, secondary);
     }
 
     // Called when the |player| executes `/v delete` or `/v [player] delete`, which means they wish

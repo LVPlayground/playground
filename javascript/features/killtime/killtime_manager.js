@@ -102,23 +102,20 @@ class KilltimeManager {
         const knownKillsAmountSet = new Set();
         let playerName = null;
         let highestKillsAmount = 0;
-        let shouldReturn = false;
 
         this.scoreMap_.forEach(function (kills, name) {
             if (knownKillsAmountSet.has(kills))
-                shouldReturn = true;
+                return null;
 
-            if (shouldReturn) {
-                knownKillsAmountSet.add(kills);
+            knownKillsAmountSet.add(kills);
 
-                if (kills > highestKillsAmount) {
-                    highestKillsAmount = kills;
-                    playerName = name;
-                }
+            if (kills > highestKillsAmount) {
+                highestKillsAmount = kills;
+                playerName = name;
             }
         });
 
-        return shouldReturn ? null : playerName;
+        return playerName;
     }
 
     // Returns the amount of kills made in the killtimesession.

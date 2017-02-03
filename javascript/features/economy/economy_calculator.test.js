@@ -185,4 +185,37 @@ describe('EconomyCalculator', (it, beforeEach, afterEach) => {
         assert.throws(() => calculateVehiclePrice(0, 200, 0));
         assert.throws(() => calculateVehiclePrice(0, 0, 200));
     });
+
+    it ('calculates the correct prize for a killtime', assert => {
+        const expectedPrizeWith1pAnd0kills = 25000;
+        const expectedPrizeWith1pAnd1kills = 25000;
+        const expectedPrizeWith1pAnd24kills = 25000;
+        const expectedPrizeWith1pAnd25kills = 25000;
+        const expectedPrizeWith1pAnd26kills = 26000;
+
+        const expectedPrizeWith5pAnd4kills = 25000;
+        const expectedPrizeWith5pAnd5kills = 25000;
+        const expectedPrizeWith5pAnd6kills = 30000;
+
+        const expectedPrizeWith10pAnd2kills = 25000;
+        const expectedPrizeWith10pAnd3kills = 30000;
+        const expectedPrizeWith10pAnd4kills = 40000;
+
+        // 1 participant making X kills
+        assert.equal(calculator.calculateKilltimeAwardPrize(1, 0), expectedPrizeWith1pAnd0kills);
+        assert.equal(calculator.calculateKilltimeAwardPrize(1, 1), expectedPrizeWith1pAnd1kills);
+        assert.equal(calculator.calculateKilltimeAwardPrize(1, 24), expectedPrizeWith1pAnd24kills);
+        assert.equal(calculator.calculateKilltimeAwardPrize(1, 25), expectedPrizeWith1pAnd25kills);
+        assert.equal(calculator.calculateKilltimeAwardPrize(1, 26), expectedPrizeWith1pAnd26kills);
+
+        // 5 participants making X kills
+        assert.equal(calculator.calculateKilltimeAwardPrize(5, 4), expectedPrizeWith5pAnd4kills);
+        assert.equal(calculator.calculateKilltimeAwardPrize(5, 5), expectedPrizeWith5pAnd5kills);
+        assert.equal(calculator.calculateKilltimeAwardPrize(5, 6), expectedPrizeWith5pAnd6kills);
+
+        // 10 participants making X kills
+        assert.equal(calculator.calculateKilltimeAwardPrize(10, 2), expectedPrizeWith10pAnd2kills);
+        assert.equal(calculator.calculateKilltimeAwardPrize(10, 3), expectedPrizeWith10pAnd3kills);
+        assert.equal(calculator.calculateKilltimeAwardPrize(10, 4), expectedPrizeWith10pAnd4kills);
+    });
 });

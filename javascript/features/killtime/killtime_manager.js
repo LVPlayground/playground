@@ -90,21 +90,6 @@ class KilltimeManager {
         this.announce_().announceToPlayers(Message.KILLTIME_WINNER, playerWithKillsText, prizeMessage);
     }
 
-    onPlayerDeath(event) {
-        if (!this.isRunning_)
-            return;
-
-        const killer = server.playerManager.getById(event.killerid);
-        if (!killer || killer.virtualWorld != 0)
-            return;
-
-        let previousKillsAmount = 0;
-        if (this.scoreMap_.has(killer.name))
-            previousKillsAmount = this.scoreMap_.get(killer.name);
-
-        this.scoreMap_.set(killer.name, previousKillsAmount + 1);
-    }
-
     getPlayerWithHighestKillsAmount() {
         const knownKillsAmountSet = new Set();
         let playerName = null;
@@ -133,6 +118,21 @@ class KilltimeManager {
         });
 
         return totalKillsAmount;
+    }
+
+    onPlayerDeath(event) {
+        if (!this.isRunning_)
+            return;
+
+        const killer = server.playerManager.getById(event.killerid);
+        if (!killer || killer.virtualWorld != 0)
+            return;
+
+        let previousKillsAmount = 0;
+        if (this.scoreMap_.has(killer.name))
+            previousKillsAmount = this.scoreMap_.get(killer.name);
+
+        this.scoreMap_.set(killer.name, previousKillsAmount + 1);
     }
 
     // Cleans up the state created by this class

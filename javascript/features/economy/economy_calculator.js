@@ -191,7 +191,7 @@ class EconomyCalculator {
     // there is not enough killing and/or participants. This way we keep the players encouraged to take part in kill-
     // time while meanwhile keep the economy stable.
     calculateKilltimeAwardPrize(participants, kills) {
-        let minimumPrizeMoney = 25000;
+        const minimumPrizeMoney = 25000;
 
         const startPrizeMoney = 1000;
         const multiplier = participants * kills;

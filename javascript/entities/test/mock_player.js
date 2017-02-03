@@ -39,7 +39,7 @@ class MockPlayer {
         this.lastDialogStyle_ = null;
         this.lastDialogLabel_ = null;
         this.lastDialogMessage_ = null;
-        
+
         this.lastPlayedSound_ = null;
 
         this.messages_ = [];
@@ -62,6 +62,8 @@ class MockPlayer {
 
         this.currentVehicleId_ = null;
         this.currentVehicleSeat_ = 0;
+
+        this.cashMoney_ = 0;
     }
 
     get id() { return this.id_; }
@@ -470,6 +472,9 @@ class MockPlayer {
     updateStreamerObjects() { this.streamerObjectsUpdated_ = true; }
 
     streamerObjectsUpdated() { return this.streamerObjectsUpdated_; }
+
+    get cashMoney() { return this.cashMoney_; }
+    giveCashMoney(amount) { this.cashMoney_ = amount;}
 }
 
 exports = MockPlayer;

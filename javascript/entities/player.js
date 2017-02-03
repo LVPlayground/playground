@@ -186,7 +186,7 @@ class Player {
   get specialAction() { return pawnInvoke('GetPlayerSpecialAction', 'i', this.id_); }
   set specialAction(value) { pawnInvoke('SetPlayerSpecialAction', 'ii', this.id_, value); }
 
-  // Returns an object with the keys that the player is currently pressing. 
+  // Returns an object with the keys that the player is currently pressing.
   getKeys() {
     const [keys, updown, leftright] = pawnInvoke('GetPlayerKeys', 'iIII', this.id_);
     return {
@@ -403,6 +403,14 @@ class Player {
   updateStreamer(position, virtualWorld, interiorId, type) {
     pawnInvoke('Streamer_UpdateEx', 'ifffiii', this.id_, position.x, position.y, position.z,
                virtualWorld, interiorId, type);
+  }
+
+  // This should definitely NOT be here at ALL. Money should perhaps be a separate class since we
+  // have it serverside handled and you have cash- and bankmoney.
+  // Note: Because I don't know for how long this is going to be here I have added this method including a property on
+  // the mock_player.
+  giveCashMoney(amount) {
+    pawnInvoke('GivePlayerMoney', 'ii', this.id_, amount);
   }
 
 };

@@ -95,6 +95,12 @@ class KilltimeManager {
 
         const prizeMessage = playerName != null ? Message.format(Message.KILLTIME_ENJOY_PRIZE, prizeMoney) : '';
         this.announce_().announceToPlayers(Message.KILLTIME_WINNER, playerWithKillsText, prizeMessage);
+
+        if (playerName == null)
+            return;
+
+        const winner = server.playerManager.getByName(playerName);
+        winner.giveCashMoney(prizeMoney);
     }
 
     // Return the plater with the most kills, unless it is found twice. Then there is no winner.

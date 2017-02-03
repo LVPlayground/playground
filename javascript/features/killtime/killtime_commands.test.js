@@ -111,34 +111,9 @@ describe('Killtime', (it, beforeEach) => {
         assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_ADMIN_STOPPED));
         assert.equal(gunther.messages[1],
             Message.format(Message.ANNOUNCE_ALL, Message.format(Message.KILLTIME_WINNER, gunther.name + ' with 2 kills', prizeMessage)));
-    });
-
-    it('should show that at a manual stop it is stopped by an administrator with a winner', async(assert) => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-        const russell = server.playerManager.getById(1 /* Russell */);
-        const luce    = server.playerManager.getById(2 /* Luce    */);
-        const prizeMoney = 25000; // Correct money is handled and unittested in economy
-        const prizeMessage = Message.format(Message.KILLTIME_ENJOY_PRIZE, prizeMoney);
-
-        gunther.identify();
-        gunther.level = Player.LEVEL_ADMINISTRATOR;
-
-        assert.isTrue(gunther.issueCommand('/killtime start'));
-
-        luce.die(russell);
-        russell.die(gunther);
-        luce.die();
-        gunther.die(luce);
-        luce.die(gunther);
-
-        await server.clock.advance(61 * 1000);
-        gunther.clearMessages();
-        assert.isTrue(gunther.issueCommand('/killtime stop'));
-
-        assert.equal(gunther.messages.length, 2);
-        assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_ADMIN_STOPPED));
-        assert.equal(gunther.messages[1],
-            Message.format(Message.ANNOUNCE_ALL, Message.format(Message.KILLTIME_WINNER, gunther.name + ' with 2 kills', prizeMessage)));
+        assert.equal(gunther.cashMoney, prizeMoney);
+        assert.equal(russell.cashMoney, 0);
+        assert.equal(luce.cashMoney, 0);
     });
 
     it('should show that the time is over without a winner', async(assert) => {
@@ -158,7 +133,7 @@ describe('Killtime', (it, beforeEach) => {
             Message.format(Message.ANNOUNCE_ALL, Message.format(Message.KILLTIME_WINNER, 'nobody', '')));
     });
 
-    it('should show that the time is over wit a winner', async(assert) => {
+    it('should show that the time is over with a winner', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
         const luce    = server.playerManager.getById(2 /* Luce    */);
@@ -191,6 +166,9 @@ describe('Killtime', (it, beforeEach) => {
         assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_AUTO_STOPPED));
         assert.equal(gunther.messages[1],
             Message.format(Message.ANNOUNCE_ALL, Message.format(Message.KILLTIME_WINNER, russell.name + ' with 3 kills', prizeMessage)));
+        assert.equal(gunther.cashMoney, 0);
+        assert.equal(russell.cashMoney, prizeMoney);
+        assert.equal(luce.cashMoney, 0);
     });
 
     it('should register a kill 1 second before the minutely announceTopKiller', async(assert) => {

@@ -198,10 +198,7 @@ class EconomyCalculator {
 
         const calculatedPrizeMoney = startPrizeMoney * multiplier;
 
-        if (calculatedPrizeMoney < minimumPrizeMoney)
-            return minimumPrizeMoney;
-
-        return calculatedPrizeMoney;
+        return calculatedPrizeMoney < minimumPrizeMoney ? minimumPrizeMoney : calculatedPrizeMoney;
     }
 
     dispose() {

@@ -28,3 +28,9 @@ The returned price will be a value between $100,000 and $1,500,000.
 Returns whether |position| exists in a residential exclusion zone. These are the red areas on the
 [residential value map](https://sa-mp.nl/tools/visualize-map/) that are considered to be of high
 strategic value.
+
+
+## API: calculateKilltimeAwardPrize(participants, kills)
+Calculates the prizemoney for the winner of the killtimeminigame. It is calculated in the following
+way: participants multiplied by the kills from this killtimesession multiplied by 1000. In all
+times at least $25,000 will be given, unless the calculation has a higher result.

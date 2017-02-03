@@ -5,19 +5,13 @@
 const Economy = require('features/economy/economy.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
 const Killtime = require('features/killtime/killtime.js');
-const KilltimeCommands = require('features/killtime/killtime_commands.js');
-const KilltimeManager = require('features/killtime/killtime_manager.js');
 
 describe('Killtime', (it, beforeEach) => {
-    let killtime = null;
-
     beforeEach(() => {
         server.featureManager.registerFeaturesForTests({
             announce: MockAnnounce,
             economy: Economy,
-            killtime: Killtime,
-            ktManager: KilltimeManager,
-            ktCommands: KilltimeCommands
+            killtime: Killtime
         });
 
         server.featureManager.loadFeature('killtime');
@@ -32,8 +26,7 @@ describe('Killtime', (it, beforeEach) => {
         assert.isTrue(gunther.issueCommand('/killtime'));
 
         assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0],
-            Message.format(Message.COMMAND_USAGE, Message.KILLTIME_USAGE));
+        assert.equal(gunther.messages[0], Message.format(Message.COMMAND_USAGE, Message.KILLTIME_USAGE));
     });
 
     it('should not be able to be started for 1 minute by a registered administrator', assert => {
@@ -44,7 +37,6 @@ describe('Killtime', (it, beforeEach) => {
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
         assert.isTrue(gunther.issueCommand('/killtime start ' + minutesToRun));
-
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.KILLTIME_MINIMUM_TWO_MINUTES);
     });
@@ -60,8 +52,7 @@ describe('Killtime', (it, beforeEach) => {
         assert.isTrue(gunther.issueCommand('/killtime start'));
 
         assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0],
-            Message.format(Message.ANNOUNCE_ALL, killtimeMessage));
+        assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, killtimeMessage));
     });
 
     it('should be able to be started for 3 minutes by a registered administrator', assert => {
@@ -75,8 +66,7 @@ describe('Killtime', (it, beforeEach) => {
         assert.isTrue(gunther.issueCommand('/killtime start ' + minutesToRun));
 
         assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0],
-            Message.format(Message.ANNOUNCE_ALL, killtimeMessage));
+        assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, killtimeMessage));
     });
 
     it('should show that at a manual stop it is stopped by an administrator without a winner', assert => {
@@ -90,10 +80,9 @@ describe('Killtime', (it, beforeEach) => {
         assert.isTrue(gunther.issueCommand('/killtime stop'));
 
         assert.equal(gunther.messages.length, 2);
-        assert.equal(gunther.messages[0],
-            Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_ADMIN_STOPPED));
+        assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_ADMIN_STOPPED));
         assert.equal(gunther.messages[1],
-            Message.format(Message.ANNOUNCE_ALL, Message.format(Message.KILLTIME_WINNER, 'no-one', '')));
+            Message.format(Message.ANNOUNCE_ALL, Message.format(Message.KILLTIME_WINNER, 'nobody', '')));
     });
 
     it('should show that at a manual stop it is stopped by an administrator with a winner', async(assert) => {
@@ -119,8 +108,7 @@ describe('Killtime', (it, beforeEach) => {
         assert.isTrue(gunther.issueCommand('/killtime stop'));
 
         assert.equal(gunther.messages.length, 2);
-        assert.equal(gunther.messages[0],
-            Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_ADMIN_STOPPED));
+        assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_ADMIN_STOPPED));
         assert.equal(gunther.messages[1],
             Message.format(Message.ANNOUNCE_ALL, Message.format(Message.KILLTIME_WINNER, gunther.name + ' with 2 kills', prizeMessage)));
     });
@@ -148,8 +136,7 @@ describe('Killtime', (it, beforeEach) => {
         assert.isTrue(gunther.issueCommand('/killtime stop'));
 
         assert.equal(gunther.messages.length, 2);
-        assert.equal(gunther.messages[0],
-            Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_ADMIN_STOPPED));
+        assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_ADMIN_STOPPED));
         assert.equal(gunther.messages[1],
             Message.format(Message.ANNOUNCE_ALL, Message.format(Message.KILLTIME_WINNER, gunther.name + ' with 2 kills', prizeMessage)));
     });
@@ -166,10 +153,9 @@ describe('Killtime', (it, beforeEach) => {
         await server.clock.advance(60 * 1000);
 
         assert.equal(gunther.messages.length, 2);
-        assert.equal(gunther.messages[0],
-            Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_AUTO_STOPPED));
+        assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_AUTO_STOPPED));
         assert.equal(gunther.messages[1],
-            Message.format(Message.ANNOUNCE_ALL, Message.format(Message.KILLTIME_WINNER, 'no-one', '')));
+            Message.format(Message.ANNOUNCE_ALL, Message.format(Message.KILLTIME_WINNER, 'nobody', '')));
     });
 
     it('should show that the time is over wit a winner', async(assert) => {
@@ -202,8 +188,7 @@ describe('Killtime', (it, beforeEach) => {
         await server.clock.advance(60 * 1000);
 
         assert.equal(gunther.messages.length, 2);
-        assert.equal(gunther.messages[0],
-            Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_AUTO_STOPPED));
+        assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_AUTO_STOPPED));
         assert.equal(gunther.messages[1],
             Message.format(Message.ANNOUNCE_ALL, Message.format(Message.KILLTIME_WINNER, russell.name + ' with 3 kills', prizeMessage)));
     });
@@ -226,8 +211,7 @@ describe('Killtime', (it, beforeEach) => {
         await server.clock.advance(1 * 1000);
 
         assert.equal(russell.messages.length, 1);
-        assert.equal(russell.messages[0],
-            Message.format(Message.ANNOUNCE_ALL, killtimeMessage));
+        assert.equal(russell.messages[0], Message.format(Message.ANNOUNCE_ALL, killtimeMessage));
     });
 
     it('should support live reloading, and properly clean up after itself', assert => {

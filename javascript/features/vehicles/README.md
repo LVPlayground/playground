@@ -30,6 +30,8 @@ Furthermore, administrators are able to use the following commands:
   * **/v reset**: Resets the server to its original vehicle layout.
   * **/v [player]? access [players/vips/administrators/management]?**: Restricts the vehicle to a
     particular `level`.
+  * **/v [player]? color [0-255]? [0-255]?**: Displays or updates the colors of either your own vehicle, or
+    that of `player`.
   * **/v [player]? delete**: Deletes either your own vehicle, or that of `player`.
   * **/v [player]? health [0-1000]?**: Displays or updates the health of either your own vehicle, or
     that of `player`.

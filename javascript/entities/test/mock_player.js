@@ -474,7 +474,7 @@ class MockPlayer {
     streamerObjectsUpdated() { return this.streamerObjectsUpdated_; }
 
     get cashMoney() { return this.cashMoney_; }
-    giveCashMoney(amount) { this.cashMoney_ = amount;}
+    giveCashMoney(amount) { this.cashMoney_ += amount;}
 }
 
 exports = MockPlayer;

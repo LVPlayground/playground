@@ -15,7 +15,7 @@ class ReportCommands {
         server.commandManager.buildCommand('report')
             .parameters([{ name: 'name/id', type: CommandBuilder.PLAYER_PARAMETER },
                          { name: 'reason', type: CommandBuilder.SENTENCE_PARAMETER }])
-            .build(ReportCommands.prototype.onReportPlayerCommand.bind(this))
+            .build(ReportCommands.prototype.onReportPlayerCommand.bind(this));
     }
 
     playerIsReportedOneMinuteAgoOrLess(reportedPlayer) {

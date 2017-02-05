@@ -81,6 +81,35 @@ class PlayerFavours extends Feature {
         });
 
         // -----------------------------------------------------------------------------------------
+        // Xanland (https://sa-mp.nl/players/423/xanland.html)
+
+        //this.objectRemover_.load('data/favours/xanland_lvairport_entrance.json');
+        //this.addXanlandObject_();
+
+        //server.commandManager.buildCommand('xanlandobject')
+        //    .build(PlayerFavours.prototype.onXanlandObjectCommand.bind(this));
+        // -----------------------------------------------------------------------------------------
+    }
+
+    onXanlandObjectCommand(player) {
+        if (this.isXanlandObjectAdded_) {
+            this.removeXanlandObject_();
+            player.sendMessage('Done, removed!');
+        } else {
+            this.addXanlandObject_();
+            player.sendMessage('Done, added!');
+        }
+    }
+
+    addXanlandObject_() {
+        this.xanlandObject_ = ObjectGroup.create('data/favours/xanland_lvairport_entrance.json', 0, 0);
+        this.isXanlandObjectAdded_ = true;
+    }
+
+    removeXanlandObject_() {
+        this.xanlandObject_.dispose();
+        this.xanlandObject_ = null;
+        this.isXanlandObjectAdded_ = false;
     }
 
     // This feature has no public API.
@@ -99,6 +128,9 @@ class PlayerFavours extends Feature {
 
         this.objectRemover_.dispose();
         this.objectRemover_ = null;
+
+        //this.removeXanlandObject_();
+        //server.commandManager.removeCommand('xanlandobject');
     }
 }
 

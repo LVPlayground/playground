@@ -154,6 +154,15 @@ class KilltimeManager {
     // Cleans up the state created by this class
     dispose() {
         this.stop(null);
+
+        this.announce_.dispose();
+        this.announce_ = null;
+
+        this.economy_.dispose();
+        this.economy_ = null;
+
+        this.callbacks_.dispose();
+        this.callbacks_ = null;
     }
 }
 

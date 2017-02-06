@@ -155,10 +155,8 @@ class KilltimeManager {
     dispose() {
         this.stop(null);
 
-        this.announce_.dispose();
         this.announce_ = null;
 
-        this.economy_.dispose();
         this.economy_ = null;
 
         this.callbacks_.dispose();

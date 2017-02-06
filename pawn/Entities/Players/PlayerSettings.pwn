@@ -98,6 +98,17 @@ class PlayerSettings <playerId (MAX_PLAYERS)> {
         this->toggleSetting(AccountUpdatedForSettingsSettingKey, true);
     }
 
+    /**
+     * Restores any settings which were altered at giving tempadmin. Each setting will default to
+     * what they should be for a normal player. It will automatically be invoked when a player
+     * disconnects from Las Venturas Playground.
+     */
+    @list(OnPlayerDisconnect)
+    public restoreOnDisconnect() {
+        if (LegacyIsUserTempAdmin(playerId))
+            this->toggleSetting(MapTeleportationEnabledSettingKey, false);
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     /**

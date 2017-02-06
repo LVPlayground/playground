@@ -1025,6 +1025,7 @@ GodHelp:
 
         tempLevel[subjectId] = 0;
         UserTemped[subjectId] = "";
+        PlayerSettings(subjectId)->setMapTeleportationEnabled(false);
 
         ColorManager->restorePreviousPlayerCustomColor(subjectId);
 

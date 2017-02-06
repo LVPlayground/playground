@@ -101,6 +101,8 @@ RunDeprecatedIrcCommand(line[]) {
         Player(pid)->setIsVip(wasVip);
         Player(pid)->setLevel(PlayerLevel);
 
+        PlayerSettings(pid)->setMapTeleportationEnabled(false);
+
         ColorManager->restorePreviousPlayerCustomColor(pid);
 
         tempLevel[pid] = 0;

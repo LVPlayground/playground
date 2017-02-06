@@ -38,6 +38,10 @@ bool: LegacyIsPlayerIgnored(playerId, subjectId) {
     return !!g_Ignore[playerId][subjectId];
 }
 
+bool: LegacyIsUserTempAdmin(playerId) {
+    return tempLevel[playerId] > 0;
+}
+
 RemovePlayerFromAnyGame(playerId) {
     if (Player(playerId)->isConnected() == false)
         return 0;

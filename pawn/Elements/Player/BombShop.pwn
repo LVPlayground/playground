@@ -105,7 +105,6 @@ CBomb__CheckPlayer(i)
                 }
             #endif
 
-            // Player using their /inf car can't add a bomb because of abuse
             if (!IsPlayerInMainWorld(i)) {
                 ShowBoxForPlayer(i, "Sorry, the BombShop is only available in the main world. Use /world 0!");
                 RemovePlayerFromBombShop(i);
@@ -487,7 +486,7 @@ CBomb__EngineCheck(playerid,vehicleid,i)
             DisarmVehicle(vehicleid,1,i); // explode the vehicle ;)
             new str[256];
             format(str,256,"Your vehicle engine bomb exploded on %s.",PlayerName(playerid));
-            SetPlayerHealth(playerid, 0);
+            SetPlayerHealthIfGodmodeDisabled(playerid, 0);
 
             if (playerid != VehicleBomb[vehicleid][armer]) {
                 validKillerId[playerid] = VehicleBomb[vehicleid][armer];
@@ -878,28 +877,28 @@ DisarmVehicle(vehicleid, explode=1, i=-1)
                 switch(VehicleBomb[vehicleid][ExplosionType])
                 {
                     case EXPLODE_TYPE_SMALL: {
-                        SetPlayerHealth(i, hp-40);
+                        SetPlayerHealthIfGodmodeDisabled(i, hp-40);
                         if (i != VehicleBomb[vehicleid][armer]) {
                             validKillerId[i] = VehicleBomb[vehicleid][armer];
                             validReasonId[i] = WEAPON_EXPLOSION;
                         }
                     }
                     case EXPLODE_TYPE_MEDIUM: {
-                        SetPlayerHealth(i, hp-80);
+                        SetPlayerHealthIfGodmodeDisabled(i, hp-80);
                         if (i != VehicleBomb[vehicleid][armer]) {
                             validKillerId[i] = VehicleBomb[vehicleid][armer];
                             validReasonId[i] = WEAPON_EXPLOSION;
                         }
                     }
                     case EXPLODE_TYPE_LARGE: {
-                        SetPlayerHealth(i, 0);
+                        SetPlayerHealthIfGodmodeDisabled(i, 0);
                         if (i != VehicleBomb[vehicleid][armer]) {
                             validKillerId[i] = VehicleBomb[vehicleid][armer];
                             validReasonId[i] = WEAPON_EXPLOSION;
                         }
                     }
                     case EXPLODE_TYPE_MASSIVE: {
-                        SetPlayerHealth(i, 0);
+                        SetPlayerHealthIfGodmodeDisabled(i, 0);
                         if (i != VehicleBomb[vehicleid][armer]) {
                             validKillerId[i] = VehicleBomb[vehicleid][armer];
                             validReasonId[i] = WEAPON_EXPLOSION;
@@ -928,28 +927,28 @@ DisarmVehicle(vehicleid, explode=1, i=-1)
                 switch(VehicleBomb[vehicleid][ExplosionType])
                 {
                 case EXPLODE_TYPE_SMALL: {
-                    SetPlayerHealth(i, hp-40);
+                    SetPlayerHealthIfGodmodeDisabled(i, hp-40);
                     if (i != VehicleBomb[vehicleid][armer]) {
                         validKillerId[i] = VehicleBomb[vehicleid][armer];
                         validReasonId[i] = WEAPON_EXPLOSION;
                     }
                 }
                 case EXPLODE_TYPE_MEDIUM: {
-                    SetPlayerHealth(i, hp-80);
+                    SetPlayerHealthIfGodmodeDisabled(i, hp-80);
                     if (i != VehicleBomb[vehicleid][armer]) {
                         validKillerId[i] = VehicleBomb[vehicleid][armer];
                         validReasonId[i] = WEAPON_EXPLOSION;
                     }
                 }
                 case EXPLODE_TYPE_LARGE: {
-                    SetPlayerHealth(i, 0);
+                    SetPlayerHealthIfGodmodeDisabled(i, 0);
                     if (i != VehicleBomb[vehicleid][armer]) {
                         validKillerId[i] = VehicleBomb[vehicleid][armer];
                         validReasonId[i] = WEAPON_EXPLOSION;
                     }
                 }
                 case EXPLODE_TYPE_MASSIVE: {
-                    SetPlayerHealth(i, 0);
+                    SetPlayerHealthIfGodmodeDisabled(i, 0);
                     if (i != VehicleBomb[vehicleid][armer]) {
                             validKillerId[i] = VehicleBomb[vehicleid][armer];
                             validReasonId[i] = WEAPON_EXPLOSION;
@@ -1001,4 +1000,10 @@ IsVehicleBombShopValid(vehicleid)
         return 0;
     }
     return 1;
+}
+
+// Helper function which changes the health of a player in case godmode is DISABLED
+SetPlayerHealthIfGodmodeDisabled(playerId, Float:healthAmount) {
+    if (!g_bPlayerGodmode[playerId])
+        SetPlayerHealth(playerId, healthAmount);
 }

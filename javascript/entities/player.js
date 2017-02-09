@@ -65,7 +65,6 @@ class Player {
   set name(value) { this.name_ = value; pawnInvoke('SetPlayerName', 'is', this.id_, value); }
 
   // Returns the IP address of this player. This attribute is read-only.
-  get ipAddress() { return this.ipAddress_; }
   get ip() { return this.ipAddress_; }
 
   // Returns the serial of the player. Read-only and note that it is not unique per player!

@@ -96,10 +96,10 @@ class ActivityLog extends Feature {
     if (!player || player.isNpc())
       return;
 
-    const numericIpAddress = this.ip2long(player.ipAddress);
+    const numericIpAddress = this.ip2long(player.ip);
     const hashedGpci = Murmur3Hash.generateHash(player.gpci);
 
-    this.announce_().announceToIRC(JoinIpGpciTag, player.id, player.ipAddress, player.name, hashedGpci);
+    this.announce_().announceToIRC(JoinIpGpciTag, player.id, player.ip, player.name, hashedGpci);
 
     this.recorder_.getIdFromWriteInsertSessionAtConnect(player.name, numericIpAddress, hashedGpci).then (result => {
       this.playerSessionIdMap_.set(player.id, result.sessionId);

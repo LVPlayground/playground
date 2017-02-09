@@ -970,7 +970,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         // Does the player own the airport?
         if (endid != playerid)
-            return 0;
+            return 1;
 
         // Have they used the correct params?
         tmp = strtok(cmdtext, idx);

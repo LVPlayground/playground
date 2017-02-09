@@ -3,6 +3,11 @@
 // be found in the LICENSE file.
 
 OnPlayerLVPDisconnect(playerId, reason) {
+    new bool: wasVip = Player(playerId)->isLoggedIn() ? (AccountData(playerId)->isVip())
+                                                      : false;
+    if (!wasVip)
+        PlayerSettings(playerId)->setTeleportationDisabled(false);
+
     if (reason != 2)
         CSave__OnPlayerDisconnect(playerId);
 

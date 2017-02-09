@@ -77,38 +77,29 @@ RunDeprecatedIrcCommand(line[]) {
 
     if(strcmp(cmd,"taketempadmin",true) == 0)
     {
-        new tmp[256], szName [256];
-        tmp = strtok(line, idx);
-        if(!tmp[0]) return AddEcho("Correct Usage: !taketempadmin <playerid>");
+        new temp[256], ircUsername[64], message[256];
+        temp = strtok(line, idx);
 
-        format(szName, 256, "%s", tmp);
-        tmp = strtok(line, idx);
+        format(ircUsername, sizeof(ircUsername), "%s", temp);
+        temp = strtok(line, idx);
 
-        new pid = strval(tmp);
-        if(!Player(pid)->isConnected())
+        new playerId = strval(temp);
+        if(!Player(playerId)->isConnected())
         {
-            format(string,sizeof(string),"[notconnected] %d",pid);
-            AddEcho(string);
+            format(message, sizeof(message), "%d", playerId);
+            IRC->broadcast(NotConnectedIrcMessage, message);
             return 1;
         }
-        new str[256];
-        format(str,256,"%s (IRC) has taken admin rights from %s (Id:%d).", szName, PlayerName (pid), pid);
-        Admin(Player::InvalidId, str);
 
-        new const bool: wasVip = Player(pid)->isLoggedIn() ? (AccountData(pid)->isVip())
-                                                           : false;
+        TakeTempAdministratorRightsFromPlayer(playerId);
 
-        Player(pid)->setIsVip(wasVip);
-        Player(pid)->setLevel(PlayerLevel);
+        format(message, sizeof(message), "%s is no longer an administrator.",
+               Player(playerId)->nicknameString());
+        AddEcho(message);
 
-        PlayerSettings(pid)->setMapTeleportationEnabled(false);
-
-        ColorManager->restorePreviousPlayerCustomColor(pid);
-
-        tempLevel[pid] = 0;
-        UserTemped [pid] = "";
-        format(str,256,"%s is no longer an administrator.",PlayerName(pid));
-        AddEcho(str); 
+        format(message, sizeof(message), "%s (IRC) has taken admin rights from %s (Id:%d).",
+               ircUsername, Player(playerId)->nicknameString(), playerId);
+        Admin(Player::InvalidId, message);
         return 1;
     }
 

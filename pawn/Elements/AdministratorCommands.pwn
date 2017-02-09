@@ -1015,19 +1015,7 @@ GodHelp:
             return 1;
         }
 
-        new const bool: wasVip = Player(subjectId)->isLoggedIn() ? (AccountData(subjectId)->isVip())
-                                                                 : false;
-
-        Player(subjectId)->setLevel(PlayerLevel);
-        Player(subjectId)->setIsVip(wasVip);
-
-        UndercoverAdministrator(subjectId)->setIsUndercoverAdministrator(false);
-
-        tempLevel[subjectId] = 0;
-        UserTemped[subjectId] = "";
-        PlayerSettings(subjectId)->setMapTeleportationEnabled(false);
-
-        ColorManager->restorePreviousPlayerCustomColor(subjectId);
+        TakeTempAdministratorRightsFromPlayer(subjectId, true /** fromInGame **/);
 
         format(g_message, sizeof(g_message), "%s (Id:%d) is no admin anymore.",
             Player(subjectId)->nicknameString(), subjectId);

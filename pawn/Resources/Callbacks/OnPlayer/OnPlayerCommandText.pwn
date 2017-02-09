@@ -463,6 +463,11 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
+        if(PlayerSpectateHandler->isSpectating(playerid)) {
+            ShowBoxForPlayer(playerid, "You can't do this while spectating. Please stop spectating.");
+            return 1;
+        }
+
         preventKillLamers[playerid] = 1;
         SetPlayerHealth(playerid, 0.0);
 

@@ -91,7 +91,7 @@ class MockPlayer {
     get name() { return this.name_; }
     set name(value) { this.name_ = value; }
 
-    get ipAddress() { return this.ipAddress_; }
+    get ip() { return this.ipAddress_; }
 
     get level() { return this.level_; }
     set level(value) { this.level_ = value; }

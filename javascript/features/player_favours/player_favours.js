@@ -83,33 +83,40 @@ class PlayerFavours extends Feature {
         // -----------------------------------------------------------------------------------------
         // Xanland (https://sa-mp.nl/players/423/xanland.html)
 
-        //this.objectRemover_.load('data/favours/xanland_lvairport_entrance.json');
-        //this.addXanlandObject_();
+        this.objectRemover_.load('data/favours/xanland_lvairport_entrance.json');
+        this.xanlandObjectDetails_ = JSON.parse(readFile('data/favours/xanland_lvairport_entrance.json'))[0];
+        this.xanlandObjectDetails_.position = new Vector(...this.xanlandObjectDetails_.position);
+        this.xanlandObjectDetails_.rotation = new Vector(...this.xanlandObjectDetails_.rotation);
+        this.xanlandObjectEntities_ = new ScopedEntities();
+        this.xanlandObject_ = this.xanlandObjectEntities_.createObject(this.xanlandObjectDetails_);
+        this.showXanlandObject_();
 
-        //server.commandManager.buildCommand('xanlandobject')
-        //    .build(PlayerFavours.prototype.onXanlandObjectCommand.bind(this));
+        server.commandManager.buildCommand('xanlandobject')
+            .restrict(Player.LEVEL_MANAGEMENT)
+            .build(PlayerFavours.prototype.onXanlandObjectCommand.bind(this));
         // -----------------------------------------------------------------------------------------
     }
 
     onXanlandObjectCommand(player) {
-        if (this.isXanlandObjectAdded_) {
-            this.removeXanlandObject_();
-            player.sendMessage('Done, removed!');
+        if (this.isXanlandObjectVisible_) {
+            this.hideXanlandObject_();
+            player.sendMessage('Done, hidden!');
         } else {
-            this.addXanlandObject_();
-            player.sendMessage('Done, added!');
+            this.showXanlandObject_();
+            player.sendMessage('Done, shown!');
         }
     }
 
-    addXanlandObject_() {
-        this.xanlandObject_ = ObjectGroup.create('data/favours/xanland_lvairport_entrance.json', 0, 0);
-        this.isXanlandObjectAdded_ = true;
+    showXanlandObject_() {
+        this.xanlandObject_.position = this.xanlandObjectDetails_.position;
+        this.isXanlandObjectVisible_ = true;
     }
 
-    removeXanlandObject_() {
-        this.xanlandObject_.dispose();
-        this.xanlandObject_ = null;
-        this.isXanlandObjectAdded_ = false;
+    hideXanlandObject_() {
+        const position = new Vector(this.xanlandObjectDetails_.position.x, this.xanlandObjectDetails_.position.y,
+                                    3); // Just below groundlevel
+        this.xanlandObject_.position = position;
+        this.isXanlandObjectVisible_ = false;
     }
 
     // This feature has no public API.
@@ -129,8 +136,13 @@ class PlayerFavours extends Feature {
         this.objectRemover_.dispose();
         this.objectRemover_ = null;
 
-        //this.removeXanlandObject_();
-        //server.commandManager.removeCommand('xanlandobject');
+        this.hideXanlandObject_();
+        this.xanlandObjectDetails_ = null;
+        this.xanlandObject_.dispose();
+        this.xanlandObject_ = null;
+        this.xanlandObjectEntities_.dispose();
+        this.xanlandObjectEntities_ = null;
+        server.commandManager.removeCommand('xanlandobject');
     }
 }
 

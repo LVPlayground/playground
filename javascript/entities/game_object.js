@@ -46,13 +46,13 @@ class GameObject {
     // Gets or sets the position of the object in the world.
     get position() { return new Vector(...pawnInvoke('GetDynamicObjectPos', 'iFFF', this.id_)); }
     set position(value) {
-        pawnInvoke('GetDynamicObjectPos', 'ifff', this.id_, value.x, value.y, value.z);
+        pawnInvoke('SetDynamicObjectPos', 'ifff', this.id_, value.x, value.y, value.z);
     }
 
     // Gets or sets the rotation, in 3D space, of the object in the world.
     get rotation() { return new Vector(...pawnInvoke('GetDynamicObjectRot', 'iFFF', this.id_)); }
     set rotation(value) {
-        pawnInvoke('GetDynamicObjectRot', 'ifff', this.id_, value.x, value.y, value.z);
+        pawnInvoke('SetDynamicObjectRot', 'ifff', this.id_, value.x, value.y, value.z);
     }
 
     // Gets the draw distance of the object.

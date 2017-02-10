@@ -2,6 +2,14 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
+#define DIALOG_COMMANDS_MAIN                4001
+#define DIALOG_COMMANDS_COMMUNICATION       4002
+#define DIALOG_COMMANDS_TELEPORTATION       4003
+#define DIALOG_COMMANDS_FIGHTING            4004
+#define DIALOG_COMMANDS_MONEY               4005
+#define DIALOG_JUMP_RACES                   4035
+#define DIALOG_TELES_TUNE_SHOPS             4037
+
 deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
     switch (dialogid) {
         case DIALOG_DRIVEBY: {

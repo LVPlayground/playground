@@ -41,11 +41,6 @@ new __iCMDIDX;
  *  Dialog IDs
  */
 #define DIALOG_COMMANDS_LIST                4000
-#define DIALOG_COMMANDS_MAIN                4001
-#define DIALOG_COMMANDS_COMMUNICATION       4002
-#define DIALOG_COMMANDS_TELEPORTATION       4003
-#define DIALOG_COMMANDS_FIGHTING            4004
-#define DIALOG_COMMANDS_MONEY               4005
 #define DIALOG_MINIGAMES                    4007
 #define DIALOG_DRIVEBY                      4008
 #define DIALOG_GYM_FIGHT                    4009
@@ -60,9 +55,7 @@ new __iCMDIDX;
 #define DIALOG_FIGHTCLUB_DUEL_INVITE        4018
 #define DIALOG_FIGHTCLUB_WATCH              4019
 #define DIALOG_DERBY_MAIN                   4033
-#define DIALOG_JUMP_RACES                   4035
 #define DIALOG_TELES_MAIN                   4036
-#define DIALOG_TELES_TUNE_SHOPS             4037
 #define DIALOG_TAXI_LOCATIONS               4038
 #define DIALOG_MINIGAME_DM                  4039
 #define DIALOG_JUMPS_LIST                   4041

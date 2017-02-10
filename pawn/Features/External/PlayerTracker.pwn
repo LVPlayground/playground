@@ -104,8 +104,6 @@ class PlayerTracker {
             "WHERE player_id = %d",
             nickname, playerId);
 
-        printf("%s", m_queryBuffer);
-
         Database->query(m_queryBuffer, "", 0);
     }
 

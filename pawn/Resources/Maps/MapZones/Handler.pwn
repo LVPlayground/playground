@@ -162,7 +162,7 @@ GetPlayerMapZoneRaceRank(playerid, iMapID)
 
     for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
     {
-        if(!Player(i)->isConnected() || IsPlayerNPC(i))
+        if(!Player(i)->isConnected() || Player(i)->isNonPlayerCharacter())
         {
             continue;
         }
@@ -384,7 +384,7 @@ ProcessMapZoneRaces()
         {
             for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
             {
-                if(!Player(i)->isConnected() || IsPlayerNPC(i))
+                if(!Player(i)->isConnected() || Player(i)->isNonPlayerCharacter())
                     continue;
 
                 // Is this player taking part in the map zone race?
@@ -426,7 +426,7 @@ ProcessMapZoneRaces()
             // We may also need to start the race and show the appropriate checkpoint.
             for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
             {
-                if(!Player(i)->isConnected() || IsPlayerNPC(i))
+                if(!Player(i)->isConnected() || Player(i)->isNonPlayerCharacter())
                 {
                     continue;
                 }
@@ -603,7 +603,7 @@ GetNumberOfPlayersInMapZoneRace(iMapID)
         if(!Player(i)->isConnected())
             continue;
 
-        if(IsPlayerNPC(i))
+        if(Player(i)->isNonPlayerCharacter())
             continue;
 
         if(!Map_Zone[iMapID][Map_Player_In_Race][i])

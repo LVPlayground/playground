@@ -102,7 +102,7 @@ class NewsController {
      */
     @list(OnPlayerConnect)
     public onPlayerConnect(playerId) {
-        if (IsPlayerNPC(playerId))
+        if (Player(playerId)->isNonPlayerCharacter())
             return;
 
         for (new index = 0; index < NewsController::MaximumVisibleNewsMessages; ++index){

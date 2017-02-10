@@ -171,7 +171,7 @@ stock CTheft__MaybeMerchantSpawn(playerId, const characterName[]) {
 // or applies an animation when he's waiting for the delivery. Called every five seconds.
 CTheft__CheckMerchantStatus() {
     if (GTA_RemoveMerchantTime >= Time->currentTime()) {
-        if (GTA_Vehicle == -1 /* inactive */ && IsPlayerNPC(GTA_Merchant)) {
+        if (GTA_Vehicle == -1 /* inactive */ && Player(GTA_Merchant)->isNonPlayerCharacter()) {
             Kick(GTA_Merchant);
 
             GTA_Merchant = Player::InvalidId;
@@ -180,7 +180,7 @@ CTheft__CheckMerchantStatus() {
         GTA_RemoveMerchantTime = -1;
     }
 
-    if (IsPlayerNPC(GTA_Merchant))
+    if (Player(GTA_Merchant)->isNonPlayerCharacter())
         ApplyAnimation(GTA_Merchant, "DEALER", "DEALER_IDLE_01", 4.1, 0, 1, 1, 1, 1, 1);
 }
 
@@ -228,7 +228,7 @@ CTheft__EnterCheckpoint(playerId) {
 
     GivePlayerMoney(playerId, GTA_Value);  // economy: GrandTheftAutoRandomVehicleValue
 
-    if (IsPlayerNPC(GTA_Merchant)) {
+    if (Player(GTA_Merchant)->isNonPlayerCharacter()) {
         SetPlayerChatBubble(GTA_Merchant, "Thanks for delivering the vehicle!", COLOR_LIGHTBLUE, 300, 9999);
         ApplyAnimation(GTA_Merchant, "CLOTHES", "CLO_Buy", 4.1, 0, 1, 1, 1, 1, 1);
         ApplyAnimation(GTA_Merchant, "CLOTHES", "CLO_Buy", 4.1, 0, 1, 1, 1, 1, 1);

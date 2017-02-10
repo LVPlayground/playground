@@ -28,7 +28,7 @@ class ZoneManager {
      */
     @list(OnPlayerConnect)
     public onPlayerConnect(playerId) {
-        if (IsPlayerNPC(playerId) == 0)
+        if (!Player(playerId)->isNonPlayerCharacter())
             zone_player_start_tracking(playerId);
     }
 
@@ -40,7 +40,7 @@ class ZoneManager {
      */
     @list(OnPlayerDisconnect)
     public onPlayerDisconnect(playerId) {
-        if (IsPlayerNPC(playerId) == 0)
+        if (!Player(playerId)->isNonPlayerCharacter())
             zone_player_stop_tracking(playerId);
     }
 

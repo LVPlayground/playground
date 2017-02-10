@@ -136,7 +136,7 @@ native LimitPlayerMarkerRadius(Float:marker_radius);
 
 // Npc
 native ConnectNPC(name[], script[]);
-native IsPlayerNPC(playerid);
+native IsPlayerNPC(playerid); // Please use: Player(playerid)->isNonPlayerCharacter()
 
 // Admin
 native IsPlayerAdmin(playerid);

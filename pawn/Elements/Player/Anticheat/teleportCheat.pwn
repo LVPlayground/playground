@@ -77,7 +77,7 @@ static Float:fSobeitCheatTeles[46][3]=
 TeleportCheatProcess(playerid)
 {
     // Is it an actual player?
-    if(IsPlayerNPC(playerid))
+    if(Player(playerid)->isNonPlayerCharacter())
     {
         return;
     }

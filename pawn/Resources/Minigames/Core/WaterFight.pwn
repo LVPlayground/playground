@@ -130,7 +130,7 @@ waterFightStart()
             continue;
         }
 
-        if(IsPlayerNPC(i))
+        if(Player(i)->isNonPlayerCharacter())
         {
             continue;
         }
@@ -192,7 +192,7 @@ waterFightProcess()
                         continue;
                     }
 
-                    if(IsPlayerNPC(i))
+                    if(Player(i)->isNonPlayerCharacter())
                     {
                         continue;
                     }
@@ -232,7 +232,7 @@ waterFightProcess()
                 continue;
             }
 
-            if(IsPlayerNPC(i))
+            if(Player(i)->isNonPlayerCharacter())
             {
                 continue;
             }
@@ -280,7 +280,7 @@ waterFightProcess()
                     continue;
                 }
 
-                if(IsPlayerNPC(i))
+                if(Player(i)->isNonPlayerCharacter())
                 {
                     continue;
                 }
@@ -302,7 +302,7 @@ waterFightProcess()
                 continue;
             }
 
-            if(IsPlayerNPC(i))
+            if(Player(i)->isNonPlayerCharacter())
             {
                 continue;
             }
@@ -338,7 +338,7 @@ waterFightProcess()
                     continue;
                 }
 
-                if(IsPlayerNPC(i))
+                if(Player(i)->isNonPlayerCharacter())
                 {
                     continue;
                 }

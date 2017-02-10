@@ -109,7 +109,7 @@ islandDMGetTeamCount(iTeamID)
 
     for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
     {
-        if(!Player(i)->isConnected() || IsPlayerNPC(i))
+        if(!Player(i)->isConnected() || Player(i)->isNonPlayerCharacter())
         {
             continue;
         }
@@ -165,7 +165,7 @@ islandDMRemovePlayer(playerid)
     {
         for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
         {
-            if(!Player(i)->isConnected() || IsPlayerNPC(i))
+            if(!Player(i)->isConnected() || Player(i)->isNonPlayerCharacter())
             {
                 continue;
             }
@@ -199,7 +199,7 @@ islandDMRemovePlayer(playerid)
 
         for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
         {
-            if(!Player(i)->isConnected() || IsPlayerNPC(i))
+            if(!Player(i)->isConnected() || Player(i)->isNonPlayerCharacter())
             {
                 continue;
             }
@@ -252,7 +252,7 @@ islandDMToggleBlip(playerid, bool:show)
     // we may have to hide the map icons & nametags to!
     for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
     {
-        if(!Player(i)->isConnected() || IsPlayerNPC(i) || i == playerid)
+        if(!Player(i)->isConnected() || Player(i)->isNonPlayerCharacter() || i == playerid)
         {
             continue;
         }

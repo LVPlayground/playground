@@ -29,6 +29,8 @@ class PlayerManager {
             'playerstatechange', PlayerManager.prototype.onPlayerStateChange.bind(this));
         this.callbacks_.addEventListener(
             'playerdisconnect', PlayerManager.prototype.onPlayerDisconnect.bind(this));
+        this.callbacks_.addEventListener(
+            'playerguestlogin', PlayerManager.prototype.onPlayerGuestLogin.bind(this));
     }
 
     // Gets the number of players currently connected to the server.
@@ -186,6 +188,18 @@ class PlayerManager {
         player.undercover_ = !!event.undercover;
 
         this.notifyObservers('onPlayerLogin', player, event);
+    }
+
+    // Called when a player decides to play as guest. This changes the name of the player so the
+    // player-object needs to be updated to have the new name.
+    onPlayerGuestLogin(event) {
+        const player = this.players_.get(event.playerId);
+        if (!player)
+            return;  // the event has been received for an invalid player
+
+        player.name_ = event.guestPlayerName;
+
+        this.notifyObservers('onPlayerGuestLogin', player, event);
     }
 
     // Called when a player's state changes. Handles players entering and leaving vehicles, and

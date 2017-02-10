@@ -99,10 +99,12 @@ class PlayerTracker {
         GetPlayerName(playerId, nickname, sizeof(nickname));
 
         format(m_queryBuffer, sizeof(m_queryBuffer),
-            "UPDATE online" ...
-            "SET nickname = \"%s\"" ...
+            "UPDATE online " ...
+            "SET nickname = \"%s\" " ...
             "WHERE player_id = %d",
             nickname, playerId);
+
+        printf("%s", m_queryBuffer);
 
         Database->query(m_queryBuffer, "", 0);
     }

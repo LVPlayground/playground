@@ -482,11 +482,10 @@ lvp_locate(playerid,params[])
 
     if(IsNumeric(params))
     {
-        if(IsPlayerConnected(strval(params)))
-        {
+        if(Player(strval(params))->isConnected()) {
             iPlayerID = strval(params);
             goto l_Proceed;
-        }else{
+        } else {
             SendClientMessage(playerid,Color::Red,"Invalid Player ID.");
             return 1;
         }

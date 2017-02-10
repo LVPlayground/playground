@@ -235,7 +235,7 @@ native InterpolateCameraPos(playerid, Float:FromX, Float:FromY, Float:FromZ, Flo
 native InterpolateCameraLookAt(playerid, Float:FromX, Float:FromY, Float:FromZ, Float:ToX, Float:ToY, Float:ToZ, time, cut = CAMERA_CUT);
 
 // Player conditionals
-native IsPlayerConnected(playerid);
+//native IsPlayerConnected(playerid); // Please use: Player(playerid)->isConnected()
 native IsPlayerInVehicle(playerid, vehicleid);
 native IsPlayerInAnyVehicle(playerid);
 native IsPlayerInCheckpoint(playerid);

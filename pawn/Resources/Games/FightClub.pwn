@@ -798,13 +798,13 @@ CFightClub__TerminateMatch(matchid)
 
             CFightClub__ResetMatch(matchid);
 
-            if(IsPlayerConnected(iPlayer1))
+            if(Player(iPlayer1)->isConnected())
             {
                 format(string, sizeof(string), "* An administrator terminated your invitation to %s.", PlayerName(iPlayer2));
                 SendClientMessage(iPlayer1, Color::Red, string);
                 SpawnPlayer(iPlayer1);
             }
-            if(IsPlayerConnected(iPlayer2))
+            if(Player(iPlayer2)->isConnected())
             {
                 format(string, sizeof(string), "* An administrator terminated %s's invitation to you.", PlayerName(iPlayer1));
                 SendClientMessage(iPlayer2, Color::Red, string);
@@ -823,13 +823,13 @@ CFightClub__TerminateMatch(matchid)
 
             CFightClub__ResetMatch(matchid);
 
-            if(IsPlayerConnected(iPlayer1))
+            if(Player(iPlayer1)->isConnected())
             {
                 format(string, sizeof(string), "* An administrator terminated your fight with %s.", PlayerName(iPlayer2));
                 SendClientMessage(iPlayer1, Color::Red, string);
                 SpawnPlayer(iPlayer1);
             }
-            if(IsPlayerConnected(iPlayer2))
+            if(Player(iPlayer2)->isConnected())
             {
                 format(string, sizeof(string), "* An administrator terminated your fight with %s.", PlayerName(iPlayer1));
                 SendClientMessage(iPlayer2, Color::Red, string);
@@ -1052,7 +1052,7 @@ CFightClub__EndMatch(matchid, deathPlayerId)
 
     NewsController->show(sMessage);
 
-    if(IsPlayerConnected(iPlayer1))
+    if(Player(iPlayer1)->isConnected())
     {
         SetPlayerVirtualWorld(iPlayer1, 0);
         SetPlayerInterior(iPlayer1, 0);
@@ -1064,7 +1064,7 @@ CFightClub__EndMatch(matchid, deathPlayerId)
         }
     }
 
-    if(IsPlayerConnected(iPlayer2))
+    if(Player(iPlayer2)->isConnected())
     {
         SetPlayerVirtualWorld(iPlayer2, 0);
         SetPlayerInterior(iPlayer2, 0);
@@ -1147,13 +1147,13 @@ CFightClub__CancelMatch(matchid)
     new iPlayer2 = Matches[matchid][player2];
     new string[128];
 
-    if(IsPlayerConnected(iPlayer2))
+    if(Player(iPlayer2)->isConnected())
     {
         format(string, sizeof(string), "* You canceled your invitation to %s.", PlayerName(iPlayer2));
         SendClientMessage(iPlayer1, Color::Red, string);
     }
 
-    if(IsPlayerConnected(iPlayer1))
+    if(Player(iPlayer1)->isConnected())
     {
         format(string, sizeof(string), "* %s has canceled his invitation.", PlayerName(iPlayer1));
         SendClientMessage(iPlayer2, Color::Red, string);

@@ -469,7 +469,7 @@ CBomb__EngineCheck(playerid,vehicleid,i)
     // Is the vehicle valid, armed, has the armed player connected, and is
     // a engine bomb?
 
-    if(VehicleBomb[vehicleid][VehicleArmed] && IsPlayerConnected(VehicleBomb[vehicleid][armer]) &&  VehicleBomb[vehicleid][BombType] == BOMB_TYPE_PARKED)
+    if(VehicleBomb[vehicleid][VehicleArmed] && Player(VehicleBomb[vehicleid][armer])->isConnected() &&  VehicleBomb[vehicleid][BombType] == BOMB_TYPE_PARKED)
     {
         new Float:x, Float:y, Float:z;
         GetVehiclePos(vehicleid ,x ,y , z);
@@ -772,7 +772,7 @@ CBomb__CreateExplosion(vehicleId) {
     GetVehiclePos(vehicleId, x, y, z);
 
     for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
-        if (!IsPlayerConnected(playerId) || IsPlayerNPC(playerId))
+        if (!Player(playerId)->isConnected() || IsPlayerNPC(playerId))
             continue;  // the |playerId| is either not connected, or is an NPC
 
         if (GetPlayerVirtualWorld(playerId) != virtualWorld)
@@ -820,7 +820,7 @@ DisarmVehicle(vehicleid, explode=1, i=-1)
         return 0;
 
     // if our player has disconnected, it doesn't explode.
-    if(!IsPlayerConnected(VehicleBomb[vehicleid][armer]))
+    if(!Player(VehicleBomb[vehicleid][armer])->isConnected())
         explode = 0;
 
     // Now,we get the co-ords of the vehicle to create the explosion.

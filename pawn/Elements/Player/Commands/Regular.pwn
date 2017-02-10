@@ -94,7 +94,7 @@ lvp_Ignored( playerid, params[] )
     if (Player(playerid)->isAdministrator() && params[0]) {
         param_shift( tempVar );
         iRequestID = SelectPlayer(tempVar);
-        if (IsPlayerConnected( iRequestID )) {
+        if (Player(iRequestID)->isConnected()) {
             iCheckForPlayer = iRequestID;
         }
         else 
@@ -113,7 +113,7 @@ lvp_Ignored( playerid, params[] )
 
     // Check it out yo man o/ o/ Loop for all players;
     for (new i = 0; i <= PlayerManager->highestPlayerId(); i++) {
-        if (IsPlayerConnected( i ) && g_Ignore[ iCheckForPlayer ][ i ] == true) {
+        if (Player(i)->isConnected() && g_Ignore[ iCheckForPlayer ][ i ] == true) {
             GetPlayerName( i, szName, 24 ); iCount++;
             format( szMessage, sizeof( szMessage ), "%s%s ", szMessage, szName );
             if (strlen( szMessage ) > 60) {

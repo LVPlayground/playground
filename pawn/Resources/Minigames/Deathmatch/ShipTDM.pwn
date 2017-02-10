@@ -57,7 +57,7 @@ SetupPlayerForShipTDM( playerid )
     // who you kill until you figure it out yourself. Naise!
 
     for (new i = 0; i < m_sTDM_Teams[ iOtherTeamID ]; i++) {
-        if (IsPlayerConnected(m_sTDM_Members[ iOtherTeamID ][ i ])) {
+        if (Player(m_sTDM_Members[ iOtherTeamID ][ i ])->isConnected()) {
             ShowPlayerNameTagForPlayer( playerid, m_sTDM_Members[ iOtherTeamID ][ i ], 0 );
             ShowPlayerNameTagForPlayer( m_sTDM_Members[ iOtherTeamID ][ i ], playerid, 0 );
         }
@@ -198,7 +198,7 @@ StopPlayerForShipTDM( playerid, reason )
      // Ok, we've got the team ID now. We need to see everyone from the
      // other team again, which is pretty much all there's left to do.
     for (new i = 0; i < m_sTDM_Teams[ iOtherTeamID ]; i++) {
-        if (IsPlayerConnected(m_sTDM_Members[ iOtherTeamID ][ i ])) {
+        if (Player(m_sTDM_Members[ iOtherTeamID ][ i ])->isConnected()) {
             ShowPlayerNameTagForPlayer( playerid, m_sTDM_Members[ iOtherTeamID ][ i ], 1 );
             ShowPlayerNameTagForPlayer( m_sTDM_Members[ iOtherTeamID ][ i ], playerid, 1 );
         }

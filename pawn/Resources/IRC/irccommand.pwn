@@ -371,8 +371,9 @@ RunDeprecatedIrcCommand(line[]) {
 
         for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
         {
-            if( IsPlayerConnected( i ) && Player(i)->isAdministrator())
+            if(Player(i)->isConnected() && Player(i)->isAdministrator()) {
                 SendClientMessage(i, COLOR_YELLOW, string);
+            }
         }
 
         format(string,sizeof(string),"[adminmsg] %s 255 %s", tmp, sendText);

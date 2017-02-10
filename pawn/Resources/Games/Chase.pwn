@@ -311,8 +311,7 @@ CChase__Process()
         chaseData[2]--;
     } else {
         // Time's up!
-        if( IsPlayerConnected(chaseData[1]) )
-        {
+        if(Player(chaseData[1])->isConnected()) {
             CChase__Stop(5, -1);
         }
     }

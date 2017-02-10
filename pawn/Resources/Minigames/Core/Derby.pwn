@@ -972,7 +972,7 @@ CDerby__UpdateTextdraw(iDerbyID)
 
     for(new i = 1; i < CDerby__GetNumberOfSpawns(iDerbyID)+1; i++)
     {
-        if(!IsPlayerConnected(n_PositionID[i]))
+        if(!Player(n_PositionID[i])->isConnected())
         {
             format(szTextString, 256, "%s#%d~y~ ...~n~~w~", szTextString, i);
         }

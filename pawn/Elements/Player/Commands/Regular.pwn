@@ -40,7 +40,7 @@ lvp_Ignore( playerid, params[] )
 
     new szName[ 24 ], szMessage[ 256 ];
     GetPlayerName( ignoreID, szName, 24 );
-    format( szMessage, sizeof( szMessage ), "You have successfully ignored %s (Id: %d)!", szName, ignoreID);
+    format( szMessage, sizeof( szMessage ), "You have successfully ignored %s (Id:%d)!", szName, ignoreID);
 
     SendClientMessage( playerid, Color::Green, szMessage );
     return 1;

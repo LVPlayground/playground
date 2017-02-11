@@ -42,28 +42,28 @@ lvp_minigaming(playerid, params[]) {
             continue;
 
         if (PlayerActivity(subjectId)->isJavaScriptActivity()) {
-            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t-", minigaming,
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t-", minigaming,
                 ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId));
             continue;
         }
 
         if (IsPlayerInMapZone(subjectId)) {
-            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s jump\t-", minigaming,
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s jump\t-", minigaming,
                 ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId));
             continue;
         }
 
         if (CDerby__GetPlayerState(subjectId) >= DERBY_STATE_COUNTDOWN) {
-            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s derby\t-", minigaming,
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s derby\t-", minigaming,
                 ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId));
             continue;
         }
 
         if (PlayerInfo[subjectId][PlayerStatus] >= STATUS_BATFIGHT && PlayerInfo[subjectId][PlayerStatus] <= STATUS_ISLANDDM) {
-            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t-", minigaming,
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t-", minigaming,
                 ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId));
             continue;
@@ -73,7 +73,7 @@ lvp_minigaming(playerid, params[]) {
             Color->toString(Color::MinigameTransparentRed, colorBuffer[0], sizeof(colorBuffer[]));
             Color->toString(Color::White, colorBuffer[1], sizeof(colorBuffer[]));
 
-            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t{%s}%s", minigaming,
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t{%s}%s", minigaming,
                 ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId),
                 CHideGame__SeekerId() == subjectId ? colorBuffer[0] : colorBuffer[1],
@@ -85,7 +85,7 @@ lvp_minigaming(playerid, params[]) {
             Color->toString(Color::MinigameTransparentRed, colorBuffer[0], sizeof(colorBuffer[]));
             Color->toString(Color::MinigameTransparentBlue, colorBuffer[1], sizeof(colorBuffer[]));
 
-            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t{%s}%s", minigaming,
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t{%s}%s", minigaming,
                 ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId),
                 CRobbery__GetPlayerTeam(subjectId) == ROBBERY_TEAMATTACK ? colorBuffer[0] : colorBuffer[1],
@@ -95,14 +95,14 @@ lvp_minigaming(playerid, params[]) {
 
 #if Feature::DisableFights == 0
         if (CFightClub__IsPlayerFighting(subjectId)) {
-            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s (/fight watch %d)\t-", minigaming,
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s (/fight watch %d)\t-", minigaming,
                 ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId), PlayerMatch[subjectId]);
             continue;
         }
 
         if (waterFightIsPlayerPlaying(subjectId)) {
-            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t-", minigaming,
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t-", minigaming,
                 ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId));
             continue;
@@ -112,7 +112,7 @@ lvp_minigaming(playerid, params[]) {
             Color->toString(Color::MinigameTransparentRed, colorBuffer[0], sizeof(colorBuffer[]));
             Color->toString(Color::MinigameTransparentBlue, colorBuffer[1], sizeof(colorBuffer[]));
 
-            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t{%s}%s", minigaming,
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t{%s}%s", minigaming,
                 ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId),
                 rwGetPlayerTeam(subjectId) == RW_TEAM_RED ? colorBuffer[0] : colorBuffer[1],
@@ -122,7 +122,7 @@ lvp_minigaming(playerid, params[]) {
 #endif
 
         if (hayHasPlayerSignedUp(subjectId)) {
-            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t-", minigaming,
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t-", minigaming,
                 ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId));
             continue;
@@ -132,7 +132,7 @@ lvp_minigaming(playerid, params[]) {
             Color->toString(Color::MinigameTransparentBlue, colorBuffer[0], sizeof(colorBuffer[]));
             Color->toString(Color::MinigameTransparentGreen, colorBuffer[1], sizeof(colorBuffer[]));
 
-            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t{%s}%s", minigaming,
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t{%s}%s", minigaming,
                 ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId),
                 CLyse__GetPlayerTeam(subjectId) == TEAM_BLUE ? colorBuffer[0] : colorBuffer[1],
@@ -141,7 +141,7 @@ lvp_minigaming(playerid, params[]) {
         }
 
         if (isPlayerBrief[subjectId] && briefStatus == BRIEF_STATE_RUNNING) {
-            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t-", minigaming,
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t-", minigaming,
                 ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId));
             continue;
@@ -151,7 +151,7 @@ lvp_minigaming(playerid, params[]) {
             Color->toString(Color::MinigameTransparentBlue, colorBuffer[0], sizeof(colorBuffer[]));
             Color->toString(Color::MinigameTransparentGreen, colorBuffer[1], sizeof(colorBuffer[]));
 
-            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t{%s}%s", minigaming,
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t{%s}%s", minigaming,
                 ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId),
                 p_Team[subjectId] == TEAM_BLUE ? colorBuffer[0] : colorBuffer[1],
@@ -164,7 +164,7 @@ lvp_minigaming(playerid, params[]) {
             Color->toString(Color::MinigameTransparentRed, colorBuffer[0], sizeof(colorBuffer[]));
             Color->toString(Color::MinigameTransparentBlue, colorBuffer[1], sizeof(colorBuffer[]));
 
-            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id: %d)\t%s\t{%s}%s", minigaming,
+            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t{%s}%s", minigaming,
                 ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId),
                 WWTW_PlayerData[subjectId][iPlayerTeam] == WWTW_TEAMATTACK ? colorBuffer[0] : colorBuffer[1],

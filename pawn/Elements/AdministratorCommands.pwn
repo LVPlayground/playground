@@ -928,7 +928,7 @@ lvp_p(playerId, params[]) {
         }
 
 GodHelp:
-        format(g_message, sizeof(g_message), "%s (Id: %d) currently has god mode {FFFF00}%s{FFFFFF}.",
+        format(g_message, sizeof(g_message), "%s (Id:%d) currently has god mode {FFFF00}%s{FFFFFF}.",
             Player(subjectId)->nicknameString(), subjectId, (g_bPlayerGodmode[subjectId] ? "enabled": "disabled"));
 
         SendClientMessage(playerId, Color::Information, g_message);
@@ -1162,7 +1162,7 @@ lvp_showreport(playerId, params[]) {
     SendClientMessage(subjectId, Color::Warning, REPORT_MESSAGE);
 
     // Inform the mutee.
-    format(g_message, sizeof(g_message), "You have been muted for two minutes by %s (Id: %d).",
+    format(g_message, sizeof(g_message), "You have been muted for two minutes by %s (Id:%d).",
         Player(playerId)->nicknameString(), playerId);
     SendClientMessage(subjectId, Color::Error, g_message);
 
@@ -1177,7 +1177,7 @@ lvp_showreport(playerId, params[]) {
     Admin(playerId, g_message);
 
     // Inform the muter.
-    format(g_message, sizeof(g_message), "%s (Id: %d) has been warned and muted for two minutes.",
+    format(g_message, sizeof(g_message), "%s (Id:%d) has been warned and muted for two minutes.",
         Player(subjectId)->nicknameString(), subjectId);
     SendClientMessage(playerId, Color::Success, g_message);
 

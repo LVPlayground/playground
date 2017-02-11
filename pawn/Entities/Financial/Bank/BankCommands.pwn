@@ -212,7 +212,7 @@ class BankCommands {
     public onAccountEarningsCommand(playerId, params[]) {
         new message[128];
         if (Command->parameterCount(params) == 0) {
-            format(message, sizeof(message), "Automatic depositoing of in-game earnings is %s{FFFFFF} for you.",
+            format(message, sizeof(message), "Automatic depositing of in-game earnings is %s{FFFFFF} for you.",
                 (PlayerSettings(playerId)->areEarningsToBankAccountDisabled() ?
                     "{DC143C}disabled" : "{33AA33}enabled"));
             SendClientMessage(playerId, Color::Information, message);

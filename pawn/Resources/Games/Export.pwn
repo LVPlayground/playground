@@ -76,7 +76,7 @@ public CExport__NewWantedVehicle()
         }
     }
 
-    // Copy information about the cars being exported
+    // Copy information about the vehicles being exported
     wantedVehicle[ 0 ] = done[ 0 ];
     wantedVehicle[ 1 ] = done[ 1 ];
     wantedVehicle[ 2 ] = done[ 2 ];
@@ -95,7 +95,7 @@ public CExport__NewWantedVehicle()
 
     // // Format the last part, and send the message to everyone.
     SendClientMessageToAllEx(Color::Green, szMessage );
-    SendClientMessageToAllEx(Color::Green, "* And remember, we don't take trashed cars! Check out /export.");
+    SendClientMessageToAllEx(Color::Green, "* And remember, we don't take trashed vehicles! Check out /export.");
     // In about 6 or 7 minutes we need new wanted vehicles!
     return 1;
 }
@@ -252,7 +252,7 @@ CExport__OnEnterCheckpoint( playerid )
                 //Just a little check for the bonus time
                 BonusTime__CheckPlayer(playerid, BONUS_EXPORT);
 
-                // Right, all the cars on the list are exported, start another round!
+                // Right, all the vehicles on the list are exported, start another round!
                 if(amountWantedVehicle[0] + amountWantedVehicle[1] + amountWantedVehicle[2] == 0)
                 {
                     CExport__NewWantedVehicle();

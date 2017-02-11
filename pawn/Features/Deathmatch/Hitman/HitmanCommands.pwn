@@ -75,7 +75,7 @@ class HitmanCommands {
         new maxBountyAmount, message[256];
         if (HitmanTracker(victimId)->playerBounty() + bountyAmount > HitmanTracker::MaximumBountyAmount) {
             maxBountyAmount = HitmanTracker::MaximumBountyAmount - HitmanTracker(victimId)->playerBounty();
-            format(message, sizeof(message), "The maximum amount you can place on %s (%d) is $%s.",
+            format(message, sizeof(message), "The maximum amount you can place on %s (Id:%d) is $%s.",
                 Player(victimId)->nicknameString(), victimId, formatPrice(maxBountyAmount));
             SendClientMessage(playerId, Color::Error, message);
             return 1;
@@ -92,12 +92,12 @@ class HitmanCommands {
         HitmanTracker(playerId)->lastHitmanUsageTime() = Time->currentTime();
 
         format(message, sizeof(message),
-            "* %s has had a {A9C4E4}$%s bounty {CCCCCC}put on their head from %s {A9C4E4}(total: $%s){CCCCCC}.",
+            "* %s (Id:%d) has had a {A9C4E4}$%s bounty {CCCCCC}put on their head from %s (Id:%d) {A9C4E4}(total: $%s){CCCCCC}.",
             Player(victimId)->nicknameString(), formatPrice(bountyAmount), Player(playerId)->nicknameString(),
             formatPrice(HitmanTracker(victimId)->playerBounty()));
         SendClientMessageToAllEx(Color::ConnectionMessage, message);
 
-        format(message, sizeof(message), "* You have had a $%s bounty put on you from [%d] %s.",
+        format(message, sizeof(message), "* You have had a $%s bounty put on you from %s (Id:%d).",
             formatPrice(bountyAmount), playerId, Player(playerId)->nicknameString());
         SendClientMessage(victimId, Color::Warning, message);
 

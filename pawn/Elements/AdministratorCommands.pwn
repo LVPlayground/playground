@@ -991,7 +991,7 @@ GodHelp:
         ColorManager->storeExistingPlayerCustomColor(subjectId);
         ColorManager->setPlayerCustomColor(subjectId, Color::AdministratorColor);
 
-        SendClientMessage(subjectId, Color::Success, "An administrator has granted you admin rights!");
+        SendClientMessage(subjectId, Color::Success, "You have been granted administrator rights.");
 
         format(g_message, sizeof(g_message), "%s (Id:%d) is now temp. admin.",
             Player(subjectId)->nicknameString(), subjectId);

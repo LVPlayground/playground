@@ -93,12 +93,12 @@ class HitmanCommands {
 
         format(message, sizeof(message),
             "* %s (Id:%d) has had a {A9C4E4}$%s bounty {CCCCCC}put on their head from %s (Id:%d) {A9C4E4}(total: $%s){CCCCCC}.",
-            Player(victimId)->nicknameString(), formatPrice(bountyAmount), Player(playerId)->nicknameString(),
+            Player(victimId)->nicknameString(), victimId, formatPrice(bountyAmount), Player(playerId)->nicknameString(), playerId,
             formatPrice(HitmanTracker(victimId)->playerBounty()));
         SendClientMessageToAllEx(Color::ConnectionMessage, message);
 
         format(message, sizeof(message), "* You have had a $%s bounty put on you from %s (Id:%d).",
-            formatPrice(bountyAmount), playerId, Player(playerId)->nicknameString());
+            formatPrice(bountyAmount), Player(playerId)->nicknameString(), playerId);
         SendClientMessage(victimId, Color::Warning, message);
 
         return 1;

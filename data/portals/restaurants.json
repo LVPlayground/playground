@@ -192,6 +192,6 @@
     {
         "name": "TSDINER",
         "entrance": { "position": [ 681.579, -473.419, 15.592 ], "facingAngle": 180, "interiorId": 0 },
-        "exit": { "position": [ 681.50, -446.1, -25.62 ], "facingAngle": 180, "interiorId": 1 }
+        "exit": { "position": [ 681.50, -446.1, -26.60 ], "facingAngle": 180, "interiorId": 1 }
     }
 ]

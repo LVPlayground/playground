@@ -280,7 +280,7 @@ lvp_stats(playerid, params[])
         if(!Player(i)->isConnected())
         continue;
 
-        if(Player(i)->isNonPlayerCharacter())
+        if(IsPlayerNPC(i))
         {
             iNPCSOnline++;
             continue;
@@ -355,7 +355,7 @@ lvp_slap(playerId, params[]) {
     param_shift(szParameter);
 
     new targetPlayerId = SelectPlayer(szParameter);
-    if (!Player(targetPlayerId)->isConnected() || Player(targetPlayerId)->isNonPlayerCharacter()) {
+    if (!Player(targetPlayerId)->isConnected() || IsPlayerNPC(targetPlayerId)) {
         SendClientMessage(playerId, Color::Warning, "Error: That player is not connected to the server!");
         return 1;
     }

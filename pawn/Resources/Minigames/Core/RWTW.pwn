@@ -488,7 +488,7 @@ rwRemovePlayerFromMinigame(playerid)
 rwSignPlayerUp(playerid)
 {
     // Error checking - shouldn't be neccesary though
-    if(!Player(playerid)->isConnected() || Player(playerid)->isNonPlayerCharacter() || !IsPlayerMinigameFree(playerid))
+    if(!Player(playerid)->isConnected() || IsPlayerNPC(playerid) || !IsPlayerMinigameFree(playerid))
     {
         return;
     }

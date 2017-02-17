@@ -113,7 +113,7 @@ OnPlayerPressRampKey(playerid)
             if(!Player(i)->isConnected())
                 continue;
 
-            if(Player(i)->isNonPlayerCharacter())
+            if(IsPlayerNPC(i))
                 continue;
 
             if(!IsPlayerStreamedIn(i, playerid))

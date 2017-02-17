@@ -772,7 +772,7 @@ CBomb__CreateExplosion(vehicleId) {
     GetVehiclePos(vehicleId, x, y, z);
 
     for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
-        if (!Player(playerId)->isConnected() || Player(playerId)->isNonPlayerCharacter())
+        if (!Player(playerId)->isConnected() || IsPlayerNPC(playerId))
             continue;  // the |playerId| is either not connected, or is an NPC
 
         if (GetPlayerVirtualWorld(playerId) != virtualWorld)

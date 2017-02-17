@@ -920,7 +920,7 @@ CDerby__UpdateTextdraw(iDerbyID)
 
     for (new playerid = 0; playerid <= PlayerManager->highestPlayerId(); playerid++)
     {
-        if(!Player(playerid)->isConnected() || Player(playerid)->isNonPlayerCharacter() || CDerby__GetPlayerDerby(playerid) != iDerbyID)
+        if(!Player(playerid)->isConnected() || IsPlayerNPC(playerid) || CDerby__GetPlayerDerby(playerid) != iDerbyID)
         {
             continue;
         }
@@ -932,7 +932,7 @@ CDerby__UpdateTextdraw(iDerbyID)
 
         for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
         {
-            if(!Player(i)->isConnected() || Player(i)->isNonPlayerCharacter() || CDerby__GetPlayerDerby(i) != iDerbyID)
+            if(!Player(i)->isConnected() || IsPlayerNPC(i) || CDerby__GetPlayerDerby(i) != iDerbyID)
             {
                 continue;
             }

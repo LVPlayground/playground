@@ -1049,7 +1049,7 @@ lvp_show(playerId, params[]) {
     }
 
     if (showInfo == true) {
-        new const bool: automated = Player(playerId)->isNonPlayerCharacter();
+        new const bool: automated = !!IsPlayerNPC(playerId);
 
         for (new receiverId = 0; receiverId <= PlayerManager->highestPlayerId(); ++receiverId) {
             if (Player(receiverId)->isConnected() == false || IsPlayerInMinigame(receiverId))

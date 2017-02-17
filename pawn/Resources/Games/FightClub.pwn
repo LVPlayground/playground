@@ -909,7 +909,7 @@ CFightClub__TerminateAllMatches()
             {
                 continue;
             }
-            if(Player(i)->isNonPlayerCharacter())
+            if(IsPlayerNPC(i))
             {
                 continue;
             }
@@ -1084,7 +1084,7 @@ CFightClub__EndMatch(matchid, deathPlayerId)
             continue;
         }
 
-        if(Player(iPlayerID)->isNonPlayerCharacter())
+        if(IsPlayerNPC(iPlayerID))
         {
             continue;
         }

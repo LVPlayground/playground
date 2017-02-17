@@ -1574,7 +1574,7 @@ public CHideGame__SecondTimer()
     {
         if(!Player(iPlayerID)->isConnected()) continue;
         if(CHideGame__GetPlayerState(iPlayerID) != HS_STATE_PLAYING) continue;
-        if(Player(iPlayerID)->isNonPlayerCharacter()) continue;
+        if(IsPlayerNPC(iPlayerID)) continue;
 
         // "Godmode"
         SetPlayerHealth( iPlayerID, 100.0 );

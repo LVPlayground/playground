@@ -87,9 +87,6 @@ class Feature {
     // Disables the Pawn of everything related to DM fights.
     public const DisableFights = 0;
 
-    // Be able to switch it off in preperation of the rewrite of it in javascript
-    public const DisableKilltime = 0;
-
     /** **************************************************************************************** **/
     /// Christmas
 

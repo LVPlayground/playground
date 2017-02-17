@@ -39,9 +39,6 @@ enum EconomyValueType {
     GiftHuntMediumPrize,
     GiftHuntSmallPrize,
     GrandTheftAutoRandomVehicleValue,
-#if Feature::DisableKilltime == 0
-    KilltimeVictory,
-#endif
     MapZoneReward,
     MapZoneSpeedBonus,
     MinigameParticipation,
@@ -110,9 +107,6 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case GiftHuntMediumPrize:               return 25000;
         case GiftHuntSmallPrize:                return 10000;
         case GrandTheftAutoRandomVehicleValue:  return random(30000 /* max */ - 17500 /* min */) + 17500 /* min */;
-#if Feature::DisableKilltime == 0
-        case KilltimeVictory:                   return 5000;
-#endif
         case MapZoneReward:                     return 2000 - 10 * inputValue /* time taken (seconds) */;
         case MapZoneSpeedBonus:                 return 2 * inputValue /* high-speed streak count */;
         case MinigameParticipation:             return 250;

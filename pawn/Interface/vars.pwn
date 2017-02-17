@@ -9,14 +9,6 @@
  *
  */
 
-#if Feature::DisableKilltime == 0
-new sKillTime;
-new killTimeWeaponId = 0;
-new KTKills[MAX_PLAYERS];
-new KTDeaths[MAX_PLAYERS];
-new KTTimer;
-#endif
-
 new iServerChampion = Player::InvalidId;
 new iRecordName[MAX_PLAYER_NAME+1] = "LVP";
 new playerLastQuitInterior[MAX_PLAYERS];

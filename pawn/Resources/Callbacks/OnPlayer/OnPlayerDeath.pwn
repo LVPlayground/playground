@@ -192,20 +192,9 @@ public OnPlayerDeath(playerid, killerid, reason) {
 
     // ---- MINIGAME & LAME-KILL CHECKS ------------------------------------------------------------
 
-    // Killtime
     if (killerid == Player::InvalidId || Player(killerid)->isConnected() == false) {
-        #if Feature::DisableKilltime == 0
-        if (KTTimer > -1 && (GetPlayerVirtualWorld(killerid) == World::MainWorld && GetPlayerVirtualWorld(playerid) == World::MainWorld))
-            KTDeaths[playerid]++;
-        #endif
         MyDeaths[playerid]++;
     } else {
-        #if Feature::DisableKilltime == 0
-        if (KTTimer > -1 && (GetPlayerVirtualWorld(killerid) == World::MainWorld && GetPlayerVirtualWorld(playerid) == World::MainWorld)) {
-            KTKills[killerid]++;
-            KTDeaths[playerid]++;
-        }
-        #endif
         MyKills[killerid]++;
         MyDeaths[playerid]++;
     }
@@ -272,11 +261,7 @@ public OnPlayerDeath(playerid, killerid, reason) {
 
     if (isLameKill) {
         new Float:distanceBetweenPlayers = GetDistanceBetweenPlayers(playerid, killerid);
-#if Feature::DisableKilltime == 0
-        if (PlayerInfo[killerid][PlayerStatus] != STATUS_CHASE && !sKillTime && distanceBetweenPlayers < 100.0)
-#else
         if (PlayerInfo[killerid][PlayerStatus] != STATUS_CHASE && distanceBetweenPlayers < 100.0)
-#endif
             return OnPlayerLameKill(playerid, killerid);
     }
 

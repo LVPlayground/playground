@@ -64,11 +64,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
             // Anti-ship fighting
             if (ShipManager->isPlayerWalkingOnShip(playerid)) {
-                #if Feature::DisableKilltime == 0
-                if (!sKillTime && (GetPlayerVirtualWorld(playerid) == 0)
-                #else
                 if ((GetPlayerVirtualWorld(playerid) == 0)
-                #endif
                     && !IsPlayerInMinigame(playerid) && Player(playerid)->isAdministrator() == false
                     && !iPlayerAnimation[playerid] && 
                     ((GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_NONE) || (GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_DUCK)))
@@ -91,11 +87,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
     // Other fighting style (punch + kick combo)
     if (PRESSED(KEY_SHIP_FIGHT) && ShipManager->isPlayerWalkingOnShip(playerid)) {
-        #if Feature::DisableKilltime == 0
-        if (!sKillTime && (GetPlayerVirtualWorld(playerid) == 0)
-        #else
         if ((GetPlayerVirtualWorld(playerid) == 0)
-        #endif
             && !IsPlayerInMinigame(playerid) && Player(playerid)->isAdministrator() == false
             && !iPlayerAnimation[playerid] && GetPlayerSpecialAction(playerid) == 0) {
             iPlayerAnimation[playerid] = 0;

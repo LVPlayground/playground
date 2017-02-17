@@ -187,10 +187,6 @@ public OnGameModeInit() {
 
 
     // Set some required variables:
-    #if Feature::DisableKilltime == 0
-    KTTimer = -1;                                   // Disables the killtime timer.
-    #endif
-
     CTaxi__Initialize();
 
     CDrink__BuildMenus();

@@ -57,6 +57,11 @@ class FlyCommand extends Command {
             return;
         }
 
+        if(subject.virtualWorld != 0 && !player.isManagement()){
+            player.sendMessage(Message.COMMAND_ERROR, name + ' isn't in the main world at moment, ' +
+                               'but you can only fly in main world');
+            return;
+        }
         if (subject === player)
             player.sendMessage(Message.COMMAND_SUCCESS, 'You are about to take off, enjoy!');
         else

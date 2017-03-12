@@ -224,8 +224,9 @@ class MockPlayer {
     sendMessage(message, ...args) {
         if (message instanceof Message)
             message = Message.format(message, ...args);
-
-        this.messages_.push(message.toString());
+        
+        if (message.length <= 144) // SA-MP-implementation does not send longer messages
+            this.messages_.push(message.toString());
     }
 
     // Clears the messages that have been sent to this player.

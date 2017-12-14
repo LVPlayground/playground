@@ -62,11 +62,11 @@ testRunner.run('.*\.test\.js').then(time => {
 
 }, failures => {
     // One or more tests have failed. Refuse to start the gamemode.
-    console.log('===============================================================');
+    console.log('==============================================================');
     console.log('There were one or more test failures. Please fix them before starting the server!\n');
 
     failures.forEach(failure =>
         console.log('  ' + failure.toString() + '\n'));
 
-    console.log('===============================================================\n');
+    console.log('==============================================================\n');
 });

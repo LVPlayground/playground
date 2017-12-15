@@ -2,82 +2,74 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const ObjectGroup = require('entities/object_group.js');
 const PirateShipParty = require('features/playground/pirate_ship_party.js');
 
 // The playground manager provides back-end logic for the features provided as part of this module.
 // It controls all settings, as well as the default values for the settings.
 class PlaygroundManager {
-    constructor() {
-        this.pirateShipParty_ = null;
+    constructor(settings) {
+        this.settings_ = settings;
 
-        // List of the options available as part of this feature. Must be alphabetically sorted.
-        this.options_ = {
-            // Enables Party Mode on the Pirate Ship, which adds lights at various locations. Best
-            // enjoyed during night-time for additional shineyness.
-            party: false
-        };
+        this.christmasDecorations_ = null;
+        this.pirateParty_ = null;
+
+        // Settings that should be observed for changes. This manager implements the behaviour
+        // necessary for servicing them.
+        this.observable_settings_ = [
+            'decorations/objects_christmas',
+            'decorations/objects_pirate_party'
+        ];
     }
 
-    // Gets a sorted array of all options available as part of this feature.
-    get options() { return Object.keys(this.options_); }
+    // Called when the |enable| state of the given |setting| changes.
+    toggle(setting, enable) {
+        const disable = !enable;
 
-    // Initializes the effects of the features that are enabled by default by means of this class'
-    // constructor. For example, the party on the ship can be enabled immediately.
-    initialize() {
-        if (this.options_.party)
-            this.enableParty();
-    }
-
-    // Returns whether |option| is enabled. Will throw an exception when the option is unknown.
-    isOptionEnabled(option) {
-        if (!this.options_.hasOwnProperty(option))
-            throw new Error('Invalid option: ' + option);
-
-        return this.options_[option];
-    }
-
-    // Changes the |option| to be |enabled|. Will throw an exception when the option is unknown.
-    // When the option has associated behaviour in this class, it will be toggled here as well.
-    setOptionEnabled(option, enabled) {
-        if (!this.options_.hasOwnProperty(option))
-            throw new Error('Invalid option: ' + option);
-
-        if (this.options_[option] == enabled)
-            return;  // the option's enabled state already matches |enabled|.
-
-        this.options_[option] = !!enabled;
-
-        // Toggle the special behaviour associated with |option|.
-        switch (option) {
-            case 'party':
-                enabled ? this.enableParty()
-                        : this.disableParty();
+        switch (setting) {
+            case 'decorations/objects_christmas':
+                if (enable && !this.christmasDecorations_) {
+                    this.christmasDecorations_ =
+                        ObjectGroup.create('data/objects/christmas_decorations.json',
+                                           0 /* virtual world */, 0 /* interior */);
+                } else if (disable && this.christmasDecorations_) {
+                    this.christmasDecorations_.dispose();
+                    this.christmasDecorations_ = null;
+                }
                 break;
+            case 'decorations/objects_pirate_party':
+                if (enable && !this.pirateParty_) {
+                    this.pirateParty_ = new PirateShipParty();
+                } else if (disable && this.pirateParty_) {
+                    this.pirateParty_.dispose();
+                    this.pirateParty_ = null;
+                }
+                break;
+            default:
+                throw new Error('Invalid setting: ' + setting);
         }
     }
 
-    // Enables party-mode on the pirate ship by loading the object group. It will immediately be
-    // applied and visible to all players in interior 0, in world 0.
-    enableParty() {
-        if (this.pirateShipParty_)
-            return;
+    // Initializes the manager with the default values for all the settings. The enabled-by-default
+    // ones will be automatically enabled.
+    initialize() {
+        for (let setting of this.observable_settings_) {
+            if (this.settings_().getValue(setting))
+                this.toggle(setting, true /* enabled */);
 
-        this.pirateShipParty_ = new PirateShipParty();
+            this.settings_().addSettingObserver(
+                setting, this, PlaygroundManager.prototype.toggle);
+        }
     }
 
-    // Disables party-mode on the pirate ship. Immediately removes all objects from the server,
-    // causing the effects to go away for the players near the ship.
-    disableParty() {
-        if (!this.pirateShipParty_)
-            return;
-
-        this.pirateShipParty_.dispose();
-        this.pirateShipParty_ = null;
-    }
-
+    // Cleans up the manager. Enabled settings will automatically be disabled.
     dispose() {
-        if (this.options_.party)
-            this.disableParty();
+        for (let setting of this.observable_settings_) {
+            if (this.settings_().getValue(setting))
+                this.toggle(setting, false /* enabled */);
+
+            this.settings_().removeSettingObserver(setting, this);
+        }
     }
 }
 

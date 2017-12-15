@@ -18,10 +18,9 @@ function capitalizeFirstLetter(string) {
     return string[0].toUpperCase() + string.slice(1);
 }
 
-// A series of general commands that don't fit in any particular 
+// A series of general commands that don't fit in any particular
 class PlaygroundCommands {
-    constructor(manager, access, announce, settings) {
-        this.manager_ = manager;
+    constructor(access, announce, settings) {
         this.announce_ = announce;
         this.settings_ = settings;
 
@@ -40,7 +39,7 @@ class PlaygroundCommands {
             // Store the |commandInstance| in the |commands_| dictionary.
             this.commands_.set(commandInstance.name, commandInstance);
         };
-        
+
         // -----------------------------------------------------------------------------------------
 
         requireCommand('features/playground/commands/autohello.js');
@@ -82,12 +81,6 @@ class PlaygroundCommands {
             .sub('access')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(PlaygroundCommands.prototype.onPlaygroundAccessCommand.bind(this))
-            .sub('party')
-                .restrict(Player.LEVEL_MANAGEMENT)
-                .parameters([
-                    { name: 'enabled', type: CommandBuilder.WORD_PARAMETER, optional: true }
-                ])
-                .build(PlaygroundCommands.prototype.onPlaygroundOptionCommand.bind(this, 'party'))
             .sub('profile')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .parameters([ { name: 'milliseconds', type: CommandBuilder.NUMBER_PARAMETER } ])
@@ -299,41 +292,6 @@ class PlaygroundCommands {
         });
     }
 
-    // Enables or disables one of the available options. The actual options are dictated by both the
-    // command builder above and by the PlaygroundManager that tracks them.
-    onPlaygroundOptionCommand(option, player, enabled = null) {
-        const status = this.manager_.isOptionEnabled(option);
-        const statusText = status ? 'enabled' : 'disabled';
-
-        if (!enabled || !['on', 'off'].includes(enabled)) {
-            player.sendMessage(Message.LVP_PLAYGROUND_OPTION_STATUS, option, statusText, option);
-            return;
-        }
-
-        const updatedStatus = (enabled === 'on');
-        const updatedStatusText = updatedStatus ? 'enabled' : 'disabled';
-
-        if (status === updatedStatus) {
-            player.sendMessage(Message.LVP_PLAYGROUND_OPTION_NO_CHANGE, option, statusText);
-            return;
-        }
-
-        this.manager_.setOptionEnabled(option, updatedStatus);
-
-        let announcement = null;
-        switch (option) {
-            case 'party':
-                announcement = Message.LVP_ANNOUNCE_PARTY;
-                break;
-        }
-
-        if (announcement)
-            this.announce_().announceToPlayers(announcement, player.name, updatedStatusText);
-
-        this.announce_().announceToAdministrators(
-            Message.LVP_ANNOUNCE_ADMIN_NOTICE, player.name, player.id, updatedStatusText, option);
-    }
-
     // Enables Management members to capture a CPU profile of the gamemode for a given number of
     // |profileDurationMs|. The filename of the profile will be automatically decided.
     onPlaygroundProfileCommand(player, profileDurationMs) {
@@ -358,7 +316,7 @@ class PlaygroundCommands {
         const date = new Date();
 
         // Compile the filename for the trace based on the current time on the server.
-        const filename = 
+        const filename =
             'profile_' + date.getFullYear() + '-' + zeroPad(date.getMonth() + 1) + '-' +
             zeroPad(date.getDate()) + '_' + zeroPad(date.getHours()) + '-' +
             zeroPad(date.getMinutes()) + '-' + zeroPad(date.getSeconds()) + '.log';
@@ -426,7 +384,7 @@ class PlaygroundCommands {
 
             // Adds a menu item to display the entries in the |category|.
             menu.addItem(category, settingsLabel, async(player) => {
-                const sortedSettings = 
+                const sortedSettings =
                     Array.from(settings).sort((lhs, rhs) => lhs.name.localeCompare(rhs.name));
 
                 const innerMenu = new Menu('Choose a setting', ['Setting', 'Value']);
@@ -568,7 +526,7 @@ class PlaygroundCommands {
             options.push('access');
 
         if (player.isManagement())
-            options.push('party', 'profile', 'reload', 'settings');
+            options.push('profile', 'reload', 'settings');
 
         player.sendMessage(Message.LVP_PLAYGROUND_HEADER);
         if (!options.length)

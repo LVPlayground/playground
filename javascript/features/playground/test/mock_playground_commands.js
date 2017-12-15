@@ -11,7 +11,7 @@ const PlaygroundCommands = require('features/playground/playground_commands.js')
 class MockPlaygroundCommands extends PlaygroundCommands {
     constructor() {
         const mockAnnounce = new MockAnnounce();
-        super(null /* manager */, new PlaygroundAccessTracker(), () => mockAnnounce);
+        super(new PlaygroundAccessTracker(), () => mockAnnounce);
     }
 };
 

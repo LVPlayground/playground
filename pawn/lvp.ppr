@@ -110,7 +110,6 @@
     <DiskObject>\Features\Account\UndercoverAdministrator.pwn</DiskObject>
     <DiskObject>\Features\Christmas.pwn</DiskObject>
     <DiskObject>\Features\Christmas\</DiskObject>
-    <DiskObject>\Features\Christmas\ChristmasDecorations.pwn</DiskObject>
     <DiskObject>\Features\Christmas\GiftHunting.pwn</DiskObject>
     <DiskObject>\Features\Communication\</DiskObject>
     <DiskObject>\Features\Communication\SpamTracker.pwn</DiskObject>

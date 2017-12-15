@@ -207,7 +207,6 @@
     "LOCATION_NO_TELEPORT": "@error Sorry, the owner has locked the door because you %s!",
 
     "LVP_ANNOUNCE_ADMIN_NOTICE": "%s (Id:%d) has %s the %s option.",
-    "LVP_ANNOUNCE_PARTY": "%s has %s the Pirate Ship Party mode!",
     "LVP_ANNOUNCE_CMD_AVAILABLE": "%s has made the /%s command available to players.",
     "LVP_ANNOUNCE_CMD_EXCEPTION": "%s (Id:%d) has allowed %s to use /%s.",
     "LVP_ANNOUNCE_CMD_LEVEL": "%s (Id:%d) has changed the level of /%s to %s.",
@@ -229,9 +228,6 @@
     "LVP_JETPACK_REMOVED_OTHER": "{DC143C}The jetpack has been removed from %s (Id:%d).",
     "LVP_JETPACK_REMOVED": "{DC143C}%s (Id:%d) has removed your jetpack.",
     "LVP_PLAYGROUND_HEADER": "Las Venturas Playground is the SA-MP server you're playing on.",
-    "LVP_PLAYGROUND_OPTIONS": "@usage /lvp %s [on/off]",
-    "LVP_PLAYGROUND_OPTION_STATUS": "The {FF8282}%s{FFFFFF} option is {FF8282}%s{FFFFFF}. Type {FF8282}/lvp %s [on/off]{FFFFFF} to change this.",
-    "LVP_PLAYGROUND_OPTION_NO_CHANGE": "@error The {FF8282}%s{FFFFFF} feature has already been %s.",
     "LVP_PROFILE_FINISHED": "@success The CPU profile that you requested has been written to %s.",
     "LVP_PROFILE_INVALID_RANGE": "@error CPU profiles must be between %d and %d milliseconds in duration.",
     "LVP_PROFILE_ONGOING": "@error A CPU profile is already in progress of being captured.",

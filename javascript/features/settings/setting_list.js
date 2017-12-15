@@ -4,6 +4,10 @@
 
 const Setting = require('features/settings/setting.js');
 
+// Boolean indicating whether we're currently in the month December. Months are
+// zero-based in JavaScript for some reason.
+const isDecember = (new Date()).getMonth() == 11;
+
 exports = [
     /** Abuse-related settings */
     new Setting('abuse', 'blocker_damage_issued_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after issuing damage.'),
@@ -19,6 +23,6 @@ exports = [
     new Setting('abuse', 'warning_report_limit', Setting.TYPE_NUMBER, 3, 'Number of types to report a specific abuse type for a player.'),
 
     /** Decoration-related settings */
-    new Setting('decorations', 'objects_christmas', Setting.TYPE_BOOLEAN, false, 'Should the Christmas decorations be enabled?'),
+    new Setting('decorations', 'objects_christmas', Setting.TYPE_BOOLEAN, isDecember, 'Should the Christmas decorations be enabled?'),
     new Setting('decorations', 'objects_pirate_party', Setting.TYPE_BOOLEAN, false, 'Should the Pirate Ship Party decorations be enabled?'),
 ];

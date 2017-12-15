@@ -19,8 +19,8 @@ describe('PlaygroundManager', (it, beforeEach, afterEach) => {
     });
 
     it('should automatically initialize default-enabled settings', assert => {
-        assert.isFalse(settings.getValue('decorations/objects_christmas'));
-        settings.setValue('decorations/objects_christmas', true /* enabled */);
+        assert.isFalse(settings.getValue('decorations/objects_pirate_party'));
+        settings.setValue('decorations/objects_pirate_party', true /* enabled */);
 
         const initialObjectCount = server.objectManager.count;
 
@@ -42,12 +42,14 @@ describe('PlaygroundManager', (it, beforeEach, afterEach) => {
             const initialObjectCount = server.objectManager.count;
 
             // Enable the feature. There should be more objects afterwards.
-            settings.setValue(setting, true /* enabled */);
-            assert.isAbove(server.objectManager.count, initialObjectCount);
+            if (!settings.getValue(setting)) {
+                settings.setValue(setting, true /* enabled */);
+                assert.isAbove(server.objectManager.count, initialObjectCount);
+            }
 
             // Disable the feature. Initial object count should be restored.
             settings.setValue(setting, false /* enabled */);
-            assert.equal(server.objectManager.count, initialObjectCount);
+            assert.isBelowOrEqual(server.objectManager.count, initialObjectCount);
         });
     });
 
@@ -65,6 +67,6 @@ describe('PlaygroundManager', (it, beforeEach, afterEach) => {
         manager.dispose();
         manager = null;
 
-        assert.equal(server.objectManager.count, initialObjectCount);
+        assert.isBelowOrEqual(server.objectManager.count, initialObjectCount);
     });
 });

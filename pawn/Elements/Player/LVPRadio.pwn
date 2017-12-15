@@ -16,12 +16,18 @@
 */
 
 // Stream URL for the radio
-static  LVP_RADIO_STREAM_URL[] = "http://play.sa-mp.nl:8000/stream/1/"; // Radio FG, some french radio for testing purposes: http://www.radiofg.com/streams/fg.pls
+new LVP_RADIO_STREAM_URL[] = "http://play.sa-mp.nl:8000/stream/1/"; // Radio FG, some french radio for testing purposes: http://www.radiofg.com/streams/fg.pls
 
-static  bool:iRadioEnabledForPlayer[MAX_PLAYERS];    // Boolean to determine if the radio is enabled for a player or not
-static  bool:iRadioPlayingForPlayer[MAX_PLAYERS];    // Boolean to determine if LVP Radio is currently playing for the player
+// http://www.christmashits.de/
+new CHRISTMAS_RADIO_STREAM_URL[] = "http://46.105.118.14:25500/listen.pls";
+// Alternatives:
+//   santaradio.co.uk: http://149.255.59.164:8041/;stream.mp3
 
-static  iRadioPlayerTuneInTime[MAX_PLAYERS];              // Stores the time the player begins the radio stream so we can update the LVP RADIO textdraws accordingly.
+
+new bool:iRadioEnabledForPlayer[MAX_PLAYERS];    // Boolean to determine if the radio is enabled for a player or not
+new bool:iRadioPlayingForPlayer[MAX_PLAYERS];    // Boolean to determine if LVP Radio is currently playing for the player
+
+new iRadioPlayerTuneInTime[MAX_PLAYERS];              // Stores the time the player begins the radio stream so we can update the LVP RADIO textdraws accordingly.
 
 // Radio display textdraws
 static  Text:radioDisplay [ 2 ] = { Text:INVALID_TEXT_DRAW, ...};
@@ -136,13 +142,21 @@ radioStreamForPlayer(playerid)
         return;
     }
 
+    new year, month, day;
+    getdate(year, month, day);
+
+    // Enable the Christmas radio in December until Boxing Day.
+    new const bool: christmasRadio =
+        (month == 12 && day <= 26);
+
     if(GetPVarInt(playerid, "iPlayerRadioDisplayMsg") == 0)
     {
         SetPVarInt(playerid, "iPlayerRadioDisplayMsg", 1);
         ShowBoxForPlayer(playerid, "Tuned in to ~y~LVP RADIO~w~. Use ~p~/audiomsg~w~ to hide radio chat messages. Use ~p~/radio~w~ to toggle radio options.");
     }
 
-    PlayAudioStreamForPlayer(playerid, LVP_RADIO_STREAM_URL);
+    PlayAudioStreamForPlayer(playerid, christmasRadio ? CHRISTMAS_RADIO_STREAM_URL
+                                                      : LVP_RADIO_STREAM_URL);
     iRadioPlayingForPlayer[playerid] = true;
     iRadioPlayerTuneInTime[playerid] = Time->currentTime();
 }

@@ -486,7 +486,7 @@ class PlaygroundCommands {
     // Handles the |player| modifying the |setting|, which represents a numeric value.
     async handleNumberSettingModification(player, setting) {
         const answer = await Question.ask(player, {
-            question: 'Update the ' + setting.identifier + ' setting',
+            question: setting.identifier,
             message: setting.description + '\nThe default value is {FFA500}' +
                      setting.defaultValue + '{A9C4E4}',
             leftButton: 'Update'
@@ -514,7 +514,7 @@ class PlaygroundCommands {
     // Handles the |player| modifying the |setting|, which represents a textual value.
     async handleStringSettingModification(player, setting) {
         const answer = await Question.ask(player, {
-            question: 'Update the ' + setting.identifier + ' setting',
+            question: setting.identifier,
             message: setting.description + '\nThe default value is {FFA500}' +
                      setting.defaultValue + '{A9C4E4}',
             leftButton: 'Update'
@@ -545,21 +545,21 @@ class PlaygroundCommands {
             case Setting.TYPE_BOOLEAN:
                 this.announce_().announceToAdministrators(
                     Message.LVP_ANNOUNCE_SETTING_TOGGLED, player.name, player.id,
-                    (setting.value ? 'enabled' : 'disabled'), setting.name);
+                    (setting.value ? 'enabled' : 'disabled'), setting.identifier);
 
                 break;
 
             case Setting.TYPE_NUMBER:
                 this.announce_().announceToAdministrators(
                     Message.LVP_ANNOUNCE_SETTING_UPDATED_NUM, player.name, player.id,
-                    setting.name, setting.value);
+                    setting.identifier, setting.value);
 
                 break;
 
             case Setting.TYPE_STRING:
                 this.announce_().announceToAdministrators(
                     Message.LVP_ANNOUNCE_SETTING_UPDATED_STRING, player.name, player.id,
-                    setting.name, setting.value);
+                    setting.identifier, setting.value);
 
                 break;
         }

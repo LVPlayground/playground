@@ -7,8 +7,10 @@ const MockAnnounce = require('features/announce/test/mock_announce.js');
 const RadioManager = require('features/radio/radio_manager.js');
 
 describe('RadioManager', (it, beforeEach, afterEach) => {
+    let gunther = null;
     let manager = null;
     let settings = null;
+    let vehicle = null;
 
     beforeEach(() => {
         settings = server.featureManager.loadFeature('settings');
@@ -23,6 +25,14 @@ describe('RadioManager', (it, beforeEach, afterEach) => {
         ]);
 
         manager = new RadioManager(selection, () => settings);
+
+        gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.identify();
+
+        vehicle = server.vehicleManager.createVehicle({
+            modelId: 411 /* Infernus */,
+            position: new Vector(1000, 1500, 10)
+        });
     });
 
     afterEach(() => {
@@ -38,5 +48,45 @@ describe('RadioManager', (it, beforeEach, afterEach) => {
 
         assert.isFalse(settings.getValue('radio/enabled'));
         assert.isFalse(manager.isEnabled());
+    });
+
+    it('should start the radio when a player enters a vehicle', assert => {
+        assert.isTrue(settings.getValue('radio/enabled'));
+        assert.isTrue(manager.isEnabled());
+
+        assert.isFalse(manager.isListening(gunther));
+
+        // Enter the vehicle as a driver.
+        {
+            gunther.enterVehicle(vehicle, 0 /* driver seat */);
+            assert.isTrue(manager.isListening(gunther));
+
+            gunther.leaveVehicle();
+            assert.isFalse(manager.isListening(gunther));
+        }
+
+        // Enter the vehicle as a passenger.
+        {
+            gunther.enterVehicle(vehicle, 1 /* passenger seat */);
+            assert.isTrue(manager.isListening(gunther));
+
+            gunther.leaveVehicle();
+            assert.isFalse(manager.isListening(gunther));
+        }
+    });
+
+    it('should not start the radio when entering a vehicle w/o the feature enabled', assert => {
+        assert.isTrue(settings.getValue('radio/enabled'));
+        assert.isTrue(manager.isEnabled());
+
+        settings.setValue('radio/enabled', false);
+
+        assert.isFalse(manager.isListening(gunther));
+
+        // Enter the vehicle as a driver.
+        {
+            gunther.enterVehicle(vehicle, 0 /* driver seat */);
+            assert.isFalse(manager.isListening(gunther));
+        }
     });
 });

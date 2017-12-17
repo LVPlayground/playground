@@ -138,5 +138,39 @@ describe('RadioCommands', (it, beforeEach) => {
             assert.equal(gunther.messages[1], Message.RADIO_COMMAND_OPTIONS_ADVERTISEMENT);
         }
     });
+
+    it('should allow players to disable the radio altogether', async assert => {
+        assert.isTrue(manager.isEnabled());
+        assert.equal(manager.getPreferredChannelForPlayer(gunther), selection.defaultChannel);
+
+        {
+            // Mimics Gunther disabling the radio feature altogether. (Last option.)
+            gunther.respondToDialog({ listitem: selection.channels.length }).then(
+                () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
+
+            await gunther.issueCommand('/radio options');
+
+            assert.equal(manager.getPreferredChannelForPlayer(gunther), null);
+        }
+    });
+
+    it('should allow players to change their preferred radio channel', async assert => {
+        assert.isTrue(manager.isEnabled());
+        assert.equal(manager.getPreferredChannelForPlayer(gunther), selection.defaultChannel);
+
+        {
+            // Mimics Gunther selecting the last channel, which we assume to *not* be the default.
+            const alternativeChannel = selection.channels[selection.channels.length - 1];
+
+            assert.notEqual(alternativeChannel, selection.defaultChannel);
+
+            gunther.respondToDialog({ listitem: selection.channels.length - 1 }).then(
+                () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
+
+            await gunther.issueCommand('/radio options');
+
+            assert.equal(manager.getPreferredChannelForPlayer(gunther), alternativeChannel);
+        }
+    });
 });
 

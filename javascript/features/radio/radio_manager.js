@@ -12,6 +12,8 @@ class RadioManager {
         this.selection_ = selection;
         this.settings_ = settings;
 
+        this.preferredChannel_ = new WeakMap();
+
         this.displayTextDraw_ = new WeakMap();
         this.listening_ = new WeakMap();
 
@@ -55,7 +57,7 @@ class RadioManager {
     // Starts the radio for the given |player|. Their choice in radio channel, if any at all, will
     // determine what they listen to.
     startRadio(player) {
-        const channel = this.getSelectedChannelForPlayer(player);
+        const channel = this.getPreferredChannelForPlayer(player);
         if (!channel)
             return;  // the |player| has opted out of the radio feature
 
@@ -136,18 +138,29 @@ class RadioManager {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Returns the channel that the player is currently listening to, if any.
+    getCurrentChannelForPlayer(player) {
+        return this.listening_.get(player) || null;
+    }
+
     // Determines the channel that the |player| should be listening to. May return NULL if the
     // player has decided to block the radio feature altogether.
-    getSelectedChannelForPlayer(player) {
-        // TODO(Russell): Enable players to disable the radio feature.
-        // TODO(Russell): Enable players to select their own channel preference.
+    getPreferredChannelForPlayer(player) {
+        if (this.preferredChannel_.has(player))
+            return this.preferredChannel_.get(player);
 
         return this.selection_.defaultChannel;
     }
 
-    // Returns the channel that the player is currently listening to, if any.
-    getCurrentChannelForPlayer(player) {
-        return this.listening_.get(player) || null;
+    // Sets the preferred channel for the |player| to |channel|.
+    setPreferredChannelForPlayer(player, channel) {
+        this.preferredChannel_.set(player, channel);
+        if (this.isListening(player)) {
+            this.stopRadio(player);
+            this.startRadio(player);
+        }
+
+        // TODO(Russell): Persist this setting between playing sessions.
     }
 
     // ---------------------------------------------------------------------------------------------

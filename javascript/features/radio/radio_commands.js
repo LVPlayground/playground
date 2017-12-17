@@ -2,6 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const Menu = require('components/menu/menu.js');
+const MessageBox = require('components/dialogs/message_box.js');
+
 // Implementation of the `/radio` command that enables players to control their radio-related
 // settings, notably their preferred channel and whether the radio should be enabled at all.
 class RadioCommands {
@@ -28,7 +31,31 @@ class RadioCommands {
             return;
         }
 
-        // TODO(Russell): Implement `/radio options`.
+        const menu = new Menu('In-game radio options', ['Channel', 'Selected']);
+        const preferredChannel = this.manager_.getPreferredChannelForPlayer(player);
+
+        for (const channel of this.selection_.channels) {
+            const selected = channel === preferredChannel ? 'X' : '';
+
+            menu.addItem(channel.name, selected, async () => {
+                this.manager_.setPreferredChannelForPlayer(player, channel);
+                await MessageBox.display(player, {
+                    title: 'Radio preferences updated!',
+                    message: Message.format(Message.RADIO_PREFERRED_CHANNEL_CHANGED, channel.name)
+                });
+            });
+        }
+
+        const disabled = !preferredChannel ? 'X' : '';
+        menu.addItem('{DDDDDD}Disable the radio', disabled, async () => {
+            this.manager_.setPreferredChannelForPlayer(player, null /* disabled */);
+                await MessageBox.display(player, {
+                    title: 'Radio preferences updated!',
+                    message: Message.RADIO_PREFERRED_DISABLED
+                });
+        });
+
+        await menu.displayForPlayer(player);
     }
 
     // Called when the |player| types `/radio` without any arguments. Starts or stops the radio
@@ -39,23 +66,26 @@ class RadioCommands {
             return;
         }
 
-        if (this.manager_.isEligible(player)) {
-            if (this.manager_.isListening(player)) {
-                const channel = this.manager_.getCurrentChannelForPlayer(player);
-                this.manager_.stopRadio(player);
-
-                player.sendMessage(Message.RADIO_COMMAND_TOGGLE_LISTENING, 'stopped', channel.name);
-            }
-            else {
-                this.manager_.startRadio(player);
-                const channel = this.manager_.getCurrentChannelForPlayer(player);
-
-                player.sendMessage(Message.RADIO_COMMAND_TOGGLE_LISTENING, 'started', channel.name);
-            }
-        } else {
+        // Bail out if the |player| is not eligible for listening to the radio right now.
+        if (!this.manager_.isEligible(player)) {
             player.sendMessage(Message.RADIO_COMMAND_NOT_ELIGIBLE);
+            player.sendMessage(Message.RADIO_COMMAND_OPTIONS_ADVERTISEMENT);
+            return;
         }
 
+        const isListening = this.manager_.isListening(player);
+        const operation = isListening ? 'stopped' : 'started';
+
+        let channel = null;
+        if (isListening) {
+            channel = this.manager_.getCurrentChannelForPlayer(player);
+            this.manager_.stopRadio(player);
+        } else {
+            this.manager_.startRadio(player);
+            channel = this.manager_.getCurrentChannelForPlayer(player);
+        }
+
+        player.sendMessage(Message.RADIO_COMMAND_TOGGLE_LISTENING, operation, channel.name);
         player.sendMessage(Message.RADIO_COMMAND_OPTIONS_ADVERTISEMENT);
     }
 

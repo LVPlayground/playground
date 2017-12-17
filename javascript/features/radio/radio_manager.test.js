@@ -23,6 +23,10 @@ describe('RadioManager', (it, beforeEach, afterEach) => {
             {
                 name: "LVP Radio",
                 stream: "https://play.sa-mp.nl/stream.pls"
+            },
+            {
+                name: "Alternative Radio",
+                stream: "https://example.com/stream.pls"
             }
         ]);
 
@@ -116,6 +120,36 @@ describe('RadioManager', (it, beforeEach, afterEach) => {
             gunther.enterVehicle(vehicle, 0 /* driver seat */);
             assert.isFalse(manager.isListening(gunther));
             assert.isNull(gunther.streamUrl);
+        }
+    });
+
+    it('should allow the preferred channel for a player to be updated', assert => {
+        assert.isTrue(settings.getValue('radio/enabled'));
+        assert.isTrue(manager.isEnabled());
+
+        // Default.
+        {
+            // No configuration necessary.
+
+            assert.isNotNull(manager.getPreferredChannelForPlayer(gunther));
+            assert.equal(selection.defaultChannel, manager.getPreferredChannelForPlayer(gunther));
+        }
+
+        // Different channel.
+        {
+            assert.notEqual(selection.defaultChannel, selection.channels[1]);
+
+            manager.setPreferredChannelForPlayer(gunther, selection.channels[1]);
+
+            assert.isNotNull(manager.getPreferredChannelForPlayer(gunther));
+            assert.equal(selection.channels[1], manager.getPreferredChannelForPlayer(gunther));
+        }
+
+        // Disabled.
+        {
+            manager.setPreferredChannelForPlayer(gunther, null /* disabled */);
+
+            assert.isNull(manager.getPreferredChannelForPlayer(gunther));
         }
     });
 

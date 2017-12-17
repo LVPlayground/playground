@@ -12,7 +12,7 @@ class TestError extends Error {
         stackLength = stackTrace.length;
 
     // Determine the location of the error based on the second-final entry in the stack trace.
-    let [_, filename, line] = stackTrace[stackLength - 2].match(/.*\(([^:]+):(\d+):.*/);
+    let [_, filename, line] = stackTrace[stackLength - 1].match(/.*\(([^:]+):(\d+):.*/);
 
     this.context_ = {
       suiteDescription: context.suiteDescription,

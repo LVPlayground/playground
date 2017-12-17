@@ -13,10 +13,8 @@ describe('ChannelSelection', (it, beforeEach, afterEach) => {
         settings = server.featureManager.loadFeature('settings');
         selection = new ChannelSelection(() => new MockAnnounce(), () => settings);
     });
-    afterEach(() => {
-        if (selection)
-            selection.dispose();
-    });
+
+    afterEach(() => selection.dispose());
 
     // Radio configuration that should be used for testing purposes.
     const TEST_RADIO_CONFIGURATION = [

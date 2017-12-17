@@ -13,7 +13,7 @@ class RadioManager {
         this.settings_ = settings;
 
         this.displayTextDraw_ = new WeakMap();
-        this.listening_ = new Set();
+        this.listening_ = new WeakMap();
 
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
@@ -25,6 +25,13 @@ class RadioManager {
 
     // Returns whether the given |player| is listening to the radio right now.
     isListening(player) { return this.listening_.has(player); }
+
+    // Returns whether the |player| is eligible for listening to the radio. This means that they
+    // have to be in a vehicle, unless Management has enabled always-on listening.
+    isEligible(player) {
+        return player.vehicle !== null ||
+               !this.settings_().getValue('radio/restricted_to_vehicles');
+    }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -54,17 +61,19 @@ class RadioManager {
 
         // TODO(Russell): Make TextDraw testable.
         if (!server.isTest())
-            this.displayRadioChannelName(player, channel);
+            this.displayRadioChannelName(player, channel, true /* initialWait */);
 
         player.playAudioStream(channel.stream);
-        this.listening_.add(player);
+        this.listening_.set(player, channel);
     }
 
     // Displays the name of the |channel| to the |player| in the same style as Grand Theft Auto
     // displays radio channel names. Will change the text's colour after three seconds, and have it
     // automatically disappear after another three seconds.
-    async displayRadioChannelName(player, channel) {
-        await seconds(3);
+    async displayRadioChannelName(player, channel, initialWait) {
+        if (initialWait)
+            await seconds(3);
+
         {
             if (!player.isConnected() || !this.isListening(player))
                 return;  // the player stopped listening to the radio already
@@ -134,6 +143,11 @@ class RadioManager {
         // TODO(Russell): Enable players to select their own channel preference.
 
         return this.selection_.defaultChannel;
+    }
+
+    // Returns the channel that the player is currently listening to, if any.
+    getCurrentChannelForPlayer(player) {
+        return this.listening_.get(player) || null;
     }
 
     // ---------------------------------------------------------------------------------------------

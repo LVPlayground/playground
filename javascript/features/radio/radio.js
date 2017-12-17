@@ -5,6 +5,7 @@
 const Feature = require('components/feature_manager/feature.js');
 
 const ChannelSelection = require('features/radio/channel_selection.js');
+const RadioCommands = require('features/radio/radio_commands.js');
 const RadioManager = require('features/radio/radio_manager.js');
 
 // Implementation of the Radio feature that allows players to listen to a variety of radio channels
@@ -23,12 +24,11 @@ class Radio extends Feature {
         this.selection_.loadConfiguration();
 
         this.manager_ = new RadioManager(this.selection_, settings);
-
-        // TODO: /radio command
-        // TODO: radio zones (ship + add/del radio?)
+        this.commands_ = new RadioCommands(this.manager_, this.selection_);
     }
 
     dispose() {
+        this.commands_.dispose();
         this.manager_.dispose();
         this.selection_.dispose();
     }

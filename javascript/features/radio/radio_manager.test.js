@@ -52,21 +52,40 @@ describe('RadioManager', (it, beforeEach, afterEach) => {
         assert.isFalse(manager.isEnabled());
     });
 
-    it('should start the radio when a player enters a vehicle', assert => {
+    it('should be able to start and stop the radio for a player', assert => {
         assert.isTrue(settings.getValue('radio/enabled'));
         assert.isTrue(manager.isEnabled());
 
         assert.isFalse(manager.isListening(gunther));
         assert.isNull(gunther.streamUrl);
 
+        manager.startRadio(gunther);
+        assert.isTrue(manager.isListening(gunther));
+        assert.equal(gunther.streamUrl, selection.defaultChannel.stream);
+
+        manager.stopRadio(gunther);
+        assert.isFalse(manager.isListening(gunther));
+        assert.isNull(gunther.streamUrl);
+    });
+
+    it('should start the radio when a player enters a vehicle', assert => {
+        assert.isTrue(settings.getValue('radio/enabled'));
+        assert.isTrue(manager.isEnabled());
+
+        assert.isFalse(manager.isListening(gunther));
+        assert.isFalse(manager.isEligible(gunther));
+        assert.isNull(gunther.streamUrl);
+
         // Enter the vehicle as a driver.
         {
             gunther.enterVehicle(vehicle, 0 /* driver seat */);
             assert.isTrue(manager.isListening(gunther));
+            assert.isTrue(manager.isEligible(gunther));
             assert.equal(gunther.streamUrl, selection.defaultChannel.stream);
 
             gunther.leaveVehicle();
             assert.isFalse(manager.isListening(gunther));
+            assert.isFalse(manager.isEligible(gunther));
             assert.isNull(gunther.streamUrl);
         }
 
@@ -74,10 +93,12 @@ describe('RadioManager', (it, beforeEach, afterEach) => {
         {
             gunther.enterVehicle(vehicle, 1 /* passenger seat */);
             assert.isTrue(manager.isListening(gunther));
+            assert.isTrue(manager.isEligible(gunther));
             assert.equal(gunther.streamUrl, selection.defaultChannel.stream);
 
             gunther.leaveVehicle();
             assert.isFalse(manager.isListening(gunther));
+            assert.isFalse(manager.isEligible(gunther));
             assert.isNull(gunther.streamUrl);
         }
     });
@@ -96,5 +117,17 @@ describe('RadioManager', (it, beforeEach, afterEach) => {
             assert.isFalse(manager.isListening(gunther));
             assert.isNull(gunther.streamUrl);
         }
+    });
+
+    it('should enable management to override the in-vehicle restrictions', assert => {
+        assert.isNull(gunther.vehicle);
+
+        assert.isTrue(settings.getValue('radio/restricted_to_vehicles'));
+        assert.isFalse(manager.isEligible(gunther));
+
+        settings.setValue('radio/restricted_to_vehicles', false);
+
+        assert.isFalse(settings.getValue('radio/restricted_to_vehicles'));
+        assert.isTrue(manager.isEligible(gunther));
     });
 });

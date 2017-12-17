@@ -24,6 +24,7 @@ const Abuse = require('features/abuse/abuse.js');
 const Communication = require('features/communication/communication.js');
 const Gangs = require('features/gangs/gangs.js');
 const MockAnnounce = require('features/announce/test/mock_announce.js');
+const Radio = require('features/radio/radio.js');
 const Settings = require('features/settings/settings.js');
 const Streamer = require('features/streamer/streamer.js');
 
@@ -52,6 +53,7 @@ class MockServer {
             announce: MockAnnounce,  // TODO: Move functionality to |communication|. See #309.
             communication: Communication,
             gangs: Gangs,
+            radio: Radio,
             settings: Settings,
             streamer: Streamer
         });

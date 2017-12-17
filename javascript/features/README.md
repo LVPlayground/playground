@@ -50,4 +50,3 @@ The following features need to be cleaned up and properly documented:
   - **[DeathFeed](death_feed/)**: Controls whether the _death feed_ should be visible to the player.
   - **[Debug](debug/)**: Provides generic commands related to debugging the server.
   - **[Races](races/)**: Gives players the ability to participate in races.
-  - **[VIPs](vips/)**: Defines the JavaScript portion of the VIP platform.

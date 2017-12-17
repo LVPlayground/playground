@@ -13,12 +13,14 @@ class PlaygroundManager {
 
         this.christmasDecorations_ = null;
         this.pirateParty_ = null;
+        this.vipRoomObjects_ = null;
 
         // Settings that should be observed for changes. This manager implements the behaviour
         // necessary for servicing them.
         this.observable_settings_ = [
             'decorations/objects_christmas',
-            'decorations/objects_pirate_party'
+            'decorations/objects_pirate_party',
+            'decorations/objects_vip_room',
         ];
     }
 
@@ -37,6 +39,7 @@ class PlaygroundManager {
                     this.christmasDecorations_ = null;
                 }
                 break;
+
             case 'decorations/objects_pirate_party':
                 if (enable && !this.pirateParty_) {
                     this.pirateParty_ = new PirateShipParty();
@@ -45,6 +48,18 @@ class PlaygroundManager {
                     this.pirateParty_ = null;
                 }
                 break;
+
+            case 'decorations/objects_vip_room':
+                if (enable && !this.vipRoomObjects_) {
+                    this.vipRoomObjects_ =
+                        ObjectGroup.create('data/objects/vip_room.json',
+                                           0 /* virtual world */, 0 /* interior */)
+                } else if (disable && this.vipRoomObjects_) {
+                    this.vipRoomObjects_.dispose();
+                    this.vipRoomObjects_ = null;
+                }
+                break;
+
             default:
                 throw new Error('Invalid setting: ' + setting);
         }

@@ -51,9 +51,6 @@ testRunner.run('.*\.test\.js').then(time => {
         // Player-related features
         'player_favours',
 
-        // VIP-related features
-        'vips',
-
         // -----------------------------------------------------------------------------------------
 
         // v1 features - these need to be cleaned up

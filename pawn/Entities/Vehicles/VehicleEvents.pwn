@@ -192,17 +192,6 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
         Annotation::ExpandList<OnVehicleStreamIn>(vehicleId, playerId);
         return 1;
     }
-
-    /**
-     * This method will be invoked when a player leaves a vehicle. We may have to clean up after them,
-     * re-lock the vehicle or stop the radio from playing.
-     *
-     * @param playerId Id of the player who has exited a vehicle.
-     */
-    public onPlayerExitVehicle(playerId) {
-        radioPlayerExitVehicle(playerId);
-        return 1;
-    }
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -275,14 +264,5 @@ public OnVehicleStreamIn(vehicleid, forplayerid) {
         return 0; // don't handle invalid players, NPCs or invalid vehicles.
 
     VehicleEvents(vehicleid)->onVehicleStreamIn(forplayerid);
-    return 1;
-}
-
-public OnPlayerExitVehicle(playerid, vehicleid) {
-    if (Player(playerid)->isConnected() == false || Player(playerid)->isNonPlayerCharacter() == true
-        || Vehicle(vehicleid)->isValid() == false)
-        return 0; // don't handle invalid players, NPCs or invalid vehicles.
-
-    VehicleEvents(vehicleid)->onPlayerExitVehicle(playerid);
     return 1;
 }

@@ -21,7 +21,6 @@
     <DiskObject>\Elements\Player\Connections\SaveInfo.pwn</DiskObject>
     <DiskObject>\Elements\Player\Drink.pwn</DiskObject>
     <DiskObject>\Elements\Player\interiorHandler.pwn</DiskObject>
-    <DiskObject>\Elements\Player\LVPRadio.pwn</DiskObject>
     <DiskObject>\Elements\Player\PlayerDisplay.pwn</DiskObject>
     <DiskObject>\Elements\Player\playerHandler.pwn</DiskObject>
     <DiskObject>\Elements\Player\Ramping.pwn</DiskObject>

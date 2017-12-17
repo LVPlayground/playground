@@ -145,9 +145,6 @@
 #include Elements/Player/Balloon.pwn
 #include Elements/Player/Tow.pwn
 
-// LVP RADIO
-#include Elements/Player/LVPRadio.pwn
-
 #include Elements/Player/WantedLevel.pwn
 #include Elements/Player/SprayTags.pwn
 

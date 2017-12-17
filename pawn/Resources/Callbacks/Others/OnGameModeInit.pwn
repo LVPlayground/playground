@@ -50,7 +50,6 @@ public OnGameModeInit() {
 #endif
     sprayTagInitialize();           // Spray tag handler
     InitHotAirBalloon();
-    radioInitializeDisplay();
     BagCash__Initialize();
 
 #if Feature::DisableFights == 0

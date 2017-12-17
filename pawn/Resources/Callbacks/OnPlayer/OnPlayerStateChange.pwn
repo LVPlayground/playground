@@ -20,11 +20,6 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
     TeleportCheatAddException(playerid);
     ClearPlayerMenus(playerid);
 
-    if (IsPlayerInAnyVehicle(playerid))
-        radioPlayerEnterVehicle(playerid);
-    else
-        radioPlayerExitVehicle(playerid);
-
     if (newstate == PLAYER_STATE_PASSENGER) {
         if (GetPlayerWeapon(playerid) == WEAPON_DEAGLE || GetPlayerWeapon(playerid) == WEAPON_SNIPER) {
             new weaponId, ammo;

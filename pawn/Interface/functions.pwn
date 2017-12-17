@@ -223,7 +223,6 @@ ResetPlayerStats(playerId) {
     CTaxi_ResetMayTaxi(playerId);
     ResetTeleCheatData(playerId);
     sprayTagResetData(playerId);
-    radioStreamResetData(playerId);
     playerLastQuitInterior[playerId] = 0;
     WantedLevel[playerId] = 0;
     preventKillLamers[ playerId ] = 0;

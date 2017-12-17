@@ -137,19 +137,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     param_reset();
     new string[256];
 
-    if(!strcmp(cmdtext, "/radio", true))
-    {
-        if(iRadioEnabledForPlayer[playerid] == true)
-        {
-            radioToggleForPlayer(playerid, false);
-            ShowBoxForPlayer(playerid, "LVP Radio disabled.");
-            return 1;
-        }
-        radioToggleForPlayer(playerid, true);
-        ShowBoxForPlayer(playerid, "LVP Radio enabled.");
-        return 1;
-    }
-
     if(CHideGame__GetPlayerState(playerid) == HS_STATE_PLAYING && Player(playerid)->isAdministrator() == false)
     {
         if(strcmp(cmd, "/leave", true) != 0 && strcmp(cmd, "/lay", true) !=0 && strcmp(cmd, "/sit", true) !=0 && strcmp(cmd, "/find", true) !=0

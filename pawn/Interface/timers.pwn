@@ -81,7 +81,6 @@ class DeprecatedTimerRuntime {
             WeaponCheat (playerId);
             CDrink__ProcessPlayer (playerId);
             CheckGymEntry (playerId);
-            radioProcess(playerId);
 
             if (g_bPlayerGodmode[playerId])
             {

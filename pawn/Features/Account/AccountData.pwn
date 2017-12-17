@@ -155,6 +155,11 @@ class AccountData <playerId (MAX_PLAYERS)> {
         // Read whether the player is part of a gang.
         m_gangId = DatabaseResult(resultId)->readInteger("gang_id");
 
+        // Read the preferred radio channel.
+        new preferredRadioChannel[64];
+        DatabaseResult(resultId)->readString("preferred_radio_channel", preferredRadioChannel);
+        PlayerSyncedData(playerId)->setPreferredRadioChannel(preferredRadioChannel);
+
         // Mutable information will be stored by the respective sub-systems, which will be handled
         // by a separate (private) method in this class.
         this->applyMutableData(resultId);

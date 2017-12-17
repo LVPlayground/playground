@@ -410,6 +410,15 @@ class PlaygroundCommands {
 
                             break;
 
+                        case Setting.TYPE_STRING:
+                            valueLabel = setting.value;
+                            if (setting.value != setting.defaultValue) {
+                                valueLabel = '{FFFF00}' + valueLabel + '{FFFFFF} (default: ' +
+                                             setting.defaultValue + ')';
+                            }
+
+                            break;
+
                         default:
                             throw new Error('Invalid setting type for ' + setting.name);
                     }
@@ -424,6 +433,10 @@ class PlaygroundCommands {
 
                             case Setting.TYPE_NUMBER:
                                 await this.handleNumberSettingModification(player, setting);
+                                break;
+
+                            case Setting.TYPE_STRING:
+                                await this.handleStringSettingModification(player, setting);
                                 break;
                         }
                     });
@@ -498,6 +511,34 @@ class PlaygroundCommands {
         });
     }
 
+    // Handles the |player| modifying the |setting|, which represents a textual value.
+    async handleStringSettingModification(player, setting) {
+        const answer = await Question.ask(player, {
+            question: 'Update the ' + setting.identifier + ' setting',
+            message: setting.description + '\nThe default value is {FFA500}' +
+                     setting.defaultValue + '{A9C4E4}',
+            leftButton: 'Update'
+        });
+
+        if (!answer)
+            return;  // the |player| cancelled the dialog.
+
+        if (!answer.length || answer.length > 255) {
+            return await MessageBox.display(player, {
+                title: 'Invalid value for the ' + setting.identifier + ' setting!',
+                message: Message.LVP_SETTING_INVALID_STRING
+            });
+        }
+
+        this.settings_().setValue(setting.identifier, answer);
+        this.announceSettingChangeToAdministrators(player, setting);
+
+        return await MessageBox.display(player, {
+            title: 'The setting has been disabled!',
+            message: Message.format(Message.LVP_SETTING_UPDATED, setting.identifier, answer)
+        });
+    }
+
     // Announces the updated value for the |setting|, as made by |player|, to administrators.
     announceSettingChangeToAdministrators(player, setting) {
         switch (setting.type) {
@@ -511,6 +552,13 @@ class PlaygroundCommands {
             case Setting.TYPE_NUMBER:
                 this.announce_().announceToAdministrators(
                     Message.LVP_ANNOUNCE_SETTING_UPDATED_NUM, player.name, player.id,
+                    setting.name, setting.value);
+
+                break;
+
+            case Setting.TYPE_STRING:
+                this.announce_().announceToAdministrators(
+                    Message.LVP_ANNOUNCE_SETTING_UPDATED_STRING, player.name, player.id,
                     setting.name, setting.value);
 
                 break;

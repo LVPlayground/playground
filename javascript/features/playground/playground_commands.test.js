@@ -172,9 +172,6 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
     it('should be able to change boolean settings', async(assert) => {
         const settings = server.featureManager.loadFeature('settings');
 
-        const russell = server.playerManager.getById(1 /* Russell */);
-        russell.identify();
-
         gunther.level = Player.LEVEL_MANAGEMENT;
 
         // Disable the `spawn_vehicle_admin_override` section in the `abuse` section.
@@ -210,9 +207,6 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
     it('should be able to change numeric settings', async(assert) => {
         const settings = server.featureManager.loadFeature('settings');
 
-        const russell = server.playerManager.getById(1 /* Russell */);
-        russell.identify();
-
         gunther.level = Player.LEVEL_MANAGEMENT;
 
         // Disable the `spawn_vehicle_admin_override` section in the `abuse` section.
@@ -243,5 +237,25 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.isTrue(gunther.messages[0].includes('blocker_damage_issued_time'));
         assert.isTrue(gunther.messages[0].includes('10'));
+    });
+
+    it('should be able to change textual settings', async(assert) => {
+        const settings = server.featureManager.loadFeature('settings');
+
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
+        // Change the `default_channel` section in the `radio` section.
+        gunther.respondToDialog({ listitem: 2 /* Assumed `radio` */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Assumed to be `default_channel` */ })).then(
+            () => gunther.respondToDialog({ response: 1, inputtext: 'Hello World' })).then(
+            () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
+
+        assert.equal(settings.getValue('radio/default_channel'), 'LVP Radio');
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(settings.getValue('radio/default_channel'), 'Hello World');
+
+        assert.equal(gunther.messages.length, 1);
+        assert.isTrue(gunther.messages[0].includes('default_channel'));
+        assert.isTrue(gunther.messages[0].includes('Hello World'));
     });
 });

@@ -10,11 +10,6 @@
         "stream": "http://icecast.omroep.nl/3fm-bb-mp3"
     },
     {
-        "name": "BBC Radio 1",
-        "language": "English",
-        "stream": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio1_mf_q"
-    },
-    {
         "name": "Capital FM",
         "language": "English",
         "stream": "http://media-ice.musicradio.com/CapitalMP3"

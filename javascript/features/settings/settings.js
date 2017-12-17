@@ -118,6 +118,11 @@ class Settings extends Feature {
                     throw new Error('The value for ' + identifier + ' must be a number.');
                 break;
 
+            case Setting.TYPE_STRING:
+                if (typeof value !== 'string')
+                    throw new Error('The value for ' + identifier + ' must be a string.');
+                break;
+
             default:
                 throw new Error('Unknown type for the setting ' + identifier + '.');
         }

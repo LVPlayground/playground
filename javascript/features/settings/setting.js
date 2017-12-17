@@ -43,5 +43,6 @@ class Setting {
 // adding or removing types from here as well.
 Setting.TYPE_BOOLEAN = 0;
 Setting.TYPE_NUMBER = 1;
+Setting.TYPE_STRING = 2;
 
 exports = Setting;

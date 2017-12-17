@@ -9,7 +9,7 @@ const Setting = require('features/settings/setting.js');
 const isDecember = (new Date()).getMonth() == 11;
 
 exports = [
-    /** Abuse-related settings */
+    /** Abuse related settings */
     new Setting('abuse', 'blocker_damage_issued_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after issuing damage.'),
     new Setting('abuse', 'blocker_damage_taken_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after having taken damage.'),
     new Setting('abuse', 'blocker_weapon_fire_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after firing your weapon.'),
@@ -22,7 +22,11 @@ exports = [
 
     new Setting('abuse', 'warning_report_limit', Setting.TYPE_NUMBER, 3, 'Number of types to report a specific abuse type for a player.'),
 
-    /** Decoration-related settings */
+    /** Decoration related settings */
     new Setting('decorations', 'objects_christmas', Setting.TYPE_BOOLEAN, isDecember, 'Should the Christmas decorations be enabled?'),
     new Setting('decorations', 'objects_pirate_party', Setting.TYPE_BOOLEAN, false, 'Should the Pirate Ship Party decorations be enabled?'),
+
+    /** Radio related settings */
+    new Setting('radio', 'enabled', Setting.TYPE_BOOLEAN, true, 'Should the radio feature be enabled?'),
+    new Setting('radio', 'default_channel', Setting.TYPE_STRING, 'LVP Radio', 'Name of the default radio channel.'),
 ];

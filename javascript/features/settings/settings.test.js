@@ -57,6 +57,23 @@ describe('Settings', (it, beforeEach) => {
 
             assert.notEqual(updatedValue, booleanValue);
         }
+
+        // Strings
+        {
+            const stringValue = settings.getValue('radio/default_channel');
+            assert.equal(typeof stringValue, 'string');
+
+            assert.throws(() => settings.setValue('radio/default_channel', 424));
+            assert.throws(() => settings.setValue('radio/default_channel', true));
+            assert.throws(() => settings.setValue('radio/default_channel', [ true ]));
+
+            settings.setValue('radio/default_channel', 'Hello, world!');
+
+            const updatedValue = settings.getValue('radio/default_channel');
+            assert.equal(typeof updatedValue, 'string');
+
+            assert.notEqual(updatedValue, stringValue);
+        }
     });
 
     it('should be able to support change observers for the settings', assert => {

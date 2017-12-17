@@ -15,23 +15,23 @@ class RadioCommands {
         // The `/radio` command gives players the ability to quickly (and temporarily) stop the
         // radio, as well as the option to change their channel selection.
         server.commandManager.buildCommand('radio')
-            .sub('options')
-                .build(RadioCommands.prototype.onRadioOptionsCommand.bind(this))
+            .sub('settings')
+                .build(RadioCommands.prototype.onRadioSettingsCommand.bind(this))
             .build(RadioCommands.prototype.onRadioCommand.bind(this));
 
         // TODO(Russell): Support `/radio add`
         // TODO(Russell): Support `/radio remove`
     }
 
-    // Called when the |player| types `/radio options`. Shows a dialog allowing them to set the
+    // Called when the |player| types `/radio settings`. Shows a dialog allowing them to set the
     // radio channel they would like to listen to while on LVP.
-    async onRadioOptionsCommand(player) {
+    async onRadioSettingsCommand(player) {
         if (!this.manager_.isEnabled()) {
             player.sendMessage(Message.RADIO_FEATURE_DISABLED);
             return;
         }
 
-        const menu = new Menu('In-game radio options', ['Channel', 'Language']);
+        const menu = new Menu('In-game radio settings', ['Channel', 'Language']);
         const preferredChannel = this.manager_.getPreferredChannelForPlayer(player);
 
         for (const channel of this.selection_.channels) {
@@ -58,7 +58,7 @@ class RadioCommands {
     }
 
     // Called when the |player| types `/radio` without any arguments. Starts or stops the radio
-    // if they're in a vehicle. Tells them about `/radio options` too.
+    // if they're in a vehicle. Tells them about `/radio settings` too.
     onRadioCommand(player) {
         if (!this.manager_.isEnabled()) {
             player.sendMessage(Message.RADIO_FEATURE_DISABLED);
@@ -68,7 +68,7 @@ class RadioCommands {
         // Bail out if the |player| is not eligible for listening to the radio right now.
         if (!this.manager_.isEligible(player)) {
             player.sendMessage(Message.RADIO_COMMAND_NOT_ELIGIBLE);
-            player.sendMessage(Message.RADIO_COMMAND_OPTIONS_ADVERTISEMENT);
+            player.sendMessage(Message.RADIO_COMMAND_SETTINGS_ADVERTISEMENT);
             return;
         }
 
@@ -85,7 +85,7 @@ class RadioCommands {
         }
 
         player.sendMessage(Message.RADIO_COMMAND_TOGGLE_LISTENING, operation, channel.name);
-        player.sendMessage(Message.RADIO_COMMAND_OPTIONS_ADVERTISEMENT);
+        player.sendMessage(Message.RADIO_COMMAND_SETTINGS_ADVERTISEMENT);
     }
 
     dispose() {

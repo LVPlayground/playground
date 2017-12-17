@@ -37,9 +37,9 @@ describe('RadioCommands', (it, beforeEach) => {
             gunther.clearMessages();
         }
 
-        // Command: /radio options
+        // Command: /radio settings
         {
-            await gunther.issueCommand('/radio options');
+            await gunther.issueCommand('/radio settings');
 
             assert.equal(gunther.messages.length, 1);
             assert.equal(gunther.messages[0], Message.RADIO_FEATURE_DISABLED);
@@ -126,7 +126,7 @@ describe('RadioCommands', (it, beforeEach) => {
         }
     });
 
-    it('should show an advertisement for the `options` command', async assert => {
+    it('should show an advertisement for the `settings` command', async assert => {
         settings.setValue('radio/restricted_to_vehicles', false);
         assert.isTrue(manager.isEnabled());
         assert.isTrue(manager.isEligible(gunther));
@@ -135,7 +135,7 @@ describe('RadioCommands', (it, beforeEach) => {
             await gunther.issueCommand('/radio');
 
             assert.equal(gunther.messages.length, 2);
-            assert.equal(gunther.messages[1], Message.RADIO_COMMAND_OPTIONS_ADVERTISEMENT);
+            assert.equal(gunther.messages[1], Message.RADIO_COMMAND_SETTINGS_ADVERTISEMENT);
         }
     });
 
@@ -148,7 +148,7 @@ describe('RadioCommands', (it, beforeEach) => {
             gunther.respondToDialog({ listitem: selection.channels.length }).then(
                 () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
 
-            await gunther.issueCommand('/radio options');
+            await gunther.issueCommand('/radio settings');
 
             assert.equal(manager.getPreferredChannelForPlayer(gunther), null);
         }
@@ -167,7 +167,7 @@ describe('RadioCommands', (it, beforeEach) => {
             gunther.respondToDialog({ listitem: selection.channels.length - 1 }).then(
                 () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
 
-            await gunther.issueCommand('/radio options');
+            await gunther.issueCommand('/radio settings');
 
             assert.equal(manager.getPreferredChannelForPlayer(gunther), alternativeChannel);
         }

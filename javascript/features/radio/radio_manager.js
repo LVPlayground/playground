@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 const ScopedCallbacks = require('base/scoped_callbacks.js');
+const TextDraw = require('components/text_draw/text_draw.js');
 
 // Manager for the radio feature that's responsible for determining whether and when the radio
 // should start playing for players.
@@ -11,6 +12,7 @@ class RadioManager {
         this.selection_ = selection;
         this.settings_ = settings;
 
+        this.displayTextDraw_ = new WeakMap();
         this.listening_ = new Set();
 
         this.callbacks_ = new ScopedCallbacks();
@@ -50,14 +52,75 @@ class RadioManager {
         if (!channel)
             return;  // the |player| has opted out of the radio feature
 
-        // TODO(Russell): Show some text box thing to tell them about the radio?
+        // TODO(Russell): Make TextDraw testable.
+        if (!server.isTest())
+            this.displayRadioChannelName(player, channel);
 
         player.playAudioStream(channel.stream);
         this.listening_.add(player);
     }
 
+    // Displays the name of the |channel| to the |player| in the same style as Grand Theft Auto
+    // displays radio channel names. Will change the text's colour after three seconds, and have it
+    // automatically disappear after another three seconds.
+    async displayRadioChannelName(player, channel) {
+        await seconds(3);
+        {
+            if (!player.isConnected() || !this.isListening(player))
+                return;  // the player stopped listening to the radio already
+
+            const text = new TextDraw({
+                alignment: TextDraw.ALIGN_CENTER,
+                color: Color.fromRGB(0xA3, 0x79, 0x10),
+                font: TextDraw.FONT_MONOSPACE,
+                letterSize: [ 0.519999, 1.899999 ],
+                outlineSize: 1,
+                position: [ 320, 21 ],
+                proportional: true,
+                text: channel.name,
+            });
+
+            // Store the |text| associated with the |player|.
+            this.displayTextDraw_.set(player, text);
+
+            text.displayForPlayer(player);
+        }
+
+        await seconds(3);
+        {
+            const text = this.displayTextDraw_.get(player);
+            if (!player.isConnected() || !text)
+                return;  // the player disconnected or stopped listening to the radio
+
+            text.hideForPlayer(player);
+
+            // Update the |text|'s colour to fade it out, and then display it again.
+            text.color = Color.fromRGB(0xA3, 0xA3, 0xA3);
+
+            text.displayForPlayer(player);
+        }
+
+        await seconds(3);
+        {
+            const text = this.displayTextDraw_.get(player);
+            if (!player.isConnected() || !text)
+                return;  // the player disconnected or stopped listening to the radio
+
+            text.hideForPlayer(player);
+        }
+    }
+
     // Stops the radio for the given |player| given that they're listening to it.
     stopRadio(player) {
+        const text = this.displayTextDraw_.get(player);
+        if (text) {
+            // Hide the |text| from the player's screen as it's not relevant anymore.
+            text.hideForPlayer(player);
+
+            // Stop the channel radio name update sequence.
+            this.displayTextDraw_.delete(player);
+        }
+
         player.stopAudioStream();
         this.listening_.delete(player);
     }

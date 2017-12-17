@@ -23,6 +23,9 @@ class Radio extends Feature {
         this.selection_.loadConfiguration();
 
         this.manager_ = new RadioManager(this.selection_, settings);
+
+        // TODO: /radio command
+        // TODO: radio zones (ship + add/del radio?)
     }
 
     dispose() {

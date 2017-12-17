@@ -4,15 +4,26 @@
 
 const Feature = require('components/feature_manager/feature.js');
 
+const ChannelSelection = require('features/radio/channel_selection.js');
+
 // Implementation of the Radio feature that allows players to listen to a variety of radio channels
 // while playing on Las Venturas Playground.
 class Radio extends Feature {
     constructor() {
         super();
+
+        // Used for announcing changes in the default radio channel.
+        const announce = this.defineDependency('announce');
+
+        // There are various runtime configuration options available for the radio feature.
+        const settings = this.defineDependency('settings');
+
+        this.selection_ = new ChannelSelection(announce, settings);
+        this.selection_.loadConfiguration();
     }
 
     dispose() {
-
+        this.selection_.dispose();
     }
 }
 

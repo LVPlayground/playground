@@ -46,7 +46,7 @@ testRunner.run('.*\.test\.js').then(time => {
         'houses',
 
         // General smaller, self-contained features
-        'friends', 'killtime', 'playground', 'report', 'vehicles',
+        'friends', 'killtime', 'playground', 'radio', 'report', 'vehicles',
 
         // Player-related features
         'player_favours',

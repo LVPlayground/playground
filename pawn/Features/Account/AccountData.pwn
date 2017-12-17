@@ -2,23 +2,6 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-#if Feature::TemporaryVip == 1
-
-forward OnAdvertiseVip(playerId);
-public OnAdvertiseVip(playerId) {
-    if (!Player(playerId)->isConnected())
-        return;  // the player is not connected anymore
-
-    SendClientMessage(playerId, Color::Green,
-        "Merry Christmas! We've granted you VIP rights for this playing session to celebrate the festive season.");
-    SendClientMessage(playerId, Color::Green,
-        "Free VIP will last until January 1st. Consider donating on https://sa-mp.nl/donate if you like it!");
-
-    Player(playerId)->setIsVip(true);
-}
-
-#endif
-
 /**
  * The AccountData class encapsulates all immutable data available for a player's profile. While
  * some of these settings can be overridden by administrators on a per-session basis, persistently
@@ -118,19 +101,6 @@ class AccountData <playerId (MAX_PLAYERS)> {
         m_vip = !!DatabaseResult(resultId)->readInteger("is_vip");
         Player(playerId)->setIsVip(m_vip);
 
-#if Feature::TemporaryVip == 1
-        // If the player doesn't have VIP rights and the temporary VIP feature has been enabled,
-        // grant rights automatically after four seconds of playing.
-        if (!m_vip) {
-            new year, month, day;
-            getdate(year, month, day);
-
-            // The temporary VIP feature is only available in December.
-            if (month == 12)
-                SetTimerEx("OnAdvertiseVip", 4000, 0, "i", playerId);
-        }
-#endif
-
         m_developer = !!DatabaseResult(resultId)->readInteger("is_developer");
         Player(playerId)->setIsDeveloper(m_developer);
 
@@ -218,3 +188,8 @@ class AccountData <playerId (MAX_PLAYERS)> {
         Database->query(query, "", 0);
     }
 };
+
+forward OnGrantVipToPlayer(playerId);
+public OnGrantVipToPlayer(playerId) {
+    Player(playerId)->setIsVip(true);
+}

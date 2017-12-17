@@ -90,10 +90,6 @@ class Feature {
     /** **************************************************************************************** **/
     /// Christmas
 
-    // Grants temporary VIP rights to all registered players during the festive period. The rights
-    // will not persist between sessions, and the user should be tempted to donate.
-    public const TemporaryVip = 0;
-
     // A present is dropped somewhere in Las Venturas; when a player picks it up, he receives a 
     // random gift.
     public const EnableGiftHunting = 0;

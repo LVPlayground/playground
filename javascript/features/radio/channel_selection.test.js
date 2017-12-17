@@ -20,10 +20,12 @@ describe('ChannelSelection', (it, beforeEach, afterEach) => {
     const TEST_RADIO_CONFIGURATION = [
         {
             name: "LVP Radio",
+            language: "English",
             stream: "https://play.sa-mp.nl/stream.pls"
         },
         {
             name: "Fantasy Radio",
+            language: "English",
             stream: "https://example.com/stream.pls"
         }
     ];

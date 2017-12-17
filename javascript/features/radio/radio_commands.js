@@ -31,13 +31,12 @@ class RadioCommands {
             return;
         }
 
-        const menu = new Menu('In-game radio options', ['Channel', 'Selected']);
+        const menu = new Menu('In-game radio options', ['Channel', 'Language']);
         const preferredChannel = this.manager_.getPreferredChannelForPlayer(player);
 
         for (const channel of this.selection_.channels) {
-            const selected = channel === preferredChannel ? 'X' : '';
-
-            menu.addItem(channel.name, selected, async () => {
+            const highlight = channel === preferredChannel ? '{FFFF00}' : '';
+            menu.addItem(highlight + channel.name, highlight + channel.language, async () => {
                 this.manager_.setPreferredChannelForPlayer(player, channel);
                 await MessageBox.display(player, {
                     title: 'Radio preferences updated!',
@@ -46,8 +45,8 @@ class RadioCommands {
             });
         }
 
-        const disabled = !preferredChannel ? 'X' : '';
-        menu.addItem('{DDDDDD}Disable the radio', disabled, async () => {
+        const highlight = !preferredChannel ? '{FFFF00}' : '{999999}';
+        menu.addItem(highlight + 'Disable the radio', highlight + '-' /* language */, async () => {
             this.manager_.setPreferredChannelForPlayer(player, null /* disabled */);
                 await MessageBox.display(player, {
                     title: 'Radio preferences updated!',

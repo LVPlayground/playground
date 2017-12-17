@@ -22,10 +22,12 @@ describe('RadioManager', (it, beforeEach, afterEach) => {
         selection.loadConfigurationFromArray([
             {
                 name: "LVP Radio",
+                language: "English",
                 stream: "https://play.sa-mp.nl/stream.pls"
             },
             {
                 name: "Alternative Radio",
+                language: "English",
                 stream: "https://example.com/stream.pls"
             }
         ]);

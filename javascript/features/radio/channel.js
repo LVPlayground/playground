@@ -8,6 +8,9 @@ class Channel {
         if (!configuration.hasOwnProperty('name') || typeof configuration.name !== 'string')
             throw new Error('The name of a radio channel must be set as a string.');
 
+        if (!configuration.hasOwnProperty('language') || typeof configuration.language !== 'string')
+            throw new Error('The language of a radio channel must be set as a string.');
+
         if (!configuration.hasOwnProperty('stream') || typeof configuration.stream !== 'string')
             throw new Error('The stream of a radio channel must be set as a string.');
 
@@ -15,11 +18,15 @@ class Channel {
             throw new Error('The stream of a radio channel must be a URL.');
 
         this.name_ = configuration.name;
+        this.language_ = configuration.language;
         this.stream_ = configuration.stream;
     }
 
     // Gets the name of this radio channel.
     get name() { return this.name_; }
+
+    // Gets the language of this radio channel.
+    get language() { return this.language_; }
 
     // Gets the stream URL of this radio channel.
     get stream() { return this.stream_; }

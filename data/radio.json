@@ -1,18 +1,42 @@
 [
     {
         "name": "LVP Radio",
+        "language": "English",
         "stream": "http://play.sa-mp.nl:8000/stream/1/"
     },
     {
-        "name": "ChristmasHits.FM",
+        "name": "3FM",
+        "language": "Dutch",
+        "stream": "http://icecast.omroep.nl/3fm-bb-mp3"
+    },
+    {
+        "name": "BBC Radio 1",
+        "language": "English",
+        "stream": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio1_mf_q"
+    },
+    {
+        "name": "Capital FM",
+        "language": "English",
+        "stream": "http://media-ice.musicradio.com/CapitalMP3"
+    },
+    {
+        "name": "Christmas Hits",
+        "language": "German",
         "stream": "http://46.105.118.14:25500/listen.pls"
     },
     {
-        "name": "BBC Radio 1 (UK)",
-        "stream": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio1_mf_p?s=1426866326&e=1426880726&h=89d26749151daccea5416a7c310f0b45"
+        "name": "Oui FM",
+        "language": "French",
+        "stream": "http://stream.ouifm.fr/ouifm-high.mp3"
     },
     {
-        "name": "Radio 538 (NL)",
-        "stream": "http://playerservices.streamtheworld.com/api/livestream-redirect/TLPSTR09.mp3"
+        "name": "Planet Rock",
+        "language": "English",
+        "stream": "http://live-bauer-mz.sharp-stream.com/planetrock.mp3"
+    },
+    {
+        "name": "Radio 538",
+        "language": "Dutch",
+        "stream": "http://18973.live.streamtheworld.com/RADIO538.mp3"
     }
 ]

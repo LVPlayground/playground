@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const PlayerSyncedData = require('entities/player_synced_data.js');
+
 // Camera interpolation modes defined by SA-MP.
 const CAMERA_MOVE = 1;
 const CAMERA_CUT = 2;
@@ -14,6 +16,8 @@ class Player {
     this.ipAddress_ = pawnInvoke('GetPlayerIp', 'iS', playerId);
     this.nonPlayerCharacter_ = !!pawnInvoke('IsPlayerNPC', 'i', playerId);
     this.gpci_ = pawnInvoke('gpci', 'iS', playerId);
+
+    this.syncedData_ = new PlayerSyncedData(playerId);
 
     this.connected_ = true;
     this.disconnecting_ = false;
@@ -72,6 +76,10 @@ class Player {
 
   // Gets the level of this player. Synchronized with the gamemode using the `levelchange` event.
   get level() { return this.level_; }
+
+  // Gets the PlayerSynchedData object, representing data that's synchronized between the Pawn and
+  // JavaScript implementations of Las Venturas Playground.
+  get syncedData() { return this.syncedData_; }
 
   // Returns whether the player is an administrator on Las Venturas Playground.
   isAdministrator() {

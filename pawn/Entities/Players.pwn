@@ -5,6 +5,7 @@
 #include "Entities/Players/PlayerActivity.pwn"
 #include "Entities/Players/PlayerFlags.pwn"
 #include "Entities/Players/PlayerState.pwn"
+#include "Entities/Players/PlayerSyncedData.pwn"
 #include "Entities/Players/Player.pwn"
 #include "Entities/Players/PlayerSettings.pwn"
 #include "Entities/Players/PlayerManager.pwn"

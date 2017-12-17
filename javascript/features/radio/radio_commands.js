@@ -31,7 +31,7 @@ class RadioCommands {
             return;
         }
 
-        const menu = new Menu('In-game radio settings', ['Channel', 'Language']);
+        const menu = new Menu('Radio settings', ['Channel', 'Language']);
         const preferredChannel = this.manager_.getPreferredChannelForPlayer(player);
 
         for (const channel of this.selection_.channels) {

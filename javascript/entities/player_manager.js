@@ -31,6 +31,10 @@ class PlayerManager {
             'playerdisconnect', PlayerManager.prototype.onPlayerDisconnect.bind(this));
         this.callbacks_.addEventListener(
             'playerguestlogin', PlayerManager.prototype.onPlayerGuestLogin.bind(this));
+
+        // Implementation of the UpdatePlayerSyncedData() Pawn native.
+        provideNative('UpdatePlayerSyncedData', 'iiifs',
+                      PlayerManager.prototype.updatePlayerSyncedData.bind(this))
     }
 
     // Gets the number of players currently connected to the server.
@@ -268,6 +272,15 @@ class PlayerManager {
         player.notifyDisconnected();
     }
 
+    // Called when a value of synchronized data associated with a player has changed.
+    updatePlayerSyncedData(playerId, property, intValue, floatValue, stringValue) {
+        const player = this.players_.get(playerId);
+        if (!player)
+            return;  // the event has been received for an invalid player
+
+        player.syncedData.apply(property, intValue, floatValue, stringValue);
+    }
+
     // Notifies observers about the |eventName|, passing |...args| as the argument to the method
     // when it exists. The call will be bound to the observer's instance.
     notifyObservers(eventName, ...args) {
@@ -289,6 +302,8 @@ class PlayerManager {
 
     // Releases all references and state held by the player manager.
     dispose() {
+        provideNative('UpdatePlayerSyncedData', 'iiifs', () => 1);
+
         this.callbacks_.dispose();
         this.callbacks_ = null;
 

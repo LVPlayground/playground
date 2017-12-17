@@ -91,6 +91,8 @@ class Player <playerId (MAX_PLAYERS)> {
 
         GetPlayerName(playerId, m_nickname, sizeof(m_nickname));
         GetPlayerIp(playerId, m_ipAddress, sizeof(m_ipAddress));
+
+        PlayerSyncedData(playerId)->reset();
     }
 
     /**
@@ -111,6 +113,8 @@ class Player <playerId (MAX_PLAYERS)> {
      * state, to make sure that the rest of the gamemode is aware of this.
      */
     public onDisconnect() {
+        printf("Pawn PRC: %s", PlayerSyncedData(playerId)->preferredRadioChannel());
+
         m_flags = 0;
         m_level = PlayerLevel;
         m_nickname[0] = 0;
@@ -118,6 +122,7 @@ class Player <playerId (MAX_PLAYERS)> {
         m_ipAddress[0] = 0;
 
         PlayerState(playerId)->updateState(DisconnectedPlayerState);
+        PlayerSyncedData(playerId)->reset();
     }
 
     // ---- FUNCTIONAL METHODS ---------------------------------------------------------------------

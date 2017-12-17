@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const MockPlayerSyncedData = require('entities/test/mock_player_synced_data.js');
 const MockVehicle = require('entities/test/mock_vehicle.js');
 
 // Mocked player. Has the same interface and abilities as a real Player object, except that it does
@@ -16,6 +17,8 @@ class MockPlayer {
         this.vip_ = false;
         this.undercover_ = false;
         this.gangId_ = null;
+
+        this.syncedData_ = new MockPlayerSyncedData(this.id_);
 
         this.nonPlayerCharacter_ = event.npc || false;
 
@@ -95,6 +98,8 @@ class MockPlayer {
 
     get level() { return this.level_; }
     set level(value) { this.level_ = value; }
+
+    get syncedData() { return this.syncedData_; }
 
     isAdministrator() {
         return this.level_ == Player.LEVEL_ADMINISTRATOR ||
@@ -224,7 +229,7 @@ class MockPlayer {
     sendMessage(message, ...args) {
         if (message instanceof Message)
             message = Message.format(message, ...args);
-        
+
         if (message.length <= 144) // SA-MP-implementation does not send longer messages
             this.messages_.push(message.toString());
     }

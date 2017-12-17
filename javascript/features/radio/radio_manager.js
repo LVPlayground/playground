@@ -46,18 +46,31 @@ class RadioManager {
     // Starts the radio for the given |player|. Their choice in radio channel, if any at all, will
     // determine what they listen to.
     startRadio(player) {
-        // TODO(Russell): Determine whether the |player| wants to listen to the radio at all.
-        // TODO(Russell): Determine the radio channel the |player| wants to listen to.
-        // TODO(Russell): Start the radio.
+        const channel = this.getSelectedChannelForPlayer(player);
+        if (!channel)
+            return;  // the |player| has opted out of the radio feature
 
+        // TODO(Russell): Show some text box thing to tell them about the radio?
+
+        player.playAudioStream(channel.stream);
         this.listening_.add(player);
     }
 
     // Stops the radio for the given |player| given that they're listening to it.
     stopRadio(player) {
+        player.stopAudioStream();
         this.listening_.delete(player);
+    }
 
-        // TODO(Russell): Stop the radio.
+    // ---------------------------------------------------------------------------------------------
+
+    // Determines the channel that the |player| should be listening to. May return NULL if the
+    // player has decided to block the radio feature altogether.
+    getSelectedChannelForPlayer(player) {
+        // TODO(Russell): Enable players to disable the radio feature.
+        // TODO(Russell): Enable players to select their own channel preference.
+
+        return this.selection_.defaultChannel;
     }
 
     // ---------------------------------------------------------------------------------------------

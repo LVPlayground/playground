@@ -9,6 +9,7 @@ const RadioManager = require('features/radio/radio_manager.js');
 describe('RadioManager', (it, beforeEach, afterEach) => {
     let gunther = null;
     let manager = null;
+    let selection = null;
     let settings = null;
     let vehicle = null;
 
@@ -16,7 +17,8 @@ describe('RadioManager', (it, beforeEach, afterEach) => {
         settings = server.featureManager.loadFeature('settings');
 
         const announce = new MockAnnounce();
-        const selection = new ChannelSelection(() => announce, () => settings);
+
+        selection = new ChannelSelection(() => announce, () => settings);
         selection.loadConfigurationFromArray([
             {
                 name: "LVP Radio",
@@ -36,8 +38,8 @@ describe('RadioManager', (it, beforeEach, afterEach) => {
     });
 
     afterEach(() => {
-        manager.selection_.dispose();
         manager.dispose();
+        selection.dispose();
     });
 
     it('should keep track of whether the feature is enabled', assert => {
@@ -55,23 +57,28 @@ describe('RadioManager', (it, beforeEach, afterEach) => {
         assert.isTrue(manager.isEnabled());
 
         assert.isFalse(manager.isListening(gunther));
+        assert.isNull(gunther.streamUrl);
 
         // Enter the vehicle as a driver.
         {
             gunther.enterVehicle(vehicle, 0 /* driver seat */);
             assert.isTrue(manager.isListening(gunther));
+            assert.equal(gunther.streamUrl, selection.defaultChannel.stream);
 
             gunther.leaveVehicle();
             assert.isFalse(manager.isListening(gunther));
+            assert.isNull(gunther.streamUrl);
         }
 
         // Enter the vehicle as a passenger.
         {
             gunther.enterVehicle(vehicle, 1 /* passenger seat */);
             assert.isTrue(manager.isListening(gunther));
+            assert.equal(gunther.streamUrl, selection.defaultChannel.stream);
 
             gunther.leaveVehicle();
             assert.isFalse(manager.isListening(gunther));
+            assert.isNull(gunther.streamUrl);
         }
     });
 
@@ -87,6 +94,7 @@ describe('RadioManager', (it, beforeEach, afterEach) => {
         {
             gunther.enterVehicle(vehicle, 0 /* driver seat */);
             assert.isFalse(manager.isListening(gunther));
+            assert.isNull(gunther.streamUrl);
         }
     });
 });

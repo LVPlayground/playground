@@ -139,21 +139,6 @@ describe('RadioCommands', (it, beforeEach) => {
         }
     });
 
-    it('should allow players to disable the radio altogether', async assert => {
-        assert.isTrue(manager.isEnabled());
-        assert.equal(manager.getPreferredChannelForPlayer(gunther), selection.defaultChannel);
-
-        {
-            // Mimics Gunther disabling the radio feature altogether. (Last option.)
-            gunther.respondToDialog({ listitem: selection.channels.length }).then(
-                () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
-
-            await gunther.issueCommand('/radio settings');
-
-            assert.equal(manager.getPreferredChannelForPlayer(gunther), null);
-        }
-    });
-
     it('should allow players to change their preferred radio channel', async assert => {
         assert.isTrue(manager.isEnabled());
         assert.equal(manager.getPreferredChannelForPlayer(gunther), selection.defaultChannel);
@@ -170,6 +155,41 @@ describe('RadioCommands', (it, beforeEach) => {
             await gunther.issueCommand('/radio settings');
 
             assert.equal(manager.getPreferredChannelForPlayer(gunther), alternativeChannel);
+        }
+    });
+
+    it('should allow players to fall back to the default radio channel', async assert => {
+        assert.isTrue(manager.isEnabled());
+        assert.equal(manager.getPreferredChannelForPlayer(gunther), selection.defaultChannel);
+
+        const alternativeChannel = selection.channels[selection.channels.length - 1];
+        manager.setPreferredChannelForPlayer(gunther, alternativeChannel);
+
+        assert.equal(manager.getPreferredChannelForPlayer(gunther), alternativeChannel);
+
+        {
+            // Mimics Gunther selecting the default radio channel option.
+            gunther.respondToDialog({ listitem: selection.channels.length }).then(
+                () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
+
+            await gunther.issueCommand('/radio settings');
+
+            assert.equal(manager.getPreferredChannelForPlayer(gunther), selection.defaultChannel);
+        }
+    });
+
+    it('should allow players to disable the radio altogether', async assert => {
+        assert.isTrue(manager.isEnabled());
+        assert.equal(manager.getPreferredChannelForPlayer(gunther), selection.defaultChannel);
+
+        {
+            // Mimics Gunther disabling the radio feature altogether. (Last option.)
+            gunther.respondToDialog({ listitem: selection.channels.length + 1 }).then(
+                () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
+
+            await gunther.issueCommand('/radio settings');
+
+            assert.equal(manager.getPreferredChannelForPlayer(gunther), null);
         }
     });
 });

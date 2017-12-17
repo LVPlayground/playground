@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+const Channel = require('features/radio/channel.js');
 const ScopedCallbacks = require('base/scoped_callbacks.js');
 const TextDraw = require('components/text_draw/text_draw.js');
 
@@ -11,8 +12,6 @@ class RadioManager {
     constructor(selection, settings) {
         this.selection_ = selection;
         this.settings_ = settings;
-
-        this.preferredChannel_ = new WeakMap();
 
         this.displayTextDraw_ = new WeakMap();
         this.listening_ = new WeakMap();
@@ -143,24 +142,43 @@ class RadioManager {
         return this.listening_.get(player) || null;
     }
 
+    // Determines if the |player| has selected a preferred channel. Otherwise the default is used.
+    hasPreferredChannelForPlayer(player) {
+        return player.syncedData.preferredRadioChannel !== '';
+    }
+
     // Determines the channel that the |player| should be listening to. May return NULL if the
     // player has decided to block the radio feature altogether.
     getPreferredChannelForPlayer(player) {
-        if (this.preferredChannel_.has(player))
-            return this.preferredChannel_.get(player);
+        if (player.syncedData.preferredRadioChannel.length) {
+            if (player.syncedData.preferredRadioChannel == '_disabled')
+                return null;
+
+            // Find the selected channel in the ChannelSelection.
+            for (const channel of this.selection_.channels) {
+                if (player.syncedData.preferredRadioChannel === channel.name)
+                    return channel;
+            }
+
+            // Not found? Reset the player's preference back to default;
+            player.syncedData.preferredRadioChannel = '';
+        }
 
         return this.selection_.defaultChannel;
     }
 
     // Sets the preferred channel for the |player| to |channel|.
     setPreferredChannelForPlayer(player, channel) {
-        this.preferredChannel_.set(player, channel);
-        if (this.isListening(player)) {
-            this.stopRadio(player);
-            this.startRadio(player, false /* initialWait */);
-        }
+        if (channel instanceof Channel || channel === null)
+            player.syncedData.preferredRadioChannel = channel ? channel.name : '_disabled'
+        else
+            player.syncedData.preferredRadioChannel = ''; /* server default */
 
-        // TODO(Russell): Persist this setting between playing sessions.
+        if (!this.isListening(player))
+            return;
+
+        this.stopRadio(player);
+        this.startRadio(player, false /* initialWait */);
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -32,7 +32,11 @@ class RadioCommands {
         }
 
         const menu = new Menu('Radio settings', ['Channel', 'Language']);
-        const preferredChannel = this.manager_.getPreferredChannelForPlayer(player);
+
+        const hasPreferredChannel = this.manager_.hasPreferredChannelForPlayer(player);
+        const preferredChannel =
+            hasPreferredChannel ? this.manager_.getPreferredChannelForPlayer(player)
+                                : null;
 
         for (const channel of this.selection_.channels) {
             const highlight = channel === preferredChannel ? '{FFFF00}' : '';
@@ -45,8 +49,21 @@ class RadioCommands {
             });
         }
 
-        const highlight = !preferredChannel ? '{FFFF00}' : '{999999}';
-        menu.addItem(highlight + 'Disable the radio', highlight + '-' /* language */, async () => {
+        // Default radio channel.
+
+        const server = (!preferredChannel && !hasPreferredChannel) ? '{FFFF00}' : '{999999}';
+        menu.addItem(server + 'Default radio channel', server + '-' /* language */, async () => {
+            this.manager_.setPreferredChannelForPlayer(player, '' /* default */);
+                await MessageBox.display(player, {
+                    title: 'Radio preferences updated!',
+                    message: Message.RADIO_PREFERRED_DEFAULT
+                });
+        });
+
+        // Disable the radio altogether.
+
+        const disable = (!preferredChannel && hasPreferredChannel) ? '{FFFF00}' : '{999999}';
+        menu.addItem(disable + 'Disable the radio', disable + '-' /* language */, async () => {
             this.manager_.setPreferredChannelForPlayer(player, null /* disabled */);
                 await MessageBox.display(player, {
                     title: 'Radio preferences updated!',

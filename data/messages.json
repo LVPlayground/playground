@@ -255,6 +255,7 @@
     "RADIO_COMMAND_TOGGLE_LISTENING": "@success You have %s listening to {33AA33}%s{FFFFFF}.",
     "RADIO_FEATURE_DISABLED": "@error Management has disabled the radio feature. Sorry!",
     "RADIO_PREFERRED_CHANNEL_CHANGED": "Your preferred channel has been updated to {FFA500}%s{A9C4E4}.",
+    "RADIO_PREFERRED_DEFAULT": "You will be listening to the default radio channel again.",
     "RADIO_PREFERRED_DISABLED": "You have disabled the in-game radio.",
 
     "REPORT_MESSAGE": "{33AA33}Your report has been delivered to the crew{FFFFFF}: Player: %s (Id:%d) - Reason: %s",

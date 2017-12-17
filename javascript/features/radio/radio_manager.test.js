@@ -65,7 +65,7 @@ describe('RadioManager', (it, beforeEach, afterEach) => {
         assert.isFalse(manager.isListening(gunther));
         assert.isNull(gunther.streamUrl);
 
-        manager.startRadio(gunther);
+        manager.startRadio(gunther, true /* initialWait */);
         assert.isTrue(manager.isListening(gunther));
         assert.equal(gunther.streamUrl, selection.defaultChannel.stream);
 

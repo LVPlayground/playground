@@ -80,7 +80,7 @@ class RadioCommands {
             channel = this.manager_.getCurrentChannelForPlayer(player);
             this.manager_.stopRadio(player);
         } else {
-            this.manager_.startRadio(player);
+            this.manager_.startRadio(player, false /* initialWait */);
             channel = this.manager_.getCurrentChannelForPlayer(player);
         }
 

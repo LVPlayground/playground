@@ -56,14 +56,14 @@ class RadioManager {
 
     // Starts the radio for the given |player|. Their choice in radio channel, if any at all, will
     // determine what they listen to.
-    startRadio(player) {
+    startRadio(player, initialWait = true) {
         const channel = this.getPreferredChannelForPlayer(player);
         if (!channel)
             return;  // the |player| has opted out of the radio feature
 
         // TODO(Russell): Make TextDraw testable.
         if (!server.isTest())
-            this.displayRadioChannelName(player, channel, true /* initialWait */);
+            this.displayRadioChannelName(player, channel, initialWait);
 
         player.playAudioStream(channel.stream);
         this.listening_.set(player, channel);
@@ -157,7 +157,7 @@ class RadioManager {
         this.preferredChannel_.set(player, channel);
         if (this.isListening(player)) {
             this.stopRadio(player);
-            this.startRadio(player);
+            this.startRadio(player, false /* initialWait */);
         }
 
         // TODO(Russell): Persist this setting between playing sessions.

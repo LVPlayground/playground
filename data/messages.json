@@ -249,7 +249,7 @@
     "RACE_COMMAND_JOIN": "{CCD782}You have signed up for the {838F31}%s{CCD782}!",
     "RACE_COMMAND_LEFT": "{CCD782}You have left the {838F31}%s{CCD782}!",
 
-    "RADIO_ANNOUNCE_INVALID_DEFAULT_RADIO": "The configured default radio channel {838F31}%s{CCD782} is invalid.",
+    "RADIO_ANNOUNCE_INVALID_DEFAULT_RADIO": "The configured default radio channel {FF8282}%s{FFFFFF} is invalid.",
     "RADIO_COMMAND_NOT_ELIGIBLE": "@error You have to be in a vehicle in order to listen to the radio.",
     "RADIO_COMMAND_OPTIONS_ADVERTISEMENT": "@info Use {CCCCCC}/radio options{FFFFFF} to change your options.",
     "RADIO_COMMAND_TOGGLE_LISTENING": "@success You have %s listening to {33AA33}%s{FFFFFF}.",

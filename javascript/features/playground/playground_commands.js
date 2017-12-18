@@ -27,45 +27,6 @@ class PlaygroundCommands {
         this.access_ = access;
         this.commands_ = new Map();
 
-        // Utility function to import, create and initialize the command in |filename|. The command
-        // will be stored in the |commands_| map, and be registered with the manager later.
-        const requireCommand = filename => {
-            import CommandImplementation from filename;
-            if (!CommandImplementation instanceof Command)
-                throw new Error(filename + ' does not contain a command.');
-
-            const commandInstance = new CommandImplementation(announce);
-
-            // Store the |commandInstance| in the |commands_| dictionary.
-            this.commands_.set(commandInstance.name, commandInstance);
-        };
-
-        // -----------------------------------------------------------------------------------------
-
-        requireCommand('features/playground/commands/autohello.js');
-        requireCommand('features/playground/commands/boost.js');
-        requireCommand('features/playground/commands/fancy.js');
-        requireCommand('features/playground/commands/fly.js');
-        requireCommand('features/playground/commands/jetpack.js');
-        requireCommand('features/playground/commands/rampcar.js');
-        requireCommand('features/playground/commands/slow.js');
-        requireCommand('features/playground/commands/spm.js');
-
-        // -----------------------------------------------------------------------------------------
-
-        // Register each of the known commands with the access tracker and command manager. The
-        // command will be restricted based on its default access level and exceptions.
-        this.commands_.forEach((command, name) => {
-            this.access_.registerCommand(name, command.defaultPlayerLevel);
-
-            command.build(
-                server.commandManager.buildCommand(name)
-                    .restrict(PlaygroundAccessTracker.prototype.canAccessCommand.bind(this.access_,
-                                                                                      name)));
-        });
-
-        // -----------------------------------------------------------------------------------------
-
         this.profiling_ = false;
 
         // Functor that will actually activate a CPU profile. Has to be overridden by tests in order
@@ -93,6 +54,41 @@ class PlaygroundCommands {
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .build(PlaygroundCommands.prototype.onPlaygroundSettingsCommand.bind(this))
             .build(PlaygroundCommands.prototype.onPlaygroundCommand.bind(this));
+    }
+
+    // Asynchronously loads the misc commands provided by this feature. They are defined in their
+    // own source files, which must be loaded asynchronously.
+    async loadCommands() {
+        const commandFiles = [
+            'features/playground/commands/autohello.js',
+            'features/playground/commands/boost.js',
+            'features/playground/commands/fancy.js',
+            'features/playground/commands/fly.js',
+            'features/playground/commands/jetpack.js',
+            'features/playground/commands/rampcar.js',
+            'features/playground/commands/slow.js',
+            'features/playground/commands/spm.js'
+        ];
+
+        for (const commandFile of commandFiles) {
+            const CommandImplementation = (await import(commandFile)).default;
+            if (!CommandImplementation instanceof Command)
+                throw new Error(filename + ' does not contain a command.');
+
+            const command = new CommandImplementation(this.announce_);
+
+            // Register the command with the access manager, and then pass on the server-global
+            // command manager to its build() method so that it can be properly exposed.
+            this.access_.registerCommand(command.name, command.defaultPlayerLevel);
+
+            command.build(
+                server.commandManager.buildCommand(command.name)
+                    .restrict(PlaygroundAccessTracker.prototype.canAccessCommand.bind(this.access_,
+                                                                                      command.name)));
+
+            // Store the |command| in the |commands_| dictionary.
+            this.commands_.set(command.name, command);
+        }
     }
 
     // Gets the access tracker for the commands managed by this class.
@@ -347,13 +343,13 @@ class PlaygroundCommands {
     // Facilitates the developer's ability to reload features without having to restart the server.
     // There are strict requirements a feature has to meet in regards to dependencies in order for
     // it to be live reloadable.
-    onPlaygroundReloadCommand(player, feature) {
+    async onPlaygroundReloadCommand(player, feature) {
         if (!server.featureManager.isEligibleForLiveReload(feature)) {
             player.sendMessage(Message.LVP_RELOAD_NOT_ELIGIBLE, feature);
             return;
         }
 
-        server.featureManager.liveReload(feature);
+        await server.featureManager.liveReload(feature);
 
         this.announce_().announceToAdministrators(
             Message.LVP_ANNOUNCE_FEATURE_RELOADED, player.name, player.id, feature);

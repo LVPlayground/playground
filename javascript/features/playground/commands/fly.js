@@ -176,6 +176,10 @@ class FlyCommand extends Command {
         // Make them stop flying on the next iteration.
         this.flying_.set(player, false);
     }
+
+    dispose() {
+        this.callbacks_.dispose();
+    }
 }
 
 export default FlyCommand;

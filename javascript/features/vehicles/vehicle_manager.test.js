@@ -439,11 +439,11 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.isFalse(vehicle.isConnected());
     });
 
-    it('should recreate vehicles when the streamer reloads', assert => {
+    it('should recreate vehicles when the streamer reloads', async assert => {
         const originalStreamerSize = vehicleStreamer.size;
 
         assert.isTrue(server.featureManager.isEligibleForLiveReload('streamer'));
-        assert.isTrue(server.featureManager.liveReload('streamer'));
+        assert.isTrue(await server.featureManager.liveReload('streamer'));
 
         const streamer = server.featureManager.loadFeature('streamer');
         assert.notEqual(streamer.getVehicleStreamer(), vehicleStreamer);

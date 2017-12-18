@@ -230,7 +230,7 @@ describe('Pickups', (it, beforeEach, afterEach) => {
 
         assert.equal(server.pickupManager.count, originalPickupCount + 1);
 
-        server.featureManager.liveReload('streamer');
+        assert.isTrue(await server.featureManager.liveReload('streamer'));
 
         assert.equal(server.pickupManager.count, originalPickupCount + 1);
     });

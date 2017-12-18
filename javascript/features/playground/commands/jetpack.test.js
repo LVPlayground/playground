@@ -8,8 +8,10 @@ describe('JetpackCommand', (it, beforeEach, afterEach) => {
     let commands = null;
     let gunther = null;
 
-    beforeEach(() => {
+    beforeEach(async() => {
         commands = new MockPlaygroundCommands();
+        await commands.loadCommands();
+
         gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify();
 

@@ -23,6 +23,7 @@ class Playground extends Feature {
 
         this.manager_ = new PlaygroundManager(settings);
         this.commands_ = new PlaygroundCommands(this.access_, announce, settings);
+        this.commands_.loadCommands();
 
         // Activate the features that should be activated by default.
         this.manager_.initialize();

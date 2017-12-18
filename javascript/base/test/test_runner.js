@@ -52,13 +52,13 @@ class TestRunner {
   // executed. Returns a promise that will be resolved when all tests pass, or rejected when one or
   // more failures are observed.
   run(pattern) {
-    this.loadTestSuites(pattern);
-
     const start = highResolutionTime();
 
-    return new Promise((resolve, reject) => {
+    return new Promise(async(resolve, reject) => {
       let currentSuiteIndex = 0,
           failures = [];
+
+      await this.loadTestSuites(pattern);
 
       const runNextSuite = () => {
         if (currentSuiteIndex >= this.testSuites_.length) {
@@ -119,12 +119,13 @@ class TestRunner {
 
   // Loads all the test suites that match |pattern|. A global function called `describe` will be
   // made available to these files, enabling them to register their test suite(s).
-  loadTestSuites(pattern) {
+  async loadTestSuites(pattern) {
     // Install the global `describe` function on the global.
     global.describe = TestRunner.prototype.registerSuite.bind(this);
 
     // Include all files that match |pattern| in the ./javascript/ folder.
-    glob('javascript', pattern).map(require);
+    for (const filename of glob('javascript', pattern))
+      await import(filename);
 
     // Remove the `describe` method from the global scope again.
     delete global.describe;

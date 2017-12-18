@@ -101,7 +101,7 @@ describe('HouseVehicleController', (it, beforeEach, afterEach) => {
         assert.equal(server.vehicleManager.count, serverVehicleCount + 10);
     });
 
-    it('should reattach vehicles when the streamer reloads', assert => {
+    it('should reattach vehicles when the streamer reloads', async assert => {
         assert.equal(controller.count, 0);
 
         for (let i = 0; i < 10; ++i)
@@ -112,7 +112,7 @@ describe('HouseVehicleController', (it, beforeEach, afterEach) => {
 
         const oldStreamer = controller.streamer;
 
-        assert.isTrue(server.featureManager.liveReload('streamer'));
+        assert.isTrue(await server.featureManager.liveReload('streamer'));
 
         assert.notEqual(controller.streamer, oldStreamer);
         assert.equal(controller.streamer.size, 10);

@@ -6,7 +6,7 @@ import Feature from 'components/feature_manager/feature.js';
 import FeatureManager from 'components/feature_manager/feature_manager.js';
 
 describe('FeatureManager', it => {
-    it('initializes the features', assert => {
+    it('initializes the features', async assert => {
         let counter = 0;
 
         class MySimpleFeature extends Feature {
@@ -22,12 +22,12 @@ describe('FeatureManager', it => {
             second: MySecondFeature
         });
 
-        server.featureManager.loadFeatures(['simple', 'second']);
+        await server.featureManager.loadFeatures(['simple', 'second']);
 
         assert.equal(counter, 11);
     });
 
-    it('should allow declaring dependencies', assert => {
+    it('should allow declaring dependencies', async assert => {
         let value = 0;
 
         class MySimpleFeature extends Feature {
@@ -47,12 +47,12 @@ describe('FeatureManager', it => {
             second: MySecondFeature
         });
 
-        server.featureManager.loadFeatures(['simple', 'second']);
+        await server.featureManager.loadFeatures(['simple', 'second']);
 
         assert.equal(value, 42);
     });
 
-    it('should throw on invalid dependencies', assert => {
+    it('should throw on invalid dependencies', async assert => {
         class MySimpleFeature extends Feature {
             constructor() {
                 super();
@@ -63,11 +63,13 @@ describe('FeatureManager', it => {
 
         server.featureManager.registerFeaturesForTests({ simple: MySimpleFeature });
 
-        assert.throws(() =>
-            server.featureManager.loadFeatures(['simple']));
+        try {
+            await server.featureManager.loadFeatures(['simple']);
+            assert.notReached();
+        } catch (e) {}
     });
 
-    it('should throw on circular dependencies', assert => {
+    it('should throw on circular dependencies', async assert => {
         class MySimpleFeature extends Feature {
             constructor() {
                 super();
@@ -89,11 +91,13 @@ describe('FeatureManager', it => {
             second: MySecondFeature
         });
 
-        assert.throws(() =>
-            server.featureManager.loadFeatures(['simple', 'second']));
+        try {
+            await server.featureManager.loadFeatures(['simple', 'second']);
+            assert.notReached();
+        } catch (e) {}
     });
 
-    it('should be able to hand out functional dependencies', assert => {
+    it('should be able to hand out functional dependencies', async assert => {
         let executed = false;
 
         class MySimpleFeature extends Feature {}
@@ -118,7 +122,7 @@ describe('FeatureManager', it => {
             second: MySecondFeature
         });
 
-        server.featureManager.loadFeatures(['simple', 'second']);
+        await server.featureManager.loadFeatures(['simple', 'second']);
 
         assert.isTrue(executed);
     });
@@ -173,7 +177,7 @@ describe('FeatureManager', it => {
         assert.isFalse(server.featureManager.isEligibleForLiveReload('opt_out'));
     });
 
-    it('should be able to live reload features', assert => {
+    it('should be able to live reload features', async assert => {
         let constructorCounter = 0;
         let disposeCounter = 0;
 
@@ -210,7 +214,7 @@ describe('FeatureManager', it => {
             feature: MyFeature
         });
 
-        server.featureManager.loadFeatures(['counter', 'feature']);
+        await server.featureManager.loadFeatures(['counter', 'feature']);
 
         assert.isTrue(server.featureManager.isEligibleForLiveReload('counter'));
 
@@ -223,7 +227,7 @@ describe('FeatureManager', it => {
         assert.equal(feature.count(), 2);
         assert.equal(feature.count(), 3);
 
-        assert.isTrue(server.featureManager.liveReload('counter'));
+        assert.isTrue(await server.featureManager.liveReload('counter'));
 
         assert.equal(constructorCounter, 2);
         assert.equal(disposeCounter, 1);
@@ -233,7 +237,7 @@ describe('FeatureManager', it => {
         assert.equal(feature.count(), 3);
     });
 
-    it('should support reload observers on functional dependencies', assert => {
+    it('should support reload observers on functional dependencies', async assert => {
         class MyDependency extends Feature {
             constructor() {
                 super();
@@ -273,7 +277,7 @@ describe('FeatureManager', it => {
             feature: MyFeature
         });
 
-        server.featureManager.loadFeatures(['dependency', 'feature']);
+        await server.featureManager.loadFeatures(['dependency', 'feature']);
 
         assert.isTrue(server.featureManager.isEligibleForLiveReload('dependency'));
         assert.isTrue(server.featureManager.isEligibleForLiveReload('feature'));
@@ -283,24 +287,24 @@ describe('FeatureManager', it => {
         assert.equal(feature.count(), 1);
         assert.equal(feature.count(), 2);
 
-        assert.isTrue(server.featureManager.liveReload('dependency'));
+        assert.isTrue(await server.featureManager.liveReload('dependency'));
         assert.equal(feature.reloadCount(), 0);
         assert.equal(feature.count(), 1);
 
         feature.addReloadObserver();
 
-        assert.isTrue(server.featureManager.liveReload('dependency'));
+        assert.isTrue(await server.featureManager.liveReload('dependency'));
         assert.equal(feature.reloadCount(), 1);
         assert.equal(feature.count(), 1);
 
         feature.removeReloadObserver();
 
-        assert.isTrue(server.featureManager.liveReload('dependency'));
+        assert.isTrue(await server.featureManager.liveReload('dependency'));
         assert.equal(feature.reloadCount(), 1);
         assert.equal(feature.count(), 1);
     });
 
-    it('should invoke reload observers with the new instance', assert => {
+    it('should invoke reload observers with the new instance', async assert => {
         let counter = 0;
 
         class MyDependency extends Feature {
@@ -339,14 +343,14 @@ describe('FeatureManager', it => {
             feature: MyFeature
         });
 
-        server.featureManager.loadFeatures(['dependency', 'feature']);
+        await server.featureManager.loadFeatures(['dependency', 'feature']);
 
         const feature = server.featureManager.getFeatureForTests('feature');
 
         assert.isNull(feature.counter);
         assert.equal(counter, 1);
 
-        assert.isTrue(server.featureManager.liveReload('dependency'));
+        assert.isTrue(await server.featureManager.liveReload('dependency'));
 
         assert.equal(feature.counter, 2);
         assert.equal(counter, 2);

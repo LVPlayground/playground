@@ -192,11 +192,11 @@ describe('Killtime', (it, beforeEach) => {
         assert.equal(russell.messages[0], Message.format(Message.ANNOUNCE_ALL, killtimeMessage));
     });
 
-    it('should support live reloading, and properly clean up after itself', assert => {
+    it('should support live reloading, and properly clean up after itself', async assert => {
         const commandCount = server.commandManager.size;
 
         assert.isTrue(server.featureManager.isEligibleForLiveReload('killtime'));
-        assert.isTrue(server.featureManager.liveReload('killtime'));
+        assert.isTrue(await server.featureManager.liveReload('killtime'));
 
         assert.equal(server.commandManager.size, commandCount);
     });

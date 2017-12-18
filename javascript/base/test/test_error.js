@@ -8,11 +8,25 @@ class TestError extends Error {
   constructor(context) {
     super();
 
-    let stackTrace = context.innerError.stack.split('\n'),
-        stackLength = stackTrace.length;
+    const stackTrace = context.innerError.stack.split('\n');
+    const stackLength = stackTrace.length;
 
-    // Determine the location of the error based on the second-final entry in the stack trace.
-    let [_, filename, line] = stackTrace[stackLength - 1].match(/.*\(([^:]+):(\d+):.*/);
+    let filename = 'unknown';
+    let line = 0;
+
+    // TODO(Russell): Become much smarter about finding the file and line to blame...
+    {
+      for (let i = stackLength - 1; i >= 0; --i) {
+        const stackLine = stackTrace[i];
+        if (!stackLine.includes('javascript'))
+          continue;  // doesn't contain a filename
+
+        if (!stackLine.includes('.test.'))
+          continue;  // doesn't include a test file
+
+        [, filename, line] = stackLine.match(/javascript[\\\/]([^:]+):(\d+):/);
+      }
+    }
 
     this.context_ = {
       suiteDescription: context.suiteDescription,

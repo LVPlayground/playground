@@ -8,8 +8,9 @@ describe('SecretPrivateMessageCommand', (it, beforeEach, afterEach) => {
     let commands = null;
     let lucy = null;
 
-    beforeEach(() => {
+    beforeEach(async() => {
         commands = new MockPlaygroundCommands();
+        await commands.loadCommands();
 
         lucy = server.playerManager.getById(2 /* Lucy */);
         lucy.identify();

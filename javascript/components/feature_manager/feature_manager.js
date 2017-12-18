@@ -40,23 +40,21 @@ class FeatureManager {
 
     // Loads all the |features|. This should be an array of feature names, each of which is presumed
     // to have their Feature instance defined as //features/{name}/{name}.js.
-    loadFeatures(features) {
+    async loadFeatures(features) {
         if (this.registeredFeatures_.size != 0 && !server.isTest())
             throw new Error('The feature manager may only be initialized once.');
 
         // Load all the feature constructors in the map of registered features.
-        features.forEach(feature => {
+        for (const feature of features) {
             if (this.registeredFeatures_.has(feature) && server.isTest())
-                return;
+                continue;
 
             const featureFilename = 'features/' + feature + '/' + feature + '.js';
-
-            // TODO(Russell): FIX MODULES
-            //import featureConstructor from featureFilename;
+            const featureConstructor = (await import(featureFilename)).default;
 
             this.dependencyGraph_.createNode(feature);
             this.registeredFeatures_.set(feature, featureConstructor);
-        });
+        }
 
         // Load all the features into the system by instantiating them.
         for (const feature of this.registeredFeatures_.keys())
@@ -115,25 +113,22 @@ class FeatureManager {
     // sure that any changed files are reloaded from disk. Then the feature is read from disk again,
     // followed by disposing the existing feature. All dependencies declared by the feature will
     // then be cleared, finished by reloading the feature through the regular code path again.
-    liveReload(feature) {
-        // TODO(Russell): Modules broke live reloading. Disable it for now.
-        return false;
-
+    async liveReload(feature) {
         if (!this.isEligibleForLiveReload(feature))
             throw new Error('The feature "' + feature + '" is not eligible for live reload.');
 
         const featureDirectory = 'features/' + feature + '/';
         const featureFilename = featureDirectory + feature + '.js';
 
-        // Clear the require() cache to be able to load the latest code for the feature.
-        require.clear(featureDirectory);
+        // Clear the module cache to be able to load the latest code for the feature.
+        clearModuleCache(featureDirectory);
 
         let featureConstructor = null;
         try {
             if (server.isTest())
                 featureConstructor = this.registeredFeatures_.get(feature);
             else
-                featureConstructor = require(featureFilename);
+                featureConstructor = (await import(featureFilename)).default;
 
         } catch (exception) {
             console.log('Unable to reload ' + feature, exception);

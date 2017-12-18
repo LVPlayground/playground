@@ -89,7 +89,7 @@ describe('HouseEntranceController', (it, beforeEach) => {
 
         assert.equal(locationFeature.portalCount, occupiedLocationCount);
 
-        server.featureManager.liveReload('location');
+        assert.isTrue(await server.featureManager.liveReload('location'));
 
         const reloadedLocationFeature = server.featureManager.getFeatureForTests('location');
         assert.notEqual(reloadedLocationFeature, locationFeature);

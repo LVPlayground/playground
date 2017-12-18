@@ -90,11 +90,11 @@ describe('Report', (it, beforeEach) => {
             Message.format(Message.REPORT_MESSAGE, gunther.name, gunther.id, 'weird weapon-use'));
     });
 
-    it('should support live reloading, and properly clean up after itself', assert => {
+    it('should support live reloading, and properly clean up after itself', async assert => {
         const commandCount = server.commandManager.size;
 
         assert.isTrue(server.featureManager.isEligibleForLiveReload('report'));
-        assert.isTrue(server.featureManager.liveReload('report'));
+        assert.isTrue(await server.featureManager.liveReload('report'));
 
         assert.equal(server.commandManager.size, commandCount);
     });

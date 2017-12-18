@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Rectangle = require('components/text_draw/rectangle.js');
-const TextDraw = require('components/text_draw/text_draw.js');
+import Rectangle from 'components/text_draw/rectangle.js';
+import TextDraw from 'components/text_draw/text_draw.js';
 
 // Background color of the message. Should be semi-transparent.
 const BACKGROUND_COLOR = Color.fromRGBA(0, 0, 0, 100);
@@ -42,4 +42,4 @@ class MessageView {
     }
 }
 
-exports = MessageView;
+export default MessageView;

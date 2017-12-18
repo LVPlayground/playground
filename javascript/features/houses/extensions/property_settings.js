@@ -2,10 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const HouseExtension = require('features/houses/house_extension.js');
-const Menu = require('components/menu/menu.js');
-const MessageBox = require('components/dialogs/message_box.js');
-const Question = require('components/dialogs/question.js');
+import HouseExtension from 'features/houses/house_extension.js';
+import Menu from 'components/menu/menu.js';
+import MessageBox from 'components/dialogs/message_box.js';
+import Question from 'components/dialogs/question.js';
 
 // Options for asking the player what their house's name should be.
 const NAME_QUESTION = {
@@ -214,4 +214,4 @@ class PropertySettings extends HouseExtension {
     }
 }
 
-exports = PropertySettings;
+export default PropertySettings;

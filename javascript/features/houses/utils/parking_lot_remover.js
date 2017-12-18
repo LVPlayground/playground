@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Dialog = require('components/dialogs/dialog.js');
-const IdentityBeam = require('features/houses/utils/identity_beam.js');
+import Dialog from 'components/dialogs/dialog.js';
+import IdentityBeam from 'features/houses/utils/identity_beam.js';
 
 // Class that provides the user interface required for *removing* a previously created parking lot.
 // It will highlight the existing parking lots and verify input of the `/house remove` command.
@@ -118,4 +118,4 @@ ParkingLotRemover.REASON_CANCELED = 0;
 ParkingLotRemover.REASON_CONFIRMED = 1;
 ParkingLotRemover.REASON_DISCONNECT = 2;
 
-exports = ParkingLotRemover;
+export default ParkingLotRemover;

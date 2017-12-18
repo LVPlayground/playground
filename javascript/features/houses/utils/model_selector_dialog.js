@@ -33,4 +33,4 @@ ModelSelectorDialog.COLUMN_COUNT = 6;
 // Number of rows of models to display per page of the model selector.
 ModelSelectorDialog.ROW_COUNT = 3;
 
-exports = ModelSelectorDialog;
+export default ModelSelectorDialog;

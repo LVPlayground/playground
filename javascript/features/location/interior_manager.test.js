@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const InteriorManager = require('features/location/interior_manager.js');
-const Portal = require('features/location/portal.js');
+import InteriorManager from 'features/location/interior_manager.js';
+import Portal from 'features/location/portal.js';
 
 describe('InteriorManager', (it, beforeEach, afterEach) => {
     let manager = null;

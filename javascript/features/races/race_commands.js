@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const CommandBuilder = require('components/command_manager/command_builder.js');
-const Menu = require('components/menu/menu.js');
+import CommandBuilder from 'components/command_manager/command_builder.js';
+import Menu from 'components/menu/menu.js';
 
 // Title of the dialog that displays the available races.
 const DIALOG_TITLE = 'Racing on Las Venturas Playground';
@@ -84,4 +84,4 @@ class RaceCommands {
     }
 }
 
-exports = RaceCommands;
+export default RaceCommands;

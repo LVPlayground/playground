@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ScopedEntities = require('entities/scoped_entities.js');
+import ScopedEntities from 'entities/scoped_entities.js';
 
 // Private symbol ensuring that the ColorPicker constructor won't be used.
 const PrivateSymbol = Symbol('Please use the static methods.');
@@ -42,4 +42,4 @@ class ObjectGroup {
     }
 }
 
-exports = ObjectGroup;
+export default ObjectGroup;

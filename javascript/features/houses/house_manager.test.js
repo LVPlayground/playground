@@ -2,10 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const createTestEnvironment = require('features/houses/test/test_environment.js');
+import createTestEnvironment from 'features/houses/test/test_environment.js';
 
-const HouseExtension = require('features/houses/house_extension.js');
-const HouseSettings = require('features/houses/house_settings.js');
+import HouseExtension from 'features/houses/house_extension.js';
+import HouseSettings from 'features/houses/house_settings.js';
 
 describe('HouseManager', (it, beforeEach) => {
     let manager = null;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const AssertionFailedError = require('base/test/assertion_failed_error.js');
+import AssertionFailedError from 'base/test/assertion_failed_error.js';
 
 // This library provides a series of asserts that can be used for validating assumptions in unit
 // tests. Failing asserts will create clear and useful error messages.
@@ -382,7 +382,7 @@ class Assert {
 
   // -----------------------------------------------------------------------------------------------
 
-  // Coerces |value| to a string. 
+  // Coerces |value| to a string.
   toString(value) {
     if (value === null)
       return 'null';
@@ -390,7 +390,7 @@ class Assert {
       return 'undefined';
     else if (Number.isNaN(value))
       return 'NaN';
-    
+
     return value.toString();
   }
 
@@ -446,4 +446,4 @@ function angularEquals(o1, o2) {
   return false;
 }
 
-exports = Assert;
+export default Assert;

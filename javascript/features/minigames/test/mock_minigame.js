@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Minigame = require('features/minigames/minigame.js');
+import Minigame from 'features/minigames/minigame.js';
 
 // A mocked implementation of something that could be a minigame.
 class MockMinigame extends Minigame {
@@ -98,4 +98,4 @@ class MockMinigame extends Minigame {
     onFinish(reason) { this.finishResolve_(reason); return this.finishPromise_; }
 }
 
-exports = MockMinigame;
+export default MockMinigame;

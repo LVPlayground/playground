@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const HouseSettings = require('features/houses/house_settings.js');
-const Portal = require('features/location/portal.js');
-const ScopedEntities = require('entities/scoped_entities.js');
+import HouseSettings from 'features/houses/house_settings.js';
+import Portal from 'features/location/portal.js';
+import ScopedEntities from 'entities/scoped_entities.js';
 
 // The radius around a house pickup within which the label will be visible.
 const HOUSE_AVAILABLE_LABEL_DRAW_DISTANCE = 20;
@@ -164,7 +164,7 @@ class HouseEntranceController {
                     throw new Error('The |location| must have an associated pickup/label.');
 
                 this.availableLocationLabels_.delete(location);
-                this.availableLocationPickups_.delete(location);                
+                this.availableLocationPickups_.delete(location);
                 this.availablePickups_.delete(pickup);
 
                 label.dispose();
@@ -404,4 +404,4 @@ class HouseEntranceController {
     }
 }
 
-exports = HouseEntranceController;
+export default HouseEntranceController;

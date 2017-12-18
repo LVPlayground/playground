@@ -2,11 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Feature = require('components/feature_manager/feature.js');
+import Feature from 'components/feature_manager/feature.js';
 
-const ChannelSelection = require('features/radio/channel_selection.js');
-const RadioCommands = require('features/radio/radio_commands.js');
-const RadioManager = require('features/radio/radio_manager.js');
+import ChannelSelection from 'features/radio/channel_selection.js';
+import RadioCommands from 'features/radio/radio_commands.js';
+import RadioManager from 'features/radio/radio_manager.js';
 
 // Implementation of the Radio feature that allows players to listen to a variety of radio channels
 // while playing on Las Venturas Playground.
@@ -34,4 +34,4 @@ class Radio extends Feature {
     }
 }
 
-exports = Radio;
+export default Radio;

@@ -117,4 +117,4 @@ VehicleAccessManager.LOCK_PLAYER = Symbol('Player-based lock');
 VehicleAccessManager.LOCK_PLAYER_LEVEL = Symbol('Player level-based lock');
 VehicleAccessManager.LOCK_VIP = Symbol('VIP-based lock');
 
-exports = VehicleAccessManager;
+export default VehicleAccessManager;

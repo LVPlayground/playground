@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const HouseVehicle = require('features/houses/house_vehicle.js');
+import HouseVehicle from 'features/houses/house_vehicle.js';
 
 // This class represents the settings associated with a given house.
 class HouseSettings {
@@ -112,4 +112,4 @@ HouseSettings.ACCESS_PERSONAL = 3;
 // The default access level that will be given to new houses.
 HouseSettings.ACCESS_DEFAULT = HouseSettings.ACCESS_FRIENDS;
 
-exports = HouseSettings;
+export default HouseSettings;

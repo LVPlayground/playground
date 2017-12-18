@@ -123,4 +123,4 @@ class FightLocation {
 // Synchronously initialise the FightLocation data whilst loading the script.
 FightLocation.initialise(PrivateSymbol);
 
-exports = FightLocation;
+export default FightLocation;

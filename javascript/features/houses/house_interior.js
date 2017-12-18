@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const InteriorList = require('features/houses/utils/interior_list.js');
+import InteriorList from 'features/houses/utils/interior_list.js';
 
 // This class represents the interior information of a given house.
 class HouseInterior {
@@ -28,4 +28,4 @@ class HouseInterior {
     dispose() {}
 }
 
-exports = HouseInterior;
+export default HouseInterior;

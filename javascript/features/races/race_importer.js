@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Race = require('features/races/race.js');
-const RaceCheckpoint = require('components/checkpoints/race_checkpoint.js');
+import Race from 'features/races/race.js';
+import RaceCheckpoint from 'components/checkpoints/race_checkpoint.js';
 
 // Private symbol to prevent people from using the RaceImporter's constructor.
 const PrivateSymbol = Symbol('Required for constructing the RaceImporter.');
@@ -422,4 +422,4 @@ class RaceImporter {
     }
 }
 
-exports = RaceImporter;
+export default RaceImporter;

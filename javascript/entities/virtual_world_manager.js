@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const VirtualWorldBlock = require('entities/virtual_world_block.js');
+import VirtualWorldBlock from 'entities/virtual_world_block.js';
 
 // Id of the Virtual World that represents the main world.
 const MainVirtualWorld = 0;
@@ -46,4 +46,4 @@ class VirtualWorldManager {
     dispose() {}
 }
 
-exports = VirtualWorldManager;
+export default VirtualWorldManager;

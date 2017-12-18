@@ -99,4 +99,4 @@ class Portal {
     get exitFn() { return this.exitFn_; }
 }
 
-exports = Portal;
+export default Portal;

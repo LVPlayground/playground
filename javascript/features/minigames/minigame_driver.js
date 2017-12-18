@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Minigame = require('features/minigames/minigame.js');
-const ScopedEntities = require('entities/scoped_entities.js');
+import Minigame from 'features/minigames/minigame.js';
+import ScopedEntities from 'entities/scoped_entities.js';
 
 // A minigame driver contains the information required to run an individual minigame. It will keep
 // track of the engaged players, their states and will automatically unregister the minigame when
@@ -250,4 +250,4 @@ class MinigameDriver {
     }
 }
 
-exports = MinigameDriver;
+export default MinigameDriver;

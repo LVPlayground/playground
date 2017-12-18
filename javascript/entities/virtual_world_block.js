@@ -57,4 +57,4 @@ class VirtualWorldBlock {
     }
 }
 
-exports = VirtualWorldBlock;
+export default VirtualWorldBlock;

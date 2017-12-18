@@ -2,11 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const createTestEnvironment = require('features/houses/test/test_environment.js');
+import createTestEnvironment from 'features/houses/test/test_environment.js';
 
-const HouseExtension = require('features/houses/house_extension.js');
-const HouseSettings = require('features/houses/house_settings.js');
-const MockLocation = require('features/location/test/mock_location.js');
+import HouseExtension from 'features/houses/house_extension.js';
+import HouseSettings from 'features/houses/house_settings.js';
+import MockLocation from 'features/location/test/mock_location.js';
 
 describe('HouseEntranceController', (it, beforeEach) => {
     let friendsFeature = null;  // MockFriends

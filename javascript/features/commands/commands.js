@@ -2,10 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Feature = require('components/feature_manager/feature.js');
-const InfoDialogCommand = require('features/commands/info_dialog_command.js');
-const PositioningCommands = require('features/commands/positioning_commands.js');
-const IrcChatCommands = require('features/commands/irc_chat_commands.js');
+import Feature from 'components/feature_manager/feature.js';
+import InfoDialogCommand from 'features/commands/info_dialog_command.js';
+import PositioningCommands from 'features/commands/positioning_commands.js';
+import IrcChatCommands from 'features/commands/irc_chat_commands.js';
 
 // Feature that provides a series of commands not immediately affiliated with a particular feature.
 // The Commands class provides the shared infrastructure, whereas groups of commands will be
@@ -37,4 +37,4 @@ class Commands extends Feature {
   }
 };
 
-exports = Commands;
+export default Commands;

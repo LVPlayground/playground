@@ -222,4 +222,4 @@ class VehicleValueMap {
     }
 }
 
-exports = VehicleValueMap;
+export default VehicleValueMap;

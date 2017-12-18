@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const createTestEnvironment = require('features/houses/test/test_environment.js');
+import createTestEnvironment from 'features/houses/test/test_environment.js';
 
-const PlayerMoneyBridge = require('features/houses/utils/player_money_bridge.js');
+import PlayerMoneyBridge from 'features/houses/utils/player_money_bridge.js';
 
 // Zero-based index of the Pickup Settings menu in the `/house settings` options.
 const SETTINGS_MENU_INDEX = 3;
@@ -136,7 +136,7 @@ describe('Pickups', (it, beforeEach, afterEach) => {
         assert.equal(gunther.health, 100);
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.HOUSE_PICKUP_HEALTH_RESTORED_SELF);
-        
+
         assert.isTrue(healthPickup.isRespawning());
         assert.isTrue(healthPickup.isConnected());
 
@@ -154,7 +154,7 @@ describe('Pickups', (it, beforeEach, afterEach) => {
         assert.equal(russell.messages.length, 1);
         assert.equal(russell.messages[0],
                      Message.format(Message.HOUSE_PICKUP_HEALTH_RESTORED, gunther.name));
-        
+
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0],
                      Message.format(Message.HOUSE_PICKUP_HEALTH_USED, russell.name, russell.id));
@@ -208,7 +208,7 @@ describe('Pickups', (it, beforeEach, afterEach) => {
         assert.equal(russell.messages.length, 1);
         assert.equal(russell.messages[0],
                      Message.format(Message.HOUSE_PICKUP_ARMOUR_RESTORED, gunther.name));
-        
+
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0],
                      Message.format(Message.HOUSE_PICKUP_ARMOUR_USED, russell.name, russell.id));

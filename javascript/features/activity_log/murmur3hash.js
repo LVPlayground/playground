@@ -108,4 +108,4 @@ class Murmur3Hash {
     }
 }
 
-exports = Murmur3Hash;
+export default Murmur3Hash;

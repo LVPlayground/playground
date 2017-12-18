@@ -27,4 +27,4 @@ class MockRaceDatabase {
     dispose() {}
 }
 
-exports = MockRaceDatabase;
+export default MockRaceDatabase;

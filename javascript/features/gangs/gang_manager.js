@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Gang = require('features/gangs/gang.js');
-const GangDatabase = require('features/gangs/gang_database.js');
-const MockGangDatabase = require('features/gangs/test/mock_gang_database.js');
+import Gang from 'features/gangs/gang.js';
+import GangDatabase from 'features/gangs/gang_database.js';
+import MockGangDatabase from 'features/gangs/test/mock_gang_database.js';
 
 // The gang manager is responsible for managing all current information associated with gangs
 // whose players are logged in to Las Venturas Playground. It also mediates between the commands,
@@ -122,7 +122,7 @@ class GangManager {
                 managers: [],
                 members: []
             };
-            
+
             for (let player of gang.members)
                 gangPlayers[player.userId] = player;
 
@@ -360,4 +360,4 @@ class GangManager {
     }
 }
 
-exports = GangManager;
+export default GangManager;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const StoredVehicle = require('features/streamer/stored_vehicle.js');
+import StoredVehicle from 'features/streamer/stored_vehicle.js';
 
 // Class that extends StoredVehicle with the persistent information of the vehicle.
 class DatabaseVehicle extends StoredVehicle {
@@ -57,4 +57,4 @@ DatabaseVehicle.ACCESS_TYPES = [
     DatabaseVehicle.ACCESS_TYPE_PLAYER_VIP
 ];
 
-exports = DatabaseVehicle;
+export default DatabaseVehicle;

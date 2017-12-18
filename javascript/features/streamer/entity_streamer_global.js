@@ -2,10 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const EntityStreamer = require('features/streamer/entity_streamer.js');
-const FastPriorityQueue = require('features/streamer/fast_priority_queue.js');
+import EntityStreamer from 'features/streamer/entity_streamer.js';
+import FastPriorityQueue from 'features/streamer/fast_priority_queue.js';
 
-// Comparator that orders stored entities in ascending order by their the total reference count. 
+// Comparator that orders stored entities in ascending order by their the total reference count.
 const TotalReferenceComparator = (lhs, rhs) => {
     if (lhs.totalReferences === rhs.totalReferences)
         return 0;
@@ -225,10 +225,10 @@ class EntityStreamerGlobal extends EntityStreamer {
 
             const disposableEntity = this.disposableEntities_.pop();
             disposableEntity.setLiveEntity(null);
-            
+
             this.deleteEntity(disposableEntity);
             this.activeEntities_--;
-            
+
         }
 
         // Remove the |storedEntity| from the disposable entities if it's listed there. Create the
@@ -257,7 +257,7 @@ class EntityStreamerGlobal extends EntityStreamer {
         }
 
         storedEntity.setLiveEntity(null);
-        
+
         this.deleteEntity(storedEntity);
         this.activeEntities_--;
     }
@@ -300,4 +300,4 @@ class EntityStreamerGlobal extends EntityStreamer {
     }
 }
 
-exports = EntityStreamerGlobal;
+export default EntityStreamerGlobal;

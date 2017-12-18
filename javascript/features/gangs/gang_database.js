@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Gang = require('features/gangs/gang.js');
+import Gang from 'features/gangs/gang.js';
 
 // Query for loading a gang's information for a specific player.
 const LOAD_GANG_FOR_PLAYER_QUERY = `
@@ -418,4 +418,4 @@ GangDatabase.EXISTS_AVAILABLE = 0;
 GangDatabase.EXISTS_TAG = 1;
 GangDatabase.EXISTS_NAME = 2;
 
-exports = GangDatabase;
+export default GangDatabase;

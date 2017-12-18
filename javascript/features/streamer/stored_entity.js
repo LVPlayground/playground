@@ -95,4 +95,4 @@ class StoredEntity {
     }
 }
 
-exports = StoredEntity;
+export default StoredEntity;

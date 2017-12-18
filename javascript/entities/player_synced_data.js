@@ -54,4 +54,4 @@ class PlayerSyncedData {
 // Setting keys for the individual properties.
 PlayerSyncedData.PREFERRED_RADIO_CHANNEL = 0;
 
-exports = PlayerSyncedData;
+export default PlayerSyncedData;

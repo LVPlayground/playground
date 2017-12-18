@@ -33,4 +33,4 @@ class TestError extends Error {
   }
 };
 
-exports = TestError;
+export default TestError;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ActorManager = require('entities/actor_manager.js');
-const MockActor = require('entities/test/mock_actor.js');
+import ActorManager from 'entities/actor_manager.js';
+import MockActor from 'entities/test/mock_actor.js';
 
 describe('ActorManager', (it, beforeEach, afterEach) => {
     let manager = null;

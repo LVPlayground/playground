@@ -164,4 +164,4 @@ class RaceDatabase {
     dispose() {}
 }
 
-exports = RaceDatabase;
+export default RaceDatabase;

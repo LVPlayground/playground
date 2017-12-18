@@ -2,10 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const CommandBuilder = require('components/command_manager/command_builder.js');
-const DatabaseVehicle = require('features/vehicles/database_vehicle.js');
-const Menu = require('components/menu/menu.js');
-const VehicleAccessManager = require('features/vehicles/vehicle_access_manager.js');
+import CommandBuilder from 'components/command_manager/command_builder.js';
+import DatabaseVehicle from 'features/vehicles/database_vehicle.js';
+import Menu from 'components/menu/menu.js';
+import VehicleAccessManager from 'features/vehicles/vehicle_access_manager.js';
 
 // The maximum distance from the player to the vehicle closest to them, in units.
 const MaximumVehicleDistance = 10;
@@ -718,4 +718,4 @@ class VehicleCommands {
     }
 }
 
-exports = VehicleCommands;
+export default VehicleCommands;

@@ -2,10 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ActivityRecorder = require('features/activity_log/activity_recorder.js');
-const Feature = require('components/feature_manager/feature.js');
-const ScopedCallbacks = require('base/scoped_callbacks.js');
-const Murmur3Hash = require('features/activity_log/murmur3hash.js');
+import ActivityRecorder from 'features/activity_log/activity_recorder.js';
+import Feature from 'components/feature_manager/feature.js';
+import ScopedCallbacks from 'base/scoped_callbacks.js';
+import Murmur3Hash from 'features/activity_log/murmur3hash.js';
 
 // IRC tag used to show the players name, id, ip and gpci
 const JoinIpGpciTag = 'joinipgpci';
@@ -159,4 +159,4 @@ class ActivityLog extends Feature {
   }
 };
 
-exports = ActivityLog;
+export default ActivityLog;

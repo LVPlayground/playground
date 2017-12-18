@@ -101,4 +101,4 @@ class MockPickup {
     }
 }
 
-exports = MockPickup;
+export default MockPickup;

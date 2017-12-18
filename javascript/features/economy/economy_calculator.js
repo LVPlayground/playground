@@ -209,4 +209,4 @@ class EconomyCalculator {
 // The price range based on which vehicles for houses will be priced.
 EconomyCalculator.PRICE_RANGE_HOUSE_VEHICLES = [ 100000, 1500000 ];
 
-exports = EconomyCalculator;
+export default EconomyCalculator;

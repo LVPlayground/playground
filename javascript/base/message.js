@@ -172,4 +172,6 @@ Message.loadMessages(MESSAGE_DATA_FILE);
 
 // Expose the Message class on the global object, since it will be common practice for features to
 // format messages or deal with predefined ones.
-global.Message = exports = Message;
+global.Message = Message;
+
+export default Message;

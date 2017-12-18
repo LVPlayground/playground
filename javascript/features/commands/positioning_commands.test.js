@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const PositioningCommands = require('features/commands/positioning_commands.js');
+import PositioningCommands from 'features/commands/positioning_commands.js';
 
 describe('PositioningCommands', (it, beforeEach, afterEach) => {
     let positioningCommands = null;

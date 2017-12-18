@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Dialog = require('components/dialogs/dialog.js');
-const InteriorSelectorUI = require('features/houses/utils/interior_selector_ui.js');
+import Dialog from 'components/dialogs/dialog.js';
+import InteriorSelectorUI from 'features/houses/utils/interior_selector_ui.js';
 
 // Number of milliseconds to wait before animating the camera within a house scene.
 const HOUSE_SCENE_PRELOAD_MS = 1000;
@@ -152,4 +152,4 @@ class InteriorSelector {
     }
 }
 
-exports = InteriorSelector;
+export default InteriorSelector;

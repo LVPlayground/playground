@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const EntityLogger = require('features/logger/entity_logger.js');
-const Feature = require('components/feature_manager/feature.js');
-const LogWriter = require('features/logger/log_writer.js');
+import EntityLogger from 'features/logger/entity_logger.js';
+import Feature from 'components/feature_manager/feature.js';
+import LogWriter from 'features/logger/log_writer.js';
 
 // Las Venturas Playground has the ability to record all in-game events and happenings for the
 // purposes of gathering analytics. These provide important tools to administrators, as well as
@@ -53,4 +53,4 @@ class Logger extends Feature {
     }
 }
 
-exports = Logger;
+export default Logger;

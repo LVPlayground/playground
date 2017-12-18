@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MockTextLabel = require('entities/test/mock_text_label.js');
+import MockTextLabel from 'entities/test/mock_text_label.js';
 
 describe('MockTextLabel', (it, beforeEach, afterEach) => {
     let textLabel = null;

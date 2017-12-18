@@ -2,12 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Feature = require('components/feature_manager/feature.js');
-const Setting = require('features/settings/setting.js');
-const SettingList = require('features/settings/setting_list.js');
-const SettingsDatabase = require('features/settings/settings_database.js');
+import Feature from 'components/feature_manager/feature.js';
+import Setting from 'features/settings/setting.js';
+import SettingList from 'features/settings/setting_list.js';
+import SettingsDatabase from 'features/settings/settings_database.js';
 
-const MockSettingsDatabase = require('features/settings/test/mock_settings_database.js');
+import MockSettingsDatabase from 'features/settings/test/mock_settings_database.js';
 
 // Provides the ability to get and set settings that should persist between server restarts. Values
 // that have been changed from their defaults will be stored in the database.
@@ -156,4 +156,4 @@ class Settings extends Feature {
     }
 }
 
-exports = Settings;
+export default Settings;

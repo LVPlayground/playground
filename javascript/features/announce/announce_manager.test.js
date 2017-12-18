@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const AnnounceManager = require('features/announce/announce_manager.js');
+import AnnounceManager from 'features/announce/announce_manager.js';
 
 describe('AnnounceManager', (it, beforeEach, afterEach) => {
     let announceManager = null;

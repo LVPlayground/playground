@@ -294,4 +294,4 @@ class MockVehicle {
     }
 }
 
-exports = MockVehicle;
+export default MockVehicle;

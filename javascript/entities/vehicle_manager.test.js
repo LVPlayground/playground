@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MockVehicle = require('entities/test/mock_vehicle.js');
-const VehicleManager = require('entities/vehicle_manager.js');
+import MockVehicle from 'entities/test/mock_vehicle.js';
+import VehicleManager from 'entities/vehicle_manager.js';
 
 describe('VehicleManager', (it, beforeEach) => {
     let manager = null;

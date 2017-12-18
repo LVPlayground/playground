@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ScopedCallbacks = require('base/scoped_callbacks.js');
-const SessionId = require('features/logger/session_id.js');
+import ScopedCallbacks from 'base/scoped_callbacks.js';
+import SessionId from 'features/logger/session_id.js';
 
 // The entity logger is responsible for creating log entities for the observable methods on the
 // entity managers, for example the PlayerManager.
@@ -315,4 +315,4 @@ class EntityLogger {
     }
 }
 
-exports = EntityLogger;
+export default EntityLogger;

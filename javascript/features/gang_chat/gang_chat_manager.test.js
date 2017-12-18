@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Communication = require('features/communication/communication.js');
-const GangChatManager = require('features/gang_chat/gang_chat_manager.js');
-const GangTester = require('features/gangs/test/gang_tester.js');
+import Communication from 'features/communication/communication.js';
+import GangChatManager from 'features/gang_chat/gang_chat_manager.js';
+import GangTester from 'features/gangs/test/gang_tester.js';
 
 describe('GangChatManager', (it, beforeEach, afterEach) => {
     let gangs = null;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const FastPriorityQueue = require('features/streamer/fast_priority_queue.js');
+import FastPriorityQueue from 'features/streamer/fast_priority_queue.js';
 
 describe('FastPriorityQueue', it => {
     // Comparator that can be used to sort values in the priority queue in descending order.

@@ -2,10 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const DatabaseVehicle = require('features/vehicles/database_vehicle.js');
-const MockVehicleDatabase = require('features/vehicles/test/mock_vehicle_database.js');
-const VehicleAccessManager = require('features/vehicles/vehicle_access_manager.js');
-const VehicleDatabase = require('features/vehicles/vehicle_database.js');
+import DatabaseVehicle from 'features/vehicles/database_vehicle.js';
+import MockVehicleDatabase from 'features/vehicles/test/mock_vehicle_database.js';
+import VehicleAccessManager from 'features/vehicles/vehicle_access_manager.js';
+import VehicleDatabase from 'features/vehicles/vehicle_database.js';
 
 // The maximum value that can be given to a vehicle's color.
 const MaximumVehicleColorValue = 255;
@@ -426,4 +426,4 @@ class VehicleManager {
 // Pin that will be used to keep vehicles alive by order of Management.
 VehicleManager.MANAGEMENT_PIN = Symbol();
 
-exports = VehicleManager;
+export default VehicleManager;

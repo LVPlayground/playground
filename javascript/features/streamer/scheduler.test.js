@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const EntityStreamerGlobal = require('features/streamer/entity_streamer_global.js');
-const Scheduler = require('features/streamer/scheduler.js');
-const StoredEntity = require('features/streamer/stored_entity.js');
+import EntityStreamerGlobal from 'features/streamer/entity_streamer_global.js';
+import Scheduler from 'features/streamer/scheduler.js';
+import StoredEntity from 'features/streamer/stored_entity.js';
 
 describe('Scheduler', (it, beforeEach, afterEach) => {
     let scheduler = null;

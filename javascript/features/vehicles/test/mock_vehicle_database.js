@@ -42,4 +42,4 @@ class MockVehicleDatabase {
     async deleteVehicle(databaseVehicle) {}
 }
 
-exports = MockVehicleDatabase;
+export default MockVehicleDatabase;

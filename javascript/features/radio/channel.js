@@ -32,4 +32,4 @@ class Channel {
     get stream() { return this.stream_; }
 }
 
-exports = Channel;
+export default Channel;

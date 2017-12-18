@@ -153,4 +153,4 @@ class ActivityRecorder {
   }
 };
 
-exports = ActivityRecorder;
+export default ActivityRecorder;

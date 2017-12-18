@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Channel = require('features/radio/channel.js');
+import Channel from 'features/radio/channel.js';
 
 // JSON configuration file containing the radio channel selection.
 const ConfigurationFile = 'data/radio.json';
@@ -73,4 +73,4 @@ class ChannelSelection {
     }
 }
 
-exports = ChannelSelection;
+export default ChannelSelection;

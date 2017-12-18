@@ -77,4 +77,4 @@ class DriftTracker {
   }
 };
 
-exports = DriftTracker;
+export default DriftTracker;

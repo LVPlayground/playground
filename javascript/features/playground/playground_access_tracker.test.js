@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const PlaygroundAccessTracker = require('features/playground/playground_access_tracker.js');
+import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
 
 describe('PlaygroundAccessTracker', (it, beforeEach, afterEach) => {
     let tracker = null;

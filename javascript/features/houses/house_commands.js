@@ -2,17 +2,17 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const CommandBuilder = require('components/command_manager/command_builder.js');
-const Dialog = require('components/dialogs/dialog.js');
-const HouseSettings = require('features/houses/house_settings.js');
-const IdentityBeam = require('features/houses/utils/identity_beam.js');
-const InteriorList = require('features/houses/utils/interior_list.js');
-const InteriorSelector = require('features/houses/utils/interior_selector.js');
-const Menu = require('components/menu/menu.js');
-const MessageBox = require('components/dialogs/message_box.js');
-const ParkingLotCreator = require('features/houses/utils/parking_lot_creator.js');
-const ParkingLotRemover = require('features/houses/utils/parking_lot_remover.js');
-const PlayerMoneyBridge = require('features/houses/utils/player_money_bridge.js');
+import CommandBuilder from 'components/command_manager/command_builder.js';
+import Dialog from 'components/dialogs/dialog.js';
+import HouseSettings from 'features/houses/house_settings.js';
+import IdentityBeam from 'features/houses/utils/identity_beam.js';
+import InteriorList from 'features/houses/utils/interior_list.js';
+import InteriorSelector from 'features/houses/utils/interior_selector.js';
+import Menu from 'components/menu/menu.js';
+import MessageBox from 'components/dialogs/message_box.js';
+import ParkingLotCreator from 'features/houses/utils/parking_lot_creator.js';
+import ParkingLotRemover from 'features/houses/utils/parking_lot_remover.js';
+import PlayerMoneyBridge from 'features/houses/utils/player_money_bridge.js';
 
 // Maximum number of milliseconds during which the identity beam should be displayed.
 const IdentityBeamDisplayTimeMs = 60000;
@@ -587,7 +587,7 @@ class HouseCommands {
                                                      location.settings.ownerName);
 
             const confirmation =
-                await Dialog.displayMessage(player, 'Selling the house', message, 
+                await Dialog.displayMessage(player, 'Selling the house', message,
                                             'Yes' /* leftButton */, 'No' /* rightButton */);
 
             if (!confirmation.response)
@@ -648,7 +648,7 @@ class HouseCommands {
             [451, 'Turismo']
         ]);
 
-        // Create the initial dialog, displaying a list of their parking lots.        
+        // Create the initial dialog, displaying a list of their parking lots.
         for (const parkingLot of location.parkingLots) {
             const vehicle = location.settings.vehicles.get(parkingLot);
             const vehicleLabel = vehicle ? '{FFFF00}' + allowedVehicles.get(vehicle.modelId)
@@ -661,7 +661,7 @@ class HouseCommands {
                                                    allowedVehicles.get(vehicle.modelId));
 
                     const confirmation =
-                        await Dialog.displayMessage(player, 'Dispose of your vehicle?', message, 
+                        await Dialog.displayMessage(player, 'Dispose of your vehicle?', message,
                                                     'Yes' /* leftButton */, 'No' /* rightButton */);
 
                     if (!confirmation.response)
@@ -679,7 +679,7 @@ class HouseCommands {
                 // Create the purchase menu that enables players to purchase a vehicle.
                 const purchaseMenu =
                     new Menu('Which vehicle do you want to buy?', ['Vehicle', 'Price']);
-                
+
                 for (const [modelId, modelName] of allowedVehicles) {
                     const price = 0;
 
@@ -770,4 +770,4 @@ class HouseCommands {
     }
 }
 
-exports = HouseCommands;
+export default HouseCommands;

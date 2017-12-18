@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const EntityStreamerGlobal = require('features/streamer/entity_streamer_global.js');
+import EntityStreamerGlobal from 'features/streamer/entity_streamer_global.js';
 
 // Number of milliseconds between ticks for each of the global streamers.
 const GlobalStreamerTickMs = 1000;
@@ -21,7 +21,7 @@ class Scheduler {
     // Gets the number of iterations the scheduler has been through so far.
     get counter() { return this.counter_; }
 
-    // Adds the |streamer| to the set of global streamers. 
+    // Adds the |streamer| to the set of global streamers.
     addStreamer(streamer) {
         if (streamer instanceof EntityStreamerGlobal)
             this.globalStreamers_.add(streamer);
@@ -71,4 +71,4 @@ class Scheduler {
     }
 }
 
-exports = Scheduler;
+export default Scheduler;

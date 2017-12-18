@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ScopedCallbacks = require('base/scoped_callbacks.js');
+import ScopedCallbacks from 'base/scoped_callbacks.js';
 
 // The communication manager is responsible for making sure that the different capabilities play
 // well together, and is the main entry point for the OnPlayerText callback contents as well.
@@ -68,4 +68,4 @@ class CommunicationManager {
     }
 }
 
-exports = CommunicationManager;
+export default CommunicationManager;

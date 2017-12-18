@@ -146,4 +146,4 @@ class Race {
   }
 };
 
-exports = Race;
+export default Race;

@@ -2,17 +2,17 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ActorManager = require('entities/actor_manager.js');
-const Clock = require('base/clock.js');
-const CommandManager = require('components/command_manager/command_manager.js');
-const Database = require('components/database/database.js');
-const FeatureManager = require('components/feature_manager/feature_manager.js');
-const ObjectManager = require('entities/object_manager.js');
-const PickupManager = require('entities/pickup_manager.js');
-const PlayerManager = require('entities/player_manager.js');
-const TextLabelManager = require('entities/text_label_manager.js');
-const VehicleManager = require('entities/vehicle_manager.js');
-const VirtualWorldManager = require('entities/virtual_world_manager.js');
+import ActorManager from 'entities/actor_manager.js';
+import Clock from 'base/clock.js';
+import CommandManager from 'components/command_manager/command_manager.js';
+import Database from 'components/database/database.js';
+import FeatureManager from 'components/feature_manager/feature_manager.js';
+import ObjectManager from 'entities/object_manager.js';
+import PickupManager from 'entities/pickup_manager.js';
+import PlayerManager from 'entities/player_manager.js';
+import TextLabelManager from 'entities/text_label_manager.js';
+import VehicleManager from 'entities/vehicle_manager.js';
+import VirtualWorldManager from 'entities/virtual_world_manager.js';
 
 // The Server object is the global instance of the Las Venturas Playground run-time. It is globally
 // available and exposes an interface that enables any aspect of the server to be changed.
@@ -99,7 +99,7 @@ class Server {
     }
 }
 
-exports = Server;
+export default Server;
 
 // The Server object is exposed on the global scope. It must, however, be instantiated manually when
 // the test runner has finished verifying the state of the gamemode.

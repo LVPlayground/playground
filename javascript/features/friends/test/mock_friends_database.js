@@ -27,4 +27,4 @@ class MockFriendsDatabase {
     async removeFriend(player, friendUserId) {}
 }
 
-exports = MockFriendsDatabase;
+export default MockFriendsDatabase;

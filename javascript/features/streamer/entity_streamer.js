@@ -114,4 +114,4 @@ class EntityStreamer {
     }
 }
 
-exports = EntityStreamer;
+export default EntityStreamer;

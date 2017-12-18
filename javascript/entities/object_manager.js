@@ -51,4 +51,4 @@ class ObjectManager {
     }
 }
 
-exports = ObjectManager;
+export default ObjectManager;

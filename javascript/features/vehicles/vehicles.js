@@ -2,10 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Feature = require('components/feature_manager/feature.js');
-const VehicleCommands = require('features/vehicles/vehicle_commands.js');
-const VehicleManager = require('features/vehicles/vehicle_manager.js');
-const VehicleNatives = require('features/vehicles/vehicle_natives.js');
+import Feature from 'components/feature_manager/feature.js';
+import VehicleCommands from 'features/vehicles/vehicle_commands.js';
+import VehicleManager from 'features/vehicles/vehicle_manager.js';
+import VehicleNatives from 'features/vehicles/vehicle_natives.js';
 
 // The Vehicles feature is responsible for the features one might find around San Andreas. It allows
 // all players to create vehicles on demand, administrators to store and modify them persistently.
@@ -46,4 +46,4 @@ class Vehicles extends Feature {
     }
 }
 
-exports = Vehicles;
+export default Vehicles;

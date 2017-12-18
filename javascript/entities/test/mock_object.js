@@ -95,4 +95,4 @@ class MockObject {
     }
 }
 
-exports = MockObject;
+export default MockObject;

@@ -24,4 +24,4 @@ class HouseParkingLot {
     get interiorId() { return this.interiorId_; }
 }
 
-exports = HouseParkingLot;
+export default HouseParkingLot;

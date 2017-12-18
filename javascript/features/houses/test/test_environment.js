@@ -2,15 +2,15 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Economy = require('features/economy/economy.js');
-const Houses = require('features/houses/houses.js');
-const MockAnnounce = require('features/announce/test/mock_announce.js');
-const MockFriends = require('features/friends/test/mock_friends.js');
-const MockLocation = require('features/location/test/mock_location.js');
-const MockPlayground = require('features/playground/test/mock_playground.js');
+import Economy from 'features/economy/economy.js';
+import Houses from 'features/houses/houses.js';
+import MockAnnounce from 'features/announce/test/mock_announce.js';
+import MockFriends from 'features/friends/test/mock_friends.js';
+import MockLocation from 'features/location/test/mock_location.js';
+import MockPlayground from 'features/playground/test/mock_playground.js';
 
 // Exports a function that fully initializes a test environment for the houses feature.
-exports = async function createTestEnvironment() {
+export default async function createTestEnvironment() {
     server.featureManager.registerFeaturesForTests({
         announce: MockAnnounce,
         economy: Economy,

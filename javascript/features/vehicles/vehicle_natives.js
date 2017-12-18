@@ -30,4 +30,4 @@ class VehicleNatives {
     }
 }
 
-exports = VehicleNatives;
+export default VehicleNatives;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MockPlayer = require('entities/test/mock_player.js');
-const PlayerManager = require('entities/player_manager.js');
+import MockPlayer from 'entities/test/mock_player.js';
+import PlayerManager from 'entities/player_manager.js';
 
 describe('PlayerManager', (it, beforeEach, afterEach) => {
     let manager = null;
@@ -231,7 +231,7 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const vehicle = server.vehicleManager.createVehicle({
             modelId: 412 /* Infernus */,
-            position: new Vector(1000, 1500, 2000)  
+            position: new Vector(1000, 1500, 2000)
         });
 
         assert.isTrue(gunther.enterVehicle(vehicle));
@@ -267,7 +267,7 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
 
         const vehicle = server.vehicleManager.createVehicle({
             modelId: 412 /* Infernus */,
-            position: new Vector(1000, 1500, 2000)  
+            position: new Vector(1000, 1500, 2000)
         });
 
         assert.isFalse(vehicle.isOccupied());
@@ -338,7 +338,7 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
 
         const vehicle = server.vehicleManager.createVehicle({
             modelId: 412 /* Infernus */,
-            position: new Vector(1000, 1500, 2000)  
+            position: new Vector(1000, 1500, 2000)
         });
 
         assert.isFalse(vehicle.isOccupied());

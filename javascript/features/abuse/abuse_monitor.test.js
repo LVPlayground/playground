@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const AbuseMonitor = require('features/abuse/abuse_monitor.js');
+import AbuseMonitor from 'features/abuse/abuse_monitor.js';
 
 describe('AbuseMonitor', (it, beforeEach) => {
     let monitor = null;
@@ -48,7 +48,7 @@ describe('AbuseMonitor', (it, beforeEach) => {
             modelId: 441,
             position: new Vector(200, 300, 50)
         });
-        
+
         vehicle.lockForPlayer(gunther);
 
         // (1) Make sure that the abuse can be detected.

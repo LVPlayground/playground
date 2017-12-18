@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const RaceCheckpoint = require('components/checkpoints/race_checkpoint.js');
-const RaceImporter = require('features/races/race_importer.js');
+import RaceCheckpoint from 'components/checkpoints/race_checkpoint.js';
+import RaceImporter from 'features/races/race_importer.js';
 
 describe('RaceImporter', it => {
     it('should require and validate the id', assert => {

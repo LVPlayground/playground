@@ -47,4 +47,4 @@ class HouseExtension {
     dispose() {}
 }
 
-exports = HouseExtension;
+export default HouseExtension;

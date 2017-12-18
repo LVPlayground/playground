@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const FreeVip = require('features/playground/traits/free_vip.js');
-const ObjectGroup = require('entities/object_group.js');
-const PirateShipParty = require('features/playground/traits/pirate_ship_party.js');
+import FreeVip from 'features/playground/traits/free_vip.js';
+import ObjectGroup from 'entities/object_group.js';
+import PirateShipParty from 'features/playground/traits/pirate_ship_party.js';
 
 // The playground manager provides back-end logic for the features provided as part of this module.
 // It controls all settings, as well as the default values for the settings.
@@ -100,4 +100,4 @@ class PlaygroundManager {
     }
 }
 
-exports = PlaygroundManager;
+export default PlaygroundManager;

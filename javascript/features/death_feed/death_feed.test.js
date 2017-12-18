@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const DeathFeed = require('features/death_feed/death_feed.js');
+import DeathFeed from 'features/death_feed/death_feed.js';
 
 describe('DeathFeed', it => {
   it('should track deaths in fifo order', assert => {

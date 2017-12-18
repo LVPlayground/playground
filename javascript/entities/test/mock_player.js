@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MockPlayerSyncedData = require('entities/test/mock_player_synced_data.js');
-const MockVehicle = require('entities/test/mock_vehicle.js');
+import MockPlayerSyncedData from 'entities/test/mock_player_synced_data.js';
+import MockVehicle from 'entities/test/mock_vehicle.js';
 
 // Mocked player. Has the same interface and abilities as a real Player object, except that it does
 // not rely on the SA-MP server to be available, nor communicates with Pawn.
@@ -483,4 +483,4 @@ class MockPlayer {
     giveCashMoney(amount) { this.cashMoney_ += amount;}
 }
 
-exports = MockPlayer;
+export default MockPlayer;

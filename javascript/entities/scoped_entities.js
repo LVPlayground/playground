@@ -152,4 +152,4 @@ class ScopedEntities {
     }
 }
 
-exports = ScopedEntities;
+export default ScopedEntities;

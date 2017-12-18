@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Feature = require('components/feature_manager/feature.js');
+import Feature from 'components/feature_manager/feature.js';
 
 // Implementation of the DeathFeed feature that follows the exact same API, but does not actually
 // interact with the San Andreas: Multiplayer server.
@@ -28,4 +28,4 @@ class MockDeathFeed extends Feature {
     sendDeathMessage(player, killee, killer, reason) {}
 }
 
-exports = MockDeathFeed;
+export default MockDeathFeed;

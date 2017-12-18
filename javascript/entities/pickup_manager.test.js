@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const PickupManager = require('entities/pickup_manager.js');
-const MockPickup = require('entities/test/mock_pickup.js');
+import PickupManager from 'entities/pickup_manager.js';
+import MockPickup from 'entities/test/mock_pickup.js';
 
 describe('PickupManager', (it, beforeEach) => {
     let manager = null;

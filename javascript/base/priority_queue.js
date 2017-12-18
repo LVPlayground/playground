@@ -87,4 +87,4 @@ class PriorityQueue {
     }
 }
 
-exports = PriorityQueue;
+export default PriorityQueue;

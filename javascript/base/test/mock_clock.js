@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Clock = require('base/clock.js');
-const PriorityQueue = require('base/priority_queue.js');
+import Clock from 'base/clock.js';
+import PriorityQueue from 'base/priority_queue.js';
 
 // Private variable to ensure that only a single MockClock exists at any given time. This is
 // important because it will override the wait() method on the global.
@@ -92,4 +92,4 @@ class MockClock {
 // Carry-over the formatRelativeTime() implementation from the real Clock.
 MockClock.prototype.formatRelativeTime = Clock.prototype.formatRelativeTime;
 
-exports = MockClock;
+export default MockClock;

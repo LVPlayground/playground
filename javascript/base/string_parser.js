@@ -56,7 +56,7 @@ function SentenceParser(argumentString) {
 
   if (result.length == 0)
     return [argumentString, null];
-  
+
   return ['', result];
 }
 
@@ -195,4 +195,4 @@ StringParser.PARAM_TYPE_WORD_MATCH = 2;
 StringParser.PARAM_TYPE_SENTENCE = 3;
 StringParser.PARAM_TYPE_CUSTOM = 4;
 
-exports = StringParser;
+export default StringParser;

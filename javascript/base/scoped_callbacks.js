@@ -42,4 +42,4 @@ class ScopedCallbacks {
   }
 };
 
-exports = ScopedCallbacks;
+export default ScopedCallbacks;

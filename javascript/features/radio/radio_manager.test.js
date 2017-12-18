@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ChannelSelection = require('features/radio/channel_selection.js');
-const MockAnnounce = require('features/announce/test/mock_announce.js');
-const RadioManager = require('features/radio/radio_manager.js');
+import ChannelSelection from 'features/radio/channel_selection.js';
+import MockAnnounce from 'features/announce/test/mock_announce.js';
+import RadioManager from 'features/radio/radio_manager.js';
 
 describe('RadioManager', (it, beforeEach, afterEach) => {
     let gunther = null;

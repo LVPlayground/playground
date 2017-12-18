@@ -29,4 +29,4 @@ class Command {
     dispose() {}
 }
 
-exports = Command;
+export default Command;

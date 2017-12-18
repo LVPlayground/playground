@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const createTestEnvironment = require('features/houses/test/test_environment.js');
+import createTestEnvironment from 'features/houses/test/test_environment.js';
 
 // Zero-based index of the Property Settings menu in the `/house settings` options.
 const SETTINGS_MENU_INDEX = 2;

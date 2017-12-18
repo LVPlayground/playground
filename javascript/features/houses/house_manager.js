@@ -2,17 +2,17 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const HouseDatabase = require('features/houses/house_database.js');
-const HouseEntranceController = require('features/houses/house_entrance_controller.js');
-const HouseExtension = require('features/houses/house_extension.js');
-const HouseInterior = require('features/houses/house_interior.js');
-const HouseLocation = require('features/houses/house_location.js');
-const HouseParkingLot = require('features/houses/house_parking_lot.js');
-const HouseSettings = require('features/houses/house_settings.js');
-const HouseVehicle = require('features/houses/house_vehicle.js');
-const HouseVehicleController = require('features/houses/house_vehicle_controller.js');
-const MockHouseDatabase = require('features/houses/test/mock_house_database.js');
-const ObjectGroup = require('entities/object_group.js');
+import HouseDatabase from 'features/houses/house_database.js';
+import HouseEntranceController from 'features/houses/house_entrance_controller.js';
+import HouseExtension from 'features/houses/house_extension.js';
+import HouseInterior from 'features/houses/house_interior.js';
+import HouseLocation from 'features/houses/house_location.js';
+import HouseParkingLot from 'features/houses/house_parking_lot.js';
+import HouseSettings from 'features/houses/house_settings.js';
+import HouseVehicle from 'features/houses/house_vehicle.js';
+import HouseVehicleController from 'features/houses/house_vehicle_controller.js';
+import MockHouseDatabase from 'features/houses/test/mock_house_database.js';
+import ObjectGroup from 'entities/object_group.js';
 
 // The house manager orchestrates all details associated with housing, manages data and responds to
 // player connection and disconnection events.
@@ -548,4 +548,4 @@ class HouseManager {
     }
 }
 
-exports = HouseManager;
+export default HouseManager;

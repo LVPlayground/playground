@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MockPickup = require('entities/test/mock_pickup.js');
+import MockPickup from 'entities/test/mock_pickup.js';
 
 describe('MockPickup', (it, beforeEach, afterEach) => {
     let pickup = null;

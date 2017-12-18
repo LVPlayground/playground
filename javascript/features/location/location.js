@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Feature = require('components/feature_manager/feature.js');
-const InteriorManager = require('features/location/interior_manager.js');
+import Feature from 'components/feature_manager/feature.js';
+import InteriorManager from 'features/location/interior_manager.js';
 
 // The pattern selecting the appropriate files for the interior portals.
 const PORTAL_DIRECTORY = 'data/portals';
@@ -65,4 +65,4 @@ class Location extends Feature {
     }
 }
 
-exports = Location;
+export default Location;

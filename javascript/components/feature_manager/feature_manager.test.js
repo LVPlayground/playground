@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Feature = require('components/feature_manager/feature.js');
-const FeatureManager = require('components/feature_manager/feature_manager.js');
+import Feature from 'components/feature_manager/feature.js';
+import FeatureManager from 'components/feature_manager/feature_manager.js';
 
 describe('FeatureManager', it => {
     it('initializes the features', assert => {
@@ -262,7 +262,7 @@ describe('FeatureManager', it => {
 
             reloadCount() { return this.reloadCount_; }
             count() { return this.dependency_().count(); }
-            
+
             onReload() {
                 this.reloadCount_++;
             }
@@ -286,7 +286,7 @@ describe('FeatureManager', it => {
         assert.isTrue(server.featureManager.liveReload('dependency'));
         assert.equal(feature.reloadCount(), 0);
         assert.equal(feature.count(), 1);
-        
+
         feature.addReloadObserver();
 
         assert.isTrue(server.featureManager.liveReload('dependency'));

@@ -2,7 +2,7 @@
 // Use of this entrance code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const PortalLoader = require('features/location/portal_loader.js');
+import PortalLoader from 'features/location/portal_loader.js';
 
 describe('PortalLoader', it => {
     const validPoint = { position: [0, 0, 0], facingAngle: 0, interiorId: 0 };

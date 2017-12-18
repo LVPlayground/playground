@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MockAnnounce = require('features/announce/test/mock_announce.js');
-const Report = require('features/report/report.js');
+import MockAnnounce from 'features/announce/test/mock_announce.js';
+import Report from 'features/report/report.js';
 
 describe('Report', (it, beforeEach) => {
     let report = null;
@@ -79,7 +79,7 @@ describe('Report', (it, beforeEach) => {
         const lucy    = server.playerManager.getById(2 /* Lucy    */);
 
         assert.isTrue(russell.issueCommand('/report 0 bullet-amount freezed'));
-        
+
         // Advance the server's time by two minutes to fake the wait having passed.
         await server.clock.advance(120000);
 

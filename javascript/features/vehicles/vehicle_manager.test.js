@@ -2,11 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const DatabaseVehicle = require('features/vehicles/database_vehicle.js');
-const MockAnnounce = require('features/announce/test/mock_announce.js');
-const MockPlayground = require('features/playground/test/mock_playground.js');
-const VehicleAccessManager = require('features/vehicles/vehicle_access_manager.js');
-const Vehicles = require('features/vehicles/vehicles.js');
+import DatabaseVehicle from 'features/vehicles/database_vehicle.js';
+import MockAnnounce from 'features/announce/test/mock_announce.js';
+import MockPlayground from 'features/playground/test/mock_playground.js';
+import VehicleAccessManager from 'features/vehicles/vehicle_access_manager.js';
+import Vehicles from 'features/vehicles/vehicles.js';
 
 describe('VehicleManager', (it, beforeEach) => {
     let gunther = null;

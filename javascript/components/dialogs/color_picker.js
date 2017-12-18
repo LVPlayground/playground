@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ColorPickerManager = require('components/dialogs/color_picker_manager.js');
+import ColorPickerManager from 'components/dialogs/color_picker_manager.js';
 
 // Private symbol ensuring that the ColorPicker constructor won't be used.
 const PrivateSymbol = Symbol('Please use the static methods.');
@@ -12,7 +12,7 @@ const PrivateSymbol = Symbol('Please use the static methods.');
 // that implementation and apply slightly different behaviour for tests.
 class ColorPicker {
     // Shows a color picker to |player|. Returns a promise that will be resolved when they have
-    // either selected a color, or dismissed the dialog. 
+    // either selected a color, or dismissed the dialog.
     static show(player) {
         const colorPicker = new ColorPicker(PrivateSymbol, player);
         ColorPickerManager.register(player, colorPicker);
@@ -55,4 +55,4 @@ class ColorPicker {
     }
 }
 
-exports = ColorPicker;
+export default ColorPicker;

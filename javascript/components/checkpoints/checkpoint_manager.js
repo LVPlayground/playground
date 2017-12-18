@@ -96,4 +96,4 @@ class CheckpointManager {
 CheckpointManager.NORMAL_CHECKPOINTS = 0;
 CheckpointManager.RACE_CHECKPOINTS = 1;
 
-exports = CheckpointManager;
+export default CheckpointManager;

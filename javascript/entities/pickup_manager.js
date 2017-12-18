@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ScopedCallbacks = require('base/scoped_callbacks.js');
+import ScopedCallbacks from 'base/scoped_callbacks.js';
 
 // Number of milliseconds after which it should be confirmed whether the player is still standing
 // in the given pickup. This works around an issue where SA-MP fires the event too frequently.
@@ -117,7 +117,7 @@ class PickupManager {
                 this.notifyObservers('onPlayerLeavePickup', player, pickup);
 
             this.currentPickupForPlayer_.delete(player);
-            
+
         })();
     }
 
@@ -154,4 +154,4 @@ class PickupManager {
     }
 }
 
-exports = PickupManager;
+export default PickupManager;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MockPickup = require('entities/test/mock_pickup.js');
-const PickupManager = require('entities/pickup_manager.js');
+import MockPickup from 'entities/test/mock_pickup.js';
+import PickupManager from 'entities/pickup_manager.js';
 
 // Distance, in units, squared, which is considered to be the range of a pickup.
 const PickupRangeSq = 2 * 2;
@@ -47,4 +47,4 @@ class MockPickupManager extends PickupManager {
     }
 }
 
-exports = MockPickupManager;
+export default MockPickupManager;

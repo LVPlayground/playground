@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Economy = require('features/economy/economy.js');
-const MockAnnounce = require('features/announce/test/mock_announce.js');
-const Killtime = require('features/killtime/killtime.js');
+import Economy from 'features/economy/economy.js';
+import MockAnnounce from 'features/announce/test/mock_announce.js';
+import Killtime from 'features/killtime/killtime.js';
 
 describe('Killtime', (it, beforeEach) => {
     beforeEach(() => {

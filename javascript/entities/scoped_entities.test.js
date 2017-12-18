@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ScopedEntities = require('entities/scoped_entities.js');
+import ScopedEntities from 'entities/scoped_entities.js';
 
 describe('ScopedEntities', it => {
     it('should be able to create and dispose of scoped actors', assert => {

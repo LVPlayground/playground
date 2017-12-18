@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const createTestEnvironment = require('features/houses/test/test_environment.js');
+import createTestEnvironment from 'features/houses/test/test_environment.js';
 
 // Zero-based index of the Visitor Log menu in the `/house settings` options.
 const SETTINGS_MENU_INDEX = 4;
@@ -69,7 +69,7 @@ describe('VisitorLog', (it, beforeEach) => {
         manager.forceEnterHouse(gunther, location);
         manager.forceEnterHouse(gunther, location);
 
-        assert.equal((await manager.database.readVisitorLogs(location)).length, 2);        
+        assert.equal((await manager.database.readVisitorLogs(location)).length, 2);
     });
 
     it('should not display the menu item for regular players', async(assert) => {

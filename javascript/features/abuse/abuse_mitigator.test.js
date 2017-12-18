@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const AbuseMitigator = require('features/abuse/abuse_mitigator.js');
+import AbuseMitigator from 'features/abuse/abuse_mitigator.js';
 
 describe('AbuseMitigator', (it, beforeEach) => {
     let mitigator = null;

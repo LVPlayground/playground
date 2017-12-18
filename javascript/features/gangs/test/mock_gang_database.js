@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Gang = require('features/gangs/gang.js');
+import Gang from 'features/gangs/gang.js';
 
 const mockedGangInfo = {
     hko: {
@@ -144,4 +144,4 @@ MockGangDatabase.HKO_LEADER_USER_ID = 42;
 MockGangDatabase.CC_GANG_ID = 1000;
 MockGangDatabase.CC_LEADER_USER_ID = 50;
 
-exports = MockGangDatabase;
+export default MockGangDatabase;

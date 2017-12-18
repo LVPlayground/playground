@@ -119,4 +119,4 @@ class AnnounceManager {
     }
 }
 
-exports = AnnounceManager;
+export default AnnounceManager;

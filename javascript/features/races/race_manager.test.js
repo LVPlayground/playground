@@ -2,12 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Minigames = require('features/minigames/minigames.js');
-const MockAnnounce = require('features/announce/test/mock_announce.js');
-const MockDeathFeed = require('features/death_feed/test/mock_death_feed.js');
-const MockRaceDatabase = require('features/races/test/mock_race_database.js');
-const Race = require('features/races/race.js');
-const RaceManager = require('features/races/race_manager.js');
+import Minigames from 'features/minigames/minigames.js';
+import MockAnnounce from 'features/announce/test/mock_announce.js';
+import MockDeathFeed from 'features/death_feed/test/mock_death_feed.js';
+import MockRaceDatabase from 'features/races/test/mock_race_database.js';
+import Race from 'features/races/race.js';
+import RaceManager from 'features/races/race_manager.js';
 
 describe('RaceManager', (it, beforeEach, afterEach) => {
     let gunther = null;

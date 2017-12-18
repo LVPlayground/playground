@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Feature = require('components/feature_manager/feature.js');
-const FriendsCommands = require('features/friends/friends_commands.js');
-const FriendsManager = require('features/friends/friends_manager.js');
+import Feature from 'components/feature_manager/feature.js';
+import FriendsCommands from 'features/friends/friends_commands.js';
+import FriendsManager from 'features/friends/friends_manager.js';
 
 // Players have the ability to maintain a list of their friends on Las Venturas Playground. These
 // indicate one-directional relations, as there are no approval processes or notifications. See the
@@ -41,4 +41,4 @@ class FriendsFeature extends Feature {
     }
 }
 
-exports = FriendsFeature;
+export default FriendsFeature;

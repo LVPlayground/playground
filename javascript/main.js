@@ -2,27 +2,27 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Server = require('server.js');
-const TestRunner = require('base/test/test_runner.js');
+import Server from 'server.js';
+import TestRunner from 'base/test/test_runner.js';
 
 // Import global objects.
-require('base/color.js');
-require('base/message.js');
-require('base/number_util.js');
-require('base/rect.js');
-require('base/string_util.js');
-require('base/time.js');
-require('base/vector.js');
+import 'base/color.js';
+import 'base/message.js';
+import 'base/number_util.js';
+import 'base/rect.js';
+import 'base/string_util.js';
+import 'base/time.js';
+import 'base/vector.js';
 
 // Import the entities. These are global objects.
-require('entities/actor.js');
-require('entities/game_object.js');
-require('entities/pickup.js');
-require('entities/player.js');
-require('entities/text_label.js');
-require('entities/vehicle.js');
-require('entities/vehicle_model.js');
-require('entities/virtual_world.js');
+import 'entities/actor.js';
+import 'entities/game_object.js';
+import 'entities/pickup.js';
+import 'entities/player.js';
+import 'entities/text_label.js';
+import 'entities/vehicle.js';
+import 'entities/vehicle_model.js';
+import 'entities/virtual_world.js';
 
 // All tests included in the JavaScript version of Las Venturas Playground must pass before we allow
 // the gamemode to be started. Without this requirement, certain features may break unexpectedly.

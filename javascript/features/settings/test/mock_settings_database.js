@@ -25,4 +25,4 @@ class MockSettingsDatabase {
     async deleteSetting(setting) { ++this.deleteCalls_; }
 }
 
-exports = MockSettingsDatabase;
+export default MockSettingsDatabase;

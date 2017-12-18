@@ -2,10 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ObjectGroup = require('entities/object_group.js');
-const Portal = require('features/location/portal.js');
-const PortalLoader = require('features/location/portal_loader.js');
-const ScopedEntities = require('entities/scoped_entities.js');
+import ObjectGroup from 'entities/object_group.js';
+import Portal from 'features/location/portal.js';
+import PortalLoader from 'features/location/portal_loader.js';
+import ScopedEntities from 'entities/scoped_entities.js';
 
 // The radius around a portal's entrance within which the label will be visible.
 const PORTAL_LABEL_DRAW_DISTANCE = 20;
@@ -294,4 +294,4 @@ class InteriorManager {
     }
 }
 
-exports = InteriorManager;
+export default InteriorManager;

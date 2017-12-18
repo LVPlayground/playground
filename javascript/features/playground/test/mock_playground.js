@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Feature = require('components/feature_manager/feature.js');
-const PlaygroundAccessTracker = require('features/playground/playground_access_tracker.js');
+import Feature from 'components/feature_manager/feature.js';
+import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
 
 // Mocked implementation of the Playground feature's API.
 class MockPlayground extends Feature {
@@ -44,4 +44,4 @@ class MockPlayground extends Feature {
     }
 }
 
-exports = MockPlayground;
+export default MockPlayground;

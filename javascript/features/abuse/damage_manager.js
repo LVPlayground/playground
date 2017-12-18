@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ScopedCallbacks = require('base/scoped_callbacks.js');
+import ScopedCallbacks from 'base/scoped_callbacks.js';
 
 // The Damage Manager is responsible for tracking all damage done on Las Venturas Playground. It
 // observes fights, decides whether damage should be dealt and interacts with the mitigator.
@@ -71,4 +71,4 @@ class DamageManager {
     }
 }
 
-exports = DamageManager;
+export default DamageManager;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const StoredVehicle = require('features/streamer/stored_vehicle.js');
+import StoredVehicle from 'features/streamer/stored_vehicle.js';
 
 // The vehicle controller is responsible for the vehicles associated with houses. The controller
 // works based on HouseLocation and HouseVehicle instances, communicating with the VehicleStreamer
@@ -51,7 +51,7 @@ class HouseVehicleController {
 
         this.streamer.add(storedVehicle);
     }
-    
+
     // Removes the |houseVehicle| that used to be associated with the |location|.
     removeVehicle(location, houseVehicle) {
         const houseVehicles = this.locationVehicles_.get(location);
@@ -116,4 +116,4 @@ class HouseVehicleController {
     }
 }
 
-exports = HouseVehicleController;
+export default HouseVehicleController;

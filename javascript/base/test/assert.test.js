@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Assert = require('base/test/assert.js');
-const AssertionFailedError = require('base/test/assertion_failed_error.js');
+import Assert from 'base/test/assert.js';
+import AssertionFailedError from 'base/test/assertion_failed_error.js';
 
 describe('Assert', it => {
   // TODO: assert(expression, message)
@@ -68,7 +68,7 @@ describe('Assert', it => {
     assert.notDeepEqual({ foo: 'bar' }, { bar: 'foo' });
     assert.notDeepEqual({ foo: 'bar' }, { foo: 'bar', bar: 'baz' });
   });
-  
+
   it('isTrue', assert => {
     assert.isTrue(true);
     assert.isTrue(1);

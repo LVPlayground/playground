@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const PlayerSyncedData = require('entities/player_synced_data.js');
+import PlayerSyncedData from 'entities/player_synced_data.js';
 
 // Camera interpolation modes defined by SA-MP.
 const CAMERA_MOVE = 1;
@@ -463,8 +463,10 @@ Player.SPECIAL_ACTION_DRINK_SPRUNK = 23;
 Player.SPECIAL_ACTION_CUFFED = 24;
 Player.SPECIAL_ACTION_CARRY = 25;
 
-// Loads the activities of a player and installs them on |Player|.
-require('entities/player_activities.js')(Player);
+// DO NOT ADD NEW VALUES TO THIS ENUMERATION WITHOUT ALSO ADDING THEM TO PAWN.
+//     //pawn/Entities/Players/PlayerActivity.pwn
+Player.PLAYER_ACTIVITY_NONE = 0;
+Player.PLAYER_ACTIVITY_JS_RACE = 1;
 
 // Called when a player's activity changes. This event is custom to Las Venturas Playground.
 self.addEventListener('playeractivitychange', event => {

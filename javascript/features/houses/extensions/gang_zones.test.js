@@ -2,10 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const createTestEnvironment = require('features/houses/test/test_environment.js');
+import createTestEnvironment from 'features/houses/test/test_environment.js';
 
-const GangTester = require('features/gangs/test/gang_tester.js');
-const GangZones = require('features/houses/extensions/gang_zones.js');
+import GangTester from 'features/gangs/test/gang_tester.js';
+import GangZones from 'features/houses/extensions/gang_zones.js';
 
 describe('GangZones', (it, beforeEach) => {
     let gangs = null;

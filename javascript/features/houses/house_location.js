@@ -107,4 +107,4 @@ class HouseLocation {
     }
 }
 
-exports = HouseLocation;
+export default HouseLocation;

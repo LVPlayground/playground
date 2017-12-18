@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const HouseParkingLot = require('features/houses/house_parking_lot.js');
-const HouseVehicle = require('features/houses/house_vehicle.js');
-const HouseVehicleController = require('features/houses/house_vehicle_controller.js');
+import HouseParkingLot from 'features/houses/house_parking_lot.js';
+import HouseVehicle from 'features/houses/house_vehicle.js';
+import HouseVehicleController from 'features/houses/house_vehicle_controller.js';
 
 describe('HouseVehicleController', (it, beforeEach, afterEach) => {
     let controller = null;

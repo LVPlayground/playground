@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ModelSelectorDialog = require('features/houses/utils/model_selector_dialog.js');
+import ModelSelectorDialog from 'features/houses/utils/model_selector_dialog.js';
 
 // Private symbol ensuring that the ModelSelector constructor won't be used.
 const PrivateSymbol = Symbol('Please use ModelSelector.select() instead.');
@@ -66,7 +66,7 @@ class ModelSelector {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Displays the page having |number|, which is a one-based index, to the player. 
+    // Displays the page having |number|, which is a one-based index, to the player.
     displayPage(number) {
         this.currentPage_ = number;
 
@@ -129,4 +129,4 @@ class ModelSelector {
     }
 }
 
-exports = ModelSelector;
+export default ModelSelector;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MessageView = require('features/races/ui/message_view.js');
+import MessageView from 'features/races/ui/message_view.js';
 
 // Displays a message to a specific player that they have left their vehicle and therefore will be
 // dropping out of the race. They will be frozen while the message is displaying.
@@ -12,4 +12,4 @@ class LeaveVehicleMessage {
     }
 }
 
-exports = LeaveVehicleMessage;
+export default LeaveVehicleMessage;

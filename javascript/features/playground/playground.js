@@ -2,10 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Feature = require('components/feature_manager/feature.js');
-const PlaygroundAccessTracker = require('features/playground/playground_access_tracker.js');
-const PlaygroundCommands = require('features/playground/playground_commands.js');
-const PlaygroundManager = require('features/playground/playground_manager.js');
+import Feature from 'components/feature_manager/feature.js';
+import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
+import PlaygroundCommands from 'features/playground/playground_commands.js';
+import PlaygroundManager from 'features/playground/playground_manager.js';
 
 // Implementation of the feature that contains a number of options and features giving Las Venturas
 // Playground its unique identity.
@@ -57,4 +57,4 @@ class Playground extends Feature {
     }
 }
 
-exports = Playground;
+export default Playground;

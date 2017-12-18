@@ -2,31 +2,31 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ActorManager = require('entities/actor_manager.js');
-const CommandManager = require('components/command_manager/command_manager.js');
-const FeatureManager = require('components/feature_manager/feature_manager.js');
-const ObjectManager = require('entities/object_manager.js');
-const PlayerManager = require('entities/player_manager.js');
-const TextLabelManager = require('entities/text_label_manager.js');
-const VehicleManager = require('entities/vehicle_manager.js');
-const VirtualWorldManager = require('entities/virtual_world_manager.js');
+import ActorManager from 'entities/actor_manager.js';
+import CommandManager from 'components/command_manager/command_manager.js';
+import FeatureManager from 'components/feature_manager/feature_manager.js';
+import ObjectManager from 'entities/object_manager.js';
+import PlayerManager from 'entities/player_manager.js';
+import TextLabelManager from 'entities/text_label_manager.js';
+import VehicleManager from 'entities/vehicle_manager.js';
+import VirtualWorldManager from 'entities/virtual_world_manager.js';
 
-const MockActor = require('entities/test/mock_actor.js');
-const MockClock = require('base/test/mock_clock.js');
-const MockObject = require('entities/test/mock_object.js');
-const MockPickup = require('entities/test/mock_pickup.js');
-const MockPickupManager = require('entities/test/mock_pickup_manager.js');
-const MockPlayer = require('entities/test/mock_player.js');
-const MockTextLabel = require('entities/test/mock_text_label.js');
-const MockVehicle = require('entities/test/mock_vehicle.js');
+import MockActor from 'entities/test/mock_actor.js';
+import MockClock from 'base/test/mock_clock.js';
+import MockObject from 'entities/test/mock_object.js';
+import MockPickup from 'entities/test/mock_pickup.js';
+import MockPickupManager from 'entities/test/mock_pickup_manager.js';
+import MockPlayer from 'entities/test/mock_player.js';
+import MockTextLabel from 'entities/test/mock_text_label.js';
+import MockVehicle from 'entities/test/mock_vehicle.js';
 
-const Abuse = require('features/abuse/abuse.js');
-const Communication = require('features/communication/communication.js');
-const Gangs = require('features/gangs/gangs.js');
-const MockAnnounce = require('features/announce/test/mock_announce.js');
-const Radio = require('features/radio/radio.js');
-const Settings = require('features/settings/settings.js');
-const Streamer = require('features/streamer/streamer.js');
+import Abuse from 'features/abuse/abuse.js';
+import Communication from 'features/communication/communication.js';
+import Gangs from 'features/gangs/gangs.js';
+import MockAnnounce from 'features/announce/test/mock_announce.js';
+import Radio from 'features/radio/radio.js';
+import Settings from 'features/settings/settings.js';
+import Streamer from 'features/streamer/streamer.js';
 
 // The MockServer is a mocked implementation of the Server class that creates a mocked environment
 // having mocked connected players. It will automatically be created before running a test, and
@@ -131,4 +131,4 @@ class MockServer {
     }
 }
 
-exports = MockServer;
+export default MockServer;

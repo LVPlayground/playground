@@ -88,4 +88,4 @@ class DependencyGraph {
     }
 }
 
-exports = DependencyGraph;
+export default DependencyGraph;

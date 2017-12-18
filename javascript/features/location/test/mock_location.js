@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Feature = require('components/feature_manager/feature.js');
-const InteriorManager = require('features/location/interior_manager.js');
+import Feature from 'components/feature_manager/feature.js';
+import InteriorManager from 'features/location/interior_manager.js';
 
 // Mocked version of the Location feature providing the API interfaces.
 class MockLocation extends Feature {
@@ -55,4 +55,4 @@ class MockLocation extends Feature {
     }
 }
 
-exports = MockLocation;
+export default MockLocation;

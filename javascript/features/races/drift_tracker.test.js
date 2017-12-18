@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const DriftTracker = require('features/races/drift_tracker.js');
+import DriftTracker from 'features/races/drift_tracker.js';
 
 describe('DriftTracker', it => {
   it('converts quaternions to the principal axes', assert => {

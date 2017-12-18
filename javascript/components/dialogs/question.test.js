@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Question = require('components/dialogs/question.js');
+import Question from 'components/dialogs/question.js';
 
 describe('Question', (it, beforeEach, afterEach) => {
     let player = null;

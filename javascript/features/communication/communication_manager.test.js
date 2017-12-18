@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const CommunicationManager = require('features/communication/communication_manager.js');
+import CommunicationManager from 'features/communication/communication_manager.js';
 
 describe('CommunicationManager', (it, beforeEach, afterEach) => {
     let gunther;

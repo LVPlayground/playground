@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const PriorityQueue = require('base/priority_queue.js');
+import PriorityQueue from 'base/priority_queue.js';
 
 // Implementation of a priority queue that can tell whether a certain entity exists in the priority
 // queue in O(1) time, at the cost of O(2n) storage. Entries may only be added once.
@@ -78,4 +78,4 @@ class FastPriorityQueue {
     }
 }
 
-exports = FastPriorityQueue;
+export default FastPriorityQueue;

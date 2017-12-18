@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const PickupStreamer = require('features/streamer/pickup_streamer.js');
-const StoredPickup = require('features/streamer/stored_pickup.js');
+import PickupStreamer from 'features/streamer/pickup_streamer.js';
+import StoredPickup from 'features/streamer/stored_pickup.js';
 
 describe('PickupStreamer', it => {
     function createStoredPickup({ position, respawnDelay = -1, enterFn = null,

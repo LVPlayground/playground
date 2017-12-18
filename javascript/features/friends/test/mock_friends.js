@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Feature = require('components/feature_manager/feature.js');
+import Feature from 'components/feature_manager/feature.js';
 
 // This is a mocked implementation of the Friends feature that can be used for testing. Tests have
 // the ability to inject fake data that should be returned by the functions.
@@ -10,7 +10,7 @@ class MockFriends extends Feature {
     constructor() {
         super();
 
-        // Map of |player| to 
+        // Map of |player| to
         this.mockedFriends_ = new Map();
     }
 
@@ -65,4 +65,4 @@ class MockFriends extends Feature {
     }
 }
 
-exports = MockFriends;
+export default MockFriends;

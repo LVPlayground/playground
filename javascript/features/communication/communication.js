@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const CommunicationManager = require('features/communication/communication_manager.js');
-const CommunicationNatives = require('features/communication/communication_natives.js');
-const Feature = require('components/feature_manager/feature.js');
+import CommunicationManager from 'features/communication/communication_manager.js';
+import CommunicationNatives from 'features/communication/communication_natives.js';
+import Feature from 'components/feature_manager/feature.js';
 
 // The communication feature manages the low-level communicative capabilities of players, for
 // example the main chat, interactive commands and can defer to delegates for more specific chats,
@@ -50,4 +50,4 @@ class Communication extends Feature {
     }
 }
 
-exports = Communication;
+export default Communication;

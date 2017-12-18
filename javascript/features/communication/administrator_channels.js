@@ -12,7 +12,7 @@ class AdministratorChannels {
         this.channels_ = new Map();
 
         // The channels are defined in an external JavaScript file for readability reasons.
-        const channels = require('features/communication/administrator_channels.list.js');
+        import channels from 'features/communication/administrator_channels.list.js';
 
         // Function to alphabetically sort the channels defined in the |channels|.
         const alphabeticalSortFn = (lhs, rhs) => lhs.value.localeCompare(rhs.value);
@@ -73,4 +73,4 @@ AdministratorChannels.VERBOSITY_ALL = 4;
 // In this mode, channels are enabled by default, but can be disabled manually.
 AdministratorChannels.VERBOSITY_CUSTOM = 5;
 
-exports = AdministratorChannels;
+export default AdministratorChannels;

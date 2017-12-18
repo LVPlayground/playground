@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-exports = [
+export default [
     { "name": "Four Dragons' Managerial Suite", "position": new Vector(2003.1178, 1015.1948, 33.008), "rotation": 351.5789, "interior": 11 },
     { "name": "Ganton Gym", "position": new Vector(770.8033, -0.7033, 1000.7267), "rotation": 22.8599, "interior": 5 },
     { "name": "Brothel", "position": new Vector(974.0177, -9.5937, 1001.1484), "rotation": 22.6045, "interior": 3 },

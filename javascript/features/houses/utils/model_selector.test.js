@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ModelSelector = require('features/houses/utils/model_selector.js');
+import ModelSelector from 'features/houses/utils/model_selector.js';
 
 describe('ModelSelector', (it, beforeEach) => {
     // Generates a fake model entry. Can optionally have a label and/or a price.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const AdministratorChannels = require('features/communication/administrator_channels.js');
+import AdministratorChannels from 'features/communication/administrator_channels.js';
 
 describe('AdministratorChannels', it => {
     it('should store categories and channels in alphabetized order', assert => {

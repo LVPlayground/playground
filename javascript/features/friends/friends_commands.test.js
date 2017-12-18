@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const FriendsCommands = require('features/friends/friends_commands.js');
-const FriendsManager = require('features/friends/friends_manager.js');
-const MockFriendsDatabase = require('features/friends/test/mock_friends_database.js');
+import FriendsCommands from 'features/friends/friends_commands.js';
+import FriendsManager from 'features/friends/friends_manager.js';
+import MockFriendsDatabase from 'features/friends/test/mock_friends_database.js';
 
 describe('FriendsCommands', (it, beforeEach, afterEach) => {
     let gunther = null;

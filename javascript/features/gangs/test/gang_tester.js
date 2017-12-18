@@ -25,4 +25,4 @@ class GangTester {
     }
 }
 
-exports = GangTester;
+export default GangTester;

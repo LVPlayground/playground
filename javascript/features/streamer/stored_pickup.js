@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const StoredEntity = require('features/streamer/stored_entity.js');
+import StoredEntity from 'features/streamer/stored_entity.js';
 
 // Details about a stored pickup. This contains all the necessary information in order to create
 // the pickup, on demand, within the pickup streamer.
@@ -31,4 +31,4 @@ class StoredPickup extends StoredEntity {
     get leaveFn() { return this.leaveFn_; }
 }
 
-exports = StoredPickup;
+export default StoredPickup;

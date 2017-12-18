@@ -14,7 +14,7 @@ class HouseVehicle {
 
     // Gets the Id of this vehicle in the database.
     get id() { return this.id_; }
-    
+
     // Gets the Id of the model that should be used to represent this vehicle.
     get modelId() { return this.modelId_; }
 
@@ -22,4 +22,4 @@ class HouseVehicle {
     get parkingLot() { return this.parkingLot_; }
 }
 
-exports = HouseVehicle;
+export default HouseVehicle;

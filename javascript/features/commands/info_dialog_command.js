@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Menu = require('components/menu/menu.js');
-const MessageBox = require('components/dialogs/message_box.js');
+import Menu from 'components/menu/menu.js';
+import MessageBox from 'components/dialogs/message_box.js';
 
 // Command driven by a JSON file that will display a dialog to the user to share information with
 // them. This class should not be instantiated, instead, use the create() method.
@@ -68,4 +68,4 @@ class MessageMenuCommand {
   }
 };
 
-exports = InfoDialogCommand;
+export default InfoDialogCommand;

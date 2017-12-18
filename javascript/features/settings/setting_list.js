@@ -2,13 +2,13 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Setting = require('features/settings/setting.js');
+import Setting from 'features/settings/setting.js';
 
 // Boolean indicating whether we're currently in the month December. Months are
 // zero-based in JavaScript for some reason.
 const isDecember = (new Date()).getMonth() == 11;
 
-exports = [
+export default [
     /** Abuse related settings */
     new Setting('abuse', 'blocker_damage_issued_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after issuing damage.'),
     new Setting('abuse', 'blocker_damage_taken_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after having taken damage.'),

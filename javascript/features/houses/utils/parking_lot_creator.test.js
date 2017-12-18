@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const HouseLocation = require('features/houses/house_location.js');
-const ParkingLotCreator = require('features/houses/utils/parking_lot_creator.js');
+import HouseLocation from 'features/houses/house_location.js';
+import ParkingLotCreator from 'features/houses/utils/parking_lot_creator.js';
 
 describe('ParkingLotCreator', (it, beforeEach, afterEach) => {
     const location = new HouseLocation(0 /* id */, {

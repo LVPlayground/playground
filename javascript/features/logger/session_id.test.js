@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const SessionId = require('features/logger/session_id.js');
+import SessionId from 'features/logger/session_id.js';
 
 describe('SessionId', it => {
     // Returns the current timestamp in seconds since the Unix epoch.

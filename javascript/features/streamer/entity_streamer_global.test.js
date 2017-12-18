@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const EntityStreamerGlobal = require('features/streamer/entity_streamer_global.js');
-const StoredEntity = require('features/streamer/stored_entity.js');
+import EntityStreamerGlobal from 'features/streamer/entity_streamer_global.js';
+import StoredEntity from 'features/streamer/stored_entity.js';
 
 describe('EntityStreamerGlobal', it => {
     // Implementation of the EntityStreamerGlobal interface that just stores the instances.
@@ -63,7 +63,7 @@ describe('EntityStreamerGlobal', it => {
         assert.equal(streamer.playerEntitySetCount, server.playerManager.count);
 
         gunther.disconnect();
-        
+
         assert.equal(streamer.playerEntitySetCount, server.playerManager.count);
         assert.equal(streamer.playerEntitySetCount, originalPlayerCount - 1);
 
@@ -195,7 +195,7 @@ describe('EntityStreamerGlobal', it => {
         assert.equal(streamer.activeEntityCount, 0);
         await streamer.stream();
         assert.equal(streamer.activeEntityCount, 1);
-        
+
         // Move |gunther| out of scope of the |entity|, which should not delete it.
         gunther.position = new Vector(3050, 3050, 0);
 
@@ -257,7 +257,7 @@ describe('EntityStreamerGlobal', it => {
         assert.equal(entity.activeReferences, 0);
 
         gunther.position = entity.position.translate({ x: 5, y: -5 });
-        
+
         await streamer.stream();
 
         assert.equal(streamer.activeEntityCount, 1);

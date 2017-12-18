@@ -93,4 +93,4 @@ DialogManager.MIN_DIALOG_ID = 25000;
 // The highest dialog id that is under the control of the DialogManager.
 DialogManager.MAX_DIALOG_ID = 30000;
 
-exports = DialogManager;
+export default DialogManager;

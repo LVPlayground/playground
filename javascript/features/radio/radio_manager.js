@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Channel = require('features/radio/channel.js');
-const ScopedCallbacks = require('base/scoped_callbacks.js');
-const TextDraw = require('components/text_draw/text_draw.js');
+import Channel from 'features/radio/channel.js';
+import ScopedCallbacks from 'base/scoped_callbacks.js';
+import TextDraw from 'components/text_draw/text_draw.js';
 
 // Manager for the radio feature that's responsible for determining whether and when the radio
 // should start playing for players.
@@ -188,4 +188,4 @@ class RadioManager {
     }
 }
 
-exports = RadioManager;
+export default RadioManager;

@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const HouseExtension = require('features/houses/house_extension.js');
-const Menu = require('components/menu/menu.js');
-const MessageBox = require('components/dialogs/message_box.js');
+import HouseExtension from 'features/houses/house_extension.js';
+import Menu from 'components/menu/menu.js';
+import MessageBox from 'components/dialogs/message_box.js';
 
 // Time, in milliseconds, to ignore players re-entering a house.
 const REENTRY_IGNORE_TIME_MS = 5 * 60 * 1000;
@@ -76,4 +76,4 @@ class VisitorLog extends HouseExtension {
     }
 }
 
-exports = VisitorLog;
+export default VisitorLog;

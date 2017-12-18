@@ -52,4 +52,4 @@ class SettingsDatabase {
     }
 }
 
-exports = SettingsDatabase;
+export default SettingsDatabase;

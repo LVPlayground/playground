@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const TextDrawManager = require('components/text_draw/text_draw_manager.js');
+import TextDrawManager from 'components/text_draw/text_draw_manager.js';
 
 // Sensible maximum shadow size that may be used for a text draw.
 const MAXIMUM_SHADOW_SIZE = 24;
@@ -285,4 +285,4 @@ TextDraw.ALIGN_LEFT = 1;
 TextDraw.ALIGN_CENTER = 2;
 TextDraw.ALIGN_RIGHT = 3;
 
-exports = TextDraw;
+export default TextDraw;

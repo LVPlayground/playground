@@ -76,4 +76,4 @@ FightSignUp.TYPE_INVITE_PLAYER = 0;
 FightSignUp.TYPE_PUBLIC_CHALLENGE = 1;
 FightSignUp.TYPE_PUBLIC_ANNOUNCE = 2;
 
-exports = FightSignUp;
+export default FightSignUp;

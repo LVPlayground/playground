@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MockPlaygroundCommands = require('features/playground/test/mock_playground_commands.js');
+import MockPlaygroundCommands from 'features/playground/test/mock_playground_commands.js';
 
 describe('JetpackCommand', (it, beforeEach, afterEach) => {
     let commands = null;
@@ -54,7 +54,7 @@ describe('JetpackCommand', (it, beforeEach, afterEach) => {
         russell.specialAction = Player.SPECIAL_ACTION_USEJETPACK;
 
         gunther.level = Player.LEVEL_ADMINISTRATOR;
-        
+
         assert.isTrue(gunther.issueCommand('/jetpack ' + russell.name + ' remove'));
 
         assert.equal(gunther.messages.length, 2);

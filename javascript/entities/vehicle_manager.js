@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ScopedCallbacks = require('base/scoped_callbacks.js');
+import ScopedCallbacks from 'base/scoped_callbacks.js';
 
 // Range, in units, that enter and exit keys will work around a remote controllable vehicle.
 const RemoteControllableVehicleRange = 2;
@@ -272,4 +272,4 @@ class VehicleManager {
     }
 }
 
-exports = VehicleManager;
+export default VehicleManager;

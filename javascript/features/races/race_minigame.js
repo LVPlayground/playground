@@ -2,13 +2,13 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Countdown = require('features/races/ui/countdown.js');
-const DestroyedVehicleMessage = require('features/races/ui/destroyed_vehicle_message.js');
-const FinishedMessage = require('features/races/ui/finished_message.js');
-const LeaveVehicleMessage = require('features/races/ui/leave_vehicle_message.js');
-const Minigame = require('features/minigames/minigame.js');
-const RaceExpiredMessage = require('features/races/ui/race_expired_message.js');
-const RacePlayerData = require('features/races/race_player_data.js');
+import Countdown from 'features/races/ui/countdown.js';
+import DestroyedVehicleMessage from 'features/races/ui/destroyed_vehicle_message.js';
+import FinishedMessage from 'features/races/ui/finished_message.js';
+import LeaveVehicleMessage from 'features/races/ui/leave_vehicle_message.js';
+import Minigame from 'features/minigames/minigame.js';
+import RaceExpiredMessage from 'features/races/ui/race_expired_message.js';
+import RacePlayerData from 'features/races/race_player_data.js';
 
 // Frequency at which infinite nitro should be given to vehicles. In milliseconds.
 const InfiniteNitroInterval = 20000;
@@ -65,7 +65,7 @@ class RaceMinigame extends Minigame {
     }
 
     // Called when the race advances to loading state. This created the required entities, makes
-    // sure that all players are in the appropriate world and displays the count-down for them. 
+    // sure that all players are in the appropriate world and displays the count-down for them.
     onLoad() {
         return Promise.resolve().then(() => {
             this.createObjects();
@@ -115,7 +115,7 @@ class RaceMinigame extends Minigame {
 
                 // Display the score board for the |player|.
                 playerData.scoreBoard.displayForPlayer(participantCount);
-                
+
                 // Create the first checkpoint for the player, so they know where to go.
                 this.nextCheckpoint(player);
             }
@@ -370,7 +370,7 @@ class RaceMinigame extends Minigame {
             return;
         }
     }
-    
+
     // ---------------------------------------------------------------------------------------------
 
     // Called when the |player| has left the race, either by choice, because they disconnected or
@@ -421,4 +421,4 @@ class RaceMinigame extends Minigame {
     }
 }
 
-exports = RaceMinigame;
+export default RaceMinigame;

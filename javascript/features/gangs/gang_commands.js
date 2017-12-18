@@ -2,18 +2,18 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const alert = require('components/dialogs/alert.js');
-const confirm = require('components/dialogs/confirm.js');
+import alert from 'components/dialogs/alert.js';
+import confirm from 'components/dialogs/confirm.js';
 
-const ColorPicker = require('components/dialogs/color_picker.js');
-const CommandBuilder = require('components/command_manager/command_builder.js');
-const Dialog = require('components/dialogs/dialog.js');
-const Gang = require('features/gangs/gang.js');
-const GangDatabase = require('features/gangs/gang_database.js');
-const Menu = require('components/menu/menu.js');
-const PlayerMoneyBridge = require('features/gangs/util/player_money_bridge.js');
-const Question = require('components/dialogs/question.js');
-const QuestionSequence = require('components/dialogs/question_sequence.js');
+import ColorPicker from 'components/dialogs/color_picker.js';
+import CommandBuilder from 'components/command_manager/command_builder.js';
+import Dialog from 'components/dialogs/dialog.js';
+import Gang from 'features/gangs/gang.js';
+import GangDatabase from 'features/gangs/gang_database.js';
+import Menu from 'components/menu/menu.js';
+import PlayerMoneyBridge from 'features/gangs/util/player_money_bridge.js';
+import Question from 'components/dialogs/question.js';
+import QuestionSequence from 'components/dialogs/question_sequence.js';
 
 // Options for asking the player what the gang's full name should be.
 const NAME_QUESTION = {
@@ -344,7 +344,7 @@ class GangCommands {
         }
 
         await this.manager_.removePlayerFromGang(player, gang);
-        if (succession) 
+        if (succession)
             await this.manager_.updateRoleForUserId(succession.userId, gang, Gang.ROLE_LEADER);
 
         player.sendMessage(Message.GANG_DID_LEAVE, gang.name);
@@ -776,4 +776,4 @@ class GangCommands {
     }
 }
 
-exports = GangCommands;
+export default GangCommands;

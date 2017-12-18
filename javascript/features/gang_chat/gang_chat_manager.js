@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ScopedCallbacks = require('base/scoped_callbacks.js');
+import ScopedCallbacks from 'base/scoped_callbacks.js';
 
 // Implementation of the actual gang chat feature. Will work with the gangs feature to get its data.
 class GangChatManager {
@@ -23,7 +23,7 @@ class GangChatManager {
             this, GangChatManager.prototype.onCommunicationReload.bind(this));
     }
 
-    // Called when a player sends a message to the chat box. If it starts 
+    // Called when a player sends a message to the chat box. If it starts
     onPlayerText(player, text) {
         if (!text.startsWith('!') || text.length === 1)
             return false;  // this is not a gang-bound message
@@ -94,7 +94,7 @@ class GangChatManager {
                                             : Message.GANG_CHAT),
                                gang.tag, player.id, player.name, messageRaw);
         }
-        
+
         // Announce the message to people watching on IRC.
         if (this.announce_) {
             this.announce_().announceToIRC(
@@ -124,7 +124,7 @@ class GangChatManager {
             recipients.add(onlinePlayer);
         });
 
-        
+
 
         // Distribute the message to the player who is spying on the gang chat.
         if (this.spyingPlayer_ !== null && !isEncrypted) {
@@ -209,4 +209,4 @@ class GangChatManager {
     }
 }
 
-exports = GangChatManager;
+export default GangChatManager;

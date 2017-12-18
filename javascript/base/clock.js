@@ -67,4 +67,4 @@ class Clock {
     dispose() {}
 }
 
-exports = Clock;
+export default Clock;

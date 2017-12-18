@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MessageView = require('features/races/ui/message_view.js');
+import MessageView from 'features/races/ui/message_view.js';
 
 // Displays a message to a specific player that they have finished the race. This is not very
 // insightful, but they can look at the scoreboard to the right to figure out how they did.
@@ -12,4 +12,4 @@ class FinishedMessage {
     }
 }
 
-exports = FinishedMessage;
+export default FinishedMessage;

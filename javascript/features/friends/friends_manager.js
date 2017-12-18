@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const FriendsDatabase = require('features/friends/friends_database.js');
+import FriendsDatabase from 'features/friends/friends_database.js';
 
 // Manager for the friends feature responsible for the mid-level logic of the feature, including
 // making sure that a player's friends are loaded when they log in to the server.
@@ -172,4 +172,4 @@ class FriendsManager {
 // Value for indicating that a player is currently online on Las Venturas Playground.
 FriendsManager.CURRENTLY_ONLINE = Number.MAX_SAFE_INTEGER;
 
-exports = FriendsManager;
+export default FriendsManager;

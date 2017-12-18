@@ -21,4 +21,4 @@ class SessionId {
     }
 }
 
-exports = SessionId;
+export default SessionId;

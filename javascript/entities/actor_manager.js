@@ -39,4 +39,4 @@ class ActorManager {
     }
 }
 
-exports = ActorManager;
+export default ActorManager;

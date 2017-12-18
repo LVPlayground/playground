@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ResidentialValueMap = require('features/economy/residential_value_map.js');
+import ResidentialValueMap from 'features/economy/residential_value_map.js';
 
 describe('ResidentialValueMap', it => {
     it('should be able to load and query the data', assert => {

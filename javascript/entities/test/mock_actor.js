@@ -104,4 +104,4 @@ class MockActor {
     }
 }
 
-exports = MockActor;
+export default MockActor;

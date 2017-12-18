@@ -2,10 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Feature = require('components/feature_manager/feature.js');
-const RaceCommands = require('features/races/race_commands.js');
-const RaceImporter = require('features/races/race_importer.js');
-const RaceManager = require('features/races/race_manager.js');
+import Feature from 'components/feature_manager/feature.js';
+import RaceCommands from 'features/races/race_commands.js';
+import RaceImporter from 'features/races/race_importer.js';
+import RaceManager from 'features/races/race_manager.js';
 
 // In which directory are the race data files stored?
 const RACE_DATA_DIRECTORY = 'data/races';
@@ -47,4 +47,4 @@ class Races extends Feature {
     }
 }
 
-exports = Races;
+export default Races;

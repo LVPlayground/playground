@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const EntityStreamerGlobal = require('features/streamer/entity_streamer_global.js');
-const ScopedEntities = require('entities/scoped_entities.js');
+import EntityStreamerGlobal from 'features/streamer/entity_streamer_global.js';
+import ScopedEntities from 'entities/scoped_entities.js';
 
 // Implementation for a streamer that's able to stream pickups for all players. This class is
 // intended to be used with stored entities that are StoredPickup instances.
@@ -118,4 +118,4 @@ class PickupStreamer extends EntityStreamerGlobal {
     }
 }
 
-exports = PickupStreamer;
+export default PickupStreamer;

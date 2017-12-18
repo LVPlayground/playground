@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const AbuseConstants = require('features/abuse/abuse_constants.js');
+import AbuseConstants from 'features/abuse/abuse_constants.js';
 
 const TELEPORT_STATUS_ALLOWED = 0;
 const TELEPORT_STATUS_REJECTED_FIGHTING = 1;
@@ -64,4 +64,4 @@ class AbuseNatives {
     }
 }
 
-exports = AbuseNatives;
+export default AbuseNatives;

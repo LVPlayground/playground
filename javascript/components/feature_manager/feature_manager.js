@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const DependencyGraph = require('components/feature_manager/dependency_graph.js');
-const Feature = require('components/feature_manager/feature.js');
+import DependencyGraph from 'components/feature_manager/dependency_graph.js';
+import Feature from 'components/feature_manager/feature.js';
 
 // The feature manager owns all the features available in the JavaScript implementation of the
 // server, provides cross-feature interfaces and access to many of the shared objects.
@@ -50,7 +50,9 @@ class FeatureManager {
                 return;
 
             const featureFilename = 'features/' + feature + '/' + feature + '.js';
-            const featureConstructor = require(featureFilename);
+
+            // TODO(Russell): FIX MODULES
+            //import featureConstructor from featureFilename;
 
             this.dependencyGraph_.createNode(feature);
             this.registeredFeatures_.set(feature, featureConstructor);
@@ -114,6 +116,9 @@ class FeatureManager {
     // followed by disposing the existing feature. All dependencies declared by the feature will
     // then be cleared, finished by reloading the feature through the regular code path again.
     liveReload(feature) {
+        // TODO(Russell): Modules broke live reloading. Disable it for now.
+        return false;
+
         if (!this.isEligibleForLiveReload(feature))
             throw new Error('The feature "' + feature + '" is not eligible for live reload.');
 
@@ -289,4 +294,4 @@ class FeatureManager {
     }
 };
 
-exports = FeatureManager;
+export default FeatureManager;

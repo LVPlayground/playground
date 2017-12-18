@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const PlaygroundManager = require('features/playground/playground_manager.js');
+import PlaygroundManager from 'features/playground/playground_manager.js';
 
 describe('PlaygroundManager', (it, beforeEach, afterEach) => {
     let manager = null;

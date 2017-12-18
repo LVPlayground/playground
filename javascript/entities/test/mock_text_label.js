@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MockPlayer = require('entities/test/mock_player.js');
-const MockVehicle = require('entities/test/mock_vehicle.js');
+import MockPlayer from 'entities/test/mock_player.js';
+import MockVehicle from 'entities/test/mock_vehicle.js';
 
 // Mocked version of the TextLabel class that supports the same API, but won't interact with the
 // SA-MP server in order to do its actions.
@@ -107,4 +107,4 @@ class MockTextLabel {
     }
 }
 
-exports = MockTextLabel;
+export default MockTextLabel;

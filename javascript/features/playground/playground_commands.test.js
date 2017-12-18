@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const PlaygroundAccessTracker = require('features/playground/playground_access_tracker.js');
-const PlaygroundCommands = require('features/playground/playground_commands.js');
-const MockAnnounce = require('features/announce/test/mock_announce.js');
+import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
+import PlaygroundCommands from 'features/playground/playground_commands.js';
+import MockAnnounce from 'features/announce/test/mock_announce.js';
 
 describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
     let access = null;

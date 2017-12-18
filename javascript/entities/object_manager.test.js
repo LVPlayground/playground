@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ObjectManager = require('entities/object_manager.js');
-const MockObject = require('entities/test/mock_object.js');
+import ObjectManager from 'entities/object_manager.js';
+import MockObject from 'entities/test/mock_object.js';
 
 describe('ObjectManager', (it, beforeEach, afterEach) => {
     let manager = null;

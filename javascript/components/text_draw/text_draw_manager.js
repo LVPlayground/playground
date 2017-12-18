@@ -78,4 +78,4 @@ class TextDrawManager {
   }
 };
 
-exports = TextDrawManager;
+export default TextDrawManager;

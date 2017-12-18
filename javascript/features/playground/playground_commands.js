@@ -2,13 +2,13 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Command = require('features/playground/command.js');
-const CommandBuilder = require('components/command_manager/command_builder.js');
-const Menu = require('components/menu/menu.js');
-const MessageBox = require('components/dialogs/message_box.js');
-const PlaygroundAccessTracker = require('features/playground/playground_access_tracker.js');
-const Question = require('components/dialogs/question.js');
-const Setting = require('features/settings/setting.js');
+import Command from 'features/playground/command.js';
+import CommandBuilder from 'components/command_manager/command_builder.js';
+import Menu from 'components/menu/menu.js';
+import MessageBox from 'components/dialogs/message_box.js';
+import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
+import Question from 'components/dialogs/question.js';
+import Setting from 'features/settings/setting.js';
 
 // Directory in which the CPU profiles will be stored.
 const ProfileDirectory = 'profiles';
@@ -30,7 +30,7 @@ class PlaygroundCommands {
         // Utility function to import, create and initialize the command in |filename|. The command
         // will be stored in the |commands_| map, and be registered with the manager later.
         const requireCommand = filename => {
-            const CommandImplementation = require(filename);
+            import CommandImplementation from filename;
             if (!CommandImplementation instanceof Command)
                 throw new Error(filename + ' does not contain a command.');
 
@@ -595,4 +595,4 @@ class PlaygroundCommands {
     }
 }
 
-exports = PlaygroundCommands;
+export default PlaygroundCommands;

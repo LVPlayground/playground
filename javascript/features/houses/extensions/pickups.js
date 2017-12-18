@@ -2,13 +2,13 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const alert = require('components/dialogs/alert.js');
-const confirm = require('components/dialogs/confirm.js');
+import alert from 'components/dialogs/alert.js';
+import confirm from 'components/dialogs/confirm.js';
 
-const HouseExtension = require('features/houses/house_extension.js');
-const Menu = require('components/menu/menu.js');
-const PlayerMoneyBridge = require('features/houses/utils/player_money_bridge.js');
-const StoredPickup = require('features/streamer/stored_pickup.js');
+import HouseExtension from 'features/houses/house_extension.js';
+import Menu from 'components/menu/menu.js';
+import PlayerMoneyBridge from 'features/houses/utils/player_money_bridge.js';
+import StoredPickup from 'features/streamer/stored_pickup.js';
 
 // Delay, in seconds, after which a health pickup in a house respawns.
 const HealthPickupRespawnDelay = 180;
@@ -256,7 +256,7 @@ class Pickups extends HouseExtension {
                 player.sendMessage(Message.HOUSE_PICKUP_ARMOUR_RESTORED, ownerName);
                 if (owner)
                     owner.sendMessage(Message.HOUSE_PICKUP_ARMOUR_USED, player.name, player.id);
-            
+
                 break;
 
             default:
@@ -296,4 +296,4 @@ class Pickups extends HouseExtension {
     }
 }
 
-exports = Pickups;
+export default Pickups;

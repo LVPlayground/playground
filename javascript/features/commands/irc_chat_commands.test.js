@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MockAnnounce = require('features/announce/test/mock_announce.js');
-const IrcChatCommands = require('features/commands/irc_chat_commands.js');
+import MockAnnounce from 'features/announce/test/mock_announce.js';
+import IrcChatCommands from 'features/commands/irc_chat_commands.js';
 
 describe('IrcChatCommands', (it, beforeEach, afterEach) => {
     let ircChatCommands = null;

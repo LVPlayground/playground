@@ -4,4 +4,4 @@
 
 let counter = 0;
 
-exports = () => ++counter;
+export default () => ++counter;

@@ -78,4 +78,4 @@ class AbuseMitigator {
     }
 }
 
-exports = AbuseMitigator;
+export default AbuseMitigator;

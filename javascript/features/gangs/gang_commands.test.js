@@ -2,10 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MockAnnounce = require('features/announce/test/mock_announce.js');
-const Gang = require('features/gangs/gang.js');
-const Gangs = require('features/gangs/gangs.js');
-const PlayerMoneyBridge = require('features/gangs/util/player_money_bridge.js');
+import MockAnnounce from 'features/announce/test/mock_announce.js';
+import Gang from 'features/gangs/gang.js';
+import Gangs from 'features/gangs/gangs.js';
+import PlayerMoneyBridge from 'features/gangs/util/player_money_bridge.js';
 
 describe('GangCommands', (it, beforeEach) => {
     let commands = null;

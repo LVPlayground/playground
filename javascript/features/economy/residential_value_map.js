@@ -105,4 +105,4 @@ class ResidentialValueMap {
     }
 }
 
-exports = ResidentialValueMap;
+export default ResidentialValueMap;

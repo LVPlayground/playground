@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MinigameDriver = require('features/minigames/minigame_driver.js');
+import MinigameDriver from 'features/minigames/minigame_driver.js';
 
 describe('MinigameDriver', (it, beforeEach, afterEach) => {
     let player = null;

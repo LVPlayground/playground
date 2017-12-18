@@ -2,12 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const AbuseConstants = require('features/abuse/abuse_constants.js');
-const DatabaseVehicle = require('features/vehicles/database_vehicle.js');
-const MockAnnounce = require('features/announce/test/mock_announce.js');
-const MockPlayground = require('features/playground/test/mock_playground.js');
-const VehicleManager = require('features/vehicles/vehicle_manager.js');
-const Vehicles = require('features/vehicles/vehicles.js');
+import AbuseConstants from 'features/abuse/abuse_constants.js';
+import DatabaseVehicle from 'features/vehicles/database_vehicle.js';
+import MockAnnounce from 'features/announce/test/mock_announce.js';
+import MockPlayground from 'features/playground/test/mock_playground.js';
+import VehicleManager from 'features/vehicles/vehicle_manager.js';
+import Vehicles from 'features/vehicles/vehicles.js';
 
 describe('VehicleCommands', (it, beforeEach) => {
     let abuse = null;

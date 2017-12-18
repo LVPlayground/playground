@@ -351,4 +351,4 @@ class InteriorList {
     }
 }
 
-exports = InteriorList;
+export default InteriorList;

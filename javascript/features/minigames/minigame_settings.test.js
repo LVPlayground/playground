@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MinigameSettings = require('features/minigames/minigame_settings.js');
+import MinigameSettings from 'features/minigames/minigame_settings.js';
 
 describe('MinigameSettings', it => {
     it('should throw when constructed with anything but an object-like type', assert => {

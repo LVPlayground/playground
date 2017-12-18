@@ -40,4 +40,4 @@ class PlayerMoneyBridge {
     }
 }
 
-exports = PlayerMoneyBridge;
+export default PlayerMoneyBridge;

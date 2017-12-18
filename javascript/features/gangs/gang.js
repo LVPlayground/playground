@@ -123,4 +123,4 @@ Gang.ROLE_LEADER = 0;
 Gang.ROLE_MANAGER = 1;
 Gang.ROLE_MEMBER = 2;
 
-exports = Gang;
+export default Gang;

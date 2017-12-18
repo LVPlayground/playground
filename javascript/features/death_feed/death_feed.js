@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Feature = require('components/feature_manager/feature.js');
-const ScopedCallbacks = require('base/scoped_callbacks.js');
+import Feature from 'components/feature_manager/feature.js';
+import ScopedCallbacks from 'base/scoped_callbacks.js';
 
 // Number of death messages that are visible on the player's screens.
 const DEATH_FEED_VISIBLE_LENGTH = 5;
@@ -90,4 +90,4 @@ class DeathFeed extends Feature {
   }
 };
 
-exports = DeathFeed;
+export default DeathFeed;

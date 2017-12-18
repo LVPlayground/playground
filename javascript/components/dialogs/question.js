@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Dialog = require('components/dialogs/dialog.js');
+import Dialog from 'components/dialogs/dialog.js';
 
 // Private symbol ensuring that the Question constructor won't be used.
 const PrivateSymbol = Symbol('Please use the static methods.');
@@ -139,4 +139,4 @@ class Question {
     }
 }
 
-exports = Question;
+export default Question;

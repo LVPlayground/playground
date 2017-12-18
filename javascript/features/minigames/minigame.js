@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MinigameSettings = require('features/minigames/minigame_settings.js');
+import MinigameSettings from 'features/minigames/minigame_settings.js';
 
 // Base class that all minigames have to extend. Contains default implementations of the event
 // handlers that are available, and makes sure that certain bits of information are available.
@@ -84,7 +84,7 @@ class Minigame {
     onPlayerRemoved(player, reason) {}
 
     // Will be called when the minigame has finished. Must return a promise that has to be resolved
-    // when clean-up has finished. All active players will be respawned after this call finishes. 
+    // when clean-up has finished. All active players will be respawned after this call finishes.
     onFinish(reason) { return Promise.resolve(); }
 
     // ---------------------------------------------------------------------------------------------
@@ -118,4 +118,4 @@ Minigame.REASON_DROPPED_OUT = 1;
 Minigame.REASON_DISCONNECT = 2;
 Minigame.REASON_FINISHED = 3;
 
-exports = Minigame;
+export default Minigame;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const EntityStreamerGlobal = require('features/streamer/entity_streamer_global.js');
-const ScopedEntities = require('entities/scoped_entities.js');
+import EntityStreamerGlobal from 'features/streamer/entity_streamer_global.js';
+import ScopedEntities from 'entities/scoped_entities.js';
 
 // Pin that will be used to keep vehicles alive that have recently been used.
 const RecentUsagePin = Symbol();
@@ -103,7 +103,7 @@ class VehicleStreamer extends EntityStreamerGlobal {
             closestVehicle = vehicle;
             closestDistance = squaredDistance;
         }
-        
+
         return {
             vehicles: storedVehicles.size,
             models: models.size,
@@ -387,4 +387,4 @@ class VehicleStreamer extends EntityStreamerGlobal {
     }
 }
 
-exports = VehicleStreamer;
+export default VehicleStreamer;

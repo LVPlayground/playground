@@ -2,15 +2,15 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Feature = require('components/feature_manager/feature.js');
-const HouseCommands = require('features/houses/house_commands.js');
-const HouseManager = require('features/houses/house_manager.js');
-const HouseNatives = require('features/houses/house_natives.js');
+import Feature from 'components/feature_manager/feature.js';
+import HouseCommands from 'features/houses/house_commands.js';
+import HouseManager from 'features/houses/house_manager.js';
+import HouseNatives from 'features/houses/house_natives.js';
 
-const GangZones = require('features/houses/extensions/gang_zones.js');
-const Pickups = require('features/houses/extensions/pickups.js');
-const PropertySettings = require('features/houses/extensions/property_settings.js');
-const VisitorLog = require('features/houses/extensions/visitor_log.js');
+import GangZones from 'features/houses/extensions/gang_zones.js';
+import Pickups from 'features/houses/extensions/pickups.js';
+import PropertySettings from 'features/houses/extensions/property_settings.js';
+import VisitorLog from 'features/houses/extensions/visitor_log.js';
 
 // Houses are points on the map that players may purchase and then call their house. While the
 // house points have to be determined by administrators, players can select their own interior, get
@@ -68,4 +68,4 @@ class Houses extends Feature {
     }
 }
 
-exports = Houses;
+export default Houses;

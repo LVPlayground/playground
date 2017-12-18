@@ -34,4 +34,4 @@ class FreeVip {
     }
 };
 
-exports = FreeVip;
+export default FreeVip;

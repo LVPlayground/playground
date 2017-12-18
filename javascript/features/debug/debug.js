@@ -2,10 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const CommandBuilder = require('components/command_manager/command_builder.js');
-const Feature = require('components/feature_manager/feature.js');
+import CommandBuilder from 'components/command_manager/command_builder.js';
+import Feature from 'components/feature_manager/feature.js';
 
-const InteriorList = require('features/debug/interiors.js');
+import InteriorList from 'features/debug/interiors.js';
 
 // Utility function to return |value| in |len| digits, left-padded with zeros when necessary.
 function leftPad(value, len = 2) {
@@ -240,4 +240,4 @@ class Debug extends Feature {
   }
 }
 
-exports = Debug;
+export default Debug;

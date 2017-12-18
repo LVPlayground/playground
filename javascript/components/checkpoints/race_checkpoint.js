@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const CheckpointManager = require('components/checkpoints/checkpoint_manager.js');
+import CheckpointManager from 'components/checkpoints/checkpoint_manager.js';
 
 // Create an instance of the manager for race checkpoints.
 let manager = new CheckpointManager(CheckpointManager.RACE_CHECKPOINTS);
@@ -50,4 +50,4 @@ RaceCheckpoint.AIRBORNE_NORMAL = 3;
 RaceCheckpoint.AIRBORNE_FINISH = 4;
 RaceCheckpoint.NO_MARKER = 2;
 
-exports = RaceCheckpoint;
+export default RaceCheckpoint;

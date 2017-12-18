@@ -23,4 +23,4 @@ class CommunicationNatives {
     }
 }
 
-exports = CommunicationNatives;
+export default CommunicationNatives;

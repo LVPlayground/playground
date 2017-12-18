@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MockPlaygroundCommands = require('features/playground/test/mock_playground_commands.js');
+import MockPlaygroundCommands from 'features/playground/test/mock_playground_commands.js';
 
 describe('SecretPrivateMessageCommand', (it, beforeEach, afterEach) => {
     let commands = null;

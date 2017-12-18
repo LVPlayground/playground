@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Feature = require('components/feature_manager/feature.js');
-const KilltimeManager = require('features/killtime/killtime_manager.js');
-const KilltimeCommands = require('features/killtime/killtime_commands.js');
+import Feature from 'components/feature_manager/feature.js';
+import KilltimeManager from 'features/killtime/killtime_manager.js';
+import KilltimeCommands from 'features/killtime/killtime_commands.js';
 
 // Killtime is a fun element in LVP for, especially, DMers. This provides the possibility to give a prize for the
 // player who kills the most players in the given time.
@@ -31,4 +31,4 @@ class Killtime extends Feature {
     }
 }
 
-exports = Killtime;
+export default Killtime;

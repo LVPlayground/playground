@@ -224,4 +224,4 @@ class PlaygroundAccessTracker {
     }
 }
 
-exports = PlaygroundAccessTracker;
+export default PlaygroundAccessTracker;

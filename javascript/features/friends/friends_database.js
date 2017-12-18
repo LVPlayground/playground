@@ -87,4 +87,4 @@ class FriendsDatabase {
     }
 }
 
-exports = FriendsDatabase;
+export default FriendsDatabase;

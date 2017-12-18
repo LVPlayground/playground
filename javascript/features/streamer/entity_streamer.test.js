@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const EntityStreamer = require('features/streamer/entity_streamer.js');
-const StoredEntity = require('features/streamer/stored_entity.js');
+import EntityStreamer from 'features/streamer/entity_streamer.js';
+import StoredEntity from 'features/streamer/stored_entity.js';
 
 describe('EntityStreamer', it => {
     // Fills the |streamer| with |edge|*|edge| entities. The created entities will be ten units

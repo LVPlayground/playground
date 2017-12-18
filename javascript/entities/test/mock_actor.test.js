@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const MockActor = require('entities/test/mock_actor.js');
+import MockActor from 'entities/test/mock_actor.js';
 
 describe('MockActor', (it, beforeEach, afterEach) => {
     let actor = null;

@@ -52,4 +52,4 @@ AbuseConstants.REASON_TIME_LIMIT = (limit) => {
     return 'can only do so once per ' + formatTimePeriod(limit);
 };
 
-exports = AbuseConstants;
+export default AbuseConstants;

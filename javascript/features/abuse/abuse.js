@@ -2,12 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const AbuseConstants = require('features/abuse/abuse_constants.js');
-const AbuseMitigator = require('features/abuse/abuse_mitigator.js');
-const AbuseMonitor = require('features/abuse/abuse_monitor.js');
-const AbuseNatives = require('features/abuse/abuse_natives.js');
-const DamageManager = require('features/abuse/damage_manager.js');
-const Feature = require('components/feature_manager/feature.js');
+import AbuseConstants from 'features/abuse/abuse_constants.js';
+import AbuseMitigator from 'features/abuse/abuse_mitigator.js';
+import AbuseMonitor from 'features/abuse/abuse_monitor.js';
+import AbuseNatives from 'features/abuse/abuse_natives.js';
+import DamageManager from 'features/abuse/damage_manager.js';
+import Feature from 'components/feature_manager/feature.js';
 
 // Time period, in milliseconds, a player needs to wait between time limited teleportations.
 const TeleportCoolDownPeriodMs = 180000;  // 3 minutes
@@ -129,4 +129,4 @@ class Abuse extends Feature {
     }
 }
 
-exports = Abuse;
+export default Abuse;

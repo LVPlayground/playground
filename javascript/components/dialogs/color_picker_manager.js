@@ -41,4 +41,4 @@ global.addEventListener('colorpickerresponse', event => {
     ColorPickerManager.sendResult(player, color);
 });
 
-exports = ColorPickerManager;
+export default ColorPickerManager;

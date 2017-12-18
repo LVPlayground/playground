@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Minigame = require('features/minigames/minigame.js');
-const RaceDatabase = require('features/races/race_database.js');
-const RaceMinigame = require('features/races/race_minigame.js');
+import Minigame from 'features/minigames/minigame.js';
+import RaceDatabase from 'features/races/race_database.js';
+import RaceMinigame from 'features/races/race_minigame.js';
 
 // The race manager is in charge of meditating between the race database, the commands and the
 // minigame feature that will drive the actual races.
@@ -23,7 +23,7 @@ class RaceManager {
     // ---------------------------------------------------------------------------------------------
 
     // Registers the |race| with the race catalogue maintained by the manager. Will throw when a
-    // race having the same Id has already been registered. 
+    // race having the same Id has already been registered.
     registerRace(race) {
         if (this.raceCatalogue_.has(race.id))
             throw new Error('A race with Id #' + race.id + ' has already been registered.');
@@ -74,7 +74,7 @@ class RaceManager {
             return races;
         });
     }
-  
+
     // ---------------------------------------------------------------------------------------------
 
     // Starts the race identified by |raceId| for the |player|. If a race having that Id is already
@@ -120,4 +120,4 @@ class RaceManager {
     }
 }
 
-exports = RaceManager;
+export default RaceManager;

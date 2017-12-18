@@ -2,10 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Feature = require('components/feature_manager/feature.js');
-const ObjectGroup = require('entities/object_group.js');
-const ObjectRemover = require('features/player_favours/object_remover.js');
-const ScopedEntities = require('entities/scoped_entities.js');
+import Feature from 'components/feature_manager/feature.js';
+import ObjectGroup from 'entities/object_group.js';
+import ObjectRemover from 'features/player_favours/object_remover.js';
+import ScopedEntities from 'entities/scoped_entities.js';
 
 // Implementation of a collection of features that have been implemented specifically by request of
 // a particular player. The actual features and their owners are documented in the README.md file.
@@ -146,4 +146,4 @@ class PlayerFavours extends Feature {
     }
 }
 
-exports = PlayerFavours;
+export default PlayerFavours;

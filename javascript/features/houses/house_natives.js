@@ -37,4 +37,4 @@ class HouseNatives {
     }
 }
 
-exports = HouseNatives;
+export default HouseNatives;

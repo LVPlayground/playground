@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const CommandBuilder = require('components/command_manager/command_builder.js');
+import CommandBuilder from 'components/command_manager/command_builder.js';
 
 describe('CommandBuilder', (it, beforeEach) => {
   let command = null,
@@ -36,7 +36,7 @@ describe('CommandBuilder', (it, beforeEach) => {
 
   // Utility function to create a new builder using |testParent| as the parent.
   let builder = (command) => new CommandBuilder(CommandBuilder.COMMAND, testParent, command);
-  
+
   it('should keep track of the command name', assert => {
     builder('testcommand').build();
 

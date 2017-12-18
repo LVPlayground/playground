@@ -8,7 +8,7 @@
 // The abuse monitor is able to detect the following kinds of abuse:
 //     1) Illegal non-player character: connecting a non-player character from a remote host.
 //     2) Illegal vehicle entry: entering a vehicle that is locked for the player.
-// 
+//
 class AbuseMonitor {
     constructor(announce, settings) {
         this.announce_ = announce;
@@ -124,4 +124,4 @@ class AbuseMonitor {
 AbuseMonitor.TYPE_ILLEGAL_NON_PLAYER_CHARACTER = 0;
 AbuseMonitor.TYPE_ILLEGAL_VEHICLE_ENTRY = 1;
 
-exports = AbuseMonitor;
+export default AbuseMonitor;

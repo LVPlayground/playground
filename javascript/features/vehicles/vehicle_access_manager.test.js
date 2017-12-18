@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const VehicleAccessManager = require('features/vehicles/vehicle_access_manager.js');
+import VehicleAccessManager from 'features/vehicles/vehicle_access_manager.js';
 
 describe('VehicleAccessManager', (it, beforeEach, afterEach) => {
     let gunther = null;
@@ -17,7 +17,7 @@ describe('VehicleAccessManager', (it, beforeEach, afterEach) => {
                     synchronizeAccessForVehicle: storedVehicle => {}
                 };
             }
-            
+
         };
 
         gunther = server.playerManager.getById(0 /* Gunther */);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const TestSuite = require('base/test/test_suite.js');
+import TestSuite from 'base/test/test_suite.js';
 
 // The test runner class manages execution of tests before the gamemode starts.
 //
@@ -131,4 +131,4 @@ class TestRunner {
   }
 };
 
-exports = TestRunner;
+export default TestRunner;

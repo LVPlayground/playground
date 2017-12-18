@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const DialogManager = require('components/dialogs/dialog_manager.js');
+import DialogManager from 'components/dialogs/dialog_manager.js';
 
 // The different kind of available dialogs in SA-MP.
 // http://wiki.sa-mp.com/wiki/Dialog_Styles
@@ -71,4 +71,4 @@ Dialog.PRIMARY_BUTTON = 1;
 // Id of the secondary -right- button (optional) on a dialog in the SA-MP server.
 Dialog.SECONDARY_BUTTON = 0;
 
-exports = Dialog;
+export default Dialog;

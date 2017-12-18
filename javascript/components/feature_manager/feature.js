@@ -28,4 +28,4 @@ class Feature {
     dispose() {}
 }
 
-exports = Feature;
+export default Feature;

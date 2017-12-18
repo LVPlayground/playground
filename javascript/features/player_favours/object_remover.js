@@ -81,4 +81,4 @@ class ObjectRemover {
     }
 }
 
-exports = ObjectRemover;
+export default ObjectRemover;

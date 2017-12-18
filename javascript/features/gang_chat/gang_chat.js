@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Feature = require('components/feature_manager/feature.js');
-const GangChatManager = require('features/gang_chat/gang_chat_manager.js');
+import Feature from 'components/feature_manager/feature.js';
+import GangChatManager from 'features/gang_chat/gang_chat_manager.js';
 
 // Gangs can get a private-ish chat in which they can talk among each other when they prefix their
 // messages with an exclamation mark. There is one catch, though: the owner of a certain property
@@ -34,4 +34,4 @@ class GangChat extends Feature {
     }
 }
 
-exports = GangChat;
+export default GangChat;

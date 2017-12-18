@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const AbuseConstants = require('features/abuse/abuse_constants.js');
+import AbuseConstants from 'features/abuse/abuse_constants.js';
 
 describe('Abuse', (it, beforeEach) => {
     let abuse = null;

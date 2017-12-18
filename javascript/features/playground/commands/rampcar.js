@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Command = require('features/playground/command.js');
-const CommandBuilder = require('components/command_manager/command_builder.js');
-const ScopedEntities = require('entities/scoped_entities.js');
+import Command from 'features/playground/command.js';
+import CommandBuilder from 'components/command_manager/command_builder.js';
+import ScopedEntities from 'entities/scoped_entities.js';
 
 // Command: /rampcar [player]?
 class RampCarCommand extends Command {
@@ -80,4 +80,4 @@ class RampCarCommand extends Command {
     }
 }
 
-exports = RampCarCommand;
+export default RampCarCommand;

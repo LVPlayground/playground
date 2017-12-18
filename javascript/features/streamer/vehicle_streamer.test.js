@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const StoredVehicle = require('features/streamer/stored_vehicle.js');
-const VehicleStreamer = require('features/streamer/vehicle_streamer.js');
+import StoredVehicle from 'features/streamer/stored_vehicle.js';
+import VehicleStreamer from 'features/streamer/vehicle_streamer.js';
 
 describe('VehicleStreamer', it => {
     // Creates a StoredVehicle with a random position.
@@ -125,7 +125,7 @@ describe('VehicleStreamer', it => {
         assert.equal(storedVehicle, streamer.getStoredVehicle(vehicle));
 
         vehicle.position = new Vector(1000, 1500, 2000);
-        
+
         // (1) Have both Gunther and Russell enter the vehicle.
         gunther.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
         russell.enterVehicle(vehicle, Vehicle.SEAT_PASSENGER);

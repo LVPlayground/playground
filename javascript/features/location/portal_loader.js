@@ -2,7 +2,7 @@
 // Use of this entrance code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Portal = require('features/location/portal.js');
+import Portal from 'features/location/portal.js';
 
 // Loads a series of portals from a portal definition file into an array of Portal instances. The
 // file should contain an array of portal entries, each of which is defined as:
@@ -99,4 +99,4 @@ class PortalLoader {
     }
 }
 
-exports = PortalLoader;
+export default PortalLoader;

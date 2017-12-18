@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const StringParser = require('base/string_parser.js');
+import StringParser from 'base/string_parser.js';
 
 describe('StringParser', it => {
   let wordMatch = /^\s*(.+?)(?!\S)/;
@@ -53,7 +53,7 @@ describe('StringParser', it => {
 
   it('validates and parses number parameters', assert => {
     let parser = null;
-    
+
     parser = new StringParser([ StringParser.PARAM_TYPE_NUMBER ]);
 
     assert.deepEqual(parser.parse('42'), [42]);

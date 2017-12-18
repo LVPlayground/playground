@@ -2,10 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Gang = require('features/gangs/gang.js');
-const GangDatabase = require('features/gangs/gang_database.js');
-const Gangs = require('features/gangs/gangs.js');
-const MockGangDatabase = require('features/gangs/test/mock_gang_database.js');
+import Gang from 'features/gangs/gang.js';
+import GangDatabase from 'features/gangs/gang_database.js';
+import Gangs from 'features/gangs/gangs.js';
+import MockGangDatabase from 'features/gangs/test/mock_gang_database.js';
 
 describe('GangManager', (it, beforeEach) => {
     let gunther = null;

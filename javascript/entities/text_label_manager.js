@@ -40,4 +40,4 @@ class TextLabelManager {
     }
 }
 
-exports = TextLabelManager;
+export default TextLabelManager;

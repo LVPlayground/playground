@@ -2,10 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const AbsoluteTimeView = require('features/races/ui/absolute_time_view.js');
-const Rectangle = require('components/text_draw/rectangle.js');
-const RelativeTimeView = require('features/races/ui/relative_time_view.js');
-const TextDraw = require('components/text_draw/text_draw.js');
+import AbsoluteTimeView from 'features/races/ui/absolute_time_view.js';
+import Rectangle from 'components/text_draw/rectangle.js';
+import RelativeTimeView from 'features/races/ui/relative_time_view.js';
+import TextDraw from 'components/text_draw/text_draw.js';
 
 // Background color of the score board. Should be semi-transparent.
 const BACKGROUND_COLOR = Color.fromRGBA(0, 0, 0, 100);
@@ -53,11 +53,11 @@ class ScoreBoard {
 
         this.hasPersonalRecords_ = false;
         this.participantCount_ = null;
-        
+
         this.position_ = 1;
         this.visible_ = false;
 
-        this.positionBackground_ = new Rectangle(500, 140, 106, 36.8, BACKGROUND_COLOR);        
+        this.positionBackground_ = new Rectangle(500, 140, 106, 36.8, BACKGROUND_COLOR);
 
         // Section (1): Position compared to the other players in the current race
         // -----------------------------------------------------------------------------------------
@@ -214,4 +214,4 @@ class ScoreBoard {
     }
 }
 
-exports = ScoreBoard;
+export default ScoreBoard;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ScoreBoard = require('features/races/ui/score_board.js');
+import ScoreBoard from 'features/races/ui/score_board.js';
 
 // Stores the per-player information for an active race minigame. Contains very little logic, as
 // the logic for races should be focused in the RaceMinigame class.
@@ -66,4 +66,4 @@ class RacePlayerData {
     }
 }
 
-exports = RacePlayerData;
+export default RacePlayerData;

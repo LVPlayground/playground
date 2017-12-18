@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const IdentityBeam = require('features/houses/utils/identity_beam.js');
+import IdentityBeam from 'features/houses/utils/identity_beam.js';
 
 describe('IdentityBeam', it => {
     const position = new Vector(1000, 1000, 500);

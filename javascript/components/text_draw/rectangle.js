@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const TextDraw = require('components/text_draw/text_draw.js');
+import TextDraw from 'components/text_draw/text_draw.js';
 
 // Represents a rectangular text draw that can be displayed on the player's screen. There is no text
 // on the rectangle, it only has a set position, size and color.
@@ -17,7 +17,7 @@ class Rectangle extends TextDraw {
       textSize: [x + width, 1],
       letterSize: [1, Math.pow((height - 3) / 10, 1.0122)],
       alignment: TextDraw.ALIGN_LEFT,
-      
+
       useBox: true,
       boxColor: color,
       text: '_'
@@ -25,4 +25,4 @@ class Rectangle extends TextDraw {
   }
 };
 
-exports = Rectangle;
+export default Rectangle;

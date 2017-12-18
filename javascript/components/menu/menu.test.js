@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Menu = require('components/menu/menu.js');
+import Menu from 'components/menu/menu.js';
 
 const DIALOG_STYLE_LIST = 2;
 const DIALOG_STYLE_TABLIST_HEADERS = 5;

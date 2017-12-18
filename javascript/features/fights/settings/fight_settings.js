@@ -94,4 +94,4 @@ FightSettings.VISIBILITY_POLICY_VISIBLE = 0;
 FightSettings.VISIBILITY_POLICY_TEAM = 1;
 FightSettings.VISIBILITY_POLICY_HIDDEN = 2;
 
-exports = FightSettings;
+export default FightSettings;

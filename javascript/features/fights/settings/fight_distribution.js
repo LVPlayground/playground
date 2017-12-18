@@ -66,4 +66,4 @@ FightDistribution.TYPE_BALANCED_TEAMS = 1;
 FightDistribution.TYPE_RANDOM_TEAMS = 2;
 FightDistribution.TYPE_GANGS = 3;
 
-exports = FightDistribution;
+export default FightDistribution;

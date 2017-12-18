@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const TestError = require('base/test/test_error.js');
+import TestError from 'base/test/test_error.js';
 
 // Error thrown when an unexpected exception occurs while running a test. The inner error will be
 // displayed to the developer in total, while the TestError information will be fulfiled as well.
@@ -21,4 +21,4 @@ class UnexpectedExceptionError extends TestError {
   }
 };
 
-exports = UnexpectedExceptionError;
+export default UnexpectedExceptionError;

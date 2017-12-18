@@ -58,4 +58,4 @@ class FightStrategy {
 FightStrategy.TYPE_CONTINUOUS = 0;
 FightStrategy.TYPE_DEATHMATCH = 1;
 
-exports = FightStrategy;
+export default FightStrategy;

@@ -9,4 +9,4 @@ class MockLogWriter {
     dispose() {}
 }
 
-exports = MockLogWriter;
+export default MockLogWriter;

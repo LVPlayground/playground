@@ -2,11 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Minigame = require('features/minigames/minigame.js');
-const MinigameManager = require('features/minigames/minigame_manager.js');
-const MockAnnounce = require('features/announce/test/mock_announce.js');
-const MockDeathFeed = require('features/death_feed/test/mock_death_feed.js');
-const MockMinigame = require('features/minigames/test/mock_minigame.js');
+import Minigame from 'features/minigames/minigame.js';
+import MinigameManager from 'features/minigames/minigame_manager.js';
+import MockAnnounce from 'features/announce/test/mock_announce.js';
+import MockDeathFeed from 'features/death_feed/test/mock_death_feed.js';
+import MockMinigame from 'features/minigames/test/mock_minigame.js';
 
 describe('MinigameManager', (it, beforeEach, afterEach) => {
     let gunther, russell;
@@ -64,7 +64,7 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
 
         const simpleRace = new MockMinigame({ name: 'My Simple Race' });
         const normalRace = new MockMinigame({ name: 'My Normal Race' });
-        
+
         manager.createMinigame(category, simpleRace, gunther);
         manager.createMinigame(category, normalRace, russell);
 

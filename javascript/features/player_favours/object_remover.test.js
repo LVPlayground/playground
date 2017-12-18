@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ObjectRemover = require('features/player_favours/object_remover.js');
+import ObjectRemover from 'features/player_favours/object_remover.js';
 
 describe('ObjectRemover', (it, beforeEach, afterEach) => {
     let gunther = null;

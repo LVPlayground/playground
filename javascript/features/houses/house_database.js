@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const HouseSettings = require('features/houses/house_settings.js');
+import HouseSettings from 'features/houses/house_settings.js';
 
 // Query to load the locations at which houses can be created from the database.
 const LOAD_LOCATIONS_QUERY = `
@@ -58,7 +58,7 @@ const LOAD_HOUSES_QUERY = `
         houses_locations ON houses_locations.house_location_id = houses_settings.house_location_id
     LEFT JOIN
         users_gangs ON users_gangs.user_id = houses_settings.house_user_id AND
-                       users_gangs.left_gang IS NULL 
+                       users_gangs.left_gang IS NULL
     LEFT JOIN
         users ON users.user_id = houses_settings.house_user_id
     WHERE
@@ -388,7 +388,7 @@ class HouseDatabase {
 
                 house.features.set(
                     row.feature, new Vector(row.position_x, row.position_y, row.position_z));
-            });   
+            });
         }
 
         // (3) Load the vehicles from the database.
@@ -594,4 +594,4 @@ class HouseDatabase {
     }
 }
 
-exports = HouseDatabase;
+export default HouseDatabase;

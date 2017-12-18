@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Murmur3Hash = require('features/activity_log/murmur3hash.js');
+import Murmur3Hash from 'features/activity_log/murmur3hash.js';
 
 describe('Murmur3Hash', (it) => {
     it('generateHash should throw an error when key is empty', assert => {

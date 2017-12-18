@@ -2,12 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const FightDistribution = require('features/fights/settings/fight_distribution.js');
-const FightLocation = require('features/fights/settings/fight_location.js');
-const FightSettings = require('features/fights/settings/fight_settings.js');
-const FightSettingsBuilder = require('features/fights/settings/fight_settings_builder.js');
-const FightSignUp = require('features/fights/settings/fight_sign_up.js');
-const FightStrategy = require('features/fights/settings/fight_strategy.js');
+import FightDistribution from 'features/fights/settings/fight_distribution.js';
+import FightLocation from 'features/fights/settings/fight_location.js';
+import FightSettings from 'features/fights/settings/fight_settings.js';
+import FightSettingsBuilder from 'features/fights/settings/fight_settings_builder.js';
+import FightSignUp from 'features/fights/settings/fight_sign_up.js';
+import FightStrategy from 'features/fights/settings/fight_strategy.js';
 
 describe('FightSettings', it => {
     it('should be an immutable object', assert => {

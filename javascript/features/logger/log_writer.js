@@ -83,4 +83,4 @@ class LogWriter {
     }
 }
 
-exports = LogWriter;
+export default LogWriter;

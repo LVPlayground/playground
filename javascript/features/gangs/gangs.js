@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Feature = require('components/feature_manager/feature.js');
-const GangCommands = require('features/gangs/gang_commands.js');
-const GangManager = require('features/gangs/gang_manager.js');
+import Feature from 'components/feature_manager/feature.js';
+import GangCommands from 'features/gangs/gang_commands.js';
+import GangManager from 'features/gangs/gang_manager.js';
 
 // Implementation of the gangs feature. A gang is a group of players that fight together under a
 // collaborative name. They get a shared bank account, have a private-ish group chat available to
@@ -60,5 +60,5 @@ class Gangs extends Feature {
     }
 }
 
-exports = Gangs;
+export default Gangs;
 

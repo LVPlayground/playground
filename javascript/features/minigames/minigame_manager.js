@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Minigame = require('features/minigames/minigame.js');
-const MinigameDriver = require('features/minigames/minigame_driver.js');
-const ScopedCallbacks = require('base/scoped_callbacks.js');
+import Minigame from 'features/minigames/minigame.js';
+import MinigameDriver from 'features/minigames/minigame_driver.js';
+import ScopedCallbacks from 'base/scoped_callbacks.js';
 
 // Number of milliseconds player have to sign-up to another player's minigame.
 const SignupTimeoutMilliseconds = 20000;
@@ -21,7 +21,7 @@ class MinigameManager {
         this.categories_ = new Set();
 
         // Map of category symbol to a set containing all minigame drivers that are currently in
-        // progress for the given category. 
+        // progress for the given category.
         this.minigames_ = new Map();
 
         // Map of player instance to the driver of the minigame they are engaged in.
@@ -283,4 +283,4 @@ class MinigameManager {
     }
 }
 
-exports = MinigameManager;
+export default MinigameManager;

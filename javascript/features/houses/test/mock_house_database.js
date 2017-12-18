@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const HouseSettings = require('features/houses/house_settings.js');
+import HouseSettings from 'features/houses/house_settings.js';
 
 // Definition of a random parking lot that will be loaded as mocked data.
 const PARKING_LOT = {
@@ -151,4 +151,4 @@ class MockHouseDatabase {
     async removeVehicle(vehicle) {}
 }
 
-exports = MockHouseDatabase;
+export default MockHouseDatabase;

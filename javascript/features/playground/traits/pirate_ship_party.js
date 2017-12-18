@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const ObjectGroup = require('entities/object_group.js');
+import ObjectGroup from 'entities/object_group.js';
 
 // The animation that the DJ on the ship should be moving with.
 const DjAnimation = { library: 'LOWRIDER', name: 'RAP_B_Loop', loop: true };
@@ -47,4 +47,4 @@ class PirateShipParty {
     }
 }
 
-exports = PirateShipParty;
+export default PirateShipParty;

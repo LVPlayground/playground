@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Command = require('features/playground/command.js');
-const CommandBuilder = require('components/command_manager/command_builder.js');
+import Command from 'features/playground/command.js';
+import CommandBuilder from 'components/command_manager/command_builder.js';
 
 // Command: /spm [player] [message]
 class SecretPrivateMessageCommand extends Command {
@@ -32,4 +32,4 @@ class SecretPrivateMessageCommand extends Command {
     }
 }
 
-exports = SecretPrivateMessageCommand;
+export default SecretPrivateMessageCommand;

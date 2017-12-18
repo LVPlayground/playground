@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Dialog = require('components/dialogs/dialog.js');
+import Dialog from 'components/dialogs/dialog.js';
 
 // Maximum distance, in units, at which parking lots may be created around a house location.
 const MAXIMUM_PARKING_LOT_DISTANCE = 150;
@@ -141,4 +141,4 @@ ParkingLotCreator.REASON_CANCELED = 0;
 ParkingLotCreator.REASON_CONFIRMED = 1;
 ParkingLotCreator.REASON_DISCONNECT = 2;
 
-exports = ParkingLotCreator;
+export default ParkingLotCreator;

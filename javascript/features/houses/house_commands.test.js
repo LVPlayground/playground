@@ -2,15 +2,15 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const createTestEnvironment = require('features/houses/test/test_environment.js');
+import createTestEnvironment from 'features/houses/test/test_environment.js';
 
-const AbuseConstants  = require('features/abuse/abuse_constants.js');
-const HouseCommands = require('features/houses/house_commands.js');
-const HouseExtension = require('features/houses/house_extension.js');
-const HouseSettings = require('features/houses/house_settings.js');
-const InteriorList = require('features/houses/utils/interior_list.js');
-const ParkingLotCreator = require('features/houses/utils/parking_lot_creator.js');
-const PlayerMoneyBridge = require('features/houses/utils/player_money_bridge.js');
+import AbuseConstants from 'features/abuse/abuse_constants.js';
+import HouseCommands from 'features/houses/house_commands.js';
+import HouseExtension from 'features/houses/house_extension.js';
+import HouseSettings from 'features/houses/house_settings.js';
+import InteriorList from 'features/houses/utils/interior_list.js';
+import ParkingLotCreator from 'features/houses/utils/parking_lot_creator.js';
+import PlayerMoneyBridge from 'features/houses/utils/player_money_bridge.js';
 
 describe('HouseCommands', (it, beforeEach) => {
     let abuse = null;
@@ -122,7 +122,7 @@ describe('HouseCommands', (it, beforeEach) => {
     it('should enable administrators to remove house locations', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const locationCount = manager.locationCount;
-        
+
         assert.isAbove(locationCount, 0);
 
         gunther.identify();

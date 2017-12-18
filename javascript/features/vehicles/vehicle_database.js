@@ -131,4 +131,4 @@ class VehicleDatabase {
     }
 }
 
-exports = VehicleDatabase;
+export default VehicleDatabase;

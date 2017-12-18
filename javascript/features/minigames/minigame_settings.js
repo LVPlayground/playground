@@ -50,4 +50,4 @@ class MinigameSettings {
     get enableRespawn() { return this.enableRespawn_; }
 }
 
-exports = MinigameSettings;
+export default MinigameSettings;

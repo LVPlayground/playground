@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const AnnounceManager = require('features/announce/announce_manager.js');
-const Feature = require('components/feature_manager/feature.js');
+import AnnounceManager from 'features/announce/announce_manager.js';
+import Feature from 'components/feature_manager/feature.js';
 
 // Mocked implementation of the Announce feature. May be used by tests that depend on this module.
 class MockAnnounce extends Feature {
@@ -47,4 +47,4 @@ class MockAnnounce extends Feature {
     announceToIRC(tag, ...parameters) {}
 }
 
-exports = MockAnnounce;
+export default MockAnnounce;

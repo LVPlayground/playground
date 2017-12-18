@@ -100,4 +100,4 @@ Color.YELLOW = Color.fromRGB(255, 255, 0);
 // Define the Color object on the global object.
 global.Color = Color;
 
-exports = Color;
+export default Color;

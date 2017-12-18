@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const EconomyCalculator = require('features/economy/economy_calculator.js');
+import EconomyCalculator from 'features/economy/economy_calculator.js';
 
 describe('EconomyCalculator', (it, beforeEach, afterEach) => {
     let calculator = null;

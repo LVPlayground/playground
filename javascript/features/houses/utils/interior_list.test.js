@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-const Economy = require('features/economy/economy.js');
-const InteriorList = require('features/houses/utils/interior_list.js');
+import Economy from 'features/economy/economy.js';
+import InteriorList from 'features/houses/utils/interior_list.js';
 
 describe('InteriorList', it => {
     it('basically should never change', assert => {

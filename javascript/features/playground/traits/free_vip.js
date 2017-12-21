@@ -26,7 +26,8 @@ class FreeVip {
         player.vip_ = true;
 
         // Make sure that the Pawn code is aware of their VIP rights as well.
-        pawnInvoke('OnGrantVipToPlayer', 'i', player.id);
+        if (!server.isTest())
+            pawnInvoke('OnGrantVipToPlayer', 'i', player.id);
     }
 
     dispose() {

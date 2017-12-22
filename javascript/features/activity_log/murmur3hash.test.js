@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import MockPawnInvoke from 'base/test/mock_pawn_invoke.js';
 import Murmur3Hash from 'features/activity_log/murmur3hash.js';
 
 describe('Murmur3Hash', (it) => {
@@ -40,6 +41,7 @@ describe('Murmur3Hash', (it) => {
     });
 
     it('should provide the native MurmurIIIHashGenerateHash to pawn', assert => {
+        MockPawnInvoke.getInstance().disable();
         Murmur3Hash.provideNativeMurmur3HashGenerateHashToPawn();
 
         const generatedHashOfTest = pawnInvoke('MurmurIIIHashGenerateHash', 'siS', 'test', 0);

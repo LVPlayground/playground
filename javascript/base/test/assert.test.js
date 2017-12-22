@@ -279,6 +279,33 @@ describe('Assert', it => {
     });
   });
 
+  it('pawnCall', assert => {
+    pawnInvoke('MyFunction', 'i', 42);
+
+    assert.pawnCall('MyFunction');
+    assert.pawnCall('MyFunction', { signature: 'i' });
+    assert.pawnCall('MyFunction', { signature: 'i', args: [ 42 ] });
+    assert.pawnCall('MyFunction', { args: [ 42 ]});
+    assert.pawnCall('MyFunction', { times: 1 });
+
+    assert.throws(() => assert.pawnCall('MyFunction', { signature: 's' }));
+    assert.throws(() => assert.pawnCall('MyFunction', { args: [ 1337 ] }));
+    assert.throws(() => assert.pawnCall('MyFunction', { times: 2 }));
+
+    pawnInvoke('MySecondFunction', 's', 'hello');
+    pawnInvoke('MySecondFunction', 's', 'hello');
+    pawnInvoke('MySecondFunction', 's', 'world');
+
+    assert.pawnCall('MySecondFunction');
+    assert.pawnCall('MySecondFunction', { signature: 's', args: [ 'hello' ] });
+    assert.pawnCall('MySecondFunction', { signature: 's', args: [ 'world' ] });
+    assert.pawnCall('MySecondFunction', { times: 3 });
+    assert.pawnCall('MySecondFunction', { signature: 's', times: 3 });
+    assert.pawnCall('MySecondFunction', { args: [ 'hello' ], times: 2 });
+
+    assert.throws(() => assert.pawnCall('MySecondFunction', { args: [ 'hello' ], times: 3 }));
+  });
+
   // TODO: assert.operator(val1, operator, val2, [message])
 
   it('closeTo', assert => {

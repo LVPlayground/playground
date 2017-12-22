@@ -60,9 +60,7 @@ class RadioManager {
         if (!channel)
             return;  // the |player| has opted out of the radio feature
 
-        // TODO(Russell): Make TextDraw testable.
-        if (!server.isTest())
-            this.displayRadioChannelName(player, channel, initialWait);
+        this.displayRadioChannelName(player, channel, initialWait);
 
         player.playAudioStream(channel.stream);
         this.listening_.set(player, channel);

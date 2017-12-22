@@ -109,6 +109,38 @@ describe('RadioManager', (it, beforeEach, afterEach) => {
         }
     });
 
+    it('should announce the radio channel name as appropriate', async assert => {
+        assert.isTrue(settings.getValue('radio/enabled'));
+        assert.isTrue(manager.isEnabled());
+
+        // Enter the vehicle as adriver.
+        {
+            gunther.enterVehicle(vehicle, 0 /* driver seat */);
+            assert.isTrue(manager.isListening(gunther));
+
+            // There is an initial delay of three seconds.
+            assert.noPawnCall('CreatePlayerTextDraw');
+
+            await server.clock.advance(3000 /* 3 seconds */);
+
+            // The highlighted radio channel name should now be displayed.
+            assert.pawnCall('CreatePlayerTextDraw', { times: 1 });
+            assert.noPawnCall('PlayerTextDrawDestroy');
+
+            await server.clock.advance(3000 /* 3 seconds */);
+
+            // The grey radio channel name should now be displayed.
+            assert.pawnCall('CreatePlayerTextDraw', { times: 2 });
+            assert.pawnCall('PlayerTextDrawDestroy', { times: 1 });
+
+            await server.clock.advance(3000 /* 3 seconds */);
+
+            // The radio channel name should now have been removed.
+            assert.pawnCall('CreatePlayerTextDraw', { times: 2 });
+            assert.pawnCall('PlayerTextDrawDestroy', { times: 2 });
+        }
+    });
+
     it('should not start the radio when entering a vehicle w/o the feature enabled', assert => {
         assert.isTrue(settings.getValue('radio/enabled'));
         assert.isTrue(manager.isEnabled());

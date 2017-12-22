@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import AssertionFailedError from 'base/test/assertion_failed_error.js';
+import MockPawnInvoke from 'base/test/mock_pawn_invoke.js';
 
 // This library provides a series of asserts that can be used for validating assumptions in unit
 // tests. Failing asserts will create clear and useful error messages.
@@ -261,6 +262,8 @@ class Assert {
     this.reportFailure('evaluates to a boolean');
   }
 
+  // -----------------------------------------------------------------------------------------------
+
   // Asserts typeof value === name
   typeOf(value, name) {
     if (typeof value === name)
@@ -276,6 +279,8 @@ class Assert {
 
     this.reportFailure('has type ' + this.toString(name));
   }
+
+  // -----------------------------------------------------------------------------------------------
 
   // Asserts (object instanceof constructor)
   instanceOf(object, constructor) {
@@ -293,6 +298,8 @@ class Assert {
     this.reportFailure('is instance of ' + constructor.name);
   }
 
+  // -----------------------------------------------------------------------------------------------
+
   // Asserts that |needle| is in |haystack|.
   include(haystack, needle) {
     if (haystack.includes(needle))
@@ -308,6 +315,8 @@ class Assert {
 
     this.reportFailure('expected ' + this.toString(needle) + ' not to be included');
   }
+
+  // -----------------------------------------------------------------------------------------------
 
   // Asserts that executing |fn| throws an exception of |type|.
   // TODO(Russell): Also allow asserting on the exception's message.
@@ -349,6 +358,8 @@ class Assert {
     }
   }
 
+  // -----------------------------------------------------------------------------------------------
+
   // Asserts Math.abs(actual - expected) <= delta
   closeTo(actual, expected, delta) {
     if (Math.abs(actual - expected) <= delta)
@@ -365,10 +376,14 @@ class Assert {
     this.reportFailure('expected ' + this.toString(actual) + ' to not be close (~' + delta + ') to ' + this.toString(expected));
   }
 
+  // -----------------------------------------------------------------------------------------------
+
   // Creates a failure because the current place in the code execution should not be reached.
   notReached() {
     this.reportFailure('the code was unexpectedly reached');
   }
+
+  // -----------------------------------------------------------------------------------------------
 
   // Creates a failure because of an unexpected promise resolution.
   unexpectedResolution() {
@@ -378,6 +393,47 @@ class Assert {
   // Creates a failure because of an unexpected promise rejection.
   unexpectedRejection() {
     this.reportFailure('promise was not expected to reject');
+  }
+
+  // -----------------------------------------------------------------------------------------------
+
+  // Asserts that a certain Pawn function has been called, optionally with the given signature and
+  // arguments. The last |times| calls will be considered for the assertion.
+  pawnCall(fn, { signature = null, args = null, times = 1 } = {}) {
+    const calls = MockPawnInvoke.getInstance().calls;
+    let count = 0;
+
+    for (const call of calls) {
+      if (call.fn != fn)
+        continue;  // call to another Pawn method
+
+      if (signature !== null && call.signature != signature)
+        continue;  // signature was provided, and differs
+
+      if (args !== null && !angularEquals(call.args, args))
+        continue;  // arguments were provided, but differ
+
+      if (++count >= times)
+        break;
+    }
+
+    if (count < times)
+      this.reportFailure('expected ' + times + ' call(s) to ' + fn + ', got ' + count);
+  }
+
+  // Asserts that a certain Pawn function has *not* been called, optionally with the given signature
+  // and arguments. The last |times| calls will be considered for the assertion.
+  noPawnCall(fn, { signature = null, args = null, times = 1 } = {}) {
+    let exceptionThrown = false;
+
+    try {
+      this.pawnCall(fn, { signature, args, times });
+    } catch (e) {
+      exceptionThrown = true;
+    }
+
+    if (!exceptionThrown)
+      this.reportFailure('expected no call(s) to ' + fn);
   }
 
   // -----------------------------------------------------------------------------------------------

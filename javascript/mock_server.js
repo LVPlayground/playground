@@ -14,6 +14,7 @@ import VirtualWorldManager from 'entities/virtual_world_manager.js';
 import MockActor from 'entities/test/mock_actor.js';
 import MockClock from 'base/test/mock_clock.js';
 import MockObject from 'entities/test/mock_object.js';
+import MockPawnInvoke from 'base/test/mock_pawn_invoke.js';
 import MockPickup from 'entities/test/mock_pickup.js';
 import MockPickupManager from 'entities/test/mock_pickup_manager.js';
 import MockPlayer from 'entities/test/mock_player.js';
@@ -35,6 +36,7 @@ class MockServer {
     // Constructs the MockServer instance, and creates a mocked scenario on the server.
     constructor() {
         this.clock_ = new MockClock();
+        this.pawnInvoke_ = new MockPawnInvoke();
 
         this.commandManager_ = new CommandManager();
         this.featureManager_ = new FeatureManager();
@@ -116,6 +118,7 @@ class MockServer {
 
     // Disposes the MockServer and uninitializes all owned objects.
     dispose() {
+        this.pawnInvoke_.dispose();
         this.clock_.dispose();
 
         this.featureManager_.dispose();

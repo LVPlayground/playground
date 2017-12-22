@@ -39,6 +39,9 @@ class KilltimeManager {
         let minutesPassedBy = 0;
         while (this.isRunning_) {
             await minutes(1);
+            if (!this.isRunning_)
+                return;
+
             minutesPassedBy++;
 
             if (minutesPassedBy == totalMinutes) {

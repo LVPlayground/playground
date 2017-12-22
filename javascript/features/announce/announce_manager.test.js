@@ -6,15 +6,8 @@ import AnnounceManager from 'features/announce/announce_manager.js';
 
 describe('AnnounceManager', (it, beforeEach, afterEach) => {
     let announceManager = null;
-    let ircMessages = [];
 
-    beforeEach(() => {
-        announceManager = new AnnounceManager(message => {
-            ircMessages.push(message);
-        });
-
-        ircMessages = [];
-    });
+    beforeEach(() => announceManager = new AnnounceManager());
 
     it('should announce new minigames to players', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
@@ -30,7 +23,7 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
                      Message.format(Message.ANNOUNCE_MINIGAME, name, command));
     });
 
-    it('should announce minigame participation to players', assert => {
+    it('should announce minigame participation to players', async assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         const name = 'Hello Kitty Playground';
@@ -38,14 +31,21 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
 
         announceManager.announceMinigameParticipation(gunther, name, command);
 
+        // Verify that a call to Pawn will be issued as a microtask to avoid reentrancy issues.
+        {
+            assert.noPawnCall('OnDisplayNewsMessage');
+            await Promise.resolve();
+            assert.pawnCall('OnDisplayNewsMessage');
+        }
+
         assert.equal(gunther.messages.length, 0);
 
         // TODO(Russell): Test the message through the news controller when possible.
 
-        assert.deepEqual(ircMessages, [
-            '[announce] ' + Message.format(Message.ANNOUNCE_MINIGAME_JOINED_IRC,
-                                           gunther.name, gunther.id, name)
-        ]);
+        assert.pawnCall('EchoMessage', {
+            args: [ '[announce] ' + Message.format(Message.ANNOUNCE_MINIGAME_JOINED_IRC,
+                                                   gunther.name, gunther.id, name) ]
+        })
     });
 
     it('should distribute messages to players', assert => {
@@ -60,8 +60,7 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
         assert.equal(russell.messages.length, 1);
         assert.equal(russell.messages[0], Message.format(Message.ANNOUNCE_ALL, 'Hello, world!'));
 
-        assert.equal(ircMessages.length, 1);
-        assert.equal(ircMessages[0], '[announce] Hello, world!');
+        assert.pawnCall('EchoMessage', { args: [ '[announce] Hello, world!' ] });
     });
 
     it('should distribute messages to administrators', assert => {
@@ -78,8 +77,7 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
         assert.equal(russell.messages[0],
                      Message.format(Message.ANNOUNCE_ADMINISTRATORS, 'Hello, admins!'));
 
-        assert.equal(ircMessages.length, 1);
-        assert.equal(ircMessages[0], '[admin] Hello, admins!');
+        assert.pawnCall('EchoMessage', { args: [ '[admin] Hello, admins!' ] });
     });
 
     it('should distribute reports to administrators', assert => {
@@ -99,18 +97,16 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
                            'much moneyz'));
 
         assert.equal(lucy.messages.length, 0);
-
-        assert.equal(ircMessages.length, 1);
-        assert.equal(ircMessages[0], '[report] Lucy 2 Gunther 0 much moneyz');
+        assert.pawnCall('EchoMessage', { args: [ '[report] Lucy 2 Gunther 0 much moneyz' ] });
     });
 
     it('should distribute messages to IRC', assert => {
         announceManager.announceToIRC('tag');
         announceManager.announceToIRC('hello', 'world', 25, [1, 2, 3], {});
 
-        assert.deepEqual(ircMessages, [
-            '[tag] ',
-            '[hello] world 25 1,2,3 [object Object]'
-        ]);
+        assert.pawnCall('EchoMessage', { args: [ '[tag] ' ] });
+        assert.pawnCall('EchoMessage', {
+            args: [ '[hello] world 25 1,2,3 [object Object]' ]
+        });
     });
 });

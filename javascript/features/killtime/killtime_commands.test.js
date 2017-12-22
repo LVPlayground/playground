@@ -3,13 +3,11 @@
 // be found in the LICENSE file.
 
 import Economy from 'features/economy/economy.js';
-import MockAnnounce from 'features/announce/test/mock_announce.js';
 import Killtime from 'features/killtime/killtime.js';
 
 describe('Killtime', (it, beforeEach) => {
     beforeEach(() => {
         server.featureManager.registerFeaturesForTests({
-            announce: MockAnnounce,
             economy: Economy,
             killtime: Killtime
         });
@@ -29,16 +27,21 @@ describe('Killtime', (it, beforeEach) => {
         assert.equal(gunther.messages[0], Message.format(Message.COMMAND_USAGE, Message.KILLTIME_USAGE));
     });
 
-    it('should not be able to be started for 1 minute by a registered administrator', assert => {
+    it('should not be able to be started outside of the time limitations', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        const minutesToRun = 1;
 
         gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
-        assert.isTrue(gunther.issueCommand('/killtime start ' + minutesToRun));
+        assert.isTrue(gunther.issueCommand('/killtime start 1'));
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.KILLTIME_MINIMUM_TWO_MINUTES);
+
+        gunther.clearMessages();
+
+        assert.isTrue(gunther.issueCommand('/killtime start 100'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.KILLTIME_MAXIMUM_TEN_MINUTES);
     });
 
     it('should be able to be started for the standard 2 minutes by a registered administrator', assert => {

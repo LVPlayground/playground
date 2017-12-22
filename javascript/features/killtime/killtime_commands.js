@@ -26,6 +26,11 @@ class KilltimeCommands {
             return;
         }
 
+        if (minutes > 10) {
+            player.sendMessage(Message.KILLTIME_MAXIMUM_TEN_MINUTES);
+            return;
+        }
+
         this.manager_.start(minutes);
     }
 

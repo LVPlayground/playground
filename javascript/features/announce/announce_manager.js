@@ -14,10 +14,6 @@ const ReportTag = 'report';
 // Implementation of the functionality of the Announce feature. This is where input will be verified
 // and the messages will be dispatched to the appropriate audience.
 class AnnounceManager {
-    constructor(ircDelegate = null) {
-        this.ircDelegate_ = ircDelegate;
-    }
-
     // Announces that the |name| has started. Players can join by typing |command|.
     announceMinigame(player, name, command) {
         const formattedMessage = Message.format(Message.ANNOUNCE_MINIGAME, name, command);
@@ -35,8 +31,7 @@ class AnnounceManager {
         // TODO(Russell): Validate that |formattedMessage| is safe for game text usage.
 
         // Announce it asynchronously when not running a test to avoid reentrancy problems.
-        if (!server.isTest())
-            Promise.resolve().then(() => pawnInvoke('OnDisplayNewsMessage', 's', formattedMessage));
+        Promise.resolve().then(() => pawnInvoke('OnDisplayNewsMessage', 's', formattedMessage));
 
         this.announceToIRC(AnnounceTag, Message.format(Message.ANNOUNCE_MINIGAME_JOINED_IRC,
                                                        player.name, player.id, name));
@@ -96,26 +91,13 @@ class AnnounceManager {
     // bots to pick up on distribution and display of the message from thereon.
     announceToIRC(tag, ...parameters) {
         const message = '[' + tag + '] ' + parameters.join(' ');
-
-        if (this.ircDelegate_) {
-            this.ircDelegate_(message);
-            return;
-        }
-
         if (message.length > 400) {
             console.log('[AnnounceManager] Warning: Message dropped because it could cause an ' +
                         'overflow in the echo plugin: ' + message.substr(0, 125) + '...');
             return;
         }
 
-        if (server.isTest())
-            return;  // do not issue IRC messages when running a test
-
         pawnInvoke('EchoMessage', 's', message);
-    }
-
-    dispose() {
-        this.ircDelegate_ = null;
     }
 }
 

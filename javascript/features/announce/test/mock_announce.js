@@ -10,7 +10,7 @@ class MockAnnounce extends Feature {
     constructor() {
         super();
 
-        this.manager_ = new AnnounceManager(() => null /* ircDelegate */);
+        this.manager_ = new AnnounceManager();
     }
 
     dispose() {}

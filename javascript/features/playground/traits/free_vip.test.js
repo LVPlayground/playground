@@ -27,6 +27,7 @@ describe('FreeVip', (it, beforeEach, afterEach) => {
 
         await server.clock.advance(10000 /* 10 seconds, twice the feature's wait */);
         assert.isTrue(gunther.isVip());
+        assert.pawnCall('OnGrantVipToPlayer');
 
         assert.equal(gunther.messages.length, 3);
         assert.isTrue(gunther.messages[0].startsWith('Surprise!'));

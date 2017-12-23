@@ -82,6 +82,8 @@ class VeryImportantPlayersCommands {
             return 1;
         }
 
+        new const bool: isIsolated = PlayerSyncedData(playerId)->isolated();
+
         // Send message to all ingame VIPs and (undercover)admins.
         new notice[256];
         format(notice, sizeof(notice), "[VIP] [%d] %s: %s", playerId, Player(playerId)->nicknameString(),
@@ -94,6 +96,9 @@ class VeryImportantPlayersCommands {
 
             if (LegacyIsPlayerIgnored(player, playerId) == true)
                 continue; /* the player is ignoring this VIP */
+
+            if (isIsolated && player != playerId)
+                continue; /* isolated players are ghosted */
 
             SendClientMessage(player, Color::VipChat, notice);
         }

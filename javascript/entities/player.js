@@ -111,7 +111,12 @@ class Player {
 
   // Gets or sets the virtual world the player is part of.
   get virtualWorld() { return pawnInvoke('GetPlayerVirtualWorld', 'i', this.id_); }
-  set virtualWorld(value) { pawnInvoke('SetPlayerVirtualWorld', 'ii', this.id_, value); }
+  set virtualWorld(value) {
+    if (this.syncedData_.isIsolated())
+      return;
+
+    pawnInvoke('SetPlayerVirtualWorld', 'ii', this.id_, value);
+  }
 
   // Gets or sets the interior the player is part of. Moving them to the wrong interior will mess up
   // their visual state significantly, as all world objects may disappear.
@@ -161,6 +166,9 @@ class Player {
 
   // Makes the player enter the given |vehicle|, optionally in the given |seat|.
   enterVehicle(vehicle, seat = 0 /* driver */) {
+    if (this.syncedData_.isIsolated() && vehicle.virtualWorld != this.virtualWorld_)
+      return;
+
     pawnInvoke('PutPlayerInVehicle', 'iii', this.id_, vehicle.id, seat);
   }
 

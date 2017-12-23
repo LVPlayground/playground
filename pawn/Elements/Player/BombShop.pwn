@@ -124,10 +124,10 @@ CBomb__CheckPlayer(i)
             for (new playerid = 0; playerid <= PlayerManager->highestPlayerId(); playerid++)
             {
                 if(!Player(playerid)->isConnected())
-                continue;
+                    continue;
 
                 if(!IsPlayerInVehicle(playerid, GetPlayerVehicleID(i)))
-                continue;
+                    continue;
 
                 SetPlayerVirtualWorld(playerid, GetIsolatedWorldForPlayer(i));
             }

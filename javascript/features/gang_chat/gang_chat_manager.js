@@ -42,6 +42,7 @@ class GangChatManager {
         const recipients = new Set();
 
         let isEncrypted = false;
+        let isIsolated = player.syncedData.isIsolated();
 
         let gang = null;
 
@@ -102,6 +103,9 @@ class GangChatManager {
         }
 
         for (let member of gang.members) {
+            if (isIsolated && member != player)
+                continue;
+
             if (recipients.has(member))
                 continue;
 
@@ -124,10 +128,8 @@ class GangChatManager {
             recipients.add(onlinePlayer);
         });
 
-
-
         // Distribute the message to the player who is spying on the gang chat.
-        if (this.spyingPlayer_ !== null && !isEncrypted) {
+        if (this.spyingPlayer_ !== null && !isEncrypted && !isIsolated) {
             if (!this.spyingPlayer_.isConnected()) {
                 this.spyingPlayer_ = null;
                 return true;

@@ -288,4 +288,34 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.equal(russell.messages.length, 0);
     });
+
+    it('should ghost messages if the sender has been isolated', async assert => {
+        const player = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        player.identify();
+        player.syncedData.setIsolated(true);
+
+        const gang = await GangTester.createGang(player);
+        const expectedMessage =
+            Message.format(Message.GANG_CHAT, gang.tag, player.id, player.name, 'hello');
+
+        assert.isTrue(player.issueMessage('!  hello  '));
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], expectedMessage);
+
+        assert.equal(russell.messages.length, 0);
+
+        player.clearMessages();
+
+        gang.addPlayer(russell);
+
+        assert.isTrue(player.issueMessage('!  hello  '));
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], expectedMessage);
+
+        assert.equal(russell.messages.length, 0);
+    });
 });

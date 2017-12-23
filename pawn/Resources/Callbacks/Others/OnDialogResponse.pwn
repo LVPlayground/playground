@@ -191,7 +191,7 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                     return SendClientMessage(playerid, Color::Error, "You've already invited someone, use '/fight cancel' first.");
 
                 new matchId = CFightClub__GetEmptyMatch();
-                if (matchId < 0)
+                if (matchId < 0 || PlayerSyncedData(playerid)->isolated())
                     return SendClientMessage(playerid, Color::Error, "The FightClub is currently full.");
 
                 new const price = GetEconomyValue(MinigameParticipation);

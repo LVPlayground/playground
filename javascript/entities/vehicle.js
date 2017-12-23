@@ -145,6 +145,9 @@ class Vehicle {
     // Gets or sets the virtual world this vehicle is tied to.
     get virtualWorld() { return pawnInvoke('GetVehicleVirtualWorld', 'i', this.id_); }
     set virtualWorld(value) {
+        if (this.driver && this.driver.syncedData.isIsolated())
+            return;
+
         pawnInvoke('SetVehicleVirtualWorld', 'ii', this.id_, value);
 
         if (this.trailer_) {

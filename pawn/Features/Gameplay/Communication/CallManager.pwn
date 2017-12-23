@@ -89,11 +89,13 @@ class CallManager {
         SetPlayerSpecialAction(callerId, 11);
         SetPlayerAttachedObject(callerId, 3, 330, 6);
 
-        new notice[160];
-        format(notice, sizeof(notice),
-            "You've got an incoming call from {FFFFFF}%s{33AA33}, use {FFFFFF}\"/answer\"{33AA33} to pick up, or {FFFFFF}\"/hangup\"{33AA33} to decline.",
-            Player(callerId)->nicknameString());
-        SendClientMessage(calleeId, Color::ActionRequired, notice);
+        if (!PlayerSyncedData(callerId)->isolated()) {
+            new notice[160];
+            format(notice, sizeof(notice),
+                "You've got an incoming call from {FFFFFF}%s{33AA33}, use {FFFFFF}\"/answer\"{33AA33} to pick up, or {FFFFFF}\"/hangup\"{33AA33} to decline.",
+                Player(callerId)->nicknameString());
+            SendClientMessage(calleeId, Color::ActionRequired, notice);
+        }
 
         SendClientMessage(callerId, Color::Success, "The phone is ringing...");
 

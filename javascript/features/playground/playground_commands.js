@@ -65,6 +65,7 @@ class PlaygroundCommands {
             'features/playground/commands/fancy.js',
             'features/playground/commands/fly.js',
             'features/playground/commands/jetpack.js',
+            'features/playground/commands/isolate.js',
             'features/playground/commands/rampcar.js',
             'features/playground/commands/slow.js',
             'features/playground/commands/spm.js'

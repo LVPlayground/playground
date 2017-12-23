@@ -114,16 +114,18 @@ class PrivateMessagingManager {
         format(notice, sizeof(notice), "{FCF545}PM to [%d] %s: {FFFFFF}%s", receiverId, receiver, message);
         SendClientMessage(senderId, Color::White, notice);
 
-        // Show the sender the result.
-        format(notice, sizeof(notice), "{FFDC18}PM from [%d] %s: {FFFFFF}%s", senderId, sender, message);
-        SendClientMessage(receiverId, Color::White, notice);
+        if (!PlayerSyncedData(senderId)->isolated()) {
+            // Show the sender the result.
+            format(notice, sizeof(notice), "{FFDC18}PM from [%d] %s: {FFFFFF}%s", senderId, sender, message);
+            SendClientMessage(receiverId, Color::White, notice);
 
-        // Play a sound for the receiver to indicate they received a message.
-        PlayerPlaySound(receiverId, 1058, 0.0, 0.0, 0.0);
+            // Play a sound for the receiver to indicate they received a message.
+            PlayerPlaySound(receiverId, 1058, 0.0, 0.0, 0.0);
 
-        // Only show the /r or /reply message to people who haven't played on LVP a lot yet.
-        if (Player(receiverId)->isRegular() == false)
-            SendClientMessage(receiverId, Color::ConnectionMessage, "* Use {A9C4E4}/r {CCCCCC}or {A9C4E4}/reply {CCCCCC}to quickly reply to the message.");
+            // Only show the /r or /reply message to people who haven't played on LVP a lot yet.
+            if (Player(receiverId)->isRegular() == false)
+                SendClientMessage(receiverId, Color::ConnectionMessage, "* Use {A9C4E4}/r {CCCCCC}or {A9C4E4}/reply {CCCCCC}to quickly reply to the message.");
+        }
 
         // Broadcast message on IRC.
         format(notice, sizeof(notice), "%s %d %s %d %s", sender, senderId, receiver, receiverId, message);
@@ -160,12 +162,17 @@ class PrivateMessagingManager {
         format(m_lastPrivateMessageSenderName[senderId], 25, "%s", receiver);
         m_lastPrivateMessageSenderId[senderId] = Player::InvalidId;
 
+        new const bool: isIsolated = PlayerSyncedData(senderId)->isolated();
+
         // Time to send out the message and notify admins ingame and on IRC.
         new notice[256];
         format(notice, sizeof(notice), "*  PM: %s (Id:%d) to %s (IRC): %s", sender, senderId,
             receiver, message);
 
         for (new player = 0; player <= PlayerManager->highestPlayerId(); ++player) {
+            if (isIsolated)
+                break;  // We silently drop IRC pms for isolated players
+
             if (Player(player)->isConnected() == false || Player(player)->isAdministrator() == false)
                 continue; /* either not connected or not an administrator */
 
@@ -182,9 +189,11 @@ class PrivateMessagingManager {
         format(notice, sizeof(notice), "{FCF545}PM to [IRC] %s: {FFFFFF}%s", receiver, message);
         SendClientMessage(senderId, Color::White, notice);
 
-        // Broadcast message on IRC.
-        format(notice, sizeof(notice), "%d %s %s %s", senderId, sender, receiver, message);
-        IRC->broadcast(IrcPrivateMessageIrcMessage, notice);
+        if (!isIsolated) {
+            // Broadcast message on IRC.
+            format(notice, sizeof(notice), "%d %s %s %s", senderId, sender, receiver, message);
+            IRC->broadcast(IrcPrivateMessageIrcMessage, notice);
+        }
 
         return 1;
     }

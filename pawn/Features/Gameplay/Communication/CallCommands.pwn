@@ -79,8 +79,16 @@ class CallCommands {
     public onAnswerCommand(playerId, params[]) {
         new callerId = Player::InvalidId;
         for (new player = 0; player <= PlayerManager->highestPlayerId(); player++) {
-            if (CallManager->isCalling(player) == true && CallManager->isCallingId(player) == playerId)
-                callerId = player;
+            if (!CallManager->isCalling(player))
+                continue;
+
+            if (CallManager->isCallingId(player) != playerId)
+                continue;
+
+            if (PlayerSyncedData(player)->isolated())
+                continue;
+
+            callerId = player;
         }
 
         if (callerId == Player::InvalidId) {

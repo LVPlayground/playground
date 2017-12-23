@@ -336,7 +336,11 @@ ExecuteSlapCommand(playerId, targetPlayerId) {
 
     format(message, sizeof(message), "* %s slaps %s around a bit with a large %s.",
         Player(playerId)->nicknameString(), Player(targetPlayerId)->nicknameString(), SLAP_REASONS[reason]);
-    SendClientMessageToAllEx(Color::SlapAnnouncement, message);
+
+    if (!PlayerSyncedData(playerId)->isolated())
+        SendClientMessageToAllEx(Color::SlapAnnouncement, message);
+    else
+        SendClientMessage(playerId, Color::SlapAnnouncement, message);
 
     GameTextForPlayer(targetPlayerId, "~y~slapped", 5000, 5);
 

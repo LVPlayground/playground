@@ -709,6 +709,9 @@ CFightClub__WatchMatch(playerid, matchid)
     if(Matches[matchid][status] != FC_STATUS_FIGHTING)
         return SendClientMessage(playerid, Color::Red, "* Sorry, this match isn't running anymore");
 
+    if (PlayerSyncedData(playerid)->isolated())
+        return 1;  // no watching
+
     new string[256];
     new iPlayer1 = Matches[matchid][player1];
     new iPlayer2 = Matches[matchid][player2];

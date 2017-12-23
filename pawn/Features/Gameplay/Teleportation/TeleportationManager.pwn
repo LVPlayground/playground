@@ -66,6 +66,8 @@ class TeleportationManager {
 
         ReportPlayerTeleport(playerId, 0 /* timeLimited */);
 
+        new const bool: isIsolated = PlayerSyncedData(playerId)->isolated();
+
         // For crew members only: the ability to teleport to players within interiors.
         if (teleportType == SecretTeleport)
             SetPlayerInterior(playerId, GetPlayerInterior(subjectId));
@@ -80,7 +82,9 @@ class TeleportationManager {
                 trailerId = GetVehicleTrailer(vehicleId);
 
             DetachTrailerFromVehicle(vehicleId);
-            SetVehicleVirtualWorld(vehicleId, GetPlayerVirtualWorld(subjectId));
+
+            if (!isIsolated)
+                SetVehicleVirtualWorld(vehicleId, GetPlayerVirtualWorld(subjectId));
 
             if (teleportType == SecretTeleport)
                 LinkVehicleToInterior(vehicleId, GetPlayerInterior(subjectId));
@@ -88,7 +92,8 @@ class TeleportationManager {
             SetVehiclePos(vehicleId, subjectPosition[0] + 4, subjectPosition[1] + 4, subjectPosition[2] + 2);
 
             if (trailerId != 0) {
-                SetVehicleVirtualWorld(trailerId, GetPlayerVirtualWorld(subjectId));
+                if (!isIsolated)
+                    SetVehicleVirtualWorld(trailerId, GetPlayerVirtualWorld(subjectId));
                 if (teleportType == SecretTeleport)
                     LinkVehicleToInterior(trailerId, GetPlayerInterior(subjectId));
                 AttachTrailerToVehicle(trailerId, vehicleId);
@@ -112,7 +117,7 @@ class TeleportationManager {
         }
         ShowBoxForPlayer(playerId, message);
 
-        if (teleportType != SecretTeleport) {
+        if (teleportType != SecretTeleport && !isIsolated) {
             format(message, sizeof(message), "%s (Id:%d) has been %s to you using \"/%s\".",
                 Player(playerId)->nicknameString(), playerId,
                 (teleportType == DefaultTeleport ? "teleported" : "carteleported"),

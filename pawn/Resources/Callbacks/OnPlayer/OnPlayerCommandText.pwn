@@ -1052,6 +1052,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         new actionText[256];
         actionText = right(cmdtext, (strlen(cmdtext)-4));
 
+        new const bool: isIsolated = PlayerSyncedData(playerid)->isolated();
+
         SetPlayerChatBubble(playerid, actionText, ColorManager->playerColor(playerid), 50, 10*1000);
 
         format(string, sizeof(string), "* %s %s", Player(playerid)->nicknameString(), actionText);
@@ -1061,6 +1063,9 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
             if (GetPlayerVirtualWorld(subjectId) != GetPlayerVirtualWorld(playerid)
                 && (!PlayerSettings(subjectId)->isAllVirtualWorldChatEnabled() || !Player(subjectId)->isAdministrator()))
+                continue;
+
+            if (isIsolated && subjectId != playerid)
                 continue;
 
             SendClientMessage(subjectId, ColorManager->playerColor(playerid), string);
@@ -1362,8 +1367,10 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         format(string, sizeof(string), "Success: You have sent $%s to %s (Id:%d).", formatPrice(cashAmount), Player(subjectId)->nicknameString(), subjectId);
         SendClientMessage(playerid, Color::Success, string);
 
-        format(string, sizeof(string), "Success: You have received $%s from %s (Id:%d).", formatPrice(cashAmount), Player(playerid)->nicknameString(), playerid);
-        SendClientMessage(subjectId, Color::Success, string);
+        if (!PlayerSyncedData(playerid)->isolated()) {
+            format(string, sizeof(string), "Success: You have received $%s from %s (Id:%d).", formatPrice(cashAmount), Player(playerid)->nicknameString(), playerid);
+            SendClientMessage(subjectId, Color::Success, string);
+        }
 
         return 1;
     }

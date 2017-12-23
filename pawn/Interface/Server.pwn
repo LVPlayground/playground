@@ -102,6 +102,20 @@ stock SetWorldTimeHook({Float,_}:...) { }
 #define SetWorldTime        SetWorldTimeHook
 
 // -------------------------------------------------------------------------------------------------
+// We override the SetPlayerVirtualWorld() native so that it becomes void to players who have been
+// isolated. They have been banished to their own virtual world, with no way out.
+
+stock SetPlayerVirtualWorldHook(playerId, virtualWorldId) {
+    if (PlayerSyncedData(playerId)->isolated())
+        return;
+
+    SetPlayerVirtualWorld(playerId, virtualWorldId);
+}
+
+// And override the actual natives so that they're caught by our hook.
+#define SetPlayerVirtualWorld SetPlayerVirtualWorldHook
+
+// -------------------------------------------------------------------------------------------------
 // We override the TextDrawCreate method in beta builds because there is quite a bit of code around
 // which tries to destroy TextDraws with Id=0, even though this is perfectly valid. In such cases,
 // crash the current execution path for the sake of getting a stack trace.

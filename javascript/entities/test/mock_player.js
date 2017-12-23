@@ -134,7 +134,12 @@ class MockPlayer {
 
     // Gets or sets the virtual world the player is part of.
     get virtualWorld() { return this.virtualWorld_; }
-    set virtualWorld(value) { this.virtualWorld_ = value; }
+    set virtualWorld(value) {
+        if (this.syncedData_.isIsolated())
+          return;
+
+        this.virtualWorld_ = value;
+    }
 
     // Gets or sets the position of this player.
     get position() { return this.position_; }

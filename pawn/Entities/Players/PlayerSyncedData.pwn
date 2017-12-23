@@ -6,7 +6,8 @@
 native UpdatePlayerSyncedData(playerId, property, intValue, Float: floatValue, stringValue[]);
 
 enum PlayerSyncedDataProperty {
-    PREFERRED_RADIO_CHANNEL = 0
+    PREFERRED_RADIO_CHANNEL = 0,
+    ISOLATED = 1
 };
 
 #define INVALID_INT 0
@@ -16,10 +17,23 @@ enum PlayerSyncedDataProperty {
 // Bridges between Pawn and JavaScript for a number of player-related settings. Changes to any of
 // these values will be reflected in the JavaScript code, and vice versa.
 class PlayerSyncedData <playerId (MAX_PLAYERS)> {
+    new bool: m_isolated;
     new m_preferredRadioChannel[64];
 
     public reset() {
+        m_isolated = false;
         m_preferredRadioChannel[0] = 0;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    public bool: isolated() {
+        return m_isolated;
+    }
+
+    public setIsolated(bool: isolated) {
+        m_isolated = isolated;
+        this->sync(ISOLATED);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -37,6 +51,10 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
 
     public sync(PlayerSyncedDataProperty: property) {
         switch (property) {
+            // Integral properties.
+            case ISOLATED:
+                UpdatePlayerSyncedData(playerId, _: property, m_isolated ? 1 : 0, INVALID_FLOAT, INVALID_STRING);
+
             // Textual properties.
             case PREFERRED_RADIO_CHANNEL:
                 UpdatePlayerSyncedData(playerId, _: property, INVALID_INT, INVALID_FLOAT, m_preferredRadioChannel);
@@ -45,11 +63,13 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
 
     public apply(PlayerSyncedDataProperty: property, intValue, Float: floatValue, stringValue[]) {
         switch (property) {
+            case ISOLATED:
+                m_isolated = !!intValue;
+
             case PREFERRED_RADIO_CHANNEL:
                 format(m_preferredRadioChannel, sizeof(m_preferredRadioChannel), "%s", stringValue);
         }
 
-        #pragma unused intValue
         #pragma unused floatValue
     }
 };

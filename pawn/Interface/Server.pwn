@@ -140,6 +140,17 @@ SendClientMessagePrivate(playerid, color, const message[]) {
 
     // If the text string exceeds the character limit of 144 chars, split it up.
     if (strlen(textBuffer) > 143) {
+        // We actually want to remove this method, since automatically wrapping text is not really
+        // a best practice. To be sure we do not have too long messages and since players are
+        // certainly not going to report such bugs we do some temporary logging of too long messages
+        new File: handle = fopen("messagelog/toolong.txt", io_append);
+        if (handle) {
+            new tooLongMessage[262];
+            format(tooLongMessage, sizeof(tooLongMessage), "%s\r\n", textBuffer);
+            fwrite(handle, tooLongMessage);
+            fclose(handle);
+        }
+
         // Look for the first whitespace at the end of the string.
         for (new index = 143; index > 0; index--) {
             if (strcmp(textBuffer[index], " ", false, 1))

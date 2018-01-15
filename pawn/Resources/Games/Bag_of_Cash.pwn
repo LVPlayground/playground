@@ -92,7 +92,7 @@ static RandPickupLoc[RANDOM_MONEY_LOCATIONS][E_RAND_MONEY_BAG] = {
 	{2163.2676,1900.4282,36.1094,"Fishing for the stars"}, // Starfish casino
 	{2087.0808,1905.8810,12.8338,"Under the fall"}, // Under the "waterfall" at the Visage
 	{2320.4902,2126.9048,46.1184,"Candy suxxx"}, // On top of Candy's head at the casino's
-	{1221.8914,9.2019,1001.3356,"Top heavy girls daily"}, // Inside the LV stripclub (near ammu)
+	{1210.68, -33.24, 1000.96,"Top heavy girls daily"}, // Inside the LV stripclub (near ammu)
 	{1067.5168,1776.1780,10.8203,"Grinding gears"}, // Scrap yard LV
 	{220.1056,1822.8801,7.5257,"Map of San Andreas"}, // Map in area 51
 	{2.3492,1363.7041,9.1719,"Solar trailer park"}, // Trailer park near the ufo (has 3 solar panels)

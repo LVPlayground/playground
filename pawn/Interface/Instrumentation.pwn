@@ -41,7 +41,8 @@ enum InstrumentationType {
     PlayerVipLoginActivity = 29,            // When a very important player logs in to their account.
     IgnorePlayerActivity = 30,              // When a player decides to ignore another player.
     CreatedVehicleActivity = 31,            // When an administrator creates a vehicle with /v create.
-    DestroyedVehicleActivity = 32           // When an administrator destroyes a vehicle with /v destroy.
+    DestroyedVehicleActivity = 32,          // When an administrator destroyes a vehicle with /v destroy.
+    JumpZoneEnteredActivity = 33            // When a player has been teleported to a jumpzone.
 };
 
 /**

@@ -69,6 +69,7 @@
     <DiskObject>\Entities\Players\PlayerMessageLevels.pwn</DiskObject>
     <DiskObject>\Entities\Players\PlayerSettings.pwn</DiskObject>
     <DiskObject>\Entities\Players\PlayerState.pwn</DiskObject>
+    <DiskObject>\Entities\Players\PlayerSyncedData.pwn</DiskObject>
     <DiskObject>\Entities\Properties.pwn</DiskObject>
     <DiskObject>\Entities\Properties\</DiskObject>
     <DiskObject>\Entities\Properties\Property.pwn</DiskObject>
@@ -376,7 +377,6 @@
     <DiskObject>\Resources\Minigames\Derby\Derby7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby9.pwn</DiskObject>
-    <DiskObject>\Entities\Players\PlayerSyncedData.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

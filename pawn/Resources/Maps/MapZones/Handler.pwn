@@ -1171,6 +1171,7 @@ lvp_jump(playerid, params[]) {
         ShowPlayerBox(playerid, "Welcome to the %s jump!~n~Reach the ~r~Corona~w~ for a bonus!", Map_Zone[jumpId][Map_Name]);
 
     g_MapTP[playerid] = Time->currentTime();
+    Instrumentation->recordActivity(JumpZoneEnteredActivity, jumpId);
 
     return 1;
 }

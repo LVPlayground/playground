@@ -66,4 +66,7 @@ testRunner.run('.*\.test\.js').then(time => {
         console.log('  ' + failure.toString() + '\n'));
 
     console.log('==============================================================\n');
+
+    // Kill the server for easier debugging on Windows.
+    killServer();
 });

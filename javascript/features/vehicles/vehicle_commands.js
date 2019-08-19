@@ -262,7 +262,7 @@ class VehicleCommands {
                     new Menu('Please disambiguate the vehicle!', ['Name', 'Model ID']);
 
                 // Sort the vehicles it found by name, alphabetically.
-                vehicleModels.sort((lhs, rhs) => lhs.name.localeCompare(rhs));
+                vehicleModels.sort((lhs, rhs) => lhs.name.localeCompare(rhs.name));
 
                 for (const model of vehicleModels)
                     disambiguationDialog.addItem(model.name, model.id);

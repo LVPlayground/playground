@@ -14,6 +14,10 @@ const ReportTag = 'report';
 // Implementation of the functionality of the Announce feature. This is where input will be verified
 // and the messages will be dispatched to the appropriate audience.
 class AnnounceManager {
+    constructor() {
+        this.configuration = JSON.parse(readFile('announce.json'));
+    }
+
     // Announces that the |name| has started. Players can join by typing |command|.
     announceMinigame(player, name, command) {
         const formattedMessage = Message.format(Message.ANNOUNCE_MINIGAME, name, command);
@@ -97,7 +101,7 @@ class AnnounceManager {
             return;
         }
 
-        pawnInvoke('EchoMessage', 's', message);
+        pawnInvoke('SendEchoMessage', 'sis', this.configuration.ip, this.configuration.port, message);
     }
 }
 

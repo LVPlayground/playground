@@ -4,10 +4,25 @@
 
 import AnnounceManager from 'features/announce/announce_manager.js';
 
+let configurationCache = null;
+
 describe('AnnounceManager', (it, beforeEach, afterEach) => {
     let announceManager = null;
 
     beforeEach(() => announceManager = new AnnounceManager());
+
+    function assertSendEchoMessage(assert, message) {
+        if (!configurationCache)
+            configurationCache = JSON.parse(readFile('announce.json'));
+        
+        assert.pawnCall('SendEchoMessage', {
+            args: [
+                configurationCache.ip,
+                configurationCache.port,
+                message
+            ]
+        });
+    }
 
     it('should announce new minigames to players', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
@@ -42,10 +57,10 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
 
         // TODO(Russell): Test the message through the news controller when possible.
 
-        //assert.pawnCall('EchoMessage', {
-        //    args: [ '[announce] ' + Message.format(Message.ANNOUNCE_MINIGAME_JOINED_IRC,
-        //                                           gunther.name, gunther.id, name) ]
-        //})
+        assertSendEchoMessage(
+            assert,
+            '[announce] ' + Message.format(Message.ANNOUNCE_MINIGAME_JOINED_IRC,
+                                           gunther.name, gunther.id, name));
     });
 
     it('should distribute messages to players', assert => {
@@ -60,7 +75,7 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
         assert.equal(russell.messages.length, 1);
         assert.equal(russell.messages[0], Message.format(Message.ANNOUNCE_ALL, 'Hello, world!'));
 
-        //assert.pawnCall('EchoMessage', { args: [ '[announce] Hello, world!' ] });
+        assertSendEchoMessage(assert, '[announce] Hello, world!');
     });
 
     it('should distribute messages to administrators', assert => {
@@ -77,7 +92,7 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
         assert.equal(russell.messages[0],
                      Message.format(Message.ANNOUNCE_ADMINISTRATORS, 'Hello, admins!'));
 
-        //assert.pawnCall('EchoMessage', { args: [ '[admin] Hello, admins!' ] });
+        assertSendEchoMessage(assert, '[admin] Hello, admins!');
     });
 
     it('should distribute reports to administrators', assert => {
@@ -97,16 +112,14 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
                            'much moneyz'));
 
         assert.equal(lucy.messages.length, 0);
-        //assert.pawnCall('EchoMessage', { args: [ '[report] Lucy 2 Gunther 0 much moneyz' ] });
+        assertSendEchoMessage(assert, '[report] Lucy 2 Gunther 0 much moneyz');
     });
 
     it('should distribute messages to IRC', assert => {
         announceManager.announceToIRC('tag');
         announceManager.announceToIRC('hello', 'world', 25, [1, 2, 3], {});
 
-        //assert.pawnCall('EchoMessage', { args: [ '[tag] ' ] });
-        //assert.pawnCall('EchoMessage', {
-        //    args: [ '[hello] world 25 1,2,3 [object Object]' ]
-        //});
+        assertSendEchoMessage(assert, '[tag] ');
+        assertSendEchoMessage(assert, '[hello] world 25 1,2,3 [object Object]');
     });
 });

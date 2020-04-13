@@ -254,6 +254,7 @@
 
     "RADIO_ANNOUNCE_INVALID_DEFAULT_RADIO": "The configured default radio channel {FF8282}%s{FFFFFF} is invalid.",
     "RADIO_COMMAND_NOT_ELIGIBLE": "@error You have to be in a vehicle in order to listen to the radio.",
+    "RADIO_COMMAND_DISABLED": "{CCCCCC}You've disabled the radio, so this feature is not available right now.",
     "RADIO_COMMAND_SETTINGS_ADVERTISEMENT": "@info Use {CCCCCC}/radio settings{FFFFFF} to change your settings.",
     "RADIO_COMMAND_TOGGLE_LISTENING": "@success You have %s listening to {33AA33}%s{FFFFFF}.",
     "RADIO_FEATURE_DISABLED": "@error Management has disabled the radio feature. Sorry!",

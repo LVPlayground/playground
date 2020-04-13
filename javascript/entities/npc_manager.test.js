@@ -25,21 +25,33 @@ describe('NpcManager', (it, beforeEach, afterEach) => {
     });
 
     it('should suffix NPC names when given an in-use nickname', assert => {
-        // TODO: Implement this functionality.
+        playerManager.onPlayerConnect({ playerid: 42, name: 'Joe' });
+
+        const npc = npcManager.createNpc({ name: 'Joe', pawnScript: 'joe' });
+        assert.notEqual(npc.name, 'Joe');
     });
 
     it('should suffix NPC names when given a reserved nickname', assert => {
-        // TODO: Implement this functionality.
+        const nicknames = new Set();
+
+        for (let i = 0; i < 100; ++i) {
+            const npc = npcManager.createNpc({ name: 'Joe', pawnScript: 'bot' });
+            nicknames.add(npc.name);
+        }
+
+        // Allow for ~5 misses because random numbers are being used, so there is a non-zero
+        // probability (1.12%) of having duplicates. We don't want this to be flaky.
+        assert.isAboveOrEqual(nicknames.size, 95);
     });
 
-    it('should maintain a count of the number of created objects', assert => {
+    it('should maintain a count of the number of created objects', async (assert) => {
         assert.equal(npcManager.count, 0);
 
         for (let i = 0; i < 10; ++i)
             npcManager.createNpc({ name: 'Bot' + i, pawnScript: 'bot' });
 
         assert.equal(npcManager.count, 10);
-        npcManager.dispose();
+        await npcManager.dispose();
 
         assert.equal(npcManager.count, 0);
         npcManager = null;

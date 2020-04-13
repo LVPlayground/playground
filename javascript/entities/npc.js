@@ -74,7 +74,7 @@ class Npc {
     // Initiates the NPC's connection on the SA-MP server. May be overridden by a mock Npc
     // implementation to avoid introducing actual behaviour.
     async internalConnect() {
-        // TODO: Connect the NPC
+        pawnInvoke('ConnectNPC', 'ss', this.name_, this.pawnScript_);
     }
 
     // Actually disconnects the NPC from the SA-MP server. May be overridden by a mock Npc
@@ -117,6 +117,9 @@ class Npc {
     }
 
     dispose() {
+        if (this.state_ != Npc.kStateDisposed)
+            throw new Error('Only fully disconnected NPCs may be disposed of.');
+
         this.manager_.didDisposeNpc(this);
     }
 }

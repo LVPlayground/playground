@@ -21,14 +21,22 @@ class NpcManager {
     get count() { return this.npcs_.size; }
 
     // Creates an NPC with the given name, powered by the given script. An instance of the Npc
-    // class will be returned immediately, which doesn't mean that the player is connected.
+    // class will be returned immediately, but the associated Player object will only be associated
+    // when the bot has connected to the server.
     //
-    // The Pawn script has to be the script's name in the server/npcmodes/ directory, without
+    // The given |name| must be unique among connected players and pending bots. In case of
+    // duplication, a random four-digit numeric suffix will be added to the nickname in order to
+    // deduplicate, and allow the connection to proceed. Throwing an exception here would not be
+    // appropriate as there are additional race conditions that can occur.
+    //
+    // The given |pawnScript| has to be the script's name in the server/npcmodes/ directory, without
     // the file extension (.amx). For example, given a script called "gunther.pwn", the compiled
     // version would be called "gunther.amx", and the `pawnScript` given should be "gunther".
     createNpc({ name, pawnScript } = {}) {
-        const npc = new this.npcConstructor_(this, name, pawnScript);
-        this.npcs_.set(name, npc);
+        const npcName = this.ensureUniqueNpcName(name);
+        const npc = new this.npcConstructor_(this, npcName, pawnScript);
+
+        this.npcs_.set(npcName, npc);
 
         wait(kNpcConnectionTimeoutMs).then(() => {
             if (!npc.isConnecting())
@@ -38,6 +46,15 @@ class NpcManager {
         });
 
         return npc;
+    }
+
+    // Ensures that a unique name will be given to the new NPC. This will verify among all connected
+    // players, as well as NPCs, regardless whether they have connected or not.
+    ensureUniqueNpcName(name) {
+        if (!this.playerManager_.getByName(name) && !this.npcs_.has(name))
+            return name;
+
+        return name + (Math.floor(Math.random() * 8999) + 1000);
     }
 
     // --------------------------------------------------------------------------------------------
@@ -73,6 +90,9 @@ class NpcManager {
         this.npcs_.delete(npc.name);
     }
 
+    // Disposes of all connected NPCs. This is an asynchronous process, as we need to make sure that
+    // all connected bots have properly disconnected from the server, thus callers are expected to
+    // wait for the completion of this method.
     async dispose() {
         let npcDisconnectionPromises = [];
 

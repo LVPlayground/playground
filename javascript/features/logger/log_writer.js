@@ -26,7 +26,7 @@ class LogWriter {
         if (this.disposed_)
             return;
 
-        logstash('' /* empty message */, LOGSTASH_UNIX_SOCKET);
+        //logstash('' /* empty message */, LOGSTASH_UNIX_SOCKET);
         wait(LOGSTASH_SOCKET_REFRESH_INTERVAL_MS).then(
             LogWriter.prototype.refreshSocketTaskRunner.bind(this));
     }
@@ -59,7 +59,7 @@ class LogWriter {
         const message = JSON.stringify(event).replace(/\\n/g, "\\n")
                                              .replace(/\\r/g, "\\r");
 
-        logstash(message);
+        //logstash(message);
     }
 
     // Creates a string representing the current time as "YYYY-MM-DDTHH:II:SS.UUUZ".

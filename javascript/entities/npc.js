@@ -26,6 +26,10 @@ class Npc {
             this.readyPromiseResolver_ = resolve;
         });
 
+        this.disconnectedPromise_ = new Promise(resolve => {
+            this.disconnectedPromiseResolver_ = resolve;
+        });
+
         this.internalConnect();
     }
 
@@ -64,6 +68,9 @@ class Npc {
     // Gets the Player instance associated with this NPC, if any.
     get player() { return this.player_; }
 
+    // Gets the disconnection promise that can be used to wait for the NPC to fully disconnect.
+    get disconnected() { return this.disconnectedPromise_; }
+
     // Initiates the NPC's connection on the SA-MP server. May be overridden by a mock Npc
     // implementation to avoid introducing actual behaviour.
     async internalConnect() {
@@ -84,6 +91,7 @@ class Npc {
         this.state_ = Npc.kStateConnected;
 
         this.readyPromiseResolver_(this);
+        this.readyPromiseResolver_ = null;
     }
 
     // To be called by the NpcManager when the connection for this NPC has timed out.
@@ -92,6 +100,7 @@ class Npc {
         this.state_ = Npc.kStateDisposed;
 
         this.readyPromiseResolver_(this);
+        this.readyPromiseResolver_ = null;
     }
 
     // To be called by the NpcManager when the NPC has disconnected from the server for reasons not
@@ -100,13 +109,13 @@ class Npc {
         this.player_ = null;
         this.state_ = Npc.kStateDisposed;
 
+        this.disconnectedPromiseResolver_();
+        this.disconnectedPromiseResolver_ = null;
+
         this.dispose();
     }
 
     dispose() {
-        if (this.state_ === Npc.kStateConnected)
-            this.disconnect();
-
         this.manager_.didDisposeNpc(this);
     }
 }

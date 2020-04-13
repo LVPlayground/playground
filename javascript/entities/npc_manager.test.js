@@ -69,7 +69,7 @@ describe('NpcManager', (it, beforeEach, afterEach) => {
         assert.isTrue(npc.isDisconnecting());
         assert.isNotNull(npc.player);
 
-        await Promise.resolve();  // mimicks asynchronous disconnection
+        await npc.disconnected;
 
         assert.isFalse(npc.isConnecting());
         assert.isFalse(npc.isConnected());

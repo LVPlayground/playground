@@ -88,11 +88,11 @@ class Server {
     // ---------------------------------------------------------------------------------------------
 
     // Disposes and uninitializes the server object and all objects owned by it.
-    dispose() {
+    async dispose() {
         this.featureManager_.dispose();
         this.commandManager_.dispose();
 
-        this.npcManager_.dispose();
+        await this.npcManager_.dispose();
 
         this.virtualWorldManager_.dispose();
         this.vehicleManager_.dispose();

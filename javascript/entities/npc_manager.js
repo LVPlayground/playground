@@ -66,10 +66,27 @@ class NpcManager {
     }
 
     async dispose() {
-        for (const npc of this.npcs_.values())
-            npc.dispose();
+        let npcDisconnectionPromises = [];
 
-        // Stop observing the PlayerManager, as no further events are spected.
+        // Iterate over each of the NPCs and act according to the state they're in. The NpcManager
+        // will only be considered disposed of after all connections have been closed.
+        for (const npc of this.npcs_.values()) {
+            if (npc.isConnecting()) {
+                // TODO: Properly handle this case.
+                npc.dispose();
+            }
+
+            if (npc.isConnected() || npc.isDisconnecting()) {
+                npcDisconnectionPromises.push(npc.disconnected);
+
+                if (!npc.isDisconnecting())
+                    npc.disconnect();
+            }
+        }
+
+        // Wait until all NPCs have disconnected from the server.
+        await Promise.all(npcDisconnectionPromises);
+
         this.playerManager_.removeObserver(this);
 
         if (this.npcs_.size != 0)

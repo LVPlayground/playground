@@ -108,7 +108,6 @@ describe('NpcManager', (it, beforeEach, afterEach) => {
 
         await Promise.all([
             server.clock.advance(10000),  // timeout = 8000ms
-            npc.ready,
             npc.disconnected,
         ]);
 

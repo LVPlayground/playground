@@ -75,8 +75,8 @@ class Npc {
                this.disconnectOnConnection_;
     }
 
-    // Gets the ready promise that can be used to wait for this NPC's connection. Will be resolved
-    // when the connection is successful, but also when it fails, so be sure to check isConnected().
+    // Gets the ready promise that can be used to wait for this NPC's connection. Will only be
+    // resolved when the connection is successful
     get ready() { return this.readyPromise_; }
 
     // Gets the Player instance associated with this NPC, if any.
@@ -113,13 +113,9 @@ class Npc {
         this.readyPromiseResolver_ = null;
     }
 
-    // To be called by the NpcManager when the connection for this NPC has timed out. The ready
-    // promise will be called with a disconnected NPC, after which the disconnection promise will
-    // be called immediately as well. Then the NPC will dispose of itself.
+    // To be called by the NpcManager when the connection for this NPC has timed out. The
+    // disconnection promise will be called immediately. Then the NPC will dispose of itself.
     didConnectTimeout() {
-        this.readyPromiseResolver_(this);
-        this.readyPromiseResolver_ = null;
-
         this.didDisconnect();
     }
 

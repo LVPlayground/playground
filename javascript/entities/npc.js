@@ -45,8 +45,10 @@ class Npc {
             return;
         }
 
-        if (this.state_ === Npc.kStateDisconnecting)
+        if (this.state_ === Npc.kStateDisconnecting ||
+            this.state_ === Npc.kStateDisposed) {
             return;
+        }
 
         this.state_ = Npc.kStateDisconnecting;
         this.internalDisconnect();

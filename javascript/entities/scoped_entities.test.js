@@ -35,6 +35,38 @@ describe('ScopedEntities', it => {
 
     // ---------------------------------------------------------------------------------------------
 
+    it ('should be able to create and dispose of scoped NPCs', assert => {
+        const entities = new ScopedEntities();
+
+        const npc = entities.createNpc({ name: 'Joe', pawnScript: 'bot' });
+        assert.isNotNull(npc);
+
+        assert.isTrue(entities.hasNpc(npc));
+        assert.isTrue(npc.isConnecting());
+        assert.isFalse(npc.isDisconnecting());
+
+        entities.dispose();
+
+        assert.isTrue(npc.isDisconnecting());
+    });
+
+    it('should not identify NPCs owned by other systems as part of a scoped set', assert => {
+        const entities = new ScopedEntities();
+        const npc = server.npcManager.createNpc({ name: 'Joe', pawnScript: 'bot' });
+
+        assert.isTrue(npc.isConnecting());
+        assert.isFalse(npc.isDisconnecting());
+
+        assert.isFalse(entities.hasNpc(npc));
+
+        entities.dispose();
+
+        assert.isTrue(npc.isConnecting());
+        assert.isFalse(npc.isDisconnecting());
+    });
+
+    // ---------------------------------------------------------------------------------------------
+
     it('should be able to create and dispose of scoped objects', assert => {
         const entities = new ScopedEntities();
 

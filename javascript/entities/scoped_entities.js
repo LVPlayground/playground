@@ -8,6 +8,7 @@
 class ScopedEntities {
     constructor({ interiorId = 0, virtualWorld = 0 } = {}) {
         this.actors_ = new Set();
+        this.npcs_ = new Set();
         this.objects_ = new Set();
         this.pickups_ = new Set();
         this.textLabels_ = new Set();
@@ -43,6 +44,23 @@ class ScopedEntities {
 
     // Returns whether the |actor| belongs to this set of scoped entities.
     hasActor(actor) { return this.actors_ && this.actors_.has(actor); }
+
+    // Creates a new NPC scoped to the lifetime of this object. The passed options must match those
+    // accepted by NpcManager.createNpc() on the global Server object.
+    createNpc(options) {
+        if (!this.npcs_)
+            throw new Error('Unable to create the NPC, this object has been disposed of.');
+
+        const npc = server.npcManager.createNpc(options);
+
+        // TODO: Associate the NPC with the correct interior and virtual world on spawn.
+
+        this.npcs_.add(npc);
+        return npc;
+    }
+
+    // Returns whether the |npc| belongs to this set of scoped entities.
+    hasNpc(npc) { return this.npcs_ && this.npcs_.has(npc); }
 
     // Creates an object with |options|, which must match those by ObjectManager.createObject(). The
     // object will be removed automatically when this instance is being disposed of.
@@ -137,6 +155,9 @@ class ScopedEntities {
 
         this.actors_.forEach(safeDisposeEntity);
         this.actors_ = null;
+
+        this.npcs_.forEach(npc => npc.disconnect());
+        this.npcs_ = null;
 
         this.objects_.forEach(safeDisposeEntity);
         this.objects_ = null;

@@ -2,7 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+// Number of milliseconds to wait before considering an NPC's connection as having timed out.
+const kNpcConnectionTimeoutMs = 8 /* seconds */ * 1000;
 
 // This manager is responsible for creating non-player characters, controlled by a predefined
 // script. For all intents and purposes, when connected, NPCs can be considered as Player
@@ -28,6 +29,13 @@ class NpcManager {
     createNpc({ name, pawnScript } = {}) {
         const npc = new this.npcConstructor_(this, name, pawnScript);
         this.npcs_.set(name, npc);
+
+        wait(kNpcConnectionTimeoutMs).then(() => {
+            if (!npc.isConnecting())
+                return;
+            
+            npc.didConnectTimeout();
+        });
 
         return npc;
     }

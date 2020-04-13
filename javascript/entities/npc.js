@@ -94,13 +94,14 @@ class Npc {
         this.readyPromiseResolver_ = null;
     }
 
-    // To be called by the NpcManager when the connection for this NPC has timed out.
+    // To be called by the NpcManager when the connection for this NPC has timed out. The ready
+    // promise will be called with a disconnected NPC, after which the disconnection promise will
+    // be called immediately as well. Then the NPC will dispose of itself.
     didConnectTimeout() {
-        this.player_ = null;
-        this.state_ = Npc.kStateDisposed;
-
         this.readyPromiseResolver_(this);
         this.readyPromiseResolver_ = null;
+
+        this.didDisconnect();
     }
 
     // To be called by the NpcManager when the NPC has disconnected from the server for reasons not

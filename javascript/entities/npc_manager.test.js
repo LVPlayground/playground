@@ -86,8 +86,24 @@ describe('NpcManager', (it, beforeEach, afterEach) => {
         assert.equal(npc.pawnScript, 'joe');
     });
 
-    it('should time out connecting NPCs after a short period of time', assert => {
-        // TODO: Implement this functionality.
+    it('should time out connecting NPCs after a short period of time', async (assert) => {
+        const npc = npcManager.createNpc({ name: 'Joe', pawnScript: 'timeout' });
+
+        assert.equal(npcManager.count, 1);
+
+        assert.isTrue(npc.isConnecting());
+        assert.isFalse(npc.isConnected());
+
+        await Promise.all([
+            server.clock.advance(10000),  // timeout = 8000ms
+            npc.ready,
+            npc.disconnected,
+        ]);
+
+        assert.isFalse(npc.isConnecting());
+        assert.isFalse(npc.isConnected());
+
+        assert.equal(npcManager.count, 0);
     });
 
     return; //

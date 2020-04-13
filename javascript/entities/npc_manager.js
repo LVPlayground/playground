@@ -18,6 +18,10 @@ class NpcManager {
 
     // Creates an NPC with the given name, powered by the given script. An instance of the Npc
     // class will be returned immediately, which doesn't mean that the player is connected.
+    //
+    // The Pawn script has to be the script's name in the server/npcmodes/ directory, without
+    // the file extension (.amx). For example, given a script called "gunther.pwn", the compiled
+    // version would be called "gunther.amx", and the `pawnScript` given should be "gunther".
     createNpc({ nickname, pawnScript } = {}) {
         const npc = new this.npcConstructor_(this, nickname, pawnScript);
         this.npcs_.add(npc);

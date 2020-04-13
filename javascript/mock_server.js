@@ -44,13 +44,14 @@ class MockServer {
         this.featureManager_ = new FeatureManager();
 
         this.actorManager_ = new ActorManager(MockActor /* actorConstructor */);
-        this.npcManager_ = new NpcManager(MockNpc /* npcConstructor */);
         this.objectManager_ = new ObjectManager(MockObject /* objectConstructor */);
         this.pickupManager_ = new MockPickupManager(MockPickup /* pickupConstructor */);
         this.playerManager_ = new PlayerManager(MockPlayer /* playerConstructor */);
         this.textLabelManager_ = new TextLabelManager(MockTextLabel /* textLabelConstructor */);
         this.vehicleManager_ = new VehicleManager(MockVehicle /* vehicleConstructor */);
         this.virtualWorldManager_ = new VirtualWorldManager();
+
+        this.npcManager_ = new NpcManager(MockNpc /* npcConstructor */, this.playerManager_);
 
         // Register features whose production versions are suitable for testing.
         this.featureManager_.registerFeaturesForTests({
@@ -123,9 +124,11 @@ class MockServer {
     // ---------------------------------------------------------------------------------------------
 
     // Disposes the MockServer and uninitializes all owned objects.
-    dispose() {
+    async dispose() {
         this.featureManager_.dispose();
         this.commandManager_.dispose();
+
+        await this.npcManager_.dispose();
 
         this.virtualWorldManager_.dispose();
         this.vehicleManager_.dispose();
@@ -133,7 +136,6 @@ class MockServer {
         this.playerManager_.dispose();
         this.pickupManager_.dispose();
         this.objectManager_.dispose();
-        this.npcManager_.dispose();
         this.actorManager_.dispose();
 
         this.pawnInvoke_.dispose();

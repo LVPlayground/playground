@@ -8,7 +8,8 @@ class Npc {
     // Statuses that can be assigned to an NPC.
     static kStateConnecting = 0;
     static kStateConnected = 1;
-    static kStateDisposed = 2;
+    static kStateDisconnecting = 2;
+    static kStateDisposed = 3;
 
     // Creates a new NPC. Do NOT use this constructor directly, instead get the NpcManager from the
     // global Server object and create your non-playing characters through there.
@@ -33,7 +34,9 @@ class Npc {
     // connected to the server, in which case we need to destroy it once it connects.
     disconnect() {
         // TODO: Handle the case where the NPC is still connecting.
-        this.state_ = Npc.kStateDisposed;
+
+        this.state_ = Npc.kStateDisconnecting;
+        this.internalDisconnect();
     }
 
     // Gets the nickname assigned to this NPC.
@@ -46,7 +49,13 @@ class Npc {
     isConnecting() { return this.state_ === Npc.kStateConnecting; }
 
     // Returns whether the NPC is currently connected to the server.
-    isConnected() { return this.state_ === Npc.kStateConnected; }
+    isConnected() {
+        return this.state_ === Npc.kStateConnected ||
+               this.state_ === Npc.kStateDisconnecting;
+    }
+
+    // Returns whether the NPC is currently being disconnected.
+    isDisconnecting() { return this.state_ === Npc.kStateDisconnecting; }
 
     // Gets the ready promise that can be used to wait for this NPC's connection. Will be resolved
     // when the connection is successful, but also when it fails, so be sure to check isConnected().
@@ -59,6 +68,13 @@ class Npc {
     // implementation to avoid introducing actual behaviour.
     async internalConnect() {
         // TODO: Connect the NPC
+    }
+
+    // Actually disconnects the NPC from the SA-MP server. May be overridden by a mock Npc
+    // implementation to allow customization of timing of the events.
+    async internalDisconnect() {
+        if (this.player_)
+            this.player_.kick();
     }
 
     // To be called by the NpcManager when this NPC has connected to the server. The `player`
@@ -76,6 +92,15 @@ class Npc {
         this.state_ = Npc.kStateDisposed;
 
         this.readyPromiseResolver_(this);
+    }
+
+    // To be called by the NpcManager when the NPC has disconnected from the server for reasons not
+    // tracked in this class, e.g. being kicked by an administrator manually.
+    didDisconnect() {
+        this.player_ = null;
+        this.state_ = Npc.kStateDisposed;
+
+        this.dispose();
     }
 
     dispose() {

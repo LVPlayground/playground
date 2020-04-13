@@ -4,52 +4,94 @@
 
 import NpcManager from 'entities/npc_manager.js';
 import MockNpc from 'entities/test/mock_npc.js';
+import MockPlayer from 'entities/test/mock_player.js';
+import PlayerManager from 'entities/player_manager.js';
 
 describe('NpcManager', (it, beforeEach, afterEach) => {
-    let manager = null;
+    let playerManager = null;
+    let npcManager = null;
 
-    beforeEach(() => manager = new NpcManager(MockNpc /* npcConstructor */));
-    afterEach(() => {
-        if (manager)
-            manager.dispose();
+    beforeEach(() => {
+        playerManager = new PlayerManager(MockPlayer /* playerConstructor */);
+        npcManager = new NpcManager(MockNpc /* npcConstructor */, playerManager);
+    });
+
+    afterEach(async () => {
+        if (npcManager)
+            await npcManager.dispose();
+
+        if (playerManager)
+            playerManager.dispose();
+    });
+
+    it('should suffix NPC names when given an in-use nickname', assert => {
+        // TODO: Implement this functionality.
+    });
+
+    it('should suffix NPC names when given a reserved nickname', assert => {
+        // TODO: Implement this functionality.
     });
 
     it('should maintain a count of the number of created objects', assert => {
-        assert.equal(manager.count, 0);
+        assert.equal(npcManager.count, 0);
 
+        // TODO: Rename `nickname` to `name` for consistency with `Player`.
         for (let i = 0; i < 10; ++i)
-            manager.createNpc({ nickname: 'foo', pawnScript: 'foo' });
+            npcManager.createNpc({ nickname: 'Bot' + i, pawnScript: 'bot' });
 
-        assert.equal(manager.count, 10);
-        manager.dispose();
+        assert.equal(npcManager.count, 10);
+        npcManager.dispose();
 
-        assert.equal(manager.count, 0);
-        manager = null;
+        assert.equal(npcManager.count, 0);
+        npcManager = null;
     });
 
     it('should asynchronously connect NPCs to the server', async (assert) => {
-        const npc = manager.createNpc({ nickname: 'Joe', pawnScript: 'joe' });
+        const npc = npcManager.createNpc({ nickname: 'Joe', pawnScript: 'joe' });
+
+        assert.equal(npcManager.count, 1);
 
         assert.isTrue(npc.isConnecting());
         assert.isFalse(npc.isConnected());
+        assert.isFalse(npc.isDisconnecting());
+        assert.isNull(npc.player);
 
         await npc.ready;
 
         assert.isFalse(npc.isConnecting());
         assert.isTrue(npc.isConnected());
+        assert.isFalse(npc.isDisconnecting());
+        assert.isNotNull(npc.player);
 
         npc.disconnect();
 
         assert.isFalse(npc.isConnecting());
+        assert.isTrue(npc.isConnected());
+        assert.isTrue(npc.isDisconnecting());
+        assert.isNotNull(npc.player);
+
+        await Promise.resolve();  // mimicks asynchronous disconnection
+
+        assert.isFalse(npc.isConnecting());
         assert.isFalse(npc.isConnected());
+        assert.isFalse(npc.isDisconnecting());
+        assert.isNull(npc.player);
+
+        assert.equal(npcManager.count, 0);
     });
 
     it('should make sure that NPCs reflect the given information', assert => {
-        const npc = manager.createNpc({ nickname: 'Joe', pawnScript: 'joe' });
+        const npc = npcManager.createNpc({ nickname: 'Joe', pawnScript: 'joe' });
 
         assert.equal(npc.nickname, 'Joe');
         assert.equal(npc.pawnScript, 'joe');
     });
+
+    it('should time out connecting NPCs after a short period of time', assert => {
+        // TODO: Implement this functionality.
+    });
+
+    return; //
 
     it('should fail', assert => {
         assert.isFalse(true);

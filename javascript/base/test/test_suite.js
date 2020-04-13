@@ -84,7 +84,7 @@ class TestSuite {
       }).then(() => {
         // (6) Dispose the global mocked server, and re-instate the original instance. This may
         // throw because the feature can have interacted with one of the managers.
-        global.server.dispose();
+        return global.server.dispose();
 
       }).catch(error => {
         // (7) If disposing of the environment threw an exception, store this in |carriedException|

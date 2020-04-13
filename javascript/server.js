@@ -26,13 +26,14 @@ class Server {
         this.featureManager_ = new FeatureManager();
 
         this.actorManager_ = new ActorManager();
-        this.npcManager_ = new NpcManager();
         this.objectManager_ = new ObjectManager();
         this.pickupManager_ = new PickupManager();
         this.playerManager_ = new PlayerManager();
         this.textLabelManager_ = new TextLabelManager();
         this.vehicleManager_ = new VehicleManager();
         this.virtualWorldManager_ = new VirtualWorldManager();
+
+        this.npcManager_ = new NpcManager(Npc, this.playerManager_);
 
         // TODO(Russell): The DialogManager should be owned by the Server instance.
     }
@@ -91,13 +92,14 @@ class Server {
         this.featureManager_.dispose();
         this.commandManager_.dispose();
 
+        this.npcManager_.dispose();
+
         this.virtualWorldManager_.dispose();
         this.vehicleManager_.dispose();
         this.textLabelManager_.dispose();
         this.playerManager_.dispose();
         this.pickupManager_.dispose();
         this.objectManager_.dispose();
-        this.npcManager_.dispose();
         this.actorManager_.dispose();
 
         this.clock_.dispose();

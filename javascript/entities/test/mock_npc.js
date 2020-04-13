@@ -18,10 +18,34 @@ class MockNpc extends Npc {
                 break;
             
             default:
-                // TODO: Route this through the NpcManager instead.
-                this.didConnect();
+                let playerManager = this.manager_.playerManager_;
+                let playerId = 0;
+
+                while (playerManager.getById(playerId) !== null)
+                    ++playerId;
+
+                playerManager.onPlayerConnect({
+                    playerid: playerId,
+                    name: this.nickname,
+                    npc: true,
+                });
+
                 break;
         }
+    }
+
+    // Overridden from the parent class, to allow asynchronous disconnections to happen without
+    // affecting the synchronousity of MockPlayer.kick().
+    async internalDisconnect() {
+        await Promise.resolve();  // any asynchronousity is sufficient
+
+        let playerManager = this.manager_.playerManager_;
+        let playerId = this.player_.id;
+
+        playerManager.onPlayerDisconnect({
+            playerid: playerId,
+            reason: 2 /* kicked */
+        });
     }
 }
 

@@ -5,6 +5,7 @@
 import ActorManager from 'entities/actor_manager.js';
 import CommandManager from 'components/command_manager/command_manager.js';
 import FeatureManager from 'components/feature_manager/feature_manager.js';
+import NpcManager from 'entities/npc_manager.js';
 import ObjectManager from 'entities/object_manager.js';
 import PlayerManager from 'entities/player_manager.js';
 import TextLabelManager from 'entities/text_label_manager.js';
@@ -13,6 +14,7 @@ import VirtualWorldManager from 'entities/virtual_world_manager.js';
 
 import MockActor from 'entities/test/mock_actor.js';
 import MockClock from 'base/test/mock_clock.js';
+import MockNpc from 'entities/test/mock_npc.js';
 import MockObject from 'entities/test/mock_object.js';
 import MockPawnInvoke from 'base/test/mock_pawn_invoke.js';
 import MockPickup from 'entities/test/mock_pickup.js';
@@ -42,6 +44,7 @@ class MockServer {
         this.featureManager_ = new FeatureManager();
 
         this.actorManager_ = new ActorManager(MockActor /* actorConstructor */);
+        this.npcManager_ = new NpcManager(MockNpc /* npcConstructor */);
         this.objectManager_ = new ObjectManager(MockObject /* objectConstructor */);
         this.pickupManager_ = new MockPickupManager(MockPickup /* pickupConstructor */);
         this.playerManager_ = new PlayerManager(MockPlayer /* playerConstructor */);
@@ -90,6 +93,9 @@ class MockServer {
     // Gets the real actor manager that maintains mocked actors.
     get actorManager() { return this.actorManager_; }
 
+    // Gets the global NPC manager, responsible for creating NPCs on the server.
+    get npcManager() { return this.npcManager_; }
+
     // Gets the real object manager that maintains mocked objects.
     get objectManager() { return this.objectManager_; }
 
@@ -127,6 +133,7 @@ class MockServer {
         this.playerManager_.dispose();
         this.pickupManager_.dispose();
         this.objectManager_.dispose();
+        this.npcManager_.dispose();
         this.actorManager_.dispose();
 
         this.pawnInvoke_.dispose();

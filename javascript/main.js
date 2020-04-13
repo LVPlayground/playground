@@ -17,6 +17,7 @@ import 'base/vector.js';
 // Import the entities. These are global objects.
 import 'entities/actor.js';
 import 'entities/game_object.js';
+import 'entities/npc.js';
 import 'entities/pickup.js';
 import 'entities/player.js';
 import 'entities/text_label.js';

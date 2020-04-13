@@ -7,6 +7,7 @@ import Clock from 'base/clock.js';
 import CommandManager from 'components/command_manager/command_manager.js';
 import Database from 'components/database/database.js';
 import FeatureManager from 'components/feature_manager/feature_manager.js';
+import NpcManager from 'entities/npc_manager.js';
 import ObjectManager from 'entities/object_manager.js';
 import PickupManager from 'entities/pickup_manager.js';
 import PlayerManager from 'entities/player_manager.js';
@@ -25,6 +26,7 @@ class Server {
         this.featureManager_ = new FeatureManager();
 
         this.actorManager_ = new ActorManager();
+        this.npcManager_ = new NpcManager();
         this.objectManager_ = new ObjectManager();
         this.pickupManager_ = new PickupManager();
         this.playerManager_ = new PlayerManager();
@@ -55,6 +57,9 @@ class Server {
 
     // Gets the global actor manager, responsible for all actors in the game.
     get actorManager() { return this.actorManager_; }
+
+    // Gets the global NPC manager, responsible for creating NPCs on the server.
+    get npcManager() { return this.npcManager_; }
 
     // Gets the global object manager, responsible for all objects created in the game.
     get objectManager() { return this.objectManager_; }
@@ -92,6 +97,7 @@ class Server {
         this.playerManager_.dispose();
         this.pickupManager_.dispose();
         this.objectManager_.dispose();
+        this.npcManager_.dispose();
         this.actorManager_.dispose();
 
         this.clock_.dispose();

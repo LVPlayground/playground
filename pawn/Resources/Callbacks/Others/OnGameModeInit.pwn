@@ -68,7 +68,6 @@ public OnGameModeInit() {
     EnableStuntBonusForAll(0);              // Disable all stunt bonuses, as this conflicts with the anti-moneycheat.
     ShowPlayerMarkers(1);                    // Shows the player markers.
     ShowNameTags(1);                         // Shows the player nametags.
-    SetEchoDestination(Configuration::EchoHostname, Configuration::EchoPort); // Sets the echo bot.
     AllowInteriorWeapons(0);                    // Enables the usage of interior weapons.
     StartTimers();                              // Starts the LVP timers
     LoadMaps();                                 // Loads the mapped areas.

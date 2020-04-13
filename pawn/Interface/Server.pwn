@@ -10,6 +10,7 @@ native IsValidVehicle(vehicleid);
 
 // Provided by the PlaygroundJS plugin.
 native IsPlayerMinimized(playerId);
+native SendEchoMessage(destinationIp[], destinationPort, message[]);
 
 // The OnPlayerUpdate callback should never reach Pawn. If the following message is seen on the
 // console, it means that PlaygroundJS' interception of the callback is failing.

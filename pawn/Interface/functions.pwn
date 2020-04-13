@@ -462,8 +462,7 @@ AddEcho(message[]) {
     if (strlen(message) > 480)
         return 0;
 
-    SetEchoDestination(Configuration::EchoHostname, Configuration::EchoPort);
-    EchoMessage(message);
+    SendEchoMessage(Configuration::EchoHostname, Configuration::EchoPort, message);
     return 1;
 }
 

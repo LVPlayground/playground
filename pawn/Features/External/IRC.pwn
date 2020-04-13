@@ -2,9 +2,6 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-native EchoMessage(message[]);
-native SetEchoDestination(ip[], port);
-
 /**
  * Las Venturas Playground has a significant footprint on IRC, which is short for Internet Relay
  * Chat. Through the Nuwani bots, people have the ability to communicate with the gamemode in real
@@ -73,7 +70,6 @@ class IRC {
             m_messageBuffer[279] = 0;
         }
 
-        SetEchoDestination(Configuration::EchoHostname, Configuration::EchoPort);
-        EchoMessage(m_messageBuffer);
+        SendEchoMessage(Configuration::EchoHostname, Configuration::EchoPort, m_messageBuffer);
     }
 };

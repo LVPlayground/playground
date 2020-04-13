@@ -30,6 +30,9 @@ class Npc {
             this.disconnectedPromiseResolver_ = resolve;
         });
 
+        // Flag that will request the bot to disconnect when connection has been established.
+        this.disconnectOnConnection_ = false;
+
         this.internalConnect();
     }
 
@@ -37,7 +40,13 @@ class Npc {
     // method takes care of the one edge-case where the NPC might still be in progress of being
     // connected to the server, in which case we need to destroy it once it connects.
     disconnect() {
-        // TODO: Handle the case where the NPC is still connecting.
+        if (this.state_ === Npc.kStateConnecting) {
+            this.disconnectOnConnection_ = true;
+            return;
+        }
+
+        if (this.state_ === Npc.kStateDisconnecting)
+            return;
 
         this.state_ = Npc.kStateDisconnecting;
         this.internalDisconnect();
@@ -59,7 +68,10 @@ class Npc {
     }
 
     // Returns whether the NPC is currently being disconnected.
-    isDisconnecting() { return this.state_ === Npc.kStateDisconnecting; }
+    isDisconnecting() {
+        return this.state_ === Npc.kStateDisconnecting ||
+               this.disconnectOnConnection_;
+    }
 
     // Gets the ready promise that can be used to wait for this NPC's connection. Will be resolved
     // when the connection is successful, but also when it fails, so be sure to check isConnected().
@@ -90,6 +102,11 @@ class Npc {
         this.player_ = player;
         this.state_ = Npc.kStateConnected;
 
+        if (this.disconnectOnConnection_) {
+            this.disconnect();
+            return;
+        }
+        
         this.readyPromiseResolver_(this);
         this.readyPromiseResolver_ = null;
     }
@@ -109,6 +126,8 @@ class Npc {
     didDisconnect() {
         this.player_ = null;
         this.state_ = Npc.kStateDisposed;
+
+        this.disconnectOnConnection_ = false;
 
         this.disconnectedPromiseResolver_();
         this.disconnectedPromiseResolver_ = null;

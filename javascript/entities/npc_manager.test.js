@@ -40,7 +40,7 @@ describe('NpcManager', (it, beforeEach, afterEach) => {
         }
 
         // Allow for ~5 misses because random numbers are being used, so there is a non-zero
-        // probability (1.12%) of having duplicates. We don't want this to be flaky.
+        // probability (1.12%) of having a single duplicate. This shouldn't randomly flake.
         assert.isAboveOrEqual(nicknames.size, 95);
     });
 
@@ -118,9 +118,27 @@ describe('NpcManager', (it, beforeEach, afterEach) => {
         assert.equal(npcManager.count, 0);
     });
 
-    return; //
+    it('should allow disconnecting an NPC before it has connected', async (assert) => {
+        const npc = npcManager.createNpc({ name: 'Joe', pawnScript: 'joe' });
 
-    it('should fail', assert => {
-        assert.isFalse(true);
+        assert.equal(npcManager.count, 1);
+
+        assert.isTrue(npc.isConnecting());
+        assert.isFalse(npc.isConnected());
+        assert.isFalse(npc.isDisconnecting());
+
+        npc.disconnect();
+
+        assert.isTrue(npc.isConnecting());
+        assert.isFalse(npc.isConnected());
+        assert.isTrue(npc.isDisconnecting());
+
+        await npc.disconnected;
+
+        assert.isFalse(npc.isConnecting());
+        assert.isFalse(npc.isConnected());
+        assert.isFalse(npc.isDisconnecting());
+
+        assert.equal(npcManager.count, 0);
     });
 });

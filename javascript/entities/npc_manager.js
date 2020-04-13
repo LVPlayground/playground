@@ -63,7 +63,7 @@ class NpcManager {
     // we're waiting for an NPC with the given name to connect, mark that as being successful.
     onPlayerConnect(player) {
         const npc = this.npcs_.get(player.name);
-        if (!npc || !player.isNonPlayerCharacter())
+        if (!npc || !npc.isConnecting() || !player.isNonPlayerCharacter())
             return;
         
         npc.didConnect(player);
@@ -99,17 +99,10 @@ class NpcManager {
         // Iterate over each of the NPCs and act according to the state they're in. The NpcManager
         // will only be considered disposed of after all connections have been closed.
         for (const npc of this.npcs_.values()) {
-            if (npc.isConnecting()) {
-                // TODO: Properly handle this case.
-                npc.dispose();
-            }
+            npcDisconnectionPromises.push(npc.disconnected);
 
-            if (npc.isConnected() || npc.isDisconnecting()) {
-                npcDisconnectionPromises.push(npc.disconnected);
-
-                if (!npc.isDisconnecting())
-                    npc.disconnect();
-            }
+            if (!npc.isDisconnecting())
+                npc.disconnect();
         }
 
         // Wait until all NPCs have disconnected from the server.

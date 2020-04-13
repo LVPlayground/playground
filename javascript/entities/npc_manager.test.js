@@ -35,9 +35,8 @@ describe('NpcManager', (it, beforeEach, afterEach) => {
     it('should maintain a count of the number of created objects', assert => {
         assert.equal(npcManager.count, 0);
 
-        // TODO: Rename `nickname` to `name` for consistency with `Player`.
         for (let i = 0; i < 10; ++i)
-            npcManager.createNpc({ nickname: 'Bot' + i, pawnScript: 'bot' });
+            npcManager.createNpc({ name: 'Bot' + i, pawnScript: 'bot' });
 
         assert.equal(npcManager.count, 10);
         npcManager.dispose();
@@ -47,7 +46,7 @@ describe('NpcManager', (it, beforeEach, afterEach) => {
     });
 
     it('should asynchronously connect NPCs to the server', async (assert) => {
-        const npc = npcManager.createNpc({ nickname: 'Joe', pawnScript: 'joe' });
+        const npc = npcManager.createNpc({ name: 'Joe', pawnScript: 'joe' });
 
         assert.equal(npcManager.count, 1);
 
@@ -81,9 +80,9 @@ describe('NpcManager', (it, beforeEach, afterEach) => {
     });
 
     it('should make sure that NPCs reflect the given information', assert => {
-        const npc = npcManager.createNpc({ nickname: 'Joe', pawnScript: 'joe' });
+        const npc = npcManager.createNpc({ name: 'Joe', pawnScript: 'joe' });
 
-        assert.equal(npc.nickname, 'Joe');
+        assert.equal(npc.name, 'Joe');
         assert.equal(npc.pawnScript, 'joe');
     });
 

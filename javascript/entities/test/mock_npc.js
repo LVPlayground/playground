@@ -26,7 +26,7 @@ class MockNpc extends Npc {
 
                 playerManager.onPlayerConnect({
                     playerid: playerId,
-                    name: this.nickname,
+                    name: this.name,
                     npc: true,
                 });
 

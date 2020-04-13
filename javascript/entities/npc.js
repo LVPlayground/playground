@@ -13,10 +13,10 @@ class Npc {
 
     // Creates a new NPC. Do NOT use this constructor directly, instead get the NpcManager from the
     // global Server object and create your non-playing characters through there.
-    constructor(manager, nickname, pawnScript) {
+    constructor(manager, name, pawnScript) {
         this.manager_ = manager;
 
-        this.nickname_ = nickname;
+        this.name_ = name;
         this.pawnScript_ = pawnScript;
 
         this.player_ = null;
@@ -40,7 +40,7 @@ class Npc {
     }
 
     // Gets the nickname assigned to this NPC.
-    get nickname() { return this.nickname_; }
+    get name() { return this.name_; }
 
     // Gets the Pawn script that this NPC is due to run.
     get pawnScript() { return this.pawnScript_; }

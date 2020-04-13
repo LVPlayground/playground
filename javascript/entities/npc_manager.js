@@ -25,9 +25,9 @@ class NpcManager {
     // The Pawn script has to be the script's name in the server/npcmodes/ directory, without
     // the file extension (.amx). For example, given a script called "gunther.pwn", the compiled
     // version would be called "gunther.amx", and the `pawnScript` given should be "gunther".
-    createNpc({ nickname, pawnScript } = {}) {
-        const npc = new this.npcConstructor_(this, nickname, pawnScript);
-        this.npcs_.set(nickname, npc);
+    createNpc({ name, pawnScript } = {}) {
+        const npc = new this.npcConstructor_(this, name, pawnScript);
+        this.npcs_.set(name, npc);
 
         return npc;
     }
@@ -59,12 +59,10 @@ class NpcManager {
     // Removes the |npc| from the maintained set of NPCs. Should only be used by the NPC
     // implementation to inform the manager about their disposal.
     didDisposeNpc(npc) {
-        const name = npc.nickname;
+        if (!this.npcs_.has(npc.name))
+            throw new Error('Attempting to dispose an invalid NPC: ' + npc.name);
 
-        if (!this.npcs_.has(name))
-            throw new Error('Attempting to dispose an invalid NPC: ' + name);
-
-        this.npcs_.delete(name);
+        this.npcs_.delete(npc.name);
     }
 
     async dispose() {

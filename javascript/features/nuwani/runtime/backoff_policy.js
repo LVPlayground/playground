@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-// The initial delay, in seconds, to wait before establishing a connection.
-const kInitialDelaySec = 4;
+// The initial delay, in milliseconds, to wait before establishing a connection.
+const kInitialDelayMs = 4000;
 
 // The multiplication factor to apply in each iteration of the backoff policy.
 const kMultiplyFactor = 2;
@@ -23,23 +23,20 @@ export class BackoffPolicy {
     failure_count_ = 0;
     state_ = kPolicyStateInitial;
 
-    // Returns the initial delay, in seconds, that the policy will wait before opening a connection.
-    static initialDelaySec() {
-        return kInitialDelaySec;
+    // Returns the delay for the |attempt|th attempt.
+    static CalculateDelayForAttempt(attempt) {
+        return Math.floor(
+            kInitialDelayMs * Math.pow(kMultiplyFactor, Math.min(attempt, kMaximumFailureCount)));
     }
     
-    // Returns the time until the next request can be started, in seconds. The policy must not be
-    // in RequestinProgress state, as the previous request attempt must first be acknowledged. 
-    getTimeToNextRequestSec() {
+    // Returns the time until the next request can be started, in milliseconds. The policy must not
+    // be in RequestinProgress state, as the previous request attempt must first be acknowledged. 
+    getTimeToNextRequestMs() {
         if (this.state_ === kPolicyStateRequestInProgress)
             throw new Error('Unable to progress policy state: request already in progress.');
 
-        let delay = kInitialDelaySec;
-        if (this.state_ === kPolicyStateIdle)
-            delay *= Math.pow(kMultiplyFactor, Math.min(this.failure_count_, kMaximumFailureCount));
-
         this.state_ = kPolicyStateRequestInProgress;
-        return Math.floor(delay);
+        return BackoffPolicy.CalculateDelayForAttempt(this.failure_count_);
     }
 
     // Marks the in-progress request as having succeeded. The failure count will be reset, which

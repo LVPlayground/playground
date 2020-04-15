@@ -118,4 +118,6 @@ describe('Connection', (it, beforeEach, afterEach) => {
         assert.isFalse(connectionSuccessful);
         assert.isFalse(connectionFailed);
     });
+
+    // TODO: Test UTF-8 encoding and decoding behaviour of the Connection class
 });

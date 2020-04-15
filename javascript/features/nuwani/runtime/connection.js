@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { BackoffPolicy } from 'features/nuwani/runtime/backoff_policy.js';
+import { stringToUtf8Buffer, utf8BufferToString } from 'features/nuwani/runtime/encoding.js';
 
 // Number of seconds to wait before considering a connection as having failed.
 const kConnectionTimeoutSec = 10;
@@ -93,12 +94,14 @@ export class Connection {
         } while (!this.disposed_);
     }
 
-    // Writes the given |message| to the connection.
+    // Writes the given |message| to the connection. The |message| will be encoded as UTF-8, so
+    // international characters are allowed.
     async write(message) {
         if (this.socket_.state !== 'connected')
             throw new Error('Illegal write to non-connected socket.');
         
-        // TODO: Actually write data to the socket.
+        const buffer = stringToUtf8Buffer(message);
+        await this.socket_.write(buffer);
     }
 
     // Called when an error occurs on the socket that backs the connection. Most errors will require
@@ -116,7 +119,11 @@ export class Connection {
     // Called when data has been received from the socket. Each event may contain one or multiple
     // messages that will be forwarded to the Bot.
     onSocketMessage(event) {
-        // TODO: Actually read data from the socket.
+        const buffer = utf8BufferToString(event.data);
+        const messages = buffer.split('\n');
+
+        messages.forEach(message =>
+            this.delegate_.onConnectionMessage(message));
     }
 
     // Logs the given |message| associated with this connection. The message will not be written to

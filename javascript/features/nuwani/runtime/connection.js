@@ -14,15 +14,19 @@ export class Connection {
     servers_ = null;
 
     backoffPolicy_ = null;
-    disposed_ = false;
     socket_ = null;
+
+    disposed_ = false;
 
     constructor(delegate, servers) {
         this.delegate_ = delegate;
         this.servers_ = servers;
 
         this.backoffPolicy_ = new BackoffPolicy();
+
         this.socket_ = new Socket('tcp');
+        this.socket_.addEventListener('error', Connection.prototype.onSocketError.bind(this));
+        this.socket_.addEventListener('message', Connection.prototype.onSocketMessage.bind(this));
     }
     
     // Starts trying to establish a connection with one of the network's servers. Will spin and wait
@@ -61,6 +65,18 @@ export class Connection {
             ++attempt;
 
         } while (!this.disposed_);
+    }
+
+    // Called when an error occurs on the socket that backs the connection. Most errors will require
+    // the connection to be closed and reset, which will be initiated by this method.
+    onSocketError(event) {
+
+    }
+
+    // Called when data has been received from the socket. Each event may contain one or multiple
+    // messages that will be forwarded to the Bot.
+    onSocketMessage(event) {
+
     }
 
     dispose() {

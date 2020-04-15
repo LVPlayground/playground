@@ -14,6 +14,8 @@ export class TestServerSocket {
     // Magic port value that can be used to trigger a failed connection.
     static kFailurePort = 26667;
 
+    #sockets_ = [];
+
     constructor() {
         if (existingInstance !== null)
             throw new Error('An instance of the TestServerSocket already exists.');
@@ -24,8 +26,18 @@ export class TestServerSocket {
         Socket = TestSocket;
     }
 
+    // Gets the array of sockets that have been opened thus far.
+    get sockets() { return this.#sockets_; }
+
+    // To be called when a new socket has been opened.
+    registerSocket(socket) {
+        this.#sockets_.push(socket);
+    }
+
     dispose() {
         Socket = existingSocket;
+
+        this.#sockets_ = [];
 
         existingInstance = null;
         existingSocket = null;
@@ -38,6 +50,9 @@ class TestSocket {
     #protocol_ = null;
     #state_ = null;
 
+    #error_listeners_ = new Set();
+    #message_listeners_ = new Set();
+
     // Values exposed for testing purposes only, these do not exist on the actual implementation.
     ipForTesting = null;
     portForTesting = null;
@@ -49,6 +64,8 @@ class TestSocket {
         
         this.#protocol_ = protocol;
         this.#state_ = 'disconnected';
+
+        existingInstance.registerSocket(this);
     }
 
     // Promise<boolean> open(string ip, number port[, number timeout]);
@@ -66,6 +83,39 @@ class TestSocket {
 
         this.#state_ = 'connected';
         return true;
+    }
+
+    // Promise<boolean> write(ArrayBuffer data);
+    async write(data) {
+        return true;
+    }
+
+    // void addEventListener(string event, function listener);
+    addEventListener(event, listener) {
+        switch (event) {
+            case 'error':
+                this.#error_listeners_.add(listener);
+                break;
+            case 'message':
+                this.#message_listeners_.add(listener);
+                break;
+            default:
+                throw new Error('Invalid event listener specified: ' + event);
+        }
+    }
+
+    // void removeEventListener(string event, function listener);
+    removeEventListener(event, listener) {
+        switch (event) {
+            case 'error':
+                this.#error_listeners_.delete(listener);
+                break;
+            case 'message':
+                this.#message_listeners_.delete(listener);
+                break;
+            default:
+                throw new Error('Invalid event listener specified: ' + event);
+        }
     }
 
     // void close();

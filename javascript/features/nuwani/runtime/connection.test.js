@@ -8,12 +8,12 @@ import { Connection } from 'features/nuwani/runtime/connection.js';
 import { TestServerSocket } from 'features/nuwani/test/test_server_socket.js';
 
 describe('Connection', (it, beforeEach, afterEach) => {
-    let socket = null;
+    let network = null;
 
-    beforeEach(() => socket = new TestServerSocket());
+    beforeEach(() => network = new TestServerSocket());
     afterEach(() => {
-        socket.dispose();
-        socket = null;
+        network.dispose();
+        network = null;
     });
 
     it('should be able to establish a connection', async (assert) => {
@@ -37,6 +37,10 @@ describe('Connection', (it, beforeEach, afterEach) => {
         ]);
 
         assert.isTrue(connectionSuccessful);
+
+        assert.equal(network.sockets.length, 1);
+        assert.equal(network.sockets[0].ipForTesting, '127.0.0.1');
+        assert.equal(network.sockets[0].portForTesting, 6667);
     });
 
     it('should be able to fall back to another server when connectivity fails', async (assert) => {
@@ -74,6 +78,10 @@ describe('Connection', (it, beforeEach, afterEach) => {
 
         assert.isTrue(connectionFailed);
         assert.isTrue(connectionSuccessful);
+
+        assert.equal(network.sockets.length, 1);
+        assert.equal(network.sockets[0].ipForTesting, '127.0.0.2');
+        assert.equal(network.sockets[0].portForTesting, 6667);
     });
 
     it('should abort connection attempts if the Connection class gets disposed', async (assert) => {

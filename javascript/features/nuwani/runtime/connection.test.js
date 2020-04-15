@@ -25,11 +25,14 @@ describe('Connection', (it, beforeEach, afterEach) => {
         //   3. A connection is opened to 127.0.0.1, which passes.
 
         const servers = [{ ip: '127.0.0.1', port: 6667 }];
-        const connection = new Connection(new class {
+        const connection = new Connection(servers, new class {
+            onConnectionFailed() {}
             onConnectionEstablished() {
                 connectionSuccessful = true;
             }
-        }, servers);
+            onConnectionMessage(message) {}
+            onConnectionClosed() {}
+        });
 
         await Promise.all([
             connection.connect(),
@@ -60,16 +63,18 @@ describe('Connection', (it, beforeEach, afterEach) => {
             { ip: '127.0.0.2', port: 6667 },
         ];
 
-        const connection = new Connection(new class {
-            onConnectionEstablished() {
-                connectionSuccessful = true;
-            }
+        const connection = new Connection(servers, new class {
             onConnectionFailed() {
                 connectionFailed = true;
                 Promise.resolve().then(
                     () => server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(1)));
             }
-        }, servers);
+            onConnectionEstablished() {
+                connectionSuccessful = true;
+            }
+            onConnectionMessage(message) {}
+            onConnectionClosed() {}
+        });
 
         await Promise.all([
             connection.connect(),
@@ -94,14 +99,16 @@ describe('Connection', (it, beforeEach, afterEach) => {
         //   3. The delay finished, Connection notices that it got disposed of, bails out.
 
         const servers = [{ ip: '127.0.0.1', port: 6667 }];
-        const connection = new Connection(new class {
-            onConnectionEstablished() {
-                connectionSuccessful = true;
-            }
+        const connection = new Connection(servers, new class {
             onConnectionFailed() {
                 connectionFailed = true;
             }
-        }, servers);
+            onConnectionEstablished() {
+                connectionSuccessful = true;
+            }
+            onConnectionMessage(message) {}
+            onConnectionClosed() {}
+        });
 
         connection.connect();
         connection.dispose();

@@ -12,6 +12,16 @@ let connectionId = 1;
 
 // The Connection class wraps the actual TCP Socket that's used to establish a connection with
 // the IRC server, and provides functionality for features such as automatic reconnections.
+//
+// This class must be given a delegate on construction, which will receive higher level events
+// associated with activity on the socket. The following methods must exist:
+//
+// * onConnectionFailed()
+// * onConnectionEstablished()
+// * onConnectionMessage(string message)
+// * onConnectionClosed()
+//
+// Reconnection attempts, as well as socket-level logging, will be done by this class.
 export class Connection {
     delegate_ = null;
     servers_ = null;
@@ -22,9 +32,9 @@ export class Connection {
     connection_id_ = null;
     disposed_ = false;
 
-    constructor(delegate, servers) {
-        this.delegate_ = delegate;
+    constructor(servers, delegate) {
         this.servers_ = servers;
+        this.delegate_ = delegate;
 
         this.backoffPolicy_ = new BackoffPolicy();
 
@@ -41,11 +51,10 @@ export class Connection {
         let attempt = 0;
 
         await wait(this.backoffPolicy_.getTimeToNextRequestMs());
+        if (this.disposed_)
+            return;
 
         do {
-            if (this.disposed_)
-                return;
-
             const currentServerIndex = attempt % this.servers_.length;
             const ip = this.servers_[currentServerIndex].ip;
             const port = this.servers_[currentServerIndex].port;
@@ -84,22 +93,30 @@ export class Connection {
         } while (!this.disposed_);
     }
 
+    // Writes the given |message| to the connection.
+    async write(message) {
+        if (this.socket_.state !== 'connected')
+            throw new Error('Illegal write to non-connected socket.');
+        
+        // TODO: Actually write data to the socket.
+    }
+
     // Called when an error occurs on the socket that backs the connection. Most errors will require
     // the connection to be closed and reset, which will be initiated by this method.
     onSocketError(event) {
         this.log(`Error ${event.code}: ${event.message}`);
 
-        // Close the socket if it hasn't closed itself already.
-        if (this.socket_.state !== 'disconnected')
-            this.socket_.close();
+        if (this.socket_.state === 'disconnected')
+            return;
 
-        // TODO: Should we automatically reconnect to the server here?
+        this.delegate_.onConnectionClosed();
+        this.socket_.close();
     }
 
     // Called when data has been received from the socket. Each event may contain one or multiple
     // messages that will be forwarded to the Bot.
     onSocketMessage(event) {
-        
+        // TODO: Actually read data from the socket.
     }
 
     // Logs the given |message| associated with this connection. The message will not be written to

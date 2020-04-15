@@ -3,7 +3,7 @@ export function stringToUtf8Buffer(string) {
 }
 
 export function utf8BufferToString(buffer) {
-    return ToString(FromUTF8(buffer));
+    return ToString(FromUTF8(new Uint8Array(buffer)));
 }
 
 /**

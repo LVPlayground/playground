@@ -99,8 +99,10 @@ export class Connection {
     async write(message) {
         if (this.socket_.state !== 'connected')
             throw new Error('Illegal write to non-connected socket.');
-        
-        const buffer = stringToUtf8Buffer(message);
+
+        console.log('[IRC] >[' + message + ']');
+
+        const buffer = stringToUtf8Buffer(message.trimEnd() + '\r\n');
         await this.socket_.write(buffer);
     }
 
@@ -120,10 +122,14 @@ export class Connection {
     // messages that will be forwarded to the Bot.
     onSocketMessage(event) {
         const buffer = utf8BufferToString(event.data);
-        const messages = buffer.split('\n');
+        const messages = buffer.split(/\r?\n/);
 
-        messages.forEach(message =>
-            this.delegate_.onConnectionMessage(message));
+        messages.forEach(message => {
+            if (!message.length)
+                return;
+
+            this.delegate_.onConnectionMessage(message);
+        });
     }
 
     // Logs the given |message| associated with this connection. The message will not be written to

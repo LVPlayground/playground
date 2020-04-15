@@ -7,22 +7,22 @@ import { kTestConfiguration } from 'features/nuwani/test/test_configuration.js';
 // Wraps the Nuwani configuration defined in "nuwani.json", validates it and allows JavaScript code
 // to access it in a more ideomatic manner.
 export class Configuration {
-    #bots_ = [];
-    #servers_ = [];
-    #channels_ = [];
+    bots_ = [];
+    servers_ = [];
+    channels_ = [];
 
     // Gets the bots that should be connected. Each bot is listed as { nickname, master }, and
     // there is guaranteed to only be a single master.
-    get bots() { return this.#bots_; }
+    get bots() { return this.bots_; }
 
     // Gets the list of servers the bot could be connecting to. These are all expected to point to
     // the same network. The first server will be preferred, subsequent servers will only be
     // considered in case of a connection failure. Each server is listed as { ip, port, ssl }.
-    get servers() { return this.#servers_; }
+    get servers() { return this.servers_; }
 
     // Gets the channels that the bot should join. Each entry is listed as { channel, password },
     // where the password may be NULL if no password is required.
-    get channels() { return this.#channels_; }
+    get channels() { return this.channels_; }
 
     // Constructs the Configuration file. In production the data will be read from a file called
     // "nuwani.json", whereas tests will have to do with a verified testing configuration.
@@ -45,9 +45,9 @@ export class Configuration {
         if (typeof configuration !== 'object')
             throw new Error('The IRC configuration must be a JSON object.');
         
-        this.#bots_ = [];
-        this.#servers_ = [];
-        this.#channels_ = [];
+        this.bots_ = [];
+        this.servers_ = [];
+        this.channels_ = [];
 
         // (1) Load the bot's identity configuration.
         if (!configuration.hasOwnProperty('bots') || !Array.isArray(configuration.bots))
@@ -77,11 +77,11 @@ export class Configuration {
         configuration.channels.forEach(channel => this.safeAddChannel(channel));
 
         // (4) Require that the master bot has been defined.
-        if (this.#bots_.filter(bot => bot.master).length !== 1)
+        if (this.bots_.filter(bot => bot.master).length !== 1)
             throw new Error('Exactly one IRC bot must be specified as the master bot.');
 
         // (5) Require that the echo channel has been defined.
-        if (this.#channels_.filter(channel => channel.echo).length !== 1)
+        if (this.channels_.filter(channel => channel.echo).length !== 1)
             throw new Error('Exactly one IRC channel must be specified as the echo channel.');
     }
 
@@ -100,7 +100,7 @@ export class Configuration {
         if (bot.hasOwnProperty('master') && typeof bot.master !== 'boolean')
             throw new Error('Invalid IRC Bot master flag given: ' + bot.master);
 
-        this.#bots_.push(Object.assign({
+        this.bots_.push(Object.assign({
             password: null,
             master: false,
         }, bot));
@@ -121,7 +121,7 @@ export class Configuration {
         if (server.hasOwnProperty('ssl') && typeof server.ssl !== 'boolean')
             throw new Error('Invalid IRC server SSL: ' + server.ssl);
         
-        this.#servers_.push(Object.assign({
+        this.servers_.push(Object.assign({
             port: 6667,
             ssl: false,
         }, server));
@@ -139,7 +139,7 @@ export class Configuration {
         if (channel.hasOwnProperty('echo') && typeof channel.echo !== 'boolean')
             throw new Error('Invalid IRC channel echo: ' + channel.echo);
 
-        this.#channels_.push(Object.assign({
+        this.channels_.push(Object.assign({
             password: null,
             echo: false,
         }, channel));

@@ -40,6 +40,15 @@ export class Connection {
             const port = this.servers_[currentServerIndex].port;
 
             const connected = await this.socket_.open(ip, port, kConnectionTimeoutSec);
+            if (this.disposed_) {
+                if (connected)
+                    this.socket_.close();
+                
+                return;
+            }
+
+            // Report the result to the back-off policy, to ensure that the next request will be
+            // made with the appropriate time delay.
             connected ? this.backoffPolicy_.markRequestSuccessful()
                       : this.backoffPolicy_.markRequestFailed();
 

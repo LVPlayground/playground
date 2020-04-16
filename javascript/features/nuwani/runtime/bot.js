@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { Connection } from 'features/nuwani/runtime/connection.js';
+import { ConnectionHandshake } from 'features/nuwani/runtime/connection_handshake.js';
 import { Message } from 'features/nuwani/runtime/message.js';
 
 // Whitelist containing hostnames of folks who can use the ?eval command. Temporary.
@@ -14,48 +15,45 @@ const kEvalWhitelist = [
 // Represents an individual Bot that can be connected to IRC. Manages its own connection and will
 // signal to the Runtime when its ready to start sending messages.
 export class Bot {
-    bot_ = null;
-    channels_ = null;
-
     connection_ = null;
+    handshake_ = null;
 
     constructor(bot, servers, channels) {
-        this.bot_ = bot;
-        this.channels_ = channels;
-
         this.connection_ = new Connection(servers, this);
         this.connection_.connect();
+
+        this.handshake_ = new ConnectionHandshake(bot, channels, this.connection_);
     }
 
     // ConnectionDelegate implementation:
     // ---------------------------------------------------------------------------------------------
 
-    // Called when the TCP connection with the IRC server has been established. The first thing to
-    // do here is the handshake to identify ourselves with the server.
+    // Called when the TCP connection with the IRC server has been established. The connection
+    // handshake will begin immediately.
     onConnectionEstablished() {
-        console.log('[IRC] Connected!');
+        console.log('[IRC] Connected to the server, beginning handshake...');
 
-        this.connection_.write(`NICK ${this.bot_.nickname}`);
-        this.connection_.write(`USER ${this.bot_.nickname} 0 * :Nuwani IRC Bot`);
+        this.handshake_.start();
     }
 
     // Called when the |messageString| has been received from the connection. It's an already decoded
     // string that contains at most a single to-be-parsed IRC command.
     onConnectionMessage(messageString) {
+        const message = new Message(messageString);
+
         console.log('[IRC] :[' + messageString + ']');
 
-        const message = new Message(messageString);
+        if (this.handshake_.handleMessage(message))
+            return;
+
+        
+
+        
         switch (message.command) {
             case 'PING':
                 this.connection_.write(`PONG :${message.params[0]}`);
                 break;
             
-            case '396':  // end of motd
-                for (const channel of this.channels_)
-                    this.connection_.write(`JOIN ${channel.channel} ${channel.password || ''}`);
-
-                break;
-
             case 'PRIVMSG':
                 const destination = message.params[0];
                 const parts = message.params[1].split(' ');
@@ -81,12 +79,16 @@ export class Bot {
     onConnectionClosed() {
         console.log('[IRC] Disconnected');
 
+        this.handshake_.reset();
         this.connection_.connect();
     }
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        this.handshake_.dispose();
+        this.handshake_ = null;
+
         this.connection_.dispose();
         this.connection_ = null;
     }

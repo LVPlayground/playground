@@ -11,8 +11,8 @@ export class Configuration {
     servers_ = [];
     channels_ = [];
 
-    // Gets the bots that should be connected. Each bot is listed as { nickname, master }, and
-    // there is guaranteed to only be a single master.
+    // Gets the bots that should be connected. Each bot is listed as { nickname, password, master },
+    // and there is guaranteed to only be a single master.
     get bots() { return this.bots_; }
 
     // Gets the list of servers the bot could be connecting to. These are all expected to point to
@@ -20,8 +20,8 @@ export class Configuration {
     // considered in case of a connection failure. Each server is listed as { ip, port, ssl }.
     get servers() { return this.servers_; }
 
-    // Gets the channels that the bot should join. Each entry is listed as { channel, password },
-    // where the password may be NULL if no password is required.
+    // Gets the channels that the bot should join. Each entry is listed as { channel, echo,
+    // password }, where the password may be NULL if no password is required.
     get channels() { return this.channels_; }
 
     // Constructs the Configuration file. In production the data will be read from a file called

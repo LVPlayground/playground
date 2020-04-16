@@ -58,11 +58,33 @@ describe('ConnectionHandshake', (it, beforeEach, afterEach) => {
         assert.isTrue(/NICK Nuwani[0-9]{4}/i.test(connection.messages[2]));
     });
 
+    it('should identify itself as a bot if the server supports it', assert => {
+        {
+            const handshake = new ConnectionHandshake(bot, channels, connection);
+
+            handshake.start();
+            handshake.handleMessage(new Message(':server.network.com 001 :Welcome to the network'));
+            handshake.handleMessage(new Message(':server.network.com 004 :_ _ B _'));
+
+            assert.equal(connection.messages.length, 3);
+            assert.equal(connection.messages[2], 'MODE Nuwani +B');
+        }
+        {
+            const handshake = new ConnectionHandshake(bot, channels, connection);
+
+            handshake.start();
+            handshake.handleMessage(new Message(':server.network.com 001 :Welcome to the network'));
+            handshake.handleMessage(new Message(':server.network.com 004 :_ _ _ _'));  // missing B
+
+            assert.equal(connection.messages.length, 3 /* first test */ + 2 /* this test */);
+        }
+    });
+
     it('should wait for NickServ identification before joining channels', async (assert) => {
         const handshake = new ConnectionHandshake(bot, channels, connection);
 
         handshake.start();
-        handshake.handleMessage(new Message(':server.network.com 001 :Welcome to the network!'));
+        handshake.handleMessage(new Message(':server.network.com 001 :Welcome to the network'));
         handshake.handleMessage(new Message(':server.network.com 376 :End of MoTD'));
 
         assert.equal(connection.messages.length, 2);

@@ -18,6 +18,7 @@ export class ConnectionHandshake {
     // States the handshake process can be in.
     static kStateIdle = 0;
     static kStateRegistrationSent = 1;
+    static kStateRegistrationAcknowledged = 2;
     static kStateAwaitingPasswordRequest = 3;
     static kStateDisposed = 999;
 
@@ -25,6 +26,7 @@ export class ConnectionHandshake {
     channels_ = null;
     connection_ = null;
 
+    nickname_ = null;
     state_ = null;
 
     constructor(bot, channels, connection) {
@@ -48,6 +50,8 @@ export class ConnectionHandshake {
 
         this.connection_.write(`NICK ${this.bot_.nickname}`);
         this.connection_.write(`USER ${this.bot_.nickname} 0 * :NuwaniJS IRC Bot`);
+
+        this.nickname_ = this.bot_.nickname;
         this.state_ = ConnectionHandshake.kStateRegistrationSent;
     }
 
@@ -56,13 +60,32 @@ export class ConnectionHandshake {
         switch (message.command) {
             case '433':  // ERR_NICKNAMEINUSE
             case '436':  // ERR_NICKCOLLISION
-                if (this.state_ === ConnectionHandshake.kStateRegistrationSent)
-                    this.connection_.write(`NICK ${this.bot_.nickname}${GenerateNicknameSuffix()}`);
+                if (this.state_ === ConnectionHandshake.kStateRegistrationSent) {
+                    this.nickname_ = this.bot_.nickname + GenerateNicknameSuffix();
+                    this.connection_.write(`NICK ${this.nickname_}`);
+                }
 
                 return true;
 
-            // TODO: Should we listen to 001 (RPL_WELCOME) in case a server is joined that doesn't
-            // have a MOTD, and would thus never send RPL_ENDOFMOTD?
+            case '001':  // RPL_WELCOME
+                this.state_ = ConnectionHandshake.kStateRegistrationAcknowledged;
+
+                // TODO: Should we handle the case where the server doesn't have a MOTD, and thus
+                // will never send the 376 (RPL_ENDOFMOTD) command?
+                return false;
+
+            case '004':  // RPL_MYINFO
+                if (this.state_ === ConnectionHandshake.kStateRegistrationAcknowledged) {
+                    const [server, version, userModes, ...rest] = message.params[0].split(' ');
+
+                    // If the server supports the +B(ot) user mode, mark ourselves as one to be a
+                    // good citizen. Channel can set restrictions for bots.
+                    if (userModes.includes('B'))
+                        this.connection_.write(`MODE ${this.nickname_} +B`);
+                }
+    
+                // Deliberately returning true: other code can consume RPL_MYINFO as well.
+                return false;
 
             case '376':  // RPL_ENDOFMOTD
                 if (this.bot_.password !== null) {

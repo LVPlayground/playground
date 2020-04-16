@@ -3,6 +3,13 @@
 // be found in the LICENSE file.
 
 import { Connection } from 'features/nuwani/runtime/connection.js';
+import { Message } from 'features/nuwani/runtime/message.js';
+
+// Whitelist containing hostnames of folks who can use the ?eval command. Temporary.
+const kEvalWhitelist = [
+    'las.venturas.playground',
+    'netstaff.irc.gtanet.com',
+];
 
 // Represents an individual Bot that can be connected to IRC. Manages its own connection and will
 // signal to the Runtime when its ready to start sending messages.
@@ -32,24 +39,40 @@ export class Bot {
         this.connection_.write(`USER ${this.bot_.nickname} 0 * :Nuwani IRC Bot`);
     }
 
-    // Called when the |message| has been received from the connection. It's an already decoded
+    // Called when the |messageString| has been received from the connection. It's an already decoded
     // string that contains at most a single to-be-parsed IRC command.
-    onConnectionMessage(message) {
-        console.log('[IRC] :[' + message + ']');
+    onConnectionMessage(messageString) {
+        console.log('[IRC] :[' + messageString + ']');
 
-        const parts = message.split(' ');
+        const message = new Message(messageString);
+        switch (message.command) {
+            case 'PING':
+                this.connection_.write(`PONG :${message.params[0]}`);
+                break;
+            
+            case '396':  // end of motd
+                for (const channel of this.channels_)
+                    this.connection_.write(`JOIN ${channel.channel} ${channel.password || ''}`);
 
-        // Ping message from the server
-        if (parts[0] === 'PING')
-            this.connection_.write(`PONG ${parts[1]}`);
+                break;
 
-        if (parts[1] === 'PRIVMSG' && parts[3] === ':?time')
-            this.connection_.write(`PRIVMSG ${parts[2]} :I have no idea!`);
+            case 'PRIVMSG':
+                const destination = message.params[0];
+                const parts = message.params[1].split(' ');
 
-        // End of MoTD: join channels
-        if (parts[1] === '396') {
-            for (const channel of this.channels_)
-                this.connection_.write(`JOIN ${channel.channel} ${channel.password || ''}`);
+                switch (parts[0]) {
+                    case '?eval':
+                        if (kEvalWhitelist.includes(message.source.hostname))
+                            this.connection_.write(`PRIVMSG ${destination} :`+ eval(parts.slice(1).join(' ')));
+
+                        break;
+
+                    case '?time':
+                        this.connection_.write(`PRIVMSG ${destination} :${(new Date).toString()}`);
+                        break;
+                }
+
+                break;
         }
     }
 
@@ -57,6 +80,8 @@ export class Bot {
     // able to do anything until the connection has been re-established.
     onConnectionClosed() {
         console.log('[IRC] Disconnected');
+
+        this.connection_.connect();
     }
 
     // ---------------------------------------------------------------------------------------------

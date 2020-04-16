@@ -26,7 +26,8 @@ export class Message {
     command_ = null;
     params_ = [];
 
-    // Gets the source of this message, if any.
+    // Gets the source of this message, if any. Non-NULL values will be instances of the
+    // MessageSource class with the appropriate fields set.
     get source() { return this.source_; }
 
     // Gets the command of this message, which is either numeric or textual. The command will always

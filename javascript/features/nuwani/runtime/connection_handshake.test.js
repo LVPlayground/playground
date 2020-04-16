@@ -64,7 +64,7 @@ describe('ConnectionHandshake', (it, beforeEach, afterEach) => {
 
             handshake.start();
             handshake.handleMessage(new Message(':server.network.com 001 :Welcome to the network'));
-            handshake.handleMessage(new Message(':server.network.com 004 :_ _ B _'));
+            handshake.handleMessage(new Message(':server.network.com 004 _ _ _ B _'));
 
             assert.equal(connection.messages.length, 3);
             assert.equal(connection.messages[2], 'MODE Nuwani +B');
@@ -74,7 +74,7 @@ describe('ConnectionHandshake', (it, beforeEach, afterEach) => {
 
             handshake.start();
             handshake.handleMessage(new Message(':server.network.com 001 :Welcome to the network'));
-            handshake.handleMessage(new Message(':server.network.com 004 :_ _ _ _'));  // missing B
+            handshake.handleMessage(new Message(':server.network.com 004 _ _ _ _ _'));  // missing B
 
             assert.equal(connection.messages.length, 3 /* first test */ + 2 /* this test */);
         }

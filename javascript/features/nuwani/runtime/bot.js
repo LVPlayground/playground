@@ -45,9 +45,6 @@ export class Bot {
 
         if (this.handshake_.handleMessage(message))
             return;
-
-        
-
         
         switch (message.command) {
             case 'PING':

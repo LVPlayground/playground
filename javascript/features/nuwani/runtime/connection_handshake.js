@@ -76,11 +76,9 @@ export class ConnectionHandshake {
 
             case '004':  // RPL_MYINFO
                 if (this.state_ === ConnectionHandshake.kStateRegistrationAcknowledged) {
-                    const [server, version, userModes, ...rest] = message.params[0].split(' ');
-
                     // If the server supports the +B(ot) user mode, mark ourselves as one to be a
                     // good citizen. Channel can set restrictions for bots.
-                    if (userModes.includes('B'))
+                    if (message.params.length >= 4 && message.params[3].includes('B'))
                         this.connection_.write(`MODE ${this.nickname_} +B`);
                 }
     

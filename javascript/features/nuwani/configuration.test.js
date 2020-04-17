@@ -5,7 +5,7 @@
 import { Configuration } from 'features/nuwani/configuration.js';
 
 // A configuration that will be accepted by the Configuration class.
-function createConfiguration({ bots, servers, channels } = {}) {
+function createConfiguration({ bots, servers, channels, levels } = {}) {
     return {
         bots: bots || [
             { nickname: 'Bot', password: 'foobar', master: true },
@@ -19,6 +19,14 @@ function createConfiguration({ bots, servers, channels } = {}) {
         channels: channels || [
             { channel: '#public', echo: true },
             { channel: '#private', password: 'joinme' },
+        ],
+        levels: levels || [
+            { mode: 'Y', level: 'management' },
+            { mode: 'q', level: 'management' },
+            { mode: 'a', level: 'management' },
+            { mode: 'o', level: 'administrator' },
+            { mode: 'h', level: 'vip' },
+            { mode: 'v', level: 'vip' },
         ],
     };
 };
@@ -113,5 +121,40 @@ describe('Configuration', it => {
 
         assert.equal(configuration.channels.length, 2);
         assert.isNull(configuration.channels[0].password);
+    });
+
+    it('correctly reflects level associative information', assert => {
+        assert.throws(() => (new Configuration).initializeFromJson(createConfiguration({
+            levels: 'yesplz',  // invalid type
+        })));
+
+        assert.throws(() => (new Configuration).initializeFromJson(createConfiguration({
+            levels: [
+                { mode: 'qq', level: 'administrator' },  // invalid mode
+            ]
+        })));
+
+        assert.throws(() => (new Configuration).initializeFromJson(createConfiguration({
+            levels: [
+                { mode: 'q', level: 'king' },  // invalid level
+            ]
+        })));
+
+        assert.throws(() => (new Configuration).initializeFromJson(createConfiguration({
+            levels: [
+                { mode: 'q', level: 'management' },
+                { mode: 'q', level: 'administrator' },  // defined twice
+            ]
+        })));
+
+        const configuration = new Configuration();
+        configuration.initializeFromJson(createConfiguration());
+
+        assert.equal(configuration.levels.size, 6);
+        
+        for (const mapping of createConfiguration().levels) {
+            assert.isTrue(configuration.levels.has(mapping.mode));
+            assert.equal(configuration.levels.get(mapping.mode), mapping.level);
+        }
     });
 });

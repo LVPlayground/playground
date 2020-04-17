@@ -38,7 +38,7 @@ export class Bot {
         this.connection_.connect();
 
         this.handshake_ = new ConnectionHandshake(this, channels, this.connection_);
-        this.network_tracker_ = new NetworkTracker();
+        this.network_tracker_ = new NetworkTracker(this);
     }
 
     // ConnectionDelegate implementation:

@@ -10,6 +10,7 @@ export class Configuration {
     bots_ = [];
     servers_ = [];
     channels_ = [];
+    levels_ = new Map();
 
     // Gets the bots that should be connected. Each bot is listed as { nickname, password, master },
     // and there is guaranteed to only be a single master.
@@ -23,6 +24,10 @@ export class Configuration {
     // Gets the channels that the bot should join. Each entry is listed as { channel, echo,
     // password }, where the password may be NULL if no password is required.
     get channels() { return this.channels_; }
+
+    // Gets the level mapping between IRC channel mode in the echo channel, and how this should be
+    // perceived in the command processor. Each entry is listed as { mode, level }.
+    get levels() { return this.levels_; }
 
     // Constructs the Configuration file. In production the data will be read from a file called
     // "nuwani.json", whereas tests will have to do with a verified testing configuration.
@@ -48,6 +53,7 @@ export class Configuration {
         this.bots_ = [];
         this.servers_ = [];
         this.channels_ = [];
+        this.levels_ = new Map();
 
         // (1) Load the bot's identity configuration.
         if (!configuration.hasOwnProperty('bots') || !Array.isArray(configuration.bots))
@@ -76,11 +82,17 @@ export class Configuration {
 
         configuration.channels.forEach(channel => this.safeAddChannel(channel));
 
-        // (4) Require that the master bot has been defined.
+        // (4) Load the level mappings.
+        if (!configuration.hasOwnProperty('levels') || !Array.isArray(configuration.levels))
+            throw new Error('The level mapping must be indicated in a JSON array.');
+
+        configuration.levels.forEach(mapping => this.safeAddLevelMapping(mapping));
+
+        // (5) Require that the master bot has been defined.
         if (this.bots_.filter(bot => bot.master).length !== 1)
             throw new Error('Exactly one IRC bot must be specified as the master bot.');
 
-        // (5) Require that the echo channel has been defined.
+        // (6) Require that the echo channel has been defined.
         if (this.channels_.filter(channel => channel.echo).length !== 1)
             throw new Error('Exactly one IRC channel must be specified as the echo channel.');
     }
@@ -143,5 +155,26 @@ export class Configuration {
             password: null,
             echo: false,
         }, channel));
+    }
+
+    // Adds the given |mapping| to the level mappings. Each mapping must be unique, and both sides
+    // (the IRC user mode, and the LVP Level name) must be validated.
+    safeAddLevelMapping(mapping) {
+        if (!mapping.hasOwnProperty('mode') || typeof mapping.mode !== 'string')
+            throw new Error('Level mapping must have a defined user mode.');
+        
+        if (!mapping.hasOwnProperty('level') || typeof mapping.level !== 'string')
+            throw new Error('Level mapping must have a defined access level.');
+        
+        if (mapping.mode.length != 1)
+            throw new Error('Level mapping user modes must be a single character.');
+        
+        if (!['management', 'administrator', 'vip'].includes(mapping.level))
+            throw new Error('Level mapping access levels must be a valid string.');
+        
+        if (this.levels_.has(mapping.mode))
+            throw new Error('Level mapping has already been defined for: +' + mapping.mode);
+
+        this.levels_.set(mapping.mode, mapping.level);
     }
 }

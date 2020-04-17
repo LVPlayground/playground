@@ -12,4 +12,12 @@ export const kTestConfiguration = {
     channels: [
         { channel: '#LVP.DevJS', echo: true },
     ],
+    levels: [
+        { mode: 'Y', level: 'management' },
+        { mode: 'q', level: 'management' },
+        { mode: 'a', level: 'management' },
+        { mode: 'o', level: 'administrator' },
+        { mode: 'h', level: 'vip' },
+        { mode: 'v', level: 'vip' },
+    ],
 };

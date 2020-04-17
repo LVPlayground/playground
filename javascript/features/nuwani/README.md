@@ -23,6 +23,11 @@ will be interpret by the [Configuration](configuration.js) class.
     "channels": [
         { "channel": "#echo", "echo": true },
         { "channel": "#admins", "password": "only4crew" }
+    ],
+    "levels": [
+        { "mode": "a", "level": "management" },
+        { "mode": "o", "level": "administrator" },
+        { "mode": "v", "level": "vip" }
     ]
 }
 

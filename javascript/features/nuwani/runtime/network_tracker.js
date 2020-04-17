@@ -10,12 +10,14 @@ export class NetworkTracker {
     bot_ = null;
 
     channels_ = null;
+    prefixes_ = null;
     settings_ = null;
 
     constructor(bot) {
         this.bot_ = bot;
 
         this.channels_ = new Map();
+        this.prefixes_ = new Map();
         this.support_ = new Map();
     }
 
@@ -38,6 +40,8 @@ export class NetworkTracker {
                         continue;
 
                     this.support_.set(rule, value || true);
+                    if (rule === 'PREFIX' && value)
+                        this.populatePrefixToUserModeCache(value);
                 }
                 break;
 
@@ -53,12 +57,31 @@ export class NetworkTracker {
             }
 
             case '333': {  // RPL_TOPICWHOTIME
-                if (message.params.length != 4)
+                if (message.params.length < 4)
                     throw new Error('Invalid RPL_TOPICWHOTIME message received: ' + message);
 
                 const [nickname, channel, who, time] = message.params;
                 if (this.channels_.has(channel))
                     this.channels_.get(channel).onTopicWhoTimeMessage(who, time);
+
+                break;
+            }
+
+            case '353': {  // RPL_NAMREPLY
+                if (message.params.length < 4)
+                    throw new Error('Invalid RPL_NAMREPLY message received: ' + message);
+                
+                const [nickname, visibility, channelName, names] = message.params;
+                if (!this.channels_.has(channelName))
+                    throw new Error('Invalid channel in RPL_NAMREPLY message: ' + channelName);
+
+                const channel = this.channels_.get(channelName);
+                for (const name of names.split(' ')) {
+                    const userMode = this.prefixes_.get(name[0]);
+
+                    channel.onJoin(userMode ? name.substring(1)
+                                            : name, userMode || '');
+                }
 
                 break;
             }
@@ -114,6 +137,17 @@ export class NetworkTracker {
                 break;
             }
         }
+    }
+
+    // Populates the PREFIX cache when configuration has been received from the server. This setting
+    // determines the user modes that give users rights on any particular channel.
+    populatePrefixToUserModeCache(prefix) {
+        const divider = prefix.indexOf(')');
+        if (divider === -1 || prefix.length != 2 * divider)
+            throw new Error('Invalid PREFIX syntax found: ' + prefix);
+        
+        for (let i = 1; i < divider; ++i)
+            this.prefixes_.set(prefix[divider + i], prefix[i]);
     }
 
     // Resets the network tracker to a default state. This should generally be called when the

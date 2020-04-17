@@ -144,5 +144,35 @@ describe('NetworkTracker', (it, beforeEach) => {
         assert.isTrue(channel.users.has('NuwaniJS'));
     });
 
-    //it('fails', assert => assert.isTrue(false));
+    it('should kick-start channel knowledge based on RPL_NAMREPLY', assert => {
+        const tracker = new NetworkTracker(bot);
+
+        assert.equal(bot.nickname, 'NuwaniJS');
+        assert.equal(tracker.channels.size, 0);
+
+        tracker.handleMessage(new Message(':NuwaniJS!user@host JOIN :#echo'));
+        tracker.handleMessage(new Message(':NuwaniJS!user@host JOIN :#private'));
+
+        assert.equal(tracker.channels.size, 2);
+
+        const channel = tracker.channels.get('#echo');
+
+        assert.equal(channel.users.size, 1);
+        assert.isTrue(channel.users.has('NuwaniJS'));
+        assert.equal(channel.users.get('NuwaniJS'), '');
+
+        tracker.handleMessage(new Message(':server:name 353 NuwaniJS = #echo :Joe'));
+
+        assert.equal(channel.users.size, 2);
+        assert.isTrue(channel.users.has('Joe'));
+        assert.equal(channel.users.get('Joe'), '');
+
+        tracker.handleMessage(new Message(':server.com 005 OVERRIDE PREFIX=(Yqaohv)!~&@%+ NAMESX'));
+        tracker.handleMessage(new Message(':server.com 353 NuwaniJS = #echo :&Ted @Fred Santa'));
+
+        assert.equal(channel.users.size, 5);
+        assert.equal(channel.users.get('Ted'), 'a');
+        assert.equal(channel.users.get('Fred'), 'o');
+        assert.equal(channel.users.get('Santa'), '');
+    });
 });

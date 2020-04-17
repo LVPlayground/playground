@@ -55,6 +55,15 @@ export class NetworkChannel {
         this.users_.set(nickname, initialMode || '');
     }
 
+    // Called when the user identified as |nickname| has changed their name to |newNickname|.
+    onNameChange(nickname, newNickname) {
+        if (!this.users_.has(nickname))
+            return;
+        
+        this.users_.set(newNickname, this.users_.get(nickname));
+        this.users_.delete(nickname);
+    }
+
     // Called when the user having |nickname| has left this channel, either by choice or by action
     // of a channel operator (KICK).
     onLeave(nickname, command) {

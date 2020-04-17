@@ -134,11 +134,11 @@ export class NetworkTracker {
             }
 
             case 'NICK':
-                if (message.source.nickname === this.bot_.nickname) {
+                if (message.source.nickname === this.bot_.nickname)
                     this.bot_.onNicknameChange(message.params[0]);
-                } else {
-                    // TODO: Track name changes for other users on the network.
-                }
+
+                for (const channel of this.channels_.values())
+                    channel.onNameChange(message.source.nickname, message.params[0]);
 
                 break;
             

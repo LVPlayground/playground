@@ -151,6 +151,36 @@ describe('NetworkTracker', (it, beforeEach) => {
         assert.isTrue(channel.users.has('NuwaniJS'));
     });
 
+    it('should keep track of users who change their nicknames', assert => {
+        const tracker = new NetworkTracker(bot);
+
+        assert.equal(bot.nickname, 'NuwaniJS');
+        assert.equal(tracker.channels.size, 0);
+
+        tracker.handleMessage(new Message(':NuwaniJS!user@host JOIN :#echo'));
+
+        assert.equal(tracker.channels.size, 1);
+
+        const channel = tracker.channels.get('#echo');
+
+        assert.isNotNull(channel);
+        assert.equal(channel.users.size, 1);
+        assert.isTrue(channel.users.has('NuwaniJS'));
+        assert.isFalse(channel.users.has('Joe'));
+        assert.isFalse(channel.users.has('Ted'));
+
+        tracker.handleMessage(new Message(':Joe!joe@host JOIN :#echo'));
+
+        assert.equal(channel.users.size, 2);
+        assert.isTrue(channel.users.has('Joe'));
+
+        tracker.handleMessage(new Message(':Joe!joe@host NICK :Ted'));
+
+        assert.equal(channel.users.size, 2);
+        assert.isFalse(channel.users.has('Joe'));
+        assert.isTrue(channel.users.has('Ted'));
+    });
+
     it('should kick-start channel knowledge based on RPL_NAMREPLY', assert => {
         const tracker = new NetworkTracker(bot);
 

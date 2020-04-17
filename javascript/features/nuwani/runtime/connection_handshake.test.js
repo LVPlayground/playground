@@ -20,7 +20,11 @@ class FakeConnection {
 }
 
 describe('ConnectionHandshake', (it, beforeEach, afterEach) => {
-    const bot = { nickname: 'Nuwani', password: '123456' };
+    const bot = {
+        config: { nickname: 'Nuwani', password: '123456' },
+        nickname: 'Nuwani',
+    };
+
     const channels = [
         { channel: '#public' },
         { channel: '#private', password: 'qwerty' }

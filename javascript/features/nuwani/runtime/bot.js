@@ -16,15 +16,28 @@ const kEvalWhitelist = [
 // Represents an individual Bot that can be connected to IRC. Manages its own connection and will
 // signal to the Runtime when its ready to start sending messages.
 export class Bot {
+    config_ = null;
+    nickname_ = null;
+
     connection_ = null;
     handshake_ = null;
     network_tracker_ = null;
 
-    constructor(bot, servers, channels) {
+    // Gets the configuration that's been assigned to this bot.
+    get config() { return this.config_; }
+
+    // Gets the nickname that has been assigned to this bot. Normally this will be the nickname set
+    // in configuration, but this can be changed during registration and through the NICK command.
+    get nickname() { return this.nickname_; }
+
+    constructor(config, servers, channels) {
+        this.config_ = config;
+        this.nickname_ = config.nickname;
+
         this.connection_ = new Connection(servers, this);
         this.connection_.connect();
 
-        this.handshake_ = new ConnectionHandshake(bot, channels, this.connection_);
+        this.handshake_ = new ConnectionHandshake(this, channels, this.connection_);
         this.network_tracker_ = new NetworkTracker();
     }
 
@@ -35,7 +48,6 @@ export class Bot {
     // handshake will begin immediately.
     onConnectionEstablished() {
         console.log('[IRC] Connected to the server, beginning handshake...');
-
         this.handshake_.start();
     }
 
@@ -84,7 +96,21 @@ export class Bot {
         this.handshake_.reset();
         this.network_tracker_.reset();
 
+        // Reset the nickname, it might be available again on reconnection.
+        this.bot_nickname_ = this.bot_config_.nickname();
+
         this.connection_.connect();
+    }
+
+    // NetworkTrackerDelegate implementation:
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the nickname of the connected bot changes to |newNickname|. This could be
+    // initiated by the system (e.g. to resolve conflicts on registration), an issued NICK command
+    // or a change forced by the server and/or an IRC Operator.
+    onNicknameChange(newNickname) {
+        console.log('[IRC] Nickname changed to ' + newNickname);
+        this.nickname_ = newNickname;
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -5,9 +5,13 @@
 // The network tracker keeps track of state across the network, which channels are joined by
 // the bot, and which users are on those channels with which access levels.
 export class NetworkTracker {
+    bot_ = null;
+
     settings_ = null;
 
-    constructor() {
+    constructor(bot) {
+        this.bot_ = bot;
+
         this.support_ = new Map();
     }
 
@@ -30,6 +34,15 @@ export class NetworkTracker {
                 }
 
                 break;
+            
+            case 'NICK':
+                if (message.source.nickname === this.bot_.nickname) {
+                    this.bot_.onNicknameChange(message.params[0]);
+                } else {
+                    // TODO: Track name changes for other users on the network.
+                }
+
+                break;
         }
     }
 
@@ -41,5 +54,7 @@ export class NetworkTracker {
 
     dispose() {
         this.support_ = null;
+
+        this.bot_ = null;
     }
 }

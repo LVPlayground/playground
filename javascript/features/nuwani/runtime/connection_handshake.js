@@ -25,8 +25,6 @@ export class ConnectionHandshake {
     bot_ = null;
     channels_ = null;
     connection_ = null;
-
-    nickname_ = null;
     state_ = null;
 
     constructor(bot, channels, connection) {
@@ -48,10 +46,11 @@ export class ConnectionHandshake {
         if (this.state_ !== ConnectionHandshake.kStateIdle)
             throw new Error('A connection handshake is already in progress');
 
-        this.connection_.write(`NICK ${this.bot_.nickname}`);
-        this.connection_.write(`USER ${this.bot_.nickname} 0 * :NuwaniJS IRC Bot`);
+        const nickname = this.bot_.config.nickname;
 
-        this.nickname_ = this.bot_.nickname;
+        this.connection_.write(`NICK ${nickname}`);
+        this.connection_.write(`USER ${nickname} 0 * :NuwaniJS IRC Bot`);
+
         this.state_ = ConnectionHandshake.kStateRegistrationSent;
     }
 
@@ -61,8 +60,8 @@ export class ConnectionHandshake {
             case '433':  // ERR_NICKNAMEINUSE
             case '436':  // ERR_NICKCOLLISION
                 if (this.state_ === ConnectionHandshake.kStateRegistrationSent) {
-                    this.nickname_ = this.bot_.nickname + GenerateNicknameSuffix();
-                    this.connection_.write(`NICK ${this.nickname_}`);
+                    const nickname = this.bot_.config.nickname + GenerateNicknameSuffix();
+                    this.connection_.write(`NICK ${nickname}`);
                 }
 
                 return true;
@@ -79,14 +78,14 @@ export class ConnectionHandshake {
                     // If the server supports the +B(ot) user mode, mark ourselves as one to be a
                     // good citizen. Channel can set restrictions for bots.
                     if (message.params.length >= 4 && message.params[3].includes('B'))
-                        this.connection_.write(`MODE ${this.nickname_} +B`);
+                        this.connection_.write(`MODE ${this.bot_.nickname} +B`);
                 }
     
                 // Deliberately returning true: other code can consume RPL_MYINFO as well.
                 return false;
 
             case '376':  // RPL_ENDOFMOTD
-                if (this.bot_.password !== null) {
+                if (this.bot_.config.password !== null) {
                     this.state_ = ConnectionHandshake.kStateAwaitingPasswordRequest;
                     this.runPasswordTimeoutHandler();
                 } else {
@@ -102,14 +101,14 @@ export class ConnectionHandshake {
                 if (!message.params[1].includes(kNickServTrigger))
                     return false;  // message is not asking for identification
                 
-                if (!this.bot_.password) {
+                if (!this.bot_.config.password) {
                     console.log('[IRC] NickServ is requesting a password, but none is configured.');
                     return false;
                 }
                 
                 // TODO: Verify that NickServ is a network service prior to sending our password to
                 // the name, otherwise this would be fairly easily exploitable.
-                this.connection_.write(`PRIVMSG NickServ :IDENTIFY ${this.bot_.password}`);
+                this.connection_.write(`PRIVMSG NickServ :IDENTIFY ${this.bot_.config.password}`);
                 return true;
         }
 

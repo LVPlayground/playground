@@ -5,6 +5,7 @@
 import { Connection } from 'features/nuwani/runtime/connection.js';
 import { ConnectionHandshake } from 'features/nuwani/runtime/connection_handshake.js';
 import { Message } from 'features/nuwani/runtime/message.js';
+import { NetworkTracker } from 'features/nuwani/runtime/network_tracker.js';
 
 // Whitelist containing hostnames of folks who can use the ?eval command. Temporary.
 const kEvalWhitelist = [
@@ -17,12 +18,14 @@ const kEvalWhitelist = [
 export class Bot {
     connection_ = null;
     handshake_ = null;
+    network_tracker_ = null;
 
     constructor(bot, servers, channels) {
         this.connection_ = new Connection(servers, this);
         this.connection_.connect();
 
         this.handshake_ = new ConnectionHandshake(bot, channels, this.connection_);
+        this.network_tracker_ = new NetworkTracker();
     }
 
     // ConnectionDelegate implementation:
@@ -46,6 +49,8 @@ export class Bot {
         if (this.handshake_.handleMessage(message))
             return;
         
+        this.network_tracker_.handleMessage(message);
+
         switch (message.command) {
             case 'PING':
                 this.connection_.write(`PONG :${message.params[0]}`);
@@ -77,12 +82,17 @@ export class Bot {
         console.log('[IRC] Disconnected');
 
         this.handshake_.reset();
+        this.network_tracker_.reset();
+
         this.connection_.connect();
     }
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        this.network_tracker_.dispose();
+        this.network_tracker_ = null;
+
         this.handshake_.dispose();
         this.handshake_ = null;
 

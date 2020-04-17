@@ -47,6 +47,10 @@ will be interpret by the [Configuration](configuration.js) class.
     _NickServ_ identification has completed. Only a single channel can be the `echo` channel, where
     federated output will be sent. Channels can optionally have a `password` defined too.
 
+  * A mapping is necessary between IRC levels (e.g. the "@", "+" prefixes) and LVP access levels.
+    The IRC levels are indicated as user modes, and the LVP access levels have to be one of
+    `management`, `administrator` or `vip`.
+
 ## Features
 **NuwaniJS** has been designed specifically for [Las Venturas Playground](https://sa-mp.nl/) and is
 not meant to be a general purpose bot. Its features focus on applicability, compatibility and

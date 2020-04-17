@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { ModeParser } from 'features/nuwani/runtime/mode_parser.js';
 import { NetworkChannel } from 'features/nuwani/runtime/network_channel.js';
 
 // The network tracker keeps track of state across the network, which channels are joined by
@@ -13,12 +14,16 @@ export class NetworkTracker {
     prefixes_ = null;
     settings_ = null;
 
+    modeParser_ = null;
+
     constructor(bot) {
         this.bot_ = bot;
 
         this.channels_ = new Map();
         this.prefixes_ = new Map();
         this.support_ = new Map();
+
+        this.modeParser_ = new ModeParser();
     }
 
     // Gets the channels that the bot has joined on the current network.
@@ -40,9 +45,18 @@ export class NetworkTracker {
                         continue;
 
                     this.support_.set(rule, value || true);
-                    if (rule === 'PREFIX' && value)
-                        this.populatePrefixToUserModeCache(value);
+
+                    switch (rule) {
+                        case 'PREFIX':
+                            this.populatePrefixToUserModeCache(value);
+                            this.modeParser_.setChannelPrefixes(value);
+                            break;
+                        case 'CHANMODES':
+                            this.modeParser_.setChannelModes(value);
+                            break;
+                    }
                 }
+
                 break;
 
             case '332': {  // RPL_TOPIC
@@ -109,9 +123,14 @@ export class NetworkTracker {
                     throw new Error('Processing invalid KICK for unjoined channel: ' + channelName);
                 
                 if (nickname !== this.bot_.nickname)
-                    this.channels_.get(channelName).onLeave(nickname);
+                    this.channels_.get(channelName).onLeave(nickname, 'KICK');
                 else
                     this.channels_.delete(channelName);
+            }
+
+            case 'MODE': {
+
+                break;
             }
 
             case 'NICK':
@@ -130,10 +149,17 @@ export class NetworkTracker {
                     throw new Error('Processing invalid PART for unjoined channel: ' + channelName);
 
                 if (message.source.nickname !== this.bot_.nickname)
-                    this.channels_.get(channelName).onLeave(message.source.nickname);
+                    this.channels_.get(channelName).onLeave(message.source.nickname, 'PART');
                 else
                     this.channels_.delete(channelName);
 
+                break;
+            }
+
+            case 'QUIT': {
+                for (const channel of this.channels_.values())
+                    channel.onLeave(message.source.nickname, 'QUIT');
+                
                 break;
             }
         }

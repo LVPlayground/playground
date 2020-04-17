@@ -57,8 +57,8 @@ export class NetworkChannel {
 
     // Called when the user having |nickname| has left this channel, either by choice or by action
     // of a channel operator (KICK).
-    onLeave(nickname) {
-        if (!this.users_.has(nickname))
+    onLeave(nickname, command) {
+        if (!this.users_.has(nickname) && command !== 'QUIT')
             throw new Error(`Invalid part: ${nickname} is not on channel ${this.name_}.`);
 
         this.users_.delete(nickname);

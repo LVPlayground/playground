@@ -125,22 +125,29 @@ describe('NetworkTracker', (it, beforeEach) => {
 
         tracker.handleMessage(new Message(':Joe!joe@host JOIN :#echo'));
         tracker.handleMessage(new Message(':Ted!ted@host JOIN :#echo'));
+        tracker.handleMessage(new Message(':Steven!steven@host JOIN :#echo'));
         tracker.handleMessage(new Message(':Santa!claus@host JOIN :#private'));
 
-        assert.equal(channel.users.size, 3);
+        assert.equal(channel.users.size, 4);
         assert.isTrue(channel.users.has('Joe'));
         assert.isTrue(channel.users.has('Ted'));
+        assert.isTrue(channel.users.has('Steven'));
         assert.isFalse(channel.users.has('Santa'));
 
         tracker.handleMessage(new Message(':Ted!ted@host PART :#echo'));
         
-        assert.equal(channel.users.size, 2);
+        assert.equal(channel.users.size, 3);
         assert.isFalse(channel.users.has('Ted'));
 
         tracker.handleMessage(new Message(':NuwaniJS!user@host KICK #echo Joe :bye!'));
         
-        assert.equal(channel.users.size, 1);
+        assert.equal(channel.users.size, 2);
         assert.isFalse(channel.users.has('Joe'));
+
+        tracker.handleMessage(new Message(':Steven!steven@host QUIT :Bye bye!'));
+
+        assert.equal(channel.users.size, 1);
+        assert.isFalse(channel.users.has('Steven'));
         assert.isTrue(channel.users.has('NuwaniJS'));
     });
 
@@ -175,4 +182,26 @@ describe('NetworkTracker', (it, beforeEach) => {
         assert.equal(channel.users.get('Fred'), 'o');
         assert.equal(channel.users.get('Santa'), '');
     });
+
+    it('should amend channel knowledge based on MODE commands', assert => {
+        const tracker = new NetworkTracker(bot);
+
+        assert.equal(bot.nickname, 'NuwaniJS');
+        assert.equal(tracker.channels.size, 0);
+
+        tracker.handleMessage(new Message(':NuwaniJS!user@host JOIN :#echo'));
+        tracker.handleMessage(new Message(':Ted!ted@host JOIN :#echo'));
+
+        assert.equal(tracker.channels.size, 1);
+
+        const channel = tracker.channels.get('#echo');
+
+        assert.equal(channel.users.size, 2);
+        assert.equal(channel.users.get('NuwaniJS'), '');
+        assert.equal(channel.users.get('Ted'), '');
+
+
+    });
+
+    it('fails', assert => assert.isTrue(false));
 });

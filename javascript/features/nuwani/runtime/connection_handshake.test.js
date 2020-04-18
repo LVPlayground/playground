@@ -21,6 +21,7 @@ class FakeConnection {
 
 describe('ConnectionHandshake', (it, beforeEach, afterEach) => {
     const bot = {
+        onHandshakeCompleted: function() {},
         config: { nickname: 'Nuwani', password: '123456' },
         nickname: 'Nuwani',
     };

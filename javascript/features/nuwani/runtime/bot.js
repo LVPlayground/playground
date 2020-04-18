@@ -104,7 +104,9 @@ export class Bot {
             return;
         
         this.networkTracker_.handleMessage(message);
-        this.delegate_.onBotMessage(this, message);
+
+        if (this.config_.master)
+            this.delegate_.onBotMessage(this, message);
     }
 
     // Called when the TCP connection with the IRC server has been closed. The bot will no longer be

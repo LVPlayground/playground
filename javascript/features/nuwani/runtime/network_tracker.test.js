@@ -219,8 +219,13 @@ describe('NetworkTracker', (it, beforeEach) => {
         assert.equal(bot.nickname, 'NuwaniJS');
         assert.equal(tracker.channels.size, 0);
 
+        tracker.handleMessage(new Message(':server.com 005 OVERRIDE PREFIX=(Yqaohv)!~&@%+ NAMESX'));
+        tracker.handleMessage(
+            new Message(':server.com 005 CHANMODES=IXbe,k,FLfjl,ABKMQRSTcimnprstuz'));
+
         tracker.handleMessage(new Message(':NuwaniJS!user@host JOIN :#echo'));
-        tracker.handleMessage(new Message(':Ted!ted@host JOIN :#echo'));
+
+        tracker.handleMessage(new Message(':server.com 353 NuwaniJS = #echo :&Ted'));
 
         assert.equal(tracker.channels.size, 1);
 
@@ -228,10 +233,24 @@ describe('NetworkTracker', (it, beforeEach) => {
 
         assert.equal(channel.users.size, 2);
         assert.equal(channel.users.get('NuwaniJS'), '');
+        assert.equal(channel.users.get('Ted'), 'a');
+
+        tracker.handleMessage(new Message(':server.com MODE #echo +vYz NuwaniJS Ted'));
+
+        assert.equal(channel.users.get('NuwaniJS'), 'v');
+        assert.equal(channel.users.get('Ted'), 'aY');
+
+        tracker.handleMessage(new Message(':Ted!ted@host PART #echo :bye!'));
+        tracker.handleMessage(new Message(':Ted!ted@host JOIN :#echo'));
+
+        assert.equal(channel.users.size, 2);
+        assert.equal(channel.users.get('NuwaniJS'), 'v');
         assert.equal(channel.users.get('Ted'), '');
 
-
+        tracker.handleMessage(
+            new Message(':server.com MODE #echo +q-v+aa NuwaniJS NuwaniJS NuwaniJS Ted'));
+        
+        assert.equal(channel.users.get('NuwaniJS'), 'qa');
+        assert.equal(channel.users.get('Ted'), 'a');
     });
-
-    it('fails', assert => assert.isTrue(false));
 });

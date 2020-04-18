@@ -45,7 +45,7 @@ export class ModeParser {
             throw new Error('Only MODE command can be parsed.');
 
         if (message.params.length < 2)
-            throw new Error('Parsing the MODE command requires at least two parameters.')
+            throw new Error('Parsing the MODE command requires at least two parameters.');
 
         const target = message.params[0];
         const result = {

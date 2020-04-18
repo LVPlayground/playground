@@ -64,6 +64,32 @@ export class NetworkChannel {
         this.users_.delete(nickname);
     }
 
+    // Called when a MODE command has set the |flag| on the given |nickname|.
+    onModeSet(nickname, flag) {
+        let mode = this.users_.get(nickname);
+
+        if (mode === undefined)
+            throw new Error(`Invalid MODE update for ${nickname} on channel ${this.name_}.`);
+        
+        if (!mode.includes(flag))
+            mode += flag;
+
+        this.users_.set(nickname, mode);
+    }
+
+    // Called when a MODE command has removed the |flag| from the given |nickname|.
+    onModeUnset(nickname, flag) {
+        let mode = this.users_.get(nickname);
+
+        if (mode === undefined)
+            throw new Error(`Invalid MODE update for ${nickname} on channel ${this.name_}.`);
+        
+        if (mode.includes(flag))
+            mode = mode.replace(flag, '');
+
+        this.users_.set(nickname, mode);
+    }
+
     // Called when the user having |nickname| has left this channel, either by choice or by action
     // of a channel operator (KICK).
     onLeave(nickname, command) {

@@ -11,7 +11,8 @@ export class NetworkTracker {
     bot_ = null;
 
     channels_ = null;
-    prefixes_ = null;
+    levelPrefixes_ = null;
+    levelModes_ = null;
     settings_ = null;
 
     modeParser_ = null;
@@ -20,7 +21,8 @@ export class NetworkTracker {
         this.bot_ = bot;
 
         this.channels_ = new Map();
-        this.prefixes_ = new Map();
+        this.levelPrefixes_ = new Map();
+        this.levelModes_ = new Map();
         this.support_ = new Map();
 
         this.modeParser_ = new ModeParser();
@@ -48,7 +50,7 @@ export class NetworkTracker {
 
                     switch (rule) {
                         case 'PREFIX':
-                            this.populatePrefixToUserModeCache(value);
+                            this.populateChannelModePrefixCaches(value);
                             this.modeParser_.setChannelPrefixes(value);
                             break;
                         case 'CHANMODES':
@@ -91,7 +93,7 @@ export class NetworkTracker {
 
                 const channel = this.channels_.get(channelName);
                 for (const name of names.split(' ')) {
-                    const userMode = this.prefixes_.get(name[0]);
+                    const userMode = this.levelPrefixes_.get(name[0]);
 
                     channel.onJoin(userMode ? name.substring(1)
                                             : name, userMode || '');
@@ -126,9 +128,31 @@ export class NetworkTracker {
                     this.channels_.get(channelName).onLeave(nickname, 'KICK');
                 else
                     this.channels_.delete(channelName);
+                
+                break;
             }
 
             case 'MODE': {
+                const [target] = message.params;
+
+                if (this.channels_.has(target)) {
+                    const mutations = this.modeParser_.parse(message);
+                    const channel = this.channels_.get(target);
+
+                    mutations.set.forEach(mutation => {
+                        if (!this.levelModes_.has(mutation.flag))
+                            return;
+                        
+                        channel.onModeSet(mutation.param, mutation.flag);
+                    });
+
+                    mutations.unset.forEach(mutation => {
+                        if (!this.levelModes_.has(mutation.flag))
+                            return;
+                        
+                        channel.onModeUnset(mutation.param, mutation.flag);
+                    });
+                }
 
                 break;
             }
@@ -167,20 +191,24 @@ export class NetworkTracker {
 
     // Populates the PREFIX cache when configuration has been received from the server. This setting
     // determines the user modes that give users rights on any particular channel.
-    populatePrefixToUserModeCache(prefix) {
+    populateChannelModePrefixCaches(prefix) {
         const divider = prefix.indexOf(')');
         if (divider === -1 || prefix.length != 2 * divider)
             throw new Error('Invalid PREFIX syntax found: ' + prefix);
         
-        for (let i = 1; i < divider; ++i)
-            this.prefixes_.set(prefix[divider + i], prefix[i]);
+        for (let i = 1; i < divider; ++i) {
+            this.levelPrefixes_.set(prefix[divider + i], prefix[i]);
+            this.levelModes_.set(prefix[i], prefix[divider + i]);
+        }
     }
 
     // Resets the network tracker to a default state. This should generally be called when the
     // connection with the server has been closed, and will be restarting soon.
     reset() {
-        this.channels_ = new Map();
-        this.support_ = new Map();
+        this.channels_.clear();
+        this.levelModes_.clear();
+        this.levelPrefixes_.clear();
+        this.support_.clear();
     }
 
     dispose() {

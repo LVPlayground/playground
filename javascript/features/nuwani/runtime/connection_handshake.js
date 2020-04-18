@@ -94,6 +94,20 @@ export class ConnectionHandshake {
 
                 return true;
             
+            case 'MODE':
+                if (this.state_ === ConnectionHandshake.kStateAwaitingPasswordRequest) {
+                    if (message.params[0] !== this.bot_.nickname)
+                        return false;  // mode change for another channel/user
+                    
+                    if (message.params[1] !== '+r')
+                        return false;  // mode change doesn't set the registration flag
+                    
+                    this.joinChannelsAndCompleteHandshake();
+                    return true;
+                }
+
+                return false;
+
             case 'NOTICE':
                 if (message.source.nickname !== 'NickServ')
                     return false;  // message not from NickServ

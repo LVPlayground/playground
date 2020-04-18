@@ -84,7 +84,43 @@ describe('ConnectionHandshake', (it, beforeEach, afterEach) => {
         }
     });
 
-    it('should wait for NickServ identification before joining channels', async (assert) => {
+    it('should automatically identify with NickServ when requested', assert => {
+        const handshake = new ConnectionHandshake(bot, channels, connection);
+        const kIdentificationRequest =
+            ':NickServ!services@network.com NOTICE NuwaniJS :nick, type /msg NickServ ' +
+            'IDENTIFY password.  Otherwise,';
+
+        assert.equal(connection.messages.length, 0);
+        assert.isFalse(handshake.isActive());
+
+        handshake.handleMessage(new Message(kIdentificationRequest));
+
+        assert.isFalse(handshake.isActive());
+        assert.equal(connection.messages.length, 1);
+
+        assert.equal(connection.messages[0], 'PRIVMSG NickServ :IDENTIFY 123456');
+    });
+
+    it('should wait for NickServ identification before joining channels', assert => {
+        const handshake = new ConnectionHandshake(bot, channels, connection);
+
+        handshake.start();
+        handshake.handleMessage(new Message(':server.network.com 001 :Welcome to the network'));
+        handshake.handleMessage(new Message(':server.network.com 376 :End of MoTD'));
+
+        assert.equal(connection.messages.length, 2);
+        assert.equal(handshake.stateForTesting, ConnectionHandshake.kStateAwaitingPasswordRequest);
+
+        handshake.handleMessage(new Message(`:server.network.com MODE ${bot.nickname} :+r`));
+
+        assert.equal(handshake.stateForTesting, ConnectionHandshake.kStateIdle);
+        assert.equal(connection.messages.length, 4);
+
+        assert.equal(connection.messages[2], 'JOIN #public');
+        assert.equal(connection.messages[3], 'JOIN #private qwerty');
+    });
+
+    it('should timeout NickServ identification before joining channels', async (assert) => {
         const handshake = new ConnectionHandshake(bot, channels, connection);
 
         handshake.start();
@@ -103,22 +139,5 @@ describe('ConnectionHandshake', (it, beforeEach, afterEach) => {
         assert.equal(connection.messages[3], 'JOIN #private qwerty');
 
         assert.isFalse(handshake.isActive());
-    });
-
-    it('should automatically identify with NickServ when requested', assert => {
-        const handshake = new ConnectionHandshake(bot, channels, connection);
-        const kIdentificationRequest =
-            ':NickServ!services@network.com NOTICE NuwaniJS :nick, type /msg NickServ ' +
-            'IDENTIFY password.  Otherwise,';
-
-        assert.equal(connection.messages.length, 0);
-        assert.isFalse(handshake.isActive());
-
-        handshake.handleMessage(new Message(kIdentificationRequest));
-
-        assert.isFalse(handshake.isActive());
-        assert.equal(connection.messages.length, 1);
-
-        assert.equal(connection.messages[0], 'PRIVMSG NickServ :IDENTIFY 123456');
     });
 });

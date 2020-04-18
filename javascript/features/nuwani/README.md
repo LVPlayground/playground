@@ -62,7 +62,7 @@ reliability, to minimize the amount of maintenance necessary on an on-going basi
   * Sequenced [connection handshake](runtime/connection_handshake.js) to guarantee ordering and
     handling failure cases of registration, authentication and joining channels.
   * Tracking of [network state](runtime/network_tracker.js) including server support rules,
-    channels, and user modes.
+    channels, and user modes, with server-compatible [mode parsing](runtime/mode_parser.js).
 
 ## Commands
 **NuwaniJS** supports commands for players, administrators and management members, each implied by

@@ -20,7 +20,7 @@ const kPolicyStateIdle = 2;
 // initial connection as well. This makes sure that we won't hammer the IRC servers in case of
 // problems, by waiting for an exponentially longer amount of time.
 export class BackoffPolicy {
-    failure_count_ = 0;
+    failureCount_ = 0;
     state_ = kPolicyStateInitial;
 
     // Returns the delay for the |attempt|th attempt.
@@ -36,7 +36,7 @@ export class BackoffPolicy {
             throw new Error('Unable to progress policy state: request already in progress.');
 
         this.state_ = kPolicyStateRequestInProgress;
-        return BackoffPolicy.CalculateDelayForAttempt(this.failure_count_);
+        return BackoffPolicy.CalculateDelayForAttempt(this.failureCount_);
     }
 
     // Marks the in-progress request as having succeeded. The failure count will be reset, which
@@ -45,7 +45,7 @@ export class BackoffPolicy {
         if (this.state_ != kPolicyStateRequestInProgress)
             throw new Error('Unable to progress policy state: no request in progress.');
         
-        this.failure_count_ = 0;
+        this.failureCount_ = 0;
         this.state_ = kPolicyStateIdle;
     }
 
@@ -55,7 +55,7 @@ export class BackoffPolicy {
         if (this.state_ != kPolicyStateRequestInProgress)
             throw new Error('Unable to progress policy state: no request in progress.');
         
-        this.failure_count_++;
+        this.failureCount_++;
         this.state_ = kPolicyStateIdle;
     }
 }

@@ -16,12 +16,19 @@ const kEvalWhitelist = [
 // Represents an individual Bot that can be connected to IRC. Manages its own connection and will
 // signal to the Runtime when its ready to start sending messages.
 export class Bot {
+    // Possible states the Bot system can be in. Explicitly disconnected bots will not try to
+    // establish a connection until they're told to connect.
+    static kStateDisconnected = 0;
+    static kStateConnecting = 2;
+    static kStateConnected = 1;
+
     config_ = null;
     nickname_ = null;
 
     connection_ = null;
     handshake_ = null;
-    network_tracker_ = null;
+    networkTracker_ = null;
+    state_ = null;
 
     // Gets the configuration that's been assigned to this bot.
     get config() { return this.config_; }
@@ -35,10 +42,34 @@ export class Bot {
         this.nickname_ = config.nickname;
 
         this.connection_ = new Connection(servers, this);
-        this.connection_.connect();
-
         this.handshake_ = new ConnectionHandshake(this, channels, this.connection_);
-        this.network_tracker_ = new NetworkTracker(this);
+        this.networkTracker_ = new NetworkTracker(this);
+        this.state_ = Bot.kStateDisconnected;
+    }
+
+    // Begins connecting this bot to the network. No-op if the bot isn't currently disconnected.
+    connect() {
+        if (this.state_ !== Bot.kStateDisconnected)
+            return;
+
+        this.connection_.connect();
+        this.state_ = Bot.kStateConnecting;
+    }
+
+    // Disconnects the bot from the network and will not re-establish connection by itself. Will be
+    // a no-op if the bot isn't currently connected or connecting to the network.
+    disconnect() {
+        switch (this.state_) {
+            case Bot.kStateDisconnected:
+                break;
+
+            case Bot.kStateConnecting:
+            case Bot.kStateConnected:
+                this.connection_.close();
+                break;
+        }
+
+        this.state_ = Bot.kStateDisconnected;
     }
 
     // ConnectionDelegate implementation:
@@ -61,7 +92,7 @@ export class Bot {
         if (this.handshake_.handleMessage(message))
             return;
         
-        this.network_tracker_.handleMessage(message);
+        this.networkTracker_.handleMessage(message);
 
         switch (message.command) {
             case 'PING':
@@ -87,7 +118,7 @@ export class Bot {
                         break;
                     
                     case '?who': {
-                        const channel = this.network_tracker_.channels.get(destination);
+                        const channel = this.networkTracker_.channels.get(destination);
                         if (!channel) {
                             this.connection_.write(`PRIVMSG ${destination} :Unknown channel.`);
                             break;
@@ -116,12 +147,20 @@ export class Bot {
         console.log('[IRC] Disconnected');
 
         this.handshake_.reset();
-        this.network_tracker_.reset();
+        this.networkTracker_.reset();
 
         // Reset the nickname, it might be available again on reconnection.
-        this.bot_nickname_ = this.bot_config_.nickname();
+        this.nickname_ = this.config_.nickname();
 
-        this.connection_.connect();
+        switch (this.state_) {
+            case Bot.kStateDisconnected:
+                break;  // do not reconnect
+            
+            case Bot.kStateConnecting:
+            case Bot.kStateConnected:
+                this.connection_.connect();
+                break;
+        }
     }
 
     // NetworkTrackerDelegate implementation:
@@ -132,14 +171,15 @@ export class Bot {
     // or a change forced by the server and/or an IRC Operator.
     onNicknameChange(newNickname) {
         console.log('[IRC] Nickname changed to ' + newNickname);
+
         this.nickname_ = newNickname;
     }
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        this.network_tracker_.dispose();
-        this.network_tracker_ = null;
+        this.networkTracker_.dispose();
+        this.networkTracker_ = null;
 
         this.handshake_.dispose();
         this.handshake_ = null;

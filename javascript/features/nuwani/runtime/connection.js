@@ -27,33 +27,42 @@ export class Connection {
     delegate_ = null;
     servers_ = null;
 
-    backoffPolicy_ = null;
-    socket_ = null;
+    connectionId_ = null;
+    connectionToken_ = null;
 
-    connection_id_ = null;
+    backoffPolicy_ = null;
     disposed_ = false;
+    socket_ = null;
 
     constructor(servers, delegate) {
         this.servers_ = servers;
         this.delegate_ = delegate;
+
+        this.connectionId_ = connectionId++;
 
         this.backoffPolicy_ = new BackoffPolicy();
 
         this.socket_ = new Socket('tcp');
         this.socket_.addEventListener('error', Connection.prototype.onSocketError.bind(this));
         this.socket_.addEventListener('message', Connection.prototype.onSocketMessage.bind(this));
-
-        this.connection_id_ = connectionId++;
     }
     
     // Starts trying to establish a connection with one of the network's servers. Will spin and wait
     // according to the backoff policy until its successful.
     async connect() {
-        let attempt = 0;
+        if (this.connectionToken_ !== null)
+            throw new Error('A connection attempt is already in progress.');
+
+        const connectionToken = Symbol('Connection token');
+        const isCurrentAttempt = () => this.connectionToken_ === connectionToken;
+
+        this.connectionToken_ = connectionToken;
 
         await wait(this.backoffPolicy_.getTimeToNextRequestMs());
-        if (this.disposed_)
+        if (!isCurrentAttempt())
             return;
+
+        let attempt = 0;
 
         do {
             const currentServerIndex = attempt % this.servers_.length;
@@ -63,10 +72,10 @@ export class Connection {
             this.log(`Connecting to ${ip}:${port}...`);
             const connected = await this.socket_.open(ip, port, kConnectionTimeoutSec);
 
-            if (this.disposed_) {
-                if (connected)
+            if (!isCurrentAttempt()) {
+                if (connected && this.disposed_)
                     this.socket_.close();
-                
+
                 return;
             }
 
@@ -77,6 +86,8 @@ export class Connection {
 
             if (connected) {
                 this.log(`Connection to ${ip}:${port} succeeded.`);
+
+                this.connectionToken_ = null;
                 this.delegate_.onConnectionEstablished();
                 return;
             }
@@ -91,7 +102,7 @@ export class Connection {
 
             ++attempt;
 
-        } while (!this.disposed_);
+        } while (isCurrentAttempt());
     }
 
     // Writes the given |message| to the connection. The |message| will be encoded as UTF-8, so
@@ -104,6 +115,22 @@ export class Connection {
 
         const buffer = stringToUtf8Buffer(message.trimEnd() + '\r\n');
         await this.socket_.write(buffer);
+    }
+
+    // Closes the connection currently established with the server, if any. In-progress connection
+    // attempts themselves will be cancelled too, albeit with a delay.
+    disconnect() {
+        switch (this.socket_.state) {
+            case 'disconnected':
+                break;
+
+            case 'connecting':
+            case 'connected':
+                this.socket_.close();
+                break;
+        }
+
+        this.connectionToken_ = null;
     }
 
     // Called when an error occurs on the socket that backs the connection. Most errors will require
@@ -138,10 +165,11 @@ export class Connection {
         if (server.isTest())
             return;
         
-        console.log('[Connection:' + this.connection_id_ + '] ' + message);
+        console.log('[Connection:' + this.connectionId_ + '] ' + message);
     }
 
     dispose() {
+        this.connectionToken_ = null;
         this.disposed_ = true;
     }
 }

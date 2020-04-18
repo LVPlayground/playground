@@ -20,8 +20,8 @@ export class MessageSource {
     username_ = null;
     hostname_ = null;
 
-    is_server_ = false;
-    is_user_ = false;
+    isServer_ = false;
+    isUser_ = false;
 
     // Gets the nickname, if any, associated with this source.
     get nickname() { return this.nickname_; }
@@ -33,10 +33,10 @@ export class MessageSource {
     get hostname() { return this.hostname_; }
 
     // Returns whether this source represents a server.
-    isServer() { return this.is_server_; }
+    isServer() { return this.isServer_; }
 
     // Returns whether this source represents a user.
-    isUser() { return this.is_user_; }
+    isUser() { return this.isUser_; }
 
     // Parses the |source| string into a MessageSource structure. An exception will be thrown
     // on invalid formats.
@@ -56,7 +56,7 @@ export class MessageSource {
             this.username_ = source.substring(userPosition + 1, hostPosition);
             this.hostname_ = source.substring(hostPosition + 1);
 
-            this.is_user_ = true;
+            this.isUser_ = true;
             return;
         }
 
@@ -64,25 +64,25 @@ export class MessageSource {
             this.nickname_ = source.substring(0, hostPosition);
             this.hostname_ = source.substring(hostPosition + 1);
 
-            this.is_user_ = true;
+            this.isUser_ = true;
             return;
         }
 
         if (dotPosition !== -1) {
             this.hostname_ = source;
 
-            this.is_server_ = true;
+            this.isServer_ = true;
             return;
         }
 
         this.nickname_ = source;
-        this.is_user_ = true;
+        this.isUser_ = true;
     }
 
     // Converts the source back to a string object. This should be identical to the input string
     // given, but no guarantees will be made.
     toString() {
-        if (this.is_server_)
+        if (this.isServer_)
             return this.hostname_;
 
         let output = this.nickname_;

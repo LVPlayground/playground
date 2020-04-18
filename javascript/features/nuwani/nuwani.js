@@ -20,7 +20,9 @@ export default class extends Feature {
             return;
 
         this.configuration_ = new Configuration();
+
         this.runtime_ = new Runtime(this.configuration_);
+        this.runtime_.connect();
     }
 
     dispose() {

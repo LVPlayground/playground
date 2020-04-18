@@ -12,12 +12,28 @@ export class Runtime {
 
     constructor(configuration) {
         this.configuration_ = configuration;
-        
-        // Initialize each of the bots defined in the configuration. The bots will automatically
-        // begin maintaining their connections with an exponential backoff policy.
-        configuration.bots.forEach(bot =>
+
+        this.configuration_.bots.forEach(bot =>
             this.bots_.push(new Bot(bot, configuration.servers, configuration.channels)));
     }
+
+    // Initialize each of the bots defined in the configuration. The bots will automatically begin
+    // maintaining their connections with an exponential backoff policy.
+    connect() {
+        this.bots_.forEach(bot => bot.connect());
+    }
+
+    // Disconnect all the bots from the network.
+    diconnect() {
+        this.bots_.forEach(bot => bot.disconnect());
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // BotDelegate implementation:
+
+
+
+    // ---------------------------------------------------------------------------------------------
 
     dispose() {
         this.bots_.forEach(bot => bot.dispose());

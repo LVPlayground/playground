@@ -94,9 +94,14 @@ export class NetworkTracker {
                 const channel = this.channels_.get(channelName);
                 for (const name of names.split(' ')) {
                     const userMode = this.levelPrefixes_.get(name[0]);
+                    const cleanName = userMode ? name.substring(1) : name;
 
-                    channel.onJoin(userMode ? name.substring(1)
-                                            : name, userMode || '');
+                    // Some IRCds include the recent joinee in the NAMES reply, before the actual
+                    // JOIN comes through. This leads to an interesting race condition.
+                    if (cleanName === this.bot_.nickname)
+                        continue;
+
+                    channel.onJoin(cleanName, userMode || '');
                 }
 
                 break;

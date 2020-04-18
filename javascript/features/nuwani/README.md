@@ -73,4 +73,5 @@ a user's modes on the configured echo channel. The following commands are availa
 ```
 
 ## References
+  * [RFC 2812](https://tools.ietf.org/html/rfc2812)
   * [IRC/2 Numeric List](https://www.alien.net.au/irc/irc2numerics.html)

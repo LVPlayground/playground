@@ -49,6 +49,9 @@ export class MessageSource {
         const hostPosition = source.indexOf('@');
 
         if (userPosition !== -1) {
+            if (hostPosition === -1)
+                throw new Error('Invalid source given (missing host): ' + source);
+
             this.nickname_ = source.substring(0, userPosition);
             this.username_ = source.substring(userPosition + 1, hostPosition);
             this.hostname_ = source.substring(hostPosition + 1);
@@ -74,5 +77,20 @@ export class MessageSource {
 
         this.nickname_ = source;
         this.is_user_ = true;
+    }
+
+    // Converts the source back to a string object. This should be identical to the input string
+    // given, but no guarantees will be made.
+    toString() {
+        if (this.is_server_)
+            return this.hostname_;
+
+        let output = this.nickname_;
+        if (this.username_)
+            output += '!' + this.username_;
+        if (this.hostname_)
+            output += '@' + this.hostname_;
+
+        return output;
     }
 }

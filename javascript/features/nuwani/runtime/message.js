@@ -102,4 +102,24 @@ export class Message {
         this.params_.push(message.substring(position, nextSpace));
         return nextSpace;
     }
+
+    // Converts this instance back to a string. This isn't guaranteed to be identical to the input
+    // string, particularly because whitespace will have been amended.
+    toString() {
+        let output = '';
+
+        if (this.source_)
+            output += `:${this.source_} `;
+        
+        output += this.command;
+
+        this.params_.forEach((param, i) => {
+            if ((i + 1) === this.params_.length)
+                output += ` :` + param;
+            else
+                output += ` ` + param;
+        });
+
+        return output;
+    }
 }

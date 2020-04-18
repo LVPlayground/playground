@@ -31,6 +31,7 @@ describe('MessageSource', it => {
         assert.throws(() => new MessageSource());
         assert.throws(() => new MessageSource(''));
         assert.throws(() => new MessageSource(3.1415));
+        assert.throws(() => new MessageSource('nick!user'));
     });
 
     it('is able to parse server sources', assert => {
@@ -49,5 +50,14 @@ describe('MessageSource', it => {
 
         verify(assert, 'Joe!user@hostname', { nickname: 'Joe', username: 'user',
                                               hostname: 'hostname', user: true });
+    });
+
+    it('is able to convert parsed sources back to a string', assert => {
+        assert.equal((new MessageSource('network.com')).toString(), 'network.com');
+        assert.equal((new MessageSource('127.0.0.1')).toString(), '127.0.0.1');
+
+        assert.equal((new MessageSource('Joe')).toString(), 'Joe');
+        assert.equal((new MessageSource('Joe@host')).toString(), 'Joe@host');
+        assert.equal((new MessageSource('Joe!user@host')).toString(), 'Joe!user@host');
     });
 });

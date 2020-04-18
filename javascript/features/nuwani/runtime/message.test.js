@@ -78,4 +78,17 @@ describe('Message', it => {
         assert.equal(message.params[0], 'I');
         assert.equal(message.params[1], 'am a teapot');
     });
+
+    it('should be able to convert messages back to strings', assert => {
+        assert.equal((new Message(':server 001 :Hello!')).toString(), ':server 001 :Hello!');
+        assert.equal((new Message(':server 001 Hello!')).toString(), ':server 001 :Hello!');
+
+        assert.equal((new Message('PING :server.name')).toString(), 'PING :server.name');
+
+        assert.equal((new Message(':nick!user@host PRIVMSG NuwaniJS :Hello!')).toString(),
+                    ':nick!user@host PRIVMSG NuwaniJS :Hello!');
+        
+        assert.equal((new Message(':nick@host notice NuwaniJS hi')).toString(),
+                    ':nick@host NOTICE NuwaniJS :hi');
+    });
 });

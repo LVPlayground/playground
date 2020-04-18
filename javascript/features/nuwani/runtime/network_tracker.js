@@ -185,6 +185,10 @@ export class NetworkTracker {
                 break;
             }
 
+            case 'PING':
+                this.bot_.write(`PONG :${message.params[0]}`)
+                break;
+
             case 'QUIT': {
                 for (const channel of this.channels_.values())
                     channel.onLeave(message.source.nickname, 'QUIT');

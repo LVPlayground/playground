@@ -149,6 +149,7 @@ export class ConnectionHandshake {
         }
 
         this.state_ = ConnectionHandshake.kStateIdle;
+        this.bot_.onHandshakeCompleted();
     }
 
     // Resets the state of the handshake machine to idle, usually done when the connection has been

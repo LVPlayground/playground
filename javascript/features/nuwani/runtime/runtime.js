@@ -13,30 +13,50 @@ export class Runtime {
     constructor(configuration) {
         this.configuration_ = configuration;
 
-        this.configuration_.bots.forEach(bot =>
-            this.bots_.push(new Bot(bot, configuration.servers, configuration.channels)));
+        const serverConfig = configuration.servers;
+        const channelConfig = configuration.channels;
+
+        for (const config of this.configuration_.bots)
+            this.bots_.push(new Bot(this, config, serverConfig, channelConfig));
     }
 
     // Initialize each of the bots defined in the configuration. The bots will automatically begin
     // maintaining their connections with an exponential backoff policy.
     connect() {
-        this.bots_.forEach(bot => bot.connect());
+        for (const bot of this.bots_)
+            bot.connect();
     }
 
     // Disconnect all the bots from the network.
     diconnect() {
-        this.bots_.forEach(bot => bot.disconnect());
+        for (const bot of this.bots_)
+            bot.disconnect();
     }
 
     // ---------------------------------------------------------------------------------------------
     // BotDelegate implementation:
 
+    // Called when the |bot| has connected, finished registration and is ready for use.
+    onBotConnected(bot) {
 
+    }
+
+    // Called when the |bot| has received a message. All response is optional.
+    onBotMessage(bot, message) {
+
+    }
+
+    // Called when the |bot| has disconnected from the network.
+    onBotDisconnected(bot) {
+
+    }
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        this.bots_.forEach(bot => bot.dispose());
+        for (const bot of this.bots_)
+            bot.dispose();
+
         this.bots_ = [];
     }
 }

@@ -22,6 +22,7 @@ export class Bot {
     static kStateConnecting = 2;
     static kStateConnected = 1;
 
+    delegate_ = null;
     config_ = null;
     nickname_ = null;
 
@@ -37,7 +38,8 @@ export class Bot {
     // in configuration, but this can be changed during registration and through the NICK command.
     get nickname() { return this.nickname_; }
 
-    constructor(config, servers, channels) {
+    constructor(delegate, config, servers, channels) {
+        this.delegate_ = delegate;
         this.config_ = config;
         this.nickname_ = config.nickname;
 
@@ -54,6 +56,15 @@ export class Bot {
 
         this.connection_.connect();
         this.state_ = Bot.kStateConnecting;
+    }
+
+    // Writes the given |message| to the network. The bot must be connected to the network for this
+    // to work, and will throw an exception otherwise.
+    write(message) {
+        if (this.state_ !== Bot.kStateConnected)
+            throw new Error('Messages may only be written when the bot is connected.');
+        
+        this.connection_.write(message);
     }
 
     // Disconnects the bot from the network and will not re-establish connection by itself. Will be
@@ -93,58 +104,15 @@ export class Bot {
             return;
         
         this.networkTracker_.handleMessage(message);
-
-        switch (message.command) {
-            case 'PING':
-                this.connection_.write(`PONG :${message.params[0]}`);
-                break;
-            
-            case 'PRIVMSG':
-                const parts = message.params[1].split(' ');    
-                const destination = message.params[0] === this.nickname_ ? message.source.nickname
-                                                                         : message.params[0];
-
-                switch (parts[0]) {
-                    case '?eval':
-                        if (kEvalWhitelist.includes(message.source.hostname)) {
-                            this.connection_.write(
-                                `PRIVMSG ${destination} :` + eval(parts.slice(1).join(' ')));
-                        }
-                        
-                        break;
-
-                    case '?time':
-                        this.connection_.write(`PRIVMSG ${destination} :${(new Date).toString()}`);
-                        break;
-                    
-                    case '?who': {
-                        const channel = this.networkTracker_.channels.get(destination);
-                        if (!channel) {
-                            this.connection_.write(`PRIVMSG ${destination} :Unknown channel.`);
-                            break;
-                        }
-
-                        let users = [];
-
-                        for (const [nickname, userMode] of channel.users) {
-                            const nicknameReverse = nickname.split('').reverse().join('');
-                            users.push(nicknameReverse + ' 14(+' + userMode + ')');
-                        }
-
-                        this.connection_.write(
-                            `PRIVMSG ${destination} :4${channel.name}: ` + users.join(', '));
-                        break;
-                    }
-                }
-
-                break;
-        }
+        this.delegate_.onBotMessage(this, message);
     }
 
     // Called when the TCP connection with the IRC server has been closed. The bot will no longer be
     // able to do anything until the connection has been re-established.
     onConnectionClosed() {
         console.log('[IRC] Disconnected');
+
+        this.delegate_.onBotDisconnected(this);
 
         this.handshake_.reset();
         this.networkTracker_.reset();
@@ -161,6 +129,14 @@ export class Bot {
                 this.connection_.connect();
                 break;
         }
+    }
+
+    // ConnectionHandshakeDelegate implementation:
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the connection handshake has completed. At this point the bot is ready for use.
+    onHandshakeCompleted() {
+        this.delegate_.onBotConnected(this);
     }
 
     // NetworkTrackerDelegate implementation:
@@ -183,6 +159,9 @@ export class Bot {
 
         this.handshake_.dispose();
         this.handshake_ = null;
+
+        if (this.state_ === Bot.kStateConnected)
+            this.connection_.write('QUIT :Shutting down...');
 
         this.connection_.dispose();
         this.connection_ = null;

@@ -69,19 +69,41 @@ export class Bot {
                 break;
             
             case 'PRIVMSG':
-                const destination = message.params[0];
-                const parts = message.params[1].split(' ');
+                const parts = message.params[1].split(' ');    
+                const destination = message.params[0] === this.nickname_ ? message.source.nickname
+                                                                         : message.params[0];
 
                 switch (parts[0]) {
                     case '?eval':
-                        if (kEvalWhitelist.includes(message.source.hostname))
-                            this.connection_.write(`PRIVMSG ${destination} :`+ eval(parts.slice(1).join(' ')));
-
+                        if (kEvalWhitelist.includes(message.source.hostname)) {
+                            this.connection_.write(
+                                `PRIVMSG ${destination} :` + eval(parts.slice(1).join(' ')));
+                        }
+                        
                         break;
 
                     case '?time':
                         this.connection_.write(`PRIVMSG ${destination} :${(new Date).toString()}`);
                         break;
+                    
+                    case '?who': {
+                        const channel = this.network_tracker_.channels.get(destination);
+                        if (!channel) {
+                            this.connection_.write(`PRIVMSG ${destination} :Unknown channel.`);
+                            break;
+                        }
+
+                        let users = [];
+
+                        for (const [nickname, userMode] of channel.users) {
+                            const nicknameReverse = nickname.split('').reverse().join('');
+                            users.push(nicknameReverse + ' 14(+' + userMode + ')');
+                        }
+
+                        this.connection_.write(
+                            `PRIVMSG ${destination} :4${channel.name}: ` + users.join(', '));
+                        break;
+                    }
                 }
 
                 break;

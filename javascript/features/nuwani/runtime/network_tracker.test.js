@@ -225,7 +225,7 @@ describe('NetworkTracker', (it, beforeEach) => {
 
         tracker.handleMessage(new Message(':NuwaniJS!user@host JOIN :#echo'));
 
-        tracker.handleMessage(new Message(':server.com 353 NuwaniJS = #echo :&Ted'));
+        tracker.handleMessage(new Message(':server.com 353 NuwaniJS = #EcHo :&Ted'));
 
         assert.equal(tracker.channels.size, 1);
 

@@ -5,22 +5,22 @@
 import { Configuration } from 'features/nuwani/configuration.js';
 
 // A configuration that will be accepted by the Configuration class.
-function createConfiguration({ bots, servers, channels, levels } = {}) {
+function createConfiguration({ bots, servers, channels, levels, commandPrefix } = {}) {
     return {
-        bots: bots || [
+        bots: bots ?? [
             { nickname: 'Bot', password: 'foobar', master: true },
             { nickname: 'Slave' },
         ],
-        servers: servers || [
+        servers: servers ?? [
             { ip: '127.0.0.1' },
             { ip: '127.0.0.2', port: 6668 },
             { ip: '127.0.0.3', port: 6697, ssl: true },
         ],
-        channels: channels || [
+        channels: channels ?? [
             { channel: '#public', echo: true },
             { channel: '#private', password: 'joinme' },
         ],
-        levels: levels || [
+        levels: levels ?? [
             { mode: 'Y', level: 'management' },
             { mode: 'q', level: 'management' },
             { mode: 'a', level: 'management' },
@@ -28,6 +28,7 @@ function createConfiguration({ bots, servers, channels, levels } = {}) {
             { mode: 'h', level: 'vip' },
             { mode: 'v', level: 'vip' },
         ],
+        commandPrefix: commandPrefix ?? '!',
     };
 };
 
@@ -156,5 +157,20 @@ describe('Configuration', it => {
             assert.isTrue(configuration.levels.has(mapping.mode));
             assert.equal(configuration.levels.get(mapping.mode), mapping.level);
         }
+    });
+
+    it('loads the configurable IRC command prefix', assert => {
+        assert.throws(() => (new Configuration).initializeFromJson(createConfiguration({
+            commandPrefix: 3.1415,  // not a string
+        })));
+
+        assert.throws(() => (new Configuration).initializeFromJson(createConfiguration({
+            commandPrefix: '',  // empty string
+        })));
+
+        const configuration = new Configuration();
+        configuration.initializeFromJson(createConfiguration());
+        
+        assert.equal(configuration.commandPrefix, '!');
     });
 });

@@ -11,6 +11,7 @@ export class Configuration {
     servers_ = [];
     channels_ = [];
     levels_ = new Map();
+    commandPrefix_ = null;
 
     // Gets the bots that should be connected. Each bot is listed as { nickname, password, master },
     // and there is guaranteed to only be a single master.
@@ -28,6 +29,9 @@ export class Configuration {
     // Gets the level mapping between IRC channel mode in the echo channel, and how this should be
     // perceived in the command processor. Each entry is listed as { mode, level }.
     get levels() { return this.levels_; }
+
+    // Gets the prefix used to identify bot commands. Can be any number of characters long.
+    get commandPrefix() { return this.commandPrefix_;}
 
     // Constructs the Configuration file. In production the data will be read from a file called
     // "nuwani.json", whereas tests will have to do with a verified testing configuration.
@@ -88,11 +92,20 @@ export class Configuration {
 
         configuration.levels.forEach(mapping => this.safeAddLevelMapping(mapping));
 
-        // (5) Require that the master bot has been defined.
+        // (5) Load the command prefix.
+        if (!configuration.hasOwnProperty('commandPrefix') ||
+                typeof configuration.commandPrefix !== 'string' ||
+                !configuration.commandPrefix.length) {
+            throw new Error('The command prefix must be indicated in a non-empty string.');
+        }
+
+        this.commandPrefix_ = configuration.commandPrefix;
+
+        // (6) Require that the master bot has been defined.
         if (this.bots_.filter(bot => bot.master).length !== 1)
             throw new Error('Exactly one IRC bot must be specified as the master bot.');
 
-        // (6) Require that the echo channel has been defined.
+        // (7) Require that the echo channel has been defined.
         if (this.channels_.filter(channel => channel.echo).length !== 1)
             throw new Error('Exactly one IRC channel must be specified as the echo channel.');
     }

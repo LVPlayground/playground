@@ -20,4 +20,5 @@ export const kTestConfiguration = {
         { mode: 'h', level: 'vip' },
         { mode: 'v', level: 'vip' },
     ],
+    commandPrefix: '?',
 };

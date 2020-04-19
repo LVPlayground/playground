@@ -28,7 +28,8 @@ will be interpret by the [Configuration](configuration.js) class.
         { "mode": "a", "level": "management" },
         { "mode": "o", "level": "administrator" },
         { "mode": "v", "level": "vip" }
-    ]
+    ],
+    "commandPrefix": "!"
 }
 
 ```

@@ -21,4 +21,7 @@ export const kTestConfiguration = {
         { mode: 'v', level: 'vip' },
     ],
     commandPrefix: '?',
+    owners: [
+        'Joe!joe@lvp.administrator',
+    ],
 };

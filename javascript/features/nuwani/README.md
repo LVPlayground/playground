@@ -29,7 +29,10 @@ will be interpret by the [Configuration](configuration.js) class.
         { "mode": "o", "level": "administrator" },
         { "mode": "v", "level": "vip" }
     ],
-    "commandPrefix": "!"
+    "commandPrefix": "!",
+    "owners": [
+        "*!*@lvp.administrator"
+    ]
 }
 
 ```

@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { MessageSource } from 'features/nuwani/runtime/message_source.js';
+
 import { kTestConfiguration } from 'features/nuwani/test/test_configuration.js';
 
 // Wraps the Nuwani configuration defined in "nuwani.json", validates it and allows JavaScript code
@@ -12,6 +14,7 @@ export class Configuration {
     channels_ = [];
     levels_ = new Map();
     commandPrefix_ = null;
+    owners_ = [];
 
     // Gets the bots that should be connected. Each bot is listed as { nickname, password, master },
     // and there is guaranteed to only be a single master.
@@ -31,7 +34,11 @@ export class Configuration {
     get levels() { return this.levels_; }
 
     // Gets the prefix used to identify bot commands. Can be any number of characters long.
-    get commandPrefix() { return this.commandPrefix_;}
+    get commandPrefix() { return this.commandPrefix_; }
+
+    // Gets the owners of the IRC bot. Each of those is an instance of MessageSource, where each of
+    // the individual fields might be set to an asterisk to indicate "any value".
+    get owners() { return this.owners_; }
 
     // Constructs the Configuration file. In production the data will be read from a file called
     // "nuwani.json", whereas tests will have to do with a verified testing configuration.
@@ -58,6 +65,7 @@ export class Configuration {
         this.servers_ = [];
         this.channels_ = [];
         this.levels_ = new Map();
+        this.owners_ = [];
 
         // (1) Load the bot's identity configuration.
         if (!configuration.hasOwnProperty('bots') || !Array.isArray(configuration.bots))
@@ -101,11 +109,17 @@ export class Configuration {
 
         this.commandPrefix_ = configuration.commandPrefix;
 
-        // (6) Require that the master bot has been defined.
+        // (6) Load the list of owners of the bot.
+        if (!configuration.hasOwnProperty('owners') || !Array.isArray(configuration.owners))
+            throw new Error('The owners must be indicated in a JSON array.');
+
+        configuration.owners.forEach(owner => this.safeAddOwner(owner));
+
+        // (7) Require that the master bot has been defined.
         if (this.bots_.filter(bot => bot.master).length !== 1)
             throw new Error('Exactly one IRC bot must be specified as the master bot.');
 
-        // (7) Require that the echo channel has been defined.
+        // (8) Require that the echo channel has been defined.
         if (this.channels_.filter(channel => channel.echo).length !== 1)
             throw new Error('Exactly one IRC channel must be specified as the echo channel.');
     }
@@ -189,5 +203,22 @@ export class Configuration {
             throw new Error('Level mapping has already been defined for: +' + mapping.mode);
 
         this.levels_.set(mapping.mode, mapping.level);
+    }
+
+    // Adds the given |owner| to the list of the bot's owners.
+    safeAddOwner(owner) {
+        if (typeof owner !== 'string' || !owner.length)
+            throw new Error('Each bot owner must be a non-empty string.');
+        
+        const source = new MessageSource(owner);
+
+        if (!source.nickname)
+            throw new Error('Each bot owner must have a nickname set. Use * as a wildcard.');
+        if (!source.username)
+            throw new Error('Each bot owner must have a username set. Use * as a wildcard.');
+        if (!source.hostname)
+            throw new Error('Each bot owner must have a hostname set. Use * as a wildcard.');
+        
+        this.owners_.push(source);
     }
 }

@@ -3,9 +3,10 @@
 // be found in the LICENSE file.
 
 import { Configuration } from 'features/nuwani/configuration.js';
+import { MessageSource } from 'features/nuwani/runtime/message_source.js';
 
 // A configuration that will be accepted by the Configuration class.
-function createConfiguration({ bots, servers, channels, levels, commandPrefix } = {}) {
+function createConfiguration({ bots, servers, channels, levels, commandPrefix, owners } = {}) {
     return {
         bots: bots ?? [
             { nickname: 'Bot', password: 'foobar', master: true },
@@ -29,6 +30,10 @@ function createConfiguration({ bots, servers, channels, levels, commandPrefix } 
             { mode: 'v', level: 'vip' },
         ],
         commandPrefix: commandPrefix ?? '!',
+        owners: owners ?? [
+            'Joe!joe@*',
+            '*!*@lvp.administrator',
+        ],
     };
 };
 
@@ -172,5 +177,50 @@ describe('Configuration', it => {
         configuration.initializeFromJson(createConfiguration());
         
         assert.equal(configuration.commandPrefix, '!');
+    });
+
+    it('loads a list of bot owner idents', assert => {
+        assert.throws(() => (new Configuration).initializeFromJson(createConfiguration({
+            owners: 'everyone!`',  // not an array
+        })));
+
+        assert.throws(() => (new Configuration).initializeFromJson(createConfiguration({
+            owners: [
+                3.1415,  // not a string
+            ],
+        })));
+
+        assert.throws(() => (new Configuration).initializeFromJson(createConfiguration({
+            owners: [
+                'Joe',  // missing user/host
+            ],
+        })));
+
+        assert.throws(() => (new Configuration).initializeFromJson(createConfiguration({
+            owners: [
+                'Joe@host',  // missing user
+            ],
+        })));
+
+        assert.throws(() => (new Configuration).initializeFromJson(createConfiguration({
+            owners: [
+                'Joe!Joe!Joe%Joe^Joe',  // unparseable
+            ],
+        })));
+
+        const configuration = new Configuration();
+        configuration.initializeFromJson(createConfiguration());
+        
+        assert.equal(configuration.owners.length, 2);
+
+        assert.isTrue(configuration.owners[0] instanceof MessageSource);
+        assert.equal(configuration.owners[0].nickname, 'Joe');
+        assert.equal(configuration.owners[0].username, 'joe');
+        assert.equal(configuration.owners[0].hostname, '*');
+
+        assert.isTrue(configuration.owners[1] instanceof MessageSource);
+        assert.equal(configuration.owners[1].nickname, '*');
+        assert.equal(configuration.owners[1].username, '*');
+        assert.equal(configuration.owners[1].hostname, 'lvp.administrator');
     });
 });

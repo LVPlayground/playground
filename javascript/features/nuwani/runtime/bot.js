@@ -7,12 +7,6 @@ import { ConnectionHandshake } from 'features/nuwani/runtime/connection_handshak
 import { Message } from 'features/nuwani/runtime/message.js';
 import { NetworkTracker } from 'features/nuwani/runtime/network_tracker.js';
 
-// Whitelist containing hostnames of folks who can use the ?eval command. Temporary.
-const kEvalWhitelist = [
-    'las.venturas.playground',
-    'netstaff.irc.gtanet.com',
-];
-
 // Represents an individual Bot that can be connected to IRC. Manages its own connection and will
 // signal to the Runtime when its ready to start sending messages.
 export class Bot {
@@ -90,6 +84,8 @@ export class Bot {
     // handshake will begin immediately.
     onConnectionEstablished() {
         console.log('[IRC] Connected to the server, beginning handshake...');
+
+        this.state_ = Bot.kStateConnected;
         this.handshake_.start();
     }
 
@@ -120,7 +116,7 @@ export class Bot {
         this.networkTracker_.reset();
 
         // Reset the nickname, it might be available again on reconnection.
-        this.nickname_ = this.config_.nickname();
+        this.nickname_ = this.config_.nickname;
 
         switch (this.state_) {
             case Bot.kStateDisconnected:
@@ -128,6 +124,7 @@ export class Bot {
             
             case Bot.kStateConnecting:
             case Bot.kStateConnected:
+                this.state_ = Bot.kStateConnecting;
                 this.connection_.connect();
                 break;
         }

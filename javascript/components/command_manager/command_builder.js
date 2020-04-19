@@ -22,7 +22,7 @@ function PlayerParser(argumentString) {
 // The command builder provides a convenient interface to build commands on, together with all the
 // options that are possible to have for commands. A variety of checks will be done to ensure that
 // the command will work consistently and reliably.
-class CommandBuilder {
+export class CommandBuilder {
   constructor(level, parent, delegate, command, defaultValue = null) {
     this.level_ = level;
     this.parent_ = parent;

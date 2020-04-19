@@ -28,6 +28,8 @@ export class CommandDelegate {
     // Returns the level of the |context| in the echo channel, as a Player level.
     getSourceLevel(context) {
         const channelModes = context.getSenderModesInEchoChannel();
+        if (typeof channelModes !== 'string')
+            return Player.LEVEL_PLAYER;
         
         for (const mapping of this.levels_) {
             if (channelModes.includes(mapping.mode))

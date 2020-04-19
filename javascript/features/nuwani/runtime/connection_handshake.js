@@ -35,6 +35,9 @@ export class ConnectionHandshake {
         this.state_ = ConnectionHandshake.kStateIdle;
     }
 
+    // Gets the channels that the bot will join on connection.
+    get channels() { return this.channels_; }
+
     // Gets the current handshake state. Should only be used for testing.
     get stateForTesting() { return this.state_; }
 

@@ -8,6 +8,9 @@ export class CommandContext {
     bot_ = null;
     message_ = null;
 
+    // Gets the bot which received this command.
+    get bot() { return this.bot_; }
+
     // Gets the nickname of the person who sent this command. May be undefined.
     get nickname() { return this.message_.source?.nickname; }
 

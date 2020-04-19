@@ -71,15 +71,15 @@ reliability, to minimize the amount of maintenance necessary on an on-going basi
 **NuwaniJS** supports commands for players, administrators and management members, each implied by
 a user's modes on the configured echo channel. The following commands are available:
 
-### Maintenance commands (bot owners)
+### Maintenance commands
 
-  * [!eval](https://github.com/LVPlayground/playground/blob/master/javascript/features/nuwani/commands/maintenance_commands.js):
-    run arbitrary JavaScript code in context of the server.
-  
+  * [!eval](commands/maintenance_commands.js) (restricted to **bot owners**): to run arbitrary code
+    in context of the server.
+  * [!level](commands/maintenance_commands.js): determines the level of an IRC user.
+
 ### Generic commands (everyone)
 
-  * [!time](https://github.com/LVPlayground/playground/blob/master/javascript/features/nuwani/commands/maintenance_commands.js):
-    displays the current time on the server.
+  * [!time](commands/maintenance_commands.js): displays the current time on the server.
 
 ## References
   * [RFC 2812](https://tools.ietf.org/html/rfc2812)

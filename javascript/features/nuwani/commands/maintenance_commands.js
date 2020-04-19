@@ -8,20 +8,26 @@ import { CommandBuilder } from 'components/command_manager/command_builder.js';
 // example to inspect the bot and the server's current status, evaluate code, and so on.
 export class MaintenanceCommands {
     commandManager_ = null;
+    configuration_ = null;
 
-    constructor(commandManager, owners) {
+    constructor(commandManager, configuration) {
         this.commandManager_ = commandManager;
-        this.owners_ = owners;
+        this.configuration_ = configuration;
 
         // !eval [JavaScript code]
         this.commandManager_.buildCommand('eval')
-                .restrict(MaintenanceCommands.prototype.isOwner.bind(this))
-                .parameters([{ name: 'code', type: CommandBuilder.SENTENCE_PARAMETER }])
-                .build(MaintenanceCommands.prototype.onEvalCommand.bind(this));
+            .restrict(MaintenanceCommands.prototype.isOwner.bind(this))
+            .parameters([{ name: 'code', type: CommandBuilder.SENTENCE_PARAMETER }])
+            .build(MaintenanceCommands.prototype.onEvalCommand.bind(this));
         
+        // !level [nickname?]
+        this.commandManager_.buildCommand('level')
+            .parameters([{ name: 'nickname', type: CommandBuilder.WORD_PARAMETER, optional: true }])
+            .build(MaintenanceCommands.prototype.onLevelCommand.bind(this));
+
         // !time
         this.commandManager_.buildCommand('time')
-                .build(MaintenanceCommands.prototype.onTimeCommand.bind(this));
+            .build(MaintenanceCommands.prototype.onTimeCommand.bind(this));
     }
 
     // !eval [JavaScript code]
@@ -30,6 +36,48 @@ export class MaintenanceCommands {
     // and should therefore be limited to bot owners.
     onEvalCommand(context, code) {
         context.respond('5Result: ' + eval(code));
+    }
+
+    // !level [nickname?]
+    //
+    // Displays the level of the |nickname| from the perspective of the bot. This is determined by
+    // their channel modes in the configured echo channel.
+    onLevelCommand(context, nickname) {
+        let actualNickname = nickname || context.nickname;
+
+        const channelModes = context.bot.getUserModesInEchoChannel(actualNickname);
+        if (typeof channelModes !== 'string') {
+            context.respond(`4Error: ${actualNickname} does not seem to be in the echo channel.`);
+            return;
+        }
+        
+        let level = Player.LEVEL_PLAYER;
+        for (const mapping of this.configuration_.levels) {
+            if (channelModes.includes(mapping.mode)) {
+                level = mapping.level;
+                break;
+            }
+        }
+
+        let levelString = null;
+        switch (level) {
+            case Player.LEVEL_MANAGEMENT:
+                levelString = 'a Management member';
+                break;
+
+            case Player.LEVEL_ADMINISTRATOR:
+                levelString = 'an administrator';
+                break;
+
+            case Player.LEVEL_PLAYER:
+                levelString = 'a player';
+                break;
+
+            default:
+                throw new Error('Unrecognised player level: ' + level);
+        }
+
+        context.respond(`5Result: ${actualNickname} is ${levelString}.`);
     }
 
     // !time
@@ -45,7 +93,7 @@ export class MaintenanceCommands {
         if (!source || !source.isUser())
             return false;  // the |context| was not sent by a human
         
-        for (const owner of this.owners_) {
+        for (const owner of this.configuration_.owners) {
             if (owner.nickname !== source.nickname && owner.nickname !== '*')
                 continue;
             
@@ -63,6 +111,7 @@ export class MaintenanceCommands {
 
     dispose() {
         this.commandManager_.removeCommand('time');
+        this.commandManager_.removeCommand('level');
         this.commandManager_.removeCommand('eval');
     }
 }

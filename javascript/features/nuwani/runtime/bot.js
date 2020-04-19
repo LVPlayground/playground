@@ -70,8 +70,24 @@ export class Bot {
 
     // Returns the user modes set for the |nickname| on the echo channel, if any.
     getUserModesInEchoChannel(nickname) {
-        // TODO: Implement this.
-        return '';
+        let echoChannel = null;
+
+        for (const channel of this.handshake_.channels) {
+            if (!channel.echo)
+                continue;
+            
+            echoChannel = channel.channel;
+            break;
+        }
+
+        if (!echoChannel)
+            throw new Error('Unable to identify the echo channel from the ConnectionHandshake.');
+
+        const channel = this.networkTracker_.channels.get(echoChannel);
+        if (!channel)
+            return '';  // the bot hasn't joined the echo channel (yet)
+
+        return channel.users.get(nickname);
     }
 
     // Disconnects the bot from the network and will not re-establish connection by itself. Will be

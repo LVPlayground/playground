@@ -66,10 +66,8 @@ export class NetworkTracker {
                     throw new Error('Invalid RPL_TOPIC message received: ' + message);
 
                 const [nickname, channel, topic] = message.params;
-
-                const lowerCaseChannel = channel.toLowerCase();
-                if (this.channels_.has(lowerCaseChannel))
-                    this.channels_.get(lowerCaseChannel).onTopicMessage(topic);
+                if (this.channels_.has(channel))
+                    this.channels_.get(channel).onTopicMessage(topic);
 
                 break;
             }
@@ -79,10 +77,8 @@ export class NetworkTracker {
                     throw new Error('Invalid RPL_TOPICWHOTIME message received: ' + message);
 
                 const [nickname, channel, who, time] = message.params;
-
-                const lowerCaseChannel = channel.toLowerCase();
-                if (this.channels_.has(lowerCaseChannel))
-                    this.channels_.get(lowerCaseChannel).onTopicWhoTimeMessage(who, time);
+                if (this.channels_.has(channel))
+                    this.channels_.get(channel).onTopicWhoTimeMessage(who, time);
 
                 break;
             }
@@ -92,12 +88,10 @@ export class NetworkTracker {
                     throw new Error('Invalid RPL_NAMREPLY message received: ' + message);
                 
                 const [nickname, visibility, channelName, names] = message.params;
-
-                const lowerCaseChannelName = channelName.toLowerCase();
-                if (!this.channels_.has(lowerCaseChannelName))
+                if (!this.channels_.has(channelName))
                     throw new Error('Invalid channel in RPL_NAMREPLY message: ' + channelName);
 
-                const channel = this.channels_.get(lowerCaseChannelName);
+                const channel = this.channels_.get(channelName);
                 for (const name of names.split(' ')) {
                     const userMode = this.levelPrefixes_.get(name[0]);
                     const cleanName = userMode ? name.substring(1) : name;
@@ -115,32 +109,30 @@ export class NetworkTracker {
 
             case 'JOIN': {
                 const [channelName] = message.params;
-                const lowerCaseChannelName = channelName.toLowerCase();
-
+                
                 if (message.source.nickname === this.bot_.nickname) {
-                    if (this.channels_.has(lowerCaseChannelName))
+                    if (this.channels_.has(channelName))
                         throw new Error('The bot has already joined channel: ' + channelName);
                     
-                    this.channels_.set(lowerCaseChannelName, new NetworkChannel(channelName));
-                } else  if (!this.channels_.has(lowerCaseChannelName)) {
+                    this.channels_.set(channelName, new NetworkChannel(channelName));
+                } else  if (!this.channels_.has(channelName)) {
                     throw new Error('Processing invalid JOIN for channel: ' + channelName);
                 }
 
-                this.channels_.get(lowerCaseChannelName).onJoin(message.source.nickname);
+                this.channels_.get(channelName).onJoin(message.source.nickname);
                 break;
             }
 
             case 'KICK': {
                 const [channelName, nickname, reason] = message.params;
-                const lowerCaseChannelName = channelName.toLowerCase();
 
-                if (!this.channels_.has(lowerCaseChannelName))
+                if (!this.channels_.has(channelName))
                     throw new Error('Processing invalid KICK for unjoined channel: ' + channelName);
                 
                 if (nickname !== this.bot_.nickname)
-                    this.channels_.get(lowerCaseChannelName).onLeave(nickname, 'KICK');
+                    this.channels_.get(channelName).onLeave(nickname, 'KICK');
                 else
-                    this.channels_.delete(lowerCaseChannelName);
+                    this.channels_.delete(channelName);
                 
                 break;
             }
@@ -181,17 +173,14 @@ export class NetworkTracker {
             
             case 'PART': {
                 const [channelName] = message.params;
-                const lowerCaseChannelName = channelName.toLowerCase();
 
-                if (!this.channels_.has(lowerCaseChannelName))
+                if (!this.channels_.has(channelName))
                     throw new Error('Processing invalid PART for unjoined channel: ' + channelName);
 
-                if (message.source.nickname !== this.bot_.nickname) {
-                    this.channels_.get(lowerCaseChannelName).onLeave(
-                        message.source.nickname, 'PART');
-                } else {
-                    this.channels_.delete(lowerCaseChannelName);
-                }
+                if (message.source.nickname !== this.bot_.nickname)
+                    this.channels_.get(channelName).onLeave(message.source.nickname, 'PART');
+                else
+                    this.channels_.delete(channelName);
 
                 break;
             }

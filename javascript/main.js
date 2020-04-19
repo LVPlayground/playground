@@ -36,7 +36,10 @@ testRunner.run('.*\.test\.js').then(time => {
 
     server = new Server();
     server.featureManager.loadFeatures([
-        // Foundational features
+        // Foundational features. These must not have dependencies on any other features.
+        'nuwani',
+
+        // Low level features, which may only depend on each other and foundational features.
         'abuse', 'announce', 'communication', 'economy', 'location', 'logger', 'minigames',
         'settings', 'streamer',
 

@@ -9,13 +9,17 @@ import { CommandBuilder } from 'components/command_manager/command_builder.js';
 export class MaintenanceCommands {
     commandManager_ = null;
 
-    constructor(commandManager) {
+    constructor(commandManager, owners) {
         this.commandManager_ = commandManager;
+        this.owners_ = owners;
+
+        // !eval [JavaScript code]
         this.commandManager_.buildCommand('eval')
-                .restrict(Player.LEVEL_PLAYER)
+                .restrict(MaintenanceCommands.prototype.isOwner.bind(this))
                 .parameters([{ name: 'code', type: CommandBuilder.SENTENCE_PARAMETER }])
                 .build(MaintenanceCommands.prototype.onEvalCommand.bind(this));
         
+        // !time
         this.commandManager_.buildCommand('time')
                 .build(MaintenanceCommands.prototype.onTimeCommand.bind(this));
     }
@@ -33,6 +37,28 @@ export class MaintenanceCommands {
     // Displays the current time on the server.
     onTimeCommand(context) {
         context.respond('5The current time is: ' + (new Date).toTimeString());
+    }
+
+    // Returns whether the given |context| has been created for a message from a bot owner.
+    isOwner(context) {
+        const source = context.source;
+        if (!source || !source.isUser())
+            return false;  // the |context| was not sent by a human
+        
+        for (const owner of this.owners_) {
+            if (owner.nickname !== source.nickname && owner.nickname !== '*')
+                continue;
+            
+            if (owner.username !== source.username && owner.username !== '*')
+                continue;
+            
+            if (owner.hostname !== source.hostname && source.hostname !== '*')
+                continue;
+            
+            return true;
+        }
+
+        return false;
     }
 
     dispose() {

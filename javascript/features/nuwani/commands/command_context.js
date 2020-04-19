@@ -8,6 +8,9 @@ export class CommandContext {
     bot_ = null;
     message_ = null;
 
+    // Gets the source of the message, as a MessageSource instance. May be NULL.
+    get source() { return this.message_.source; }
+
     // Gets the target where the command was issued, which could either be an IRC channel, or a
     // private chat dialogue with a particular user.
     get target() {

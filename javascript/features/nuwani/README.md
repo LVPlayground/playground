@@ -34,7 +34,6 @@ will be interpret by the [Configuration](configuration.js) class.
         "*!*@lvp.administrator"
     ]
 }
-
 ```
 
   * The system supports an arbitrary amount of bots. Only a single bot can be the `master`, which
@@ -72,9 +71,15 @@ reliability, to minimize the amount of maintenance necessary on an on-going basi
 **NuwaniJS** supports commands for players, administrators and management members, each implied by
 a user's modes on the configured echo channel. The following commands are available:
 
-```javascript
-// None yet!
-```
+### Maintenance commands (bot owners)
+
+  * [!eval](https://github.com/LVPlayground/playground/blob/master/javascript/features/nuwani/commands/maintenance_commands.js):
+    run arbitrary JavaScript code in context of the server.
+  
+### Generic commands (everyone)
+
+  * [!time](https://github.com/LVPlayground/playground/blob/master/javascript/features/nuwani/commands/maintenance_commands.js):
+    displays the current time on the server.
 
 ## References
   * [RFC 2812](https://tools.ietf.org/html/rfc2812)

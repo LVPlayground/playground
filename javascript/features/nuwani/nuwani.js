@@ -43,7 +43,7 @@ export default class extends Feature {
         // Initiate a series of commands that are provided by the Nuwani feature directly. They can
         // be split up in multiple components for organisational reasons.
         this.commands_ = [
-            new MaintenanceCommands(this.commandManager_),
+            new MaintenanceCommands(this.commandManager_, this.configuration_.owners),
         ];
     }
 

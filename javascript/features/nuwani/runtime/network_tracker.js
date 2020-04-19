@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { CaseInsensitiveMap } from 'base/case_insensitive_map.js';
 import { ModeParser } from 'features/nuwani/runtime/mode_parser.js';
 import { NetworkChannel } from 'features/nuwani/runtime/network_channel.js';
 
@@ -20,7 +21,7 @@ export class NetworkTracker {
     constructor(bot) {
         this.bot_ = bot;
 
-        this.channels_ = new Map();
+        this.channels_ = new CaseInsensitiveMap();
         this.levelPrefixes_ = new Map();
         this.levelModes_ = new Map();
         this.support_ = new Map();

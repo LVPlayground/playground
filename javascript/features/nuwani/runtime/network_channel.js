@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { CaseInsensitiveMap } from 'base/case_insensitive_map.js';
 import { MessageSource } from 'features/nuwani/runtime/message_source.js';
 
 // This class encapsulates the concept of a channel on an IRC server. We track the channel's topic,
@@ -32,7 +33,7 @@ export class NetworkChannel {
 
     constructor(name) {
         this.name_ = name;
-        this.users_ = new Map();
+        this.users_ = new CaseInsensitiveMap();
     }
 
     // Called when a RPL_TOPIC (332) message has been received for this channel.

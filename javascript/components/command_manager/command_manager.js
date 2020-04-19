@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import CommandBuilder from 'components/command_manager/command_builder.js';
+import CommandGameDelegate from 'components/command_manager/command_game_delegate.js';
 import ScopedCallbacks from 'base/scoped_callbacks.js';
 
 // The command manager maintains a registry of available in-game commands and provides the ability
@@ -10,6 +11,7 @@ import ScopedCallbacks from 'base/scoped_callbacks.js';
 class CommandManager {
   constructor() {
     this.commands_ = {};
+    this.delegate_ = new CommandGameDelegate();
 
     // Attach the global event listeners which we need to reliably handle commands.
     this.callbacks_ = new ScopedCallbacks();
@@ -40,7 +42,7 @@ class CommandManager {
     if (this.commands_.hasOwnProperty(command))
       throw new Error('The command /' + command + ' has already been registered.');
 
-    return new CommandBuilder(CommandBuilder.COMMAND, this, command);
+    return new CommandBuilder(CommandBuilder.COMMAND, this, this.delegate_, command);
   }
 
   // Removes the |command| from the list of commands known and handled by this manager.

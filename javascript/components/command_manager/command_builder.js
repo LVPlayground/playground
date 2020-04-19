@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { CommandError } from 'components/command_manager/command_error.js';
 import StringParser from 'base/string_parser.js';
 
 // Parses the first word in |argumentString| as either the id or the name of a player. Returns the
@@ -22,9 +23,10 @@ function PlayerParser(argumentString) {
 // options that are possible to have for commands. A variety of checks will be done to ensure that
 // the command will work consistently and reliably.
 class CommandBuilder {
-  constructor(level, parent, command, defaultValue = null) {
+  constructor(level, parent, delegate, command, defaultValue = null) {
     this.level_ = level;
     this.parent_ = parent;
+    this.delegate_ = delegate;
 
     this.command_ = command;
     this.defaultValue_ = defaultValue;
@@ -44,7 +46,7 @@ class CommandBuilder {
   // Returns a human readable name of the command that's currently in process of being build.
   get name() {
     if (this.level_ == CommandBuilder.COMMAND)
-      return '/' + this.command_;
+      return this.delegate_.getCommandPrefix() + this.command_;
 
     // TODO: Provide a name for *_PARAMETER values.
     let name = this.command_;
@@ -126,7 +128,7 @@ class CommandBuilder {
         throw new Error('Default values must be provided through a function that takes a player.');
     }
 
-    return new CommandBuilder(CommandBuilder.SUB_COMMAND, this, subCommand, defaultValue);
+    return new CommandBuilder(CommandBuilder.SUB_COMMAND, this, this.delegate_, subCommand, defaultValue);
   }
 
   // Returns whether one of the registered sub commands will be able to handle the |command|.
@@ -198,31 +200,31 @@ class CommandBuilder {
   // Internal implementation for creating the listener function. Each listener function follows the
   // same pattern of
   createListener() {
-    return async(player, argumentString, carriedArguments = []) => {
+    return async(source, argumentString, carriedArguments = []) => {
       // Make sure that any leading padding is removed from |args|.
       argumentString = argumentString.trim();
 
-      // When a level restriction is in effect for this command and the player does not meet the
+      // When a level restriction is in effect for this command and the source does not meet the
       // required level, bail out immediately. This clause only hits for the main command.
-      if ((this.restrictFn_ && !this.restrictFn_(player)) || this.restrictLevel_ > player.level) {
-        const message = this.restrictFn_ ? 'specific players'
+      if ((this.restrictFn_ && !this.restrictFn_(source)) || this.restrictLevel_ > this.delegate_.getSourceLevel(source)) {
+        const message = this.restrictFn_ ? 'specific people'
                                          : playerLevelToString(this.restrictLevel_, true /* plural */);
 
-        player.sendMessage(Message.format(Message.COMMAND_ERROR_INSUFFICIENT_RIGHTS, message));
+        this.delegate_.sendErrorMessage(source, CommandError.kInsufficientRights, message);
         return true;
       }
 
       // Bail out when a player's level is beyond Player, the command requires this but they're not
       // registered with Las Venturas Playground. Many commands make this assumption.
-      if (this.restrictLevel_ > Player.LEVEL_PLAYER && !player.isRegistered()) {
-        player.sendMessage(Message.COMMAND_ERROR_INSUFFICIENT_RIGHTS_BETA);
+      if (this.restrictLevel_ > Player.LEVEL_PLAYER && !this.delegate_.isRegistered(source)) {
+        this.delegate_.sendErrorMessage(source, CommandError.kNotRegistered);
         return true;
       }
 
       // Determine if there is a sub-command that we should delegate to. Word matching is used for
       // string values (which will be the common case for delegating commands.)
       for (let { builder, listener } of this.subCommands_) {
-        if ((this.restrictFn_ && !this.restrictFn_(player)) || builder.restrictLevel_ > player.level)
+        if ((this.restrictFn_ && !this.restrictFn_(source)) || builder.restrictLevel_ > this.delegate_.getSourceLevel(source))
           continue;
 
         if (typeof builder.command_ == 'string') {
@@ -230,7 +232,7 @@ class CommandBuilder {
           if (!argumentString.startsWith(builder.command_) || (argumentString.length != commandLength && argumentString[commandLength] != ' '))
             continue;
 
-          return await listener(player, argumentString.substr(commandLength), carriedArguments);
+          return await listener(source, argumentString.substr(commandLength), carriedArguments);
         }
 
         let result = null;
@@ -240,14 +242,14 @@ class CommandBuilder {
             if (result === null)
               break;
 
-            return await listener(player, argumentString.substr(result[0].length), [ ...carriedArguments, parseFloat(result[0]) ]);
+            return await listener(source, argumentString.substr(result[0].length), [ ...carriedArguments, parseFloat(result[0]) ]);
 
           case CommandBuilder.WORD_PARAMETER:
             result = StringParser.WORD_MATCH.exec(argumentString);
             if (result === null)
               break;
 
-            return await listener(player, argumentString.substr(result[0].length), [ ...carriedArguments, result[0] ]);
+            return await listener(source, argumentString.substr(result[0].length), [ ...carriedArguments, result[0] ]);
 
           case CommandBuilder.PLAYER_PARAMETER:
             result = StringParser.WORD_MATCH.exec(argumentString);
@@ -256,27 +258,27 @@ class CommandBuilder {
 
             const subject = server.playerManager.find({ nameOrId: result[0], returnPlayer: true });
             if (!subject && !builder.defaultValue_) {
-              player.sendMessage(Message.COMMAND_ERROR_UNKNOWN_PLAYER, argumentString);
+              this.delegate_.sendErrorMessage(source, CommandError.kUnknownPlayer, argumentString);
               return true;
             }
 
             // Disambiguates between "/v 123 delete" and "/v Darkfire delete" (unconnected players)
             // and "/v 123" (spawn by invalid model ID) and "/v Darkfire" (spawn by invalid model).
             if (!subject && !builder.canHandleCommand(result[0]) && argumentString.length > result[0].length) {
-              player.sendMessage(Message.COMMAND_ERROR_UNKNOWN_PLAYER, result[0]);
+              this.delegate_.sendErrorMessage(source, CommandError.kUnknownPlayer, result[0]);
               return true;
             }
 
             if (subject)
-              return await listener(player, argumentString.substr(result[0].length), [ ...carriedArguments, subject ]);
+              return await listener(source, argumentString.substr(result[0].length), [ ...carriedArguments, subject ]);
         }
 
         // If the sub-command has a default value function defined, attempt to get its value by
-        // invoking it with |player|. Return values of NULL indicate that the value should not hit.
+        // invoking it with |source|. Return values of NULL indicate that the value should not hit.
         if (builder.defaultValue_ !== null) {
-          let value = builder.defaultValue_(player);
+          let value = builder.defaultValue_(source);
           if (value !== null)
-            if (await listener(player, argumentString, [ ...carriedArguments, value ]) !== false)
+            if (await listener(source, argumentString, [ ...carriedArguments, value ]) !== false)
               return true;
         }
       }
@@ -284,9 +286,9 @@ class CommandBuilder {
       // Determine if parameters have been associated with this command. If that's the case, parse
       // and validate them. A generic usage message will be displayed if parsing failed.
       if (this.parameterParser_ !== null) {
-        let parameters = this.parameterParser_.parse(argumentString, player);
+        let parameters = this.parameterParser_.parse(argumentString, source);
         if (parameters === null) {
-          player.sendMessage(Message.format(Message.COMMAND_USAGE, this.toString()));
+          this.delegate_.sendErrorMessage(source, CommandError.kInvalidUse, this.toString());
           return true;
         }
 
@@ -300,7 +302,7 @@ class CommandBuilder {
         return false;
       }
 
-      await this.listener_(player, ...carriedArguments);
+      await this.listener_(source, ...carriedArguments);
       return true;
     };
   }

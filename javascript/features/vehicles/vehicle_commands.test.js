@@ -345,7 +345,7 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.isTrue(await russell.issueCommand('/v'));
         assert.equal(russell.messages.length, 1);
         assert.equal(russell.messages[0],
-                     Message.format(Message.COMMAND_ERROR_INSUFFICIENT_RIGHTS, 'specific players'));
+                     Message.format(Message.COMMAND_ERROR_INSUFFICIENT_RIGHTS, 'specific people'));
     });
 
     it('should support spawning vehicles by their model Id', async(assert) => {

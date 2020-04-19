@@ -8,14 +8,17 @@ export class CommandContext {
     bot_ = null;
     message_ = null;
 
+    // Gets the nickname of the person who sent this command. May be undefined.
+    get nickname() { return this.message_.source?.nickname; }
+
     // Gets the source of the message, as a MessageSource instance. May be NULL.
     get source() { return this.message_.source; }
 
     // Gets the target where the command was issued, which could either be an IRC channel, or a
     // private chat dialogue with a particular user.
     get target() {
-        return this.message_.params[0].startsWith('#') ? this.message_.params[0]
-                                                       : this.message_.source.nickname;
+        return this.bot_.isChannelName(this.message_.params[0]) ? this.message_.params[0]
+                                                                : this.message_.source.nickname;
     }
 
     constructor(bot, message) {
@@ -23,10 +26,9 @@ export class CommandContext {
         this.message_ = message;
     }
 
-    // Gets the level the source of this |message_| has in the Echo channel.
-    getLevel() {
-        // TODO: Implement this.
-        return Player.LEVEL_PLAYER;
+    // Gets the channel modes the sender has in the echo channel, if any.
+    getSenderModesInEchoChannel() {
+        return this.bot_.getUserModesInEchoChannel(this.nickname);
     }
 
     // Responds to this command with the given |message|. Will bypass echo distribution.

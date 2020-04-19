@@ -8,13 +8,17 @@ import StringParser from 'base/string_parser.js';
 // Parses the first word in |argumentString| as either the id or the name of a player. Returns the
 // player when successful, or fails when the player is not connected to the server.
 function PlayerParser(argumentString) {
+  CommandBuilder.lastInvalidPlayerValue = null;
+
   let result = StringParser.WORD_MATCH.exec(argumentString);
   if (result === null)
     return [argumentString, null];
 
   let player = server.playerManager.find({ nameOrId: result[0], returnPlayer: true });
-  if (player === null)
+  if (player === null) {
+    CommandBuilder.lastInvalidPlayerValue = result[0];
     return [argumentString, null];
+  }
 
   return [argumentString.substr(result[0].length), player];
 }
@@ -23,6 +27,8 @@ function PlayerParser(argumentString) {
 // options that are possible to have for commands. A variety of checks will be done to ensure that
 // the command will work consistently and reliably.
 export class CommandBuilder {
+  static lastInvalidPlayerValue = null;
+
   constructor(level, parent, delegate, command, defaultValue = null) {
     this.level_ = level;
     this.parent_ = parent;
@@ -95,16 +101,18 @@ export class CommandBuilder {
 
       let optional = parameter.hasOwnProperty('optional') ? !!parameter.optional : false;
       let type = parameter.type,
-          parser = null;
+          parser = null,
+          error = null;
 
       // If the type of this parameter is a player, pull in our own custom parser.
       if (type == CommandBuilder.PLAYER_PARAMETER) {
         type = CommandBuilder.CUSTOM_PARAMETER;
         parser = PlayerParser;
+        error = StringParser.ERROR_MISSING_PLAYER_PARAMETER;
       }
 
       // Store the formatting rule that will be used to construct the parser.
-      format.push({ type, parser, optional });
+      format.push({ type, parser, error, optional });
 
       // Store the name and requiredness of this parameter locally for usage messages.
       this.parameters_.push({ name: parameter.name, optional: optional });
@@ -287,8 +295,15 @@ export class CommandBuilder {
       // and validate them. A generic usage message will be displayed if parsing failed.
       if (this.parameterParser_ !== null) {
         let parameters = this.parameterParser_.parse(argumentString, source);
-        if (parameters === null) {
-          this.delegate_.sendErrorMessage(source, CommandError.kInvalidUse, this.toString());
+        if (!Array.isArray(parameters)) {
+          switch (parameters) {
+            case StringParser.ERROR_MISSING_PLAYER_PARAMETER:
+              this.delegate_.sendErrorMessage(source, CommandError.kUnknownPlayer, CommandBuilder.lastInvalidPlayerValue);
+              break;
+            default:
+              this.delegate_.sendErrorMessage(source, CommandError.kInvalidUse, this.toString());
+              break;
+          }
           return true;
         }
 

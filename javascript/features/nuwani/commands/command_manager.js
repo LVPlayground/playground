@@ -29,7 +29,7 @@ export class CommandManager extends RuntimeObserver {
         this.configuration_ = configuration;
 
         this.commands_ = new Map();
-        this.delegate_ = new CommandDelegate(configuration.commandPrefix);
+        this.delegate_ = new CommandDelegate(configuration.commandPrefix, configuration.levels);
     }
 
     // Registers |command| as a new command, which will invoke |listener| when used.

@@ -63,9 +63,9 @@ describe('StringParser', it => {
     assert.deepEqual(parser.parse('   52   '), [52]);
     assert.deepEqual(parser.parse('0'), [0]);
 
-    assert.isNull(parser.parse(''));
-    assert.isNull(parser.parse('10w'));
-    assert.isNull(parser.parse('fifty'));
+    assert.equal(parser.parse(''), StringParser.ERROR_MISSING_PARAMETER);
+    assert.equal(parser.parse('10w'), StringParser.ERROR_MISSING_PARAMETER);
+    assert.equal(parser.parse('fifty'), StringParser.ERROR_MISSING_PARAMETER);
 
     parser = new StringParser([ StringParser.PARAM_TYPE_NUMBER,
                                 StringParser.PARAM_TYPE_NUMBER ]);
@@ -76,8 +76,8 @@ describe('StringParser', it => {
     assert.deepEqual(parser.parse('81  12  '), [81, 12]);
     assert.deepEqual(parser.parse('  80.12  -52.12  '), [80.12, -52.12]);
 
-    assert.isNull(parser.parse('50 word'));
-    assert.isNull(parser.parse('word 50'));
+    assert.equal(parser.parse('50 word'), StringParser.ERROR_MISSING_PARAMETER);
+    assert.equal(parser.parse('word 50'), StringParser.ERROR_MISSING_PARAMETER);
   });
 
   it('validates and parses word parameters', assert => {
@@ -92,7 +92,7 @@ describe('StringParser', it => {
     assert.deepEqual(parser.parse('52.12'), ['52.12']);
     assert.deepEqual(parser.parse('_'), ['_']);
 
-    assert.isNull(parser.parse(''));
+    assert.equal(parser.parse(''), StringParser.ERROR_MISSING_PARAMETER);
 
     parser = new StringParser([ StringParser.PARAM_TYPE_WORD,
                                 StringParser.PARAM_TYPE_WORD ]);
@@ -102,7 +102,7 @@ describe('StringParser', it => {
     assert.deepEqual(parser.parse('~today    rain~'), ['~today', 'rain~']);
     assert.deepEqual(parser.parse('12.5 world'), ['12.5', 'world']);
 
-    assert.isNull(parser.parse('word'));
+    assert.equal(parser.parse('word'), StringParser.ERROR_MISSING_PARAMETER);
   });
 
   it('validates and parses exact word matches', assert => {
@@ -113,16 +113,16 @@ describe('StringParser', it => {
     assert.deepEqual(parser.parse('hello'), []);
     assert.deepEqual(parser.parse('  hello world'), []);
 
-    assert.isNull(parser.parse('hi hello'));
-    assert.isNull(parser.parse('hellow'));
+    assert.equal(parser.parse('hi hello'), StringParser.ERROR_MISSING_PARAMETER);
+    assert.equal(parser.parse('hellow'), StringParser.ERROR_MISSING_PARAMETER);
 
     parser = new StringParser([ 'hello', StringParser.PARAM_TYPE_WORD ]);
 
     assert.deepEqual(parser.parse('hello world'), ['world']);
     assert.deepEqual(parser.parse('  hello   world  '), ['world']);
 
-    assert.isNull(parser.parse('hellow world'));
-    assert.isNull(parser.parse(' hello '));
+    assert.equal(parser.parse('hellow world'), StringParser.ERROR_MISSING_PARAMETER);
+    assert.equal(parser.parse(' hello '), StringParser.ERROR_MISSING_PARAMETER);
   });
 
   it('validates and parses sentence parameters', assert => {
@@ -134,8 +134,8 @@ describe('StringParser', it => {
     assert.deepEqual(parser.parse(' Las Venturas '), ['Las Venturas']);
     assert.deepEqual(parser.parse('  Las  Venturas  Playground  '), ['Las  Venturas  Playground']);
 
-    assert.isNull(parser.parse(''));
-    assert.isNull(parser.parse(' '));
+    assert.equal(parser.parse(''), StringParser.ERROR_MISSING_PARAMETER);
+    assert.equal(parser.parse(' '), StringParser.ERROR_MISSING_PARAMETER);
   });
 
   it('validates and parses custom parameters', assert => {
@@ -149,7 +149,7 @@ describe('StringParser', it => {
     assert.deepEqual(parser.parse('Russell'), [7]);
     assert.deepEqual(parser.parse('Venturas Playground'), [8]);
 
-    assert.isNull(parser.parse(''));
+    assert.equal(parser.parse(''), StringParser.ERROR_MISSING_PARAMETER);
   });
 
   it('validates and parses mixed parameters', assert => {
@@ -166,9 +166,9 @@ describe('StringParser', it => {
     assert.deepEqual(parser.parse(' 24  text  Venturas  some more'), [24, 'text', 8, 'some more']);
     assert.deepEqual(parser.parse('-41.41  _  _  hi'), [-41.41, '_', 1, 'hi']);
 
-    assert.isNull(parser.parse('text'));
-    assert.isNull(parser.parse('42 41 40'));
-    assert.isNull(parser.parse('text text text hello world'));
+    assert.equal(parser.parse('text'), StringParser.ERROR_MISSING_PARAMETER);
+    assert.equal(parser.parse('42 41 40'), StringParser.ERROR_MISSING_PARAMETER);
+    assert.equal(parser.parse('text text text hello world'), StringParser.ERROR_MISSING_PARAMETER);
   });
 
   it('allows missing optional arguments', assert => {
@@ -182,8 +182,8 @@ describe('StringParser', it => {
     assert.deepEqual(parser.parse('42 foo'), [42, 'foo']);
     assert.deepEqual(parser.parse('42'), [42]);
 
-    assert.isNull(parser.parse(''));
-    assert.isNull(parser.parse('word'));
-    assert.isNull(parser.parse('word foo'));
+    assert.equal(parser.parse(''), StringParser.ERROR_MISSING_PARAMETER);
+    assert.equal(parser.parse('word'), StringParser.ERROR_MISSING_PARAMETER);
+    assert.equal(parser.parse('word foo'), StringParser.ERROR_MISSING_PARAMETER);
   });
 });

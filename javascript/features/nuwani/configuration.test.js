@@ -26,8 +26,7 @@ function createConfiguration({ bots, servers, channels, levels, commandPrefix, o
             { mode: 'q', level: 'management' },
             { mode: 'a', level: 'management' },
             { mode: 'o', level: 'administrator' },
-            { mode: 'h', level: 'vip' },
-            { mode: 'v', level: 'vip' },
+            { mode: 'h', level: 'administrator' },
         ],
         commandPrefix: commandPrefix ?? '!',
         owners: owners ?? [
@@ -156,11 +155,13 @@ describe('Configuration', it => {
         const configuration = new Configuration();
         configuration.initializeFromJson(createConfiguration());
 
-        assert.equal(configuration.levels.size, 6);
-        
-        for (const mapping of createConfiguration().levels) {
-            assert.isTrue(configuration.levels.has(mapping.mode));
-            assert.equal(configuration.levels.get(mapping.mode), mapping.level);
+        assert.equal(configuration.levels.length, 5);
+
+        let previousLevel = Player.LEVEL_MANAGEMENT;
+
+        for (const mapping of configuration.levels) {
+            assert.isBelowOrEqual(mapping.level, previousLevel);
+            previousLevel = mapping.level;
         }
     });
 

@@ -119,6 +119,8 @@ class StringParser {
       hadOptionalParameter |= optional;
 
       let value = parameter.hasOwnProperty('value') ? parameter.value : null;
+
+      let error = null;
       let parser = null;
 
       // Iterate over the |type| to determine the parser appropriate for this parameter.
@@ -141,18 +143,16 @@ class StringParser {
             throw new Error('Custom parameter types need to have a `parser` defined.');
 
           parser = parameter.parser;
+          if (parameter.hasOwnProperty('error'))
+            error = parameter.error;
+
           break;
         default:
           throw new Error('Invalid parser specified to the string parser.')
-          break;
       }
 
       // Push the sanitized parameter information to the local state.
-      this.parameters_.push({
-        optional: optional,
-        parser: parser,
-        value: value
-      });
+      this.parameters_.push({ optional, parser, error, value });
     });
   }
 
@@ -177,7 +177,7 @@ class StringParser {
       }
 
       if (!parameter.optional)
-        return null;
+        return parameter.error ?? StringParser.ERROR_MISSING_PARAMETER;
     }
 
     return values;
@@ -194,5 +194,9 @@ StringParser.PARAM_TYPE_WORD = 1;
 StringParser.PARAM_TYPE_WORD_MATCH = 2;
 StringParser.PARAM_TYPE_SENTENCE = 3;
 StringParser.PARAM_TYPE_CUSTOM = 4;
+
+// Error messages that can be returned by the string parser instead of NULL.
+StringParser.ERROR_MISSING_PARAMETER = 0;
+StringParser.ERROR_MISSING_PLAYER_PARAMETER = 1;
 
 export default StringParser;

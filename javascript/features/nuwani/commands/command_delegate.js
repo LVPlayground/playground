@@ -7,9 +7,11 @@ import { CommandError } from 'components/command_manager/command_error.js';
 // Implementation of the CommandDelegate interface for usage with IRC.
 export class CommandDelegate {
     commandPrefix_ = null;
+    levels_ = null;
 
-    constructor(commandPrefix) {
+    constructor(commandPrefix, levels) {
         this.commandPrefix_ = commandPrefix;
+        this.levels_ = levels;
     }
 
     // Returns the prefix to show before command names in usage and error messages.
@@ -25,7 +27,14 @@ export class CommandDelegate {
 
     // Returns the level of the |context| in the echo channel, as a Player level.
     getSourceLevel(context) {
-        return context.getLevel();
+        const channelModes = context.getSenderModesInEchoChannel();
+        
+        for (const mapping of this.levels_) {
+            if (channelModes.includes(mapping.mode))
+                return mapping.level;
+        }
+
+        return Player.LEVEL_PLAYER;
     }
 
     // Sends the given |error| to the |context|, with the given |parameters|.

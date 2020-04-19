@@ -61,6 +61,19 @@ export class Bot {
         this.connection_.write(message);
     }
 
+    // Convenience API for determining whether the |target| identifies a channel or a user. This is
+    // network agnostic, and also supports non-#-prefixed channels.
+    isChannelName(target) {
+        const types = this.networkTracker_.getSupportRule('CHANTYPES') || '#';
+        return types.indexOf(target[0]) > -1;
+    }
+
+    // Returns the user modes set for the |nickname| on the echo channel, if any.
+    getUserModesInEchoChannel(nickname) {
+        // TODO: Implement this.
+        return '';
+    }
+
     // Disconnects the bot from the network and will not re-establish connection by itself. Will be
     // a no-op if the bot isn't currently connected or connecting to the network.
     disconnect() {

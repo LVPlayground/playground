@@ -17,10 +17,9 @@ export const kTestConfiguration = {
         { mode: 'q', level: 'management' },
         { mode: 'a', level: 'management' },
         { mode: 'o', level: 'administrator' },
-        { mode: 'h', level: 'vip' },
-        { mode: 'v', level: 'vip' },
+        { mode: 'h', level: 'administrator' },
     ],
-    commandPrefix: '?',
+    commandPrefix: '!',
     owners: [
         'Joe!joe@lvp.administrator',
     ],

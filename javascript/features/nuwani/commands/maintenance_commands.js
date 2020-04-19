@@ -52,7 +52,7 @@ export class MaintenanceCommands {
             if (owner.username !== source.username && owner.username !== '*')
                 continue;
             
-            if (owner.hostname !== source.hostname && source.hostname !== '*')
+            if (owner.hostname !== source.hostname && owner.hostname !== '*')
                 continue;
             
             return true;

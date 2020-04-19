@@ -12,7 +12,7 @@ export class Configuration {
     bots_ = [];
     servers_ = [];
     channels_ = [];
-    levels_ = new Map();
+    levels_ = [];
     commandPrefix_ = null;
     owners_ = [];
 
@@ -30,7 +30,8 @@ export class Configuration {
     get channels() { return this.channels_; }
 
     // Gets the level mapping between IRC channel mode in the echo channel, and how this should be
-    // perceived in the command processor. Each entry is listed as { mode, level }.
+    // perceived in the command processor. Each entry is listed as { mode, level }, and the entries
+    // are sorted in descending order based on the access level.
     get levels() { return this.levels_; }
 
     // Gets the prefix used to identify bot commands. Can be any number of characters long.
@@ -64,7 +65,7 @@ export class Configuration {
         this.bots_ = [];
         this.servers_ = [];
         this.channels_ = [];
-        this.levels_ = new Map();
+        this.levels_ = [];
         this.owners_ = [];
 
         // (1) Load the bot's identity configuration.
@@ -122,6 +123,14 @@ export class Configuration {
         // (8) Require that the echo channel has been defined.
         if (this.channels_.filter(channel => channel.echo).length !== 1)
             throw new Error('Exactly one IRC channel must be specified as the echo channel.');
+
+        // (9) Sort the level mapping in descending order based on the access level.
+        this.levels_.sort((lhs, rhs) => {
+            if (lhs.level === rhs.level)
+                return 0;
+            
+            return lhs.level > rhs.level ? -1 : 1;
+        });
     }
 
     // Adds the given |bot| to the list of bots to spawn. The nickname is required and must be valid
@@ -196,13 +205,20 @@ export class Configuration {
         if (mapping.mode.length != 1)
             throw new Error('Level mapping user modes must be a single character.');
         
-        if (!['management', 'administrator', 'vip'].includes(mapping.level))
+        const kMapping = {
+            management: Player.LEVEL_MANAGEMENT,
+            administrator: Player.LEVEL_ADMINISTRATOR,
+        };
+
+        if (!kMapping.hasOwnProperty(mapping.level))
             throw new Error('Level mapping access levels must be a valid string.');
         
-        if (this.levels_.has(mapping.mode))
-            throw new Error('Level mapping has already been defined for: +' + mapping.mode);
+        for (const existingMapping of this.levels_) {
+            if (existingMapping.mode === mapping.mode)
+                throw new Error('Level mapping has already been defined for: +' + mapping.mode);
+        } 
 
-        this.levels_.set(mapping.mode, mapping.level);
+        this.levels_.push({ mode: mapping.mode, level: kMapping[mapping.level] });
     }
 
     // Adds the given |owner| to the list of the bot's owners.

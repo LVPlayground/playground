@@ -34,26 +34,21 @@ export class CommandDelegate {
 
         switch (error) {
             case CommandError.kInsufficientRights:
-                message = Message.COMMAND_ERROR_INSUFFICIENT_RIGHTS;
-                break;
-            
-            case CommandError.kNotRegistered:
-                message = Message.COMMAND_ERROR_INSUFFICIENT_RIGHTS_BETA;
+                message = '4Error: Sorry, this command is only available to %s.';
                 break;
             
             case CommandError.kUnknownPlayer:
-                message = Message.COMMAND_ERROR_UNKNOWN_PLAYER;
+                message = '4Error: Sorry, no player could be found for "%s".';
                 break;
 
             case CommandError.kInvalidUse:
-                message = Message.COMMAND_USAGE;
+                message = '10Usage: %s';
                 break;
 
             default:
                 throw new Error('Unknown error: ' + error);
         }
 
-        // TODO: Actually bring this back to the |source| somehow.
-        console.log('[IRC Error] ' + Message.format(message, ...params));
+        context.respond(Message.format(message, ...params));
     }
 }

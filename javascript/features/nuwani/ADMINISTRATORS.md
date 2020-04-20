@@ -4,6 +4,7 @@ the available IRC commands. Our tools are powerful and have evolved over the yea
 that not everybody may be fully up-to-speed on the latest.
 
 ### Controlling who can access the server
+  * [I want to kick someone from the server](#-i-want-to-kick-someone-from-the-server)
   * [I want to ban an in-game player](#-i-want-to-ban-an-in-game-player)
   * [I want to ban a player by IP address](#-i-want-to-ban-a-player-by-ip-address)
   * [I want to ban a player by IP range](#-i-want-to-ban-a-player-by-ip-range)
@@ -16,6 +17,11 @@ that not everybody may be fully up-to-speed on the latest.
   * [I want to find out what a player's record is](#-i-want-to-find-out-what-a-players-record-is)
   * [I want to add a note to a player's record](#-i-want-to-add-a-note-to-a-players-record)
   * [I want to unban a player by IP address, range or serial number](#-i-want-to-unban-a-player-by-ip-address-range-or-serial-number)
+
+### Communicating with players on the server
+  * [I want to make a formal announcement](#-i-want-to-make-a-formal-announcement)
+  * [I want to send a message, but highlight it](#-i-want-to-send-a-message-but-highlight-it)
+  * [I want to send a message to in-game crew](#-i-want-to-send-a-message-to-in-game-crew)
 
 ## Controlling who can access the server
 As an administrator, you have the ability to control which players are able to access the server,
@@ -30,6 +36,15 @@ Las Venturas Playground supports three kinds of bans:
 All types of bans have mandatory associations with a player, and must have an expiration date set.
 Bans will also be associated with the person who issued the ban, and come attached with a reason. In
 addition to that, we also log each time a ban gets lifted.
+
+### ⯈ I want to kick someone from the server
+**Command**: `!kick [player] [reason]`
+
+#### Examples
+```
+!kick 4 Consider this your last warning, Joe!
+!kick Gunther Not allowing my AMAZING bike on the ship :(
+```
 
 ### ⯈ I want to ban an in-game player
 **Command**: `!ban [player] [days=3] [reason]`
@@ -164,4 +179,33 @@ addition to that, we also log each time a ban gets lifted.
 !unban 56.0.105.103 Turns out that banning USPS does not make parcels appear
 !unban 192.168.*.* My flat mate bribed me in giving them access again
 !unban 7483910346 Turns out it was Joe pulling another prank
+```
+
+## Communicating with players on the server
+Everyone on IRC has the ability to send messages to the server with the `!msg` command, but there
+are cases where it's useful to stand out a little bit more, or only send a message to a particular
+audience, particularly your fellow administrators.
+
+### ⯈ I want to make a formal announcement
+**Command**: `!announce [message]`
+
+#### Examples
+```
+!announce The server will be going down for maintenance in 5 minutes.
+```
+
+### ⯈ I want to send a message, but highlight it
+**Command**: `!say [message]`
+
+#### Examples
+```
+!say Everyone should join the cruise! Let's gather at the pirate ship.
+```
+
+### ⯈ I want to send a message to in-game crew
+**Command**: `!admin [message]`
+
+#### Examples
+```
+!admin I forgot who you are again, my undercover friend!
 ```

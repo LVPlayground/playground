@@ -111,8 +111,6 @@ export class Connection {
         if (this.socket_.state !== 'connected')
             throw new Error('Illegal write to non-connected socket.');
 
-        console.log('[IRC] >[' + message + ']');
-
         const buffer = stringToUtf8Buffer(message.trimEnd() + '\r\n');
         await this.socket_.write(buffer);
     }
@@ -161,11 +159,11 @@ export class Connection {
 
     // Logs the given |message| associated with this connection. The message will not be written to
     // the console when running tests, to avoid spewing a ton of output.
-    log(message) {
+    log(message, prefix = '<<') {
         if (server.isTest())
             return;
         
-        console.log('[Connection:' + this.connectionId_ + '] ' + message);
+        console.log(`[IRC Connection:${this.connectionId_}] ${prefix} ${message}`);
     }
 
     dispose() {

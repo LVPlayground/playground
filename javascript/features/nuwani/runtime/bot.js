@@ -85,7 +85,7 @@ export class Bot {
 
         const channel = this.networkTracker_.channels.get(echoChannel);
         if (!channel)
-            return '';  // the bot hasn't joined the echo channel (yet)
+            return undefined;  // the bot hasn't joined the echo channel (yet)
 
         return channel.users.get(nickname);
     }
@@ -99,7 +99,7 @@ export class Bot {
 
             case Bot.kStateConnecting:
             case Bot.kStateConnected:
-                this.connection_.close();
+                this.connection_.disconnect();
                 break;
         }
 
@@ -112,7 +112,7 @@ export class Bot {
     // Called when the TCP connection with the IRC server has been established. The connection
     // handshake will begin immediately.
     onConnectionEstablished() {
-        console.log('[IRC] Connected to the server, beginning handshake...');
+        this.log('Connected to the server, beginning handshake...');
 
         this.state_ = Bot.kStateConnected;
         this.handshake_.start();
@@ -123,7 +123,7 @@ export class Bot {
     onConnectionMessage(messageString) {
         const message = new Message(messageString);
 
-        console.log('[IRC] :[' + messageString + ']');
+        this.log(messageString, '>> ');
 
         if (this.handshake_.handleMessage(message))
             return;
@@ -137,7 +137,7 @@ export class Bot {
     // Called when the TCP connection with the IRC server has been closed. The bot will no longer be
     // able to do anything until the connection has been re-established.
     onConnectionClosed() {
-        console.log('[IRC] Disconnected');
+        this.log('Disconnected');
 
         this.delegate_.onBotDisconnected(this);
 
@@ -174,12 +174,19 @@ export class Bot {
     // initiated by the system (e.g. to resolve conflicts on registration), an issued NICK command
     // or a change forced by the server and/or an IRC Operator.
     onNicknameChange(newNickname) {
-        console.log('[IRC] Nickname changed to ' + newNickname);
+        this.log(`Nickname changed from ${this.nickname_} to ${newNickname}`);
 
         this.nickname_ = newNickname;
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    log(message, prefix = '') {
+        if (server.isTest())
+            return;
+
+        console.log(`[IRC Bot:${this.nickname}] ${prefix}${message}`);
+    }
 
     dispose() {
         this.networkTracker_.dispose();

@@ -32,12 +32,6 @@ describe('Bot', (it, beforeEach, afterEach) => {
                             configuration.channels);
 
         assert.throws(() => bot.write('PRIVMSG #echo :Hello, world!'));
-
-        bot.onConnectionEstablished();
-        assert.doesNotThrow(() => bot.write('PONG :server.name'));
-
-        bot.disconnect();
-        assert.throws(() => bot.write('PRIVMSG #private :Cannot see this.'));
     });
 
     it('is able to identify channel names based on RPL_ISUPPORT replies', assert => {

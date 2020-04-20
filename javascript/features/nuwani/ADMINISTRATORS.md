@@ -23,6 +23,11 @@ that not everybody may be fully up-to-speed on the latest.
   * [I want to send a message, but highlight it](#-i-want-to-send-a-message-but-highlight-it)
   * [I want to send a message to in-game crew](#-i-want-to-send-a-message-to-in-game-crew)
 
+### Managing the state of Las Venturas Playground players
+  * [I want to see which player data I have access to](#-i-want-to-see-which-player-data-i-have-access-to)
+  * [I want to see a player's data](#-i-want-to-see-a-player-s-data)
+  * [I want to update a player's data](#-i-want-to-update-a-player-s-data)
+
 ## Controlling who can access the server
 As an administrator, you have the ability to control which players are able to access the server,
 and to revoke access from any player for any reason. We call this _banning_ and _unbanning_ players.
@@ -171,6 +176,7 @@ addition to that, we also log each time a ban gets lifted.
 !addnote USPS Did not receive my mail again, grrrr!
 ```
 
+
 ### ⯈ I want to unban a player by IP address, range or serial number
 **Command**: `!unban [ip | ip range | serial] [note]`
 
@@ -208,4 +214,44 @@ audience, particularly your fellow administrators.
 #### Examples
 ```
 !admin I forgot who you are again, my undercover friend!
+```
+
+
+## Managing the state of Las Venturas Playground players
+Players come to us with all kinds of requests: their ratio to be re-set, their colour to be changed,
+statistics to be merged with another account, or just plain errors in our code that cause corruption
+in someone's statistics.
+
+For all of those reasons, you have the ability to amend the information associated with a player
+right in the database. A trio of commands exists to power this ability.
+
+### ⯈ I want to see which player data I have access to
+**Command**: `!supported`
+
+#### Examples
+```
+!supported
+```
+
+#### Notes
+  * The number of supported fields depends on whether you're an administrator or a Management
+    member. In addition, there are fields that aren't accessible by either and require raw database
+    access.
+
+### ⯈ I want to see a player's data
+**Command**: `!getvalue [nickname] [field]`
+
+#### Examples
+```
+!getvalue Gunther kill_count
+!getvalue Gunther stats_exports
+```
+
+### ⯈ I want to update a player's data
+**Command**: `!setvalue [nickname] [field] [value]`
+
+#### Examples
+```
+!setvalue Gunther kill_count 25
+!setvalue Gunther stats_exports 500
 ```

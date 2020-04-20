@@ -8,6 +8,7 @@ that not everybody may be fully up-to-speed on the latest.
   * [I want to ban a player by IP address](#-i-want-to-ban-a-player-by-ip-address)
   * [I want to ban a player by IP range](#-i-want-to-ban-a-player-by-ip-range)
   * [I want to ban a player by serial number](#-i-want-to-ban-a-player-by-serial-number)
+  * [I want to find out what the most recent bans are](#-i-want-to-find-out-what-the-most-recent-bans-are)
   * [I want to find out who is using an IP address](#-i-want-to-find-out-who-is-using-an-ip-address)
   * [I want to find out which IP addresses a player is using](#-i-want-to-find-out-which-ip-addresses-a-player-is-using)
   * [I want to find out who is using a serial number](#-i-want-to-find-out-who-is-using-a-serial-number)
@@ -73,6 +74,18 @@ addition to that, we also log each time a ban gets lifted.
 !ban serial 5111943668 [HC]Robot 10 Not sure if you're real?
 !ban serial 7483910346 spambot0 30 Trying to hammer the server
 ```
+
+### ⯈ I want to find out what the most recent bans are
+**Command**: `!lastbans`
+
+#### Examples
+```
+!lastbans
+```
+
+#### Notes
+  * Only the five most recent bans will be displayed. Additional information is available through
+    the website, which the command will give you a link for.
 
 ### ⯈ I want to find out who is using an IP address
 **Command**: `!ipinfo [ip | ip range]`

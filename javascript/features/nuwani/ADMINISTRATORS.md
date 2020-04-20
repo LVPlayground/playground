@@ -17,112 +17,123 @@ All types of bans have mandatory associations with a player, and must have an ex
 Bans will also be associated with the person who issued the ban, and come attached with a reason. In
 addition to that, we also log each time a ban gets lifted.
 
-### I want to ban an in-game player
+### 🤔 I want to ban an in-game player
 **Command**: `!ban [player] [days=3] [reason]`
-**Examples**
+
+#### Examples
 ```
 !ban 16 Unexpected use of a minigun
 !ban Gunther Not allowing me to walk on the ship
 !ban Gunther 30 Being a douce, come back in 30 days!
 ```
 
-**Notes**
+#### Notes
   * By default, bans will last for three days.
 
-### I want to ban a player by IP address
+### 🤔 I want to ban a player by IP address
 **Command**: `!ban ip [ip] [playerName] [days] [reason]`
-**Examples**
+
+#### Examples
 ```
 !ban ip 127.0.0.1 3 Don't want those pesky NPCs
 !ban ip 192.168.0.1 30 Banning my router for 30 days for crappy firmware
 ```
 
-### I want to ban a player by IP range
+### 🤔 I want to ban a player by IP range
 **Command**: `!ban range [ip range] [playerName] [days] [reason]`
-**Examples**
+
+#### Examples
 ```
 !ban range 192.168.*.* Family 7 Taking a week off from my household members
 !ban range 56.*.*.* USPS 3 My mail was delayed, focus on that please
 ```
 
-**Notes**
+#### Notes
   * Administrators are allowed to ban up to 65,536 addresses. Management members are allowed to
     ban up to 16,777,216 addresses. Raw database access is required in order to go beyond that.
 
-### I want to ban a player by serial number
+### 🤔 I want to ban a player by serial number
 **Command**: `!ban serial [gpci] [playerName] [days] [reason]`
-**Examples**
+
+#### Examples
 ```
 !ban serial 5111943668 [HC]Robot 10 Not sure if you're real?
 !ban serial 7483910346 spambot0 30 Trying to hammer the server
 ```
 
-### I want to find out who is using an IP address
+### 🤔 I want to find out who is using an IP address
 **Command**: `!ipinfo [ip | ip range]`
-**Examples**
+
+#### Examples
 ```
 !ipinfo 56.0.105.103
 !ipinfo 192.168.*.*
 ```
 
-**Notes**
+#### Notes
   * The 15 most recent nicknames will be displayed. Raw database access is required in order to
     access additional nicknames.
 
-### I want to find out which IP addresses a player is using
+### 🤔 I want to find out which IP addresses a player is using
 **Command**: `!ipinfo [nickname]`
-**Examples**
+
+#### Examples
 ```
 !ipinfo USPS
 ```
 
-**Notes**
+#### Notes
   * The 15 most recent IP addresses will be displayed. Raw database access is required in order to
     access additional IP addresses.
 
-### I want to find out who is using a serial number
+### 🤔 I want to find out who is using a serial number
 **Command**: `!serialinfo [serial]`
-**Examples**
+
+#### Examples
 ```
 !serialinfo 5111943668
 ```
 
-**Notes**
+#### Notes
   * The 15 most recent nicknames will be displayed. Raw database access is required in order to
     access additional nicknames.
 
-### I want to find out which serial(s) a player is using
+### 🤔 I want to find out which serial(s) a player is using
 **Command**: `!serialinfo [nickname]`
-**Examples**
+
+#### Examples
 ```
 !serialinfo USPS
 ```
 
-**Notes**
+#### Notes
   * The 15 most recent serial numbers will be displayed. Raw database access is required in order to
     access additional serial numbers.
 
-### I want to find out what a player's record is
+### 🤔 I want to find out what a player's record is
 **Command**: `!why [nickname]`
-**Examples**
+
+#### Examples
 ```
 !why USPS
 ```
 
-**Notes**
+#### Notes
   * The 5 most recent entries on the player's record will be displayed. Additional information is
     available through the website, which the command will give you a link for.
 
-### I want to add a note to a player's record
+### 🤔 I want to add a note to a player's record
 **Command**: `!addnote [nickname] [note]`
-**Examples**:
+
+#### Examples
 ```
 !addnote USPS Did not receive my mail again, grrrr!
 ```
 
-### I want to unban a player by IP address, range or serial number
+### 🤔 I want to unban a player by IP address, range or serial number
 **Command**: `!unban [ip | ip range | serial] [note]`
-**Examples**:
+
+#### Examples
 ```
 !unban 56.0.105.103 Turns out that banning USPS does not make parcels appear
 !unban 192.168.*.* My flat mate bribed me in giving them access again

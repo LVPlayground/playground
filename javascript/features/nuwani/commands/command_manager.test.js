@@ -9,13 +9,8 @@ import { Message } from 'features/nuwani/runtime/message.js';
 import { TestBot } from 'features/nuwani/test/test_bot.js';
 
 describe('CommandManager', it => {
-    const fakeRuntime = {
-        addObserver: function() {},
-        removeObserver: function() {},
-    };
-
     it('should not be able to register duplicate commands', assert => {
-        const manager = new CommandManager(fakeRuntime, new Configuration());
+        const manager = new CommandManager(/* runtime= */ null, new Configuration());
 
         assert.throws(() => manager.removeCommand('hello'));
         assert.doesNotThrow(() => manager.registerCommand('hello', function() {}));
@@ -30,7 +25,7 @@ describe('CommandManager', it => {
         {
             let called = false;
 
-            const manager = new CommandManager(fakeRuntime, new Configuration());
+            const manager = new CommandManager(/* runtime= */ null, new Configuration());
 
             manager.buildCommand('test').build(() => called = true);
             manager.onBotMessage(new TestBot(), new Message(':Joe@host PRIVMSG #echo :!test'));
@@ -45,7 +40,7 @@ describe('CommandManager', it => {
             const configuration = new Configuration();
             configuration.commandPrefix_ = '%%';
 
-            const manager = new CommandManager(fakeRuntime, configuration);
+            const manager = new CommandManager(/* runtime= */ null, configuration);
 
             manager.buildCommand('test').build(() => called = true);
             manager.onBotMessage(new TestBot(), new Message(':Joe@host PRIVMSG #echo :%%test'));
@@ -55,7 +50,7 @@ describe('CommandManager', it => {
     });
 
     it('should be able to respond with usage messages in case of invalid syntax', assert => {
-        const manager = new CommandManager(fakeRuntime, new Configuration());
+        const manager = new CommandManager(/* runtime= */ null, new Configuration());
         const bot = new TestBot();
 
         let calledWith = null;
@@ -83,7 +78,7 @@ describe('CommandManager', it => {
     });
 
     it('should be able to respond with an error in case of insufficient rights', assert => {
-        const manager = new CommandManager(fakeRuntime, new Configuration());
+        const manager = new CommandManager(/* runtime= */ null, new Configuration());
         const bot = new TestBot();
 
         let called = false;
@@ -109,7 +104,7 @@ describe('CommandManager', it => {
     });
 
     it('should be able to identify in-game players, or error when unknown', assert => {
-        const manager = new CommandManager(fakeRuntime, new Configuration());
+        const manager = new CommandManager(/* runtime= */ null, new Configuration());
         const bot = new TestBot();
 
         let calledForPlayerName = null;

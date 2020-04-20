@@ -23,8 +23,12 @@ export class CommandManager extends RuntimeObserver {
     constructor(runtime, configuration) {
         super();
 
-        this.runtime_ = runtime;
-        this.runtime_.addObserver(this);
+        if (runtime) {
+            this.runtime_ = runtime;
+            this.runtime_.addObserver(this);
+        } else if (!server.isTest()) {
+            throw new Error('The |runtime| argument is only optional while running tests.');
+        }
 
         this.configuration_ = configuration;
 
@@ -63,7 +67,7 @@ export class CommandManager extends RuntimeObserver {
     // ---------------------------------------------------------------------------------------------
     // RuntimeObserver implementation:
 
-    onBotMessage(bot, message) {
+    async onBotMessage(bot, message) {
         if (message.command != 'PRIVMSG' || message.params.length !== 2)
             return;  // not a valid message
         
@@ -83,14 +87,16 @@ export class CommandManager extends RuntimeObserver {
         if (!this.commands_.has(command))
             return;  // unknown command
         
-        this.commands_.get(command)(new CommandContext(bot, message), args);
+        await this.commands_.get(command)(new CommandContext(bot, message), args);
     }
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        this.runtime_.removeObserver(this);
-        this.runtime_ = null;
+        if (this.runtime_) {
+            this.runtime_.removeObserver(this);
+            this.runtime_ = null;
+        }
 
         this.commands_.clear();
         this.commands_ = null;

@@ -42,11 +42,15 @@ export class TestBot {
     }
     
     getUserModesInEchoChannel(nickname) {
-        return this.userModes_.get(nickname) || '';
+        return this.userModes_.get(nickname);
     }
 
     setUserModesInEchoChannelForTesting(nickname, userModes) {
-        return this.userModes_.set(nickname, userModes);
+        this.userModes_.set(nickname, userModes);
+    }
+
+    removeUserFromEchoChannelForTesting(nickname) {
+        this.userModes_.delete(nickname);
     }
 
     disconnect() {}

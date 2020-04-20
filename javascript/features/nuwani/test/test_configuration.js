@@ -21,6 +21,6 @@ export const kTestConfiguration = {
     ],
     commandPrefix: '!',
     owners: [
-        'Joe!joe@lvp.administrator',
+        'Ricky!owner@lvp.management',
     ],
 };

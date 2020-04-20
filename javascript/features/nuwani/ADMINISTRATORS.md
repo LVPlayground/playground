@@ -3,6 +3,19 @@ This guide exists for administrators of Las Venturas Playground who wish to beco
 the available IRC commands. Our tools are powerful and have evolved over the years, which means
 that not everybody may be fully up-to-speed on the latest.
 
+### Controlling who can access the server
+  * [I want to ban an in-game player](#-i-want-to-ban-an-in-game-player)
+  * [I want to ban a player by IP address](#-i-want-to-ban-a-player-by-ip-address)
+  * [I want to ban a player by IP range](#-i-want-to-ban-a-player-by-ip-range)
+  * [I want to ban a player by serial number](#-i-want-to-ban-a-player-by-serial-number)
+  * [I want to find out who is using an IP address](#-i-want-to-find-out-who-is-using-an-ip-address)
+  * [I want to find out which IP addresses a player is using](#-i-want-to-find-out-which-ip-addresses-a-player-is-using)
+  * [I want to find out who is using a serial number](#-i-want-to-find-out-who-is-using-a-serial-number)
+  * [I want to find out which serial(s) a player is using](#-i-want-to-find-out-which-serials-a-player-is-using)
+  * [I want to find out what a player's record is](#-i-want-to-find-out-what-a-players-record-is)
+  * [I want to add a note to a player's record](#-i-want-to-add-a-note-to-a-players-record)
+  * [I want to unban a player by IP address, range or serial number](#-i-want-to-unban-a-player-by-ip-address-range-or-serial-number)
+
 ## Controlling who can access the server
 As an administrator, you have the ability to control which players are able to access the server,
 and to revoke access from any player for any reason. We call this _banning_ and _unbanning_ players.
@@ -17,7 +30,7 @@ All types of bans have mandatory associations with a player, and must have an ex
 Bans will also be associated with the person who issued the ban, and come attached with a reason. In
 addition to that, we also log each time a ban gets lifted.
 
-### 🤔 I want to ban an in-game player
+### ⯈ I want to ban an in-game player
 **Command**: `!ban [player] [days=3] [reason]`
 
 #### Examples
@@ -30,7 +43,7 @@ addition to that, we also log each time a ban gets lifted.
 #### Notes
   * By default, bans will last for three days.
 
-### 🤔 I want to ban a player by IP address
+### ⯈ I want to ban a player by IP address
 **Command**: `!ban ip [ip] [playerName] [days] [reason]`
 
 #### Examples
@@ -39,7 +52,7 @@ addition to that, we also log each time a ban gets lifted.
 !ban ip 192.168.0.1 30 Banning my router for 30 days for crappy firmware
 ```
 
-### 🤔 I want to ban a player by IP range
+### ⯈ I want to ban a player by IP range
 **Command**: `!ban range [ip range] [playerName] [days] [reason]`
 
 #### Examples
@@ -52,7 +65,7 @@ addition to that, we also log each time a ban gets lifted.
   * Administrators are allowed to ban up to 65,536 addresses. Management members are allowed to
     ban up to 16,777,216 addresses. Raw database access is required in order to go beyond that.
 
-### 🤔 I want to ban a player by serial number
+### ⯈ I want to ban a player by serial number
 **Command**: `!ban serial [gpci] [playerName] [days] [reason]`
 
 #### Examples
@@ -61,7 +74,7 @@ addition to that, we also log each time a ban gets lifted.
 !ban serial 7483910346 spambot0 30 Trying to hammer the server
 ```
 
-### 🤔 I want to find out who is using an IP address
+### ⯈ I want to find out who is using an IP address
 **Command**: `!ipinfo [ip | ip range]`
 
 #### Examples
@@ -74,7 +87,7 @@ addition to that, we also log each time a ban gets lifted.
   * The 15 most recent nicknames will be displayed. Raw database access is required in order to
     access additional nicknames.
 
-### 🤔 I want to find out which IP addresses a player is using
+### ⯈ I want to find out which IP addresses a player is using
 **Command**: `!ipinfo [nickname]`
 
 #### Examples
@@ -86,7 +99,7 @@ addition to that, we also log each time a ban gets lifted.
   * The 15 most recent IP addresses will be displayed. Raw database access is required in order to
     access additional IP addresses.
 
-### 🤔 I want to find out who is using a serial number
+### ⯈ I want to find out who is using a serial number
 **Command**: `!serialinfo [serial]`
 
 #### Examples
@@ -98,7 +111,7 @@ addition to that, we also log each time a ban gets lifted.
   * The 15 most recent nicknames will be displayed. Raw database access is required in order to
     access additional nicknames.
 
-### 🤔 I want to find out which serial(s) a player is using
+### ⯈ I want to find out which serial(s) a player is using
 **Command**: `!serialinfo [nickname]`
 
 #### Examples
@@ -110,7 +123,7 @@ addition to that, we also log each time a ban gets lifted.
   * The 15 most recent serial numbers will be displayed. Raw database access is required in order to
     access additional serial numbers.
 
-### 🤔 I want to find out what a player's record is
+### ⯈ I want to find out what a player's record is
 **Command**: `!why [nickname]`
 
 #### Examples
@@ -122,7 +135,7 @@ addition to that, we also log each time a ban gets lifted.
   * The 5 most recent entries on the player's record will be displayed. Additional information is
     available through the website, which the command will give you a link for.
 
-### 🤔 I want to add a note to a player's record
+### ⯈ I want to add a note to a player's record
 **Command**: `!addnote [nickname] [note]`
 
 #### Examples
@@ -130,7 +143,7 @@ addition to that, we also log each time a ban gets lifted.
 !addnote USPS Did not receive my mail again, grrrr!
 ```
 
-### 🤔 I want to unban a player by IP address, range or serial number
+### ⯈ I want to unban a player by IP address, range or serial number
 **Command**: `!unban [ip | ip range | serial] [note]`
 
 #### Examples

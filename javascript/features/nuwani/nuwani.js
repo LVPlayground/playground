@@ -8,7 +8,9 @@ import { CommandManager } from 'features/nuwani/commands/command_manager.js';
 import { Configuration } from 'features/nuwani/configuration.js';
 import { Runtime } from 'features/nuwani/runtime/runtime.js';
 
+import { CommunicationCommands } from 'features/nuwani/commands/communication_commands.js';
 import { MaintenanceCommands } from 'features/nuwani/commands/maintenance_commands.js';
+import { PlayerCommands } from 'features/nuwani/commands/player_commands.js';
 
 // Base of the Nuwani feature, which is a JavaScript-powered implementation of the IRC Bots that
 // provide echo and communication functionalities to a series of IRC channels.
@@ -43,7 +45,9 @@ export default class extends Feature {
         // Initiate a series of commands that are provided by the Nuwani feature directly. They can
         // be split up in multiple components for organisational reasons.
         this.commands_ = [
+            new CommunicationCommands(this.commandManager_),
             new MaintenanceCommands(this.commandManager_, this.configuration_),
+            new PlayerCommands(this.commandManager_),
         ];
     }
 

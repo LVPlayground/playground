@@ -4,7 +4,8 @@
 
 import { MessageDistributor, kMaximumCommandRateMaster, kMaximumCommandRateSlave,
          kMaximumQueueSize, kRequestSlaveOnQueueOverflowCount,
-         kRequestSlaveOnQueueOverflowMs } from 'features/nuwani/echo/message_distributor.js';
+         kIncreaseSlaveRequestIntervalMs, kDecreaseSlaveRequestSampleCount,
+         kDecreaseSlaveRequestIntervalMs } from 'features/nuwani/echo/message_distributor.js';
 
 import { Configuration } from 'features/nuwani/configuration.js';
 import { TestBot } from 'features/nuwani/test/test_bot.js';
@@ -219,9 +220,9 @@ describe('MessageDistributor', (it, beforeEach, afterEach) => {
 
         assert.equal(runtime.requestSlaveIncreaseCallCount, 1);
 
-        // (3) Do the exact same thing again, but now after waiting |kRequestSlaveOnQueueOverflowMs|
+        // (3) Do the exact same thing again, but after waiting |kIncreaseSlaveRequestIntervalMs|
         // which means that another bot can be requested if needed.
-        server.clock.advance(kRequestSlaveOnQueueOverflowMs);
+        server.clock.advance(kIncreaseSlaveRequestIntervalMs);
 
         for (let cycle = 0; cycle < iterations; ++cycle) {
             for (let messageId = 0; messageId < kMaximumQueueSize * 2; ++messageId)
@@ -233,6 +234,42 @@ describe('MessageDistributor', (it, beforeEach, afterEach) => {
         assert.equal(runtime.requestSlaveIncreaseCallCount, 2);
     });
 
-    // TODO: Request slave decreases if the load allows for that.
-    // TODO: Do not request slave decreases if requested recently.
+    it('is able to signal when the number of bots could be decreased', async (assert) => {
+        const master = new TestBot();
+        const slaves = [
+            new TestBot({ slave: true }),
+            new TestBot({ slave: true }),
+            new TestBot({ slave: true })
+        ];
+
+        distributor.run();
+        distributor.onBotConnected(master);
+
+        for (const slave of slaves)
+            distributor.onBotConnected(slave);
+        
+        assert.equal(runtime.requestSlaveDecreaseCallCount, 0);
+
+        // (1) Wait for |kDecreaseSlaveRequestIntervalMs| to unlock the system.
+        await server.clock.advance(kDecreaseSlaveRequestIntervalMs);
+
+        // (2) Run for |kDecreaseSlaveRequestSampleCount| iterations, each a second, where a single
+        // message will be sent. With three slaves, our maximum throughput is 3.5 commands/sec,
+        // where the actual throughput will be averaging at 1 command/sec. (29% of capacity.)
+        for (let cycle = 0; cycle < kDecreaseSlaveRequestSampleCount; ++cycle) {
+            distributor.write('PRIVMSG #LVP.DevJS :Hello, world!');
+            await server.clock.advance(/* 1 second = */ 1000);
+        }
+
+        assert.equal(runtime.requestSlaveDecreaseCallCount, 1);
+
+        // (3) Run the same iterations again, but since we've recently requested the number of
+        // slaves to decrease, we don't expect another call at this time.
+        for (let cycle = 0; cycle < kDecreaseSlaveRequestSampleCount; ++cycle) {
+            distributor.write('PRIVMSG #LVP.DevJS :Hello, world!');
+            await server.clock.advance(/* 1 second = */ 1000);
+        }
+
+        assert.equal(runtime.requestSlaveDecreaseCallCount, 1);
+    });
 });

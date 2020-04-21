@@ -42,12 +42,14 @@ export class Runtime {
     // too high. An extra slave would be able to help out. Adding a slave is at our discretion.
     requestSlaveIncrease() {
         // TODO: Implement this method.
+        console.log('------> Requesting an additional slave.');
     }
 
     // Called by the message distributor when the bot command rate is sufficiently low to be able to
     // get by with a slave less. The runtime can decide whether to honour this request.
     requestSlaveDecrease() {
         // TODO: Implement this method.
+        console.log('------> Requesting a slave to be turned down.');
     }
 
     // Disconnect all the bots from the network.

@@ -6,7 +6,7 @@ import Feature from 'components/feature_manager/feature.js';
 
 import { CommandManager } from 'features/nuwani/commands/command_manager.js';
 import { Configuration } from 'features/nuwani/configuration.js';
-import { MessageDistributor } from 'features/nuwani/echo/runtime_distributor.js';
+import { MessageDistributor } from 'features/nuwani/echo/message_distributor.js';
 import { Runtime } from 'features/nuwani/runtime/runtime.js';
 
 import { CommunicationCommands } from 'features/nuwani/commands/communication_commands.js';

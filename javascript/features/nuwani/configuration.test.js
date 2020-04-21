@@ -126,6 +126,8 @@ describe('Configuration', it => {
 
         assert.equal(configuration.channels.length, 2);
         assert.isNull(configuration.channels[0].password);
+
+        assert.equal(configuration.echoChannel, configuration.channels[0].channel);
     });
 
     it('correctly reflects level associative information', assert => {

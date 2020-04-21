@@ -5,6 +5,7 @@
 import { MessageDistributor, kMaximumCommandRateMaster, kMaximumCommandRateSlave,
          kMaximumQueueSize } from 'features/nuwani/echo/message_distributor.js';
 
+import { Configuration } from 'features/nuwani/configuration.js';
 import { TestBot } from 'features/nuwani/test/test_bot.js';
 
 describe('MessageDistributor', (it, beforeEach, afterEach) => {
@@ -20,7 +21,7 @@ describe('MessageDistributor', (it, beforeEach, afterEach) => {
 
     beforeEach(() => {
         runtime = new FakeRuntime();
-        distributor = new MessageDistributor(runtime);
+        distributor = new MessageDistributor(runtime, new Configuration());
     });
 
     afterEach(() => {
@@ -102,7 +103,7 @@ describe('MessageDistributor', (it, beforeEach, afterEach) => {
             distributor.onBotConnected(master);
 
             for (let messageId = 0; messageId < kMaximumQueueSize; ++messageId)
-                distributor.write('PRIVMSG #echo :Hello, world!');
+                distributor.write('PRIVMSG #LVP.DevJS :Hello, world!');
             
             assert.isAbove(distributor.queueSize, 1);
             while (distributor.queueSize) {
@@ -118,7 +119,7 @@ describe('MessageDistributor', (it, beforeEach, afterEach) => {
             distributor.onBotConnected(slave);
 
             for (let messageId = 0; messageId < kMaximumQueueSize; ++messageId)
-                distributor.write('PRIVMSG #echo :Hello, world!');
+                distributor.write('PRIVMSG #LVP.DevJS :Hello, world!');
             
             assert.isAbove(distributor.queueSize, 1);
             while (distributor.queueSize) {
@@ -136,5 +137,45 @@ describe('MessageDistributor', (it, beforeEach, afterEach) => {
 
         assert.isBelow(slaveWaits, masterWaits);
         assert.equal(masterWaits / 2, slaveWaits);        
+    });
+
+    it('should dispose of messages when the queue size has been exceeded', async (assert) => {
+        const slave = new TestBot({ slave: true });
+
+        distributor.run();
+        distributor.onBotConnected(slave);
+
+        for (let messageId = 0; messageId < kMaximumQueueSize * 2; ++messageId)
+            distributor.write('PRIVMSG #LVP.DevJS :Hello, world!');
+        
+        assert.isAbove(distributor.queueSize, kMaximumQueueSize);
+
+        while (distributor.queueSize)
+            await server.clock.advance(/* 1 second = */ 1000);
+
+        assert.equal(slave.messagesForTesting.length, kMaximumQueueSize + kMaximumCommandRateSlave);
+        assert.isTrue(/dropped (\d+) pending messages/.test(slave.messagesForTesting.pop()));
+    });
+
+    it('should repeatedly drop messages if the queue keeps growing', async (assert) => {
+        const slave = new TestBot({ slave: true });
+        const iterations = 3;
+
+        distributor.run();
+        distributor.onBotConnected(slave);
+        
+        for (let cycle = 0; cycle < iterations; ++cycle) {
+            for (let messageId = 0; messageId < kMaximumQueueSize * 2; ++messageId)
+                distributor.write('PRIVMSG #LVP.DevJS :Hello, world!');
+
+            await server.clock.advance(/* 1 second = */ 1000);
+        }
+
+        while (distributor.queueSize)
+            await server.clock.advance(/* 1 second = */ 1000);
+
+        assert.equal(slave.messagesForTesting.length, kMaximumQueueSize + iterations);
+        for (let cycle = 0; cycle < iterations; ++cycle)
+            assert.isTrue(/dropped (\d+) pending messages/.test(slave.messagesForTesting.pop()));
     });
 });

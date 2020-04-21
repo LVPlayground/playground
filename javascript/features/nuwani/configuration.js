@@ -12,6 +12,7 @@ export class Configuration {
     bots_ = [];
     servers_ = [];
     channels_ = [];
+    echoChannel_ = null;
     levels_ = [];
     commandPrefix_ = null;
     owners_ = [];
@@ -28,6 +29,10 @@ export class Configuration {
     // Gets the channels that the bot should join. Each entry is listed as { channel, echo,
     // password }, where the password may be NULL if no password is required.
     get channels() { return this.channels_; }
+
+    // Gets the echo channel to which output should be written. This is frequently accessed data,
+    // so it makes sense to cache the value in a central place.
+    get echoChannel() { return this.echoChannel_; }
 
     // Gets the level mapping between IRC channel mode in the echo channel, and how this should be
     // perceived in the command processor. Each entry is listed as { mode, level }, and the entries
@@ -121,8 +126,13 @@ export class Configuration {
             throw new Error('Exactly one IRC bot must be specified as the master bot.');
 
         // (8) Require that the echo channel has been defined.
-        if (this.channels_.filter(channel => channel.echo).length !== 1)
-            throw new Error('Exactly one IRC channel must be specified as the echo channel.');
+        {
+            const channels = this.channels_.filter(channel => channel.echo);
+            if (channels.length !== 1)
+                throw new Error('Exactly one IRC channel must be specified as the echo channel.');
+
+            this.echoChannel_ = channels[0].channel;
+        }  
 
         // (9) Sort the level mapping in descending order based on the access level.
         this.levels_.sort((lhs, rhs) => {

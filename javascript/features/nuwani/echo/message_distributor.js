@@ -68,6 +68,7 @@ export class MessageDistributor extends RuntimeObserver {
     };
 
     runtime_ = null;
+    configuration_ = null;
 
     bots_ = null;
     queue_ = null;
@@ -75,11 +76,13 @@ export class MessageDistributor extends RuntimeObserver {
     // Gets the number of messages currently stored in the distribution queue.
     get queueSize() { return this.queue_.length; }
 
-    constructor(runtime) {
+    constructor(runtime, configuration) {
         super();
 
         this.runtime_ = runtime;
         this.runtime_.addObserver(this);
+
+        this.configuration_ = configuration;
 
         this.bots_ = new Map();
         this.queue_ = [];
@@ -107,13 +110,26 @@ export class MessageDistributor extends RuntimeObserver {
         while (this.runtime_) {
             await wait(/* 1 second= */ 1000);
 
+            // (1) Decrease the current command rate on all bots, flush the queue where possible.
             for (const [bot, status] of this.bots_.entries()) {
                 status.decreaseCommandRate();
 
-                if (this.queue_.length && status.availableForWrite()) {
+                // Prune all pending messages while the |bot|'s command rate allows for that.
+                while (this.queue_.length && status.availableForWrite()) {
+                    bot.write(this.queue_.shift().toString());
                     status.increaseCommandRate();
-                    bot.write(this.queue_.shift());
                 }
+            }
+
+            // (2) If there are too many messages left in the queue, declare bankruptcy on them.
+            if (this.queue_.length > kMaximumQueueSize) {
+                const echoChannel = this.configuration_.echoChannel;
+                const overflowCount = (this.queue_.length - kMaximumQueueSize) + 2;
+                const bankruptcyMessage =
+                    `PRIVMSG ${echoChannel} :14(dropped ${overflowCount} pending messages)`;
+
+                this.queue_ = this.queue_.slice(0, kMaximumQueueSize - 2);
+                this.queue_.push(bankruptcyMessage);
             }
         }
     }
@@ -141,6 +157,7 @@ export class MessageDistributor extends RuntimeObserver {
         this.runtime_.removeObserver(this);
         this.runtime_ = null;
 
+        this.configuration_ = null;
         this.queue_ = null;
 
         this.bots_.clear();

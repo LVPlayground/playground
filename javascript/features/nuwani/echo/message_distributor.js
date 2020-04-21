@@ -13,13 +13,14 @@ export const kMaximumCommandRateMaster = 0.5;
 export const kMaximumQueueSize = 10;
 
 // Request a new slave bot to be started when the distribution queue has been exceeded
-// |kRequestSlaveOnQueueExceedCount| times in the last |kRequestSlaveOnQueueExceedSec| seconds.
-const kRequestSlaveOnQueueExceedCount = 3;
-const kRequestSlaveOnQueueExceedSec = 180;
+// |kRequestSlaveOnQueueOverflowCount| times in the last |kRequestSlaveOnQueueOverflowMs| ms.
+export const kRequestSlaveOnQueueOverflowCount = 3;
+export const kRequestSlaveOnQueueOverflowMs = 180 * 1000;
 
-// Disconnect a slave bot when the distribution queue has been at safe capacity for N-1 bots for
-// the past |kDisconnectSlaveOnSafeReducedCapacitySec| seconds.
-const kDisconnectSlaveOnSafeReducedCapacitySec = 600;
+// Intervals, in milliseconds, which will be the minimum intervals between requesting an increased
+// number of slaves and/or requesting existing slaves to disconnect.
+const kIncreaseSlaveRequestIntervalMs = 30 * 1000;
+const kDecreaseSlaveRequestIntervalMs = 600 * 1000;
 
 // The message distributor is a key component in NuwaniJS' echo system that makes sure messages are
 // well balanced between the available bots, we don't exceed the server's allowance, and we can
@@ -70,6 +71,13 @@ export class MessageDistributor extends RuntimeObserver {
     runtime_ = null;
     configuration_ = null;
 
+    // Millisecond timestamps of the last time we requested a bot to connect or disconnect.
+    lastIncreaseSlaveRequestTime_ = null;
+    lastDecreaseSlaveRequestTime_ = null;
+
+    // Array with the |kRequestSlaveOnQueueExceedCount| latest overflows that happened.
+    overflowTimes_ = null;
+
     bots_ = null;
     queue_ = null;
 
@@ -83,6 +91,7 @@ export class MessageDistributor extends RuntimeObserver {
         this.runtime_.addObserver(this);
 
         this.configuration_ = configuration;
+        this.overflowTimes_ = [];
 
         this.bots_ = new Map();
         this.queue_ = [];
@@ -116,22 +125,68 @@ export class MessageDistributor extends RuntimeObserver {
 
                 // Prune all pending messages while the |bot|'s command rate allows for that.
                 while (this.queue_.length && status.availableForWrite()) {
-                    bot.write(this.queue_.shift().toString());
                     status.increaseCommandRate();
+                    bot.write(this.queue_.shift());                    
                 }
             }
-
+            
             // (2) If there are too many messages left in the queue, declare bankruptcy on them.
             if (this.queue_.length > kMaximumQueueSize) {
-                const echoChannel = this.configuration_.echoChannel;
-                const overflowCount = (this.queue_.length - kMaximumQueueSize) + 2;
-                const bankruptcyMessage =
-                    `PRIVMSG ${echoChannel} :14(dropped ${overflowCount} pending messages)`;
+                const timestamp = server.clock.currentTime();
 
-                this.queue_ = this.queue_.slice(0, kMaximumQueueSize - 2);
-                this.queue_.push(bankruptcyMessage);
+                this.coalesceQueueOverflow();
+                this.recordQueueOverflow(timestamp);
+                
+                if (this.queue_.length > kMaximumQueueSize)
+                    throw new Error('Queue is still too long after coalescing messages.');
+
+                if (this.recentQueueOverflowCount(timestamp) >= kRequestSlaveOnQueueOverflowCount) {
+                    const lastIncreaseSlaveRequestTime = this.lastIncreaseSlaveRequestTime_ ?? 0;
+                    if (lastIncreaseSlaveRequestTime < (timestamp - kRequestSlaveOnQueueOverflowMs))
+                        this.requestSlaveIncrease(timestamp);
+                }
             }
         }
+    }
+
+    // Coalesces the queue overflow in a single message that indicates how many messages have
+    // been dropped. This message will be placed at the end of the new queue.
+    coalesceQueueOverflow() {
+        const echoChannel = this.configuration_.echoChannel;
+        const overflowCount = (this.queue_.length - kMaximumQueueSize) + 2;
+        const bankruptcyMessage =
+            `PRIVMSG ${echoChannel} :14(dropped ${overflowCount} pending messages)`;
+
+        this.queue_ = this.queue_.slice(0, kMaximumQueueSize - 2);
+        this.queue_.push(bankruptcyMessage);
+    }
+
+    // Records an overflow in the message queue by logging the instance. The queue will never
+    // exceed |kRequestSlaveOnQueueOverflowCount| entries, which will be the most recent ones.
+    recordQueueOverflow(timestamp) {
+        this.overflowTimes_.push(timestamp);
+
+        if (this.overflowTimes_.length > kRequestSlaveOnQueueOverflowCount)
+            this.overflowTimes_.shift();
+    }
+
+    // Calculates the number of recent message queue overflows based on the defined thresholds.
+    recentQueueOverflowCount(timestamp) {
+        let count = 0;
+
+        for (const overflowTime of this.overflowTimes_) {
+            if (overflowTime > (timestamp - kRequestSlaveOnQueueOverflowMs))
+                ++count;
+        }
+
+        return count;
+    }
+
+    // Requests the runtime to launch a new slave as the system is seeing increased load. This is
+    // not a guarantee that the slave will join, just that it's been requested.
+    requestSlaveIncrease(timestamp) {
+        this.lastIncreaseSlaveRequestTime_ = timestamp;
+        this.runtime_.requestSlaveIncrease();
     }
 
     // RuntimeObserver implementation:

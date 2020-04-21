@@ -38,6 +38,18 @@ export class Runtime {
             bot.connect();
     }
 
+    // Called by the message distributor when messages are being dropped because the command rate is
+    // too high. An extra slave would be able to help out. Adding a slave is at our discretion.
+    requestSlaveIncrease() {
+        // TODO: Implement this method.
+    }
+
+    // Called by the message distributor when the bot command rate is sufficiently low to be able to
+    // get by with a slave less. The runtime can decide whether to honour this request.
+    requestSlaveDecrease() {
+        // TODO: Implement this method.
+    }
+
     // Disconnect all the bots from the network.
     diconnect() {
         for (const bot of this.bots_)

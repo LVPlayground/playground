@@ -3,7 +3,8 @@
 // be found in the LICENSE file.
 
 import { MessageDistributor, kMaximumCommandRateMaster, kMaximumCommandRateSlave,
-         kMaximumQueueSize } from 'features/nuwani/echo/message_distributor.js';
+         kMaximumQueueSize, kRequestSlaveOnQueueOverflowCount,
+         kRequestSlaveOnQueueOverflowMs } from 'features/nuwani/echo/message_distributor.js';
 
 import { Configuration } from 'features/nuwani/configuration.js';
 import { TestBot } from 'features/nuwani/test/test_bot.js';
@@ -12,8 +13,17 @@ describe('MessageDistributor', (it, beforeEach, afterEach) => {
     // Fake implementation of the Runtime class that implements sufficient functionality to test the
     // message distributor, and provides access to calls for spinning up or turning down a bot.
     class FakeRuntime {
+        requestSlaveIncreaseCallCount_ = 0;
+        requestSlaveDecreaseCallCount_ = 0;
+
+        get requestSlaveIncreaseCallCount() { return this.requestSlaveIncreaseCallCount_; }
+        get requestSlaveDecreaseCallCount() { return this.requestSlaveDecreaseCallCount_; }
+
         addObserver(observer) {}
         removeObserver(observer) {}
+
+        requestSlaveIncrease() { this.requestSlaveIncreaseCallCount_++; }
+        requestSlaveDecrease() { this.requestSlaveDecreaseCallCount_++; }
     }
 
     let runtime = null;
@@ -178,4 +188,51 @@ describe('MessageDistributor', (it, beforeEach, afterEach) => {
         for (let cycle = 0; cycle < iterations; ++cycle)
             assert.isTrue(/dropped (\d+) pending messages/.test(slave.messagesForTesting.pop()));
     });
+
+    it('should request another bot to connect if the message load is high', async (assert) => {
+        const master = new TestBot();
+        const iterations = kRequestSlaveOnQueueOverflowCount;
+
+        distributor.run();
+        distributor.onBotConnected(master);
+
+        assert.equal(runtime.requestSlaveIncreaseCallCount, 0);
+
+        // (1) Create |kRequestSlaveOnQueueOverflowCount| overflows, which will request a slave.
+        for (let cycle = 0; cycle < iterations; ++cycle) {
+            for (let messageId = 0; messageId < kMaximumQueueSize * 2; ++messageId)
+                distributor.write('PRIVMSG #LVP.DevJS :Hello, world!');
+
+            await server.clock.advance(/* 1 second = */ 1000);
+        }
+
+        assert.equal(runtime.requestSlaveIncreaseCallCount, 1);
+
+        // (2) Create that many overflows again. This SHOULD NOT create a slave because not
+        // enough time has passed since the last slave that was created.
+        for (let cycle = 0; cycle < iterations; ++cycle) {
+            for (let messageId = 0; messageId < kMaximumQueueSize * 2; ++messageId)
+                distributor.write('PRIVMSG #LVP.DevJS :Hello, world!');
+
+            await server.clock.advance(/* 1 second = */ 1000);
+        }
+
+        assert.equal(runtime.requestSlaveIncreaseCallCount, 1);
+
+        // (3) Do the exact same thing again, but now after waiting |kRequestSlaveOnQueueOverflowMs|
+        // which means that another bot can be requested if needed.
+        server.clock.advance(kRequestSlaveOnQueueOverflowMs);
+
+        for (let cycle = 0; cycle < iterations; ++cycle) {
+            for (let messageId = 0; messageId < kMaximumQueueSize * 2; ++messageId)
+                distributor.write('PRIVMSG #LVP.DevJS :Hello, world!');
+
+            await server.clock.advance(/* 1 second = */ 1000);
+        }
+
+        assert.equal(runtime.requestSlaveIncreaseCallCount, 2);
+    });
+
+    // TODO: Request slave decreases if the load allows for that.
+    // TODO: Do not request slave decreases if requested recently.
 });

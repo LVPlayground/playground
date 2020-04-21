@@ -6,6 +6,7 @@ import Feature from 'components/feature_manager/feature.js';
 
 import { CommandManager } from 'features/nuwani/commands/command_manager.js';
 import { Configuration } from 'features/nuwani/configuration.js';
+import { MessageDistributor } from 'features/nuwani/echo/runtime_distributor.js';
 import { Runtime } from 'features/nuwani/runtime/runtime.js';
 
 import { CommunicationCommands } from 'features/nuwani/commands/communication_commands.js';
@@ -17,6 +18,8 @@ import { PlayerCommands } from 'features/nuwani/commands/player_commands.js';
 export default class extends Feature {
     configuration_ = null;
     runtime_ = null;
+
+    messageDistributor_ = null;
 
     commandManager_ = null;
     commands_ = null;
@@ -36,6 +39,10 @@ export default class extends Feature {
         // configuration. We immediately initiate the connection.
         this.runtime_ = new Runtime(this.configuration_);
         this.runtime_.connect();
+
+        // The message distributor is responsible for the fan-out of echo messages to individual
+        // bots, and to make sure that we're able to cope with the message load.
+        this.messageDistributor_ = new MessageDistributor(this.runtime_);
 
         // The command manager deals with commands exposed to IRC. They work identical to those
         // available in-game, and thus must be created with a Builder, either by this Feature or
@@ -59,6 +66,9 @@ export default class extends Feature {
 
         this.commandManager_.dispose();
         this.commandManager_ = null;
+
+        this.messageDistributor_.dispose();
+        this.messageDistributor_ = null;
 
         this.runtime_.dispose();
         this.runtime_ = null;

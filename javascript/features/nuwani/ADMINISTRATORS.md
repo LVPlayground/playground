@@ -25,8 +25,8 @@ that not everybody may be fully up-to-speed on the latest.
 
 ### Managing the state of Las Venturas Playground players
   * [I want to see which player data I have access to](#-i-want-to-see-which-player-data-i-have-access-to)
-  * [I want to see a player's data](#-i-want-to-see-a-player-s-data)
-  * [I want to update a player's data](#-i-want-to-update-a-player-s-data)
+  * [I want to see a player's data](#-i-want-to-see-a-players-data)
+  * [I want to update a player's data](#-i-want-to-update-a-players-data)
 
 ## Controlling who can access the server
 As an administrator, you have the ability to control which players are able to access the server,

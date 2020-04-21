@@ -43,6 +43,7 @@ export default class extends Feature {
         // The message distributor is responsible for the fan-out of echo messages to individual
         // bots, and to make sure that we're able to cope with the message load.
         this.messageDistributor_ = new MessageDistributor(this.runtime_);
+        this.messageDistributor_.run();
 
         // The command manager deals with commands exposed to IRC. They work identical to those
         // available in-game, and thus must be created with a Builder, either by this Feature or

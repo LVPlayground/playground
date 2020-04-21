@@ -5,11 +5,12 @@
 import { RuntimeObserver } from 'features/nuwani/runtime/runtime.js';
 
 // Maximum command rate per bot, indicated in number of commands per second.
-const kMaximumCommandRate = 1;
+export const kMaximumCommandRateSlave = 1;
+export const kMaximumCommandRateMaster = 0.5;
 
 // Maximum number of messages in the distribution queue. The full queue will be dropped when the
 // queue size exceeds this number, with a warning being sent to IRC instead.
-const kMaximumQueueSize = 10;
+export const kMaximumQueueSize = 10;
 
 // Request a new slave bot to be started when the distribution queue has been exceeded
 // |kRequestSlaveOnQueueExceedCount| times in the last |kRequestSlaveOnQueueExceedSec| seconds.
@@ -44,29 +45,105 @@ const kDisconnectSlaveOnSafeReducedCapacitySec = 600;
 // by 50%. The reason behind this is that its responsible for responding to commands as well,
 // which should still not trigger fakelag on the server.
 export class MessageDistributor extends RuntimeObserver {
+    // Maintains the status of an individual bot in regards to sending statistics, with some utility
+    // methods to make interacting with a queue more obvious in the rest of the code.
+    static BotDistributionStatus = class BotDistributionStatus {
+        maximumCommandRate_ = null;
+        currentCommandRate_ = null;
+
+        constructor(maximumCommandRate) {
+            this.maximumCommandRate_ = maximumCommandRate;
+            this.currentCommandRate_ = 0;
+        }
+
+        // Returns whether the bot's current command rate allows for a write to the network.
+        availableForWrite() { return this.currentCommandRate_ < this.maximumCommandRate_; }
+
+        // Methods for increasing or decreasing the current command rate of this bot.
+        increaseCommandRate() { this.currentCommandRate_++; }
+        decreaseCommandRate() {
+            this.currentCommandRate_ =
+                Math.max(0, this.currentCommandRate_ - 1 * this.maximumCommandRate_);
+        }
+    };
+
     runtime_ = null;
+
+    bots_ = null;
+    queue_ = null;
+
+    // Gets the number of messages currently stored in the distribution queue.
+    get queueSize() { return this.queue_.length; }
 
     constructor(runtime) {
         super();
 
         this.runtime_ = runtime;
+        this.runtime_.addObserver(this);
 
-        if (this.runtime_)
-            this.runtime_.addObserver(this);
+        this.bots_ = new Map();
+        this.queue_ = [];
+    }
+
+    // Writes the |message| to the echo channel. The message will be sent immediately if any of the
+    // bots have a zero command rate. Otherwise, it will be put in the queue for distribution soon.
+    write(message) {
+        for (const [bot, status] of this.bots_.entries()) {
+            if (!status.availableForWrite())
+                continue;
+            
+            status.increaseCommandRate();
+
+            bot.write(message);
+            return;
+        }
+
+        this.queue_.push(message);
+    }
+
+    // Runs the message distributor until it's been disposed of. This function will never return
+    // until that happens, and will keep itself spinning once per second for that duration.
+    async run() {
+        while (this.runtime_) {
+            await wait(/* 1 second= */ 1000);
+
+            for (const [bot, status] of this.bots_.entries()) {
+                status.decreaseCommandRate();
+
+                if (this.queue_.length && status.availableForWrite()) {
+                    status.increaseCommandRate();
+                    bot.write(this.queue_.shift());
+                }
+            }
+        }
     }
 
     // RuntimeObserver implementation:
     // ---------------------------------------------------------------------------------------------
 
-    onBotConnected(bot) {}
-    onBotDisconnected(bot) {}
+    // Called when the given |bot| has connected. Registers it internally for message delivery, with
+    // the configured command rate depending on whether it's a master or slave bot.
+    onBotConnected(bot) {
+        this.bots_.set(bot, new MessageDistributor.BotDistributionStatus(
+                                    bot.config.master ? kMaximumCommandRateMaster
+                                                      : kMaximumCommandRateSlave));
+    }
+
+    // Called when the given |bot| has disconnected. We immediately remove it from internal state
+    // as it can no longer be used to distribute echo messages. This avoids messages getting lost.
+    onBotDisconnected(bot) {
+        this.bots_.delete(bot);
+    }
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        if (this.runtime_) {
-            this.runtime_.removeObserver(this);
-            this.runtime_ = null;
-        }
+        this.runtime_.removeObserver(this);
+        this.runtime_ = null;
+
+        this.queue_ = null;
+
+        this.bots_.clear();
+        this.bots_ = null;
     }
 }

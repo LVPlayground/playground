@@ -18,11 +18,11 @@ export class TestBot {
     // thus clarified as a suffix in the method name.
     get messagesForTesting() { return this.messages_; }
 
-    constructor() {
+    constructor({ slave } = {}) {
         this.config_ = {
             nickname: 'NuwaniJS',
             password: null,
-            master: true,
+            master: !slave,
         };
 
         this.nickname_ = this.config_.nickname;

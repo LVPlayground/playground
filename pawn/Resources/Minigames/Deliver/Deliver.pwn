@@ -16,7 +16,8 @@ enum TruckDeliveryPlayerEnum {
     Time,
     distn,
     TimeStart,
-    CheckTime
+    CheckTime,
+    deliveryTrailerID
 }
 
 new TruckDeliveryPlayer[MAX_PLAYERS][TruckDeliveryPlayerEnum];
@@ -127,7 +128,7 @@ PrepareDelivery(playerid)
         TruckDeliveryPlayer[playerid][Time] = floatround(floatpower(TruckDeliveryPlayer[playerid][distn], 0.9)*4.5, floatround_round);
         TruckDeliveryPlayer[playerid][CheckTime] = TruckDeliveryPlayer[playerid][Time];
         TruckDeliveryPlayer[playerid][TimeStart] = Time->currentTime();
-
+        TruckDeliveryPlayer[playerid][deliveryTrailerID] = GetVehicleTrailer(iVehID);
 
         DisablePlayerCheckpoint(playerid);
         SetPlayerCheckpoint(playerid, TruckLocationZ, TruckLocationY, TruckLocationZ, 5.0);
@@ -181,6 +182,12 @@ DeliveryComplete(playerid)
         SendClientMessage(playerid, Color::Red, "* What are you trying to pull? Bring me the trailer!");
         return 1;
     }
+
+    if (TruckDeliveryPlayer[playerid][deliveryTrailerID] != GetVehicleTrailer(iVehID)) {
+        SendClientMessage(playerid, Color::Red, "* You need to bring me the original trailer!");
+        return 1;
+    }
+
     DisablePlayerCheckpoint(playerid);
 
     new const timeTaken = Time->currentTime() - TruckDeliveryPlayer[playerid][TimeStart];

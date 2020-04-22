@@ -79,7 +79,7 @@ new g_vehicleModelInfo[NumberOfVehicleModels][VehicleModelInfoEntry] = {
     /** 468 **/ { "Sanchez",          BikeVehicleFlag },
     /** 469 **/ { "Sparrow",          HelicopterVehicleFlag },
     /** 470 **/ { "Patriot",          0 },
-    /** 471 **/ { "Quad",             0 },
+    /** 471 **/ { "Quad",             DisableNitroInjectionVehicleFlag },
     /** 472 **/ { "Coastguard",       BoatVehicleFlag },
     /** 473 **/ { "Dinghy",           BoatVehicleFlag },
     /** 474 **/ { "Hermes",           TransfenderModificationFlag },

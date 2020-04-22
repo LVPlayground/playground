@@ -106,11 +106,12 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
      * explosion or because it's being respawned, they will respawn.
      */
     public onVehicleSpawn() {
+        CBomb__ResetVehicleData(vehicleId);
+        CCrush__Reset(vehicleId);
+
         // Remove vehicles created with /v create which have not been saved yet.
         if (Vehicle(vehicleId)->isOpenWorldVehicle() == true) {
             VehicleManager->destroyVehicle(vehicleId);
-            CBomb__ResetVehicleData(vehicleId);
-            CCrush__Reset(vehicleId);
             return 1;
         }
 
@@ -132,8 +133,6 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
         SetVehicleVirtualWorld(vehicleId, 0 /* World::MainWorld */);
 
         // Further handling for other features.
-        CBomb__ResetVehicleData(vehicleId);
-        CCrush__Reset(vehicleId);
         CShell__VehicleSpawn(vehicleId);
         CTheft__VehicleSpawn(vehicleId);
         CLyse__VehicleSpawn(vehicleId);

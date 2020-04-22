@@ -257,6 +257,8 @@ class ShipManager {
                 SendClientMessage(playerId, Color::Error, "Vehicles are not allowed on the ship!");
             }
 
+            CBomb__ResetVehicleData(vehicleId);
+
             SetVehicleToRespawn(vehicleId);
 
             return 1;

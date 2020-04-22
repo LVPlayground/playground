@@ -1137,6 +1137,9 @@ lvp_jump(playerid, params[]) {
     if (!IsPlayerInAnyVehicle(playerid))
         return ShowBoxForPlayer(playerid, "You have to be in a vehicle to teleport to a jumpzone!");
 
+    if (GetPlayerVehicleSeat(playerid) != 0 && !Player(playerid)->isAdministrator())
+        return ShowBoxForPlayer(playerid, "You need to be the driver to teleport a vehicle!");
+
     if (VehicleModel(GetVehicleModel(GetPlayerVehicleID(playerid)))->isNitroInjectionAvailable() == false)
         return ShowBoxForPlayer(playerid, "You cannot teleport to a jumpzone in this type of vehicle!");
 
@@ -1157,8 +1160,9 @@ lvp_jump(playerid, params[]) {
         return ShowBoxForPlayer(playerid, "You can't teleport to a jumpzone with a passenger in your vehicle!");
 
     if (Map_Zone[jumpId][Map_MaxPlayers] != -1 && g_MapPlayerCount[jumpId] >= Map_Zone[jumpId][Map_MaxPlayers]
-        && Player(playerid)->isAdministrator() == false)
+        && Player(playerid)->isAdministrator() == false) {
         return ShowBoxForPlayer(playerid, "This jumpzone is full! Try again later.");
+    }
 
     ReportPlayerTeleport(playerid, 0 /* timeLimited */);
     SetPlayerMapZone(playerid, jumpId);

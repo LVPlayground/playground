@@ -55,12 +55,15 @@ class PropertyCommands {
      */
     @command("property")
     public onPropertyCommand(playerId, params[]) {
-        if (Command->parameterCount(params) == 0 && Player(playerId)->isAdministrator() == false) {
+        new bool: isPermanentAdministrator =
+            Player(playerId)->isAdministrator() && !Player(playerId)->isLevelTemporary();
+
+        if (Command->parameterCount(params) == 0 && !isPermanentAdministrator) {
             SendClientMessage(playerId, Color::Information, "Usage: /property search [name/Id]");
             return 1;
         }
 
-        if (Command->parameterCount(params) == 0 && Player(playerId)->isAdministrator() == true) {
+        if (Command->parameterCount(params) == 0 && isPermanentAdministrator) {
             SendClientMessage(playerId, Color::Information,
                 "Usage: /property [Id]? [create/delete/earnings/feature/goto/move/name/owner/price/save/search]");
             SendClientMessage(playerId, Color::Information,
@@ -69,13 +72,13 @@ class PropertyCommands {
         }
 
         new propertyId = Command->integerParameter(params, 0), operationName[16], parameterOffset = 0;
-        if (propertyId != -1 && Command->parameterCount(params) >= 2 && Player(playerId)->isAdministrator() == true) {
+        if (propertyId != -1 && Command->parameterCount(params) >= 2 && isPermanentAdministrator) {
             Command->stringParameter(params, 1, operationName, sizeof(operationName));
             parameterOffset = min(strlen(params), Command->startingIndexForParameter(params, 1)
                 + strlen(operationName) + 1);
         } else {
             Command->stringParameter(params, 0, operationName, sizeof(operationName));
-            if (strcmp(operationName, "search", true) && Player(playerId)->isAdministrator() == false)
+            if (strcmp(operationName, "search", true) && !isPermanentAdministrator)
                 return 0;
 
             parameterOffset = min(strlen(params), Command->startingIndexForParameter(params, 0)

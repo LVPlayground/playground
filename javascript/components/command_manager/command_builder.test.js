@@ -307,6 +307,60 @@ describe('CommandBuilder', (it, beforeEach) => {
     assert.equal(Message.filter(lastMessage), 'Error: Sorry, this command is only available to administrators.');
   });
 
+  it('should restrict values to permanent player levels', assert => {
+    let invoked = false;
+
+    builder('testcommand')
+        .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
+        .build(player => invoked = true);
+
+    listener(player, '');
+    assert.isFalse(invoked);
+
+    player.identify();
+    player.level = Player.LEVEL_ADMINISTRATOR;
+    player.levelIsTemporary = true;
+
+    listener(player, '');
+    assert.isFalse(invoked);
+
+    player.levelIsTemporary = false;
+
+    listener(player, '');
+    assert.isTrue(invoked);
+  });
+
+  it('should restrict sub-commands to permanent player levels', assert => {
+    let subInvoked = 0;
+    let invoked = 0;
+  
+    builder('testsubcommand')
+        .sub('foobar')
+            .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
+            .build(player => subInvoked++)
+        .build(player => invoked++);
+
+    assert.equal(invoked, 0);
+
+    listener(player, 'foobar');
+    assert.equal(subInvoked, 0);
+    assert.equal(invoked, 1);
+
+    player.identify();
+    player.level = Player.LEVEL_ADMINISTRATOR;
+    player.levelIsTemporary = true;
+
+    listener(player, 'foobar');
+    assert.equal(subInvoked, 0);
+    assert.equal(invoked, 2);
+
+    player.levelIsTemporary = false;
+
+    listener(player, 'foobar');
+    assert.equal(subInvoked, 1);
+    assert.equal(invoked, 2);
+  });
+
   it('should restrict values to functions', assert => {
     let counter = 0;
     let invoked = 0;

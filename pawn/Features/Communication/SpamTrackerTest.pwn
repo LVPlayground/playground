@@ -43,7 +43,7 @@ stock SpamTrackerTest() {
     SpamTracker->reset();
 
     // Case: Administrators and higher are exempt from the non-sanity spam policies.
-    Player(playerId)->setLevel(AdministratorLevel);
+    Player(playerId)->setLevel(AdministratorLevel, /* isTemporary= */ false);
 
     for (new i = 0; i < 5; i++)
         SpamTracker->record(playerId, "foobar");

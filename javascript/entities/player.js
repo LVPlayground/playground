@@ -23,6 +23,8 @@ class Player {
     this.disconnecting_ = false;
 
     this.level_ = Player.LEVEL_PLAYER;
+    this.levelIsTemporary_ = false;
+    
     this.vip_ = false;
     this.undercover_ = false;
 
@@ -77,6 +79,9 @@ class Player {
   // Gets the level of this player. Synchronized with the gamemode using the `levelchange` event.
   get level() { return this.level_; }
 
+  // Gets whether the player's level is temporary. Certain restrictions might apply in that case.
+  get levelIsTemporary() { return this.levelIsTemporary_; }
+
   // Gets the PlayerSynchedData object, representing data that's synchronized between the Pawn and
   // JavaScript implementations of Las Venturas Playground.
   get syncedData() { return this.syncedData_; }
@@ -85,6 +90,11 @@ class Player {
   isAdministrator() {
     return this.level_ == Player.LEVEL_ADMINISTRATOR ||
            this.level_ == Player.LEVEL_MANAGEMENT;
+  }
+
+  // Returns whether the player is a temporary administrator.
+  isTemporaryAdministrator() {
+    return this.isAdministrator() && this.levelIsTemporary_;
   }
 
   // Returns whether the player is a Management member on Las Venturas Playground.

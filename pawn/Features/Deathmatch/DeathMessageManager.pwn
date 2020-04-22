@@ -59,6 +59,9 @@ class DeathMessageManager {
         if (playerId != subjectId && Player(playerId)->isAdministrator() == false)
             return 0;
 
+        if (Player(playerId)->isLevelTemporary())
+            return 0;
+
         // Only make this feature available to registered players.
         if (Player(subjectId)->isRegistered() == false) {
             if (playerId != subjectId)

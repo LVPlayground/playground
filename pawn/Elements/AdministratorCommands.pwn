@@ -911,7 +911,7 @@ GodHelp:
         }
 
         Player(subjectId)->setIsVip(true);
-        Player(subjectId)->setLevel(AdministratorLevel);
+        Player(subjectId)->setLevel(AdministratorLevel, /* isTemporary= */ true);
 
         tempLevel[subjectId] = 2;
         format(UserTemped[subjectId], sizeof(UserTemped[]), "%s", Player(playerId)->nicknameString());

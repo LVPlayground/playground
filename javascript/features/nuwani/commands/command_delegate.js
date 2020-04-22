@@ -27,16 +27,25 @@ export class CommandDelegate {
 
     // Returns the level of the |context| in the echo channel, as a Player level.
     getSourceLevel(context) {
+        let level = {
+            sourceLevel: Player.LEVEL_PLAYER,
+            sourceLevelTemporary: false
+        };
+
         const channelModes = context.getSenderModesInEchoChannel();
         if (typeof channelModes !== 'string')
-            return Player.LEVEL_PLAYER;
+            return level;
         
         for (const mapping of this.levels_) {
-            if (channelModes.includes(mapping.mode))
-                return mapping.level;
+            if (channelModes.includes(mapping.mode)) {
+                return {
+                    sourceLevel: mapping.level,
+                    sourceLevelTemporary: false,
+                };
+            }
         }
 
-        return Player.LEVEL_PLAYER;
+        return level;
     }
 
     // Sends the given |error| to the |context|, with the given |parameters|.

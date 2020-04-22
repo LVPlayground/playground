@@ -18,7 +18,10 @@ export default class CommandGameDelegate {
 
     // Returns the level of the |source|, which in this case is a Player.
     getSourceLevel(player) {
-        return player.level;
+        return {
+            sourceLevel: player.level,
+            sourceLevelTemporary: player.levelIsTemporary,
+        };
     }
 
     // Sends the given |error| to the |player|, with the given |parameters|.

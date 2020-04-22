@@ -13,22 +13,22 @@ describe('CommandDelegate', it => {
 
         assert.equal(Player.LEVEL_MANAGEMENT, delegate.getSourceLevel({
             getSenderModesInEchoChannel: () => 'a'
-        }));
+        }).sourceLevel);
 
         assert.equal(Player.LEVEL_MANAGEMENT, delegate.getSourceLevel({
             getSenderModesInEchoChannel: () => 'oa'
-        }));
+        }).sourceLevel);
 
         assert.equal(Player.LEVEL_ADMINISTRATOR, delegate.getSourceLevel({
             getSenderModesInEchoChannel: () => 'o'
-        }));
+        }).sourceLevel);
 
         assert.equal(Player.LEVEL_PLAYER, delegate.getSourceLevel({
             getSenderModesInEchoChannel: () => 'h'
-        }));
+        }).sourceLevel);
 
         assert.equal(Player.LEVEL_PLAYER, delegate.getSourceLevel({
             getSenderModesInEchoChannel: () => ''
-        }));
+        }).sourceLevel);
     });
 });

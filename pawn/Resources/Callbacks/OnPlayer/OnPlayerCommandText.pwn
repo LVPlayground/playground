@@ -392,7 +392,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     if(strcmp(cmd, "/rconadmin", true) == 0 && IsPlayerAdmin(playerid))
     {
         // An RCON admin has requested management perms.. we give them.
-        Player(playerid)->setLevel(ManagementLevel);
+        Player(playerid)->setLevel(ManagementLevel, /* isTemporary= */ false);
 
         // However we don't let them know, because it's tradition.
         return 0;

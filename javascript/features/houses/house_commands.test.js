@@ -53,6 +53,27 @@ describe('HouseCommands', (it, beforeEach) => {
         assert.equal(manager.locationCount, locationCount + 1);
     });
 
+    it('should disallow temporary admins from creating house locations', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const locationCount = manager.locationCount;
+
+        gunther.identify();
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+        gunther.levelIsTemporary = true;
+
+        assert.equal(manager.locationCount, locationCount);
+
+        assert.isTrue(await gunther.issueCommand('/house create'));
+
+        // The server should pretend like the command does not exist, and show the help messages
+        // to the player instead.
+
+        assert.isAbove(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.HOUSE_HEADER);
+
+        assert.equal(manager.locationCount, locationCount);
+    });
+
     it('should prevent houses from being created in residential exclusion zones', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 

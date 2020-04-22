@@ -38,6 +38,8 @@ Furthermore, administrators are able to use the following commands:
   * **/v [player]? respawn**: Respawns either your own vehicle, or that of `player`.
   * **/v [player]? save**: Saves either your own vehicle, or that of `player`, in the database.
 
+_Note that temporary administrators are not allowed to use either `/v save` or `/v delete`._
+
 Finally, Management is able to use the following commands:
 
   * **/v optimise**: Optimises the vehicle streamer. Should be used sparsely.

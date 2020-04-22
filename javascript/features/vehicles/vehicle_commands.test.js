@@ -1080,4 +1080,22 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.equal(gunther.vehicle.primaryColor, 142);
         assert.equal(gunther.vehicle.secondaryColor, 241);
     });
+
+    it('should pretend that the delete and save commands do not exist for temps', async(assert) => {
+        // Only administrators can manipulate vehicle color(s) on the server, but certain commands
+        // have been restricted from temporary administrators.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+        gunther.levelIsTemporary = true;
+
+        assert.isTrue(createVehicleForPlayer(gunther));
+        assert.isNotNull(gunther.vehicle);
+
+        assert.isTrue(await gunther.issueCommand('/v save'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.VEHICLE_QUICK_ALREADY_DRIVING);
+
+        assert.isTrue(await gunther.issueCommand('/v delete'));
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(gunther.messages[1], Message.VEHICLE_QUICK_ALREADY_DRIVING);
+    });
 });

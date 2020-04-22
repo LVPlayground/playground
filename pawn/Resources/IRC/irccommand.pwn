@@ -62,7 +62,7 @@ RunDeprecatedIrcCommand(line[]) {
         Admin(Player::InvalidId, str);
 
         Player(pid)->setIsVip(true);
-        Player(pid)->setLevel(AdministratorLevel);
+        Player(pid)->setLevel(AdministratorLevel, /* isTemporary= */ true);
 
         ColorManager->storeExistingPlayerCustomColor(pid);
         ColorManager->setPlayerCustomColor(pid, Color::AdministratorColor);

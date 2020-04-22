@@ -61,8 +61,9 @@ export class CommandBuilder {
     return this.parent_.name + ' ' + name;
   }
 
-  // Restricts usage of the command to the given player level.
-  restrict(level) {
+  // Restricts usage of the command to the given player level. Optionally, when |restrictTemporary|
+  // has been set, it further excludes people who aren't permanently at that level.
+  restrict(level, restrictTemporary = false) {
     if (typeof level == 'function') {
       this.restrictFn_ = level;
       return this;
@@ -75,6 +76,7 @@ export class CommandBuilder {
       throw new Error('A restrictive function has already been supplied.');
 
     this.restrictLevel_ = level;
+    this.restrictLevelTemporaries_ = restrictTemporary;
     return this;
   }
 
@@ -212,9 +214,17 @@ export class CommandBuilder {
       // Make sure that any leading padding is removed from |args|.
       argumentString = argumentString.trim();
 
+      const { sourceLevel, sourceLevelTemporary } = this.delegate_.getSourceLevel(source);
+
+      // Returns whether the |source| does not meet the level restriction stored on |builder|.
+      function failsLevelRestriction(builder) {
+        return builder.restrictLevel_ > sourceLevel ||
+              (builder.restrictLevelTemporaries_ && sourceLevelTemporary);
+      }
+
       // When a level restriction is in effect for this command and the source does not meet the
       // required level, bail out immediately. This clause only hits for the main command.
-      if ((this.restrictFn_ && !this.restrictFn_(source)) || this.restrictLevel_ > this.delegate_.getSourceLevel(source)) {
+      if ((this.restrictFn_ && !this.restrictFn_(source)) || failsLevelRestriction(this)) {
         const message = this.restrictFn_ ? 'specific people'
                                          : playerLevelToString(this.restrictLevel_, true /* plural */);
 
@@ -232,7 +242,7 @@ export class CommandBuilder {
       // Determine if there is a sub-command that we should delegate to. Word matching is used for
       // string values (which will be the common case for delegating commands.)
       for (let { builder, listener } of this.subCommands_) {
-        if ((this.restrictFn_ && !this.restrictFn_(source)) || builder.restrictLevel_ > this.delegate_.getSourceLevel(source))
+        if ((this.restrictFn_ && !this.restrictFn_(source)) || failsLevelRestriction(builder))
           continue;
 
         if (typeof builder.command_ == 'string') {

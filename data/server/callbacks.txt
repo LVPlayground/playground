@@ -7,7 +7,7 @@ forward OnColorPickerResponse(playerid, color);
 forward OnMessageLevelChange(playerid, messagelevel);
 forward OnPlayerActivityChange(playerid, activity);
 forward OnPlayerLeaveActivity(playerid);
-forward OnPlayerLevelChange(playerid, newlevel);
+forward OnPlayerLevelChange(playerid, newlevel, temporary);
 forward OnPlayerLogin(playerid, userid, vip, gangid, undercover);
 forward OnPlayerResolvedDeath(playerid, killerid, reason);
 forward OnSetiOwnershipChange(playerid);

@@ -168,12 +168,15 @@ class PlayerManager {
         switch (event.newlevel) {
             case 3:  // Management
                 player.level_ = Player.LEVEL_MANAGEMENT;
+                player.levelIsTemporary_ = false;
                 break;
             case 2:  // Administrator
                 player.level_ = Player.LEVEL_ADMINISTRATOR;
+                player.levelIsTemporary_ = !!event.temporary;
                 break;
             default:
                 player.level_ = Player.LEVEL_PLAYER;
+                player.levelIsTemporary_ = false;
                 break;
         }
 

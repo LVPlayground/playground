@@ -45,7 +45,7 @@ class HouseCommands {
             .sub('cancel')
                 .build(HouseCommands.prototype.onHouseCancelCommand.bind(this))
             .sub('create')
-                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
                 .build(HouseCommands.prototype.onHouseCreateCommand.bind(this))
             .sub('enter')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
@@ -58,14 +58,14 @@ class HouseCommands {
                 .parameters([{ name: 'id', type: CommandBuilder.NUMBER_PARAMETER }])
                 .build(HouseCommands.prototype.onHouseInteriorCommand.bind(this))
             .sub('modify')
-                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
                 .build(HouseCommands.prototype.onHouseModifyCommand.bind(this))
             .sub('remove')
-                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
                 .parameters([{ name: 'id', type: CommandBuilder.NUMBER_PARAMETER }])
                 .build(HouseCommands.prototype.onHouseRemoveCommand.bind(this))
             .sub('save')
-                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
                 .build(HouseCommands.prototype.onHouseSaveCommand.bind(this))
             .sub('settings')
                 .build(HouseCommands.prototype.onHouseSettingsCommand.bind(this))
@@ -527,7 +527,7 @@ class HouseCommands {
         }
 
         const isOwner = location.settings.ownerId === player.userId;
-        if (!isOwner && !player.isAdministrator()) {
+        if (!isOwner && (!player.isAdministrator() || player.isTemporaryAdministrator())) {
             player.sendMessage(Message.HOUSE_SETTINGS_NOT_OWNER);
             return;
         }

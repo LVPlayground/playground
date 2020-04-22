@@ -13,6 +13,7 @@ class MockPlayer {
 
         this.name_ = event.name || 'Player' + playerId;
         this.level_ = event.level || Player.LEVEL_PLAYER;
+        this.levelIsTemporary_ = false;
         this.rconAdmin_ = false;
         this.vip_ = false;
         this.undercover_ = false;
@@ -99,12 +100,19 @@ class MockPlayer {
     get level() { return this.level_; }
     set level(value) { this.level_ = value; }
 
+    get levelIsTemporary() { return this.levelIsTemporary_; }
+    set levelIsTemporary(value) { this.levelIsTemporary_ = value; }
+
     get syncedData() { return this.syncedData_; }
 
     isAdministrator() {
         return this.level_ == Player.LEVEL_ADMINISTRATOR ||
                this.level_ == Player.LEVEL_MANAGEMENT;
     }
+
+    isTemporaryAdministrator() {
+        return this.isAdministrator() && this.levelIsTemporary_;
+      }
 
     isManagement() { return this.level_ == Player.LEVEL_MANAGEMENT; }
 

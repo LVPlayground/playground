@@ -21,8 +21,9 @@ class Player <playerId (MAX_PLAYERS)> {
     // What are the flags that apply to the current player?
     new m_flags;
 
-    // What kind of access does this player have?
+    // What kind of access does this player have, and is it temporary or persistent?
     new PlayerAccessLevel: m_level;
+    new bool: m_levelIsTemporary;
 
     // Store their nickname in a string, as we could be needing this a lot.
     new m_nickname[MAX_PLAYER_NAME+1];
@@ -80,6 +81,7 @@ class Player <playerId (MAX_PLAYERS)> {
     public onConnect() {
         m_flags = 0;
         m_level = PlayerLevel;
+        m_levelIsTemporary = false;
         m_connectionTime = Time->currentTime();
 
         this->enableFlag(IsConnectedPlayerFlag);
@@ -115,6 +117,7 @@ class Player <playerId (MAX_PLAYERS)> {
     public onDisconnect() {
         m_flags = 0;
         m_level = PlayerLevel;
+        m_levelIsTemporary = false;
         m_nickname[0] = 0;
         m_connectionTime = 0;
         m_ipAddress[0] = 0;
@@ -239,6 +242,15 @@ class Player <playerId (MAX_PLAYERS)> {
     }
 
     /**
+     * Returns whether the player's current level is temporary, and has been granted as such.
+     *
+     * @return boolean Whether the player's level is temporary.
+     */
+    public inline bool: isLevelTemporary() {
+        return m_levelIsTemporary;
+    }
+
+    /**
      * Returns whether this player is a regular player on Las Venturas Playground, which will be
      * decided by the amount of hours they've spent on the server.
      *
@@ -293,9 +305,10 @@ class Player <playerId (MAX_PLAYERS)> {
      *
      * @param level The level this player should be updated to.
      */
-    public setLevel(PlayerAccessLevel: level) {
-        CallRemoteFunction("OnPlayerLevelChange", "ii", playerId, _: level);
+    public setLevel(PlayerAccessLevel: level, bool: isTemporary) {
+        CallRemoteFunction("OnPlayerLevelChange", "iii", playerId, _: level, _: isTemporary);
         m_level = level;
+        m_levelIsTemporary = isTemporary;
     }
 
     // ---- GETTERS FOR IMMUTABLE FLAGS ------------------------------------------------------------
@@ -477,8 +490,8 @@ public LVP_BanPlayer(playerId, reason[]) {
     return 1;
 }
 
-forward OnPlayerLevelChange(playerid, newlevel);
-public OnPlayerLevelChange(playerid, newlevel) {}
+forward OnPlayerLevelChange(playerid, newlevel, temporary);
+public OnPlayerLevelChange(playerid, newlevel, temporary) {}
 
 // Include the test-suite for the Player class.
 #include "Entities/Players/Player.tests.pwn"

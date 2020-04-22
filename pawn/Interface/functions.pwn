@@ -1007,7 +1007,7 @@ TakeTempAdministratorRightsFromPlayer(playerId, bool: fromInGame = false) {
     new const bool: wasVip = Player(playerId)->isLoggedIn() ? (AccountData(playerId)->isVip())
                                                             : false;
 
-    Player(playerId)->setLevel(PlayerLevel);
+    Player(playerId)->setLevel(PlayerLevel, /* isTemporary= */ false);
     Player(playerId)->setIsVip(wasVip);
 
     if (fromInGame)

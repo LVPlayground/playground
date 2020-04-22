@@ -56,11 +56,11 @@ stock PlayerTestSuite() {
     assert_equals(Player(50)->isAdministrator(), false, "Player 50 should not be an administrator.");
     assert_equals(Player(50)->isManagement(), false, "Player 50 should not be a management member.");
 
-    Player(50)->setLevel(AdministratorLevel);
+    Player(50)->setLevel(AdministratorLevel, /* isTemporary= */ false);
     assert_equals(Player(50)->isAdministrator(), true, "Player 50 should be an administrator.");
     assert_equals(Player(50)->isManagement(), false, "Player 50 should not be a management member.");
 
-    Player(50)->setLevel(ManagementLevel);
+    Player(50)->setLevel(ManagementLevel, /* isTemporary= */ false);
     assert_equals(Player(50)->isManagement(), true, "Player 50 should be a management member.");
     Player(50)->onDisconnect();
 

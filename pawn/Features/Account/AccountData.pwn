@@ -110,7 +110,7 @@ class AccountData <playerId (MAX_PLAYERS)> {
         m_level = AccountData->stringToPlayerLevel(level);
 
         // Synchronize this data with other classes in the code, to make sure they're up to date.
-        Player(playerId)->setLevel(m_level);
+        Player(playerId)->setLevel(m_level, /* isTemporary= */ false);
 
         new remainingJailTime = DatabaseResult(resultId)->readInteger("jailed");
         if (remainingJailTime > 0) {
@@ -169,7 +169,7 @@ class AccountData <playerId (MAX_PLAYERS)> {
     public applyPlayerLevel(PlayerAccessLevel: level) {
         m_level = level;
 
-        Player(playerId)->setLevel(m_level);
+        Player(playerId)->setLevel(m_level, /* isTemporary= */ false);
     }
 
     /**

@@ -159,7 +159,8 @@ class PlayerSettings <playerId (MAX_PLAYERS)> {
      * @return boolean Should earnings not be deposited to the player's account?
      */
     public bool: areEarningsToBankAccountDisabled() {
-        return this->hasSetting(EarningsToBankAccountDisabledSettingKey);
+        return !Player(playerId)->isRegistered() ||
+               this->hasSetting(EarningsToBankAccountDisabledSettingKey);
     }
 
     /**

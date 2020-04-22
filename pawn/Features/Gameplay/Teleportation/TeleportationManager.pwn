@@ -89,6 +89,8 @@ class TeleportationManager {
             if (teleportType == SecretTeleport)
                 LinkVehicleToInterior(vehicleId, GetPlayerInterior(subjectId));
 
+            CBomb__ResetVehicleData(vehicleId);
+
             SetVehiclePos(vehicleId, subjectPosition[0] + 4, subjectPosition[1] + 4, subjectPosition[2] + 2);
 
             if (trailerId != 0) {

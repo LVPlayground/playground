@@ -1080,8 +1080,11 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     }
 
     if (strcmp(cmd, "/borrow", true) == 0) {
-        new amount[128], maxAvailableLoan = 500000;
+        new amount[128];
         amount = strtok(cmdtext, idx);
+
+        new maxAvailableLoan = Player(playerid)->isRegistered() ? 500000
+                                                                :  10000;
 
         if (!strlen(amount)) {
             SendClientMessage(playerid, Color::Information, "Usage: /borrow [amount]");

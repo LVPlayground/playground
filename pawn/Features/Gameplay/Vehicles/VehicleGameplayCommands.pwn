@@ -42,7 +42,7 @@ class VehicleGameplayCommands {
         targetVehicleId = GetPlayerVehicleID(targetPlayerId);
         if (Player(playerId)->isAdministrator() == false) {
             if (CruiseController->isCruiseActive() == false && !IsPlayerInMapZone(targetPlayerId)) {
-                ShowBoxForPlayer(playerId, "You are only allowed to repair your vehicle during cruises, races or in map zones.");
+                ShowBoxForPlayer(playerId, "You are only allowed to repair your vehicle during cruises or in map zones.");
                 return 1;
             }
 
@@ -98,7 +98,7 @@ class VehicleGameplayCommands {
 
         targetVehicleId = GetPlayerVehicleID(targetPlayerId);
         if (Player(playerId)->isAdministrator() == false) {
-            if (!IsPlayerInMapZone(targetPlayerId) && CruiseController->isCruiseActive() == false) {
+            if (!IsPlayerInMapZone(targetPlayerId) && CruiseController->isCruiseActive() == false && PlayerActivity(targetPlayerId)->get() != PlayerActivityJsRace) {
                 ShowBoxForPlayer(playerId, "You are only allowed to flip your vehicle during cruises, races or in map zones.");
                 return 1;
             }

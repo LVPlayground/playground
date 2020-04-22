@@ -29,6 +29,9 @@ class RaceCommands {
         if (!this.manager_.isValid(id))
             return player.sendMessage(Message.RACE_ERROR_INVALID_RACE_ID);
 
+        if (player.interiorId !== 0 || player.virtualWorld !== 0)
+            return player.sendMessage(Message.RACE_ERROR_NOT_OUTSIDE);
+
         // TODO: Withdraw the price of playing a race from the player's account.
 
         this.manager_.startRace(player, id);
@@ -37,6 +40,9 @@ class RaceCommands {
     // Creates a dialog that provides an overview of the available races, together with their all-
     // time best times, and personalized best times if the player has logged in to their account.
     raceOverview(player) {
+        if (player.interiorId !== 0 || player.virtualWorld !== 0)
+            return player.sendMessage(Message.RACE_ERROR_NOT_OUTSIDE);
+
         this.manager_.loadRecordTimesForPlayer(player).then(races => {
             // Bail out if there are no races, since there won't be anything to display.
             if (!races.length)

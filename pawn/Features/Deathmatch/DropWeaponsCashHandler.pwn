@@ -162,7 +162,11 @@ class DropWeaponsCashHandler {
             dropPosition[2], GetPlayerVirtualWorld(playerId));
 
         // We save half of the dropped amount.
-        m_pickupCashAmount[playerId] = floatround(float(GetPlayerMoney(playerId)) * (GetEconomyValue(DeathDropMoneyPercentage) / 100.0));
+        new cashAmount = floatround(float(GetPlayerMoney(playerId)) * (GetEconomyValue(DeathDropMoneyPercentage) / 100.0));
+        if (cashAmount < 0)
+            cashAmount = 25;
+
+        m_pickupCashAmount[playerId] = cashAmount;
 
         m_droppedObjectTimer[playerId] = Time->currentTime();
 

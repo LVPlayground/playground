@@ -25,7 +25,6 @@ native JSON_parse(filename[]);
 native JSON_next(Node: node);
 native JSON_find(Node: node, name[]);
 native JSON_firstChild(Node: node);
-native JSON_getName(Node: node, buffer[], bufferSize);
 native JSON_getType(Node: node);
 native JSON_readString(Node: node, buffer[], bufferSize);
 native JSON_readInteger(Node: node, &value);
@@ -89,17 +88,6 @@ class JSON
      */
     public inline Node: firstChild(Node: node) {
         return (Node: (JSON_firstChild(node)));
-    }
-
-    /**
-     * Retrieve the name of given node.
-     *
-     * @param node The node to retrieve the name from.
-     * @param buffer The buffer to store the node's name in.
-     * @param bufferSize Maximum size to which we can fill the buffer.
-     */
-    public inline getName(Node: node, buffer[], bufferSize) {
-        JSON_getName(node, buffer, bufferSize);
     }
 
     /**

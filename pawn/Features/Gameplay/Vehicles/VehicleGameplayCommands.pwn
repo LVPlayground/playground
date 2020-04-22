@@ -16,17 +16,44 @@ class VehicleGameplayCommands {
      *
      * @param playerId Id of the player who executed this command.
      * @param player Name or Id of a player to fix the car for. Optional.
-     * @command /vr [player]?
+     * @command /vr [all | player]?
      */
     @command("vr")
     public onVehicleRepairCommand(playerId, params[]) {
         new targetPlayerId = playerId,
             targetVehicleId = Vehicle::InvalidId;
 
-        if (Command->parameterCount(params) >= 1 && Player(playerId)->isAdministrator() == true) {
+        if (Command->parameterCount(params) >= 1 && Player(playerId)->isAdministrator()) {
+            new targetParameter[4];
+            Command->stringParameter(params, 0, targetParameter, sizeof(targetParameter));
+
+            if (!strcmp(targetParameter, "all", true, 3)) {
+                for (new i = 0; i <= PlayerManager->highestPlayerId(); i++) {
+                    if (!Player(i)->isConnected() || !IsPlayerInAnyVehicle(i))
+                        continue;
+
+                    new vehicleId = GetPlayerVehicleID(i);
+
+                    SetVehicleHealth(vehicleId, 1000.0);
+                    RepairVehicle(vehicleId);
+
+                    if (playerId != i)
+                        ShowBoxForPlayer(i, "Your vehicle has been repaired!");
+                }
+
+                new message[64];
+                format(message, sizeof(message), "%s (Id:%d) has repaired all the vehicles.",
+                    Player(playerId)->nicknameString(), playerId);
+                Admin(playerId, message);
+
+                ShowBoxForPlayer(playerId, "All occupied vehicles have been repaired!");
+                return 1;
+            }
+
             targetPlayerId = Command->playerParameter(params, 0, playerId);
             if (targetPlayerId == Player::InvalidId)
                 return 1;
+
 
             if (GetPlayerState(targetPlayerId) != PLAYER_STATE_DRIVER) {
                 ShowBoxForPlayer(playerId, "This player isn't driving any vehicle.");

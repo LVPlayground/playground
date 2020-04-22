@@ -306,6 +306,12 @@ class HouseCommands {
             return;
         }
 
+        // Bail out if the user is in an interior, or in a different virtual world.
+        if (player.interiorId != 0 || player.virtualWorld != 0) {
+            player.sendMessage(Message.HOUSE_GOTO_TELEPORT_BLOCKED, 'not outside');
+            return;
+        }
+
         // Find the houses owned by |userId|. This operation is O(n) on the number of locations.
         for (const location of this.manager_.locations) {
             if (location.isAvailable())

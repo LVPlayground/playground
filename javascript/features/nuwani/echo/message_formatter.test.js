@@ -11,6 +11,9 @@ describe('MessageFormatter', it => {
         assert.throws(() => formatter.format('invalidTag'));
         assert.equal(
             formatter.format('test', 'Joe', 12.945, 14), 'Hello Joe, I have $13 for 14 days!');
+        
+        assert.throws(() => formatter.format('test_color_invalid'));
+        assert.equal(formatter.format('test_color'), '\x03031 \x0315yo \x03test');
     });
 
     it('is able to parse messages coming from Pawn', assert => {

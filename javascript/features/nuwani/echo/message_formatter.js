@@ -21,6 +21,8 @@ export class MessageFormatter {
                 test_string: '%s',
                 test_dsz: '%d %s %s',
                 test_ffd: '%d %d %d',
+                test_color_invalid: '<color:51>',
+                test_color: '<color:3>1 <color:15>yo <color>test',
             });
         } else {
             this.loadMessages(JSON.parse(readFile(kMessagesFile)));
@@ -44,12 +46,30 @@ export class MessageFormatter {
     //   %t  - Time. Will format minutes as MM:SS, hours as HH:MM:SS.
     //   %%  - Literal percentage sign.
     //
-    // To broaden support for additional formatters, refer to the string formatter itself.
+    // To broaden support for additional formatters, refer to the string formatter itself. In
+    // addition to these formatting characters, colour can be embedded as well:
+    //
+    //   <color:0-15>   Opens a colour block for the indicated color.
+    //   <color>        Closes any colour block.
+    //
+    // Embedded colours may only occur in the format, they will be ignored elsewhere.
     format(tag, ...params) {
         if (!this.messages_.has(tag))
             throw new Error('Invalid message tag given: ' + tag);
 
-        return stringFormat(this.messages_.get(tag), ...params);
+        let format = this.messages_.get(tag);
+
+        // Replace embedded colours and styling with the appropriate control characters.
+        format = format.replace(/<color>/g, '\x03');
+        format = format.replace(/<color:(\d+)>/g, (_, color) => {
+            const numericColour = parseInt(color, 10);
+            if (numericColour < 0 || numericColour > 15)
+                throw new Error('Invalid IRC colour code: ' + color);
+            
+            return '\x03' + ('0' + numericColour.toString()).substr(-2);
+        });
+
+        return stringFormat(format, ...params);
     }
 
     // Formats the Pawn-sourced |message| assuming the given |format|. Will return a string

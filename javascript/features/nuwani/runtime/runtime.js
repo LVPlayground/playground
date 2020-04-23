@@ -20,6 +20,9 @@ export class Runtime {
     bots_ = [];
     observers_ = null;
 
+    // Gives access to the bots that are part of this runtime.
+    get bots() { return this.bots_; }
+
     constructor(configuration) {
         this.configuration_ = configuration;
         this.observers_ = new Set();

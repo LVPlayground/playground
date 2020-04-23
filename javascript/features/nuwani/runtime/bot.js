@@ -32,6 +32,9 @@ export class Bot {
     // in configuration, but this can be changed during registration and through the NICK command.
     get nickname() { return this.nickname_; }
 
+    // Returns whether the bot is currently connected to the network.
+    isConnected() { return this.state_ === Bot.kStateConnected; }
+
     constructor(delegate, config, servers, channels) {
         this.delegate_ = delegate;
         this.config_ = config;

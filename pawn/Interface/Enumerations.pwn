@@ -3,31 +3,6 @@
 // be found in the LICENSE file.
 
 /**
- * What is the kind of IRC message that should be distributed? This is used to avoid having hard-
- * coded prefixes all around the source-code, which increases our flexibility.
- */
-enum IrcMessageType {
-    DeveloperIrcMessage, // [message]
-    BuyPropertyIrcMessage, // [propertyPrice] [playerName] [propertyName]
-    GangChatIrcMessage, // [playerId] [playerName] ![message]
-    GuestLoginIrcMessage, // [playerId] [oldPlayerName] [newPlayerName]
-    LoginIrcMessage, // [playerId] [playerName]
-    SellPropertyIrcMessage, // [propertyPrice] [playerName] [propertyName]
-    SellAllPropertiesIrcMessage, // [playerId] [playerName] [earnings]
-    PrivateMessageIrcMessage, // [playerName] [playerId] [receiverName] [receiverId] [message]
-    IrcPrivateMessageIrcMessage, // [playerId] [playerName] [receiverName] [message]
-    VipChatIrcMessage, // [playerName] [playerId] [message]
-    PhoneIrcMessage, // [playerName] [playerId] [calleeName] [calleeId] [message]
-    JoinIrcMessage, // [playerId] [playerName]
-    LeaveIrcMessage, // [playerId] [playerName] [reason]
-    DeathIrcMessage, // [playerName]
-    KillIrcMessage, // [playerName] [playerId] [killerName] [killerId] [reason]
-    NotConnectedIrcMessage, // [playerId]
-    AddCommandIrcMessage, // [trigger] [paramTypes] [userRight] [params]
-    PlayerStatusIrcMessage // [playerId] [playerName] [message]
-};
-
-/**
  * There are several reasons which can lead to a player leaving their minigame. This enumeration
  * contains a key for each of them, allowing us to properly give consistent replies to the player.
  */

@@ -458,14 +458,6 @@ TaxUpdate() {
     return 1;
 }
 
-AddEcho(message[]) {
-    if (strlen(message) > 480)
-        return 0;
-
-    SendEchoMessage(Configuration::EchoHostname, Configuration::EchoPort, message);
-    return 1;
-}
-
 strtok(const string[], &index) {
     new length = strlen(string);
     while ((index < length) && (string[index] <= ' '))

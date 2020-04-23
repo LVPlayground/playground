@@ -70,4 +70,8 @@ describe('StringFormatter', it => {
         assert.equal(format('%t', 7200), '02:00:00');
         assert.equal(format('%t', 36154), '10:02:34');
     });
+
+    it('should work with combinations', assert => {
+        assert.equal(format('%d %s %s', 42, 'hello', 'world :)'), '42 hello world :)');
+    });
 });

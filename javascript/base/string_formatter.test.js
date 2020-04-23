@@ -74,4 +74,10 @@ describe('StringFormatter', it => {
     it('should work with combinations', assert => {
         assert.equal(format('%d %s %s', 42, 'hello', 'world :)'), '42 hello world :)');
     });
+
+    it('should be able to re-order formatting', assert => {
+        assert.equal(format('%s{1} %d{0}', 25, 'Joe'), 'Joe 25');
+        assert.throws(() => format('%s{1}', 'Heh'));
+        assert.throws(() => format('%s{-1}', 'Heh'));
+    });
 });

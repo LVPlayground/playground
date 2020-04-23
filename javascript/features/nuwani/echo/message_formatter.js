@@ -107,7 +107,5 @@ export class MessageFormatter {
         return this.format(tag, ...params);
     }
 
-    dispose() {
-
-    }
+    dispose() {}
 }

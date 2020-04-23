@@ -7,6 +7,7 @@ import Feature from 'components/feature_manager/feature.js';
 import { CommandManager } from 'features/nuwani/commands/command_manager.js';
 import { Configuration } from 'features/nuwani/configuration.js';
 import { MessageDistributor } from 'features/nuwani/echo/message_distributor.js';
+import { MessageFormatter } from 'features/nuwani/echo/message_formatter.js';
 import { Runtime } from 'features/nuwani/runtime/runtime.js';
 
 import { CommunicationCommands } from 'features/nuwani/commands/communication_commands.js';
@@ -48,6 +49,10 @@ export default class extends Feature {
         this.messageDistributor_ = new MessageDistributor(this.runtime_, this.configuration_);
         this.messageDistributor_.run();
 
+        // The message formatter is able to format messages according to the configured JSON file,
+        // for display on IRC. It powers both JavaScript and Pawn-sourced messages.
+        this.messageFormatter_ = new MessageFormatter();
+
         // The command manager deals with commands exposed to IRC. They work identical to those
         // available in-game, and thus must be created with a Builder, either by this Feature or
         // by other ones that depend on IRC connectivity.
@@ -62,6 +67,28 @@ export default class extends Feature {
         ];
     }
 
+    // ---------------------------------------------------------------------------------------------
+
+    // Distributes a |tag| message to IRC, which will be formatted with the |params|. Should only be
+    // used by JavaScript code. Formatting is strict, and issues will throw exceptions.
+    echo(tag, ...params) {
+        const message = this.messageFormatter_.format(tag, params);
+        this.messageDistributor_.write(message);
+    }
+
+    // Implements the EchoMessage native function, which has the following signature:
+    //     native EchoMessage(tag[], format[], message[]);
+    //
+    // The native will be bound when this class is constructed, and will automatically be unbound on
+    // disposal. Echoed messages will directly be distributed to IRC.
+    echoFromPawn(tag, format, message) {
+        console.log(`tag: [${tag}], format: [${format}], message: [${message}]`);
+        return 1;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+
     dispose() {
         for (const instance of this.commands_)
             instance.dispose();
@@ -70,6 +97,9 @@ export default class extends Feature {
 
         this.commandManager_.dispose();
         this.commandManager_ = null;
+
+        this.messageFormatter_.dispose();
+        this.messageFormatter_ = null;
 
         this.messageDistributor_.dispose();
         this.messageDistributor_ = null;

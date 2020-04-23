@@ -483,7 +483,7 @@ class GangCommands {
 
                 for (const [label, price, seconds] of prices) {
                     const pricePrefix = (price < currentBalance ? '{00FF00}' : '{FF0000}');
-                    const priceLabel = pricePrefix + Message.formatPrice(price);
+                    const priceLabel = pricePrefix + Message.format('%$', price);
 
                     purchaseMenu.addItem(label, priceLabel, async(player) => {
                         const balance = await PlayerMoneyBridge.getBalanceForPlayer(player);

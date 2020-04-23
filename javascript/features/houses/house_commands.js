@@ -690,7 +690,7 @@ class HouseCommands {
                     const price = 0;
 
                     // TODO: Actually charge money for the vehicles.
-                    purchaseMenu.addItem(modelName, Message.formatPrice(price), async(player) => {
+                    purchaseMenu.addItem(modelName, Message.format('%$', price), async(player) => {
                         await this.manager_.createVehicle(location, parkingLot, {
                             modelId: modelId
                         });

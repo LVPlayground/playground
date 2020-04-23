@@ -62,7 +62,7 @@ class RaceCommands {
                 // Append the best time on Las Venturas Playground to the values.
                 if (race.bestRace !== null) {
                     columnValues.push(
-                        Message.formatTime(race.bestRace.time) + ' (' + race.bestRace.name + ')');
+                        Message.format('%t', race.bestRace.time) + ' (' + race.bestRace.name + ')');
                 } else {
                     columnValues.push('---');
                 }
@@ -70,7 +70,7 @@ class RaceCommands {
                 // If the user has logged in, append their personal best to the values.
                 if (displayPersonalBest) {
                     if (race.personalBestTime !== null)
-                        columnValues.push(Message.formatTime(race.personalBestTime));
+                        columnValues.push(Message.format('%t', race.personalBestTime));
                     else
                         columnValues.push('---');
                 }

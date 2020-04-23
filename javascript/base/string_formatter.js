@@ -52,12 +52,12 @@ export function format(message, ...parameters) {
 
 // Formats |value| as a number. Thousand separators will be inserted, and the number of decimals
 // for floating point numbers will be limited to two.
-function formatNumber(value) {
+export function formatNumber(value) {
     if (typeof value !== 'number')
         return value;
 
     let representation = Math.round(value * 100) / 100,
-    parts = representation.toString().split('.');
+        parts = representation.toString().split('.');
 
     parts[0] = parts[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, ',');
 
@@ -66,7 +66,7 @@ function formatNumber(value) {
 
 // Formats |value| as a price. Effectively the same as formatting a number, but removes all the
 // decimals from the amount and requires it to be a valid number.
-function formatPrice(value) {
+export function formatPrice(value) {
     if (typeof value !== 'number')
         value = 0;
 
@@ -75,7 +75,7 @@ function formatPrice(value) {
 
 // Formats |time|. Anything under an hour will be formatted as MM:SS, whereas values over an hour
 // will be formatted as HH:MM:SS instead. Non-numeric values will be returned as-is.
-function formatTime(time) {
+export function formatTime(time) {
     if (typeof time !== 'number')
         return time;
 

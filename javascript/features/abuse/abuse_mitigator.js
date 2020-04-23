@@ -49,6 +49,11 @@ class AbuseMitigator {
         this.weaponFireTime_.set(player, server.clock.monotonicallyIncreasingTime());
     }
 
+    // Resets the fact that |player| has fired their weapon.
+    resetWeaponFire(player) {
+        this.weaponFireTime_.delete(player);
+    }
+
     // Returns whether the |player| hasn't issued damage in the past |minimumElapsedTime| ms.
     satisfiesDamageIssuedConstraint(player, currentTime, minimumElapsedTime) {
         const damageIssuedTime = this.damageIssuedTime_.get(player);
@@ -60,6 +65,11 @@ class AbuseMitigator {
         this.damageIssuedTime_.set(player, server.clock.monotonicallyIncreasingTime());
     }
 
+    // Resets the fact that |player| has issued damage to another player.
+    resetDamageIssued(player) {
+        this.damageIssuedTime_.delete(player);
+    }
+
     // Returns whether the |player| hasn't taken damage in the past |minimumElapsedTime| ms.
     satisfiesDamageTakenConstraint(player, currentTime, minimumElapsedTime) {
         const damageTakenTime = this.damageTakenTime_.get(player);
@@ -69,6 +79,11 @@ class AbuseMitigator {
     // Reports that |player| has taken damage from another player.
     reportDamageTaken(player) {
         this.damageTakenTime_.set(player, server.clock.monotonicallyIncreasingTime());
+    }
+
+    // Resets the fact that |player| has taken damage from another player.
+    resetDamageTaken(player) {
+        this.damageTakenTime_.delete(player);
     }
 
     // ---------------------------------------------------------------------------------------------

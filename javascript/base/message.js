@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { format as stringFormat } from 'base/string_formatter.js';
+import { format as stringFormat, formatNumber, formatPrice, formatTime } from 'base/string_formatter.js';
 
 // File in which the messages are stored. Must be in JSON format.
 const MESSAGE_DATA_FILE = 'data/messages.json';
@@ -10,10 +10,10 @@ const MESSAGE_DATA_FILE = 'data/messages.json';
 // Known message prefixes. These are substitutions for the most common contents of messages, for
 // example usage information or errors. In the message syntax, they are prepended by an at-sign.
 const MESSAGE_PREFIXES = {
-  error: '{DC143C}Error{FFFFFF}: ',
-  info: '',  // TODO: Do we need a particular prefix?
-  success: '{33AA33}Success{FFFFFF}: ',
-  usage: '{FF9900}Usage{FFFFFF}: ',
+    error: '{DC143C}Error{FFFFFF}: ',
+    info: '',  // TODO: Do we need a particular prefix?
+    success: '{33AA33}Success{FFFFFF}: ',
+    usage: '{FF9900}Usage{FFFFFF}: ',
 };
 
 // The message class will statically hold all defined messages, as well as provide utility functions
@@ -24,73 +24,77 @@ const MESSAGE_PREFIXES = {
 // directory, and made available as a static member of the Message class. While loading the messages
 // any unsafe messages will be considered to be a fatal error, as they might crash players.
 class Message {
-  // Formats |message| with |parameters|. The following formatting rules are available:
-  //
-  //   %s  - String, will be passed in unmodified.
-  //   %d  - Integer, will be passed in unmodified.
-  //   %f  - Floating point. Will be passed in with two decimals.
-  //   %p  - Player name. Accepts either Player instances, strings (names) or numbers (Ids).
-  //   %$  - Money. Will be formatted as an amount in dollars.
-  //   %t  - Time. Will format minutes as MM:SS, hours as HH:MM:SS.
-  //   %%  - Literal percentage sign.
-  //
-  // Any other symbols followed by an percentage sign will be ignored.
-  static format = stringFormat;
+    // Formats |message| with |parameters|. The following formatting rules are available:
+    //
+    //   %s  - String, will be passed in unmodified.
+    //   %d  - Integer, will be passed in unmodified.
+    //   %f  - Floating point. Will be passed in with two decimals.
+    //   %p  - Player name. Accepts either Player instances, strings (names) or numbers (Ids).
+    //   %$  - Money. Will be formatted as an amount in dollars.
+    //   %t  - Time. Will format minutes as MM:SS, hours as HH:MM:SS.
+    //   %%  - Literal percentage sign.
+    //
+    // Any other symbols followed by an percentage sign will be ignored.
+    static format = stringFormat;
 
-  // Filters all colours from |message| and returns the remainder of the message.
-  static filter(message) {
-    return message.replace(/\{[0-9A-F]{6,8}\}/gi, '');
-  }
+    static formatPrice = formatPrice;
+    static formatTime = formatTime;
+    static formatNumber = formatNumber;
 
-  // Loads messages from |file|. Unsafe messages will be considered as fatal errors.
-  static loadMessages(file) {
-    let messages = JSON.parse(readFile(file));
-    if (!messages || typeof messages !== 'object')
-      throw new Error('Unable to read messages from data file: ' + file);
+    // Filters all colours from |message| and returns the remainder of the message.
+    static filter(message) {
+        return message.replace(/\{[0-9A-F]{6,8}\}/gi, '');
+    }
 
-    Object.keys(messages).forEach(identifier => {
-      let message = messages[identifier];
-      if (Message.hasOwnProperty(identifier))
-        throw new Error('A message named "' + identifier + '" has already been created.');
+    // Loads messages from |file|. Unsafe messages will be considered as fatal errors.
+    static loadMessages(file) {
+        let messages = JSON.parse(readFile(file));
+        if (!messages || typeof messages !== 'object')
+            throw new Error('Unable to read messages from data file: ' + file);
 
-      message = Message.substitutePrefix(message, identifier);
+        Object.keys(messages).forEach(identifier => {
+            let message = messages[identifier];
+            if (Message.hasOwnProperty(identifier))
+                throw new Error('A message named "' + identifier + '" has already been created.');
 
-      if (!Message.validate(message))
-        throw new Error('The message named "' + identifier + '" is not safe for usage.');
+            message = Message.substitutePrefix(message, identifier);
 
-      Message[identifier] = new Message(message);
-    });
-  }
+            if (!Message.validate(message))
+                throw new Error('The message named "' + identifier + '" is not safe for usage.');
 
-  // Substitutes any @-prefixes in |message| with the intended text. This will also affect the color
-  // of the remainder of the message when the prefix uses a color.
-  static substitutePrefix(message, identifier) {
-    if (!message.startsWith('@'))
-      return message;
+            Message[identifier] = new Message(message);
+        });
+    }
 
-    return message.replace(/^@([^\s]+)\s*/, (_, prefixName) => {
-      if (!MESSAGE_PREFIXES.hasOwnProperty(prefixName))
-        throw new Error('The message named "' + identifier + '" uses an invalid prefix: @' + prefixName);
+    // Substitutes any @-prefixes in |message| with the intended text. This will also affect the color
+    // of the remainder of the message when the prefix uses a color.
+    static substitutePrefix(message, identifier) {
+        if (!message.startsWith('@'))
+            return message;
 
-      return MESSAGE_PREFIXES[prefixName];
-    });
-  }
+        return message.replace(/^@([^\s]+)\s*/, (_, prefixName) => {
+            if (!MESSAGE_PREFIXES.hasOwnProperty(prefixName))
+                throw new Error('The message named "' + identifier + '" uses an invalid prefix: @' + prefixName);
 
-  // Validates that |message| can safely be send to users.
-  static validate(message) {
-    // TODO: Figure out and implement the appropriate safety rules.
-    return true;
-  }
+            return MESSAGE_PREFIXES[prefixName];
+        });
+    }
 
-  // Constructs a new Message object for |message|. Can be silently converted to a string.
-  constructor(message) {
-    this.message_ = message;
-  }
+    // Validates that |message| can safely be send to users.
+    static validate(message) {
+        // TODO: Figure out and implement the appropriate safety rules.
+        return true;
+    }
 
-  // Called when converting this class to a string, either implicitly or explicitly.
-  toString() {
-    return this.message_;
-  }
+    // Constructs a new Message object for |message|. Can be silently converted to a string.
+    constructor(message) {
+        this.message_ = message;
+    }
+
+    // Called when converting this class to a string, either implicitly or explicitly.
+    toString() {
+        return this.message_;
+    }
 };
 
 // Immediately load the messages from the primary message data file.

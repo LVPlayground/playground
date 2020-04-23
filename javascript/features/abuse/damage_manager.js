@@ -20,6 +20,8 @@ class DamageManager {
             'playertakedamage', DamageManager.prototype.onPlayerTakeDamage.bind(this));
         this.callbacks_.addEventListener(
             'playerweaponshot', DamageManager.prototype.onPlayerWeaponShot.bind(this));
+        this.callbacks_.addEventListener(
+            'playerdeath', DamageManager.prototype.onPlayerDeath.bind(this));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -42,7 +44,7 @@ class DamageManager {
         this.mitigator_.reportDamageTaken(player);
     }
 
-// forward OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ);
+    // forward OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ);
 
     // Called when the player the |event| describes has fired a shot.
     onPlayerWeaponShot(event) {
@@ -61,6 +63,16 @@ class DamageManager {
             this.monitor_.onPlayerShootPlayer(
                 player, target, new Vector(event.fX, event.fY, event.fZ), event.weaponid);
         }
+    }
+
+    onPlayerDeath(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player)
+            return;  // the |event| was not received for a valid |player|
+
+        this.mitigator_.resetDamageIssued(player);
+        this.mitigator_.resetDamageTaken(player);
+        this.mitigator_.resetWeaponFire(player);
     }
 
     // ---------------------------------------------------------------------------------------------

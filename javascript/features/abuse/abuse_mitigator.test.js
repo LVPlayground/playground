@@ -2,14 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import AbuseMitigator from 'features/abuse/abuse_mitigator.js';
-
 describe('AbuseMitigator', (it, beforeEach) => {
     let mitigator = null;
 
     beforeEach(() => mitigator = server.featureManager.loadFeature('abuse').mitigator_);
 
-    it('should properly support the time throttling-related mitigations', async(assert) => {
+    it('should properly support the time throttling-related mitigations', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
 
@@ -49,7 +47,7 @@ describe('AbuseMitigator', (it, beforeEach) => {
         }
     });
 
-    it('should properly support the fighting-related mitigations', async(assert) => {
+    it('should properly support the fighting-related mitigations', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
 
@@ -113,6 +111,32 @@ describe('AbuseMitigator', (it, beforeEach) => {
             assert.isFalse(mitigator.satisfiesDamageTakenConstraint(russell, time, 1500));
 
             assert.isTrue(mitigator.satisfiesDamageTakenConstraint(russell, futureTime, 1500));
+        }
+    });
+
+    it('should properly reset constraints in case the player died', async (assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        {
+            const time = server.clock.monotonicallyIncreasingTime();
+
+            assert.isTrue(mitigator.satisfiesWeaponFireConstraint(gunther, time, 1500));
+            assert.isTrue(mitigator.satisfiesDamageIssuedConstraint(gunther, time, 1500));
+            assert.isTrue(mitigator.satisfiesDamageTakenConstraint(gunther, time, 1500));
+
+            russell.shoot({ target: gunther, damageAmount: 10 });
+            gunther.shoot({ target: russell, damageAmount: 10 });
+
+            assert.isFalse(mitigator.satisfiesWeaponFireConstraint(gunther, time, 1500));
+            assert.isFalse(mitigator.satisfiesDamageIssuedConstraint(gunther, time, 1500));
+            assert.isFalse(mitigator.satisfiesDamageTakenConstraint(gunther, time, 1500));
+
+            gunther.die({ killerPlayer: russell });
+
+            assert.isTrue(mitigator.satisfiesWeaponFireConstraint(gunther, time, 1500));
+            assert.isTrue(mitigator.satisfiesDamageIssuedConstraint(gunther, time, 1500));
+            assert.isTrue(mitigator.satisfiesDamageTakenConstraint(gunther, time, 1500));
         }
     });
 });

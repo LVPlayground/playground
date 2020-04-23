@@ -20,9 +20,9 @@
         "stream": "http://46.105.118.14:25500/listen.pls"
     },
     {
-        "name": "Oui FM",
+        "name": "Generations Rap FR",
         "language": "French",
-        "stream": "http://stream.ouifm.fr/ouifm-high.mp3"
+        "stream": "http://generationfm-rap.ice.infomaniak.ch/generationfm-rap-high.mp3"
     },
     {
         "name": "Planet Rock",
@@ -33,5 +33,10 @@
         "name": "Radio 538",
         "language": "Dutch",
         "stream": "http://18973.live.streamtheworld.com/RADIO538.mp3"
+    },
+    {
+        "name": "Radio 10",
+        "language": "Dutch",
+        "stream": "http://www.listenlive.eu/streams/netherlands/radio10.m3u"
     }
 ]

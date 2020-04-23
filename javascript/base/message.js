@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { format as stringFormat } from 'base/string_formatter.js';
+
 // File in which the messages are stored. Must be in JSON format.
 const MESSAGE_DATA_FILE = 'data/messages.json';
 
@@ -33,83 +35,7 @@ class Message {
   //   %%  - Literal percentage sign.
   //
   // Any other symbols followed by an percentage sign will be ignored.
-  static format(message, ...parameters) {
-    let substitutionIndex = 0;
-    return String(message).replace(/%([sdfp\$t%])/g, (_, rule) => {
-      if (rule == '%')
-        return '%';  // special case: %% (percentage-sign literal).
-
-      if (substitutionIndex >= parameters.length)
-        throw new Error('Not enough substitution parameters were provided for this query.');
-
-      let value = parameters[substitutionIndex++];
-      if (typeof value === 'undefined')
-        return '[undefined]';
-      else if (value === null)
-        return '[null]';
-
-      switch (rule) {
-        case 's':
-          return value.toString();
-        case 'd':
-          return this.formatNumber(value);
-        // TODO: %f
-        // TODO: %p
-        case '$':
-          return this.formatPrice(value);
-        case 't':
-          return this.formatTime(value);
-      }
-
-      // All characters supported by the regular expression should be included in the switch above,
-      // so we should never actually reach this line of code.
-      return null;
-    });
-  }
-
-  // Formats |value| as a number. Thousand separators will be inserted, and the number of decimals
-  // for floating point numbers will be limited to two.
-  static formatNumber(value) {
-    if (typeof value !== 'number')
-      return value;
-
-    let representation = Math.round(value * 100) / 100,
-        parts = representation.toString().split('.');
-
-    parts[0] = parts[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, ',');
-
-    return parts.join('.');
-  }
-
-  // Formats |value| as a price. Effectively the same as formatting a number, but removes all the
-  // decimals from the amount and requires it to be a valid number.
-  static formatPrice(value) {
-    if (typeof value !== 'number')
-      value = 0;
-
-    return (value < 0 ? '-' : '') + '$' + this.formatNumber(Math.abs(Math.round(value)));
-  }
-
-  // Formats |time|. Anything under an hour will be formatted as MM:SS, whereas values over an hour
-  // will be formatted as HH:MM:SS instead. Non-numeric values will be returned as-is.
-  static formatTime(time) {
-    if (typeof time !== 'number')
-      return time;
-
-    let seconds = time % 60;
-    let minutes = Math.floor(time / 60) % 60;
-    let hours = Math.floor(time / 3600);
-
-    let representation = '';
-
-    if (hours > 0)
-      representation += (hours < 10 ? '0' : '') + hours + ':';
-
-    representation += (minutes < 10 ? '0' : '') + minutes + ':';
-    representation += (seconds < 10 ? '0' : '') + seconds;
-
-    return representation;
-  }
+  static format = stringFormat;
 
   // Filters all colours from |message| and returns the remainder of the message.
   static filter(message) {

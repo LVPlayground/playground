@@ -42,7 +42,7 @@ export class Connection {
 
         this.backoffPolicy_ = new BackoffPolicy();
 
-        this.socket_ = new Socket('tcp');
+        this.socket_ = new Socket({ protocol: 'tcp' });
         this.socket_.addEventListener('error', Connection.prototype.onSocketError.bind(this));
         this.socket_.addEventListener('message', Connection.prototype.onSocketMessage.bind(this));
     }

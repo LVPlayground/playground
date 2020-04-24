@@ -34,9 +34,6 @@ export default class Nuwani extends Feature {
     constructor() {
         super();
 
-        if (server.isTest())
-            return;
-
         this.configuration_ = new Configuration();
 
         // The Runtime is responsible for connectivity with the IRC Network, in accordance with the

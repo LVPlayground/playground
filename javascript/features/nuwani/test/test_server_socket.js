@@ -57,12 +57,18 @@ class TestSocket {
     ipForTesting = null;
     portForTesting = null;
 
-    // [Constructor(string protocol)]
-    constructor(protocol) {
-        if (!['tcp', 'udp'].includes(protocol.toLowerCase()))
-            throw new Error('Invalid protocol provided: ' + protocol);
+    // [Constructor(object options)]
+    constructor(options) {
+        if (typeof options !== 'object')
+            throw new Error('The |options| must be a dictionary.');
         
-        this.#protocol_ = protocol;
+        if (!options.hasOwnProperty('protocol'))
+            throw new Error('The |options| must have the |protocol| field set.');
+
+        if (!['tcp', 'udp'].includes(options.protocol.toLowerCase()))
+            throw new Error('Invalid protocol provided: ' + options.protocol);
+        
+        this.#protocol_ = options.protocol;
         this.#state_ = 'disconnected';
 
         existingInstance.registerSocket(this);

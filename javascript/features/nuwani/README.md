@@ -81,6 +81,28 @@ a user's modes on the configured echo channel. The following commands are availa
 
   * [!time](commands/maintenance_commands.js): displays the current time on the server.
 
+## Echo
+**NuwaniJS** has the ability to share almost everything that happens on the server with people
+watching on IRC. This is quite critical in enabling people to understand what's going on, and
+to allow them to interact with people on the server as well.
+
+Code written in Pawn has the ability to call the `EchoMessage` native function. It takes three
+parameters: `tag`, the message's identifier, `format`, the message's syntax, and `message`, the
+individual parts, formatted in accordance with the `format`, which should be distributed.
+
+Code in JavaScript can depend on this Nuwani module, and call the public `echo` function. It
+only requires the `tag`, followed by any number of arguments that, together, make up the message.
+
+Messages will then be formatted by the [MessageFormatter](echo/message_formatter.js), which takes
+the defined format (in [irc_messages.json](/data/irc_messages.json)). This formats supports various
+operators: `<color>` to amend the message's color, `<target>` to change where the message should
+go, and `<prefix>` to require a particular channel user mode in order to receive the message.
+
+Once formatted, the message will be passed to the [MessageDistributor](echo/message_distributor).
+This class has the ability to evenly divide messages over the available bots, provide a built-in
+fake lag to prevent the bots from timing out, and request the [Runtime](runtime/runtime.js) to
+spawn extra bots when required. The messages are then sent to the network.
+
 ## References
   * [RFC 2812](https://tools.ietf.org/html/rfc2812)
   * [IRC/2 Numeric List](https://www.alien.net.au/irc/irc2numerics.html)

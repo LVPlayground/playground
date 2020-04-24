@@ -21,6 +21,27 @@ describe('MessageFormatter', it => {
         assert.equal(formatter.format('test_empty'), 'PRIVMSG #echo :Regular string');
     });
 
+    it('can append level prefixes to messages sent to IRC', assert => {
+        const formatter = new MessageFormatter(kEchoChannel);
+
+        assert.throws(() => formatter.format('test_prefix_invalid'));
+
+        assert.equal(formatter.format('test_int', 42), 'PRIVMSG #echo :42');
+        assert.equal(formatter.format('test_prefix_vip'), 'PRIVMSG +#echo :Hello');
+        assert.equal(formatter.format('test_prefix_admin'), 'PRIVMSG @#echo :Hello');
+    });
+
+    it('can change the IRC target to which messages should be sent', assert => {
+        const formatter = new MessageFormatter(kEchoChannel);
+
+        assert.throws(() => formatter.format('test_target_invalid'));
+
+        assert.equal(formatter.format('test_int', 42), 'PRIVMSG #echo :42');
+        assert.equal(formatter.format('test_target_private'), 'PRIVMSG #vip :Hello');
+        assert.equal(formatter.format('test_target_nickname'), 'PRIVMSG Joe :Hello');
+        assert.equal(formatter.format('test_target_prefix'), 'PRIVMSG %#vip :Hello');
+    });
+
     it('is able to parse messages coming from Pawn', assert => {
         const formatter = new MessageFormatter(kEchoChannel);
 

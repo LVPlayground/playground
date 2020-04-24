@@ -7,6 +7,10 @@ import { format as stringFormat } from 'base/string_formatter.js';
 // The JSON file in which the message format for all IRC messages has been stored.
 const kMessagesFile = 'data/irc_messages.json';
 
+// Regular expression that can be used to validate a custom message target. This doesn't actually
+// adhere to the RPL_ISUPPORT information the server sends us, but should be generic enough.
+const kValidTargetExpression = /^[a-z_\-\[\]\\^{}|`#&][a-z0-9_\-\[\]\\^{}|`#&]*$/i;
+
 // Converts a message identifier with a sequence of parameters to a formatted IRC message that can
 // be distributed to an echo channel. Includes a routine to intepret Pawn messages too.
 export class MessageFormatter {
@@ -27,6 +31,13 @@ export class MessageFormatter {
                 test_color_invalid: '<color:51>',
                 test_color: '<color:3>1 <color:15>yo <color>test',
                 test_empty: 'Regular string',
+                test_prefix_vip: '<prefix:+>Hello',
+                test_prefix_admin: '<prefix:@>Hello',
+                test_prefix_invalid: '<prefix:hello>World',
+                test_target_invalid: '<target:***>Hello',
+                test_target_private: '<target:#vip>Hello',
+                test_target_nickname: '<target:Joe>Hello',
+                test_target_prefix: '<target:#vip><prefix:%>Hello',
             });
         } else {
             this.loadMessages(JSON.parse(readFile(kMessagesFile)));
@@ -51,15 +62,21 @@ export class MessageFormatter {
     //   %%  - Literal percentage sign.
     //
     // To broaden support for additional formatters, refer to the string formatter itself. In
-    // addition to these formatting characters, colour can be embedded as well:
+    // addition to these formatting characters, style and behaviour can be amended as well:
     //
     //   <color:0-15>   Opens a colour block for the indicated color.
     //   <color>        Closes any colour block.
+    //   <prefix:?>     Allows a single-character channel access prefix for the message.
+    //   <target:?>     Allows the message to be sent to a different channel or user.
     //
-    // Embedded colours may only occur in the format, they will be ignored elsewhere.
+    // These embedded tags may only occur in the format, not in any of the arguments or styling
+    // data. They will be ignored there.
     format(tag, ...params) {
         if (!this.messages_.has(tag))
             throw new Error('Invalid message tag given: ' + tag);
+
+        let destination = this.echoChannel_;
+        let destinationPrefix = '';
 
         let format = this.messages_.get(tag);
 
@@ -73,12 +90,29 @@ export class MessageFormatter {
             return '\x03' + ('0' + numericColour.toString()).substr(-2);
         });
 
+        // Allow for configurable channel access prefixes in the message format.
+        format = format.replace(/<prefix:(.+?)>/g, (_, prefix) => {
+            if (prefix.length !== 1)
+                throw new Error('Invalid IRC access prefix: ' + prefix);
+            
+            destinationPrefix = prefix;
+            return '';
+        });
+
+        // Allow for configurable destination targets, e.g. for crew and management chat.
+        format = format.replace(/<target:(.+?)>/g, (_, target) => {
+            if (!kValidTargetExpression.test(target))
+                throw new Error('Invalid IRC message target: ' + target);
+            
+            destination = target;
+            return '';
+        });
+
+        // Now format the actual message according to |format|. This is done last, to ensure that
+        // the non-fixed part of the string cannot influence the above filtering.
         const formattedMessage = stringFormat(format, ...params);
 
-        // TODO: Support different destinations (e.g. private messages, crew chat).
-        // TODO: Support access prefixes (e.g. %#LVP.echo...).
-
-        return `PRIVMSG ${this.echoChannel_} :${formattedMessage}`;
+        return `PRIVMSG ${destinationPrefix}${destination} :${formattedMessage}`;
     }
 
     // Formats the Pawn-sourced |message| assuming the given |format|. Will return a string

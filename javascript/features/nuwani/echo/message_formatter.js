@@ -9,6 +9,7 @@ const kMessagesFile = 'data/irc_messages.json';
 
 // Regular expression that can be used to validate a custom message target. This doesn't actually
 // adhere to the RPL_ISUPPORT information the server sends us, but should be generic enough.
+const kValidTargetParamExpression = /^\{(\d+)\}$/;
 const kValidTargetExpression = /^[a-z_\-\[\]\\^{}|`#&][a-z0-9_\-\[\]\\^{}|`#&]*$/i;
 
 // Converts a message identifier with a sequence of parameters to a formatted IRC message that can
@@ -38,6 +39,8 @@ export class MessageFormatter {
                 test_target_private: '<target:#vip>Hello',
                 test_target_nickname: '<target:Joe>Hello',
                 test_target_prefix: '<target:#vip><prefix:%>Hello',
+                test_target_param: '<target:{0}>Hello',
+                test_target_param2: '<target:{1}>%s',
             });
         } else {
             this.loadMessages(JSON.parse(readFile(kMessagesFile)));
@@ -68,6 +71,8 @@ export class MessageFormatter {
     //   <color>        Closes any colour block.
     //   <prefix:?>     Allows a single-character channel access prefix for the message.
     //   <target:?>     Allows the message to be sent to a different channel or user.
+    //   <target:{?}>   Allows the message to be sent to the target defined in one of the
+    //                  parameters. Verification will still have to succeed.
     //
     // These embedded tags may only occur in the format, not in any of the arguments or styling
     // data. They will be ignored there.
@@ -99,12 +104,26 @@ export class MessageFormatter {
             return '';
         });
 
-        // Allow for configurable destination targets, e.g. for crew and management chat.
+        // Allow for configurable destination targets, e.g. for crew and management chat. This can
+        // either be hardcoded in the format, or be dynamic based on a parameter.
         format = format.replace(/<target:(.+?)>/g, (_, target) => {
-            if (!kValidTargetExpression.test(target))
-                throw new Error('Invalid IRC message target: ' + target);
+            let actualTarget = null;
+
+            const matches = target.match(kValidTargetParamExpression);
+            if (matches !== null) {
+                const parameterIndex = parseInt(matches[1]);
+                if (parameterIndex < 0 || parameterIndex >= params.length)
+                    throw new Error('Invalid IRC message target index: ' + matches[1]);
+                
+                actualTarget = params[parameterIndex];
+            } else {
+                actualTarget = target;
+            }
+
+            if (!kValidTargetExpression.test(actualTarget))
+                throw new Error('Invalid IRC message target: ' + actualTarget);
             
-            destination = target;
+            destination = actualTarget;
             return '';
         });
 

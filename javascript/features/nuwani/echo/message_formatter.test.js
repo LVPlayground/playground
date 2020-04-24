@@ -40,6 +40,9 @@ describe('MessageFormatter', it => {
         assert.equal(formatter.format('test_target_private'), 'PRIVMSG #vip :Hello');
         assert.equal(formatter.format('test_target_nickname'), 'PRIVMSG Joe :Hello');
         assert.equal(formatter.format('test_target_prefix'), 'PRIVMSG %#vip :Hello');
+
+        assert.equal(formatter.format('test_target_param', 'Joe'), 'PRIVMSG Joe :Hello');
+        assert.equal(formatter.format('test_target_param2', 'Hello', 'Joe'), 'PRIVMSG Joe :Hello');
     });
 
     it('is able to parse messages coming from Pawn', assert => {

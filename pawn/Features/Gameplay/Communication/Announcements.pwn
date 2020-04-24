@@ -83,7 +83,7 @@ class Announcements {
 
         // Announce this player's connection to people watching from IRC.
         format(m_formatBuffer, sizeof(m_formatBuffer), "%d %s", playerId, Player(playerId)->nicknameString());
-        EchoMessage("join", "sd", m_formatBuffer);
+        EchoMessage("join", "ds", m_formatBuffer);
     }
 
     /**
@@ -100,7 +100,7 @@ class Announcements {
 
         // Announce the login of the player to the people on IRC
         format(m_formatBuffer, sizeof(m_formatBuffer), "%d %s", playerId, Player(playerId)->nicknameString());
-        EchoMessage("login", "sd", m_formatBuffer);
+        EchoMessage("login", "ds", m_formatBuffer);
     }
 
     /**
@@ -152,7 +152,7 @@ class Announcements {
 
         // Announce this player's disconnection to people watching from IRC.
         format(m_formatBuffer, sizeof(m_formatBuffer), "%d %s %d", playerId, playerName, reason);
-        EchoMessage("quit", "sdd", m_formatBuffer);
+        EchoMessage("quit", "dsd", m_formatBuffer);
     }
 
     /**

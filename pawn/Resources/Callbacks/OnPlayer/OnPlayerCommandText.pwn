@@ -124,10 +124,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         {
             SavePlayerSpawnData(playerid);
             SendClientMessage(playerid, Color::Green, "Spawn data saved to file.");
-
-            new szMsg[128];
-            format(szMsg, 128, "[dev] LVP On-foot Spawn Point added by %s: City: %s. Area: %s.", PlayerName(playerid), GetPlayerCity(playerid), GetPlayerZone(playerid));
-            AddEcho(szMsg);
             return 1;
         }
     #endif

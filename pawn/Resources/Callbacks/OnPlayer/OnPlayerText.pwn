@@ -144,9 +144,8 @@ public OnPlayerText(playerid, text[]) {
     } else {
         format(message, sizeof(message), "[worldchat] %d %d %s %s", playerVirtualWorld,
             playerid, Player(playerid)->nicknameString(), text);
+        AddEcho(message);
     }
-
-    AddEcho(message);
 
     // /q Jokes Not Allowed
     new QuitJokes[2][] = {

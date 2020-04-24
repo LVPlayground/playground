@@ -370,9 +370,9 @@ CFightClub__OnCommand(playerid, params[]) {
             PlayerName(Matches[matchId][player1]), PlayerName(Matches[matchId][player2]), matchId);
         NewsController->show(string);
 
-        format(string, sizeof(string), "A fight between %s (Id:%d) and %s (Id:%d) has started!",
+        format(string, sizeof(string), "%s %d %s %d",
             PlayerName(Matches[matchId][player1]), Matches[matchId][player1], PlayerName(Matches[matchId][player2]), Matches[matchId][player2]);
-        AddEcho(string);
+        EchoMessage("fightclub-start", "sdsd", string);
 
         Matches[matchId][status] = FC_STATUS_FIGHTING;
         CFightClub__StartMatch(matchId);
@@ -1052,6 +1052,22 @@ CFightClub__EndMatch(matchid, deathPlayerId)
         SendClientMessage (iPlayer2, Color::Green, sMessage);
         format (sMessage, sizeof (sMessage), "The fight between ~r~~h~%s~w~ and ~r~~h~%s~w~ ended in a draw!", PlayerName(iPlayer1), PlayerName(iPlayer2));
     }
+
+    // Display a message on IRC...
+    if (iScore1 == iScore2) {
+        format(sMessage, sizeof(sMessage), "%s %d %s %d",
+            PlayerName(iPlayer1), iPlayer1, PlayerName(iPlayer2), iPlayer2);
+        EchoMessage("fightclub-draw", "sdsd", sMessage);
+
+    } else {
+        new winner = iScore1 > iScore2 ? iPlayer1 : iPlayer2;
+        new loser = iScore1 > iScore2 ? iPlayer2 : iPlayer1;
+
+        format(sMessage, sizeof(sMessage), "%s %d %s %d %d %d",
+            PlayerName(winner), winner, PlayerName(loser), loser, max(iScore1, iScore2), min(iScore1, iScore2));
+        EchoMessage("fightclub-winner", "sdsddd", sMessage);
+    }
+
 
     NewsController->show(sMessage);
 

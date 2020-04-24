@@ -14,7 +14,7 @@
 // normal JavaScript syntax. Sorry :).
 
 // Provided by the PlaygroundJS plugin.
-//native EchoMessage(tag[], format[], message[]);
+native EchoMessage(tag[], format[], message[]);
 
 // Provided by the Echo plugin.
 native SendEchoMessage(destinationIp[], destinationPort, message[]);
@@ -33,19 +33,11 @@ AddEcho(message[]) {
  * coded prefixes all around the source-code, which increases our flexibility.
  */
 enum IrcMessageType {
-    DeveloperIrcMessage, // [message]
-    BuyPropertyIrcMessage, // [propertyPrice] [playerName] [propertyName]
     GangChatIrcMessage, // [playerId] [playerName] ![message]
-    GuestLoginIrcMessage, // [playerId] [oldPlayerName] [newPlayerName]
-    LoginIrcMessage, // [playerId] [playerName]
-    SellPropertyIrcMessage, // [propertyPrice] [playerName] [propertyName]
-    SellAllPropertiesIrcMessage, // [playerId] [playerName] [earnings]
     PrivateMessageIrcMessage, // [playerName] [playerId] [receiverName] [receiverId] [message]
     IrcPrivateMessageIrcMessage, // [playerId] [playerName] [receiverName] [message]
     VipChatIrcMessage, // [playerName] [playerId] [message]
     PhoneIrcMessage, // [playerName] [playerId] [calleeName] [calleeId] [message]
-    JoinIrcMessage, // [playerId] [playerName]
-    LeaveIrcMessage, // [playerId] [playerName] [reason]
     DeathIrcMessage, // [playerName]
     KillIrcMessage, // [playerName] [playerId] [killerName] [killerId] [reason]
     NotConnectedIrcMessage, // [playerId]
@@ -73,28 +65,12 @@ class IRC {
      */
     public broadcast(IrcMessageType: type, message[]) {
         switch (type) {
-            case DeveloperIrcMessage:
-                m_messageBuffer = "[dev] ";
-            case BuyPropertyIrcMessage:
-                m_messageBuffer = "[buy] ";
             case GangChatIrcMessage:
                 m_messageBuffer = "[gang] ";
             case DeathIrcMessage:
                 m_messageBuffer = "[death] ";
             case KillIrcMessage:
                 m_messageBuffer = "[kill] ";
-            case JoinIrcMessage:
-                m_messageBuffer = "[join] ";
-            case LeaveIrcMessage:
-                m_messageBuffer = "[leave] ";
-            case GuestLoginIrcMessage:
-                m_messageBuffer = "[guestlogin] ";
-            case LoginIrcMessage:
-                m_messageBuffer = "[login] ";
-            case SellPropertyIrcMessage:
-                m_messageBuffer = "[sold] ";
-            case SellAllPropertiesIrcMessage:
-                m_messageBuffer = "[soldall] ";
             case PrivateMessageIrcMessage:
                 m_messageBuffer = "[pm] ";
             case IrcPrivateMessageIrcMessage:

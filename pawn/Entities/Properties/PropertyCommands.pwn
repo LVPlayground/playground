@@ -787,11 +787,12 @@ class PropertyCommands {
             Player(playerId)->nicknameString(), Property(propertyId)->nameString());
         NewsController->show(message);
 
-        format(message, sizeof(message), "%d %s %s", Property(propertyId)->price(),
-            Player(playerId)->nicknameString(), Property(propertyId)->nameString());
-        IRC->broadcast(BuyPropertyIrcMessage, message);
+        format(message, sizeof(message), "%s %d %d %s", Player(playerId)->nicknameString(), playerId,
+            Property(propertyId)->price(), Property(propertyId)->nameString());
 
+        EchoMessage("buy", "sddz", message);
         return 1;
+
         #pragma unused params
     }
 
@@ -834,16 +835,17 @@ class PropertyCommands {
                 overallPrice += Property(playerProperties[propertyIndex])->price();
             }
 
-            GivePlayerMoney(playerId, (overallPrice / 100) * Property::EarningOnPropertySellPercent);
+            new actualEarnings = (overallPrice / 100) * Property::EarningOnPropertySellPercent;
 
-            FinancialUtilities->formatPrice((overallPrice / 100) * Property::EarningOnPropertySellPercent, 
-                earnings, sizeof(earnings));
+            GivePlayerMoney(playerId, actualEarnings);
+
+            FinancialUtilities->formatPrice(actualEarnings, earnings, sizeof(earnings));
             format(message, sizeof(message), "You've successfully sold all of your properties, and earned %s!", earnings);
             SendClientMessage(playerId, Color::Success, message);
 
-            format(message, sizeof(message), "%d %s %s", playerId, Player(playerId)->nicknameString(), earnings);
-            IRC->broadcast(SellAllPropertiesIrcMessage, message);
+            format(message, sizeof(message), "%s %d %.2f", Player(playerId)->nicknameString(), playerId, actualEarnings);
 
+            EchoMessage("sell-all", "sdf", message);
             return 1;
         }
 
@@ -874,10 +876,10 @@ class PropertyCommands {
         format(message, sizeof(message), "You've successfully sold the property \"%s\" (Id:%d) for %s!", Property(propertyId)->nameString(), propertyId, earnings);
         SendClientMessage(playerId, Color::Success, message);
 
-        format(message, sizeof(message), "%d %s %s",
-            Property(propertyId)->price(), Player(playerId)->nicknameString(), Property(propertyId)->nameString());
-        IRC->broadcast(SellPropertyIrcMessage, message);
+        format(message, sizeof(message), "%s %d %d %s",
+            Player(playerId)->nicknameString(), playerId, Property(propertyId)->price(), Property(propertyId)->nameString());
 
+        EchoMessage("sell", "sddz", message);
         return 1;
     }
 

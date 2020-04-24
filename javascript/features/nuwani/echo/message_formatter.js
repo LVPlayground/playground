@@ -10,9 +10,12 @@ const kMessagesFile = 'data/irc_messages.json';
 // Converts a message identifier with a sequence of parameters to a formatted IRC message that can
 // be distributed to an echo channel. Includes a routine to intepret Pawn messages too.
 export class MessageFormatter {
+    echoChannel_ = null;
     messages_ = new Map();
 
-    constructor(forceProdForTesting = false) {
+    constructor(echoChannel, forceProdForTesting = false) {
+        this.echoChannel_ = echoChannel;
+
         if (server.isTest() && !forceProdForTesting) {
             this.loadMessages({
                 test: 'Hello %s, I have %$ for %d days!',
@@ -23,6 +26,7 @@ export class MessageFormatter {
                 test_ffd: '%d %d %d',
                 test_color_invalid: '<color:51>',
                 test_color: '<color:3>1 <color:15>yo <color>test',
+                test_empty: 'Regular string',
             });
         } else {
             this.loadMessages(JSON.parse(readFile(kMessagesFile)));
@@ -69,7 +73,12 @@ export class MessageFormatter {
             return '\x03' + ('0' + numericColour.toString()).substr(-2);
         });
 
-        return stringFormat(format, ...params);
+        const formattedMessage = stringFormat(format, ...params);
+
+        // TODO: Support different destinations (e.g. private messages, crew chat).
+        // TODO: Support access prefixes (e.g. %#LVP.echo...).
+
+        return `PRIVMSG ${this.echoChannel_} :${formattedMessage}`;
     }
 
     // Formats the Pawn-sourced |message| assuming the given |format|. Will return a string

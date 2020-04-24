@@ -16,7 +16,7 @@ import { PlayerCommands } from 'features/nuwani/commands/player_commands.js';
 
 // Base of the Nuwani feature, which is a JavaScript-powered implementation of the IRC Bots that
 // provide echo and communication functionalities to a series of IRC channels.
-export default class extends Feature {
+export default class Nuwani extends Feature {
     configuration_ = null;
     runtime_ = null;
 
@@ -51,7 +51,7 @@ export default class extends Feature {
 
         // The message formatter is able to format messages according to the configured JSON file,
         // for display on IRC. It powers both JavaScript and Pawn-sourced messages.
-        this.messageFormatter_ = new MessageFormatter();
+        this.messageFormatter_ = new MessageFormatter(this.configuration_.echoChannel);
 
         // The command manager deals with commands exposed to IRC. They work identical to those
         // available in-game, and thus must be created with a Builder, either by this Feature or
@@ -65,6 +65,9 @@ export default class extends Feature {
             new MaintenanceCommands(this.commandManager_, this.configuration_),
             new PlayerCommands(this.commandManager_),
         ];
+
+        // Implement the EchoMessage native, which allows Pawn code to output text to the IRC echo.
+        provideNative('EchoMessage', 'sss', Nuwani.prototype.echoFromPawn.bind(this));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -72,8 +75,8 @@ export default class extends Feature {
     // Distributes a |tag| message to IRC, which will be formatted with the |params|. Should only be
     // used by JavaScript code. Formatting is strict, and issues will throw exceptions.
     echo(tag, ...params) {
-        const message = this.messageFormatter_.format(tag, params);
-        this.messageDistributor_.write(message);
+        const formattedMessage = this.messageFormatter_.format(tag, params);
+        this.messageDistributor_.write(formattedMessage);
     }
 
     // Implements the EchoMessage native function, which has the following signature:
@@ -82,7 +85,11 @@ export default class extends Feature {
     // The native will be bound when this class is constructed, and will automatically be unbound on
     // disposal. Echoed messages will directly be distributed to IRC.
     echoFromPawn(tag, format, message) {
-        console.log(`tag: [${tag}], format: [${format}], message: [${message}]`);
+        console.log('XXXXXXXXXXXXXXXXXXXXXXXXXX: ' + tag);
+
+        const formattedMessage = this.messageFormatter_.formatPawn(tag, format, message);
+        this.messageDistributor_.write(formattedMessage);
+
         return 1;
     }
 
@@ -90,6 +97,8 @@ export default class extends Feature {
 
 
     dispose() {
+        provideNative('EchoMessage', 'sss', (tag, format, message) => 1);
+
         for (const instance of this.commands_)
             instance.dispose();
 

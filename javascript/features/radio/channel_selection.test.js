@@ -3,15 +3,16 @@
 // be found in the LICENSE file.
 
 import ChannelSelection from 'features/radio/channel_selection.js';
-import MockAnnounce from 'features/announce/test/mock_announce.js';
 
 describe('ChannelSelection', (it, beforeEach, afterEach) => {
     let selection = null;
     let settings = null;
 
     beforeEach(() => {
+        const announce = server.featureManager.loadFeature('announce');
+
         settings = server.featureManager.loadFeature('settings');
-        selection = new ChannelSelection(() => new MockAnnounce(), () => settings);
+        selection = new ChannelSelection(() => announce, () => settings);
     });
 
     afterEach(() => selection.dispose());
@@ -103,8 +104,9 @@ describe('ChannelSelection', (it, beforeEach, afterEach) => {
         assert.equal(gunther.messages.length, 0);
 
         // Invalid default channel settings on load should issue a warning too.
-        const secondChannelSelection =
-            new ChannelSelection(() => new MockAnnounce(), () => settings);
+        const announce = server.featureManager.loadFeature('announce');
+        const secondChannelSelection = new ChannelSelection(() => announce, () => settings);
+
         secondChannelSelection.loadConfigurationFromArray(TEST_RADIO_CONFIGURATION);
 
         {

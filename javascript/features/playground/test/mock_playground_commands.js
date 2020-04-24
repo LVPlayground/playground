@@ -2,7 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import MockAnnounce from 'features/announce/test/mock_announce.js';
 import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
 import PlaygroundCommands from 'features/playground/playground_commands.js';
 
@@ -10,8 +9,9 @@ import PlaygroundCommands from 'features/playground/playground_commands.js';
 // exception that the arguments required for the constructor are automatically injected.
 class MockPlaygroundCommands extends PlaygroundCommands {
     constructor() {
-        const mockAnnounce = new MockAnnounce();
-        super(new PlaygroundAccessTracker(), () => mockAnnounce);
+        const announce = server.featureManager.loadFeature('announce');
+
+        super(new PlaygroundAccessTracker(), () => announce);
     }
 };
 

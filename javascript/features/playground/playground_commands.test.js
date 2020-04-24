@@ -4,7 +4,6 @@
 
 import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
 import PlaygroundCommands from 'features/playground/playground_commands.js';
-import MockAnnounce from 'features/announce/test/mock_announce.js';
 
 describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
     let access = null;
@@ -12,7 +11,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
     let gunther = null;
 
     beforeEach(() => {
-        const announce = new MockAnnounce();
+        const announce = server.featureManager.loadFeature('announce');
         const settings = server.featureManager.loadFeature('settings');
 
         access = new PlaygroundAccessTracker();

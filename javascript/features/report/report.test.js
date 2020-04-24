@@ -2,7 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import MockAnnounce from 'features/announce/test/mock_announce.js';
 import Report from 'features/report/report.js';
 
 describe('Report', (it, beforeEach) => {
@@ -10,7 +9,6 @@ describe('Report', (it, beforeEach) => {
 
     beforeEach(() => {
         server.featureManager.registerFeaturesForTests({
-            announce: MockAnnounce,
             report: Report
         });
 

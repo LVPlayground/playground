@@ -4,7 +4,6 @@
 
 import Minigame from 'features/minigames/minigame.js';
 import MinigameManager from 'features/minigames/minigame_manager.js';
-import MockAnnounce from 'features/announce/test/mock_announce.js';
 import MockDeathFeed from 'features/death_feed/test/mock_death_feed.js';
 import MockMinigame from 'features/minigames/test/mock_minigame.js';
 
@@ -17,7 +16,8 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         gunther = server.playerManager.getById(0 /* Gunther */);
         russell = server.playerManager.getById(1 /* Russell */);
 
-        const announce = new MockAnnounce();
+        const announce = server.featureManager.loadFeature('announce');
+
         deathFeed = new MockDeathFeed();
 
         manager = new MinigameManager(() => announce, () => deathFeed);

@@ -2,14 +2,13 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import MockAnnounce from 'features/announce/test/mock_announce.js';
 import IrcChatCommands from 'features/commands/irc_chat_commands.js';
 
 describe('IrcChatCommands', (it, beforeEach, afterEach) => {
     let ircChatCommands = null;
 
     beforeEach(() => {
-        const announce = new MockAnnounce();
+        const announce = server.featureManager.loadFeature('announce');
         ircChatCommands = new IrcChatCommands(() => announce);
     });
 

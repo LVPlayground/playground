@@ -93,7 +93,6 @@ export default class Nuwani extends Feature {
 
     // ---------------------------------------------------------------------------------------------
 
-
     dispose() {
         provideNative('EchoMessage', 'sss', (tag, format, message) => 1);
 

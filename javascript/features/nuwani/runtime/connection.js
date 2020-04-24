@@ -43,6 +43,7 @@ export class Connection {
         this.backoffPolicy_ = new BackoffPolicy();
 
         this.socket_ = new Socket({ protocol: 'tcp' });
+        this.socket_.addEventListener('close', Connection.prototype.onSocketClose.bind(this));
         this.socket_.addEventListener('error', Connection.prototype.onSocketError.bind(this));
         this.socket_.addEventListener('message', Connection.prototype.onSocketMessage.bind(this));
     }
@@ -59,8 +60,10 @@ export class Connection {
         this.connectionToken_ = connectionToken;
 
         await wait(this.backoffPolicy_.getTimeToNextRequestMs());
-        if (!isCurrentAttempt())
+        if (!isCurrentAttempt()) {
+            this.backoffPolicy_.resetToIdle();
             return;
+        }
 
         let attempt = 0;
 
@@ -72,17 +75,17 @@ export class Connection {
             this.log(`Connecting to ${ip}:${port}...`);
             const connected = await this.socket_.open(ip, port, kConnectionTimeoutSec);
 
-            if (!isCurrentAttempt()) {
-                if (connected && this.disposed_)
-                    this.socket_.close();
-
-                return;
-            }
-
             // Report the result to the back-off policy, to ensure that the next request will be
             // made with the appropriate time delay.
             connected ? this.backoffPolicy_.markRequestSuccessful()
                       : this.backoffPolicy_.markRequestFailed();
+
+            if (!isCurrentAttempt()) {
+                if (connected && this.disposed_)
+                    this.socket_.close();
+                
+                return;
+            }
 
             if (connected) {
                 this.log(`Connection to ${ip}:${port} succeeded.`);
@@ -99,6 +102,9 @@ export class Connection {
             this.delegate_.onConnectionFailed();
 
             await wait(delay);
+
+            if (!isCurrentAttempt())
+                this.backoffPolicy_.resetToIdle();
 
             ++attempt;
 
@@ -129,6 +135,14 @@ export class Connection {
         }
 
         this.connectionToken_ = null;
+    }
+
+    // Called when the socket has been closed. Most errors will issue an `error` event instead, but
+    // there are situations in which the Socket will initiate disconnection.
+    onSocketClose(event) {
+        this.log('Disconnected');
+
+        this.delegate_.onConnectionClosed();
     }
 
     // Called when an error occurs on the socket that backs the connection. Most errors will require

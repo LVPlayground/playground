@@ -140,4 +140,9 @@ export class ModeParser {
             this.channelModes_.set(mode, type);
         }
     }
+
+    // Resets the mode parser to a default, empty state.
+    reset() {
+        this.channelModes_.clear();
+    }
 }

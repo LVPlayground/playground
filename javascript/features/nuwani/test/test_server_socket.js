@@ -50,6 +50,7 @@ class TestSocket {
     #protocol_ = null;
     #state_ = null;
 
+    #close_listeners_ = new Set();
     #error_listeners_ = new Set();
     #message_listeners_ = new Set();
 
@@ -99,6 +100,9 @@ class TestSocket {
     // void addEventListener(string event, function listener);
     addEventListener(event, listener) {
         switch (event) {
+            case 'close':
+                this.#close_listeners_.add(listener);
+                break;
             case 'error':
                 this.#error_listeners_.add(listener);
                 break;
@@ -113,6 +117,9 @@ class TestSocket {
     // void removeEventListener(string event, function listener);
     removeEventListener(event, listener) {
         switch (event) {
+            case 'close':
+                this.#close_listeners_.delete(listener);
+                break;
             case 'error':
                 this.#error_listeners_.delete(listener);
                 break;
@@ -130,6 +137,9 @@ class TestSocket {
         this.portForTesting = null;
 
         this.#state_ = 'disconnected';
+
+        for (const listener of this.#close_listeners_)
+            listener();
     }
 
     // readonly attribute string protocol;

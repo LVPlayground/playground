@@ -48,7 +48,7 @@ describe('HouseCommands', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.isTrue(
             gunther.messages[0].includes(
-                Message.format(Message.HOUSE_ANNOUNCE_CREATED, gunther.name, gunther.id)));
+                Message.format(Message.HOUSE_ANNOUNCE_CREATED, gunther.id, gunther.name)));
 
         assert.equal(manager.locationCount, locationCount + 1);
     });

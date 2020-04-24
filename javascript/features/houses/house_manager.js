@@ -269,7 +269,7 @@ class HouseManager {
                 }
 
                 this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_ACCESS_CHANGED, 
-                    player.name, player.id, location.settings.name, location.settings.id, readableAccess);
+                    player.id, player.name, location.settings.name, location.settings.id, readableAccess);
                 
                     location.settings.access = value;
                 break;
@@ -282,7 +282,7 @@ class HouseManager {
                 await this.entranceController_.updateLocationSetting(location, 'color', value);
 
                 this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_MARKER_CHANGED, 
-                    player.name, player.id, location.settings.name, location.settings.id, value);
+                    player.id, player.name, location.settings.name, location.settings.id, value);
 
                 location.settings.markerColor = value;
                 break;
@@ -295,7 +295,7 @@ class HouseManager {
                 await this.entranceController_.updateLocationSetting(location, 'label', value);
                 
                 this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_RENAMED, 
-                    player.name, player.id, location.settings.name, location.settings.id, value);
+                    player.id, player.name, location.settings.name, location.settings.id, value);
 
                     location.settings.name = value;
                 break;
@@ -312,10 +312,10 @@ class HouseManager {
                 
                 if(value){
                     this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_SPAWN_CHANGED, 
-                        player.name, player.id, location.settings.name, location.settings.id);    
+                        player.id, player.name, location.settings.name, location.settings.id);    
                 } else {
                     this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_SPAWN_REMOVED, 
-                        player.name, player.id, location.settings.name, location.settings.id);                    
+                        player.id, player.name, location.settings.name, location.settings.id);                    
                 }
 
                 location.settings.setSpawn(value);
@@ -328,7 +328,7 @@ class HouseManager {
                 await this.database_.updateHouseStreamUrl(location, value);
                 
                 this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_AUDIO_STREAM_CHANGED, 
-                    player.name, player.id, location.settings.name, location.settings.id, value);
+                    player.id, player.name, location.settings.name, location.settings.id, value);
 
                 location.settings.streamUrl = value;
                 break;
@@ -340,7 +340,7 @@ class HouseManager {
                 await this.database_.updateHouseWelcomeMessage(location, value);
 
                 this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_SET_WELCOME_MESSAGE, 
-                    player.name, player.id, location.settings.name, location.settings.id, value);
+                    player.id, player.name, location.settings.name, location.settings.id, value);
                 
                 location.settings.welcomeMessage = value;
                 break;

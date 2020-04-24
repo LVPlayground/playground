@@ -85,8 +85,6 @@ export default class Nuwani extends Feature {
     // The native will be bound when this class is constructed, and will automatically be unbound on
     // disposal. Echoed messages will directly be distributed to IRC.
     echoFromPawn(tag, format, message) {
-        console.log('XXXXXXXXXXXXXXXXXXXXXXXXXX: ' + tag);
-
         const formattedMessage = this.messageFormatter_.formatPawn(tag, format, message);
         this.messageDistributor_.write(formattedMessage);
 

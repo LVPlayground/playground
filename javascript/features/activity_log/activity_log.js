@@ -8,7 +8,7 @@ import ScopedCallbacks from 'base/scoped_callbacks.js';
 import Murmur3Hash from 'features/activity_log/murmur3hash.js';
 
 // IRC tag used to show the players name, id, ip and gpci
-const JoinIpGpciTag = 'joinipgpci';
+const JoinIpGpciTag = 'join-ip-gpci';
 
 // The activity log feature keeps track of many in-game events and logs them to the database. This
 // is part of an effort to gather more information with Las Venturas Playground, enabling analysis
@@ -38,7 +38,7 @@ class ActivityLog extends Feature {
     this.playerSessionIdMap_ = new Map(); // { playerid, sessionid )
 
     // To be able to show the IP and GPCI on IRC
-    this.announce_ = this.defineDependency('announce');
+    this.nuwani_ = this.defineDependency('nuwani');
 
     Murmur3Hash.provideNativeMurmur3HashGenerateHashToPawn();
   }
@@ -99,7 +99,7 @@ class ActivityLog extends Feature {
     const numericIpAddress = this.ip2long(player.ip);
     const hashedGpci = Murmur3Hash.generateHash(player.gpci);
 
-    this.announce_().announceToIRC(JoinIpGpciTag, player.id, player.ip, player.name, hashedGpci);
+    this.nuwani_().echo(JoinIpGpciTag, player.name, player.id, player.ip, hashedGpci);
 
     this.recorder_.getIdFromWriteInsertSessionAtConnect(player.name, numericIpAddress, hashedGpci).then (result => {
       this.playerSessionIdMap_.set(player.id, result.sessionId);

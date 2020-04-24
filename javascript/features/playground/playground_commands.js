@@ -20,8 +20,9 @@ function capitalizeFirstLetter(string) {
 
 // A series of general commands that don't fit in any particular
 class PlaygroundCommands {
-    constructor(access, announce, settings) {
+    constructor(access, announce, nuwani, settings) {
         this.announce_ = announce;
+        this.nuwani_ = nuwani;
         this.settings_ = settings;
 
         this.access_ = access;
@@ -76,7 +77,7 @@ class PlaygroundCommands {
             if (!CommandImplementation instanceof Command)
                 throw new Error(filename + ' does not contain a command.');
 
-            const command = new CommandImplementation(this.announce_);
+            const command = new CommandImplementation(this.announce_, this.nuwani_);
 
             // Register the command with the access manager, and then pass on the server-global
             // command manager to its build() method so that it can be properly exposed.

@@ -6,9 +6,12 @@
     "guest": "<color:2>[%d] <color:3>*** %s has decided to play as %s (guest).",
     "quit": "<color:2>[%d] <color:3>*** %s has left the game (%s).",
 
+    "join-ip-gpci": "<prefix:%><color:5>*** <color:4>%s (Id:%d) IP address:<color:5> %s<color:4>, serial:<color:5> %s",
+
     "chat": "<color:2>[%d] <color:7>%s:<color> %s",
     "chat-admin": "<prefix:%><color:12>Admin chat <color:2>[%d] <color:7>%s:<color> %s",
     "chat-call": "<prefix:%><color:7>Call from <color:5>%s <color:7>(Id:%d) to <color:5>%s <color:7>(Id:%d):<color> %s",
+    "chat-gang": "<prefix:%><color:2>*** <color:7>Gang %s (Id:%d) <color:2>[%d] <color:7>%s:<color> %s",
     "chat-irc": "<target:{0}><color:7>Message from <color:5>%s{1} <color:7>(Id:%d{2}):<color>: %s{3}",
     "chat-private": "<prefix:%><color:7>PM from <color:5>%s <color:7>(Id:%d) to <color:5>%s <color:7>(Id:%d):<color> %s",
     "chat-vip": "<prefix:+><color:12>VIP chat <color:2>[%d] <color:7>%s:<color> %s",

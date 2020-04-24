@@ -52,9 +52,6 @@ class Announce extends Feature {
         this.manager_.announceReportToAdministrators(player, reportedPlayer, reason);
     }
 
-    // TODO: Migrate all callers.
-    announceToIRC(tag, ...parameters) {}
-
     // ---------------------------------------------------------------------------------------------
 
     dispose() {

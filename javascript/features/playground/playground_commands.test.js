@@ -12,10 +12,11 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
 
     beforeEach(() => {
         const announce = server.featureManager.loadFeature('announce');
+        const nuwani = server.featureManager.loadFeature('nuwani');
         const settings = server.featureManager.loadFeature('settings');
 
         access = new PlaygroundAccessTracker();
-        commands = new PlaygroundCommands(access, () => announce, () => settings);
+        commands = new PlaygroundCommands(access, () => announce, () => nuwani, () => settings);
 
         gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify();

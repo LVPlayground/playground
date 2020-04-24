@@ -10,8 +10,9 @@ import PlaygroundCommands from 'features/playground/playground_commands.js';
 class MockPlaygroundCommands extends PlaygroundCommands {
     constructor() {
         const announce = server.featureManager.loadFeature('announce');
+        const nuwani = server.featureManager.loadFeature('nuwani');
 
-        super(new PlaygroundAccessTracker(), () => announce);
+        super(new PlaygroundAccessTracker(), () => announce, () => nuwani);
     }
 };
 

@@ -8,8 +8,8 @@ describe('IrcChatCommands', (it, beforeEach, afterEach) => {
     let ircChatCommands = null;
 
     beforeEach(() => {
-        const announce = server.featureManager.loadFeature('announce');
-        ircChatCommands = new IrcChatCommands(() => announce);
+        const nuwani = server.featureManager.loadFeature('nuwani');
+        ircChatCommands = new IrcChatCommands(() => nuwani);
     });
 
     afterEach(() => {

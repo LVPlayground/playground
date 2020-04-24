@@ -73,7 +73,7 @@ class PropertySettings extends HouseExtension {
                 if (!name)
                     return;  // the player decided to not update the house's name
 
-                await this.manager_.updateHouseSetting(location, 'name', name);
+                await this.manager_.updateHouseSetting(player, location, 'name', name);
 
                 // Display a confirmation dialog to the player to inform them of their action.
                 await MessageBox.display(player, {
@@ -87,7 +87,7 @@ class PropertySettings extends HouseExtension {
                 if (message === null)
                     return;  // the player decided to not update the house's welcome message
 
-                await this.manager_.updateHouseSetting(location, 'welcome', message);
+                await this.manager_.updateHouseSetting(player, location, 'welcome', message);
 
                 // Display a confirmation dialog to the player to inform them of their action.
                 await MessageBox.display(player, {
@@ -116,7 +116,7 @@ class PropertySettings extends HouseExtension {
                             location.settings.markerColor === color.value ? '{FFFF00}' : '';
 
                         colorMenu.addItem(labelPrefix + color.label, async(player) => {
-                            await this.manager_.updateHouseSetting(location, 'marker', color.value);
+                            await this.manager_.updateHouseSetting(player, location, 'marker', color.value);
 
                             // Display a confirmation dialog to inform the player of their action.
                             await MessageBox.display(player, {
@@ -136,7 +136,7 @@ class PropertySettings extends HouseExtension {
 
                     const hasStream = !!stream.length;
 
-                    await this.manager_.updateHouseSetting(location, 'stream', stream);
+                    await this.manager_.updateHouseSetting(player, location, 'stream', stream);
 
                     // Synchronize the audio playback for any player that may be in the |location|.
                     server.playerManager.forEach(visitor => {
@@ -158,7 +158,7 @@ class PropertySettings extends HouseExtension {
             }
 
             settingsMenu.addItem('Spawn at this house', spawnValue, async(player) => {
-                await this.manager_.updateHouseSetting(
+                await this.manager_.updateHouseSetting(player, 
                     location, 'spawn', !location.settings.isSpawn());
 
                 // Display a confirmation dialog to the player to inform them of their action.

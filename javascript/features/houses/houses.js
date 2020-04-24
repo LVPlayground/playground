@@ -41,7 +41,7 @@ class Houses extends Feature {
         // The streamer will be used for creation of house vehicles.
         const streamer = this.defineDependency('streamer');
 
-        this.manager_ = new HouseManager(abuse, economy, friends, gangs, location, streamer);
+        this.manager_ = new HouseManager(abuse, announce, economy, friends, gangs, location, streamer);
 
         this.manager_.registerExtension(new GangZones(this.manager_, economy, gangs));
         this.manager_.registerExtension(new PropertySettings(this.manager_));

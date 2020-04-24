@@ -11,7 +11,11 @@ class Announce extends Feature {
     constructor() {
         super();
 
-        this.manager_ = new AnnounceManager();
+        // Depend on the Nuwani feature to be able to announce messages to IRC. Features wishing to
+        // send their own IRC messages should depend on Nuwani individually.
+        const nuwani = this.defineDependency('nuwani');
+
+        this.manager_ = new AnnounceManager(nuwani);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -48,15 +52,13 @@ class Announce extends Feature {
         this.manager_.announceReportToAdministrators(player, reportedPlayer, reason);
     }
 
-    // Announces |tag| with the |...parameters| to people watching on IRC.
-    announceToIRC(tag, ...parameters) {
-        this.manager_.announceToIRC(tag, ...parameters);
-    }
+    // TODO: Migrate all callers.
+    announceToIRC(tag, ...parameters) {}
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        this.manager.dispose();
+        this.manager_.dispose();
     }
 }
 

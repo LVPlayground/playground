@@ -3,19 +3,25 @@
 // be found in the LICENSE file.
 
 // Tag to be used for regular player-visible announcements.
-const AnnounceTag = 'announce';
+const AnnounceTag = 'notice-announce';
+
+// Tag to be used when announcing participation in a minigame.
+const AnnounceMinigameTag = 'notice-minigame';
 
 // Tag to be used for private administrator-visible announcements.
-const AdminTag = 'admin';
+const AdminTag = 'notice-admin';
 
 // Tag to be used for sending reports to admins on IRC.
-const ReportTag = 'report';
+const ReportTag = 'notice-report';
 
 // Implementation of the functionality of the Announce feature. This is where input will be verified
 // and the messages will be dispatched to the appropriate audience.
 class AnnounceManager {
-    constructor() {
+    nuwani_ = null;
+
+    constructor(nuwani) {
         this.configuration = JSON.parse(readFile('announce.json'));
+        this.nuwani_ = nuwani;
     }
 
     // Announces that the |name| has started. Players can join by typing |command|.
@@ -37,8 +43,7 @@ class AnnounceManager {
         // Announce it asynchronously when not running a test to avoid reentrancy problems.
         Promise.resolve().then(() => pawnInvoke('OnDisplayNewsMessage', 's', formattedMessage));
 
-        this.announceToIRC(AnnounceTag, Message.format(Message.ANNOUNCE_MINIGAME_JOINED_IRC,
-                                                       player.name, player.id, name));
+        this.nuwani_().echo(AnnounceMinigameTag, player.name, player.id, name);
     }
 
     // Announces |message| to all in-game players. Optionally |args| may be passed if the |message|
@@ -52,7 +57,7 @@ class AnnounceManager {
         server.playerManager.forEach(player =>
             player.sendMessage(formattedMessage));
 
-        this.announceToIRC(AnnounceTag, message);
+        this.nuwani_().echo(AnnounceTag, message);
     }
 
     // Announces |message| to all in-game administrators. Optionally |args| may be passed if
@@ -70,7 +75,7 @@ class AnnounceManager {
             player.sendMessage(formattedMessage);
         });
 
-        this.announceToIRC(AdminTag, message);
+        this.nuwani_().echo(AdminTag, message);
     }
 
     // Announces that a |player| did a report of |reportedPlayer| because of |reason| to all in-game
@@ -87,22 +92,11 @@ class AnnounceManager {
             player.sendMessage(formattedMessage);
         });
 
-        this.announceToIRC(
-            ReportTag, player.name, player.id, reportedPlayer.name, reportedPlayer.id, reason);
+        this.nuwani_().echo(ReportTag, player.name, player.id, reportedPlayer.name,
+                            reportedPlayer.id, reason);
     }
 
-    // Announces |tag| with the given |parameters|, in order, to IRC. It is the responsibility for
-    // bots to pick up on distribution and display of the message from thereon.
-    announceToIRC(tag, ...parameters) {
-        const message = '[' + tag + '] ' + parameters.join(' ');
-        if (message.length > 400) {
-            console.log('[AnnounceManager] Warning: Message dropped because it could cause an ' +
-                        'overflow in the echo plugin: ' + message.substr(0, 125) + '...');
-            return;
-        }
-
-        pawnInvoke('SendEchoMessage', 'sis', this.configuration.ip, this.configuration.port, message);
-    }
+    dispose() {}
 }
 
 export default AnnounceManager;

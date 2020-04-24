@@ -4,25 +4,14 @@
 
 import AnnounceManager from 'features/announce/announce_manager.js';
 
-let configurationCache = null;
-
 describe('AnnounceManager', (it, beforeEach, afterEach) => {
     let announceManager = null;
+    let nuwani = null;
 
-    beforeEach(() => announceManager = new AnnounceManager());
-
-    function assertSendEchoMessage(assert, message) {
-        if (!configurationCache)
-            configurationCache = JSON.parse(readFile('announce.json'));
-        
-        assert.pawnCall('SendEchoMessage', {
-            args: [
-                configurationCache.ip,
-                configurationCache.port,
-                message
-            ]
-        });
-    }
+    beforeEach(() => {
+        nuwani = server.featureManager.loadFeature('nuwani');
+        announceManager = new AnnounceManager(() => nuwani);
+    });
 
     it('should announce new minigames to players', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
@@ -57,10 +46,15 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
 
         // TODO(Russell): Test the message through the news controller when possible.
 
-        assertSendEchoMessage(
-            assert,
-            '[announce] ' + Message.format(Message.ANNOUNCE_MINIGAME_JOINED_IRC,
-                                           gunther.name, gunther.id, name));
+        assert.equal(nuwani.messagesForTesting.length, 1);
+        assert.deepEqual(nuwani.messagesForTesting[0], {
+            tag: 'notice-minigame',
+            params: [
+                gunther.name,
+                gunther.id,
+                name,
+            ]
+        });
     });
 
     it('should distribute messages to players', assert => {
@@ -75,7 +69,13 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
         assert.equal(russell.messages.length, 1);
         assert.equal(russell.messages[0], Message.format(Message.ANNOUNCE_ALL, 'Hello, world!'));
 
-        assertSendEchoMessage(assert, '[announce] Hello, world!');
+        assert.equal(nuwani.messagesForTesting.length, 1);
+        assert.deepEqual(nuwani.messagesForTesting[0], {
+            tag: 'notice-announce',
+            params: [
+                'Hello, world!',
+            ]
+        });
     });
 
     it('should distribute messages to administrators', assert => {
@@ -92,7 +92,13 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
         assert.equal(russell.messages[0],
                      Message.format(Message.ANNOUNCE_ADMINISTRATORS, 'Hello, admins!'));
 
-        assertSendEchoMessage(assert, '[admin] Hello, admins!');
+        assert.equal(nuwani.messagesForTesting.length, 1);
+        assert.deepEqual(nuwani.messagesForTesting[0], {
+            tag: 'notice-admin',
+            params: [
+                'Hello, admins!',
+            ]
+        });
     });
 
     it('should distribute reports to administrators', assert => {
@@ -112,14 +118,17 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
                            'much moneyz'));
 
         assert.equal(lucy.messages.length, 0);
-        assertSendEchoMessage(assert, '[report] Lucy 2 Gunther 0 much moneyz');
-    });
 
-    it('should distribute messages to IRC', assert => {
-        announceManager.announceToIRC('tag');
-        announceManager.announceToIRC('hello', 'world', 25, [1, 2, 3], {});
-
-        assertSendEchoMessage(assert, '[tag] ');
-        assertSendEchoMessage(assert, '[hello] world 25 1,2,3 [object Object]');
+        assert.equal(nuwani.messagesForTesting.length, 1);
+        assert.deepEqual(nuwani.messagesForTesting[0], {
+            tag: 'notice-report',
+            params: [
+                lucy.name,
+                lucy.id,
+                gunther.name,
+                gunther.id,
+                'much moneyz',
+            ]
+        });
     });
 });

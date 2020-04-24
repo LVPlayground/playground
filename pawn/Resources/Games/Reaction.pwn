@@ -47,8 +47,18 @@ CReaction__Initialize()
 // instead of using many.
 CReaction__Process()
 {
+    new bool: anyConnectedHuman = false;
+
+    for (new playerId = 0; playerId < PlayerManager->highestPlayerId(); ++playerId) {
+        if (Player(playerId)->isNonPlayerCharacter())
+            continue;
+
+        anyConnectedHuman = true;
+        break;
+    }
+
     // The games should be paused when no players are currently connected to the server.
-    if (PlayerManager->connectedPlayerCount() == 0)
+    if (!anyConnectedHuman)
         return 1;
 
     if(reactionData[timer] == 0)
@@ -92,8 +102,8 @@ CReaction__Process()
                     // String type
 
                     new string[256];
-                    format(string, sizeof(string) , "%s %d", reactionText, GetEconomyValue(ReactionTest));
-                    EchoMessage("reaction-repeat", "sd", string);
+                    format(string, sizeof(string) , "%d %s", GetEconomyValue(ReactionTest), reactionText);
+                    EchoMessage("reaction-repeat", "dz", string);
 
                     reactionData[clock] = GetTickCount();
                     reactionData[timer] = -1;
@@ -108,8 +118,8 @@ CReaction__Process()
                     // Math sum type
 
                     new string[256];
-                    format(string, sizeof(string) , "%s %d", reactionNumbers, GetEconomyValue(ReactionTest));
-                    EchoMessage("reaction-calculate", "sd", string);
+                    format(string, sizeof(string) , "%d %s", GetEconomyValue(ReactionTest), reactionNumbers);
+                    EchoMessage("reaction-calculate", "dz", string);
 
                     format(reactionAnswer, 256, "%d", calculation);
 

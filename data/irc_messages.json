@@ -21,8 +21,8 @@
     "fightclub-winner": "<color:13>*** %s (Id:%d) has won the fight against %s (Id:%d) with a score of %d : %d.",
     "fightclub-draw": "<color:13>*** The fight between %s (Id:%d) and %s (Id:%d) ended in a draw.",
 
-    "reaction-repeat": "<color:6>*** First player to type %s wins %$!",
-    "reaction-calculate": "<color:6>*** First player to calculate %s wins %$!",
+    "reaction-repeat": "<color:6>*** First player to type %s{1} wins %${0}!",
+    "reaction-calculate": "<color:6>*** First player to calculate %s{1} wins %${0}!",
     "reaction-result": "<color:6>*** %s (Id:%d) has won the reaction test in %d seconds!",
 
     "merchant": "<color:3>*** The merchant wants to purchase a %s for %$."

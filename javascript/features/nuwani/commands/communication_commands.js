@@ -10,8 +10,9 @@ import { CommandBuilder } from 'components/command_manager/command_builder.js';
 export class CommunicationCommands {
     commandManager_ = null;
 
-    constructor(commandManager) {
+    constructor(commandManager, nuwani) {
         this.commandManager_ = commandManager;
+        this.nuwani_ = nuwani;
 
         // !admin [message]
         // !announce [message]

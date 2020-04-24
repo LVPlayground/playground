@@ -9,8 +9,9 @@ import { CommandBuilder } from 'components/command_manager/command_builder.js';
 export class PlayerCommands {
     commandManager_ = null;
 
-    constructor(commandManager) {
+    constructor(commandManager, nuwani) {
         this.commandManager_ = commandManager;
+        this.nuwani_ = nuwani;
 
         // !players
         // !players [nickname]

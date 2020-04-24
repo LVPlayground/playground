@@ -10,9 +10,10 @@ export class MaintenanceCommands {
     commandManager_ = null;
     configuration_ = null;
 
-    constructor(commandManager, configuration) {
+    constructor(commandManager, configuration, nuwani) {
         this.commandManager_ = commandManager;
         this.configuration_ = configuration;
+        this.nuwani_ = nuwani;
 
         // !eval [JavaScript code]
         this.commandManager_.buildCommand('eval')

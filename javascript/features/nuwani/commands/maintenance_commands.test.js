@@ -15,13 +15,15 @@ describe('MaintenanceCommands', (it, beforeEach, afterEach) => {
 
     let commandManager = null;
     let commands = null;
+    let nuwani = null;
 
     beforeEach(() => {
         configuration = new Configuration();
         bot = new TestBot();
+        nuwani = server.featureManager.loadFeature('nuwani');
 
         commandManager = new CommandManager(/* runtime= */ null, configuration);
-        commands = new MaintenanceCommands(commandManager, configuration);
+        commands = new MaintenanceCommands(commandManager, configuration, nuwani);
     });
 
     afterEach(() => {

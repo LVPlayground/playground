@@ -61,9 +61,9 @@ export default class Nuwani extends Feature {
         // Initiate a series of commands that are provided by the Nuwani feature directly. They can
         // be split up in multiple components for organisational reasons.
         this.commands_ = [
-            new CommunicationCommands(this.commandManager_),
-            new MaintenanceCommands(this.commandManager_, this.configuration_),
-            new PlayerCommands(this.commandManager_),
+            new CommunicationCommands(this.commandManager_, this),
+            new MaintenanceCommands(this.commandManager_, this.configuration_, this),
+            new PlayerCommands(this.commandManager_, this),
         ];
 
         // Implement the EchoMessage native, which allows Pawn code to output text to the IRC echo.

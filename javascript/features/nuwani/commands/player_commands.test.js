@@ -13,10 +13,15 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
     let bot = null;
     let commandManager = null;
     let commands = null;
+    let nuwani = null;
 
     beforeEach(() => {
+        const configuration = new Configuration();
+        
+        nuwani = server.featureManager.loadFeature('nuwani');
+
         bot = new TestBot();
-        commandManager = new CommandManager(/* runtime= */ null, new Configuration());
+        commandManager = new CommandManager(/* runtime= */ null, configuration, nuwani);
         commands = new PlayerCommands(commandManager);
     });
 

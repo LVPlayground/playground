@@ -68,7 +68,7 @@ class CallManager {
 
         format(notice, sizeof(notice), "%s %d %s %d %s", Player(callerId)->nicknameString(),
             callerId, Player(calleeId)->nicknameString(), calleeId, message);
-        IRC->broadcast(PhoneIrcMessage, notice);
+        EchoMessage("chat-call", "sdsdz", notice);
 
         return 1;
     }

@@ -103,9 +103,8 @@ class VeryImportantPlayersCommands {
             SendClientMessage(player, Color::VipChat, notice);
         }
 
-        format(notice, sizeof(notice), "%s %d %s", Player(playerId)->nicknameString(), playerId, message[1]);
-        IRC->broadcast(VipChatIrcMessage, notice);
-
+        format(notice, sizeof(notice), "%d %s %s", playerId, Player(playerId)->nicknameString(), message[1]);
+        EchoMessage("chat-vip", "dsz", notice);
         return 1;
     }
 

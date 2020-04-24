@@ -1124,6 +1124,7 @@ lvp_announce(playerId, params[]) {
     format(g_message, sizeof(g_message), "Announce by %s (Id:%d): %s", Player(playerId)->nicknameString(), playerId, params);
     Admin(playerId, g_message);
 
+    EchoMessage("notice-announce", "z", params);
     return 1;
 }
 

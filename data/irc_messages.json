@@ -7,6 +7,15 @@
     "quit": "<color:2>[%d] <color:3>*** %s has left the game (%s).",
 
     "chat": "<color:2>[%d] <color:7>%s:<color> %s",
+    "chat-admin": "<prefix:%><color:12>Admin chat <color:2>[%d] <color:7>%s:<color> %s",
+    "chat-call": "<prefix:%><color:7>Call from <color:5>%s <color:7>(Id:%d) to <color:5>%s <color:7>(Id:%d):<color> %s",
+    "chat-irc": "<target:{0}><color:7>Message from <color:5>%s{1} <color:7>(Id:%d{2}):<color>: %s{3}",
+    "chat-private": "<prefix:%><color:7>PM from <color:5>%s <color:7>(Id:%d) to <color:5>%s <color:7>(Id:%d):<color> %s",
+    "chat-vip": "<prefix:+><color:12>VIP chat <color:2>[%d] <color:7>%s:<color> %s",
+    "chat-world": "<prefix+><color:12>[World %d] <color:2>[%d] <color:7>%s:<color> %s",
+
+    "notice-admin": "<prefix:%><color:5>*** %s",
+    "notice-announce": "<color:12>*** Announcement: %s",
 
     "status": "<color:2>[%d] <color:7>%s %s",
 

@@ -416,9 +416,7 @@ Admin(senderId, text[]) {
             SendClientMessage(playerId, Color::AdministratorColor, notice);
     }
 
-    format(notice, sizeof(notice), "[admin] %s", text);
-    AddEcho(notice);
-
+    EchoMessage("notice-admin", "z", text);
     return 1;
 }
 

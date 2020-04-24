@@ -158,8 +158,7 @@ class PropertySettings extends HouseExtension {
             }
 
             settingsMenu.addItem('Spawn at this house', spawnValue, async(player) => {
-                await this.manager_.updateHouseSetting(player, 
-                    location, 'spawn', !location.settings.isSpawn());
+                await this.manager_.updateHouseSetting(player, location, 'spawn', !location.settings.isSpawn());
 
                 // Display a confirmation dialog to the player to inform them of their action.
                 await MessageBox.display(player, {

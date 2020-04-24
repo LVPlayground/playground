@@ -182,8 +182,6 @@
 #include Elements/Player/Commands/Regular.pwn
 #include Elements/Player/Commands/General.pwn
 
-#include Resources/IRC/irccommand.pwn
-
 
 // --------------------
 // New account system: LegacyAccountBridge.

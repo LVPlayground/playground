@@ -33,16 +33,10 @@ AddEcho(message[]) {
  * coded prefixes all around the source-code, which increases our flexibility.
  */
 enum IrcMessageType {
-    GangChatIrcMessage, // [playerId] [playerName] ![message]
     PrivateMessageIrcMessage, // [playerName] [playerId] [receiverName] [receiverId] [message]
     IrcPrivateMessageIrcMessage, // [playerId] [playerName] [receiverName] [message]
     VipChatIrcMessage, // [playerName] [playerId] [message]
     PhoneIrcMessage, // [playerName] [playerId] [calleeName] [calleeId] [message]
-    DeathIrcMessage, // [playerName]
-    KillIrcMessage, // [playerName] [playerId] [killerName] [killerId] [reason]
-    NotConnectedIrcMessage, // [playerId]
-    AddCommandIrcMessage, // [trigger] [paramTypes] [userRight] [params]
-    PlayerStatusIrcMessage // [playerId] [playerName] [message]
 };
 
 /**
@@ -65,12 +59,6 @@ class IRC {
      */
     public broadcast(IrcMessageType: type, message[]) {
         switch (type) {
-            case GangChatIrcMessage:
-                m_messageBuffer = "[gang] ";
-            case DeathIrcMessage:
-                m_messageBuffer = "[death] ";
-            case KillIrcMessage:
-                m_messageBuffer = "[kill] ";
             case PrivateMessageIrcMessage:
                 m_messageBuffer = "[pm] ";
             case IrcPrivateMessageIrcMessage:
@@ -79,12 +67,6 @@ class IRC {
                 m_messageBuffer = "[vipchat] ";
             case PhoneIrcMessage:
                 m_messageBuffer = "[phone] ";
-            case NotConnectedIrcMessage:
-                m_messageBuffer = "[notconnected] ";
-            case AddCommandIrcMessage:
-                m_messageBuffer = "[addcommand] ";
-            case PlayerStatusIrcMessage:
-                m_messageBuffer = "[me] ";
             default:
                 m_messageBuffer = "[unknown] ";
         }

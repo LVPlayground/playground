@@ -46,7 +46,6 @@ class DeprecatedTimerRuntime {
 #endif
 
         CReaction__Process();
-        IRCCommand ();
         CDerby__Process();
         CRobbery__Process();
 

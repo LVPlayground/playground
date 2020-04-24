@@ -182,12 +182,17 @@ public OnPlayerDeath(playerid, killerid, reason) {
 
     new message[256];
     if (killerid == Player::InvalidId) {
-        format(message, sizeof(message), "%s", Player(playerid)->nicknameString());
-        IRC->broadcast(DeathIrcMessage, message);
+        EchoMessage("death", "s", Player(playerid)->nicknameString());
     } else {
-        format(message, sizeof(message), "%s %d %s %d %d", Player(playerid)->nicknameString(), playerid,
-            Player(killerid)->nicknameString(), killerid, reason);
-        IRC->broadcast(KillIrcMessage, message);
+        new weaponName[64];
+        GetWeaponName(reason, weaponName, sizeof(weaponName));
+
+        format(message, sizeof(message), "%s %d %s %d %s", 
+            Player(playerid)->nicknameString(), playerid,
+            Player(killerid)->nicknameString(), killerid,
+            weaponName);
+
+        EchoMessage("kill", "sdsds", message);
     }
 
     // ---- MINIGAME & LAME-KILL CHECKS ------------------------------------------------------------

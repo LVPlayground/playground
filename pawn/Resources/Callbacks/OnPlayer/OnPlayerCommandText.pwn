@@ -553,7 +553,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(resetfc,        7, AdministratorLevel);
     lvp_command(resetmatch,    10, AdministratorLevel);
 #endif
-    lvp_command(asay,           4, AdministratorLevel);
     lvp_command(reactiontest,  12, AdministratorLevel);
     lvp_command(chase,          5, AdministratorLevel);
     lvp_command(fetch,          5, AdministratorLevel);
@@ -1072,7 +1071,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         }
 
         format(string, sizeof(string), "%d %s %s", playerid, Player(playerid)->nicknameString(), actionText);
-        IRC->broadcast(PlayerStatusIrcMessage, string);
+        EchoMessage("status", "dss", string);
 
         SpamTracker->record(playerid, actionText);
 

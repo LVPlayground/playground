@@ -92,8 +92,8 @@ CReaction__Process()
                     // String type
 
                     new string[256];
-                    format(string, sizeof(string) , "[reaction] %s", reactionText);
-                    AddEcho(string);
+                    format(string, sizeof(string) , "%s %d", reactionText, GetEconomyValue(ReactionTest));
+                    EchoMessage("reaction-repeat", "sd", string);
 
                     reactionData[clock] = GetTickCount();
                     reactionData[timer] = -1;
@@ -108,8 +108,8 @@ CReaction__Process()
                     // Math sum type
 
                     new string[256];
-                    format(string, sizeof(string) , "[reaction2] %s", reactionNumbers);
-                    AddEcho(string);
+                    format(string, sizeof(string) , "%s %d", reactionNumbers, GetEconomyValue(ReactionTest));
+                    EchoMessage("reaction-calculate", "sd", string);
 
                     format(reactionAnswer, 256, "%d", calculation);
 
@@ -200,14 +200,13 @@ CReaction__OnText(playerid, text[])
 
         // Achievement thing
         CAchieve__ReactionWin(playerid, fDiff);
-
-        // Note that this player has won the reaction test, distribute a message
-        // to IRC (fuck you to the one who decided to use mIRC colour codes here).
         CReaction__Rebuild();
+
         reactionData[expire] = 0;
 
-        format( szMessage, sizeof( szMessage ), "[wonreaction] %s %.2f", szName, fDiff );
-        AddEcho( szMessage );
+
+        format( szMessage, sizeof( szMessage ), "%s %d %.2f", szName, playerid, fDiff );
+        EchoMessage("reaction-result", "sdf", szMessage);
         return 1;
     }
     return 1;

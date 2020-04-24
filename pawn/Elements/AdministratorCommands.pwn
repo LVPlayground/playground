@@ -247,28 +247,6 @@ lvp_t(playerId, params[]) {
     return 1;
 }
 
-lvp_asay (playerId, params[]) {
-    if (Command->parameterCount(params) == 0) {
-        SendClientMessage(playerId, Color::Success, "This command will show a IRC-like !say message.");
-        SendClientMessage(playerId, Color::Information, "Usage: /asay [message]");
-        return 1;
-    }
-
-    new adminName[MAX_PLAYER_NAME+1];
-    if (UndercoverAdministrator(playerId)->isUndercoverAdministrator() == true)
-        UndercoverAdministrator(playerId)->getOriginalUsername(adminName, sizeof(adminName));
-    else
-        Player(playerId)->nickname(adminName, sizeof(adminName));
-
-    format(g_message, sizeof(g_message), "* Admin (%s): %s", adminName, params);
-    SendClientMessageToAllEx(0x2587CEAA, g_message);
-
-    format(g_message, sizeof(g_message), "[say] %s %s", adminName, params);
-    AddEcho(g_message);
-
-    return 1;
-}
-
 lvp_set(playerId, params[]) {
     if (Command->parameterCount(params) == 0)
         goto SetHelp;

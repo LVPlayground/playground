@@ -4,11 +4,22 @@
     "join": "<color:2>[%d] <color:3>*** %s has joined the game.",
     "login": "<color:2>[%d] <color:3>*** %s has logged in.",
     "guest": "<color:2>[%d] <color:3>*** %s has decided to play as %s (guest).",
-    "quit": "<color:2>[%d] <color:3>*** %s has left the game (%d).",
+    "quit": "<color:2>[%d] <color:3>*** %s has left the game (%s).",
 
     "chat": "<color:2>[%d] <color:7>%s:<color> %s",
 
+    "status": "<color:2>[%d] <color:7>%s %s",
+
+    "death": "<color:4>*** %s has died.",
+    "kill": "<color:4>*** %s (Id:%d) has been killed by %s (Id:%d): %s",
+
     "buy": "<color:10>*** %s (Id:%d) has bought the %s{3} property for %${2}.",
     "sell": "<color:10>*** %s (Id:%d) has sold the %s{3} property for %${2}.",
-    "sell-all": "<color:10>*** %s (Id:%d) has sold all their properties for %$."
+    "sell-all": "<color:10>*** %s (Id:%d) has sold all their properties for %$.",
+
+    "reaction-repeat": "<color:6>*** First player to type %s wins %$!",
+    "reaction-calculate": "<color:6>*** First player to calculate %s wins %$!",
+    "reaction-result": "<color:6>*** %s (Id:%d) has won the reaction test in %d seconds!",
+
+    "merchant": "<color:3>*** The merchant wants to purchase a %s for %$."
 }

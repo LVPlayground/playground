@@ -6,6 +6,8 @@
     "guest": "<color:2>[%d] <color:3>*** %s has decided to play as %s (guest).",
     "quit": "<color:2>[%d] <color:3>*** %s has left the game (%d).",
 
+    "chat": "<color:2>[%d] <color:7>%s:<color> %s",
+
     "buy": "<color:10>*** %s (Id:%d) has bought the %s{3} property for %${2}.",
     "sell": "<color:10>*** %s (Id:%d) has sold the %s{3} property for %${2}.",
     "sell-all": "<color:10>*** %s (Id:%d) has sold all their properties for %$."

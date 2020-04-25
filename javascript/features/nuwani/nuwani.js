@@ -28,6 +28,9 @@ export default class Nuwani extends Feature {
     // Gets the CommandManager with which IRC commands can be created.
     get commandManager() { return this.commandManager_; }
 
+    // Gets the message distributor that's responsible for fanning out messages.
+    get messageDistributor() { return this.messageDistributor_; }
+
     // Gets the runtime that powers the connection to IRC.
     get runtime() { return this.runtime_; }
 

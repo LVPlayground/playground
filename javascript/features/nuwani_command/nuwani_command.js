@@ -83,10 +83,19 @@ export default class NuwaniCommand extends Feature {
     async requestIncrease(player) {
         const nuwani = this.nuwani_();
 
-        if (!nuwani.runtime.availableBots.size)
-            return alert(player, 'There are no available bots that could be connected.');
+        if (!nuwani.runtime.availableBots.size) {
+            return alert(player, {
+                title: 'Nuwani Configuration',
+                message: 'There are no available bots that could be connected.'
+            });
+        }
         
-        if (!await confirm(player, 'Are you sure that you want to connect an extra bot?'))
+        const result = await confirm(player, {
+            title: 'Nuwani Configuration',
+            message: 'Are you sure that you want to connect an extra bot?',
+        });
+
+        if (!result)
             return;
         
         this.announce_().announceToAdministrators(
@@ -94,7 +103,10 @@ export default class NuwaniCommand extends Feature {
 
         nuwani.runtime.requestSlaveIncrease();
 
-        await alert(player, 'An extra bot has been requested and should connect momentarily.');
+        await alert(player, {
+            title: 'Nuwani Configuration',
+            message: 'An extra bot has been requested and should connect momentarily.',
+        });
     }
 
     // Requests one of the optional bots to disconnect. The system will load balance automatically,
@@ -107,14 +119,23 @@ export default class NuwaniCommand extends Feature {
             if (activeBot.config.master || !activeBot.config.optional)
                 continue;
             
-                hasActiveOptionalBots = true;
+            hasActiveOptionalBots = true;
             break;
         }
 
-        if (!hasActiveOptionalBots)
-            return alert(player, 'There are no active bots that could be disconnected.');
-        
-        if (!await confirm(player, 'Are you sure that you want to disconnect one of the bots?'))
+        if (!hasActiveOptionalBots) {
+            return alert(player, {
+                title: 'Nuwani Configuration',
+                message: 'There are no active bots that could be disconnected.',
+            });
+        }
+
+        const result = await confirm(player, {
+            title: 'Nuwani Configuration',
+            message: 'Are you sure that you want to disconnect one of the bots?',
+        });
+
+        if (!result)
             return;
         
         this.announce_().announceToAdministrators(
@@ -122,7 +143,10 @@ export default class NuwaniCommand extends Feature {
 
         nuwani.runtime.requestSlaveDecrease();
 
-        await alert(player, 'One of the bots will be disconnecting from the network momentarily.');
+        await alert(player, {
+            title: 'Nuwani Configuration',
+            message: 'One of the bots will be disconnecting from the network momentarily.',
+        });
     }
 
     dispose() {

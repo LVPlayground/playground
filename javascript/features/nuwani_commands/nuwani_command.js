@@ -2,33 +2,26 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Feature from 'components/feature_manager/feature.js';
 import Menu from 'components/menu/menu.js';
 
 import alert from 'components/dialogs/alert.js';
 import confirm from 'components/dialogs/confirm.js';
 
 // The `/nuwani` command enables in-game staff to understand, control and manage the Nuwani IRC
-// system. Access to this command is controlled per `/lvp access`. This feature solely is the
-// command, and provides no other functionality.
-export default class NuwaniCommand extends Feature {
+// system. Access to this command is controlled per `/lvp access`.
+export class NuwaniCommand {
     announce_ = null;
     nuwani_ = null;
+    playground_ = null;
 
-    constructor() {
-        super();
+    constructor(announce, nuwani, playground) {
+        this.announce_ = announce;
+        this.nuwani_ = nuwani;
+        this.playground_ = playground;
 
-        // Certain actions will have to be announced to administrators
-        this.announce_ = this.defineDependency('announce');
-
-        // It's no surprise that the command will have to depend on the feature.
-        this.nuwani_ = this.defineDependency('nuwani');
-
-        // Provides access control for the command itself, configurable whilst in-game.
-        this.playground_ = this.defineDependency('playground');
         this.playground_().registerCommand('nuwani', Player.LEVEL_MANAGEMENT);
 
-        // Defines the `/nuwani` command. Access ins controlled by the Playground module.
+        // Defines the `/nuwani` command. Access is controlled by the Playground module.
         server.commandManager.buildCommand('nuwani')
             .restrict(player => this.playground_().canAccessCommand(player, 'nuwani'))
             .build(NuwaniCommand.prototype.onNuwaniCommand.bind(this));
@@ -151,7 +144,10 @@ export default class NuwaniCommand extends Feature {
 
     dispose() {
         this.playground_().unregisterCommand('nuwani');
+
+        this.playground_ = null;
         this.nuwani_ = null;
+        this.announce_ = null;
 
         server.commandManager.removeCommand('nuwani');
     }

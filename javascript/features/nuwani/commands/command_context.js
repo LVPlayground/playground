@@ -41,7 +41,7 @@ export class CommandContext {
 
     // Responds to this command with information regarding its |usage|.
     respondWithUsage(usage) {
-        this.bot_.write(`PRIVMSG ${this.target} :10Usage: ${message}`);
+        this.bot_.write(`PRIVMSG ${this.target} :10Usage: ${usage}`);
     }
 
     // Writes the raw |message| to the network. Will bypass echo distribution.

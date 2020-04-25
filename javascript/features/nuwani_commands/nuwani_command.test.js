@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import NuwaniCommand from 'features/nuwani_command/nuwani_command.js';
+import { NuwaniCommands } from 'features/nuwani_commands/nuwani_commands.js';
 import MockPlayground from 'features/playground/test/mock_playground.js';
 
 describe('NuwaniCommand', (it, beforeEach) => {
@@ -15,11 +15,11 @@ describe('NuwaniCommand', (it, beforeEach) => {
         gunther.level = Player.LEVEL_MANAGEMENT;
 
         server.featureManager.registerFeaturesForTests({
-            nuwani_command: NuwaniCommand,
+            nuwani_commands: NuwaniCommands,
             playground: MockPlayground,
         });
 
-        server.featureManager.loadFeature('nuwani_command');
+        server.featureManager.loadFeature('nuwani_commands');
     });
 
     it('should only be available to managers by default, but be configurable', async (assert) => {

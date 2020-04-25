@@ -69,9 +69,7 @@ reliability, to minimize the amount of maintenance necessary on an on-going basi
 
 ## Commands
 **NuwaniJS** supports commands for players, administrators and management members, each implied by
-a user's modes on the configured echo channel. The following commands are available:
-
-### Maintenance commands
+a user's modes on the configured echo channel. The following commands are built in:
 
   * [!eval](commands/maintenance_commands.js) (restricted to **bot owners**): to run arbitrary code
     in context of the server.
@@ -79,9 +77,8 @@ a user's modes on the configured echo channel. The following commands are availa
   * [!nuwani](commands/maintenance_commands.js) (restricted to **Management**): manage the Nuwani
     IRC Bot system.
 
-### Generic commands (everyone)
-
-_None._
+Other commands will be provided by the [nuwani_commands](../nuwani_commands/) feature, which is
+able to have dependencies on other parts of the gamemode as well.
 
 ## Echo
 **NuwaniJS** has the ability to share almost everything that happens on the server with people

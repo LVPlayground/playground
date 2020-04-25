@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { CommandManager } from 'features/nuwani/commands/command_manager.js';
 import { Configuration } from 'features/nuwani/configuration.js';
 import Feature from 'components/feature_manager/feature.js';
 import { MessageDistributor } from 'features/nuwani/echo/message_distributor.js';
@@ -13,6 +14,7 @@ import { TestBot } from 'features/nuwani/test/test_bot.js';
 export class MockNuwani extends Feature {
     configuration_ = null;
     runtime_ = null;
+    commandManager_ = null;
     messageDistributor_ = null;
 
     messages_ = null;
@@ -21,7 +23,7 @@ export class MockNuwani extends Feature {
     get messagesForTesting() { return this.messages_; }
 
     // Gets the CommandManager with which IRC commands can be created.
-    get commandManager() { throw new Error('Not yet implemented in MockNuwani'); }
+    get commandManager() { return this.commandManager_; }
 
     // Gets the message distributor that's responsible for fanning out messages.
     get messageDistributor() { return this.messageDistributor_; }
@@ -35,6 +37,8 @@ export class MockNuwani extends Feature {
         this.configuration_ = new Configuration();
 
         this.runtime_ = new Runtime(this.configuration_, /* BotConstructor= */ TestBot);
+
+        this.commandManager_ = new CommandManager(this.runtime_, this.configuration_);
 
         this.messageDistributor_ = new MessageDistributor(this.runtime_, this.configuration_);
         // TODO: Can we run the message distributor?
@@ -59,6 +63,9 @@ export class MockNuwani extends Feature {
     dispose() {
         this.messageDistributor_.dispose();
         this.messageDistributor_ = null;
+
+        this.commandManager_.dispose();
+        this.commandManager_ = null;
 
         this.runtime_.dispose();
         this.runtime_ = null;

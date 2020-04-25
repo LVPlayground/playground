@@ -6,13 +6,10 @@ import Feature from 'components/feature_manager/feature.js';
 
 import { CommandManager } from 'features/nuwani/commands/command_manager.js';
 import { Configuration } from 'features/nuwani/configuration.js';
+import { MaintenanceCommands } from 'features/nuwani/commands/maintenance_commands.js';
 import { MessageDistributor } from 'features/nuwani/echo/message_distributor.js';
 import { MessageFormatter } from 'features/nuwani/echo/message_formatter.js';
 import { Runtime } from 'features/nuwani/runtime/runtime.js';
-
-import { CommunicationCommands } from 'features/nuwani/commands/communication_commands.js';
-import { MaintenanceCommands } from 'features/nuwani/commands/maintenance_commands.js';
-import { PlayerCommands } from 'features/nuwani/commands/player_commands.js';
 
 // Base of the Nuwani feature, which is a JavaScript-powered implementation of the IRC Bots that
 // provide echo and communication functionalities to a series of IRC channels.
@@ -58,13 +55,8 @@ export default class Nuwani extends Feature {
         // by other ones that depend on IRC connectivity.
         this.commandManager_ = new CommandManager(this.runtime_, this.configuration_);
 
-        // Initiate a series of commands that are provided by the Nuwani feature directly. They can
-        // be split up in multiple components for organisational reasons.
-        this.commands_ = [
-            new CommunicationCommands(this.commandManager_, this),
-            new MaintenanceCommands(this.commandManager_, this.configuration_, this),
-            new PlayerCommands(this.commandManager_, this),
-        ];
+        // Provides the commands internal to Nuwani, for maintenance of the IRC system.
+        this.commands_ = new MaintenanceCommands(this.commandManager_, this.configuration_, this);
 
         // Implement the EchoMessage native, which allows Pawn code to output text to the IRC echo.
         provideNative('EchoMessage', 'sss', Nuwani.prototype.echoFromPawn.bind(this));
@@ -96,9 +88,7 @@ export default class Nuwani extends Feature {
     dispose() {
         provideNative('EchoMessage', 'sss', (tag, format, message) => 1);
 
-        for (const instance of this.commands_)
-            instance.dispose();
-
+        this.commands_.dispose();
         this.commands_ = null;
 
         this.commandManager_.dispose();

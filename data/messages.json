@@ -194,6 +194,12 @@
 
     "IRC_CHAT_MESSAGE_SENT": "{33AA33}Message sent to {FFFFFF}%s {33AA33}as {FFFFFF}%s{33AA33}: {FFFFFF}%s",
 
+    "IRC_ADMIN_MESSAGE": "{FFFF00}* %s %s (IRC): %s",
+    "IRC_ANNOUNCE_ADMIN": "%s (IRC) has made an announcement.",
+    "IRC_ANNOUNCE_DIVIDER": "{DC143C}-------------------",
+    "IRC_ANNOUNCE_MESSAGE": "{FFFF00}%s",
+    "IRC_SAY_MESSAGE": "{80CBC4}*** %s: %s",
+
     "KILLTIME_ADMIN_STOPPED": "{DC143C}Killtime{FFFFFF}: An administrator has stopped the killtime. Luckily, the prize will still be handed.",
     "KILLTIME_AUTO_STOPPED": "{DC143C}Killtime{FFFFFF}: Time is up! The prize will be given out shortly.",
     "KILLTIME_MAXIMUM_TEN_MINUTES": "{DC143C}Killtime{FFFFFF}: Sorry, there is a maximum of two minutes.",

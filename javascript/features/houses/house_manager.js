@@ -251,27 +251,12 @@ class HouseManager {
                 }
 
                 await this.database_.updateHouseAccess(location, value);
-                
-                let readableAccess = 'unknown';
-                switch(value) {
-                    case HouseSettings.ACCESS_EVERYBODY:
-                        readableAccess = 'everybody';
-                        break;
-                    case HouseSettings.ACCESS_FRIENDS_AND_GANG:
-                    readableAccess = 'friends and gangs';
-                        break;
-                    case HouseSettings.ACCESS_FRIENDS:
-                    readableAccess = 'friends';
-                        break;
-                    case HouseSettings.ACCESS_PERSONAL:
-                    readableAccess = 'personal';
-                        break;
-                }
 
+                const readableAccess = HouseSettings.getReadableAccess(value);
                 this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_ACCESS_CHANGED, 
                     player.id, player.name, location.settings.name, location.settings.id, readableAccess);
                 
-                    location.settings.access = value;
+                location.settings.access = value;
                 break;
 
             case 'marker':
@@ -297,7 +282,7 @@ class HouseManager {
                 this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_RENAMED, 
                     player.id, player.name, location.settings.name, location.settings.id, value);
 
-                    location.settings.name = value;
+                location.settings.name = value;
                 break;
 
             case 'spawn':

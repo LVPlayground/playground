@@ -22,10 +22,22 @@ export class Runtime {
 
     observers_ = null;
 
-    // Gives access to the bots that are part of this runtime.
-    get bots() { return this.bots_; }
+    // Gives access to the master bot. It's always active, even when it might not be connected
+    // right now due to connectivity issues.
+    get masterBot() {
+        for (const bot of this.activeBots_.values()) {
+            if (bot.config.master)
+                return bot;
+        }
 
-    constructor(configuration) {
+        return null;
+    }
+
+    // Gives access to the bots that are part of this runtime.
+    get activeBots() { return this.activeBots_; }
+    get availableBots() { return this.availableBots_; }
+
+    constructor(configuration, BotConstructor = Bot) {
         this.configuration_ = configuration;
         this.observers_ = new Set();
 
@@ -35,7 +47,7 @@ export class Runtime {
         const { servers, channels } = configuration;
 
         for (const config of this.configuration_.bots) {
-            const bot = new Bot(this, config, servers, channels);
+            const bot = new BotConstructor(this, config, servers, channels);
 
             if (config.master || !config.optional)
                 this.activeBots_.add(bot);
@@ -78,10 +90,17 @@ export class Runtime {
         }
     }
 
-    // Disconnect all the bots from the network.
+    // Disconnect all the bots from the network. All optional bots will also be placed in the set of
+    // available bots again, as this is considered a sizeable reset of the system.
     diconnect() {
-        for (const bot of this.activeBots_.values())
+        for (const bot of this.activeBots_.values()) {
+            if (!bot.config.master && bot.config.optional) {
+                this.activeBots_.delete(bot);
+                this.availableBots_.add(bot);
+            }
+
             bot.disconnect();
+        }
     }
 
     // Adds the given |observer| to the list of observers for bot connectivity. Must extend the

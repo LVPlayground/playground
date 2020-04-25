@@ -3,6 +3,8 @@
 // be found in the LICENSE file.
 
 import Feature from 'components/feature_manager/feature.js';
+import Menu from 'components/menu/menu.js';
+import MessageBox from 'components/dialogs/message_box.js';
 
 // The `/nuwani` command enables in-game staff to understand, control and manage the Nuwani IRC
 // system. Access to this command is controlled per `/lvp access`. This feature solely is the
@@ -26,34 +28,50 @@ export default class NuwaniCommand extends Feature {
             .build(NuwaniCommand.prototype.onNuwaniCommand.bind(this));
     }
 
-    // Called when the `/nuwani` command has been executed without parameters. Outputs the status.
-    onNuwaniCommand(player) {
-        const bots = {
-            connected: [],
-            disconnected: []
-        };
+    // Called when the `/nuwani` command has been executed. Shows the menu with all the options that
+    // are available the the |player| for controlling the bot.
+    async onNuwaniCommand(player) {
+        const menu = new Menu('Nuwani IRC Bot');
+        
+        menu.addItem('Inspect bot status', NuwaniCommand.prototype.displayStatus.bind(this));
+        
+        await menu.displayForPlayer(player);
+    }
 
-        for (const bot of this.nuwani_().runtime.bots) {
-            if (bot.isConnected())
-                bots.connected.push(bot.nickname);
-            else
-                bot.disconnected.push(bot.nickname);
+    // Displays a menu with the status of each of the IRC bots, both the active and available ones.
+    // The connected bots will further be shown with their connectivity status and command rate.
+    async displayStatus(player) {
+        const nuwani = this.nuwani_();
+        const menu = new Menu('Nuwani: bot status', [
+            'Bot',
+            'Status',
+            'Command rate',
+        ]);
+
+        for (const activeBot of nuwani.runtime.activeBots) {
+            menu.addItem(...[
+                activeBot.nickname,
+                activeBot.isConnected() ? '{ADFF2F}connected'
+                                        : '{ff782f}disconnected',
+                /* command rate= */ 0,
+            ]);
         }
 
-        // Sort the bot names for each of the categories.
-        bots.connected.sort();
-        bots.disconnected.sort();
+        for (const availableBot of nuwani.runtime.availableBots) {
+            menu.addItem(...[
+                availableBot.nickname,
+                '{bec7cc}available',
+                /* command rate= */ 0,
+            ]);
+        }
 
-        if (bots.connected.length)
-            player.sendMessage(Message.NUWANI_STATUS_CONNECTED, bots.connected.join(', '));
-        if (bots.disconnected.length)
-            player.sendMessage(Message.NUWANI_STATUS_DISCONNECTED, bots.disconnected.join(', '));
+        await menu.displayForPlayer(player);
     }
 
     dispose() {
-        this.playground_().unregisterCommand('house');
+        this.playground_().unregisterCommand('nuwani');
         this.nuwani_ = null;
 
-        server.commandManager.removeCommand('house');
+        server.commandManager.removeCommand('nuwani');
     }
 }

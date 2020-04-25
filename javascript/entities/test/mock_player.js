@@ -237,6 +237,18 @@ class MockPlayer {
     get lastDialogStyle() { return this.lastDialogStyle_; }
     get lastDialogLabel() { return this.lastDialogLabel_; }
 
+    // Advanced method to get the last dialog as a menu table.
+    getLastDialogAsTable() {
+        if (!this.lastDialogMessage_)
+            throw new Error('No last message is available to output as a table.');
+        
+        const lines = this.lastDialogMessage_.split('\n');
+        return {
+            columns: lines.shift().split('\t'),
+            rows: lines.map(line => line.split('\t'))
+        };
+    }
+
     // Sends |message| to the player. It will be stored in the local messages array and can be
     // retrieved through the |messages| getter.
     sendMessage(message, ...args) {
@@ -249,6 +261,15 @@ class MockPlayer {
 
     // Clears the messages that have been sent to this player.
     clearMessages() { this.messages_ = []; }
+
+    // Clears the last dialog that has been shown to this player.
+    clearLastDialog() {
+        this.lastDialogId_ = null;
+        this.lastDialogTitle_ = null;
+        this.lastDialogStyle_ = null;
+        this.lastDialogLabel_ = null;
+        this.lastDialogMessage_ = null;
+    }
 
     // Gets the messages that have been sent to this player.
     get messages() { return this.messages_; }

@@ -8,11 +8,14 @@ export class TestBot {
     config_ = null;
     nickname_ = null;
 
+    connected_ = false;
     userModes_ = null;
     messages_ = null;
 
     get config() { return this.config_; }
     get nickname() { return this.nickname_; }
+
+    isConnected() { this.connected_ = true; }
 
     // Returns the messages that were written to this bot. Only available for testing purposes,
     // thus clarified as a suffix in the method name.
@@ -27,11 +30,14 @@ export class TestBot {
 
         this.nickname_ = this.config_.nickname;
 
+        this.connected_ = false;
         this.userModes_ = new Map();
         this.messages_ = [];
     }
 
-    connect() {}
+    connect() {
+        this.connected_ = true;
+    }
 
     write(message) {
         this.messages_.push(message);
@@ -53,7 +59,9 @@ export class TestBot {
         this.userModes_.delete(nickname);
     }
 
-    disconnect() {}
+    disconnect() {
+        this.connected_ = false;
+    }
 
     dispose() {}
 }

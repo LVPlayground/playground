@@ -14,7 +14,7 @@ import Dialog from 'components/dialogs/dialog.js';
 // There is no limit to the number of items that can be added to a menu, as this component will
 // automatically split a dialog up in multiple dialogs when it doesn't fit in a single box. However,
 // keep in mind that this does not provide a great user experience.
-class Menu {
+export class Menu {
     constructor(title, columns = [], { pageSize = 50 } = {}) {
         if (!Array.isArray(columns) || columns.length > Menu.MAX_COLUMN_COUNT)
             throw new Error('Menus cannot have more than ' + Menu.MAX_COLUMN_COUNT + ' columns.');

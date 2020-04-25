@@ -46,7 +46,12 @@ describe('MessageDistributor', (it, beforeEach, afterEach) => {
         assert.isTrue(Number.isInteger((1000 / kMaximumCommandRateSlave) / 1000));
 
         const master = new TestBot();
-        const slave = new TestBot({ slave: true });
+        const slave = new TestBot(/* delegate= */ null, {
+            nickname: 'NuwaniJS',
+            master: false,
+            optional: true,
+            slave: true
+        });
 
         let masterWaits = 0;
         let slaveWaits = 0;
@@ -102,7 +107,12 @@ describe('MessageDistributor', (it, beforeEach, afterEach) => {
         assert.isBelow(kMaximumCommandRateSlave, kMaximumQueueSize);
 
         const master = new TestBot();
-        const slave = new TestBot({ slave: true });
+        const slave = new TestBot(/* delegate= */ null, {
+            nickname: 'NuwaniJS',
+            master: false,
+            optional: true,
+            slave: true
+        });
 
         let masterWaits = 0;
         let slaveWaits = 0;
@@ -151,7 +161,12 @@ describe('MessageDistributor', (it, beforeEach, afterEach) => {
     });
 
     it('should dispose of messages when the queue size has been exceeded', async (assert) => {
-        const slave = new TestBot({ slave: true });
+        const slave = new TestBot(/* delegate= */ null, {
+            nickname: 'NuwaniJS',
+            master: false,
+            optional: true,
+            slave: true
+        });
 
         distributor.run();
         distributor.onBotConnected(slave);
@@ -169,7 +184,13 @@ describe('MessageDistributor', (it, beforeEach, afterEach) => {
     });
 
     it('should repeatedly drop messages if the queue keeps growing', async (assert) => {
-        const slave = new TestBot({ slave: true });
+        const slave = new TestBot(/* delegate= */ null, {
+            nickname: 'NuwaniJS',
+            master: false,
+            optional: true,
+            slave: true
+        });
+
         const iterations = 3;
 
         distributor.run();
@@ -237,9 +258,15 @@ describe('MessageDistributor', (it, beforeEach, afterEach) => {
     it('is able to signal when the number of bots could be decreased', async (assert) => {
         const master = new TestBot();
         const slaves = [
-            new TestBot({ slave: true }),
-            new TestBot({ slave: true }),
-            new TestBot({ slave: true })
+            new TestBot(/* delegate= */ null, {
+                nickname: 'NuwaniJS', master: false, optional: true, slave: true
+            }),
+            new TestBot(/* delegate= */ null, {
+                nickname: 'NuwiniJS', master: false, optional: true, slave: true
+            }),
+            new TestBot(/* delegate= */ null, {
+                nickname: 'NuwoniJS', master: false, optional: true, slave: true
+            }),
         ];
 
         distributor.run();

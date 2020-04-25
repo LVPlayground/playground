@@ -4,6 +4,7 @@
 
 import { Configuration } from 'features/nuwani/configuration.js';
 import Feature from 'components/feature_manager/feature.js';
+import { MessageDistributor } from 'features/nuwani/echo/message_distributor.js';
 import { Runtime } from 'features/nuwani/runtime/runtime.js';
 import { TestBot } from 'features/nuwani/test/test_bot.js';
 
@@ -12,6 +13,7 @@ import { TestBot } from 'features/nuwani/test/test_bot.js';
 export class MockNuwani extends Feature {
     configuration_ = null;
     runtime_ = null;
+    messageDistributor_ = null;
 
     messages_ = null;
 
@@ -21,6 +23,9 @@ export class MockNuwani extends Feature {
     // Gets the CommandManager with which IRC commands can be created.
     get commandManager() { throw new Error('Not yet implemented in MockNuwani'); }
 
+    // Gets the message distributor that's responsible for fanning out messages.
+    get messageDistributor() { return this.messageDistributor_; }
+
     // Gets the runtime that powers the connection to IRC.
     get runtime() { return this.runtime_; }
 
@@ -28,9 +33,17 @@ export class MockNuwani extends Feature {
         super();
 
         this.configuration_ = new Configuration();
+
         this.runtime_ = new Runtime(this.configuration_, /* BotConstructor= */ TestBot);
 
+        this.messageDistributor_ = new MessageDistributor(this.runtime_, this.configuration_);
+        // TODO: Can we run the message distributor?
+
         this.messages_ = [];
+
+        // Connect to the network as the final step for the mock, because this is a synchronous
+        // operation in tests, whereas it's (highly) asynchronous in normal situations.
+        this.runtime_.connect();
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -43,5 +56,11 @@ export class MockNuwani extends Feature {
 
     // ---------------------------------------------------------------------------------------------
 
-    dispose() {}
+    dispose() {
+        this.messageDistributor_.dispose();
+        this.messageDistributor_ = null;
+
+        this.runtime_.dispose();
+        this.runtime_ = null;
+    }
 }

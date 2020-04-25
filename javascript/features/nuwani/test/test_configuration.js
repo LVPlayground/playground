@@ -5,6 +5,8 @@
 export const kTestConfiguration = {
     bots: [
         { nickname: 'NuwaniJS', master: true },
+        { nickname: 'NuwiniJS', optional: false },
+        { nickname: 'NuwoniJS', optional: true },
     ],
     servers: [
         { ip: '127.0.0.1', port: 6667 },

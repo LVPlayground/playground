@@ -52,15 +52,15 @@ export default class NuwaniCommand extends Feature {
             menu.addItem(...[
                 activeBot.nickname,
                 activeBot.isConnected() ? '{ADFF2F}connected'
-                                        : '{ff782f}disconnected',
-                /* command rate= */ 0,
+                                        : '{FF782F}disconnected',
+                nuwani.messageDistributor.getCommandRateForBot(activeBot) ?? '-',
             ]);
         }
 
         for (const availableBot of nuwani.runtime.availableBots) {
             menu.addItem(...[
                 availableBot.nickname,
-                '{bec7cc}available',
+                '{BEC7CC}available',
                 /* command rate= */ 0,
             ]);
         }

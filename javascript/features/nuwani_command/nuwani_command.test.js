@@ -72,11 +72,24 @@ describe('NuwaniCommand', (it, beforeEach) => {
 
         const status = gunther.getLastDialogAsTable();
 
-        assert.equal(status.rows.length, 1);
-        assert.deepEqual(status.rows[0], [
-            'NuwaniJS',
-            '{ff782f}disconnected',
-            /* command rate= */ '0',
+        assert.equal(status.rows.length, 3);
+        assert.deepEqual(status.rows,
+        [
+            [
+                'NuwaniJS',
+                '{ADFF2F}connected',
+                /* command rate= */ '0',
+            ],
+            [
+                'NuwiniJS',
+                '{ADFF2F}connected',
+                /* command rate= */ '0',
+            ],
+            [
+                'NuwoniJS',
+                '{BEC7CC}available',
+                /* command rate= */ '0',
+            ],
         ]);
     });
 });

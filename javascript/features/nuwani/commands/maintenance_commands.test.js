@@ -128,4 +128,51 @@ describe('MaintenanceCommands', (it, beforeEach, afterEach) => {
             otherNotInChannel[0],
             'PRIVMSG #echo :Error: Holsje does not seem to be in the echo channel.');
     });
+
+    it('should be able to request increases and decreases in bot count', async (assert) => {
+        bot.setUserModesInEchoChannelForTesting('Holsje', 'a');
+        let responses = null;
+
+        assert.equal(nuwani.runtime.availableBots.size, 1);
+
+        responses = await issueCommand(bot, commandManager, {
+            source: 'Holsje!holsje@hostname',
+            command: '!nuwani request-increase',
+        });
+
+        assert.equal(responses.length, 1);
+        assert.isTrue(responses[0].includes('Success'));
+
+        assert.equal(nuwani.runtime.availableBots.size, 0);
+
+        responses = await issueCommand(bot, commandManager, {
+            source: 'Holsje!holsje@hostname',
+            command: '!nuwani request-increase',
+        });
+
+        assert.equal(responses.length, 1);
+        assert.isFalse(responses[0].includes('Success'));
+
+        assert.equal(nuwani.runtime.availableBots.size, 0);
+
+        responses = await issueCommand(bot, commandManager, {
+            source: 'Holsje!holsje@hostname',
+            command: '!nuwani request-decrease',
+        });
+
+        assert.equal(responses.length, 1);
+        assert.isTrue(responses[0].includes('Success'));
+
+        assert.equal(nuwani.runtime.availableBots.size, 1);
+
+        responses = await issueCommand(bot, commandManager, {
+            source: 'Holsje!holsje@hostname',
+            command: '!nuwani request-decrease',
+        });
+
+        assert.equal(responses.length, 1);
+        assert.isFalse(responses[0].includes('Success'));
+
+        assert.equal(nuwani.runtime.availableBots.size, 1);
+    });
 });

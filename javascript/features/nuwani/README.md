@@ -76,10 +76,12 @@ a user's modes on the configured echo channel. The following commands are availa
   * [!eval](commands/maintenance_commands.js) (restricted to **bot owners**): to run arbitrary code
     in context of the server.
   * [!level](commands/maintenance_commands.js): determines the level of an IRC user.
+  * [!nuwani](commands/maintenance_commands.js) (restricted to **Management**): manage the Nuwani
+    IRC Bot system.
 
 ### Generic commands (everyone)
 
-  * [!time](commands/maintenance_commands.js): displays the current time on the server.
+_None._
 
 ## Echo
 **NuwaniJS** has the ability to share almost everything that happens on the server with people

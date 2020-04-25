@@ -92,4 +92,85 @@ describe('NuwaniCommand', (it, beforeEach) => {
             ],
         ]);
     });
+
+    it('should be able to request an increases and decreases in bots', async (assert) => {
+        assert.equal(nuwani.runtime.availableBots.size, 1);
+        
+        // (1) Request an increase having available bots.
+        gunther.respondToDialog({ listitem: 1 /* Request an increase in bots... */ }).then(
+            () => gunther.respondToDialog({ response: 1 /* Confirm */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        await gunther.issueCommand('/nuwani');
+
+        assert.equal(gunther.messages.length, 1);
+        assert.isTrue(
+            gunther.messages[0].includes(
+                Message.format(Message.NUWANI_ADMIN_INCREASE_BOT, gunther.name, gunther.id)));
+
+        assert.equal(nuwani.runtime.availableBots.size, 0);
+
+        gunther.clearLastDialog();
+        gunther.clearMessages();
+
+        // (2) Request an increase without having available bots.
+        gunther.respondToDialog({ listitem: 1 /* Request an increase in bots... */ }).then(
+            () => gunther.respondToDialog({ response: 1 /* Dismiss */ }));
+
+        await gunther.issueCommand('/nuwani');
+
+        assert.equal(gunther.messages.length, 0);
+        assert.equal(nuwani.runtime.availableBots.size, 0);
+
+        gunther.clearLastDialog();
+
+        // (3) Request a decrease having optional, active bots.
+        gunther.respondToDialog({ listitem: 2 /* Request a decrease in bots... */ }).then(
+            () => gunther.respondToDialog({ response: 1 /* Confirm */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        await gunther.issueCommand('/nuwani');
+
+        assert.equal(gunther.messages.length, 1);
+        assert.isTrue(
+            gunther.messages[0].includes(
+                Message.format(Message.NUWANI_ADMIN_DECREASE_BOT, gunther.name, gunther.id)));
+
+        assert.equal(nuwani.runtime.availableBots.size, 1);
+
+        gunther.clearLastDialog();
+        gunther.clearMessages();
+
+        // (4) Request a decrease without having optional, active bots.
+        gunther.respondToDialog({ listitem: 2 /* Request a decrease in bots... */ }).then(
+            () => gunther.respondToDialog({ response: 1 /* Dismiss */ }));
+
+        await gunther.issueCommand('/nuwani');
+
+        assert.equal(gunther.messages.length, 0);
+        assert.equal(nuwani.runtime.availableBots.size, 1);
+    });
+
+    it('should be able to cancel changes in active bots', async (assert) => {
+        assert.equal(nuwani.runtime.availableBots.size, 1);
+        
+        // (1) Request an increase in the number of available bots.
+        gunther.respondToDialog({ listitem: 1 /* Request an increase in bots... */ }).then(
+            () => gunther.respondToDialog({ response: 0 /* Cancel */ }));
+
+        await gunther.issueCommand('/nuwani');
+
+        assert.equal(nuwani.runtime.availableBots.size, 1);
+
+        nuwani.runtime.requestSlaveIncrease();
+        assert.equal(nuwani.runtime.availableBots.size, 0);
+
+        // (2) Request a decrease in the number of available bots.
+        gunther.respondToDialog({ listitem: 2 /* Request a decrease in bots... */ }).then(
+            () => gunther.respondToDialog({ response: 0 /* Cancel */ }));
+
+        await gunther.issueCommand('/nuwani');
+
+        assert.equal(nuwani.runtime.availableBots.size, 0);
+    });
 });

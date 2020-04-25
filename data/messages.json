@@ -242,8 +242,8 @@
     "LVP_SETTING_TOGGLED": "The {FFA500}%s{A9C4E4} setting has been %s.",
     "LVP_SETTING_UPDATED": "The {FFA500}%s{A9C4E4} setting has been updated to {FFA500}%s{A9C4E4}.",
 
-    "NUWANI_STATUS_CONNECTED": "{33AA33}Connected{FFFFFF}: %s",
-    "NUWANI_STATUS_DISCONNECTED": "{DC143C}Disconnected{FFFFFF}: %s",
+    "NUWANI_ADMIN_INCREASE_BOT": "%s (Id:%d) has requested an increase in IRC bots.",
+    "NUWANI_ADMIN_DECREASE_BOT": "%s (Id:%d) has requested a decrease in IRC bots.",
 
     "POSITIONING_CURRENT_POSITION": "Your current position is X: %d, Y: %d Z: %d, Rotation: %d",
     "POSITIONING_OTHER_USAGE_POS": "{FF9900}Other usage{FFFFFF}: /pos [x] [y] [z]",

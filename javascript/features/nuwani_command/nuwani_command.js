@@ -4,16 +4,22 @@
 
 import Feature from 'components/feature_manager/feature.js';
 import Menu from 'components/menu/menu.js';
-import MessageBox from 'components/dialogs/message_box.js';
+
+import alert from 'components/dialogs/alert.js';
+import confirm from 'components/dialogs/confirm.js';
 
 // The `/nuwani` command enables in-game staff to understand, control and manage the Nuwani IRC
 // system. Access to this command is controlled per `/lvp access`. This feature solely is the
 // command, and provides no other functionality.
 export default class NuwaniCommand extends Feature {
+    announce_ = null;
     nuwani_ = null;
 
     constructor() {
         super();
+
+        // Certain actions will have to be announced to administrators
+        this.announce_ = this.defineDependency('announce');
 
         // It's no surprise that the command will have to depend on the feature.
         this.nuwani_ = this.defineDependency('nuwani');
@@ -34,7 +40,11 @@ export default class NuwaniCommand extends Feature {
         const menu = new Menu('Nuwani IRC Bot');
         
         menu.addItem('Inspect bot status', NuwaniCommand.prototype.displayStatus.bind(this));
-        
+        menu.addItem(
+            'Request an increase in bots...', NuwaniCommand.prototype.requestIncrease.bind(this));
+        menu.addItem(
+            'Request a decrease in bots...', NuwaniCommand.prototype.requestDecrease.bind(this));
+
         await menu.displayForPlayer(player);
     }
 
@@ -66,6 +76,53 @@ export default class NuwaniCommand extends Feature {
         }
 
         await menu.displayForPlayer(player);
+    }
+
+    // Requests an additional bot to start to handle the IRC echo load. This could be useful in case
+    // an administrator is aware of an upcoming increase in player volume.
+    async requestIncrease(player) {
+        const nuwani = this.nuwani_();
+
+        if (!nuwani.runtime.availableBots.size)
+            return alert(player, 'There are no available bots that could be connected.');
+        
+        if (!await confirm(player, 'Are you sure that you want to connect an extra bot?'))
+            return;
+        
+        this.announce_().announceToAdministrators(
+            Message.NUWANI_ADMIN_INCREASE_BOT, player.name, player.id);
+
+        nuwani.runtime.requestSlaveIncrease();
+
+        await alert(player, 'An extra bot has been requested and should connect momentarily.');
+    }
+
+    // Requests one of the optional bots to disconnect. The system will load balance automatically,
+    // so in practice this should rarely be neccesary, but it's gimicky and it works.
+    async requestDecrease(player) {
+        const nuwani = this.nuwani_();
+
+        let hasActiveOptionalBots = false;
+        for (const activeBot of nuwani.runtime.activeBots) {
+            if (activeBot.config.master || !activeBot.config.optional)
+                continue;
+            
+                hasActiveOptionalBots = true;
+            break;
+        }
+
+        if (!hasActiveOptionalBots)
+            return alert(player, 'There are no active bots that could be disconnected.');
+        
+        if (!await confirm(player, 'Are you sure that you want to disconnect one of the bots?'))
+            return;
+        
+        this.announce_().announceToAdministrators(
+            Message.NUWANI_ADMIN_DECREASE_BOT, player.name, player.id);
+
+        nuwani.runtime.requestSlaveDecrease();
+
+        await alert(player, 'One of the bots will be disconnecting from the network momentarily.');
     }
 
     dispose() {

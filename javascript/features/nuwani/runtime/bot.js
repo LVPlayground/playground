@@ -95,14 +95,14 @@ export class Bot {
 
     // Disconnects the bot from the network and will not re-establish connection by itself. Will be
     // a no-op if the bot isn't currently connected or connecting to the network.
-    disconnect() {
+    async disconnect() {
         switch (this.state_) {
             case Bot.kStateDisconnected:
                 break;
 
             case Bot.kStateConnecting:
             case Bot.kStateConnected:
-                this.connection_.disconnect();
+                await this.connection_.disconnect();
                 break;
         }
 
@@ -136,6 +136,9 @@ export class Bot {
         if (this.config_.master)
             this.delegate_.onBotMessage(this, message);
     }
+
+    // Called when a connection attempt has failed. This event is ignored.
+    onConnectionFailed() {}
 
     // Called when the TCP connection with the IRC server has been closed. The bot will no longer be
     // able to do anything until the connection has been re-established.

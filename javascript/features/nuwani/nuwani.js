@@ -72,7 +72,7 @@ export default class Nuwani extends Feature {
     // Distributes a |tag| message to IRC, which will be formatted with the |params|. Should only be
     // used by JavaScript code. Formatting is strict, and issues will throw exceptions.
     echo(tag, ...params) {
-        const formattedMessage = this.messageFormatter_.format(tag, params);
+        const formattedMessage = this.messageFormatter_.format(tag, ...params);
         this.messageDistributor_.write(formattedMessage);
     }
 

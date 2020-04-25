@@ -140,7 +140,7 @@ public OnPlayerText(playerid, text[]) {
     // Add it to the echo-feed, so it shows up on IRC as well.
     if (playerInMainWorld) {
         format(message, sizeof(message), "%d %s %s", playerid, Player(playerid)->nicknameString(), text);
-        EchoMessage("chat", "dss", message);
+        EchoMessage("chat", "dsz", message);
     } else {
         format(message, sizeof(message), "%d %d %s %s", playerVirtualWorld, playerid, Player(playerid)->nicknameString(), text);
         EchoMessage("chat-world", "ddsz", message);

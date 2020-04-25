@@ -129,7 +129,7 @@ class PrivateMessagingManager {
 
         // Broadcast message on IRC.
         format(notice, sizeof(notice), "%s %d %s %d %s", sender, senderId, receiver, receiverId, message);
-        EchoMessage("chat-private", "", notice);
+        EchoMessage("chat-private", "sdsdz", notice);
 
         return 1;
     }

@@ -40,7 +40,7 @@ describe('MaintenanceCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.equal(missingParameters.length, 1);
-        assert.equal(missingParameters[0], 'PRIVMSG #echo :Usage: !eval [code]');
+        assert.equal(missingParameters[0], 'PRIVMSG #LVP.DevJS :Usage: !eval [code]');
 
         const successfulCommand = await issueCommand(bot, commandManager, {
             source: configuration.owners[0].toString(),
@@ -48,7 +48,7 @@ describe('MaintenanceCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.equal(successfulCommand.length, 1);
-        assert.equal(successfulCommand[0], 'PRIVMSG #echo :Result: 2');
+        assert.equal(successfulCommand[0], 'PRIVMSG #LVP.DevJS :Result: 2');
     });
 
     it('should run the appropriate owner checks for the !eval command', async(assert) => {
@@ -60,7 +60,7 @@ describe('MaintenanceCommands', (it, beforeEach, afterEach) => {
         assert.equal(unauthenticatedCommand.length, 1);
         assert.equal(
             unauthenticatedCommand[0],
-            'PRIVMSG #echo :Error: Sorry, this command is only available to specific people.');
+            'PRIVMSG #LVP.DevJS :Error: Sorry, this command is only available to specific people.');
     });
 
     it('should be able to identify user levels with the !level command', async(assert) => {
@@ -72,7 +72,7 @@ describe('MaintenanceCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.equal(selfManagement.length, 1);
-        assert.equal(selfManagement[0], 'PRIVMSG #echo :Result: Joe is a Management member.');
+        assert.equal(selfManagement[0], 'PRIVMSG #LVP.DevJS :Result: Joe is a Management member.');
 
         bot.setUserModesInEchoChannelForTesting('Joe', 'ho');
 
@@ -82,7 +82,7 @@ describe('MaintenanceCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.equal(selfAdministrator.length, 1);
-        assert.equal(selfAdministrator[0], 'PRIVMSG #echo :Result: Joe is an administrator.');
+        assert.equal(selfAdministrator[0], 'PRIVMSG #LVP.DevJS :Result: Joe is an administrator.');
 
         bot.setUserModesInEchoChannelForTesting('Joe', 'v');
 
@@ -92,7 +92,7 @@ describe('MaintenanceCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.equal(selfPlayer.length, 1);
-        assert.equal(selfPlayer[0], 'PRIVMSG #echo :Result: Joe is a player.');
+        assert.equal(selfPlayer[0], 'PRIVMSG #LVP.DevJS :Result: Joe is a player.');
 
         bot.removeUserFromEchoChannelForTesting('Joe');
 
@@ -104,7 +104,7 @@ describe('MaintenanceCommands', (it, beforeEach, afterEach) => {
         assert.equal(selfNotInChannel.length, 1);
         assert.equal(
             selfNotInChannel[0],
-            'PRIVMSG #echo :Error: Joe does not seem to be in the echo channel.');
+            'PRIVMSG #LVP.DevJS :Error: Joe does not seem to be in the echo channel.');
 
         bot.setUserModesInEchoChannelForTesting('Holsje', 'a');
 
@@ -114,7 +114,8 @@ describe('MaintenanceCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.equal(otherManagement.length, 1);
-        assert.equal(otherManagement[0], 'PRIVMSG #echo :Result: Holsje is a Management member.');
+        assert.equal(
+            otherManagement[0], 'PRIVMSG #LVP.DevJS :Result: Holsje is a Management member.');
 
         bot.removeUserFromEchoChannelForTesting('Holsje');
 
@@ -126,7 +127,7 @@ describe('MaintenanceCommands', (it, beforeEach, afterEach) => {
         assert.equal(otherNotInChannel.length, 1);
         assert.equal(
             otherNotInChannel[0],
-            'PRIVMSG #echo :Error: Holsje does not seem to be in the echo channel.');
+            'PRIVMSG #LVP.DevJS :Error: Holsje does not seem to be in the echo channel.');
     });
 
     it('should be able to request increases and decreases in bot count', async (assert) => {

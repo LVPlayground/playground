@@ -45,7 +45,7 @@ describe('CommunicationCommands', (it, beforeEach, afterEach) => {
         assert.equal(noAccessResult.length, 1);
         assert.equal(
             noAccessResult[0],
-            'PRIVMSG #echo :Error: Sorry, this command is only available to administrators.');
+            'PRIVMSG #LVP.DevJS :Error: Sorry, this command is only available to administrators.');
 
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
@@ -75,7 +75,7 @@ describe('CommunicationCommands', (it, beforeEach, afterEach) => {
         assert.equal(noAccessResult.length, 1);
         assert.equal(
             noAccessResult[0],
-            'PRIVMSG #echo :Error: Sorry, this command is only available to administrators.');
+            'PRIVMSG #LVP.DevJS :Error: Sorry, this command is only available to administrators.');
 
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
@@ -101,6 +101,32 @@ describe('CommunicationCommands', (it, beforeEach, afterEach) => {
         assert.equal(nuwani.messagesForTesting[1].tag, 'notice-announce');
     });
 
+    it('should be able to send messages to in-game players', async (assert) => {
+        const wrongChannelResult = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!msg What do you call a fake noodle? An impasta.',
+            target: '#private',
+        });
+
+        assert.equal(wrongChannelResult.length, 0);
+
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!msg What do you call a fake noodle? An impasta.',
+        });
+
+        assert.equal(result.length, 0);
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.IRC_MESSAGE, kCommandSourceUsername,
+                           'What do you call a fake noodle? An impasta.'));
+
+        assert.equal(nuwani.messagesForTesting.length, 1);
+        assert.equal(nuwani.messagesForTesting[0].tag, 'chat-from-irc');
+    });
+
     it('should be able to highlight a message to in-game players', async (assert) => {
         const noAccessResult = await issueCommand(bot, commandManager, {
             source: kCommandSource,
@@ -110,7 +136,7 @@ describe('CommunicationCommands', (it, beforeEach, afterEach) => {
         assert.equal(noAccessResult.length, 1);
         assert.equal(
             noAccessResult[0],
-            'PRIVMSG #echo :Error: Sorry, this command is only available to administrators.');
+            'PRIVMSG #LVP.DevJS :Error: Sorry, this command is only available to administrators.');
 
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
@@ -128,5 +154,43 @@ describe('CommunicationCommands', (it, beforeEach, afterEach) => {
 
         assert.equal(nuwani.messagesForTesting.length, 1);
         assert.equal(nuwani.messagesForTesting[0].tag, 'notice-say');
+    });
+
+    it('should be able to send VIP messages to in-game players', async (assert) => {
+        gunther.setVip(true);
+
+        const noAccessResult = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!vip I wish this amazing feature was available',
+        });
+
+        assert.equal(noAccessResult.length, 1);
+        assert.equal(
+            noAccessResult[0],
+            'PRIVMSG #LVP.DevJS :Error: Sorry, this command is only available to specific people.');
+
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'v');
+
+        const wrongChannelResult = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!vip I wish this amazing feature was available',
+            target: '#private',
+        });
+
+        assert.equal(wrongChannelResult.length, 0);
+
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!vip I wish this amazing feature was available',
+        });
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.IRC_VIP_MESSAGE, kCommandSourceUsername,
+                           'I wish this amazing feature was available'));
+
+        assert.equal(nuwani.messagesForTesting.length, 1);
+        assert.equal(nuwani.messagesForTesting[0].tag, 'chat-vip-irc');
     });
 });

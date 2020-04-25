@@ -52,6 +52,10 @@ export class TestBot {
     isChannelName(target) {
         return target.startsWith('#');
     }
+
+    inEchoChannel(target) {
+        return target.toLowerCase() === '#lvp.devjs';
+    }
     
     getUserModesInEchoChannel(nickname) {
         return this.userModes_.get(nickname);

@@ -39,7 +39,7 @@ export class NuwaniCommands extends Feature {
 
         this.commands_ = [
             new BanCommands(commandManager),
-            new CommunicationCommands(commandManager, this.nuwani_),
+            new CommunicationCommands(commandManager, this.announce_, this.nuwani_),
             new PlayerCommands(commandManager),
         ];
     }

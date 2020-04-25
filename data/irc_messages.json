@@ -12,17 +12,19 @@
     "chat-admin": "<prefix:%><color:12>Admin chat <color:2>[%d] <color:7>%s:<color> %s",
     "chat-admin-irc": "<prefix:%><color:12>Admin chat <color:2>[IRC] <color:7>%s:<color> %s",
     "chat-call": "<prefix:%><color:7>Call from <color:5>%s <color:7>(Id:%d) to <color:5>%s <color:7>(Id:%d):<color> %s",
+    "chat-from-irc": "<color:2>[IRC] <color:7>%s:<color> %s",
     "chat-gang": "<prefix:%><color:2>*** <color:7>Gang %s (Id:%d) <color:2>[%d] <color:7>%s:<color> %s",
     "chat-irc": "<target:{0}><color:7>Message from <color:5>%s{1} <color:7>(Id:%d{2}):<color>: %s{3}",
     "chat-private": "<prefix:%><color:7>PM from <color:5>%s <color:7>(Id:%d) to <color:5>%s <color:7>(Id:%d):<color> %s",
     "chat-vip": "<prefix:+><color:12>VIP chat <color:2>[%d] <color:7>%s:<color> %s",
+    "chat-vip-irc": "<prefix:+><color:12>VIP chat <color:2>[IRC] <color:7>%s:<color> %s",
     "chat-world": "<prefix+><color:12>[World %d] <color:2>[%d] <color:7>%s:<color> %s",
 
     "notice-admin": "<prefix:%><color:2>*** <color:5>%s",
     "notice-announce": "<color:12>*** Announcement: %s",
     "notice-minigame": "<color:10>*** %s (Id:%d) has signed up for the %s.",
     "notice-report": "<prefix:%><color:2>*** <color:7>Report from %s (Id:%d) about %s (Id:%d):<color> %s",
-    "notice-say": "<color:10>*** Messages from %s: %s",
+    "notice-say": "<color:10>*** Message from %s: %s",
 
     "status": "<color:2>[%d] <color:7>%s %s",
 

@@ -198,7 +198,9 @@
     "IRC_ANNOUNCE_ADMIN": "%s (IRC) has made an announcement.",
     "IRC_ANNOUNCE_DIVIDER": "{DC143C}-------------------",
     "IRC_ANNOUNCE_MESSAGE": "{FFFF00}%s",
+    "IRC_MESSAGE": "{FFFFFF}[IRC] %s: %s",
     "IRC_SAY_MESSAGE": "{80CBC4}*** %s: %s",
+    "IRC_VIP_MESSAGE": "{00E1E1}[VIP] [IRC] %s: %s",
 
     "KILLTIME_ADMIN_STOPPED": "{DC143C}Killtime{FFFFFF}: An administrator has stopped the killtime. Luckily, the prize will still be handed.",
     "KILLTIME_AUTO_STOPPED": "{DC143C}Killtime{FFFFFF}: Time is up! The prize will be given out shortly.",

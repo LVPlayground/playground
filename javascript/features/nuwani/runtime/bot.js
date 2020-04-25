@@ -71,6 +71,21 @@ export class Bot {
         return types.indexOf(target[0]) > -1;
     }
 
+    // Returns whether the |target| happens to be the echo channel configured in the bot.
+    inEchoChannel(target) {
+        let echoChannel = null;
+
+        for (const channel of this.handshake_.channels) {
+            if (!channel.echo)
+                continue;
+            
+            echoChannel = channel.channel.toLowerCase();
+            break;
+        }
+
+        return echoChannel === target.toLowerCase();
+    }
+
     // Returns the user modes set for the |nickname| on the echo channel, if any.
     getUserModesInEchoChannel(nickname) {
         let echoChannel = null;

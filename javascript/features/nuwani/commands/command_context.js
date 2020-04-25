@@ -29,6 +29,11 @@ export class CommandContext {
         this.message_ = message;
     }
 
+    // Returns whether this command was excuted in the echo channel.
+    inEchoChannel() {
+        return this.bot_.inEchoChannel(this.message_.params[0]);
+    }
+
     // Gets the channel modes the sender has in the echo channel, if any.
     getSenderModesInEchoChannel() {
         return this.bot_.getUserModesInEchoChannel(this.nickname);

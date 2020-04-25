@@ -28,7 +28,11 @@ export class CommunicationCommands {
             .build(CommunicationCommands.prototype.onAnnounceCommand.bind(this));
 
         // TODO: !pm [player] [message]
-        // TODO: !msg [message]
+
+        // !msg [message]
+        this.commandManager_.buildCommand('msg')
+            .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
+            .build(CommunicationCommands.prototype.onMessageCommand.bind(this));
 
         // !say [message]
         this.commandManager_.buildCommand('say')
@@ -36,7 +40,11 @@ export class CommunicationCommands {
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(CommunicationCommands.prototype.onSayCommand.bind(this));
 
-        // TODO: !vip [message]
+        // !vip [message]
+        this.commandManager_.buildCommand('vip')
+            .restrict(CommunicationCommands.isVipContext)
+            .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
+            .build(CommunicationCommands.prototype.onVipMessageCommand.bind(this));
     }
     
     // !admin [message]
@@ -80,6 +88,24 @@ export class CommunicationCommands {
         context.respond('3Success: The announcement has been published.');
     }
 
+    // !msg [message]
+    //
+    // Sends a regular message to in-game players who are in the main world. Everyone is able to
+    // send those messages, not just administrators and up.
+    onMessageCommand(context, message) {
+        if (!context.inEchoChannel())
+            return;  // only available in the echo channel
+
+        const formattedMessage = Message.format(Message.IRC_MESSAGE, context.nickname, message);
+
+        server.playerManager.forEach(player => {
+            if (VirtualWorld.isMainWorld(player.virtualWorld))
+                player.sendMessage(formattedMessage);
+        });
+
+        this.nuwani_().echo('chat-from-irc', context.nickname, message);
+    }
+
     // !say [message]
     //
     // Sends a highlighted message to all in-game players. Command is restricted to administrators.
@@ -93,8 +119,35 @@ export class CommunicationCommands {
         context.respond('3Success: The message has been published.');
     }
 
+    // !vip [message]
+    //
+    // Sends a message to all in-game VIP players. Only VIPs on IRC are able to send these messages,
+    // and can see all chatter as well through their channel status.
+    onVipMessageCommand(context, message) {
+        if (!context.inEchoChannel())
+            return;  // only available in the echo channel
+
+        const formattedMessage = Message.format(Message.IRC_VIP_MESSAGE, context.nickname, message);
+
+        server.playerManager.forEach(player => {
+            if (player.isVip())
+                player.sendMessage(formattedMessage);
+        });
+
+        this.nuwani_().echo('chat-vip-irc', context.nickname, message);
+    }
+
+    // Returns whether the |context| describes a user who's been marked as a VIP on IRC. We
+    // determine this by the user having "+v" mode in the echo channel.
+    static isVipContext(context) {
+        const status = context.getSenderModesInEchoChannel();
+        return typeof status === 'string' && status.includes('v');
+    }
+
     dispose() {
+        this.commandManager_.removeCommand('vip');
         this.commandManager_.removeCommand('say');
+        this.commandManager_.removeCommand('msg');
         this.commandManager_.removeCommand('announce');
         this.commandManager_.removeCommand('admin');
     }

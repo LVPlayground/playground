@@ -100,8 +100,11 @@ export class Bot {
             case Bot.kStateDisconnected:
                 break;
 
-            case Bot.kStateConnecting:
             case Bot.kStateConnected:
+                this.connection_.write('QUIT :Las Venturas Playground (https://sa-mp.nl/)');
+                // deliberate fall-through
+
+            case Bot.kStateConnecting:
                 this.state_ = Bot.kStateDisconnected;
 
                 await this.connection_.disconnect();

@@ -72,6 +72,31 @@ class HouseSettings {
     get access() { return this.access_; }
     set access(value) { this.access_ = value; }
 
+    // Get a readable access setting to display to users.
+    static getReadableAccess(value) {        
+        let readableAccess = 'unknown';
+
+        switch(value) {
+            case HouseSettings.ACCESS_EVERYBODY:
+                readableAccess = 'everybody';
+                break;
+
+            case HouseSettings.ACCESS_FRIENDS_AND_GANG:
+                readableAccess = 'friends and gang';
+                break;
+
+            case HouseSettings.ACCESS_FRIENDS:
+                readableAccess = 'friends';
+                break;
+
+            case HouseSettings.ACCESS_PERSONAL:
+                readableAccess = 'personal';
+                break;
+        }
+
+        return readableAccess;
+    }
+
     // Returns whether this house should be the spawn point for the owner.
     isSpawn() { return this.spawnPoint_; }
 

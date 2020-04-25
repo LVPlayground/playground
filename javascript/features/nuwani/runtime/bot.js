@@ -102,11 +102,11 @@ export class Bot {
 
             case Bot.kStateConnecting:
             case Bot.kStateConnected:
+                this.state_ = Bot.kStateDisconnected;
+
                 await this.connection_.disconnect();
                 break;
         }
-
-        this.state_ = Bot.kStateDisconnected;
     }
 
     // ConnectionDelegate implementation:
@@ -115,8 +115,6 @@ export class Bot {
     // Called when the TCP connection with the IRC server has been established. The connection
     // handshake will begin immediately.
     onConnectionEstablished() {
-        this.log('Connected to the server, beginning handshake...');
-
         this.state_ = Bot.kStateConnected;
         this.handshake_.start();
     }
@@ -125,8 +123,6 @@ export class Bot {
     // string that contains at most a single to-be-parsed IRC command.
     onConnectionMessage(messageString) {
         const message = new Message(messageString);
-
-        this.log(messageString, '>> ');
 
         if (this.handshake_.handleMessage(message))
             return;
@@ -143,7 +139,7 @@ export class Bot {
     // Called when the TCP connection with the IRC server has been closed. The bot will no longer be
     // able to do anything until the connection has been re-established.
     onConnectionClosed() {
-        this.log('Disconnected');
+        this.log('Connection closed');
 
         this.delegate_.onBotDisconnected(this);
 
@@ -170,6 +166,8 @@ export class Bot {
 
     // Called when the connection handshake has completed. At this point the bot is ready for use.
     onHandshakeCompleted() {
+        this.log('Connection completed, bot reporting for duty!');
+
         this.delegate_.onBotConnected(this);
     }
 

@@ -132,7 +132,7 @@ class HouseCommands {
         await this.manager_.createHouse(player, location, interior.id);
 
         this.announce_().announceToAdministrators(
-            Message.HOUSE_ANNOUNCE_PURCHASED, player.id, player.name, interior.price, location.id);
+            Message.HOUSE_ANNOUNCE_PURCHASED, player.name, player.id, interior.price, location.id);
 
         // Display a confirmation dialog to the player to inform them of their action.
         await MessageBox.display(player, {
@@ -193,7 +193,7 @@ class HouseCommands {
 
         // Announce creation of the location to other administrators.
         this.announce_().announceToAdministrators(
-            Message.HOUSE_ANNOUNCE_CREATED, player.id, player.name);
+            Message.HOUSE_ANNOUNCE_CREATED, player.name, player.id);
 
         // Display a confirmation dialog to the player to inform them of their action.
         await MessageBox.display(player, {
@@ -341,7 +341,7 @@ class HouseCommands {
 
                 // Announce creation of the location to other administrators.
                 this.announce_().announceToAdministrators(
-                    Message.HOUSE_ANNOUNCE_TELEPORTED, player.id, player.name);
+                    Message.HOUSE_ANNOUNCE_TELEPORTED, player.name, player.id);
             });
         }
 
@@ -465,7 +465,7 @@ class HouseCommands {
 
                 // Announce eviction of the previous owner to other administrators.
                 this.announce_().announceToAdministrators(
-                    Message.HOUSE_ANNOUNCE_EVICTED, player.id, player.name, ownerName,
+                    Message.HOUSE_ANNOUNCE_EVICTED, player.name, player.id, ownerName,
                     closestLocation.id);
 
                 // Display a confirmation dialog to the player to inform them of their action.
@@ -489,7 +489,7 @@ class HouseCommands {
 
             // Announce creation of the location to other administrators.
             this.announce_().announceToAdministrators(
-                Message.HOUSE_ANNOUNCE_DELETED, player.id, player.name, closestLocation.id);
+                Message.HOUSE_ANNOUNCE_DELETED, player.name, player.id, closestLocation.id);
 
             // Display a confirmation dialog to the player to inform them of their action.
             await MessageBox.display(player, {
@@ -600,7 +600,7 @@ class HouseCommands {
                 return;
 
             this.announce_().announceToAdministrators(
-                Message.HOUSE_ANNOUNCE_SOLD, player.id, player.name, location.settings.name,
+                Message.HOUSE_ANNOUNCE_SOLD, player.name, player.id, location.settings.name,
                 location.settings.id, offer);
 
             await this.manager_.removeHouse(location);

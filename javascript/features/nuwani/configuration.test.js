@@ -10,7 +10,7 @@ function createConfiguration({ bots, servers, channels, levels, commandPrefix, o
     return {
         bots: bots ?? [
             { nickname: 'Bot', password: 'foobar', master: true },
-            { nickname: 'Slave' },
+            { nickname: 'Slave', optional: true },
         ],
         servers: servers ?? [
             { ip: '127.0.0.1' },

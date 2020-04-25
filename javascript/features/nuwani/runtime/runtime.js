@@ -17,7 +17,9 @@ export class RuntimeObserver {
 export class Runtime {
     configuration_ = null;
 
-    bots_ = [];
+    activeBots_ = null;
+    availableBots_ = null;
+
     observers_ = null;
 
     // Gives access to the bots that are part of this runtime.
@@ -27,37 +29,58 @@ export class Runtime {
         this.configuration_ = configuration;
         this.observers_ = new Set();
 
-        const serverConfig = configuration.servers;
-        const channelConfig = configuration.channels;
+        this.activeBots_ = new Set();
+        this.availableBots_ = new Set();
 
-        for (const config of this.configuration_.bots)
-            this.bots_.push(new Bot(this, config, serverConfig, channelConfig));
+        const { servers, channels } = configuration;
+
+        for (const config of this.configuration_.bots) {
+            const bot = new Bot(this, config, servers, channels);
+
+            if (config.master || !config.optional)
+                this.activeBots_.add(bot);
+            else
+                this.availableBots_.add(bot);
+        }
     }
 
-    // Initialize each of the bots defined in the configuration. The bots will automatically begin
-    // maintaining their connections with an exponential backoff policy.
+    // Initialize each of the bots listed in the configuration as non-optional, as well as the
+    // master bot. The other, available bots can be spun up as required.
     connect() {
-        for (const bot of this.bots_)
+        for (const bot of this.activeBots_.values())
             bot.connect();
     }
 
     // Called by the message distributor when messages are being dropped because the command rate is
     // too high. An extra slave would be able to help out. Adding a slave is at our discretion.
     requestSlaveIncrease() {
-        // TODO: Implement this method.
-        console.log('------> Requesting an additional slave.');
+        for (const bot of this.availableBots_.values()) {
+            this.availableBots_.delete(bot);
+            this.activeBots_.add(bot);
+
+            bot.connect();
+            return;
+        }
     }
 
     // Called by the message distributor when the bot command rate is sufficiently low to be able to
     // get by with a slave less. The runtime can decide whether to honour this request.
     requestSlaveDecrease() {
-        // TODO: Implement this method.
-        console.log('------> Requesting a slave to be turned down.');
+        for (const bot of this.activeBots_.values()) {
+            if (bot.config.master || !bot.config.optional)
+                continue;
+            
+            this.activeBots_.delete(bot);
+            this.availableBots_.add(bot);
+
+            bot.disconnect();
+            return;
+        }
     }
 
     // Disconnect all the bots from the network.
     diconnect() {
-        for (const bot of this.bots_)
+        for (const bot of this.activeBots_.values())
             bot.disconnect();
     }
 
@@ -110,9 +133,13 @@ export class Runtime {
         this.observers_.clear();
         this.observers_ = null;
 
-        for (const bot of this.bots_)
+        for (const bot of this.activeBots_.values())
+            bot.dispose();
+        
+        for (const bot of this.availableBots_.values())
             bot.dispose();
 
-        this.bots_ = [];
+        this.activeBots_.clear();
+        this.availableBots_.clear();
     }
 }

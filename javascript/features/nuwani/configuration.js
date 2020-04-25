@@ -17,8 +17,8 @@ export class Configuration {
     commandPrefix_ = null;
     owners_ = [];
 
-    // Gets the bots that should be connected. Each bot is listed as { nickname, password, master },
-    // and there is guaranteed to only be a single master.
+    // Gets the bots that should be connected. Each bot is listed as { nickname, password, master,
+    // optional }, and there is guaranteed to only be a single master.
     get bots() { return this.bots_; }
 
     // Gets the list of servers the bot could be connecting to. These are all expected to point to
@@ -158,9 +158,13 @@ export class Configuration {
         if (bot.hasOwnProperty('master') && typeof bot.master !== 'boolean')
             throw new Error('Invalid IRC Bot master flag given: ' + bot.master);
 
+        if (bot.hasOwnProperty('optional') && typeof bot.optional !== 'boolean')
+            throw new Error('Invalid IRC Bot optional flag given: ' + bot.optional);
+
         this.bots_.push(Object.assign({
             password: null,
             master: false,
+            optional: false,
         }, bot));
     }
 

@@ -17,6 +17,7 @@ export class BanCommands {
         // !ban ip [ip] [playerName] [days] [reason]
         // !ban range [ip range] [playerName] [days] [reason]
         // !ban serial [gpci] [playerName] [days] [reason]
+        // !kick [player] [reason]
         // !lastbans
         // !ipinfo [ip | ip range]
         // !ipinfo [nickname]

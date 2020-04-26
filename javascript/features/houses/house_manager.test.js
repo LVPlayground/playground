@@ -190,7 +190,7 @@ describe('HouseManager', (it, beforeEach) => {
 
         assert.equal(location.settings.access, HouseSettings.ACCESS_FRIENDS);
 
-        await manager.updateHouseSetting(location, 'access', HouseSettings.ACCESS_EVERYBODY);
+        await manager.updateHouseSetting(gunther, location, 'access', HouseSettings.ACCESS_EVERYBODY);
 
         assert.equal(location.settings.access, HouseSettings.ACCESS_EVERYBODY);
     });
@@ -204,7 +204,7 @@ describe('HouseManager', (it, beforeEach) => {
 
         assert.equal(location.settings.markerColor, 'yellow');
 
-        await manager.updateHouseSetting(location, 'marker', 'green');
+        await manager.updateHouseSetting(gunther, location, 'marker', 'green');
 
         assert.equal(location.settings.markerColor, 'green');
     });
@@ -218,7 +218,7 @@ describe('HouseManager', (it, beforeEach) => {
 
         assert.equal(location.settings.name, 'Guntherplaza');
 
-        await manager.updateHouseSetting(location, 'name', 'Gunther Pro Palace');
+        await manager.updateHouseSetting(gunther, location, 'name', 'Gunther Pro Palace');
 
         assert.equal(location.settings.name, 'Gunther Pro Palace');
     });
@@ -232,11 +232,11 @@ describe('HouseManager', (it, beforeEach) => {
 
         assert.isFalse(location.settings.isSpawn());
 
-        await manager.updateHouseSetting(location, 'spawn', true);
+        await manager.updateHouseSetting(gunther, location, 'spawn', true);
 
         assert.isTrue(location.settings.isSpawn());
 
-        await manager.updateHouseSetting(location, 'spawn', false);
+        await manager.updateHouseSetting(gunther, location, 'spawn', false);
 
         assert.isFalse(location.settings.isSpawn());
     });
@@ -250,11 +250,11 @@ describe('HouseManager', (it, beforeEach) => {
 
         assert.equal(location.settings.streamUrl, '');
 
-        await manager.updateHouseSetting(location, 'stream', 'http://example.com/foo.mp3');
+        await manager.updateHouseSetting(gunther, location, 'stream', 'http://example.com/foo.mp3');
 
         assert.equal(location.settings.streamUrl, 'http://example.com/foo.mp3');
 
-        await manager.updateHouseSetting(location, 'stream', '');
+        await manager.updateHouseSetting(gunther, location, 'stream', '');
 
         assert.equal(location.settings.streamUrl, '');
     });
@@ -268,11 +268,11 @@ describe('HouseManager', (it, beforeEach) => {
 
         assert.equal(location.settings.welcomeMessage, '');
 
-        await manager.updateHouseSetting(location, 'welcome', 'hello, world!');
+        await manager.updateHouseSetting(gunther, location, 'welcome', 'hello, world!');
 
         assert.equal(location.settings.welcomeMessage, 'hello, world!');
 
-        await manager.updateHouseSetting(location, 'welcome', '');
+        await manager.updateHouseSetting(gunther, location, 'welcome', '');
 
         assert.equal(location.settings.welcomeMessage, '');
     });

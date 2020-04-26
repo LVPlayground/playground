@@ -139,6 +139,8 @@ export class PlayerDatabase {
         if (result === null)
             throw new Error(`The player ${nickname} could not be found in the database.`);
         
+        // TODO: Apply custom formatting if the |field| requires it.
+
         return result;
     }
 
@@ -167,10 +169,36 @@ export class PlayerDatabase {
         return result.rows[0][fieldName];
     }
 
+    // Returns the |value| formatted in a way that's appropriate for the given |fieldName|. Updating
+    // the value should take this format too, so when making any changes here be sure to also
+    // update the `_updateCustomPlayerField` method in this class.
+    formatCustomPlayerField(fieldName, value) {
+        // custom_color
+        // level
+        // money_bank_type
+        // last_ip
+        // last_seen
+    }
+
     // Updates the |fieldName| setting of the given |nickname| to the set |value|. Validation will
     // be applied based on the type of field.
     async updatePlayerField(nickname, fieldName, value) {
+        const fields = this.getSupportedFields();
 
+        if (!fields.hasOwnProperty(fieldName))
+            throw new Error(`${fieldName} is not a field known to me. Please check !supported.`);
+        
+        const field = fields[fieldName];
+        switch (field.type) {
+            case PlayerDatabase.kTypeNumber:
+                return this._updateNumericPlayerField(nickname, field.table, fieldName, value);
+            case PlayerDatabase.kTypeString:
+                return this._updateStringPlayerField(nickname, field.table, fieldName, value);
+            case PlayerDatabase.kTypeCustom:
+                return this._updateCustomPlayerField(nickname, field.table, fieldName, value);
+            default:
+                throw new Error(`${fieldName} has an invalid type defined in the code.`);
+        }
     }
 
     // Generates a new random database salt, which is an integer between 100000000 and 999999999.
@@ -179,22 +207,59 @@ export class PlayerDatabase {
     }
 
     // Updates the |field| setting of the given |nickname|, which is one of the custom values.
-    // Validation and formatting specific to the |field| will be done in here.
-    async _updateCustomPlayerField(nickname, field, value) {
+    // Validation and formatting specific to the |column| will be done in here.
+    async _updateCustomPlayerField(nickname, table, column, value) {
         // custom_color
         // level
         // money_bank_type
         // last_ip
         // last_seen
+
+        throw new Error('Not implemented.');
     }
 
-    // Updates the numeric |field| setting of the given |nickname|.
-    async _updateNumericPlayerField(nickname, field, value) {
-
+    // Updates the numeric |column| setting of the given |nickname|.
+    async _updateNumericPlayerField(nickname, table, column, value) {
+        const numericValue = parseInt(value, 10);
+        if (numericValue <= -2147483648 || numericValue >= 2147483647)
+            throw new Error('Numeric values must be between -2147483647 and 2147483646.');
+        
+        return this._updatePlayerFieldQuery(nickname, table, column, numericValue);
     }
 
-    // Updates the textual |field| setting of the given |nickname|.
-    async _updateStringPlayerField(nickname, field, value) {
+    // Updates the textual |column| setting of the given |nickname|.
+    async _updateStringPlayerField(nickname, table, column, value) {
+        const stringValue = String(value);
+        if (stringValue.length >= 64)
+            throw new Error('Textual values must not be longer than 64 characters in length.');
+        
+        return this._updatePlayerFieldQuery(nickname, table, column, value);
+    }
 
+    // Actually updates the |column| in |table| to |value| for the given |nickname|. At this point
+    // the |value| must have been normalized already, but it's still not trusted.
+    async _updatePlayerFieldQuery(nickname, table, column, value) {
+        const query = `
+            UPDATE
+                ${table}
+            SET
+                ${column} = ?
+            WHERE
+                user_id = (
+                    SELECT
+                        user_id
+                    FROM
+                        users_nicknames
+                    WHERE
+                        nickname = ?)
+            LIMIT
+                1`;
+
+        const results = await server.database.query(query, value, nickname);
+        if (!results || !results.affectedRows)
+            throw new Error(`The player ${nickname} could not be found in the database.`);
+
+        return value;
+        
     }
 }

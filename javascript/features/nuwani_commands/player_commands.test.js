@@ -159,7 +159,34 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable updating player information through the commands', async (assert) => {
-        
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'a');
+
+        const invalidField = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!setvalue [BB]Ricky92 ponies 31',
+        });
+
+        assert.equal(invalidField.length, 1);
+        assert.isTrue(invalidField[0].includes('Error'));
+        assert.isTrue(invalidField[0].includes('not a field known'));
+
+        const invalidUser = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!setvalue FakeUser kill_count 100000000',
+        });
+
+        assert.equal(invalidUser.length, 1);
+        assert.isTrue(invalidUser[0].includes('Error'));
+        assert.isTrue(invalidUser[0].includes('could not be found'));
+
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!setvalue [BB]Ricky92 kill_count 2345',
+        });
+
+        assert.equal(result.length, 1);
+        assert.isFalse(result[0].includes('Error'));
+        assert.isTrue(result[0].includes('Success'));
     });
 
     it('should be able to list all in-game players', async (assert) => {

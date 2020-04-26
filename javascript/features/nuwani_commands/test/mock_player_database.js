@@ -59,4 +59,12 @@ export class MockPlayerDatabase extends PlayerDatabase {
                 throw new Error('Field not defined for testing: ' + fieldName);
         }
     }
+
+    // Overridden.
+    _updatePlayerFieldQuery(nickname, table, column, value) {
+        if (nickname === 'FakeUser')
+            throw new Error(`The player ${nickname} could not be found in the database.`);
+
+        return value;
+    }
 }

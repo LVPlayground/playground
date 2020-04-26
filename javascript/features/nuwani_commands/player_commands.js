@@ -129,13 +129,18 @@ export class PlayerCommands {
     //
     // Updates the given |field| in the |nickname|'s account data to the given |value|. Values will
     // be treated differently on their type. Storage is managed by the PlayerDatabase.
-    onSetValueCommand(context, nickname, field, value) {
+    async onSetValueCommand(context, nickname, field, value) {
         if (server.playerManager.getByName(nickname) !== null) {
             context.respond('4Error: Cannot update account data of in-game players.');
             return;
         }
 
-
+        try {
+            const writtenValue = await this.database_.updatePlayerField(nickname, field, value);
+            context.respond(`3Success: The value has been updated to "${writtenValue}".`);
+        } catch (exception) {
+            context.respond(`4Error: ${exception.message}`);
+        }
     }
 
     // !getid [nickname]

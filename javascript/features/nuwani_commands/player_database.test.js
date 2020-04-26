@@ -40,9 +40,45 @@ describe('PlayerDatabase', it => {
         }
     });
 
+    it('is able to validate numeric values when updating player data', async (assert) => {
+        const instance = new MockPlayerDatabase(/* passwordSalt= */ 's4lt');
+
+        try {
+            await instance.updatePlayerField('nickname', 'kill_count', -9999999999);
+            assert.notReached();
+
+        } catch {}
+
+        try {
+            await instance.updatePlayerField('nickname', 'kill_count', 9999999999);
+            assert.notReached();
+
+        } catch {}
+
+        const result = await instance.updatePlayerField('nickname', 'kill_count', '28347');
+        assert.isTrue(typeof result === 'number');
+        assert.strictEqual(result, 28347);
+    });
+
+    it('is able to validate string values when updating player data', async (assert) => {
+        const instance = new MockPlayerDatabase(/* passwordSalt= */ 's4lt');
+
+        try {
+            await instance.updatePlayerField('nickname', 'death_message', 'a'.repeat(500));
+            assert.notReached();
+
+        } catch {}
+
+        const result = await instance.updatePlayerField('nickname', 'death_message', 'Kaboom!');
+        assert.isTrue(typeof result === 'string');
+        assert.strictEqual(result, 'Kaboom!');
+    });
+
     // Test custom behaviour: custom_color
     // Test custom behaviour: level
     // Test custom behaviour: money_bank_type
     // Test custom behaviour: last_ip
     // Test custom behaviour: last_seen
+
+    it('fails', assert => assert.isTrue(false));
 });

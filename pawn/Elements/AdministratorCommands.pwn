@@ -1028,9 +1028,13 @@ lvp_show(playerId, params[]) {
 
     if (showInfo == true) {
         new const bool: automated = !!IsPlayerNPC(playerId);
+        new informedPlayerCount = 0;
 
         for (new receiverId = 0; receiverId <= PlayerManager->highestPlayerId(); ++receiverId) {
             if (Player(receiverId)->isConnected() == false || IsPlayerInMinigame(receiverId))
+                continue;
+
+            if (Player(receiverId)->isNonPlayerCharacter())
                 continue;
 
             if (automated && PlayerSettings(receiverId)->areAutomatedAnnouncementsDisabled())
@@ -1039,12 +1043,15 @@ lvp_show(playerId, params[]) {
             SendClientMessage(receiverId, Color::Red, "-------------------");
             SendClientMessage(receiverId, Color::Warning, g_message);
             SendClientMessage(receiverId, Color::Red, "-------------------");
+            informedPlayerCount++;
         }
 
-        format(g_message, sizeof(g_message), "%s (Id:%d) has done /show %s.",
-            Player(playerId)->nicknameString(), playerId, showParameter);
-        Admin(playerId, g_message);
+        if (informedPlayerCount > 0) {        
+            format(g_message, sizeof(g_message), "%s (Id:%d) has done /show %s.",
+                Player(playerId)->nicknameString(), playerId, showParameter);
 
+            Admin(playerId, g_message);
+        }
         return 1;
     }
 

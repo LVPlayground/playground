@@ -74,11 +74,135 @@ describe('PlayerDatabase', it => {
         assert.strictEqual(result, 'Kaboom!');
     });
 
-    // Test custom behaviour: custom_color
-    // Test custom behaviour: level
-    // Test custom behaviour: money_bank_type
-    // Test custom behaviour: last_ip
-    // Test custom behaviour: last_seen
+    it('should be able to format and update colours', async (assert) => {
+        const instance = new MockPlayerDatabase(/* passwordSalt= */ 's4lt');
 
-    it('fails', assert => assert.isTrue(false));
+        const value = await instance.getPlayerField('[BB]Ricky92', 'custom_color');
+        assert.isTrue(typeof value === 'string');
+        assert.equal(value, '0x8952EB');
+
+        const invalidValues = ['red', '0xFF', '0xFFFF', 'FFFFFF', '0xFFFFFFFF', 15653933];
+        for (const invalidValue of invalidValues) {
+            try {
+                await instance.updatePlayerField('nickname', 'custom_color', invalidValue);
+                assert.notReached();
+    
+            } catch (exception) {
+                assert.isTrue(exception.message.includes('not a valid color'));
+            }
+        }
+
+        const result = await instance.updatePlayerField('nickname', 'custom_color', '0xFF00FF');
+        assert.isTrue(typeof result === 'string');
+        assert.strictEqual(result, '0xFF00FF');
+
+        assert.isTrue(typeof instance.updatedValue === 'number');
+        assert.equal(instance.updatedValue, 16711935);
+    });
+
+    it('should be able to format and update player levels', async (assert) => {
+        const instance = new MockPlayerDatabase(/* passwordSalt= */ 's4lt');
+
+        const value = await instance.getPlayerField('[BB]Ricky92', 'level');
+        assert.isTrue(typeof value === 'string');
+        assert.equal(value, 'Management');
+
+        const invalidValues = ['admin', 'mod', 'Moderator', 'management'];
+        for (const invalidValue of invalidValues) {
+            try {
+                await instance.updatePlayerField('nickname', 'level', invalidValue);
+                assert.notReached();
+    
+            } catch (exception) {
+                assert.isTrue(exception.message.includes('not a valid player level'));
+            }
+        }
+
+        const result = await instance.updatePlayerField('nickname', 'level', 'Player');
+        assert.isTrue(typeof result === 'string');
+        assert.strictEqual(result, 'Player');
+
+        assert.isTrue(typeof instance.updatedValue === 'string');
+        assert.equal(instance.updatedValue, 'Player');
+    });
+
+    it('should be able to format and update bank account types', async (assert) => {
+        const instance = new MockPlayerDatabase(/* passwordSalt= */ 's4lt');
+
+        const value = await instance.getPlayerField('[BB]Ricky92', 'money_bank_type');
+        assert.isTrue(typeof value === 'string');
+        assert.equal(value, 'Premier');
+
+        const invalidValues = ['normal', 'SuperAccount', 'premier'];
+        for (const invalidValue of invalidValues) {
+            try {
+                await instance.updatePlayerField('nickname', 'money_bank_type', invalidValue);
+                assert.notReached();
+    
+            } catch (exception) {
+                assert.isTrue(exception.message.includes('not a valid bank account type'));
+            }
+        }
+
+        const result = await instance.updatePlayerField('nickname', 'money_bank_type', 'Normal');
+        assert.isTrue(typeof result === 'string');
+        assert.strictEqual(result, 'Normal');
+
+        assert.isTrue(typeof instance.updatedValue === 'string');
+        assert.equal(instance.updatedValue, 'Normal');
+    });
+
+    it('should be able to format and update last seen IP addresses', async (assert) => {
+        const instance = new MockPlayerDatabase(/* passwordSalt= */ 's4lt');
+
+        const value = await instance.getPlayerField('[BB]Ricky92', 'last_ip');
+        assert.isTrue(typeof value === 'string');
+        assert.equal(value, '37.48.87.211');
+
+        const result = await instance.updatePlayerField('[BB]Ricky92', 'last_ip', '127.0.0.1');
+        assert.isTrue(typeof result === 'string');
+        assert.equal(result, '127.0.0.1');
+
+        assert.isTrue(typeof instance.updatedValue === 'number');
+        assert.equal(instance.updatedValue, 2130706433);
+    });
+
+    it('should be able to format and update last seen times', async (assert) => {
+        const instance = new MockPlayerDatabase(/* passwordSalt= */ 's4lt');
+
+        const value = await instance.getPlayerField('[BB]Ricky92', 'last_seen');
+        assert.isTrue(typeof value === 'string');
+        assert.equal(value, '2019-12-24 12:44:41');
+
+        const invalidValues = ['bakery', 'yesterday', '???'];
+        for (const invalidValue of invalidValues) {
+            try {
+                await instance.updatePlayerField('nickname', 'last_seen', invalidValue);
+                assert.notReached();
+    
+            } catch (exception) {
+                assert.isTrue(exception.message.includes('not a valid date format'));
+            }
+        }
+
+        const outOfRangeValues = ['2041-12-01 12:41:00', '2001-01-01 05:24:12'];
+        for (const outOfRangeValue of outOfRangeValues) {
+            try {
+                await instance.updatePlayerField('nickname', 'last_seen', outOfRangeValue);
+                assert.notReached();
+    
+            } catch (exception) {
+                assert.isTrue(exception.message.includes('between 2006 and right now'));
+            }
+        }
+
+        const result = await instance.updatePlayerField(
+            '[BB]Ricky92', 'last_seen', '2020-04-26 20:27:12');
+
+        assert.isTrue(typeof result === 'string');
+        assert.equal(result, '2020-04-26 20:27:12');
+
+        assert.isTrue(typeof instance.updatedValue === 'string');
+        assert.equal(instance.updatedValue, '2020-04-26 20:27:12');
+    });
 });

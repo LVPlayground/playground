@@ -9,6 +9,7 @@ import { PlayerDatabase } from 'features/nuwani_commands/player_database.js';
 export class MockPlayerDatabase extends PlayerDatabase {
     summary = null;
     changePassQueries = [];
+    updatedValue = null;
 
     constructor(...params) {
         super(...params);
@@ -52,9 +53,18 @@ export class MockPlayerDatabase extends PlayerDatabase {
             return null;
         
         switch (fieldName) {
+            case 'custom_color':
+                return -1991054421;  // 0x8952EBAA (w/ alpha)
             case 'kill_count':
                 return 1234;
-
+            case 'level':
+                return 'Management';
+            case 'money_bank_type':
+                return 'Premier';
+            case 'last_ip':
+                return 623925203;  // 37.48.87.211
+            case 'last_seen':
+                return '2019-12-24 12:44:41';
             default:
                 throw new Error('Field not defined for testing: ' + fieldName);
         }
@@ -65,6 +75,7 @@ export class MockPlayerDatabase extends PlayerDatabase {
         if (nickname === 'FakeUser')
             throw new Error(`The player ${nickname} could not be found in the database.`);
 
+        this.updatedValue = value;
         return value;
     }
 }

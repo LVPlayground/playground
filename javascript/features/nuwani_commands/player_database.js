@@ -40,6 +40,26 @@ const PLAYER_SUMMARY_QUERY = `
     WHERE
         users_nickname.nickname = ?`;
 
+// Validates the |text| as a valid IP address, and converts it to a number.
+function ip2long(text) {
+    const parts = text.split('.');
+    if (parts.length !== 4)
+        throw new Error(`"${text}" is not a valid IP address.`);
+    
+    let numericParts = [];
+    for (const part of parts) {
+        if (!/^([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/.test(part))
+            throw new Error(`"${text}" is not a valid IP address.`);
+        
+        numericParts.push(parseInt(part, 10));
+    }
+
+    return numericParts[0] * 16777216 +
+           numericParts[1] * 65536 +
+           numericParts[2] * 256 +
+           numericParts[3];
+}
+
 // Enables interacting with the MySQL database for purposes of the PlayerCommands provided by the
 // Nuwani IRC system. Requires a live MySQL connection.
 export class PlayerDatabase {
@@ -65,8 +85,6 @@ export class PlayerDatabase {
     // is a hardcoded list because we only want to support a sub-set of the database column data.
     getSupportedFields() {
         return {
-            clock_tz: { table: 'users_mutable', type: PlayerDatabase.kTypeNumber },
-            clock: { table: 'users_mutable', type: PlayerDatabase.kTypeNumber },
             custom_color: { table: 'users_mutable', type: PlayerDatabase.kTypeCustom },
             death_count: { table: 'users_mutable', type: PlayerDatabase.kTypeNumber },
             death_message: { table: 'users_mutable', type: PlayerDatabase.kTypeString },
@@ -139,7 +157,8 @@ export class PlayerDatabase {
         if (result === null)
             throw new Error(`The player ${nickname} could not be found in the database.`);
         
-        // TODO: Apply custom formatting if the |field| requires it.
+        if (field.type === PlayerDatabase.kTypeCustom)
+            return this.formatCustomPlayerField(fieldName, result);
 
         return result;
     }
@@ -173,11 +192,34 @@ export class PlayerDatabase {
     // the value should take this format too, so when making any changes here be sure to also
     // update the `_updateCustomPlayerField` method in this class.
     formatCustomPlayerField(fieldName, value) {
+        switch (fieldName) {
+            case 'last_seen':
+            case 'level':
+            case 'money_bank_type':
+                return value;
+
+            case 'custom_color': {
+                let colorValue = (value >>> 0).toString(16);
+                if (colorValue.length > 6)
+                    colorValue = colorValue.substring(0, 6);  // remove the alpha channel
+                
+                // Make sure that blue-only colours (e.g. 0x0000FF) are shown consistently.
+                colorValue = ('00000' + colorValue).substr(-6);
+
+                // Return the color value as 0xRRGGBB, all in uppercase.
+                return '0x' + colorValue.toUpperCase();
+            }
+
+            case 'last_ip':
+                return [
+                    value >>> 24 & 0xFF,
+                    value >>> 16 & 0xFF,
+                    value >>>  8 & 0xFF,
+                    value        & 0xFF
+                ].join('.');
+        }
+
         // custom_color
-        // level
-        // money_bank_type
-        // last_ip
-        // last_seen
     }
 
     // Updates the |fieldName| setting of the given |nickname| to the set |value|. Validation will
@@ -209,13 +251,58 @@ export class PlayerDatabase {
     // Updates the |field| setting of the given |nickname|, which is one of the custom values.
     // Validation and formatting specific to the |column| will be done in here.
     async _updateCustomPlayerField(nickname, table, column, value) {
-        // custom_color
-        // level
-        // money_bank_type
-        // last_ip
-        // last_seen
+        let processedValue = null;
 
-        throw new Error('Not implemented.');
+        switch (column) {
+            case 'custom_color':
+                if (!/^0[xX][0-9a-fA-F]{6}$/.test(value))
+                    throw new Error(`"${value}" is not a valid color format (0xRRGGBB).`);
+                
+                let color = parseInt(value.substring(2), 16);
+                if (color > 2147483647)
+                    color = -2147483648 + (color - (2147483647 + 1));
+
+                processedValue = color;
+                break;
+
+            case 'last_ip':
+                processedValue = ip2long(value);
+                break;
+            
+            case 'last_seen':
+                const date = new Date(value);
+                if (Number.isNaN(date.getTime()))
+                    throw new Error(`"${value}" is not a valid date format.`);
+                
+                if (date.getFullYear() < 2006 || date.getTime() > Date.now())
+                    throw new Error('The last seen time must be between 2006 and right now.');
+
+                processedValue = value;
+                break;
+
+            case 'level':
+                if (!['Player', 'Administrator', 'Management'].includes(value))
+                    throw new Error(`"${value}" is not a valid player level.`);
+                
+                processedValue = value;
+                break;
+            
+            case 'money_bank_type':
+                if (!['Normal', 'Premier'].includes(value))
+                    throw new Error(`"${value}" is not a valid bank account type.`);
+                
+                processedValue = value;
+                break;
+
+            default:
+                throw new Error(`Formatting for ${column} has not been implemented.`);
+        }
+
+        await this._updatePlayerFieldQuery(nickname, table, column, processedValue);
+
+        // The complexity of the above data types has been hidden away from people on IRC, so no
+        // need to show the actual `processedValue` here.
+        return value;
     }
 
     // Updates the numeric |column| setting of the given |nickname|.

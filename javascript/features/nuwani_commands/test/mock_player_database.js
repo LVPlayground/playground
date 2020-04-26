@@ -45,4 +45,18 @@ export class MockPlayerDatabase extends PlayerDatabase {
         this.changePassQueries.push({ nickname, password, databaseSalt });
         return true;
     }
+
+    // Overridden.
+    async _getPlayerFieldQuery(nickname, fieldName, field) {
+        if (nickname === 'FakeUser')
+            return null;
+        
+        switch (fieldName) {
+            case 'kill_count':
+                return 1234;
+
+            default:
+                throw new Error('Field not defined for testing: ' + fieldName);
+        }
+    }
 }

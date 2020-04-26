@@ -128,7 +128,43 @@ export class PlayerDatabase {
     // Gets the given |fieldName| from the |nickname|'s data in the database. Custom fields will be
     // pre-processed before being returned.
     async getPlayerField(nickname, fieldName) {
+        const fields = this.getSupportedFields();
 
+        if (!fields.hasOwnProperty(fieldName))
+            throw new Error(`${fieldName} is not a field known to me. Please check !supported.`);
+        
+        const field = fields[fieldName];
+        const result = await this._getPlayerFieldQuery(nickname, fieldName, field);
+
+        if (result === null)
+            throw new Error(`The player ${nickname} could not be found in the database.`);
+        
+        return result;
+    }
+
+    // Actually runs a database query for getting the |field| from the |nickname|'s player data. The
+    // |field| includes the table name that |fieldName| exists in. Both values are safe to use
+    // directly, but |nickname| will potentially have to be filtered.
+    async _getPlayerFieldQuery(nickname, fieldName, field) {
+        const query = `
+            SELECT
+                ${fieldName}
+            FROM
+                ${field.table}
+            WHERE
+                user_id = (
+                    SELECT
+                        user_id
+                    FROM
+                        users_nicknames
+                    WHERE
+                        nickname = ?)`;
+        
+        const result = await server.database.query(query, nickname);
+        if (!result.rows.length || !result.rows[0].hasOwnProperty(fieldName))
+            return null;
+
+        return result.rows[0][fieldName];
     }
 
     // Updates the |fieldName| setting of the given |nickname| to the set |value|. Validation will

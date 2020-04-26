@@ -116,8 +116,13 @@ export class PlayerCommands {
     // !getvalue [nickname] [field]
     //
     // Displays the given |field| from |nickname|'s account data. Only available to management.
-    onGetValueCommand(context, nickname, field) {
-
+    async onGetValueCommand(context, nickname, field) {
+        try {
+            const value = await this.database_.getPlayerField(nickname, field);
+            context.respond(`5Value of "${field}": ${value}`);
+        } catch (exception) {
+            context.respond(`4Error: ${exception.message}`);
+        }
     }
 
     // !setvalue [nickname] [field] [value]
@@ -125,6 +130,11 @@ export class PlayerCommands {
     // Updates the given |field| in the |nickname|'s account data to the given |value|. Values will
     // be treated differently on their type. Storage is managed by the PlayerDatabase.
     onSetValueCommand(context, nickname, field, value) {
+        if (server.playerManager.getByName(nickname) !== null) {
+            context.respond('4Error: Cannot update account data of in-game players.');
+            return;
+        }
+
 
     }
 

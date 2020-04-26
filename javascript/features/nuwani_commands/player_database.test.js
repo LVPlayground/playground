@@ -39,4 +39,10 @@ describe('PlayerDatabase', it => {
             assert.isBelowOrEqual(salt, 999999999);
         }
     });
+
+    // Test custom behaviour: custom_color
+    // Test custom behaviour: level
+    // Test custom behaviour: money_bank_type
+    // Test custom behaviour: last_ip
+    // Test custom behaviour: last_seen
 });

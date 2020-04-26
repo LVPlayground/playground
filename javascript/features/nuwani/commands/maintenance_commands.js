@@ -29,6 +29,8 @@ export class MaintenanceCommands {
         // !nuwani [request-decrease|request-increase]
         this.commandManager_.buildCommand('nuwani')
             .restrict(Player.LEVEL_MANAGEMENT)
+            .sub('reload-format')
+                .build(MaintenanceCommands.prototype.onNuwaniReloadFormatCommand.bind(this))
             .sub('request-decrease')
                 .build(MaintenanceCommands.prototype.onNuwaniRequestDecreaseCommand.bind(this))
             .sub('request-increase')
@@ -90,7 +92,20 @@ export class MaintenanceCommands {
     //
     // Displays the sub-commands that are available as part of this command.
     onNuwaniCommand(context) {
-        context.respondWithUsage('!nuwani [request-decrease | request-increase]')
+        context.respondWithUsage('!nuwani [reload-format | request-decrease | request-increase]')
+    }
+
+    // !nuwani reload-format
+    //
+    // Reloads the IRC message format. The new format must have been uploaded to the server already,
+    // and calling this command will apply the changes to the live bot as well.
+    onNuwaniReloadFormatCommand(context) {
+        try {
+            this.nuwani_.messageFormatter.reloadFormat();
+            context.respond('3Success: The message format has been reloaded.');
+        } catch (exception) {
+            this.respond(`4Error: Unable to reload the format (${exception.message})`);
+        }
     }
 
     // !nuwani request-decrease

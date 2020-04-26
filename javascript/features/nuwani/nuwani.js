@@ -28,6 +28,9 @@ export default class Nuwani extends Feature {
     // Gets the message distributor that's responsible for fanning out messages.
     get messageDistributor() { return this.messageDistributor_; }
 
+    // Gets the message formatter responsible for making messages on IRC look pretty.
+    get messageFormatter() { return this.messageFormatter_; }
+
     // Gets the runtime that powers the connection to IRC.
     get runtime() { return this.runtime_; }
 

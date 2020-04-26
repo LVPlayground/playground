@@ -33,6 +33,7 @@ export class NuwaniCommand {
         const menu = new Menu('Nuwani IRC Bot');
         
         menu.addItem('Inspect bot status', NuwaniCommand.prototype.displayStatus.bind(this));
+        menu.addItem('Reload the message format', NuwaniCommand.prototype.reloadFormat.bind(this));
         menu.addItem(
             'Request an increase in bots...', NuwaniCommand.prototype.requestIncrease.bind(this));
         menu.addItem(
@@ -69,6 +70,29 @@ export class NuwaniCommand {
         }
 
         await menu.displayForPlayer(player);
+    }
+
+    // Requests the IRC message format to be reloaded. This will take immediate effect. Errors in
+    // the JSON format will result in an exception prior to ousting the old format.
+    async reloadFormat(player) {
+        const nuwani = this.nuwani_();
+
+        try {
+            nuwani.messageFormatter.reloadFormat();
+
+            this.announce_().announceToAdministrators(
+                Message.NUWANI_ADMIN_MESSAGE_FORMAT, player.name, player.id);
+            
+            await alert(player, {
+                title: 'Nuwani Configuration',
+                message: 'The message format has been successfully reloaded.',
+            });
+        } catch (exception) {
+            await alert(player, {
+                title: 'Nuwani Configuration',
+                message: `Unable to reload the format (${exception.message}).`,
+            });
+        }
     }
 
     // Requests an additional bot to start to handle the IRC echo load. This could be useful in case

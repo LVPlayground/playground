@@ -86,9 +86,12 @@ describe('MessageFormatter', it => {
             'PRIVMSG #echo :3.14 15.15 25');
     });
 
-    it('is able to load the production messages', assert => {
-        assert.doesNotThrow(() => {
-            new MessageFormatter(kEchoChannel, /* forceProdForTesting= */ true);
-        });
+    it('is able to load and re-load the production messages', assert => {
+        let formatter = null;
+
+        assert.doesNotThrow(() =>
+            formatter = new MessageFormatter(kEchoChannel, /* forceProdForTesting= */ true));
+
+        assert.doesNotThrow(() => formatter.reloadFormat());
     });
 });

@@ -34,6 +34,10 @@ The command will show a menu with a variety of options available to choose from.
 Displays a list of the configured bots, each with their connectivity status and recent command
 rates. Command rates are not available for bots not currently connected to the network.
 
+## Reload the message format
+The IRC message format can be amended without having to restart the server. Make sure that the
+latest version is available on the server, and select this command to apply the new formatting.
+
 ## Request an increase in bots...
 Requests one of the available bots to connect to the network and start assuming some of the message
 load. Useful when in-game staff is aware of an upcoming change in player volume. Selecting this

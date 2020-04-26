@@ -130,6 +130,18 @@ describe('MaintenanceCommands', (it, beforeEach, afterEach) => {
             'PRIVMSG #LVP.DevJS :Error: Holsje does not seem to be in the echo channel.');
     });
 
+    it('should be able to reload the IRC message format', async (assert) => {
+        bot.setUserModesInEchoChannelForTesting('Holsje', 'a');
+
+        const responses = await issueCommand(bot, commandManager, {
+            source: 'Holsje!holsje@hostname',
+            command: '!nuwani reload-format',
+        });
+
+        assert.equal(responses.length, 1);
+        assert.isTrue(responses[0].includes('Success'));
+    });
+
     it('should be able to request increases and decreases in bot count', async (assert) => {
         bot.setUserModesInEchoChannelForTesting('Holsje', 'a');
         let responses = null;

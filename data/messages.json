@@ -261,6 +261,7 @@
 
     "NUWANI_ADMIN_INCREASE_BOT": "%s (Id:%d) has requested an increase in IRC bots.",
     "NUWANI_ADMIN_DECREASE_BOT": "%s (Id:%d) has requested a decrease in IRC bots.",
+    "NUWANI_ADMIN_MESSAGE_FORMAT": "%s (Id:%d) has reloaded the IRC message format.",
 
     "POSITIONING_CURRENT_POSITION": "Your current position is X: %d, Y: %d Z: %d, Rotation: %d",
     "POSITIONING_OTHER_USAGE_POS": "{FF9900}Other usage{FFFFFF}: /pos [x] [y] [z]",

@@ -53,6 +53,12 @@ export class MessageFormatter {
         this.messages_ = new Map(Object.entries(messages));
     }
 
+    // Reloads the message format from the |kMessagesFile| on disk. This will throw an exception
+    // in case of JSON parsing errors, so callers must be sure to handle these.
+    reloadFormat() {
+        this.loadMessages(JSON.parse(readFile(kMessagesFile)));
+    }
+
     // Formats the given |tag| with the available |params|. Returns a string that can be directly
     // distributed to the server. The format matches the StringFormat one, namely:
     //

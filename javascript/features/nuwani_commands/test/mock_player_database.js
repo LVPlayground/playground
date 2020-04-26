@@ -8,9 +8,10 @@ import { PlayerDatabase } from 'features/nuwani_commands/player_database.js';
 // order to avoid hitting the actual database.
 export class MockPlayerDatabase extends PlayerDatabase {
     summary = null;
+    changePassQueries = [];
 
-    constructor() {
-        super();
+    constructor(...params) {
+        super(...params);
 
         // Initialize all the summary override values to NULL, to make sure that we can use the ??
         // operator in the `getPlayerSummaryInfo` method further down.
@@ -24,6 +25,7 @@ export class MockPlayerDatabase extends PlayerDatabase {
         };
     }
 
+    // Overridden.
     async getPlayerSummaryInfo(nickname) {
         if (nickname === 'NameThatDoesNotExist')
             return null;
@@ -36,5 +38,11 @@ export class MockPlayerDatabase extends PlayerDatabase {
             death_count: this.summary.deathCount ?? 4812,
             last_seen: this.summary.lastSeen ?? 92929
         };
+    }
+
+    // Overridden.
+    async _changePasswordQuery(nickname, password, databaseSalt) {
+        this.changePassQueries.push({ nickname, password, databaseSalt });
+        return true;
     }
 }

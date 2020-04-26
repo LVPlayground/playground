@@ -6,7 +6,10 @@ If you're interested in _how_ to use Nuwani as an administrator, please see our
 [Administrator Guide](ADMINISTRATORS.md) instead.
 
 ## Commands provided to Management members on IRC
-_None._
+  * `!changepass [nickname]`: changes the password of the given player to a temporary one.
+  * `!getvalue [nickname] [field]`: displays a particular field in the player's account.
+  * `!setvalue [nickname] [field] [value]`: updates a particular field in the player's account.
+  * `!supported`: displays a list of the supported fields for altering player data.
 
 ## Commands provided to administrators on IRC
   * `!admin [message]`: sends the given message to in-game administrators.
@@ -21,6 +24,7 @@ _None._
   * `!getname [id]`: finds a player with the given player Id, displays their nickname.
   * `!msg [message]`: send the given message to all in-game players in the main world.
   * `!players`: displays an overview of all players currently in-game.
+  * `!players [nickname]`: displays a summary about the given player's statistics.
   * `!pm [player] [message]`: sends the given message privately to the chosen player.
 
 ## The in-game `/nuwani` command

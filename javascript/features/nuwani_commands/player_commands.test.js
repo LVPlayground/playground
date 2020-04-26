@@ -23,7 +23,7 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
         bot = new TestBot();
 
         commandManager = nuwani.commandManager;
-        commands = new PlayerCommands(commandManager, MockPlayerDatabase);
+        commands = new PlayerCommands(commandManager, 's4lt', MockPlayerDatabase);
     });
 
     afterEach(() => {
@@ -69,6 +69,48 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
 
         assert.equal(result.length, 1);
         assert.equal(result[0], 'PRIVMSG #LVP.DevJS :*** Lucy (Id:2)');
+    });
+
+    it('should refuse to update the password of an in-game player', async (assert) => {
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'a');
+
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!changepass ' + server.playerManager.getById(0).name,
+        });
+
+        assert.equal(result.length, 1);
+        assert.equal(
+            result[0],
+            'PRIVMSG #LVP.DevJS :Error: Cannot update the password of in-game players.');
+    });
+
+    it('should be able to update a player password to a temporary one', async (assert) => {
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'a');
+
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!changepass [BB]Ricky92',
+        });
+
+        assert.equal(result.length, 1);
+        assert.isTrue(result[0].includes('Success'));
+        assert.isTrue(/to ([a-zA-Z0-9]){12}\.$/.test(result[0]));
+
+        assert.equal(commands.database_.changePassQueries.length, 1);
+        assert.equal(commands.database_.changePassQueries[0].nickname, '[BB]Ricky92');
+    });
+
+    it('should be able to display a list of supported database fields', async (assert) => {
+
+    });
+
+    it('should be able to get individual account values for a player', async (assert) => {
+
+    });
+
+    it('should enable updating player information through the commands', async (assert) => {
+
     });
 
     it('should be able to list all in-game players', async (assert) => {

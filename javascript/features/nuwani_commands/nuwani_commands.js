@@ -36,11 +36,12 @@ export class NuwaniCommands extends Feature {
         // Initiate a series of commands that are provided by the Nuwani feature directly. They can
         // be split up in multiple components for organisational reasons.
         const commandManager = this.nuwani_().commandManager;
+        const configuration = this.nuwani_().configuration;
 
         this.commands_ = [
             new BanCommands(commandManager),
             new CommunicationCommands(commandManager, this.announce_, this.nuwani_),
-            new PlayerCommands(commandManager),
+            new PlayerCommands(commandManager, configuration.passwordSalt),
         ];
     }
 

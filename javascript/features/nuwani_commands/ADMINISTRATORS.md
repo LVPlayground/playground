@@ -27,6 +27,7 @@ that not everybody may be fully up-to-speed on the latest.
   * [I want to see which player data I have access to](#-i-want-to-see-which-player-data-i-have-access-to)
   * [I want to see a player's data](#-i-want-to-see-a-players-data)
   * [I want to update a player's data](#-i-want-to-update-a-players-data)
+  * [I want to change a player's password](#-i-want-to-change-a-players-password)
 
 ## Controlling who can access the server
 As an administrator, you have the ability to control which players are able to access the server,
@@ -255,3 +256,15 @@ right in the database. A trio of commands exists to power this ability.
 !setvalue Gunther kill_count 25
 !setvalue Gunther stats_exports 500
 ```
+
+### ⯈ I want to change a player's password
+**Command**: `!changepass [nickname]`
+
+#### Examples
+```
+!changepass Gunther
+```
+
+#### Notes
+  * We do not allow setting a player's password to a particular value, that's up to them. Instead,
+    this command will set their password to a pseudo-randomly generated value.

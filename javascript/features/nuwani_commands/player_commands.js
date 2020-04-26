@@ -20,9 +20,9 @@ export class PlayerCommands {
     commandManager_ = null;
     database_ = null;
 
-    constructor(commandManager, PlayerDatabaseConstructor = PlayerDatabase) {
+    constructor(commandManager, passwordSalt, PlayerDatabaseConstructor = PlayerDatabase) {
         this.commandManager_ = commandManager;
-        this.database_ = new PlayerDatabaseConstructor();
+        this.database_ = new PlayerDatabaseConstructor(passwordSalt);
 
         // !getid [nickname]
         this.commandManager_.buildCommand('getid')
@@ -41,9 +41,90 @@ export class PlayerCommands {
                 .build(PlayerCommands.prototype.onPlayerInfoCommand.bind(this))
             .build(PlayerCommands.prototype.onPlayerOnlineListCommand.bind(this));
 
+        // !changepass [nickname]
+        this.commandManager_.buildCommand('changepass')
+            .restrict(Player.LEVEL_MANAGEMENT)
+            .parameters([{ name: 'nickname', type: CommandBuilder.WORD_PARAMETER }])
+            .build(PlayerCommands.prototype.onChangePasswordCommand.bind(this));
+
         // !supported
-        // !getvalue [key]
-        // !setvalue [key] [value]
+        this.commandManager_.buildCommand('supported')
+            .restrict(Player.LEVEL_MANAGEMENT)
+            .build(PlayerCommands.prototype.onSupportedCommand.bind(this));
+
+        // !getvalue [field]
+        this.commandManager_.buildCommand('getvalue')
+            .restrict(Player.LEVEL_MANAGEMENT)
+            .parameters([
+                { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
+                { name: 'field', type: CommandBuilder.WORD_PARAMETER }])
+            .build(PlayerCommands.prototype.onGetValueCommand.bind(this));
+
+        // !setvalue [field] [value]
+        this.commandManager_.buildCommand('setvalue')
+            .restrict(Player.LEVEL_MANAGEMENT)
+            .parameters([
+                { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
+                { name: 'field', type: CommandBuilder.WORD_PARAMETER },
+                { name: 'value', type: CommandBuilder.SENTENCE_PARAMETER }])
+            .build(PlayerCommands.prototype.onSetValueCommand.bind(this));
+    }
+
+    // !changepass [nickname]
+    //
+    // Changes the password of the given |nickname| to a new, randomly generated password that will
+    // be shared back to issues of this command. We disallow setting arbitrary new passwords.
+    async onChangePasswordCommand(context, nickname) {
+        if (server.playerManager.getByName(nickname) !== null) {
+            context.respond('4Error: Cannot update the password of in-game players.');
+            return;
+        }
+
+        let password = '';
+
+        // Generate a random password based on the |kPasswordCharacters| that is |kPasswordLength|
+        // characters in length. The characters {o, O, 0} and {l, I, 1} have been removed to make
+        // it easier for people to actually use this password if they so desire.
+        const kPasswordCharacters = 'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        const kPasswordLength = 12;
+
+        for (let char = 0; char < kPasswordLength; ++char) {
+            password +=
+                kPasswordCharacters.charAt(Math.floor(Math.random() * kPasswordCharacters.length));
+        }
+
+        // Write the new password to the database for this player. Failures imply that the user's
+        // account could not be found in the database.
+        const result = await this.database_.changePassword(nickname, password);
+        if (result) {
+            context.respond(
+                `3Success: The password of ${nickname} has been updated to ${password}.`);
+        } else {
+            context.respond(`4Error: The player ${nickname} could not be found in the database.`);
+        }
+    }
+
+    // !supported
+    //
+    // Displays a list of the supported fields in the player account data store that can be read and
+    // updated by the commands. Type and table information is omitted.
+    onSupportedCommand(context) {
+
+    }
+
+    // !getvalue [nickname] [field]
+    //
+    // Displays the given |field| from |nickname|'s account data. Only available to management.
+    onGetValueCommand(context, nickname, field) {
+
+    }
+
+    // !setvalue [nickname] [field] [value]
+    //
+    // Updates the given |field| in the |nickname|'s account data to the given |value|. Values will
+    // be treated differently on their type. Storage is managed by the PlayerDatabase.
+    onSetValueCommand(context, nickname, field, value) {
+
     }
 
     // !getid [nickname]
@@ -198,7 +279,7 @@ export class PlayerCommands {
             if (summary.death_count === 0) {
                 deathFormat = 'have never died themselves yet';
             } else if (summary.death_count === 1) {
-                deathFormat = 'have only died once themselves';
+                deathFormat = 'have died once themselves';
             } else {
                 deathFormat = 'have died %d times themselves';
                 params.push(summary.death_count);

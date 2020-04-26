@@ -220,22 +220,22 @@ export class PlayerCommands {
 
             const exploded = this.explodeLastSeen(summary.last_seen);
             if (exploded.years === 1) {
-                recencyFormat += 'a year ago.';
+                recencyFormat += 'a year ago. ';
             } else if (exploded.years > 1) {
-                recencyFormat += '%d years ago.';
+                recencyFormat += '%d years ago. ';
                 params.push(exploded.years);
             } else if (exploded.months === 1) {
-                recencyFormat += 'a month ago.';
+                recencyFormat += 'a month ago. ';
             } else if (exploded.months > 0) {
-                recencyFormat += '%d months ago.';
+                recencyFormat += '%d months ago. ';
                 params.push(exploded.months);
             } else if (exploded.days === 1) {
-                recencyFormat += 'yesterday.';
+                recencyFormat += 'yesterday. ';
             } else if (exploded.days > 0) {
-                recencyFormat += '%d days ago.';
+                recencyFormat += '%d days ago. ';
                 params.push(exploded.days);
             } else {
-                recencyFormat += 'earlier today.';
+                recencyFormat += 'earlier today. ';
             }
         }
 
@@ -245,7 +245,7 @@ export class PlayerCommands {
         // Now all that remains to be done is to compile the actual format for this player's summary
         // and respond to the IRC command with the final result.
         const messageFormat =
-            `${levelFormat} who has ${onlineTimeFormat}. ${deathmatchFormat}${recencyFormat} %s`;
+            `${levelFormat} who has ${onlineTimeFormat}. ${deathmatchFormat}${recencyFormat}%s`;
         
         context.respond(format(messageFormat, ...params));
     }

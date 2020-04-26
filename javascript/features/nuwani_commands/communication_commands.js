@@ -27,12 +27,17 @@ export class CommunicationCommands {
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(CommunicationCommands.prototype.onAnnounceCommand.bind(this));
 
-        // TODO: !pm [player] [message]
-
         // !msg [message]
         this.commandManager_.buildCommand('msg')
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(CommunicationCommands.prototype.onMessageCommand.bind(this));
+
+        // !pm [player] [message]
+        this.commandManager_.buildCommand('pm')
+            .parameters([
+                { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
+                { name: 'message', type: CommandBuilder.SENTENCE_PARAMETER } ])
+            .build(CommunicationCommands.prototype.onPrivageMessageCommand.bind(this));
 
         // !say [message]
         this.commandManager_.buildCommand('say')
@@ -106,6 +111,29 @@ export class CommunicationCommands {
         this.nuwani_().echo('chat-from-irc', context.nickname, message);
     }
 
+    // !pm [player] [message]
+    //
+    // Sends a private message that only the |player| and in-game crew can read. May be sent from
+    // any channel, as the contents don't necessarily have to be public.
+    onPrivageMessageCommand(context, player, message) {
+        player.sendMessage(
+            Message.format(Message.IRC_PRIVATE_MESSAGE, context.nickname, message));
+        
+        const adminAnnouncement =
+            Message.format(Message.IRC_PRIVATE_MESSAGE_ADMIN, context.nickname, player.name,
+                           player.id, message);
+
+        server.playerManager.forEach(player => {
+            if (player.isAdministrator())
+                player.sendMessage(adminAnnouncement);
+        });
+        
+        this.nuwani_().echo(
+            'chat-private-irc', context.nickname, player.name, player.id, message);
+        
+        context.respond(`3Success: Your message has been sent to ${player.name}`);
+    }
+
     // !say [message]
     //
     // Sends a highlighted message to all in-game players. Command is restricted to administrators.
@@ -147,6 +175,7 @@ export class CommunicationCommands {
     dispose() {
         this.commandManager_.removeCommand('vip');
         this.commandManager_.removeCommand('say');
+        this.commandManager_.removeCommand('pm');
         this.commandManager_.removeCommand('msg');
         this.commandManager_.removeCommand('announce');
         this.commandManager_.removeCommand('admin');

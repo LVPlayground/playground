@@ -127,6 +127,39 @@ describe('CommunicationCommands', (it, beforeEach, afterEach) => {
         assert.equal(nuwani.messagesForTesting[0].tag, 'chat-from-irc');
     });
 
+    it('should be able to send private messages to in-game players', async (assert) => {
+        const unknownPlayer = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!pm Kate Have you heard from Leo lately?',
+        });
+
+        assert.equal(unknownPlayer.length, 1);
+        assert.equal(
+            unknownPlayer[0],
+            'PRIVMSG #LVP.DevJS :Error: Sorry, no player could be found for "Kate".');
+
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!pm Gunt Hey Gunther!',
+        });
+        
+        assert.equal(result.length, 1);
+        assert.isTrue(result[0].includes('Success'));
+        assert.isTrue(result[0].includes('Gunther'));
+
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.IRC_PRIVATE_MESSAGE, kCommandSourceUsername, 'Hey Gunther!'));
+        assert.equal(
+            gunther.messages[1],
+            Message.format(Message.IRC_PRIVATE_MESSAGE_ADMIN, kCommandSourceUsername, gunther.name,
+                           gunther.id, 'Hey Gunther!'));
+
+        assert.equal(nuwani.messagesForTesting.length, 1);
+        assert.equal(nuwani.messagesForTesting[0].tag, 'chat-private-irc');
+    });
+
     it('should be able to highlight a message to in-game players', async (assert) => {
         const noAccessResult = await issueCommand(bot, commandManager, {
             source: kCommandSource,

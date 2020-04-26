@@ -199,6 +199,8 @@
     "IRC_ANNOUNCE_DIVIDER": "{DC143C}-------------------",
     "IRC_ANNOUNCE_MESSAGE": "{FFFF00}%s",
     "IRC_MESSAGE": "{FFFFFF}[IRC] %s: %s",
+    "IRC_PRIVATE_MESSAGE": "{FFDC18}PM from %s (IRC): {FFFFFF}%s",
+    "IRC_PRIVATE_MESSAGE_ADMIN": "{FF9900}* PM: %s (IRC) to %s (Id:%d): %s",
     "IRC_SAY_MESSAGE": "{80CBC4}*** %s: %s",
     "IRC_VIP_MESSAGE": "{00E1E1}[VIP] [IRC] %s: %s",
 

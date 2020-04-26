@@ -109,7 +109,8 @@ export class PlayerCommands {
     // Displays a list of the supported fields in the player account data store that can be read and
     // updated by the commands. Type and table information is omitted.
     onSupportedCommand(context) {
-
+        const supported = Object.keys(this.database_.getSupportedFields()).sort();
+        context.respond('5Supported fields: ' + supported.join(', '));
     }
 
     // !getvalue [nickname] [field]

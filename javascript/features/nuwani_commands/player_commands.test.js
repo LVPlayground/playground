@@ -102,7 +102,15 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should be able to display a list of supported database fields', async (assert) => {
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'a');
 
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!supported',
+        });
+
+        assert.equal(result.length, 1);
+        assert.isTrue(result[0].includes('Supported fields'));
     });
 
     it('should be able to get individual account values for a player', async (assert) => {

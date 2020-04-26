@@ -16,6 +16,7 @@ export class Configuration {
     levels_ = [];
     commandPrefix_ = null;
     owners_ = [];
+    passwordSalt_ = null;
 
     // Gets the bots that should be connected. Each bot is listed as { nickname, password, master,
     // optional }, and there is guaranteed to only be a single master.
@@ -46,6 +47,10 @@ export class Configuration {
     // the individual fields might be set to an asterisk to indicate "any value".
     get owners() { return this.owners_; }
 
+    // Gets the password salt with which player passwords are generated. This field is optional
+    // in the configuration, but required for Nuwani's ability to change player passwords.
+    get passwordSalt() { return this.passwordSalt_; }
+
     // Constructs the Configuration file. In production the data will be read from a file called
     // "nuwani.json", whereas tests will have to do with a verified testing configuration.
     constructor() {
@@ -72,6 +77,7 @@ export class Configuration {
         this.channels_ = [];
         this.levels_ = [];
         this.owners_ = [];
+        this.passwordSalt_ = null;
 
         // (1) Load the bot's identity configuration.
         if (!configuration.hasOwnProperty('bots') || !Array.isArray(configuration.bots))
@@ -121,11 +127,19 @@ export class Configuration {
 
         configuration.owners.forEach(owner => this.safeAddOwner(owner));
 
-        // (7) Require that the master bot has been defined.
+        // (7) Load the password salt, if this field exists in the configuration.
+        if (configuration.hasOwnProperty('passwordSalt') && !!configuration.passwordSalt) {
+            if (typeof configuration.passwordSalt != 'string' || !configuration.passwordSalt.length)
+                throw new Error('The password salt must be a non-zero string.');
+            
+            this.passwordSalt_ = configuration.passwordSalt;
+        }
+
+        // (8) Require that the master bot has been defined.
         if (this.bots_.filter(bot => bot.master).length !== 1)
             throw new Error('Exactly one IRC bot must be specified as the master bot.');
 
-        // (8) Require that the echo channel has been defined.
+        // (9) Require that the echo channel has been defined.
         {
             const channels = this.channels_.filter(channel => channel.echo);
             if (channels.length !== 1)
@@ -134,7 +148,7 @@ export class Configuration {
             this.echoChannel_ = channels[0].channel;
         }  
 
-        // (9) Sort the level mapping in descending order based on the access level.
+        // (10) Sort the level mapping in descending order based on the access level.
         this.levels_.sort((lhs, rhs) => {
             if (lhs.level === rhs.level)
                 return 0;

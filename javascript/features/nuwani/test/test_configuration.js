@@ -25,4 +25,5 @@ export const kTestConfiguration = {
     owners: [
         'Ricky!owner@lvp.management',
     ],
+    passwordSalt: 's4lt',
 };

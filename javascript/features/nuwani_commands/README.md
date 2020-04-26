@@ -9,13 +9,19 @@ If you're interested in _how_ to use Nuwani as an administrator, please see our
 _None._
 
 ## Commands provided to administrators on IRC
-_None._
+  * `!admin [message]`: sends the given message to in-game administrators.
+  * `!announce [message]`: displays a clear, visual announcement to all players.
+  * `!say [message]`: clearly highlights the given message to all players.
 
 ## Commands available to VIPs on IRC
-_None._
+  * `!vip [message]`: sends the given message to all in-game VIP players.
 
 ## Commands available to everyone on IRC
-_None._
+  * `!getid [nickname]`: finds a player with the given nickname, displays their Id.
+  * `!getname [id]`: finds a player with the given player Id, displays their nickname.
+  * `!msg [message]`: send the given message to all in-game players in the main world.
+  * `!players`: displays an overview of all players currently in-game.
+  * `!pm [player] [message]`: sends the given message privately to the chosen player.
 
 ## The in-game `/nuwani` command
 In-game staff is able to inspect and manage the IRC bots through the `/nuwani` command. Access to

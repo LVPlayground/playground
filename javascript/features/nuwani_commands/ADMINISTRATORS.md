@@ -74,7 +74,7 @@ addition to that, we also log each time a ban gets lifted.
   * By default, bans will last for three days.
 
 ### ⯈ I want to ban a player by IP address
-**Command**: `!ban ip [ip] [playerName] [days] [reason]`
+**Command**: `!ban ip [ip] [nickname] [days] [reason]`
 
 #### Examples
 ```
@@ -83,7 +83,7 @@ addition to that, we also log each time a ban gets lifted.
 ```
 
 ### ⯈ I want to ban a player by IP range
-**Command**: `!ban range [ip range] [playerName] [days] [reason]`
+**Command**: `!ban range [ip range] [nickname] [days] [reason]`
 
 #### Examples
 ```
@@ -96,7 +96,7 @@ addition to that, we also log each time a ban gets lifted.
     ban up to 16,777,216 addresses. Raw database access is required in order to go beyond that.
 
 ### ⯈ I want to ban a player by serial number
-**Command**: `!ban serial [gpci] [playerName] [days] [reason]`
+**Command**: `!ban serial [serial] [nickname] [days] [reason]`
 
 #### Examples
 ```

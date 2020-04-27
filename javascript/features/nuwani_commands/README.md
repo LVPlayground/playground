@@ -15,11 +15,23 @@ If you're interested in _how_ to use Nuwani as an administrator, please see our
   * `!supported`: displays a list of the supported fields for altering player data.
 
 ## Commands provided to administrators on IRC
+  * `!addnote [nickname] [note]`: adds the given note to a player's record.
   * `!admin [message]`: sends the given message to in-game administrators.
   * `!aliases [nickname]`: lists the aliases associated with the given player.
   * `!announce [message]`: displays a clear, visual announcement to all players.
+  * `!ban [player] [days] [reason]`: bans an in-game player for a given reason.
+  * `!ban ip [ip] [nickname] [days] [reason]`: bans a particular player by their IP address.
+  * `!ban range [ip range] [nickname] [days] [reason]`: bans a player by their IP address range.
+  * `!ban serial [serial] [nickname] [days] [reason]`: bans a player by their serial number.
   * `!history [nickname]`: displays the nickname history of the given player.
+  * `!isbanned [nickname | ip | ip range | serial]`: checks whether a particular ban exists.
+  * `!kick [player] [reason]`: kicks an in-game player from the game for a given reason.
+  * `!lastbans`: displays the most recent bans created on the server.
+  * `!ipinfo [nickname | ip | ip range]`: displays IP information of the given information.
   * `!say [message]`: clearly highlights the given message to all players.
+  * `!serialinfo [nickname | serial]`: displays serial of nickname information.
+  * `!why [nickname]`: displays the most recent entries in a player's record.
+  * `!unban [ip | ip range | serial] [reason]`: lifts the ban for the given reason.
 
 ## Commands available to VIPs on IRC
   * `!vip [message]`: sends the given message to all in-game VIP players.

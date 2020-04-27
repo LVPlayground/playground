@@ -23,11 +23,19 @@ that not everybody may be fully up-to-speed on the latest.
   * [I want to send a message, but highlight it](#-i-want-to-send-a-message-but-highlight-it)
   * [I want to send a message to in-game crew](#-i-want-to-send-a-message-to-in-game-crew)
 
+### Managing identity of a player on the server
+  * [I want to change a player's username](#-i-want-to-change-a-players-username)
+  * [I want to see a player's nickname history](#-i-want-to-see-a-players-nickname-history)
+  * [I want to see a player's aliases](#-i-want-to-see-a-players-aliases)
+  * [I want to add a new alias for a player](#-i-want-to-add-a-new-alias-for-a-player)
+  * [I want to remove an alias from a player](#-i-want-to-remove-an-alias-from-a-player)
+
 ### Managing the state of Las Venturas Playground players
   * [I want to see which player data I have access to](#-i-want-to-see-which-player-data-i-have-access-to)
   * [I want to see a player's data](#-i-want-to-see-a-players-data)
   * [I want to update a player's data](#-i-want-to-update-a-players-data)
   * [I want to change a player's password](#-i-want-to-change-a-players-password)
+
 
 ## Controlling who can access the server
 As an administrator, you have the ability to control which players are able to access the server,
@@ -215,6 +223,55 @@ audience, particularly your fellow administrators.
 #### Examples
 ```
 !admin I forgot who you are again, my undercover friend!
+```
+
+
+## Managing identity of a player on the server
+Think back to your early teens, where creating your first e-mail account as `hotlad91@hotmail.com`
+seemed like the best idea in the world. Come your twenties, with a need to build a resume, and
+suddenly this e-mail address might not be the most appropriate anymore.
+
+Players change their minds about their identity all the time. They may join or leave a gang. Up to
+them, really. We have a few tools available to help them through this process.
+
+### ⯈ I want to change a player's username
+**Command**: `!changename [nickname] [newNickname]`
+
+#### Examples
+```
+!changename [BB]Ricky92 TheRickster
+```
+
+### ⯈ I want to see a player's nickname history
+**Command**: `!nickhistory [nickname]`;
+
+#### Examples
+```
+!nickhistory [SC]Hizophrenia
+```
+
+### ⯈ I want to see a player's aliases
+**Command**: `!aliases`
+
+#### Examples
+```
+!aliases [SC]Hizophrenia
+```
+
+### ⯈ I want to add a new alias for a player
+**Command**: `!addalias [nickname] [alias]`
+
+#### Examples
+```
+!addalias MrSpoon MrsFork
+```
+
+### ⯈ I want to remove an alias from a player
+**Command**: `!supported`
+
+#### Examples
+```
+!removealias Beaner Beanster
 ```
 
 

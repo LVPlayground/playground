@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { ip2long } from 'features/nuwani_commands/ip_utilities.js';
+
 // MySQL query to execute when adding an entry to the database.
 const ADD_ENTRY_QUERY = `
     INSERT INTO
@@ -30,10 +32,62 @@ export class BanDatabase {
     // ** kTypeNote
     //    No additional parameters have to be given.
     //
+    // ** kTypeBan and kTypeBanIp
+    //    banDurationDays: number of days for which the bans should apply.
+    //
+    //    ...and one of the following:
+    //        banIpAddress: a textual IP address (127.0.0.1) that should be banned.
+    //        banIpRange: a textual IP range (127.0.*.*) that should be banned.
+    //        banSerialNumber: a numeric serial number that should be banned.
+    //
     // Returns whether the log entry that has been written to the database, as a boolean.
-    async addEntry({ type, sourceUserId = null, sourceNickname,
+    async addEntry({ type, banDurationDays = null, banIpAddress = null, banIpRange = null,
+                     banSerialNumber = null, sourceUserId = null, sourceNickname,
                      subjectUserId = null, subjectNickname, note } = {}) {
         switch (type) {
+            case BanDatabase.kTypeBan:
+            case BanDatabase.kTypeBanIp:
+                if (!banDurationDays || banDurationDays < 0)
+                    throw new Error('A duration for the ban, in days, must be given.');
+
+                let banIpRangeStart = 0;
+                let banIpRangeEnd = 0;
+                let banSerial = 0;
+
+                if (banIpAddress !== null) {
+                    if (banIpRange !== null || banSerialNumber !== null)
+                        throw new Error('Exactly one type of ban must be used at a time.');
+                    
+                    banIpRangeStart = ip2long(banIpAddress);
+                    banIpRangeEnd = ip2long(banIpAddress);
+
+                } else if (banIpRange !== null) {
+                    if (banSerialNumber !== null)
+                        throw new Error('Exactly one type of ban must be used at a time.');
+                    
+                    banIpRangeStart = ip2long(banIpRange.replace(/\*/g, '0'));
+                    banIpRangeEnd = ip2long(banIpRange.replace(/\*/g, '255'));
+
+                } else if (banSerialNumber) {
+                    banSerial = banSerialNumber;
+
+                } else {
+                    throw new Error('Exactly one type of ban must be used at a time.');
+                }
+
+                return this.addEntryInternal({
+                    type,
+                    banIpRangeStart,
+                    banIpRangeEnd,
+                    banSerial,
+                    banDurationDays,
+                    sourceUserId: sourceUserId ?? 0,
+                    sourceNickname,
+                    subjectUserId: subjectUserId ?? 0,
+                    subjectNickname,
+                    note
+                });
+        
             case BanDatabase.kTypeKick:
             case BanDatabase.kTypeNote:
                 return this.addEntryInternal({

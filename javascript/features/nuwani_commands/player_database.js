@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { ip2long } from 'features/nuwani_commands/ip_utilities.js';
 import { sha1 } from 'features/nuwani_commands/sha1.js';
 
 // Query to update a player's (hashed) password to the given hashed value and salt.
@@ -117,26 +118,6 @@ const PLAYER_PAST_NICKNAMES_QUERY = `
 
 // Regular expression to test whether a string is a valid SA-MP nickname.
 const kValidNicknameExpression = /^[0-9a-z\[\]\(\)\$@\._=]{1,24}$/i;
-
-// Validates the |text| as a valid IP address, and converts it to a number.
-function ip2long(text) {
-    const parts = text.split('.');
-    if (parts.length !== 4)
-        throw new Error(`"${text}" is not a valid IP address.`);
-    
-    let numericParts = [];
-    for (const part of parts) {
-        if (!/^([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/.test(part))
-            throw new Error(`"${text}" is not a valid IP address.`);
-        
-        numericParts.push(parseInt(part, 10));
-    }
-
-    return numericParts[0] * 16777216 +
-           numericParts[1] * 65536 +
-           numericParts[2] * 256 +
-           numericParts[3];
-}
 
 // Enables interacting with the MySQL database for purposes of the PlayerCommands provided by the
 // Nuwani IRC system. Requires a live MySQL connection.

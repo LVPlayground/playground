@@ -115,7 +115,7 @@ export class BanCommands {
 
         const subjectPlayer = server.playerManager.getByName(nickname);
         if (subjectPlayer !== null && subjectPlayer.isRegistered())
-            subjectUserId = userId;
+            subjectUserId = subjectPlayer.userId;
         
         const success = await this.database_.addEntry({
             type: BanDatabase.kTypeNote,
@@ -169,9 +169,22 @@ export class BanCommands {
 
     // !kick [player] [reason]
     //
-    // Kicks the in-game |player| from the game for the given |reason|.
+    // Kicks the in-game |player| from the game for the given |reason|. 
     async onKickPlayerCommand(context, player, reason) {
-        context.respond('4Error: This command has not been implemented yet.');
+        if (!this.validateNote(context, reason))
+            return;
+
+        const success = await this.database_.addEntry({
+            type: BanDatabase.kTypeKick,
+            sourceNickname: context.nickname,
+            subjectUserId: player.userId ?? 0,
+            subjectNickname: player.name,
+            note: reason
+        });
+
+        context.respond(`3Success: ${player.name} has been kicked from the game.`);
+        if (!success)
+            context.respond(`4Error: The kick note for ${player.name} could not be stored.`);
     }
 
     // !lastbans

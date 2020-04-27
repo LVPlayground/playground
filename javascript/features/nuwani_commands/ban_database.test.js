@@ -48,5 +48,20 @@ describe('PlayerDatabase', it => {
         assert.equal(instance.addedEntry.subjectNickname, '[HC]Golk3r');
         assert.equal(instance.addedEntry.note, 'Seems to be fighting a lot?');
     });
+
+    it('is able to add notes about kicks to the database', async (assert) => {
+        const instance = new MockBanDatabase();
+
+        assert.isTrue(await instance.addEntry({
+            type: BanDatabase.kTypeKick,
+            sourceNickname: '[BB]Ricky92',
+            subjectUserId: 4050,
+            subjectNickname: 'Sinned',
+            note: 'Seems to be sinning all around...'
+        }));
+
+        assert.isNotNull(instance.addedEntry);
+        assert.equal(instance.addedEntry.type, BanDatabase.kTypeKick);
+    });
 });
 

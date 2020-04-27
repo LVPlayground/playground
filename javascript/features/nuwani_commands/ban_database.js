@@ -34,9 +34,10 @@ export class BanDatabase {
     async addEntry({ type, sourceUserId = null, sourceNickname,
                      subjectUserId = null, subjectNickname, note } = {}) {
         switch (type) {
+            case BanDatabase.kTypeKick:
             case BanDatabase.kTypeNote:
                 return this.addEntryInternal({
-                    type: BanDatabase.kTypeNote,
+                    type,
                     banIpRangeStart: 0,
                     banIpRangeEnd: 0,
                     banSerial: 0,

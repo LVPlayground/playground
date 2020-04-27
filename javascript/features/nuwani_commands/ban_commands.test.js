@@ -27,7 +27,9 @@ describe('BanCommands', (it, beforeEach, afterEach) => {
         commandManager = nuwani.commandManager;
         commands = new BanCommands(nuwani.commandManager, MockBanDatabase);
         database = commands.database_;
+
         gunther = server.playerManager.getById(/* Gunther= */ 0);
+        gunther.identify();
     });
 
     afterEach(() => {
@@ -94,7 +96,7 @@ describe('BanCommands', (it, beforeEach, afterEach) => {
         assert.isNotNull(database.addedEntry);
         assert.equal(database.addedEntry.type, BanDatabase.kTypeNote);
         assert.equal(database.addedEntry.sourceNickname, kCommandSourceUsername);
-        assert.equal(database.addedEntry.subjectUserId, gunther.id);
+        assert.equal(database.addedEntry.subjectUserId, gunther.userId);
         assert.equal(database.addedEntry.subjectNickname, gunther.name);
         assert.equal(database.addedEntry.note, 'Has been in-game for weeks?!');
     });
@@ -132,7 +134,23 @@ describe('BanCommands', (it, beforeEach, afterEach) => {
     it('should be able to kick in-game players from the game', async (assert) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
-        // !kick [player] [reason]
+        await assertNoteConstraints(assert, '!kick 0');
+
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: `!kick ${gunther.name} Idling on the ship`,
+        });
+
+        assert.equal(result.length, 1);
+        assert.equal(result[0],
+                     `PRIVMSG #LVP.DevJS :Success: ${gunther.name} has been kicked from the game.`);
+        
+        assert.isNotNull(database.addedEntry);
+        assert.equal(database.addedEntry.type, BanDatabase.kTypeKick);
+        assert.equal(database.addedEntry.sourceNickname, kCommandSourceUsername);
+        assert.equal(database.addedEntry.subjectUserId, gunther.userId);
+        assert.equal(database.addedEntry.subjectNickname, gunther.name);
+        assert.equal(database.addedEntry.note, 'Idling on the ship');
     });
 
     it('should be able to list the most recent bans', async (assert) => {

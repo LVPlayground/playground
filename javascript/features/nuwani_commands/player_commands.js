@@ -26,7 +26,7 @@ export class PlayerCommands {
 
         // !addalias [nickname] [alias]
         this.commandManager_.buildCommand('addalias')
-            .restrict(Player.LEVEL_MANAGEMENT)
+            .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
                 { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
                 { name: 'alias', type: CommandBuilder.WORD_PARAMETER }])
@@ -40,7 +40,7 @@ export class PlayerCommands {
         
         // !removealias [nickname] [alias]
         this.commandManager_.buildCommand('removealias')
-            .restrict(Player.LEVEL_MANAGEMENT)
+            .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
                 { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
                 { name: 'alias', type: CommandBuilder.WORD_PARAMETER }])
@@ -71,7 +71,7 @@ export class PlayerCommands {
 
         // !changename [nickname] [newNickname]
         this.commandManager_.buildCommand('changename')
-            .restrict(Player.LEVEL_MANAGEMENT)
+            .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
                 { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
                 { name: 'newNickname', type: CommandBuilder.WORD_PARAMETER }])

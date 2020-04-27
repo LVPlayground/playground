@@ -32,7 +32,7 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should make it possible to add an alias to an account', async (assert) => {
-        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'a');
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
         const onlinePlayer = await issueCommand(bot, commandManager, {
             source: kCommandSource,
@@ -80,7 +80,7 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should allow for removing an alias from an account', async (assert) => {
-        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'a');
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
         const onlinePlayer = await issueCommand(bot, commandManager, {
             source: kCommandSource,
@@ -126,7 +126,7 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should allow changing a user\'s nickname to another one', async (assert) => {
-        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'a');
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
         const onlinePlayer = await issueCommand(bot, commandManager, {
             source: kCommandSource,

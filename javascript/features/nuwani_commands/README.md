@@ -6,15 +6,13 @@ If you're interested in _how_ to use Nuwani as an administrator, please see our
 [Administrator Guide](ADMINISTRATORS.md) instead.
 
 ## Commands provided to Management members on IRC
-  * `!addalias [nickname] [alias]`: adds the given alias as one that can be used by the player.
-  * `!changename [nickname] [newNickname]`: changes the nickname of the given player.
   * `!changepass [nickname]`: changes the password of the given player to a temporary one.
   * `!getvalue [nickname] [field]`: displays a particular field in the player's account.
-  * `!removealias [nickname] [alias]`: removes the given alias from the player.
   * `!setvalue [nickname] [field] [value]`: updates a particular field in the player's account.
   * `!supported`: displays a list of the supported fields for altering player data.
 
 ## Commands provided to administrators on IRC
+  * `!addalias [nickname] [alias]`: adds the given alias as one that can be used by the player.
   * `!addnote [nickname] [note]`: adds the given note to a player's record.
   * `!admin [message]`: sends the given message to in-game administrators.
   * `!aliases [nickname]`: lists the aliases associated with the given player.
@@ -23,11 +21,13 @@ If you're interested in _how_ to use Nuwani as an administrator, please see our
   * `!ban ip [ip] [nickname] [days] [reason]`: bans a particular player by their IP address.
   * `!ban range [ip range] [nickname] [days] [reason]`: bans a player by their IP address range.
   * `!ban serial [serial] [nickname] [days] [reason]`: bans a player by their serial number.
+  * `!changename [nickname] [newNickname]`: changes the nickname of the given player.
   * `!history [nickname]`: displays the nickname history of the given player.
   * `!isbanned [nickname | ip | ip range | serial]`: checks whether a particular ban exists.
   * `!kick [player] [reason]`: kicks an in-game player from the game for a given reason.
   * `!lastbans`: displays the most recent bans created on the server.
   * `!ipinfo [nickname | ip | ip range]`: displays IP information of the given information.
+  * `!removealias [nickname] [alias]`: removes the given alias from the player.
   * `!say [message]`: clearly highlights the given message to all players.
   * `!serialinfo [nickname | serial]`: displays serial of nickname information.
   * `!why [nickname]`: displays the most recent entries in a player's record.

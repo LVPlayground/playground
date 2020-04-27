@@ -92,6 +92,14 @@ class Assert {
     this.reportFailure('evaluates to false');
   }
 
+  // Assert whether |haystack| includes the |needle|.
+  includes(haystack, needle) {
+    if (haystack.includes(needle))
+      return;
+
+    this.reportFailure('expected ' + this.toString(haystack) + ' to include ' + this.toString(needle) + ', but it doesn\'t.');
+  }
+
   // Asserts valueToCheck > valueToBeAbove
   isAbove(valueToCheck, valueToBeAbove) {
     if (valueToCheck > valueToBeAbove)

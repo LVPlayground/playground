@@ -76,6 +76,12 @@ describe('Assert', it => {
     assert.isTrue({});
   });
 
+  it('includes', assert => {
+    assert.includes([1, 2, 3], 2);
+    assert.includes('hello, world!', 'hell');
+    assert.includes('hello, world', 'o, w');
+  });
+
   it('isAbove', assert => {
     assert.isAbove(42, 40);
     assert.isAbove(-10, -20);

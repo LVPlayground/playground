@@ -18,9 +18,18 @@ class TestSuite {
     this.beforeEach_ = null;
     this.afterEach_ = null;
 
+    // The |registerTestHelper| implements the `it` function available in all unit test suites,
+    // used to register and instantiate individual test cases. It also provides some helpers.
+    let registerTestHelper = TestSuite.prototype.registerTest.bind(this);
+
+    // `it.fails()` is a utility function to create a test that will, per definition, fail. This
+    // is useful in cases where tests are being developed, and the server should not start.
+    registerTestHelper.fails = () =>
+      this.registerTest('is expected to fail', assert => assert.isTrue(false));
+
     // Call the test descriptor that contains the individual test cases.
     fn(
-        /** it **/         TestSuite.prototype.registerTest.bind(this),
+        /** it **/         registerTestHelper,
         /** beforeEach **/ TestSuite.prototype.setBeforeEach.bind(this),
         /** afterEach **/  TestSuite.prototype.setAfterEach.bind(this));
   }

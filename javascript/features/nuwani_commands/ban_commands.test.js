@@ -198,22 +198,56 @@ describe('BanCommands', (it, beforeEach, afterEach) => {
 
         const result = await issueCommand(bot, commandManager, {
             source: kCommandSource,
-            command: `!ban ip 127.0.0.1 Lucy 10 reason`,
+            command: `!ban ip 127.0.0.2 Lucy 10 reason`,
         });
 
         assert.equal(result.length, 1);
         assert.equal(
             result[0],
-            'PRIVMSG #LVP.DevJS :Success: The IP address 127.0.0.1 has been banned from the game.');
+            'PRIVMSG #LVP.DevJS :Success: The IP address 127.0.0.2 has been banned from the game.');
         
         assert.isNotNull(database.addedEntry);
         assert.equal(database.addedEntry.type, BanDatabase.kTypeBanIp);
         assert.equal(database.addedEntry.banDurationDays, 10);
-        assert.equal(database.addedEntry.banIpRangeStart, ip2long('127.0.0.1'));
-        assert.equal(database.addedEntry.banIpRangeEnd, ip2long('127.0.0.1'));
+        assert.equal(database.addedEntry.banIpRangeStart, ip2long('127.0.0.2'));
+        assert.equal(database.addedEntry.banIpRangeEnd, ip2long('127.0.0.2'));
         assert.equal(database.addedEntry.sourceNickname, kCommandSourceUsername);
         assert.equal(database.addedEntry.subjectNickname, 'Lucy');
         assert.equal(database.addedEntry.note, 'reason');
+    });
+
+    it('should disconnect in-game players in case their IP gets banned', async (assert) => {
+        server.playerManager.onPlayerConnect({
+            playerid: 42,
+            name: 'EvilJoe',
+            ip: '8.8.8.8',
+        });
+
+        const evilJoe = server.playerManager.getById(/* EvilJoe= */ 42);
+        assert.isNotNull(evilJoe);
+        assert.isTrue(evilJoe.isConnected());
+
+        const ingameResult = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!ban ip 8.8.8.8 [BB]Joe 3 Sharing knowledge',
+        });
+
+        assert.equal(ingameResult.length, 1);
+        assert.equal(
+            ingameResult[0],
+            'PRIVMSG #LVP.DevJS :Success: The IP address 8.8.8.8 has been banned from the game.');
+        
+        assert.isFalse(evilJoe.isConnected());
+        assert.equal(evilJoe.messages.length, 1);
+        assert.equal(
+            evilJoe.messages[0], Message.format(Message.NUWANI_PLAYER_BANNED_NOTICE,
+                                                kCommandSourceUsername, 3, 'Sharing knowledge'));
+
+        assert.equal(gunther.messages.length, 1);
+        assert.includes(
+            gunther.messages[0],
+            Message.format(Message.NUWANI_ADMIN_BANNED_GROUP, kCommandSourceUsername,
+                           'EvilJoe (Id:42)', 3, 'Sharing knowledge'));
     });
 
     it('should be able to people by ranges of IP addresses', async (assert) => {
@@ -261,6 +295,77 @@ describe('BanCommands', (it, beforeEach, afterEach) => {
         assert.equal(database.addedEntry.note, 'reason');
     });
 
+    it('should disconnect in-game players in case their IP gets range-banned', async (assert) => {
+        server.playerManager.onPlayerConnect({
+            playerid: 15,
+            name: 'InnocentJoe',
+            ip: '8.8.0.1',
+        });
+
+        server.playerManager.onPlayerConnect({
+            playerid: 42,
+            name: 'EvilJoe',
+            ip: '8.8.4.4',
+        });
+
+        server.playerManager.onPlayerConnect({
+            playerid: 43,
+            name: 'EvilerJoe',
+            ip: '8.8.8.8',
+        });
+
+        server.playerManager.onPlayerConnect({
+            playerid: 44,
+            name: 'SuperEvilJoe',
+            ip: '8.8.200.41',
+        });
+
+        let evilJoes = [];
+
+        // Aggregate all the evil Joes in the |evilJoes| array, and make sure they're connected.
+        for (const playerId of [15, 42, 43, 44]) {
+            const player = server.playerManager.getById(playerId);
+            assert.isNotNull(player);
+            assert.isTrue(player.isConnected());
+
+            evilJoes.push(player);
+        }
+
+        const ingameResult = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!ban range 8.8.*.* [BB]Joe 14 funny together',
+        });
+
+        assert.equal(ingameResult.length, 1);
+        assert.equal(
+            ingameResult[0],
+            'PRIVMSG #LVP.DevJS :Success: The IP range 8.8.*.* has been banned from the game.');
+        
+        for (const player of evilJoes) {
+            assert.isFalse(player.isConnected());
+            assert.equal(player.messages.length, 1);
+            assert.equal(
+                player.messages[0], Message.format(Message.NUWANI_PLAYER_BANNED_NOTICE,
+                                                   kCommandSourceUsername, 14, 'funny together'));
+        }
+
+        assert.equal(gunther.messages.length, 2);
+        assert.includes(
+            gunther.messages[0],
+            Message.format(Message.NUWANI_ADMIN_BANNED_GROUP, kCommandSourceUsername,
+                           'InnocentJoe (Id:15), EvilJoe (Id:42), EvilerJoe (Id:43)',
+                           14, 'funny together'));
+        
+        assert.includes(
+            gunther.messages[1],
+            Message.format(Message.NUWANI_ADMIN_BANNED_GROUP, kCommandSourceUsername,
+                           'SuperEvilJoe (Id:44)', 14, 'funny together'));
+        
+        // Make sure that the other players are still in-game.
+        assert.isTrue(gunther.isConnected());
+        assert.isTrue(lucy.isConnected());
+    });
+
     it('should be able to people by their in-game serial (GCPI) number', async (assert) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
@@ -284,6 +389,40 @@ describe('BanCommands', (it, beforeEach, afterEach) => {
         assert.equal(database.addedEntry.sourceNickname, kCommandSourceUsername);
         assert.equal(database.addedEntry.subjectNickname, 'Lucy');
         assert.equal(database.addedEntry.note, 'reason yeah');
+    });
+
+    it('should disconnect in-game players in case their serial gets banned', async (assert) => {
+        server.playerManager.onPlayerConnect({
+            playerid: 42,
+            name: 'EvilJoe',
+            gpci: 666000666
+        });
+
+        const evilJoe = server.playerManager.getById(/* EvilJoe= */ 42);
+        assert.isNotNull(evilJoe);
+        assert.isTrue(evilJoe.isConnected());
+
+        const ingameResult = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!ban serial 666000666 [BB]Joe 3 pdf files ugh',
+        });
+
+        assert.equal(ingameResult.length, 1);
+        assert.equal(
+            ingameResult[0],
+            'PRIVMSG #LVP.DevJS :Success: The serial 666000666 has been banned from the game.');
+        
+        assert.isFalse(evilJoe.isConnected());
+        assert.equal(evilJoe.messages.length, 1);
+        assert.equal(
+            evilJoe.messages[0], Message.format(Message.NUWANI_PLAYER_BANNED_NOTICE,
+                                                kCommandSourceUsername, 3, 'pdf files ugh'));
+
+        assert.equal(gunther.messages.length, 1);
+        assert.includes(
+            gunther.messages[0],
+            Message.format(Message.NUWANI_ADMIN_BANNED_GROUP, kCommandSourceUsername,
+                           'EvilJoe (Id:42)', 3, 'pdf files ugh'));
     });
 
     it('should be able to see if a ban exists for certain conditions', async (assert) => {

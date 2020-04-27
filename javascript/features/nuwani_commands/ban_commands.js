@@ -5,6 +5,8 @@
 import { BanDatabase } from 'features/nuwani_commands/ban_database.js';
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
+import { isPartOfRangeBan } from 'features/nuwani_commands/ip_utilities.js';
+
 // Implementation of a series of commands that enables administrators to revoke access from certain
 // players, IP addresses and serial numbers from the server, as well as understanding why someone
 // might not have access. This includes a series of tools for understanding IP and serial usage.
@@ -184,7 +186,7 @@ export class BanCommands {
             return;
         }
 
-        // TODO: See if the |ip| captures in-game players.
+        this.disconnectPlayersAffectedByBan(context.nickname, { ip }, days, reason);
 
         const success = await this.database_.addEntry({
             type: BanDatabase.kTypeBanIp,
@@ -217,8 +219,9 @@ export class BanCommands {
             return;
         }
 
-        // TODO: See if the |range| captures in-game players.
         // TODO: Limit the reach of the |range| based on |context| level.
+
+        this.disconnectPlayersAffectedByBan(context.nickname, { range }, days, reason);
 
         const success = await this.database_.addEntry({
             type: BanDatabase.kTypeBanIp,
@@ -242,7 +245,7 @@ export class BanCommands {
         if (!this.validateDuration(context, days) || !this.validateNote(context, reason))
             return;
 
-        // TODO: See if the |serial| captures in-game players.
+        this.disconnectPlayersAffectedByBan(context.nickname, { serial }, days, reason);
 
         const success = await this.database_.addEntry({
             type: BanDatabase.kTypeBan,
@@ -394,6 +397,49 @@ export class BanCommands {
         }
 
         return Math.pow(255, wildcardCount);
+    }
+
+    // Disconnects players from the server who are affected by the ban, which could either be an
+    // individual |ip| address, an IP |range| or a |serial| number. Will inform both the user and
+    // in-game administrators of this action.
+    disconnectPlayersAffectedByBan(nickname, ban, days, reason) {
+        let bannedPlayers = [];
+
+        // Check if the ban would apply to anyone currently in-game. If so, they are to be removed
+        // from the server, and a notice will be sent to in-game administrators as well.
+        server.playerManager.forEach(player => {
+            if (ban.hasOwnProperty('ip')) {
+                if (player.ip !== ban.ip)
+                    return;  // IP-based ban, and the player has another IP address.
+
+            } else if (ban.hasOwnProperty('range')) {
+                if (!isPartOfRangeBan(player.ip, ban.range))
+                    return;
+
+            } else if (ban.hasOwnProperty('serial')) {
+                if (player.gpci !== ban.serial)
+                    return;  // serial-based ban, and the player has another serial.
+
+            } else {
+                throw new Error('Unknown properties of the |given| ban, cannot proceed.');
+            }
+
+            bannedPlayers.push([ player.name, player.id ]);
+
+            player.sendMessage(Message.NUWANI_PLAYER_BANNED_NOTICE, nickname, days, reason);
+            player.kick();
+        });
+
+        // Tell administrators about the ban(s), in one message per three affected users.
+        while (bannedPlayers.length > 0) {
+            const group = bannedPlayers.splice(0, 3);
+
+            const identities = group.map(info => `${info[0]} (Id:${info[1]})`);
+            const identitiesText = identities.join(', ');
+
+            this.announce_().announceToAdministrators(
+                Message.NUWANI_ADMIN_BANNED_GROUP, nickname, identitiesText, days, reason);
+        }
     }
 
     dispose() {

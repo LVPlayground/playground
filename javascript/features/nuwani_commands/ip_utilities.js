@@ -21,3 +21,14 @@ export function ip2long(text) {
            numericParts[2] * 256 +
            numericParts[3];
 }
+
+// Determines whether the given |ip| would be subject to a ban on the |range|.
+export function isPartOfRangeBan(ip, range) {
+    const firstWildcard = range.indexOf('*');
+
+    if (firstWildcard === -1)
+        throw new Error('The |range| must include a wildcard.');
+    
+    const rangePrefix = range.substring(0, firstWildcard);
+    return ip.startsWith(rangePrefix);
+}

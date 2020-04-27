@@ -30,6 +30,7 @@ class MockPlayer {
         this.virtualWorld_ = 0;
         this.userId_ = null;
         this.ipAddress_ = event.ip || '127.0.0.1';
+        this.gpci_ = event.gpci || 12345678;
         this.position_ = new Vector(0, 0, 0);
         this.specialAction_ = Player.SPECIAL_ACTION_NONE;
 
@@ -96,6 +97,8 @@ class MockPlayer {
     set name(value) { this.name_ = value; }
 
     get ip() { return this.ipAddress_; }
+
+    get gpci() { return this.gpci_; }
 
     get level() { return this.level_; }
     set level(value) { this.level_ = value; }

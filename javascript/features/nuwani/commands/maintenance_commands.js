@@ -17,7 +17,7 @@ export class MaintenanceCommands {
 
         // !eval [JavaScript code]
         this.commandManager_.buildCommand('eval')
-            .restrict(MaintenanceCommands.prototype.isOwner.bind(this))
+            .restrict(context => context.isOwner())
             .parameters([{ name: 'code', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(MaintenanceCommands.prototype.onEvalCommand.bind(this));
         
@@ -145,28 +145,6 @@ export class MaintenanceCommands {
         this.nuwani_.runtime.requestSlaveIncrease();
 
         context.respond('3Success: A new bot has been requested to connect to the network.');
-    }
-
-    // Returns whether the given |context| has been created for a message from a bot owner.
-    isOwner(context) {
-        const source = context.source;
-        if (!source || !source.isUser())
-            return false;  // the |context| was not sent by a human
-        
-        for (const owner of this.configuration_.owners) {
-            if (owner.nickname !== source.nickname && owner.nickname !== '*')
-                continue;
-            
-            if (owner.username !== source.username && owner.username !== '*')
-                continue;
-            
-            if (owner.hostname !== source.hostname && owner.hostname !== '*')
-                continue;
-            
-            return true;
-        }
-
-        return false;
     }
 
     dispose() {

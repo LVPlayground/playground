@@ -47,7 +47,7 @@ export class CommunicationCommands {
 
         // !vip [message]
         this.commandManager_.buildCommand('vip')
-            .restrict(CommunicationCommands.isVipContext)
+            .restrict(context => context.isVip())
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(CommunicationCommands.prototype.onVipMessageCommand.bind(this));
     }
@@ -56,9 +56,18 @@ export class CommunicationCommands {
     //
     // Sends a message to the in-game administrator chat, reaching all in-game crew.
     onAdminCommand(context, message) {
-        const prefix =
-            context.getSenderModesInEchoChannel().includes('a') ? 'Manager'
-                                                                : 'Admin';
+        let prefix = '';
+
+        switch (context.level) {
+            case Player.LEVEL_MANAGEMENT:
+                prefix = 'Manager';
+                break;
+            case Player.LEVEL_ADMINISTRATOR:
+                prefix = 'Admin';
+                break;
+            default:
+                throw new Error('Unexpected level to label: ' + context.level);
+        }
 
         const formattedMessage =
             Message.format(Message.IRC_ADMIN_MESSAGE, prefix, context.nickname, message);
@@ -163,13 +172,6 @@ export class CommunicationCommands {
         });
 
         this.nuwani_().echo('chat-vip-irc', context.nickname, message);
-    }
-
-    // Returns whether the |context| describes a user who's been marked as a VIP on IRC. We
-    // determine this by the user having "+v" mode in the echo channel.
-    static isVipContext(context) {
-        const status = context.getSenderModesInEchoChannel();
-        return typeof status === 'string' && status.includes('v');
     }
 
     dispose() {

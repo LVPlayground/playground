@@ -39,7 +39,7 @@ export class NuwaniCommands extends Feature {
         const configuration = this.nuwani_().configuration;
 
         this.commands_ = [
-            new BanCommands(commandManager),
+            new BanCommands(commandManager, this.announce_),
             new CommunicationCommands(commandManager, this.announce_, this.nuwani_),
             new PlayerCommands(commandManager, configuration.passwordSalt),
         ];

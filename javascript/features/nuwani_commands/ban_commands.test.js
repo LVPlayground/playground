@@ -19,17 +19,23 @@ describe('BanCommands', (it, beforeEach, afterEach) => {
     let commands = null;
     let database = null;
     let gunther = null;
+    let lucy = null;
 
     beforeEach(() => {
+        const announce = server.featureManager.loadFeature('announce');
         const nuwani = server.featureManager.loadFeature('nuwani');
 
         bot = new TestBot();
         commandManager = nuwani.commandManager;
-        commands = new BanCommands(nuwani.commandManager, MockBanDatabase);
+        commands = new BanCommands(nuwani.commandManager, () => announce, MockBanDatabase);
         database = commands.database_;
 
         gunther = server.playerManager.getById(/* Gunther= */ 0);
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.identify();
+
+        lucy = server.playerManager.getById(/* Lucy= */ 2);
+        lucy.identify();
     });
 
     afterEach(() => {
@@ -84,21 +90,29 @@ describe('BanCommands', (it, beforeEach, afterEach) => {
         assert.equal(database.addedEntry.subjectNickname, 'Specifer');
         assert.equal(database.addedEntry.note, 'Issued a warning on the forums');
 
+        assert.equal(gunther.messages.length, 0);
+
         const associatedNote = await issueCommand(bot, commandManager, {
             source: kCommandSource,
-            command: `!addnote ${gunther.name} Has been in-game for weeks?!`,
+            command: `!addnote ${lucy.name} Has been in-game for weeks?!`,
         });
 
         assert.equal(associatedNote.length, 1);
         assert.equal(associatedNote[0], `PRIVMSG #LVP.DevJS :Success: The note for ` +
-                                        `${gunther.name} has been added to their record.`);
+                                        `${lucy.name} has been added to their record.`);
 
         assert.isNotNull(database.addedEntry);
         assert.equal(database.addedEntry.type, BanDatabase.kTypeNote);
         assert.equal(database.addedEntry.sourceNickname, kCommandSourceUsername);
-        assert.equal(database.addedEntry.subjectUserId, gunther.userId);
-        assert.equal(database.addedEntry.subjectNickname, gunther.name);
+        assert.equal(database.addedEntry.subjectUserId, lucy.userId);
+        assert.equal(database.addedEntry.subjectNickname, lucy.name);
         assert.equal(database.addedEntry.note, 'Has been in-game for weeks?!');
+
+        assert.equal(gunther.messages.length, 1);
+        assert.includes(
+            gunther.messages[0],
+            Message.format(Message.NUWANI_ADMIN_ADDED_NOTE, kCommandSourceUsername, lucy.name,
+                          lucy.id, 'Has been in-game for weeks?!'));
     });
 
     it('should be able to ban in-game players', async (assert) => {
@@ -136,21 +150,31 @@ describe('BanCommands', (it, beforeEach, afterEach) => {
 
         await assertNoteConstraints(assert, '!kick 0');
 
+        assert.isTrue(lucy.isConnected());
+
         const result = await issueCommand(bot, commandManager, {
             source: kCommandSource,
-            command: `!kick ${gunther.name} Idling on the ship`,
+            command: `!kick ${lucy.name} Idling on the ship`,
         });
+
+        assert.isFalse(lucy.isConnected());
 
         assert.equal(result.length, 1);
         assert.equal(result[0],
-                     `PRIVMSG #LVP.DevJS :Success: ${gunther.name} has been kicked from the game.`);
+                     `PRIVMSG #LVP.DevJS :Success: ${lucy.name} has been kicked from the game.`);
         
         assert.isNotNull(database.addedEntry);
         assert.equal(database.addedEntry.type, BanDatabase.kTypeKick);
         assert.equal(database.addedEntry.sourceNickname, kCommandSourceUsername);
-        assert.equal(database.addedEntry.subjectUserId, gunther.userId);
-        assert.equal(database.addedEntry.subjectNickname, gunther.name);
+        assert.equal(database.addedEntry.subjectUserId, lucy.userId);
+        assert.equal(database.addedEntry.subjectNickname, lucy.name);
         assert.equal(database.addedEntry.note, 'Idling on the ship');
+
+        assert.equal(gunther.messages.length, 1);
+        assert.includes(
+            gunther.messages[0],
+            Message.format(Message.NUWANI_ADMIN_KICKED, kCommandSourceUsername, lucy.name, lucy.id,
+                          'Idling on the ship'));
     });
 
     it('should be able to list the most recent bans', async (assert) => {

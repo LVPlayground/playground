@@ -11,8 +11,10 @@ import { CommandBuilder } from 'components/command_manager/command_builder.js';
 export class BanCommands {
     commandManager_ = null;
 
-    constructor(commandManager, BanDatabaseConstructor = BanDatabase) {
+    constructor(commandManager, announce, BanDatabaseConstructor = BanDatabase) {
         this.commandManager_ = commandManager;
+        this.announce_ = announce;
+
         this.database_ = new BanDatabaseConstructor();
 
         // !addnote [nickname] [note]
@@ -114,9 +116,15 @@ export class BanCommands {
         let subjectUserId = null;
 
         const subjectPlayer = server.playerManager.getByName(nickname);
-        if (subjectPlayer !== null && subjectPlayer.isRegistered())
-            subjectUserId = subjectPlayer.userId;
-        
+        if (subjectPlayer !== null) {
+            if (subjectPlayer.isRegistered())
+                subjectUserId = subjectPlayer.userId;
+
+            this.announce_().announceToAdministrators(
+                Message.NUWANI_ADMIN_ADDED_NOTE, context.nickname, subjectPlayer.name,
+                subjectPlayer.id, note);
+        }
+
         const success = await this.database_.addEntry({
             type: BanDatabase.kTypeNote,
             sourceNickname: context.nickname,
@@ -129,6 +137,8 @@ export class BanCommands {
             context.respond(`3Success: The note for ${nickname} has been added to their record.`);
         else
             context.respond(`4Error: The note for ${nickname} could not be stored.`);
+        
+        
     }
 
     // !ban [player] [days] [reason]
@@ -173,6 +183,11 @@ export class BanCommands {
     async onKickPlayerCommand(context, player, reason) {
         if (!this.validateNote(context, reason))
             return;
+
+        this.announce_().announceToAdministrators(
+            Message.NUWANI_ADMIN_KICKED, context.nickname, player.name, player.id, reason);
+
+        player.kick();  // actually remove them from the server
 
         const success = await this.database_.addEntry({
             type: BanDatabase.kTypeKick,

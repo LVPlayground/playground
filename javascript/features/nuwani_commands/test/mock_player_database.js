@@ -72,6 +72,14 @@ export class MockPlayerDatabase extends PlayerDatabase {
     }
 
     // Overridden.
+    async getNicknameHistory(nickname) {
+        if (nickname === 'FakeUser')
+            return null;
+        
+        return ['[HOT]Lad1992', 'Beamer'];
+    }
+
+    // Overridden.
     async changeNameQuery(userId, nickname, newNickname) {
         this.nameMutation = { userId, nickname, newNickname };
         return true;

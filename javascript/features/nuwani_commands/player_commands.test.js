@@ -103,6 +103,28 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
             'PRIVMSG #LVP.DevJS :Success: WoodPecker has been removed as an alias for [BB]Ricky92.');
     });
 
+    it('should allow for inspecting a user\'s nickname history', async (assert) => {
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
+
+        const notFound = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!history FakeUser',
+        });
+
+        assert.equal(notFound.length, 1);
+        assert.equal(
+            notFound[0],
+            'PRIVMSG #LVP.DevJS :Error: No history for FakeUser could be found in the database.');
+
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!history Beaner',
+        });
+
+        assert.equal(result.length, 1);
+        assert.equal(result[0], 'PRIVMSG #LVP.DevJS :Previous nicknames: [HOT]Lad1992, Beamer');
+    });
+
     it('should allow changing a user\'s nickname to another one', async (assert) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'a');
 

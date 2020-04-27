@@ -243,11 +243,11 @@ them, really. We have a few tools available to help them through this process.
 ```
 
 ### ⯈ I want to see a player's nickname history
-**Command**: `!nickhistory [nickname]`;
+**Command**: `!history [nickname]`;
 
 #### Examples
 ```
-!nickhistory [SC]Hizophrenia
+!history [SC]Hizophrenia
 ```
 
 ### ⯈ I want to see a player's aliases

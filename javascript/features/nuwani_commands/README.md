@@ -18,6 +18,7 @@ If you're interested in _how_ to use Nuwani as an administrator, please see our
   * `!admin [message]`: sends the given message to in-game administrators.
   * `!aliases [nickname]`: lists the aliases associated with the given player.
   * `!announce [message]`: displays a clear, visual announcement to all players.
+  * `!history [nickname]`: displays the nickname history of the given player.
   * `!say [message]`: clearly highlights the given message to all players.
 
 ## Commands available to VIPs on IRC

@@ -90,6 +90,31 @@ const PLAYER_CHANGE_NAME_QUERY = `
     LIMIT
         1`;
 
+// Query for logging a player's nickname change in the database.
+const PLAYER_CHANGE_NAME_LOG_QUERY = `
+    INSERT INTO
+        nickname_changes
+        (user_id, nickname, date)
+    VALUES
+        (?, ?, NOW())`;
+
+// Query for reading a user's past nicknames in the database.
+const PLAYER_PAST_NICKNAMES_QUERY = `
+    SELECT
+        nickname
+    FROM
+        nickname_changes
+    WHERE
+        user_id = (
+            SELECT
+                user_id
+            FROM
+                users_nickname
+            WHERE
+                nickname = ?)
+    ORDER BY
+        date DESC`;
+
 // Regular expression to test whether a string is a valid SA-MP nickname.
 const kValidNicknameExpression = /^[0-9a-z\[\]\(\)\$@\._=]{1,24}$/i;
 
@@ -213,6 +238,19 @@ export class PlayerDatabase {
         return true;
     }
 
+    // Gets the nickname history of the given |nickname|.
+    async getNicknameHistory(nickname) {
+        const results = await server.database.query(PLAYER_PAST_NICKNAMES_QUERY, nickname);
+        if (!results || !results.rows.length)
+            return null;
+        
+        const nicknames = [];
+        for (const row of results.rows)
+            nicknames.push(row.nickname);
+        
+        return nicknames;
+    }
+
     // Changes the nickname of the user identified by |nickname| to |newNickname|. This must be
     // their main nickname, and |newNickname| must not be in use yet either.
     async changeName(nickname, newNickname) {
@@ -241,7 +279,8 @@ export class PlayerDatabase {
         const [changeNameResult, removeAliasResult, addAliasResult] = Promise.all([
             server.database.query(PLAYER_CHANGE_NAME_QUERY, newNickname, userId, nickname),
             server.database.query(PLAYER_REMOVE_ALIAS_QUERY, userId, nickname),
-            server.database.query(PLAYER_ADD_ALIAS_QUERY, userId, newNickname)
+            server.database.query(PLAYER_ADD_ALIAS_QUERY, userId, newNickname),
+            server.database.query(PLAYER_CHANGE_NAME_LOG_QUERY, userId, newNickname),
         ]);
 
         console.log(changeNameResult);

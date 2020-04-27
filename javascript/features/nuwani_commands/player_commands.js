@@ -63,6 +63,12 @@ export class PlayerCommands {
                 .build(PlayerCommands.prototype.onPlayerInfoCommand.bind(this))
             .build(PlayerCommands.prototype.onPlayerOnlineListCommand.bind(this));
 
+        // !history [nickname]
+        this.commandManager_.buildCommand('history')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .parameters([{ name: 'nickname', type: CommandBuilder.WORD_PARAMETER }])
+            .build(PlayerCommands.prototype.onHistoryCommand.bind(this));
+
         // !changename [nickname] [newNickname]
         this.commandManager_.buildCommand('changename')
             .restrict(Player.LEVEL_MANAGEMENT)
@@ -152,6 +158,20 @@ export class PlayerCommands {
         } catch (exception) {
             context.respond(`4Error: ${exception.message}`);
         }
+    }
+
+    // !history [nickname]
+    //
+    // Lists the user's previous nicknames and aliases, to be able to better identify someone's
+    // past and the skeletons hiding in their closet.
+    async onHistoryCommand(context, nickname) {
+        const result = await this.database_.getNicknameHistory(nickname);
+        if (result === null || !result.length) {
+            context.respond(`4Error: No history for ${nickname} could be found in the database.`);
+            return;
+        }
+
+        context.respond(`5Previous nicknames: ${result.join(', ')}`);
     }
 
     // !changename [nickname] [newNickname]
@@ -486,6 +506,7 @@ export class PlayerCommands {
         this.commandManager_.removeCommand('supported');
         this.commandManager_.removeCommand('changepass');
         this.commandManager_.removeCommand('changename');
+        this.commandManager_.removeCommand('history');
         this.commandManager_.removeCommand('players');
         this.commandManager_.removeCommand('getname');
         this.commandManager_.removeCommand('getid');

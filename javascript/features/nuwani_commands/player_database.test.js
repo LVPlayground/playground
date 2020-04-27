@@ -313,6 +313,4 @@ describe('PlayerDatabase', it => {
         assert.equal(instance.nameMutation.nickname, '[BB]Ricky92');
         assert.equal(instance.nameMutation.newNickname, 'NewNick');
     });
-
-    it('should fail', assert => assert.isFalse(true));
 });

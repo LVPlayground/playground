@@ -46,7 +46,7 @@ export class MockPlayerDatabase extends PlayerDatabase {
 
     // Overridden.
     async getAliases(nickname) {
-        if (['FakeUser', 'AliasName', 'NewNick'].includes(nickname))
+        if (['FakeUser', 'AliasName', 'AmazingRicky', 'NewNick'].includes(nickname))
             return null;
         
         return {

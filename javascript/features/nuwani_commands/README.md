@@ -6,13 +6,17 @@ If you're interested in _how_ to use Nuwani as an administrator, please see our
 [Administrator Guide](ADMINISTRATORS.md) instead.
 
 ## Commands provided to Management members on IRC
+  * `!addalias [nickname] [alias]`: adds the given alias as one that can be used by the player.
+  * `!changename [nickname] [newNickname]`: changes the nickname of the given player.
   * `!changepass [nickname]`: changes the password of the given player to a temporary one.
   * `!getvalue [nickname] [field]`: displays a particular field in the player's account.
+  * `!removealias [nickname] [alias]`: removes the given alias from the player.
   * `!setvalue [nickname] [field] [value]`: updates a particular field in the player's account.
   * `!supported`: displays a list of the supported fields for altering player data.
 
 ## Commands provided to administrators on IRC
   * `!admin [message]`: sends the given message to in-game administrators.
+  * `!aliases [nickname]`: lists the aliases associated with the given player.
   * `!announce [message]`: displays a clear, visual announcement to all players.
   * `!say [message]`: clearly highlights the given message to all players.
 

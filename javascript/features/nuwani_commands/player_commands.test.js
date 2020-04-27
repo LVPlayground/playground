@@ -31,6 +31,102 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
         bot.dispose();
     });
 
+    it('should make it possible to add an alias to an account', async (assert) => {
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'a');
+
+        const onlinePlayer = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!addalias [BB]Ricky92 ' + server.playerManager.getById(0).name,
+        });
+
+        assert.equal(onlinePlayer.length, 1);
+        assert.equal(
+            onlinePlayer[0],
+            'PRIVMSG #LVP.DevJS :Error: Cannot change the details of in-game players.');
+        
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!addalias [BB]Ricky92 AmazingRicky',
+        });
+
+        assert.equal(result.length, 1);
+        assert.equal(
+            result[0],
+            'PRIVMSG #LVP.DevJS :Success: AmazingRicky has been added as an alias for [BB]Ricky92.');
+    });
+
+    it('should make it possible to list aliases associated with an account', async (assert) => {
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
+
+        const unknownPlayer = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!aliases FakeUser',
+        });
+
+        assert.equal(unknownPlayer.length, 1);
+        assert.equal(
+            unknownPlayer[0],
+            'PRIVMSG #LVP.DevJS :Error: The player FakeUser could not be found in the database.');
+        
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!aliases WoodPecker',
+        });
+
+        assert.equal(result.length, 1);
+        assert.equal(
+            result[0],
+            'PRIVMSG #LVP.DevJS :Aliases of [BB]Ricky92: WoodPecker, [BA]Ro[BB]in');
+    });
+
+    it('should allow for removing an alias from an account', async (assert) => {
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'a');
+
+        const onlinePlayer = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!removealias ' + server.playerManager.getById(0).name + ' [BB]Ricky92',
+        });
+
+        assert.equal(onlinePlayer.length, 1);
+        assert.equal(
+            onlinePlayer[0],
+            'PRIVMSG #LVP.DevJS :Error: Cannot change the details of in-game players.');
+        
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!removealias [BB]Ricky92 WoodPecker',
+        });
+
+        assert.equal(result.length, 1);
+        assert.equal(
+            result[0],
+            'PRIVMSG #LVP.DevJS :Success: WoodPecker has been removed as an alias for [BB]Ricky92.');
+    });
+
+    it('should allow changing a user\'s nickname to another one', async (assert) => {
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'a');
+
+        const onlinePlayer = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!changename [BB]Ricky92 ' + server.playerManager.getById(0).name,
+        });
+
+        assert.equal(onlinePlayer.length, 1);
+        assert.equal(
+            onlinePlayer[0],
+            'PRIVMSG #LVP.DevJS :Error: Cannot change the details of in-game players.');
+        
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!changename [BB]Ricky92 AmazingRicky',
+        });
+
+        assert.equal(result.length, 1);
+        assert.equal(
+            result[0],
+            'PRIVMSG #LVP.DevJS :Success: [BB]Ricky92 will henceforth be known as AmazingRicky.');
+    });
+
     it('should be able to find players by their in-game nickname', async (assert) => {
         const notFound = await issueCommand(bot, commandManager, {
             source: kCommandSource,

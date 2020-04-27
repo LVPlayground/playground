@@ -24,6 +24,28 @@ export class PlayerCommands {
         this.commandManager_ = commandManager;
         this.database_ = new PlayerDatabaseConstructor(passwordSalt);
 
+        // !addalias [nickname] [alias]
+        this.commandManager_.buildCommand('addalias')
+            .restrict(Player.LEVEL_MANAGEMENT)
+            .parameters([
+                { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
+                { name: 'alias', type: CommandBuilder.WORD_PARAMETER }])
+            .build(PlayerCommands.prototype.onAddAliasCommand.bind(this));
+
+        // !aliases [nickname]
+        this.commandManager_.buildCommand('aliases')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .parameters([{ name: 'nickname', type: CommandBuilder.WORD_PARAMETER }])
+            .build(PlayerCommands.prototype.onAliasesCommand.bind(this));
+        
+        // !removealias [nickname] [alias]
+        this.commandManager_.buildCommand('removealias')
+            .restrict(Player.LEVEL_MANAGEMENT)
+            .parameters([
+                { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
+                { name: 'alias', type: CommandBuilder.WORD_PARAMETER }])
+            .build(PlayerCommands.prototype.onRemoveAliasCommand.bind(this));
+
         // !getid [nickname]
         this.commandManager_.buildCommand('getid')
             .parameters([{ name: 'nickname', type: CommandBuilder.PLAYER_PARAMETER }])
@@ -40,6 +62,14 @@ export class PlayerCommands {
             .sub(CommandBuilder.WORD_PARAMETER)
                 .build(PlayerCommands.prototype.onPlayerInfoCommand.bind(this))
             .build(PlayerCommands.prototype.onPlayerOnlineListCommand.bind(this));
+
+        // !changename [nickname] [newNickname]
+        this.commandManager_.buildCommand('changename')
+            .restrict(Player.LEVEL_MANAGEMENT)
+            .parameters([
+                { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
+                { name: 'newNickname', type: CommandBuilder.WORD_PARAMETER }])
+            .build(PlayerCommands.prototype.onChangeNameCommand.bind(this));
 
         // !changepass [nickname]
         this.commandManager_.buildCommand('changepass')
@@ -68,6 +98,79 @@ export class PlayerCommands {
                 { name: 'field', type: CommandBuilder.WORD_PARAMETER },
                 { name: 'value', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(PlayerCommands.prototype.onSetValueCommand.bind(this));
+    }
+
+    // !addalias [nickname] [alias]
+    //
+    // Adds the given |alias| to |nickname|'s account as an alternative username. Our system allows
+    // players to be identified with any number of names.
+    async onAddAliasCommand(context, nickname, alias) {
+        if (server.playerManager.getByName(nickname) !== null ||
+                server.playerManager.getByName(alias) !== null) {
+            context.respond('4Error: Cannot change the details of in-game players.');
+            return;
+        }
+
+        try {
+            const value = await this.database_.addAlias(nickname, alias);
+            context.respond(`3Success: ${alias} has been added as an alias for ${nickname}.`);
+        } catch (exception) {
+            context.respond(`4Error: ${exception.message}`);
+        }
+    }
+
+    // !aliases [nickname]
+    //
+    // Lists the aliases associated with the |nickname|. This may be an alias itself.
+    async onAliasesCommand(context, nickname) {
+        const result = await this.database_.getAliases(nickname);
+        if (!result) {
+            context.respond(`4Error: The player ${nickname} could not be found in the database.`);
+            return;
+        }
+
+        const aliases = result.aliases.length ? result.aliases.sort().join(', ')
+                                              : '';
+
+        context.respond(`10Aliases of ${result.nickname}: ${aliases}`);
+    }
+
+    // !removealias [nickname] [alias]
+    //
+    // Removes the given |alias| from |nickname|'s account. It will immediately become available for
+    // use by other players again.
+    async onRemoveAliasCommand(context, nickname, alias) {
+        if (server.playerManager.getByName(nickname) !== null ||
+                server.playerManager.getByName(alias) !== null) {
+            context.respond('4Error: Cannot change the details of in-game players.');
+            return;
+        }
+
+        try {
+            const value = await this.database_.removeAlias(nickname, alias);
+            context.respond(`3Success: ${alias} has been removed as an alias for ${nickname}.`);
+        } catch (exception) {
+            context.respond(`4Error: ${exception.message}`);
+        }
+    }
+
+    // !changename [nickname] [newNickname]
+    //
+    // Requests the user identified by |nickname| to be identified by |newNickname| instead. The old
+    // name will become immediately available for use by other players again.
+    async onChangeNameCommand(context, nickname, newNickname) {
+        if (server.playerManager.getByName(nickname) !== null ||
+                server.playerManager.getByName(newNickname) !== null) {
+            context.respond('4Error: Cannot change the details of in-game players.');
+            return;
+        }
+
+        try {
+            const value = await this.database_.changeName(nickname, newNickname);
+            context.respond(`3Success: ${nickname} will henceforth be known as ${newNickname}.`);
+        } catch (exception) {
+            context.respond(`4Error: ${exception.message}`);
+        }
     }
 
     // !changepass [nickname]
@@ -378,8 +481,16 @@ export class PlayerCommands {
     }
 
     dispose() {
+        this.commandManager_.removeCommand('setvalue');
+        this.commandManager_.removeCommand('getvalue');
+        this.commandManager_.removeCommand('supported');
+        this.commandManager_.removeCommand('changepass');
+        this.commandManager_.removeCommand('changename');
         this.commandManager_.removeCommand('players');
         this.commandManager_.removeCommand('getname');
         this.commandManager_.removeCommand('getid');
+        this.commandManager_.removeCommand('removealias');
+        this.commandManager_.removeCommand('aliases');
+        this.commandManager_.removeCommand('addalias');
     }
 }

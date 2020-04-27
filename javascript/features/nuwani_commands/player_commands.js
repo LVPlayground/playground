@@ -118,7 +118,7 @@ export class PlayerCommands {
         }
 
         try {
-            const value = await this.database_.addAlias(nickname, alias);
+            await this.database_.addAlias(nickname, alias);
             context.respond(`3Success: ${alias} has been added as an alias for ${nickname}.`);
         } catch (exception) {
             context.respond(`4Error: ${exception.message}`);
@@ -153,7 +153,7 @@ export class PlayerCommands {
         }
 
         try {
-            const value = await this.database_.removeAlias(nickname, alias);
+            await this.database_.removeAlias(nickname, alias);
             context.respond(`3Success: ${alias} has been removed as an alias for ${nickname}.`);
         } catch (exception) {
             context.respond(`4Error: ${exception.message}`);
@@ -186,7 +186,7 @@ export class PlayerCommands {
         }
 
         try {
-            const value = await this.database_.changeName(nickname, newNickname);
+            await this.database_.changeName(nickname, newNickname);
             context.respond(`3Success: ${nickname} will henceforth be known as ${newNickname}.`);
         } catch (exception) {
             context.respond(`4Error: ${exception.message}`);

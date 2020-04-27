@@ -209,9 +209,7 @@ export class PlayerDatabase {
     // Actually adds the |alias| to the database for the given |userId|.
     async addAliasQuery(userId, alias) {
         const result = await server.database.query(PLAYER_ADD_ALIAS_QUERY, userId, alias);
-        console.log(result);
-
-        return true;
+        return result && result.affectedRows >= 1;
     }
 
     // Removes the given |alias| from the given |nickname|. The ordering here matters: |nickname|
@@ -233,9 +231,7 @@ export class PlayerDatabase {
     // Actually removes the |alias| from the database for the given |userId|.
     async removeAliasQuery(userId, alias) {
         const result = await server.database.query(PLAYER_REMOVE_ALIAS_QUERY, userId, alias);
-        console.log(result);
-
-        return true;
+        return result && result.affectedRows >= 1;
     }
 
     // Gets the nickname history of the given |nickname|.
@@ -276,14 +272,13 @@ export class PlayerDatabase {
 
     // Actually changes the name of |nickname| to |newNickname|.
     async changeNameQuery(userId, nickname, newNickname) {
-        const [changeNameResult, removeAliasResult, addAliasResult] = Promise.all([
+        await Promise.all([
             server.database.query(PLAYER_CHANGE_NAME_QUERY, newNickname, userId, nickname),
             server.database.query(PLAYER_REMOVE_ALIAS_QUERY, userId, nickname),
             server.database.query(PLAYER_ADD_ALIAS_QUERY, userId, newNickname),
-            server.database.query(PLAYER_CHANGE_NAME_LOG_QUERY, userId, newNickname),
+            server.database.query(PLAYER_CHANGE_NAME_LOG_QUERY, userId, nickname),
         ]);
 
-        console.log(changeNameResult);
         return true;
     }
 

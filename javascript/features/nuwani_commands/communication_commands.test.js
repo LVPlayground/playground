@@ -85,16 +85,15 @@ describe('CommunicationCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.equal(result.length, 1);
-        assert.isTrue(result[0].includes('Success'));
+        assert.includes(result[0], 'Success');
 
         assert.equal(gunther.messages.length, 4);
         assert.equal(gunther.messages[0], Message.IRC_ANNOUNCE_DIVIDER);
         assert.equal(gunther.messages[1],
             Message.format(Message.IRC_ANNOUNCE_MESSAGE, 'The server will be rebooting soon!'));
         assert.equal(gunther.messages[2], Message.IRC_ANNOUNCE_DIVIDER);
-        assert.isTrue(
-            gunther.messages[3].includes(Message.format(Message.IRC_ANNOUNCE_ADMIN,
-                                                        kCommandSourceUsername)));
+        assert.includes(gunther.messages[3], Message.format(Message.IRC_ANNOUNCE_ADMIN,
+                                                            kCommandSourceUsername));
 
         assert.equal(nuwani.messagesForTesting.length, 2);
         assert.equal(nuwani.messagesForTesting[0].tag, 'notice-admin');
@@ -144,8 +143,8 @@ describe('CommunicationCommands', (it, beforeEach, afterEach) => {
         });
         
         assert.equal(result.length, 1);
-        assert.isTrue(result[0].includes('Success'));
-        assert.isTrue(result[0].includes('Gunther'));
+        assert.includes(result[0], 'Success');
+        assert.includes(result[0], 'Gunther');
 
         assert.equal(gunther.messages.length, 2);
         assert.equal(
@@ -179,7 +178,7 @@ describe('CommunicationCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.equal(result.length, 1);
-        assert.isTrue(result[0].includes('Success'));
+        assert.includes(result[0], 'Success');
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0],

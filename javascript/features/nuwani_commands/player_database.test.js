@@ -88,7 +88,7 @@ describe('PlayerDatabase', it => {
                 assert.notReached();
     
             } catch (exception) {
-                assert.isTrue(exception.message.includes('not a valid color'));
+                assert.includes(exception.message, 'not a valid color');
             }
         }
 
@@ -114,7 +114,7 @@ describe('PlayerDatabase', it => {
                 assert.notReached();
     
             } catch (exception) {
-                assert.isTrue(exception.message.includes('not a valid player level'));
+                assert.includes(exception.message, 'not a valid player level');
             }
         }
 
@@ -140,7 +140,7 @@ describe('PlayerDatabase', it => {
                 assert.notReached();
     
             } catch (exception) {
-                assert.isTrue(exception.message.includes('not a valid bank account type'));
+                assert.includes(exception.message, 'not a valid bank account type');
             }
         }
 
@@ -181,7 +181,7 @@ describe('PlayerDatabase', it => {
                 assert.notReached();
     
             } catch (exception) {
-                assert.isTrue(exception.message.includes('not a valid date format'));
+                assert.includes(exception.message, 'not a valid date format');
             }
         }
 
@@ -192,7 +192,7 @@ describe('PlayerDatabase', it => {
                 assert.notReached();
     
             } catch (exception) {
-                assert.isTrue(exception.message.includes('between 2006 and right now'));
+                assert.includes(exception.message, 'between 2006 and right now');
             }
         }
 
@@ -213,28 +213,28 @@ describe('PlayerDatabase', it => {
             await instance.addAlias('[BB]Ricky92', '^^Rickster^^');
             assert.notReached();
         } catch (exception) {
-            assert.isTrue(exception.message.includes('not a valid SA-MP nickname'));
+            assert.includes(exception.message, 'not a valid SA-MP nickname');
         }
 
         try {
             await instance.addAlias('FakeUser', 'AliasName');
             assert.notReached();
         } catch (exception) {
-            assert.isTrue(exception.message.includes('could not be found'));
+            assert.includes(exception.message, 'could not be found');
         }
 
         try {
             await instance.addAlias('WoodPecker', 'AliasName');
             assert.notReached();
         } catch (exception) {
-            assert.isTrue(exception.message.includes('is an alias by itself'));
+            assert.includes(exception.message, 'is an alias by itself');
         }
 
         try {
             await instance.addAlias('[BB]Ricky92', '[BA]Ro[BB]in');
             assert.notReached();
         } catch (exception) {
-            assert.isTrue(exception.message.includes('already is a player'));
+            assert.includes(exception.message, 'already is a player');
         }
 
         assert.isTrue(await instance.addAlias('[BB]Ricky92', 'AliasName'));
@@ -251,21 +251,21 @@ describe('PlayerDatabase', it => {
             await instance.removeAlias('FakeUser', 'AliasName');
             assert.notReached();
         } catch (exception) {
-            assert.isTrue(exception.message.includes('could not be found'));
+            assert.includes(exception.message, 'could not be found');
         }
 
         try {
             await instance.removeAlias('WoodPecker', 'AliasName');
             assert.notReached();
         } catch (exception) {
-            assert.isTrue(exception.message.includes('is an alias by itself'));
+            assert.includes(exception.message, 'is an alias by itself');
         }
 
         try {
             await instance.removeAlias('[BB]Ricky92', 'AliasName');
             assert.notReached();
         } catch (exception) {
-            assert.isTrue(exception.message.includes('is not an alias'));
+            assert.includes(exception.message, 'is not an alias');
         }
 
         assert.isTrue(await instance.removeAlias('[BB]Ricky92', 'WoodPecker'));
@@ -282,28 +282,28 @@ describe('PlayerDatabase', it => {
             await instance.changeName('[BB]Ricky92', '^^Rickster^^');
             assert.notReached();
         } catch (exception) {
-            assert.isTrue(exception.message.includes('not a valid SA-MP nickname'));
+            assert.includes(exception.message, 'not a valid SA-MP nickname');
         }
 
         try {
             await instance.changeName('FakeUser', 'NewNick');
             assert.notReached();
         } catch (exception) {
-            assert.isTrue(exception.message.includes('could not be found'));
+            assert.includes(exception.message, 'could not be found');
         }
 
         try {
             await instance.changeName('WoodPecker', 'NewNick');
             assert.notReached();
         } catch (exception) {
-            assert.isTrue(exception.message.includes('is an alias'));
+            assert.includes(exception.message, 'is an alias');
         }
 
         try {
             await instance.changeName('[BB]Ricky92', '[BA]Ro[BB]in');
             assert.notReached();
         } catch (exception) {
-            assert.isTrue(exception.message.includes('already is a player'));
+            assert.includes(exception.message, 'already is a player');
         }
 
         assert.isTrue(await instance.changeName('[BB]Ricky92', 'NewNick'));

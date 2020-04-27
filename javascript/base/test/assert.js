@@ -100,6 +100,14 @@ class Assert {
     this.reportFailure('expected ' + this.toString(haystack) + ' to include ' + this.toString(needle) + ', but it doesn\'t.');
   }
 
+  // Assert that |haystack| does not include the |needle|.
+  doesNotInclude(haystack, needle) {
+    if (!haystack.includes(needle))
+      return;
+
+    this.reportFailure('expected ' + this.toString(haystack) + ' to not include ' + this.toString(needle) + ', but does.');
+  }
+
   // Asserts valueToCheck > valueToBeAbove
   isAbove(valueToCheck, valueToBeAbove) {
     if (valueToCheck > valueToBeAbove)
@@ -304,24 +312,6 @@ class Assert {
       return;
 
     this.reportFailure('is instance of ' + constructor.name);
-  }
-
-  // -----------------------------------------------------------------------------------------------
-
-  // Asserts that |needle| is in |haystack|.
-  include(haystack, needle) {
-    if (haystack.includes(needle))
-      return;
-
-    this.reportFailure('expected ' + this.toString(needle) + ' to be included');
-  }
-
-  // Asserts that |needle| is not in |haystack|.
-  notInclude(haystack, needle) {
-    if (!haystack.includes(needle))
-      return;
-
-    this.reportFailure('expected ' + this.toString(needle) + ' not to be included');
   }
 
   // -----------------------------------------------------------------------------------------------

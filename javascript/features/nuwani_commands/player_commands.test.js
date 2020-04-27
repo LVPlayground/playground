@@ -212,7 +212,7 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.equal(result.length, 1);
-        assert.isTrue(result[0].includes('Success'));
+        assert.includes(result[0], 'Success');
         assert.isTrue(/to ([a-zA-Z0-9]){12}\.$/.test(result[0]));
 
         assert.equal(commands.database_.changePassQueries.length, 1);
@@ -228,7 +228,7 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.equal(result.length, 1);
-        assert.isTrue(result[0].includes('Supported fields'));
+        assert.includes(result[0], 'Supported fields');
     });
 
     it('should be able to get individual account values for a player', async (assert) => {
@@ -240,8 +240,8 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.equal(invalidField.length, 1);
-        assert.isTrue(invalidField[0].includes('Error'));
-        assert.isTrue(invalidField[0].includes('not a field known'));
+        assert.includes(invalidField[0], 'Error');
+        assert.includes(invalidField[0], 'not a field known');
 
         const invalidUser = await issueCommand(bot, commandManager, {
             source: kCommandSource,
@@ -249,8 +249,8 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.equal(invalidUser.length, 1);
-        assert.isTrue(invalidUser[0].includes('Error'));
-        assert.isTrue(invalidUser[0].includes('could not be found'));
+        assert.includes(invalidUser[0], 'Error');
+        assert.includes(invalidUser[0], 'could not be found');
 
         const result = await issueCommand(bot, commandManager, {
             source: kCommandSource,
@@ -258,8 +258,8 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.equal(result.length, 1);
-        assert.isFalse(result[0].includes('Error'));
-        assert.isTrue(result[0].includes('1234'));
+        assert.doesNotInclude(result[0], 'Error');
+        assert.includes(result[0], '1234');
     });
 
     it('should not allow updating information of in-game players', async (assert) => {
@@ -285,8 +285,8 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.equal(invalidField.length, 1);
-        assert.isTrue(invalidField[0].includes('Error'));
-        assert.isTrue(invalidField[0].includes('not a field known'));
+        assert.includes(invalidField[0], 'Error');
+        assert.includes(invalidField[0], 'not a field known');
 
         const invalidUser = await issueCommand(bot, commandManager, {
             source: kCommandSource,
@@ -294,8 +294,8 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.equal(invalidUser.length, 1);
-        assert.isTrue(invalidUser[0].includes('Error'));
-        assert.isTrue(invalidUser[0].includes('could not be found'));
+        assert.includes(invalidUser[0], 'Error');
+        assert.includes(invalidUser[0], 'could not be found');
 
         const result = await issueCommand(bot, commandManager, {
             source: kCommandSource,
@@ -303,8 +303,8 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.equal(result.length, 1);
-        assert.isFalse(result[0].includes('Error'));
-        assert.isTrue(result[0].includes('Success'));
+        assert.doesNotInclude(result[0], 'Error');
+        assert.includes(result[0], 'Success');
     });
 
     it('should be able to list all in-game players', async (assert) => {
@@ -347,7 +347,7 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.equal(result.length, 1);
-        assert.isFalse(result[0].includes('has not registered with us'));
+        assert.doesNotInclude(result[0], 'has not registered with us');
     });
 
     it('should be able to format level information in player summaries', async (assert) => {
@@ -362,11 +362,11 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
             return result[0];
         };
 
-        assert.isTrue((await withLevelVip('Management', false)).includes('a Management member'));
-        assert.isTrue((await withLevelVip('Administrator', false)).includes('an administrator'));
-        assert.isTrue((await withLevelVip('Moderator', false)).includes('a player'));
-        assert.isTrue((await withLevelVip('Player', false)).includes('a player'));
-        assert.isTrue((await withLevelVip('Player', true)).includes('a VIP'));
+        assert.includes(await withLevelVip('Management', false), 'a Management member');
+        assert.includes(await withLevelVip('Administrator', false), 'an administrator');
+        assert.includes(await withLevelVip('Moderator', false), 'a player');
+        assert.includes(await withLevelVip('Player', false), 'a player');
+        assert.includes(await withLevelVip('Player', true), 'a VIP');
     });
 
     it('should be able to format player online time in player summaries', async (assert) => {
@@ -380,23 +380,19 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
             return result[0];
         };
 
-        assert.isTrue((await withOnlineTime(0)).includes('never been online yet'));
-        assert.isTrue((await withOnlineTime(1)).includes('been online for 1 second.'));
-        assert.isTrue((await withOnlineTime(2)).includes('been online for 2 seconds.'));
-        assert.isTrue((await withOnlineTime(60)).includes('been online for 1 minute.'));
-        assert.isTrue((await withOnlineTime(120)).includes('been online for 2 minutes.'));
-        assert.isTrue((await withOnlineTime(3600)).includes('been online for 1 hour.'));
-        assert.isTrue((await withOnlineTime(7200)).includes('been online for 2 hours.'));
-        assert.isTrue(
-            (await withOnlineTime(7200 * 1000)).includes('been online for 2,000 hours.'));
-        assert.isTrue(
-            (await withOnlineTime(3660)).includes('been online for 1 hour and 1 minute.'));
-        assert.isTrue(
-            (await withOnlineTime(3720)).includes('been online for 1 hour and 2 minutes.'));
-        assert.isTrue(
-            (await withOnlineTime(7260)).includes('been online for 2 hours and 1 minute.'));
-        assert.isTrue((await withOnlineTime(12345678)).includes(
-            'been online for 3,429 hours and 21 minutes.'));
+        assert.includes(await withOnlineTime(0), 'never been online yet');
+        assert.includes(await withOnlineTime(1), 'been online for 1 second.');
+        assert.includes(await withOnlineTime(2), 'been online for 2 seconds.');
+        assert.includes(await withOnlineTime(60), 'been online for 1 minute.');
+        assert.includes(await withOnlineTime(120), 'been online for 2 minutes.');
+        assert.includes(await withOnlineTime(3600), 'been online for 1 hour.');
+        assert.includes(await withOnlineTime(7200), 'been online for 2 hours.');
+        assert.includes(await withOnlineTime(7200 * 1000), 'been online for 2,000 hours.');
+        assert.includes(await withOnlineTime(3660), 'been online for 1 hour and 1 minute.');
+        assert.includes(await withOnlineTime(3720), 'been online for 1 hour and 2 minutes.');
+        assert.includes(await withOnlineTime(7260), 'been online for 2 hours and 1 minute.');
+        assert.includes(
+            await withOnlineTime(12345678), 'been online for 3,429 hours and 21 minutes.');
     });
 
     it('should be able to format deathmatch information in player summaries', async (assert) => {
@@ -411,20 +407,18 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
             return result[0];
         };
 
-        assert.isFalse((await withKillDeaths(0, 0)).includes('killed'));
-        assert.isTrue((await withKillDeaths(5, 0)).includes(
-            'killed 5 people, but have never died themselves yet'));
-        assert.isTrue((await withKillDeaths(0, 5)).includes(
-            'killed anyone yet, but have died 5 times'));
-        assert.isTrue((await withKillDeaths(5, 5)).includes(
-            'killed 5 people and have died 5 times'));
-        assert.isTrue((await withKillDeaths(1400, 15000)).includes(
-            'killed 1,400 people and have died 15,000 times'));
+        assert.doesNotInclude(await withKillDeaths(0, 0), 'killed');
+        assert.includes(
+            await withKillDeaths(5, 0), 'killed 5 people, but have never died themselves yet');
+        assert.includes(await withKillDeaths(0, 5), 'killed anyone yet, but have died 5 times');
+        assert.includes(await withKillDeaths(5, 5), 'killed 5 people and have died 5 times');
+        assert.includes(
+            await withKillDeaths(1400, 15000), 'killed 1,400 people and have died 15,000 times');
 
-        assert.isTrue((await withKillDeaths(10, 10)).includes('a ratio of 1.'));
-        assert.isTrue((await withKillDeaths(20, 10)).includes('a ratio of 2.'));
-        assert.isTrue((await withKillDeaths(10, 20)).includes('a ratio of 0.5.'));
-        assert.isTrue((await withKillDeaths(425, 127)).includes('a ratio of 3.35.'));
+        assert.includes(await withKillDeaths(10, 10), 'a ratio of 1.');
+        assert.includes(await withKillDeaths(20, 10), 'a ratio of 2.');
+        assert.includes(await withKillDeaths(10, 20), 'a ratio of 0.5.');
+        assert.includes(await withKillDeaths(425, 127), 'a ratio of 3.35.');
     });
 
     it('should be able to format recency information in player summaries', async (assert) => {
@@ -438,16 +432,16 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
             return result[0];
         };
 
-        assert.isFalse((await withLastSeen(0)).includes('last seen'));
-        assert.isTrue((await withLastSeen(1)).includes('earlier today'));
-        assert.isTrue((await withLastSeen(23 * 60 * 60)).includes('earlier today'));
-        assert.isTrue((await withLastSeen(24 * 60 * 60)).includes('yesterday'));
-        assert.isTrue((await withLastSeen(48 * 60 * 60)).includes('2 days ago'));
-        assert.isTrue((await withLastSeen(480 * 60 * 60)).includes('20 days ago'));
-        assert.isTrue((await withLastSeen(30.5 * 86400)).includes('a month ago'));
-        assert.isTrue((await withLastSeen(61 * 86400)).includes('2 months ago'));
-        assert.isTrue((await withLastSeen(365 * 86400)).includes('a year ago'));
-        assert.isTrue((await withLastSeen(1095 * 86400)).includes('3 years ago'));
+        assert.doesNotInclude(await withLastSeen(0), 'last seen');
+        assert.includes(await withLastSeen(1), 'earlier today');
+        assert.includes(await withLastSeen(23 * 60 * 60), 'earlier today');
+        assert.includes(await withLastSeen(24 * 60 * 60), 'yesterday');
+        assert.includes(await withLastSeen(48 * 60 * 60), '2 days ago');
+        assert.includes(await withLastSeen(480 * 60 * 60), '20 days ago');
+        assert.includes(await withLastSeen(30.5 * 86400), 'a month ago');
+        assert.includes(await withLastSeen(61 * 86400), '2 months ago');
+        assert.includes(await withLastSeen(365 * 86400), 'a year ago');
+        assert.includes(await withLastSeen(1095 * 86400), '3 years ago');
     });
 
     it('should properly encode the nickname in the url', async (assert) => {
@@ -457,6 +451,6 @@ describe('PlayerCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.equal(result.length, 1);
-        assert.isTrue(result[0].includes('https://profile.sa-mp.nl/%5BBB%5DRicky92'));
+        assert.includes(result[0], 'https://profile.sa-mp.nl/%5BBB%5DRicky92');
     });
 });

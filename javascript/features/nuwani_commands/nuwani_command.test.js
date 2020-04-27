@@ -100,9 +100,8 @@ describe('NuwaniCommand', (it, beforeEach) => {
         await gunther.issueCommand('/nuwani');
 
         assert.equal(gunther.messages.length, 1);
-        assert.isTrue(
-            gunther.messages[0].includes(
-                Message.format(Message.NUWANI_ADMIN_MESSAGE_FORMAT, gunther.name, gunther.id)));
+        assert.includes(gunther.messages[0], Message.format(Message.NUWANI_ADMIN_MESSAGE_FORMAT,
+                                                            gunther.name, gunther.id));
     });
 
     it('should be able to request an increases and decreases in bots', async (assert) => {
@@ -116,9 +115,8 @@ describe('NuwaniCommand', (it, beforeEach) => {
         await gunther.issueCommand('/nuwani');
 
         assert.equal(gunther.messages.length, 1);
-        assert.isTrue(
-            gunther.messages[0].includes(
-                Message.format(Message.NUWANI_ADMIN_INCREASE_BOT, gunther.name, gunther.id)));
+        assert.includes(gunther.messages[0], Message.format(Message.NUWANI_ADMIN_INCREASE_BOT,
+                                                            gunther.name, gunther.id));
 
         assert.equal(nuwani.runtime.availableBots.size, 0);
 
@@ -144,9 +142,8 @@ describe('NuwaniCommand', (it, beforeEach) => {
         await gunther.issueCommand('/nuwani');
 
         assert.equal(gunther.messages.length, 1);
-        assert.isTrue(
-            gunther.messages[0].includes(
-                Message.format(Message.NUWANI_ADMIN_DECREASE_BOT, gunther.name, gunther.id)));
+        assert.includes(gunther.messages[0], Message.format(Message.NUWANI_ADMIN_DECREASE_BOT,
+                                                            gunther.name, gunther.id));
 
         assert.equal(nuwani.runtime.availableBots.size, 1);
 

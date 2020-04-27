@@ -82,6 +82,12 @@ describe('Assert', it => {
     assert.includes('hello, world', 'o, w');
   });
 
+  it('doesNotInclude', assert => {
+    assert.doesNotInclude([1, 2, 3], 4);
+    assert.doesNotInclude('hello, world', 'HELLO');
+    assert.doesNotInclude('Hello', 'Joe');
+  });
+
   it('isAbove', assert => {
     assert.isAbove(42, 40);
     assert.isAbove(-10, -20);
@@ -246,16 +252,6 @@ describe('Assert', it => {
     assert.notInstanceOf(new Bar(), Foo);
     assert.notInstanceOf({}, Foo);
     assert.notInstanceOf(Object.create(Bar), Bar);
-  });
-
-  it('include', assert => {
-    assert.include([1, 2, 3], 1);
-    assert.include(['foo', 'bar', 'baz'], 'bar');
-  });
-
-  it('notInclude', assert => {
-    assert.notInclude([1, 2, 3], 4);
-    assert.notInclude(['foo', 'bar', 'baz'], 'booze');
   });
 
   // TODO: assert.match(value, regexp, [message])

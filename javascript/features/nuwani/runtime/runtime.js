@@ -149,14 +149,14 @@ export class Runtime {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        this.observers_.clear();
-        this.observers_ = null;
-
         for (const bot of this.activeBots_.values())
             bot.dispose();
         
         for (const bot of this.availableBots_.values())
             bot.dispose();
+
+        this.observers_.clear();
+        this.observers_ = null;
 
         this.activeBots_.clear();
         this.availableBots_.clear();

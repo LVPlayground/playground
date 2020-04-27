@@ -211,16 +211,16 @@ export class Bot {
     }
 
     dispose() {
-        this.networkTracker_.dispose();
-        this.networkTracker_ = null;
-
-        this.handshake_.dispose();
-        this.handshake_ = null;
-
         if (this.state_ === Bot.kStateConnected)
             this.connection_.write('QUIT :Shutting down...');
 
         this.connection_.dispose();
         this.connection_ = null;
+
+        this.networkTracker_.dispose();
+        this.networkTracker_ = null;
+
+        this.handshake_.dispose();
+        this.handshake_ = null;
     }
 }

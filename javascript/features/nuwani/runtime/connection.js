@@ -128,6 +128,9 @@ export class Connection {
     // Called when the socket has been closed. Most errors will issue an `error` event instead, but
     // there are situations in which the Socket will initiate disconnection.
     onClose(event) {
+        if (this.disposed_)
+            return;
+
         this.connectionToken_ = null;
         this.delegate_.onConnectionClosed();
     }
@@ -146,6 +149,9 @@ export class Connection {
     // Called when data has been received from the socket. Each event may contain one or multiple
     // messages that will be forwarded to the Bot.
     onMessage(event) {
+        if (this.disposed_)
+            return;
+
         const buffer = utf8BufferToString(event.data);
         const messages = buffer.split(/\r?\n/);
 

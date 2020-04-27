@@ -137,8 +137,6 @@ export class BanCommands {
             context.respond(`3Success: The note for ${nickname} has been added to their record.`);
         else
             context.respond(`4Error: The note for ${nickname} could not be stored.`);
-        
-        
     }
 
     // !ban [player] [days] [reason]

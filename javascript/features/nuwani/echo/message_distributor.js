@@ -150,8 +150,11 @@ export class MessageDistributor extends RuntimeObserver {
     // Runs the message distributor until it's been disposed of. This function will never return
     // until that happens, and will keep itself spinning once per second for that duration.
     async run() {
-        while (this.runtime_) {
+        while (true) {
             await wait(/* 1 second= */ 1000);
+
+            if (!this.runtime_)
+                return;
 
             const timestamp = server.clock.currentTime();
 

@@ -66,6 +66,8 @@ reliability, to minimize the amount of maintenance necessary on an on-going basi
     handling failure cases of registration, authentication and joining channels.
   * Tracking of [network state](runtime/network_tracker.js) including server support rules,
     channels, and user modes, with server-compatible [mode parsing](runtime/mode_parser.js).
+  * Eligible for live reloading with `/lvp reload` to apply code changes without having to restart
+    the entire SA-MP server.
 
 ## Commands
 **NuwaniJS** supports commands for players, administrators and management members, each implied by

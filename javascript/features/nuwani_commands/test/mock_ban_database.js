@@ -7,7 +7,15 @@ import { BanDatabase } from 'features/nuwani_commands/ban_database.js';
 // Implementation of the BanDatabase that overrides all methods with mocked out behaviour, in
 // order to avoid hitting the actual database.
 export class MockBanDatabase extends BanDatabase {
+    addedEntry = null;
+
     constructor(...params) {
         super(...params);
+    }
+
+    // Overridden.
+    async _addEntryQuery(params) {
+        this.addedEntry = params;
+        return true;
     }
 }

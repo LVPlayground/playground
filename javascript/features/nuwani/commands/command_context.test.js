@@ -131,6 +131,4 @@ describe('CommandContext', it => {
             assert.isFalse(userContext.isOwner());
         }
     });
-
-    it.fails();
 });

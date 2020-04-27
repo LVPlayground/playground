@@ -154,6 +154,10 @@ describe('BanCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.isFalse(lucy.isConnected());
+        assert.equal(lucy.messages.length, 1);
+        assert.equal(
+            lucy.messages[0], Message.format(Message.NUWANI_PLAYER_BANNED_NOTICE,
+                                             kCommandSourceUsername, 5, 'Idling on the ship'));
 
         assert.equal(result.length, 1);
         assert.equal(result[0],
@@ -301,6 +305,10 @@ describe('BanCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.isFalse(lucy.isConnected());
+        assert.equal(lucy.messages.length, 1);
+        assert.equal(
+            lucy.messages[0], Message.format(Message.NUWANI_PLAYER_KICKED_NOTICE,
+                                             kCommandSourceUsername, 'Idling on the ship'));
 
         assert.equal(result.length, 1);
         assert.equal(result[0],

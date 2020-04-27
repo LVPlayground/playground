@@ -147,11 +147,10 @@ export class BanCommands {
         if (!this.validateDuration(context, days) || !this.validateNote(context, reason))
             return;
 
-        // TODO: Tell the |player|.
-
         this.announce_().announceToAdministrators(
             Message.NUWANI_ADMIN_BANNED, context.nickname, player.name, player.id, days, reason);
 
+        player.sendMessage(Message.NUWANI_PLAYER_BANNED_NOTICE, context.nickname, days, reason);
         player.kick();  // actually remove them from the server
 
         const success = await this.database_.addEntry({
@@ -274,11 +273,10 @@ export class BanCommands {
         if (!this.validateNote(context, reason))
             return;
 
-        // TODO: Tell the |player|.
-
         this.announce_().announceToAdministrators(
             Message.NUWANI_ADMIN_KICKED, context.nickname, player.name, player.id, reason);
 
+        player.sendMessage(Message.NUWANI_PLAYER_KICKED_NOTICE, context.nickname, reason);
         player.kick();  // actually remove them from the server
 
         const success = await this.database_.addEntry({

@@ -104,14 +104,37 @@ export class BanCommands {
 
     // !addnote [nickname] [note]
     //
-    // Adds the given |note| to the permanent record of the player identified by |nickname|.
+    // Adds the given |note| to the permanent record of the player identified by |nickname|. When
+    // the given |nickname| is online and logged in to their account, their user Id will be added
+    // the log of as well. The user Id of the sender will never be associated.
     async onAddNoteCommand(context, nickname, note) {
-        context.respond('4Error: This command has not been implemented yet.');
+        if (!this.validateNote(context, note))
+            return;
+
+        let subjectUserId = null;
+
+        const subjectPlayer = server.playerManager.getByName(nickname);
+        if (subjectPlayer !== null && subjectPlayer.isRegistered())
+            subjectUserId = userId;
+        
+        const success = await this.database_.addEntry({
+            type: BanDatabase.kTypeNote,
+            sourceNickname: context.nickname,
+            subjectUserId: subjectUserId,
+            subjectNickname: nickname,
+            note
+        });
+
+        if (success)
+            context.respond(`3Success: The note for ${nickname} has been added to their record.`);
+        else
+            context.respond(`4Error: The note for ${nickname} could not be stored.`);
     }
 
     // !ban [player] [days] [reason]
     //
-    // Bans the in-game |player| for a period of |days|, for the given |reason|.
+    // Bans the in-game |player| for a period of |days|, for the given |reason|. The ban will be an
+    // IP-based ban on whichever address they are connected with right now.
     async onBanPlayerCommand(context, player, days, reason) {
         context.respond('4Error: This command has not been implemented yet.');
     }
@@ -188,6 +211,17 @@ export class BanCommands {
         context.respond('4Error: This command has not been implemented yet.');
     }
     
+    // Common routine for validating the given |note|, and responding to |context| with an error
+    // message in case there are any issues with it.
+    validateNote(context, note) {
+        if (note.length <= 3 || note.length > 128) {
+            context.respond('4Error: The note must be between 4 and 128 characters in length.');
+            return false;
+        }
+
+        return true;
+    }
+
     dispose() {
         this.commandManager_.removeCommand('unban');
         this.commandManager_.removeCommand('why');

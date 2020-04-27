@@ -24,6 +24,10 @@ export class BanDatabase {
     static kTypeKick = 'kick';
     static kTypeNote = 'note';
     static kTypeUnban = 'unban';
+
+    // Boundaries on the number of days a ban may last.
+    static kMinimumDuration = 1;
+    static kMaximumDuration = 999;
     
     // Adds an entry to the user log table. The |type|, |sourceNickname|, |subjectNickname| and
     // |note| fields are required. When known, the |sourceUserId| and |subjectUserId| fields are

@@ -7,6 +7,7 @@ import { BanDatabase } from 'features/nuwani_commands/ban_database.js';
 import { MockBanDatabase } from 'features/nuwani_commands/test/mock_ban_database.js';
 import { TestBot } from 'features/nuwani/test/test_bot.js';
 
+import { ip2long } from 'features/nuwani_commands/ip_utilities.js';
 import { issueCommand } from 'features/nuwani/commands/command_helpers.js';
 
 // The source that will be used for this series of IRC command tests.
@@ -42,6 +43,29 @@ describe('BanCommands', (it, beforeEach, afterEach) => {
         commands.dispose();
         bot.dispose();
     });
+
+    // Utility function for validating that the ban duration has a sensible length.
+    async function assertDurationConstraints(assert, commandBase) {
+        const kErrorMessage = `The ban duration must be between ${BanDatabase.kMinimumDuration} ` +
+                              `and ${BanDatabase.kMaximumDuration} days.`;
+
+        const durationTooShort = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: commandBase.replace('?', '-15'),
+        });
+
+        assert.equal(durationTooShort.length, 1);
+        assert.equal(durationTooShort[0], `PRIVMSG #LVP.DevJS :Error: ${kErrorMessage}`);
+        
+
+        const durationTooLong = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: commandBase.replace('?', '5000'),
+        });
+
+        assert.equal(durationTooLong.length, 1);
+        assert.equal(durationTooLong[0], `PRIVMSG #LVP.DevJS :Error: ${kErrorMessage}`);
+    }
 
     // Utility function for verifying that the note constraints are properly applied to the
     // command that starts with |commandBase|. Various forms of notes will be added to it.
@@ -118,25 +142,144 @@ describe('BanCommands', (it, beforeEach, afterEach) => {
     it('should be able to ban in-game players', async (assert) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
-        // !ban [player] [days=3] [reason]
+        await assertDurationConstraints(assert, `!ban ${lucy.id} ? reason`);
+        await assertNoteConstraints(assert, `!ban ${lucy.id} 5`);
+
+        assert.isTrue(lucy.isConnected());
+
+        const ipAddress = lucy.ip;
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: `!ban ${lucy.name} 5 Idling on the ship`,
+        });
+
+        assert.isFalse(lucy.isConnected());
+
+        assert.equal(result.length, 1);
+        assert.equal(result[0],
+                     `PRIVMSG #LVP.DevJS :Success: ${lucy.name} has been banned from the game.`);
+        
+        assert.isNotNull(database.addedEntry);
+        assert.equal(database.addedEntry.type, BanDatabase.kTypeBan);
+        assert.equal(database.addedEntry.banDurationDays, 5);
+        assert.equal(database.addedEntry.banIpRangeStart, ip2long(ipAddress));
+        assert.equal(database.addedEntry.banIpRangeEnd, ip2long(ipAddress));
+        assert.equal(database.addedEntry.sourceNickname, kCommandSourceUsername);
+        assert.equal(database.addedEntry.subjectUserId, lucy.userId);
+        assert.equal(database.addedEntry.subjectNickname, lucy.name);
+        assert.equal(database.addedEntry.note, 'Idling on the ship');
+
+        assert.equal(gunther.messages.length, 1);
+        assert.includes(
+            gunther.messages[0],
+            Message.format(Message.NUWANI_ADMIN_BANNED, kCommandSourceUsername, lucy.name, lucy.id,
+                          5, 'Idling on the ship'));
     });
 
     it('should be able to people by their IP address', async (assert) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
-        // !ban ip [ip] [nickname] [days] [reason]
+        await assertDurationConstraints(assert, '!ban ip 127.0.0.1 Lucy ? reason');
+        await assertNoteConstraints(assert, '!ban ip 127.0.0.1 Lucy 10');
+
+        const invalidAddress = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: `!ban ip 127.0.0 Lucy 15 reason`,
+        });
+
+        assert.equal(invalidAddress.length, 1);
+        assert.equal(
+            invalidAddress[0],
+            'PRIVMSG #LVP.DevJS :Error: The IP address must be in the format of 37.48.87.211.');
+
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: `!ban ip 127.0.0.1 Lucy 10 reason`,
+        });
+
+        assert.equal(result.length, 1);
+        assert.equal(
+            result[0],
+            'PRIVMSG #LVP.DevJS :Success: The IP address 127.0.0.1 has been banned from the game.');
+        
+        assert.isNotNull(database.addedEntry);
+        assert.equal(database.addedEntry.type, BanDatabase.kTypeBanIp);
+        assert.equal(database.addedEntry.banDurationDays, 10);
+        assert.equal(database.addedEntry.banIpRangeStart, ip2long('127.0.0.1'));
+        assert.equal(database.addedEntry.banIpRangeEnd, ip2long('127.0.0.1'));
+        assert.equal(database.addedEntry.sourceNickname, kCommandSourceUsername);
+        assert.equal(database.addedEntry.subjectNickname, 'Lucy');
+        assert.equal(database.addedEntry.note, 'reason');
     });
 
     it('should be able to people by ranges of IP addresses', async (assert) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
-        // !ban range [ip range] [nickname] [days] [reason]
+        await assertDurationConstraints(assert, '!ban range 37.48.*.* Gunther ? reason');
+        await assertNoteConstraints(assert, '!ban range 37.48.*.* Gunther 15');
+
+        const invalidAddress = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: `!ban range banana Lucy 15 reason`,
+        });
+
+        assert.equal(invalidAddress.length, 1);
+        assert.equal(
+            invalidAddress[0],
+            'PRIVMSG #LVP.DevJS :Error: The IP address must be in the format of 37.48.87.*.');
+
+        const invalidRange = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: `!ban range 127.*.0.* Lucy 15 reason`,
+        });
+
+        assert.equal(invalidRange.length, 1);
+        assert.equal(invalidRange[0],
+                    'PRIVMSG #LVP.DevJS :Error: Only more wildcards may follow a wildcard octet.');
+
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: `!ban range 127.0.*.* Lucy 15 reason`,
+        });
+
+        assert.equal(result.length, 1);
+        assert.equal(
+            result[0],
+            'PRIVMSG #LVP.DevJS :Success: The IP range 127.0.*.* has been banned from the game.');
+        
+        assert.isNotNull(database.addedEntry);
+        assert.equal(database.addedEntry.type, BanDatabase.kTypeBanIp);
+        assert.equal(database.addedEntry.banDurationDays, 15);
+        assert.equal(database.addedEntry.banIpRangeStart, ip2long('127.0.0.0'));
+        assert.equal(database.addedEntry.banIpRangeEnd, ip2long('127.0.255.255'));
+        assert.equal(database.addedEntry.sourceNickname, kCommandSourceUsername);
+        assert.equal(database.addedEntry.subjectNickname, 'Lucy');
+        assert.equal(database.addedEntry.note, 'reason');
     });
 
     it('should be able to people by their in-game serial (GCPI) number', async (assert) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
-        // !ban serial [serial] [nickname] [days] [reason]
+        await assertDurationConstraints(assert, '!ban serial 1485609655 Gunther ? reason');
+        await assertNoteConstraints(assert, '!ban serial 1485609655 Gunther 20');
+
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: `!ban serial 1485609655 Lucy 20 reason yeah`,
+        });
+
+        assert.equal(result.length, 1);
+        assert.equal(result[0],
+                     'PRIVMSG #LVP.DevJS :Success: The serial 1485609655 has been banned ' +
+                     'from the game.');
+        
+        assert.isNotNull(database.addedEntry);
+        assert.equal(database.addedEntry.type, BanDatabase.kTypeBan);
+        assert.equal(database.addedEntry.banDurationDays, 20);
+        assert.equal(database.addedEntry.banSerial, 1485609655);
+        assert.equal(database.addedEntry.sourceNickname, kCommandSourceUsername);
+        assert.equal(database.addedEntry.subjectNickname, 'Lucy');
+        assert.equal(database.addedEntry.note, 'reason yeah');
     });
 
     it('should be able to see if a ban exists for certain conditions', async (assert) => {

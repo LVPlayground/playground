@@ -263,6 +263,7 @@
     "NUWANI_ADMIN_DECREASE_BOT": "%s (Id:%d) has requested a decrease in IRC bots.",
     "NUWANI_ADMIN_MESSAGE_FORMAT": "%s (Id:%d) has reloaded the IRC message format.",
     "NUWANI_ADMIN_ADDED_NOTE": "%s (IRC) has added a note for %s (Id:%d): %s",
+    "NUWANI_ADMIN_BANNED": "%s (IRC) has banned %s (Id:%d) for %d days: %s",
     "NUWANI_ADMIN_KICKED": "%s (IRC) has kicked %s (Id:%d): %s",
 
     "POSITIONING_CURRENT_POSITION": "Your current position is X: %d, Y: %d Z: %d, Rotation: %d",

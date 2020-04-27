@@ -36,14 +36,14 @@ export class BanCommands {
                     { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
                     { name: 'days', type: CommandBuilder.NUMBER_PARAMETER },
                     { name: 'reason', type: CommandBuilder.SENTENCE_PARAMETER }])
-                .build(BanCommands.prototype.onBanSerialCommand.bind(this))
+                .build(BanCommands.prototype.onBanIpCommand.bind(this))
             .sub('range')
                 .parameters([
                     { name: 'ip range', type: CommandBuilder.WORD_PARAMETER },
                     { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
                     { name: 'days', type: CommandBuilder.NUMBER_PARAMETER },
                     { name: 'reason', type: CommandBuilder.SENTENCE_PARAMETER }])
-                .build(BanCommands.prototype.onBanSerialCommand.bind(this))
+                .build(BanCommands.prototype.onBanRangeCommand.bind(this))
             .sub('serial')
                 .parameters([
                     { name: 'serial', type: CommandBuilder.NUMBER_PARAMETER },
@@ -144,28 +144,120 @@ export class BanCommands {
     // Bans the in-game |player| for a period of |days|, for the given |reason|. The ban will be an
     // IP-based ban on whichever address they are connected with right now.
     async onBanPlayerCommand(context, player, days, reason) {
-        context.respond('4Error: This command has not been implemented yet.');
+        if (!this.validateDuration(context, days) || !this.validateNote(context, reason))
+            return;
+
+        // TODO: Tell the |player|.
+
+        this.announce_().announceToAdministrators(
+            Message.NUWANI_ADMIN_BANNED, context.nickname, player.name, player.id, days, reason);
+
+        player.kick();  // actually remove them from the server
+
+        const success = await this.database_.addEntry({
+            type: BanDatabase.kTypeBan,
+            banDurationDays: days,
+            banIpAddress: player.ip,
+            sourceNickname: context.nickname,
+            subjectUserId: player.userId ?? 0,
+            subjectNickname: player.name,
+            note: reason
+        });
+
+        context.respond(`3Success: ${player.name} has been banned from the game.`);
+        if (!success)
+            context.respond(`4Error: The ban note for ${player.name} could not be stored.`);
     }
 
     // !ban ip [ip] [nickname] [days] [reason]
     //
     // Bans the singular |ip| address, belonging to |nickname|, for |days| days.
     async onBanIpCommand(context, ip, nickname, days, reason) {
-        context.respond('4Error: This command has not been implemented yet.');
+        if (!this.validateDuration(context, days) || !this.validateNote(context, reason))
+            return;
+
+        const affected = this.validateIpAndReturnAffectedAddresses(context, 'ip', ip);
+        if (!affected)
+            return;  // an error occurred
+
+        if (affected > 1) {
+            context.respond(`4Error: Please use "!ban range" to ban more than a single address.`);
+            return;
+        }
+
+        // TODO: See if the |ip| captures in-game players.
+
+        const success = await this.database_.addEntry({
+            type: BanDatabase.kTypeBanIp,
+            banDurationDays: days,
+            banIpAddress: ip,
+            sourceNickname: context.nickname,
+            subjectNickname: nickname,
+            note: reason
+        });
+
+        if (success)
+            context.respond(`3Success: The IP address ${ip} has been banned from the game.`);
+        else
+            context.respond(`4Error: The ban could not be stored in the database.`);
     }
 
     // !ban range [ip range] [nickname] [days] [reason]
     //
     // Bans the IP address |range|, belonging to |nickname|, for |days| days.
     async onBanRangeCommand(context, range, nickname, days, reason) {
-        context.respond('4Error: This command has not been implemented yet.');
+        if (!this.validateDuration(context, days) || !this.validateNote(context, reason))
+            return;
+
+        const affected = this.validateIpAndReturnAffectedAddresses(context, 'range', range);
+        if (!affected)
+            return;
+        
+        if (affected === 1) {
+            context.respond(`4Error: Please use "!ban ip" to ban a single address.`);
+            return;
+        }
+
+        // TODO: See if the |range| captures in-game players.
+        // TODO: Limit the reach of the |range| based on |context| level.
+
+        const success = await this.database_.addEntry({
+            type: BanDatabase.kTypeBanIp,
+            banDurationDays: days,
+            banIpRange: range,
+            sourceNickname: context.nickname,
+            subjectNickname: nickname,
+            note: reason
+        });
+
+        if (success)
+            context.respond(`3Success: The IP range ${range} has been banned from the game.`);
+        else
+            context.respond(`4Error: The ban could not be stored in the database.`);
     }
 
     // !ban serial [serial] [nickname] [days] [reason]
     //
     // Bans the singular |serial| number, belonging to |nickname|, for |days| days.
     async onBanSerialCommand(context, serial, nickname, days, reason) {
-        context.respond('4Error: This command has not been implemented yet.');
+        if (!this.validateDuration(context, days) || !this.validateNote(context, reason))
+            return;
+
+        // TODO: See if the |serial| captures in-game players.
+
+        const success = await this.database_.addEntry({
+            type: BanDatabase.kTypeBan,
+            banDurationDays: days,
+            banSerialNumber: serial,
+            sourceNickname: context.nickname,
+            subjectNickname: nickname,
+            note: reason
+        });
+
+        if (success)
+            context.respond(`3Success: The serial ${serial} has been banned from the game.`);
+        else
+            context.respond(`4Error: The ban could not be stored in the database.`);
     }
 
     // !isbanned [nickname | ip | ip range | serial]
@@ -181,6 +273,8 @@ export class BanCommands {
     async onKickPlayerCommand(context, player, reason) {
         if (!this.validateNote(context, reason))
             return;
+
+        // TODO: Tell the |player|.
 
         this.announce_().announceToAdministrators(
             Message.NUWANI_ADMIN_KICKED, context.nickname, player.name, player.id, reason);
@@ -237,6 +331,20 @@ export class BanCommands {
         context.respond('4Error: This command has not been implemented yet.');
     }
     
+    // Validates that the given |days| is a sensible value for a ban. We put limits on this because
+    // people will try to break this system, and they really shouldn't.
+    validateDuration(context, days) {
+        if (days < BanDatabase.kMinimumDuration || days > BanDatabase.kMaximumDuration) {
+            context.respond(
+                `4Error: The ban duration must be between ${BanDatabase.kMinimumDuration} ` +
+                `and ${BanDatabase.kMaximumDuration} days.`);
+
+            return false;
+        }
+
+        return true;
+    }
+
     // Common routine for validating the given |note|, and responding to |context| with an error
     // message in case there are any issues with it.
     validateNote(context, note) {
@@ -246,6 +354,48 @@ export class BanCommands {
         }
 
         return true;
+    }
+
+    // Validates the given |address|, which could be an individual IP address or a range, and
+    // returns the number of IP addresses that would be affected by banning this.
+    validateIpAndReturnAffectedAddresses(context, type, address) {
+        const octets = address.split('.');
+        const format = type === 'range' ? '37.48.87.*'
+                                        : '37.48.87.211';
+
+        if (octets.length !== 4) {
+            context.respond(`4Error: The IP address must be in the format of ${format}.`);
+            return 0;
+        }
+
+        let wildcards = [ false, false, false, false ];
+        let wildcardCount = 0;
+
+        for (let octetIndex = 0; octetIndex < octets.length; ++octetIndex) {
+           if (octets[octetIndex] === '*' && type === 'range') {
+               wildcards[octetIndex] = true;
+               wildcardCount++;
+
+               continue;
+           }
+
+           if (!/^([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/.test(octets[octetIndex])) {
+               context.respond(`4Error: The IP address must be in the format of ${format}.`);
+               return 0;
+           }
+        }
+
+        let foundWildcard = false;
+        for (const isWildcard of wildcards) {
+            if (!isWildcard && foundWildcard) {
+                context.respond(`4Error: Only more wildcards may follow a wildcard octet.`);
+                return 0;
+            }
+
+            foundWildcard |= isWildcard;
+        }
+
+        return Math.pow(255, wildcardCount);
     }
 
     dispose() {

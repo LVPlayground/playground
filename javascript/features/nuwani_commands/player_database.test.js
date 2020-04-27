@@ -205,4 +205,114 @@ describe('PlayerDatabase', it => {
         assert.isTrue(typeof instance.updatedValue === 'string');
         assert.equal(instance.updatedValue, '2020-04-26 20:27:12');
     });
+
+    it('should allow for adding aliases to a user account', async (assert) => {
+        const instance = new MockPlayerDatabase(/* passwordSalt= */ 's4lt');
+
+        try {
+            await instance.addAlias('[BB]Ricky92', '^^Rickster^^');
+            assert.notReached();
+        } catch (exception) {
+            assert.isTrue(exception.message.includes('not a valid SA-MP nickname'));
+        }
+
+        try {
+            await instance.addAlias('FakeUser', 'AliasName');
+            assert.notReached();
+        } catch (exception) {
+            assert.isTrue(exception.message.includes('could not be found'));
+        }
+
+        try {
+            await instance.addAlias('WoodPecker', 'AliasName');
+            assert.notReached();
+        } catch (exception) {
+            assert.isTrue(exception.message.includes('is an alias by itself'));
+        }
+
+        try {
+            await instance.addAlias('[BB]Ricky92', '[BA]Ro[BB]in');
+            assert.notReached();
+        } catch (exception) {
+            assert.isTrue(exception.message.includes('already is a player'));
+        }
+
+        assert.isTrue(await instance.addAlias('[BB]Ricky92', 'AliasName'));
+
+        assert.isNotNull(instance.aliasMutation);
+        assert.equal(instance.aliasMutation.userId, 4050);
+        assert.equal(instance.aliasMutation.alias, 'AliasName');
+    });
+
+    it('should allow for removing aliases from a user account', async (assert) => {
+        const instance = new MockPlayerDatabase(/* passwordSalt= */ 's4lt');
+
+        try {
+            await instance.removeAlias('FakeUser', 'AliasName');
+            assert.notReached();
+        } catch (exception) {
+            assert.isTrue(exception.message.includes('could not be found'));
+        }
+
+        try {
+            await instance.removeAlias('WoodPecker', 'AliasName');
+            assert.notReached();
+        } catch (exception) {
+            assert.isTrue(exception.message.includes('is an alias by itself'));
+        }
+
+        try {
+            await instance.removeAlias('[BB]Ricky92', 'AliasName');
+            assert.notReached();
+        } catch (exception) {
+            assert.isTrue(exception.message.includes('is not an alias'));
+        }
+
+        assert.isTrue(await instance.removeAlias('[BB]Ricky92', 'WoodPecker'));
+
+        assert.isNotNull(instance.aliasMutation);
+        assert.equal(instance.aliasMutation.userId, 4050);
+        assert.equal(instance.aliasMutation.alias, 'WoodPecker');
+    });
+
+    it('should be able to safely change the nickname of a user', async (assert) => {
+        const instance = new MockPlayerDatabase(/* passwordSalt= */ 's4lt');
+
+        try {
+            await instance.changeName('[BB]Ricky92', '^^Rickster^^');
+            assert.notReached();
+        } catch (exception) {
+            assert.isTrue(exception.message.includes('not a valid SA-MP nickname'));
+        }
+
+        try {
+            await instance.changeName('FakeUser', 'NewNick');
+            assert.notReached();
+        } catch (exception) {
+            assert.isTrue(exception.message.includes('could not be found'));
+        }
+
+        try {
+            await instance.changeName('WoodPecker', 'NewNick');
+            assert.notReached();
+        } catch (exception) {
+            assert.isTrue(exception.message.includes('is an alias'));
+        }
+
+        try {
+            await instance.changeName('[BB]Ricky92', '[BA]Ro[BB]in');
+            assert.notReached();
+        } catch (exception) {
+            assert.isTrue(exception.message.includes('already is a player'));
+        }
+
+        assert.isTrue(await instance.changeName('[BB]Ricky92', 'NewNick'));
+
+        assert.isNotNull(instance.nameMutation);
+        assert.equal(instance.nameMutation.userId, 4050);
+        assert.equal(instance.nameMutation.nickname, '[BB]Ricky92');
+        assert.equal(instance.nameMutation.newNickname, 'NewNick');
+    });
+
+    it('should fail', assert => assert.isFalse(true));
 });

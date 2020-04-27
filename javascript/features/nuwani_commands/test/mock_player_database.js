@@ -11,6 +11,9 @@ export class MockPlayerDatabase extends PlayerDatabase {
     changePassQueries = [];
     updatedValue = null;
 
+    aliasMutation = null;
+    nameMutation = null;
+
     constructor(...params) {
         super(...params);
 
@@ -39,6 +42,39 @@ export class MockPlayerDatabase extends PlayerDatabase {
             death_count: this.summary.deathCount ?? 4812,
             last_seen: this.summary.lastSeen ?? 92929
         };
+    }
+
+    // Overridden.
+    async getAliases(nickname) {
+        if (['FakeUser', 'AliasName', 'NewNick'].includes(nickname))
+            return null;
+        
+        return {
+            userId: 4050,
+            nickname: '[BB]Ricky92',
+            aliases: [
+                'WoodPecker',
+                '[BA]Ro[BB]in',
+            ]
+        };
+    }
+
+    // Overridden.
+    async addAliasQuery(userId, alias) {
+        this.aliasMutation = { userId, alias };
+        return true;
+    }
+
+    // Overridden.
+    async removeAliasQuery(userId, alias) {
+        this.aliasMutation = { userId, alias };
+        return true;
+    }
+
+    // Overridden.
+    async changeNameQuery(userId, nickname, newNickname) {
+        this.nameMutation = { userId, nickname, newNickname };
+        return true;
     }
 
     // Overridden.

@@ -40,6 +40,59 @@ const PLAYER_SUMMARY_QUERY = `
     WHERE
         users_nickname.nickname = ?`;
 
+// Query to get the aliases associated with a nickname, as well as a flag on whether a particular
+// entry is their main username.
+const PLAYER_ALIASES_QUERY = `
+    SELECT
+        users_nickname.user_id,
+        users_nickname.nickname,
+        IF(users.username = users_nickname.nickname, 1, 0) AS is_primary
+    FROM
+        users_nickname
+    LEFT JOIN
+        users ON users.user_id = users_nickname.user_id
+    WHERE
+        users_nickname.user_id = (
+            SELECT
+                user_id
+            FROM
+                users_nickname
+            WHERE
+                nickname = ?)`;
+
+// Query to add an alias to the database.
+const PLAYER_ADD_ALIAS_QUERY = `
+    INSERT INTO
+        users_nickname
+        (user_id, nickname)
+    VALUES
+        (?, ?)`;
+
+// Query to remove an alias from the database.
+const PLAYER_REMOVE_ALIAS_QUERY = `
+    DELETE FROM
+        users_nickname
+    WHERE
+        user_id = ? AND
+        nickname = ?
+    LIMIT
+        1`;
+
+// Query to change someone's main username into something else.
+const PLAYER_CHANGE_NAME_QUERY = `
+    UPDATE
+        users
+    SET
+        username = ?
+    WHERE
+        user_id = ? AND
+        username = ?
+    LIMIT
+        1`;
+
+// Regular expression to test whether a string is a valid SA-MP nickname.
+const kValidNicknameExpression = /^[0-9a-z\[\]\(\)\$@\._=]{1,24}$/i;
+
 // Validates the |text| as a valid IP address, and converts it to a number.
 function ip2long(text) {
     const parts = text.split('.');
@@ -79,6 +132,120 @@ export class PlayerDatabase {
         const results = await server.database.query(PLAYER_SUMMARY_QUERY, nickname);
         return results.rows.length ? results.rows[0]
                                    : null;
+    }
+
+    // Gets the list of aliases owned by the |nickname|, including their username.
+    async getAliases(nickname) {
+        const databaseResults = await server.database.query(PLAYER_ALIASES_QUERY, nickname);
+        if (!databaseResults || !databaseResults.rows.length)
+            return null;
+
+        const results = {
+            userId: null,
+            nickname: null,
+            aliases: []
+        };
+
+        for (const row of databaseResults.rows) {
+            results.userId = row.user_id;
+
+            if (!!row.is_primary)
+                results.nickname = row.nickname;
+            else
+                results.aliases.push(row.nickname);
+        }
+
+        return results;
+    }
+
+    // Removes the given |alias| from the given |nickname|. The ordering here matters: |nickname|
+    // must be the main nickname, where |alias| will be added to it.
+    async addAlias(nickname, alias) {
+        if (!kValidNicknameExpression.test(alias))
+            throw new Error(`The alias ${alias} is not a valid SA-MP nickname.`);
+
+        const [nicknameResults, aliasResults] = await Promise.all([
+            this.getAliases(nickname),
+            this.getAliases(alias),
+        ]);
+
+        if (!nicknameResults)
+            throw new Error(`The player ${nickname} could not be found in the database.`);
+        
+        if (nicknameResults.nickname !== nickname)
+            throw new Error(`${nickname} is an alias by itself. Use their real nickname instead.`);
+        
+        if (aliasResults !== null)
+            throw new Error(`There already is a player named ${alias} in the database.`);
+        
+        return this.addAliasQuery(nicknameResults.userId, alias);
+    }
+
+    // Actually adds the |alias| to the database for the given |userId|.
+    async addAliasQuery(userId, alias) {
+        const result = await server.database.query(PLAYER_ADD_ALIAS_QUERY, userId, alias);
+        console.log(result);
+
+        return true;
+    }
+
+    // Removes the given |alias| from the given |nickname|. The ordering here matters: |nickname|
+    // must be the main nickname, where |alias| will be removed from it.
+    async removeAlias(nickname, alias) {
+        const nicknameResults = await this.getAliases(nickname);
+        if (!nicknameResults)
+            throw new Error(`The player ${nickname} could not be found in the database.`);
+        
+        if (nicknameResults.nickname !== nickname)
+            throw new Error(`${nickname} is an alias by itself. Use their main username instead.`);
+        
+        if (!nicknameResults.aliases.includes(alias))
+            throw new Error(`${alias} is not an alias of the given ${nickname}.`);
+        
+        return this.removeAliasQuery(nicknameResults.userId, alias);
+    }
+
+    // Actually removes the |alias| from the database for the given |userId|.
+    async removeAliasQuery(userId, alias) {
+        const result = await server.database.query(PLAYER_REMOVE_ALIAS_QUERY, userId, alias);
+        console.log(result);
+
+        return true;
+    }
+
+    // Changes the nickname of the user identified by |nickname| to |newNickname|. This must be
+    // their main nickname, and |newNickname| must not be in use yet either.
+    async changeName(nickname, newNickname) {
+        if (!kValidNicknameExpression.test(newNickname))
+            throw new Error(`The alias ${newNickname} is not a valid SA-MP nickname.`);
+
+        const [nicknameResults, newNicknameResults] = await Promise.all([
+            this.getAliases(nickname),
+            this.getAliases(newNickname),
+        ]);
+
+        if (!nicknameResults)
+            throw new Error(`The player ${nickname} could not be found in the database.`);
+        
+        if (nicknameResults.nickname !== nickname)
+            throw new Error(`${nickname} is an alias. Use their actual username instead.`);
+        
+        if (newNicknameResults !== null)
+            throw new Error(`There already is a player named ${newNickname} in the database.`);
+        
+        return this.changeNameQuery(nicknameResults.userId, nickname, newNickname);
+    }
+
+    // Actually changes the name of |nickname| to |newNickname|.
+    async changeNameQuery(userId, nickname, newNickname) {
+        const [changeNameResult, removeAliasResult, addAliasResult] = Promise.all([
+            server.database.query(PLAYER_CHANGE_NAME_QUERY, newNickname, userId, nickname),
+            server.database.query(PLAYER_REMOVE_ALIAS_QUERY, userId, nickname),
+            server.database.query(PLAYER_ADD_ALIAS_QUERY, userId, newNickname)
+        ]);
+
+        console.log(changeNameResult);
+        return true;
     }
 
     // Returns which fields are supported by the !supported, !getvalue and !setvalue commands. This
@@ -177,7 +344,7 @@ export class PlayerDatabase {
                     SELECT
                         user_id
                     FROM
-                        users_nicknames
+                        users_nickname
                     WHERE
                         nickname = ?)`;
         
@@ -336,7 +503,7 @@ export class PlayerDatabase {
                     SELECT
                         user_id
                     FROM
-                        users_nicknames
+                        users_nickname
                     WHERE
                         nickname = ?)
             LIMIT
@@ -347,6 +514,5 @@ export class PlayerDatabase {
             throw new Error(`The player ${nickname} could not be found in the database.`);
 
         return value;
-        
     }
 }

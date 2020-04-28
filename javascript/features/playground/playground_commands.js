@@ -49,6 +49,8 @@ class PlaygroundCommands {
                 .build(PlaygroundCommands.prototype.onPlaygroundProfileCommand.bind(this))
             .sub('reload')
                 .restrict(Player.LEVEL_MANAGEMENT)
+                .sub('messages')
+                    .build(PlaygroundCommands.prototype.onPlaygroundReloadMessagesCommand.bind(this))
                 .parameters([ { name: 'feature', type: CommandBuilder.WORD_PARAMETER } ])
                 .build(PlaygroundCommands.prototype.onPlaygroundReloadCommand.bind(this))
             .sub('settings')
@@ -340,6 +342,23 @@ class PlaygroundCommands {
             Message.LVP_ANNOUNCE_PROFILE_START, player.name, player.id, profileDurationMs);
 
         player.sendMessage(Message.LVP_PROFILE_STARTED, profileDurationMs);
+    }
+
+    // Facilitates reloading the server's message format file, which allows changing text and output
+    // dynamically whenever a needs arises. Might be required when live reloading features to add
+    // new functionality, that requires additional strings.
+    async onPlaygroundReloadMessagesCommand(player) {
+        this.announce_().announceToAdministrators(
+            Message.LVP_RELOAD_MESSAGES_ADMIN, player.name, player.id);
+
+        try {
+            const { originalMessageCount, messageCount } = Message.reloadMessages();
+            player.sendMessage(
+                Message.LVP_RELOAD_MESSAGES_SUCCESS, messageCount, originalMessageCount);
+
+        } catch (exception) {
+            player.sendMessage(Message.LVP_RELOAD_MESSAGES_ERROR, exception.message);
+        }
     }
 
     // Facilitates the developer's ability to reload features without having to restart the server.

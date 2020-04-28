@@ -5,7 +5,7 @@
 import { format as stringFormat, formatNumber, formatPrice, formatTime } from 'base/string_formatter.js';
 
 // File in which the messages are stored. Must be in JSON format.
-const MESSAGE_DATA_FILE = 'data/messages.json';
+const kMessageDataFile = 'data/messages.json';
 
 // Known message prefixes. These are substitutions for the most common contents of messages, for
 // example usage information or errors. In the message syntax, they are prepended by an at-sign.
@@ -46,24 +46,58 @@ class Message {
         return message.replace(/\{[0-9A-F]{6,8}\}/gi, '');
     }
 
-    // Loads messages from |file|. Unsafe messages will be considered as fatal errors.
-    static loadMessages(file) {
-        let messages = JSON.parse(readFile(file));
+    // Loads messages from |kMessageDataFile|. Unsafe messages will be considered as fatal errors.
+    static loadMessages() {
+        let messages = JSON.parse(readFile(kMessageDataFile));
         if (!messages || typeof messages !== 'object')
-            throw new Error('Unable to read messages from data file: ' + file);
+            throw new Error('Unable to read messages from data file: ' + kMessageDataFile);
 
-        Object.keys(messages).forEach(identifier => {
-            let message = messages[identifier];
-            if (Message.hasOwnProperty(identifier))
-                throw new Error('A message named "' + identifier + '" has already been created.');
+        Message.installMessages(messages);
+    }
 
-            message = Message.substitutePrefix(message, identifier);
+    // Reloads the messages when the server is already running. All uppercase-only properties on the
+    // Message function will be removed, after which the format will be reloaded again.
+    static reloadMessages() {
+        // Load the |messages| first, so that any JSON errors won't result in the server being
+        // completely busted, and nothing being sent to anyone at all.
+        const messages = JSON.parse(readFile(kMessageDataFile));
 
-            if (!Message.validate(message))
-                throw new Error('The message named "' + identifier + '" is not safe for usage.');
+        let originalMessageCount = 0;
+        for (const property of Object.getOwnPropertyNames(Message)) {
+            if (property.toUpperCase() !== property)
+                continue;
+   
+            delete Message[property];
+            originalMessageCount++;
+        }
 
-            Message[identifier] = new Message(message);
-        });
+        return {
+            originalMessageCount,
+            messageCount: Message.installMessages(messages)
+        };
+    }
+
+    // Installs the given |messages| on the Message object. Returns the number of messages that
+    // have been installed on the object.
+    static installMessages(messages) {
+        let messageCount = 0;
+
+        for (let [identifier, messageText] of Object.entries(messages)) {
+            if (!Message.validate(messageText))
+                throw new Error(`The message named "${identifier}" is not safe for usage.`);
+
+            messageText = Message.substitutePrefix(messageText, identifier);
+
+            Object.defineProperty(Message, identifier, {
+                value: new Message(messageText),
+                configurable: true,
+                writable: false,
+            });
+
+            messageCount++;
+        }
+
+        return messageCount;
     }
 
     // Substitutes any @-prefixes in |message| with the intended text. This will also affect the color
@@ -98,7 +132,7 @@ class Message {
 };
 
 // Immediately load the messages from the primary message data file.
-Message.loadMessages(MESSAGE_DATA_FILE);
+Message.loadMessages();
 
 // Expose the Message class on the global object, since it will be common practice for features to
 // format messages or deal with predefined ones.

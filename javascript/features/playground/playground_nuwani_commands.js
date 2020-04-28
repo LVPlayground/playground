@@ -41,7 +41,17 @@ export class PlaygroundNuwaniCommands {
     //
     // Reloads the messages and format defined for the JavaScript features in `messages.json`.
     onLvpReloadMessagesCommand(context) {
+        this.announce_().announceToAdministrators(
+            Message.LVP_RELOAD_MESSAGES_IRC_ADMIN, context.nickname);
 
+        try {
+            const { originalMessageCount, messageCount } = Message.reloadMessages();
+            context.respond('3Success: %d messages have been loaded 14(was: %d).',
+                            messageCount, originalMessageCount);
+
+        } catch (exception) {
+            context.respond(`4Error: Unable to reload the messages: ${exception.message}`);
+        }
     }
 
     // !lvp reload [feature]

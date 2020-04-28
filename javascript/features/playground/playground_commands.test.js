@@ -258,4 +258,14 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(gunther.messages[0].includes('default_channel'));
         assert.isTrue(gunther.messages[0].includes('Hello World'));
     });
+
+    it('should be able to live reload the message formatting file', async(assert) => {
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
+        assert.isTrue(await gunther.issueCommand('/lvp reload messages'));
+
+        assert.equal(gunther.messages.length, 2);
+        assert.includes(gunther.messages[0], 'is reloading all in-game messages');  // admin notice
+        assert.includes(gunther.messages[1], 'messages have been reloaded');  // acknowledgement
+    });
 });

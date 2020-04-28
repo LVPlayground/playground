@@ -47,6 +47,19 @@ describe('PlaygroundNuwaniCommands', (it, beforeEach, afterEach) => {
         assert.includes(result[0], 'Usage:');
     });
 
+    it('should be able to reload the message format', async (assert) => {
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'a');
+
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!lvp reload messages',
+        });
+
+        assert.equal(result.length, 1);
+        assert.includes(result[0], 'Success');
+        assert.includes(result[0], 'messages have been loaded');
+    });
+
     it('should be able to reload features', async (assert) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'a');
 

@@ -217,6 +217,8 @@ describe('BanCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should disconnect in-game players in case their IP gets banned', async (assert) => {
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
+
         server.playerManager.onPlayerConnect({
             playerid: 42,
             name: 'EvilJoe',
@@ -296,6 +298,8 @@ describe('BanCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should disconnect in-game players in case their IP gets range-banned', async (assert) => {
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
+
         server.playerManager.onPlayerConnect({
             playerid: 15,
             name: 'InnocentJoe',
@@ -366,6 +370,42 @@ describe('BanCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(lucy.isConnected());
     });
 
+    it('should limit the breadth of range bans based on user level', async (assert) => {
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
+
+        const excessAdminBan = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!ban range 8.*.*.* [BB]Joe 14 excellent ban reason',
+        });
+
+        assert.equal(excessAdminBan.length, 1);
+        assert.equal(excessAdminBan[0],
+                     `PRIVMSG #LVP.DevJS :Error: You're not allowed to ban more than 65,536 IP ` +
+                     `addresses at a time. This ban would affect 16,777,216 addresses.`);
+        
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'a');
+
+        const excessManagementBan = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!ban range *.*.*.* [BB]Joe 14 BAN THE WORLD!!`1',
+        });
+
+        assert.equal(excessManagementBan.length, 1);
+        assert.equal(excessManagementBan[0],
+                     `PRIVMSG #LVP.DevJS :Error: You're not allowed to ban more than 16,777,216 ` +
+                     `IP addresses at a time. This ban would affect 4,294,967,296 addresses.`);
+                    
+        const normalManagementBan = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!ban range 8.*.*.* [BB]Joe 14 excellent ban reason',
+        });
+
+        assert.equal(normalManagementBan.length, 1);
+        assert.equal(
+            normalManagementBan[0],
+            `PRIVMSG #LVP.DevJS :Success: The IP range 8.*.*.* has been banned from the game.`);
+    });
+
     it('should be able to people by their in-game serial (GCPI) number', async (assert) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
@@ -392,6 +432,8 @@ describe('BanCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should disconnect in-game players in case their serial gets banned', async (assert) => {
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
+
         server.playerManager.onPlayerConnect({
             playerid: 42,
             name: 'EvilJoe',

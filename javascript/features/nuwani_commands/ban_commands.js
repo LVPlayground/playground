@@ -5,6 +5,7 @@
 import { BanDatabase } from 'features/nuwani_commands/ban_database.js';
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
+import { format } from 'base/string_formatter.js';
 import { isPartOfRangeBan } from 'features/nuwani_commands/ip_utilities.js';
 
 // Implementation of a series of commands that enables administrators to revoke access from certain
@@ -32,6 +33,7 @@ export class BanCommands {
         // !ban serial [serial] [nickname] [days] [reason]
         // !ban [player] [days] [reason]
         this.commandManager_.buildCommand('ban')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('ip')
                 .parameters([
                     { name: 'ip', type: CommandBuilder.WORD_PARAMETER },
@@ -219,7 +221,27 @@ export class BanCommands {
             return;
         }
 
-        // TODO: Limit the reach of the |range| based on |context| level.
+        let limit = 1;
+        switch (context.level) {
+            case Player.LEVEL_MANAGEMENT:
+                limit = BanDatabase.kMaximumIpRangeCountManagement;
+                break;
+            
+            case Player.LEVEL_ADMINISTRATOR:
+                limit = BanDatabase.kMaximumIpRangeCountAdministrator;
+                break;
+            
+            default:
+                throw new Error('Unexpected user level found: ' + context.level);
+        }
+
+        // Impose the |limit|, to err on the safe side.
+        if (affected > limit) {
+            context.respond(
+                format(`4Error: You're not allowed to ban more than %d IP addresses at a ` +
+                       `time. This ban would affect %d addresses.`, limit, affected));
+            return;
+        }
 
         this.disconnectPlayersAffectedByBan(context.nickname, { range }, days, reason);
 
@@ -396,7 +418,7 @@ export class BanCommands {
             foundWildcard |= isWildcard;
         }
 
-        return Math.pow(255, wildcardCount);
+        return Math.pow(256, wildcardCount);
     }
 
     // Disconnects players from the server who are affected by the ban, which could either be an

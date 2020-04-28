@@ -28,6 +28,10 @@ export class BanDatabase {
     // Boundaries on the number of days a ban may last.
     static kMinimumDuration = 1;
     static kMaximumDuration = 999;
+
+    // Limits on the maximum number of affected IPs for range bans based on level.
+    static kMaximumIpRangeCountAdministrator = 256 * 256;     // 0.0.*.*
+    static kMaximumIpRangeCountManagement = 256 * 256 * 256;  // 0.*.*.*
     
     // Adds an entry to the user log table. The |type|, |sourceNickname|, |subjectNickname| and
     // |note| fields are required. When known, the |sourceUserId| and |subjectUserId| fields are

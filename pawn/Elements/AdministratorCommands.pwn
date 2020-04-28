@@ -1006,11 +1006,6 @@ lvp_show(playerId, params[]) {
         format(g_message, sizeof(g_message), "Need a nickchange? Join irc.gtanet.com and /msg Nuwani !changenick");
     }
 
-    else if (!strcmp(showParameter, "ts", true, 2)) {
-        showInfo = true;
-        format(g_message, sizeof(g_message), "LVP has TeamSpeak! Join: ts.sa-mp.nl");
-    }
-
     else if (!strcmp(showParameter, "spam", true, 4)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "Don't spam in the mainchat, people will see it after one time!");
@@ -1024,6 +1019,11 @@ lvp_show(playerId, params[]) {
     else if (!strcmp(showParameter, "interior", true, 8)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "Running in to interiors or houses, pausing and teleporting away while being attacked or fighting are NOT allowed!");
+    }
+
+    else if (!strcmp(showParameter, "irc", true, 3)) {
+        showInfo = true;
+        format(g_message, sizeof(g_message), "Join us on GTANet IRC! Click on \"contact\" on https://sa-mp.nl/ for more info.");
     }
 
     if (showInfo == true) {

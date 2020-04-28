@@ -5,7 +5,8 @@
 import ActivityRecorder from 'features/activity_log/activity_recorder.js';
 import Feature from 'components/feature_manager/feature.js';
 import ScopedCallbacks from 'base/scoped_callbacks.js';
-import Murmur3Hash from 'features/activity_log/murmur3hash.js';
+
+import { murmur3hash } from 'base/murmur3hash.js';
 
 // IRC tag used to show the players name, id, ip and gpci
 const JoinIpGpciTag = 'join-ip-gpci';
@@ -40,7 +41,10 @@ class ActivityLog extends Feature {
     // To be able to show the IP and GPCI on IRC
     this.nuwani_ = this.defineDependency('nuwani');
 
-    Murmur3Hash.provideNativeMurmur3HashGenerateHashToPawn();
+    // Provide the MurmurIIIHashGenerateHash native function to Pawn now that it still needs it.
+    provideNative('MurmurIIIHashGenerateHash', 'siS', (key, maxLength) => {
+      return [ murmur3hash(key).toString() ];
+    });
   }
 
   // Called when a confirmed death has happened with the corrected Id of the killer, if any. The

@@ -7,6 +7,7 @@ import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
 import { format } from 'base/string_formatter.js';
 import { isPartOfRangeBan } from 'features/nuwani_commands/ip_utilities.js';
+import { murmur3hash } from 'base/murmur3hash.js';
 
 // Implementation of a series of commands that enables administrators to revoke access from certain
 // players, IP addresses and serial numbers from the server, as well as understanding why someone
@@ -447,7 +448,8 @@ export class NuwaniCommands {
                     return;
 
             } else if (ban.hasOwnProperty('serial')) {
-                if (player.gpci != ban.serial)
+                const gpci = player.gpci;
+                if (!gpci || !gpci.length || murmur3hash(gpci) !== ban.serial)
                     return;  // serial-based ban, and the player has another serial.
 
             } else {

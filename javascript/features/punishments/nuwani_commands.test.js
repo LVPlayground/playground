@@ -437,7 +437,7 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         server.playerManager.onPlayerConnect({
             playerid: 42,
             name: 'EvilJoe',
-            gpci: 666000666
+            gpci: 'ED8C58A99DC5E8909458E9994D9DACEDEC4D9AEA',
         });
 
         const evilJoe = server.playerManager.getById(/* EvilJoe= */ 42);
@@ -446,13 +446,13 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
 
         const ingameResult = await issueCommand(bot, commandManager, {
             source: kCommandSource,
-            command: '!ban serial 666000666 [BB]Joe 3 pdf files ugh',
+            command: '!ban serial 648955637 [BB]Joe 3 pdf files ugh',
         });
 
         assert.equal(ingameResult.length, 1);
         assert.equal(
             ingameResult[0],
-            'PRIVMSG #LVP.DevJS :Success: The serial 666000666 has been banned from the game.');
+            'PRIVMSG #LVP.DevJS :Success: The serial 648955637 has been banned from the game.');
         
         assert.isFalse(evilJoe.isConnected());
         assert.equal(evilJoe.messages.length, 1);

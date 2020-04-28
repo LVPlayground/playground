@@ -66,20 +66,43 @@ reliability, to minimize the amount of maintenance necessary on an on-going basi
     handling failure cases of registration, authentication and joining channels.
   * Tracking of [network state](runtime/network_tracker.js) including server support rules,
     channels, and user modes, with server-compatible [mode parsing](runtime/mode_parser.js).
+  * Eligible for live reloading with `/lvp reload` to apply code changes without having to restart
+    the entire SA-MP server.
 
 ## Commands
 **NuwaniJS** supports commands for players, administrators and management members, each implied by
-a user's modes on the configured echo channel. The following commands are available:
-
-### Maintenance commands
+a user's modes on the configured echo channel. The following commands are built in:
 
   * [!eval](commands/maintenance_commands.js) (restricted to **bot owners**): to run arbitrary code
     in context of the server.
   * [!level](commands/maintenance_commands.js): determines the level of an IRC user.
+  * [!nuwani](commands/maintenance_commands.js) (restricted to **Management**): manage the Nuwani
+    IRC Bot system.
 
-### Generic commands (everyone)
+Other commands will be provided by the [nuwani_commands](../nuwani_commands/) feature, which is
+able to have dependencies on other parts of the gamemode as well.
 
-  * [!time](commands/maintenance_commands.js): displays the current time on the server.
+## Echo
+**NuwaniJS** has the ability to share almost everything that happens on the server with people
+watching on IRC. This is quite critical in enabling people to understand what's going on, and
+to allow them to interact with people on the server as well.
+
+Code written in Pawn has the ability to call the `EchoMessage` native function. It takes three
+parameters: `tag`, the message's identifier, `format`, the message's syntax, and `message`, the
+individual parts, formatted in accordance with the `format`, which should be distributed.
+
+Code in JavaScript can depend on this Nuwani module, and call the public `echo` function. It
+only requires the `tag`, followed by any number of arguments that, together, make up the message.
+
+Messages will then be formatted by the [MessageFormatter](echo/message_formatter.js), which takes
+the defined format (in [irc_messages.json](/data/irc_messages.json)). This formats supports various
+operators: `<color>` to amend the message's color, `<target>` to change where the message should
+go, and `<prefix>` to require a particular channel user mode in order to receive the message.
+
+Once formatted, the message will be passed to the [MessageDistributor](echo/message_distributor).
+This class has the ability to evenly divide messages over the available bots, provide a built-in
+fake lag to prevent the bots from timing out, and request the [Runtime](runtime/runtime.js) to
+spawn extra bots when required. The messages are then sent to the network.
 
 ## References
   * [RFC 2812](https://tools.ietf.org/html/rfc2812)

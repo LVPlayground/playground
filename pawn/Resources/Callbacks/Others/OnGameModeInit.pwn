@@ -211,7 +211,7 @@ public OnGameModeInit() {
     TextDrawSetProportional(Rivershell,1);
     TextDrawSetShadow(Rivershell,1);
 
-    AddEcho ( "[init] Gamemode Initialized" );
+    EchoMessage("init", "", "");
 
     Annotation::ExpandList<OnGameModeInit>();
 

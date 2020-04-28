@@ -30,6 +30,7 @@ class MockPlayer {
         this.virtualWorld_ = 0;
         this.userId_ = null;
         this.ipAddress_ = event.ip || '127.0.0.1';
+        this.gpci_ = event.gpci || 12345678;
         this.position_ = new Vector(0, 0, 0);
         this.specialAction_ = Player.SPECIAL_ACTION_NONE;
 
@@ -96,6 +97,8 @@ class MockPlayer {
     set name(value) { this.name_ = value; }
 
     get ip() { return this.ipAddress_; }
+
+    get gpci() { return this.gpci_; }
 
     get level() { return this.level_; }
     set level(value) { this.level_ = value; }
@@ -237,6 +240,18 @@ class MockPlayer {
     get lastDialogStyle() { return this.lastDialogStyle_; }
     get lastDialogLabel() { return this.lastDialogLabel_; }
 
+    // Advanced method to get the last dialog as a menu table.
+    getLastDialogAsTable() {
+        if (!this.lastDialogMessage_)
+            throw new Error('No last message is available to output as a table.');
+        
+        const lines = this.lastDialogMessage_.split('\n');
+        return {
+            columns: lines.shift().split('\t'),
+            rows: lines.map(line => line.split('\t'))
+        };
+    }
+
     // Sends |message| to the player. It will be stored in the local messages array and can be
     // retrieved through the |messages| getter.
     sendMessage(message, ...args) {
@@ -249,6 +264,15 @@ class MockPlayer {
 
     // Clears the messages that have been sent to this player.
     clearMessages() { this.messages_ = []; }
+
+    // Clears the last dialog that has been shown to this player.
+    clearLastDialog() {
+        this.lastDialogId_ = null;
+        this.lastDialogTitle_ = null;
+        this.lastDialogStyle_ = null;
+        this.lastDialogLabel_ = null;
+        this.lastDialogMessage_ = null;
+    }
 
     // Gets the messages that have been sent to this player.
     get messages() { return this.messages_; }

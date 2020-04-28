@@ -18,9 +18,6 @@ new g_connectionAttemptFailedCount = 0;
  */
 public OnConnectionAttempt(connectionId, bool: succeeded, server[], username[], errno, error[]) {
     if (succeeded == true) {
-        if (g_connectionAttemptFailedCount != 0)
-            IRC->broadcast(DeveloperIrcMessage, "The connection with the database has been re-established.");
-
         printf("[MySQL] The connection with the database has been (re-)established.");
         g_connectionAttemptFailedCount = 0;
         return;
@@ -34,7 +31,6 @@ public OnConnectionAttempt(connectionId, bool: succeeded, server[], username[], 
     format(message, sizeof(message), "Could not connect to the database with '%s'@%s: %s (%d).",
         username, server, error, errno);
 
-    IRC->broadcast(DeveloperIrcMessage, message);
     printf("[MySQL] %s", message);
 }
 

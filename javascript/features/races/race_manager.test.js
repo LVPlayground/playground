@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 import Minigames from 'features/minigames/minigames.js';
-import MockAnnounce from 'features/announce/test/mock_announce.js';
 import MockDeathFeed from 'features/death_feed/test/mock_death_feed.js';
 import MockRaceDatabase from 'features/races/test/mock_race_database.js';
 import Race from 'features/races/race.js';
@@ -18,9 +17,8 @@ describe('RaceManager', (it, beforeEach, afterEach) => {
 
         // Load the mocked announce, but the real minigames feature, which races depend on.
         server.featureManager.registerFeaturesForTests({
-            announce: MockAnnounce,
             death_feed: MockDeathFeed,
-            minigames: Minigames
+            minigames: Minigames,
         });
 
         server.featureManager.loadFeature('minigames');

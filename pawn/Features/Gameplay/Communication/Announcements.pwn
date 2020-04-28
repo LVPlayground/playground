@@ -83,7 +83,7 @@ class Announcements {
 
         // Announce this player's connection to people watching from IRC.
         format(m_formatBuffer, sizeof(m_formatBuffer), "%d %s", playerId, Player(playerId)->nicknameString());
-        IRC->broadcast(JoinIrcMessage, m_formatBuffer);
+        EchoMessage("join", "ds", m_formatBuffer);
     }
 
     /**
@@ -100,7 +100,7 @@ class Announcements {
 
         // Announce the login of the player to the people on IRC
         format(m_formatBuffer, sizeof(m_formatBuffer), "%d %s", playerId, Player(playerId)->nicknameString());
-        IRC->broadcast(LoginIrcMessage, m_formatBuffer);
+        EchoMessage("login", "ds", m_formatBuffer);
     }
 
     /**
@@ -118,7 +118,7 @@ class Announcements {
 
         // Announce the play as guest to the people on IRC
         format(m_formatBuffer, sizeof(m_formatBuffer), "%d %s %s", playerId, oldNickname, Player(playerId)->nicknameString());
-        IRC->broadcast(GuestLoginIrcMessage, m_formatBuffer);
+        EchoMessage("guest", "dss", m_formatBuffer);
     }
 
     /**
@@ -134,25 +134,31 @@ class Announcements {
         new playerName[MAX_PLAYER_NAME+1];
         GetPlayerName(playerId, playerName, sizeof(playerName));
 
+        new reasonString[16];
+
         switch (reason) {
-            case 0 /** timed out **/:
+            case 0 /** timed out **/: {
+                format(reasonString, sizeof(reasonString), "timed out");
                 format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) has left {A9C4E4}Las Venturas Playground{CCCCCC} (timed out).",
                     Player(playerId)->nicknameString(), playerId);
-
-            case 2 /** kicked or banned **/:
+            }
+            case 2 /** kicked or banned **/: {
+                format(reasonString, sizeof(reasonString), "kicked");
                 format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) has left {A9C4E4}Las Venturas Playground{CCCCCC} (kicked).",
                     playerName, playerId);
-
-            default:
+            }
+            default: {
+                format(reasonString, sizeof(reasonString), "leaving");
                 format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) has left {A9C4E4}Las Venturas Playground{CCCCCC}.",
                     Player(playerId)->nicknameString(), playerId);
+            }
         }
 
         this->distributeAnnouncement(ConnectionMessageAnnouncement, Color::ConnectionMessage, m_formatBuffer);
 
         // Announce this player's disconnection to people watching from IRC.
-        format(m_formatBuffer, sizeof(m_formatBuffer), "%d %s %d", playerId, playerName, reason);
-        IRC->broadcast(LeaveIrcMessage, m_formatBuffer);
+        format(m_formatBuffer, sizeof(m_formatBuffer), "%d %s %s", playerId, playerName, reasonString);
+        EchoMessage("quit", "dss", m_formatBuffer);
     }
 
     /**

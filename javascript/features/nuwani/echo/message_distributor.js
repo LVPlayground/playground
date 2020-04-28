@@ -65,6 +65,9 @@ export class MessageDistributor extends RuntimeObserver {
             this.currentCommandRate_ = 0;
         }
 
+        // Gets the current command rate for this bot.
+        get currentCommandRate() { return this.currentCommandRate_; }
+
         // Gets the maximum command rate for this bot.
         get maximumCommandRate() { return this.maximumCommandRate_; }
 
@@ -99,6 +102,15 @@ export class MessageDistributor extends RuntimeObserver {
 
     // Gets the number of messages currently stored in the distribution queue.
     get queueSize() { return this.queue_.length; }
+
+    // Returns the command rate for the bot identified by the given |nickname|, or null when the bot
+    // is not currently connected to the network.
+    getCommandRateForBot(bot) {
+        if (this.bots_.has(bot))
+            return this.bots_.get(bot).currentCommandRate;
+        
+        return null;
+    }
 
     constructor(runtime, configuration) {
         super();
@@ -138,8 +150,11 @@ export class MessageDistributor extends RuntimeObserver {
     // Runs the message distributor until it's been disposed of. This function will never return
     // until that happens, and will keep itself spinning once per second for that duration.
     async run() {
-        while (this.runtime_) {
+        while (true) {
             await wait(/* 1 second= */ 1000);
+
+            if (!this.runtime_)
+                return;
 
             const timestamp = server.clock.currentTime();
 

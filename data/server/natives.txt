@@ -2,6 +2,9 @@
 # Use of this source code is governed by the MIT license, a copy of which can
 # be found in the LICENSE file.
 
+# native EchoMessage(tag[], format[], message[]);
+EchoMessage
+
 # native UpdatePlayerSyncedData(playerId, property, intValue, Float: floatValue, stringValue[]);
 UpdatePlayerSyncedData
 

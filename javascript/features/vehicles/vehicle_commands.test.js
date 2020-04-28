@@ -4,7 +4,6 @@
 
 import AbuseConstants from 'features/abuse/abuse_constants.js';
 import DatabaseVehicle from 'features/vehicles/database_vehicle.js';
-import MockAnnounce from 'features/announce/test/mock_announce.js';
 import MockPlayground from 'features/playground/test/mock_playground.js';
 import VehicleManager from 'features/vehicles/vehicle_manager.js';
 import Vehicles from 'features/vehicles/vehicles.js';
@@ -21,7 +20,6 @@ describe('VehicleCommands', (it, beforeEach) => {
         gunther.identify({ userId: 42 });
 
         server.featureManager.registerFeaturesForTests({
-            announce: MockAnnounce,
             playground: MockPlayground,
             vehicles: Vehicles
         });

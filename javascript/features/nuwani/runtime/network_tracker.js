@@ -219,6 +219,8 @@ export class NetworkTracker {
         this.levelModes_.clear();
         this.levelPrefixes_.clear();
         this.support_.clear();
+
+        this.modeParser_.reset();
     }
 
     dispose() {

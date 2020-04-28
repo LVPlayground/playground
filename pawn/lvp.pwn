@@ -65,6 +65,7 @@
 #include "Interface/Command.pwn"
 #include "Interface/CompilerDebug.pwn"
 #include "Interface/Dialog.pwn"
+#include "Interface/Echo.pwn"
 #include "Interface/Economy.pwn"
 #include "Interface/Enumerations.pwn"
 #include "Interface/Instrumentation.pwn"
@@ -180,8 +181,6 @@
 #include Elements/AdministratorCommands.pwn
 #include Elements/Player/Commands/Regular.pwn
 #include Elements/Player/Commands/General.pwn
-
-#include Resources/IRC/irccommand.pwn
 
 
 // --------------------

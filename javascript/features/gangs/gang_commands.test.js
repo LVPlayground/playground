@@ -2,7 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import MockAnnounce from 'features/announce/test/mock_announce.js';
 import Gang from 'features/gangs/gang.js';
 import Gangs from 'features/gangs/gangs.js';
 import PlayerMoneyBridge from 'features/gangs/util/player_money_bridge.js';

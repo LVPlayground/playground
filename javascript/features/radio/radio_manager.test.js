@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 import ChannelSelection from 'features/radio/channel_selection.js';
-import MockAnnounce from 'features/announce/test/mock_announce.js';
 import RadioManager from 'features/radio/radio_manager.js';
 
 describe('RadioManager', (it, beforeEach, afterEach) => {
@@ -16,7 +15,7 @@ describe('RadioManager', (it, beforeEach, afterEach) => {
     beforeEach(() => {
         settings = server.featureManager.loadFeature('settings');
 
-        const announce = new MockAnnounce();
+        const announce = server.featureManager.loadFeature('announce');
 
         selection = new ChannelSelection(() => announce, () => settings);
         selection.loadConfigurationFromArray([

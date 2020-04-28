@@ -2,22 +2,25 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Communication from 'features/communication/communication.js';
 import GangChatManager from 'features/gang_chat/gang_chat_manager.js';
 import GangTester from 'features/gangs/test/gang_tester.js';
 
 describe('GangChatManager', (it, beforeEach, afterEach) => {
     let gangs = null;
     let manager = null;
+    let nuwani = null;
 
     beforeEach(() => {
+        // The communication feature has to be pre-loaded.
         server.featureManager.loadFeature('communication');
 
         const communication =
             server.featureManager.createDependencyWrapperForFeature('communication');
 
         gangs = server.featureManager.loadFeature('gangs');
-        manager = new GangChatManager(() => gangs, null /* announce */, communication);
+        nuwani = server.featureManager.loadFeature('nuwani');
+
+        manager = new GangChatManager(() => gangs, communication, () => nuwani);
     });
 
     afterEach(() => manager.dispose());
@@ -108,6 +111,27 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
 
         assert.equal(russell.messages.length, 1);
         assert.equal(russell.messages[0], expectedMessage);
+    });
+
+    it('should distribute the message to people on IRC', async(assert) => {
+        const player = server.playerManager.getById(0 /* Gunther */);
+
+        player.identify();
+        const gang = await GangTester.createGang(player);
+
+        assert.isTrue(await player.issueMessage('!hello'));
+
+        assert.equal(nuwani.messagesForTesting.length, 1);
+        assert.deepEqual(nuwani.messagesForTesting[0], {
+            tag: 'chat-gang',
+            params: [
+                gang.name,
+                gang.id,
+                player.id,
+                player.name,
+                'hello',
+            ],
+        });
     });
 
     it('should skip administrators if their message level is lower than two', async(assert) => {

@@ -124,10 +124,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         {
             SavePlayerSpawnData(playerid);
             SendClientMessage(playerid, Color::Green, "Spawn data saved to file.");
-
-            new szMsg[128];
-            format(szMsg, 128, "[dev] LVP On-foot Spawn Point added by %s: City: %s. Area: %s.", PlayerName(playerid), GetPlayerCity(playerid), GetPlayerZone(playerid));
-            AddEcho(szMsg);
             return 1;
         }
     #endif
@@ -553,7 +549,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(resetfc,        7, AdministratorLevel);
     lvp_command(resetmatch,    10, AdministratorLevel);
 #endif
-    lvp_command(asay,           4, AdministratorLevel);
     lvp_command(reactiontest,  12, AdministratorLevel);
     lvp_command(chase,          5, AdministratorLevel);
     lvp_command(fetch,          5, AdministratorLevel);
@@ -1072,7 +1067,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         }
 
         format(string, sizeof(string), "%d %s %s", playerid, Player(playerid)->nicknameString(), actionText);
-        IRC->broadcast(PlayerStatusIrcMessage, string);
+        EchoMessage("status", "dss", string);
 
         SpamTracker->record(playerid, actionText);
 

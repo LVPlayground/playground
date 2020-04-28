@@ -33,7 +33,7 @@ export class CommandManager extends RuntimeObserver {
         this.configuration_ = configuration;
 
         this.commands_ = new Map();
-        this.delegate_ = new CommandDelegate(configuration.commandPrefix, configuration.levels);
+        this.delegate_ = new CommandDelegate(configuration.commandPrefix);
     }
 
     // Registers |command| as a new command, which will invoke |listener| when used.
@@ -86,8 +86,9 @@ export class CommandManager extends RuntimeObserver {
 
         if (!this.commands_.has(command))
             return;  // unknown command
-        
-        await this.commands_.get(command)(new CommandContext(bot, message), args);
+
+        await this.commands_.get(command)(
+            CommandContext.createForMessage(bot, message, this.configuration_), args);
     }
 
     // ---------------------------------------------------------------------------------------------

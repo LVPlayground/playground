@@ -247,28 +247,6 @@ lvp_t(playerId, params[]) {
     return 1;
 }
 
-lvp_asay (playerId, params[]) {
-    if (Command->parameterCount(params) == 0) {
-        SendClientMessage(playerId, Color::Success, "This command will show a IRC-like !say message.");
-        SendClientMessage(playerId, Color::Information, "Usage: /asay [message]");
-        return 1;
-    }
-
-    new adminName[MAX_PLAYER_NAME+1];
-    if (UndercoverAdministrator(playerId)->isUndercoverAdministrator() == true)
-        UndercoverAdministrator(playerId)->getOriginalUsername(adminName, sizeof(adminName));
-    else
-        Player(playerId)->nickname(adminName, sizeof(adminName));
-
-    format(g_message, sizeof(g_message), "* Admin (%s): %s", adminName, params);
-    SendClientMessageToAllEx(0x2587CEAA, g_message);
-
-    format(g_message, sizeof(g_message), "[say] %s %s", adminName, params);
-    AddEcho(g_message);
-
-    return 1;
-}
-
 lvp_set(playerId, params[]) {
     if (Command->parameterCount(params) == 0)
         goto SetHelp;
@@ -1028,11 +1006,6 @@ lvp_show(playerId, params[]) {
         format(g_message, sizeof(g_message), "Need a nickchange? Join irc.gtanet.com and /msg Nuwani !changenick");
     }
 
-    else if (!strcmp(showParameter, "ts", true, 2)) {
-        showInfo = true;
-        format(g_message, sizeof(g_message), "LVP has TeamSpeak! Join: ts.sa-mp.nl");
-    }
-
     else if (!strcmp(showParameter, "spam", true, 4)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "Don't spam in the mainchat, people will see it after one time!");
@@ -1048,11 +1021,20 @@ lvp_show(playerId, params[]) {
         format(g_message, sizeof(g_message), "Running in to interiors or houses, pausing and teleporting away while being attacked or fighting are NOT allowed!");
     }
 
+    else if (!strcmp(showParameter, "irc", true, 3)) {
+        showInfo = true;
+        format(g_message, sizeof(g_message), "Join us on GTANet IRC! Click on \"contact\" on https://sa-mp.nl/ for more info.");
+    }
+
     if (showInfo == true) {
         new const bool: automated = !!IsPlayerNPC(playerId);
+        new informedPlayerCount = 0;
 
         for (new receiverId = 0; receiverId <= PlayerManager->highestPlayerId(); ++receiverId) {
             if (Player(receiverId)->isConnected() == false || IsPlayerInMinigame(receiverId))
+                continue;
+
+            if (Player(receiverId)->isNonPlayerCharacter())
                 continue;
 
             if (automated && PlayerSettings(receiverId)->areAutomatedAnnouncementsDisabled())
@@ -1061,12 +1043,15 @@ lvp_show(playerId, params[]) {
             SendClientMessage(receiverId, Color::Red, "-------------------");
             SendClientMessage(receiverId, Color::Warning, g_message);
             SendClientMessage(receiverId, Color::Red, "-------------------");
+            informedPlayerCount++;
         }
 
-        format(g_message, sizeof(g_message), "%s (Id:%d) has done /show %s.",
-            Player(playerId)->nicknameString(), playerId, showParameter);
-        Admin(playerId, g_message);
+        if (informedPlayerCount > 0) {        
+            format(g_message, sizeof(g_message), "%s (Id:%d) has done /show %s.",
+                Player(playerId)->nicknameString(), playerId, showParameter);
 
+            Admin(playerId, g_message);
+        }
         return 1;
     }
 
@@ -1146,6 +1131,7 @@ lvp_announce(playerId, params[]) {
     format(g_message, sizeof(g_message), "Announce by %s (Id:%d): %s", Player(playerId)->nicknameString(), playerId, params);
     Admin(playerId, g_message);
 
+    EchoMessage("notice-announce", "z", params);
     return 1;
 }
 

@@ -22,17 +22,19 @@ let connectionId = 1;
 // * onConnectionMessage(string message)
 // * onConnectionClosed()
 //
-// Reconnection attempts, as well as socket-level logging, will be done by this class.
+// Once the initial connection attempt has completed, this class will not maintain the connection
+// when it's disconnected for other reasons.
 export class Connection {
-    delegate_ = null;
     servers_ = null;
+    delegate_ = null;
 
     connectionId_ = null;
-    connectionToken_ = null;
 
     backoffPolicy_ = null;
-    disposed_ = false;
     socket_ = null;
+
+    connectionToken_ = null;
+    disposed_ = false;
 
     constructor(servers, delegate) {
         this.servers_ = servers;
@@ -43,8 +45,9 @@ export class Connection {
         this.backoffPolicy_ = new BackoffPolicy();
 
         this.socket_ = new Socket('tcp');
-        this.socket_.addEventListener('error', Connection.prototype.onSocketError.bind(this));
-        this.socket_.addEventListener('message', Connection.prototype.onSocketMessage.bind(this));
+        this.socket_.addEventListener('close', Connection.prototype.onClose.bind(this));
+        this.socket_.addEventListener('error', Connection.prototype.onError.bind(this));
+        this.socket_.addEventListener('message', Connection.prototype.onMessage.bind(this));
     }
     
     // Starts trying to establish a connection with one of the network's servers. Will spin and wait
@@ -54,35 +57,37 @@ export class Connection {
             throw new Error('A connection attempt is already in progress.');
 
         const connectionToken = Symbol('Connection token');
-        const isCurrentAttempt = () => this.connectionToken_ === connectionToken;
-
         this.connectionToken_ = connectionToken;
 
         await wait(this.backoffPolicy_.getTimeToNextRequestMs());
-        if (!isCurrentAttempt())
-            return;
+        if (this.connectionToken_ !== connectionToken || this.disposed_)
+            return this.backoffPolicy_.resetToIdle();
 
         let attempt = 0;
 
         do {
             const currentServerIndex = attempt % this.servers_.length;
-            const ip = this.servers_[currentServerIndex].ip;
-            const port = this.servers_[currentServerIndex].port;
+            const { ip, port, ssl } = this.servers_[currentServerIndex];
 
             this.log(`Connecting to ${ip}:${port}...`);
-            const connected = await this.socket_.open(ip, port, kConnectionTimeoutSec);
 
-            if (!isCurrentAttempt()) {
-                if (connected && this.disposed_)
-                    this.socket_.close();
-
-                return;
-            }
+            const connected = await this.socket_.open({
+                ip, port,
+                timeout: kConnectionTimeoutSec,
+                ssl: ssl ? 'tls' : 'none',
+            });
 
             // Report the result to the back-off policy, to ensure that the next request will be
             // made with the appropriate time delay.
             connected ? this.backoffPolicy_.markRequestSuccessful()
                       : this.backoffPolicy_.markRequestFailed();
+
+            if (this.connectionToken_ !== connectionToken) {
+                if (connected && this.disposed_)
+                    await this.socket_.close();
+                
+                return;
+            }
 
             if (connected) {
                 this.log(`Connection to ${ip}:${port} succeeded.`);
@@ -100,52 +105,53 @@ export class Connection {
 
             await wait(delay);
 
+            if (this.connectionToken_ !== connectionToken)
+                this.backoffPolicy_.resetToIdle();
+
             ++attempt;
 
-        } while (isCurrentAttempt());
+        } while (this.connectionToken_ === connectionToken && !this.disposed_);
     }
 
     // Writes the given |message| to the connection. The |message| will be encoded as UTF-8, so
     // international characters are allowed.
     async write(message) {
-        if (this.socket_.state !== 'connected')
-            throw new Error('Illegal write to non-connected socket.');
-
-        const buffer = stringToUtf8Buffer(message.trimEnd() + '\r\n');
-        await this.socket_.write(buffer);
+        await this.socket_.write(stringToUtf8Buffer(message.trimEnd() + '\r\n'));
     }
 
     // Closes the connection currently established with the server, if any. In-progress connection
     // attempts themselves will be cancelled too, albeit with a delay.
-    disconnect() {
-        switch (this.socket_.state) {
-            case 'disconnected':
-                break;
+    async disconnect() {
+        await this.socket_.close();
+    }
 
-            case 'connecting':
-            case 'connected':
-                this.socket_.close();
-                break;
-        }
+    // Called when the socket has been closed. Most errors will issue an `error` event instead, but
+    // there are situations in which the Socket will initiate disconnection.
+    onClose(event) {
+        if (this.disposed_)
+            return;
 
         this.connectionToken_ = null;
+        this.delegate_.onConnectionClosed();
     }
 
     // Called when an error occurs on the socket that backs the connection. Most errors will require
     // the connection to be closed and reset, which will be initiated by this method.
-    onSocketError(event) {
+    async onError(event) {
         this.log(`Error ${event.code}: ${event.message}`);
 
-        if (this.socket_.state === 'disconnected')
+        if (this.socket_.state !== 'connected')
             return;
 
-        this.delegate_.onConnectionClosed();
-        this.socket_.close();
+        await this.disconnect();
     }
 
     // Called when data has been received from the socket. Each event may contain one or multiple
     // messages that will be forwarded to the Bot.
-    onSocketMessage(event) {
+    onMessage(event) {
+        if (this.disposed_)
+            return;
+
         const buffer = utf8BufferToString(event.data);
         const messages = buffer.split(/\r?\n/);
 

@@ -322,7 +322,7 @@ new SLAP_REASONS[][] = {
     "cock", "sheep", "trout", "dildo", "probe", "rocket launcher", "hand", "network technician",
     "boob", "poop", "FiXeR", "baseball bat", "computer", "fucker", "fist", "tree", "stick", "spike",
     "broken bottle", "claw", "asswipe", "used dildo", "used condom", "broken laptop", "dog",
-    "motherfucking snake", "Luce", "trout"
+    "motherfucking snake", "Luce", "trout", "Winniegun"
 };
 
 // Makes |playerId| slap the |targetPlayerId|. Their most recent slap time and the target's most

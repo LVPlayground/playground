@@ -139,7 +139,7 @@ class AutoHelloMessageCommand extends Command {
         });
 
         // Make sure that people on IRC get to see the greeting as well.
-        this.announce_().announceToIRC('text', greeter.id, greeter.name, greetingsMessage);
+        this.nuwani_().echo('chat', greeter.id, greeter.name, greetingsMessage);
 
         // If this was a reconnection, we'll want to ignore the player for quite some time.
         if (!isReconnect)

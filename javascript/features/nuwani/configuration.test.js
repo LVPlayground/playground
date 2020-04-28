@@ -6,11 +6,12 @@ import { Configuration } from 'features/nuwani/configuration.js';
 import { MessageSource } from 'features/nuwani/runtime/message_source.js';
 
 // A configuration that will be accepted by the Configuration class.
-function createConfiguration({ bots, servers, channels, levels, commandPrefix, owners } = {}) {
+function createConfiguration({ bots, servers, channels, levels, commandPrefix,
+                               owners, passwordSalt } = {}) {
     return {
         bots: bots ?? [
             { nickname: 'Bot', password: 'foobar', master: true },
-            { nickname: 'Slave' },
+            { nickname: 'Slave', optional: true },
         ],
         servers: servers ?? [
             { ip: '127.0.0.1' },
@@ -33,6 +34,7 @@ function createConfiguration({ bots, servers, channels, levels, commandPrefix, o
             'Joe!joe@*',
             '*!*@lvp.administrator',
         ],
+        passwordSalt: passwordSalt ?? undefined,
     };
 };
 
@@ -225,5 +227,27 @@ describe('Configuration', it => {
         assert.equal(configuration.owners[1].nickname, '*');
         assert.equal(configuration.owners[1].username, '*');
         assert.equal(configuration.owners[1].hostname, 'lvp.administrator');
+    });
+
+    it('loads the configured password salt, if any', assert => {
+        {
+            assert.throws(() => (new Configuration).initializeFromJson(createConfiguration({
+                passwordSalt: 3.14,
+            })));
+        }
+        {
+            const configuration = new Configuration();
+            configuration.initializeFromJson(createConfiguration());
+
+            assert.isNull(configuration.passwordSalt);
+        }
+        {
+            const configuration = new Configuration();
+            configuration.initializeFromJson(createConfiguration({
+                passwordSalt: 'hello-world',
+            }));
+
+            assert.equal(configuration.passwordSalt, 'hello-world');
+        }
     });
 });

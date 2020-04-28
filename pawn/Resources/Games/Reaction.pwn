@@ -47,8 +47,18 @@ CReaction__Initialize()
 // instead of using many.
 CReaction__Process()
 {
+    new bool: anyConnectedHuman = false;
+
+    for (new playerId = 0; playerId < PlayerManager->highestPlayerId(); ++playerId) {
+        if (Player(playerId)->isNonPlayerCharacter())
+            continue;
+
+        anyConnectedHuman = true;
+        break;
+    }
+
     // The games should be paused when no players are currently connected to the server.
-    if (PlayerManager->connectedPlayerCount() == 0)
+    if (!anyConnectedHuman)
         return 1;
 
     if(reactionData[timer] == 0)
@@ -92,8 +102,8 @@ CReaction__Process()
                     // String type
 
                     new string[256];
-                    format(string, sizeof(string) , "[reaction] %s", reactionText);
-                    AddEcho(string);
+                    format(string, sizeof(string) , "%d %s", GetEconomyValue(ReactionTest), reactionText);
+                    EchoMessage("reaction-repeat", "dz", string);
 
                     reactionData[clock] = GetTickCount();
                     reactionData[timer] = -1;
@@ -108,8 +118,8 @@ CReaction__Process()
                     // Math sum type
 
                     new string[256];
-                    format(string, sizeof(string) , "[reaction2] %s", reactionNumbers);
-                    AddEcho(string);
+                    format(string, sizeof(string) , "%d %s", GetEconomyValue(ReactionTest), reactionNumbers);
+                    EchoMessage("reaction-calculate", "dz", string);
 
                     format(reactionAnswer, 256, "%d", calculation);
 
@@ -200,14 +210,13 @@ CReaction__OnText(playerid, text[])
 
         // Achievement thing
         CAchieve__ReactionWin(playerid, fDiff);
-
-        // Note that this player has won the reaction test, distribute a message
-        // to IRC (fuck you to the one who decided to use mIRC colour codes here).
         CReaction__Rebuild();
+
         reactionData[expire] = 0;
 
-        format( szMessage, sizeof( szMessage ), "[wonreaction] %s %.2f", szName, fDiff );
-        AddEcho( szMessage );
+
+        format( szMessage, sizeof( szMessage ), "%s %d %.2f", szName, playerid, fDiff );
+        EchoMessage("reaction-result", "sdf", szMessage);
         return 1;
     }
     return 1;

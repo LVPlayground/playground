@@ -99,8 +99,8 @@ public OnPlayerText(playerid, text[]) {
             SendClientMessage(playerid, Color::Success, message);
         }
 
-        format(message, sizeof(message), "[adminmsg] %s %d %s", Player(playerid)->nicknameString(), playerid, text[1]);
-        AddEcho(message);
+        format(message, sizeof(message), "%d %s %s", playerid, Player(playerid)->nicknameString(), text[1]);
+        EchoMessage("chat-admin", "dsz", message);
 
         return 0;
     }
@@ -139,13 +139,12 @@ public OnPlayerText(playerid, text[]) {
 
     // Add it to the echo-feed, so it shows up on IRC as well.
     if (playerInMainWorld) {
-        format(message, sizeof(message), "[text] %d %s %s", playerid, Player(playerid)->nicknameString(), text);
+        format(message, sizeof(message), "%d %s %s", playerid, Player(playerid)->nicknameString(), text);
+        EchoMessage("chat", "dsz", message);
     } else {
-        format(message, sizeof(message), "[worldchat] %d %d %s %s", playerVirtualWorld,
-            playerid, Player(playerid)->nicknameString(), text);
+        format(message, sizeof(message), "%d %d %s %s", playerVirtualWorld, playerid, Player(playerid)->nicknameString(), text);
+        EchoMessage("chat-world", "ddsz", message);
     }
-
-    AddEcho(message);
 
     // /q Jokes Not Allowed
     new QuitJokes[2][] = {

@@ -132,7 +132,7 @@ class HouseCommands {
         await this.manager_.createHouse(player, location, interior.id);
 
         this.announce_().announceToAdministrators(
-            Message.HOUSE_ANNOUNCE_PURCHASED, player.name, player.id, interior.price);
+            Message.HOUSE_ANNOUNCE_PURCHASED, player.name, player.id, interior.price, location.id);
 
         // Display a confirmation dialog to the player to inform them of their action.
         await MessageBox.display(player, {
@@ -558,7 +558,7 @@ class HouseCommands {
 
                 // Add the menu item for the |level| to the sub-menu shown to the player.
                 accessMenu.addItem(label, async(player) => {
-                    await this.manager_.updateHouseSetting(location, 'access', level);
+                    await this.manager_.updateHouseSetting(player, location, 'access', level);
 
                     // Change casing of the |label| so that it gramatically works in the message.
                     const confirmationLabel =
@@ -601,7 +601,7 @@ class HouseCommands {
 
             this.announce_().announceToAdministrators(
                 Message.HOUSE_ANNOUNCE_SOLD, player.name, player.id, location.settings.name,
-                location.settings.id);
+                location.settings.id, offer);
 
             await this.manager_.removeHouse(location);
 
@@ -690,7 +690,7 @@ class HouseCommands {
                     const price = 0;
 
                     // TODO: Actually charge money for the vehicles.
-                    purchaseMenu.addItem(modelName, Message.formatPrice(price), async(player) => {
+                    purchaseMenu.addItem(modelName, Message.format('%$', price), async(player) => {
                         await this.manager_.createVehicle(location, parkingLot, {
                             modelId: modelId
                         });

@@ -5,8 +5,9 @@
 // The Command class forms the base class of all commands that can be toggled with the `/lvp access`
 // command, and has knowledge of several common objects.
 class Command {
-    constructor(announce) {
+    constructor(announce, nuwani) {
         this.announce_ = announce;
+        this.nuwani_ = nuwani;
     }
 
     // Gets the name of the current command. Must be implemented by the command.

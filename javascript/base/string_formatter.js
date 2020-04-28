@@ -16,14 +16,25 @@
 export function format(message, ...parameters) {
     let substitutionIndex = 0;
 
-    return String(message).replace(/%([sdfp\$t%])/g, (_, rule) => {
+    return String(message).replace(/%([sdfp\$t%])(\{(\-?\d+)\})?/g, (_, rule, ignore, index) => {
         if (rule === '%')
             return '%';  // special case: %% (percentage-sign literal).
 
-        if (substitutionIndex >= parameters.length)
-            throw new Error('Not enough substitution parameters were provided for this query.');
+        let value = null;
+        if (index) {
+            const numericIndex = parseInt(index, 10);
+            if (numericIndex < 0 || numericIndex >= parameters.length)
+                throw new Error('Invalid index supplied in substitution: ' + index);
 
-        let value = parameters[substitutionIndex++];
+            value = parameters[numericIndex];
+
+        } else {
+            if (substitutionIndex >= parameters.length)
+                throw new Error('Not enough substitution parameters were provided for this query.');
+            
+            value = parameters[substitutionIndex++];
+        }
+        
         if (typeof value === 'undefined')
             return '[undefined]';
         else if (value === null)

@@ -17,7 +17,7 @@ import ObjectGroup from 'entities/object_group.js';
 // The house manager orchestrates all details associated with housing, manages data and responds to
 // player connection and disconnection events.
 class HouseManager {
-    constructor(abuse, economy, friends, gangs, location, streamer) {
+    constructor(abuse, announce, economy, friends, gangs, location, streamer) {
         this.database_ = server.isTest() ? new MockHouseDatabase()
                                          : new HouseDatabase();
 
@@ -26,6 +26,8 @@ class HouseManager {
 
         this.extensions_ = new Set();
         this.locations_ = new Set();
+
+        this.announce_ = announce;
 
         this.objects_ = ObjectGroup.create('data/objects/houses.json');
 
@@ -234,7 +236,7 @@ class HouseManager {
     //     'welcome' - Updates the welcome message of the house.
     //
     // Updating an invalid setting will yield an exception.
-    async updateHouseSetting(location, setting, value) {
+    async updateHouseSetting(player, location, setting, value) {
         if (!this.locations_.has(location))
             throw new Error('The given |location| does not exist in this HouseManager.');
 
@@ -250,6 +252,10 @@ class HouseManager {
 
                 await this.database_.updateHouseAccess(location, value);
 
+                const readableAccess = HouseSettings.getReadableAccess(value);
+                this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_ACCESS_CHANGED, 
+                    player.name, player.id, location.settings.name, location.settings.id, readableAccess);
+                
                 location.settings.access = value;
                 break;
 
@@ -260,6 +266,9 @@ class HouseManager {
                 await this.database_.updateHouseMarkerColor(location, value);
                 await this.entranceController_.updateLocationSetting(location, 'color', value);
 
+                this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_MARKER_CHANGED, 
+                    player.name, player.id, location.settings.name, location.settings.id, value);
+
                 location.settings.markerColor = value;
                 break;
 
@@ -269,6 +278,9 @@ class HouseManager {
 
                 await this.database_.updateHouseName(location, value);
                 await this.entranceController_.updateLocationSetting(location, 'label', value);
+                
+                this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_RENAMED, 
+                    player.name, player.id, location.settings.name, location.settings.id, value);
 
                 location.settings.name = value;
                 break;
@@ -282,6 +294,14 @@ class HouseManager {
                 // Remove the spawn setting from all existing houses owned by the player.
                 this.getHousesForUser(location.settings.ownerId).forEach(ownedLocation =>
                     ownedLocation.settings.setSpawn(false));
+                
+                if(value){
+                    this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_SPAWN_CHANGED, 
+                        player.name, player.id, location.settings.name, location.settings.id);    
+                } else {
+                    this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_SPAWN_REMOVED, 
+                        player.name, player.id, location.settings.name, location.settings.id);                    
+                }
 
                 location.settings.setSpawn(value);
                 break;
@@ -291,6 +311,9 @@ class HouseManager {
                     throw new Error('An audio stream URL must be at most 255 characters in length.');
 
                 await this.database_.updateHouseStreamUrl(location, value);
+                
+                this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_AUDIO_STREAM_CHANGED, 
+                    player.name, player.id, location.settings.name, location.settings.id, value);
 
                 location.settings.streamUrl = value;
                 break;
@@ -301,6 +324,9 @@ class HouseManager {
 
                 await this.database_.updateHouseWelcomeMessage(location, value);
 
+                this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_SET_WELCOME_MESSAGE, 
+                    player.name, player.id, location.settings.name, location.settings.id, value);
+                
                 location.settings.welcomeMessage = value;
                 break;
 

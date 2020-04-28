@@ -32,6 +32,9 @@ export class Bot {
     // in configuration, but this can be changed during registration and through the NICK command.
     get nickname() { return this.nickname_; }
 
+    // Returns whether the bot is currently connected to the network.
+    isConnected() { return this.state_ === Bot.kStateConnected; }
+
     constructor(delegate, config, servers, channels) {
         this.delegate_ = delegate;
         this.config_ = config;
@@ -68,6 +71,21 @@ export class Bot {
         return types.indexOf(target[0]) > -1;
     }
 
+    // Returns whether the |target| happens to be the echo channel configured in the bot.
+    inEchoChannel(target) {
+        let echoChannel = null;
+
+        for (const channel of this.handshake_.channels) {
+            if (!channel.echo)
+                continue;
+            
+            echoChannel = channel.channel.toLowerCase();
+            break;
+        }
+
+        return echoChannel === target.toLowerCase();
+    }
+
     // Returns the user modes set for the |nickname| on the echo channel, if any.
     getUserModesInEchoChannel(nickname) {
         let echoChannel = null;
@@ -92,18 +110,21 @@ export class Bot {
 
     // Disconnects the bot from the network and will not re-establish connection by itself. Will be
     // a no-op if the bot isn't currently connected or connecting to the network.
-    disconnect() {
+    async disconnect() {
         switch (this.state_) {
             case Bot.kStateDisconnected:
                 break;
 
-            case Bot.kStateConnecting:
             case Bot.kStateConnected:
-                this.connection_.disconnect();
+                this.connection_.write('QUIT :Las Venturas Playground (https://sa-mp.nl/)');
+                // deliberate fall-through
+
+            case Bot.kStateConnecting:
+                this.state_ = Bot.kStateDisconnected;
+
+                await this.connection_.disconnect();
                 break;
         }
-
-        this.state_ = Bot.kStateDisconnected;
     }
 
     // ConnectionDelegate implementation:
@@ -112,8 +133,6 @@ export class Bot {
     // Called when the TCP connection with the IRC server has been established. The connection
     // handshake will begin immediately.
     onConnectionEstablished() {
-        this.log('Connected to the server, beginning handshake...');
-
         this.state_ = Bot.kStateConnected;
         this.handshake_.start();
     }
@@ -122,8 +141,6 @@ export class Bot {
     // string that contains at most a single to-be-parsed IRC command.
     onConnectionMessage(messageString) {
         const message = new Message(messageString);
-
-        this.log(messageString, '>> ');
 
         if (this.handshake_.handleMessage(message))
             return;
@@ -134,10 +151,13 @@ export class Bot {
             this.delegate_.onBotMessage(this, message);
     }
 
+    // Called when a connection attempt has failed. This event is ignored.
+    onConnectionFailed() {}
+
     // Called when the TCP connection with the IRC server has been closed. The bot will no longer be
     // able to do anything until the connection has been re-established.
     onConnectionClosed() {
-        this.log('Disconnected');
+        this.log('Connection closed');
 
         this.delegate_.onBotDisconnected(this);
 
@@ -164,6 +184,8 @@ export class Bot {
 
     // Called when the connection handshake has completed. At this point the bot is ready for use.
     onHandshakeCompleted() {
+        this.log('Connection completed, bot reporting for duty!');
+
         this.delegate_.onBotConnected(this);
     }
 
@@ -189,16 +211,16 @@ export class Bot {
     }
 
     dispose() {
-        this.networkTracker_.dispose();
-        this.networkTracker_ = null;
-
-        this.handshake_.dispose();
-        this.handshake_ = null;
-
         if (this.state_ === Bot.kStateConnected)
             this.connection_.write('QUIT :Shutting down...');
 
         this.connection_.dispose();
         this.connection_ = null;
+
+        this.networkTracker_.dispose();
+        this.networkTracker_ = null;
+
+        this.handshake_.dispose();
+        this.handshake_ = null;
     }
 }

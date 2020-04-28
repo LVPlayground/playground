@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 import DatabaseVehicle from 'features/vehicles/database_vehicle.js';
-import MockAnnounce from 'features/announce/test/mock_announce.js';
 import MockPlayground from 'features/playground/test/mock_playground.js';
 import VehicleAccessManager from 'features/vehicles/vehicle_access_manager.js';
 import Vehicles from 'features/vehicles/vehicles.js';
@@ -30,7 +29,6 @@ describe('VehicleManager', (it, beforeEach) => {
         gunther.position = POSITION;
 
         server.featureManager.registerFeaturesForTests({
-            announce: MockAnnounce,
             playground: MockPlayground,
             vehicles: Vehicles
         });

@@ -10,7 +10,7 @@ export async function issueCommand(bot, commandManager, { target, command, sourc
     if (!command)
         throw new Error('The |command| is required when issuing a command.');
 
-    target = target ?? '#echo';
+    target = target ?? '#LVP.DevJS';
     source = source ?? 'Randomer!user@hostname';
 
     const currentMessageCount = bot.messagesForTesting.length;

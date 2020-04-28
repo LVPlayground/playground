@@ -10,13 +10,14 @@ export class MaintenanceCommands {
     commandManager_ = null;
     configuration_ = null;
 
-    constructor(commandManager, configuration) {
+    constructor(commandManager, configuration, nuwani) {
         this.commandManager_ = commandManager;
         this.configuration_ = configuration;
+        this.nuwani_ = nuwani;
 
         // !eval [JavaScript code]
         this.commandManager_.buildCommand('eval')
-            .restrict(MaintenanceCommands.prototype.isOwner.bind(this))
+            .restrict(context => context.isOwner())
             .parameters([{ name: 'code', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(MaintenanceCommands.prototype.onEvalCommand.bind(this));
         
@@ -24,10 +25,17 @@ export class MaintenanceCommands {
         this.commandManager_.buildCommand('level')
             .parameters([{ name: 'nickname', type: CommandBuilder.WORD_PARAMETER, optional: true }])
             .build(MaintenanceCommands.prototype.onLevelCommand.bind(this));
-
-        // !time
-        this.commandManager_.buildCommand('time')
-            .build(MaintenanceCommands.prototype.onTimeCommand.bind(this));
+        
+        // !nuwani [request-decrease|request-increase]
+        this.commandManager_.buildCommand('nuwani')
+            .restrict(Player.LEVEL_MANAGEMENT)
+            .sub('reload-format')
+                .build(MaintenanceCommands.prototype.onNuwaniReloadFormatCommand.bind(this))
+            .sub('request-decrease')
+                .build(MaintenanceCommands.prototype.onNuwaniRequestDecreaseCommand.bind(this))
+            .sub('request-increase')
+                .build(MaintenanceCommands.prototype.onNuwaniRequestIncreaseCommand.bind(this))
+            .build(MaintenanceCommands.prototype.onNuwaniCommand.bind(this));
     }
 
     // !eval [JavaScript code]
@@ -80,37 +88,67 @@ export class MaintenanceCommands {
         context.respond(`5Result: ${actualNickname} is ${levelString}.`);
     }
 
-    // !time
+    // !nuwani
     //
-    // Displays the current time on the server.
-    onTimeCommand(context) {
-        context.respond('5The current time is: ' + (new Date).toTimeString());
+    // Displays the sub-commands that are available as part of this command.
+    onNuwaniCommand(context) {
+        context.respondWithUsage('!nuwani [reload-format | request-decrease | request-increase]')
     }
 
-    // Returns whether the given |context| has been created for a message from a bot owner.
-    isOwner(context) {
-        const source = context.source;
-        if (!source || !source.isUser())
-            return false;  // the |context| was not sent by a human
-        
-        for (const owner of this.configuration_.owners) {
-            if (owner.nickname !== source.nickname && owner.nickname !== '*')
+    // !nuwani reload-format
+    //
+    // Reloads the IRC message format. The new format must have been uploaded to the server already,
+    // and calling this command will apply the changes to the live bot as well.
+    onNuwaniReloadFormatCommand(context) {
+        try {
+            this.nuwani_.messageFormatter.reloadFormat();
+            context.respond('3Success: The message format has been reloaded.');
+        } catch (exception) {
+            this.respond(`4Error: Unable to reload the format (${exception.message})`);
+        }
+    }
+
+    // !nuwani request-decrease
+    //
+    // Requests an IRC bot to disconnect from the network, in case there's one connected which
+    // has been marked as optional. Generally not useful, but provided for symmetry.
+    onNuwaniRequestDecreaseCommand(context) {
+        let hasActiveOptionalBots = false;
+        for (const activeBot of this.nuwani_.runtime.activeBots) {
+            if (activeBot.config.master || !activeBot.config.optional)
                 continue;
             
-            if (owner.username !== source.username && owner.username !== '*')
-                continue;
-            
-            if (owner.hostname !== source.hostname && owner.hostname !== '*')
-                continue;
-            
-            return true;
+            hasActiveOptionalBots = true;
+            break;
         }
 
-        return false;
+        if (!hasActiveOptionalBots) {
+            context.respond('4Error: There are no optional bots that could be disconnected.');
+            return;
+        }
+
+        this.nuwani_.runtime.requestSlaveDecrease();
+
+        context.respond('3Success: One of the bots has been requested to disconnect.');
+    }
+
+    // !nuwani request-increase
+    //
+    // Requests an additional IRC bot to start up. Useful in case staff on IRC are aware of an
+    // upcoming sudden increase in player count.
+    onNuwaniRequestIncreaseCommand(context) {
+        if (!this.nuwani_.runtime.availableBots.size) {
+            context.respond('4Error: There are no available bots that could be connected.');
+            return;
+        }
+
+        this.nuwani_.runtime.requestSlaveIncrease();
+
+        context.respond('3Success: A new bot has been requested to connect to the network.');
     }
 
     dispose() {
-        this.commandManager_.removeCommand('time');
+        this.commandManager_.removeCommand('nuwani');
         this.commandManager_.removeCommand('level');
         this.commandManager_.removeCommand('eval');
     }

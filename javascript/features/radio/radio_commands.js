@@ -101,7 +101,7 @@ class RadioCommands {
             channel = this.manager_.getCurrentChannelForPlayer(player);
         }
 
-        if (channel.name !== null)
+        if (channel && channel.name !== null)
             player.sendMessage(Message.RADIO_COMMAND_TOGGLE_LISTENING, operation, channel.name);
         else
             player.sendMessage(Message.RADIO_COMMAND_DISABLED);

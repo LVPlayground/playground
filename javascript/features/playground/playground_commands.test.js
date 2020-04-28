@@ -4,7 +4,6 @@
 
 import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
 import PlaygroundCommands from 'features/playground/playground_commands.js';
-import MockAnnounce from 'features/announce/test/mock_announce.js';
 
 describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
     let access = null;
@@ -12,11 +11,12 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
     let gunther = null;
 
     beforeEach(() => {
-        const announce = new MockAnnounce();
+        const announce = server.featureManager.loadFeature('announce');
+        const nuwani = server.featureManager.loadFeature('nuwani');
         const settings = server.featureManager.loadFeature('settings');
 
         access = new PlaygroundAccessTracker();
-        commands = new PlaygroundCommands(access, () => announce, () => settings);
+        commands = new PlaygroundCommands(access, () => announce, () => nuwani, () => settings);
 
         gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.identify();
@@ -257,5 +257,15 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.isTrue(gunther.messages[0].includes('default_channel'));
         assert.isTrue(gunther.messages[0].includes('Hello World'));
+    });
+
+    it('should be able to live reload the message formatting file', async(assert) => {
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
+        assert.isTrue(await gunther.issueCommand('/lvp reload messages'));
+
+        assert.equal(gunther.messages.length, 2);
+        assert.includes(gunther.messages[0], 'is reloading all in-game messages');  // admin notice
+        assert.includes(gunther.messages[1], 'messages have been reloaded');  // acknowledgement
     });
 });

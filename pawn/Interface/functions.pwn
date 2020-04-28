@@ -375,7 +375,7 @@ FortCarsonUpdate() {
 }
 
 ShowServerMessage() {
-    new serverMessageCommands[9][7] = {"beg", "donate", "report", "rules", "forum", "reg", "swear", "weaps", "ts"};
+    new serverMessageCommands[9][7] = {"beg", "donate", "irc", "report", "rules", "forum", "reg", "swear", "weaps"};
     lvp_show(GetPlayerId("Gunther"), serverMessageCommands[random(9)]);
 }
 
@@ -416,9 +416,7 @@ Admin(senderId, text[]) {
             SendClientMessage(playerId, Color::AdministratorColor, notice);
     }
 
-    format(notice, sizeof(notice), "[admin] %s", text);
-    AddEcho(notice);
-
+    EchoMessage("notice-admin", "z", text);
     return 1;
 }
 
@@ -455,14 +453,6 @@ TaxUpdate() {
         }
     }
 
-    return 1;
-}
-
-AddEcho(message[]) {
-    if (strlen(message) > 480)
-        return 0;
-
-    SendEchoMessage(Configuration::EchoHostname, Configuration::EchoPort, message);
     return 1;
 }
 

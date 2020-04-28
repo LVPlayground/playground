@@ -19,4 +19,9 @@ describe('Message', it => {
     assert.equal(Message.filter('{123456}color'), 'color');
     assert.equal(Message.filter('{abc123}color'), 'color');
   });
+
+  it('should create the messages in a read-only manner', assert => {
+    assert.isTrue(Message.hasOwnProperty('TEST_MESSAGE'));
+    assert.throws(() => Message.TEST_MESSAGE = 'foobar');
+  });
 });

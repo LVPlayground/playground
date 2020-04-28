@@ -23,10 +23,19 @@ that not everybody may be fully up-to-speed on the latest.
   * [I want to send a message, but highlight it](#-i-want-to-send-a-message-but-highlight-it)
   * [I want to send a message to in-game crew](#-i-want-to-send-a-message-to-in-game-crew)
 
+### Managing identity of a player on the server
+  * [I want to change a player's username](#-i-want-to-change-a-players-username)
+  * [I want to see a player's nickname history](#-i-want-to-see-a-players-nickname-history)
+  * [I want to see a player's aliases](#-i-want-to-see-a-players-aliases)
+  * [I want to add a new alias for a player](#-i-want-to-add-a-new-alias-for-a-player)
+  * [I want to remove an alias from a player](#-i-want-to-remove-an-alias-from-a-player)
+
 ### Managing the state of Las Venturas Playground players
   * [I want to see which player data I have access to](#-i-want-to-see-which-player-data-i-have-access-to)
   * [I want to see a player's data](#-i-want-to-see-a-players-data)
   * [I want to update a player's data](#-i-want-to-update-a-players-data)
+  * [I want to change a player's password](#-i-want-to-change-a-players-password)
+
 
 ## Controlling who can access the server
 As an administrator, you have the ability to control which players are able to access the server,
@@ -65,7 +74,7 @@ addition to that, we also log each time a ban gets lifted.
   * By default, bans will last for three days.
 
 ### ⯈ I want to ban a player by IP address
-**Command**: `!ban ip [ip] [playerName] [days] [reason]`
+**Command**: `!ban ip [ip] [nickname] [days] [reason]`
 
 #### Examples
 ```
@@ -74,7 +83,7 @@ addition to that, we also log each time a ban gets lifted.
 ```
 
 ### ⯈ I want to ban a player by IP range
-**Command**: `!ban range [ip range] [playerName] [days] [reason]`
+**Command**: `!ban range [ip range] [nickname] [days] [reason]`
 
 #### Examples
 ```
@@ -87,7 +96,7 @@ addition to that, we also log each time a ban gets lifted.
     ban up to 16,777,216 addresses. Raw database access is required in order to go beyond that.
 
 ### ⯈ I want to ban a player by serial number
-**Command**: `!ban serial [gpci] [playerName] [days] [reason]`
+**Command**: `!ban serial [serial] [nickname] [days] [reason]`
 
 #### Examples
 ```
@@ -217,6 +226,55 @@ audience, particularly your fellow administrators.
 ```
 
 
+## Managing identity of a player on the server
+Think back to your early teens, where creating your first e-mail account as `hotlad91@hotmail.com`
+seemed like the best idea in the world. Come your twenties, with a need to build a resume, and
+suddenly this e-mail address might not be the most appropriate anymore.
+
+Players change their minds about their identity all the time. They may join or leave a gang. Up to
+them, really. We have a few tools available to help them through this process.
+
+### ⯈ I want to change a player's username
+**Command**: `!changename [nickname] [newNickname]`
+
+#### Examples
+```
+!changename [BB]Ricky92 TheRickster
+```
+
+### ⯈ I want to see a player's nickname history
+**Command**: `!history [nickname]`;
+
+#### Examples
+```
+!history [SC]Hizophrenia
+```
+
+### ⯈ I want to see a player's aliases
+**Command**: `!aliases`
+
+#### Examples
+```
+!aliases [SC]Hizophrenia
+```
+
+### ⯈ I want to add a new alias for a player
+**Command**: `!addalias [nickname] [alias]`
+
+#### Examples
+```
+!addalias MrSpoon MrsFork
+```
+
+### ⯈ I want to remove an alias from a player
+**Command**: `!supported`
+
+#### Examples
+```
+!removealias Beaner Beanster
+```
+
+
 ## Managing the state of Las Venturas Playground players
 Players come to us with all kinds of requests: their ratio to be re-set, their colour to be changed,
 statistics to be merged with another account, or just plain errors in our code that cause corruption
@@ -255,3 +313,15 @@ right in the database. A trio of commands exists to power this ability.
 !setvalue Gunther kill_count 25
 !setvalue Gunther stats_exports 500
 ```
+
+### ⯈ I want to change a player's password
+**Command**: `!changepass [nickname]`
+
+#### Examples
+```
+!changepass Gunther
+```
+
+#### Notes
+  * We do not allow setting a player's password to a particular value, that's up to them. Instead,
+    this command will set their password to a pseudo-randomly generated value.

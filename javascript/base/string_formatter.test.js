@@ -70,4 +70,14 @@ describe('StringFormatter', it => {
         assert.equal(format('%t', 7200), '02:00:00');
         assert.equal(format('%t', 36154), '10:02:34');
     });
+
+    it('should work with combinations', assert => {
+        assert.equal(format('%d %s %s', 42, 'hello', 'world :)'), '42 hello world :)');
+    });
+
+    it('should be able to re-order formatting', assert => {
+        assert.equal(format('%s{1} %d{0}', 25, 'Joe'), 'Joe 25');
+        assert.throws(() => format('%s{1}', 'Heh'));
+        assert.throws(() => format('%s{-1}', 'Heh'));
+    });
 });

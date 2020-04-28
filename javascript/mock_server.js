@@ -24,9 +24,10 @@ import MockTextLabel from 'entities/test/mock_text_label.js';
 import MockVehicle from 'entities/test/mock_vehicle.js';
 
 import Abuse from 'features/abuse/abuse.js';
+import Announce from 'features/announce/announce.js';
 import Communication from 'features/communication/communication.js';
 import Gangs from 'features/gangs/gangs.js';
-import MockAnnounce from 'features/announce/test/mock_announce.js';
+import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
 import Radio from 'features/radio/radio.js';
 import Settings from 'features/settings/settings.js';
 import Streamer from 'features/streamer/streamer.js';
@@ -56,9 +57,10 @@ class MockServer {
         // Register features whose production versions are suitable for testing.
         this.featureManager_.registerFeaturesForTests({
             abuse: Abuse,
-            announce: MockAnnounce,  // TODO: Move functionality to |communication|. See #309.
+            announce: Announce,  // TODO: Move functionality to |communication|. See #309.
             communication: Communication,
             gangs: Gangs,
+            nuwani: MockNuwani,
             radio: Radio,
             settings: Settings,
             streamer: Streamer

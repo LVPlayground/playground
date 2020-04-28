@@ -14,7 +14,7 @@ export class TestServerSocket {
     // Magic port value that can be used to trigger a failed connection.
     static kFailurePort = 26667;
 
-    #sockets_ = [];
+    sockets_ = [];
 
     constructor() {
         if (existingInstance !== null)
@@ -27,17 +27,17 @@ export class TestServerSocket {
     }
 
     // Gets the array of sockets that have been opened thus far.
-    get sockets() { return this.#sockets_; }
+    get sockets() { return this.sockets_; }
 
     // To be called when a new socket has been opened.
     registerSocket(socket) {
-        this.#sockets_.push(socket);
+        this.sockets_.push(socket);
     }
 
     dispose() {
         Socket = existingSocket;
 
-        this.#sockets_ = [];
+        this.sockets_ = [];
 
         existingInstance = null;
         existingSocket = null;
@@ -47,88 +47,104 @@ export class TestServerSocket {
 // Mock implementation of the Socket module, normally provided by PlaygroundJS. Should be kept
 // in sync, and exercise the same behaviour as the C++ plugin's implementation.
 class TestSocket {
-    #protocol_ = null;
-    #state_ = null;
+    state_ = null;
+    listeners_ = null;
+    options_ = null;
 
-    #error_listeners_ = new Set();
-    #message_listeners_ = new Set();
+    // Options are exposed for testing purposes only, normal Sockets do not provide this accessor.
+    get optionsForTesting() { return this.options_; }
 
-    // Values exposed for testing purposes only, these do not exist on the actual implementation.
-    ipForTesting = null;
-    portForTesting = null;
+    // readonly attribute string state;
+    get state() { return this.state_; }
 
     // [Constructor(string protocol)]
     constructor(protocol) {
-        if (!['tcp', 'udp'].includes(protocol.toLowerCase()))
-            throw new Error('Invalid protocol provided: ' + protocol);
-        
-        this.#protocol_ = protocol;
-        this.#state_ = 'disconnected';
+        if (typeof protocol !== 'string')
+            throw new Error('The |protocol| must be a string.');
+
+        if (!['tcp'].includes(protocol))
+            throw new Error('Invalid protocol provided: ' + options.protocol);
+
+        this.state_ = 'disconnected';
+        this.listeners_ = new Map([
+            ['close',   new Set()],
+            ['error',   new Set()],
+            ['message', new Set()],
+        ]);
 
         existingInstance.registerSocket(this);
     }
 
-    // Promise<boolean> open(string ip, number port[, number timeout]);
-    async open(ip, port, timeout) {
-        if (this.#state_ !== 'disconnected')
-            throw new Error('Illegal to call open() if a live connection already exists.');
-
-        if (port === TestServerSocket.kFailurePort) {
-            this.#state_ = 'disconnected';
-            return false;
+    // Promise<boolean> open(SocketOpenOptions options);
+    async open(options) {
+        switch (this.state_) {
+            case 'connecting':
+            case 'connected':
+            case 'disconnecting':
+                throw new Error('Unable to open the socket: there already is an active connection.');
+            
+            case 'disconnected':
+                break;
         }
 
-        this.ipForTesting = ip;
-        this.portForTesting = port;
+        this.options_ = options;
 
-        this.#state_ = 'connected';
+        if (options.port === TestServerSocket.kFailurePort)
+            return false;
+
+        this.state_ = 'connected';
         return true;
     }
 
     // Promise<boolean> write(ArrayBuffer data);
     async write(data) {
+        switch (this.state_) {
+            case 'connecting':
+            case 'disconnecting':
+            case 'disconnected':
+                throw new Error('Unable to write data to the socket: this requires an active connection.');
+            
+            case 'connected':
+                break;
+        }
+
         return true;
+    }
+
+    // Promise<void> close();
+    async close() {
+        switch (this.state_) {
+            case 'disconnected':
+                throw new Error('Unable to close the socket: this requires a connection.');
+            
+            case 'connecting':
+            case 'disconnecting':
+            case 'connected':
+                break;
+        }
+
+        this.state_ = 'disconnected';
+        this.options_ = null;
+
+        await Promise.resolve();  // introduce asynchronousity
+
+        for (const listener of this.listeners_.get('close'))
+            listener();
     }
 
     // void addEventListener(string event, function listener);
     addEventListener(event, listener) {
-        switch (event) {
-            case 'error':
-                this.#error_listeners_.add(listener);
-                break;
-            case 'message':
-                this.#message_listeners_.add(listener);
-                break;
-            default:
-                throw new Error('Invalid event listener specified: ' + event);
-        }
+        if (!this.listeners_.has(event))
+            throw new Error('Invalid event name: ' + event);
+        
+        this.listeners_.get(event).add(listener);
     }
 
     // void removeEventListener(string event, function listener);
     removeEventListener(event, listener) {
-        switch (event) {
-            case 'error':
-                this.#error_listeners_.delete(listener);
-                break;
-            case 'message':
-                this.#message_listeners_.delete(listener);
-                break;
-            default:
-                throw new Error('Invalid event listener specified: ' + event);
-        }
+        if (!this.listeners_.has(event))
+            throw new Error('Invalid event name: ' + event);
+        
+        this.listeners_.get(event).delete(listener);
     }
-
-    // void close();
-    close() {
-        this.ipForTesting = null;
-        this.portForTesting = null;
-
-        this.#state_ = 'disconnected';
-    }
-
-    // readonly attribute string protocol;
-    get protocol() { return this.#protocol_; }
-
-    // readonly attribute string state;
-    get state() { return this.#state_; }
 }

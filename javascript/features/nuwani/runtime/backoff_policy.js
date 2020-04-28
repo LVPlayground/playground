@@ -58,4 +58,11 @@ export class BackoffPolicy {
         this.failureCount_++;
         this.state_ = kPolicyStateIdle;
     }
+
+    // Resets the backoff policy back to idle, when the request has been aborted before it actually
+    // started. This could be the case due to the asynchronous nature of establishing connection.
+    resetToIdle() {
+        this.failureCount_ = 0;
+        this.state_ = kPolicyStateIdle;
+    }
 }

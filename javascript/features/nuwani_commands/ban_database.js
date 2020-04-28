@@ -10,7 +10,7 @@ const ADD_ENTRY_QUERY = `
         logs
         (log_date, log_type, ban_ip_range_start, ban_ip_range_end, gpci_hash,
          ban_expiration_date,
-         user_nickname, user_id, source_nickname, source_user_id, description)
+         user_nickname, user_id, subject_nickname, subject_user_id, description)
     VALUES
         (NOW(), ?, ?, ?, ?,
          IF(? = 0, '1970-01-01 01:00:00', DATE_ADD(NOW(), INTERVAL ? DAY)),

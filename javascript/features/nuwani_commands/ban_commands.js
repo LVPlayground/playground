@@ -55,11 +55,12 @@ export class BanCommands {
                     { name: 'days', type: CommandBuilder.NUMBER_PARAMETER },
                     { name: 'reason', type: CommandBuilder.SENTENCE_PARAMETER }])
                 .build(BanCommands.prototype.onBanSerialCommand.bind(this))
-            .parameters([
-                { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
-                { name: 'days', type: CommandBuilder.NUMBER_PARAMETER },
-                { name: 'reason', type: CommandBuilder.SENTENCE_PARAMETER }])
-            .build(BanCommands.prototype.onBanPlayerCommand.bind(this));
+            .sub(CommandBuilder.PLAYER_PARAMETER)
+                .parameters([
+                    { name: 'days', type: CommandBuilder.NUMBER_PARAMETER },
+                    { name: 'reason', type: CommandBuilder.SENTENCE_PARAMETER }])
+                .build(BanCommands.prototype.onBanPlayerCommand.bind(this))
+            .build(BanCommands.prototype.onBanCommand.bind(this));
 
         // !isbanned [nickname | ip | ip range | serial]
         this.commandManager_.buildCommand('isbanned')
@@ -141,6 +142,13 @@ export class BanCommands {
             context.respond(`3Success: The note for ${nickname} has been added to their record.`);
         else
             context.respond(`4Error: The note for ${nickname} could not be stored.`);
+    }
+
+    // !ban
+    //
+    // Shows information about how to use the !ban command, since it's quite a complicated command.
+    onBanCommand(context) {
+        context.respondWithUsage('!ban [player | ip | range | serial]');
     }
 
     // !ban [player] [days] [reason]
@@ -439,7 +447,7 @@ export class BanCommands {
                     return;
 
             } else if (ban.hasOwnProperty('serial')) {
-                if (player.gpci !== ban.serial)
+                if (player.gpci != ban.serial)
                     return;  // serial-based ban, and the player has another serial.
 
             } else {

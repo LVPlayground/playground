@@ -237,44 +237,4 @@ class TeleportationCommands {
 
         return 1;
     }
-
-// -------------------------------------------------------------------------------------------------
-// Russell haxx
-
-    @command("pcmd")
-    public onCmdCommand(playerId, params[]) {
-        if (!Player(playerId)->isManagement())
-            return 1;
-
-        new subjectId = Command->playerParameter(params, 0, playerId);
-        if (subjectId == Player::InvalidId) {
-            SendClientMessage(playerId, Color::Error, "Usage: /pcmd [player!] [/cmdtext]");
-            return 1;
-        }
-
-        new commandOffset = Command->startingIndexForParameter(params, 1);
-        if (commandOffset == -1) {
-            SendClientMessage(playerId, Color::Error, "Usage: /pcmd [player] [/cmdtext!]");
-            return 1; /* invalid parameters given by the sender */
-        }
-
-        new command[128];
-        strncpy(command, params[commandOffset], sizeof(command));
-
-        if (command[0] != '/') {
-            SendClientMessage(playerId, Color::Error, "Usage: /pcmd [player] [/cmdtext!] - missing slash");
-            return 1;
-        }
-
-        new confirmation[168];
-        format(confirmation, sizeof(confirmation), "OnPlayerCommandText(%d, \"%s\")", subjectId, command);
-        SendClientMessage(playerId, Color::Information, confirmation);
-
-        if (strlen(command))
-            CallRemoteFunction("OnPlayerCommandText", "is", subjectId, command);
-
-        return 1;
-    }
-
-// -------------------------------------------------------------------------------------------------
 };

@@ -64,7 +64,7 @@ class IsolateCommand extends Command {
             return;  // huh?
 
         // Use pawnInvoke() because the regular `virtualWorld` property has been blocked.
-        pawnInvoke('SetPlayerVirtualWorld', player.id, this.isolatedWorld_.get(player));
+        pawnInvoke('SetPlayerVirtualWorld', 'ii', player.id, this.isolatedWorld_.get(player));
     }
 
     dispose() {

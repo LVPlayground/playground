@@ -85,7 +85,8 @@ const GANG_MEMBERS_QUERY = `
         users ON users.user_id = users_gangs.user_id
     WHERE
         users_gangs.gang_id = ? AND
-        users_gangs.left_gang IS NULL
+        users_gangs.left_gang IS NULL AND
+        users.username IS NOT NULL
     ORDER BY
         users_gangs.user_role ASC,
         users.username ASC`;

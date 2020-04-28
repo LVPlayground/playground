@@ -6,6 +6,7 @@ import Feature from 'components/feature_manager/feature.js';
 import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
 import PlaygroundCommands from 'features/playground/playground_commands.js';
 import PlaygroundManager from 'features/playground/playground_manager.js';
+import { PlaygroundNuwaniCommands } from 'features/playground/playground_nuwani_commands.js';
 
 // Implementation of the feature that contains a number of options and features giving Las Venturas
 // Playground its unique identity.
@@ -14,10 +15,11 @@ class Playground extends Feature {
         super();
 
         // Used for announcing changes in feature availability to players.
-        const announce = this.defineDependency('announce');
+        this.announce_ = this.defineDependency('announce');
 
-        // Used for distributing messages to IRC, where applicable.
-        const nuwani = this.defineDependency('nuwani');
+        // Used for distributing messages to Nuwani, where applicable.
+        this.nuwani_ = this.defineDependency('nuwani');
+        this.nuwani_.addReloadObserver(this, () => this.initializeNuwaniCommands());
 
         // The Playground feature provides an interface in the mutable settings.
         const settings = this.defineDependency('settings');
@@ -25,11 +27,21 @@ class Playground extends Feature {
         this.access_ = new PlaygroundAccessTracker();
 
         this.manager_ = new PlaygroundManager(settings);
-        this.commands_ = new PlaygroundCommands(this.access_, announce, nuwani, settings);
+
+        this.commands_ =
+            new PlaygroundCommands(this.access_, this.announce_, this.nuwani_, settings);
         this.commands_.loadCommands();
 
         // Activate the features that should be activated by default.
         this.manager_.initialize();
+        this.initializeNuwaniCommands();
+    }
+
+    // Initializes the Nuwani commands part of the Playground feature. In a separate method because
+    // Nuwani may have to be reloaded during server runtime.
+    initializeNuwaniCommands() {
+        this.nuwaniCommands_ =
+            new PlaygroundNuwaniCommands(this.announce_, this.nuwani_, this.manager_);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -54,6 +66,8 @@ class Playground extends Feature {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        this.nuwaniCommands_.dispose();
+
         this.commands_.dispose();
         this.manager_.dispose();
 

@@ -8,6 +8,7 @@ If you're interested in _how_ to use Nuwani as an administrator, please see our
 ## Commands provided to Management members on IRC
   * `!changepass [nickname]`: changes the password of the given player to a temporary one.
   * `!getvalue [nickname] [field]`: displays a particular field in the player's account.
+  * `!lvp reload`: low-level server feature management to live reload particular functionality.
   * `!setvalue [nickname] [field] [value]`: updates a particular field in the player's account.
   * `!supported`: displays a list of the supported fields for altering player data.
 

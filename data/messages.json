@@ -265,6 +265,7 @@
     "NUWANI_ADMIN_ADDED_NOTE": "%s (IRC) has added a note for %s (Id:%d): %s",
     "NUWANI_ADMIN_BANNED": "%s (IRC) has banned %s (Id:%d) for %d days: %s",
     "NUWANI_ADMIN_BANNED_GROUP": "%s (IRC) has banned %s for %d days: %s",
+    "NUWANI_ADMIN_FEATURE_RELOADED": "%s (IRC) has reloaded the %s feature.",
     "NUWANI_ADMIN_KICKED": "%s (IRC) has kicked %s (Id:%d): %s",
     "NUWANI_PLAYER_BANNED_NOTICE": "{FF9900}You have been banned by %s for %d days{FFFFFF}: %s",
     "NUWANI_PLAYER_KICKED_NOTICE": "{FF9900}You have been kicked by %s{FFFFFF}: %s",

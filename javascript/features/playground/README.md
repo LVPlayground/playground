@@ -28,3 +28,10 @@ The following commands are available as part of the feature:
     available to management.
   - **/spm [player] [message]**: Sends a private message to `player` that will not be logged. Only
     available to management.
+
+## Nuwani commands
+The Playground feature also provides a limited set of functionality to Management members on IRC,
+through the following commands:
+
+  - **!lvp reload messages**: Reloads the JavaScript messages defined in `messages.json`.
+  - **!lvp reload [feature]**: Reloads the given JavaScript feature.

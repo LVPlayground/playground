@@ -357,7 +357,6 @@ class PlaygroundCommands {
             Message.LVP_ANNOUNCE_FEATURE_RELOADED, player.name, player.id, feature);
 
         player.sendMessage(Message.LVP_RELOAD_RELOADED, feature);
-
     }
 
     // Displays a series of menus to Management members that want to inspect or make changes to how

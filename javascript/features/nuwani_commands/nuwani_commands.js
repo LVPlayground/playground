@@ -4,7 +4,6 @@
 
 import Feature from 'components/feature_manager/feature.js';
 
-import { BanCommands } from 'features/nuwani_commands/ban_commands.js';
 import { CommunicationCommands } from 'features/nuwani_commands/communication_commands.js';
 import { NuwaniCommand } from 'features/nuwani_commands/nuwani_command.js';
 import { PlayerCommands } from 'features/nuwani_commands/player_commands.js';
@@ -45,7 +44,6 @@ export class NuwaniCommands extends Feature {
         const configuration = this.nuwani_().configuration;
 
         this.commands_ = [
-            new BanCommands(commandManager, this.announce_),
             new CommunicationCommands(commandManager, this.announce_, this.nuwani_),
             new PlayerCommands(commandManager, configuration.passwordSalt),
         ];

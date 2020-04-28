@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { BanCommands } from 'features/nuwani_commands/ban_commands.js';
-import { BanDatabase } from 'features/nuwani_commands/ban_database.js';
-import { MockBanDatabase } from 'features/nuwani_commands/test/mock_ban_database.js';
+import { BanDatabase } from 'features/punishments/ban_database.js';
+import { MockBanDatabase } from 'features/punishments/test/mock_ban_database.js';
+import { NuwaniCommands } from 'features/punishments/nuwani_commands.js';
 import { TestBot } from 'features/nuwani/test/test_bot.js';
 
 import { ip2long } from 'features/nuwani_commands/ip_utilities.js';
@@ -14,7 +14,7 @@ import { issueCommand } from 'features/nuwani/commands/command_helpers.js';
 const kCommandSourceUsername = 'Holsje';
 const kCommandSource = 'Holsje!theone@lvp.administrator';
 
-describe('BanCommands', (it, beforeEach, afterEach) => {
+describe('NuwaniCommands', (it, beforeEach, afterEach) => {
     let bot = null;
     let commandManager = null;
     let commands = null;
@@ -28,7 +28,7 @@ describe('BanCommands', (it, beforeEach, afterEach) => {
 
         bot = new TestBot();
         commandManager = nuwani.commandManager;
-        commands = new BanCommands(nuwani.commandManager, () => announce, MockBanDatabase);
+        commands = new NuwaniCommands(nuwani.commandManager, () => announce, MockBanDatabase);
         database = commands.database_;
 
         gunther = server.playerManager.getById(/* Gunther= */ 0);

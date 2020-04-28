@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { BanDatabase } from 'features/nuwani_commands/ban_database.js';
+import { BanDatabase } from 'features/punishments/ban_database.js';
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
 import { format } from 'base/string_formatter.js';
@@ -11,7 +11,7 @@ import { isPartOfRangeBan } from 'features/nuwani_commands/ip_utilities.js';
 // Implementation of a series of commands that enables administrators to revoke access from certain
 // players, IP addresses and serial numbers from the server, as well as understanding why someone
 // might not have access. This includes a series of tools for understanding IP and serial usage.
-export class BanCommands {
+export class NuwaniCommands {
     commandManager_ = null;
 
     constructor(commandManager, announce, BanDatabaseConstructor = BanDatabase) {
@@ -26,7 +26,7 @@ export class BanCommands {
             .parameters([
                 { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
                 { name: 'note', type: CommandBuilder.SENTENCE_PARAMETER }])
-            .build(BanCommands.prototype.onAddNoteCommand.bind(this));
+            .build(NuwaniCommands.prototype.onAddNoteCommand.bind(this));
 
         // !ban ip [ip] [nickname] [days] [reason]
         // !ban range [ip range] [nickname] [days] [reason]
@@ -40,34 +40,34 @@ export class BanCommands {
                     { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
                     { name: 'days', type: CommandBuilder.NUMBER_PARAMETER },
                     { name: 'reason', type: CommandBuilder.SENTENCE_PARAMETER }])
-                .build(BanCommands.prototype.onBanIpCommand.bind(this))
+                .build(NuwaniCommands.prototype.onBanIpCommand.bind(this))
             .sub('range')
                 .parameters([
                     { name: 'ip range', type: CommandBuilder.WORD_PARAMETER },
                     { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
                     { name: 'days', type: CommandBuilder.NUMBER_PARAMETER },
                     { name: 'reason', type: CommandBuilder.SENTENCE_PARAMETER }])
-                .build(BanCommands.prototype.onBanRangeCommand.bind(this))
+                .build(NuwaniCommands.prototype.onBanRangeCommand.bind(this))
             .sub('serial')
                 .parameters([
                     { name: 'serial', type: CommandBuilder.NUMBER_PARAMETER },
                     { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
                     { name: 'days', type: CommandBuilder.NUMBER_PARAMETER },
                     { name: 'reason', type: CommandBuilder.SENTENCE_PARAMETER }])
-                .build(BanCommands.prototype.onBanSerialCommand.bind(this))
+                .build(NuwaniCommands.prototype.onBanSerialCommand.bind(this))
             .sub(CommandBuilder.PLAYER_PARAMETER)
                 .parameters([
                     { name: 'days', type: CommandBuilder.NUMBER_PARAMETER },
                     { name: 'reason', type: CommandBuilder.SENTENCE_PARAMETER }])
-                .build(BanCommands.prototype.onBanPlayerCommand.bind(this))
-            .build(BanCommands.prototype.onBanCommand.bind(this));
+                .build(NuwaniCommands.prototype.onBanPlayerCommand.bind(this))
+            .build(NuwaniCommands.prototype.onBanCommand.bind(this));
 
         // !isbanned [nickname | ip | ip range | serial]
         this.commandManager_.buildCommand('isbanned')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{
                 name: 'nickname | ip | ip range | serial', type: CommandBuilder.WORD_PARAMETER }])
-            .build(BanCommands.prototype.onIsBannedCommand.bind(this));
+            .build(NuwaniCommands.prototype.onIsBannedCommand.bind(this));
 
         // !kick [player] [reason]
         this.commandManager_.buildCommand('kick')
@@ -75,30 +75,30 @@ export class BanCommands {
             .parameters([
                 { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
                 { name: 'reason', type: CommandBuilder.SENTENCE_PARAMETER }])
-            .build(BanCommands.prototype.onKickPlayerCommand.bind(this));
+            .build(NuwaniCommands.prototype.onKickPlayerCommand.bind(this));
 
         // !lastbans
         this.commandManager_.buildCommand('lastbans')
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .build(BanCommands.prototype.onLastBansCommand.bind(this));
+            .build(NuwaniCommands.prototype.onLastBansCommand.bind(this));
 
         // !ipinfo [nickname | ip | ip range]
         this.commandManager_.buildCommand('ipinfo')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'nickname | ip | ip range', type: CommandBuilder.WORD_PARAMETER }])
-            .build(BanCommands.prototype.onIpInfoCommand.bind(this));
+            .build(NuwaniCommands.prototype.onIpInfoCommand.bind(this));
 
         // !serialinfo [nickname | serial]
         this.commandManager_.buildCommand('serialinfo')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'nickname | serial', type: CommandBuilder.WORD_PARAMETER }])
-            .build(BanCommands.prototype.onSerialInfoCommand.bind(this));
+            .build(NuwaniCommands.prototype.onSerialInfoCommand.bind(this));
 
         // !why [nickname]
         this.commandManager_.buildCommand('why')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'nickname', type: CommandBuilder.WORD_PARAMETER }])
-            .build(BanCommands.prototype.onWhyCommand.bind(this));
+            .build(NuwaniCommands.prototype.onWhyCommand.bind(this));
 
         // !unban [ip | ip range | serial] [reason]
         this.commandManager_.buildCommand('unban')
@@ -106,7 +106,7 @@ export class BanCommands {
             .parameters([
                 { name: 'ip | ip range | serial', type: CommandBuilder.WORD_PARAMETER },
                 { name: 'reason', type: CommandBuilder.SENTENCE_PARAMETER }])
-            .build(BanCommands.prototype.onWhyCommand.bind(this));
+            .build(NuwaniCommands.prototype.onWhyCommand.bind(this));
     }
 
     // !addnote [nickname] [note]

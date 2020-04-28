@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { BanDatabase } from 'features/nuwani_commands/ban_database.js';
-import { MockBanDatabase } from 'features/nuwani_commands/test/mock_ban_database.js';
+import { BanDatabase } from 'features/punishments/ban_database.js';
+import { MockBanDatabase } from 'features/punishments/test/mock_ban_database.js';
 
 describe('PlayerDatabase', it => {
     // Note that while each test instantiates the `MockBanDatabase` class, it's actually testing

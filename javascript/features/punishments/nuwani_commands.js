@@ -563,9 +563,27 @@ export class NuwaniCommands {
     //
     // Displays the recent entries in the permanent record of the given |player|.
     async onWhyCommand(context, nickname) {
-        context.respond('4Error: This command has not been implemented yet.');
+        const { total, logs } = await this.database_.getLogEntries({ nickname, limit: 5 });
+        if (!logs.length) {
+            context.respond(`4Error: No logs could be found for ${nickname}.`);
+            return;
+        }
+
+        const url = 'https://profile.sa-mp.nl/bans/' + encodeURIComponent(nickname);
+
+        context.respond(`4*** Player log for ${nickname} (${total} items) - ${url}`);
+        for (const entry of logs) {
+            const date = entry.date.toISOString().replace(/^(.+?)T(.+?)\..*$/, '$1 $2');
+            const attribution = `${entry.type} by ${entry.issuedBy}`;
+            const reason = entry.reason;
+
+            const banValue = entry.ip || entry.range || entry.serial;
+            const ban = banValue ? ` 14(${banValue})` : '';
+
+            context.respond(`4[${date}] 3(${attribution}): ${reason}${ban}`);
+        }
     }
-    
+
     // Validates that the given |days| is a sensible value for a ban. We put limits on this because
     // people will try to break this system, and they really shouldn't.
     validateDuration(context, days) {

@@ -10,6 +10,18 @@ describe('PlayerDatabase', it => {
     // most of the production logic as `MockBanDatabase` extends the `BanDatabase` changing only the
     // routines that actually interact with the database.
 
+    it('is able to get the most recent log entries from a user', async (assert) => {
+        const instance = new MockBanDatabase();
+
+        const noResults = await instance.getLogEntries({ nickname: 'Xanlant' });
+        assert.equal(noResults.total, 0);
+        assert.equal(noResults.logs.length, 0);
+
+        const results = await instance.getLogEntries({ nickname: 'Xanland' });
+        assert.isAbove(results.total, 0);
+        assert.isAbove(results.logs.length, 0);
+    });
+
     it('is able to add notes the the database', async (assert) => {
         const instance = new MockBanDatabase();
 

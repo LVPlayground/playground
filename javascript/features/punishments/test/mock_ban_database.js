@@ -15,6 +15,31 @@ export class MockBanDatabase extends BanDatabase {
     }
 
     // Overridden.
+    async _getLogEntriesQuery({ nickname, limit }) {
+        if (nickname === 'Xanland') {
+            return {
+                total: 7,
+                results: [
+                    {
+                        log_id: 3,
+                        log_date: '2020-04-26 04:31:41',
+                        log_type: 'ban',
+                        ban_ip_range_start: 0,
+                        ban_ip_range_end: 0,
+                        gpci_hash: 2657120904,  // 894984A40C8E59EC45DC4E8CC088CE0DCDD8E5D9
+                        ban_expiration_date: '2020-06-06 03:25:30',
+                        user_nickname: 'HaloLVP',
+                        subject_nickname: 'Xanland',
+                        description: 'Testing serial information',
+                    }
+                ]
+            };
+        }
+
+        return { total: 0, results: [] };
+    }
+
+    // Overridden.
     async _addEntryQuery(params) {
         this.addedEntry = params;
         return true;
@@ -27,6 +52,7 @@ export class MockBanDatabase extends BanDatabase {
             {
                 log_id: 1,
                 log_date: '2020-04-28 20:41:12',
+                log_type: 'ban',
                 ban_ip_range_start: 623925203,
                 ban_ip_range_end: 623925203,
                 gpci_hash: 0,
@@ -39,6 +65,7 @@ export class MockBanDatabase extends BanDatabase {
             {
                 log_id: 2,
                 log_date: '2020-04-27 14:55:01',
+                log_type: 'ban',
                 ban_ip_range_start: 623902720,
                 ban_ip_range_end: 623968255,
                 gpci_hash: 0,
@@ -51,6 +78,7 @@ export class MockBanDatabase extends BanDatabase {
             {
                 log_id: 3,
                 log_date: '2020-04-26 04:31:41',
+                log_type: 'ban',
                 ban_ip_range_start: 0,
                 ban_ip_range_end: 0,
                 gpci_hash: 2657120904,  // 894984A40C8E59EC45DC4E8CC088CE0DCDD8E5D9
@@ -144,6 +172,7 @@ export class MockBanDatabase extends BanDatabase {
                 {
                     log_id: 48561,
                     log_date: '2020-04-01 12:51:14',
+                    log_type: 'ban',
                     ban_ip_range_start: 623925203,  // 37.48.87.211
                     ban_ip_range_end: 623925203,  // 37.48.87.211
                     gpci_hash: 987654321,
@@ -155,6 +184,7 @@ export class MockBanDatabase extends BanDatabase {
                 {
                     log_id: 39654,
                     log_date: '2020-01-16 14:55:01',
+                    log_type: 'ban',
                     ban_ip_range_start: 1021343232,  // 60.224.118.0
                     ban_ip_range_end: 1021343487,  // 60.224.118.255
                     gpci_hash: 987654321,
@@ -170,6 +200,7 @@ export class MockBanDatabase extends BanDatabase {
                 {
                     log_id: 12894,
                     log_date: '2019-12-05 04:51:11',
+                    log_type: 'ban',
                     ban_ip_range_start: 623902720,  // 37.48.0.0
                     ban_ip_range_end: 623968255,  // 37.48.255.255
                     gpci_hash: 0,
@@ -184,6 +215,7 @@ export class MockBanDatabase extends BanDatabase {
                 {
                     log_id: 8954,
                     log_date: '2018-01-14 14:12:59',
+                    log_type: 'ban',
                     ban_ip_range_start: 0,
                     ban_ip_range_end: 0,
                     gpci_hash: 2657120904,  // 894984A40C8E59EC45DC4E8CC088CE0DCDD8E5D9

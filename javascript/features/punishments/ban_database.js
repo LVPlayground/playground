@@ -4,6 +4,36 @@
 
 import { ip2long, long2ip, isIpAddress, isIpRange, rangeToText } from 'features/nuwani_commands/ip_utilities.js';
 
+// MySQL query for getting the most recent log entries of a player.
+const GET_LOG_ENTRIES_QUERY = `
+    SELECT
+        log_id,
+        log_date,
+        log_type,
+        ban_ip_range_start,
+        ban_ip_range_end,
+        gpci_hash,
+        ban_expiration_date,
+        user_nickname,
+        subject_nickname,
+        description
+    FROM
+        logs
+    WHERE
+        subject_nickname = ?
+    ORDER BY
+        log_date DESC
+    LIMIT
+        ?`;
+
+const GET_LOG_ENTRIES_COUNT_QUERY = `
+    SELECT
+        COUNT(*) AS total
+    FROM
+        logs
+    WHERE
+        subject_nickname = ?`;
+
 // MySQL query to execute when adding an entry to the database.
 const ADD_ENTRY_QUERY = `
     INSERT INTO
@@ -21,6 +51,7 @@ const FIND_ACTIVE_BANS_QUERY = `
     SELECT
         log_id,
         log_date,
+        log_type,
         ban_ip_range_start,
         ban_ip_range_end,
         gpci_hash,
@@ -56,7 +87,7 @@ const RECENT_NICKNAMES_QUERY = `
     GROUP BY
         nickname
     ORDER BY
-        total DESC
+        session_date DESC
     LIMIT
         10`;
 
@@ -83,7 +114,7 @@ const RECENT_IP_QUERY = `
     GROUP BY
         ip_address
     ORDER BY
-        total DESC
+        session_date DESC
     LIMIT
         10`;
 
@@ -109,7 +140,7 @@ const RECENT_SERIAL_QUERY = `
     GROUP BY
         gpci_hash
     ORDER BY
-        total DESC
+        session_date DESC
     LIMIT
         10`;
 
@@ -127,6 +158,7 @@ const LAST_BANS_QUERY = `
     SELECT
         log_id,
         log_date,
+        log_type,
         ban_ip_range_start,
         ban_ip_range_end,
         gpci_hash,
@@ -168,6 +200,30 @@ export class BanDatabase {
     static kMaximumIpRangeCountAdministrator = 256 * 256;     // 0.0.*.*
     static kMaximumIpRangeCountManagement = 256 * 256 * 256;  // 0.*.*.*
     
+    // Gets the |limit| most recent log entries stored for the given |nickname|.
+    async getLogEntries({ nickname, limit = 5 } = {}) {
+        const { total, results } = await this._getLogEntriesQuery({ nickname, limit });
+        const logs = [];
+
+        for (const row of results)
+            logs.push(this.toBanInformation(row));
+
+        return { total, logs };
+    }
+
+    // Actually runs the query for getting the |limit| most recent log entries from |nickname|.
+    async _getLogEntriesQuery({ nickname, limit }) {
+        const [ totalResult, entriesResult ] = await Promise.all([
+            server.database.query(GET_LOG_ENTRIES_COUNT_QUERY, nickname),
+            server.database.query(GET_LOG_ENTRIES_QUERY, nickname, limit)
+        ]);
+
+        const total = totalResult && totalResult.rows.length ? totalResult.rows[0].total : 0;
+        const results = entriesResult ? entriesResult.rows : [];
+
+        return { total, results };
+    }
+
     // Adds an entry to the user log table. The |type|, |sourceNickname|, |subjectNickname| and
     // |note| fields are required. When known, the |sourceUserId| and |subjectUserId| fields are
     // accepted for all types as well. Type specific fields are as follows:
@@ -368,7 +424,7 @@ export class BanDatabase {
 
     // Actually runs the queries necessary to determine the active nicknames for either an IP
     // range, or for a serial number.
-    async _findNicknamesQuery({ ipRangeBegin, ipRangeEnd, serial, maxAge = 1095 } = {}) {
+    async _findNicknamesQuery({ ipRangeBegin = 0, ipRangeEnd = 0, serial = 0, maxAge = 1095 } = {}) {
         const [ totalResults, topResults ] = await Promise.all([
             server.database.query(
                 RECENT_NICKNAMES_COUNT_QUERY, ipRangeBegin, ipRangeEnd, serial, maxAge),
@@ -498,6 +554,7 @@ export class BanDatabase {
     toBanInformation(row) {
         let information = {
             id: row.log_id,
+            type: row.log_type,
             date: new Date(row.log_date),
             expiration: new Date(row.ban_expiration_date),
             reason: row.description,

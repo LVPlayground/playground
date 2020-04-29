@@ -688,12 +688,30 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         assert.includes(resultsNickname[0], '5642214798');
     });
 
-    it.fails();
-
     it('should be able to display recent entries in a player record', async (assert) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
-        // !why [nickname]
+        const noResultsNickname = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!why Xanlant',
+        });
+
+        assert.equal(noResultsNickname.length, 1);
+        assert.includes(noResultsNickname[0], 'Error');
+        assert.includes(noResultsNickname[0], 'No logs could be found');
+
+        const resultsNickname = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!why Xanland',
+        });
+
+        assert.equal(resultsNickname.length, 2);
+        assert.includes(resultsNickname[0], 'Xanland');
+        assert.includes(resultsNickname[0], '7 items');
+
+        assert.includes(resultsNickname[1], 'ban');
+        assert.includes(resultsNickname[1], 'Testing serial information');
+        assert.includes(resultsNickname[1], '2657120904');
     });
 
     it('should be able to list previously issued bans', async (assert) => {

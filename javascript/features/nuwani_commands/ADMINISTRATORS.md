@@ -117,20 +117,22 @@ addition to that, we also log each time a ban gets lifted.
     the website, which the command will give you a link for.
 
 ### ⯈ I want to find out who is using an IP address
-**Command**: `!ipinfo [ip | ip range]`
+**Command**: `!ipinfo [ip | ip range] [maxAge = 1095]`
 
 #### Examples
 ```
-!ipinfo 56.0.105.103
+!ipinfo 56.0.105.103 365
 !ipinfo 192.168.*.*
 ```
 
 #### Notes
-  * The 15 most recent nicknames will be displayed. Raw database access is required in order to
+  * The 10 most recent nicknames will be displayed. Raw database access is required in order to
     access additional nicknames.
+  * By default only entries from the past three years will be considered. This can be overridden by
+    passing a different value for the `maxAge` argument, a number of days.
 
 ### ⯈ I want to find out which IP addresses a player is using
-**Command**: `!ipinfo [nickname]`
+**Command**: `!ipinfo [nickname] [maxAge = 1095]`
 
 #### Examples
 ```
@@ -138,23 +140,28 @@ addition to that, we also log each time a ban gets lifted.
 ```
 
 #### Notes
-  * The 15 most recent IP addresses will be displayed. Raw database access is required in order to
+  * The 10 most recent IP addresses will be displayed. Raw database access is required in order to
     access additional IP addresses.
+  * By default only entries from the past three years will be considered. This can be overridden by
+    passing a different value for the `maxAge` argument, a number of days.
 
 ### ⯈ I want to find out who is using a serial number
-**Command**: `!serialinfo [serial]`
+**Command**: `!serialinfo [serial] [maxAge = 1095]`
 
 #### Examples
 ```
+!serialinfo 5111943668 90
 !serialinfo 5111943668
 ```
 
 #### Notes
-  * The 15 most recent nicknames will be displayed. Raw database access is required in order to
+  * The 10 most recent nicknames will be displayed. Raw database access is required in order to
     access additional nicknames.
+  * By default only entries from the past three years will be considered. This can be overridden by
+    passing a different value for the `maxAge` argument, a number of days.
 
 ### ⯈ I want to find out which serial(s) a player is using
-**Command**: `!serialinfo [nickname]`
+**Command**: `!serialinfo [nickname] [maxAge = 1095]`
 
 #### Examples
 ```
@@ -162,8 +169,10 @@ addition to that, we also log each time a ban gets lifted.
 ```
 
 #### Notes
-  * The 15 most recent serial numbers will be displayed. Raw database access is required in order to
+  * The 10 most recent serial numbers will be displayed. Raw database access is required in order to
     access additional serial numbers.
+  * By default only entries from the past three years will be considered. This can be overridden by
+    passing a different value for the `maxAge` argument, a number of days.
 
 ### ⯈ I want to find out what a player's record is
 **Command**: `!why [nickname]`

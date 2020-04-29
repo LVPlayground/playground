@@ -89,16 +89,20 @@ export class NuwaniCommands {
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .build(NuwaniCommands.prototype.onLastBansCommand.bind(this));
 
-        // !ipinfo [nickname | ip | ip range]
+        // !ipinfo [nickname | ip | ip range] [maxAge = 1095]
         this.commandManager_.buildCommand('ipinfo')
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'nickname | ip | ip range', type: CommandBuilder.WORD_PARAMETER }])
+            .parameters([
+                { name: 'nickname | ip | ip range', type: CommandBuilder.WORD_PARAMETER },
+                { name: 'maxAge', type: CommandBuilder.NUMBER_PARAMETER, optional: true }])
             .build(NuwaniCommands.prototype.onIpInfoCommand.bind(this));
 
-        // !serialinfo [nickname | serial]
+        // !serialinfo [nickname | serial] [maxAge = 1095]
         this.commandManager_.buildCommand('serialinfo')
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'nickname | serial', type: CommandBuilder.WORD_PARAMETER }])
+            .parameters([
+                { name: 'nickname | serial', type: CommandBuilder.WORD_PARAMETER },
+                { name: 'maxAge', type: CommandBuilder.NUMBER_PARAMETER, optional: true }])
             .build(NuwaniCommands.prototype.onSerialInfoCommand.bind(this));
 
         // !why [nickname]
@@ -404,16 +408,17 @@ export class NuwaniCommands {
         context.respond('5Most recent bans: ' + responseBans.join(', '));
     }
 
-    // !ipinfo [nickname | ip | ip range]
+    // !ipinfo [nickname | ip | ip range] [maxAge = 1095]
     //
     // Displays information about the IP addresses used by |nickname|, or the nicknames who have
     // used the singular |ip| address or the given |ip range| in the past.
-    async onIpInfoCommand(context, value) {
+    async onIpInfoCommand(context, value, maxAge = 1095) {
         let results = null;
 
         if (isIpAddress(value) || isIpRange(value)) {
             results = await this.database_.findNicknamesForIpAddressOrRange({
                 ip: value,
+                maxAge,
             });
 
             if (!results || !results.total) {
@@ -423,6 +428,7 @@ export class NuwaniCommands {
         } else {
             results = await this.database_.findIpAddressesForNickname({
                 nickname: value,
+                maxAge,
             });
 
             if (!results || !results.total) {
@@ -438,17 +444,18 @@ export class NuwaniCommands {
         context.respond('5Result: ' + this.formatInfoResults(results) + suffix);
     }
 
-    // !serialinfo [nickname | serial]
+    // !serialinfo [nickname | serial] [maxAge = 1095]
     //
     // Displays information about the serial numbers used by the given |nickname|, or the nicknames
     // who have used the given |serial| number in the past.
-    async onSerialInfoCommand(context, value) {
+    async onSerialInfoCommand(context, value, maxAge = 1095) {
         let serialNumber = parseInt(value, 10);
         let results = null;
 
         if (!Number.isNaN(serialNumber) && serialNumber.toString().length == value.length) {
             results = await this.database_.findNicknamesForSerial({
                 serial: serialNumber,
+                maxAge,
             });
 
             if (!results || !results.total) {
@@ -458,6 +465,7 @@ export class NuwaniCommands {
         } else {
             results = await this.database_.findSerialsForNickname({
                 nickname: value,
+                maxAge,
             });
 
             if (!results || !results.total) {

@@ -27,10 +27,10 @@ If you're interested in _how_ to use Nuwani as an administrator, please see our
   * `!isbanned [nickname | ip | ip range | serial]`: checks whether a particular ban exists.
   * `!kick [player] [reason]`: kicks an in-game player from the game for a given reason.
   * `!lastbans`: displays the most recent bans created on the server.
-  * `!ipinfo [nickname | ip | ip range]`: displays IP information of the given information.
+  * `!ipinfo [nickname | ip | ip range] [maxAge = 1095]`: displays IP info for the nickname.
   * `!removealias [nickname] [alias]`: removes the given alias from the player.
   * `!say [message]`: clearly highlights the given message to all players.
-  * `!serialinfo [nickname | serial]`: displays serial of nickname information.
+  * `!serialinfo [nickname | serial]  [maxAge = 1095]`: displays serial info for the nickname.
   * `!why [nickname]`: displays the most recent entries in a player's record.
   * `!unban [ip | ip range | serial] [reason]`: lifts the ban for the given reason.
 

@@ -164,5 +164,53 @@ describe('PlayerDatabase', it => {
         assert.equal(instance.addedEntry.subjectNickname, '[HC]Golk3r');
         assert.equal(instance.addedEntry.note, 'IP bans do not seem to work');
     });
-});
 
+    it('is able to get the most recent bans from the database', async (assert) => {
+        const instance = new MockBanDatabase();
+
+        assert.equal((await instance.getRecentBans(2)).length, 2);
+        assert.isAboveOrEqual((await instance.getRecentBans()).length, 3);
+
+        const bans = await instance.getRecentBans(3);
+
+        assert.equal(bans.length, 3);
+
+        // Ban 1: IP ban
+        assert.equal(bans[0].id, 1);
+        assert.isTrue(bans[0].date instanceof Date);
+        assert.isTrue(bans[0].expiration instanceof Date);
+        assert.equal(bans[0].reason, 'being so thorough');
+        assert.equal(bans[0].issuedBy, '[CP]Mr.JT');
+        assert.equal(bans[0].nickname, 'Halo');
+
+        assert.equal(bans[0].ip, '37.48.87.211');
+        assert.isNull(bans[0].range);
+        assert.isNull(bans[0].serial);
+
+        // Ban 2: IP range ban
+        assert.equal(bans[1].id, 2);
+        assert.isTrue(bans[1].date instanceof Date);
+        assert.isTrue(bans[1].expiration instanceof Date);
+        assert.equal(bans[1].reason, 'Health cheat');
+        assert.equal(bans[1].issuedBy, 'slein');
+        assert.equal(bans[1].nickname, '[BB]Joe');
+
+        assert.isNull(bans[1].ip);
+        assert.equal(bans[1].range, '37.48.*.*');
+        assert.isNull(bans[1].serial);
+
+        // Ban 3: Serial ban
+        assert.equal(bans[2].id, 3);
+        assert.isTrue(bans[2].date instanceof Date);
+        assert.isTrue(bans[2].expiration instanceof Date);
+        assert.equal(bans[2].reason, 'Testing serial information');
+        assert.equal(bans[2].issuedBy, 'HaloLVP');
+        assert.equal(bans[2].nickname, 'Xanland');
+
+        assert.isNull(bans[2].ip);
+        assert.isNull(bans[2].range);
+        assert.equal(bans[2].serial, 2657120904);
+    });
+
+    it.fails();
+});

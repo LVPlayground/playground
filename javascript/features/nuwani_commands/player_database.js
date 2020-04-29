@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { ip2long } from 'features/nuwani_commands/ip_utilities.js';
+import { ip2long, long2ip } from 'features/nuwani_commands/ip_utilities.js';
 import { sha1 } from 'features/nuwani_commands/sha1.js';
 
 // Query to update a player's (hashed) password to the given hashed value and salt.
@@ -393,12 +393,7 @@ export class PlayerDatabase {
             }
 
             case 'last_ip':
-                return [
-                    value >>> 24 & 0xFF,
-                    value >>> 16 & 0xFF,
-                    value >>>  8 & 0xFF,
-                    value        & 0xFF
-                ].join('.');
+                return long2ip(value);
         }
 
         // custom_color

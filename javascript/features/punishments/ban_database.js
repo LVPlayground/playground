@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { ip2long } from 'features/nuwani_commands/ip_utilities.js';
+import { ip2long, long2ip, rangeToText } from 'features/nuwani_commands/ip_utilities.js';
 
 // MySQL query to execute when adding an entry to the database.
 const ADD_ENTRY_QUERY = `
@@ -15,6 +15,27 @@ const ADD_ENTRY_QUERY = `
         (NOW(), ?, ?, ?, ?,
          IF(? = 0, '1970-01-01 01:00:00', DATE_ADD(NOW(), INTERVAL ? DAY)),
          ?, ?, ?, ?, ?)`;
+
+// MySQL query for getting a certain number of most recent bans.
+const LAST_BANS_QUERY = `
+    SELECT
+        log_id,
+        log_date,
+        ban_ip_range_start,
+        ban_ip_range_end,
+        gpci_hash,
+        ban_expiration_date,
+        user_nickname,
+        subject_nickname,
+        description
+    FROM
+        logs
+    WHERE
+        ban_expiration_date > NOW()
+    ORDER BY
+        log_date DESC
+    LIMIT
+        ?`;
 
 // Responsible for actually executing ban-related operations on the MySQL database.
 export class BanDatabase {
@@ -164,5 +185,49 @@ export class BanDatabase {
             banDurationDays, sourceNickname, sourceUserId, subjectNickname, subjectUserId, note);
 
         return result && result.insertId !== 0;
+    }
+
+    // Gets the |limit| most recent, still active bans from the database, together with context on
+    // the ban itself, such as the issuer, subject and what type of ban it is.
+    async getRecentBans(limit = 10) {
+        const result = await this._getRecentBansQuery(limit);
+        const bans = [];
+
+        for (const row of result) {
+            let information = {
+                id: row.log_id,
+                date: new Date(row.log_date),
+                expiration: new Date(row.ban_expiration_date),
+                reason: row.description,
+                issuedBy: row.user_nickname,
+                nickname: row.subject_nickname,
+
+                // One of the following will be given, depending on the type of ban.
+                ip: null,
+                range: null,
+                serial: null,
+            };
+
+            if (row.ban_ip_range_start !== row.ban_ip_range_end) {
+                information.range = rangeToText(long2ip(row.ban_ip_range_start),
+                                                long2ip(row.ban_ip_range_end));
+            } else if (row.ban_ip_range_start !== 0) {
+                information.ip = long2ip(row.ban_ip_range_start);
+            } else if (row.gpci_hash !== 0) {
+                information.serial = row.gpci_hash;
+            } else {
+                throw new Error(`Invalid ban in the database with log_id: ${log_id}`);
+            }
+
+            bans.push(information);
+        }
+
+        return bans;
+    }
+
+    // Actually fetches the |limit| most recent bans from the database, and returns the raw rows.
+    async _getRecentBansQuery(limit) {
+        const result = await server.database.query(LAST_BANS_QUERY, limit);
+        return result ? result.rows : [];
     }
 }

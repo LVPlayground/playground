@@ -22,6 +22,43 @@ export function ip2long(text) {
            numericParts[3];
 }
 
+// Converts the |value|, which must be a number, to an IP address.
+export function long2ip(value) {
+    if (typeof value !== 'number')
+        throw new Error(`Expected a number, got a ${typeof value} instead.`);
+
+    return [
+        value >>> 24 & 0xFF,
+        value >>> 16 & 0xFF,
+        value >>>  8 & 0xFF,
+        value        & 0xFF
+    ].join('.');
+}
+
+// Converts the difference between |firstIp| and |lastIp| to a range ("8.8.*.*"). This requires
+// that |firstIp| is in the format of "8.8.0.0", and |lastIp| is in the format of "8.8.255.255".
+export function rangeToText(firstIp, lastIp) {
+    let firstOctets = firstIp.split('.');
+    let lastOctets = lastIp.split('.');
+
+    if (firstOctets.length !== 4)
+        throw new Error(`Invalid IP address given: ${firstIp}.`);
+    if (lastOctets.length !== 4)
+        throw new Error(`Invalid IP address given: ${lastIp}.`);
+
+    let result = firstOctets.slice(0, 4);
+    for (let octet = 0; octet < 4; ++octet) {
+        if (firstOctets[octet] === lastOctets[octet])
+            continue;  // already in |result|
+        else if (firstOctets[octet] === '0' && lastOctets[octet] === '255')
+            result[octet] = '*';  // a range
+        else
+            throw new Error(`Unable to determine range between ${firstIp} and ${lastIp}.`);
+    }
+
+    return result.join('.');
+}
+
 // Determines whether the given |ip| would be subject to a ban on the |range|.
 export function isPartOfRangeBan(ip, range) {
     const firstWildcard = range.indexOf('*');

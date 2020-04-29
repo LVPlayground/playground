@@ -63,6 +63,81 @@ export class MockBanDatabase extends BanDatabase {
     }
 
     // Overridden.
+    async _findNicknamesQuery({ ipRangeBegin, ipRangeEnd, serial }) {
+        if (ipRangeBegin === 623925203 /* 37.48.87.211 */) {
+            return {
+                total: 3,
+                nicknames: [
+                    { nickname: 'Gunther', sessions: 512 },
+                    { nickname: 'PilotLV', sessions: 12 },
+                    { nickname: 'PilotLC', sessions: 1 },
+                ],
+            };
+        } else if (ipRangeBegin == 623902720 /* 37.48.0.0 */ &&
+                   ipRangeEnd === 623968255 /* 37.48.255.255 */) {
+            return {
+                total: 48,
+                nicknames: [
+                    { nickname: 'Gunther', sessions: 512 },
+                    { nickname: 'LocalBot', sessions: 71 },
+                    { nickname: 'PilotLV', sessions: 12 },
+                    { nickname: 'PilotSA', sessions: 12 },
+                    { nickname: 'PilotLC', sessions: 1 },
+                ],
+            };
+        } else if (serial === 2657120904) {
+            return {
+                total: 2,
+                nicknames: [
+                    { nickname: 'Xanland', sessions: 122 },
+                    { nickname: 'XandeR', sessions: 8 },
+                ]
+            };
+        }
+
+        return {
+            total: 0,
+            nicknames: [],
+        };
+    }
+
+    // Overridden.
+    async findIpAddressesForNickname(nickname) {
+        if (nickname === 'Xanland') {
+            return {
+                total: 13,
+                addresses: [
+                    { ip: '37.47.12.13', sessions: 15 },
+                    { ip: '212.87.1.1', sessions: 1 },
+                ],
+            };
+        }
+
+        return {
+            total: 0,
+            addresses: [],
+        };
+    }
+
+    // Overridden.
+    async findSerialsForNickname(nickname) {
+        if (nickname === 'Xanland') {
+            return {
+                total: 13,
+                serials: [
+                    { serial: 2657120904, sessions: 122 },
+                    { serial: 5642214798, sessions: 1 },
+                ],
+            };
+        }
+
+        return {
+            total: 0,
+            serials: [],
+        };
+    }
+
+    // Overridden.
     async _findActiveBansQuery({ nickname, ipRangeStart, ipRangeEnd, serial }) {
         if (nickname === '[BB]Joe' || nickname === '[BB]EvilJoe' || serial == 987654321) {
             return [

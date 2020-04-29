@@ -42,6 +42,86 @@ const FIND_ACTIVE_BANS_QUERY = `
     LIMIT
         5`;
 
+// MySQL query to find the nicknames that have (recently) been used by IP address, range or serial
+const RECENT_NICKNAMES_QUERY = `
+    SELECT
+        nickname,
+        COUNT(session_id) AS total
+    FROM
+        sessions
+    WHERE
+        ((ip_address >= ? AND ip_address <= ?) OR
+         (gpci_hash = ?)) AND
+        DATEDIFF(NOW(), session_date) < ?
+    GROUP BY
+        nickname
+    ORDER BY
+        total DESC
+    LIMIT
+        10`;
+
+const RECENT_NICKNAMES_COUNT_QUERY = `
+    SELECT
+        COUNT(DISTINCT nickname) AS total
+    FROM
+        sessions
+    WHERE
+        ((ip_address >= ? AND ip_address <= ?) OR
+         (gpci_hash = ?)) AND
+        DATEDIFF(NOW(), session_date) < ?`;
+
+// MySQL queries to find the IP addresses that have (recently) been used by a particular nickname.
+const RECENT_IP_QUERY = `
+    SELECT
+        ip_address,
+        COUNT(session_id) AS total
+    FROM
+        sessions
+    WHERE
+        nickname = ? AND
+        DATEDIFF(NOW(), session_date) < ?
+    GROUP BY
+        ip_address
+    ORDER BY
+        total DESC
+    LIMIT
+        10`;
+
+const RECENT_IP_COUNT_QUERY = `
+    SELECT
+        COUNT(DISTINCT ip_address) AS total
+    FROM
+        sessions
+    WHERE
+        nickname = ? AND
+        DATEDIFF(NOW(), session_date) < ?`;
+
+// MySQL queries to find the serial numbers that have (recently) been used by a particular nickname.
+const RECENT_SERIAL_QUERY = `
+    SELECT
+        gpci_hash,
+        COUNT(session_id) AS total
+    FROM
+        sessions
+    WHERE
+        nickname = ? AND
+        DATEDIFF(NOW(), session_date) < ?
+    GROUP BY
+        gpci_hash
+    ORDER BY
+        total DESC
+    LIMIT
+        10`;
+
+const RECENT_SERIAL_COUNT_QUERY = `
+    SELECT
+        COUNT(DISTINCT gpci_hash) AS total
+    FROM
+        sessions
+    WHERE
+        nickname = ? AND
+        DATEDIFF(NOW(), session_date) < ?`;
+
 // MySQL query for getting a certain number of most recent bans.
 const LAST_BANS_QUERY = `
     SELECT
@@ -260,6 +340,101 @@ export class BanDatabase {
     async _getRecentBansQuery(limit) {
         const result = await server.database.query(LAST_BANS_QUERY, limit);
         return result ? result.rows : [];
+    }
+
+    // Finds the nicknames that have been (recently) been used by the given |ip|, which could either
+    // be an individual IP address, or an IP range of unlimited size.
+    async findNicknamesForIpAddressOrRange({ ip, ...options } = {}) {
+        let ipRangeBegin = 0;
+        let ipRangeEnd = 0;
+
+        if (isIpAddress(ip)) {
+            ipRangeBegin = ip2long(ip);
+            ipRangeEnd = ipRangeBegin;
+        } else if (isIpRange(ip)) {
+            ipRangeBegin = ip2long(ip.replace(/\*/g, '0'));
+            ipRangeEnd = ip2long(ip.replace(/\*/g, '255'));
+        } else {
+            return null;
+        }
+
+        return this._findNicknamesQuery({ ipRangeBegin, ipRangeEnd, ...options });
+    }
+
+    // Finds the nicknames that have (recently) been used by the given |serial|.
+    async findNicknamesForSerial({ serial, ...options } = {}) {
+        return this._findNicknamesQuery({ serial, ...options });
+    }
+
+    // Actually runs the queries necessary to determine the active nicknames for either an IP
+    // range, or for a serial number.
+    async _findNicknamesQuery({ ipRangeBegin, ipRangeEnd, serial, maxAge = 1095 } = {}) {
+        const [ totalResults, topResults ] = await Promise.all([
+            server.database.query(
+                RECENT_NICKNAMES_COUNT_QUERY, ipRangeBegin, ipRangeEnd, serial, maxAge),
+            server.database.query(RECENT_NICKNAMES_QUERY, ipRangeBegin, ipRangeEnd, serial, maxAge),
+        ]);
+
+        const results = {
+            total: 0,
+            nicknames: []  
+        };
+
+        if (totalResults && totalResults.rows.length === 1)
+            results.total = totalResults.rows[0].total;
+        
+        if (topResults && topResults.rows.length) {
+            for (const row of topResults.rows)
+                results.nicknames.push({ nickname: row.nickname, sessions: row.total });
+        }
+
+        return results;
+    }
+
+    // Finds the IP addresses that have (recently) been used by the given |nickname|.
+    async findIpAddressesForNickname({ nickname, maxAge = 1095 } = {}) {
+        const [ totalResults, topResults ] = await Promise.all([
+            server.database.query(RECENT_IP_COUNT_QUERY, nickname, maxAge),
+            server.database.query(RECENT_IP_QUERY, nickname, maxAge),
+        ]);
+
+        const results = {
+            total: 0,
+            addresses: []  
+        };
+
+        if (totalResults && totalResults.rows.length === 1)
+            results.total = totalResults.rows[0].total;
+        
+        if (topResults && topResults.rows.length) {
+            for (const row of topResults.rows)
+                results.addresses.push({ ip: long2ip(row.ip_address), sessions: row.total });
+        }
+
+        return results;
+    }
+
+    // Finds the serial numbers that have (recently) been used by the given |nickname|.
+    async findSerialsForNickname({ nickname, maxAge = 1095 } = {}) {
+        const [ totalResults, topResults ] = await Promise.all([
+            server.database.query(RECENT_SERIAL_COUNT_QUERY, nickname, maxAge),
+            server.database.query(RECENT_SERIAL_QUERY, nickname, maxAge),
+        ]);
+
+        const results = {
+            total: 0,
+            serials: []  
+        };
+
+        if (totalResults && totalResults.rows.length === 1)
+            results.total = totalResults.rows[0].total;
+        
+        if (topResults && topResults.rows.length) {
+            for (const row of topResults.rows)
+                results.serials.push({ serial: row.gpci_hash, sessions: row.total });
+        }
+
+        return results;
     }
 
     // Finds the active ban(s) that match the given parameters, either by |nickname|, |ip|, |range|

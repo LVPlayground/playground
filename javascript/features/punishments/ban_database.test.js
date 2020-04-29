@@ -225,8 +225,6 @@ describe('PlayerDatabase', it => {
                          { nickname: null, ip: null, range: '127.0.*.*', serial: null });
     });
 
-    it.fails();
-
     it('is able to find active bans based on the given conditionals', async (assert) => {
         const instance = new MockBanDatabase();
         const invalidConditions = [

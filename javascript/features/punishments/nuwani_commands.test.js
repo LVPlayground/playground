@@ -632,6 +632,8 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         assert.equal(database.addedEntry.subjectNickname, 'Xanland');
         assert.equal(database.addedEntry.note, 'reason');
 
+        assert.equal(database.unbanLogId, 8954);
+
         // Case: successful unban on a direct nickname match
         const nicknameMatchUnban = await issueCommand(bot, commandManager, {
             source: kCommandSource,
@@ -647,6 +649,8 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         assert.equal(database.addedEntry.sourceNickname, kCommandSourceUsername);
         assert.equal(database.addedEntry.subjectNickname, '[BB]EvilJoe');
         assert.equal(database.addedEntry.note, 'unbanned');
+
+        assert.equal(database.unbanLogId, 39654);
 
         // Case: ambiguous command, with individual bans being shown
         const ambiguousUnban = await issueCommand(bot, commandManager, {

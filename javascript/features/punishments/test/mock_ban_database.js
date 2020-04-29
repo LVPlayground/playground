@@ -8,6 +8,7 @@ import { BanDatabase } from 'features/punishments/ban_database.js';
 // order to avoid hitting the actual database.
 export class MockBanDatabase extends BanDatabase {
     addedEntry = null;
+    unbanLogId = null;
 
     constructor(...params) {
         super(...params);
@@ -119,5 +120,10 @@ export class MockBanDatabase extends BanDatabase {
         } else {
             return [];  // no bans found
         }
+    }
+
+    // Overridden.
+    async unban(logId) {
+        this.unbanLogId = logId;
     }
 }

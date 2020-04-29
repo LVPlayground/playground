@@ -450,7 +450,8 @@ export class NuwaniCommands {
                 note: reason,
             })
 
-            // TODO: Actually lift the ban.
+            // Actually lift the ban, by changing the expiration date to right now.
+            await this.database_.unban(matchingBan.id);
 
             // The actual medium that the |matchingBan| described.
             const banMedium = matchingBan.ip || matchingBan.range || matchingBan.serial;

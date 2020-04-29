@@ -63,6 +63,14 @@ const LAST_BANS_QUERY = `
     LIMIT
         ?`;
 
+const UNBAN_QUERY = `
+    UPDATE
+        logs
+    SET
+        ban_expiration_date = NOW()
+    WHERE
+        log_id = ?`
+
 // Responsible for actually executing ban-related operations on the MySQL database.
 export class BanDatabase {
     // Corresponds to the `log_type` column in the database.
@@ -303,6 +311,11 @@ export class BanDatabase {
             nickname, nickname);
 
         return result ? result.rows : [];
+    }
+
+    // Unbans the given |logId|. All the necessary checks must already have been done.
+    async unban(logId) {
+        await this.database.query(UNBAN_QUERY, logId);
     }
 
     // Converts the given |row| to a ban information structure, containing the same information in a

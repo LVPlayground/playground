@@ -145,6 +145,7 @@ export class BanDatabase {
         
             case BanDatabase.kTypeKick:
             case BanDatabase.kTypeNote:
+            case BanDatabase.kTypeUnban:
                 return this.addEntryInternal({
                     type,
                     banIpRangeStart: 0,

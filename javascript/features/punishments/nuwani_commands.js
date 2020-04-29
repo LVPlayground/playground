@@ -441,9 +441,16 @@ export class NuwaniCommands {
         if (strictMatchingBans.length === 1 || nameMatchingBans.length == 1) {
             const matchingBan =
                 strictMatchingBans.length == 1 ? strictMatchingBans[0] : nameMatchingBans[0];
-            
+
+            // Add the unban notice carrying |reason| to the player's permanent record.
+            await this.database_.addEntry({
+                type: BanDatabase.kTypeUnban,
+                sourceNickname: context.nickname,
+                subjectNickname: matchingBan.nickname,
+                note: reason,
+            })
+
             // TODO: Actually lift the ban.
-            // TODO: Actually add a note.
 
             // The actual medium that the |matchingBan| described.
             const banMedium = matchingBan.ip || matchingBan.range || matchingBan.serial;

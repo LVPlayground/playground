@@ -196,6 +196,16 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
             invalidAddress[0],
             'PRIVMSG #LVP.DevJS :Error: The IP address must be in the format of 37.48.87.211.');
 
+        const existingBan = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!ban ip 37.48.87.10 NotJoe 10 You seem familiar...'
+        });
+
+        assert.equal(existingBan.length, 1);
+        assert.includes(existingBan[0], 'Error');
+        assert.includes(existingBan[0], 'already covered');
+        assert.includes(existingBan[0], '[BB]Joe');
+
         const result = await issueCommand(bot, commandManager, {
             source: kCommandSource,
             command: `!ban ip 127.0.0.2 Lucy 10 reason`,
@@ -276,6 +286,16 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         assert.equal(invalidRange.length, 1);
         assert.equal(invalidRange[0],
                     'PRIVMSG #LVP.DevJS :Error: Only more wildcards may follow a wildcard octet.');
+
+        const existingBan = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!ban range 37.48.87.* NotJoe 10 You seem familiar...'
+        });
+
+        assert.equal(existingBan.length, 1);
+        assert.includes(existingBan[0], 'Error');
+        assert.includes(existingBan[0], 'already covered');
+        assert.includes(existingBan[0], '[BB]Joe');
 
         const result = await issueCommand(bot, commandManager, {
             source: kCommandSource,
@@ -411,6 +431,16 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
 
         await assertDurationConstraints(assert, '!ban serial 1485609655 Gunther ? reason');
         await assertNoteConstraints(assert, '!ban serial 1485609655 Gunther 20');
+
+        const existingBan = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!ban serial 2657120904 XandeR 10 You seem familiar...'
+        });
+
+        assert.equal(existingBan.length, 1);
+        assert.includes(existingBan[0], 'Error');
+        assert.includes(existingBan[0], 'already covered');
+        assert.includes(existingBan[0], 'Xanland');
 
         const result = await issueCommand(bot, commandManager, {
             source: kCommandSource,

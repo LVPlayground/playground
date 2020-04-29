@@ -216,6 +216,14 @@ export class NuwaniCommands {
             return;
         }
 
+        const existingBans = await this.database_.findActiveBans({ ip });
+        if (existingBans.length) {
+            const description = this.formatBanInformationString(existingBans[0]);
+
+            context.respond(`4Error: This IP address ban is already covered by ${description}.`);
+            return;
+        }
+
         this.disconnectPlayersAffectedByBan(context.nickname, { ip }, days, reason);
 
         const success = await this.database_.addEntry({
@@ -271,6 +279,14 @@ export class NuwaniCommands {
             return;
         }
 
+        const existingBans = await this.database_.findActiveBans({ range });
+        if (existingBans.length) {
+            const description = this.formatBanInformationString(existingBans[0]);
+
+            context.respond(`4Error: This range ban is already covered by ${description}.`);
+            return;
+        }
+
         this.disconnectPlayersAffectedByBan(context.nickname, { range }, days, reason);
 
         const success = await this.database_.addEntry({
@@ -294,6 +310,14 @@ export class NuwaniCommands {
     async onBanSerialCommand(context, serial, nickname, days, reason) {
         if (!this.validateDuration(context, days) || !this.validateNote(context, reason))
             return;
+
+        const existingBans = await this.database_.findActiveBans({ serial });
+        if (existingBans.length) {
+            const description = this.formatBanInformationString(existingBans[0]);
+
+            context.respond(`4Error: This serial ban is already covered by ${description}.`);
+            return;
+        }
 
         this.disconnectPlayersAffectedByBan(context.nickname, { serial }, days, reason);
 

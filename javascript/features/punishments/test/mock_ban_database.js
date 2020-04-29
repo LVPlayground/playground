@@ -89,7 +89,8 @@ export class MockBanDatabase extends BanDatabase {
                     description: 'Infinite health??',
                 },
             ];
-        } else if (ipRangeStart === 623925002 /* 37.48.87.10 */) {
+        } else if (ipRangeStart === 623925002 /* 37.48.87.10 */ ||
+                   ipRangeStart === 623924992 /* 37.48.87.0 */ ) {
             return [
                 {
                     log_id: 12894,

@@ -61,7 +61,8 @@ export class Bot {
         if (this.state_ !== Bot.kStateConnected)
             throw new Error('Messages may only be written when the bot is connected.');
         
-        this.connection_.write(message);
+        if (this.connection_)
+            this.connection_.write(message);
     }
 
     // Convenience API for determining whether the |target| identifies a channel or a user. This is

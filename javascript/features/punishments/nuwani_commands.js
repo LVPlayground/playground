@@ -64,6 +64,11 @@ export class NuwaniCommands {
                 .build(NuwaniCommands.prototype.onBanPlayerCommand.bind(this))
             .build(NuwaniCommands.prototype.onBanCommand.bind(this));
 
+        // !banip
+        this.commandManager_.buildCommand('banip')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .build(NuwaniCommands.prototype.onDeprecatedBanIpCommand.bind(this));
+
         // !isbanned [nickname | ip | ip range | serial]
         this.commandManager_.buildCommand('isbanned')
             .restrict(Player.LEVEL_ADMINISTRATOR)
@@ -180,6 +185,19 @@ export class NuwaniCommands {
         context.respond(`3Success: ${player.name} has been banned from the game.`);
         if (!success)
             context.respond(`4Error: The ban note for ${player.name} could not be stored.`);
+    }
+
+    // !banip
+    //
+    // When an administrator on IRC types !banip. This has changed to "!ban ip", but we can be
+    // courteous and show them an error message. Or maybe we'll just be a bit mean.
+    onDeprecatedBanIpCommand(context) {
+        context.respond('3Success: All bans have been removed.');
+        wait(5000).then(() => {
+            context.respond(
+                `13Just kidding! Sorry ${context.nickname}, you probably want to use the new ` +
+                `"!ban ip" command instead.`);
+        });
     }
 
     // !ban ip [ip] [nickname] [days] [reason]
@@ -520,6 +538,7 @@ export class NuwaniCommands {
         this.commandManager_.removeCommand('lastbans');
         this.commandManager_.removeCommand('kick');
         this.commandManager_.removeCommand('isbanned');
+        this.commandManager_.removeCommand('banip');
         this.commandManager_.removeCommand('ban');
         this.commandManager_.removeCommand('addnote');
     }

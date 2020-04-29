@@ -608,14 +608,87 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
     it('should be able to find IP information based on certain conditions', async (assert) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
-        // !ipinfo [nickname | ip | ip range]
+        const noResultsIp = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!ipinfo 60.70.80.90',
+        });
+
+        assert.equal(noResultsIp.length, 1);
+        assert.includes(noResultsIp[0], 'Error');
+        assert.includes(noResultsIp[0], 'No nicknames found');
+
+        const resultsIp = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!ipinfo 37.48.*.*',
+        });
+
+        assert.equal(resultsIp.length, 1);
+        assert.includes(resultsIp[0], 'Result');
+        assert.includes(resultsIp[0], 'Gunther');
+        assert.includes(resultsIp[0], 'PilotLV');
+
+        const noResultsNickname = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!ipinfo Xanlant',
+        });
+
+        assert.equal(noResultsNickname.length, 1);
+        assert.includes(noResultsNickname[0], 'Error');
+        assert.includes(noResultsNickname[0], 'No IP addresses found');
+
+        const resultsNickname = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!ipinfo Xanland',
+        });
+
+        assert.equal(resultsNickname.length, 1);
+        assert.includes(resultsNickname[0], 'Result');
+        assert.includes(resultsNickname[0], '37.47.12.13');
     });
 
     it('should be able to find serial information based on certain conditions', async (assert) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
-        // !serialinfo [nickname | serial]
+        const noResultsSerial = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!serialinfo 1234568976',
+        });
+
+        assert.equal(noResultsSerial.length, 1);
+        assert.includes(noResultsSerial[0], 'Error');
+        assert.includes(noResultsSerial[0], 'No nicknames found');
+
+        const resultsSerial = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!serialinfo 2657120904',
+        });
+
+        assert.equal(resultsSerial.length, 1);
+        assert.includes(resultsSerial[0], 'Result');
+        assert.includes(resultsSerial[0], 'Xanland');
+        assert.includes(resultsSerial[0], 'XandeR');
+
+        const noResultsNickname = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!serialinfo Xanlant',
+        });
+
+        assert.equal(noResultsNickname.length, 1);
+        assert.includes(noResultsNickname[0], 'Error');
+        assert.includes(noResultsNickname[0], 'No serial numbers found');
+
+        const resultsNickname = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!serialinfo Xanland',
+        });
+
+        assert.equal(resultsNickname.length, 1);
+        assert.includes(resultsNickname[0], 'Result');
+        assert.includes(resultsNickname[0], '2657120904');
+        assert.includes(resultsNickname[0], '5642214798');
     });
+
+    it.fails();
 
     it('should be able to display recent entries in a player record', async (assert) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');

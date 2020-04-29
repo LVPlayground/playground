@@ -7,7 +7,7 @@ import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
 import { format } from 'base/string_formatter.js';
 import { fromNow } from 'base/time.js';
-import { isPartOfRangeBan } from 'features/nuwani_commands/ip_utilities.js';
+import { isIpAddress, isIpRange, isPartOfRangeBan } from 'features/nuwani_commands/ip_utilities.js';
 import { murmur3hash } from 'base/murmur3hash.js';
 
 // Implementation of a series of commands that enables administrators to revoke access from certain
@@ -409,7 +409,33 @@ export class NuwaniCommands {
     // Displays information about the IP addresses used by |nickname|, or the nicknames who have
     // used the singular |ip| address or the given |ip range| in the past.
     async onIpInfoCommand(context, value) {
-        context.respond('4Error: This command has not been implemented yet.');
+        let results = null;
+
+        if (isIpAddress(value) || isIpRange(value)) {
+            results = await this.database_.findNicknamesForIpAddressOrRange({
+                ip: value,
+            });
+
+            if (!results || !results.total) {
+                context.respond(`4Error: No nicknames found for the IP address ${value}.`);
+                return;
+            }
+        } else {
+            results = await this.database_.findIpAddressesForNickname({
+                nickname: value,
+            });
+
+            if (!results || !results.total) {
+                context.respond(`4Error: No IP addresses found for the nickname ${value}.`);
+                return;
+            }
+        }
+
+        let suffix = '';
+        if (results.total > results.entries.length)
+            suffix = ` 15[${results.total - results.entries.length} omitted...]`;
+
+        context.respond('5Result: ' + this.formatInfoResults(results) + suffix);
     }
 
     // !serialinfo [nickname | serial]
@@ -417,7 +443,34 @@ export class NuwaniCommands {
     // Displays information about the serial numbers used by the given |nickname|, or the nicknames
     // who have used the given |serial| number in the past.
     async onSerialInfoCommand(context, value) {
-        context.respond('4Error: This command has not been implemented yet.');
+        let serialNumber = parseInt(value, 10);
+        let results = null;
+
+        if (!Number.isNaN(serialNumber) && serialNumber.toString().length == value.length) {
+            results = await this.database_.findNicknamesForSerial({
+                serial: serialNumber,
+            });
+
+            if (!results || !results.total) {
+                context.respond(`4Error: No nicknames found for the serial number ${value}.`);
+                return;
+            }
+        } else {
+            results = await this.database_.findSerialsForNickname({
+                nickname: value,
+            });
+
+            if (!results || !results.total) {
+                context.respond(`4Error: No serial numbers found for the nickname ${value}.`);
+                return;
+            }
+        }
+
+        let suffix = '';
+        if (results.total > results.entries.length)
+            suffix = ` 15[${results.total - results.entries.length} omitted...]`;
+
+        context.respond('5Result: ' + this.formatInfoResults(results) + suffix);
     }
 
     // !unban [nickname | ip | ip range | serial] [reason]
@@ -638,6 +691,21 @@ export class NuwaniCommands {
             return 'serial number';
 
         throw new Error('Unrecognised ban conditional: ' + String(conditional));
+    }
+
+    // Formats the |results|, for either !ipinfo or !serialinfo, into a string that's ready to be
+    // displayed on the network.
+    formatInfoResults(results) {
+        let resultText = [];
+
+        for (const entry of results.entries) {
+            if (entry.sessions > 1)
+                resultText.push(`${entry.text} 14(${entry.sessions}x)`);
+            else
+                resultText.push(entry.text);
+        }
+
+        return resultText.join(', ');
     }
 
     dispose() {

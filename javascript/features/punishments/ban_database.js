@@ -377,7 +377,7 @@ export class BanDatabase {
 
         const results = {
             total: 0,
-            nicknames: []  
+            entries: []  
         };
 
         if (totalResults && totalResults.rows.length === 1)
@@ -385,7 +385,7 @@ export class BanDatabase {
         
         if (topResults && topResults.rows.length) {
             for (const row of topResults.rows)
-                results.nicknames.push({ nickname: row.nickname, sessions: row.total });
+                results.entries.push({ text: row.nickname, sessions: row.total });
         }
 
         return results;
@@ -400,7 +400,7 @@ export class BanDatabase {
 
         const results = {
             total: 0,
-            addresses: []  
+            entries: []  
         };
 
         if (totalResults && totalResults.rows.length === 1)
@@ -408,7 +408,7 @@ export class BanDatabase {
         
         if (topResults && topResults.rows.length) {
             for (const row of topResults.rows)
-                results.addresses.push({ ip: long2ip(row.ip_address), sessions: row.total });
+                results.entries.push({ text: long2ip(row.ip_address), sessions: row.total });
         }
 
         return results;
@@ -423,7 +423,7 @@ export class BanDatabase {
 
         const results = {
             total: 0,
-            serials: []  
+            entries: []  
         };
 
         if (totalResults && totalResults.rows.length === 1)
@@ -431,7 +431,7 @@ export class BanDatabase {
         
         if (topResults && topResults.rows.length) {
             for (const row of topResults.rows)
-                results.serials.push({ serial: row.gpci_hash, sessions: row.total });
+                results.entries.push({ text: row.gpci_hash, sessions: row.total });
         }
 
         return results;

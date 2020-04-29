@@ -176,19 +176,19 @@ describe('PlayerDatabase', it => {
         assert.isNotNull(ipAddressResults);
 
         assert.isAbove(ipAddressResults.total, 0);
-        assert.isAbove(ipAddressResults.nicknames.length, 0);
+        assert.isAbove(ipAddressResults.entries.length, 0);
 
         const ipRangeResults = await instance.findNicknamesForIpAddressOrRange({ ip: '37.48.*.*' });
         assert.isNotNull(ipRangeResults);
         
         assert.isAbove(ipRangeResults.total, 0);
-        assert.isAbove(ipRangeResults.nicknames.length, 0);
+        assert.isAbove(ipRangeResults.entries.length, 0);
 
         const noResults = await instance.findNicknamesForIpAddressOrRange({ ip: '127.0.0.1' });
         assert.isNotNull(noResults);
 
         assert.equal(noResults.total, 0);
-        assert.equal(noResults.nicknames.length, 0);
+        assert.equal(noResults.entries.length, 0);
     });
 
     it('is able to find nicknames based on serial number', async (assert) => {
@@ -198,45 +198,45 @@ describe('PlayerDatabase', it => {
         assert.isNotNull(serialResults);
         
         assert.isAbove(serialResults.total, 0);
-        assert.isAbove(serialResults.nicknames.length, 0);
+        assert.isAbove(serialResults.entries.length, 0);
 
         const noResults = await instance.findNicknamesForSerial({ serial: 123456789 });
         assert.isNotNull(noResults);
 
         assert.equal(noResults.total, 0);
-        assert.equal(noResults.nicknames.length, 0);
+        assert.equal(noResults.entries.length, 0);
     });
 
     it('is able to find IP addresses used based on a nickname', async (assert) => {
         const instance = new MockBanDatabase();
 
-        const nameResults = await instance.findIpAddressesForNickname('Xanland');
+        const nameResults = await instance.findIpAddressesForNickname({ nickname: 'Xanland' });
         assert.isNotNull(nameResults);
         
         assert.isAbove(nameResults.total, 0);
-        assert.isAbove(nameResults.addresses.length, 0);
+        assert.isAbove(nameResults.entries.length, 0);
 
-        const noResults = await instance.findIpAddressesForNickname('Xanlant');
+        const noResults = await instance.findIpAddressesForNickname({ nickname: 'Xanlant' });
         assert.isNotNull(noResults);
 
         assert.equal(noResults.total, 0);
-        assert.equal(noResults.addresses.length, 0);
+        assert.equal(noResults.entries.length, 0);
     });
 
     it('is able to find serial numbers used based on a nickname', async (assert) => {
         const instance = new MockBanDatabase();
 
-        const nameResults = await instance.findSerialsForNickname('Xanland');
+        const nameResults = await instance.findSerialsForNickname({ nickname: 'Xanland' });
         assert.isNotNull(nameResults);
         
         assert.isAbove(nameResults.total, 0);
-        assert.isAbove(nameResults.serials.length, 0);
+        assert.isAbove(nameResults.entries.length, 0);
 
-        const noResults = await instance.findSerialsForNickname('Xanlant');
+        const noResults = await instance.findSerialsForNickname({ nickname: 'Xanlant' });
         assert.isNotNull(noResults);
 
         assert.equal(noResults.total, 0);
-        assert.equal(noResults.serials.length, 0);
+        assert.equal(noResults.entries.length, 0);
     });
 
     it('is able to get the most recent bans from the database', async (assert) => {

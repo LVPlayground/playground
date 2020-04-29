@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { ip2long, long2ip, rangeToText } from 'features/nuwani_commands/ip_utilities.js';
+import { ip2long, long2ip, isIpAddress, rangeToText } from 'features/nuwani_commands/ip_utilities.js';
 
 // MySQL query to execute when adding an entry to the database.
 const ADD_ENTRY_QUERY = `
@@ -15,6 +15,32 @@ const ADD_ENTRY_QUERY = `
         (NOW(), ?, ?, ?, ?,
          IF(? = 0, '1970-01-01 01:00:00', DATE_ADD(NOW(), INTERVAL ? DAY)),
          ?, ?, ?, ?, ?)`;
+
+// MySQL query to identify active bans for the given parameters.
+const FIND_ACTIVE_BANS_QUERY = `
+    SELECT
+        log_id,
+        log_date,
+        ban_ip_range_start,
+        ban_ip_range_end,
+        gpci_hash,
+        ban_expiration_date,
+        user_nickname,
+        subject_nickname,
+        description
+    FROM
+        logs
+    WHERE
+        ban_expiration_date > NOW() AND
+        (
+            IF(? = 0, FALSE, ban_ip_range_start >= ? AND ban_ip_range_end <= ?) OR
+            IF(? = 0, FALSE, gpci_hash = ?) OR
+            IF(? = '', FALSE, subject_nickname = ?)
+        )
+    ORDER BY
+        log_date DESC
+    LIMIT
+        5`;
 
 // MySQL query for getting a certain number of most recent bans.
 const LAST_BANS_QUERY = `
@@ -187,40 +213,33 @@ export class BanDatabase {
         return result && result.insertId !== 0;
     }
 
+    // Derives what sort of indicator the |value| describes, which could be an IP address, serial
+    // number of a nickname. Returns NULL when we're not sure.
+    deriveBanConditional(value) {
+        const numericValue = parseInt(value, 10);
+
+        if (!Number.isNaN(numericValue) && Number.isInteger(numericValue) &&
+                numericValue.toString().length === value.length) {
+            return { nickname: null, ip: null, serial: numericValue };
+        }
+
+        if (isIpAddress(value))
+            return { nickname: null, ip: value, serial: null };
+        
+        if (/^[0-9a-z\[\]\(\)\$@\._=]{1,24}$/i.test(value))
+            return { nickname: value, ip: null, serial: null };
+        
+        return null;
+    }
+
     // Gets the |limit| most recent, still active bans from the database, together with context on
     // the ban itself, such as the issuer, subject and what type of ban it is.
     async getRecentBans(limit = 10) {
         const result = await this._getRecentBansQuery(limit);
         const bans = [];
 
-        for (const row of result) {
-            let information = {
-                id: row.log_id,
-                date: new Date(row.log_date),
-                expiration: new Date(row.ban_expiration_date),
-                reason: row.description,
-                issuedBy: row.user_nickname,
-                nickname: row.subject_nickname,
-
-                // One of the following will be given, depending on the type of ban.
-                ip: null,
-                range: null,
-                serial: null,
-            };
-
-            if (row.ban_ip_range_start !== row.ban_ip_range_end) {
-                information.range = rangeToText(long2ip(row.ban_ip_range_start),
-                                                long2ip(row.ban_ip_range_end));
-            } else if (row.ban_ip_range_start !== 0) {
-                information.ip = long2ip(row.ban_ip_range_start);
-            } else if (row.gpci_hash !== 0) {
-                information.serial = row.gpci_hash;
-            } else {
-                throw new Error(`Invalid ban in the database with log_id: ${log_id}`);
-            }
-
-            bans.push(information);
-        }
+        for (const row of result)
+            bans.push(this.toBanInformation(row));
 
         return bans;
     }
@@ -229,5 +248,72 @@ export class BanDatabase {
     async _getRecentBansQuery(limit) {
         const result = await server.database.query(LAST_BANS_QUERY, limit);
         return result ? result.rows : [];
+    }
+
+    // Finds the active ban(s) that match the given parameters, either by |nickname|, |ip| or
+    // |serial|, or a combination thereof. Returns detailed information about those bans.
+    async findActiveBans({ nickname = null, ip = null, serial = null } = {}) {
+        if (nickname !== null && typeof nickname !== 'string')
+            throw new Error('The given |nickname| should either be a string, or NULL.');
+        
+        if (ip !== null && typeof ip !== 'string')
+            throw new Error('The given |ip| address should either be a string, or NULL.');
+        
+        if (serial !== null && typeof serial !== 'number')
+            throw new Error('The given |serial| should either be a string, or NULL.');
+
+        if (!nickname && !ip && !serial)
+            throw new Error('At least one of |nickname|, |ip|, |serial| must be given.')
+
+        const result = await this._findActiveBansQuery({
+            nickname: nickname ?? '',
+            ip: ip ? ip2long(ip) : 0,
+            serial: serial ?? 0,
+        });
+    
+        const bans = [];
+        for (const row of result)
+            bans.push(this.toBanInformation(row));
+
+        return bans;
+    }
+
+    // Actually runs the database query to find the active bans given the conditionals.
+    async _findActiveBansQuery({ nickname, ip, serial }) {
+        const result = await server.database.query(FIND_ACTIVE_BANS_QUERY, ip, ip, ip, serial,
+                                                   serial, nickname, nickname);
+
+        return result ? result.rows : [];
+    }
+
+    // Converts the given |row| to a ban information structure, containing the same information in a
+    // more idiomatic, usable manner.
+    toBanInformation(row) {
+        let information = {
+            id: row.log_id,
+            date: new Date(row.log_date),
+            expiration: new Date(row.ban_expiration_date),
+            reason: row.description,
+            issuedBy: row.user_nickname,
+            nickname: row.subject_nickname,
+
+            // One of the following will be given, depending on the type of ban.
+            ip: null,
+            range: null,
+            serial: null,
+        };
+
+        if (row.ban_ip_range_start !== row.ban_ip_range_end) {
+            information.range = rangeToText(long2ip(row.ban_ip_range_start),
+                                            long2ip(row.ban_ip_range_end));
+        } else if (row.ban_ip_range_start !== 0) {
+            information.ip = long2ip(row.ban_ip_range_start);
+        } else if (row.gpci_hash !== 0) {
+            information.serial = row.gpci_hash;
+        } else {
+            throw new Error(`Invalid ban in the database with log_id: ${log_id}`);
+        }
+
+        return information;
     }
 }

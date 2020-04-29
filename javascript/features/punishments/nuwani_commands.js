@@ -294,11 +294,33 @@ export class NuwaniCommands {
             context.respond(`4Error: The ban could not be stored in the database.`);
     }
 
-    // !isbanned [nickname | ip | ip range | serial]
+    // !isbanned [nickname | ip | serial]
     //
-    // Checks whether the given nickname, IP address (range) or serial number is banned.
+    // Checks whether the given nickname, IP address or serial number is banned, and display details
+    // about the ban(s) that they are currently subject to.
     async onIsBannedCommand(context, value) {
-        context.respond('4Error: This command has not been implemented yet.');
+        const conditional = this.database_.deriveBanConditional(value);
+        if (!conditional) {
+            context.respond(
+                `4Error: ${value} is neither a nickname, serial number or IP address.`);
+            return;
+        }
+
+        const bans = await this.database_.findActiveBans(conditional);
+        if (!bans.length) {
+            const type = conditional.ip ? 'IP address'
+                                        : (conditional.serial ? 'serial number'
+                                                              : 'nickname');
+
+            context.respond(`5Result: No bans could be found for the given ${type}.`);
+            return;
+        }
+
+        let responseBans = [];
+        for (const information of bans)
+            responseBans.push(this.formatBanInformationString(information));
+
+        context.respond(`5Result: ` + responseBans.join(', '));
     }
 
     // !kick [player] [reason]
@@ -334,13 +356,8 @@ export class NuwaniCommands {
         const bans = await this.database_.getRecentBans(/* limit= */ 5);
 
         let responseBans = [];
-        for (const information of bans) {
-            const { nickname, issuedBy } = information;
-            const expression = information.ip ?? information.range ?? information.serial;
-            const timeDifference = fromNow({ date: information.date });
-
-            responseBans.push(`${nickname} 14(${expression}, ${timeDifference} by ${issuedBy})`);
-        }
+        for (const information of bans)
+            responseBans.push(this.formatBanInformationString(information));
 
         context.respond('5Most recent bans: ' + responseBans.join(', '));
     }
@@ -484,6 +501,15 @@ export class NuwaniCommands {
             this.announce_().announceToAdministrators(
                 Message.NUWANI_ADMIN_BANNED_GROUP, nickname, identitiesText, days, reason);
         }
+    }
+
+    // Formats the given |banInformation| into a string that's convenient for sharing on IRC.
+    formatBanInformationString(banInformation) {
+        const { nickname, issuedBy } = banInformation;
+        const expression = banInformation.ip ?? banInformation.range ?? banInformation.serial;
+        const timeDifference = fromNow({ date: banInformation.date });
+
+        return `${nickname} 14(${expression}, ${timeDifference} by ${issuedBy})`;
     }
 
     dispose() {

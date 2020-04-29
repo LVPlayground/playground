@@ -60,4 +60,64 @@ export class MockBanDatabase extends BanDatabase {
             }
         ].slice(0, limit);
     }
+
+    // Overridden.
+    async _findActiveBansQuery({ nickname, ip, serial }) {
+        if (nickname === '[BB]Joe') {
+            return [
+                {
+                    log_id: 48561,
+                    log_date: '2020-04-01 12:51:14',
+                    ban_ip_range_start: 623925203,  // 37.48.87.211
+                    ban_ip_range_end: 623925203,  // 37.48.87.211
+                    gpci_hash: 0,
+                    ban_expiration_date: '2020-06-01 18:00:00',
+                    user_nickname: 'slein',
+                    subject_nickname: '[BB]Joe',
+                    description: 'Health cheat',
+                },
+                {
+                    log_id: 39654,
+                    log_date: '2020-01-16 14:55:01',
+                    ban_ip_range_start: 1021343232,  // 60.224.118.0
+                    ban_ip_range_end: 1021343487,  // 60.224.118.255
+                    gpci_hash: 0,
+                    ban_expiration_date: '2020-07-10 18:30:00',
+                    user_nickname: 'Russell',
+                    subject_nickname: '[BB]EvilJoe',
+                    description: 'Infinite health??',
+                },
+            ];
+        } else if (ip === 623925002 /* 37.48.87.10 */) {
+            return [
+                {
+                    log_id: 12894,
+                    log_date: '2019-12-05 04:51:11',
+                    ban_ip_range_start: 623902720,  // 37.48.0.0
+                    ban_ip_range_end: 623968255,  // 37.48.255.255
+                    gpci_hash: 0,
+                    ban_expiration_date: '2020-06-01 18:00:00',
+                    user_nickname: 'slein',
+                    subject_nickname: '[BB]Joe',
+                    description: 'Health cheat',
+                },
+            ];
+        } else if (serial === 2657120904) {
+            return [
+                {
+                    log_id: 8954,
+                    log_date: '2018-01-14 14:12:59',
+                    ban_ip_range_start: 0,
+                    ban_ip_range_end: 0,
+                    gpci_hash: 2657120904,  // 894984A40C8E59EC45DC4E8CC088CE0DCDD8E5D9
+                    ban_expiration_date: '2020-06-06 03:25:30',
+                    user_nickname: 'HaloLVP',
+                    subject_nickname: 'Xanland',
+                    description: 'Funny serial number',
+                }
+            ];
+        } else {
+            return [];  // no bans found
+        }
+    }
 }

@@ -211,4 +211,116 @@ describe('PlayerDatabase', it => {
         assert.isNull(bans[2].range);
         assert.equal(bans[2].serial, 2657120904);
     });
+
+    it('can derive individual ban conditionals', assert => {
+        const instance = new MockBanDatabase();
+
+        assert.deepEqual(instance.deriveBanConditional('123456'),
+                         { nickname: null, ip: null, serial: 123456 });
+        assert.deepEqual(instance.deriveBanConditional('127.0.0.1'),
+                         { nickname: null, ip: '127.0.0.1', serial: null });
+        assert.deepEqual(instance.deriveBanConditional('[BB]Joe'),
+                         { nickname: '[BB]Joe', ip: null, serial: null });
+        
+        assert.isNull(instance.deriveBanConditional('127.0.*.*'));
+        assert.isNull(instance.deriveBanConditional('^^^MaXiMe^^^'));
+    });
+
+    it('is able to find active bans based on the given conditionals', async (assert) => {
+        const instance = new MockBanDatabase();
+        const invalidConditions = [
+            { nickname: 3.14 },
+            { nickname: undefined },
+            { ip: 123456789 },
+            { ip: {} },
+            { serial: '0xDEADBEEF' },
+            { serial: [] },
+            { },
+        ];
+
+        // Make sure that combinations of invalid conditions throw an exception.
+        for (const invalidCondition of invalidConditions) {
+            try {
+                await instance.findActiveBans(invalidCondition);
+                assert.notReached();
+            } catch {}
+        }
+
+        // Ban where the user is (innocently?) caught in an IP range ban.
+        {
+            const bans = await instance.findActiveBans({
+                nickname: 'Gunther',
+                ip: '37.48.87.10',
+                serial: 2118910112,
+            });
+
+            assert.equal(bans.length, 1);
+
+            assert.equal(bans[0].id, 12894);
+            assert.isTrue(bans[0].date instanceof Date);
+            assert.isTrue(bans[0].expiration instanceof Date);
+            assert.equal(bans[0].reason, 'Health cheat');
+            assert.equal(bans[0].issuedBy, 'slein');
+            assert.equal(bans[0].nickname, '[BB]Joe');
+
+            assert.isNull(bans[0].ip);
+            assert.equal(bans[0].range, '37.48.*.*');  // match
+            assert.isNull(bans[0].serial);
+        }
+
+        // Ban where their serial number has been banned.
+        {
+            const bans = await instance.findActiveBans({
+                nickname: 'Xanland',
+                ip: '85.17.164.254',
+                serial: 2657120904,
+            });
+
+            assert.equal(bans.length, 1);
+
+            assert.equal(bans[0].id, 8954);
+            assert.isTrue(bans[0].date instanceof Date);
+            assert.isTrue(bans[0].expiration instanceof Date);
+            assert.equal(bans[0].reason, 'Funny serial number');
+            assert.equal(bans[0].issuedBy, 'HaloLVP');
+            assert.equal(bans[0].nickname, 'Xanland');
+
+            assert.isNull(bans[0].ip);
+            assert.isNull(bans[0].range);
+            assert.equal(bans[0].serial, 2657120904);  // match
+        }
+
+        // Ban where their nickname has been banned, as well as their IP address.
+        {
+            const bans = await instance.findActiveBans({
+                nickname: '[BB]Joe',
+                ip: '60.224.118.109',
+                serial: 376693860,
+            });
+
+            assert.equal(bans.length, 2);
+
+            assert.equal(bans[0].id, 48561);
+            assert.isTrue(bans[0].date instanceof Date);
+            assert.isTrue(bans[0].expiration instanceof Date);
+            assert.equal(bans[0].reason, 'Health cheat');
+            assert.equal(bans[0].issuedBy, 'slein');
+            assert.equal(bans[0].nickname, '[BB]Joe');  // match
+
+            assert.equal(bans[0].ip, '37.48.87.211');
+            assert.isNull(bans[0].range);
+            assert.isNull(bans[0].serial);
+
+            assert.equal(bans[1].id, 39654);
+            assert.isTrue(bans[1].date instanceof Date);
+            assert.isTrue(bans[1].expiration instanceof Date);
+            assert.equal(bans[1].reason, 'Infinite health??');
+            assert.equal(bans[1].issuedBy, 'Russell');
+            assert.equal(bans[1].nickname, '[BB]EvilJoe');
+
+            assert.isNull(bans[1].ip);
+            assert.equal(bans[1].range, '60.224.118.*');  // match
+            assert.isNull(bans[1].serial);
+        }
+    });
 });

@@ -470,7 +470,57 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
     it('should be able to see if a ban exists for certain conditions', async (assert) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
-        // !isbanned [nickname | ip | ip range | serial]
+        // (1) Test error messages for invalid input.
+        const invalidInput = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!isbanned 127.0.*.*',
+        });
+
+        assert.equal(invalidInput.length, 1);
+        assert.includes(invalidInput[0], 'Error');
+        assert.includes(invalidInput[0], 'neither a nickname, serial number or IP address');
+        
+        // (2) Test the result message for no matching bans.
+        const noResults = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!isbanned [BB]Ricky92',
+        });
+
+        assert.equal(noResults.length, 1);
+        assert.includes(noResults[0], 'Result');
+        assert.includes(noResults[0], 'No bans could be found');
+        assert.includes(noResults[0], 'the given nickname');
+
+        // (3) Make sure that IP addresses, nicknames and serial numbers can be matched.
+        const ipResult = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!isbanned 37.48.87.10',
+        });
+
+        assert.equal(ipResult.length, 1);
+        assert.includes(ipResult[0], 'Result');
+        assert.includes(ipResult[0], '[BB]Joe');
+        assert.includes(ipResult[0], '37.48.*.*');
+        
+        const nicknameResult = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!isbanned [BB]Joe',
+        });
+
+        assert.equal(nicknameResult.length, 1);
+        assert.includes(nicknameResult[0], 'Result');
+        assert.includes(nicknameResult[0], '[BB]Joe');
+        assert.includes(nicknameResult[0], '37.48.87.211');
+
+        const serialResult = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!isbanned 2657120904',
+        });
+
+        assert.equal(serialResult.length, 1);
+        assert.includes(serialResult[0], 'Result');
+        assert.includes(serialResult[0], 'Xanland');
+        assert.includes(serialResult[0], '2657120904');
     });
 
     it('should be able to kick in-game players from the game', async (assert) => {

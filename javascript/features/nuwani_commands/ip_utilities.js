@@ -35,6 +35,11 @@ export function long2ip(value) {
     ].join('.');
 }
 
+// Returns whether the |value| describes a valid IP address.
+export function isIpAddress(value) {
+    return /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(value);
+}
+
 // Converts the difference between |firstIp| and |lastIp| to a range ("8.8.*.*"). This requires
 // that |firstIp| is in the format of "8.8.0.0", and |lastIp| is in the format of "8.8.255.255".
 export function rangeToText(firstIp, lastIp) {

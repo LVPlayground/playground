@@ -20,7 +20,6 @@ class AnnounceManager {
     nuwani_ = null;
 
     constructor(nuwani) {
-        this.configuration = JSON.parse(readFile('announce.json'));
         this.nuwani_ = nuwani;
     }
 

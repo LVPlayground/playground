@@ -51,11 +51,6 @@ class Debug {
     #define BETA_TEST           1
 #endif
 
-#if !defined EchoSettingsSupplied
-    #define EchoHostname        "127.0.0.1"
-    #define EchoPort            26669
-#endif
-
 /**
  * Any compile-time gamemode configuration should be added as a public constant to this class. They
  * may be referred to from anywhere, and should have no dynamic behavior at all. Toggling the
@@ -66,12 +61,6 @@ class Debug {
 class Configuration {
     // What is the salt used to hash passwords more securely?
     public const PasswordSalt = PasswordSalt;
-
-    // What is the hostname echo information should be send to?
-    public const EchoHostname = EchoHostname;
-
-    // At which port is the echo server listening?
-    public const EchoPort = EchoPort;
 };
 
 /**

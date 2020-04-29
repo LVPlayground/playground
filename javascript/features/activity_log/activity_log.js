@@ -101,7 +101,7 @@ class ActivityLog extends Feature {
       return;
 
     const numericIpAddress = this.ip2long(player.ip);
-    const hashedGpci = Murmur3Hash.generateHash(player.gpci);
+    const hashedGpci = murmur3hash(player.gpci);
 
     this.nuwani_().echo(JoinIpGpciTag, player.name, player.id, player.ip, hashedGpci);
 

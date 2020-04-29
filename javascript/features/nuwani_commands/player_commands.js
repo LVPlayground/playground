@@ -63,11 +63,21 @@ export class PlayerCommands {
                 .build(PlayerCommands.prototype.onPlayerInfoCommand.bind(this))
             .build(PlayerCommands.prototype.onPlayerOnlineListCommand.bind(this));
 
+        // !nickhistory
+        this.commandManager_.buildCommand('nickhistory')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .build(PlayerCommands.prototype.onDeprecatedNickHistoryCommand.bind(this));
+
         // !history [nickname]
         this.commandManager_.buildCommand('history')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'nickname', type: CommandBuilder.WORD_PARAMETER }])
             .build(PlayerCommands.prototype.onHistoryCommand.bind(this));
+
+        // !changenick
+        this.commandManager_.buildCommand('changenick')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .build(PlayerCommands.prototype.onDeprecatedChangeNickCommand.bind(this));
 
         // !changename [nickname] [newNickname]
         this.commandManager_.buildCommand('changename')
@@ -160,6 +170,18 @@ export class PlayerCommands {
         }
     }
 
+    // !nickhistory
+    //
+    // Previous name of the !history command. Sends the administrator a relaxed usage note.
+    onDeprecatedNickHistoryCommand(context) {
+        context.respond('3Success: Your message has been sent to [BB]Joe.');
+        wait(5000).then(() => {
+            context.respond(
+                `13Just kidding! Sorry ${context.nickname}, you probably want to use the new ` +
+                `"!history" command instead.`);
+        });
+    }
+
     // !history [nickname]
     //
     // Lists the user's previous nicknames and aliases, to be able to better identify someone's
@@ -172,6 +194,19 @@ export class PlayerCommands {
         }
 
         context.respond(`5Previous nicknames: ${result.join(', ')}`);
+    }
+
+    // !changenick
+    //
+    // Previous name of the !changename command. Sends the administrator a kind, chill notice about
+    // having to use the new command name instead.
+    onDeprecatedChangeNickCommand(context) {
+        context.respond('3Success: Shutting down the server...');
+        wait(5000).then(() => {
+            context.respond(
+                `13Just kidding! Sorry ${context.nickname}, you probably want to use the new ` +
+                `"!changename" command instead.`);
+        });
     }
 
     // !changename [nickname] [newNickname]
@@ -506,7 +541,9 @@ export class PlayerCommands {
         this.commandManager_.removeCommand('supported');
         this.commandManager_.removeCommand('changepass');
         this.commandManager_.removeCommand('changename');
+        this.commandManager_.removeCommand('changenick');
         this.commandManager_.removeCommand('history');
+        this.commandManager_.removeCommand('nickhistory');
         this.commandManager_.removeCommand('players');
         this.commandManager_.removeCommand('getname');
         this.commandManager_.removeCommand('getid');

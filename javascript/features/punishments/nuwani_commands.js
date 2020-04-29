@@ -192,7 +192,9 @@ export class NuwaniCommands {
     // When an administrator on IRC types !banip. This has changed to "!ban ip", but we can be
     // courteous and show them an error message. Or maybe we'll just be a bit mean.
     onDeprecatedBanIpCommand(context) {
-        context.respond('3Success: All bans have been removed.');
+        const count = Math.floor(Math.random() * 4000) + 1500;
+        context.respond('3Success: %d bans have been removed from the server.', count);
+
         wait(5000).then(() => {
             context.respond(
                 `13Just kidding! Sorry ${context.nickname}, you probably want to use the new ` +
@@ -450,9 +452,8 @@ export class NuwaniCommands {
             if (information.nickname === value)
                 nameMatchingBans.push(information);
 
-            if (!(information.ip === null || information.ip !== value) &&
-                    !(information.range === null || information.range !== value) &&
-                    !(information.serial === null || information.serial !== value)) {
+            if (information.ip !== value && information.range !== value &&
+                    (!information.serial || information.serial.toString() !== value)) {
                 continue;
             }
 
@@ -493,7 +494,7 @@ export class NuwaniCommands {
             responseBans.push(this.formatBanInformationString(information));
 
         context.respond(
-            '4Error: There are multiple bans matching this pattern, please be more specific.');
+            `4Error: There are no strict matching bans for "${value}", please be more specific.`);
         context.respond(`5Result: ` + responseBans.join(', '));
     }
 

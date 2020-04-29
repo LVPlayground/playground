@@ -690,7 +690,7 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
 
         assert.equal(ambiguousUnban.length, 2);
         assert.includes(ambiguousUnban[0], 'Error');
-        assert.includes(ambiguousUnban[0], 'multiple bans');
+        assert.includes(ambiguousUnban[0], 'no strict matching');
         assert.includes(ambiguousUnban[1], '[BB]Joe');
         assert.includes(ambiguousUnban[1], '[BB]EvilJoe');
     });

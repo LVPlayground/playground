@@ -315,7 +315,7 @@ export class BanDatabase {
 
     // Unbans the given |logId|. All the necessary checks must already have been done.
     async unban(logId) {
-        await this.database.query(UNBAN_QUERY, logId);
+        await server.database.query(UNBAN_QUERY, logId);
     }
 
     // Converts the given |row| to a ban information structure, containing the same information in a

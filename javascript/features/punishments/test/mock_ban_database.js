@@ -62,15 +62,15 @@ export class MockBanDatabase extends BanDatabase {
     }
 
     // Overridden.
-    async _findActiveBansQuery({ nickname, ip, serial }) {
-        if (nickname === '[BB]Joe') {
+    async _findActiveBansQuery({ nickname, ipRangeStart, ipRangeEnd, serial }) {
+        if (nickname === '[BB]Joe' || nickname === '[BB]EvilJoe' || serial == 987654321) {
             return [
                 {
                     log_id: 48561,
                     log_date: '2020-04-01 12:51:14',
                     ban_ip_range_start: 623925203,  // 37.48.87.211
                     ban_ip_range_end: 623925203,  // 37.48.87.211
-                    gpci_hash: 0,
+                    gpci_hash: 987654321,
                     ban_expiration_date: '2020-06-01 18:00:00',
                     user_nickname: 'slein',
                     subject_nickname: '[BB]Joe',
@@ -81,14 +81,14 @@ export class MockBanDatabase extends BanDatabase {
                     log_date: '2020-01-16 14:55:01',
                     ban_ip_range_start: 1021343232,  // 60.224.118.0
                     ban_ip_range_end: 1021343487,  // 60.224.118.255
-                    gpci_hash: 0,
+                    gpci_hash: 987654321,
                     ban_expiration_date: '2020-07-10 18:30:00',
                     user_nickname: 'Russell',
                     subject_nickname: '[BB]EvilJoe',
                     description: 'Infinite health??',
                 },
             ];
-        } else if (ip === 623925002 /* 37.48.87.10 */) {
+        } else if (ipRangeStart === 623925002 /* 37.48.87.10 */) {
             return [
                 {
                     log_id: 12894,

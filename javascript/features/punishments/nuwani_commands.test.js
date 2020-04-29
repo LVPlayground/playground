@@ -473,7 +473,7 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         // (1) Test error messages for invalid input.
         const invalidInput = await issueCommand(bot, commandManager, {
             source: kCommandSource,
-            command: '!isbanned 127.0.*.*',
+            command: '!isbanned ^^^MaXiMe^^^',
         });
 
         assert.equal(invalidInput.length, 1);
@@ -596,6 +596,56 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
     it('should be able to list previously issued bans', async (assert) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
-        // !unban [ip | ip range | serial] [note]
+        const invalidConditional = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!unban ^^^MaXiMe^^^ reason',
+        });
+
+        assert.equal(invalidConditional.length, 1);
+        assert.includes(invalidConditional[0], 'Error');
+        assert.includes(invalidConditional[0], 'is neither a nickname');
+
+        await assertNoteConstraints(assert, '!unban 127.0.0.1');
+
+        const noMatches = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!unban 80.70.60.50 reason',
+        });
+
+        assert.equal(noMatches.length, 1);
+        assert.includes(noMatches[0], 'Error');
+        assert.includes(noMatches[0], 'No bans could be found');
+
+        // Case: successful unban on a direct conditional match
+        const directMatchUnban = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!unban 2657120904 reason',
+        });
+
+        assert.equal(directMatchUnban.length, 1);
+        assert.includes(directMatchUnban[0], 'Success');
+        assert.includes(directMatchUnban[0], 'Xanland');
+
+        // Case: successful unban on a direct nickname match
+        const nicknameMatchUnban = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!unban [BB]EvilJoe reason',
+        });
+
+        assert.equal(nicknameMatchUnban.length, 1);
+        assert.includes(nicknameMatchUnban[0], 'Success');
+        assert.includes(nicknameMatchUnban[0], '60.224.118.*');
+
+        // Case: ambiguous command, with individual bans being shown
+        const ambiguousUnban = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!unban 987654321 reason',
+        });
+
+        assert.equal(ambiguousUnban.length, 2);
+        assert.includes(ambiguousUnban[0], 'Error');
+        assert.includes(ambiguousUnban[0], 'multiple bans');
+        assert.includes(ambiguousUnban[1], '[BB]Joe');
+        assert.includes(ambiguousUnban[1], '[BB]EvilJoe');
     });
 });

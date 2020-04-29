@@ -107,13 +107,13 @@ export class NuwaniCommands {
             .parameters([{ name: 'nickname', type: CommandBuilder.WORD_PARAMETER }])
             .build(NuwaniCommands.prototype.onWhyCommand.bind(this));
 
-        // !unban [ip | ip range | serial] [reason]
+        // !unban [nickname | ip | ip range | serial] [reason]
         this.commandManager_.buildCommand('unban')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
-                { name: 'ip | ip range | serial', type: CommandBuilder.WORD_PARAMETER },
+                { name: 'nickname | ip | ip range | serial', type: CommandBuilder.WORD_PARAMETER },
                 { name: 'reason', type: CommandBuilder.SENTENCE_PARAMETER }])
-            .build(NuwaniCommands.prototype.onWhyCommand.bind(this));
+            .build(NuwaniCommands.prototype.onUnbanCommand.bind(this));
     }
 
     // !addnote [nickname] [note]
@@ -312,7 +312,7 @@ export class NuwaniCommands {
             context.respond(`4Error: The ban could not be stored in the database.`);
     }
 
-    // !isbanned [nickname | ip | serial]
+    // !isbanned [nickname | ip | ip range | serial]
     //
     // Checks whether the given nickname, IP address or serial number is banned, and display details
     // about the ban(s) that they are currently subject to.
@@ -324,13 +324,11 @@ export class NuwaniCommands {
             return;
         }
 
+        const conditionalType = this.formatBanConditionalType(conditional);
+
         const bans = await this.database_.findActiveBans(conditional);
         if (!bans.length) {
-            const type = conditional.ip ? 'IP address'
-                                        : (conditional.serial ? 'serial number'
-                                                              : 'nickname');
-
-            context.respond(`5Result: No bans could be found for the given ${type}.`);
+            context.respond(`5Result: No bans could be found for the given ${conditionalType}.`);
             return;
         }
 
@@ -396,11 +394,75 @@ export class NuwaniCommands {
         context.respond('4Error: This command has not been implemented yet.');
     }
 
-    // !unban [ip | ip range | serial] [reason]
+    // !unban [nickname | ip | ip range | serial] [reason]
     //
-    // Lifts the ban identified on the given |ip| address, |ip range| or |serial| number.
+    // Lifts the ban identified on the given |ip| address, |ip range| or |serial| number. An exact
+    // match is necessary in order to actually execute the unban.
     async onUnbanCommand(context, value, reason) {
-        context.respond('4Error: This command has not been implemented yet.');
+        const conditional = this.database_.deriveBanConditional(value);
+        if (!conditional) {
+            context.respond(
+                `4Error: ${value} is neither a nickname, IP address, IP range or serial number.`);
+            return;
+        }
+
+        if (!this.validateNote(context, reason))
+            return;
+
+        const conditionalType = this.formatBanConditionalType(conditional);
+
+        const bans = await this.database_.findActiveBans(conditional);
+        if (!bans.length) {
+            context.respond(`4Error: No bans could be found for the given ${conditionalType}.`);
+            return;
+        }
+
+        let strictMatchingBans = [];
+        let nameMatchingBans = [];
+
+        // We require an exact match on the |reason| in order to unban them, to avoid ambiguity in
+        // _what_ is being unbanned: IP bans should not lift full range bans by accident.
+        for (const information of bans) {
+            if (information.nickname === value)
+                nameMatchingBans.push(information);
+
+            if (!(information.ip === null || information.ip !== value) &&
+                    !(information.range === null || information.range !== value) &&
+                    !(information.serial === null || information.serial !== value)) {
+                continue;
+            }
+
+            strictMatchingBans.push(information);
+        }
+
+        // If there's a single entry in |strictMatchingBans|, it's very clear what they want to be
+        // unbanned. Similarly, if there's a single ban in |nameMatchingBans| then we can derive the
+        // necessary information from that as well.
+        if (strictMatchingBans.length === 1 || nameMatchingBans.length == 1) {
+            const matchingBan =
+                strictMatchingBans.length == 1 ? strictMatchingBans[0] : nameMatchingBans[0];
+            
+            // TODO: Actually lift the ban.
+            // TODO: Actually add a note.
+
+            // The actual medium that the |matchingBan| described.
+            const banMedium = matchingBan.ip || matchingBan.range || matchingBan.serial;
+
+            context.respond(
+                `3Success: ${matchingBan.nickname} 14(${banMedium}) has been unbanned.`);
+            return;
+        }
+
+        let responseBans = [];
+
+        // Otherwise it's ambiguous what ban the user intended to be lifted. Display output that is
+        // similar to the !isbanned command, enabling them to make a more specific choice.
+        for (const information of bans)
+            responseBans.push(this.formatBanInformationString(information));
+
+        context.respond(
+            '4Error: There are multiple bans matching this pattern, please be more specific.');
+        context.respond(`5Result: ` + responseBans.join(', '));
     }
 
     // !why [nickname]
@@ -528,6 +590,21 @@ export class NuwaniCommands {
         const timeDifference = fromNow({ date: banInformation.date });
 
         return `${nickname} 14(${expression}, ${timeDifference} by ${issuedBy})`;
+    }
+
+    // Converts the given |conditional| to a string. It requires at least one of the type fields to
+    // be set, and will return a friendly, textual representation about it.
+    formatBanConditionalType(conditional) {
+        if (conditional.nickname)
+            return 'nickname';
+        if (conditional.ip)
+            return 'IP address';
+        if (conditional.range)
+            return 'IP range';
+        if (conditional.serial)
+            return 'serial number';
+
+        throw new Error('Unrecognised ban conditional: ' + String(conditional));
     }
 
     dispose() {

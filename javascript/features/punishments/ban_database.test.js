@@ -216,15 +216,16 @@ describe('PlayerDatabase', it => {
         const instance = new MockBanDatabase();
 
         assert.deepEqual(instance.deriveBanConditional('123456'),
-                         { nickname: null, ip: null, serial: 123456 });
+                         { nickname: null, ip: null, range: null, serial: 123456 });
         assert.deepEqual(instance.deriveBanConditional('127.0.0.1'),
-                         { nickname: null, ip: '127.0.0.1', serial: null });
+                         { nickname: null, ip: '127.0.0.1', range: null, serial: null });
         assert.deepEqual(instance.deriveBanConditional('[BB]Joe'),
-                         { nickname: '[BB]Joe', ip: null, serial: null });
-        
-        assert.isNull(instance.deriveBanConditional('127.0.*.*'));
-        assert.isNull(instance.deriveBanConditional('^^^MaXiMe^^^'));
+                         { nickname: '[BB]Joe', ip: null, range: null, serial: null });
+        assert.deepEqual(instance.deriveBanConditional('127.0.*.*'),
+                         { nickname: null, ip: null, range: '127.0.*.*', serial: null });
     });
+
+    it.fails();
 
     it('is able to find active bans based on the given conditionals', async (assert) => {
         const instance = new MockBanDatabase();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { ip2long, long2ip, isIpAddress, rangeToText } from 'features/nuwani_commands/ip_utilities.js';
+import { ip2long, long2ip, isIpAddress, isIpRange, rangeToText } from 'features/nuwani_commands/ip_utilities.js';
 
 // MySQL query to execute when adding an entry to the database.
 const ADD_ENTRY_QUERY = `
@@ -213,21 +213,24 @@ export class BanDatabase {
         return result && result.insertId !== 0;
     }
 
-    // Derives what sort of indicator the |value| describes, which could be an IP address, serial
-    // number of a nickname. Returns NULL when we're not sure.
+    // Derives what sort of indicator the |value| describes, which could be an IP address, range,
+    // serial number or a nickname. Returns NULL when we're not sure.
     deriveBanConditional(value) {
         const numericValue = parseInt(value, 10);
 
         if (!Number.isNaN(numericValue) && Number.isInteger(numericValue) &&
                 numericValue.toString().length === value.length) {
-            return { nickname: null, ip: null, serial: numericValue };
+            return { nickname: null, ip: null, range: null, serial: numericValue };
         }
 
         if (isIpAddress(value))
-            return { nickname: null, ip: value, serial: null };
+            return { nickname: null, ip: value, range: null, serial: null };
+        
+        if (isIpRange(value))
+            return { nickname: null, ip: null, range: value, serial: null };
         
         if (/^[0-9a-z\[\]\(\)\$@\._=]{1,24}$/i.test(value))
-            return { nickname: value, ip: null, serial: null };
+            return { nickname: value, ip: null, range: null, serial: null };
         
         return null;
     }
@@ -250,24 +253,38 @@ export class BanDatabase {
         return result ? result.rows : [];
     }
 
-    // Finds the active ban(s) that match the given parameters, either by |nickname|, |ip| or
-    // |serial|, or a combination thereof. Returns detailed information about those bans.
-    async findActiveBans({ nickname = null, ip = null, serial = null } = {}) {
+    // Finds the active ban(s) that match the given parameters, either by |nickname|, |ip|, |range|
+    // or |serial|, or a combination thereof. Returns detailed information about those bans.
+    async findActiveBans({ nickname = null, ip = null, range = null, serial = null } = {}) {
         if (nickname !== null && typeof nickname !== 'string')
             throw new Error('The given |nickname| should either be a string, or NULL.');
         
         if (ip !== null && typeof ip !== 'string')
             throw new Error('The given |ip| address should either be a string, or NULL.');
         
+        if (range !== null && typeof range !== 'string')
+            throw new Error('The given IP |range| should either be a string, or NULL.');
+
         if (serial !== null && typeof serial !== 'number')
             throw new Error('The given |serial| should either be a string, or NULL.');
 
-        if (!nickname && !ip && !serial)
-            throw new Error('At least one of |nickname|, |ip|, |serial| must be given.')
+        if (!nickname && !ip && !range && !serial)
+            throw new Error('At least one of |nickname|, |ip|, |range| or |serial| must be given.');
+
+        let ipRangeStart = 0;
+        let ipRangeEnd = 0;
+
+        if (range !== null) {
+            ipRangeStart = ip2long(range.replace(/\*/g, '0'));
+            ipRangeEnd = ip2long(range.replace(/\*/g, '255'));
+        } else if (ip !== null) {
+            ipRangeStart = ip2long(ip);
+            ipRangeEnd = ipRangeStart;
+        }
 
         const result = await this._findActiveBansQuery({
             nickname: nickname ?? '',
-            ip: ip ? ip2long(ip) : 0,
+            ipRangeStart, ipRangeEnd,
             serial: serial ?? 0,
         });
     
@@ -279,9 +296,10 @@ export class BanDatabase {
     }
 
     // Actually runs the database query to find the active bans given the conditionals.
-    async _findActiveBansQuery({ nickname, ip, serial }) {
-        const result = await server.database.query(FIND_ACTIVE_BANS_QUERY, ip, ip, ip, serial,
-                                                   serial, nickname, nickname);
+    async _findActiveBansQuery({ nickname, ipRangeStart, ipRangeEnd, serial }) {
+        const result = await server.database.query(
+            FIND_ACTIVE_BANS_QUERY, ipRangeStart, ipRangeStart, ipRangeEnd, serial, serial,
+            nickname, nickname);
 
         return result ? result.rows : [];
     }

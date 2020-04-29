@@ -335,11 +335,11 @@ export class NuwaniCommands {
 
         let responseBans = [];
         for (const information of bans) {
+            const { nickname, issuedBy } = information;
             const expression = information.ip ?? information.range ?? information.serial;
-            const issuedBy = information.issuedBy;
             const timeDifference = fromNow({ date: information.date });
 
-            responseBans.push(`${expression} 14(${timeDifference}, by ${issuedBy})`);
+            responseBans.push(`${nickname} 14(${expression}, ${timeDifference} by ${issuedBy})`);
         }
 
         context.respond('5Most recent bans: ' + responseBans.join(', '));

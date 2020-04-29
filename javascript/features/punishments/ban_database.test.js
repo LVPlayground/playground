@@ -211,6 +211,4 @@ describe('PlayerDatabase', it => {
         assert.isNull(bans[2].range);
         assert.equal(bans[2].serial, 2657120904);
     });
-
-    it.fails();
 });

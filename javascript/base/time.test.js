@@ -84,7 +84,7 @@ describe('Time', it => {
         function pastYears(years) { return pastDays(years * 365); }
 
         assert.throws(() => toNow({ date: futureHours(1) }));
-        assert.throws(() => fromNow({ date: pastHours(1) }));
+        assert.throws(() => fromNow({ date: futureHours(1) }));
 
         assert.equal(to({ date1: baseDate, date2: baseDate }), 'now');
         assert.equal(to({ date1: baseDate, date2: futureSeconds(1) }), 'in 1 second');

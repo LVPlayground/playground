@@ -11,7 +11,7 @@ global.hours = hours => wait(hours * 60 * 60 * 1000);
 // Utility function for formatting "time since", e.g. a difference of 60 seconds ending up being a
 // string that says "1 minute ago". The |suffix| is optional, but included by default.
 export function fromNow({ date, suffix = true } = {}) {
-    return from({ date1: date, date2: new Date(), suffix });
+    return from({ date1: new Date(), date2: date, suffix });
 }
 
 // Utility function that formats the "time since" between |date1| and |date2|. If |date1| happened
@@ -89,7 +89,7 @@ export function relativeTime({ date1, date2 }) {
     const absoluteDifferenceDays = absoluteDifferenceHours / 24;
 
     // (4) Difference in days
-    if (absoluteDifferenceDays === 1)
+    if (absoluteDifferenceDays < 1.5)
         return { isCurrent, isPast, text: '1 day' };
     else if (absoluteDifferenceDays <= 30)
         return { isCurrent, isPast, text: `${Math.round(absoluteDifferenceDays)} days` };

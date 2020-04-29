@@ -6,6 +6,7 @@ import { BanDatabase } from 'features/punishments/ban_database.js';
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
 import { format } from 'base/string_formatter.js';
+import { fromNow } from 'base/time.js';
 import { isPartOfRangeBan } from 'features/nuwani_commands/ip_utilities.js';
 import { murmur3hash } from 'base/murmur3hash.js';
 
@@ -330,7 +331,18 @@ export class NuwaniCommands {
     //
     // Lists the most recent bans that were created on the server.
     async onLastBansCommand(context) {
-        context.respond('4Error: This command has not been implemented yet.');
+        const bans = await this.database_.getRecentBans(/* limit= */ 5);
+
+        let responseBans = [];
+        for (const information of bans) {
+            const expression = information.ip ?? information.range ?? information.serial;
+            const issuedBy = information.issuedBy;
+            const timeDifference = fromNow({ date: information.date });
+
+            responseBans.push(`${expression} 14(${timeDifference}, by ${issuedBy})`);
+        }
+
+        context.respond('5Most recent bans: ' + responseBans.join(', '));
     }
 
     // !ipinfo [nickname | ip | ip range]

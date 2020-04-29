@@ -512,7 +512,17 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
     it('should be able to list the most recent bans', async (assert) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
-        // !lastbans
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!lastbans',
+        });
+
+        assert.equal(result.length, 1);
+        assert.includes(result[0], 'Most recent bans:');
+
+        assert.includes(result[0], '37.48.87.211');
+        assert.includes(result[0], '37.48.*.*');
+        assert.includes(result[0], '2657120904');
     });
 
     it('should be able to find IP information based on certain conditions', async (assert) => {

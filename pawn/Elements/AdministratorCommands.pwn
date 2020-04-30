@@ -156,28 +156,6 @@ lvp_fetch(playerId, params[]) {
     return 1;
 }
 
-lvp_forward(playerId, params[]) {
-    new distance = Command->integerParameter(params, 0);
-    if (Command->parameterCount(params) == 0) {
-        SendClientMessage(playerId, Color::Success, "This commands moves you forward by the chosen distance.");
-        SendClientMessage(playerId, Color::Information, "Usage: /forward [distance]");
-        return 1;
-    }
-
-    new Float: position[3];
-    GetPlayerPos(playerId, position[0], position[1], position[2]);
-    GetXYInFrontOfPlayer(playerId, position[0], position[1], distance);
-
-    if (IsPlayerInAnyVehicle(playerId))
-        SetVehiclePos(GetPlayerVehicleID(playerId), position[0], position[1], position[2]);
-    else
-        SetPlayerPos(playerId, position[0], position[1], position[2]);
-
-    SetCameraBehindPlayer(playerId);
-
-    return 1;
-}
-
 lvp_t(playerId, params[]) {
     new locationId = Command->integerParameter(params, 0);
     if (Command->parameterCount(params) == 0 || locationId < 0 || locationId > 13) {

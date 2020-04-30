@@ -77,6 +77,11 @@ describe('MessageFormatter', it => {
         assert.equal(formatter.formatPawn('test_int', 'z', 'hello'), 'PRIVMSG #echo :hello');
         assert.equal(formatter.formatPawn('test_int', 'z', 'world :o'), 'PRIVMSG #echo :world :o');
 
+        // Ignoring excess whitepsace
+        assert.equal(
+            formatter.formatPawn('test_dsz', 'dsz', ' 42  text  hello all  '),
+            'PRIVMSG #echo :42 text hello all');
+
         // Combining multiple parameters in the same string
         assert.equal(
             formatter.formatPawn('test_dsz', 'dsz', '42 says hello world'),

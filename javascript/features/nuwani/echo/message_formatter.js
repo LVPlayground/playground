@@ -96,7 +96,7 @@ export class MessageFormatter {
         format = format.replace(/<color:(\d+)>/g, (_, color) => {
             const numericColour = parseInt(color, 10);
             if (numericColour < 0 || numericColour > 15)
-                throw new Error('Invalid IRC colour code: ' + color);
+                throw new Error(`[${tag}] Invalid IRC colour code: ${color}`);
             
             return '\x03' + ('0' + numericColour.toString()).substr(-2);
         });
@@ -104,7 +104,7 @@ export class MessageFormatter {
         // Allow for configurable channel access prefixes in the message format.
         format = format.replace(/<prefix:(.+?)>/g, (_, prefix) => {
             if (prefix.length !== 1)
-                throw new Error('Invalid IRC access prefix: ' + prefix);
+                throw new Error(`[${tag}] Invalid IRC access prefix: ${prefix}`);
             
             destinationPrefix = prefix;
             return '';
@@ -119,7 +119,7 @@ export class MessageFormatter {
             if (matches !== null) {
                 const parameterIndex = parseInt(matches[1]);
                 if (parameterIndex < 0 || parameterIndex >= params.length)
-                    throw new Error('Invalid IRC message target index: ' + matches[1]);
+                    throw new Error(`[${tag}] Invalid message target: ${matches[1]}`);
                 
                 actualTarget = params[parameterIndex];
             } else {
@@ -127,7 +127,7 @@ export class MessageFormatter {
             }
 
             if (!kValidTargetExpression.test(actualTarget))
-                throw new Error('Invalid IRC message target: ' + actualTarget);
+                throw new Error(`[${tag}] Invalid message target: ${actualTarget}`);
             
             destination = actualTarget;
             return '';
@@ -161,12 +161,15 @@ export class MessageFormatter {
         // Iterate over each of the characters included in the |format|, and peel off an
         // argument from the |messageString| assuming it's formatted as such.
         for (const character of format) {
+            while (messageString.length > offset && messageString[offset] === ' ')
+                ++offset;  // skip excess whitespace
+
             let nextSpace = messageString.indexOf(' ', offset);
             if (nextSpace === -1)
                 nextSpace = messageString.length;
 
             if (offset === nextSpace)
-                throw new Error('No more parameters to consume from the `messageString`.');
+                throw new Error(`[${tag}] No more parameters available to consume.`);
 
             switch (character) {
                 case 'd':
@@ -182,11 +185,11 @@ export class MessageFormatter {
                     break;
 
                 case 'z':
-                    params.push(messageString.substring(offset));
+                    params.push(messageString.trimEnd().substring(offset));
                     break;
 
                 default:
-                    throw new Error('Invalid formatting character given: ' + character);
+                    throw new Error(`[${tag}] Invalid formatting character: ${character}`);
             }
 
             offset = nextSpace + 1;

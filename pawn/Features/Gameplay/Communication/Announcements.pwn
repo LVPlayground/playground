@@ -158,7 +158,7 @@ class Announcements {
 
         // Announce this player's disconnection to people watching from IRC.
         format(m_formatBuffer, sizeof(m_formatBuffer), "%d %s %s", playerId, playerName, reasonString);
-        EchoMessage("quit", "dss", m_formatBuffer);
+        EchoMessage("quit", "dsz", m_formatBuffer);
     }
 
     /**

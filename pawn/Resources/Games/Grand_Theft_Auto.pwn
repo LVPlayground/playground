@@ -74,8 +74,8 @@ CTheft__Initalize() {
         CTheft__UpdateVehicleMarkerForPlayer(playerId);
     }
 
-	format(message, sizeof(message), "%s %d", VehicleModel(vehicleModel)->nameString(), GTA_Value);
-	EchoMessage("merchant", "sd", message);
+	format(message, sizeof(message), "%d %s", GTA_Value, VehicleModel(vehicleModel)->nameString());
+	EchoMessage("merchant", "dz", message);
 }
 
 // Returns a random vehicle that the merchant is interested in. The vehicle must meet a series of

@@ -102,4 +102,29 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
 
         assert.equal(gunther.position.z, 8);
     });
+
+    it('/forward can\'t be executed by a player', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+    
+        gunther.position = new Vector(11, 12, 13);
+    
+        assert.isTrue(gunther.issueCommand('/foward 3'));
+    
+        assert.equal(gunther.position.x, 11);
+        assert.equal(gunther.position.y, 12);
+    });
+
+    it('/forward places the crewmember on foot [distance] further', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        gunther.identify();
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+        gunther.position = new Vector(11, 12, 13);
+        gunther.facingAngle = 42;
+
+        assert.isTrue(gunther.issueCommand('/forward 8'));
+
+        assert.equal(gunther.position.x, 16.353044850870866);
+        assert.equal(gunther.position.y, 17.945158603819152);
+    });
 });

@@ -20,6 +20,11 @@ class PositioningCommands {
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'distance', type: CommandBuilder.NUMBER_PARAMETER }])
             .build(PositioningCommands.prototype.onUpCommand.bind(this));
+
+        server.commandManager.buildCommand('forward')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .parameters([{ name: 'distance', type: CommandBuilder.NUMBER_PARAMETER }])
+            .build(PositioningCommands.prototype.onForwardCommand.bind(this));
     }
 
     onPosCommand(player) {
@@ -38,9 +43,18 @@ class PositioningCommands {
         player.position = new Vector(x, y, z);
     }
 
+    getVehicleOfPlayer(playerId) {
+        return pawnInvoke('GetPlayerVehicleID', 'i', playerId);;
+    }
+
     // Dirty hack to get position of current non-javascript created vehicle of player
     getPositionOfVehicle(vehicleId) {
         return new Vector(...pawnInvoke('GetVehiclePos', 'iFFF', vehicleId));
+    }
+
+    // Dirty hack to get z-angle of current non-javascript created vehicle of player
+    getZAngleOfVehicle(vehicleId) {
+        return pawnInvoke('GetVehicleZAngle', 'iF', vehicleId);
     }
 
     // Dirty hack to set that position of current non-javascript created vehicle of player
@@ -49,9 +63,13 @@ class PositioningCommands {
                    positions.z);
     }
 
+    getCalculatedPositionInFrontWithDistance(positions, distance, angle) {
+        return positions.translateTo2D(distance, angle);
+    }
+
     onUpCommand(player, distance) {
         if (player.isInVehicle()) {
-            const playerVehicleId = pawnInvoke('GetPlayerVehicleID', 'i', player.id);
+            const playerVehicleId = this.getVehicleOfPlayer(player.id);
 
             const playerVehiclePosition = this.getPositionOfVehicle(playerVehicleId);
             this.setPositionOfVehicle(playerVehicleId,
@@ -64,12 +82,36 @@ class PositioningCommands {
                 new Vector(playerPosition.x, playerPosition.y,
                            playerPosition.z + distance);
         }
+
+        player.sendMessage(Message.POSITIONING_UP);
+    }
+
+    onForwardCommand(player, distance) {
+        if (player.isInVehicle()) {
+            const playerVehicleId = this.getVehicleOfPlayer(player.id);
+
+            const pvPosition = this.getPositionOfVehicle(playerVehicleId);
+            const pvZAngle = this.getZAngleOfVehicle(playerVehicleId);
+            const pvCalculatedPosition = this.getCalculatedPositionInFrontWithDistance(pvPosition, distance, pvZAngle);
+            this.setPositionOfVehicle(playerVehicleId, ...pvCalculatedPosition);
+        }
+        else {
+            const playerPosition = player.position;
+            const playerZAngle = player.facingAngle;
+            const playerCalculatedPosition = this.getCalculatedPositionInFrontWithDistance(playerPosition, distance, playerZAngle);
+            player.position = playerCalculatedPosition;
+        }
+
+        player.resetCamera();
+
+        player.sendMessage(Message.POSITIONING_FORWARD);
     }
 
     // Cleans up the state created by this class, i.e. unregisters the commands.
     dispose() {
         server.commandManager.removeCommand('pos');
         server.commandManager.removeCommand('up');
+        server.commandManager.removeCommand('forward');
     }
 }
 

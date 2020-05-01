@@ -31,7 +31,7 @@ const PLAYER_SUMMARY_QUERY = `
         users_mutable.online_time,
         users_mutable.kill_count,
         users_mutable.death_count,
-        IFNULL(TIMESTAMPDIFF(SECOND, users_mutable.last_seen, NOW()), 0) as last_seen
+        users_mutable.last_seen
     FROM
         users_nickname
     LEFT JOIN

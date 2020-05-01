@@ -40,7 +40,7 @@ export class MockAccountDatabase extends AccountDatabase {
             online_time: this.summary.onlineTime ?? 991571,
             kill_count: this.summary.killCount ?? 15122,
             death_count: this.summary.deathCount ?? 4812,
-            last_seen: this.summary.lastSeen ?? 92929
+            last_seen: this.summary.lastSeen ?? '2018-11-23 18:51:12',
         };
     }
 

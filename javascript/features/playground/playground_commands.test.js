@@ -245,7 +245,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         gunther.level = Player.LEVEL_MANAGEMENT;
 
         // Change the `default_channel` section in the `radio` section.
-        gunther.respondToDialog({ listitem: 2 /* Assumed `radio` */ }).then(
+        gunther.respondToDialog({ listitem: 3 /* Assumed `radio` */ }).then(
             () => gunther.respondToDialog({ listitem: 0 /* Assumed to be `default_channel` */ })).then(
             () => gunther.respondToDialog({ response: 1, inputtext: 'Hello World' })).then(
             () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));

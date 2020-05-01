@@ -385,7 +385,10 @@ describe('AccountNuwaniCommands', (it, beforeEach, afterEach) => {
 
     it('should be able to format recency information in player summaries', async (assert) => {
         const withLastSeen = async (time) => {
-            commands.database_.summary.lastSeen = time;
+            commands.database_.summary.lastSeen =
+                time ? new Date(Date.now() - time * 1000).toString()
+                     : time;
+
             const result = await issueCommand(bot, commandManager, {
                 source: kCommandSource,
                 command: '!players Beaner',
@@ -395,14 +398,14 @@ describe('AccountNuwaniCommands', (it, beforeEach, afterEach) => {
         };
 
         assert.doesNotInclude(await withLastSeen(0), 'last seen');
-        assert.includes(await withLastSeen(1), 'earlier today');
-        assert.includes(await withLastSeen(23 * 60 * 60), 'earlier today');
-        assert.includes(await withLastSeen(24 * 60 * 60), 'yesterday');
+        assert.includes(await withLastSeen(1), '1 second ago');
+        assert.includes(await withLastSeen(23 * 60 * 60), '23 hours ago');
+        assert.includes(await withLastSeen(24 * 60 * 60), '1 day ago');
         assert.includes(await withLastSeen(48 * 60 * 60), '2 days ago');
         assert.includes(await withLastSeen(480 * 60 * 60), '20 days ago');
-        assert.includes(await withLastSeen(30.5 * 86400), 'a month ago');
+        assert.includes(await withLastSeen(30.5 * 86400), '1 month ago');
         assert.includes(await withLastSeen(61 * 86400), '2 months ago');
-        assert.includes(await withLastSeen(365 * 86400), 'a year ago');
+        assert.includes(await withLastSeen(365 * 86400), '1 year ago');
         assert.includes(await withLastSeen(1095 * 86400), '3 years ago');
     });
 

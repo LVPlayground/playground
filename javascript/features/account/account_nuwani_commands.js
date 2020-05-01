@@ -5,13 +5,11 @@
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
 import { format } from 'base/string_formatter.js';
+import { fromNow } from 'base/time.js';
 
 // Time durations, in seconds, for the named periods of time.
 const kMinuteSeconds = 60;
 const kHourSeconds = kMinuteSeconds * 60;
-const kDaySeconds = kHourSeconds * 24;
-const kMonthSeconds = kDaySeconds * 30.5;
-const kYearSeconds = kDaySeconds * 365;
 
 // Implementation of a series of commands that allow the state of players to be modified, both of
 // in-game players and of those who aren't currently online. 
@@ -449,29 +447,11 @@ export class AccountNuwaniCommands {
         }
 
         // (4) Format the information about when they were last seen.
-        if (summary.last_seen > 0) {
-            recencyFormat = '%s was last seen online ';
-            params.push(nickname);
+        if (summary.last_seen) {
+            const lastSeenText = fromNow({ date: new Date(summary.last_seen) });
 
-            const exploded = this.explodeLastSeen(summary.last_seen);
-            if (exploded.years === 1) {
-                recencyFormat += 'a year ago. ';
-            } else if (exploded.years > 1) {
-                recencyFormat += '%d years ago. ';
-                params.push(exploded.years);
-            } else if (exploded.months === 1) {
-                recencyFormat += 'a month ago. ';
-            } else if (exploded.months > 0) {
-                recencyFormat += '%d months ago. ';
-                params.push(exploded.months);
-            } else if (exploded.days === 1) {
-                recencyFormat += 'yesterday. ';
-            } else if (exploded.days > 0) {
-                recencyFormat += '%d days ago. ';
-                params.push(exploded.days);
-            } else {
-                recencyFormat += 'earlier today. ';
-            }
+            recencyFormat = `%s was last seen online ${lastSeenText}. `;
+            params.push(nickname);
         }
 
         // (5) Append a link to their profile page on the website.
@@ -492,27 +472,6 @@ export class AccountNuwaniCommands {
         const seconds = time - (hours * kHourSeconds) - (minutes * kMinuteSeconds);
 
         return { hours, minutes, seconds };
-    }
-
-    // Explodes the given |time| in seconds to a structure containing years, months and days. The
-    // exploded values are not accurate, but instead are rounded towards the closest value to
-    // give the displayed information more colour. (Only one unit should be shown.)
-    explodeLastSeen(time) {
-        const actualYears = Math.floor(time / kYearSeconds);
-        const roundedYears = Math.round(time / kYearSeconds);
-
-        const actualMonths = Math.floor(time / kMonthSeconds) - actualYears * 12;
-        const roundedMonths = Math.round(time / kMonthSeconds) - actualYears * 12;
-
-        const actualDays = Math.floor(time / kDaySeconds) - (actualMonths * kMonthSeconds) -
-                                                            (actualYears * kYearSeconds);
-
-        return {
-            years: roundedYears,
-            months: (!roundedYears && roundedMonths === 1) ? actualMonths
-                                                           : roundedMonths,
-            days: actualDays,
-        };
     }
 
     dispose() {

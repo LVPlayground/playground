@@ -19,7 +19,7 @@
     "chat-private-irc": "<prefix:%><color:7>PM from <color:5>%s <color:7>(IRC) to <color:5>%s <color:7>(Id:%d):<color> %s",
     "chat-vip": "<prefix:+><color:12>VIP chat <color:2>[%d] <color:7>%s:<color> %s",
     "chat-vip-irc": "<prefix:+><color:12>VIP chat <color:2>[IRC] <color:7>%s:<color> %s",
-    "chat-world": "<prefix+><color:12>[World %d] <color:2>[%d] <color:7>%s:<color> %s",
+    "chat-world": "<prefix:+><color:12>[World %d] <color:2>[%d] <color:7>%s:<color> %s",
 
     "notice-admin": "<prefix:%><color:2>*** <color:5>%s",
     "notice-announce": "<color:12>*** Announcement: %s",

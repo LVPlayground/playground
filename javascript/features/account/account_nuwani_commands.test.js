@@ -175,7 +175,7 @@ describe('AccountNuwaniCommands', (it, beforeEach, afterEach) => {
 
         assert.equal(result.length, 1);
         assert.includes(result[0], 'Success');
-        assert.isTrue(/to ([a-zA-Z0-9]){12}\.$/.test(result[0]));
+        assert.isTrue(/to ([a-zA-Z0-9]){12}$/.test(result[0]));
 
         assert.equal(commands.database_.changePassQueries.length, 1);
         assert.equal(commands.database_.changePassQueries[0].nickname, '[BB]Ricky92');

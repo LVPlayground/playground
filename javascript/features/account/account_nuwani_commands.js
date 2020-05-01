@@ -243,7 +243,7 @@ export class AccountNuwaniCommands {
         const result = await this.database_.changePassword(nickname, password);
         if (result) {
             context.respond(
-                `3Success: The password of ${nickname} has been updated to ${password}.`);
+                `3Success: The password of ${nickname} has been updated to ${password}`);
         } else {
             context.respond(`4Error: The player ${nickname} could not be found in the database.`);
         }

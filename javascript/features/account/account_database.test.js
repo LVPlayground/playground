@@ -81,15 +81,15 @@ describe('AccountDatabase', it => {
 
     it('is able to verify a nickname/password combination', async (assert) => {
         const instance = new MockAccountDatabase();
-        instance.setPasswordSalt('Kh4alil');
+        instance.setPasswordSalt('s4lt$');
 
         assert.isFalse(await instance.validatePassword('InvalidUser', 'passzw0rd'));
-        assert.isTrue(await instance.validatePassword('Joe', 'i-am-a-hero'));
+        assert.isTrue(await instance.validatePassword('Joe', 'correct-pass'));
         assert.isFalse(await instance.validatePassword('Joe', 'I-AM-A-HERO'));
 
         instance.setPasswordSalt('Blaat');
 
-        assert.isFalse(await instance.validatePassword('Joe', 'i-am-a-hero'));
+        assert.isFalse(await instance.validatePassword('Joe', 'correct-pass'));
     });
 
     it('is able to validate numeric values when updating player data', async (assert) => {

@@ -92,7 +92,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
 
         assert.isTrue(await gunther.issueCommand('/account'));
 
-        assert.equal(database.passwordQueries.length, 2);
+        assert.equal(database.passwordQueries.length, 3);
         assert.equal(database.changePassQueries.length, 0);
 
         // (3) The flow should refuse password that are not strong enough.
@@ -103,7 +103,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
 
         assert.isTrue(await gunther.issueCommand('/account'));
 
-        assert.equal(database.passwordQueries.length, 3);
+        assert.equal(database.passwordQueries.length, 4);
         assert.equal(database.changePassQueries.length, 0);
 
         // (4) The flow should allow people to retry with more secure passwords.
@@ -118,7 +118,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
 
         assert.isTrue(await gunther.issueCommand('/account'));
 
-        assert.equal(database.passwordQueries.length, 4);
+        assert.equal(database.passwordQueries.length, 6);
         assert.equal(database.changePassQueries.length, 0);
 
         // (4) The player is able to change their password.
@@ -129,7 +129,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
 
         assert.isTrue(await gunther.issueCommand('/account'));
 
-        assert.equal(database.passwordQueries.length, 5);
+        assert.equal(database.passwordQueries.length, 7);
         assert.equal(database.changePassQueries.length, 1);
         assert.equal(database.changePassQueries[0].nickname, 'Gunther');
     });

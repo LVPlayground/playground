@@ -161,7 +161,7 @@ export class MockAccountDatabase extends AccountDatabase {
             return null;
 
         return {
-            password: 'f575d7dcdc3fd0646540cf8ef7d140c95f67b5db',  // i-am-a-hero
+            password: '7a89943463e41a8d4c65993a3658e3fd70a2af21',  // correct-pass
             password_salt: 390156801,
         };
     }

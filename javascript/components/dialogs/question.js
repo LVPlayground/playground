@@ -81,7 +81,7 @@ class Question {
             isPrivate: false
         };
 
-        Dialog.displayInput(this.player_, dialogOptions).then(result => {
+        Dialog.displayInput(this.player_, dialogOptions).then(async (result) => {
             // Resolve the promise with NULL if the player cancelled the dialog.
             if (!result.response) {
                 this.resolve_(null);
@@ -89,7 +89,7 @@ class Question {
             }
 
             // Resolve the promise with the value when all constraints have been met.
-            if (this.verifyConstraints(result.text)) {
+            if (await this.verifyConstraints(result.text)) {
                 this.resolve_(result.text);
                 return;
             }

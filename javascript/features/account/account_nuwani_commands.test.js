@@ -299,9 +299,26 @@ describe('AccountNuwaniCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.equal(notFound.length, 1);
-        assert.equal(notFound[0], 'PRIVMSG #LVP.DevJS :Error: Sorry, the player ' +
-                                  'NameThatDoesNotExist has not registered with Las Venturas ' +
-                                  'Playground.');
+        assert.equal(
+            notFound[0],
+            'PRIVMSG #LVP.DevJS :Error: Sorry, I don\'t know who NameThatDoesNotExist is.');
+
+        const singleSuggestion = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!players newski',
+        });
+
+        assert.equal(singleSuggestion.length, 1);
+        assert.doesNotInclude(singleSuggestion[0], ' or ');
+        assert.includes(singleSuggestion[0], '(2xC)Newski');
+
+        const multipleSuggestions = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!players Joe',
+        });
+
+        assert.equal(multipleSuggestions.length, 1);
+        assert.includes(multipleSuggestions[0], '[BB]Joe, EvilJoe or SupahEvilJoe');
 
         const result = await issueCommand(bot, commandManager, {
             source: kCommandSource,

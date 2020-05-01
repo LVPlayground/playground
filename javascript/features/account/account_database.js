@@ -41,6 +41,21 @@ const PLAYER_SUMMARY_QUERY = `
     WHERE
         users_nickname.nickname = ?`;
 
+// Query to find nicknames similar to the given text, ordered by most recent activity.
+const PLAYER_NICKNAME_QUERY = `
+    SELECT
+        users_nickname.nickname
+    FROM
+        users_nickname
+    LEFT JOIN
+        users_mutable ON users_mutable.user_id = users_nickname.user_id
+    WHERE
+        users_nickname.nickname COLLATE latin1_general_ci LIKE CONCAT('%', ?, '%')
+    ORDER BY
+        users_mutable.last_seen DESC
+    LIMIT
+        5`;
+
 // Query to get the aliases associated with a nickname, as well as a flag on whether a particular
 // entry is their main username.
 const PLAYER_ALIASES_QUERY = `
@@ -139,6 +154,20 @@ export class AccountDatabase {
         const results = await server.database.query(PLAYER_SUMMARY_QUERY, nickname);
         return results.rows.length ? results.rows[0]
                                    : null;
+    }
+
+    // Finds nicknames that are similar to the given |nickname|. Returns an array with the results,
+    // which may be empty in case no results can be found.
+    async findSimilarNicknames(nickname) {
+        const results = await server.database.query(PLAYER_NICKNAME_QUERY, nickname);
+        const nicknames = [];
+
+        if (results && results.rows.length > 0) {
+            for (const row of results.rows)
+                nicknames.push(row.nickname);
+        }
+
+        return nicknames;
     }
 
     // Gets the list of aliases owned by the |nickname|, including their username.

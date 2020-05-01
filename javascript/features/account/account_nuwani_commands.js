@@ -356,8 +356,17 @@ export class AccountNuwaniCommands {
     async onPlayerInfoCommand(context, nickname) {
         const summary = await this.database_.getPlayerSummaryInfo(nickname);
         if (!summary) {
-            context.respond(`4Error: Sorry, the player ${nickname} has not registered ` +
-                            `with Las Venturas Playground.`);
+            const similar = await this.database_.findSimilarNicknames(nickname);
+
+            let message = `4Error: Sorry, I don't know who ${nickname} is.`;
+            if (similar.length == 1) {
+                message += ` Did you mean ${similar[0]}?`;
+            } else if (similar.length > 1) {
+                const lastSuggestion = similar.pop();
+                message += ` Did you mean ${similar.join(', ')} or ${lastSuggestion}?`;
+            }
+
+            context.respond(message);
             return;
         }
 

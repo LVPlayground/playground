@@ -31,7 +31,7 @@ export class MockAccountDatabase extends AccountDatabase {
 
     // Overridden.
     async getPlayerSummaryInfo(nickname) {
-        if (nickname === 'NameThatDoesNotExist')
+        if (['NameThatDoesNotExist', 'newski', 'Joe'].includes(nickname))
             return null;
 
         return {
@@ -42,6 +42,16 @@ export class MockAccountDatabase extends AccountDatabase {
             death_count: this.summary.deathCount ?? 4812,
             last_seen: this.summary.lastSeen ?? '2018-11-23 18:51:12',
         };
+    }
+
+    // Overridden.
+    async findSimilarNicknames(nickname) {
+        if (nickname === 'newski')
+            return [ '(2xC)Newski' ];
+        else if (nickname === 'Joe')
+            return [ '[BB]Joe', 'EvilJoe', 'SupahEvilJoe' ];
+        
+        return [];
     }
 
     // Overridden.

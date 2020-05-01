@@ -31,6 +31,7 @@
 
     "death": "<color:4>*** %s has died.",
     "kill": "<color:4>*** %s (Id:%d) has been killed by %s (Id:%d): %s",
+    "kill-no-reason": "<color:4>*** %s (Id:%d) has been killed by %s (Id:%d)",
 
     "buy": "<color:10>*** %s (Id:%d) has bought the %s{3} property for %${2}.",
     "sell": "<color:10>*** %s (Id:%d) has sold the %s{3} property for %${2}.",

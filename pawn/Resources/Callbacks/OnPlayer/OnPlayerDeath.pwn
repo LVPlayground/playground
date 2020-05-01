@@ -187,12 +187,20 @@ public OnPlayerDeath(playerid, killerid, reason) {
         new weaponName[64];
         GetWeaponName(reason, weaponName, sizeof(weaponName));
 
-        format(message, sizeof(message), "%s %d %s %d %s", 
-            Player(playerid)->nicknameString(), playerid,
-            Player(killerid)->nicknameString(), killerid,
-            weaponName);
+        if (strlen(weaponName) > 0) {
+            format(message, sizeof(message), "%s %d %s %d %s", 
+                Player(playerid)->nicknameString(), playerid,
+                Player(killerid)->nicknameString(), killerid,
+                weaponName);
 
-        EchoMessage("kill", "sdsds", message);
+            EchoMessage("kill", "sdsdz", message);
+        } else {
+            format(message, sizeof(message), "%s %d %s %d", 
+                Player(playerid)->nicknameString(), playerid,
+                Player(killerid)->nicknameString(), killerid);
+
+            EchoMessage("kill-no-reason", "sdsd", message);
+        }
     }
 
     // ---- MINIGAME & LAME-KILL CHECKS ------------------------------------------------------------

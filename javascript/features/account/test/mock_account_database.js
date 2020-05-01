@@ -55,6 +55,29 @@ export class MockAccountDatabase extends AccountDatabase {
     }
 
     // Overridden.
+    async _getPlayerRecordQuery(userId) {
+        if (userId != 1337)
+            return [];
+
+        return [
+            {
+                log_date: '2020-05-01 20:45:12',
+                log_type: 'kick',
+                user_nickname: 'Joe',
+                subject_nickname: '[BB]GoodJoe',
+                description: 'Being too kind',
+            },
+            {
+                log_date: '2020-04-27 14:21:01',
+                log_type: 'ban',
+                user_nickname: 'slein',
+                subject_nickname: '[BB]GoodJoe',
+                description: '3 day ban for cbug abuse',
+            }
+        ];
+    }
+
+    // Overridden.
     async getAliases(nickname) {
         if (['FakeUser', 'AliasName', 'AmazingRicky', 'NewNick'].includes(nickname))
             return null;

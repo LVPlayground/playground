@@ -31,7 +31,7 @@ export default class Account extends Feature {
 
         // The in-game commands will be made available using this object.
         this.commands_ =
-            new AccountCommands(this.announce_, this.playground_, this.database_, settings);
+            new AccountCommands(this.announce_, this.playground_, settings, this.database_);
 
         this.initializeNuwaniCommands();
     }

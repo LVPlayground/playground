@@ -56,6 +56,24 @@ const PLAYER_NICKNAME_QUERY = `
     LIMIT
         5`;
 
+// MySQL query for getting the most recent log entries of a player.
+const PLAYER_LOG_ENTRIES_QUERY = `
+    SELECT
+        log_date,
+        log_type,
+        IFNULL(username, user_nickname) AS user_nickname,
+        subject_nickname,
+        description
+    FROM
+        logs
+    LEFT JOIN
+        users ON users.user_id = logs.user_id
+    WHERE
+        subject_user_id = ? AND
+        log_type != 'note'
+    ORDER BY
+        log_date DESC`;
+
 // Query to get the aliases associated with a nickname, as well as a flag on whether a particular
 // entry is their main username.
 const PLAYER_ALIASES_QUERY = `
@@ -168,6 +186,31 @@ export class AccountDatabase {
         }
 
         return nicknames;
+    }
+
+    // Gets the player record for the given |userId|. All entries returned from this function are
+    // safe to be shared with the player directly.
+    async getPlayerRecord(userId) {
+        const results = await this._getPlayerRecordQuery(userId);
+        const record = [];
+
+        for (const row of results) {
+            record.push({
+                date: new Date(row.log_date),
+                type: row.log_type,
+                issuedBy: row.user_nickname,
+                issuedTo: row.subject_nickname,
+                reason: row.description,
+            });
+        }
+
+        return record;
+    }
+
+    // Actually executes the MySQL query for getting entries out of a player's log.
+    async _getPlayerRecordQuery(userId) {
+        const results = await server.database.query(PLAYER_LOG_ENTRIES_QUERY, userId);
+        return results ? results.rows : [];
     }
 
     // Gets the list of aliases owned by the |nickname|, including their username.

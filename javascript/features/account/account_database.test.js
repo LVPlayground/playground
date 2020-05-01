@@ -42,6 +42,28 @@ describe('AccountDatabase', it => {
         }
     });
 
+    it('is able to get entries from the player log', async (assert) => {
+        const instance = new MockAccountDatabase();
+
+        const noResults = await instance.getPlayerRecord(/* userId= */ 42);
+        assert.equal(noResults.length, 0);
+
+        const results = await instance.getPlayerRecord(/* userId= */ 1337);
+        assert.equal(results.length, 2);
+        
+        assert.isTrue(results[0].date instanceof Date);
+        assert.equal(results[0].type, 'kick');
+        assert.equal(results[0].issuedBy, 'Joe');
+        assert.equal(results[0].issuedTo, '[BB]GoodJoe');
+        assert.equal(results[0].reason, 'Being too kind');
+
+        assert.isTrue(results[1].date instanceof Date);
+        assert.equal(results[1].type, 'ban');
+        assert.equal(results[1].issuedBy, 'slein');
+        assert.equal(results[1].issuedTo, '[BB]GoodJoe');
+        assert.equal(results[1].reason, '3 day ban for cbug abuse');
+    });
+
     it('is able to validate numeric values when updating player data', async (assert) => {
         const instance = new MockAccountDatabase();
 

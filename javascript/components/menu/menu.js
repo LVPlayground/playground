@@ -53,6 +53,9 @@ export class Menu {
         this.pageCount_ = Math.ceil(this.items_.length / this.pageSize_);
     }
 
+    // Returns whether the built menu currently has items in it.
+    hasItems() { return this.items_.length > 0; }
+
     // Displays the menu to |player|. A promise will be returned that will resolve when the dialog
     // has dismissed from their screen, even when they didn't make a selection. The promise will be
     // resolved with NULL when the player disconnects before submitting a response. The |page|

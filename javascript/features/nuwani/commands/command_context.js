@@ -21,7 +21,7 @@ export class CommandContext {
                                  : message.source?.nickname;
 
         // Whether the message was sent to the echo channel, rather than an arbitrary one.
-        const inEchoChannel = target === configuration.echoChannel;
+        const inEchoChannel = target.toLower() === configuration.echoChannel.toLower();
 
         // Determine the user's channel modes in the echo channel, and from that, derive what their
         // level is and whether they should have VIP rights.

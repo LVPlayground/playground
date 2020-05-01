@@ -41,11 +41,10 @@ export class NuwaniCommands extends Feature {
     // will be called on initial server load, as well as in response to `nuwani` feature reloads.
     initializeIrcCommands() {
         const commandManager = this.nuwani_().commandManager;
-        const configuration = this.nuwani_().configuration;
 
         this.commands_ = [
             new CommunicationCommands(commandManager, this.announce_, this.nuwani_),
-            new PlayerCommands(commandManager, configuration.passwordSalt),
+            new PlayerCommands(commandManager),
         ];
     }
 

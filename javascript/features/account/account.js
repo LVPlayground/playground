@@ -35,8 +35,9 @@ export default class Account extends Feature {
     // Initializes the commands provided by this feature that will be made available to people
     // using Nuwani. The module is able to reload itself, which we need to work with.
     initializeNuwaniCommands() {
+        this.database_.setPasswordSalt(this.nuwani_().configuration.passwordSalt);
         this.nuwaniCommands_ =
-            new AccountNuwaniCommands(this.announce_, this.nuwani_, this.database_);
+            new AccountNuwaniCommands(this.nuwani_().commandManager, this.database_);        
     }
 
     dispose() {

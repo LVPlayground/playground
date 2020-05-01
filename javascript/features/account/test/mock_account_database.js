@@ -2,11 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { PlayerDatabase } from 'features/nuwani_commands/player_database.js';
+import { AccountDatabase } from 'features/account/account_database.js';
 
-// Implementation of the PlayerDatabase that overrides all methods with mocked out behaviour, in
+// Implementation of the AccountDatabase that overrides all methods with mocked out behaviour, in
 // order to avoid hitting the actual database.
-export class MockPlayerDatabase extends PlayerDatabase {
+export class MockAccountDatabase extends AccountDatabase {
     summary = null;
     changePassQueries = [];
     updatedValue = null;

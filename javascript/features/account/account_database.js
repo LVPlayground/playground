@@ -26,6 +26,7 @@ const CHANGE_PASSWORD_QUERY = `
 // Query to retrieve the necessary information to display a player summary message.
 const PLAYER_SUMMARY_QUERY = `
     SELECT
+        users.username,
         users.level,
         users.is_vip,
         users_mutable.online_time,

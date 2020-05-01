@@ -375,7 +375,7 @@ export class AccountNuwaniCommands {
         let levelFormat = '%s is ';
         let recencyFormat = '';
 
-        let params = [nickname];
+        let params = [summary.username];
 
         // (1) Format the level information in a clear way.
         switch (summary.level) {

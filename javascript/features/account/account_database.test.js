@@ -79,6 +79,19 @@ describe('AccountDatabase', it => {
         assert.equal(results[0].ip, '37.48.87.211');
     });
 
+    it('is able to verify a nickname/password combination', async (assert) => {
+        const instance = new MockAccountDatabase();
+        instance.setPasswordSalt('Kh4alil');
+
+        assert.isFalse(await instance.validatePassword('InvalidUser', 'passzw0rd'));
+        assert.isTrue(await instance.validatePassword('Joe', 'i-am-a-hero'));
+        assert.isFalse(await instance.validatePassword('Joe', 'I-AM-A-HERO'));
+
+        instance.setPasswordSalt('Blaat');
+
+        assert.isFalse(await instance.validatePassword('Joe', 'i-am-a-hero'));
+    });
+
     it('is able to validate numeric values when updating player data', async (assert) => {
         const instance = new MockAccountDatabase();
 

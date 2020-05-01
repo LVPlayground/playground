@@ -9,6 +9,7 @@ import { AccountDatabase } from 'features/account/account_database.js';
 export class MockAccountDatabase extends AccountDatabase {
     summary = null;
     changePassQueries = [];
+    passwordQueries = [];
     updatedValue = null;
 
     aliasMutation = null;
@@ -150,6 +151,19 @@ export class MockAccountDatabase extends AccountDatabase {
     async _changePasswordQuery(nickname, password, databaseSalt) {
         this.changePassQueries.push({ nickname, password, databaseSalt });
         return true;
+    }
+
+    // Overridden.
+    async _getHashedPasswordQuery(nickname) {
+        this.passwordQueries.push(nickname);
+
+        if (nickname === 'InvalidUser')
+            return null;
+
+        return {
+            password: 'f575d7dcdc3fd0646540cf8ef7d140c95f67b5db',  // i-am-a-hero
+            password_salt: 390156801,
+        };
     }
 
     // Overridden.

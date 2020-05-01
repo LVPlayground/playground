@@ -132,10 +132,13 @@ class Question {
     // Verifies that the constraints of this question have been met for |input|, and returns true
     // or false depending on that.
     verifyConstraints(input) {
-        if (this.constraints_.validation !== null && !this.constraints_.validation.test(input))
-            return false;  // validation fails
-
-        return true;
+        if (!this.constraints_.validation)
+            return true;
+        
+        if (typeof this.constraints_.validation === 'function')
+            return this.constraints_.validation(input);
+        
+        return this.constraints_.validation.test(input);
     }
 }
 

@@ -23,6 +23,24 @@ const CHANGE_PASSWORD_QUERY = `
     LIMIT
         1`;
 
+// Query to read the password salt from the database for the given user.
+const PLAYER_HASHED_PASSWORD_QUERY = `
+    SELECT
+        password,
+        password_salt
+    FROM
+        users
+    WHERE
+        user_id = (
+            SELECT
+                user_id
+            FROM
+                users_nickname
+            WHERE
+                nickname = ?)
+    LIMIT
+        1`;
+
 // Query to retrieve the necessary information to display a player summary message.
 const PLAYER_SUMMARY_QUERY = `
     SELECT
@@ -436,6 +454,27 @@ export class AccountDatabase {
             await server.database.query(CHANGE_PASSWORD_QUERY, password, databaseSalt, nickname);
         
         return results.affectedRows > 0;
+    }
+
+    // Validates whether the player identified by |nickname| would be able to sign in using the
+    // |password|. Returns a boolean once the result is known.
+    async validatePassword(nickname, password) {
+        const data = await this._getHashedPasswordQuery(nickname);
+        if (!data)
+            return false;  // the nickname does not exist
+        
+        const hashedPassword = sha1(`${data.password_salt}${password}${this.passwordSalt_}`);
+        return hashedPassword === data.password;
+    }
+
+    // Actually runs the database query necessary to get the password & salt associated with the
+    // given |nickname|. This should enable us to verify the password in the JavaScript code.
+    async _getHashedPasswordQuery(nickname) {
+        const results = await server.database.query(PLAYER_HASHED_PASSWORD_QUERY, nickname);
+        if (!results || !results.rows.length)
+            return null;
+        
+        return results.rows[0];
     }
 
     // Gets the given |fieldName| from the |nickname|'s data in the database. Custom fields will be

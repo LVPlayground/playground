@@ -2,8 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { AccountDatabase } from 'features/account/account_database.js';
 import CommandBuilder from 'components/command_manager/command_builder.js';
 import Menu from 'components/menu/menu.js';
+import Question from 'components/dialogs/question.js';
 
 import alert from 'components/dialogs/alert.js';
 
@@ -54,7 +56,8 @@ export class AccountCommands {
         const features = {
             aliases: player.isVip() && this.getSettingValue('vip_alias_control'),
             changename: this.getSettingValue('nickname_control'),
-            changepass: this.getSettingValue('password_control'),
+            changepass: this.database_.canUpdatePasswords() &&
+                        this.getSettingValue('password_control'),
             record: this.getSettingValue('record_visibility'),
             sessions: this.getSettingValue('session_visibility'),
         };
@@ -62,16 +65,20 @@ export class AccountCommands {
         const dialog = new Menu('Account management');
 
         // Enables the |player| to change their nickname. This can only be done a limited number of
-        // times in a specific time period. Changing their nickname will immediately apply.
-        if (features.changename) {
+        // times in a specific time period. Changing their nickname will immediately apply. This
+        // option may only be used when the |player| is the current player.
+        if (features.changename && player === currentPlayer) {
             // Change your nickname
             // - setting: nickname_limit_days
         }
 
         // Enables the |player| to change their password. The new password needs to be reasonably
-        // secure, and match the password guidelines on the website.
-        if (features.changepass) {
-            // Change your password
+        // secure, and match the password guidelines on the website. This option may only be used
+        // when the |player| is the current player.
+        if (features.changepass && player === currentPlayer) {
+            dialog.addItem(
+                'Change your password',
+                AccountCommands.prototype.changePassword.bind(this, currentPlayer));
         }
 
         // Enables the |player| to manage their aliases. VIPs are allowed a certain number of custom
@@ -104,6 +111,54 @@ export class AccountCommands {
         }
 
         return dialog.displayForPlayer(currentPlayer);
+    }
+
+    // Runs the change password flow for the given |player|. They will first have to verify their
+    // current password, after which they're able to give a new password.
+    async changePassword(player) {
+        const currentPassword = await Question.ask(player, {
+            question: 'Your current password',
+            message: 'Enter your current password to verify your identity',
+            constraints: {
+                validation: AccountDatabase.prototype.validatePassword.bind(
+                                this.database_, player.name),
+                explanation: 'That password is incorrect. We need to validate this to make sure ' +
+                             'that you\'re really changing your own password.',
+                abort: 'Sorry, we need to validate your identity!',
+            }
+        });
+
+        if (!currentPassword)
+            return;  // the user couldn't verify their current password
+
+        // Give the |player| multiple attempts to pick a reasonably secure password. We don't set
+        // high requirements, but we do need them to be a little bit sensible with their security.
+        const password = await Question.ask(player, {
+            question: 'Your new password',
+            message: 'Enter the new password that you have in mind',
+            constraints: {
+                validation: AccountCommands.prototype.isSufficientlySecurePassword.bind(this),
+                explanation: 'The password must be at least 8 characters long, and contain at ' +
+                             'least one number, symbol or a character of different casing.',
+                abort: 'Sorry, you need to have a reasonably secure password!'
+            }
+        });
+
+        if (!password)
+            return;  // the user aborted out of the flow
+
+        // Now execute the command to actually change the password in the database.
+        await this.database_.changePassword(player.name, password);
+
+        // Announce the change to administrators, so that the change is known by at least a few more
+        // people in case the player forgets their new password immediately after. It happens.
+        this.announce_().announceToAdministrators(
+            Message.ACCOUNT_ADMIN_PASSWORD_CHANGED, player.name, player.id);
+
+        return alert(player, {
+            title: 'Account management',
+            message: `Your password has been changed.`
+        });
     }
 
     // Displays a menu to the |currentPlayer| with the player record of their target. The Menu will
@@ -210,6 +265,30 @@ export class AccountCommands {
     getSettingValue(setting) {
         return this.settings_().getValue('account/' + setting);
     }
+
+    // Returns whether the |password| is secure enough to be used in-game. We don't set a lot of
+    // requirements, except that it needs to be at least eight characters in length and contain
+    // at least one character of different casing OR a number mixed with characters.
+    isSufficientlySecurePassword(password) {
+        const length = password.length;
+
+        if (length < 8)
+            return false;  // too short
+
+        let strength = 0;
+
+        if (/[a-z]/.test(password))
+            ++strength;  // lower-case character
+        if (/[A-Z]/.test(password))
+            ++strength;  // upper-case character
+        if (/[0-9]/.test(password))
+            ++strength;  // number
+        if (/[\?,\.'\\\-~_\[\]\{\}]/.test(password))
+            ++strength;  // symbol
+
+        return strength >= 2;
+    }
+
 
     dispose() {
         this.playground_().unregisterCommand('account');

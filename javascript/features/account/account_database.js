@@ -75,6 +75,22 @@ const PLAYER_LOG_ENTRIES_QUERY = `
     ORDER BY
         log_date DESC`;
 
+// MySQL query for getting the player's #N most recent sessions.
+const PLAYER_SESSIONS_QUERY = `
+    SELECT
+        session_date,
+        session_duration,
+        nickname,
+        ip_address
+    FROM
+        sessions
+    WHERE
+        user_id = ?
+    ORDER BY
+        session_date DESC
+    LIMIT
+        ?`;
+
 // Query to get the aliases associated with a nickname, as well as a flag on whether a particular
 // entry is their main username.
 const PLAYER_ALIASES_QUERY = `
@@ -211,6 +227,29 @@ export class AccountDatabase {
     // Actually executes the MySQL query for getting entries out of a player's log.
     async _getPlayerRecordQuery(userId) {
         const results = await server.database.query(PLAYER_LOG_ENTRIES_QUERY, userId);
+        return results ? results.rows : [];
+    }
+
+    // Gets the |limit| most recent playing sessions for the given |userId|.
+    async getPlayerSessions({ userId, limit = 50 } = {}) {
+        const results = await this._getPlayerSessionsQuery({ userId, limit });
+        const sessions = [];
+
+        for (const row of results) {
+            sessions.push({
+                date: new Date(row.session_date),
+                duration: row.session_duration,
+                nickname: row.nickname,
+                ip: long2ip(row.ip_address),
+            });
+        }
+
+        return sessions;
+    }
+
+    // Actually executes the MySQL query for getting a player's most recent sessions.
+    async _getPlayerSessionsQuery({ userId, limit }) {
+        const results = await server.database.query(PLAYER_SESSIONS_QUERY, userId, limit);
         return results ? results.rows : [];
     }
 

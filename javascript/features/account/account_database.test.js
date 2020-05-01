@@ -64,6 +64,21 @@ describe('AccountDatabase', it => {
         assert.equal(results[1].reason, '3 day ban for cbug abuse');
     });
 
+    it('is able to get the most recent sessions for a player', async (assert) => {
+        const instance = new MockAccountDatabase();
+
+        const noResults = await instance.getPlayerSessions({ userId: 42 });
+        assert.equal(noResults.length, 0);
+
+        const results = await instance.getPlayerSessions({ userId: 1337 });
+        assert.equal(results.length, 3);
+        
+        assert.isTrue(results[0].date instanceof Date);
+        assert.equal(results[0].duration, 3625);
+        assert.equal(results[0].nickname, '[BB]GoodJoe');
+        assert.equal(results[0].ip, '37.48.87.211');
+    });
+
     it('is able to validate numeric values when updating player data', async (assert) => {
         const instance = new MockAccountDatabase();
 

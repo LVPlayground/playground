@@ -79,6 +79,33 @@ export class MockAccountDatabase extends AccountDatabase {
     }
 
     // Overridden.
+    async _getPlayerSessionsQuery({ userId, limit }) {
+        if (userId != 1337)
+            return [];
+        
+        return [
+            {
+                session_date: '2020-05-01 14:15:20',
+                session_duration: 3625,
+                nickname: '[BB]GoodJoe',
+                ip_address: 623925203,  // 37.48.87.211
+            },
+            {
+                session_date: '2020-05-01 14:10:41',
+                session_duration: 211,
+                nickname: '[BB]GoodJoe',
+                ip_address: 623925203,  // 37.48.87.211
+            },
+            {
+                session_date: '2020-04-09 10:41:11',
+                session_duration: 234,
+                nickname: '[BB]Joe',
+                ip_address: 623925203,  // 37.48.87.211
+            }
+        ];
+    }
+
+    // Overridden.
     async getAliases(nickname) {
         if (['FakeUser', 'AliasName', 'AmazingRicky', 'NewNick'].includes(nickname))
             return null;

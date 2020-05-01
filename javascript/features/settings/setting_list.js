@@ -27,6 +27,7 @@ export default [
     new Setting('account', 'nickname_limit_days', Setting.TYPE_NUMBER, 30, 'Minimum number of days between nickname changes.'),
     new Setting('account', 'password_control', Setting.TYPE_BOOLEAN, true, 'Should players be able to change their password?'),
     new Setting('account', 'record_visibility', Setting.TYPE_BOOLEAN, true, 'Should players be able to access their record?'),
+    new Setting('account', 'session_count', Setting.TYPE_NUMBER, 30, 'Maximum number of recent sessions to display.'),
     new Setting('account', 'session_visibility', Setting.TYPE_BOOLEAN, true, 'Should players be able to see their recent sessions?'),
     new Setting('account', 'vip_alias_control', Setting.TYPE_BOOLEAN, true, 'Should VIPs be able to manage their aliases?'),
     new Setting('account', 'vip_alias_limit_count', Setting.TYPE_NUMBER, 3, 'Maximum number of aliases VIPs are able to created.'),

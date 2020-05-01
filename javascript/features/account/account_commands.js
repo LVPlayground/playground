@@ -93,7 +93,9 @@ export class AccountCommands {
         // Enables the |player| to view their recent playing sessions, together with some basic
         // information that can be shown about the session.
         if (features.sessions) {
-            // View your recent sessions
+            dialog.addItem(
+                'View your recent sessions',
+                AccountCommands.prototype.displaySessions.bind(this, currentPlayer, targetPlayer));
         }
 
         if (!dialog.hasItems()) {
@@ -125,13 +127,83 @@ export class AccountCommands {
         ]);
 
         for (const entry of record) {
-            const date = entry.date.toISOString().replace(/^(.+?)T.*$/, '$1');
             const type = entry.type[0].toUpperCase() + entry.type.slice(1);
 
-            display.addItem(date, type, entry.issuedBy, entry.reason);
+            display.addItem(this.formatDate(entry.date), type, entry.issuedBy, entry.reason);
         }
 
         await display.displayForPlayer(currentPlayer);
+    }
+
+    // Displays a menu to the |currentPlayer| with the most recent sessions of the target.
+    async displaySessions(currentPlayer, targetPlayer) {
+        const player = targetPlayer || currentPlayer;
+        const sessions = await this.database_.getPlayerSessions({
+            userId: player.userId,
+            limit: this.getSettingValue('session_count'),
+        });
+
+        if (!sessions.length) {
+            return alert(currentPlayer, {
+                title: 'Account management',
+                message: `There are no prior sessions of ${player.name}.`
+            });
+        }
+
+        const display = new Menu('Recent sessions of ' + player.name, [
+            'Date',
+            'Nickname',
+            'Duration',
+            'IP Address',
+        ]);
+
+        for (const session of sessions) {
+            const date = this.formatDate(session.date, true);
+            const duration = this.formatDuration(session.duration);
+
+            display.addItem(date, session.nickname, duration, session.ip);
+        }
+
+        await display.displayForPlayer(currentPlayer);
+    }
+
+    // Returns a formatted version of the given |date|. If |includeTime| is given, the time will be
+    // included in the output as well.
+    //
+    //   January 9, 2020
+    //   January 9, 2020 at 1:51 PM
+    formatDate(date, includeTime = false) {
+        const kMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
+                         'September', 'October', 'November', 'December'];
+
+        if (Number.isNaN(date.getTime()))
+            return '[invalid date]';
+
+        let formattedDate = `${kMonths[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+        if (includeTime) {
+            let hour, suffix;
+            if (date.getHours() === 0)
+                [hour, suffix] = [12, 'AM'];
+            else if (date.getHours() < 12)
+                [hour, suffix] = [date.getHours(), 'AM'];
+            else if (date.getHours() === 12)
+                [hour, suffix] = [12, 'PM'];
+            else
+                [hour, suffix] = [date.getHours() - 12, 'PM'];
+
+            formattedDate += ` at ${hour}:${('0' + date.getMinutes()).substr(-2)} ${suffix}`
+        }
+
+        return formattedDate;
+    }
+
+    // Returns a formatted version of the duration, which is assumed to be no longer than ~hours.
+    formatDuration(duration) {
+        const hours = Math.floor(duration / 3600);
+        const minutes = Math.floor(duration / 60) % 60;
+        const seconds = duration % 60;
+
+        return `${hours}:${('0' + minutes).substr(-2)}:${('0' + seconds).substr(-2)}`;
     }
 
     // Convenience function for getting the value of the given |setting|.

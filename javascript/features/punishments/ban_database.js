@@ -40,11 +40,21 @@ const ADD_ENTRY_QUERY = `
         logs
         (log_date, log_type, ban_ip_range_start, ban_ip_range_end, gpci_hash,
          ban_expiration_date,
-         user_nickname, user_id, subject_nickname, subject_user_id, description)
+         user_nickname, user_id, subject_nickname,
+         subject_user_id,
+         description)
     VALUES
         (NOW(), ?, ?, ?, ?,
          IF(? = 0, '1970-01-01 01:00:00', DATE_ADD(NOW(), INTERVAL ? DAY)),
-         ?, ?, ?, ?, ?)`;
+         ?, ?, ?,
+         IF(? = 0, IFNULL((
+            SELECT
+                user_id
+            FROM
+                users_nickname
+            WHERE
+                nickname = ?), 0), ?),
+         ?)`;
 
 // MySQL query to identify active bans for the given parameters.
 const FIND_ACTIVE_BANS_QUERY = `
@@ -353,7 +363,8 @@ export class BanDatabase {
                            sourceUserId, sourceNickname, subjectUserId, subjectNickname, note }) {
         const result = await server.database.query(
             ADD_ENTRY_QUERY, type, banIpRangeStart, banIpRangeEnd, banSerial, banDurationDays,
-            banDurationDays, sourceNickname, sourceUserId, subjectNickname, subjectUserId, note);
+            banDurationDays, sourceNickname, sourceUserId, subjectNickname, subjectUserId,
+            subjectNickname, subjectUserId, note);
 
         return result && result.insertId !== 0;
     }

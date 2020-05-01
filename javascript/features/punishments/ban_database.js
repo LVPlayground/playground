@@ -561,7 +561,8 @@ export class BanDatabase {
             issuedBy: row.user_nickname,
             nickname: row.subject_nickname,
 
-            // One of the following will be given, depending on the type of ban.
+            // One of the following will be given, depending on the type of ban. For non-ban types
+            // this information will be omitted instead.
             ip: null,
             range: null,
             serial: null,
@@ -574,8 +575,6 @@ export class BanDatabase {
             information.ip = long2ip(row.ban_ip_range_start);
         } else if (row.gpci_hash !== 0) {
             information.serial = row.gpci_hash;
-        } else {
-            throw new Error(`Invalid ban in the database with log_id: ${log_id}`);
         }
 
         return information;

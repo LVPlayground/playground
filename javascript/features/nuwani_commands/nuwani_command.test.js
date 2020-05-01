@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 import { NuwaniCommands } from 'features/nuwani_commands/nuwani_commands.js';
-import MockPlayground from 'features/playground/test/mock_playground.js';
 
 describe('NuwaniCommand', (it, beforeEach) => {
     let nuwani = null;
@@ -16,7 +15,6 @@ describe('NuwaniCommand', (it, beforeEach) => {
 
         server.featureManager.registerFeaturesForTests({
             nuwani_commands: NuwaniCommands,
-            playground: MockPlayground,
         });
 
         server.featureManager.loadFeature('nuwani_commands');

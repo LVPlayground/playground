@@ -28,6 +28,7 @@ import Announce from 'features/announce/announce.js';
 import Communication from 'features/communication/communication.js';
 import Gangs from 'features/gangs/gangs.js';
 import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
+import MockPlayground from 'features/playground/test/mock_playground.js';
 import Radio from 'features/radio/radio.js';
 import Settings from 'features/settings/settings.js';
 import Streamer from 'features/streamer/streamer.js';
@@ -61,6 +62,7 @@ class MockServer {
             communication: Communication,
             gangs: Gangs,
             nuwani: MockNuwani,
+            playground: MockPlayground,
             radio: Radio,
             settings: Settings,
             streamer: Streamer

@@ -6,7 +6,6 @@ import Economy from 'features/economy/economy.js';
 import Houses from 'features/houses/houses.js';
 import MockFriends from 'features/friends/test/mock_friends.js';
 import MockLocation from 'features/location/test/mock_location.js';
-import MockPlayground from 'features/playground/test/mock_playground.js';
 
 // Exports a function that fully initializes a test environment for the houses feature.
 export default async function createTestEnvironment() {
@@ -15,7 +14,6 @@ export default async function createTestEnvironment() {
         friends: MockFriends,
         houses: Houses,
         location: MockLocation,
-        playground: MockPlayground,
     });
 
     server.featureManager.loadFeature('houses');

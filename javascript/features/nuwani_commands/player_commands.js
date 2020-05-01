@@ -339,7 +339,7 @@ export class PlayerCommands {
         // (3) Format each of the entries in |players| in accordance with the information we've
         // gathered on them.
         for (const info of players) {
-            let color = null;
+            let color = '';
 
             if (!info.registered) {
                 color = '14';  // dark grey

@@ -131,9 +131,9 @@ describe('AccountDatabase', it => {
 
         const value = await instance.getPlayerField('[BB]Ricky92', 'custom_color');
         assert.isTrue(typeof value === 'string');
-        assert.equal(value, '0x8952EB');
+        assert.equal(value, '#8952EB');
 
-        const invalidValues = ['red', '0xFF', '0xFFFF', 'FFFFFF', '0xFFFFFFFF', 15653933];
+        const invalidValues = ['red', '#FF', '#FFFF', 'FFFFFF', '#FFFFFFFF', 15653933];
         for (const invalidValue of invalidValues) {
             try {
                 await instance.updatePlayerField('nickname', 'custom_color', invalidValue);
@@ -144,9 +144,9 @@ describe('AccountDatabase', it => {
             }
         }
 
-        const result = await instance.updatePlayerField('nickname', 'custom_color', '0xFF00FF');
+        const result = await instance.updatePlayerField('nickname', 'custom_color', '#FF00FF');
         assert.isTrue(typeof result === 'string');
-        assert.strictEqual(result, '0xFF00FF');
+        assert.strictEqual(result, '#FF00FF');
 
         assert.isTrue(typeof instance.updatedValue === 'number');
         assert.equal(instance.updatedValue, 16711935);

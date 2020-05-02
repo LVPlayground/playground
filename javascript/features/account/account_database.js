@@ -555,18 +555,16 @@ export class AccountDatabase {
                 if (colorValue.length > 6)
                     colorValue = colorValue.substring(0, 6);  // remove the alpha channel
                 
-                // Make sure that blue-only colours (e.g. 0x0000FF) are shown consistently.
+                // Make sure that blue-only colours (e.g. #0000FF) are shown consistently.
                 colorValue = ('00000' + colorValue).substr(-6);
 
-                // Return the color value as 0xRRGGBB, all in uppercase.
-                return '0x' + colorValue.toUpperCase();
+                // Return the color value as #RRGGBB, all in uppercase.
+                return '#' + colorValue.toUpperCase();
             }
 
             case 'last_ip':
                 return long2ip(value);
         }
-
-        // custom_color
     }
 
     // Updates the |fieldName| setting of the given |nickname| to the set |value|. Validation will
@@ -602,10 +600,10 @@ export class AccountDatabase {
 
         switch (column) {
             case 'custom_color':
-                if (!/^0[xX][0-9a-fA-F]{6}$/.test(value))
-                    throw new Error(`"${value}" is not a valid color format (0xRRGGBB).`);
+                if (!/^#[0-9a-fA-F]{6}$/.test(value))
+                    throw new Error(`"${value}" is not a valid color format (#RRGGBB).`);
                 
-                let color = parseInt(value.substring(2), 16);
+                let color = parseInt(value.substring(1), 16);
                 if (color > 2147483647)
                     color = -2147483648 + (color - (2147483647 + 1));
 

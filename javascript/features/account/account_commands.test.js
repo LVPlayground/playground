@@ -28,12 +28,8 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         // Create the commands so that the server is aware of them.
         commands = new AccountCommands(() => announce, () => playground, () => settings, database);
 
-        // Give Gunther and Russell administrator rights to make most of the commands available.
-        gunther.level = Player.LEVEL_MANAGEMENT;
-        gunther.setVip(true);
-
-        russell.level = Player.LEVEL_MANAGEMENT;
-        russell.setVip(true);
+        // Give |russell| administrator rights.
+        russell.level = Player.LEVEL_ADMINISTRATOR;
     });
 
     afterEach(() => commands.dispose());
@@ -297,11 +293,97 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable VIPs to create an alias', async (assert) => {
+        gunther.identify({ userId: 42, vip: 1 });
 
-    });
+        // (1) Alias frequency limit for players
+        gunther.respondToDialog({ listitem: 2 /* Manage your aliases */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Create a new alias */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
-    it('should enable VIPs to remove an alias', async (assert) => {
+        assert.isTrue(await gunther.issueCommand('/account'));
+        assert.equal(gunther.lastDialogTitle, 'Alias management');
+        assert.includes(gunther.lastDialog, 'only been 4 days');
+        assert.isNull(database.aliasMutation);
 
+        russell.identify({ userId: 42, vip: 1 });
+
+        // (2) No alias frequency limit for administrators
+        russell.respondToDialog({ listitem: 2 /* Manage your aliases */ }).then(
+            () => russell.respondToDialog({ listitem: 0 /* Create a new alias */ })).then(
+            () => russell.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await russell.issueCommand('/account'));
+        assert.equal(russell.lastDialogTitle, 'Alias management');
+        assert.doesNotInclude(russell.lastDialog, 'only been 4 days');
+        assert.isNull(database.aliasMutation);
+
+        settings.setValue('account/vip_alias_limit_days', 0);
+
+        // (3) New alias must be a valid nickname
+        gunther.respondToDialog({ listitem: 2 /* Manage your aliases */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Create a new alias */ })).then(
+            () => gunther.respondToDialog({ inputtext: '^^^MaXiMe^^^'})).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/account'));
+        assert.equal(gunther.lastDialogTitle, 'Alias management');
+        assert.includes(gunther.lastDialog, 'a valid SA-MP nickname');
+        assert.isNull(database.aliasMutation);
+
+        // (4) New alias must not be in-use on the server
+        gunther.respondToDialog({ listitem: 2 /* Manage your aliases */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Create a new alias */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'Russell'})).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/account'));
+        assert.equal(gunther.lastDialogTitle, 'Alias management');
+        assert.includes(gunther.lastDialog, 'be available');
+        assert.isNull(database.aliasMutation);
+        
+        // (5) New alias must not be registered with Las Venturas Playground
+        gunther.respondToDialog({ listitem: 2 /* Manage your aliases */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Create a new alias */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'WoodPecker'})).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/account'));
+        assert.equal(gunther.lastDialogTitle, 'Alias management');
+        assert.includes(gunther.lastDialog, 'be available on Las Venturas Playground');
+        assert.isNull(database.aliasMutation);
+
+        // (6) Creating a new alias works fine
+        gunther.respondToDialog({ listitem: 2 /* Manage your aliases */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Create a new alias */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'NewNick'})).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/account'));
+        assert.equal(gunther.lastDialogTitle, 'Alias management');
+        assert.includes(gunther.lastDialog, 'The alias NewNick has been created.');
+
+        assert.isNotNull(database.aliasMutation);
+        assert.equal(database.aliasMutation.userId, 4050);
+        assert.equal(database.aliasMutation.alias, 'NewNick');
+
+        // (7) Verify administrator notices.
+        assert.equal(russell.messages.length, 1);
+        assert.includes(
+            russell.messages[0],
+            Message.format(Message.ACCOUNT_ADMIN_ALIAS_CREATED, gunther.name, gunther.id,
+                           'NewNick'));
+
+        settings.setValue('account/vip_alias_limit_player', 2);
+
+        // (8) Alias count limit for players
+        gunther.respondToDialog({ listitem: 2 /* Manage your aliases */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Create a new alias */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'NewNick'})).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/account'));
+        assert.equal(gunther.lastDialogTitle, 'Alias management');
+        assert.includes(gunther.lastDialog, 'only allowed 2 aliases');
     });
 
     it('should be able to show the record of a player', async (assert) => {

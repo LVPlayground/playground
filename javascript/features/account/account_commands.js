@@ -27,7 +27,7 @@ export class AccountCommands {
         this.database_ = database;
 
         // Register the command so that access is controlled by `/lvp access`.
-        this.playground_().registerCommand('account', Player.LEVEL_MANAGEMENT);
+        this.playground_().registerCommand('account', Player.LEVEL_PLAYER);
 
         // /account
         // /account [player]
@@ -256,7 +256,7 @@ export class AccountCommands {
         const dialog = new Menu('Alias management', ['Alias', 'Last active']);
         dialog.addItem(
             'Create a new alias', '-',
-            AccountCommands.prototype.createAlias.bind(this, player));
+            AccountCommands.prototype.createAlias.bind(this, player, aliases));
 
         if (!aliases || !aliases.aliases.length)
             return dialog.displayForPlayer(player);
@@ -267,20 +267,93 @@ export class AccountCommands {
             const nickname = alias.nickname;
             const lastActive = alias.lastSeen ? this.formatDate(alias.lastSeen) : '{BEC7CC}(never)';
 
-            dialog.addItem(nickname, lastActive,
-                           AccountCommands.prototype.deleteAlias.bind(this, player, alias));
+            dialog.addItem(
+                nickname, lastActive,
+                AccountCommands.prototype.deleteAlias.bind(this, player, aliases, alias));
         }
 
         return dialog.displayForPlayer(player);
     }
 
     // Flow that enables a player to create a new alias, which is to be added to their account.
-    async createAlias(player) {
-        // TODO: Implement this method.
+    async createAlias(player, aliases) {
+        const aliasFrequencyDays = this.getSettingValue('vip_alias_limit_days');
+        const aliasLimit =
+            player.isAdministrator() ? this.getSettingValue('vip_alias_limit_admin')
+                                     : this.getSettingValue('vip_alias_limit_player');
+
+        if (aliases) {
+            let mostRecentCreation = 0;  // the beginning of time
+            let mostRecentAlias = null;
+
+            // People are allowed a maximum number of aliases on the server, which depends a bit on
+            // whether they're an administrator or a regular player. Management members adhere to
+            // administrator limits, but can override this using Nuwani commands.
+            if (aliases && aliases.aliases.length >= aliasLimit) {
+                return alert(player, {
+                    title: 'Alias management',
+                    message: `You're only allowed ${aliasLimit} aliases, so are not able to ` +
+                             `add a new one right now.`
+                });
+            }
+
+            // Aliases can only be created once in a certain number of days. The frequency will
+            // be ignored for administrators because they can override it anyway.
+            for (const alias of aliases.aliases) {
+                if (!alias.created)
+                    continue;
+                
+                if (mostRecentCreation > alias.created.getTime())
+                    continue;
+
+                mostRecentCreation = Math.max(mostRecentCreation, alias.created.getTime());
+                mostRecentAlias = alias.nickname;
+            }
+
+            const mostRecentCreationDays =
+                Math.round(Math.abs(Date.now() - mostRecentCreation) / (86400 * 1000));
+
+            if (mostRecentCreationDays < aliasFrequencyDays && !player.isAdministrator()) {
+                return alert(player, {
+                    title: 'Alias management',
+                    message: `You're allowed to create an alias once per ${aliasFrequencyDays} ` +
+                             `days, and it's only been ${mostRecentCreationDays} days since you ` +
+                             `added ${mostRecentAlias}. Please wait a bit longer!`
+                });
+            }
+        }
+
+        // The user can pick their new alias themselves. This uses validation identical to changing
+        // one's nickname, and requires both validity and availability.
+        const newAlias = await Question.ask(player, {
+            question: 'Alias management',
+            message: 'Enter the alias that you would like to create',
+            constraints: {
+                validation: AccountCommands.prototype.isValidAvailableNickname.bind(this),
+                explanation: 'Your new alias needs to be a valid SA-MP nickname, and be ' +
+                             'available on Las Venturas Playground',
+                abort: 'Sorry, you need to pick a valid and available nickname!'
+            }
+        });
+
+        if (!newAlias)
+            return;  // the user aborted out of the flow
+
+        await this.database_.addAlias(player.name, newAlias, /* addAlias= */ true);
+
+        // Announce the change to administrators, so that the change is known by at least a few more
+        // people in case the player forgets their new password immediately after. It happens.
+        this.announce_().announceToAdministrators(
+            Message.ACCOUNT_ADMIN_ALIAS_CREATED, player.name, player.id, newAlias);
+
+        return alert(player, {
+            title: 'Alias management',
+            message: `The alias ${newAlias} has been created.`
+        });
     }
 
     // Flow that enables a player to remove the given |alias| from their account.
-    async deleteAlias(player, alias) {
+    async deleteAlias(player, aliases, alias) {
         // TODO: Implement this method.
     }
 

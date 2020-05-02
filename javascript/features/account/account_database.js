@@ -115,6 +115,7 @@ const PLAYER_ALIASES_QUERY = `
     SELECT
         users_nickname.user_id,
         users_nickname.nickname,
+        users_nickname.creation_date,
         (
             SELECT
                 MAX(sessions.session_date)
@@ -142,9 +143,9 @@ const PLAYER_ALIASES_QUERY = `
 const PLAYER_ADD_ALIAS_QUERY = `
     INSERT INTO
         users_nickname
-        (user_id, nickname)
+        (user_id, nickname, creation_date)
     VALUES
-        (?, ?)`;
+        (?, ?, NOW())`;
 
 // Query to remove an alias from the database.
 const PLAYER_REMOVE_ALIAS_QUERY = `
@@ -301,6 +302,7 @@ export class AccountDatabase {
             } else {
                 results.aliases.push({
                     nickname: row.nickname,
+                    created: row.creation_date ? new Date(row.creation_date) : null,
                     lastSeen: row.last_seen ? new Date(row.last_seen) : null,
                 });
             }
@@ -311,7 +313,7 @@ export class AccountDatabase {
 
     // Removes the given |alias| from the given |nickname|. The ordering here matters: |nickname|
     // must be the main nickname, where |alias| will be added to it.
-    async addAlias(nickname, alias) {
+    async addAlias(nickname, alias, allowAlias = false) {
         if (!kValidNicknameExpression.test(alias))
             throw new Error(`The alias ${alias} is not a valid SA-MP nickname.`);
 
@@ -323,7 +325,7 @@ export class AccountDatabase {
         if (!nicknameResults)
             throw new Error(`The player ${nickname} could not be found in the database.`);
         
-        if (nicknameResults.nickname !== nickname)
+        if (nicknameResults.nickname !== nickname && !allowAlias)
             throw new Error(`${nickname} is an alias by itself. Use their real nickname instead.`);
         
         if (aliasResults !== null)

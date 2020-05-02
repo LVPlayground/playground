@@ -165,16 +165,16 @@ class BankCommands {
     }
 
     /**
-     * The /account command can be used to get more advanced control over one's bank account. The
-     * type of account can be changed using this command, by supplying the type of account (either
+     * The /bankaccount command can be used to get more advanced control over one's bank account.
+     * The type of account can be changed using this command, by supplying the type (either
      * "normal" or "premier") as the first parameter. Furthermore, it's possible to set whether in-
      * game earnings, such as property earnings, should be stored in one's bank account.
      *
      * @param playerId Id of the player who typed the command.
      * @param params Any further text that the player typed after the command.
-     * @command /account [normal|premier|earnings]
+     * @command /bankaccount [normal|premier|earnings]
      */
-    @command("account")
+    @command("bankaccount")
     public onAccountCommand(playerId, params[]) {
         if (BankAccount(playerId)->inBank() == false) {
             SendClientMessage(playerId, Color::Error, "You need to be in the Planning Department building in Las Venturas in order to");
@@ -194,7 +194,7 @@ class BankCommands {
 
         SendClientMessage(playerId, Color::Error, "Las Venturas Playground Central Bank");
         SendClientMessage(playerId, Color::HighlightBlue, "The following options are available to you at the Las Venturas Playground Bank.");
-        SendClientMessage(playerId, Color::HighlightBlue, "/account earnings{FFFFFF} - control whether property earnings will be deposited.");
+        SendClientMessage(playerId, Color::HighlightBlue, "/bankaccount earnings{FFFFFF} - control whether property earnings will be deposited.");
 
         return 1;
     }
@@ -206,7 +206,7 @@ class BankCommands {
      *
      * @param playerId Id of the player who entered this command.
      * @param params Additional parameters as passed on to the command itself.
-     * @command /account earnings [on/off]
+     * @command /bankaccount earnings [on/off]
      */
     @switch(AccountCommand, "earnings")
     public onAccountEarningsCommand(playerId, params[]) {
@@ -216,8 +216,8 @@ class BankCommands {
                 (PlayerSettings(playerId)->areEarningsToBankAccountDisabled() ?
                     "{DC143C}disabled" : "{33AA33}enabled"));
             SendClientMessage(playerId, Color::Information, message);
-            SendClientMessage(playerId, Color::Information, "Type {40CCFF}/account earnings [on/off]{FFFFFF} to toggle this feature. It controls whether money");
-            SendClientMessage(playerId, Color::Information, "you make in-game, for example from properties, will be deposited in your account.");
+            SendClientMessage(playerId, Color::Information, "Type {40CCFF}/bankaccount earnings [on/off]{FFFFFF} to toggle this feature. It controls whether");
+            SendClientMessage(playerId, Color::Information, "money you make in-game, for example from properties, will be deposited in your account.");
             return 1;
         }
 

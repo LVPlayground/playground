@@ -83,7 +83,7 @@ class BankAccount {
 
     /**
      * Returns whether the player currently is in the main bank building. This will be used by the
-     * bank commands to determine whether the /account command can be used.
+     * bank commands to determine whether the /bankaccount command can be used.
      *
      * @return boolean Is the player currently in the bank building?
      */
@@ -103,14 +103,14 @@ class BankAccount {
         m_inBank[playerId] = true;
 
         // Announce the options to them in an information box.
-        ShowBoxForPlayer(playerId, "Welcome to the Las Venturas Playground Main Bank. Please type ~r~/account~w~ to get started.");
+        ShowBoxForPlayer(playerId, "Welcome to the Las Venturas Playground Main Bank. Please type ~r~/bankaccount~w~ to get started.");
 
         #pragma unused pickupId, extraId
     }
 
     /**
      * When a player leaves the bank's checkpoint again, mark them as having left the bank, making
-     * sure that the /account command no longer works.
+     * sure that the /bankaccount command no longer works.
      *
      * @param pickupId Id of the pickup they left. Unused.
      * @param extraId Additional Id allowing features to route this pickup.

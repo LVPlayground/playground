@@ -33,7 +33,7 @@ export default [
     new Setting('account', 'session_visibility', Setting.TYPE_BOOLEAN, true, 'Should players be able to see their recent sessions?'),
     new Setting('account', 'vip_alias_control', Setting.TYPE_BOOLEAN, true, 'Should VIPs be able to manage their aliases?'),
     new Setting('account', 'vip_alias_limit_admin', Setting.TYPE_NUMBER, 5, 'Maximum number of aliases admins are able to create.'),
-    new Setting('account', 'vip_alias_limit_player', Setting.TYPE_NUMBER, 3, 'Maximum number of aliases VIPs are able to create.'),
+    new Setting('account', 'vip_alias_limit_player', Setting.TYPE_NUMBER, 2, 'Maximum number of aliases VIPs are able to create.'),
     new Setting('account', 'vip_alias_limit_days', Setting.TYPE_NUMBER, 7, 'Minimum number of days between alias additions.'),
 
     /** Decoration related settings */

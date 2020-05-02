@@ -290,11 +290,11 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/account'));
-        assert.deepEqual(gunther.getLastDialogAsTable(/* hasColumns= */ false), [
-            'Create a new alias',
-            '-----',
-            'WoodPecker',
-            '[BA]Ro[BB]in',
+        assert.deepEqual(gunther.getLastDialogAsTable().rows, [
+            [ 'Create a new alias',  '-' ],
+            [ '-----',               '-----' ],
+            [ 'WoodPecker',          'May 1, 2020' ],
+            [ '[BA]Ro[BB]in',        'June 9, 2018' ],
         ]);
     });
 

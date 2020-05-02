@@ -253,18 +253,23 @@ export class AccountCommands {
     async manageAliases(player) {
         const aliases = await this.database_.getAliases(player.name);
         
-        const dialog = new Menu('Alias management');
+        const dialog = new Menu('Alias management', ['Alias', 'Last active']);
         dialog.addItem(
-            'Create a new alias',
+            'Create a new alias', '-',
             AccountCommands.prototype.createAlias.bind(this, player));
 
         if (!aliases || !aliases.aliases.length)
             return dialog.displayForPlayer(player);
         
-        dialog.addItem('-----');
+        dialog.addItem('-----', '-----');
 
-        for (const alias of aliases.aliases)
-            dialog.addItem(alias, AccountCommands.prototype.deleteAlias.bind(this, player, alias));
+        for (const alias of aliases.aliases) {
+            const nickname = alias.nickname;
+            const lastActive = alias.lastSeen ? this.formatDate(alias.lastSeen) : '{BEC7CC}(never)';
+
+            dialog.addItem(nickname, lastActive,
+                           AccountCommands.prototype.deleteAlias.bind(this, player, alias));
+        }
 
         return dialog.displayForPlayer(player);
     }

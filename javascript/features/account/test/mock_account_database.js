@@ -115,8 +115,8 @@ export class MockAccountDatabase extends AccountDatabase {
             userId: 4050,
             nickname: '[BB]Ricky92',
             aliases: [
-                'WoodPecker',
-                '[BA]Ro[BB]in',
+                { nickname: 'WoodPecker', lastSeen: new Date('2020-05-01 12:41:11') },
+                { nickname: '[BA]Ro[BB]in', lastSeen: new Date('2018-06-09 03:01:16') },
             ]
         };
     }

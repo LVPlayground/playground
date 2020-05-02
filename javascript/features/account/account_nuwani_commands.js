@@ -132,8 +132,9 @@ export class AccountNuwaniCommands {
             return;
         }
 
-        const aliases = result.aliases.length ? result.aliases.sort().join(', ')
-                                              : '';
+        const aliases =
+            result.aliases.length ? result.aliases.map(alias => alias.nickname).sort().join(', ')
+                                  : '';
 
         context.respond(`10Aliases of ${result.nickname}: ${aliases}`);
     }

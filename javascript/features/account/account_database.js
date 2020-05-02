@@ -115,6 +115,15 @@ const PLAYER_ALIASES_QUERY = `
     SELECT
         users_nickname.user_id,
         users_nickname.nickname,
+        (
+            SELECT
+                MAX(sessions.session_date)
+            FROM
+                sessions
+            WHERE
+                sessions.user_id = users_nickname.user_id AND
+                sessions.nickname COLLATE latin1_general_ci = users_nickname.nickname
+        ) AS last_seen,
         IF(users.username = users_nickname.nickname, 1, 0) AS is_primary
     FROM
         users_nickname
@@ -287,10 +296,14 @@ export class AccountDatabase {
         for (const row of databaseResults.rows) {
             results.userId = row.user_id;
 
-            if (!!row.is_primary)
+            if (!!row.is_primary) {
                 results.nickname = row.nickname;
-            else
-                results.aliases.push(row.nickname);
+            } else {
+                results.aliases.push({
+                    nickname: row.nickname,
+                    lastSeen: row.last_seen ? new Date(row.last_seen) : null,
+                });
+            }
         }
 
         return results;
@@ -335,7 +348,7 @@ export class AccountDatabase {
         if (nicknameResults.nickname !== nickname)
             throw new Error(`${nickname} is an alias by itself. Use their main username instead.`);
         
-        if (!nicknameResults.aliases.includes(alias))
+        if (!nicknameResults.aliases.find(existingAlias => existingAlias.nickname === alias))
             throw new Error(`${alias} is not an alias of the given ${nickname}.`);
         
         return this.removeAliasQuery(nicknameResults.userId, alias);

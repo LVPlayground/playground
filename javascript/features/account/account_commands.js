@@ -85,16 +85,16 @@ export class AccountCommands {
         // Enables the |player| to manage their aliases. VIPs are allowed a certain number of custom
         // names on top of their username, which they are able to control themselves.
         if (features.aliases) {
-            // Manage your aliases
-            // - setting: vip_alias_limit_count
-            // - setting: vip_alias_limit_days
+            dialog.addItem(
+                'Manage your aliases',
+                AccountCommands.prototype.manageAliases.bind(this, currentPlayer));
         }
 
         // Enables the |player| to view their record, with the exception of notes as they are only
         // accessible to administrators and Management members.
         if (features.record) {
             dialog.addItem(
-                'View your record',
+                'View player record',
                 AccountCommands.prototype.displayRecord.bind(this, currentPlayer, targetPlayer));
         }
 
@@ -102,7 +102,7 @@ export class AccountCommands {
         // information that can be shown about the session.
         if (features.sessions) {
             dialog.addItem(
-                'View your recent sessions',
+                'View recent sessions',
                 AccountCommands.prototype.displaySessions.bind(this, currentPlayer, targetPlayer));
         }
 
@@ -246,6 +246,37 @@ export class AccountCommands {
             title: 'Account management',
             message: `Your password has been changed.`
         });
+    }
+
+    // Enables the |player|, who is a VIP of Las Venturas Playground, manage the aliases with which
+    // they can play on the server under their own account.
+    async manageAliases(player) {
+        const aliases = await this.database_.getAliases(player.name);
+        
+        const dialog = new Menu('Alias management');
+        dialog.addItem(
+            'Create a new alias',
+            AccountCommands.prototype.createAlias.bind(this, player));
+
+        if (!aliases || !aliases.aliases.length)
+            return dialog.displayForPlayer(player);
+        
+        dialog.addItem('-----');
+
+        for (const alias of aliases.aliases)
+            dialog.addItem(alias, AccountCommands.prototype.deleteAlias.bind(this, player, alias));
+
+        return dialog.displayForPlayer(player);
+    }
+
+    // Flow that enables a player to create a new alias, which is to be added to their account.
+    async createAlias(player) {
+        // TODO: Implement this method.
+    }
+
+    // Flow that enables a player to remove the given |alias| from their account.
+    async deleteAlias(player, alias) {
+        // TODO: Implement this method.
     }
 
     // Displays a menu to the |currentPlayer| with the player record of their target. The Menu will

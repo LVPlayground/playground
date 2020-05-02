@@ -30,7 +30,10 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
 
         // Give Gunther and Russell administrator rights to make most of the commands available.
         gunther.level = Player.LEVEL_ADMINISTRATOR;
+        gunther.setVip(true);
+
         russell.level = Player.LEVEL_ADMINISTRATOR;
+        russell.setVip(true);
     });
 
     afterEach(() => commands.dispose());
@@ -44,11 +47,11 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should fail if there are no available options', async (assert) => {
-        russell.identify();
+        russell.identify({ vip: 1 });
 
         settings.setValue('account/nickname_control', false);
         settings.setValue('account/password_control', false);
-        // TODO: Manage aliases
+        settings.setValue('account/vip_alias_control', false);
         settings.setValue('account/record_visibility', false);
         settings.setValue('account/session_visibility', false);
 
@@ -56,6 +59,34 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
 
         assert.equal(russell.messages.length, 1);
         assert.includes(russell.messages[0], 'options have been disabled');
+    });
+
+    it('should hide the appropriate options for regular players', async (assert) => {
+        russell.identify({ vip: 0 });
+        russell.level = Player.LEVEL_PLAYER;
+
+        russell.respondToDialog({ response: 0 /* Dismiss */ });
+        assert.isTrue(await russell.issueCommand('/account'));
+
+        assert.deepEqual(russell.getLastDialogAsTable(/* hasColumns= */ false), [
+            'Change your nickname',
+            'Change your password',
+            'View player record',
+            'View recent sessions',
+        ]);
+    });
+
+    it('should hide the appropriate options for third party usage', async (assert) => {
+        gunther.identify();
+        russell.identify();
+
+        russell.respondToDialog({ response: 0 /* Dismiss */ });
+        assert.isTrue(await russell.issueCommand('/account Gunther'));
+
+        assert.deepEqual(russell.getLastDialogAsTable(/* hasColumns= */ false), [
+            'View player record',
+            'View recent sessions',
+        ]);
     });
 
     it('should enable players to change their nickname', async (assert) => {
@@ -251,24 +282,44 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
             Message.format(Message.ACCOUNT_ADMIN_PASSWORD_CHANGED, 'Gunther', gunther.id));
     });
 
-    // TODO: Manage aliases
+    it('should enable VIPs to see a list of their aliases', async (assert) => {
+        gunther.identify({ userId: 42, vip: 1 });
 
-    it.fails();
+        // (1a) The player is able to abort the flow to change their password.
+        gunther.respondToDialog({ listitem: 2 /* Manage your aliases */ }).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/account'));
+        assert.deepEqual(gunther.getLastDialogAsTable(/* hasColumns= */ false), [
+            'Create a new alias',
+            '-----',
+            'WoodPecker',
+            '[BA]Ro[BB]in',
+        ]);
+    });
+
+    it('should enable VIPs to create an alias', async (assert) => {
+
+    });
+
+    it('should enable VIPs to remove an alias', async (assert) => {
+
+    });
 
     it('should be able to show the record of a player', async (assert) => {
-        gunther.identify({ userId: 42 });
+        gunther.identify({ userId: 42, vip: 1 });
 
         // (1) An error message is shown when the player's log is clean.
-        gunther.respondToDialog({ listitem: 2 /* View your record */ }).then(
+        gunther.respondToDialog({ listitem: 3 /* View your record */ }).then(
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/account'));
         assert.equal(gunther.lastDialogTitle, 'Account management');
 
-        russell.identify({ userId: 1337 });
+        russell.identify({ userId: 1337, vip: 1 });
 
         // (2) A dialog with entries is shown when the player's log has entries.
-        russell.respondToDialog({ listitem: 2 /* View your record */ }).then(
+        russell.respondToDialog({ listitem: 3 /* View your record */ }).then(
             () => russell.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await russell.issueCommand('/account'));
@@ -293,19 +344,19 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should be able to display the recent sessions of a player', async (assert) => {
-        gunther.identify({ userId: 42 });
+        gunther.identify({ userId: 42, vip: 1 });
 
         // (1) An error message is shown when the player's log is clean.
-        gunther.respondToDialog({ listitem: 3 /* View your recent sessions */ }).then(
+        gunther.respondToDialog({ listitem: 4 /* View your recent sessions */ }).then(
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/account'));
         assert.equal(gunther.lastDialogTitle, 'Account management');
 
-        russell.identify({ userId: 1337 });
+        russell.identify({ userId: 1337, vip: 1 });
 
         // (2) A dialog with entries is shown when the player's log has entries.
-        russell.respondToDialog({ listitem: 3 /* View your recent sessions */ }).then(
+        russell.respondToDialog({ listitem: 4 /* View your recent sessions */ }).then(
             () => russell.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await russell.issueCommand('/account'));

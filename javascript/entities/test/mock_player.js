@@ -241,11 +241,14 @@ class MockPlayer {
     get lastDialogLabel() { return this.lastDialogLabel_; }
 
     // Advanced method to get the last dialog as a menu table.
-    getLastDialogAsTable() {
+    getLastDialogAsTable(hasColumns = true) {
         if (!this.lastDialogMessage_)
             throw new Error('No last message is available to output as a table.');
         
         const lines = this.lastDialogMessage_.split('\n');
+        if (!hasColumns)
+            return lines;
+
         return {
             columns: lines.shift().split('\t'),
             rows: lines.map(line => line.split('\t'))

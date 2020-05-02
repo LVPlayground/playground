@@ -93,7 +93,7 @@ class PositioningCommands {
             const pvPosition = this.getPositionOfVehicle(playerVehicleId);
             const pvZAngle = this.getZAngleOfVehicle(playerVehicleId);
             const pvCalculatedPosition = this.getCalculatedPositionInFrontWithDistance(pvPosition, distance, pvZAngle);
-            this.setPositionOfVehicle(playerVehicleId, ...pvCalculatedPosition);
+            this.setPositionOfVehicle(playerVehicleId, pvCalculatedPosition);
         }
         else {
             const playerPosition = player.position;

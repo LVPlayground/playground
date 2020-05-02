@@ -297,6 +297,10 @@ class Player <playerId (MAX_PLAYERS)> {
         return true;
     }
 
+    public updateNickname() {
+        GetPlayerName(playerId, m_nickname, sizeof(m_nickname));
+    }
+
     /**
      * Change the player's level with the one as indicated. This should generally only be set by the
      * Account system, but can also be used for temporary administrators.
@@ -465,11 +469,8 @@ public OnPlayerNameChange(playerId) {
     if (!Player(playerId)->isConnected())
         return;
 
-    new nickname[MAX_PLAYER_NAME + 1];
-    GetPlayerName(playerId, nickname, sizeof(nickname));
-
     // The nickname has been changed by JavaScript code.
-    Player(playerId)->setNickname(nickname);
+    Player(playerId)->updateNickname();
 }
 
 forward LVP_IsPlayerAdmin(playerId);

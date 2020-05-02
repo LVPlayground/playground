@@ -27,7 +27,7 @@ export class AccountCommands {
         this.database_ = database;
 
         // Register the command so that access is controlled by `/lvp access`.
-        this.playground_().registerCommand('account', Player.LEVEL_PLAYER);
+        this.playground_().registerCommand('account', Player.LEVEL_MANAGEMENT);
 
         // /account
         // /account [player]

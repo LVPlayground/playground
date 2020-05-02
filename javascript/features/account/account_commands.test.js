@@ -29,10 +29,10 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         commands = new AccountCommands(() => announce, () => playground, () => settings, database);
 
         // Give Gunther and Russell administrator rights to make most of the commands available.
-        gunther.level = Player.LEVEL_ADMINISTRATOR;
+        gunther.level = Player.LEVEL_MANAGEMENT;
         gunther.setVip(true);
 
-        russell.level = Player.LEVEL_ADMINISTRATOR;
+        russell.level = Player.LEVEL_MANAGEMENT;
         russell.setVip(true);
     });
 
@@ -63,7 +63,6 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
 
     it('should hide the appropriate options for regular players', async (assert) => {
         russell.identify({ vip: 0 });
-        russell.level = Player.LEVEL_PLAYER;
 
         russell.respondToDialog({ response: 0 /* Dismiss */ });
         assert.isTrue(await russell.issueCommand('/account'));
@@ -285,7 +284,6 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     it('should enable VIPs to see a list of their aliases', async (assert) => {
         gunther.identify({ userId: 42, vip: 1 });
 
-        // (1a) The player is able to abort the flow to change their password.
         gunther.respondToDialog({ listitem: 2 /* Manage your aliases */ }).then(
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 

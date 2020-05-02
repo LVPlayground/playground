@@ -302,7 +302,8 @@ export class AccountCommands {
             'Type',
             'Issued by',
             'Reason',
-        ]);
+
+        ], { pageSize: this.getSettingValue('record_page_count') });
 
         for (const entry of record) {
             const type = entry.type[0].toUpperCase() + entry.type.slice(1);
@@ -333,7 +334,8 @@ export class AccountCommands {
             'Nickname',
             'Duration',
             'IP Address',
-        ]);
+
+        ], { pageSize: this.getSettingValue('session_page_count') });
 
         for (const session of sessions) {
             const date = this.formatDate(session.date, true);

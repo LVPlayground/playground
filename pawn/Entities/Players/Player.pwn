@@ -460,6 +460,18 @@ class Player <playerId (MAX_PLAYERS)> {
     }
 };
 
+forward OnPlayerNameChange(playerId);
+public OnPlayerNameChange(playerId) {
+    if (!Player(playerId)->isConnected())
+        return;
+
+    new nickname[MAX_PLAYER_NAME + 1];
+    GetPlayerName(playerId, nickname, sizeof(nickname));
+
+    // The nickname has been changed by JavaScript code.
+    Player(playerId)->setNickname(nickname);
+}
+
 forward LVP_IsPlayerAdmin(playerId);
 forward LVP_BanPlayer(playerId, reason[]);
 

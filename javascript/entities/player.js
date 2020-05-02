@@ -68,7 +68,12 @@ class Player {
   // Returns or updates the name of this player. Changing the player's name is currently not
   // synchronized with the Pawn portion of the gamemode.
   get name() { return this.name_; }
-  set name(value) { this.name_ = value; pawnInvoke('SetPlayerName', 'is', this.id_, value); }
+  set name(value) {
+    pawnInvoke('SetPlayerName', 'is', this.id_, value);
+    pawnInvoke('OnPlayerNameChange', 'i', this.id_);
+
+    this.name_ = value;    
+  }
 
   // Returns the IP address of this player. This attribute is read-only.
   get ip() { return this.ipAddress_; }

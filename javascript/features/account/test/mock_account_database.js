@@ -32,7 +32,7 @@ export class MockAccountDatabase extends AccountDatabase {
 
     // Overridden.
     async getPlayerSummaryInfo(nickname) {
-        if (['NameThatDoesNotExist', 'newski', 'Joe'].includes(nickname))
+        if (['NameThatDoesNotExist', 'NewNick', 'newski', 'Joe'].includes(nickname))
             return null;
 
         return {

@@ -361,7 +361,7 @@ export class AccountDatabase {
 
     // Changes the nickname of the user identified by |nickname| to |newNickname|. This must be
     // their main nickname, and |newNickname| must not be in use yet either.
-    async changeName(nickname, newNickname) {
+    async changeName(nickname, newNickname, allowAlias = false) {
         if (!kValidNicknameExpression.test(newNickname))
             throw new Error(`The alias ${newNickname} is not a valid SA-MP nickname.`);
 
@@ -373,7 +373,7 @@ export class AccountDatabase {
         if (!nicknameResults)
             throw new Error(`The player ${nickname} could not be found in the database.`);
         
-        if (nicknameResults.nickname !== nickname)
+        if (nicknameResults.nickname !== nickname && !allowAlias)
             throw new Error(`${nickname} is an alias. Use their actual username instead.`);
         
         if (newNicknameResults !== null)

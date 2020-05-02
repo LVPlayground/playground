@@ -68,8 +68,9 @@ export class AccountCommands {
         // times in a specific time period. Changing their nickname will immediately apply. This
         // option may only be used when the |player| is the current player.
         if (features.changename && player === currentPlayer) {
-            // Change your nickname
-            // - setting: nickname_limit_days
+            dialog.addItem(
+                'Change your nickname',
+                AccountCommands.prototype.changeNickname.bind(this, currentPlayer));
         }
 
         // Enables the |player| to change their password. The new password needs to be reasonably
@@ -113,11 +114,78 @@ export class AccountCommands {
         return dialog.displayForPlayer(currentPlayer);
     }
 
+    // Runs the change nickname flow for the given |player|. They will first have to verify their
+    // current password, after which they can pick a new nickname.
+    async changeNickname(player) {
+        const verifyCurrentPassword = await Question.ask(player, {
+            question: 'Changing your nickname',
+            message: 'Enter your current password to verify your identity',
+            constraints: {
+                validation: AccountDatabase.prototype.validatePassword.bind(
+                                this.database_, player.name),
+                explanation: 'That password is incorrect. We need to validate this to make sure ' +
+                             'that you\'re really changing your own nickname.',
+                abort: 'Sorry, we need to validate your identity!',
+            }
+        });
+
+        if (!verifyCurrentPassword)
+            return;  // the user couldn't verify their current password
+
+        // The user can have multiple tries at selecting a nickname that's not in-use yet on the
+        // server. We check this swiftly by seeing if the account exists, while validating the
+        // nickname and making sure it adheres to SA-MP restrictions.
+        const newNickname = await Question.ask(player, {
+            question: 'Changing your nickname',
+            message: 'Enter the new nickname that you would like to have',
+            constraints: {
+                validation: AccountCommands.prototype.isValidAvailableNickname.bind(this),
+                explanation: 'Your nickname needs to be a valid SA-MP nickname, and be available ' +
+                             'on Las Venturas Playground',
+                abort: 'Sorry, you need to pick a valid and available nickname!'
+            }
+        });
+
+        if (!newNickname)
+            return;  // the user aborted out of the flow
+
+        // Now execute the command to actually change the nickname in the database.
+        await this.database_.changeName(player.name, newNickname, /* allowAlias= */ true);
+
+        // Announce the change to administrators, so that the change is known by at least a few more
+        // people in case the player forgets their new password immediately after. It happens.
+        this.announce_().announceToAdministrators(
+            Message.ACCOUNT_ADMIN_NICKNAME_CHANGED, player.name, player.id, newNickname);
+
+        // Update the nickname of |player|. This will sync to Pawn as well.
+        player.name = newNickname;
+
+        return alert(player, {
+            title: 'Account management',
+            message: `Your nickname has been changed.`
+        });
+    }
+
+    // Returns whether the given |nickname| is both valid and available on the server.
+    async isValidAvailableNickname(nickname) {
+        if (!/^[0-9a-z\[\]\(\)\$@\._=]{1,24}$/i.test(nickname))
+            return false;  // invalid nickname
+        
+        // Verify that there are no other players in-game with this nickname.
+        for (const player of server.playerManager) {
+            if (player.name.toLowerCase() === nickname.toLowerCase())
+                return false;
+        }
+
+        const summary = await this.database_.getPlayerSummaryInfo(nickname);
+        return summary === null;
+    }
+
     // Runs the change password flow for the given |player|. They will first have to verify their
     // current password, after which they're able to give a new password.
     async changePassword(player) {
-        const currentPassword = await Question.ask(player, {
-            question: 'Your current password',
+        const verifyCurrentPassword = await Question.ask(player, {
+            question: 'Changing your password',
             message: 'Enter your current password to verify your identity',
             constraints: {
                 validation: AccountDatabase.prototype.validatePassword.bind(
@@ -128,13 +196,13 @@ export class AccountCommands {
             }
         });
 
-        if (!currentPassword)
+        if (!verifyCurrentPassword)
             return;  // the user couldn't verify their current password
 
         // Give the |player| multiple attempts to pick a reasonably secure password. We don't set
         // high requirements, but we do need them to be a little bit sensible with their security.
         const password = await Question.ask(player, {
-            question: 'Your new password',
+            question: 'Changing your password',
             message: 'Enter the new password that you have in mind',
             constraints: {
                 validation: AccountCommands.prototype.isSufficientlySecurePassword.bind(this),

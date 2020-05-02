@@ -28,8 +28,9 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         // Create the commands so that the server is aware of them.
         commands = new AccountCommands(() => announce, () => playground, () => settings, database);
 
-        // Give Gunther administrator rights to make most of the commands available.
+        // Give Gunther and Russell administrator rights to make most of the commands available.
         gunther.level = Player.LEVEL_ADMINISTRATOR;
+        russell.level = Player.LEVEL_ADMINISTRATOR;
     });
 
     afterEach(() => commands.dispose());
@@ -45,7 +46,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     it('should fail if there are no available options', async (assert) => {
         russell.identify();
 
-        // TODO: Change nickname
+        settings.setValue('account/nickname_control', false);
         settings.setValue('account/password_control', false);
         // TODO: Manage aliases
         settings.setValue('account/record_visibility', false);
@@ -57,7 +58,100 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         assert.includes(russell.messages[0], 'options have been disabled');
     });
 
-    // TODO: Change nickname
+    it('should enable players to change their nickname', async (assert) => {
+        gunther.identify({ userId: 42 });
+
+        // (1a) The player is able to abort the flow to change their nickname.
+        gunther.respondToDialog({ listitem: 0 /* Change your nickname */ }).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/account'));
+
+        assert.equal(database.passwordQueries.length, 0);
+        assert.isNull(database.nameMutation);
+
+        // (1b) Abort after verification of their password.
+        gunther.respondToDialog({ listitem: 0 /* Change your nickname */ }).then(
+            () => gunther.respondToDialog({ inputtext: 'correct-pass' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/account'));
+            
+        assert.equal(database.passwordQueries.length, 1);
+        assert.isNull(database.nameMutation);
+
+        // (2) The flow aborts if the current password cannot be verified.
+        gunther.respondToDialog({ listitem: 0 /* Change your nickname */ }).then(
+            () => gunther.respondToDialog({ inputtext: 'wrong-pass' })).then(
+            () => gunther.respondToDialog({ response: 1 /* Try again */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'invalid-pass' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/account'));
+
+        assert.equal(database.passwordQueries.length, 3);
+        assert.isNull(database.nameMutation);
+
+        // (3) The flow should refuse nicknames that are not valid.
+        gunther.respondToDialog({ listitem: 0 /* Change your nickname */ }).then(
+            () => gunther.respondToDialog({ inputtext: 'correct-pass' })).then(
+            () => gunther.respondToDialog({ inputtext: '^^^MaXiMe^^^' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/account'));
+
+        assert.equal(database.passwordQueries.length, 4);
+        assert.isNull(database.nameMutation);
+
+        // (4) The flow should allow people to retry with another nickname.
+        gunther.respondToDialog({ listitem: 0 /* Change your password */ }).then(
+            () => gunther.respondToDialog({ inputtext: 'wrong-pass' })).then(
+            () => gunther.respondToDialog({ response: 1 /* Try again */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'correct-pass' })).then(
+            () => gunther.respondToDialog({ inputtext: '^^^MaXiMe^^^' })).then(
+            () => gunther.respondToDialog({ response: 1 /* Try again */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'XD' })).then( 
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/account'));
+
+        assert.equal(database.passwordQueries.length, 6);
+        assert.isNull(database.nameMutation);
+
+        // (5) The flow should reject nicknames that are already in use.
+        gunther.respondToDialog({ listitem: 0 /* Change your nickname */ }).then(
+            () => gunther.respondToDialog({ inputtext: 'correct-pass' })).then(
+            () => gunther.respondToDialog({ inputtext: '[BB]Joe' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/account'));
+
+        assert.equal(database.passwordQueries.length, 7);
+        assert.isNull(database.nameMutation);
+
+        // (6) The flow should enable players to change their nickname.
+        gunther.respondToDialog({ listitem: 0 /* Change your nickname */ }).then(
+            () => gunther.respondToDialog({ inputtext: 'correct-pass' })).then(
+            () => gunther.respondToDialog({ inputtext: 'NewNick' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/account'));
+
+        assert.equal(database.passwordQueries.length, 8);
+        assert.isNotNull(database.nameMutation);
+
+        // (7) Verify that |gunther|'s nickname has been updated.
+        assert.equal(gunther.name, 'NewNick');
+
+        // (8) Verify that administrators have received a message.
+        assert.equal(russell.messages.length, 1);
+        assert.includes(
+            russell.messages[0],
+            Message.format(Message.ACCOUNT_ADMIN_NICKNAME_CHANGED, 'Gunther', gunther.id,
+                           gunther.name));
+    });
+
+    it.fails();
 
     it('should enable players to change their password', async (assert) => {
         assert.isTrue(database.canUpdatePasswords());
@@ -65,7 +159,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         gunther.identify({ userId: 42 });
 
         // (1a) The player is able to abort the flow to change their password.
-        gunther.respondToDialog({ listitem: 0 /* Change your password */ }).then(
+        gunther.respondToDialog({ listitem: 1 /* Change your password */ }).then(
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/account'));
@@ -74,7 +168,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         assert.equal(database.changePassQueries.length, 0);
 
         // (1b) Abort after verification of their current password.
-        gunther.respondToDialog({ listitem: 0 /* Change your password */ }).then(
+        gunther.respondToDialog({ listitem: 1 /* Change your password */ }).then(
             () => gunther.respondToDialog({ inputtext: 'correct-pass' })).then(
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
@@ -84,7 +178,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         assert.equal(database.changePassQueries.length, 0);
 
         // (2) The flow aborts if the current password cannot be verified.
-        gunther.respondToDialog({ listitem: 0 /* Change your password */ }).then(
+        gunther.respondToDialog({ listitem: 1 /* Change your password */ }).then(
             () => gunther.respondToDialog({ inputtext: 'wrong-pass' })).then(
             () => gunther.respondToDialog({ response: 1 /* Try again */ })).then(
             () => gunther.respondToDialog({ inputtext: 'invalid-pass' })).then(
@@ -96,7 +190,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         assert.equal(database.changePassQueries.length, 0);
 
         // (3) The flow should refuse password that are not strong enough.
-        gunther.respondToDialog({ listitem: 0 /* Change your password */ }).then(
+        gunther.respondToDialog({ listitem: 1 /* Change your password */ }).then(
             () => gunther.respondToDialog({ inputtext: 'correct-pass' })).then(
             () => gunther.respondToDialog({ inputtext: 'weak' })).then(
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
@@ -107,7 +201,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         assert.equal(database.changePassQueries.length, 0);
 
         // (4) The flow should allow people to retry with more secure passwords.
-        gunther.respondToDialog({ listitem: 0 /* Change your password */ }).then(
+        gunther.respondToDialog({ listitem: 1 /* Change your password */ }).then(
             () => gunther.respondToDialog({ inputtext: 'wrong-pass' })).then(
             () => gunther.respondToDialog({ response: 1 /* Try again */ })).then(
             () => gunther.respondToDialog({ inputtext: 'correct-pass' })).then(
@@ -122,7 +216,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         assert.equal(database.changePassQueries.length, 0);
 
         // (4) The player is able to change their password.
-        gunther.respondToDialog({ listitem: 0 /* Change your password */ }).then(
+        gunther.respondToDialog({ listitem: 1 /* Change your password */ }).then(
             () => gunther.respondToDialog({ inputtext: 'correct-pass' })).then(
             () => gunther.respondToDialog({ inputtext: 'new-pass' })).then(
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
@@ -132,6 +226,12 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         assert.equal(database.passwordQueries.length, 7);
         assert.equal(database.changePassQueries.length, 1);
         assert.equal(database.changePassQueries[0].nickname, 'Gunther');
+
+        // (5) Verify that administrators have received a message.
+        assert.equal(russell.messages.length, 1);
+        assert.includes(
+            russell.messages[0],
+            Message.format(Message.ACCOUNT_ADMIN_PASSWORD_CHANGED, 'Gunther', gunther.id));
     });
 
     // TODO: Manage aliases
@@ -140,7 +240,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         gunther.identify({ userId: 42 });
 
         // (1) An error message is shown when the player's log is clean.
-        gunther.respondToDialog({ listitem: 1 /* View your record */ }).then(
+        gunther.respondToDialog({ listitem: 2 /* View your record */ }).then(
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/account'));
@@ -149,7 +249,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         russell.identify({ userId: 1337 });
 
         // (2) A dialog with entries is shown when the player's log has entries.
-        russell.respondToDialog({ listitem: 1 /* View your record */ }).then(
+        russell.respondToDialog({ listitem: 2 /* View your record */ }).then(
             () => russell.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await russell.issueCommand('/account'));
@@ -177,7 +277,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         gunther.identify({ userId: 42 });
 
         // (1) An error message is shown when the player's log is clean.
-        gunther.respondToDialog({ listitem: 2 /* View your recent sessions */ }).then(
+        gunther.respondToDialog({ listitem: 3 /* View your recent sessions */ }).then(
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/account'));
@@ -186,7 +286,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         russell.identify({ userId: 1337 });
 
         // (2) A dialog with entries is shown when the player's log has entries.
-        russell.respondToDialog({ listitem: 2 /* View your recent sessions */ }).then(
+        russell.respondToDialog({ listitem: 3 /* View your recent sessions */ }).then(
             () => russell.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await russell.issueCommand('/account'));

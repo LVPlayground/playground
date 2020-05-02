@@ -117,6 +117,25 @@ export class AccountCommands {
     // Runs the change nickname flow for the given |player|. They will first have to verify their
     // current password, after which they can pick a new nickname.
     async changeNickname(player) {
+        const history = await this.database_.getNicknameHistory(player.name);
+        if (history && history.length > 0) {
+            const minimumDays = this.getSettingValue('nickname_limit_days');
+
+            // Verify that none of the items in the |player|'s nickname history were made less than
+            // |minimumDays| ago. If that's the case, an admin will have to override.
+            for (const item of history) {
+                const days = Math.floor(Math.abs(Date.now() - item.date.getTime()) / (86400 * 1000));
+                if (days >= minimumDays)
+                    break;
+                
+                return alert(player, {
+                    title: 'Account management',
+                    message: `You may change your nickname once per ${minimumDays} days. It's ` +
+                             `only been ${days} days since you changed away from ${item.nickname}.`,
+                });
+            }
+        }
+
         const verifyCurrentPassword = await Question.ask(player, {
             question: 'Changing your nickname',
             message: 'Enter your current password to verify your identity',

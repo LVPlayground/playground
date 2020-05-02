@@ -170,7 +170,8 @@ const PLAYER_CHANGE_NAME_LOG_QUERY = `
 // Query for reading a user's past nicknames in the database.
 const PLAYER_PAST_NICKNAMES_QUERY = `
     SELECT
-        nickname
+        nickname,
+        date
     FROM
         nickname_changes
     WHERE
@@ -353,8 +354,12 @@ export class AccountDatabase {
             return null;
         
         const nicknames = [];
-        for (const row of results.rows)
-            nicknames.push(row.nickname);
+        for (const row of results.rows) {
+            nicknames.push({
+                nickname: row.nickname,
+                date: new Date(row.date),
+            });
+        }
         
         return nicknames;
     }

@@ -180,7 +180,7 @@ export class AccountNuwaniCommands {
             return;
         }
 
-        context.respond(`5Previous nicknames: ${result.join(', ')}`);
+        context.respond(`5Previous nicknames: ${result.map(item => item.nickname).join(', ')}`);
     }
 
     // !changenick

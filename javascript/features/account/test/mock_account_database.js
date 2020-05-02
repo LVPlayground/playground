@@ -138,7 +138,16 @@ export class MockAccountDatabase extends AccountDatabase {
         if (nickname === 'FakeUser')
             return null;
         
-        return ['[HOT]Lad1992', 'Beamer'];
+        return [
+            {
+                nickname: '[HOT]Lad1992',
+                date: new Date(Date.now() - 14 * 86400 * 1000),
+            },
+            {
+                nickname: 'Beamer',
+                date: new Date('2018-04-18 14:19:22'),
+            }
+        ];
     }
 
     // Overridden.

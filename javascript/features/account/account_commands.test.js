@@ -61,11 +61,24 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     it('should enable players to change their nickname', async (assert) => {
         gunther.identify({ userId: 42 });
 
+        // (1) The player may only change their name once per X days.
+        gunther.respondToDialog({ listitem: 0 /* Change your nickname */ }).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/account'));
+        assert.includes(gunther.lastDialog, 'only been 14 days since you');
+
+        assert.equal(database.passwordQueries.length, 0);
+        assert.isNull(database.nameMutation);
+
+        settings.setValue('account/nickname_limit_days', 1);
+
         // (1a) The player is able to abort the flow to change their nickname.
         gunther.respondToDialog({ listitem: 0 /* Change your nickname */ }).then(
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/account'));
+        assert.includes(gunther.lastDialog, 'your current password');
 
         assert.equal(database.passwordQueries.length, 0);
         assert.isNull(database.nameMutation);
@@ -76,6 +89,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/account'));
+        assert.includes(gunther.lastDialog, 'the new nickname');
             
         assert.equal(database.passwordQueries.length, 1);
         assert.isNull(database.nameMutation);
@@ -88,6 +102,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/account'));
+        assert.includes(gunther.lastDialog, 'need to validate');
 
         assert.equal(database.passwordQueries.length, 3);
         assert.isNull(database.nameMutation);
@@ -99,6 +114,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/account'));
+        assert.includes(gunther.lastDialog, 'a valid SA-MP nickname');
 
         assert.equal(database.passwordQueries.length, 4);
         assert.isNull(database.nameMutation);
@@ -114,6 +130,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/account'));
+        assert.includes(gunther.lastDialog, 'a valid SA-MP nickname');
 
         assert.equal(database.passwordQueries.length, 6);
         assert.isNull(database.nameMutation);
@@ -125,6 +142,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/account'));
+        assert.includes(gunther.lastDialog, 'be available on');
 
         assert.equal(database.passwordQueries.length, 7);
         assert.isNull(database.nameMutation);
@@ -136,6 +154,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/account'));
+        assert.includes(gunther.lastDialog, 'has been changed');
 
         assert.equal(database.passwordQueries.length, 8);
         assert.isNotNull(database.nameMutation);
@@ -150,8 +169,6 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
             Message.format(Message.ACCOUNT_ADMIN_NICKNAME_CHANGED, 'Gunther', gunther.id,
                            gunther.name));
     });
-
-    it.fails();
 
     it('should enable players to change their password', async (assert) => {
         assert.isTrue(database.canUpdatePasswords());
@@ -235,6 +252,8 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     });
 
     // TODO: Manage aliases
+
+    it.fails();
 
     it('should be able to show the record of a player', async (assert) => {
         gunther.identify({ userId: 42 });

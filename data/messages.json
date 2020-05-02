@@ -5,6 +5,7 @@
   "ABUSE_ANNOUNCE_KICKED": "%s (Id:%d) has been kicked for %s.",
 
   "ACCOUNT_ADMIN_ALIAS_CREATED": "%s (Id:%d) has added %s as an alias for their account.",
+  "ACCOUNT_ADMIN_ALIAS_DELETED": "%s (Id:%d) has deleted %s as an alias for their account.",
   "ACCOUNT_ADMIN_NICKNAME_CHANGED": "%s (Id:%d) has changed their nickname to %s.",
   "ACCOUNT_ADMIN_PASSWORD_CHANGED": "%s (Id:%d) has changed their password.",
   "ACCOUNT_NOT_AVAILABLE": "@error All account management options have been disabled.",

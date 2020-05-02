@@ -8,6 +8,7 @@ import Menu from 'components/menu/menu.js';
 import Question from 'components/dialogs/question.js';
 
 import alert from 'components/dialogs/alert.js';
+import confirm from 'components/dialogs/confirm.js';
 
 // Provides access to in-game commands related to account management. Access to the individual
 // abilities is gated through the Playground feature, which manages command access.
@@ -269,7 +270,7 @@ export class AccountCommands {
 
             dialog.addItem(
                 nickname, lastActive,
-                AccountCommands.prototype.deleteAlias.bind(this, player, aliases, alias));
+                AccountCommands.prototype.deleteAlias.bind(this, player, alias));
         }
 
         return dialog.displayForPlayer(player);
@@ -339,7 +340,7 @@ export class AccountCommands {
         if (!newAlias)
             return;  // the user aborted out of the flow
 
-        await this.database_.addAlias(player.name, newAlias, /* addAlias= */ true);
+        await this.database_.addAlias(player.name, newAlias, /* allowAlias= */ true);
 
         // Announce the change to administrators, so that the change is known by at least a few more
         // people in case the player forgets their new password immediately after. It happens.
@@ -353,8 +354,50 @@ export class AccountCommands {
     }
 
     // Flow that enables a player to remove the given |alias| from their account.
-    async deleteAlias(player, aliases, alias) {
-        // TODO: Implement this method.
+    async deleteAlias(player, alias) {
+        const aliasFrequencyDays = this.getSettingValue('vip_alias_limit_days');
+
+        // Non-administrators are subject to limits in frequency for creating and removing aliases,
+        // which means that aliases need a certain age before they can be deleted.
+        const aliasAgeDays =
+            Math.round(Math.abs(Date.now() - alias.created.getTime()) / (86400 * 1000));
+        
+        if (aliasAgeDays < aliasFrequencyDays && !player.isAdministrator()) {
+            return alert(player, {
+                title: 'Alias management',
+                message: `You're allowed to delete aliases after they're ${aliasFrequencyDays} ` +
+                         `days old, but it's only been ${aliasAgeDays} days since you created ` +
+                         `the ${alias.nickname} alias. Please wait a bit longer!`
+            });
+        }
+
+        // The alias and/or an account named after the alias cannot currently be connected.
+        if (server.playerManager.getByName(alias.nickname) !== null) {
+            return alert(player, {
+                title: 'Alias management',
+                message: `The alias ${newAlias} is currently in use, and cannot be deleted.`
+            });
+        }
+
+        // Deletion of stuff should be guarded by a confirmation dialog.
+        const confirmation = await confirm(player, {
+            title: 'Alias management',
+            message: `Are you sure that you want to remove the ${alias.nickname} alias?`,
+        });
+
+        if (!confirmation)
+            return;  // they changed their mind
+        
+        // Actually delete the |alias|, and inform administrators of this change.
+        await this.database_.removeAlias(player.name, alias.nickname, /* allowAlias= */ true);
+
+        this.announce_().announceToAdministrators(
+            Message.ACCOUNT_ADMIN_ALIAS_DELETED, player.name, player.id, alias.nickname);
+
+        return alert(player, {
+            title: 'Alias management',
+            message: `The alias ${alias.nickname} has been deleted.`
+        });
     }
 
     // Displays a menu to the |currentPlayer| with the player record of their target. The Menu will

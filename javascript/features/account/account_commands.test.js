@@ -295,7 +295,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     it('should enable VIPs to create an alias', async (assert) => {
         gunther.identify({ userId: 42, vip: 1 });
 
-        // (1) Alias frequency limit for players
+        // (1) Alias frequency limit for players.
         gunther.respondToDialog({ listitem: 2 /* Manage your aliases */ }).then(
             () => gunther.respondToDialog({ listitem: 0 /* Create a new alias */ })).then(
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
@@ -307,7 +307,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
 
         russell.identify({ userId: 42, vip: 1 });
 
-        // (2) No alias frequency limit for administrators
+        // (2) No alias frequency limit for administrators.
         russell.respondToDialog({ listitem: 2 /* Manage your aliases */ }).then(
             () => russell.respondToDialog({ listitem: 0 /* Create a new alias */ })).then(
             () => russell.respondToDialog({ response: 0 /* Dismiss */ }));
@@ -319,7 +319,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
 
         settings.setValue('account/vip_alias_limit_days', 0);
 
-        // (3) New alias must be a valid nickname
+        // (3) New alias must be a valid nickname.
         gunther.respondToDialog({ listitem: 2 /* Manage your aliases */ }).then(
             () => gunther.respondToDialog({ listitem: 0 /* Create a new alias */ })).then(
             () => gunther.respondToDialog({ inputtext: '^^^MaXiMe^^^'})).then(
@@ -330,7 +330,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         assert.includes(gunther.lastDialog, 'a valid SA-MP nickname');
         assert.isNull(database.aliasMutation);
 
-        // (4) New alias must not be in-use on the server
+        // (4) New alias must not be in-use on the server.
         gunther.respondToDialog({ listitem: 2 /* Manage your aliases */ }).then(
             () => gunther.respondToDialog({ listitem: 0 /* Create a new alias */ })).then(
             () => gunther.respondToDialog({ inputtext: 'Russell'})).then(
@@ -341,7 +341,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         assert.includes(gunther.lastDialog, 'be available');
         assert.isNull(database.aliasMutation);
         
-        // (5) New alias must not be registered with Las Venturas Playground
+        // (5) New alias must not be registered with Las Venturas Playground.
         gunther.respondToDialog({ listitem: 2 /* Manage your aliases */ }).then(
             () => gunther.respondToDialog({ listitem: 0 /* Create a new alias */ })).then(
             () => gunther.respondToDialog({ inputtext: 'WoodPecker'})).then(
@@ -352,7 +352,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         assert.includes(gunther.lastDialog, 'be available on Las Venturas Playground');
         assert.isNull(database.aliasMutation);
 
-        // (6) Creating a new alias works fine
+        // (6) Creating a new alias works fine.
         gunther.respondToDialog({ listitem: 2 /* Manage your aliases */ }).then(
             () => gunther.respondToDialog({ listitem: 0 /* Create a new alias */ })).then(
             () => gunther.respondToDialog({ inputtext: 'NewNick'})).then(
@@ -375,7 +375,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
 
         settings.setValue('account/vip_alias_limit_player', 2);
 
-        // (8) Alias count limit for players
+        // (8) Alias count limit for players.
         gunther.respondToDialog({ listitem: 2 /* Manage your aliases */ }).then(
             () => gunther.respondToDialog({ listitem: 0 /* Create a new alias */ })).then(
             () => gunther.respondToDialog({ inputtext: 'NewNick'})).then(
@@ -384,6 +384,53 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(await gunther.issueCommand('/account'));
         assert.equal(gunther.lastDialogTitle, 'Alias management');
         assert.includes(gunther.lastDialog, 'only allowed 2 aliases');
+    });
+
+    it('should enable VIPs to delete an alias', async (assert) => {
+        gunther.identify({ userId: 42, vip: 1 });
+
+        // (1) Aliases created less than |vip_alias_limit_days| days ago cannot be deleted.
+        gunther.respondToDialog({ listitem: 2 /* Manage your aliases */ }).then(
+            () => gunther.respondToDialog({ listitem: 2 /* WoodPecker */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/account'));
+        assert.equal(gunther.lastDialogTitle, 'Alias management');
+        assert.includes(gunther.lastDialog, 'only been 4 days since');
+        assert.isNull(database.aliasMutation);
+
+        settings.setValue('account/vip_alias_limit_days', 0);
+
+        // (2) They can abort deletion of an alias.
+        gunther.respondToDialog({ listitem: 2 /* Manage your aliases */ }).then(
+            () => gunther.respondToDialog({ listitem: 2 /* WoodPecker */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/account'));
+        assert.equal(gunther.lastDialogTitle, 'Alias management');
+        assert.includes(gunther.lastDialog, 'Are you sure');
+        assert.isNull(database.aliasMutation);
+
+        // (3) Aliases can be successfully deleted.
+        gunther.respondToDialog({ listitem: 2 /* Manage your aliases */ }).then(
+            () => gunther.respondToDialog({ listitem: 2 /* WoodPecker */ })).then(
+            () => gunther.respondToDialog({ response: 1 /* Confirm */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/account'));
+        assert.equal(gunther.lastDialogTitle, 'Alias management');
+        assert.includes(gunther.lastDialog, 'WoodPecker has been deleted');
+
+        assert.isNotNull(database.aliasMutation);
+        assert.equal(database.aliasMutation.userId, 4050);
+        assert.equal(database.aliasMutation.alias, 'WoodPecker');
+
+        // (4) Verify administrator notices.
+        assert.equal(russell.messages.length, 1);
+        assert.includes(
+            russell.messages[0],
+            Message.format(Message.ACCOUNT_ADMIN_ALIAS_DELETED, gunther.name, gunther.id,
+                           'WoodPecker'));
     });
 
     it('should be able to show the record of a player', async (assert) => {

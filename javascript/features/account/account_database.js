@@ -342,12 +342,12 @@ export class AccountDatabase {
 
     // Removes the given |alias| from the given |nickname|. The ordering here matters: |nickname|
     // must be the main nickname, where |alias| will be removed from it.
-    async removeAlias(nickname, alias) {
+    async removeAlias(nickname, alias, allowAlias = false) {
         const nicknameResults = await this.getAliases(nickname);
         if (!nicknameResults)
             throw new Error(`The player ${nickname} could not be found in the database.`);
         
-        if (nicknameResults.nickname !== nickname)
+        if (nicknameResults.nickname !== nickname && !allowAlias)
             throw new Error(`${nickname} is an alias by itself. Use their main username instead.`);
         
         if (!nicknameResults.aliases.find(existingAlias => existingAlias.nickname === alias))

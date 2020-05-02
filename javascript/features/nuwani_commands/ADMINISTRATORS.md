@@ -276,7 +276,7 @@ them, really. We have a few tools available to help them through this process.
 ```
 
 ### ⯈ I want to remove an alias from a player
-**Command**: `!supported`
+**Command**: `!removealias [nickname] [alias]`
 
 #### Examples
 ```

@@ -19,6 +19,6 @@ describe('k-means clustering', it => {
         ];
 
         const clusters = getClustersForSanAndreas(points);
-        assert.equal(clusters.length, 5);
+        assert.equal(clusters.length, 3);
     });
 });

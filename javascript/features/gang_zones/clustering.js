@@ -14,16 +14,33 @@
 // Maximum number of iterations that the algorithm may do.
 const kMaxIterations = 250;
 
+// Predefined clusters in the world of San Andreas. We have defined up 12 clusters here, which is
+// enough to decently serve 12*12*2= 288 |points| with ideal distribution.
+const kClusters = [
+    [  1700,  2100 ],  // Las Venturas
+    [  1900,   100 ],  // Bone County
+    [ -1650, -2350 ],  // Mount Chiliad
+    [ -1600,  2100 ],  // Los Santos
+    [   600, -2200 ],  // San Fierro
+    [   200,  1400 ],  // Red County
+    [  2100, -1350 ],  // Tierra Robada
+    [ -1350,  -750 ],  // Flint County
+    [ -2550, -1850 ],  // Whetstone
+    [ -1024,  2200 ],  // Las Colinas
+    [  2350, -2450 ],  // Bayside Marina
+    [  1500,  1450 ],  // Las Venturas Airport
+];
+
 // Specialization that calls `getClusters` with initial means based on likely locations in the San
-// Andreas world, to avoid having to rely on randomness in the algorithms.
-export function getClustersForSanAndreas(points, { maximumClusters = 5 } = {}) {
-    return getClustersWithMeans(points, [
-        [ 1700, 1800 ],  // Las Venturas
-        [ -1500, 1600 ],  // Los Santos
-        [ 400, -2200 ],  // San Fierro
-        [ 1900, 208 ],  // Area 51
-        [ -1650, -2300 ],  // Mount Chilliad
-    ].slice(0, maximumClusters));
+// Andreas world, to avoid having to rely on randomness in the algorithms. 
+export function getClustersForSanAndreas(points, { maximumClusters = null } = {}) {
+    if (!maximumClusters)
+        maximumClusters = Math.ceil(Math.sqrt(points.length / 2));
+    
+    maximumClusters = Math.min(maximumClusters, kClusters.length);
+
+    const clusters = getClustersWithMeans(points, kClusters.slice(0, maximumClusters));
+    return clusters.filter(cluster => !!cluster.points.length);
 }
 
 function getClustersWithMeans(points, means) {

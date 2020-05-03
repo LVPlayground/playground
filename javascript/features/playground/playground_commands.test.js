@@ -176,7 +176,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
 
         // Disable the `spawn_vehicle_admin_override` section in the `abuse` section.
         gunther.respondToDialog({ listitem: 0 /* Assumed `abuse` */ }).then(
-            () => gunther.respondToDialog({ listitem: 3 /* Assumed to be the override */ })).then(
+            () => gunther.respondToDialog({ listitem: 4 /* Assumed to be the override */ })).then(
             () => gunther.respondToDialog({ listitem: 1 /* Disable */ })).then(
             () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
 
@@ -192,7 +192,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
 
         // Enable the `spawn_vehicle_admin_override` section in the `abuse` section.
         gunther.respondToDialog({ listitem: 0 /* Assumed `abuse` */ }).then(
-            () => gunther.respondToDialog({ listitem: 3 /* Assumed to be the override */ })).then(
+            () => gunther.respondToDialog({ listitem: 4 /* Assumed to be the override */ })).then(
             () => gunther.respondToDialog({ listitem: 0 /* Disable */ })).then(
             () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
 

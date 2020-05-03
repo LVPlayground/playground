@@ -7,9 +7,9 @@ import ScopedCallbacks from 'base/scoped_callbacks.js';
 // The Damage Manager is responsible for tracking all damage done on Las Venturas Playground. It
 // observes fights, decides whether damage should be dealt and interacts with the mitigator.
 class DamageManager {
-    constructor(mitigator, monitor, settings) {
+    constructor(mitigator, detectors, settings) {
+        this.detectors_ = detectors;
         this.mitigator_ = mitigator;
-        this.monitor_ = monitor;
 
         this.settings_ = settings;
 
@@ -44,9 +44,8 @@ class DamageManager {
         this.mitigator_.reportDamageTaken(player);
     }
 
-    // forward OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ);
-
     // Called when the player the |event| describes has fired a shot.
+    // https://wiki.sa-mp.com/wiki/OnPlayerWeaponShot
     onPlayerWeaponShot(event) {
         const player = server.playerManager.getById(event.playerid);
         if (!player)
@@ -54,15 +53,23 @@ class DamageManager {
 
         this.mitigator_.reportWeaponFire(player);
 
-        if (event.hittype == 1 /* BULLET_HIT_TYPE_PLAYER */) {
-            const target = server.playerManager.getById(event.hitid);
-            if (!target || target.isNonPlayerCharacter())
-                return;  // the |event| does not describe a valid |target|
+        const weaponId = event.weaponid;
+        const hitPosition = new Vector(event.fX, event.fY, event.fZ);
+        let hitPlayer = null;
+        let hitVehicle = null;
 
-            // Give the AbuseMonitor a chance to investigate the shot.
-            this.monitor_.onPlayerShootPlayer(
-                player, target, new Vector(event.fX, event.fY, event.fZ), event.weaponid);
+        switch (event.hittype) {
+            case 1:  // BULLET_HIT_TYPE_PLAYER
+                hitPlayer = server.playerManager.getById(event.hitid);
+                break;
+            
+            case 2:  // BULLET_HIT_TYPE_VEHICLE
+                hitVehicle = server.vehicleManager.getById(event.hitid);
+                break;
         }
+
+        for (const detector of this.detectors_.activeDetectors)
+            detector.onPlayerWeaponShot(player, weaponId, hitPosition, { hitPlayer, hitVehicle });
     }
 
     onPlayerDeath(event) {

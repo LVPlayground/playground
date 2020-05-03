@@ -3,8 +3,9 @@
 // be found in the LICENSE file.
 
 import AbuseConstants from 'features/abuse/abuse_constants.js';
+import { AbuseDetectors } from 'features/abuse/abuse_detectors.js';
 import AbuseMitigator from 'features/abuse/abuse_mitigator.js';
-import AbuseMonitor from 'features/abuse/abuse_monitor.js';
+import { AbuseMonitor } from 'features/abuse/abuse_monitor.js';
 import AbuseNatives from 'features/abuse/abuse_natives.js';
 import DamageManager from 'features/abuse/damage_manager.js';
 import Feature from 'components/feature_manager/feature.js';
@@ -26,8 +27,9 @@ class Abuse extends Feature {
 
         this.mitigator_ = new AbuseMitigator();
         this.monitor_ = new AbuseMonitor(this.announce_, this.settings_);
+        this.detectors_ = new AbuseDetectors(this.settings_, this.monitor_);
 
-        this.damageManager_ = new DamageManager(this.mitigator_, this.monitor_, this.settings_);
+        this.damageManager_ = new DamageManager(this.mitigator_, this.detectors_, this.settings_);
 
         this.natives_ = new AbuseNatives(this);
     }

@@ -49,6 +49,12 @@ export class ZoneGang {
         this.name_ = details.name;
     }
 
+    // Updates whether the gang is considered to be active. Should only be set by the zone data
+    // aggregator as it's its job to determine this.
+    setActive(active) {
+        this.active_ = active;
+    }
+
     // Adds the given |zoneMember| to the list of active members who are part of this gang. We use a
     // mapping of userId to ZoneMember instance to optimise for runtime manipulation.
     addMember(zoneMember) {

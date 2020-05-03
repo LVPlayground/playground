@@ -21,12 +21,14 @@ export const kZoneDominanceActiveMemberRequirement = 5;
 export class ZoneDataAggregator {
     database_ = null;
     houses_ = null;
+    delegate_ = null;
 
     activeGangs_ = null;
     initialized_ = null;
 
-    constructor(database, gangs, houses) {
+    constructor(database, gangs, houses, delegate) {
         this.database_ = database;
+        this.delegate_ = delegate;
 
         this.activeGangs_ = new Map();
         this.initialized_ = false;
@@ -125,8 +127,22 @@ export class ZoneDataAggregator {
     // Considers the |zoneGang| for getting a gang zone based on their data. Can be called any time
     // the details in |zoneGang| are updated, for example with new or removed members, house changes
     // or member activity changes e.g. because a previously inactive member connects to the server.
-    async reconsiderGangForZone(zoneGang) {
+    reconsiderGangForZone(zoneGang) {
+        if (!this.delegate_)
+            return;  // the delegate is optional for testing
 
+        const isActive = zoneGang.members.size >= kZoneDominanceActiveMemberRequirement;
+        if (zoneGang.isActive()) {
+            if (isActive)
+                this.delegate_.onGangUpdated(zoneGang);  // was active, still active
+            else
+                this.delegate_.onGangDeactivated(zoneGang);  // was active, now inactive
+        } else {
+            if (isActive)
+                this.delegate_.onGangUpdated(zoneGang);  // was inactive, now active
+        }
+
+        zoneGang.setActive(isActive);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -287,6 +303,8 @@ export class ZoneDataAggregator {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        this.delegate_ = null;
+
         this.houses_().removeObserver(this);
         this.houses_.removeReloadObserver(this);
 

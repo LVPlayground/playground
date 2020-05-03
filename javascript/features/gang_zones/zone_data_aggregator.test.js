@@ -96,7 +96,7 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
         let reconsiderationCounter = 0;
 
         // Override the |reconsiderGangForZone| method since we're only interested in call counts.
-        aggregator.__proto__.reconsiderGangForZone = async (zoneGang) => {
+        aggregator.reconsiderGangForZone = async (zoneGang) => {
             ++reconsiderationCounter;
         };
 
@@ -128,7 +128,7 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
         let reconsiderationCounter = 0;
 
         // Override the |reconsiderGangForZone| method since we're only interested in call counts.
-        aggregator.__proto__.reconsiderGangForZone = async (zoneGang) => {
+        aggregator.reconsiderGangForZone = async (zoneGang) => {
             ++reconsiderationCounter;
         };
 

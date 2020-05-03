@@ -1,27 +1,27 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
 import ScopedCallbacks from 'base/scoped_callbacks.js';
 
-// The Damage Manager is responsible for tracking all damage done on Las Venturas Playground. It
-// observes fights, decides whether damage should be dealt and interacts with the mitigator.
-class DamageManager {
-    constructor(mitigator, detectors, settings) {
+// The event listener is responsible for listening to server events and propagating those to other
+// parts of the Abuse feature, including the detectors.
+export class AbuseEventListener {
+    constructor(mitigator, detectors) {
         this.detectors_ = detectors;
         this.mitigator_ = mitigator;
 
-        this.settings_ = settings;
-
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
-            'playergivedamage', DamageManager.prototype.onPlayerGiveDamage.bind(this));
+            'playergivedamage', AbuseEventListener.prototype.onPlayerGiveDamage.bind(this));
         this.callbacks_.addEventListener(
-            'playertakedamage', DamageManager.prototype.onPlayerTakeDamage.bind(this));
+            'playertakedamage', AbuseEventListener.prototype.onPlayerTakeDamage.bind(this));
         this.callbacks_.addEventListener(
-            'playerweaponshot', DamageManager.prototype.onPlayerWeaponShot.bind(this));
+            'playerweaponshot', AbuseEventListener.prototype.onPlayerWeaponShot.bind(this));
         this.callbacks_.addEventListener(
-            'playerdeath', DamageManager.prototype.onPlayerDeath.bind(this));
+            'playerdeath', AbuseEventListener.prototype.onPlayerDeath.bind(this));
+        
+        server.playerManager.addObserver(this);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -82,12 +82,22 @@ class DamageManager {
         this.mitigator_.resetWeaponFire(player);
     }
 
+    // Called when a player has entered vehicle. This is similar to the OnPlayerEnterVehicle event
+    // issued by SA-MP, but is fired *after* the |player| has entered the |vehicle|.
+    //
+    // https://wiki.sa-mp.com/wiki/OnPlayerEnterVehicle
+    // https://wiki.sa-mp.com/wiki/OnPlayerStateChange
+    onPlayerEnterVehicle(player, vehicle) {
+        for (const detector of this.detectors_.activeDetectors)
+            detector.onPlayerEnterVehicle(player, vehicle);
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        server.playerManager.removeObserver(this);
+
         this.callbacks_.dispose();
         this.callbacks_ = null;
     }
 }
-
-export default DamageManager;

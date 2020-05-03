@@ -28,6 +28,9 @@ export class AbuseDetector {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Called after the |player| has entered the given |vehicle|.
+    onPlayerEnterVehicle(player, vehicle) {}
+
     // Called when the |player| has fired their weapon having |weaponId|, where the hit registered
     // at the given |hitPosition|. The |hitPlayer| or |hitVehicle| will be set when available.
     onPlayerWeaponShot(player, weaponId, hitPosition, { hitPlayer, hitVehicle } = {}) {}

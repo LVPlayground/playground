@@ -171,36 +171,37 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
 
     it('should be able to change boolean settings', async(assert) => {
         const settings = server.featureManager.loadFeature('settings');
+        settings.setValue('decorations/holidays_free_vip', /* enabled= */ true);
 
         gunther.level = Player.LEVEL_MANAGEMENT;
 
-        // Disable the `spawn_vehicle_admin_override` section in the `abuse` section.
-        gunther.respondToDialog({ listitem: 0 /* Assumed `abuse` */ }).then(
-            () => gunther.respondToDialog({ listitem: 4 /* Assumed to be the override */ })).then(
+        // Disable the `holidays_free_vip` section in the `abuse` section.
+        gunther.respondToDialog({ listitem: 2 /* Assumed `decorations` */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Assumed to be Holiday VIP */ })).then(
             () => gunther.respondToDialog({ listitem: 1 /* Disable */ })).then(
             () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
 
-        assert.isTrue(settings.getValue('abuse/spawn_vehicle_admin_override'));
+        assert.isTrue(settings.getValue('decorations/holidays_free_vip'));
         assert.isTrue(await gunther.issueCommand('/lvp settings'));
-        assert.isFalse(settings.getValue('abuse/spawn_vehicle_admin_override'));
+        assert.isFalse(settings.getValue('decorations/holidays_free_vip'));
 
         assert.equal(gunther.messages.length, 1);
-        assert.isTrue(gunther.messages[0].includes('spawn_vehicle_admin_override'));
+        assert.isTrue(gunther.messages[0].includes('holidays_free_vip'));
         assert.isTrue(gunther.messages[0].includes('disabled'));
 
         gunther.clearMessages();
 
-        // Enable the `spawn_vehicle_admin_override` section in the `abuse` section.
-        gunther.respondToDialog({ listitem: 0 /* Assumed `abuse` */ }).then(
-            () => gunther.respondToDialog({ listitem: 4 /* Assumed to be the override */ })).then(
+        // Enable the `holidays_free_vip` section in the `abuse` section.
+        gunther.respondToDialog({ listitem: 2 /* Assumed `decorations` */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Assumed to be Holiday VIP */ })).then(
             () => gunther.respondToDialog({ listitem: 0 /* Disable */ })).then(
             () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
 
         assert.isTrue(await gunther.issueCommand('/lvp settings'));
-        assert.isTrue(settings.getValue('abuse/spawn_vehicle_admin_override'));
+        assert.isTrue(settings.getValue('decorations/holidays_free_vip'));
 
         assert.equal(gunther.messages.length, 1);
-        assert.isTrue(gunther.messages[0].includes('spawn_vehicle_admin_override'));
+        assert.isTrue(gunther.messages[0].includes('holidays_free_vip'));
         assert.isTrue(gunther.messages[0].includes('enabled'));
     });
 

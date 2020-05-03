@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { IllegalVehicleEntryDetector } from 'features/abuse/detectors/illegal_vehicle_entry.js';
 import { ProAimDetector } from 'features/abuse/detectors/proaim_detector.js';
 
 // Maintains the list of abuse detectors relevant to the server. The `/lvp settings` command can be
@@ -16,8 +17,9 @@ export class AbuseDetectors {
     constructor(settings, monitor) {
         this.detectors_ = new Map();
         this.detectorInfo_ = new Map([
-            // Setting                  Constructor
-            [ 'abuse/detector_proaim',  ProAimDetector ],
+            // Setting                                Constructor
+            [ 'abuse/detector_illegal_vehicle_entry', IllegalVehicleEntryDetector ],
+            [ 'abuse/detector_proaim',                ProAimDetector ],
         ]);
 
         this.settings_ = settings;

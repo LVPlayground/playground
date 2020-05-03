@@ -4,10 +4,10 @@
 
 import AbuseConstants from 'features/abuse/abuse_constants.js';
 import { AbuseDetectors } from 'features/abuse/abuse_detectors.js';
+import { AbuseEventListener } from 'features/abuse/abuse_event_listener.js';
 import AbuseMitigator from 'features/abuse/abuse_mitigator.js';
 import { AbuseMonitor } from 'features/abuse/abuse_monitor.js';
 import AbuseNatives from 'features/abuse/abuse_natives.js';
-import DamageManager from 'features/abuse/damage_manager.js';
 import Feature from 'components/feature_manager/feature.js';
 
 // Time period, in milliseconds, a player needs to wait between time limited teleportations.
@@ -29,7 +29,9 @@ class Abuse extends Feature {
         this.monitor_ = new AbuseMonitor(this.announce_, this.settings_);
         this.detectors_ = new AbuseDetectors(this.settings_, this.monitor_);
 
-        this.damageManager_ = new DamageManager(this.mitigator_, this.detectors_, this.settings_);
+        // Responsible for listening to SA-MP events and forwarding those to the mitigator and
+        // enabled abuse detectors. Does minimal pre-processing itself.
+        this.eventListener_ = new AbuseEventListener(this.mitigator_, this.detectors_);
 
         this.natives_ = new AbuseNatives(this);
     }
@@ -120,8 +122,8 @@ class Abuse extends Feature {
         this.natives_.dispose();
         this.natives_ = null;
 
-        this.damageManager_.dispose();
-        this.damageManager_ = null;
+        this.eventListener_.dispose();
+        this.eventListener_ = null;
 
         this.monitor_.dispose();
         this.monitor_ = null;

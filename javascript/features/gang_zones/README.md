@@ -19,9 +19,9 @@ in the following mechanism, which gangs can directly influence:
      will be considered active, and is eligible to receive a gang zone.
 
   1. **Identification of gang area(s)**. A tally will be made of all houses owned by the active
-     gang members. Any area where more than 80% of the active members has a house will be
-     considered a gang area. This means that gangs can occupy multiple areas, for example one in
-     each city, as long as all active members participate in this.
+     gang members. Any area where more than five active members have a house will be considered
+     a gang area. This means that gangs can occupy multiple areas, for example one in each city,
+     as long as all enough members participate in this.
 
   1. ...
 
@@ -42,8 +42,15 @@ There are no exceptions for VIP members or administrators. Although they natural
 spent more time on Las Venturas Playground, this isn't per se recently.
 
 ### How exactly are gang areas determined?
+We apply a [k-means clustering](https://en.wikipedia.org/wiki/K-means_clustering) algorithm,
+implemented in [clustering.js](clustering.js), do determine up to five clusters over which the
+gang members' houses are distributed.
 
+For each of those clusters, we then identify the houses that are within a hundred units from
+the cluster's mean, to ensure that the houses are truly close together. We then make sure
+that the remaining houses are owned by at least five different players. If this is the case,
+the area surrounding the cluster will be considered a _gang area_.
 
-### TODO
-  1. Update gang members when an inactive one connects to the server.
+## TODO
+
   1. Update gang members when a new member joins the gang.

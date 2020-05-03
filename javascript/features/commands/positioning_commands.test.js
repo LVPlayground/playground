@@ -108,7 +108,7 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
     
         gunther.position = new Vector(11, 12, 13);
     
-        assert.isTrue(gunther.issueCommand('/foward 3'));
+        assert.isTrue(gunther.issueCommand('/forward 3'));
     
         assert.equal(gunther.position.x, 11);
         assert.equal(gunther.position.y, 12);

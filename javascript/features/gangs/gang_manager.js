@@ -103,7 +103,7 @@ class GangManager {
             this.gangs_.set(gang.id, gang);
 
             // Announce the |player|'s new gang to observers.
-            this.invokeObservers('onUserJoinGang', player.userId, gang.id)
+            this.invokeObservers('onUserJoinGang', player.userId, gang.id, gang)
 
             return gang;
         });
@@ -180,7 +180,7 @@ class GangManager {
         this.gangPlayers_.set(player, gang);
 
         // Announce the |player|'s new gang to observers.
-        this.invokeObservers('onUserJoinGang', player.userId, gang.id);
+        this.invokeObservers('onUserJoinGang', player.userId, gang.id, gang);
 
         return gang;
     }

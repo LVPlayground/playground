@@ -141,25 +141,65 @@ export class ZoneDataAggregator {
     // gang, the object reflects the gang's latest configuration.
     onGangSettingUpdated(gang) {
         const activeGang = this.activeGangs_.get(gang.id);
-        if (!activeGang)
+        if (!activeGang || !this.initialized_)
             return;  // the |gang| is not considered to be an active gang
         
         activeGang.initialize(gang);
     }
 
-    // Called when a gang member having the |userId| has connected to the server.
+    // Called when a member of the |gangId| gang has connected with the server.
     onGangMemberConnected(userId, gangId) {
-
+        // There is a possible edge-case where the |userId| was an inactive member of the |gangId|,
+        // whose return makes |gangId| an active gang again, potentially even with one or more
+        // zones in various areas, which would be player-visible.
+        //
+        // However, implementing a check for this in a performant way is really, really hard. That's
+        // why we don't, and will instead rely on periodic (daily?) refreshes of the data.
     }
 
-    // Called when the given |userId| has joined the gang identified by |gangId|.
-    onUserJoinGang(userId, gangId) {
-        // TODO: Implement this functionality.
-        //       * Them joining might just tip the |gangId| over the edge to be considered an active
-        //         gang, in which case we have to build the full ZoneGang object with members.
-        //
-        //       * They might own houses that have to be identified as well, before adding the
-        //         |userId| to the active gang.
+    // Called when the given |userId| has joined the gang identified by |gangId|. Their assets will
+    // now be considered as part of the gang, which may cause them to become active.
+    async onUserJoinGang(userId, gangId, gang) {
+        if (!this.initialized_)
+            return;  // ignore mutations until the system has initialized
+
+        // (1) Fetch information about all of a gang's active members from the database. Bail out
+        //     immediately if this continues to push the gang under the member threshold.
+        const activeMembers = await this.database_.getActiveMembers({ gangId });
+        if (activeMembers.length < kZoneDominanceActiveMemberRequirement)
+            return;
+
+        const zoneGang = new ZoneGang(gangId);
+        const zoneMembers = new Map();
+
+        // (2) They have the required number of active members. Excellent. Now clear the cached
+        //     gang object and begin building a new one to avoid operating on stale data.
+        this.activeGangs_.set(gangId, zoneGang);
+
+        // (3) Add all the gang's active members to the object again.
+        for (const member of activeMembers) {
+            const zoneMember = new ZoneMember(zoneGang, member);
+
+            zoneMembers.set(member.userId, zoneMember);
+            zoneGang.addMember(zoneMember);
+        }
+
+        // (4) Identify the houses owned by one of the gang members from the Houses feature, and
+        //     add them back directly to the appropriate ZoneMember instance.
+        const houseLocations = await this.houses_().getLocations();
+
+        for (const location of houseLocations) {
+            if (location.isAvailable())
+                continue;  // the house is still available
+            
+            const locationOwnerId = location.settings.ownerId;
+            if (!zoneMembers.has(locationOwnerId))
+                continue;  // the person is not a member of this gang
+            
+            zoneMembers.get(locationOwnerId).addHouse(location);
+        }
+
+        this.scheduleZoneReconsideration(gangId);
     }
 
     // Called when the given |userId| has left the gang identified by |gangId|. If that gang is an

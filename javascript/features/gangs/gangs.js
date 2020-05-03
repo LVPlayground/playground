@@ -30,7 +30,7 @@ class Gangs extends Feature {
     //
     //     onGangMemberConnected(userId, gangId)
     //     onGangSettingUpdated(gang)
-    //     onUserJoinGang(userId, gangId)
+    //     onUserJoinGang(userId, gangId, gang)
     //     onUserLeaveGang(userId, gangId)
     //
     // Events are based on users as opposed to players because mutations can happen whilst the

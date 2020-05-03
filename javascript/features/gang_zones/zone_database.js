@@ -33,13 +33,32 @@ const SEED_ACTIVE_GANGS_QUERY = `
     WHERE
         gangs.gang_id IN (?)`;
 
+// Query to fetch information about a particular gang's members after initialization has completed.
+const GET_ACTIVE_MEMBERS_FOR_GANG_QUERY = `
+    SELECT
+        users_gangs.gang_id,
+        users_gangs.user_id
+    FROM
+        users_gangs
+    LEFT JOIN
+        users_mutable ON users_mutable.user_id = users_gangs.user_id
+    WHERE
+        users_gangs.gang_id = ?
+        users_gangs.left_gang IS NULL AND
+        (
+            (users_mutable.online_time >= 5400000) OR
+            (users_mutable.online_time >= 3600000 AND users_mutable.last_seen > DATE_SUB(NOW(), INTERVAL 24 MONTH)) OR
+            (users_mutable.online_time >= 720000  AND users_mutable.last_seen > DATE_SUB(NOW(), INTERVAL 12 MONTH)) OR
+            (users_mutable.last_seen > DATE_SUB(NOW(), INTERVAL 6 MONTH))
+        )`;
+
 // Provides database access and mutation abilities for the gang zone feature. Tests should use the
 // MockZoneDatabase class instead, which avoids relying on actual MySQL connections.
 export class ZoneDatabase {
     // Returns the active players on the server. Should only be used at feature initialization time,
     // as callbacks an internal state mangling is expected to keep things in sync otherwise.
-    async getActiveMembers() {
-        const results = await this._getActiveMembersQuery();
+    async getActiveMembers({ gangId = null } = {}) {
+        const results = await this._getActiveMembersQuery({ gangId });
         const players = [];
 
         if (results && results.rows.length > 0) {
@@ -54,8 +73,9 @@ export class ZoneDatabase {
         return players;
     }
 
-    async _getActiveMembersQuery() {
-        return server.database.query(SEED_ACTIVE_MEMBERS_QUERY);
+    async _getActiveMembersQuery({ gangId }) {
+        return gangId !== null ? server.database.query(GET_ACTIVE_MEMBERS_FOR_GANG_QUERY, gangId)
+                               : server.database.query(SEED_ACTIVE_MEMBERS_QUERY);
     }
 
     // Returns details about the active gangs listed in |activeGangIds|, which must be an iterable

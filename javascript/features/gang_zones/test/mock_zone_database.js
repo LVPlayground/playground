@@ -5,12 +5,14 @@
 import { ZoneDatabase } from 'features/gang_zones/zone_database.js';
 
 const kGangBA = 1086;
+const kGangNB = 871;
 
 // Mock implementation of the gang zone database class. Mimics identical behaviour, just fakes the
 // actual database operations with mocked data.
 export class MockZoneDatabase extends ZoneDatabase {
-    // Public version of the kGangBA constant.
+    // Public version of the individual gang constants.
     static BA = kGangBA;
+    static NB = kGangNB;
 
     // Populates a series of test houses to |houses| that are significant for the testability of
     // this feature. There could be other houses too, but we'll ignore those.
@@ -40,7 +42,19 @@ export class MockZoneDatabase extends ZoneDatabase {
     }
 
     // Overridden.
-    async _getActiveMembersQuery() {
+    async _getActiveMembersQuery({ gangId }) {
+        if (gangId === kGangNB) {
+            return {
+                rows: [
+                    { gang_id: kGangNB, user_id: 3001 },  // [NB]D.R.E
+                    { gang_id: kGangNB, user_id: 3002 },  // [NB]90NINE
+                    { gang_id: kGangNB, user_id: 3003 },  // [NB]Dr.Vibrator
+                    { gang_id: kGangNB, user_id: 3004 },  // [NB]ExPloiTeD
+                    { gang_id: kGangNB, user_id: 3005 },  // [NB]Eminich
+                ]
+            };
+        }
+
         return {
             rows: [
                 { gang_id: kGangBA, user_id: 9001 },  // [BA]AzKiller

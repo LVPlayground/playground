@@ -50,7 +50,3 @@ For each of those clusters, we then identify the houses that are within a hundre
 the cluster's mean, to ensure that the houses are truly close together. We then make sure
 that the remaining houses are owned by at least five different players. If this is the case,
 the area surrounding the cluster will be considered a _gang area_.
-
-## TODO
-
-  1. Update gang members when a new member joins the gang.

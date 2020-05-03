@@ -21,6 +21,15 @@ describe('ZoneDatabase', it => {
         assert.equal(activeGangs.size, 1);
     });
 
+    it('is able to get details about a particular gang on the server', async (assert) => {
+        const database = new MockZoneDatabase();
+
+        const allMembers = await database.getActiveMembers();
+        const nbMembers = await database.getActiveMembers({ gangId: MockZoneDatabase.NB });
+
+        assert.notEqual(allMembers, nbMembers);
+    });
+
     it('is able to get details about the active gangs on the server', async (assert) => {
         const database = new MockZoneDatabase();
 

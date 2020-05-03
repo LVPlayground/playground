@@ -104,10 +104,14 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
         
         assert.isAboveOrEqual(reconsiderationCounter, 0);
 
-        // TODO: A player joining an inactive gang, making it active.
+        // A new player joining the gang should reconsider all their information.
+        const initializedReconsiderationCounter = reconsiderationCounter;
+        {
+            await aggregator.onUserJoinGang(/* [NB]Dr.Vibrator= */ 3003, MockZoneDatabase.NB);
+            await server.clock.advance(1);  // asynchronous reconsideration
+        }
+        assert.isAbove(reconsiderationCounter, initializedReconsiderationCounter);
 
-        // TODO: A player joining the server who wasn't considered an active member, but now is.
-        
         // A player leaving an active gang should end up reconsidering that gang for their gang zone
         // applicability as well, as this affects their member count, house distribution, etc...
         const beforeRemovalReconsiderationCounter = reconsiderationCounter;

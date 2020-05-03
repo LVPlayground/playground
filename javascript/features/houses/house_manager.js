@@ -24,6 +24,7 @@ class HouseManager {
         this.dataLoadedPromise_ = new Promise(resolver =>
             this.dataLoadedResolver_ = resolver);
 
+        this.observers_ = new Set();
         this.extensions_ = new Set();
         this.locations_ = new Set();
 
@@ -79,10 +80,28 @@ class HouseManager {
         this.extensions_.delete(extension);
     }
 
-    // Calls the |methodName| on all registered house extensions, in insertion order.
+    // Calls the |methodName| on all registered house extensions, in insertion order. Observers will
+    // be called for the |methodName| as well, but all callback methods are optional.
     invokeExtensions(methodName, ...args) {
         for (const extension of this.extensions_)
             extension.__proto__[methodName].call(extension, ...args);
+        
+        for (const observer of this.observers_) {
+            if (!(methodName in observer))
+                continue;
+            
+            observer[methodName].call(observer, ...args);
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    addObserver(observer) {
+        this.observers_.add(observer);
+    }
+
+    removeObserver(observer) {
+        this.observers_.delete(observer);
     }
 
     // ---------------------------------------------------------------------------------------------

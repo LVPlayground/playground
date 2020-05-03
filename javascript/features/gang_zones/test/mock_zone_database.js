@@ -18,6 +18,7 @@ export class MockZoneDatabase extends ZoneDatabase {
         const houseManager = houses.manager_;
         const housesForTesting = [
             {
+                gangId: kGangBA,
                 userId: 9001,  // [BA]AzKiller
                 location: [ 1500.0, 1500.0, 20.0 ],
             }
@@ -26,6 +27,7 @@ export class MockZoneDatabase extends ZoneDatabase {
         const gunther = server.playerManager.getById(/* Gunther= */ 0);
         for (const houseForTesting of housesForTesting) {
             gunther.identify({ userId: houseForTesting.userId });
+            gunther.gangId = houseForTesting.gangId;
 
             const location = await houseManager.createLocation(gunther, {
                 facingAngle: 0,

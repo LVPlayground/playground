@@ -22,17 +22,25 @@ export class ZoneDataAggregator {
     database_ = null;
     houses_ = null;
 
-    gangs_ = null;
+    activeGangs_ = null;
+    initialized_ = null;
 
     constructor(database, houses) {
         this.database_ = database;
-        this.houses_ = houses;
 
-        this.gangs_ = new Map();
+        this.activeGangs_ = new Map();
+        this.initialized_ = false;
+
+        this.houses_ = houses;
+        this.houses_.addReloadObserver(
+            this, ZoneDataAggregator.prototype.onHouseFeatureReload.bind(this));
+
+        // Initialize the event listeners as if the dependencies have reloaded.
+        this.onHouseFeatureReload();
     }
 
     // Gets the map of gangs that are known to the data aggregator.
-    get gangs() { return this.gangs_; }
+    get activeGangs() { return this.activeGangs_; }
 
     // Initialises the initial state of the zone data aggregator, by fetching all active player and
     // gang information from the database, and building an internal cache from that.
@@ -43,12 +51,12 @@ export class ZoneDataAggregator {
         // Pre-populate our internal knowledge of all active gangs based on the |activeMembers|.
         // This is step (1) of the gang dominance determination algorithm in README.md.
         for (const member of activeMembers) {
-            let zoneGang = this.gangs_.get(member.gangId);
+            let zoneGang = this.activeGangs_.get(member.gangId);
             if (!zoneGang) {
                 zoneGang = new ZoneGang(member.gangId);
 
                 // Store the |zoneGang| for usage by future gang members as well.
-                this.gangs_.set(member.gangId, zoneGang);
+                this.activeGangs_.set(member.gangId, zoneGang);
             }
 
             const zoneMember = new ZoneMember(zoneGang, member);
@@ -60,11 +68,11 @@ export class ZoneDataAggregator {
             activeUsers.set(member.userId, zoneMember);
         }
 
-        // Determine which sub-set of the |this.gangs_| is considered to be an active gang. This is
-        // step (2) of the zone dominance algorithm described in README.md.
+        // Determine which sub-set of the |this.activeGangs_| is considered to be an active gang.
+        // This is step (2) of the zone dominance algorithm described in README.md.
         const activeGangIds = new Set();
 
-        for (const zoneGang of this.gangs_.values()) {
+        for (const zoneGang of this.activeGangs_.values()) {
             if (zoneGang.size < kZoneDominanceActiveMemberRequirement)
                 continue;
             
@@ -76,7 +84,7 @@ export class ZoneDataAggregator {
 
         const activeGangDetails = await this.database_.getActiveGangs(activeGangIds);
         for (const details of activeGangDetails) {
-            let zoneGang = this.gangs_.get(details.id);
+            let zoneGang = this.activeGangs_.get(details.id);
             if (!zoneGang)
                 throw new Error('Received information about an unpopulated active gang.');
             
@@ -101,14 +109,74 @@ export class ZoneDataAggregator {
             zoneMember.addHouse(location);
         }
 
-        
+        // Consider every gang in |this.activeGangs_| for a gang zone now that initial data has been
+        // gathered. That function will make the next set of determinations.
+        for (const zoneGang of this.activeGangs_.values())
+            await this.reconsiderGangForZone(zoneGang);
+
+        this.initialized_ = true;
+    }
+
+    // Considers the |zoneGang| for getting a gang zone based on their data. Can be called any time
+    // the details in |zoneGang| are updated, for example with new or removed members, house changes
+    // or member activity changes e.g. because a previously inactive member connects to the server.
+    async reconsiderGangForZone(zoneGang) {
 
     }
 
+    // ---------------------------------------------------------------------------------------------
+    // Observers: House feature
+    // ---------------------------------------------------------------------------------------------
 
+    onHouseFeatureReload() {
+        this.houses_().addObserver(this);
+    }
 
+    onHouseCreated(location) {
+        if (!this.initialized_ || location.isAvailable())
+            return;  // ignore mutations until the system has initialized
+
+        const activeGang = this.activeGangs_.get(location.settings.ownerGangId);
+        if (!activeGang)
+            return;  // the trade wasn't initiated by a member of an active gang
+
+        const activeMember = activeGang.members.get(location.settings.ownerId);
+        if (!activeMember)
+            return;  // the owner isn't an active member of the gang -- should never happen!
+
+        activeMember.addHouse(location);
+
+        // Asynchronously reconsider the |activeGang| for a zone, we don't want to interfere with
+        // the execution and/or stack traces of the House feature more than we have to.
+        wait(0).then(() => this.reconsiderGangForZone(activeGang));
+    }
+
+    onHouseRemoved(location) {
+        if (!this.initialized_ || location.isAvailable())
+            return;  // ignore mutations until the system has initialized
+        
+        const activeGang = this.activeGangs_.get(location.settings.ownerGangId);
+        if (!activeGang)
+            return;  // the trade wasn't initiated by a member of an active gang
+        
+        const activeMember = activeGang.members.get(location.settings.ownerId);
+        if (!activeMember)
+            return;  // the owner isn't an active member of the gang -- should never happen!
+        
+        activeMember.removeHouse(location);
+
+        // Asynchronously reconsider the |activeGang| for a zone, we don't want to interfere with
+        // the execution and/or stack traces of the House feature more than we have to.
+        wait(0).then(() => this.reconsiderGangForZone(activeGang));
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    
     dispose() {
-        this.gangs_.clear();
-        this.gangs_ = null;
+        this.houses_().removeObserver(this);
+        this.houses_.removeReloadObserver(this);
+
+        this.activeGangs_.clear();
+        this.activeGangs_ = null;
     }
 }

@@ -65,6 +65,21 @@ class Houses extends Feature {
         return this.manager_.locations;
     }
 
+    // Adds the given |observer| to the list of listeners for house-related events. The following
+    // events will propagate to each of the observers:
+    //
+    //     onHouseCreated(location)
+    //     onHouseRemoved(location)
+    //
+    async addObserver(observer) {
+        this.manager_.addObserver(observer);
+    }
+
+    // Removes the given |observer| from the list of observers.
+    async removeObserver(observer) {
+        this.manager_.removeObserver(observer);
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     dispose() {

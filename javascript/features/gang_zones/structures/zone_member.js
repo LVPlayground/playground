@@ -31,4 +31,9 @@ export class ZoneMember {
     addHouse(houseLocation) {
         this.houses_.add(houseLocation);
     }
+
+    // Removes the |houseLocation| as a house owned by this person.
+    removeHouse(houseLocation) {
+        this.houses_.delete(houseLocation);
+    }
 }

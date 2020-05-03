@@ -15,11 +15,12 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
         await createHousesTestEnvironment();
 
         const houses = server.featureManager.loadFeature('houses');
+        const housesWrapper = server.featureManager.createDependencyWrapperForFeature('houses');
 
         database = new MockZoneDatabase();
         await database.populateTestHouses(houses);
 
-        aggregator = new ZoneDataAggregator(database, () => houses);
+        aggregator = new ZoneDataAggregator(database, housesWrapper);
     });
 
     afterEach(() => {
@@ -31,8 +32,8 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
         // Determination of "active players", and the gangs associated with them.
         await aggregator.initialize();
 
-        assert.isAboveOrEqual(aggregator.gangs.size, 1);
-        for (const gang of aggregator.gangs.values())
+        assert.isAboveOrEqual(aggregator.activeGangs.size, 1);
+        for (const gang of aggregator.activeGangs.values())
             assert.isAboveOrEqual(gang.members.size, 1);
     });
 
@@ -40,10 +41,10 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
         // Determination of "active gangs", and basic details associated with them.
         await aggregator.initialize();
 
-        assert.isAboveOrEqual(aggregator.gangs.size, 1);
-        assert.isTrue(aggregator.gangs.has(MockZoneDatabase.BA));
+        assert.isAboveOrEqual(aggregator.activeGangs.size, 1);
+        assert.isTrue(aggregator.activeGangs.has(MockZoneDatabase.BA));
 
-        const baGang = aggregator.gangs.get(MockZoneDatabase.BA);
+        const baGang = aggregator.activeGangs.get(MockZoneDatabase.BA);
 
         assert.isNotNull(baGang);
         assert.isAboveOrEqual(baGang.members.size, kZoneDominanceActiveMemberRequirement);
@@ -55,8 +56,8 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
 
         let totalHouses = 0;
 
-        assert.isAboveOrEqual(aggregator.gangs.size, 1);
-        for (const gang of aggregator.gangs.values()) {
+        assert.isAboveOrEqual(aggregator.activeGangs.size, 1);
+        for (const gang of aggregator.activeGangs.values()) {
             assert.isAboveOrEqual(gang.members.size, 1);
 
             for (const member of gang.members.values())
@@ -64,5 +65,40 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
         }
 
         assert.isAboveOrEqual(totalHouses, 1);
+    });
+
+    it('reconsiders a gang for having a zone on house creation and deletion', async (assert) => {
+        const houses = server.featureManager.loadFeature('houses');
+
+        let reconsiderationCounter = 0;
+
+        // Override the |reconsiderGangForZone| method since we're only interested in call counts.
+        aggregator.__proto__.reconsiderGangForZone = async (zoneGang) => {
+            ++reconsiderationCounter;
+        };
+
+        await aggregator.initialize();
+        
+        assert.isAboveOrEqual(reconsiderationCounter, 0);
+    
+        // Recreate all the houses we populate for testing, which count as mutations.
+        const initializedReconsiderationCounter = reconsiderationCounter;
+        {
+            await database.populateTestHouses(houses);
+            await server.clock.advance(1);  // asynchronous reconsideration
+        }
+        assert.isAbove(reconsiderationCounter, initializedReconsiderationCounter);
+
+        // Manually remove a house owned by one of our gang members. This should trigger
+        const housesAddedReconsiderationCounter = reconsiderationCounter;
+        {
+            for (const location of houses.manager_.locations) {
+                if (!location.isAvailable())
+                    await houses.manager_.removeHouse(location);
+            }
+
+            await server.clock.advance(1);  // asynchronous reconsideration
+        }
+        assert.isAbove(reconsiderationCounter, initializedReconsiderationCounter);
     });
 });

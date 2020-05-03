@@ -48,7 +48,4 @@ spent more time on Las Venturas Playground, this isn't per se recently.
   1. Update gang names when changed in-game.
   1. Update gang colors when changed in-game.
   1. Update gang members when an inactive one connects to the server.
-  1. Update gang members on house additions.
-  1. Update gang members on house removals.
   1. Deal with the "gangs" feature reloading.
-  1. Deal with the "houses" feature reloading.

@@ -25,17 +25,22 @@ export class ZoneDataAggregator {
     activeGangs_ = null;
     initialized_ = null;
 
-    constructor(database, houses) {
+    constructor(database, gangs, houses) {
         this.database_ = database;
 
         this.activeGangs_ = new Map();
         this.initialized_ = false;
+
+        this.gangs_ = gangs;
+        this.gangs_.addReloadObserver(
+            this, ZoneDataAggregator.prototype.onGangsFeatureReload.bind(this));
 
         this.houses_ = houses;
         this.houses_.addReloadObserver(
             this, ZoneDataAggregator.prototype.onHouseFeatureReload.bind(this));
 
         // Initialize the event listeners as if the dependencies have reloaded.
+        this.onGangsFeatureReload();
         this.onHouseFeatureReload();
     }
 
@@ -125,6 +130,39 @@ export class ZoneDataAggregator {
     }
 
     // ---------------------------------------------------------------------------------------------
+    // Observers: Gangs feature
+    // ---------------------------------------------------------------------------------------------
+
+    onGangsFeatureReload() {
+        this.gangs_().addObserver(this);
+    }
+
+    // Called when the given |userId| has joined the gang identified by |gangId|.
+    onUserJoinGang(userId, gangId) {
+        // TODO: Implement this functionality.
+        //       * Them joining might just tip the |gangId| over the edge to be considered an active
+        //         gang, in which case we have to build the full ZoneGang object with members.
+        //
+        //       * They might own houses that have to be identified as well, before adding the
+        //         |userId| to the active gang.
+    }
+
+    // Called when the given |userId| has left the gang identified by |gangId|. If that gang is an
+    // active gang, the player leaving might affect their ability to have a zone.
+    onUserLeaveGang(userId, gangId) {
+        if (!this.initialized_)
+            return;  // ignore mutations until the system has initialized
+        
+        const { activeGang, activeMember } = this.findActiveGangAndMember(gangId, userId);
+        if (!activeGang || !activeMember)
+            return;  // the player wasn't part of an active gang
+        
+        activeGang.removeMember(activeMember);
+
+        this.scheduleZoneReconsideration(gangId);
+    }
+
+    // ---------------------------------------------------------------------------------------------
     // Observers: House feature
     // ---------------------------------------------------------------------------------------------
 
@@ -132,49 +170,73 @@ export class ZoneDataAggregator {
         this.houses_().addObserver(this);
     }
 
+    // Called when the |location| has been bought by a player. When said player is in a gang, we
+    // have to reconsider the gang's areas.
     onHouseCreated(location) {
         if (!this.initialized_ || location.isAvailable())
             return;  // ignore mutations until the system has initialized
 
-        const activeGang = this.activeGangs_.get(location.settings.ownerGangId);
-        if (!activeGang)
-            return;  // the trade wasn't initiated by a member of an active gang
+        const { activeGang, activeMember } =
+            this.findActiveGangAndMember(location.settings.ownerGangId, location.settings.ownerId);
 
-        const activeMember = activeGang.members.get(location.settings.ownerId);
-        if (!activeMember)
-            return;  // the owner isn't an active member of the gang -- should never happen!
+        if (!activeGang || !activeMember)
+            return;  // the location wasn't owned by an active gang
 
         activeMember.addHouse(location);
 
-        // Asynchronously reconsider the |activeGang| for a zone, we don't want to interfere with
-        // the execution and/or stack traces of the House feature more than we have to.
-        wait(0).then(() => this.reconsiderGangForZone(activeGang));
+        this.scheduleZoneReconsideration(location.settings.ownerGangId);
     }
 
+    // Called when the |location| is about to be sold by a player. When said player is in a gang, we
+    // have to reconsider the gang's areas.
     onHouseRemoved(location) {
         if (!this.initialized_ || location.isAvailable())
             return;  // ignore mutations until the system has initialized
         
-        const activeGang = this.activeGangs_.get(location.settings.ownerGangId);
-        if (!activeGang)
-            return;  // the trade wasn't initiated by a member of an active gang
-        
-        const activeMember = activeGang.members.get(location.settings.ownerId);
-        if (!activeMember)
-            return;  // the owner isn't an active member of the gang -- should never happen!
-        
+        const { activeGang, activeMember } =
+            this.findActiveGangAndMember(location.settings.ownerGangId, location.settings.ownerId);
+
+        if (!activeGang || !activeMember)
+            return;  // the location wasn't owned by an active gang
+
         activeMember.removeHouse(location);
 
-        // Asynchronously reconsider the |activeGang| for a zone, we don't want to interfere with
-        // the execution and/or stack traces of the House feature more than we have to.
-        wait(0).then(() => this.reconsiderGangForZone(activeGang));
+        this.scheduleZoneReconsideration(location.settings.ownerGangId);
     }
 
     // ---------------------------------------------------------------------------------------------
     
+    // Gets the { activeGang, activeMember } for the given |gangId| and |userId|, if any.
+    findActiveGangAndMember(gangId, userId) {
+        const activeGang = this.activeGangs_.get(gangId);
+        if (!activeGang)
+            return { activeGang: null, activeMember: null };
+
+        const activeMember = activeGang.members.get(userId);
+        if (!activeMember)
+            return { activeGang: null, activeMember: null };
+        
+        return { activeGang, activeMember };
+    }
+
+    // Schedules an asynchronous, out-of-bans reconsideration of zoning for the given |gangId|.
+    async scheduleZoneReconsideration(gangId) {
+        await Promise.resolve();
+
+        if (!this.activeGangs_ || !this.activeGangs_.has(gangId))
+            return;
+        
+        this.reconsiderGangForZone(this.activeGangs_.get(gangId));
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     dispose() {
         this.houses_().removeObserver(this);
         this.houses_.removeReloadObserver(this);
+
+        this.gangs_().removeObserver(this);
+        this.gangs_.removeReloadObserver(this);
 
         this.activeGangs_.clear();
         this.activeGangs_ = null;

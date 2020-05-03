@@ -14,13 +14,15 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
     beforeEach(async() => {
         await createHousesTestEnvironment();
 
+        const gangsWrapper = server.featureManager.createDependencyWrapperForFeature('gangs');
+
         const houses = server.featureManager.loadFeature('houses');
         const housesWrapper = server.featureManager.createDependencyWrapperForFeature('houses');
 
         database = new MockZoneDatabase();
         await database.populateTestHouses(houses);
 
-        aggregator = new ZoneDataAggregator(database, housesWrapper);
+        aggregator = new ZoneDataAggregator(database, gangsWrapper, housesWrapper);
     });
 
     afterEach(() => {
@@ -65,6 +67,32 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
         }
 
         assert.isAboveOrEqual(totalHouses, 1);
+    });
+
+    it('reconsiders a gang for having a zone on gang membership changes', async (assert) => {
+        let reconsiderationCounter = 0;
+
+        // Override the |reconsiderGangForZone| method since we're only interested in call counts.
+        aggregator.__proto__.reconsiderGangForZone = async (zoneGang) => {
+            ++reconsiderationCounter;
+        };
+
+        await aggregator.initialize();
+        
+        assert.isAboveOrEqual(reconsiderationCounter, 0);
+
+        // TODO: A player joining an inactive gang, making it active.
+
+        // TODO: A player joining the server who wasn't considered an active member, but now is.
+        
+        // A player leaving an active gang should end up reconsidering that gang for their gang zone
+        // applicability as well, as this affects their member count, house distribution, etc...
+        const beforeRemovalReconsiderationCounter = reconsiderationCounter;
+        {
+            aggregator.onUserLeaveGang(/* [BA]AzKiller= */ 9001, MockZoneDatabase.BA);
+            await server.clock.advance(1);  // asynchronous reconsideration
+        }
+        assert.isAbove(reconsiderationCounter, beforeRemovalReconsiderationCounter);
     });
 
     it('reconsiders a gang for having a zone on house creation and deletion', async (assert) => {

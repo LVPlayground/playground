@@ -19,6 +19,9 @@ export default class GangZones extends Feature {
         // The zone database which handles all our own interactions with the database.
         const database = new ZoneDatabase();
 
+        // The GangZones feature depends on gangs because, well, we work for gangs.
+        const gangs = this.defineDependency('gangs');
+
         // The GangZones feature depends on houses, as they influence the zone dominance algorithm.
         const houses = this.defineDependency('houses');
 
@@ -28,7 +31,7 @@ export default class GangZones extends Feature {
 
         // Responsible for aggregating all member and house data of gangs and their members, to
         // pass to the ZoneCalculator for determining applicability of a zone, and at which size.
-        this.dataAggregator_ = new ZoneDataAggregator(database, houses);
+        this.dataAggregator_ = new ZoneDataAggregator(database, gangs, houses);
 
         // The ZoneManager is responsible for actually creating and destroying the zones on the map,
         // and keepnig track of which players are in them.

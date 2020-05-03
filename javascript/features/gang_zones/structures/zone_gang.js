@@ -53,4 +53,9 @@ export class ZoneGang {
     addMember(zoneMember) {
         this.members_.set(zoneMember.userId, zoneMember);
     }
+
+    // Removes the given |zoneMember| from the list of active members.
+    removeMember(zoneMember) {
+        this.members_.delete(zoneMember.userId);
+    }
 }

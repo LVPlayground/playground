@@ -20,10 +20,14 @@ export const kZoneDominanceActiveMemberRequirement = 5;
 // passed to the ZoneCalculator, which is responsible for calculating zone appropriateness.
 export class ZoneDataAggregator {
     database_ = null;
+    houses_ = null;
+
     gangs_ = null;
 
-    constructor(database) {
+    constructor(database, houses) {
         this.database_ = database;
+        this.houses_ = houses;
+
         this.gangs_ = new Map();
     }
 
@@ -34,6 +38,7 @@ export class ZoneDataAggregator {
     // gang information from the database, and building an internal cache from that.
     async initialize() {
         const activeMembers = await this.database_.getActiveMembers();
+        const activeUsers = new Map();
         
         // Pre-populate our internal knowledge of all active gangs based on the |activeMembers|.
         // This is step (1) of the gang dominance determination algorithm in README.md.
@@ -46,7 +51,13 @@ export class ZoneDataAggregator {
                 this.gangs_.set(member.gangId, zoneGang);
             }
 
-            zoneGang.addMember(new ZoneMember(zoneGang, member));
+            const zoneMember = new ZoneMember(zoneGang, member);
+            
+            // Store the |zoneMember| with the |zoneGang|, who owns it.
+            zoneGang.addMember(zoneMember);
+            
+            // Store the |zoneMember| with |activeUsers|, to allow for efficient house allocation.
+            activeUsers.set(member.userId, zoneMember);
         }
 
         // Determine which sub-set of the |this.gangs_| is considered to be an active gang. This is
@@ -60,6 +71,9 @@ export class ZoneDataAggregator {
             activeGangIds.add(zoneGang.id);
         }
 
+        if (!activeGangIds.size)
+            return;  // there are no active gangs on the server
+
         const activeGangDetails = await this.database_.getActiveGangs(activeGangIds);
         for (const details of activeGangDetails) {
             let zoneGang = this.gangs_.get(details.id);
@@ -69,8 +83,29 @@ export class ZoneDataAggregator {
             zoneGang.initialize(details);
         }
 
-        // ...
+        // Wait until the Houses feature is loaded, and use its knowledge to build the set of houses
+        // owned by gang members. We've got the |activeUsers| map available for quick look-up. This
+        // populates the data required to execute step (3) of the zone dominance algorithm.
+        const houseLocations = await this.houses_().getLocations();
+
+        for (const location of houseLocations) {
+            if (location.isAvailable())
+                continue;  // the house is not owned by anyone
+            
+            const settings = location.settings;
+
+            const zoneMember = activeUsers.get(settings.ownerId);
+            if (!zoneMember)
+                continue;  // the house is not owned by an active gang member
+            
+            zoneMember.addHouse(location);
+        }
+
+        
+
     }
+
+
 
     dispose() {
         this.gangs_.clear();

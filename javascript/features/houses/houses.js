@@ -7,7 +7,6 @@ import HouseCommands from 'features/houses/house_commands.js';
 import HouseManager from 'features/houses/house_manager.js';
 import HouseNatives from 'features/houses/house_natives.js';
 
-import GangZones from 'features/houses/extensions/gang_zones.js';
 import Pickups from 'features/houses/extensions/pickups.js';
 import PropertySettings from 'features/houses/extensions/property_settings.js';
 import VisitorLog from 'features/houses/extensions/visitor_log.js';
@@ -43,7 +42,6 @@ class Houses extends Feature {
 
         this.manager_ = new HouseManager(abuse, announce, economy, friends, gangs, location, streamer);
 
-        this.manager_.registerExtension(new GangZones(this.manager_, economy, gangs));
         this.manager_.registerExtension(new PropertySettings(this.manager_));
         this.manager_.registerExtension(new Pickups(this.manager_, economy, streamer));
         this.manager_.registerExtension(new VisitorLog(this.manager_));
@@ -57,7 +55,16 @@ class Houses extends Feature {
     }
 
     // ---------------------------------------------------------------------------------------------
-    // The Houses feature has no public API.
+    // Public API for the Houses feature.
+    // ---------------------------------------------------------------------------------------------
+
+    // Returns the HouseLocation objects that exist on the server. Will wait for the Manager and all
+    // associated information to be available before returning.
+    async getLocations() {
+        await this.manager_.ready;
+        return this.manager_.locations;
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     dispose() {

@@ -82,6 +82,6 @@ export class ZoneDatabase {
     }
 
     async _getActiveGangsQuery(activeGangIds) {
-        return server.database.query(SEED_ACTIVE_GANGS_QUERY, activeGangIds);
+        return server.database.query(SEED_ACTIVE_GANGS_QUERY, [...activeGangIds]);
     }
 }

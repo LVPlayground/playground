@@ -18,11 +18,19 @@ in the following mechanism, which gangs can directly influence:
   1. **Identification of active gangs**. Each gang which has at least five active gang members
      will be considered active, and is eligible to receive a gang zone.
 
+  1. **Identification of gang area(s)**. A tally will be made of all houses owned by the active
+     gang members. Any area where more than 80% of the active members has a house will be
+     considered a gang area. This means that gangs can occupy multiple areas, for example one in
+     each city, as long as all active members participate in this.
+
   1. ...
+
+The gang zone feature will continue to evaluate these requirements while the server is running,
+so players joining a gang and building a house in the gang area(s) will have an immediate effect.
 
 ## Appendix
 
-### Determining _recently_ active gang members
+### What constitutes an active gang member?
 Gang members are considered to be recently active when:
 
   1. They have been in-game in the past 6 months, or,
@@ -30,5 +38,17 @@ Gang members are considered to be recently active when:
   1. They have been in-game in the past 24 months and have >1000 hours of in-game time, or,
   1. They have >1500 hours of in-game time.
 
-There are no exceptions for VIP members or administrators, although they naturally tend to have
-spent more time on Las Venturas Playground.
+There are no exceptions for VIP members or administrators. Although they naturally tend to have
+spent more time on Las Venturas Playground, this isn't per se recently.
+
+### How exactly are gang areas determined?
+
+
+### TODO
+  1. Update gang names when changed in-game.
+  1. Update gang colors when changed in-game.
+  1. Update gang members when an inactive one connects to the server.
+  1. Update gang members on house additions.
+  1. Update gang members on house removals.
+  1. Deal with the "gangs" feature reloading.
+  1. Deal with the "houses" feature reloading.

@@ -10,11 +10,20 @@ export class ZoneGang {
     active_ = null;
     members_ = null;
 
+    color_ = null;
+    name_ = null;
+
     // Gets the ID describing how this gang has been represented in the database.
     get id() { return this.id_; }
 
-    // Gets the size of this gang in regards of active members.
-    get size() { return this.members_.size; }
+    // Gets the members of this gang who are considered to be active.
+    get members() { return this.members_; }
+
+    // Gets the color of this gang. Only available for active gangs.
+    get color() { return this.color_; }
+
+    // Gets the name of this gang. Only available for active gangs.
+    get name() { return this.color_; }
 
     // Returns whether this instance represents an "active gang".
     isActive() { return this.active_; }
@@ -33,9 +42,10 @@ export class ZoneGang {
         if (details.id !== this.id_)
             throw new Error(`Cannot initialize gang ${this.id_} with data from gang ${details.id}`);
         
-        // TODO: Do something with the given |details|.
-        
         this.active_ = true;
+
+        this.color_ = details.color;
+        this.name_ = details.name;
     }
 
     // Adds the given |zoneMember| to the list of active members who are part of this gang. We use a

@@ -150,6 +150,7 @@ class HouseManager {
         this.entranceController_.addLocation(location);
 
         this.invokeExtensions('onLocationCreated', location);
+        return location;
     }
 
     // Creates a new parking lot for |location| at |parkingLot|. The |player| will be written to

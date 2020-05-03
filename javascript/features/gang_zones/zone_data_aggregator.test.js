@@ -5,13 +5,21 @@
 import { MockZoneDatabase } from 'features/gang_zones/test/mock_zone_database.js';
 import { ZoneDataAggregator, kZoneDominanceActiveMemberRequirement } from 'features/gang_zones/zone_data_aggregator.js';
 
+import createHousesTestEnvironment from 'features/houses/test/test_environment.js';
+
 describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
     let aggregator = null;
     let database = null;
     
-    beforeEach(() => {
+    beforeEach(async() => {
+        await createHousesTestEnvironment();
+
+        const houses = server.featureManager.loadFeature('houses');
+
         database = new MockZoneDatabase();
-        aggregator = new ZoneDataAggregator(database);
+        await database.populateTestHouses(houses);
+
+        aggregator = new ZoneDataAggregator(database, () => houses);
     });
 
     afterEach(() => {
@@ -25,7 +33,7 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
 
         assert.isAboveOrEqual(aggregator.gangs.size, 1);
         for (const gang of aggregator.gangs.values())
-            assert.isAboveOrEqual(gang.size, 1);
+            assert.isAboveOrEqual(gang.members.size, 1);
     });
 
     it('is able to execute Step 2. of the zone dominance algorithm', async (assert) => {
@@ -38,6 +46,23 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
         const baGang = aggregator.gangs.get(MockZoneDatabase.BA);
 
         assert.isNotNull(baGang);
-        assert.isAboveOrEqual(baGang.size, kZoneDominanceActiveMemberRequirement);
+        assert.isAboveOrEqual(baGang.members.size, kZoneDominanceActiveMemberRequirement);
+    });
+
+    it('is able to gather data for Step 3. of the zone dominance algorithm', async (assert) => {
+        // Gather the houses owned by the active gang members.
+        await aggregator.initialize();
+
+        let totalHouses = 0;
+
+        assert.isAboveOrEqual(aggregator.gangs.size, 1);
+        for (const gang of aggregator.gangs.values()) {
+            assert.isAboveOrEqual(gang.members.size, 1);
+
+            for (const member of gang.members.values())
+                totalHouses += member.houses.size;
+        }
+
+        assert.isAboveOrEqual(totalHouses, 1);
     });
 });

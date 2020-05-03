@@ -12,16 +12,41 @@ export class MockZoneDatabase extends ZoneDatabase {
     // Public version of the kGangBA constant.
     static BA = kGangBA;
 
+    // Populates a series of test houses to |houses| that are significant for the testability of
+    // this feature. There could be other houses too, but we'll ignore those.
+    async populateTestHouses(houses) {
+        const houseManager = houses.manager_;
+        const housesForTesting = [
+            {
+                userId: 9001,  // [BA]AzKiller
+                location: [ 1500.0, 1500.0, 20.0 ],
+            }
+        ];
+
+        const gunther = server.playerManager.getById(/* Gunther= */ 0);
+        for (const houseForTesting of housesForTesting) {
+            gunther.identify({ userId: houseForTesting.userId });
+
+            const location = await houseManager.createLocation(gunther, {
+                facingAngle: 0,
+                interiorId: 0,
+                position: new Vector(...houseForTesting.location),
+            });
+
+            await houseManager.createHouse(gunther, location, /* interiorId= */ 0);
+        }
+    }
+
     // Overridden.
     async _getActiveMembersQuery() {
         return {
             rows: [
-                { gang_id: kGangBA, user_id: 1 },  // [BA]AzKiller
-                { gang_id: kGangBA, user_id: 2 },  // Agent[BA]
-                { gang_id: kGangBA, user_id: 3 },  // [BA]Sammo
-                { gang_id: kGangBA, user_id: 4 },  // [BA]Deer_Hunter
-                { gang_id: kGangBA, user_id: 5 },  // [BA]Curry
-                { gang_id: kGangBA, user_id: 6 },  // [BA]Slick
+                { gang_id: kGangBA, user_id: 9001 },  // [BA]AzKiller
+                { gang_id: kGangBA, user_id: 9002 },  // Agent[BA]
+                { gang_id: kGangBA, user_id: 9003 },  // [BA]Sammo
+                { gang_id: kGangBA, user_id: 9004 },  // [BA]Deer_Hunter
+                { gang_id: kGangBA, user_id: 9005 },  // [BA]Curry
+                { gang_id: kGangBA, user_id: 9006 },  // [BA]Slick
             ]
         };
     }

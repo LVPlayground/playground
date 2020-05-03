@@ -295,6 +295,8 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     it('should enable VIPs to create an alias', async (assert) => {
         gunther.identify({ userId: 42, vip: 1 });
 
+        settings.setValue('account/vip_alias_limit_player', 3);
+
         // (1) Alias frequency limit for players.
         gunther.respondToDialog({ listitem: 2 /* Manage your aliases */ }).then(
             () => gunther.respondToDialog({ listitem: 0 /* Create a new alias */ })).then(

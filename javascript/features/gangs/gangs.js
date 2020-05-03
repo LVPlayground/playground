@@ -28,6 +28,8 @@ class Gangs extends Feature {
     // members that are part of a gang. The |observer| can implement the following methods that will
     // be informed of changes within a gang:
     //
+    //     onGangMemberConnected(userId, gangId)
+    //     onGangSettingUpdated(gang)
     //     onUserJoinGang(userId, gangId)
     //     onUserLeaveGang(userId, gangId)
     //

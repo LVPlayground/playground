@@ -137,6 +137,21 @@ export class ZoneDataAggregator {
         this.gangs_().addObserver(this);
     }
 
+    // Called when a setting of the |gang| has been updated. We make sure that, if there's an active
+    // gang, the object reflects the gang's latest configuration.
+    onGangSettingUpdated(gang) {
+        const activeGang = this.activeGangs_.get(gang.id);
+        if (!activeGang)
+            return;  // the |gang| is not considered to be an active gang
+        
+        activeGang.initialize(gang);
+    }
+
+    // Called when a gang member having the |userId| has connected to the server.
+    onGangMemberConnected(userId, gangId) {
+
+    }
+
     // Called when the given |userId| has joined the gang identified by |gangId|.
     onUserJoinGang(userId, gangId) {
         // TODO: Implement this functionality.

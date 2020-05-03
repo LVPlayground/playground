@@ -2,6 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+// Default color that will be given to gangs who don't explicitly set their own color.
+export const kDefaultGangColor = Color.fromRGB(0xB0, 0xBE, 0xC5);
+
 // Encapsulates the information the `gang_zones` feature maintains about an individual gang. This is
 // information that's not necessarily aligned with the gangs that are available in-game. 
 export class ZoneGang {
@@ -23,7 +26,7 @@ export class ZoneGang {
     get color() { return this.color_; }
 
     // Gets the name of this gang. Only available for active gangs.
-    get name() { return this.color_; }
+    get name() { return this.name_; }
 
     // Returns whether this instance represents an "active gang".
     isActive() { return this.active_; }
@@ -41,10 +44,8 @@ export class ZoneGang {
     initialize(details) {
         if (details.id !== this.id_)
             throw new Error(`Cannot initialize gang ${this.id_} with data from gang ${details.id}`);
-        
-        this.active_ = true;
 
-        this.color_ = details.color;
+        this.color_ = details.color || kDefaultGangColor;
         this.name_ = details.name;
     }
 

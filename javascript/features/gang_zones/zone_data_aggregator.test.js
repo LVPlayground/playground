@@ -6,6 +6,7 @@ import { MockZoneDatabase } from 'features/gang_zones/test/mock_zone_database.js
 import { ZoneDataAggregator, kZoneDominanceActiveMemberRequirement } from 'features/gang_zones/zone_data_aggregator.js';
 
 import createHousesTestEnvironment from 'features/houses/test/test_environment.js';
+import { kDefaultGangColor } from 'features/gang_zones/structures/zone_gang.js';
 
 describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
     let aggregator = null;
@@ -67,6 +68,28 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
         }
 
         assert.isAboveOrEqual(totalHouses, 1);
+    });
+
+    it('should update cached gang information when it has been updated', async (assert) => {
+        // Determination of "active gangs", and basic details associated with them.
+        await aggregator.initialize();
+
+        assert.isAboveOrEqual(aggregator.activeGangs.size, 1);
+        assert.isTrue(aggregator.activeGangs.has(MockZoneDatabase.BA));
+
+        const baGang = aggregator.activeGangs.get(MockZoneDatabase.BA);
+        
+        assert.equal(baGang.name, 'BA Hooligans');
+        assert.deepEqual(baGang.color, Color.fromRGB(20, 147, 170));
+
+        aggregator.onGangSettingUpdated({
+            id: MockZoneDatabase.BA,
+            name: 'BA Hoodiefans',
+            color: null,
+        });
+
+        assert.equal(baGang.name, 'BA Hoodiefans');
+        assert.deepEqual(baGang.color, kDefaultGangColor);
     });
 
     it('reconsiders a gang for having a zone on gang membership changes', async (assert) => {

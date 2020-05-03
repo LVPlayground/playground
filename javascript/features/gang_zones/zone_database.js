@@ -33,9 +33,6 @@ const SEED_ACTIVE_GANGS_QUERY = `
     WHERE
         gangs.gang_id IN (?)`;
 
-// Default color that will be given to gangs who don't explicitly set their own color.
-const kDefaultGangColor = Color.fromRGB(0xB0, 0xBE, 0xC5);
-
 // Provides database access and mutation abilities for the gang zone feature. Tests should use the
 // MockZoneDatabase class instead, which avoids relying on actual MySQL connections.
 export class ZoneDatabase {
@@ -73,7 +70,7 @@ export class ZoneDatabase {
                     id: row.gang_id,
                     name: row.gang_name,
                     color: row.gang_color ? Color.fromNumberRGB(row.gang_color)
-                                          : kDefaultGangColor,
+                                          : null,
                 });
             }
         }

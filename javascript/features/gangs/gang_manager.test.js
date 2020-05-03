@@ -159,10 +159,15 @@ describe('GangManager', (it, beforeEach) => {
 
         gunther.identify();
 
+        let connectedCount = 0;
         let joinedUserCount = 0;
         let leftUserCount = 0;
 
         class MyObserver {
+            onGangMemberConnected(userId, gangId) {
+                connectedCount++;
+            }
+
             onUserJoinGang(userId, gangId) {
                 joinedUserCount++;
             }
@@ -177,18 +182,31 @@ describe('GangManager', (it, beforeEach) => {
         // Events should be issued when a player joins or leaves a gang.
         manager.addObserver(observer);
 
+        assert.equal(connectedCount, 0);
         assert.equal(joinedUserCount, 0);
         assert.equal(leftUserCount, 0);
 
-        await manager.createGangForPlayer(gunther, 'CC', 'name', 'goal');
+        const gang = await manager.createGangForPlayer(gunther, 'CC', 'name', 'goal');
         assert.isNotNull(manager.gangForPlayer(gunther));
 
+        assert.equal(connectedCount, 0);
+        assert.equal(joinedUserCount, 1);
+        assert.equal(leftUserCount, 0);
+
+        gunther.identify({ userId: MockGangDatabase.HKO_LEADER_USER_ID,
+                           gangId: MockGangDatabase.HKO_GANG_ID });
+
+        // The database result will be loaded through a promise, continue the test asynchronously.
+        await Promise.resolve();
+
+        assert.equal(connectedCount, 1);
         assert.equal(joinedUserCount, 1);
         assert.equal(leftUserCount, 0);
 
         await manager.removePlayerFromGang(gunther, manager.gangForPlayer(gunther));
         assert.isNull(manager.gangForPlayer(gunther));
 
+        assert.equal(connectedCount, 1);
         assert.equal(joinedUserCount, 1);
         assert.equal(leftUserCount, 1);
 
@@ -198,6 +216,7 @@ describe('GangManager', (it, beforeEach) => {
         await manager.createGangForPlayer(gunther, 'CC', 'name', 'goal');
         assert.isNotNull(manager.gangForPlayer(gunther));
 
+        assert.equal(connectedCount, 1);
         assert.equal(joinedUserCount, 1);
         assert.equal(leftUserCount, 1);
     });

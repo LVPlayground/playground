@@ -180,7 +180,7 @@ class GangManager {
         this.gangPlayers_.set(player, gang);
 
         // Announce the |player|'s new gang to observers.
-        this.invokeObservers('onUserJoinGang', player.userId, gang.id)
+        this.invokeObservers('onUserJoinGang', player.userId, gang.id);
 
         return gang;
     }
@@ -262,6 +262,8 @@ class GangManager {
         await this.database_.updateColor(gang, color);
 
         gang.updateColor(color);
+
+        this.invokeObservers('onGangSettingUpdated', gang);
     }
 
     // Updates the preference of |player| within |gang| to use the common gang color when the
@@ -284,6 +286,8 @@ class GangManager {
         await this.database_.updateName(gang, name);
 
         gang.name = name;
+
+        this.invokeObservers('onGangSettingUpdated', gang);
         return true;
     }
 
@@ -336,6 +340,9 @@ class GangManager {
 
             // Associate the |gang| with the |player|.
             this.gangPlayers_.set(player, gang);
+
+            // Inform observers about the |player| whose part of |gang| now being online.
+            this.invokeObservers('onGangMemberConnected', player.userId, gang.id);
         });
     }
 

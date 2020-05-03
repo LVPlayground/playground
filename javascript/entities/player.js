@@ -4,6 +4,8 @@
 
 import PlayerSyncedData from 'entities/player_synced_data.js';
 
+import { toFloat } from 'base/float.js';
+
 // Camera interpolation modes defined by SA-MP.
 const CAMERA_MOVE = 1;
 const CAMERA_CUT = 2;
@@ -257,6 +259,11 @@ class Player {
     this.vehicleCollisionsEnabled_ = !!value;
   }
 
+  // Returns whether the player is currently surfing a vehicle.
+  isSurfingVehicle() {
+    return pawnInvoke('GetPlayerSurfingVehicleID', 'i', this.id_) !== Player.INVALID_ID;
+  }
+
   // Returns the vehicle the player is currently driving in, when the player is in a vehicle and
   // the vehicle is owned by the JavaScript code.
   currentVehicle() {
@@ -292,6 +299,16 @@ class Player {
       throw new Error('Unknown vehicle to put the player in: ' + vehicle);
   }
 
+  // Gets the player's current packet loss, as a percentage.
+  get packetLossPercent() {
+    return toFloat(pawnInvoke('NetStats_PacketLossPercent', 'i', this.id_));
+  }
+
+  // Gets the player's current ping, in milliseconds.
+  get ping() {
+    return pawnInvoke('GetPlayerPing', 'i', this.id_);
+  }
+
   // Gets or sets the gang color of this player. May be NULL when no color has been defined.
   get gangColor() { throw new Error('Player.gangColor() has not been implemented yet.'); }
   set gangColor(value) {
@@ -317,6 +334,15 @@ class Player {
       pawnInvoke('SelectTextDraw', 'ii', this.id_, (hoverColor || Color.WHITE).toNumberRGBA());
     else
       pawnInvoke('CancelSelectTextDraw', 'i', this.id_);
+  }
+
+  // Returns the player's last shot vectors as two vectors: source and target.
+  getLastShotVectors() {
+    const positions = pawnInvoke('GetPlayerLastShotVectors', 'iFFFFFF', this.id_);
+    return {
+      source: new Vector(positions[0], positions[1], positions[2]),
+      target: new Vector(positions[3], positions[4], positions[5]),
+    };
   }
 
   // Returns a vector of the position of the player's camera.

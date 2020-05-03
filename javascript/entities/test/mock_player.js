@@ -34,6 +34,9 @@ class MockPlayer {
         this.position_ = new Vector(0, 0, 0);
         this.specialAction_ = Player.SPECIAL_ACTION_NONE;
 
+        this.packetLossPercent_ = 0;
+        this.ping_ = 30;
+
         this.dialogPromiseResolve_ = null;
         this.dialogPromise_ = new Promise(resolve => {
             this.dialogPromiseResolve_ = resolve;
@@ -206,6 +209,9 @@ class MockPlayer {
         return true;
     }
 
+    get packetLossPercent() { return this.packetLossPercent_; }
+    get ping() { return this.ping_; }
+
     // Kicks the player from the server. The user of this function is responsible for making sure
     // that the reason for the kick is properly recorded.
     kick() { this.disconnect(2 /* reason */); }
@@ -284,6 +290,14 @@ class MockPlayer {
     // to respawn immediately after, which may be an unintended side-effect.
     setSpectating(spectating) {}
 
+    // Gets the most recent shot vectors for the player.
+    getLastShotVectors() {
+        return {
+            source: new Vector(0, 0, 0),
+            target: new Vector(0, 0, 0),
+        };
+    }
+
     // Sets the player's camera to |position| and |target|, both of which must be vectors.
     setCamera(position, target) {}
 
@@ -329,6 +343,8 @@ class MockPlayer {
     // Gets or sets the message level at which this player would like to receive messages.
     get messageLevel() { return this.messageLevel_; }
     set messageLevel(value) { this.messageLevel_ = value; }
+
+    isSurfingVehicle() { return false; }
 
     // Returns the vehicle the player is currently driving in, when the player is in a vehicle and
     // the vehicle is owned by the JavaScript code.

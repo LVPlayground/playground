@@ -22,6 +22,9 @@ class PlayerTracker {
      * to the server again.
      */
     public __construct() {
+        if (!BuildGamemodeInReleaseMode)
+            return;
+
         Database->query("TRUNCATE TABLE online", "", 0);
     }
 
@@ -33,6 +36,9 @@ class PlayerTracker {
     @list(OnPlayerConnect)
     public onPlayerConnect(playerId) {
         if (Player(playerId)->isNonPlayerCharacter())
+            return;
+
+        if (!BuildGamemodeInReleaseMode)
             return;
 
         new nickname[MAX_PLAYER_NAME+1];
@@ -58,6 +64,9 @@ class PlayerTracker {
         if (Player(playerId)->isNonPlayerCharacter())
             return;
 
+        if (!BuildGamemodeInReleaseMode)
+            return;
+
         format(m_queryBuffer, sizeof(m_queryBuffer), "DELETE FROM online WHERE player_id = %d", playerId);
         Database->query(m_queryBuffer, "", 0);
     }
@@ -72,6 +81,9 @@ class PlayerTracker {
      */
     @list(OnPlayerGuestLogin)
     public onPlayerGuestLogin(playerId) {
+        if (!BuildGamemodeInReleaseMode)
+            return;
+
         new nickname[MAX_PLAYER_NAME+1];
         GetPlayerName(playerId, nickname, sizeof(nickname));
 
@@ -91,6 +103,9 @@ class PlayerTracker {
     @list(SecondTimer)
     public onUpdate() {
         if (PlayerManager->connectedPlayerCount() == 0)
+            return;
+
+        if (!BuildGamemodeInReleaseMode)
             return;
 
         new playerInsertionBuffer[80], Float: playerPosition[3], Float: playerHealth, Float: playerArmor,

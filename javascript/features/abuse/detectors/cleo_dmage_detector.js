@@ -7,14 +7,12 @@ import { AbuseDetector } from 'features/abuse/abuse_detector.js';
 // Set of weapon Ids that will be ignored for this detector, because they're either insignificant or
 // too unreliable to allow for accurate detection.
 const kIgnoredWeaponIds = new Set([
-    9,   // Chainsaw
     16,  // Grenade
     17,  // Teargas
     18,  // Molotov
     35,  // Rocket Launcher
     36,  // Heat Seaking Rocket Launcher
     38,  // Minigun
-    41,  // Spraycan
     51,  // Explosion
     52,  // Fire Extinguisher
     54,  // Splat
@@ -39,6 +37,9 @@ export const kPistolWhipWeaponIds = new Set([
      32,  // Tec-9
      33,  // Rifle
      34,  // Sniper
+     38,  // Minigun
+     41,  // Spraycan
+     52,  // Fire Extinguisher
 ]);
 
 // Some weapons have a fixed damage amount that does not fluctuate depending on the shot and/or

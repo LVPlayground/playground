@@ -40,7 +40,7 @@ export const kFixedDamageAmounts = new Map([
 const kDamageComparisonSigma = 0.01;
 
 // Run the statistical deviation checks every |kDetectionInterval| hits from a particular weapon. 
-const kDetectionInterval = 20;
+const kDetectionInterval = 5;
 
 // Object to maintain a collection of measurements with the ability to provide an average. Given the
 // Desert Eagle being the most powerful weapon in SA-MP with a maximum damage of 140, and the number
@@ -148,7 +148,7 @@ export class CleoDmageDetector extends AbuseDetector {
             if (server.isTest())
                 return;  // don't output the result during tests
 
-            console.log(`Dmage [${player.name}][${weaponId}][${global},${local}][${diff}]`);
+            console.log(`DmageV2 [${player.name}][${weaponId}][${global},${local}][${diff}]`);
         }
     }
 }

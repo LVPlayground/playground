@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { kFixedDamageAmounts } from 'features/abuse/detectors/cleo_dmage_detector.js';
+import { kFixedDamageAmounts, kPistolWhipWeaponIds } from 'features/abuse/detectors/cleo_dmage_detector.js';
 
 describe('CleoDmageDetector', (it, beforeEach) => {
     let gunther = null;
@@ -28,11 +28,26 @@ describe('CleoDmageDetector', (it, beforeEach) => {
         // Force-flip the CLEO Dmage detector to make sure the leniency option takes effect.
         settings.setValue('abuse/detector_cleo_dmage', /* enabled= */ false);
         settings.setValue('abuse/detector_cleo_dmage', /* enabled= */ true);
-        
 
         for (const [weaponId, fixedDamageAmount] of kFixedDamageAmounts) {
             const existingMessageCount = russell.messages.length;
 
+            // If it's possible to whip another player with the butt of the gun, an exception will
+            // make sure that it's neither recorded, nor incorrectly included in measurements.
+            if (kPistolWhipWeaponIds.has(weaponId)) {
+                dispatchEvent('playertakedamage', {
+                    playerid: gunther.id,
+                    issuerid: russell.id,
+                    amount: 2.640000105,
+                    weaponid: weaponId,
+                    bodypart: 3,  // Torso
+                });
+
+                assert.equal(russell.messages.length, existingMessageCount);
+            }
+
+            // Other values that are not equal to the fixed amount will have to be reported as per
+            // usual. We're confident in these cases, so an administrator notice will go out.
             dispatchEvent('playertakedamage', {
                 playerid: gunther.id,
                 issuerid: russell.id,

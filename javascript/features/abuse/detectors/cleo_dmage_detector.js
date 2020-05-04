@@ -20,6 +20,27 @@ const kIgnoredWeaponIds = new Set([
     54,  // Splat
 ]);
 
+// The amount of damage whipping someone with the handle of a pistol takes. This is valid for most
+// of the pistol-like weapons, but would be reported as weapon-specific damage.
+const kPistolWhipAmount = 2.64;
+
+// Weapon IDs that are able to inflict the |kPistolWhipWeaponIds|.
+export const kPistolWhipWeaponIds = new Set([
+     22,  // Colt 45
+     23,  // Silenced Pistol
+     24,  // Desert Eagle
+     25,  // Shotgun
+     26,  // Sawn-off shotgun
+     27,  // Spaz shotgun
+     28,  // Uzi
+     29,  // MP5
+     30,  // AK-47
+     31,  // M4
+     32,  // Tec-9
+     33,  // Rifle
+     34,  // Sniper
+]);
+
 // Some weapons have a fixed damage amount that does not fluctuate depending on the shot and/or
 // bullet count. Deriviations from that are clear indications that something is up.
 export const kFixedDamageAmounts = new Map([
@@ -105,8 +126,17 @@ export class CleoDmageDetector extends AbuseDetector {
         if (kIgnoredWeaponIds.has(weaponId))
             return;  // the weapon has been ignored
         
+        // If the |amount| is exactly |kPistolWhipAmount|, and the |weaponId| is one of the pistol
+        // types, it's safe to ignore this, since it's not a *shot* with the given |weaponId|.
+        if (Math.abs(kPistolWhipAmount - amount) <= kDamageComparisonSigma &&
+                kPistolWhipWeaponIds.has(weaponId)) {
+            return;
+        }
+
         const fixedDamageAmount = kFixedDamageAmounts.get(weaponId);
         if (fixedDamageAmount) {
+            // If the |amount| differs from |fixedDamageAmount|, then we can grant the player some
+            // leniency once, but will report it as confirmed abuse thereafter.
             if (Math.abs(fixedDamageAmount - amount) > kDamageComparisonSigma &&
                     !this.grantLeniencyOnDetection(player)) {
                 this.report(player, AbuseDetector.kDetected, {

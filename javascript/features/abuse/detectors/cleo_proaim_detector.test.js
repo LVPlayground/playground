@@ -25,6 +25,4 @@ describe('CleoDmageDetector', (it, beforeEach) => {
 
         // TODO: Implement some tests.
     });
-
-    it.fails();
 });

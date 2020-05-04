@@ -56,6 +56,7 @@ export const kFixedDamageAmounts = new Map([
     [ 32,  6.60 ],  // Tec-9
     [ 33, 24.75 ],  // Rifle
     [ 34, 41.25 ],  // Sniper
+    [ 41,  0.33 ],  // Spraycan
 ]);
 
 // Sigma when comparing floating point values in the |kFixedDamageAmounts| table.
@@ -189,7 +190,7 @@ export class CleoDmageDetector extends AbuseDetector {
             if (server.isTest())
                 return;  // don't output the result during tests
 
-            console.log(`DmageV3 [${player.name}][${weaponId}][${global},${local}][${diff}]`);
+            console.log(`DmageV4 [${player.name}][${weaponId}][${global},${local}][${diff}]`);
         }
     }
 

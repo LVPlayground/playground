@@ -15,15 +15,22 @@ export class AbuseDetector {
     monitor_ = null;
     name_ = null;
 
-    constructor(monitor, name) {
+    constructor(settings, monitor, name) {
+        this.settings_ = settings;
         this.monitor_ = monitor;
         this.name_ = name;
     }
 
     // To be called when abuse has been detected. All information regarding the report will be given
     // to the AbuseMonitor, who will take care of the rest.
-    report(player, certainty = AbuseDetector.kFunnyFeeling) {
-        this.monitor_.reportAbuse(player, this.name_, certainty);
+    report(player, certainty = AbuseDetector.kFunnyFeeling, evidence = null) {
+        this.monitor_.reportAbuse(player, this.name_, certainty, evidence);
+    }
+
+    // Returns the value of the setting with the given |name|. Allows for further configurability
+    // within an individual abuse detector.
+    getSettingValue(name) {
+        return this.settings_().getValue(name);
     }
 
     // ---------------------------------------------------------------------------------------------

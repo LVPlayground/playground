@@ -86,12 +86,16 @@ class DamageMeasurements {
 export class CleoDmageDetector extends AbuseDetector {
     individualMeasurements_ = null;
     globalMeasurements_ = null;
+    leniency_ = null;
 
     constructor(...params) {
         super(...params, 'CLEO Dmage');
 
         this.individualMeasurements_ = new WeakMap();
         this.globalMeasurements_ = new Map();
+
+        if (this.getSettingValue('abuse/detector_cleo_dmage_leniency'))
+            this.leniency_ = new WeakSet();
     }
 
     onPlayerTakeDamage(player, issuer, weaponId, amount, bodyPart) {
@@ -103,8 +107,14 @@ export class CleoDmageDetector extends AbuseDetector {
         
         const fixedDamageAmount = kFixedDamageAmounts.get(weaponId);
         if (fixedDamageAmount) {
-            if (Math.abs(fixedDamageAmount - amount) > kDamageComparisonSigma)
-                this.report(player, AbuseDetector.kDetected);
+            if (Math.abs(fixedDamageAmount - amount) > kDamageComparisonSigma &&
+                    !this.grantLeniencyOnDetection(player)) {
+                this.report(player, AbuseDetector.kDetected, {
+                    weaponId,
+                    expectedDamageAmount: fixedDamageAmount,
+                    actualDamageAmount: amount,
+                });
+            }
 
             return;
         }
@@ -150,5 +160,15 @@ export class CleoDmageDetector extends AbuseDetector {
 
             console.log(`DmageV2 [${player.name}][${weaponId}][${global},${local}][${diff}]`);
         }
+    }
+
+    // Whether to grant leniency to the player. We allow for an invalid detection because weapon
+    // sync in SA-MP and GTA is not always equally reliable.
+    grantLeniencyOnDetection(player) {
+        if (!this.leniency_ || this.leniency_.has(player))
+            return false;
+        
+        this.leniency_.add(player);
+        return true;
     }
 }

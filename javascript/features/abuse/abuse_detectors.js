@@ -59,7 +59,7 @@ export class AbuseDetectors {
             throw new Error('Change event invoked for unknown setting: ' + setting);
         
         if (enabled && !this.detectors_.has(setting)) {
-            this.detectors_.set(setting, new DetectorConstructor(this.monitor_));
+            this.detectors_.set(setting, new DetectorConstructor(this.settings_, this.monitor_));
         } else if (!enabled && this.detectors_.has(setting)) {
             this.detectors_.get(setting).dispose();
             this.detectors_.delete(setting);

@@ -23,7 +23,12 @@ describe('CleoDmageDetector', (it, beforeEach) => {
     });
 
     it('is able to detect violations of weapons that inflict fixed damage', assert => {
+        settings.setValue('abuse/detector_cleo_dmage_leniency', /* enabled= */ false);
+        
+        // Force-flip the CLEO Dmage detector to make sure the leniency option takes effect.
+        settings.setValue('abuse/detector_cleo_dmage', /* enabled= */ false);
         settings.setValue('abuse/detector_cleo_dmage', /* enabled= */ true);
+        
 
         for (const [weaponId, fixedDamageAmount] of kFixedDamageAmounts) {
             const existingMessageCount = russell.messages.length;

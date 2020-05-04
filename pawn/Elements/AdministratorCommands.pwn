@@ -296,6 +296,30 @@ TimeHelp:
         return 1;
     }
 
+    if (!strcmp(setParameter, "very", true, 4)) {
+        if (Command->parameterCount(params) < 2) {
+            SendClientMessage(playerId, Color::Information, "Usage: /set very [on/off]");
+            return 1;
+        }
+
+        g_enforceVeryTypo = Command->booleanParameter(params, 1);
+
+        SendClientMessage(playerId, Color::Success, "The setting has been updated!");
+        return 1;
+    }
+
+    if (!strcmp(setParameter, "vary", true, 4)) {
+        if (Command->parameterCount(params) < 2) {
+            SendClientMessage(playerId, Color::Information, "Usage: /set vary [on/off]");
+            return 1;
+        }
+
+        g_enforceVaryTypo = Command->booleanParameter(params, 1);
+
+        SendClientMessage(playerId, Color::Success, "The setting has been updated!");
+        return 1;
+    }
+
     if (!strcmp(setParameter, "gravity", true, 7)) {
         new Float: gravity = Command->floatParameter(params, 1);
         if (gravity < -0.15 || gravity > 0.15) {

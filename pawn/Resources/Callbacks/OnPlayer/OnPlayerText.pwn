@@ -2,6 +2,18 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
+EnforceSameLengthTypo(text[], original[], replacement[]) {
+    new const length = strlen(original);
+    new const offset = strfind(text, original, true);
+
+    if (offset > -1) {
+        for (new i = offset, j = 0; i < offset + length; ++i, ++j) {
+            text[i] = text[i] >= 65 && text[i] <= 90 ? toupper(replacement[j])
+                                                     : replacement[j];
+        }
+    }
+}
+
 /**
  * Called when the player sends a chat message.
  *
@@ -21,17 +33,15 @@ public OnPlayerText(playerid, text[]) {
     CReaction__OnText(playerid, text);
 
     // Enforce a typo in "George" (as "Geroge") when this feature has been enabled.
-    if (g_enforceGeorgeTypo) {
-        new const offset = strfind(text, "George", true);
-        new const target[] = "geroge";
+    if (g_enforceGeorgeTypo)
+        EnforceSameLengthTypo(text, "george", "geroge");
 
-        if (offset > -1) {
-            for (new i = offset, j = 0; i < offset + 6 /* len(George) */; ++i, ++j) {
-                text[i] = text[i] >= 65 && text[i] <= 90 ? toupper(target[j])
-                                                         : target[j];
-            }
-        }
-    }
+    // Enforce a typo in "vary" (as "v*ry") when this feature has been enabled.
+    // Enforce a typo in "very" (as "vary") when this feature has been enabled.
+    if (g_enforceVaryTypo)
+        EnforceSameLengthTypo(text, "vary", "v*ry");
+    else if (g_enforceVeryTypo)
+        EnforceSameLengthTypo(text, "very", "vary");
 
     // A muted player can't chat unless it's the admins he wants to chat with.
     if (MuteManager->isMuted(playerid) && text[0] != '@') {

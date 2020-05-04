@@ -86,7 +86,10 @@ new g_RivershellState;
 new g_RivershellPlayer[MAX_PLAYERS];
 new isPlayerBrief[MAX_PLAYERS];
 new briefStatus;
+
 new bool: g_enforceGeorgeTypo;
+new bool: g_enforceVaryTypo;
+new bool: g_enforceVeryTypo;
 
 enum ePlayerPosition {
     Float:fSavedPosX,

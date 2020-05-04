@@ -10,6 +10,9 @@ const kMaximumPlayerPing = 450;
 // The maximum packet loss percentage, until we give up on the player. [0-100]
 const kMaximumPlayerPacketLossPercentage = 3;
 
+const kSampleInterval = 10;
+let counter = 0;
+
 // Detects the Pro-Aim CLEO hack.
 //
 // (1) The hack finds the most likely actor the player is aiming at by starting at the crosshair's
@@ -39,7 +42,10 @@ export class CleoProAimDetector extends AbuseDetector {
     }
 
     onPlayerWeaponShot(player, weaponId, hitPosition, { hitPlayer, hitVehicle } = {}) {
-        if (player.vehicle !== null || !hitPlayer || !hitPlayer.vehicle !== null)
+        if ((counter++) % kSampleInterval !== 0)
+            return;  // don't sample too often
+
+        if (!!player.vehicle || !hitPlayer || !!hitPlayer.vehicle)
             return;  // in a vehicle, or a shot on a player in a vehicle
 
         if (weaponId === /* minigun= */ 38)
@@ -56,33 +62,21 @@ export class CleoProAimDetector extends AbuseDetector {
         if (player.isSurfingVehicle())
             return;  // bullet sync is different when surfing on a vehicle
         
-        // TODO: Figure out how to identify the teleportations.
-
-        const cameraFrontVector = player.cameraFrontVector;
-        const cameraPosition = player.cameraPosition;
-
-        cameraPosition.x += cameraFrontVector.x * 4;
-        cameraPosition.y += cameraFrontVector.y * 4;
-        cameraPosition.z += cameraFrontVector.z * 4;
-
+        const velocityMagnitude = player.velocity.magnitude;
         const { source, target } = player.getLastShotVectors();
-
-        console.log('[Distance from target] ' + hitPlayer.position.distanceTo(target));
-
-        const cameraDistance = target.distanceTo(cameraPosition);
-        if (cameraDistance >= 1.2)
-            return;  // the difference in hit position from the camera vector is too big
 
         const victimPosition = hitPlayer.position;
 
-        const playerDistance = victimPosition.distanceTo(player.position);
-        if (playerDistance <= 4)
-            return;  // the players are too close together for detection to be accurate
+        const playerDistance = source.distanceTo(victimPosition);
+        const cameraTargetDifference = target.distanceTo(victimPosition);
 
-        const victimPositionOffset = victimPosition.distanceTo(target);
-        if (victimPositionOffset <= 4)
-            return;
+        const cameraFrontVector = player.cameraFrontVector;
+        const cameraFrontVectorStr =
+            `${cameraFrontVector.x},${cameraFrontVector.y},${cameraFrontVector.z}`;
+        const cameraPosition = player.cameraPosition;
+        const cameraPositionStr = `${cameraPosition.x},${cameraPosition.y},${cameraPosition.z}`;
 
-        this.report(player, AbuseDetector.kFunnyFeeling);
+        console.log(`ProAim [${player.name}][${velocityMagnitude}][${cameraTargetDifference}]` +
+                    `[${playerDistance}][${cameraFrontVectorStr}][${cameraPositionStr}]`);
     }
 }

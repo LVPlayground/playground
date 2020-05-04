@@ -19,7 +19,7 @@ const kIgnoredWeaponIds = new Set([
 ]);
 
 // Run the statistical deviation checks every |kDetectionInterval| hits from a particular weapon. 
-const kDetectionInterval = 50;
+const kDetectionInterval = 20;
 
 // Object to maintain a collection of measurements with the ability to provide an average. Given the
 // Desert Eagle being the most powerful weapon in SA-MP with a maximum damage of 140, and the number
@@ -107,11 +107,11 @@ export class CleoDmageDetector extends AbuseDetector {
         // (3) Log player measurements every |kDetectionInterval| samples.
         if ((playerWeaponMeasurements.samples % kDetectionInterval) === 0) {
             const global = 
-                `${globalWeaponMeasurements.average}:${globalWeaponMeasurements.samples}, ` +
-                `min:${globalWeaponMeasurements.min}, max:${globalWeaponMeasurements.max}`;
+                `${globalWeaponMeasurements.average},${globalWeaponMeasurements.samples},` +
+                `${globalWeaponMeasurements.min},${globalWeaponMeasurements.max}`;
             const local =
-                `${playerWeaponMeasurements.average}:${playerWeaponMeasurements.samples}, ` +
-                `min:${playerWeaponMeasurements.min}, max:${playerWeaponMeasurements.max}`;
+                `${playerWeaponMeasurements.average},${playerWeaponMeasurements.samples},` +
+                `${playerWeaponMeasurements.min},${playerWeaponMeasurements.max}`;
 
             const diff = ((playerWeaponMeasurements.average - globalWeaponMeasurements.average)
                              / globalWeaponMeasurements.average) * 100;
@@ -119,8 +119,7 @@ export class CleoDmageDetector extends AbuseDetector {
             if (server.isTest())
                 return;  // don't output the result during tests
 
-            console.log(
-                `Dmage [${player.name}:${weaponId}][Server:${global}][Player:${local}]: ${diff}`);
+            console.log(`Dmage [${player.name}][${weaponId}][${global},${local}][${diff}]`);
         }
     }
 }

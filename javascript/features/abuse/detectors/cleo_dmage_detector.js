@@ -189,7 +189,7 @@ export class CleoDmageDetector extends AbuseDetector {
             if (server.isTest())
                 return;  // don't output the result during tests
 
-            console.log(`DmageV2 [${player.name}][${weaponId}][${global},${local}][${diff}]`);
+            console.log(`DmageV3 [${player.name}][${weaponId}][${global},${local}][${diff}]`);
         }
     }
 

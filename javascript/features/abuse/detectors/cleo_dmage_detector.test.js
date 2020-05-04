@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { kFixedDamageAmounts } from 'features/abuse/detectors/cleo_dmage_detector.js';
+
 describe('CleoDmageDetector', (it, beforeEach) => {
     let gunther = null;
     let russell = null;
@@ -18,6 +20,28 @@ describe('CleoDmageDetector', (it, beforeEach) => {
 
         // Load the |abuse| feature to make sure the detectors are running.
         server.featureManager.loadFeature('abuse');
+    });
+
+    it('is able to detect violations of weapons that inflict fixed damage', assert => {
+        settings.setValue('abuse/detector_cleo_dmage', /* enabled= */ true);
+
+        for (const [weaponId, fixedDamageAmount] of kFixedDamageAmounts) {
+            const existingMessageCount = russell.messages.length;
+
+            dispatchEvent('playertakedamage', {
+                playerid: gunther.id,
+                issuerid: russell.id,
+                amount: fixedDamageAmount + 1,  // anything beyond the sigma
+                weaponid: weaponId,
+                bodypart: 3,  // Torso
+            });
+
+            assert.equal(russell.messages.length, existingMessageCount + 1);
+            assert.includes(
+                russell.messages[existingMessageCount],
+                Message.format(Message.ABUSE_ADMIN_DETECTED, gunther.name, gunther.id,
+                               'CLEO Dmage'));
+        }
     });
 
     it('is able to detect use of Cleo Dmage detector over time', assert => {

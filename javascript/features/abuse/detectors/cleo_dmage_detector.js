@@ -15,8 +15,29 @@ const kIgnoredWeaponIds = new Set([
     36,  // Heat Seaking Rocket Launcher
     38,  // Minigun
     41,  // Spraycan
+    51,  // Explosion
     52,  // Fire Extinguisher
+    54,  // Splat
 ]);
+
+// Some weapons have a fixed damage amount that does not fluctuate depending on the shot and/or
+// bullet count. Deriviations from that are clear indications that something is up.
+export const kFixedDamageAmounts = new Map([
+    [ 14,  4.62 ],  // Flowers
+    [ 22,  8.25 ],  // Colt 45
+    [ 23, 13.20 ],  // Silenced Pistol
+    [ 24, 46.20 ],  // Desert Eagle
+    [ 28,  6.60 ],  // Uzi
+    [ 29,  8.25 ],  // MP5
+    [ 30,  9.90 ],  // AK-47
+    [ 31,  9.90 ],  // M4
+    [ 32,  6.60 ],  // Tec-9
+    [ 33, 24.75 ],  // Rifle
+    [ 34, 41.25 ],  // Sniper
+]);
+
+// Sigma when comparing floating point values in the |kFixedDamageAmounts| table.
+const kDamageComparisonSigma = 0.01;
 
 // Run the statistical deviation checks every |kDetectionInterval| hits from a particular weapon. 
 const kDetectionInterval = 20;
@@ -80,6 +101,14 @@ export class CleoDmageDetector extends AbuseDetector {
         if (kIgnoredWeaponIds.has(weaponId))
             return;  // the weapon has been ignored
         
+        const fixedDamageAmount = kFixedDamageAmounts.get(weaponId);
+        if (fixedDamageAmount) {
+            if (Math.abs(fixedDamageAmount - amount) > kDamageComparisonSigma)
+                this.report(player, AbuseDetector.kDetected);
+
+            return;
+        }
+
         // (1) Record the |amount| in the global damage measurements.
         let globalWeaponMeasurements = this.globalMeasurements_.get(weaponId);
         if (!globalWeaponMeasurements) {

@@ -43,13 +43,13 @@ describe('Vector', it => {
         const vector = new Vector(0, 0, 0);
 
         assertVectorCloseTo(assert, vector.translateTo2D(10, 0), new Vector(0, 10, 0));
-        assertVectorCloseTo(assert, vector.translateTo2D(10, 45), new Vector(7.07, 7.07, 0));
-        assertVectorCloseTo(assert, vector.translateTo2D(10, 90), new Vector(10, 0, 0));
-        assertVectorCloseTo(assert, vector.translateTo2D(10, 135), new Vector(7.07, -7.07, 0));
+        assertVectorCloseTo(assert, vector.translateTo2D(10, 45), new Vector(-7.07, 7.07, 0));
+        assertVectorCloseTo(assert, vector.translateTo2D(10, 90), new Vector(-10, 0, 0));
+        assertVectorCloseTo(assert, vector.translateTo2D(10, 135), new Vector(-7.07, -7.07, 0));
         assertVectorCloseTo(assert, vector.translateTo2D(10, 180), new Vector(0, -10, 0));
-        assertVectorCloseTo(assert, vector.translateTo2D(10, 225), new Vector(-7.07, -7.07, 0));
-        assertVectorCloseTo(assert, vector.translateTo2D(10, 270), new Vector(-10, 0, 0));
-        assertVectorCloseTo(assert, vector.translateTo2D(10, 315), new Vector(-7.07, 7.07, 0));
+        assertVectorCloseTo(assert, vector.translateTo2D(10, 225), new Vector(7.07, -7.07, 0));
+        assertVectorCloseTo(assert, vector.translateTo2D(10, 270), new Vector(10, 0, 0));
+        assertVectorCloseTo(assert, vector.translateTo2D(10, 315), new Vector(7.07, 7.07, 0));
         assertVectorCloseTo(assert, vector.translateTo2D(10, 360), new Vector(0, 10, 0));
     });
 

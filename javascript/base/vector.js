@@ -59,8 +59,8 @@ class Vector {
     translateTo2D(distance, angle) {
         const angleRadians = angle * (Math.PI / 180);
 
-        return new Vector(this.x_ + distance * Math.sin(angleRadians),
-                          this.y_ + distance * Math.cos(angleRadians),
+        return new Vector(this.x_ + distance * Math.sin(-angleRadians),
+                          this.y_ + distance * Math.cos(-angleRadians),
                           this.z_);
     }
 

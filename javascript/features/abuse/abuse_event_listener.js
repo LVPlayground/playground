@@ -35,13 +35,22 @@ export class AbuseEventListener {
         this.mitigator_.reportDamageIssued(player);
     }
 
-    // Called when the player the |event| describes has taken damage from somebody.
+    // Called when the player the |event| describes has taken damage from somebody. This event is
+    // sent by the player who took damage, and thus cannot be entirely trusted.
+    // https://wiki.sa-mp.com/wiki/OnPlayerTakeDamage
     onPlayerTakeDamage(event) {
         const player = server.playerManager.getById(event.playerid);
         if (!player)
             return;  // the |event| was not received for a valid player
 
         this.mitigator_.reportDamageTaken(player);
+
+        const issuer = server.playerManager.getById(event.issuerid);
+
+        for (const detector of this.detectors_.activeDetectors) {
+            detector.onPlayerTakeDamage(
+                player, issuer, event.weaponid, event.amount, event.bodypart);
+        }
     }
 
     // Called when the player the |event| describes has fired a shot.

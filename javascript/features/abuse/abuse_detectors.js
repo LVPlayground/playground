@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { CleoDmageDetector } from 'features/abuse/detectors/cleo_dmage_detector.js';
 import { CleoProAimDetector } from 'features/abuse/detectors/cleo_proaim_detector.js';
 import { IllegalVehicleEntryDetector } from 'features/abuse/detectors/illegal_vehicle_entry_detector.js';
 
@@ -18,6 +19,7 @@ export class AbuseDetectors {
         this.detectors_ = new Map();
         this.detectorInfo_ = new Map([
             // Setting                                Constructor
+            [ 'abuse/detector_cleo_dmage',            CleoDmageDetector ],
             [ 'abuse/detector_cleo_proaim',           CleoProAimDetector ],
             [ 'abuse/detector_illegal_vehicle_entry', IllegalVehicleEntryDetector ],
         ]);

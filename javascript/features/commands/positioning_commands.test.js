@@ -124,7 +124,7 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
 
         assert.isTrue(gunther.issueCommand('/forward 8'));
 
-        assert.equal(gunther.position.x, 16.353044850870866);
+        assert.equal(gunther.position.x, 5.646955149129134);
         assert.equal(gunther.position.y, 17.945158603819152);
     });
 });

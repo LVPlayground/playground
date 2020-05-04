@@ -57,7 +57,7 @@ describe('CleoDmageDetector', (it, beforeEach) => {
                 playerid: gunther.id,
                 issuerid: russell.id,
                 amount: Math.random() * 10,
-                weaponid: 31,  // WEAPON_M4
+                weaponid: 26,  // Sawn-off shotgun
                 bodypart: 3,  // Torso
             });
         }

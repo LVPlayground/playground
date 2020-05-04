@@ -8,9 +8,9 @@ export class AbuseDetector {
     // Certainty levels associated with a detection. |kFunnyFeeling| means that it's something that
     // in-game administrators should monitor. |kSuspected| means that we're reasonably certain, but
     // that verification is still in place. |kDetected| is a no-doubt detection.
-    static kFunnyFeeling = 0;
-    static kSuspected = 1;
-    static kDetected = 2;
+    static kFunnyFeeling = 'monitor';
+    static kSuspected = 'suspected';
+    static kDetected = 'detected';
 
     monitor_ = null;
     name_ = null;

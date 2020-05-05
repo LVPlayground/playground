@@ -18,17 +18,28 @@ export class FinancialNatives {
 
     // native GetPlayerMoneyJS(playerid);
     getPlayerMoney(playerid) {
-
+        const player = server.playerManager.getById(playerid);
+        return player ? this.regulator_.getPlayerCashAmount(player)
+                      : 0;
     }
 
     // native GivePlayerMoneyJS(playerid, amount);
     givePlayerMoney(playerid, amount) {
+        const player = server.playerManager.getById(playerid);
+        if (!player)
+            return 0;
+        
+        // TODO: Display the MoneyIndicator once ported from Pawn.
 
+        this.regulator_.setPlayerCashAmount(
+            player, this.regulator_.getPlayerCashAmount(player) + amount);
     }
 
     // native ResetPlayerMoneyJS(playerid);
     resetPlayerMoney(playerid) {
-        
+        const player = server.playerManager.getById(playerid);
+        if (player)
+            this.regulator_.setPlayerCashAmount(player, 0);
     }
 
     dispose() {

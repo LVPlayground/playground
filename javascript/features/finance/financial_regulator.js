@@ -21,10 +21,35 @@ export class FinancialRegulator {
 
     database_ = null;
 
+    // Map from |player| => |amount|, indicating the amount of cash they own.
+    cash_ = new WeakMap();
+
     constructor() {
         this.database_ = server.isTest() ? new MockFinancialDatabase()
                                          : new FinancialDatabase();
     }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: cash money
+    // ---------------------------------------------------------------------------------------------
+
+    // Returns the amount of cash money the |player| is currently carrying.
+    getPlayerCashAmount(player) {
+        return this.cash_.get(player) || 0;
+    }
+
+    // Updates the amount of cash money the |player| is currently carrying to the given |amount|.
+    setPlayerCashAmount(player, amount) {
+        if (amount < FinancialRegulator.kMinimumCashAmount)
+            amount = FinancialRegulator.kMinimumCashAmount;
+        
+        if (amount > FinancialRegulator.kMaximumCashAmount)
+            amount = FinancialRegulator.kMaximumCashAmount;
+        
+        this.cash_.set(player, amount);
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     dispose() {
         

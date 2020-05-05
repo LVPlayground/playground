@@ -18,12 +18,9 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
      * @param secondaryColor The secondary color which they want this vehicle to have.
      */
     public onVehicleRespray(playerId, primaryColor, secondaryColor) {
-        // Make sure the anti-moneycheat knows about this vehicle respray.
-        VehicleMoneyException->markVehicleResprayForPlayer(playerId);
-
         // Don't set color or give out money in the case of no colorchanges
-        new previousPrimaryColor = Vehicle(vehicleId)->primaryColor()
-           ,previousSecondaryColor = Vehicle(vehicleId)->secondaryColor();
+        new previousPrimaryColor = Vehicle(vehicleId)->primaryColor(),
+            previousSecondaryColor = Vehicle(vehicleId)->secondaryColor();
 
         if (previousPrimaryColor == primaryColor && previousSecondaryColor == secondaryColor)
             return false;
@@ -35,6 +32,7 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
         PropertyEvents->onVehicleModified();
 
         return 1;
+        #pragma unused playerId
     }
 
     /**
@@ -46,9 +44,6 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
      * @param paintjobId Id of the paintjob which the vehicle now has.
      */
     public onVehiclePaintjob(playerId, paintjobId) {
-        // Make sure that the anti-moneycheat knows about this paintjob.
-        VehicleMoneyException->markVehiclePaintjobForPlayer(playerId);
-
         // Update the vehicle's paintjob internally so we stay synchronized.
         Vehicle(vehicleId)->setPaintJob(paintjobId);
 
@@ -56,6 +51,7 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
         PropertyEvents->onVehicleModified();
 
         return 1;
+        #pragma unused playerId
     }
 
     /**
@@ -72,16 +68,13 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
         if (VehicleModel(GetVehicleModel(vehicleId))->isValidComponent(componentId) == false)
             return false;
 
-        // Make sure that the anti-moneycheat knows about this modification.
-        VehicleMoneyException->markVehicleModForPlayer(playerId);
-
         // If any player owns the vehicle modification property, give them money.
         PropertyEvents->onVehicleModified();
 
         CCrush__Modify(vehicleId);
 
         return true;
-        #pragma unused componentId
+        #pragma unused playerId, componentId
     }
 
     /**

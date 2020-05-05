@@ -182,42 +182,4 @@ class BetaCommands {
         return 1;
         #pragma unused params
     }
-
-    /**
-     * Visualize a certain layer of zones on the minimap by creating gang zones for it in a certain
-     * color. Only a few predefined layers are available right now.
-     *
-     * @param playerId Id of the player who wants to display zones on their map.
-     * @param params Additional parameters passed on to this method.
-     * @command /displayzones [cashpoints/casino/paynspray]
-     */
-    @command("displayzones")
-    public onDisplayZonesCommand(playerId, params[]) {
-        new layerName[32];
-        if (Command->parameterCount(params) == 0) {
-            SendClientMessage(playerId, Color::Information, "Usage: /displayzones [cashpoints/casino/paynspray]");
-            return 1;
-        }
-
-        Command->stringParameter(params, 0, layerName, sizeof(layerName));
-
-        new layerId = -1;
-        if (strcmp(layerName, "casino", true, 6) == 0)
-            layerId = CasinoArea::CasinoLayerId;
-        else if (strcmp(layerName, "paynspray", true, 9) == 0)
-            layerId = PayAndSprayShops::ZoneLayerId;
-
-        if (layerId == -1) {
-            SendClientMessage(playerId, Color::Information, "Usage: /displayzones [cashpoints/casino/paynspray]");
-            return 1;
-        }
-
-        // Visualize the zones for this player in a red color.
-        ZoneLayer(layerId)->visualizeForPlayer(playerId, 0xFF0000BB);
-
-        // And inform them of the layers being visualized now.
-        SendClientMessage(playerId, Color::Information, "The requested layer has been visualized on your mini-map.");
-
-        return 1;
-    }
 };

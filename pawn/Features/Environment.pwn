@@ -13,11 +13,4 @@
 #include "Features/Environment/Services/TrainDriver.pwn"
 #include "Features/Environment/Services/ServiceController.pwn"
 
-/**
- * We'll want to keep track of whether the player is on a certain area of the map, for example in
- * a casino or in a pay and spray. Various helper classes are available to do just that.
- */
-#include "Features/Environment/Area/CasinoArea.pwn"
-#include "Features/Environment/Area/PayAndSprayShops.pwn"
-
 #include "Features/Environment/Time/TimeController.pwn"

@@ -10,6 +10,9 @@ native IsValidVehicle(vehicleid);
 
 // Provided by the PlaygroundJS plugin.
 native IsPlayerMinimized(playerId);
+native GetPlayerMoneyJS(playerid);
+native GivePlayerMoneyJS(playerid, amount);
+native ResetPlayerMoneyJS(playerid);
 
 // The OnPlayerUpdate callback should never reach Pawn. If the following message is seen on the
 // console, it means that PlaygroundJS' interception of the callback is failing.
@@ -35,18 +38,9 @@ native bool: SpawnPlayerInHouse(playerId);
 // on-hand cash without being very intrusive to the rest of the gamemode. For similar reasons, the
 // ResetPlayerMoney native is also being overriden, because it can cause increases as well.
 
-// Private methods which should only be invoked by the Player money state tracker.
-GivePlayerMoneyPrivate(playerId, amount) { GivePlayerMoney(playerId, amount); }
-ResetPlayerMoneyPrivate(playerId) { ResetPlayerMoney(playerId); }
-GetPlayerMoneyPrivate(playerId) { return GetPlayerMoney(playerId); }
-
-// Hooked methods which will be invoked instead of the default native functions.
-GivePlayerMoneyHook(playerId, amount) { PlayerMoneyState(playerId)->increase(amount); }
-ResetPlayerMoneyHook(playerId) { PlayerMoneyState(playerId)->reset(); }
-
-#define GivePlayerMoney     GivePlayerMoneyHook
-#define ResetPlayerMoney    ResetPlayerMoneyHook
-#define GetPlayerMoney(%0)  PlayerMoneyState(%0)->current()
+#define GivePlayerMoney     GivePlayerMoneyJS
+#define ResetPlayerMoney    ResetPlayerMoneyJS
+#define GetPlayerMoney      GetPlayerMoneyJS
 
 // -------------------------------------------------------------------------------------------------
 // All actions of creating and removing vehicles should go through the VehicleManager class, because

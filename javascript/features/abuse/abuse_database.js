@@ -10,17 +10,21 @@ const STORE_EVIDENCE_QUERY = `
     INSERT INTO
         evidence
         (evidence_date, evidence_detector, evidence_certainty, evidence_data,
-         user_id, nickname, ip_address, gpci_hash)
+         user_id, nickname, position_x, position_y, position_z, interior_id, virtual_world_id,
+         ip_address, gpci_hash)
     VALUES
-        (NOW(), ?, ?, ?)`;
+        (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
 // Enables database communication for the abuse function, particularly to have the ability to
 // automatically submit evidence of a detection to the database.
 export class AbuseDatabase {
     // Stores the given evidence in the database.
     async storeEvidence({ player, detectorName, certainty, evidence }) {
+        const position = player.position;
+
         return server.database.query(
             STORE_EVIDENCE_QUERY, detectorName, certainty, JSON.stringify(evidence), player.userId,
-            player.nickname, ip2long(player.ip), murmur3hash(player.gpci));
+            player.nickname, position.x, position.y, position.z, player.interiorId,
+            player.virtualWorld, ip2long(player.ip), murmur3hash(player.gpci));
     }
 }

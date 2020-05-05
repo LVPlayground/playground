@@ -59,6 +59,14 @@ export const kFixedDamageAmounts = new Map([
     [ 41,  0.33 ],  // Spraycan
 ]);
 
+// Some weapons fire multiple bullets, one or multiple of which can hit. This gives them a damage
+// range rather than a fixed amount. We handle those separately.
+export const kMultiBulletDamageAmounts = new Map([
+    [ 25, { bullets: 15, damage: 3.30 } ],  // Shotgun
+    [ 26, { bullets: 15, damage: 3.30 } ],  // Sawn-off shutgun
+    [ 27, { bullets: 8,  damage: 4.95 } ],  // Spaz shutgun
+]);
+
 // Sigma when comparing floating point values in the |kFixedDamageAmounts| table.
 const kDamageComparisonSigma = 0.01;
 
@@ -109,16 +117,12 @@ class DamageMeasurements {
 export class CleoDmageDetector extends AbuseDetector {
     individualMeasurements_ = null;
     globalMeasurements_ = null;
-    leniency_ = null;
 
     constructor(...params) {
         super(...params, 'CLEO Dmage');
 
         this.individualMeasurements_ = new WeakMap();
         this.globalMeasurements_ = new Map();
-
-        if (this.getSettingValue('abuse/detector_cleo_dmage_leniency'))
-            this.leniency_ = new WeakSet();
     }
 
     onPlayerTakeDamage(player, issuer, weaponId, amount, bodyPart) {
@@ -135,13 +139,12 @@ export class CleoDmageDetector extends AbuseDetector {
             return;
         }
 
+        // Deal with weapons that are meant to do a fixed amount of damage. If the taken damage is
+        // different from the expected damage, we've got a problem. Otherwise bail out.
         const fixedDamageAmount = kFixedDamageAmounts.get(weaponId);
         if (fixedDamageAmount) {
-            // If the |amount| differs from |fixedDamageAmount|, then we can grant the player some
-            // leniency once, but will report it as confirmed abuse thereafter.
-            if (Math.abs(fixedDamageAmount - amount) > kDamageComparisonSigma &&
-                    !this.grantLeniencyOnDetection(player)) {
-                this.report(player, AbuseDetector.kDetected, {
+            if (Math.abs(fixedDamageAmount - amount) > kDamageComparisonSigma) {
+                this.report(player, AbuseDetector.kSuspected, {
                     weaponId,
                     expectedDamageAmount: fixedDamageAmount,
                     actualDamageAmount: amount,
@@ -151,29 +154,24 @@ export class CleoDmageDetector extends AbuseDetector {
             return;
         }
 
-        // (1) Record the |amount| in the global damage measurements.
-        let globalWeaponMeasurements = this.globalMeasurements_.get(weaponId);
-        if (!globalWeaponMeasurements) {
-            globalWeaponMeasurements = new DamageMeasurements();
-            this.globalMeasurements_.set(weaponId, globalWeaponMeasurements);
+        // Deal with weapons that have multiple bullets. This gives them a range of damage values.
+        // There are two potential problems here: an odd amount of bullets have hit, which will
+        // always be a local customization, or an invalid number of bullets have hit.
+        const multiBulletDamage = kMultiBulletDamageAmounts.get(weaponId);
+        if (multiBulletDamage) {
+            const hitBulletCount = Math.round((amount / multiBulletDamage.damage) * 100) / 100;
+            if (!Number.isInteger(hitBulletCount) || hitBulletCount > multiBulletDamage.bullets) {
+                this.report(player, AbuseDetector.kSuspected, { weaponId, amount });
+                return;
+            }
         }
 
-        globalWeaponMeasurements.record(amount);
+        // Record the shot in both server and personal measurements. We want to be able to get
+        // running metrics on these, and periodically check against them.
+        this.recordServerMeasurement(weaponId, amount);
+        this.recordIndividualMeasurement(player, weaponId, amount);
 
-        // (2) Record the |amount in the individual damage measurements.
-        let playerMeasurements = this.individualMeasurements_.get(player);
-        if (!playerMeasurements) {
-            playerMeasurements = new Map();
-            this.individualMeasurements_.set(player, playerMeasurements);
-        }
-
-        let playerWeaponMeasurements = playerMeasurements.get(weaponId);
-        if (!playerWeaponMeasurements) {
-            playerWeaponMeasurements = new DamageMeasurements();
-            playerMeasurements.set(weaponId, playerWeaponMeasurements);
-        }
-
-        playerWeaponMeasurements.record(amount);
+        return;  //
 
         // (3) Log player measurements every |kDetectionInterval| samples.
         if ((playerWeaponMeasurements.samples % kDetectionInterval) === 0) {
@@ -194,13 +192,32 @@ export class CleoDmageDetector extends AbuseDetector {
         }
     }
 
-    // Whether to grant leniency to the player. We allow for an invalid detection because weapon
-    // sync in SA-MP and GTA is not always equally reliable.
-    grantLeniencyOnDetection(player) {
-        if (!this.leniency_ || this.leniency_.has(player))
-            return false;
-        
-        this.leniency_.add(player);
-        return true;
+    // Records the hit by |weaponId| as having done |amount| damage in server-wide metrics.
+    recordServerMeasurement(weaponId, amount) {
+        let globalWeaponMeasurements = this.globalMeasurements_.get(weaponId);
+        if (!globalWeaponMeasurements) {
+            globalWeaponMeasurements = new DamageMeasurements();
+            this.globalMeasurements_.set(weaponId, globalWeaponMeasurements);
+        }
+
+        globalWeaponMeasurements.record(amount);
+    }
+
+    // Record the hit by |weaponId| as having done |amount| damage for the |player| specifically.
+    // These metrics are keyed by the |player| instance, thus per playing session.
+    recordIndividualMeasurement(player, weaponId, amount) {
+        let playerMeasurements = this.individualMeasurements_.get(player);
+        if (!playerMeasurements) {
+            playerMeasurements = new Map();
+            this.individualMeasurements_.set(player, playerMeasurements);
+        }
+
+        let playerWeaponMeasurements = playerMeasurements.get(weaponId);
+        if (!playerWeaponMeasurements) {
+            playerWeaponMeasurements = new DamageMeasurements();
+            playerMeasurements.set(weaponId, playerWeaponMeasurements);
+        }
+
+        playerWeaponMeasurements.record(amount);
     }
 }

@@ -2,7 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { kFixedDamageAmounts, kPistolWhipWeaponIds } from 'features/abuse/detectors/cleo_dmage_detector.js';
+import { kFixedDamageAmounts,
+         kMultiBulletDamageAmounts,
+         kPistolWhipWeaponIds } from 'features/abuse/detectors/cleo_dmage_detector.js';
 
 describe('CleoDmageDetector', (it, beforeEach) => {
     let gunther = null;
@@ -23,10 +25,6 @@ describe('CleoDmageDetector', (it, beforeEach) => {
     });
 
     it('is able to detect violations of weapons that inflict fixed damage', assert => {
-        settings.setValue('abuse/detector_cleo_dmage_leniency', /* enabled= */ false);
-        
-        // Force-flip the CLEO Dmage detector to make sure the leniency option takes effect.
-        settings.setValue('abuse/detector_cleo_dmage', /* enabled= */ false);
         settings.setValue('abuse/detector_cleo_dmage', /* enabled= */ true);
 
         for (const [weaponId, fixedDamageAmount] of kFixedDamageAmounts) {
@@ -59,8 +57,49 @@ describe('CleoDmageDetector', (it, beforeEach) => {
             assert.equal(russell.messages.length, existingMessageCount + 1);
             assert.includes(
                 russell.messages[existingMessageCount],
-                Message.format(Message.ABUSE_ADMIN_DETECTED, gunther.name, gunther.id,
+                Message.format(Message.ABUSE_ADMIN_SUSPECTED, gunther.name, gunther.id,
                                'CLEO Dmage'));
+        }
+    });
+
+    it('is understands weapons that fire multiple bullets, and their damage patterns', assert => {
+        settings.setValue('abuse/detector_cleo_dmage', /* enabled= */ true);
+
+        for (const [weaponId, damageInfo] of kMultiBulletDamageAmounts) {
+            // Verify that shots with up to |damage| bullets hitting pass the tests.
+            for (let bulletCount = 0; bulletCount < damageInfo.bullets; ++bulletCount) {
+                const existingMessageCount = russell.messages.length;
+
+                dispatchEvent('playertakedamage', {
+                    playerid: gunther.id,
+                    issuerid: russell.id,
+                    amount: bulletCount * damageInfo.damage,
+                    weaponid: weaponId,
+                    bodypart: 3,  // Torso
+                });
+
+                assert.equal(russell.messages.length, existingMessageCount);
+            }
+
+            // Verify that any value that's not a multiple of the bullet count, or exceeds the
+            // number of bullets fired by this weapon, does yield a warning.
+            for (const bulletMultiplier of [0.5, 1.5, damageInfo.bullets + 1]) {
+                const existingMessageCount = russell.messages.length;
+
+                dispatchEvent('playertakedamage', {
+                    playerid: gunther.id,
+                    issuerid: russell.id,
+                    amount: damageInfo.damage * bulletMultiplier,
+                    weaponid: weaponId,
+                    bodypart: 3,  // Torso
+                });
+
+                assert.equal(russell.messages.length, existingMessageCount + 1);
+                assert.includes(
+                    russell.messages[existingMessageCount],
+                    Message.format(Message.ABUSE_ADMIN_SUSPECTED, gunther.name, gunther.id,
+                                   'CLEO Dmage'));
+            }
         }
     });
 

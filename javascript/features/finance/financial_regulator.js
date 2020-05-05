@@ -33,6 +33,8 @@ export class FinancialRegulator {
         this.nativeCalls_ = new FinancialNativeCallsConstructor();
         this.database_ = server.isTest() ? new MockFinancialDatabase()
                                          : new FinancialDatabase();
+
+        server.playerManager.addObserver(this);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -77,6 +79,15 @@ export class FinancialRegulator {
         return true;
     }
 
+    // Called when the given |player| disconnects from Las Venturas Playground. We have to write
+    // the new bank account balance to the database if they used it this session.
+    onPlayerDisconnect(player) {
+        if (!this.balance_.has(player))
+            return;  // no mutations
+        
+        this.database_.setPlayerAccountBalance(player, this.balance_.get(player));
+    }
+
     // ---------------------------------------------------------------------------------------------
     // Section: cash money
     // ---------------------------------------------------------------------------------------------
@@ -105,6 +116,6 @@ export class FinancialRegulator {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        
+        server.playerManager.removeObserver(this);
     }
 }

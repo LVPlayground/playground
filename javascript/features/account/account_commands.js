@@ -280,7 +280,7 @@ export class AccountCommands {
                                          : undefined /* not allowed to delete aliases */);
         }
 
-        return dialog.displayForPlayer(player);
+        return dialog.displayForPlayer(currentPlayer);
     }
 
     // Flow that enables a player to create a new alias, which is to be added to their account.

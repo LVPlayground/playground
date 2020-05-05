@@ -70,9 +70,6 @@ export const kMultiBulletDamageAmounts = new Map([
 // Sigma when comparing floating point values in the |kFixedDamageAmounts| table.
 const kDamageComparisonSigma = 0.01;
 
-// Run the statistical deviation checks every |kDetectionInterval| hits from a particular weapon. 
-const kDetectionInterval = 5;
-
 // Object to maintain a collection of measurements with the ability to provide an average. Given the
 // Desert Eagle being the most powerful weapon in SA-MP with a maximum damage of 140, and the number
 // of bits in a JavaScript integer being 51, we can support upwards of 6.4e13 shots. Enough.
@@ -118,11 +115,15 @@ export class CleoDmageDetector extends AbuseDetector {
     individualMeasurements_ = null;
     globalMeasurements_ = null;
 
+    sampleRate_ = null;
+
     constructor(...params) {
         super(...params, 'CLEO Dmage');
 
         this.individualMeasurements_ = new WeakMap();
         this.globalMeasurements_ = new Map();
+
+        this.sampleRate_ = this.getSettingValue('abuse/detector_cleo_dmage_sample_rate');
     }
 
     onPlayerTakeDamage(player, issuer, weaponId, amount, bodyPart) {
@@ -168,32 +169,32 @@ export class CleoDmageDetector extends AbuseDetector {
 
         // Record the shot in both server and personal measurements. We want to be able to get
         // running metrics on these, and periodically check against them.
-        this.recordServerMeasurement(weaponId, amount);
-        this.recordIndividualMeasurement(player, weaponId, amount);
+        const globalWeaponMeasurements = this.recordGlobalMeasurement(weaponId, amount);
+        const playerWeaponMeasurements = this.recordIndividualMeasurement(player, weaponId, amount);
 
-        return;  //
+        // Sample a player's activity at a given sample rate, based on their own individual
+        // measurements. This frequency is configurable through `/lvp settings`.
+        if ((playerWeaponMeasurements % this.sampleRate_) !== 0)
+            return;
 
-        // (3) Log player measurements every |kDetectionInterval| samples.
-        if ((playerWeaponMeasurements.samples % kDetectionInterval) === 0) {
-            const global = 
-                `${globalWeaponMeasurements.average},${globalWeaponMeasurements.samples},` +
-                `${globalWeaponMeasurements.min},${globalWeaponMeasurements.max}`;
-            const local =
-                `${playerWeaponMeasurements.average},${playerWeaponMeasurements.samples},` +
-                `${playerWeaponMeasurements.min},${playerWeaponMeasurements.max}`;
+        const global = 
+            `${globalWeaponMeasurements.average},${globalWeaponMeasurements.samples},` +
+            `${globalWeaponMeasurements.min},${globalWeaponMeasurements.max}`;
+        const local =
+            `${playerWeaponMeasurements.average},${playerWeaponMeasurements.samples},` +
+            `${playerWeaponMeasurements.min},${playerWeaponMeasurements.max}`;
 
-            const diff = ((playerWeaponMeasurements.average - globalWeaponMeasurements.average)
-                             / globalWeaponMeasurements.average) * 100;
+        const diff = ((playerWeaponMeasurements.average - globalWeaponMeasurements.average)
+                            / globalWeaponMeasurements.average) * 100;
 
-            if (server.isTest())
-                return;  // don't output the result during tests
+        if (server.isTest())
+            return;  // don't output the result during tests
 
-            console.log(`DmageV4 [${player.name}][${weaponId}][${global},${local}][${diff}]`);
-        }
+        console.log(`DmageV5 [${player.name}][${weaponId}][${global},${local}][${diff}]`);
     }
 
     // Records the hit by |weaponId| as having done |amount| damage in server-wide metrics.
-    recordServerMeasurement(weaponId, amount) {
+    recordGlobalMeasurement(weaponId, amount) {
         let globalWeaponMeasurements = this.globalMeasurements_.get(weaponId);
         if (!globalWeaponMeasurements) {
             globalWeaponMeasurements = new DamageMeasurements();
@@ -201,6 +202,7 @@ export class CleoDmageDetector extends AbuseDetector {
         }
 
         globalWeaponMeasurements.record(amount);
+        return globalWeaponMeasurements;
     }
 
     // Record the hit by |weaponId| as having done |amount| damage for the |player| specifically.
@@ -219,5 +221,6 @@ export class CleoDmageDetector extends AbuseDetector {
         }
 
         playerWeaponMeasurements.record(amount);
+        return playerWeaponMeasurements;
     }
 }

@@ -26,6 +26,7 @@ import MockVehicle from 'entities/test/mock_vehicle.js';
 import Abuse from 'features/abuse/abuse.js';
 import Announce from 'features/announce/announce.js';
 import Communication from 'features/communication/communication.js';
+import Finance from 'features/finance/finance.js';
 import Gangs from 'features/gangs/gangs.js';
 import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
 import MockPlayground from 'features/playground/test/mock_playground.js';
@@ -60,6 +61,7 @@ class MockServer {
             abuse: Abuse,
             announce: Announce,  // TODO: Move functionality to |communication|. See #309.
             communication: Communication,
+            finance: Finance,
             gangs: Gangs,
             nuwani: MockNuwani,
             playground: MockPlayground,

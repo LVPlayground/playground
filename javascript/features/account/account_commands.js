@@ -265,7 +265,7 @@ export class AccountCommands {
         }
 
         if (!aliases || !aliases.aliases.length)
-            return dialog.displayForPlayer(player);
+            return dialog.displayForPlayer(currentPlayer);
         
         dialog.addItem('-----', '-----');
 

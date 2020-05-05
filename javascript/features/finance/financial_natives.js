@@ -2,6 +2,17 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+// Wrapper for any native Pawn function calls the disposition monitor has to make, to make sure that
+// these can be overridden by the JavaScript testing routines.
+export class FinancialNativeCalls {
+    getPlayerMoney(player) {
+        return pawnInvoke('GetPlayerMoney', 'i', player.id);
+    }
+    givePlayerMoney(player, amount) {
+        pawnInvoke('GivePlayerMoney', 'ii', player.id, amount);
+    }
+}
+
 // Responsible for providing players with the ability to interact with the financial regulator and
 // supporting services, by introducing a series of commands.
 export class FinancialNatives {

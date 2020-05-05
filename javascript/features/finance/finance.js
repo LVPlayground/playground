@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { FinancialCommands } from 'features/finance/financial_commands.js';
+import { FinancialDispositionMonitor } from 'features/finance/financial_disposition_monitor.js';
 import { FinancialNatives } from 'features/finance/financial_natives.js';
 import { FinancialRegulator } from 'features/finance/financial_regulator.js';
 import Feature from 'components/feature_manager/feature.js';
@@ -11,6 +12,7 @@ import Feature from 'components/feature_manager/feature.js';
 // track of money, allows players to interact with it, and gives them a bank account.
 export default class Finance extends Feature {
     commands_ = null;
+    dispositionMonitor_ = null;
     natives_ = null;
     regulator_ = null;
 
@@ -19,6 +21,13 @@ export default class Finance extends Feature {
 
         // Responsible for doing the actual bookkeeping associated with in-game money.
         this.regulator_ = new FinancialRegulator();
+
+        // The disposition monitor is responsible for keeping player state in sync with what the
+        // regulator has in their books. It's not relevant when running tests.
+        this.dispositionMonitor_ = new FinancialDispositionMonitor(this.regulator_);
+
+        if (!server.isTest())
+            this.dispositionMonitor_.monitor();
 
         // Pawn native functions to enable the other part of our gamemode to work with money.
         this.natives_ = new FinancialNatives(this.regulator_);
@@ -30,7 +39,7 @@ export default class Finance extends Feature {
     dispose() {
         this.commands_.dispose();
         this.natives_.dispose();
-
+        this.dispositionMonitor_.dispose();
         this.regulator_.dispose();
     }
 }

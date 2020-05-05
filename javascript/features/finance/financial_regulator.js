@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { FinancialDatabase } from 'features/finance/financial_database.js';
+import { FinancialNativeCalls } from 'features/finance/financial_natives.js';
 import { MockFinancialDatabase } from 'features/finance/test/mock_financial_database.js';
 
 // The financial regulator is responsible for managing money in Las Venturas Playground. It
@@ -19,12 +20,14 @@ export class FinancialRegulator {
     static kMaximumBankAmount = 2147483647;
     static kMinimumBankAmount = 0;
 
+    nativeCalls_ = null;
     database_ = null;
 
     // Map from |player| => |amount|, indicating the amount of cash they own.
     cash_ = new WeakMap();
 
-    constructor() {
+    constructor(FinancialNativeCallsConstructor = FinancialNativeCalls) {
+        this.nativeCalls_ = new FinancialNativeCallsConstructor();
         this.database_ = server.isTest() ? new MockFinancialDatabase()
                                          : new FinancialDatabase();
     }

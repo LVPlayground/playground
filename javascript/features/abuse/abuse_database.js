@@ -24,7 +24,7 @@ export class AbuseDatabase {
 
         return server.database.query(
             STORE_EVIDENCE_QUERY, detectorName, certainty, JSON.stringify(evidence), player.userId,
-            player.nickname, position.x, position.y, position.z, player.interiorId,
+            player.name, position.x, position.y, position.z, player.interiorId,
             player.virtualWorld, ip2long(player.ip), murmur3hash(player.gpci));
     }
 }

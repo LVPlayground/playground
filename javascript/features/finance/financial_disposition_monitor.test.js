@@ -5,7 +5,9 @@
 import { FinancialDispositionMonitor,
          kCasinoAreas,
          kCasinoMaximumDifference,
-         kDispositionMonitorSpinDelay } from 'features/finance/financial_disposition_monitor.js';
+         kDispositionMonitorSpinDelay,
+         kPayAndSprayMaximumDifference,
+         kPayAndSprayShops } from 'features/finance/financial_disposition_monitor.js';
 import { FinancialRegulator } from 'features/finance/financial_regulator.js';
 
 import { MockFinancialNativeCalls } from 'features/finance/test/mock_financial_native_calls.js';
@@ -49,7 +51,30 @@ describe('FinancialDispositionMonitor', (it, beforeEach, afterEach) => {
     });
 
     it('withdraws money spent in Pay and Spray shops by the player', async (assert) => {
+        const monitorPromise = dispositionMonitor.monitor();
+        
+        let currentMoney = MockFinancialNativeCalls.getPlayerMoneyForTesting(gunther);
 
+        for (const shop of kPayAndSprayShops) {
+            gunther.position = new Vector(shop[0] + 1, shop[2] + 1, 20.0);
+
+            MockFinancialNativeCalls.setPlayerMoneyForTesting(
+                gunther, currentMoney + kPayAndSprayMaximumDifference);
+
+            await server.clock.advance(kDispositionMonitorSpinDelay);
+
+            assert.equal(MockFinancialNativeCalls.getPlayerMoneyForTesting(gunther),
+                         currentMoney + kPayAndSprayMaximumDifference);
+
+            currentMoney += kPayAndSprayMaximumDifference;
+        }
+
+        dispositionMonitor.dispose();
+
+        await Promise.all([
+            server.clock.advance(kDispositionMonitorSpinDelay),
+            monitorPromise
+        ]);
     });
 
     it('withdraws money spent by tuning a vehicle', async (assert) => {
@@ -62,7 +87,7 @@ describe('FinancialDispositionMonitor', (it, beforeEach, afterEach) => {
         let currentMoney = MockFinancialNativeCalls.getPlayerMoneyForTesting(gunther);
 
         for (const casino of kCasinoAreas) {
-            gunther.position = new Vector(casino[0] + 1, casino[1] + 1, 20.0);
+            gunther.position = new Vector(casino[0] + 1, casino[2] + 1, 20.0);
 
             MockFinancialNativeCalls.setPlayerMoneyForTesting(
                 gunther, currentMoney + kCasinoMaximumDifference);

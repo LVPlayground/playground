@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import PlayerSetting from 'features/player_settings/player_setting.js';
+import PlayerSetting from 'entities/player_setting.js';
 
 // Tag to be used for regular player-visible announcements.
 const AnnounceTag = 'notice-announce';
@@ -66,7 +66,8 @@ class AnnounceManager {
     // Announces |message| to all in-game administrators. Optionally |args| may be passed if
     // |message| is an instance of Message, which is common infrastructure for user-visible text.
     announceToAdministrators(message, ...args) {
-        this.announceToAdministratorsWithFilter(message, PlayerSetting.ANNOUNCEMENT.UNCATEGORIZED, PlayerSetting.SUBCOMMAND.GENERAL, args);
+        this.announceToAdministratorsWithFilter(message, PlayerSetting.ANNOUNCEMENT.UNCATEGORIZED, 
+            PlayerSetting.SUBCOMMAND.GENERAL, args);
     }
 
     // Announces |message| to the administrators that have the announcements for |announceSubcategory| 
@@ -78,8 +79,10 @@ class AnnounceManager {
 
         const formattedMessage = Message.format(Message.ANNOUNCE_ADMINISTRATORS, message);
 
-        var generalIdentifier = `${PlayerSetting.CATEGORY.ANNOUNCEMENT}/${announceSubcategory}/${PlayerSetting.SUBCOMMAND.GENERAL}`;
-        var specificIdentifier = `${PlayerSetting.CATEGORY.ANNOUNCEMENT}/${announceSubcategory}/${subCommand}`;
+        const generalIdentifier = 
+            `${PlayerSetting.CATEGORY.ANNOUNCEMENT}/${announceSubcategory}/${PlayerSetting.SUBCOMMAND.GENERAL}`;
+        const specificIdentifier = 
+            `${PlayerSetting.CATEGORY.ANNOUNCEMENT}/${announceSubcategory}/${subCommand}`;
 
         server.playerManager.forEach(player => {
             if (!player.isAdministrator())
@@ -95,8 +98,8 @@ class AnnounceManager {
             player.sendMessage(formattedMessage);
         });
 
-        var item = this.settings_().getValue(generalIdentifier);
-        var subItem = this.settings_().getValue(specificIdentifier);
+        const item = this.settings_().getValue(generalIdentifier);
+        const subItem = this.settings_().getValue(specificIdentifier);
 
         if (item === false || subItem === false) {
             return;
@@ -109,8 +112,8 @@ class AnnounceManager {
     // administrators. It uses the ReportTag for the IRC-message.
     announceReportToAdministrators(player, reportedPlayer, reason) {
         const formattedMessage = Message.format(
-            Message.ANNOUNCE_REPORT, player.name, player.id, reportedPlayer.name, reportedPlayer.id,
-            reason);
+            Message.ANNOUNCE_REPORT, player.name, player.id, reportedPlayer.name, 
+            reportedPlayer.id, reason);
 
         server.playerManager.forEach(player => {
             if (!player.isAdministrator())

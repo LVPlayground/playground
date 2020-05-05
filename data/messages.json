@@ -19,7 +19,7 @@
   "ANNOUNCE_MINIGAME": "{CCD782}Sign up for the {838F31}%s{CCD782}! Type {838F31}%s{CCD782} to join.",
   "ANNOUNCE_NEWS_MINIGAME_JOINED": "~r~~h~%s~w~ has signed up for ~y~%s~w~ (~p~%s~w~)",
   "ANNOUNCE_REPORT": "{FFFF00}* Report by %s (Id:%d): Player: %s (Id:%d) - Reason: %s",
-  "ANNOUNCEMENT_TOGGLED":  "The {FFA500}%s{A9C4E4} announcement has been %s for you.",
+  "ANNOUNCEMENT_TOGGLED":  "@success The {FFA500}%s{A9C4E4} announcement has been %s for you.",
 
   "COMMAND_ERROR_INSUFFICIENT_RIGHTS": "@error Sorry, this command is only available to %s.",
   "COMMAND_ERROR_INSUFFICIENT_RIGHTS_BETA": "@error Sorry, you must have a registered account in order to use this command.",

@@ -2,11 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Setting from 'features/settings/setting.js';
+import Setting from 'entities/setting.js';
 
 // Encapsulates an individual player setting. 
 // Only the actual value can be changed during run-time.
-class PlayerSetting extends Setting{
+class PlayerSetting extends Setting {
     constructor(category, group, subCommand, name, type, value, description) {
         super(category, name, type, value, description);
         
@@ -20,10 +20,14 @@ class PlayerSetting extends Setting{
 
     // Gets an identifier for the setting that contains both its category and its name.
     get identifier() { return `${this.category_}/${this.group_}/${this.subCommand_}`; }
+
+    clone() {
+        return new PlayerSetting(this.category_, this.group_, this.subCommand_, this.name_, this.type_, this.value_, this.description_);
+    }
 }
 
-// Variable types of the settings that are known. Update the `/lvp settings` command display when
-// adding or removing types from here as well.
+// Variable types of the PlayerSettings
+// They have to equal the bas class.    
 PlayerSetting.TYPE_BOOLEAN = 0;
 PlayerSetting.TYPE_NUMBER = 1;
 PlayerSetting.TYPE_STRING = 2;
@@ -39,8 +43,5 @@ PlayerSetting.SUBCOMMAND = { };
 PlayerSetting.SUBCOMMAND.GENERAL = 'general';
 
 PlayerSetting.SUBCOMMAND.HOUSES_SELL = 'sell';
-
-//TODO (OttoRocket-LVP): Refactor (These are set twice!)
-PlayerSetting.TYPE_BOOLEAN = 0;
 
 export default PlayerSetting;

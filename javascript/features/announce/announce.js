@@ -44,17 +44,20 @@ class Announce extends Feature {
     }
 
     // Announces |message| to all in-game administrators that have uncategorized messages enabled. 
-    // This will automatically generate an IRC message with the "admin" tag if uncategorized announcements
-    // are enabled in the settings. The |args| will only be used if |message| is a Message object.
+    // This will automatically generate an IRC message with the "admin" tag if uncategorized 
+    // announcements are enabled in the settings. The |args| will only be used if |message| is a 
+    // Message object.
     announceToAdministrators(message, ...args) {
         this.manager_.announceToAdministrators(message, ...args);
     }
     
-    // Announces |message| to all in-game administrators who have the |announceSubcategory| and |subCommand|
-    // enabled. This will automatically generate an IRC message with the "admin" tag if uncategorized 
-    // announcements are enabled in the settings. The |args| will only be used if |message| is a Message object.
+    // Announces |message| to all in-game administrators who have the |announceSubcategory| and 
+    // |subCommand| enabled. This will automatically generate an IRC message with the "admin" tag 
+    // if uncategorized announcements are enabled in the settings. The |args| will only be used if 
+    // |message| is a Message object.
     announceToAdministratorsWithFilter(message, announceSubcategory, subCommand, ...args) {
-        this.manager_.announceToAdministratorsWithFilter(message, announceSubcategory, subCommand, ...args);
+        this.manager_.announceToAdministratorsWithFilter(message, announceSubcategory, subCommand, 
+            ...args);
     }
 
     // Announces that a |player| did a report of |reportedPlayer| because of |reason| to all in-game

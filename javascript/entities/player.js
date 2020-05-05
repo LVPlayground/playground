@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import PlayerSyncedData from 'entities/player_synced_data.js';
-import PlayerSettings from 'features/player_settings/player_settings.js';
+import PlayerSettings from 'entities/player_settings.js';
 
 import { toFloat } from 'base/float.js';
 

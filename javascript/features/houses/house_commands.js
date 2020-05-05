@@ -13,7 +13,7 @@ import MessageBox from 'components/dialogs/message_box.js';
 import ParkingLotCreator from 'features/houses/utils/parking_lot_creator.js';
 import ParkingLotRemover from 'features/houses/utils/parking_lot_remover.js';
 import PlayerMoneyBridge from 'features/houses/utils/player_money_bridge.js';
-import PlayerSetting from 'features/player_settings/player_setting.js';
+import PlayerSetting from 'entities/player_setting.js';
 
 // Maximum number of milliseconds during which the identity beam should be displayed.
 const IdentityBeamDisplayTimeMs = 60000;

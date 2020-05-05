@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import PlayerSetting from 'features/player_settings/player_setting.js';
+
 // Tag to be used for regular player-visible announcements.
 const AnnounceTag = 'notice-announce';
 
@@ -18,9 +20,11 @@ const ReportTag = 'notice-report';
 // and the messages will be dispatched to the appropriate audience.
 class AnnounceManager {
     nuwani_ = null;
+    settings_ = null;
 
-    constructor(nuwani) {
+    constructor(nuwani, settings) {
         this.nuwani_ = nuwani;
+        this.settings_ = settings;
     }
 
     // Announces that the |name| has started. Players can join by typing |command|.
@@ -62,17 +66,41 @@ class AnnounceManager {
     // Announces |message| to all in-game administrators. Optionally |args| may be passed if
     // |message| is an instance of Message, which is common infrastructure for user-visible text.
     announceToAdministrators(message, ...args) {
+        this.announceToAdministratorsWithFilter(message, PlayerSetting.ANNOUNCEMENT.UNCATEGORIZED, PlayerSetting.SUBCOMMAND.GENERAL, args);
+    }
+
+    // Announces |message| to the administrators that have the announcements for |announceSubcategory| 
+    // and |subCommand| enabled. Optionally |args| may be passed if |message| is an instance of Message, 
+    // which is common infrastructure for user-visible text.
+    announceToAdministratorsWithFilter(message, announceSubcategory, subCommand, args) {
         if (message instanceof Message)
             message = Message.format(message, ...args);
 
         const formattedMessage = Message.format(Message.ANNOUNCE_ADMINISTRATORS, message);
 
+        var generalIdentifier = `${PlayerSetting.CATEGORY.ANNOUNCEMENT}/${announceSubcategory}/${PlayerSetting.SUBCOMMAND.GENERAL}`;
+        var specificIdentifier = `${PlayerSetting.CATEGORY.ANNOUNCEMENT}/${announceSubcategory}/${subCommand}`;
+
         server.playerManager.forEach(player => {
             if (!player.isAdministrator())
                 return;
+                
+            var item = player.settings.getValue(generalIdentifier);
+            var subItem = player.settings.getValue(specificIdentifier);
+
+            if (item === false || subItem === false) {
+                return;
+            }
 
             player.sendMessage(formattedMessage);
         });
+
+        var item = this.settings_().getValue(generalIdentifier);
+        var subItem = this.settings_().getValue(specificIdentifier);
+
+        if (item === false || subItem === false) {
+            return;
+        }
 
         this.nuwani_().echo(AdminTag, message);
     }
@@ -95,7 +123,7 @@ class AnnounceManager {
                             reportedPlayer.id, reason);
     }
 
-    dispose() {}
+    dispose() { }
 }
 
 export default AnnounceManager;

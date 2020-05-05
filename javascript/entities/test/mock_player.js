@@ -4,6 +4,7 @@
 
 import MockPlayerSyncedData from 'entities/test/mock_player_synced_data.js';
 import MockVehicle from 'entities/test/mock_vehicle.js';
+import MockPlayerSettings from 'features/player_settings/test/mock_player_settings.js';
 
 // Mocked player. Has the same interface and abilities as a real Player object, except that it does
 // not rely on the SA-MP server to be available, nor communicates with Pawn.
@@ -72,6 +73,8 @@ class MockPlayer {
         this.currentVehicleSeat_ = 0;
 
         this.cashMoney_ = 0;
+
+        this.playerSettings_ = new MockPlayerSettings();
     }
 
     get id() { return this.id_; }
@@ -537,6 +540,8 @@ class MockPlayer {
 
     get cashMoney() { return this.cashMoney_; }
     giveCashMoney(amount) { this.cashMoney_ += amount;}
+
+    get settings() { return this.playerSettings_; }
 }
 
 export default MockPlayer;

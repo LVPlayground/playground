@@ -3,6 +3,8 @@
 // be found in the LICENSE file.
 
 import { FinancialDispositionMonitor,
+         kCasinoAreas,
+         kCasinoMaximumDifference,
          kDispositionMonitorSpinDelay } from 'features/finance/financial_disposition_monitor.js';
 import { FinancialRegulator } from 'features/finance/financial_regulator.js';
 
@@ -28,7 +30,6 @@ describe('FinancialDispositionMonitor', (it, beforeEach, afterEach) => {
     it('corrects differences, regardless of how big the difference is', async (assert) => {
         const monitorPromise = dispositionMonitor.monitor();
 
-        // (1) Have client mismatches of different values for each of the players.
         MockFinancialNativeCalls.setPlayerMoneyForTesting(gunther, -1500);
         MockFinancialNativeCalls.setPlayerMoneyForTesting(russell, 1500);
         MockFinancialNativeCalls.setPlayerMoneyForTesting(lucy, 1);
@@ -56,7 +57,30 @@ describe('FinancialDispositionMonitor', (it, beforeEach, afterEach) => {
     });
 
     it('withdraws or deposits money spent in a casino by the player', async (assert) => {
+        const monitorPromise = dispositionMonitor.monitor();
+        
+        let currentMoney = MockFinancialNativeCalls.getPlayerMoneyForTesting(gunther);
 
+        for (const casino of kCasinoAreas) {
+            gunther.position = new Vector(casino[0] + 1, casino[1] + 1, 20.0);
+
+            MockFinancialNativeCalls.setPlayerMoneyForTesting(
+                gunther, currentMoney + kCasinoMaximumDifference);
+
+            await server.clock.advance(kDispositionMonitorSpinDelay);
+
+            assert.equal(MockFinancialNativeCalls.getPlayerMoneyForTesting(gunther),
+                         currentMoney + kCasinoMaximumDifference);
+
+            currentMoney += kCasinoMaximumDifference;
+        }
+
+        dispositionMonitor.dispose();
+
+        await Promise.all([
+            server.clock.advance(kDispositionMonitorSpinDelay),
+            monitorPromise
+        ]);
     });
 
     it.fails();

@@ -6,7 +6,17 @@ import { FinancialNativeCalls } from 'features/finance/financial_natives.js';
 
 // How frequently should the disposition monitor verify that all monetary values known by each
 // player are in line with that the regulator wants them to be.
-export const kDispositionMonitorSpinDelay = 2500;
+export const kDispositionMonitorSpinDelay = 1500;
+
+// Set of the casino areas that exist in San Andreas. In-game coordinates.
+export const kCasinoAreas = new Set([
+    [ 1928.1771,  987.5739, 1970.5675, 1042.8369 ], // Four Dragons casino
+    [ 2171.3618, 1584.2649, 2279.4915, 1628.6199 ], // Caligula's
+    [ 1117.5068,  -11.2747, 1142.4843,   12.5986 ]  // Private Casino (VIP room)
+]);
+
+// Maximum amount of money that could change hands in casinos.
+export const kCasinoMaximumDifference = 10000;
 
 // The financial disposition monitor is responsible for keeping the in-game money of all players in
 // line with what the financial regulator thinks 
@@ -34,13 +44,34 @@ export class FinancialDispositionMonitor {
                 
                 // TODO: Allow small changes in Pay 'n Spray shops
                 // TODO: Allow small changes when tuning vehicles
-                // TODO: Allow small changes in casinos
+                
+                const absoluteDifference = Math.abs(expectedCash - actualCash);
+                if (this.isInCasino(player) && absoluteDifference <= kCasinoMaximumDifference) {
+                    this.regulator_.setPlayerCashAmount(player, actualCash);
+                    continue;
+                }
 
                 this.nativeCalls_.givePlayerMoney(player, expectedCash - actualCash);
             }
 
             await wait(kDispositionMonitorSpinDelay);
         }
+    }
+
+    // Returns whether the given |player| currently is in a casino.
+    isInCasino(player) {
+        const position = player.position;
+        for (const casino of kCasinoAreas) {
+            if (casino[0] > position.x || casino[2] < position.x)
+                continue;
+            
+            if (casino[1] > position.y || casino[3] < position.y)
+                continue;
+            
+            return true;
+        }
+
+        return false;
     }
 
     dispose() {

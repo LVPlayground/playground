@@ -42,7 +42,9 @@ export class FinancialRegulator {
     }
 
     // Updates the amount of cash money the |player| is currently carrying to the given |amount|.
-    setPlayerCashAmount(player, amount) {
+    // The |isAdjustment| flag should only be used by the FinancialDispositionMonitor when aligning
+    // our internal metrics with the player's.
+    setPlayerCashAmount(player, amount, isAdjustment = false) {
         if (amount < FinancialRegulator.kMinimumCashAmount)
             amount = FinancialRegulator.kMinimumCashAmount;
         

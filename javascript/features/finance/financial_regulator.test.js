@@ -58,6 +58,4 @@ describe('FinancialRegulator', (it, beforeEach, afterEach) => {
         assert.equal(regulator.database_.readCalls, 1);
         assert.equal(regulator.database_.writeCalls, 0);
     });
-
-    it.fails();
 });

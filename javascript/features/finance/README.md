@@ -15,3 +15,11 @@ won't even bother informing administrators about it.
 
 Small amounts of money exchanged in casinos, Pay 'n Spray shops and vehicle tuning shops will be
 accounted for by the [FinancialDispositionMonitor](financial_disposition_monitor.js).
+
+## Community contributions
+Each experienced player on Las Venturas Playground is asked to make community contributions. This
+actually is a form of tax, but let's be honest, it sounds nicer when it's for a good purpose.
+
+This money is taken every minute from player's accounts when they have a certain amount of money
+in their possession. The amount depends on whether they're registered, and whether they're a VIP
+on Las Venturas Playground.

@@ -47,6 +47,15 @@ export default [
     new Setting('decorations', 'objects_pirate_party', Setting.TYPE_BOOLEAN, false, 'Should the Pirate Ship Party decorations be enabled?'),
     new Setting('decorations', 'objects_vip_room', Setting.TYPE_BOOLEAN, true, 'Should the VIP room be stocked with objects?'),
 
+    /** Financial related settings */
+    new Setting('financial', 'community_contribution_cycle_sec', Setting.TYPE_NUMBER, 300, 'How often should contributions be collected (seconds)?'),
+    new Setting('financial', 'community_contribution_guest_base', Setting.TYPE_NUMBER, 300000, 'Starting at what wealth level should guests contribute?'),
+    new Setting('financial', 'community_contribution_guest_pct', Setting.TYPE_NUMBER, 5, 'What percentage of cash should guests contribute?'),
+    new Setting('financial', 'community_contribution_player_base', Setting.TYPE_NUMBER, 1000000, 'Starting at what wealth level should players contribute?'),
+    new Setting('financial', 'community_contribution_player_pct', Setting.TYPE_NUMBER, 4, 'What percentage of cash should registered players contribute?'),
+    new Setting('financial', 'community_contribution_vip_base', Setting.TYPE_NUMBER, 2500000, 'Starting at what wealth level should VIPs contribute?'),
+    new Setting('financial', 'community_contribution_vip_pct', Setting.TYPE_NUMBER, 3, 'What percentage of cash should VIPs contribute?'),
+
     /** Radio related settings */
     new Setting('radio', 'default_channel', Setting.TYPE_STRING, 'LVP Radio', 'Name of the default radio channel.'),
     new Setting('radio', 'enabled', Setting.TYPE_BOOLEAN, true, 'Should the radio feature be enabled?'),

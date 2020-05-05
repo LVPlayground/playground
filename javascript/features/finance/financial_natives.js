@@ -69,6 +69,7 @@ export class FinancialNatives {
     }
 
     dispose() {
+        provideNative('DepositToAccountJS', 'ii', () => 0);
         provideNative('GetPlayerMoneyJS', 'i', () => 0);
         provideNative('GivePlayerMoneyJS', 'ii', () => 0);
         provideNative('ResetPlayerMoneyJS', 'i', () => 0);

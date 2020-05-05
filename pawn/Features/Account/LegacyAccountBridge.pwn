@@ -41,9 +41,6 @@ class LegacyAccountBridge {
         iLoan[playerId] = DatabaseResult(resultId)->readInteger("money_debt");
         iLoanPercent[playerId] = 4; /* default to 4% */
 
-        // mutable: money_spawn
-        g_iSpawnMoney[playerId] = DatabaseResult(resultId)->readInteger("money_spawn");
-
         // mutable: message_level
         MessageLevelsManager->setPlayerMessageLevel(playerId, DatabaseResult(resultId)->readInteger("message_level"));
 
@@ -151,7 +148,6 @@ class LegacyAccountBridge {
                 "money_cash = %d, " ...
                 "money_debt = %d, " ...
                 "money_bounty = %d, " ...
-                "money_spawn = %d, " ...
 
                 "message_level = %d, " ...
                 "preferred_radio_channel = \"%s\", " ...
@@ -194,7 +190,6 @@ class LegacyAccountBridge {
                 GetPlayerMoney(playerId),
                 iLoan[playerId],
                 HitmanTracker(playerId)->playerBounty(),
-                g_iSpawnMoney[playerId],
 
                 MessageLevelsManager->getPlayerMessageLevel(playerId),
                 PlayerSyncedData(playerId)->preferredRadioChannel(),

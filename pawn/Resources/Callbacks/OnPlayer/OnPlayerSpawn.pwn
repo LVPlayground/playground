@@ -120,32 +120,11 @@ OriginalOnPlayerSpawn(playerId) {
         return true;
 #endif
 
-    new const defaultSpawnMoney = GetEconomyValue(SpawnMoney);
-
-/**
-
-    // Handle spawnmoney.
     if (!firstJoin[playerId] && GetPlayerMoney(playerId) > -1) {
-        if (!g_iSpawnMoney[playerId] || Player(playerId)->isLoggedIn() == false) {
-            GiveRegulatedMoney(playerId, SpawnMoney);
-        } else {
-            if (BankAccount(playerId)->balance() >= (g_iSpawnMoney[playerId] - defaultSpawnMoney)) {
-                GivePlayerMoney(playerId, g_iSpawnMoney[playerId]);
-                BankAccount(playerId)->setBalance(BankAccount(playerId)->balance() - (g_iSpawnMoney[playerId] - defaultSpawnMoney));
-            } else {
-                GiveRegulatedMoney(playerId, SpawnMoney);
-                g_iSpawnMoney[playerId] = defaultSpawnMoney;
-
-                new notice[128];
-                format(notice, sizeof(notice),
-                    "You don't have enough to pay your spawn money. It has been reset back to the default amount: $%s",
-                    formatPrice(defaultSpawnMoney));
-                SendClientMessage(playerId, Color::Error, notice);
-            }
-        }
-    } else
+        GiveRegulatedMoney(playerId, SpawnMoney);
+    } else {
         firstJoin[playerId] = 0;
-*/
+    }
 
     return 1;
 }

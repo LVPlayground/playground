@@ -98,8 +98,33 @@ describe('FinancialCommunityContribution', (it, beforeEach) => {
     });
 
     it('should have a variety of messages to share with players', async (assert) => {
+        const russell = server.playerManager.getById(/* Russell= */ 1);
+        const lucy = server.playerManager.getById(/* Lucy= */ 2);
+        
+        regulator.setPlayerCashAmount(gunther, 25000000);
+        regulator.setPlayerCashAmount(russell, 25000000);
+        regulator.setPlayerCashAmount(lucy, 25000000);
 
+        const collectionPromise = contribution.collect();
+        await server.clock.advance(kInitialCollectionDelayMs);
+
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(russell.messages.length, 2);
+        assert.equal(lucy.messages.length, 2);
+
+        const messages = new Set();
+        messages.add(gunther.messages[0]);
+        messages.add(russell.messages[0]);
+        messages.add(lucy.messages[0]);
+
+        assert.isAboveOrEqual(messages.size, 2);
+
+        contribution.dispose();
+
+        await Promise.all([
+            server.clock.advance(
+                settings.getValue('financial/community_contribution_cycle_sec') * 1000),
+            collectionPromise
+        ]);
     });
-
-    it.fails();
 });

@@ -10,6 +10,90 @@ export const kInitialCollectionDelayMs = 2 * 60 * 1000;  // two minutes
 const kMinimumCycleIntervalSec = 5;
 const kMaximumCycleIntervalSec = 1800;
 
+// List of organisation names to which a player can make community contributions.
+const kOrganisationNames = [
+    'Harry Plums Wholesale Fruit',
+    'Palomino Creek Diner',
+    'Sindacco Abattoir',
+    'Fud\'s Brazilian Waxing',
+    'Live Nude Girls Girls Girls',
+    'Nude & XXX Shop',
+    'The Pig Pen',
+    'The Pole Position Club',
+    'Tiki Theater',
+    'Juank Air',
+    'Pecker\'s Feed & Seed',
+    'Pet Grooming',
+    'Fifth Ave Antiques',
+    'Autobahn',
+    'Big Mike\'s',
+    'Dam Camper RV Park',
+    'Eightball\'s Autoyard',
+    'Michelle\'s Auto Repair',
+    'Wheel Arch Angels',
+    'Coutt and Schutz',
+    'Shody Used Autos',
+    'Larellas Bakery',
+    'Palomino Creek Bank',
+    'Attica Bar',
+    'La Cucaracha Bar & Seafood',
+    'Lil\' Probe Inn',
+    'The Welcome Pump',
+    'Nelli Nelle School of Beauty',
+    'Wu Zi Mu\'s Betting Shop',
+    'Come-A-Lot Casino',
+    'The Emerald Isle',
+    'Easter Bay Chemicals',
+    'Homies Sharp',
+    'Redwood Tobacco',
+    'Monsiuer Trousers',
+    'Son of a Beach Clothing',
+    'Gaydar Station',
+    'The Pleasure Domes Club',
+    'Gangsta Bail Bonds',
+    'San Andreas Federal Mint',
+    'Cluckin\' Bell',
+    'El Senior Taco',
+    'Muerto-Mex',
+    'The Smokin\' Beef Grill',
+    'Discount Furniture',
+    'Powertool Paradise',
+    'Family Medical Clinic',
+    'Biffin Bridge Hotel',
+    'U Get Inn Motel',
+    'The Bog Standard',
+    'Tee Pee Motel',
+    'Angel Pine Junkyard',
+    'True Grime Street Cleaners',
+    'SpandEx',
+    'Master Sounds 98.3',
+    'Radio Los Santos',
+    'West Coast Talk Radio',
+    'Chuff Security',
+    'Avispa Country Club',
+    'Bait Shop',
+    'The Bowled Spot',
+    'Blackfield Stadium',
+    'Los Santos Forum',
+    'Lolita\'s Market',
+    'Ideal Homies Store',
+    'Hemlock Tattoo',
+    'Movie Stars Homes Tour',
+    'Bikini Line Coach Company',
+    'Canny Bus Group',
+    'Brown Streak Railroad',
+    'Abstract Grooves',
+    'Gelatto Splatto',
+    'Iglesia Pentecostes',
+    'Piece of Peace',
+    'The Brown Embassy',
+    'Ammu-Nation',
+    'Erotic Wedding Chapel',
+    'Eternal Flame Wedding Chapel',
+    'Las Venturas Wedding Chapel',
+    'Welding & Weddings',
+];
+
 // Implements people's involuntary community contributions.
 export class FinancialCommunityContribution {
     regulator_ = null;
@@ -74,9 +158,10 @@ export class FinancialCommunityContribution {
         if (contribution <= 0)
             return;
 
-        
+        const reason = kOrganisationNames[Math.floor(Math.random() * kOrganisationNames.length)];
 
-        // TODO: Send the |player| a message.
+        player.sendMessage(Message.FINANCE_CONTRIBUTION_PAID, contribution, reason);
+        player.sendMessage(Message.FINANCE_CONTRIBUTION_WHY);
 
         this.regulator_.setPlayerCashAmount(player, playerWealth - contribution);
     }

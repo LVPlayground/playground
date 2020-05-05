@@ -261,7 +261,7 @@ export class AccountCommands {
                 'Create a new alias', '-',
                 AccountCommands.prototype.createAlias.bind(this, player, aliases));
         } else {
-            dialog.addItem('{BEC7CC}Unable to create aliases for other players.');
+            dialog.addItem('{BEC7CC}Unable to create aliases for other players.', '-');
         }
 
         if (!aliases || !aliases.aliases.length)

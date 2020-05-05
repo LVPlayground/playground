@@ -5,11 +5,35 @@
 // Responsible for providing players with the ability to interact with the financial regulator and
 // supporting services, by introducing a series of commands.
 export class FinancialNatives {
-    constructor() {
+    constructor(regulator) {
+        this.regulator_ = regulator;
+
+        provideNative(
+            'GetPlayerMoneyJS', 'i', FinancialNatives.prototype.getPlayerMoney.bind(this));
+        provideNative(
+            'GivePlayerMoneyJS', 'ii', FinancialNatives.prototype.givePlayerMoney.bind(this));
+        provideNative(
+            'ResetPlayerMoneyJS', 'i', FinancialNatives.prototype.resetPlayerMoney.bind(this));
+    }
+
+    // native GetPlayerMoneyJS(playerid);
+    getPlayerMoney(playerid) {
 
     }
 
-    dispose() {
+    // native GivePlayerMoneyJS(playerid, amount);
+    givePlayerMoney(playerid, amount) {
+
+    }
+
+    // native ResetPlayerMoneyJS(playerid);
+    resetPlayerMoney(playerid) {
         
+    }
+
+    dispose() {
+        provideNative('GetPlayerMoneyJS', 'i', () => 0);
+        provideNative('GivePlayerMoneyJS', 'ii', () => 0);
+        provideNative('ResetPlayerMoneyJS', 'i', () => 0);
     }
 }

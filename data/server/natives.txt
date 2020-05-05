@@ -23,6 +23,13 @@ IsCommunicationMuted
 # native bool: SpawnPlayerInHouse(playerId);
 SpawnPlayerInHouse
 
+# native GetPlayerMoneyJS(playerid);
+# native GivePlayerMoneyJS(playerid, amount);
+# native ResetPlayerMoneyJS(playerid);
+GetPlayerMoneyJS
+GivePlayerMoneyJS
+ResetPlayerMoneyJS
+
 # Required for testing.
 TestFunction
 MurmurIIIHashGenerateHash

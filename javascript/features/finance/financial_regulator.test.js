@@ -6,5 +6,4 @@ import { FinancialRegulator } from 'features/finance/financial_regulator.js';
 
 describe('FinancialRegulator', it => {
 
-    it.fails();
 });

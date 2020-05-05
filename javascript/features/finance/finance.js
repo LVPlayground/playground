@@ -21,7 +21,7 @@ export default class Finance extends Feature {
         this.regulator_ = new FinancialRegulator();
 
         // Pawn native functions to enable the other part of our gamemode to work with money.
-        this.natives_ = new FinancialNatives();
+        this.natives_ = new FinancialNatives(this.regulator_);
 
         // Commands that enable players to interact with their in-game money.
         this.commands_ = new FinancialCommands(this.regulator_);

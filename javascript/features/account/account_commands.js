@@ -87,8 +87,8 @@ export class AccountCommands {
         // names on top of their username, which they are able to control themselves.
         if (features.aliases) {
             dialog.addItem(
-                'Manage your aliases',
-                AccountCommands.prototype.manageAliases.bind(this, currentPlayer));
+                'Manage nickname aliases',
+                AccountCommands.prototype.manageAliases.bind(this, currentPlayer, targetPlayer));
         }
 
         // Enables the |player| to view their record, with the exception of notes as they are only
@@ -251,13 +251,18 @@ export class AccountCommands {
 
     // Enables the |player|, who is a VIP of Las Venturas Playground, manage the aliases with which
     // they can play on the server under their own account.
-    async manageAliases(player) {
+    async manageAliases(currentPlayer, targetPlayer) {
+        const player = targetPlayer || currentPlayer;
         const aliases = await this.database_.getAliases(player.name);
         
         const dialog = new Menu('Alias management', ['Alias', 'Last active']);
-        dialog.addItem(
-            'Create a new alias', '-',
-            AccountCommands.prototype.createAlias.bind(this, player, aliases));
+        if (player === currentPlayer) {
+            dialog.addItem(
+                'Create a new alias', '-',
+                AccountCommands.prototype.createAlias.bind(this, player, aliases));
+        } else {
+            dialog.addItem('{BEC7CC}Unable to create aliases for other players.');
+        }
 
         if (!aliases || !aliases.aliases.length)
             return dialog.displayForPlayer(player);
@@ -270,7 +275,9 @@ export class AccountCommands {
 
             dialog.addItem(
                 nickname, lastActive,
-                AccountCommands.prototype.deleteAlias.bind(this, player, alias));
+                player === currentPlayer ? AccountCommands.prototype.deleteAlias.bind(
+                                               this, player, alias)
+                                         : undefined /* not allowed to delete aliases */);
         }
 
         return dialog.displayForPlayer(player);

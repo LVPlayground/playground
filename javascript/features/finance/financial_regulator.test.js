@@ -43,5 +43,21 @@ describe('FinancialRegulator', (it, beforeEach, afterEach) => {
                      FinancialRegulator.kMinimumCashAmount);
     });
 
+    it('should be able to keep track of values in bank accounts', async (assert) => {
+        assert.equal(await regulator.getAccountBalance(gunther), 0);
+        assert.equal(regulator.database_.readCalls, 1);
+        assert.equal(regulator.database_.writeCalls, 0);
+
+        assert.isTrue(await regulator.depositToAccount(gunther, 1500));
+        assert.equal(await regulator.getAccountBalance(gunther), 1500);
+        assert.equal(regulator.database_.readCalls, 1);
+        assert.equal(regulator.database_.writeCalls, 0);
+
+        assert.isTrue(await regulator.withdrawFromAccount(gunther, 800));
+        assert.equal(await regulator.getAccountBalance(gunther), 700);
+        assert.equal(regulator.database_.readCalls, 1);
+        assert.equal(regulator.database_.writeCalls, 0);
+    });
+
     it.fails();
 });

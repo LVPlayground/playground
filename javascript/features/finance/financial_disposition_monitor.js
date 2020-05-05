@@ -37,8 +37,14 @@ export const kPayAndSprayShops = new Set([
     [   603.2857,   627.2857,  -136.2390,  -112.2390 ]   // Wheel Arch Angel
 ]);
 
-// Maximuma mount of money that the player could pay in a Pay 'n Spray shop.
+// Maximum amount of money that the player could pay in a Pay 'n Spray shop.
 export const kPayAndSprayMaximumDifference = 300;
+
+// After how many seconds do we start ignoring vehicle mod shops signals again.
+const kModShopSignalExpirationMs = 2500;
+
+// Maximum amount of money players can spent in the mod shops.
+export const kModShopMaximumDifference = 10000;
 
 // The financial disposition monitor is responsible for keeping the in-game money of all players in
 // line with what the financial regulator thinks 
@@ -46,10 +52,16 @@ export class FinancialDispositionMonitor {
     disposed_ = null;
     regulator_ = null;
 
+    lastVehicleModificationTime_ = null;
+
     constructor(regulator, NativeCallsConstructor = FinancialNativeCalls) {
         this.disposed_ = false;
         this.regulator_ = regulator;
         this.nativeCalls_ = new NativeCallsConstructor();
+
+        this.lastVehicleModificationTime_ = new WeakMap();
+
+        server.vehicleManager.addObserver(this);
     }
 
     // Spins until the disposition monitor gets disposed of. At the configured interval, will check
@@ -57,6 +69,8 @@ export class FinancialDispositionMonitor {
     async monitor() {
         await wait(kDispositionMonitorSpinDelay);
         while (!this.disposed_) {
+            const currentTime = server.clock.monotonicallyIncreasingTime();
+
             for (const player of server.playerManager) {
                 const expectedCash = this.regulator_.getPlayerCashAmount(player);
                 const actualCash = this.nativeCalls_.getPlayerMoney(player);
@@ -64,17 +78,27 @@ export class FinancialDispositionMonitor {
                 if (expectedCash === actualCash)
                     continue;
 
-                // TODO: Allow small changes when tuning vehicles
+                const difference = actualCash - expectedCash;
+                const absoluteDifference = Math.abs(difference);
+
+                const lastVehicleModificationTime = this.lastVehicleModificationTime_.get(player);
+                const lastVehicleModificationValid =
+                    lastVehicleModificationTime >= (currentTime - kModShopSignalExpirationMs);
+
+                if (lastVehicleModificationValid &&
+                        difference >= -kModShopMaximumDifference && difference < 0) {
+                    this.regulator_.setPlayerCashAmount(player, actualCash, true);
+                    continue;
+                }
                 
-                const absoluteDifference = Math.abs(expectedCash - actualCash);
                 if (this.isInPayAndSprayShop(player) &&
-                        absoluteDifference <= kPayAndSprayMaximumDifference) {
-                    this.regulator_.setPlayerCashAmount(player, actualCash);
+                        difference >= -kPayAndSprayMaximumDifference && difference < 0) {
+                    this.regulator_.setPlayerCashAmount(player, actualCash, true);
                     continue;
                 }
 
                 if (this.isInCasino(player) && absoluteDifference <= kCasinoMaximumDifference) {
-                    this.regulator_.setPlayerCashAmount(player, actualCash);
+                    this.regulator_.setPlayerCashAmount(player, actualCash, true);
                     continue;
                 }
 
@@ -111,7 +135,19 @@ export class FinancialDispositionMonitor {
         return false;
     }
 
+    onVehicleMod(player) {
+        this.lastVehicleModificationTime_.set(player, server.clock.monotonicallyIncreasingTime());
+    }
+    onVehiclePaintjob(player) {
+        this.lastVehicleModificationTime_.set(player, server.clock.monotonicallyIncreasingTime());
+    }
+    onVehicleRespray(player) {
+        this.lastVehicleModificationTime_.set(player, server.clock.monotonicallyIncreasingTime());
+    }
+
     dispose() {
+        server.vehicleManager.removeObserver(this);
+
         this.disposed_ = true;
     }
 }

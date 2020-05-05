@@ -59,14 +59,14 @@ describe('FinancialDispositionMonitor', (it, beforeEach, afterEach) => {
             gunther.position = new Vector(shop[0] + 1, shop[2] + 1, 20.0);
 
             MockFinancialNativeCalls.setPlayerMoneyForTesting(
-                gunther, currentMoney + kPayAndSprayMaximumDifference);
+                gunther, currentMoney - kPayAndSprayMaximumDifference);
 
             await server.clock.advance(kDispositionMonitorSpinDelay);
 
             assert.equal(MockFinancialNativeCalls.getPlayerMoneyForTesting(gunther),
-                         currentMoney + kPayAndSprayMaximumDifference);
+                         currentMoney - kPayAndSprayMaximumDifference);
 
-            currentMoney += kPayAndSprayMaximumDifference;
+            currentMoney -= kPayAndSprayMaximumDifference;
         }
 
         dispositionMonitor.dispose();
@@ -78,7 +78,46 @@ describe('FinancialDispositionMonitor', (it, beforeEach, afterEach) => {
     });
 
     it('withdraws money spent by tuning a vehicle', async (assert) => {
+        const monitorPromise = dispositionMonitor.monitor();
 
+        const vehicle = server.vehicleManager.createVehicle({
+            modelId: 411,
+            position: new Vector(100, 200, 300),
+        });
+
+        // (1) Expenditure by purchasing a component.
+        {
+            MockFinancialNativeCalls.setPlayerMoneyForTesting(gunther, -5000);
+            dispatchEvent('vehiclemod', {
+                playerid: gunther.id,
+                vehicleid: vehicle.id,
+                componentid: 1000  // spoiler
+            });
+
+            await server.clock.advance(kDispositionMonitorSpinDelay);
+            assert.equal(MockFinancialNativeCalls.getPlayerMoneyForTesting(gunther), -5000);
+        }
+
+        // (2) Expenditure by purchasing a new paintjob.
+        {
+            MockFinancialNativeCalls.setPlayerMoneyForTesting(gunther, -5000);
+            await server.clock.advance(kDispositionMonitorSpinDelay);
+            assert.equal(MockFinancialNativeCalls.getPlayerMoneyForTesting(gunther), -5000);
+        }
+    
+        // (3) Expenditure by getting a vehicle respray.
+        {
+            MockFinancialNativeCalls.setPlayerMoneyForTesting(gunther, -5000);
+            await server.clock.advance(kDispositionMonitorSpinDelay);
+            assert.equal(MockFinancialNativeCalls.getPlayerMoneyForTesting(gunther), -5000);
+        }
+
+        dispositionMonitor.dispose();
+
+        await Promise.all([
+            server.clock.advance(kDispositionMonitorSpinDelay),
+            monitorPromise
+        ]);
     });
 
     it('withdraws or deposits money spent in a casino by the player', async (assert) => {
@@ -107,6 +146,4 @@ describe('FinancialDispositionMonitor', (it, beforeEach, afterEach) => {
             monitorPromise
         ]);
     });
-
-    it.fails();
 });

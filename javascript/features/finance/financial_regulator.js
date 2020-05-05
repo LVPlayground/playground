@@ -51,6 +51,9 @@ export class FinancialRegulator {
         if (amount > FinancialRegulator.kMaximumCashAmount)
             amount = FinancialRegulator.kMaximumCashAmount;
         
+        if (!isAdjustment)
+            this.nativeCalls_.givePlayerMoney(player, amount - this.getPlayerCashAmount(player));
+
         this.cash_.set(player, amount);
     }
 

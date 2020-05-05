@@ -4,8 +4,8 @@
 
 import Setting from 'features/settings/setting.js';
 
-// Encapsulates an individual setting. Must be constructed with its category, name, type and default
-// value. Only the actual value can be changed during run-time.
+// Encapsulates an individual player setting. 
+// Only the actual value can be changed during run-time.
 class PlayerSetting extends Setting{
     constructor(category, group, subCommand, name, type, value, description) {
         super(category, name, type, value, description);

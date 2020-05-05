@@ -86,7 +86,7 @@ class Statistics {
         format(dialogCaption, sizeof(dialogCaption), "Statistics of %s (Id:%d)",
             Player(playerId)->nicknameString(), playerId);
 
-        new playerLevel[22], sessionTime[27], totalOnlineTime[27], balance[24];
+        new playerLevel[22], sessionTime[27], totalOnlineTime[27];
 
         // Player level.
         format(playerLevel, sizeof(playerLevel), "Player");
@@ -142,9 +142,6 @@ class Statistics {
                 achievementCount++;
         }
 
-        // Bank balance.
-        FinancialUtilities->formatPrice(BankAccount(playerId)->balance(), balance, sizeof(balance));
-
         // Time to format our dialog message.
         format(dialogMessage, sizeof(dialogMessage),
             "{B4CCE8}Level: {FF8E02}%s\r\n{B4CCE8}Online time: {FF8E02}%s\r\n{B4CCE8}Total online time: {FF8E02}%s\r\n{B4CCE8}Kills: {FF8E02}%d\r\n{B4CCE8}Deaths: {FF8E02}%d\r\n{B4CCE8}K/D ratio: {FF8E02}%.2f\r\n",
@@ -162,8 +159,8 @@ class Statistics {
             n_SprayTagCount, WonMinigame[playerId], playerVehExp[playerId], PlayerInfo[playerId][reactionTestWins]);
 
         format(dialogMessage, sizeof(dialogMessage),
-            "%s{B4CCE8}Carbombs detonated: {FF8E02}%d\r\n{B4CCE8}Bank balance: {FF8E02}%s",
-            dialogMessage, MyCarBombs[playerId], balance);
+            "%s{B4CCE8}Carbombs detonated: {FF8E02}%d",
+            dialogMessage, MyCarBombs[playerId]);
 
         ShowPlayerDialog(viewerId, Statistics::DialogId, DIALOG_STYLE_MSGBOX, dialogCaption, dialogMessage, "Got it!", "");
 

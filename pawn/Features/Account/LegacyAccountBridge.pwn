@@ -129,7 +129,6 @@ class LegacyAccountBridge {
 
         // TODO: Remove the following fields.
         // * plus_points
-        // * money_bank_limit
         // * pro_account
         // * platinum_account
         // * platinum_earnings
@@ -149,7 +148,6 @@ class LegacyAccountBridge {
                 "kill_count = %d, " ...
                 "death_count = %d, " ...
 
-                "money_bank = %d, " ...
                 "money_cash = %d, " ...
                 "money_debt = %d, " ...
                 "money_bounty = %d, " ...
@@ -193,7 +191,6 @@ class LegacyAccountBridge {
                 MyDeaths[playerId],
 
                 // Financial information
-                BankAccount(playerId)->balance(),
                 GetPlayerMoney(playerId),
                 iLoan[playerId],
                 HitmanTracker(playerId)->playerBounty(),

@@ -26,9 +26,11 @@ SpawnPlayerInHouse
 # native GetPlayerMoneyJS(playerid);
 # native GivePlayerMoneyJS(playerid, amount);
 # native ResetPlayerMoneyJS(playerid);
+# native DepositToAccountJS(playerid, amount);
 GetPlayerMoneyJS
 GivePlayerMoneyJS
 ResetPlayerMoneyJS
+DepositToAccountJS
 
 # Required for testing.
 TestFunction

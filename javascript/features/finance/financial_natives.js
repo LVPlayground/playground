@@ -25,6 +25,8 @@ export class FinancialNatives {
             'GivePlayerMoneyJS', 'ii', FinancialNatives.prototype.givePlayerMoney.bind(this));
         provideNative(
             'ResetPlayerMoneyJS', 'i', FinancialNatives.prototype.resetPlayerMoney.bind(this));
+        provideNative(
+            'DepositToAccountJS', 'ii', FinancialNatives.prototype.depositToAccount.bind(this));
     }
 
     // native GetPlayerMoneyJS(playerid);
@@ -44,6 +46,8 @@ export class FinancialNatives {
 
         this.regulator_.setPlayerCashAmount(
             player, this.regulator_.getPlayerCashAmount(player) + amount);
+        
+        return 0;
     }
 
     // native ResetPlayerMoneyJS(playerid);
@@ -51,6 +55,17 @@ export class FinancialNatives {
         const player = server.playerManager.getById(playerid);
         if (player)
             this.regulator_.setPlayerCashAmount(player, 0);
+        
+        return 0;
+    }
+
+    // native DepositToAccountJS(playerid, amount);
+    depositToAccount(playerid, amount) {
+        const player = server.playerManager.getById(playerid);
+        if (player)
+            this.regulator_.depositToAccount(player, amount);
+        
+        return 0;
     }
 
     dispose() {

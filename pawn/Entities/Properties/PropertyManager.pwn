@@ -273,29 +273,12 @@ class PropertyManager {
                 continue;
             }
 
-            // Players with a Premier bank account will have the money deposited in their bank account
-            // automatically, but again with a certain percentage of costs for the bank.
-            if (BankAccount(playerId)->availableBalance() >= payoutAmount[playerId]) {
-                // The player has sufficient balance available to receive this sum on their bank.
-                BankAccount(playerId)->setBalance(BankAccount(playerId)->balance() + payoutAmount[playerId]);
+            DepositToAccountJS(playerId, payoutAmount[playerId]);
 
-                format(message, sizeof(message),
-                    "You have earned {40CCFF}$%s{FFFFFF} with your properties, which has been deposited into your bank account.",
-                    formatPrice(payoutAmount[playerId]));
-                SendClientMessage(playerId, Color::Information, message);
-
-            } else {
-                // The player's bank account is full or does not have enough balance available
-                // to receive this sum. Give it to the player instead.
-                GivePlayerMoney(playerId, payoutAmount[playerId]);
-
-                format(message, sizeof(message),
-                    "You have earned {40CCFF}$%s{FFFFFF} with your properties. We tried to deposit this into your bank account,",
-                    formatPrice(payoutAmount[playerId]));
-                SendClientMessage(playerId, Color::Information, message);
-                SendClientMessage(playerId, Color::Information,
-                    "but your account does not allow for thus sum to be stored. You've received it in cash instead.");
-            }
+            format(message, sizeof(message),
+                "You have earned {40CCFF}$%s{FFFFFF} with your properties, which has been deposited into your bank account.",
+                formatPrice(payoutAmount[playerId]));
+            SendClientMessage(playerId, Color::Information, message);
         }
 
         if (m_propertyTycoonAmount < tycoonAmount) {

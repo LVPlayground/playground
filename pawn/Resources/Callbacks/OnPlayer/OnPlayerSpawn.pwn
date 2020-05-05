@@ -122,6 +122,8 @@ OriginalOnPlayerSpawn(playerId) {
 
     new const defaultSpawnMoney = GetEconomyValue(SpawnMoney);
 
+/**
+
     // Handle spawnmoney.
     if (!firstJoin[playerId] && GetPlayerMoney(playerId) > -1) {
         if (!g_iSpawnMoney[playerId] || Player(playerId)->isLoggedIn() == false) {
@@ -143,6 +145,7 @@ OriginalOnPlayerSpawn(playerId) {
         }
     } else
         firstJoin[playerId] = 0;
+*/
 
     return 1;
 }

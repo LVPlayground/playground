@@ -10,9 +10,11 @@ native IsValidVehicle(vehicleid);
 
 // Provided by the PlaygroundJS plugin.
 native IsPlayerMinimized(playerId);
+
 native GetPlayerMoneyJS(playerid);
 native GivePlayerMoneyJS(playerid, amount);
 native ResetPlayerMoneyJS(playerid);
+native DepositToAccountJS(playerid, amount);
 
 // The OnPlayerUpdate callback should never reach Pawn. If the following message is seen on the
 // console, it means that PlaygroundJS' interception of the callback is failing.

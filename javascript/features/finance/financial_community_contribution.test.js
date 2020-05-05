@@ -40,7 +40,6 @@ describe('FinancialCommunityContribution', (it, beforeEach) => {
         regulator.setPlayerCashAmount(lucy, vipBase + 1000000);
 
         const collectionPromise = contribution.collect();
-        
         await server.clock.advance(kInitialCollectionDelayMs);
 
         const guestPercentage = settings.getValue('financial/community_contribution_guest_pct');
@@ -69,7 +68,33 @@ describe('FinancialCommunityContribution', (it, beforeEach) => {
     });
 
     it('should collect contributions at the configured frequency', async (assert) => {
+        settings.setValue('financial/community_contribution_guest_base', 1000);
+        settings.setValue('financial/community_contribution_guest_pct', 10);
+        settings.setValue('financial/community_contribution_cycle_sec', 50);
 
+        regulator.setPlayerCashAmount(gunther, 2000);
+
+        const collectionPromise = contribution.collect();
+        await server.clock.advance(kInitialCollectionDelayMs);
+
+        assert.equal(regulator.getPlayerCashAmount(gunther), 1900);
+
+        settings.setValue('financial/community_contribution_cycle_sec', 20);
+        await server.clock.advance(50 * 1000);
+
+        assert.equal(regulator.getPlayerCashAmount(gunther), 1810);
+
+        settings.setValue('financial/community_contribution_cycle_sec', 10);
+        await server.clock.advance(20 * 1000);
+
+        assert.equal(regulator.getPlayerCashAmount(gunther), 1729);
+
+        contribution.dispose();
+
+        await Promise.all([
+            server.clock.advance(10 * 1000),
+            collectionPromise
+        ]);
     });
 
     it('should have a variety of messages to share with players', async (assert) => {

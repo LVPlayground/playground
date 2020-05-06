@@ -23,3 +23,13 @@ actually is a form of tax, but let's be honest, it sounds nicer when it's for a 
 This money is taken every minute from player's accounts when they have a certain amount of money
 in their possession. The amount depends on whether they're registered, and whether they're a VIP
 on Las Venturas Playground.
+
+## Bank accounts
+Each player on the server receives a bank account in which they can store money that should outlive
+their current playing session. Use is straightforward, through the following commands:
+
+  * `/balance` to display the bank account's balance.
+  * `/bank [[amount] | all]` to deposit a certain amount of money.
+  * `/withdraw [[amount] | all]` to withdraw a certain amount of money.
+
+Bank accounts are currently limited to $5,354,228,880, but this may increase over time.

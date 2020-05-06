@@ -42,6 +42,11 @@ PlayerSetting.ANNOUNCEMENT.HOUSES = 'houses';
 PlayerSetting.SUBCOMMAND = { };
 PlayerSetting.SUBCOMMAND.GENERAL = 'general';
 
+PlayerSetting.SUBCOMMAND.HOUSES_BUY = 'buy';
+PlayerSetting.SUBCOMMAND.HOUSES_CREATED = 'created';
+PlayerSetting.SUBCOMMAND.HOUSES_DELETED = 'deleted';
+PlayerSetting.SUBCOMMAND.HOUSES_EVICTED = 'evicted';
 PlayerSetting.SUBCOMMAND.HOUSES_SELL = 'sell';
+PlayerSetting.SUBCOMMAND.HOUSES_TELEPORTED = 'teleported';
 
 export default PlayerSetting;

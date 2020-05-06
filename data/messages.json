@@ -35,8 +35,8 @@
   "DEBUG_TRACE_STARTED": "{33AA33}The trace you requested is now being recorded.",
   "DEBUG_TRACE_FINISHED": "{33AA33}The trace you requested has finished recording.",
 
-  "FINANCE_CONTRIBUTION_PAID": "{c7006e}You've been selected to donate {ef0078}%${c7006e} to the {ef0078}%s{c7006e} fund!",
-  "FINANCE_CONTRIBUTION_WHY": "{fbe2f0}Your hard earned cash helps keep the San Andreas economy going!",
+  "FINANCE_CONTRIBUTION_PAID": "{689F38}You've been selected to donate {CDDC39}%${689F38} to the {CDDC39}%s{689F38} fund!",
+  "FINANCE_CONTRIBUTION_WHY": "{689F38}Your hard earned cash helps keep the local San Andreas economy going!",
 
   "FRIENDS_ADDED": "@success %s has been added to your friends list.",
   "FRIENDS_EMPTY": "{FF9900}You haven't added any friends yet!",

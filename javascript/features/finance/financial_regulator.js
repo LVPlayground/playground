@@ -12,7 +12,7 @@ import { MoneyIndicator } from 'features/finance/visual/money_indicator.js';
 // minor exceptions exist for casinos.
 export class FinancialRegulator {
     // Boundary values for the amount of cash a player is allowed to carry on their person. This is
-    // limmited to the display in player UI, which only carries nine digits.
+    // limited by the money handling code in SA-MP and GTA:SA. UI only allows for $99,999,999.
     static kMaximumCashAmount = 999999999;
     static kMinimumCashAmount = -999999999;
 

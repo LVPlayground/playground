@@ -12,7 +12,6 @@ import Menu from 'components/menu/menu.js';
 import MessageBox from 'components/dialogs/message_box.js';
 import ParkingLotCreator from 'features/houses/utils/parking_lot_creator.js';
 import ParkingLotRemover from 'features/houses/utils/parking_lot_remover.js';
-import PlayerMoneyBridge from 'features/houses/utils/player_money_bridge.js';
 
 // Maximum number of milliseconds during which the identity beam should be displayed.
 const IdentityBeamDisplayTimeMs = 60000;
@@ -20,12 +19,13 @@ const IdentityBeamDisplayTimeMs = 60000;
 // This class provides the `/house` command available to administrators to manage parts of the
 // Houses feature on Las Venturas Playground. Most interaction occurs through dialogs.
 class HouseCommands {
-    constructor(manager, abuse, announce, economy, location, playground) {
+    constructor(manager, abuse, announce, economy, finance, location, playground) {
         this.manager_ = manager;
 
         this.abuse_ = abuse;
         this.announce_ = announce;
         this.economy_ = economy;
+        this.finance_ = finance;
         this.location_ = location;
 
         this.playground_ = playground;
@@ -110,7 +110,7 @@ class HouseCommands {
         // |location| is available for purchase, and the |player| hasn't exceeded their house limit
         // nor has an house in the immediate environment.
 
-        const balance = await PlayerMoneyBridge.getBalanceForPlayer(player);
+        const balance = await this.finance_().getPlayerAccountBalance(player);
 
         const interiorList = InteriorList.forEconomy(player, this.economy_(), location);
         const interior = await InteriorSelector.select(player, balance, interiorList);
@@ -119,14 +119,14 @@ class HouseCommands {
 
         // Revalidate that the player has sufficient money available to buy the house. This works
         // around their bank value changes whilst they're in the interior selector.
-        const refreshedBalance = await PlayerMoneyBridge.getBalanceForPlayer(player);
+        const refreshedBalance = await this.finance_().getPlayerAccountBalance(player);
         if (interior.price > refreshedBalance) {
             player.sendMessage(Message.HOUSE_BUY_NOT_ENOUGH_MONEY, interior.price);
             return;
         }
 
         // Withdraw the cost of this house from the |player|'s bank account.
-        await PlayerMoneyBridge.setBalanceForPlayer(player, refreshedBalance - interior.price);
+        await this.finance_().withdrawFromPlayerAccount(player, interior.price);
 
         // Actually claim the house within the HouseManager, which writes it to the database.
         await this.manager_.createHouse(player, location, interior.id);
@@ -605,11 +605,8 @@ class HouseCommands {
 
             await this.manager_.removeHouse(location);
 
-            if (isOwner) {
-                const balance = await PlayerMoneyBridge.getBalanceForPlayer(player);
-
-                await PlayerMoneyBridge.setBalanceForPlayer(player, balance + offer);
-            }
+            if (isOwner)
+                await this.finance_().depositToPlayerAccount(player, offer);
 
             // Display a confirmation dialog to the player to inform them of their action.
             await MessageBox.display(player, {

@@ -10,7 +10,7 @@ const kMessagesFile = 'data/irc_messages.json';
 // Regular expression that can be used to validate a custom message target. This doesn't actually
 // adhere to the RPL_ISUPPORT information the server sends us, but should be generic enough.
 const kValidTargetParamExpression = /^\{(\d+)\}$/;
-const kValidTargetExpression = /^[a-z_\-\[\]\\^{}|`#&][a-z0-9_\-\[\]\\^{}|`#&]*$/i;
+const kValidTargetExpression = /^[a-z_\-\[\]\\^{}|`#&][a-z0-9_\.\-\[\]\\^{}|`#&]*$/i;
 
 // Converts a message identifier with a sequence of parameters to a formatted IRC message that can
 // be distributed to an echo channel. Includes a routine to intepret Pawn messages too.

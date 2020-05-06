@@ -17,6 +17,12 @@ describe('FinancialRegulator', (it, beforeEach, afterEach) => {
 
     afterEach(() => regulator.dispose());
 
+    it('should have a sensible maximum balance of bank accounts', assert => {
+        // Any balance outside of these numbers will cause truncation and inaccuracies.
+        assert.isAboveOrEqual(FinancialRegulator.kMinimumBankAmount, Number.MIN_SAFE_INTEGER);
+        assert.isBelowOrEqual(FinancialRegulator.kMaximumBankAmount, Number.MAX_SAFE_INTEGER);
+    });
+
     it('should be able to keep track of cash money held by players', assert => {
         // Players, by default, have no cash money at all.
         assert.equal(regulator.getPlayerCashAmount(gunther), 0);

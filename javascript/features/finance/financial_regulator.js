@@ -18,7 +18,7 @@ export class FinancialRegulator {
 
     // Bounary values for the amount of money a player's able to store in their bank account. These
     // are the absolute boundaries, other limits might be imposed by other systems.
-    static kMaximumBankAmount = 2147483647;
+    static kMaximumBankAmount = 5354228880;
     static kMinimumBankAmount = 0;
 
     nativeCalls_ = null;

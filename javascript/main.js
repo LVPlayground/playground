@@ -44,7 +44,7 @@ testRunner.run('.*\.test\.js').then(time => {
         'settings', 'streamer',
 
         // Gang-related features
-        'gang_chat', 'gangs',
+        'gang_chat', 'gang_zones', 'gangs',
 
         // House-related features
         'houses',

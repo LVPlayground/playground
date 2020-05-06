@@ -19,7 +19,7 @@ class Player {
     this.ipAddress_ = pawnInvoke('GetPlayerIp', 'iS', playerId);
     this.nonPlayerCharacter_ = !!pawnInvoke('IsPlayerNPC', 'i', playerId);
     this.gpci_ = pawnInvoke('gpci', 'iS', playerId);
-    this.serial_ = murmur3hash(this.gpci_);
+    this.serial_ = murmur3hash(this.gpci_ || 'bot');
 
     this.syncedData_ = new PlayerSyncedData(playerId);
 

@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 import { ip2long } from 'features/nuwani_commands/ip_utilities.js';
-import { murmur3hash } from 'base/murmur3hash.js';
 
 // Query to store the evidence in the database.
 const STORE_EVIDENCE_QUERY = `
@@ -25,6 +24,6 @@ export class AbuseDatabase {
         return server.database.query(
             STORE_EVIDENCE_QUERY, detectorName, certainty, JSON.stringify(evidence), player.userId,
             player.name, position.x, position.y, position.z, player.interiorId,
-            player.virtualWorld, ip2long(player.ip), murmur3hash(player.gpci));
+            player.virtualWorld, ip2long(player.ip), player.serial);
     }
 }

@@ -18,6 +18,7 @@ export default class Account extends Feature {
 
         // Depend on the Nuwani feature to be able to announce messages to IRC.
         this.nuwani_ = this.defineDependency('nuwani');
+        this.nuwani_.addReloadObserver(this, () => this.initializeNuwaniCommands());
 
         // Depends on the Playground feature to be able to change command access.
         this.playground_ = this.defineDependency('playground');

@@ -19,6 +19,7 @@
   "ANNOUNCE_MINIGAME": "{CCD782}Sign up for the {838F31}%s{CCD782}! Type {838F31}%s{CCD782} to join.",
   "ANNOUNCE_NEWS_MINIGAME_JOINED": "~r~~h~%s~w~ has signed up for ~y~%s~w~ (~p~%s~w~)",
   "ANNOUNCE_REPORT": "{FFFF00}* Report by %s (Id:%d): Player: %s (Id:%d) - Reason: %s",
+  "ANNOUNCEMENT_TOGGLED":  "@success The {FFA500}%s{A9C4E4} announcement has been %s for you.",
 
   "BANK_NEED_ACCOUNT": "@error You need to register on https://sa-mp.nl/ to get a bank account!",
   "BANK_NOT_ENOUGH_CASH": "@error You aren't carrying enough cash to deposit %$.",

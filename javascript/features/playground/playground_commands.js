@@ -8,7 +8,7 @@ import Menu from 'components/menu/menu.js';
 import MessageBox from 'components/dialogs/message_box.js';
 import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
 import Question from 'components/dialogs/question.js';
-import Setting from 'features/settings/setting.js';
+import Setting from 'entities/setting.js';
 
 // Directory in which the CPU profiles will be stored.
 const ProfileDirectory = 'profiles';
@@ -68,6 +68,7 @@ class PlaygroundCommands {
             'features/playground/commands/fancy.js',
             'features/playground/commands/fly.js',
             'features/playground/commands/jetpack.js',
+            'features/playground/commands/player_settings.js',
             'features/playground/commands/isolate.js',
             'features/playground/commands/rampcar.js',
             'features/playground/commands/slow.js',

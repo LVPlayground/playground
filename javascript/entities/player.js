@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import PlayerSyncedData from 'entities/player_synced_data.js';
+import PlayerSettings from 'entities/player_settings.js';
 
 import { murmur3hash } from 'base/murmur3hash.js';
 import { toFloat } from 'base/float.js';
@@ -41,6 +42,8 @@ class Player {
 
     this.vehicle_ = null;
     this.vehicleSeat_ = null;
+
+    this.playerSettings_ = new PlayerSettings();
   }
 
   // Returns the id of this player. This attribute is read-only.
@@ -473,6 +476,10 @@ class Player {
     pawnInvoke('GivePlayerMoney', 'ii', this.id_, amount);
   }
 
+  // Settings for the player stored inside the database.
+  get settings() {
+    return this.playerSettings_;
+  }
 };
 
 // Invalid player id. Must be equal to SA-MP's INVALID_PLAYER_ID definition.

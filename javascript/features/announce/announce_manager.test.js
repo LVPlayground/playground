@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import AnnounceManager from 'features/announce/announce_manager.js';
+import PlayerSetting from 'entities/player_setting.js';
 
 describe('AnnounceManager', (it, beforeEach, afterEach) => {
     let announceManager = null;
@@ -10,7 +11,9 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
 
     beforeEach(() => {
         nuwani = server.featureManager.loadFeature('nuwani');
-        announceManager = new AnnounceManager(() => nuwani);
+        const settings = server.featureManager.loadFeature('settings');
+
+        announceManager = new AnnounceManager(() => nuwani, () => settings);
     });
 
     it('should announce new minigames to players', assert => {
@@ -55,6 +58,53 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
                 name,
             ]
         });
+    });
+    
+    it('should not announce to administrators if main command is not enabled', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        announceManager.settings_().setValue(
+            `${PlayerSetting.CATEGORY.ANNOUNCEMENT}/${PlayerSetting.ANNOUNCEMENT.HOUSES}/${PlayerSetting.SUBCOMMAND.HOUSES_SELL}`, 
+            true, 0);
+        announceManager.settings_().setValue(
+            `${PlayerSetting.CATEGORY.ANNOUNCEMENT}/${PlayerSetting.ANNOUNCEMENT.HOUSES}/${PlayerSetting.SUBCOMMAND.GENERAL}`,
+            false, 0);
+
+        announceManager.announceToAdministratorsWithFilter('Hey guys.', 
+            PlayerSetting.ANNOUNCEMENT.HOUSES,  PlayerSetting.SUBCOMMAND.HOUSES_SELL);
+
+        assert.equal(gunther.messages.length, 0);
+        assert.equal(nuwani.messagesForTesting.length, 0);
+    });
+    
+    
+    it('should not announce to administrators if it is not enabled', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        announceManager.announceToAdministratorsWithFilter('Hey guys.', 
+            PlayerSetting.ANNOUNCEMENT.HOUSES,  PlayerSetting.SUBCOMMAND.HOUSES_SELL);
+
+        assert.equal(gunther.messages.length, 0);
+        assert.equal(nuwani.messagesForTesting.length, 0);
+    });
+    
+    it('should not announce to nuwani if it is not enabled', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        announceManager.settings_().setValue(
+            `${PlayerSetting.CATEGORY.ANNOUNCEMENT}/${PlayerSetting.ANNOUNCEMENT.UNCATEGORIZED}/${PlayerSetting.SUBCOMMAND.GENERAL}`, 
+            false, 0);
+
+        announceManager.announceToAdministratorsWithFilter('Hey guys!!11!!!1!!!', 
+            PlayerSetting.ANNOUNCEMENT.UNCATEGORIZED, PlayerSetting.SUBCOMMAND.GENERAL);
+
+        assert.equal(nuwani.messagesForTesting.length, 0);
     });
 
     it('should distribute messages to players', assert => {

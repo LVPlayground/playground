@@ -3,9 +3,10 @@
 // be found in the LICENSE file.
 
 import Feature from 'components/feature_manager/feature.js';
-import Setting from 'features/settings/setting.js';
+import Setting from 'entities/setting.js';
 import SettingList from 'features/settings/setting_list.js';
 import SettingsDatabase from 'features/settings/settings_database.js';
+import PlayerSettingList from 'entities/player_setting_list.js';
 
 import MockSettingsDatabase from 'features/settings/test/mock_settings_database.js';
 
@@ -29,6 +30,11 @@ class Settings extends Feature {
         for (const setting of SettingList)
             this.settings_.set(setting.identifier, setting);
 
+        // Import player specific settings to also work server wide.
+        for (const setting of PlayerSettingList) {
+            this.settings_.set(setting.identifier, setting.clone());
+        }
+
         // Load the existing persistent values from the database, and apply them to the local state.
         Promise.resolve(this.database_.loadSettings()).then(settings => {
             for (const [identifier, value] of settings) {
@@ -46,6 +52,9 @@ class Settings extends Feature {
 
     // Gets an iterator with the Settings that are available on Las Venturas Playground.
     getSettings() { return this.settings_.values(); }
+
+    // Returns the full settings map.
+    get settings() { return this.settings_; }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -124,7 +133,7 @@ class Settings extends Feature {
                 break;
 
             default:
-                throw new Error('Unknown type for the setting ' + identifier + '.');
+                throw new Error(`Unknown type(${setting.type}) for the setting ${identifier}.`);
         }
 
         // Inform observers for the |identifier| about the value change.

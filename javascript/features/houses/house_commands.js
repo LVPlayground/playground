@@ -12,6 +12,8 @@ import Menu from 'components/menu/menu.js';
 import MessageBox from 'components/dialogs/message_box.js';
 import ParkingLotCreator from 'features/houses/utils/parking_lot_creator.js';
 import ParkingLotRemover from 'features/houses/utils/parking_lot_remover.js';
+import PlayerMoneyBridge from 'features/houses/utils/player_money_bridge.js';
+import PlayerSetting from 'entities/player_setting.js';
 
 // Maximum number of milliseconds during which the identity beam should be displayed.
 const IdentityBeamDisplayTimeMs = 60000;
@@ -599,9 +601,9 @@ class HouseCommands {
             if (!confirmation.response)
                 return;
 
-            this.announce_().announceToAdministrators(
-                Message.HOUSE_ANNOUNCE_SOLD, player.name, player.id, location.settings.name,
-                location.settings.id, offer);
+            this.announce_().announceToAdministratorsWithFilter(
+                Message.HOUSE_ANNOUNCE_SOLD, PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_SELL,
+                player.name, player.id, location.settings.name, location.settings.id, offer);
 
             await this.manager_.removeHouse(location);
 

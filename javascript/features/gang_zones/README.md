@@ -19,7 +19,7 @@ in the following mechanism, which gangs can directly influence:
      will be considered active, and is eligible to receive a gang zone.
 
   1. **Identification of gang area(s)**. A tally will be made of all houses owned by the active
-     gang members. Any area where more than 60% active members have a house will be considered
+     gang members. Any area where more than 50% active members have a house will be considered
      a gang area. This means that gangs can occupy multiple areas, for example one in each city,
      as long as all enough members participate in this.
 
@@ -35,8 +35,8 @@ Gang members are considered to be recently active when:
 
   1. They have been in-game in the past 6 months, or,
   1. They have been in-game in the past 12 months and have >200 hours of in-game time, or,
-  1. They have been in-game in the past 24 months and have >1000 hours of in-game time, or,
-  1. They have >1500 hours of in-game time.
+  1. They have been in-game in the past 24 months and have >500 hours of in-game time, or,
+  1. They have >1000 hours of in-game time.
 
 There are no exceptions for VIP members or administrators. Although they naturally tend to have
 spent more time on Las Venturas Playground, this isn't per se recently.

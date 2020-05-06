@@ -15,8 +15,8 @@ const SEED_ACTIVE_MEMBERS_QUERY = `
     WHERE
         users_gangs.left_gang IS NULL AND
         (
-            (users_mutable.online_time >= 5400000) OR
-            (users_mutable.online_time >= 3600000 AND users_mutable.last_seen > DATE_SUB(NOW(), INTERVAL 24 MONTH)) OR
+            (users_mutable.online_time >= 3600000) OR
+            (users_mutable.online_time >= 1800000 AND users_mutable.last_seen > DATE_SUB(NOW(), INTERVAL 24 MONTH)) OR
             (users_mutable.online_time >= 720000  AND users_mutable.last_seen > DATE_SUB(NOW(), INTERVAL 12 MONTH)) OR
             (users_mutable.last_seen > DATE_SUB(NOW(), INTERVAL 6 MONTH))
         )`;
@@ -46,8 +46,8 @@ const GET_ACTIVE_MEMBERS_FOR_GANG_QUERY = `
         users_gangs.gang_id = ?
         users_gangs.left_gang IS NULL AND
         (
-            (users_mutable.online_time >= 5400000) OR
-            (users_mutable.online_time >= 3600000 AND users_mutable.last_seen > DATE_SUB(NOW(), INTERVAL 24 MONTH)) OR
+            (users_mutable.online_time >= 3600000) OR
+            (users_mutable.online_time >= 1800000 AND users_mutable.last_seen > DATE_SUB(NOW(), INTERVAL 24 MONTH)) OR
             (users_mutable.online_time >= 720000  AND users_mutable.last_seen > DATE_SUB(NOW(), INTERVAL 12 MONTH)) OR
             (users_mutable.last_seen > DATE_SUB(NOW(), INTERVAL 6 MONTH))
         )`;

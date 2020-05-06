@@ -31,6 +31,14 @@ describe('MessageFormatter', it => {
         assert.equal(formatter.format('test_prefix_admin'), 'PRIVMSG @#echo :Hello');
     });
 
+    it('is able to create messages for different commands as well', assert => {
+        const formatter = new MessageFormatter(kEchoChannel);
+        
+        assert.equal(formatter.format('test_command_notice'), 'NOTICE #echo :Hello');
+        assert.equal(
+            formatter.format('text_command_target_notice', 'Joe', 'Heya'), 'NOTICE Joe :Heya');
+    });
+
     it('can change the IRC target to which messages should be sent', assert => {
         const formatter = new MessageFormatter(kEchoChannel);
 

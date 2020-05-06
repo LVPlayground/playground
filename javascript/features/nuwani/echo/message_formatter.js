@@ -41,6 +41,8 @@ export class MessageFormatter {
                 test_target_prefix: '<target:#vip><prefix:%>Hello',
                 test_target_param: '<target:{0}>Hello',
                 test_target_param2: '<target:{1}>%s',
+                test_command_notice: '<command:NOTICE>Hello',
+                text_command_target_notice: '<command:NOTICE><target:{0}>%s{1}',
             });
         } else {
             this.loadMessages(JSON.parse(readFile(kMessagesFile)));
@@ -86,6 +88,7 @@ export class MessageFormatter {
         if (!this.messages_.has(tag))
             throw new Error('Invalid message tag given: ' + tag);
 
+        let command = 'PRIVMSG';
         let destination = this.echoChannel_;
         let destinationPrefix = '';
 
@@ -133,11 +136,20 @@ export class MessageFormatter {
             return '';
         });
 
+        // Allow for the type of IRC command to be changed as well.
+        format = format.replace(/<command:(.+?)>/g, (_, unverifiedCommand) => {
+            if (unverifiedCommand !== 'NOTICE')
+                throw new Error('Only NOTICE commands are enabled for now.');
+            
+            command = unverifiedCommand;
+            return '';
+        });
+
         // Now format the actual message according to |format|. This is done last, to ensure that
         // the non-fixed part of the string cannot influence the above filtering.
         const formattedMessage = stringFormat(format, ...params);
 
-        return `PRIVMSG ${destinationPrefix}${destination} :${formattedMessage}`;
+        return `${command} ${destinationPrefix}${destination} :${formattedMessage}`;
     }
 
     // Formats the Pawn-sourced |message| assuming the given |format|. Will return a string

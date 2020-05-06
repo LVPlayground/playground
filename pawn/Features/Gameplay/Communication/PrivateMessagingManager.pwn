@@ -192,7 +192,7 @@ class PrivateMessagingManager {
         if (!isIsolated) {
             // Broadcast message on IRC.
             format(notice, sizeof(notice), "%s %s %d %s", receiver, sender, senderId, message);
-            EchoMessage("chat-irc", "ssdz", notice);
+            EchoMessage("chat-irc-notice", "ssdz", notice);
         }
 
         return 1;

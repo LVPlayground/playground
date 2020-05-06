@@ -165,17 +165,6 @@ class TimerController {
         this->beforeRunTimer(60 * 1000);
         Annotation::ExpandList<MinuteTimer>();
         this->afterRunTimer();
-
-        // Similar to iterating through all players on a per-second basis, we invoke a second
-        // invocation list for each online player, each minute.
-        this->beforeRunTimer(60 * 1000 + 5);
-        for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
-            if (Player(playerId)->isConnected() == false)
-                continue;
-
-            Annotation::ExpandList<MinuteTimerPerPlayer>(playerId);
-        }
-        this->afterRunTimer();
     }
 
     /**

@@ -35,7 +35,6 @@
     <DiskObject>\Entities\Financial.pwn</DiskObject>
     <DiskObject>\Entities\Financial\</DiskObject>
     <DiskObject>\Entities\Financial\FinancialUtilities.pwn</DiskObject>
-    <DiskObject>\Entities\Financial\TaxAgency.pwn</DiskObject>
     <DiskObject>\Entities\NPCs.pwn</DiskObject>
     <DiskObject>\Entities\NPCs\</DiskObject>
     <DiskObject>\Entities\NPCs\NonPlayerCharacter.pwn</DiskObject>

@@ -12,7 +12,7 @@ export class CaseInsensitiveMap {
     // Map methods that aren't affected by changed casing.
     clear() { this.map_.clear(); }
     entries() { return this.map_.entries(); }
-    forEach(...args) { return this.map_.forEach(...args); }
+    forEach(callbackFn, thisArg) { return this.map_.forEach(callbackFn, thisArg); }
     keys() { return this.map_.keys(); }
     values() { return this.map_.values(); }
     [Symbol.iterator]() { return this.map_[Symbol.iterator]; }

@@ -4,7 +4,11 @@
         "outFile": "./.vscode/tsc.js",
         "module": "system",
         "allowJs": true,
-        "target": "es5"
+        "checkJs": true,
+        "target": "es6",
+        "lib": [
+            "esnext"
+        ]
     },
     "include": [
         "./**/*"

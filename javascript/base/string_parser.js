@@ -116,7 +116,7 @@ class StringParser {
       if (!optional && hadOptionalParameter)
         throw new Error('No required parameters may follow an optional parameter.');
 
-      hadOptionalParameter |= optional;
+      hadOptionalParameter = hadOptionalParameter || optional;
 
       let value = parameter.hasOwnProperty('value') ? parameter.value : null;
 

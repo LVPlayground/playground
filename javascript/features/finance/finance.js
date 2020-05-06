@@ -49,6 +49,60 @@ export default class Finance extends Feature {
         this.commands_ = new FinancialCommands(this.regulator_);
     }
 
+    // ---------------------------------------------------------------------------------------------
+    // Public API of the Finance feature
+    // ---------------------------------------------------------------------------------------------
+
+    // Returns the current account balance in the |player|'s bank account.
+    async getAccountBalance(player) {
+        return this.regulator_.getAccountBalance(player);
+    }
+
+    // Deposits |amount| dollars in the bank account owned by |player|.
+    async depositToAccount(player, amount) {
+        return this.regulator_.depositToAccount(player, amount);
+    }
+
+    // Withdraws |amount| dollars from the bank account owned by |player|.
+    async withdrawFromAccount(player, amount) {
+        return this.regulator_.withdrawFromAccount(player, amount);
+    }
+
+    // Returns the amount in cash the |player| is currently carrying.
+    getPlayerCash(player) {
+        return this.regulator_.getPlayerCashAmount(player);
+    }
+
+    // Gives the |player| the given |amount|. Returns whether the money has been given to them,
+    // which only fails when limits would be exceeded.
+    givePlayerCash(player, amount) {
+        if (amount < 0)
+            throw new Error('This method may only be used to issue money to a player.');
+
+        const balance = this.regulator_.getPlayerCashAmount(player);
+        if ((FinancialRegulator.kMaximumCashAmount - balance) < amount)
+            return false;
+        
+        this.regulator_.setPlayerCashAmount(player, balance + amount);
+        return true;
+    }
+
+    // Takes the given |amount| from the |player|. This is able to put them in debt. Returns whether
+    // the money was taken from them, which only fails when limits would be exceeded.
+    takePlayerCash(player, amount) {
+        if (amount < 0)
+            throw new Error('This method may only be used to take money from a player.');
+
+        const balance = this.regulator_.getPlayerCashAmount(player);
+        if ((FinancialRegulator.kMinimumCashAmount + amount) > balance)
+            return false;
+
+        this.regulator_.setPlayerCashAmount(player, balance - amount);
+        return true;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     dispose() {
         this.commands_.dispose();
         this.natives_.dispose();

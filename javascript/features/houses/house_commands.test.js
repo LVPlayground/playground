@@ -41,10 +41,10 @@ describe('HouseCommands', (it, beforeEach) => {
         gunther.respondToDialog({ response: 1 /* Yes, confirm creation of the house */ }).then(
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 
+        gunther.settings.setValue(`${PlayerSetting.CATEGORY.ANNOUNCEMENT}/${PlayerSetting.ANNOUNCEMENT.HOUSES}/${PlayerSetting.SUBCOMMAND.HOUSES_CREATED}`, true);
+            
         assert.equal(manager.locationCount, locationCount);
         
-        gunther.settings.setValue(`${PlayerSetting.CATEGORY.ANNOUNCEMENT}/${PlayerSetting.ANNOUNCEMENT.HOUSES}/${PlayerSetting.SUBCOMMAND.HOUSES_CREATED}`, true);
-
         assert.isTrue(await gunther.issueCommand('/house create'));
 
         assert.equal(gunther.messages.length, 1);

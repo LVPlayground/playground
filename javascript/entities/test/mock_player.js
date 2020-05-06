@@ -6,6 +6,8 @@ import MockPlayerSyncedData from 'entities/test/mock_player_synced_data.js';
 import MockVehicle from 'entities/test/mock_vehicle.js';
 import PlayerSettings from 'entities/player_settings.js';
 
+import { murmur3hash } from 'base/murmur3hash.js';
+
 // Mocked player. Has the same interface and abilities as a real Player object, except that it does
 // not rely on the SA-MP server to be available, nor communicates with Pawn.
 class MockPlayer {
@@ -31,7 +33,8 @@ class MockPlayer {
         this.virtualWorld_ = 0;
         this.userId_ = null;
         this.ipAddress_ = event.ip || '127.0.0.1';
-        this.gpci_ = event.gpci || 12345678;
+        this.gpci_ = event.gpci || 'FAKELONGHASHOF40CHARACTERSHEH';
+        this.serial_ = murmur3hash(this.gpci_ || 'bot');
         this.position_ = new Vector(0, 0, 0);
         this.specialAction_ = Player.SPECIAL_ACTION_NONE;
 
@@ -105,6 +108,8 @@ class MockPlayer {
     get ip() { return this.ipAddress_; }
 
     get gpci() { return this.gpci_; }
+
+    get serial() { return this.serial_; }
 
     get level() { return this.level_; }
     set level(value) { this.level_ = value; }

@@ -306,7 +306,8 @@ CAchieve__CheckIngameHours(playerid) {
         CAchieve__Achieved(playerid, ACHOURS1);
 }
 
-CAchieve__Tax(playerid, amount) {
+// TODO: Hook this up again.
+stock CAchieve__Tax(playerid, amount) {
     if (amount >= 25000000)
         CAchieve__Achieved(playerid, TAX25);
 

@@ -7,19 +7,68 @@ import { AbuseDetector } from 'features/abuse/abuse_detector.js';
 // Set of weapon Ids that will be ignored for this detector, because they're either insignificant or
 // too unreliable to allow for accurate detection.
 const kIgnoredWeaponIds = new Set([
-    9,   // Chainsaw
     16,  // Grenade
     17,  // Teargas
     18,  // Molotov
     35,  // Rocket Launcher
     36,  // Heat Seaking Rocket Launcher
     38,  // Minigun
-    41,  // Spraycan
+    51,  // Explosion
     52,  // Fire Extinguisher
+    54,  // Splat
 ]);
 
-// Run the statistical deviation checks every |kDetectionInterval| hits from a particular weapon. 
-const kDetectionInterval = 20;
+// The amount of damage whipping someone with the handle of a pistol takes. This is valid for most
+// of the pistol-like weapons, but would be reported as weapon-specific damage.
+const kPistolWhipAmount = 2.64;
+
+// Weapon IDs that are able to inflict the |kPistolWhipWeaponIds|.
+export const kPistolWhipWeaponIds = new Set([
+     22,  // Colt 45
+     23,  // Silenced Pistol
+     24,  // Desert Eagle
+     25,  // Shotgun
+     26,  // Sawn-off shotgun
+     27,  // Spaz shotgun
+     28,  // Uzi
+     29,  // MP5
+     30,  // AK-47
+     31,  // M4
+     32,  // Tec-9
+     33,  // Rifle
+     34,  // Sniper
+     38,  // Minigun
+     41,  // Spraycan
+     52,  // Fire Extinguisher
+]);
+
+// Some weapons have a fixed damage amount that does not fluctuate depending on the shot and/or
+// bullet count. Deriviations from that are clear indications that something is up.
+export const kFixedDamageAmounts = new Map([
+    [ 14,  4.62 ],  // Flowers
+    [ 22,  8.25 ],  // Colt 45
+    [ 23, 13.20 ],  // Silenced Pistol
+    [ 24, 46.20 ],  // Desert Eagle
+    [ 28,  6.60 ],  // Uzi
+    [ 29,  8.25 ],  // MP5
+    [ 30,  9.90 ],  // AK-47
+    [ 31,  9.90 ],  // M4
+    [ 32,  6.60 ],  // Tec-9
+    [ 33, 24.75 ],  // Rifle
+    [ 34, 41.25 ],  // Sniper
+    [ 41,  0.33 ],  // Spraycan
+]);
+
+// Some weapons fire multiple bullets, one or multiple of which can hit. This gives them a damage
+// range rather than a fixed amount. We handle those separately.
+export const kMultiBulletDamageAmounts = new Map([
+    [ 25, { bullets: 15, damage: 3.30 } ],  // Shotgun
+    [ 26, { bullets: 15, damage: 3.30 } ],  // Sawn-off shutgun
+    [ 27, { bullets: 8,  damage: 4.95 } ],  // Spaz shutgun
+]);
+
+// Sigma when comparing floating point values in the |kFixedDamageAmounts| table.
+const kDamageComparisonSigma = 0.01;
 
 // Object to maintain a collection of measurements with the ability to provide an average. Given the
 // Desert Eagle being the most powerful weapon in SA-MP with a maximum damage of 140, and the number
@@ -66,11 +115,15 @@ export class CleoDmageDetector extends AbuseDetector {
     individualMeasurements_ = null;
     globalMeasurements_ = null;
 
+    sampleRate_ = null;
+
     constructor(...params) {
         super(...params, 'CLEO Dmage');
 
         this.individualMeasurements_ = new WeakMap();
         this.globalMeasurements_ = new Map();
+
+        this.sampleRate_ = this.getSettingValue('abuse/detector_cleo_dmage_sample_rate');
     }
 
     onPlayerTakeDamage(player, issuer, weaponId, amount, bodyPart) {
@@ -80,7 +133,68 @@ export class CleoDmageDetector extends AbuseDetector {
         if (kIgnoredWeaponIds.has(weaponId))
             return;  // the weapon has been ignored
         
-        // (1) Record the |amount| in the global damage measurements.
+        // If the |amount| is exactly |kPistolWhipAmount|, and the |weaponId| is one of the pistol
+        // types, it's safe to ignore this, since it's not a *shot* with the given |weaponId|.
+        if (Math.abs(kPistolWhipAmount - amount) <= kDamageComparisonSigma &&
+                kPistolWhipWeaponIds.has(weaponId)) {
+            return;
+        }
+
+        // Deal with weapons that are meant to do a fixed amount of damage. If the taken damage is
+        // different from the expected damage, we've got a problem. Otherwise bail out.
+        const fixedDamageAmount = kFixedDamageAmounts.get(weaponId);
+        if (fixedDamageAmount) {
+            if (Math.abs(fixedDamageAmount - amount) > kDamageComparisonSigma) {
+                this.report(player, AbuseDetector.kSuspected, {
+                    weaponId,
+                    expectedDamageAmount: fixedDamageAmount,
+                    actualDamageAmount: amount,
+                });
+            }
+
+            return;
+        }
+
+        // Deal with weapons that have multiple bullets. This gives them a range of damage values.
+        // There are two potential problems here: an odd amount of bullets have hit, which will
+        // always be a local customization, or an invalid number of bullets have hit.
+        const multiBulletDamage = kMultiBulletDamageAmounts.get(weaponId);
+        if (multiBulletDamage) {
+            const hitBulletCount = Math.round((amount / multiBulletDamage.damage) * 100) / 100;
+            if (!Number.isInteger(hitBulletCount) || hitBulletCount > multiBulletDamage.bullets) {
+                this.report(player, AbuseDetector.kSuspected, { weaponId, amount });
+                return;
+            }
+        }
+
+        // Record the shot in both server and personal measurements. We want to be able to get
+        // running metrics on these, and periodically check against them.
+        const globalWeaponMeasurements = this.recordGlobalMeasurement(weaponId, amount);
+        const playerWeaponMeasurements = this.recordIndividualMeasurement(player, weaponId, amount);
+
+        // Sample a player's activity at a given sample rate, based on their own individual
+        // measurements. This frequency is configurable through `/lvp settings`.
+        if ((playerWeaponMeasurements % this.sampleRate_) !== 0)
+            return;
+
+        const global = 
+            `${globalWeaponMeasurements.average},${globalWeaponMeasurements.samples},` +
+            `${globalWeaponMeasurements.min},${globalWeaponMeasurements.max}`;
+        const local =
+            `${playerWeaponMeasurements.average},${playerWeaponMeasurements.samples},` +
+            `${playerWeaponMeasurements.min},${playerWeaponMeasurements.max}`;
+
+        const diff = ((playerWeaponMeasurements.average - globalWeaponMeasurements.average)
+                            / globalWeaponMeasurements.average) * 100;
+
+        if (server.isTest())
+            return;  // don't output the result during tests
+
+        console.log(`DmageV5 [${player.name}][${weaponId}][${global},${local}][${diff}]`);
+    }
+
+    // Records the hit by |weaponId| as having done |amount| damage in server-wide metrics.
+    recordGlobalMeasurement(weaponId, amount) {
         let globalWeaponMeasurements = this.globalMeasurements_.get(weaponId);
         if (!globalWeaponMeasurements) {
             globalWeaponMeasurements = new DamageMeasurements();
@@ -88,8 +202,12 @@ export class CleoDmageDetector extends AbuseDetector {
         }
 
         globalWeaponMeasurements.record(amount);
+        return globalWeaponMeasurements;
+    }
 
-        // (2) Record the |amount in the individual damage measurements.
+    // Record the hit by |weaponId| as having done |amount| damage for the |player| specifically.
+    // These metrics are keyed by the |player| instance, thus per playing session.
+    recordIndividualMeasurement(player, weaponId, amount) {
         let playerMeasurements = this.individualMeasurements_.get(player);
         if (!playerMeasurements) {
             playerMeasurements = new Map();
@@ -103,23 +221,6 @@ export class CleoDmageDetector extends AbuseDetector {
         }
 
         playerWeaponMeasurements.record(amount);
-
-        // (3) Log player measurements every |kDetectionInterval| samples.
-        if ((playerWeaponMeasurements.samples % kDetectionInterval) === 0) {
-            const global = 
-                `${globalWeaponMeasurements.average},${globalWeaponMeasurements.samples},` +
-                `${globalWeaponMeasurements.min},${globalWeaponMeasurements.max}`;
-            const local =
-                `${playerWeaponMeasurements.average},${playerWeaponMeasurements.samples},` +
-                `${playerWeaponMeasurements.min},${playerWeaponMeasurements.max}`;
-
-            const diff = ((playerWeaponMeasurements.average - globalWeaponMeasurements.average)
-                             / globalWeaponMeasurements.average) * 100;
-
-            if (server.isTest())
-                return;  // don't output the result during tests
-
-            console.log(`Dmage [${player.name}][${weaponId}][${global},${local}][${diff}]`);
-        }
+        return playerWeaponMeasurements;
     }
 }

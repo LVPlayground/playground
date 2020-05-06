@@ -4,7 +4,6 @@
 
 import Gang from 'features/gangs/gang.js';
 import Gangs from 'features/gangs/gangs.js';
-import PlayerMoneyBridge from 'features/gangs/util/player_money_bridge.js';
 
 describe('GangCommands', (it, beforeEach) => {
     let commands = null;
@@ -557,7 +556,8 @@ describe('GangCommands', (it, beforeEach) => {
 
         addPlayerToGang(player, gang, Gang.ROLE_MANAGER);
 
-        PlayerMoneyBridge.setMockedBalanceForTests(25000000);  // give the |player| 25M
+        // Give the |player| 25 million dollars to buy the encryption.
+        await server.featureManager.loadFeature('finance').depositToPlayerAccount(player, 25000000);
 
         assert.equal(gang.chatEncryptionExpiry, 0);
 
@@ -573,8 +573,6 @@ describe('GangCommands', (it, beforeEach) => {
             assert.closeTo(
                 gang.chatEncryptionExpiry, (server.clock.currentTime() / 1000) + 86400 * days, 5);
         }
-
-        PlayerMoneyBridge.setMockedBalanceForTests(null);
     });
 
     it('should do balance checks when purchasing gang chat encryption time', async(assert) => {
@@ -584,7 +582,8 @@ describe('GangCommands', (it, beforeEach) => {
 
         addPlayerToGang(player, gang, Gang.ROLE_MANAGER);
 
-        PlayerMoneyBridge.setMockedBalanceForTests(12500);  // make sure the |player| has few monies
+        // Make sure that the |player| does not have sufficient money available.
+        await server.featureManager.loadFeature('finance').depositToPlayerAccount(player, 12500);
 
         assert.equal(gang.chatEncryptionExpiry, 0);
 
@@ -598,8 +597,6 @@ describe('GangCommands', (it, beforeEach) => {
         assert.equal(gang.chatEncryptionExpiry, 0);
         assert.equal(
             player.lastDialog, Message.format(Message.GANG_SETTINGS_ENC_TIME_MONEY, 1500000, 12500))
-
-        PlayerMoneyBridge.setMockedBalanceForTests(null);
     });
 
     it('should not enable leaders to change the name to an existing one', async(assert) => {

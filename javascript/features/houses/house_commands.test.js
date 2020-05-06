@@ -10,7 +10,6 @@ import HouseExtension from 'features/houses/house_extension.js';
 import HouseSettings from 'features/houses/house_settings.js';
 import InteriorList from 'features/houses/utils/interior_list.js';
 import ParkingLotCreator from 'features/houses/utils/parking_lot_creator.js';
-import PlayerMoneyBridge from 'features/houses/utils/player_money_bridge.js';
 
 describe('HouseCommands', (it, beforeEach) => {
     let abuse = null;
@@ -447,7 +446,8 @@ describe('HouseCommands', (it, beforeEach) => {
         gunther.identify({ userId: 501 });
         gunther.position = new Vector(200, 250, 300);  // on the nearest location pickup
 
-        PlayerMoneyBridge.setMockedBalanceForTests(100000);
+        // Give |gunther| the $100,000 necessary to purchase the house.
+        await server.featureManager.loadFeature('finance').depositToPlayerAccount(gunther, 100000);
 
         gunther.respondToDialog({ response: 0 /* Yes, I get it */ });
 
@@ -456,9 +456,9 @@ describe('HouseCommands', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 1);
 
         assert.isFalse((await manager.findClosestLocation(gunther)).isAvailable());
-        assert.equal(await PlayerMoneyBridge.getBalanceForPlayer(gunther), 50000);
-
-        PlayerMoneyBridge.setMockedBalanceForTests(null);
+        assert.equal(
+            await server.featureManager.loadFeature('finance').getPlayerAccountBalance(gunther),
+            50000);
     });
 
     it('should not allow `/house goto` to be used by unregistered players', async(assert) => {
@@ -807,11 +807,8 @@ describe('HouseCommands', (it, beforeEach) => {
         assert.isFalse(location.isAvailable());
 
         // Give |gunther| a mocked balance of 150 million dollars on their bank account.
-        PlayerMoneyBridge.setMockedBalanceForTests(150000000);
-        {
-            const balance = await PlayerMoneyBridge.getBalanceForPlayer(gunther);
-            assert.equal(balance, 150000000);
-        }
+        await server.featureManager.loadFeature('finance').depositToPlayerAccount(
+            gunther, 150000000);
 
         gunther.respondToDialog({ listitem: SETTINGS_OFFSET + 1 /* Sell this house */}).then(
             () => gunther.respondToDialog({ response: 1 /* Yes, I really want to */ })).then(
@@ -822,7 +819,8 @@ describe('HouseCommands', (it, beforeEach) => {
 
         // Gunther should have been refunded money from the bank for selling their house.
         {
-            const balance = await PlayerMoneyBridge.getBalanceForPlayer(gunther);
+            const balance =
+                await server.featureManager.loadFeature('finance').getPlayerAccountBalance(gunther);
             assert.isAbove(balance, 150000000);
         }
     });

@@ -1094,38 +1094,7 @@ charHelp:
     }
 
     if (!strcmp(szParameter, "spawnmoney", true, 10)) {
-        new message[256];
-
-        if (!strlen(params)) {
-            format(message, sizeof(message), "Your spawn money is currently set to $%s.",
-                formatPrice(g_iSpawnMoney[playerid]));
-
-            SendClientMessage(playerid, Color::Success, message);
-            SendClientMessage(
-                playerid, Color::Information, "Use /my spawnmoney [amount] to change this.");
-            return 1;
-        }
-
-        new const MIN_START_MONEY = GetEconomyValue(SpawnMoney);
-        new const MAX_START_MONEY = 1000000;
-
-        param_shift_int(amount);
-        if (amount < MIN_START_MONEY || amount > MAX_START_MONEY) {
-            format(message, sizeof(message), "The amount must be between $%s and $%s.",
-                formatPrice(MIN_START_MONEY), formatPrice(MAX_START_MONEY));
-
-            SendClientMessage(playerid, Color::Error, message);
-            return 1;
-        }
-
-        g_iSpawnMoney[playerid] = amount;
-
-        new name[MAX_PLAYER_NAME + 1];
-        GetPlayerName(playerid, name, sizeof(name));
-
-        format(message, sizeof(message), "Your spawn money has been set to $%s.",
-            formatPrice(amount));
-        SendClientMessage(playerid, Color::Success, message);
+        SendClientMessage(playerid, Color::Error, "Sorry, this command is currently disabled.");
         return 1;
     }
 

@@ -8,22 +8,29 @@ export class AbuseDetector {
     // Certainty levels associated with a detection. |kFunnyFeeling| means that it's something that
     // in-game administrators should monitor. |kSuspected| means that we're reasonably certain, but
     // that verification is still in place. |kDetected| is a no-doubt detection.
-    static kFunnyFeeling = 0;
-    static kSuspected = 1;
-    static kDetected = 2;
+    static kFunnyFeeling = 'monitor';
+    static kSuspected = 'suspected';
+    static kDetected = 'detected';
 
     monitor_ = null;
     name_ = null;
 
-    constructor(monitor, name) {
+    constructor(settings, monitor, name) {
+        this.settings_ = settings;
         this.monitor_ = monitor;
         this.name_ = name;
     }
 
     // To be called when abuse has been detected. All information regarding the report will be given
     // to the AbuseMonitor, who will take care of the rest.
-    report(player, certainty = AbuseDetector.kFunnyFeeling) {
-        this.monitor_.reportAbuse(player, this.name_, certainty);
+    report(player, certainty = AbuseDetector.kFunnyFeeling, evidence = null) {
+        this.monitor_.reportAbuse(player, this.name_, certainty, evidence);
+    }
+
+    // Returns the value of the setting with the given |name|. Allows for further configurability
+    // within an individual abuse detector.
+    getSettingValue(name) {
+        return this.settings_().getValue(name);
     }
 
     // ---------------------------------------------------------------------------------------------

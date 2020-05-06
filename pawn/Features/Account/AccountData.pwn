@@ -148,9 +148,6 @@ class AccountData <playerId (MAX_PLAYERS)> {
         if (customColor != 0 && Player(playerId)->isVip())
             ColorManager->setPlayerCustomColor(playerId, customColor);
 
-        // mutable: money_bank
-        BankAccount(playerId)->setBalance(DatabaseResult(resultId)->readInteger("money_bank"));
-
         // mutable: money_bounty
         HitmanTracker(playerId)->setBounty(DatabaseResult(resultId)->readInteger("money_bounty"));
 

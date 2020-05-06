@@ -19,9 +19,6 @@ enum _: PickupModelId {
     // The rampage skull pickup is used to represent an ammunation checkpoint.
     AmmunationSkullPickupId = 1254,
 
-    // The dollar pickup is used to represent the main bank checkpoint.
-    MainBankDollarPickupId = 1274,
-
     // The information icon pickup is used to represent the information beacon.
     InformationBeaconPickupId = 1239
 };

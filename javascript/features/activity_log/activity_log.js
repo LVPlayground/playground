@@ -101,11 +101,10 @@ class ActivityLog extends Feature {
       return;
 
     const numericIpAddress = this.ip2long(player.ip);
-    const hashedGpci = murmur3hash(player.gpci);
 
-    this.nuwani_().echo(JoinIpGpciTag, player.name, player.id, player.ip, hashedGpci);
+    this.nuwani_().echo(JoinIpGpciTag, player.name, player.id, player.ip, player.serial);
 
-    this.recorder_.getIdFromWriteInsertSessionAtConnect(player.name, numericIpAddress, hashedGpci).then (result => {
+    this.recorder_.getIdFromWriteInsertSessionAtConnect(player.name, numericIpAddress, player.serial).then (result => {
       this.playerSessionIdMap_.set(player.id, result.sessionId);
     });
   }

@@ -34,17 +34,7 @@
     <DiskObject>\Entities\</DiskObject>
     <DiskObject>\Entities\Financial.pwn</DiskObject>
     <DiskObject>\Entities\Financial\</DiskObject>
-    <DiskObject>\Entities\Financial\Anticheat\</DiskObject>
-    <DiskObject>\Entities\Financial\Anticheat\MoneyExceptions\</DiskObject>
-    <DiskObject>\Entities\Financial\Anticheat\MoneyExceptions\CasinoMoneyException.pwn</DiskObject>
-    <DiskObject>\Entities\Financial\Anticheat\MoneyExceptions\VehicleMoneyException.pwn</DiskObject>
-    <DiskObject>\Entities\Financial\Anticheat\PlayerMoneyState.pwn</DiskObject>
-    <DiskObject>\Entities\Financial\Anticheat\PlayerMoneyState.tests.pwn</DiskObject>
-    <DiskObject>\Entities\Financial\Bank\</DiskObject>
-    <DiskObject>\Entities\Financial\Bank\BankAccount.pwn</DiskObject>
-    <DiskObject>\Entities\Financial\Bank\BankCommands.pwn</DiskObject>
     <DiskObject>\Entities\Financial\FinancialUtilities.pwn</DiskObject>
-    <DiskObject>\Entities\Financial\TaxAgency.pwn</DiskObject>
     <DiskObject>\Entities\NPCs.pwn</DiskObject>
     <DiskObject>\Entities\NPCs\</DiskObject>
     <DiskObject>\Entities\NPCs\NonPlayerCharacter.pwn</DiskObject>
@@ -138,9 +128,6 @@
     <DiskObject>\Features\Debug\BetaCommands.pwn</DiskObject>
     <DiskObject>\Features\Environment.pwn</DiskObject>
     <DiskObject>\Features\Environment\</DiskObject>
-    <DiskObject>\Features\Environment\Area\</DiskObject>
-    <DiskObject>\Features\Environment\Area\CasinoArea.pwn</DiskObject>
-    <DiskObject>\Features\Environment\Area\PayAndSprayShops.pwn</DiskObject>
     <DiskObject>\Features\Environment\Services\</DiskObject>
     <DiskObject>\Features\Environment\Services\Gunther.pwn</DiskObject>
     <DiskObject>\Features\Environment\Services\PlanePilot.pwn</DiskObject>
@@ -200,7 +187,6 @@
     <DiskObject>\Features\Visual\</DiskObject>
     <DiskObject>\Features\Visual\Countdown.pwn</DiskObject>
     <DiskObject>\Features\Visual\Interface.pwn</DiskObject>
-    <DiskObject>\Features\Visual\MoneyIndicator.pwn</DiskObject>
     <DiskObject>\Features\Visual\NeedToIdentifyForSpawnMessage.pwn</DiskObject>
     <DiskObject>\Features\Visual\News\</DiskObject>
     <DiskObject>\Features\Visual\News\NewsController.pwn</DiskObject>

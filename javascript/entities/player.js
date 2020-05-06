@@ -5,6 +5,7 @@
 import PlayerSyncedData from 'entities/player_synced_data.js';
 import PlayerSettings from 'entities/player_settings.js';
 
+import { murmur3hash } from 'base/murmur3hash.js';
 import { toFloat } from 'base/float.js';
 
 // Camera interpolation modes defined by SA-MP.
@@ -19,6 +20,7 @@ class Player {
     this.ipAddress_ = pawnInvoke('GetPlayerIp', 'iS', playerId);
     this.nonPlayerCharacter_ = !!pawnInvoke('IsPlayerNPC', 'i', playerId);
     this.gpci_ = pawnInvoke('gpci', 'iS', playerId);
+    this.serial_ = murmur3hash(this.gpci_ || 'bot');
 
     this.syncedData_ = new PlayerSyncedData(playerId);
 
@@ -83,8 +85,11 @@ class Player {
   // Returns the IP address of this player. This attribute is read-only.
   get ip() { return this.ipAddress_; }
 
-  // Returns the serial of the player. Read-only and note that it is not unique per player!
+  // Returns the GPCI hash of the player. Read-only and note that it is not unique per player!
   get gpci() { return this.gpci_; }
+
+  // Returns the serial number of the player.
+  get serial() { return this.serial_; }
 
   // Gets the level of this player. Synchronized with the gamemode using the `levelchange` event.
   get level() { return this.level_; }

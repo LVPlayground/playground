@@ -4,12 +4,10 @@
 
 import createTestEnvironment from 'features/houses/test/test_environment.js';
 
-import PlayerMoneyBridge from 'features/houses/utils/player_money_bridge.js';
-
 // Zero-based index of the Pickup Settings menu in the `/house settings` options.
 const SETTINGS_MENU_INDEX = 3;
 
-describe('Pickups', (it, beforeEach, afterEach) => {
+describe('Pickups', (it, beforeEach) => {
     let gunther = null;
     let location = null;
     let manager = null;
@@ -23,7 +21,8 @@ describe('Pickups', (it, beforeEach, afterEach) => {
         russell.identify({ userId: 12356 });
 
         // Give Gunther 25 million dollars to spend on house pickups.
-        PlayerMoneyBridge.setMockedBalanceForTests(25000000);
+        await server.featureManager.loadFeature('finance').depositToPlayerAccount(
+            gunther, 25000000);
 
         ({ manager } = await createTestEnvironment());
 
@@ -42,10 +41,9 @@ describe('Pickups', (it, beforeEach, afterEach) => {
         gunther.clearMessages();
     });
 
-    afterEach(() => PlayerMoneyBridge.setMockedBalanceForTests(null));
-
     it('should not enable pickups purchases if they have insufficient balance', async(assert) => {
-        PlayerMoneyBridge.setMockedBalanceForTests(0 /* no more monies */);
+        await server.featureManager.loadFeature('finance').withdrawFromPlayerAccount(
+            gunther, 25000000);
 
         assert.isFalse(location.interior.features.has('health'));
 

@@ -21,6 +21,15 @@
   "ANNOUNCE_REPORT": "{FFFF00}* Report by %s (Id:%d): Player: %s (Id:%d) - Reason: %s",
   "ANNOUNCEMENT_TOGGLED":  "@success The {FFA500}%s{A9C4E4} announcement has been %s for you.",
 
+  "BANK_NEED_ACCOUNT": "@error You need to register on https://sa-mp.nl/ to get a bank account!",
+  "BANK_NOT_ENOUGH_CASH": "@error You aren't carrying enough cash to deposit %$.",
+  "BANK_NOT_ENOUGH_FUNDS": "@error There aren't enough funds in your bank account to withdraw %$.",
+  "BANK_NO_AVAILABLE_CASH": "@error You cannot carry more than %$ in cash.",
+  "BANK_NO_AVAILABLE_BALANCE": "@error The bank is not willing to store more than %$ for you.",
+  "BANK_BALANCE": "{FFEB3B}* Your current account balance is {FF9800}%${FFEB3B}. You bank is willing to store up to {FF9800}%${FFEB3B}.",
+  "BANK_STORED": "{FFEB3B}* The have deposited {FF9800}%${FFEB3B}. Your new account balance is {FF9800}%${FFEB3B}.",
+  "BANK_WITHDRAWN": "{FFEB3B}* You have withdrawn {FF9800}%${FFEB3B}. Your new account balance is {FF9800}%${FFEB3B}.",
+
   "COMMAND_ERROR_INSUFFICIENT_RIGHTS": "@error Sorry, this command is only available to %s.",
   "COMMAND_ERROR_INSUFFICIENT_RIGHTS_BETA": "@error Sorry, you must have a registered account in order to use this command.",
   "COMMAND_ERROR_UNKNOWN_PLAYER": "@error Sorry, no player could be found for \"%s\".",
@@ -33,6 +42,9 @@
   "DEBUG_TRACE_INVALID_TIME": "@error A trace must last between 0 and 300 seconds.",
   "DEBUG_TRACE_STARTED": "{33AA33}The trace you requested is now being recorded.",
   "DEBUG_TRACE_FINISHED": "{33AA33}The trace you requested has finished recording.",
+
+  "FINANCE_CONTRIBUTION_PAID": "{FFEB3B}You've been selected to donate {FF9800}%${FFEB3B} to the {FF9800}%s{FFEB3B} fund!",
+  "FINANCE_CONTRIBUTION_WHY": "{FFEB3B}Your hard earned cash helps keep the local San Andreas economy going!",
 
   "FRIENDS_ADDED": "@success %s has been added to your friends list.",
   "FRIENDS_EMPTY": "{FF9900}You haven't added any friends yet!",

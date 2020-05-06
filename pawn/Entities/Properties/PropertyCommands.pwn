@@ -472,15 +472,6 @@ class PropertyCommands {
             return 1;
         }
 
-        if (newOwnerId == playerId) {
-            if (BankAccount(playerId)->balance() >= Property(propertyId)->price())
-                BankAccount(playerId)->setBalance(BankAccount(playerId)->balance() - Property(propertyId)->price());
-            else {
-                SendClientMessage(playerId, Color::Error, "Insufficient funds to own property.");
-                return 1;
-            }
-        }
-
         Property(propertyId)->setOwnerId(newOwnerId);
         Property(propertyId)->setPropertyAvailability(0);
         format(message, sizeof(message), "The owner of the specified property (Id:%d) has changed to %s (Id:%d).", 

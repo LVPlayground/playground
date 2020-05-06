@@ -7,7 +7,6 @@ import confirm from 'components/dialogs/confirm.js';
 
 import HouseExtension from 'features/houses/house_extension.js';
 import Menu from 'components/menu/menu.js';
-import PlayerMoneyBridge from 'features/houses/utils/player_money_bridge.js';
 import StoredPickup from 'features/streamer/stored_pickup.js';
 
 // Delay, in seconds, after which a health pickup in a house respawns.
@@ -18,11 +17,12 @@ const ArmourPickupRespawnDelay = 180;
 
 // Extension that allows players to place health and armour pickups in their house.
 class Pickups extends HouseExtension {
-    constructor(manager, economy, streamer) {
+    constructor(manager, economy, finance, streamer) {
         super();
 
         this.manager_ = manager;
         this.economy_ = economy;
+        this.finance_ = finance;
 
         // Map of locations to the pickups created as part of them.
         this.locations_ = new Map();
@@ -78,7 +78,7 @@ class Pickups extends HouseExtension {
                     const price =
                         this.economy_().calculateHouseFeaturePrice(location.position, feature);
 
-                    const balance = await PlayerMoneyBridge.getBalanceForPlayer(player);
+                    const balance = await this.finance_().getPlayerAccountBalance(player);
                     if (balance < price) {
                         return await alert(player, {
                             title: 'The pickup is too expensive!',
@@ -97,7 +97,7 @@ class Pickups extends HouseExtension {
                     if (!confirmed)
                         return await pickupMenu.displayForPlayer(player);
 
-                    await PlayerMoneyBridge.setBalanceForPlayer(player, balance - price);
+                    await this.finance_().withdrawFromPlayerAccount(player, price);
 
                     // TODO: Should we enable the player to choose the position?
                     const position = new Vector(...location.interior.getData().features[feature]);

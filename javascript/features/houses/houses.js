@@ -27,6 +27,9 @@ class Houses extends Feature {
         // House pricing is determined using a predefined set of algorithms.
         const economy = this.defineDependency('economy');
 
+        // Used to interact with the bank accounts owned by individual players.
+        const finance = this.defineDependency('finance');
+
         // Friends and gangs can influence the access rules of particular houses.
         const friends = this.defineDependency('friends');
         const gangs = this.defineDependency('gangs');
@@ -43,13 +46,13 @@ class Houses extends Feature {
         this.manager_ = new HouseManager(abuse, announce, economy, friends, gangs, location, streamer);
 
         this.manager_.registerExtension(new PropertySettings(this.manager_));
-        this.manager_.registerExtension(new Pickups(this.manager_, economy, streamer));
+        this.manager_.registerExtension(new Pickups(this.manager_, economy, finance, streamer));
         this.manager_.registerExtension(new VisitorLog(this.manager_));
 
         this.manager_.loadHousesFromDatabase();
 
         this.commands_ = new HouseCommands(
-            this.manager_, abuse, announce, economy, location, playground);
+            this.manager_, abuse, announce, economy, finance, location, playground);
 
         this.natives_ = new HouseNatives(this.manager_);
     }

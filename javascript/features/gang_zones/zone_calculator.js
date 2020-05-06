@@ -9,7 +9,7 @@ const kMaximumDistance = 100;
 
 // The minimum fraction of active gang members that need to have a house in the gang area in order
 // for the area to be considered as a real gang area.
-const kMinimumActiveMemberFractionForArea = 0.6;
+const kMinimumActiveMemberFractionForArea = 0.5;
 
 // The zone calculator is notified whenever updated information of an active gang is available,
 // which will be used to determine whether display of a zone is appropriate.
@@ -28,8 +28,12 @@ export class ZoneCalculator {
     // or more gang zones. This is also called when new active gangs are being introduced.
     onGangUpdated(zoneGang) {
         const areas = this.computeGangAreas(zoneGang);
-        if (areas.length)
+        if (areas.length) {
             console.log(`${zoneGang.name} has ${areas.length} areas.`);
+            for (const { area } of areas) {
+                console.log(`- [${area.minX}, ${area.minY}, ${area.maxX}, ${area.maxY}]`)
+            }
+        }
     }
 
     // Called when the |zoneGang| has been deactivated, and no longer deserves a gang zone because
@@ -51,21 +55,34 @@ export class ZoneCalculator {
                 houseLocations.push([ location.position.x, location.position.y, location ]);
         }
 
-        const clusters = getClustersForSanAndreas(houseLocations, { maximumClusters: 3 });
+        const clusters = getClustersForSanAndreas(houseLocations, { maximumClusters: 8 });
         const areas = [];
 
         for (const { mean } of clusters) {
             const meanVector = new Vector(...mean);
 
+            let area = {
+                x: { min: Number.MAX_SAFE_INTEGER, max: Number.MIN_SAFE_INTEGER },
+                y: { min: Number.MAX_SAFE_INTEGER, max: Number.MIN_SAFE_INTEGER },
+            };
+
             let locations = new Set();
             let members = new Set();
 
             for (const [,, location] of houseLocations) {
+                // Note:
+                // Could we have different |kMaximumDistance| depending on the gang's representation
+                // faction in this area?
                 if (!location.position.closeTo(meanVector, kMaximumDistance))
                     continue;
                 
                 locations.add(location);
                 members.add(location.settings.ownerId);
+
+                area.x.min = Math.min(area.x.min, location.position.x);
+                area.x.max = Math.max(area.x.max, location.position.x);
+                area.y.min = Math.min(area.y.min, location.position.y);
+                area.y.max = Math.max(area.y.max, location.position.y);
             }
 
             const representationFraction = members.size / zoneGang.members.size;
@@ -74,6 +91,7 @@ export class ZoneCalculator {
 
             areas.push({
                 mean: meanVector,
+                area: new Rect(area.x.min, area.y.min, area.x.max, area.y.max),
                 locations: locations.size
             });
         }

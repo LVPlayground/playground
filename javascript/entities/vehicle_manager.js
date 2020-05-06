@@ -31,9 +31,14 @@ class VehicleManager {
             'vehiclestreamin', VehicleManager.prototype.onVehicleStreamIn.bind(this));
 
         // TODO(Russell): Handle OnVehicleDamangeStatusUpdate
-        // TODO(Russell): Handle OnVehicleMod
-        // TODO(Russell): Handle OnVehiclePaintjob
-        // TODO(Russell): Handle OnVehicleRespray
+
+        this.callbacks_.addEventListener(
+            'vehiclemod', VehicleManager.prototype.onVehicleMod.bind(this)); 
+        this.callbacks_.addEventListener(
+            'vehiclepaintjob', VehicleManager.prototype.onVehiclePaintjob.bind(this)); 
+        this.callbacks_.addEventListener(
+            'vehiclerespray', VehicleManager.prototype.onVehicleRespray.bind(this)); 
+
         // TODO(Russell): Handle OnVehicleSirenStateChange
 
         this.processTrailerUpdates();
@@ -181,6 +186,44 @@ class VehicleManager {
 
         // Make the |player| enter the vehicle by teleporting them in.
         player.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    onVehicleMod(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player)
+            return;
+
+        const vehicle = this.vehicles_.get(event.vehicleid);
+        if (!vehicle)
+            return;
+
+        this.notifyObservers('onVehicleMod', player, vehicle, event.componentid);
+    }
+
+    onVehiclePaintjob(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player)
+            return;
+
+        const vehicle = this.vehicles_.get(event.vehicleid);
+        if (!vehicle)
+            return;
+        
+        this.notifyObservers('onVehiclePaintjob', player, vehicle, event.paintjobid);
+    }
+
+    onVehicleRespray(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player)
+            return;
+
+        const vehicle = this.vehicles_.get(event.vehicleid);
+        if (!vehicle)
+            return;
+
+        this.notifyObservers('onVehicleRespray', player, vehicle, event.color1, event.color2);
     }
 
     // ---------------------------------------------------------------------------------------------

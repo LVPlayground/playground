@@ -19,7 +19,7 @@ describe('FinancialCommunityContribution', (it, beforeEach) => {
         settings = server.featureManager.loadFeature('settings');
 
         regulator = new FinancialRegulator(MockFinancialNativeCalls);
-        contribution = new FinancialCommunityContribution(regulator, settings);
+        contribution = new FinancialCommunityContribution(regulator, () => settings);
     });
 
     it('should collect contributions depending on player status', async (assert) => {

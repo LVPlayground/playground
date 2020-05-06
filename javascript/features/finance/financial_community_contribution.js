@@ -136,18 +136,20 @@ export class FinancialCommunityContribution {
         // Determine the minimum wealth level at which the |player| has to start paying tax, and
         // what percentage of tax they have to pay after beyond that.
         if (player.isVip()) {
-            collectionBase = this.settings_.getValue('financial/community_contribution_vip_base');
+            collectionBase =
+                this.settings_().getValue('financial/community_contribution_vip_base');
             collectionPercentage =
-                this.settings_.getValue('financial/community_contribution_vip_pct');
+                this.settings_().getValue('financial/community_contribution_vip_pct');
         } else if (player.isRegistered()) {
             collectionBase =
-                this.settings_.getValue('financial/community_contribution_player_base');
+                this.settings_().getValue('financial/community_contribution_player_base');
             collectionPercentage =
-                this.settings_.getValue('financial/community_contribution_player_pct');
+                this.settings_().getValue('financial/community_contribution_player_pct');
         } else {
-            collectionBase = this.settings_.getValue('financial/community_contribution_guest_base');
+            collectionBase =
+                this.settings_().getValue('financial/community_contribution_guest_base');
             collectionPercentage =
-                this.settings_.getValue('financial/community_contribution_guest_pct');
+                this.settings_().getValue('financial/community_contribution_guest_pct');
         }
 
         // The |contributionBase| will be ignored, but every penny beyond that will be taxed at
@@ -170,7 +172,7 @@ export class FinancialCommunityContribution {
     // valid range of [5, 1800] seconds, to avoid crazy values.
     getCollectionDelaySec() {
         const configuredDelay =
-            this.settings_.getValue('financial/community_contribution_cycle_sec');
+            this.settings_().getValue('financial/community_contribution_cycle_sec');
         
         if (configuredDelay < kMinimumCycleIntervalSec)
             return kMinimumCycleIntervalSec;

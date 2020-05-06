@@ -15,7 +15,10 @@ class Announce extends Feature {
         // send their own IRC messages should depend on Nuwani individually.
         const nuwani = this.defineDependency('nuwani');
 
-        this.manager_ = new AnnounceManager(nuwani);
+        // The announce feature reads out the settings to know wha to announce to IRC.
+        const settings = this.defineDependency('settings');
+        
+        this.manager_ = new AnnounceManager(nuwani, settings);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -40,10 +43,21 @@ class Announce extends Feature {
         this.manager_.announceToPlayers(message, ...args);
     }
 
-    // Announces |message| to all in-game administrators. This will automatically generate an IRC
-    // message with the "admin" tag. The |args| will only be used if |message| is a Message object.
+    // Announces |message| to all in-game administrators that have uncategorized messages enabled. 
+    // This will automatically generate an IRC message with the "admin" tag if uncategorized 
+    // announcements are enabled in the settings. The |args| will only be used if |message| is a 
+    // Message object.
     announceToAdministrators(message, ...args) {
         this.manager_.announceToAdministrators(message, ...args);
+    }
+    
+    // Announces |message| to all in-game administrators who have the |announceSubcategory| and 
+    // |subCommand| enabled. This will automatically generate an IRC message with the "admin" tag 
+    // if uncategorized announcements are enabled in the settings. The |args| will only be used if 
+    // |message| is a Message object.
+    announceToAdministratorsWithFilter(message, announceSubcategory, subCommand, ...args) {
+        this.manager_.announceToAdministratorsWithFilter(message, announceSubcategory, subCommand, 
+            ...args);
     }
 
     // Announces that a |player| did a report of |reportedPlayer| because of |reason| to all in-game

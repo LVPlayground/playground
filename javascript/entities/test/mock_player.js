@@ -4,6 +4,7 @@
 
 import MockPlayerSyncedData from 'entities/test/mock_player_synced_data.js';
 import MockVehicle from 'entities/test/mock_vehicle.js';
+import PlayerSettings from 'entities/player_settings.js';
 
 import { murmur3hash } from 'base/murmur3hash.js';
 
@@ -75,6 +76,8 @@ class MockPlayer {
         this.currentVehicleSeat_ = 0;
 
         this.cashMoney_ = 0;
+
+        this.playerSettings_ = new PlayerSettings();
     }
 
     get id() { return this.id_; }
@@ -542,6 +545,8 @@ class MockPlayer {
 
     get cashMoney() { return this.cashMoney_; }
     giveCashMoney(amount) { this.cashMoney_ += amount;}
+
+    get settings() { return this.playerSettings_; }
 }
 
 export default MockPlayer;

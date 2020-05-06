@@ -176,7 +176,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         gunther.level = Player.LEVEL_MANAGEMENT;
 
         // Disable the `holidays_free_vip` section in the `abuse` section.
-        gunther.respondToDialog({ listitem: 2 /* Assumed `decorations` */ }).then(
+        gunther.respondToDialog({ listitem: 3 /* Assumed `decorations` */ }).then(
             () => gunther.respondToDialog({ listitem: 0 /* Assumed to be Holiday VIP */ })).then(
             () => gunther.respondToDialog({ listitem: 1 /* Disable */ })).then(
             () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
@@ -191,8 +191,14 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
 
         gunther.clearMessages();
 
+        var indexOfDecorationSetting = [...settings.getSettings()]
+            .map(setting => setting.category)
+            .filter((value, index, self) => self.indexOf(value) === index)
+            .sort()
+            .indexOf('decorations');
+
         // Enable the `holidays_free_vip` section in the `abuse` section.
-        gunther.respondToDialog({ listitem: 2 /* Assumed `decorations` */ }).then(
+        gunther.respondToDialog({ listitem: indexOfDecorationSetting /* Assumed `decorations` */ }).then(
             () => gunther.respondToDialog({ listitem: 0 /* Assumed to be Holiday VIP */ })).then(
             () => gunther.respondToDialog({ listitem: 0 /* Disable */ })).then(
             () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
@@ -244,9 +250,15 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         const settings = server.featureManager.loadFeature('settings');
 
         gunther.level = Player.LEVEL_MANAGEMENT;
+        
+        var indexOfRadioSetting = [...settings.getSettings()]
+            .map(setting => setting.category)
+            .filter((value, index, self) => self.indexOf(value) === index)
+            .sort()
+            .indexOf('radio');
 
         // Change the `default_channel` section in the `radio` section.
-        gunther.respondToDialog({ listitem: 4 /* Assumed `radio` */ }).then(
+        gunther.respondToDialog({ listitem: indexOfRadioSetting /* Assumed `radio` */ }).then(
             () => gunther.respondToDialog({ listitem: 0 /* Assumed to be `default_channel` */ })).then(
             () => gunther.respondToDialog({ response: 1, inputtext: 'Hello World' })).then(
             () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));

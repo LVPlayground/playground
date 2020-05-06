@@ -5,6 +5,7 @@
 import { FinancialDatabase } from 'features/finance/financial_database.js';
 import { FinancialNativeCalls } from 'features/finance/financial_natives.js';
 import { MockFinancialDatabase } from 'features/finance/test/mock_financial_database.js';
+import { MoneyIndicator } from 'features/finance/visual/money_indicator.js';
 
 // The financial regulator is responsible for managing money in Las Venturas Playground. It
 // maintains its own books, and will continuously align player's own monitary values with it. Some
@@ -107,10 +108,15 @@ export class FinancialRegulator {
         if (amount > FinancialRegulator.kMaximumCashAmount)
             amount = FinancialRegulator.kMaximumCashAmount;
         
-        if (!isAdjustment)
-            this.nativeCalls_.givePlayerMoney(player, amount - this.getPlayerCashAmount(player));
+        const difference = amount - this.getPlayerCashAmount(player);
 
         this.cash_.set(player, amount);
+        if (isAdjustment)
+            return;  // silent adjustment, all done here
+
+        MoneyIndicator.showForPlayer(player, difference);
+
+        this.nativeCalls_.givePlayerMoney(player, difference);
     }
 
     // ---------------------------------------------------------------------------------------------

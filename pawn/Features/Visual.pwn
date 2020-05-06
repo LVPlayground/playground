@@ -15,10 +15,6 @@
 #include "Features/Visual/News/NewsController.pwn"
 #include "Features/Visual/News/NewsMessage.pwn"
 
-// When a player receives money or actually spends money, we show the amount in either green (for
-// increases) or red (for decreases) text under their HUD in the top-right of the window.
-#include "Features/Visual/MoneyIndicator.pwn"
-
 // The Visual Interface class curates the most basic interface elements of Las Venturas Playground,
 // i.e. any logos and effects which should be on the player's screen for longer periods of time.
 #include "Features/Visual/Interface.pwn"

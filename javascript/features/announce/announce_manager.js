@@ -67,13 +67,13 @@ class AnnounceManager {
     // |message| is an instance of Message, which is common infrastructure for user-visible text.
     announceToAdministrators(message, ...args) {
         this.announceToAdministratorsWithFilter(message, PlayerSetting.ANNOUNCEMENT.UNCATEGORIZED, 
-            PlayerSetting.SUBCOMMAND.GENERAL, args);
+            PlayerSetting.SUBCOMMAND.GENERAL, ...args);
     }
 
     // Announces |message| to the administrators that have the announcements for |announceSubcategory| 
     // and |subCommand| enabled. Optionally |args| may be passed if |message| is an instance of Message, 
     // which is common infrastructure for user-visible text.
-    announceToAdministratorsWithFilter(message, announceSubcategory, subCommand, args) {
+    announceToAdministratorsWithFilter(message, announceSubcategory, subCommand, ...args) {
         if (message instanceof Message)
             message = Message.format(message, ...args);
 

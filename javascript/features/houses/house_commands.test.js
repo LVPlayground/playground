@@ -10,6 +10,7 @@ import HouseExtension from 'features/houses/house_extension.js';
 import HouseSettings from 'features/houses/house_settings.js';
 import InteriorList from 'features/houses/utils/interior_list.js';
 import ParkingLotCreator from 'features/houses/utils/parking_lot_creator.js';
+import PlayerSetting from 'entities/player_setting.js';
 
 describe('HouseCommands', (it, beforeEach) => {
     let abuse = null;
@@ -41,6 +42,8 @@ describe('HouseCommands', (it, beforeEach) => {
             () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
 
         assert.equal(manager.locationCount, locationCount);
+        
+        gunther.settings.setValue(`${PlayerSetting.CATEGORY.ANNOUNCEMENT}/${PlayerSetting.ANNOUNCEMENT.HOUSES}/${PlayerSetting.SUBCOMMAND.HOUSES_CREATED}`, true);
 
         assert.isTrue(await gunther.issueCommand('/house create'));
 

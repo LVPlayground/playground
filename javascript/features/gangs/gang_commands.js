@@ -11,7 +11,6 @@ import Dialog from 'components/dialogs/dialog.js';
 import Gang from 'features/gangs/gang.js';
 import GangDatabase from 'features/gangs/gang_database.js';
 import Menu from 'components/menu/menu.js';
-import PlayerMoneyBridge from 'features/gangs/util/player_money_bridge.js';
 import Question from 'components/dialogs/question.js';
 import QuestionSequence from 'components/dialogs/question_sequence.js';
 
@@ -57,9 +56,10 @@ const GOAL_QUESTION = {
 // Implements the commands available as part of the persistent gang feature. The primary ones are
 // /gang and /gangs, each of which has a number of sub-options available to them.
 class GangCommands {
-    constructor(manager, announce) {
+    constructor(manager, announce, finance) {
         this.manager_ = manager;
         this.announce_ = announce;
+        this.finance_ = finance;
 
         // Map of players to the gangs they have been invited by.
         this.invitations_ = new WeakMap();
@@ -479,14 +479,14 @@ class GangCommands {
                     [ '1 month', 25000000, 2613600 ]
                 ];
 
-                const currentBalance = await PlayerMoneyBridge.getBalanceForPlayer(player);
+                const currentBalance = await this.finance_().getPlayerAccountBalance(player);
 
                 for (const [label, price, seconds] of prices) {
                     const pricePrefix = (price < currentBalance ? '{00FF00}' : '{FF0000}');
                     const priceLabel = pricePrefix + Message.format('%$', price);
 
                     purchaseMenu.addItem(label, priceLabel, async(player) => {
-                        const balance = await PlayerMoneyBridge.getBalanceForPlayer(player);
+                        const balance = await this.finance_().getPlayerAccountBalance(player);
                         if (balance < price) {
                             return await alert(player, {
                                 title: 'Unable to purchase the additional time',
@@ -495,7 +495,7 @@ class GangCommands {
                             });
                         }
 
-                        await PlayerMoneyBridge.setBalanceForPlayer(player, balance - price);
+                        await this.finance_().withdrawFromPlayerAccount(player, price);
                         await this.manager_.updateChatEncryption(gang, player, seconds);
 
                         await alert(player, {

@@ -16,8 +16,11 @@ class Gangs extends Feature {
         // Used for announcing gang-related events to players and administrators.
         const announce = this.defineDependency('announce');
 
+        // Used to interact with the bank accounts owned by individual players.
+        const finance = this.defineDependency('finance');
+
         this.manager_ = new GangManager();
-        this.commands_ = new GangCommands(this.manager_, announce);
+        this.commands_ = new GangCommands(this.manager_, announce, finance);
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -54,17 +54,17 @@ export default class Finance extends Feature {
     // ---------------------------------------------------------------------------------------------
 
     // Returns the current account balance in the |player|'s bank account.
-    async getAccountBalance(player) {
+    async getPlayerAccountBalance(player) {
         return this.regulator_.getAccountBalance(player);
     }
 
     // Deposits |amount| dollars in the bank account owned by |player|.
-    async depositToAccount(player, amount) {
+    async depositToPlayerAccount(player, amount) {
         return this.regulator_.depositToAccount(player, amount);
     }
 
     // Withdraws |amount| dollars from the bank account owned by |player|.
-    async withdrawFromAccount(player, amount) {
+    async withdrawFromPlayerAccount(player, amount) {
         return this.regulator_.withdrawFromAccount(player, amount);
     }
 

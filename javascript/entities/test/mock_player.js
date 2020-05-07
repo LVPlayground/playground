@@ -5,6 +5,7 @@
 import MockPlayerSyncedData from 'entities/test/mock_player_synced_data.js';
 import MockVehicle from 'entities/test/mock_vehicle.js';
 import PlayerSettings from 'entities/player_settings.js';
+import { Vector } from 'base/vector.js';
 
 import { murmur3hash } from 'base/murmur3hash.js';
 
@@ -25,6 +26,12 @@ class MockPlayer {
     #isNpc_ = null;
 
     #isServerAdmin_ = false;
+
+    #position_ = new Vector(0, 0, 0);
+    #rotation_ = 0;
+    #interiorId_ = 0;
+    #virtualWorld_ = 0;
+    #velocity_ = new Vector(0, 0, 0);
 
     // Initializes the mock player with static information that generally will not change for the
     // duration of the player's session. The |params| object is available.
@@ -63,10 +70,47 @@ class MockPlayer {
     setNameForGuestLogin(value) { this.#name_ = value; }
 
     // ---------------------------------------------------------------------------------------------
+    // Section: Physics
+    // ---------------------------------------------------------------------------------------------
 
-    setNonPlayerCharacter(value) { this.#isNpc_ = value; }
+    get position() { return this.#position_; }
+    set position(value) {
+        this.#position_ = value;
 
+        // Testing behaviour: using SetPlayerPos() while the player is in a vehicle will eject them
+        // from the vehicle. Emulate this behaviour by issuing a state change event.
+        if (this.vehicle_ !== null) {
+            dispatchEvent('playerstatechange', {
+                playerid: this.#id_,
+                oldstate: this.vehicleSeat_ === Vehicle.SEAT_DRIVER ? Player.STATE_DRIVER
+                                                                    : Player.STATE_PASSENGER,
+                newstate: Player.STATE_ON_FOOT,
+            });
+        }
 
+        // Testing behaviour: players moving around will naturally cause them to be near pickups,
+        // which are events that aren't naturally generated in a test setup. Fake it.
+        server.pickupManager.onPlayerPositionChanged(this);
+    }
+
+    get rotation() { return this.#rotation_; }
+    set rotation(value) { this.#rotation_ = value; }
+
+    get velocity() { return this.#velocity_; }
+    set velocity(value) { this.#velocity_ = value; }
+
+    get interiorId() { return this.#interiorId_; }
+    set interiorId(value) { this.#interiorId_ = value; }
+
+    get virtualWorld() { return this.#virtualWorld_; }
+    set virtualWorld(value) {
+        if (this.syncedData_.isIsolated())
+            return;
+
+        this.#virtualWorld_ = value;
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
 
 
@@ -86,10 +130,7 @@ class MockPlayer {
         this.health_ = 100;
         this.armour_ = 100;
 
-        this.interiorId_ = 0;
-        this.virtualWorld_ = 0;
         this.userId_ = null;
-        this.position_ = new Vector(0, 0, 0);
         this.specialAction_ = Player.SPECIAL_ACTION_NONE;
 
         this.packetLossPercent_ = 0;
@@ -184,39 +225,6 @@ class MockPlayer {
     // Gets or sets the Id of the gang this player is part of.
     get gangId() { return this.gangId_; }
     set gangId(value) { this.gangId_ = value; }
-
-    // Gets or sets the interior the player is part of. Moving them to the wrong interior will mess up
-  // their visual state significantly, as all world objects may disappear.
-    get interiorId() { return this.interiorId_; }
-    set interiorId(value) { this.interiorId_ = value; }
-
-    // Gets or sets the virtual world the player is part of.
-    get virtualWorld() { return this.virtualWorld_; }
-    set virtualWorld(value) {
-        if (this.syncedData_.isIsolated())
-          return;
-
-        this.virtualWorld_ = value;
-    }
-
-    // Gets or sets the position of this player.
-    get position() { return this.position_; }
-    set position(value) {
-        this.position_ = value;
-
-        // Fake a state change if the player is currently in a vehicle.
-        if (this.vehicle_ != null) {
-            server.playerManager.onPlayerStateChange({
-                playerid: this.id_,
-                oldstate: this.vehicleSeat_ === Vehicle.SEAT_DRIVER ? Player.STATE_DRIVER
-                                                                    : Player.STATE_PASSENGER,
-                newstate: Player.STATE_ON_FOOT
-            });
-        }
-
-        // Fake pickup events if the player happened to have stepped in a pickup.
-        server.pickupManager.onPlayerPositionChanged(this);
-    }
 
     // Gets or sets the health of the player.
     get health() { return this.health_ }

@@ -29,7 +29,7 @@ class PositioningCommands {
 
     onPosCommand(player) {
         const playerPosition = player.position;
-        const playerFacingAngle = player.facingAngle;
+        const playerFacingAngle = player.rotation;
 
         player.sendMessage(
             Message.POSITIONING_CURRENT_POSITION, playerPosition.x, playerPosition.y,
@@ -97,7 +97,7 @@ class PositioningCommands {
         }
         else {
             const playerPosition = player.position;
-            const playerZAngle = player.facingAngle;
+            const playerZAngle = player.rotation;
             const playerCalculatedPosition = this.getCalculatedPositionInFrontWithDistance(playerPosition, distance, playerZAngle);
             player.position = playerCalculatedPosition;
         }

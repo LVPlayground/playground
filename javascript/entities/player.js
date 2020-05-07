@@ -19,6 +19,9 @@ import { toFloat } from 'base/float.js';
 //     Contains information on who the player is: their ID, nickname, IP address and serial. Most
 //     of this information is constant, and will have been cached by the `initialize()` method.
 //
+//   * Physics
+//     Where in the world are they? In which interior ID and virtual world? How fast are they
+//     going? All of these properties have both getters and setters.
 //
 //
 // This class is not directly appropriate for testing, as the Pawn calls would fail. To that end, in
@@ -87,6 +90,35 @@ class Player extends Supplementable {
     setNameForGuestLogin(value) { this.#name_ = value; }
 
     // ---------------------------------------------------------------------------------------------
+    // Section: Physics
+    // ---------------------------------------------------------------------------------------------
+
+    get position() { return new Vector(...pawnInvoke('GetPlayerPos', 'iFFF', this.#id_)); }
+    set position(value) {
+        pawnInvoke('SetPlayerPos', 'ifff', this.#id_, value.x, value.y, value.z);
+    }
+
+    get rotation() { return pawnInvoke('GetPlayerFacingAngle', 'iF', this.#id_); }
+    set rotation(value) { pawnInvoke('SetPlayerFacingAngle', 'if', this.#id_, value); }
+
+    get velocity() { return new Vector(...pawnInvoke('GetPlayerVelocity', 'iFFF', this.#id_)); }
+    set velocity(value) {
+        pawnInvoke('SetPlayerVelocity', 'ifff', this.#id_, value.x, value.y, value.z);
+    }
+
+    get interiorId() { return pawnInvoke('GetPlayerInterior', 'i', this.#id_); }
+    set interiorId(value) { pawnInvoke('SetPlayerInterior', 'ii', this.#id_, value); }
+
+    get virtualWorld() { return pawnInvoke('GetPlayerVirtualWorld', 'i', this.#id_); }
+    set virtualWorld(value) {
+        if (this.syncedData_.isIsolated())
+            return;
+
+        pawnInvoke('SetPlayerVirtualWorld', 'ii', this.#id_, value);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
 
 
 
@@ -179,35 +211,6 @@ class Player extends Supplementable {
   get gangId() { return this.gangId_; }
   set gangId(value) { this.gangId_ = value; }
 
-  // Gets or sets the virtual world the player is part of.
-  get virtualWorld() { return pawnInvoke('GetPlayerVirtualWorld', 'i', this.id_); }
-  set virtualWorld(value) {
-    if (this.syncedData_.isIsolated())
-      return;
-
-    pawnInvoke('SetPlayerVirtualWorld', 'ii', this.id_, value);
-  }
-
-  // Gets or sets the interior the player is part of. Moving them to the wrong interior will mess up
-  // their visual state significantly, as all world objects may disappear.
-  get interiorId() { return pawnInvoke('GetPlayerInterior', 'i', this.id_); }
-  set interiorId(value) { pawnInvoke('SetPlayerInterior', 'ii', this.id_, value); }
-
-  // TODO(Russell): Remove these accessors in favor of the `interiorId` ones.
-  get interior() { return this.interiorId; }
-  set interior(value) { this.interiorId = value; }
-
-  // Gets or sets the position of the player. Both must be used with a 3D vector.
-  get position() { return new Vector(...pawnInvoke('GetPlayerPos', 'iFFF', this.id_)); }
-  set position(value) { pawnInvoke('SetPlayerPos', 'ifff', this.id_, value.x, value.y, value.z); }
-
-  get rotation() { return this.facingAngle; }
-  set rotation(value) { this.facingAngle = value; }
-
-  // Gets or sets the facing angle (rotation) of the player.
-  get facingAngle() { return pawnInvoke('GetPlayerFacingAngle', 'iF', this.id_); }
-  set facingAngle(value) { pawnInvoke('SetPlayerFacingAngle', 'if', this.id_, value); }
-
   // Gets or sets the health of the player.
   get health() { return pawnInvoke('GetPlayerHealth', 'iF', this.id_); }
   set health(value) { pawnInvoke('SetPlayerHealth', 'if', this.id_, value); }
@@ -215,12 +218,6 @@ class Player extends Supplementable {
   // Gets or sets the armour level of the player.
   get armour() { return pawnInvoke('GetPlayerArmour', 'iF', this.id_); }
   set armour(value) { pawnInvoke('SetPlayerArmour', 'if', this.id_, value); }
-
-  // Gets or sets the velocity of the player. Both must be used with a 3D vector.
-  get velocity() { return new Vector(...pawnInvoke('GetPlayerVelocity', 'iFFF', this.id_)); }
-  set velocity(value) {
-    pawnInvoke('SetPlayerVelocity', 'ifff', this.id_, value.x, value.y, value.z);
-  }
 
   // Gets the vehicle the player is currently driving in. May be NULL.
   get vehicle() { return this.vehicle_; }

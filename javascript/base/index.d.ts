@@ -20,15 +20,6 @@ declare module 'base/case_insensitive_map.js' {
     }
 }
 
-declare module 'base/clock.js' {
-    export default class Clock {
-        currentTime(): number;
-        monotonicallyIncreasingTime(): number;
-        formatRelativeTime(date: number, options?: any): string;
-        dispose(): void;
-    }
-}
-
 declare module 'base/color.js' {
     export default class Color {
         static BLUE: Color;
@@ -134,17 +125,6 @@ declare module 'base/string_formatter.js' {
     export function formatNumber(value: number): string;
     export function formatPrice(value: number): string;
     export function formatTime(time: number): string;
-}
-
-declare module 'base/string_parser.js' {
-    export default class StringParser {
-        parse(string: string, context?: any): Array<any>;
-    }
-}
-
-declare module 'base/string_util.js' {
-    export function isSafeInteger(value: string): boolean;
-    export function toSafeInteger(value: string): number;
 }
 
 declare module 'base/supplementable.js' {

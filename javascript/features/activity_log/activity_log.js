@@ -97,7 +97,7 @@ class ActivityLog extends Feature {
   // the database to be able to keep track of them.
   onPlayerConnect(event) {
     const player = server.playerManager.getById(event.playerid);
-    if (!player || player.isNpc())
+    if (!player || player.isNonPlayerCharacter())
       return;
 
     const numericIpAddress = this.ip2long(player.ip);
@@ -113,7 +113,7 @@ class ActivityLog extends Feature {
   // update the session with the userid of the player.
   onPlayerLogin(event) {
     const player = server.playerManager.getById(event.playerid);
-    if (!player || player.isNpc())
+    if (!player || player.isNonPlayerCharacter())
       return;
 
     if (!this.playerSessionIdMap_.has(player.id))
@@ -127,7 +127,7 @@ class ActivityLog extends Feature {
   // case his name changes and we should adjust that in the db.
   onPlayerGuestLogin(event) {
     const player = server.playerManager.getById(event.playerId);
-    if (!player || player.isNpc())
+    if (!player || player.isNonPlayerCharacter())
       return;
 
     if (!this.playerSessionIdMap_.has(player.id))

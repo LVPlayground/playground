@@ -9,25 +9,98 @@ import { Supplementable } from 'base/supplementable.js';
 import { murmur3hash } from 'base/murmur3hash.js';
 import { toFloat } from 'base/float.js';
 
-// Camera interpolation modes defined by SA-MP.
-const CAMERA_MOVE = 1;
-const CAMERA_CUT = 2;
-
+// Player
+//
+// Represents a player connected to the SA-MP server, usually a human. They are the most advanced
+// entity in the game, and feature everything from identity, to physics, state and interaction. The
+// abilities are therefore grouped in a series of sections:
+//
+//   * Identity
+//     Contains information on who the player is: their ID, nickname, IP address and serial. Most
+//     of this information is constant, and will have been cached by the `initialize()` method.
+//
+//
+//
+// This class is not directly appropriate for testing, as the Pawn calls would fail. To that end, in
+// tests a Player will be represented by the MockPlayer object, which overrides many of the routines
+// that would end up making a Pawn call with mocked data.
+//
+// Different from most code, we've opted to use private properties in this class to aid in keeping
+// the list of auto-complete suggestions in code editors as relevant as possible.
+//
+// If you are considering extending the Player object with additional functionality, take a look at
+// the Supplementable system in //base/supplementable.js instead.
 class Player extends Supplementable {
+    #id_ = null;
+    #connected_ = null;
+
+    #name_ = null;
+    #gpci_ = null;
+    #serial_ = null;
+    #ipAddress_ = null;
+    #isNpc_ = null;
+
+    constructor(id) {
+        this.#id_ = id;
+        this.#connected_ = true;
+
+        this.initialize();
+        this.initializeDeprecated();
+    }
+
+    // Initializes the player immediately after construction. Populates caches of static player
+    // information to minimise the number of Pawn calls we need during operation.
+    initialize() {
+        this.#name_ = pawnInvoke('GetPlayerName', 'iS', this.#id_);
+        this.#gpci_ = pawnInvoke('gpci', 'iS', this.#id_);
+        this.#serial_ = murmur3hash(this.#gpci_ || 'npc');
+        this.#ipAddress_ = pawnInvoke('GetPlayerIp', 'iS', this.#id_);
+        this.#isNpc_ = !!pawnInvoke('IsPlayerNPC', 'i', this.#id_);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: Identity
+    // ---------------------------------------------------------------------------------------------
+
+    get id() { return this.#id_; }
+
+    get name() { return this.#name_; }
+    set name(value) {
+        pawnInvoke('SetPlayerName', 'is', this.#id_, value);
+        pawnInvoke('OnPlayerNameChange', 'i', this.#id_);
+
+        this.#name_ = value;    
+    }
+
+    get ip() { return this.#ipAddress_; }
+
+    get gpci() { return this.#gpci_; }
+  
+    get serial() { return this.#serial_; }
+
+    isServerAdmin() { return !!pawnInvoke('IsPlayerAdmin', 'i', this.#id_); }
+
+    isConnected() { return this.#connected_; }
+
+    isNonPlayerCharacter() { return this.#isNpc_; }
+
+    setNameForGuestLogin(value) { this.#name_ = value; }
+
+    // ---------------------------------------------------------------------------------------------
+
+
+
+    
+
+
+
   // Creates a new instance of the Player class for |playerId|.
-  constructor(playerId) {
-    super();
+  initializeDeprecated() {
+    const playerId = this.#id_;
 
     this.id_ = playerId;
-    this.name_ = pawnInvoke('GetPlayerName', 'iS', playerId);
-    this.ipAddress_ = pawnInvoke('GetPlayerIp', 'iS', playerId);
-    this.nonPlayerCharacter_ = !!pawnInvoke('IsPlayerNPC', 'i', playerId);
-    this.gpci_ = pawnInvoke('gpci', 'iS', playerId);
-    this.serial_ = murmur3hash(this.gpci_ || 'bot');
-
     this.syncedData_ = new PlayerSyncedData(playerId);
 
-    this.connected_ = true;
     this.disconnecting_ = false;
 
     this.level_ = Player.LEVEL_PLAYER;
@@ -49,15 +122,6 @@ class Player extends Supplementable {
     this.playerSettings_ = new PlayerSettings();
   }
 
-  // Returns the id of this player. This attribute is read-only.
-  get id() { return this.id_; }
-
-  // Returns whether the player is still connected to the server.
-  isConnected() { return this.connected_; }
-
-  // Returns whether the player is a non-player character.
-  isNonPlayerCharacter() { return this.nonPlayerCharacter_; }
-
   // Returns whether the player is connected, but has minimized their game.
   isMinimized() { return isPlayerMinimized(this.id_); }
 
@@ -71,28 +135,9 @@ class Player extends Supplementable {
 
   // Marks the player as having disconnected from the server.
   notifyDisconnected() {
-    this.connected_ = false;
+    this.#connected_ = false;
     this.disconnecting_ = false;
   }
-
-  // Returns or updates the name of this player. Changing the player's name is currently not
-  // synchronized with the Pawn portion of the gamemode.
-  get name() { return this.name_; }
-  set name(value) {
-    pawnInvoke('SetPlayerName', 'is', this.id_, value);
-    pawnInvoke('OnPlayerNameChange', 'i', this.id_);
-
-    this.name_ = value;    
-  }
-
-  // Returns the IP address of this player. This attribute is read-only.
-  get ip() { return this.ipAddress_; }
-
-  // Returns the GPCI hash of the player. Read-only and note that it is not unique per player!
-  get gpci() { return this.gpci_; }
-
-  // Returns the serial number of the player.
-  get serial() { return this.serial_; }
 
   // Gets the level of this player. Synchronized with the gamemode using the `levelchange` event.
   get level() { return this.level_; }
@@ -120,9 +165,6 @@ class Player extends Supplementable {
 
   // Returns whether the player is undercover, i.e. does not use their own account.
   isUndercover() { return this.undercover_; }
-
-  // Returns whether the player is logged in to the SA-MP remote console.
-  isRconAdmin() { return pawnInvoke('IsPlayerAdmin', 'i', this.id_); }
 
   // Returns whether the player is registered and logged in to their account.
   isRegistered() { return this.userId_ !== null; }
@@ -377,9 +419,9 @@ class Player extends Supplementable {
   // which must be vectors, in |duration| milliseconds.
   interpolateCamera(positionFrom, positionTo, targetFrom, targetTo, duration) {
     pawnInvoke('InterpolateCameraPos', 'iffffffii', this.id_, positionFrom.x, positionFrom.y,
-               positionFrom.z, positionTo.x, positionTo.y, positionTo.z, duration, CAMERA_MOVE);
+               positionFrom.z, positionTo.x, positionTo.y, positionTo.z, duration, 1);
     pawnInvoke('InterpolateCameraLookAt', 'iffffffii', this.id_, targetFrom.x, targetFrom.y,
-               targetFrom.z, targetTo.x, targetTo.y, targetTo.z, duration, CAMERA_MOVE);
+               targetFrom.z, targetTo.x, targetTo.y, targetTo.z, duration, 1);
   }
 
   // Resets the player's camera to be positioned behind them.
@@ -451,11 +493,6 @@ class Player extends Supplementable {
   toggleStatisticsDisplay(enabled) {
     Promise.resolve().then(() =>
         pawnInvoke('OnToggleStatisticsDisplay', 'ii', this.id_, enabled ? 1 : 0));
-  }
-
-  // Returns whether this player is a NPC or just a normal player
-  isNpc() {
-    return pawnInvoke('IsPlayerNPC', 'i', this.id_);
   }
 
   // -----------------------------------------------------------------------------------------------

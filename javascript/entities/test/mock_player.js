@@ -8,23 +8,80 @@ import PlayerSettings from 'entities/player_settings.js';
 
 import { murmur3hash } from 'base/murmur3hash.js';
 
-// Mocked player. Has the same interface and abilities as a real Player object, except that it does
-// not rely on the SA-MP server to be available, nor communicates with Pawn.
+// Player (mock)
+//
+// Implementation of the Player interface that specifically exists to enable running tests on the
+// server because the Player does not actually exist. No Pawn calls will be made. Additional
+// functionality has been added for testing purposes, to allow for modifications and inspection
+// that would otherwise be infeasible.
 class MockPlayer {
+    #id_ = null;
+    #connected_ = null; // remove
+
+    #name_ = null;
+    #gpci_ = null;
+    #serial_ = null;
+    #ipAddress_ = null;
+    #isNpc_ = null;
+
+    #isServerAdmin_ = false;
+
+    // Initializes the mock player with static information that generally will not change for the
+    // duration of the player's session. The |params| object is available.
+    initialize(params) {
+        this.#connected_ = true;  // remove
+
+        this.#name_ = params.name || 'Player' + this.#id_;
+        this.#gpci_ = params.gpci || 'FAKELONGHASHOF40CHARACTERSHEH';
+        this.#serial_ = murmur3hash(this.#gpci_ || 'npc');
+        this.#ipAddress_ = params.ip || '127.0.0.1';
+        this.#isNpc_ = params.npc || false;;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: Identity
+    // ---------------------------------------------------------------------------------------------
+
+    get id() { return this.#id_; }
+
+    get name() { return this.#name_; }
+    set name(value) { this.#name_ = value; }
+
+    get ip() { return this.#ipAddress_; }
+
+    get gpci() { return this.#gpci_; }
+  
+    get serial() { return this.#serial_; }
+
+    isServerAdmin() { return this.#isServerAdmin_; }
+    setServerAdminForTesting(value) { this.#isServerAdmin_ = value; }
+
+    isConnected() { return this.#connected_; }
+
+    isNonPlayerCharacter() { return this.#isNpc_; }
+
+    setNameForGuestLogin(value) { this.#name_ = value; }
+
+    // ---------------------------------------------------------------------------------------------
+
+    setNonPlayerCharacter(value) { this.#isNpc_ = value; }
+
+
+
+
+
+
     constructor(playerId, event) {
+        this.#id_ = playerId;
         this.id_ = playerId;
 
-        this.name_ = event.name || 'Player' + playerId;
         this.level_ = event.level || Player.LEVEL_PLAYER;
         this.levelIsTemporary_ = false;
-        this.rconAdmin_ = false;
         this.vip_ = false;
         this.undercover_ = false;
         this.gangId_ = null;
 
         this.syncedData_ = new MockPlayerSyncedData(this.id_);
-
-        this.nonPlayerCharacter_ = event.npc || false;
 
         this.health_ = 100;
         this.armour_ = 100;
@@ -32,9 +89,6 @@ class MockPlayer {
         this.interiorId_ = 0;
         this.virtualWorld_ = 0;
         this.userId_ = null;
-        this.ipAddress_ = event.ip || '127.0.0.1';
-        this.gpci_ = event.gpci || 'FAKELONGHASHOF40CHARACTERSHEH';
-        this.serial_ = murmur3hash(this.gpci_ || 'bot');
         this.position_ = new Vector(0, 0, 0);
         this.specialAction_ = Player.SPECIAL_ACTION_NONE;
 
@@ -63,7 +117,6 @@ class MockPlayer {
 
         this.streamerObjectsUpdated_ = false;
 
-        this.connected_ = true;
         this.minimized_ = false;
         this.disconnecting_ = false;
 
@@ -78,15 +131,10 @@ class MockPlayer {
         this.cashMoney_ = 0;
 
         this.playerSettings_ = new PlayerSettings();
+
+        this.initialize(event);
     }
 
-    get id() { return this.id_; }
-
-    isConnected() { return this.connected_; }
-
-    // Returns whether the player is a non-player character.
-    isNonPlayerCharacter() { return this.nonPlayerCharacter_; }
-    setNonPlayerCharacter(value) { this.nonPlayerCharacter_ = value; }
 
     isMinimized() { return this.minimized_; }
     setMinimized(minimized) { this.minimized_ = minimized; }
@@ -98,18 +146,9 @@ class MockPlayer {
     }
 
     notifyDisconnected() {
-        this.connected_ = false;
+        this.#connected_ = false;
         this.disconnecting_ = false;
     }
-
-    get name() { return this.name_; }
-    set name(value) { this.name_ = value; }
-
-    get ip() { return this.ipAddress_; }
-
-    get gpci() { return this.gpci_; }
-
-    get serial() { return this.serial_; }
 
     get level() { return this.level_; }
     set level(value) { this.level_ = value; }
@@ -131,9 +170,6 @@ class MockPlayer {
     isManagement() { return this.level_ == Player.LEVEL_MANAGEMENT; }
 
     isUndercover() { return this.undercover_; }
-
-    isRconAdmin() { return this.rconAdmin_; }
-    setRconAdmin(value) { this.rconAdmin_ = value; }
 
     isRegistered() { return this.userId_ != null; }
 

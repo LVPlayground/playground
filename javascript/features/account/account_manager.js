@@ -53,7 +53,7 @@ export class AccountManager {
     onPlayerGuestLoginEvent(event) {
         const player = server.playerManager.getById(event.playerId);
         if (player)
-            player.name_ = event.guestPlayerName;
+            player.setNameForGuestLogin(event.guestPlayerName);
     }
 
     // Called when the |player| has disconnected from the server.

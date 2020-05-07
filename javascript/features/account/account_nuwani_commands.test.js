@@ -281,7 +281,13 @@ describe('AccountNuwaniCommands', (it, beforeEach, afterEach) => {
         assert.equal(result[0], 'PRIVMSG #LVP.DevJS :Online players (3): Gunther, Lucy, Russell');
 
         // Ignore players when they've registered as a non-playing character.
-        server.playerManager.getByName('Lucy').setNonPlayerCharacter(true);
+        server.playerManager.onPlayerConnect({
+            playerid: 42,
+            name: 'NevahPC',
+            npc: true,
+        })
+
+        assert.isNotNull(server.playerManager.getByName('NevahPC'));
 
         result = await issueCommand(bot, commandManager, {
             source: kCommandSource,
@@ -289,7 +295,7 @@ describe('AccountNuwaniCommands', (it, beforeEach, afterEach) => {
         });
 
         assert.equal(result.length, 1);
-        assert.equal(result[0], 'PRIVMSG #LVP.DevJS :Online players (2): Gunther, Russell');
+        assert.equal(result[0], 'PRIVMSG #LVP.DevJS :Online players (3): Gunther, Lucy, Russell');
     });
 
     it('should be able to find information about a particular player', async (assert) => {

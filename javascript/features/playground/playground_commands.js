@@ -10,6 +10,8 @@ import PlaygroundAccessTracker from 'features/playground/playground_access_track
 import Question from 'components/dialogs/question.js';
 import Setting from 'entities/setting.js';
 
+import { isSafeInteger, toSafeInteger } from 'base/string_util.js';
+
 // Directory in which the CPU profiles will be stored.
 const ProfileDirectory = 'profiles';
 
@@ -512,14 +514,14 @@ class PlaygroundCommands {
         if (!answer)
             return;  // the |player| cancelled the dialog.
 
-        if (!answer.isSafeInteger()) {
+        if (!isSafeInteger(answer)) {
             return await MessageBox.display(player, {
                 title: 'Invalid value for the ' + setting.identifier + ' setting!',
                 message: Message.format(Message.LVP_SETTING_INVALID_NUMBER, answer)
             });
         }
 
-        this.settings_().setValue(setting.identifier, answer.toSafeInteger());
+        this.settings_().setValue(setting.identifier, toSafeInteger(answer));
         this.announceSettingChangeToAdministrators(player, setting);
 
         return await MessageBox.display(player, {

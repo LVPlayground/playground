@@ -30,7 +30,7 @@ declare module 'base/clock.js' {
 }
 
 declare module 'base/color.js' {
-    export class Color {
+    export default class Color {
         static BLUE: Color;
         static GREEN: Color;
         static RED: Color;
@@ -41,7 +41,7 @@ declare module 'base/color.js' {
         static fromRGBA(r: number, g: number, b: number, a: number): Color;
         static fromNumberRGB(number: number): Color;
         static fromNumberRGBA(number: number): Color;
-        static fromHex(hex: number) : Color;
+        static fromHex(hex: string) : Color;
 
         private constructor(privateSymbol: never, r: number, g: number, b: number, a: number);
 
@@ -62,7 +62,12 @@ declare module 'base/float.js' {
 }
 
 declare module 'base/message.js' {
-    export class Message {
+    export default class Message {
+        // We need static indexes to support the messages we populate on the Message object.
+        // https://github.com/microsoft/TypeScript/pull/37797
+
+        static filter(message: string): string;
+        static format(message: string, ...parameters: any): string;
         static loadMessages(): void;
         static reloadMessages(): void;
     }
@@ -74,7 +79,7 @@ declare module 'base/murmur3hash.js' {
 
 declare module 'base/priority_queue.js' {
     type ComperatorFunction = (left: any, right: any) => number;
-    export class PriorityQueue {
+    export default class PriorityQueue {
         constructor(comparator: ComperatorFunction);
 
         isEmpty(): boolean;
@@ -91,7 +96,7 @@ declare module 'base/priority_queue.js' {
 }
 
 declare module 'base/rect.js' {
-    export class Rect {
+    export default class Rect {
         constructor(minX: number, minY: number, maxX: number, maxY: number);
 
         minX: number;
@@ -116,7 +121,7 @@ declare module 'base/rect.js' {
 }
 
 declare module 'base/scoped_callbacks.js' {
-    export class ScopedCallbacks {
+    export default class ScopedCallbacks {
         constructor();
 
         addEventListener(eventType: string, listener: Function): void;
@@ -132,13 +137,14 @@ declare module 'base/string_formatter.js' {
 }
 
 declare module 'base/string_parser.js' {
-    export class StringParser {
+    export default class StringParser {
         parse(string: string, context?: any): Array<any>;
     }
 }
 
 declare module 'base/string_util.js' {
-
+    export function isSafeInteger(value: string): boolean;
+    export function toSafeInteger(value: string): number;
 }
 
 declare module 'base/supplementable.js' {
@@ -183,7 +189,7 @@ declare module 'base/vector.js' {
 
         magnitude2D: number;
         magnitude: number;
-        normalized2D: number;
-        normalized: number;
+        normalized2D: Vector;
+        normalized: Vector;
     }
 }

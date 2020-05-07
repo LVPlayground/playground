@@ -7,6 +7,8 @@ import DatabaseVehicle from 'features/vehicles/database_vehicle.js';
 import Menu from 'components/menu/menu.js';
 import VehicleAccessManager from 'features/vehicles/vehicle_access_manager.js';
 
+import { toSafeInteger } from 'base/string_util.js';
+
 // The maximum distance from the player to the vehicle closest to them, in units.
 const MaximumVehicleDistance = 10;
 
@@ -248,7 +250,7 @@ class VehicleCommands {
 
         let vehicleModel = null;
 
-        const potentialModelId = modelIdentifier.toSafeInteger();
+        const potentialModelId = toSafeInteger(modelIdentifier);
         if (potentialModelId && potentialModelId >= 400 && potentialModelId <= 611) {
             vehicleModel = VehicleModel.getById(potentialModelId);
         } else {

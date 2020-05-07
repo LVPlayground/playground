@@ -3,29 +3,15 @@
 // be found in the LICENSE file.
 
 // Returns whether the value of a string can be interpret as a safe integer.
-String.prototype.isSafeInteger = function() {
-    return this.toSafeInteger() !== null;
-};
+export function isSafeInteger(value) {
+    return toSafeInteger(value) !== null;
+}
 
 // Returns the integral value of a string. Returns NULL when it's not a safe integer.
-String.prototype.toSafeInteger = function() {
-    const value = parseFloat(this);
-    if (Number.isNaN(value) || !Number.isSafeInteger(value))
+export function toSafeInteger(value) {
+    const floatValue = parseFloat(value);
+    if (Number.isNaN(floatValue) || !Number.isSafeInteger(floatValue))
         return null;
 
-    return value;
-};
-
-// Returns whether the value of a string can be interpret as a number.
-String.prototype.isNumber = function() {
-    return this.toNumber() !== null;
-};
-
-// Returns the number value of a string. Returns NULL when it's not a number.
-String.prototype.toNumber = function() {
-    const value = parseFloat(this);
-    if (Number.isNaN(value) || !Number.isFinite(value))
-        return null;
-
-    return value;
-};
+    return floatValue;
+}

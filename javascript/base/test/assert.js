@@ -10,7 +10,7 @@ import MockPawnInvoke from 'base/test/mock_pawn_invoke.js';
 //
 // This library implements the Chai assertion API, as documented here:
 //     http://chaijs.com/api/assert/
-class Assert {
+export default class Assert {
   constructor(suite, description) {
     this.suite_ = suite;
     this.description_ = description;
@@ -303,7 +303,7 @@ class Assert {
     if (object instanceof constructor)
       return;
 
-    this.reportFailure('expected ' + this.toString(name) + ' to be instance of ' + constructor.name);
+    this.reportFailure('expected ' + this.toString(object) + ' to be instance of ' + constructor.name);
   }
 
   // Asserts !(object instanceof constructor)
@@ -499,5 +499,3 @@ function angularEquals(o1, o2) {
   }
   return false;
 }
-
-export default Assert;

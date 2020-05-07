@@ -15,10 +15,10 @@ class ScopedCallbacks {
   // |eventType|, a global listener will be created automatically.
   addEventListener(eventType, listener) {
     if (!this.events_.hasOwnProperty(eventType)) {
-      this.events_[eventType] = this.__proto__.onEvent.bind(this, eventType);
+      this.events_[eventType] = ScopedCallbacks.prototype.onEvent.bind(this, eventType);
 
       // Create the global event listener for |eventType|.
-      global.addEventListener(eventType, this.events_[eventType]);
+      addEventListener(eventType, this.events_[eventType]);
     }
 
     if (!this.eventListeners_.hasOwnProperty(eventType))
@@ -35,7 +35,7 @@ class ScopedCallbacks {
   // Removes all event listeners created by this instance from the global listener list.
   dispose() {
     Object.keys(this.events_).forEach(eventType =>
-        global.removeEventListener(eventType, this.events_[eventType]));
+        removeEventListener(eventType, this.events_[eventType]));
 
     this.events_ = {};
     this.eventListeners_ = {};

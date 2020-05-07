@@ -8,7 +8,6 @@ import TestRunner from 'base/test/test_runner.js';
 // Import global objects.
 import 'base/color.js';
 import 'base/message.js';
-import 'base/number_util.js';
 import 'base/rect.js';
 import 'base/string_util.js';
 import 'base/time.js';

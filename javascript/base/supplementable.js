@@ -82,9 +82,7 @@ export class Supplementable {
             throw new Error(`The instance for ${this.name}.${accessorName} must be a supplement.`);
         
         if (!supplementConstructor) {
-            Object.defineProperty(this.prototype, accessorName, {
-                configurable: true, enumerable: false, writable: true,
-            });
+            delete this.prototype[accessorName];
         } else {
             const supplementInstanceCache = new WeakMap();
 

@@ -24,13 +24,9 @@ class PlayerManager {
         this.callbacks_.addEventListener(
             'playerlevelchange', PlayerManager.prototype.onPlayerLevelChange.bind(this));
         this.callbacks_.addEventListener(
-            'playerlogin', PlayerManager.prototype.onPlayerLogin.bind(this));
-        this.callbacks_.addEventListener(
             'playerstatechange', PlayerManager.prototype.onPlayerStateChange.bind(this));
         this.callbacks_.addEventListener(
             'playerdisconnect', PlayerManager.prototype.onPlayerDisconnect.bind(this));
-        this.callbacks_.addEventListener(
-            'playerguestlogin', PlayerManager.prototype.onPlayerGuestLogin.bind(this));
 
         // Implementation of the UpdatePlayerSyncedData() Pawn native.
         provideNative('UpdatePlayerSyncedData', 'iiifs',
@@ -185,6 +181,9 @@ class PlayerManager {
 
     // Called when a player logs in to their account. This marks availability of their user data
     // and the fact that their identity has been verified.
+    //
+    // This method is called by the Account feature when loaded. Observer delivery is delayed on the
+    // player's account data being loaded from the database.
     onPlayerLogin(event) {
         const player = this.players_.get(event.playerid);
         if (!player)
@@ -195,18 +194,6 @@ class PlayerManager {
         player.undercover_ = !!event.undercover;
 
         this.notifyObservers('onPlayerLogin', player, event);
-    }
-
-    // Called when a player decides to play as guest. This changes the name of the player so the
-    // player-object needs to be updated to have the new name.
-    onPlayerGuestLogin(event) {
-        const player = this.players_.get(event.playerId);
-        if (!player)
-            return;  // the event has been received for an invalid player
-
-        player.name_ = event.guestPlayerName;
-
-        this.notifyObservers('onPlayerGuestLogin', player, event);
     }
 
     // Called when a player's state changes. Handles players entering and leaving vehicles, and

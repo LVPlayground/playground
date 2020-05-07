@@ -24,6 +24,7 @@ import MockTextLabel from 'entities/test/mock_text_label.js';
 import MockVehicle from 'entities/test/mock_vehicle.js';
 
 import Abuse from 'features/abuse/abuse.js';
+import Account from 'features/account/account.js';
 import Announce from 'features/announce/announce.js';
 import Communication from 'features/communication/communication.js';
 import Finance from 'features/finance/finance.js';
@@ -59,6 +60,7 @@ class MockServer {
         // Register features whose production versions are suitable for testing.
         this.featureManager_.registerFeaturesForTests({
             abuse: Abuse,
+            account: Account,
             announce: Announce,  // TODO: Move functionality to |communication|. See #309.
             communication: Communication,
             finance: Finance,

@@ -4,6 +4,7 @@
 
 import PlayerSyncedData from 'entities/player_synced_data.js';
 import PlayerSettings from 'entities/player_settings.js';
+import { Supplementable } from 'base/supplementable.js';
 
 import { murmur3hash } from 'base/murmur3hash.js';
 import { toFloat } from 'base/float.js';
@@ -12,9 +13,11 @@ import { toFloat } from 'base/float.js';
 const CAMERA_MOVE = 1;
 const CAMERA_CUT = 2;
 
-class Player {
+class Player extends Supplementable {
   // Creates a new instance of the Player class for |playerId|.
   constructor(playerId) {
+    super();
+
     this.id_ = playerId;
     this.name_ = pawnInvoke('GetPlayerName', 'iS', playerId);
     this.ipAddress_ = pawnInvoke('GetPlayerIp', 'iS', playerId);

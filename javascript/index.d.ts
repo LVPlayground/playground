@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import Assert from 'base/test/assert.js';
+import Server from './server.js';
 
 import 'base/index.d.ts';
 import 'base/test/index.d.ts';
@@ -35,11 +36,6 @@ declare global {
     }
 
     const console: Console;
-
-    interface Server {
-        isTest(): boolean;
-    }
-
     let server: Server;
 
     // ---------------------------------------------------------------------------------------------

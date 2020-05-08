@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import MockPlayer from 'entities/test/mock_player.js';
+import { MockPlayer } from 'entities/test/mock_player.js';
 import MockVehicle from 'entities/test/mock_vehicle.js';
 
 // Mocked version of the TextLabel class that supports the same API, but won't interact with the

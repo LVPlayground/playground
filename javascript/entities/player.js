@@ -35,7 +35,7 @@ import { toFloat } from 'base/float.js';
 //
 // If you are considering extending the Player object with additional functionality, take a look at
 // the Supplementable system in //base/supplementable.js instead.
-class Player extends Supplementable {
+export class Player extends Supplementable {
     // Constants applicable to the player's current connection to the server.
     static kConnectionEstablished = 1;
     static kConnectionClosing = 2;
@@ -106,7 +106,7 @@ class Player extends Supplementable {
     #vehicle_ = null;
     #vehicleSeat_ = null;
 
-    constructor(id) {
+    constructor(id, ...paramsForTesting) {
         super();
 
         this.#id_ = id;
@@ -115,8 +115,6 @@ class Player extends Supplementable {
 
         this.#playerSettings_ = new PlayerSettings();
         this.#syncedData_ = new PlayerSyncedData(id);
-
-        this.initialize();
     }
 
     // Initializes the player immediately after construction. Populates caches of static player
@@ -164,6 +162,8 @@ class Player extends Supplementable {
         return this.#connectionState_ === Player.kConnectionEstablished ||
                this.#connectionState_ === Player.kConnectionClosing;
     }
+
+    isDisconnecting() { return this.#connectionState_ === Player.kConnectionClosing; }
 
     isNonPlayerCharacter() { return this.#isNpc_; }
 

@@ -130,7 +130,8 @@ class PlayerManager {
         }
 
         // Pass the |event| as it may contain additional meta-data when used by tests.
-        const player = new this.playerConstructor_(playerId, event);
+        const player = new this.playerConstructor_(playerId);
+        player.initialize(event);
 
         // Associate the |player| instance with the |playerId|.
         this.players_.set(playerId, player);

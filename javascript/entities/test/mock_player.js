@@ -2,35 +2,19 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import MockPlayerSyncedData from 'entities/test/mock_player_synced_data.js';
 import MockVehicle from 'entities/test/mock_vehicle.js';
-import PlayerSettings from 'entities/player_settings.js';
+import { Player } from 'entities/player.js';
 import { Vector } from 'base/vector.js';
 
 import { murmur3hash } from 'base/murmur3hash.js';
 
-// Player (mock)
+// MockPlayer
 //
 // Implementation of the Player interface that specifically exists to enable running tests on the
 // server because the Player does not actually exist. No Pawn calls will be made. Additional
 // functionality has been added for testing purposes, to allow for modifications and inspection
 // that would otherwise be infeasible.
-class MockPlayer {
-    #id_ = null;
-    #level_ = null;
-    #connectionState_ = null; // remove
-
-    // To be removed:
-    #playerSettings_ = null;
-    #syncedData_ = null;
-    #gangColor_ = null;
-    #gangId_ = null;
-    #levelIsTemporary_ = false;
-    #messageLevel_ = 0;
-    #undercover_ = false;
-    #userId_ = null;
-    #vip_ = false;
-
+export class MockPlayer extends Player {
     #name_ = null;
     #gpci_ = null;
     #serial_ = null;
@@ -74,28 +58,16 @@ class MockPlayer {
     #streamUrl_ = null;
     #soundId_ = null;
 
-    #vehicle_ = null;
-    #vehicleSeat_ = null;
     #isSurfingVehicle_ = false;
 
+    // To be removed:
+    #gangColor_ = null;
     #streamerObjectsUpdated_ = false;
-
-    constructor(playerId, event) {
-        this.#id_ = playerId;
-
-        this.#playerSettings_ = new PlayerSettings();
-        this.#syncedData_ = new MockPlayerSyncedData(playerId);
-
-        this.initialize(event);
-    }
 
     // Initializes the mock player with static information that generally will not change for the
     // duration of the player's session. The |params| object is available.
     initialize(params) {
-        this.#connectionState_ = Player.kConnectionEstablished;  // remove
-        this.#level_ = params.level || Player.LEVEL_PLAYER;  // remove
-
-        this.#name_ = params.name || 'Player' + this.#id_;
+        this.#name_ = params.name || 'Player' + this.id;
         this.#gpci_ = params.gpci || 'FAKELONGHASHOF40CHARACTERSHEH';
         this.#serial_ = murmur3hash(this.#gpci_ || 'npc');
         this.#ipAddress_ = params.ip || '127.0.0.1';
@@ -107,14 +79,9 @@ class MockPlayer {
         });
     }
 
-    notifyDisconnecting() { this.#connectionState_ = Player.kConnectionClosing; }
-    notifyDisconnected() { this.#connectionState_ = Player.kConnectionClosed; }
-
     // ---------------------------------------------------------------------------------------------
     // Section: Identity
     // ---------------------------------------------------------------------------------------------
-
-    get id() { return this.#id_; }
 
     get name() { return this.#name_; }
     set name(value) { this.#name_ = value; }
@@ -134,17 +101,6 @@ class MockPlayer {
     isServerAdmin() { return this.#isServerAdmin_; }
     setServerAdminForTesting(value) { this.#isServerAdmin_ = value; }
 
-    // remove
-    isConnected() {
-        return this.#connectionState_ === Player.kConnectionEstablished ||
-               this.#connectionState_ === Player.kConnectionClosing;
-    }
-
-    // remove
-    isDisconnecting() {
-        return this.#connectionState_ === Player.kConnectionClosing;
-    }
-
     isNonPlayerCharacter() { return this.#isNpc_; }
 
     kick() { this.disconnectForTesting(/* reason= */ 2); }
@@ -153,7 +109,7 @@ class MockPlayer {
 
     disconnectForTesting(reason = 0) {
         dispatchEvent('playerdisconnect', {
-            playerid: this.#id_,
+            playerid: this.id,
             reason: reason
         });
     }
@@ -168,16 +124,16 @@ class MockPlayer {
 
         // Testing behaviour: using SetPlayerPos() while the player is in a vehicle will eject them
         // from the vehicle. Emulate this behaviour by issuing a state change event.
-        if (this.#vehicle_ !== null) {
+        if (this.vehicle !== null) {
             dispatchEvent('playerstatechange', {
-                playerid: this.#id_,
-                oldstate: this.#vehicleSeat_ == Vehicle.SEAT_DRIVER ? Player.kStateVehicleDriver
-                                                                    : Player.kStateVehiclePassenger,
+                playerid: this.id,
+                oldstate: this.vehicleSeat == Vehicle.SEAT_DRIVER ? Player.kStateVehicleDriver
+                                                                  : Player.kStateVehiclePassenger,
                 newstate: Player.kStateOnFoot,
             });
 
-            this.#vehicle_ = null;
-            this.#vehicleSeat_ = null;
+            this.vehicle_ = null;
+            this.vehicleSeat_ = null;
         }
 
         // Testing behaviour: players moving around will naturally cause them to be near pickups,
@@ -196,7 +152,7 @@ class MockPlayer {
 
     get virtualWorld() { return this.#virtualWorld_; }
     set virtualWorld(value) {
-        if (this.#syncedData_.isIsolated())
+        if (this.syncedData.isIsolated())
             return;
 
         this.#virtualWorld_ = value;
@@ -218,9 +174,6 @@ class MockPlayer {
     get health() { return this.#health_; }
     set health(value) { this.#health_ = value; }
 
-    get level() { return this.#level_; }
-    set level(value) { this.#level_ = value; }
-
     get skin() { return this.#skin_; }
     set skin(value) { this.#skin_ = value; }
 
@@ -228,10 +181,6 @@ class MockPlayer {
     set specialAction(value) { this.#specialAction_ = value; }
 
     get state() { return this.#state_; }
-
-    isAdministrator() { return this.#level_ >= Player.LEVEL_ADMINISTRATOR; }
-
-    isManagement() { return this.#level_ >= Player.LEVEL_MANAGEMENT; }
 
     isMinimized() { return this.#isMinimized_; }
     setMinimizedForTesting(value) { this.#isMinimized_ = value; }
@@ -243,7 +192,7 @@ class MockPlayer {
         // the spawn, which is indicated by them preventing the event's default behaviour.
         dispatchEvent('playerspawn', {
             preventDefault: () => defaultPrevented = true,
-            playerid: this.#id_
+            playerid: this.id
         });
 
         return defaultPrevented;
@@ -372,21 +321,15 @@ class MockPlayer {
     // Section: Vehicles
     // ---------------------------------------------------------------------------------------------
 
-    get vehicle() { return this.#vehicle_; }
-    set vehicle(value) { this.#vehicle_ = value; }
-  
-    get vehicleSeat() { return this.#vehicleSeat_; }
-    set vehicleSeat(value) { this.#vehicleSeat_ = value; }
-
     get vehicleCollisionsEnabled() { throw new Error('Unable to read this setting.'); }
     set vehicleCollisionsEnabled(value) { /* no need to mock write-only values */ }
 
     enterVehicle(vehicle, seat = 0) {
-        this.#vehicle_ = vehicle;
-        this.#vehicleSeat_ = seat;
+        this.vehicle = vehicle;
+        this.vehicleSeat = seat;
 
         dispatchEvent('playerstatechange', {
-            playerid: this.#id_,
+            playerid: this.id,
             oldstate: Player.kStateOnFoot,
             newstate: seat === 0 ? Player.kStateVehicleDriver
                                  : Player.kStateVehiclePassenger
@@ -396,50 +339,22 @@ class MockPlayer {
     isSurfingVehicle() { return this.#isSurfingVehicle_; }
     setSurfingVehicleForTesting(value) { this.#isSurfingVehicle_ = value; }
 
-    leaveVehicle() { this.position = this.position; }  // remove
     leaveVehicleWithAnimation() { this.leaveVehicle(); }
 
     // ---------------------------------------------------------------------------------------------
     // Stuff that needs a better home
     // ---------------------------------------------------------------------------------------------
 
-    get settings() { return this.#playerSettings_; }
-    get syncedData() { return this.#syncedData_; }
-
     restoreState() {}
     serializeState() {}
-
-    get levelIsTemporary() { return this.#levelIsTemporary_; }
-    set levelIsTemporary(value) { this.#levelIsTemporary_ = value; }
-
-    isTemporaryAdministrator() {
-        return this.isAdministrator() && this.#levelIsTemporary_;
-    }  // remove
 
     updateStreamerObjects() { this.#streamerObjectsUpdated_ = true; }
     updateStreamer(position, virtualWorld, interiorId, type) {}
 
     streamerObjectsUpdatedForTesting() { return this.#streamerObjectsUpdated_; }
 
-    get messageLevel() { return this.#messageLevel_; }
-    set messageLevel(value) { this.#messageLevel_ = value; }
-
-    get userId() { return this.#userId_; }
-    set userId(value) { this.#userId_ = value; }
-
-    get gangId() { return this.#gangId_; }
-    set gangId(value) { this.#gangId_ = value; }
-
     get gangColor() { return this.#gangColor_; }
     set gangColor(value) { this.#gangColor_ = value; }
-
-    isRegistered() { return this.#userId_ !== null; }
-
-    isUndercover() { return this.#undercover_; }
-    setUndercover(value) { this.#undercover_ = value; }
-
-    isVip() { return this.#vip_; }
-    setVip(value) { this.#vip_ = value; }
 
     // ---------------------------------------------------------------------------------------------
     // Instrumentation for testing purposes
@@ -448,7 +363,7 @@ class MockPlayer {
     // Identifies the player to a fake account. The options can be specified optionally.
     identify({ userId = 42, vip = 0, gangId = 0, undercover = 0 } = {}) {
         server.playerManager.onPlayerLogin({
-            playerid: this.#id_,
+            playerid: this.id,
             userid: userId,
             vip: vip,
             gangid: gangId,
@@ -464,7 +379,7 @@ class MockPlayer {
         dispatchEvent('playertext', {
             preventDefault: () => defaultPrevented = true,
 
-            playerid: this.#id_,
+            playerid: this.id,
             text: message
         });
 
@@ -479,7 +394,7 @@ class MockPlayer {
         await server.commandManager.onPlayerCommandText({
             preventDefault: () => defaultPrevented = true,
 
-            playerid: this.#id_,
+            playerid: this.id,
             cmdtext: commandText
         });
 
@@ -491,7 +406,7 @@ class MockPlayer {
     respondToDialog({ response = 1 /* left button */, listitem = 0, inputtext = '' } = {}) {
         return this.#lastDialogPromise_.then(() => {
             dispatchEvent('dialogresponse', {
-                playerid: this.#id_,
+                playerid: this.id,
                 dialogid: this.#lastDialogId_,
                 response: response,
                 listitem: listitem,
@@ -507,7 +422,7 @@ class MockPlayer {
     // Changes the player's state from |oldState| to |newState|.
     changeState({ oldState, newState } = {}) {
         dispatchEvent('playerstatechange', {
-            playerid: this.#id_,
+            playerid: this.id,
             oldstate: oldState,
             newstate: newState
         });
@@ -516,7 +431,7 @@ class MockPlayer {
     // Triggers an event indicating that the player died.
     die(killerPlayer = null, reason = 0) {
         dispatchEvent('playerdeath', {
-            playerid: this.#id_,
+            playerid: this.id,
             killerid: killerPlayer ? killerPlayer.id
                                    : Player.kInvalidId,
             reason: reason
@@ -537,7 +452,7 @@ class MockPlayer {
         hitOffset = hitOffset || new Vector(5, 5, 2);
 
         dispatchEvent('playerweaponshot', {
-            playerid: this.#id_,
+            playerid: this.id,
             weaponid: weaponid,
             hittype: hitType,
             hitid: target ? target.id : -1,
@@ -552,7 +467,7 @@ class MockPlayer {
         let damage = damageAmount || Math.floor(Math.random() * 100) + 10;
 
         dispatchEvent('playergivedamage', {
-            playerid: this.#id_,
+            playerid: this.id,
             damagedid: target.id,
             amount: damage,
             weaponid: weaponid,
@@ -561,7 +476,7 @@ class MockPlayer {
 
         dispatchEvent('playertakedamage', {
             playerid: target.id,
-            issuerid: this.#id_,
+            issuerid: this.id,
             amount: damage,
             weaponid: weaponid,
             bodypart: bodypart
@@ -572,11 +487,9 @@ class MockPlayer {
     // found on the SA-MP wiki: https://wiki.sa-mp.com/wiki/Keys
     keyPress(newkeys, oldkeys = 0) {
         dispatchEvent('playerkeystatechange', {
-            playerid: this.#id_,
+            playerid: this.id,
             newkeys: newkeys,
             oldkeys: oldkeys
         });
     }
 }
-
-export default MockPlayer;

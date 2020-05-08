@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import Assert from 'base/test/assert.js';
+import { Player } from 'entities/player.js';
 import Server from './server.js';
 
 import 'base/index.d.ts';

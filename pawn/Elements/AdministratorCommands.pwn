@@ -973,7 +973,7 @@ lvp_show(playerId, params[]) {
         format(g_message, sizeof(g_message), "Save money and stats! Register your nickname at www.sa-mp.nl");
     }
     
-    else if (!strcmp(showParameter, "discord", true, 4)) {
+    else if (!strcmp(showParameter, "discord", true, 7)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "Join us on official LVP Discord Server at discord.sa-mp.nl");
     }

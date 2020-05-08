@@ -249,7 +249,7 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         assert.equal(enteredCounter, 2);
         assert.equal(leftCounter, 1);
 
-        gunther.disconnect();
+        gunther.disconnectForTesting();
 
         assert.equal(enteredCounter, 2);
         assert.equal(leftCounter, 2);
@@ -362,7 +362,7 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         assert.equal([...vehicle.getPassengers()].length, 0);
 
         // (2) Disconnect |gunther| from the server.
-        gunther.disconnect();
+        gunther.disconnectForTesting();
 
         assert.isNull(gunther.vehicle);
         assert.isNull(gunther.vehicleSeat);

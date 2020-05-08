@@ -62,7 +62,7 @@ describe('EntityStreamerGlobal', it => {
 
         assert.equal(streamer.playerEntitySetCount, server.playerManager.count);
 
-        gunther.disconnect();
+        gunther.disconnectForTesting();
 
         assert.equal(streamer.playerEntitySetCount, server.playerManager.count);
         assert.equal(streamer.playerEntitySetCount, originalPlayerCount - 1);

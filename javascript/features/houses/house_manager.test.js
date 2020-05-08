@@ -471,7 +471,7 @@ describe('HouseManager', (it, beforeEach) => {
         assert.isNotNull(house.settings.owner);
         assert.equal(house.settings.owner, gunther);
 
-        gunther.disconnect();
+        gunther.disconnectForTesting();
 
         assert.isNull(house.settings.owner);
     });

@@ -24,7 +24,8 @@ import { toFloat } from 'base/float.js';
 //     going? All of these properties have both getters and setters.
 //
 //   * State
-//     What are their health and armour values?
+//     What are their health and armour values? What is the player currently doing, and how are they
+//     moving around the world—with what appearance?
 //
 //
 // This class is not directly appropriate for testing, as the Pawn calls would fail. To that end, in
@@ -119,11 +120,19 @@ class Player extends Supplementable {
   
     get serial() { return this.#serial_; }
 
+    get packetLossPercentage() {
+        return toFloat(pawnInvoke('NetStats_PacketLossPercent', 'i', this.#id_))
+    }
+
+    get ping() { return pawnInvoke('GetPlayerPing', 'i', this.#id_); }
+
     isServerAdmin() { return !!pawnInvoke('IsPlayerAdmin', 'i', this.#id_); }
 
     isConnected() { return this.#connected_; }
 
     isNonPlayerCharacter() { return this.#isNpc_; }
+
+    kick() { pawnInvoke('Kick', 'i', this.#id_); }
 
     setNameForGuestLogin(value) { this.#name_ = value; }
 
@@ -159,6 +168,9 @@ class Player extends Supplementable {
     // Section: State
     // ---------------------------------------------------------------------------------------------
 
+    get color() { return Color.fromNumberRGBA(pawnInvoke('GetPlayerColor', 'i', this.#id_)); }
+    set color(value) { pawnInvoke('SetPlayerColor', 'ii', this.#id_, value.toNumberRGBA()); }
+
     get health() { return pawnInvoke('GetPlayerHealth', 'iF', this.#id_); }
     set health(value) { pawnInvoke('SetPlayerHealth', 'if', this.#id_, value); }
 
@@ -170,6 +182,9 @@ class Player extends Supplementable {
         pawnInvoke('TogglePlayerControllable', 'ii', this.#id_, value ? 1 : 0);
     }
 
+    get skin() { return pawnInvoke('GetPlayerSkin', 'i', this.#id_); }
+    set skin(value) { pawnInvoke('SetPlayerSkin', 'ii', this.#id_, value); }
+
     get specialAction() { return pawnInvoke('GetPlayerSpecialAction', 'i', this.#id_); }
     set specialAction(value) { pawnInvoke('SetPlayerSpecialAction', 'ii', this.#id_, value); }
 
@@ -178,7 +193,6 @@ class Player extends Supplementable {
     isMinimized() { return isPlayerMinimized(this.#id_); }
 
     // ---------------------------------------------------------------------------------------------
-
 
 
 
@@ -307,10 +321,6 @@ class Player extends Supplementable {
   get drunkLevel() { return pawnInvoke('GetPlayerDrunkLevel', 'i', this.id_); }
   set drunkLevel(value) { pawnInvoke('SetPlayerDrunkLevel', 'ii', this.id_, value); }
 
-  // Kicks the player from the server. The user of this function is responsible for making sure
-  // that the reason for the kick is properly recorded.
-  kick() { pawnInvoke('Kick', 'i', this.id_); }
-
   // Returns an object with the keys that the player is currently pressing.
   getKeys() {
     const [keys, updown, leftright] = pawnInvoke('GetPlayerKeys', 'iIII', this.id_);
@@ -392,24 +402,11 @@ class Player extends Supplementable {
       throw new Error('Unknown vehicle to put the player in: ' + vehicle);
   }
 
-  // Gets the player's current packet loss, as a percentage.
-  get packetLossPercent() {
-    return toFloat(pawnInvoke('NetStats_PacketLossPercent', 'i', this.id_));
-  }
-
-  // Gets the player's current ping, in milliseconds.
-  get ping() {
-    return pawnInvoke('GetPlayerPing', 'i', this.id_);
-  }
-
   // Gets or sets the gang color of this player. May be NULL when no color has been defined.
   get gangColor() { throw new Error('Player.gangColor() has not been implemented yet.'); }
   set gangColor(value) {
     pawnInvoke('OnUpdatePlayerGangColor', 'ii', this.id_, value ? value.toNumberRGBA() : 0);
   }
-
-  // Gets the color applied to this player.
-  get color() { return Color.fromNumberRGBA(pawnInvoke('GetPlayerColor', 'i', this.id_)); }
 
   // Respawns the player.
   respawn() { pawnInvoke('SpawnPlayer', 'i', this.id_); }

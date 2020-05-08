@@ -53,7 +53,7 @@ describe('ParkingLotCreator', (it, beforeEach, afterEach) => {
 
         assert.isTrue(selector.isSelecting(gunther));
 
-        gunther.disconnect();
+        gunther.disconnectForTesting();
 
         const selectionResult = await selectionFinished;
 

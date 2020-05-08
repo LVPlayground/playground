@@ -65,7 +65,7 @@ describe('FriendsManager', (it, beforeEach, afterEach) => {
         assert.isTrue(friendsManager.lastActive_.hasOwnProperty(gunther.userId));
         assert.equal(friendsManager.lastActive_[gunther.userId], FriendsManager.CURRENTLY_ONLINE);
 
-        gunther.disconnect();
+        gunther.disconnectForTesting();
 
         assert.isFalse(friendsManager.friends_.has(gunther));
         assert.isFalse(friendsManager.loadPromises_.has(gunther));
@@ -94,7 +94,7 @@ describe('FriendsManager', (it, beforeEach, afterEach) => {
         assert.isTrue(await friendsManager.isFriendedBy(gunther, 50));
         assert.isTrue(await friendsManager.hasFriend(russell, gunther));
 
-        russell.disconnect();
+        russell.disconnectForTesting();
 
         assert.isTrue(await friendsManager.isFriendedBy(gunther, 50));
     })

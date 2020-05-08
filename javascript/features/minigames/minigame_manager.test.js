@@ -113,7 +113,7 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         manager.createMinigame(category, minigame, gunther);
         assert.isTrue(manager.isPlayerEngaged(gunther));
 
-        gunther.disconnect();
+        gunther.disconnectForTesting();
 
         await minigame.waitUntilFinished();
 
@@ -141,14 +141,14 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         assert.equal(minigame.removedPlayers.length, 0);
         assert.equal(minigame.state, Minigame.STATE_SIGN_UP);
 
-        gunther.disconnect();
+        gunther.disconnectForTesting();
 
         assert.isFalse(manager.isPlayerEngaged(gunther));
         assert.isTrue(manager.isPlayerEngaged(russell));
         assert.equal(manager.getMinigamesForCategory(category).length, 1);
         assert.equal(minigame.removedPlayers.length, 1);
 
-        russell.disconnect();
+        russell.disconnectForTesting();
 
         const reason = await minigame.waitUntilFinished();
 
@@ -172,7 +172,7 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         assert.isTrue(manager.isPlayerEngaged(russell));
         assert.equal(manager.getMinigamesForCategory(category).length, 1);
 
-        gunther.disconnect();
+        gunther.disconnectForTesting();
 
         const reason = await minigame.waitUntilFinished();
 

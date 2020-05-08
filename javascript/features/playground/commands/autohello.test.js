@@ -76,7 +76,7 @@ describe('AutoHello', (it, beforeEach, afterEach) => {
         assert.equal(joe.messages.length, 1);
         assert.isTrue(joe.messages[0].includes(joe.name));
 
-        joe.disconnect();
+        joe.disconnectForTesting();
 
         server.playerManager.onPlayerConnect({
             playerid: 200,

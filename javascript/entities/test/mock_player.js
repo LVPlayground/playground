@@ -22,6 +22,8 @@ class MockPlayer {
     #name_ = null;
     #gpci_ = null;
     #serial_ = null;
+    #packetLossPercentage_ = 0;
+    #ping_ = 30;
     #ipAddress_ = null;
     #isNpc_ = null;
 
@@ -33,8 +35,10 @@ class MockPlayer {
     #virtualWorld_ = 0;
     #velocity_ = new Vector(0, 0, 0);
 
+    #color_ = Color.WHITE;
     #health_ = 100.0;
     #armour_ = 100.0;
+    #skin_ = 308;  // San Fierro Paramedic (EMT)
     #specialAction_ = Player.kSpecialActionNone;
     #state_ = Player.kStateOnFoot;
     #isMinimized_ = false;
@@ -66,6 +70,12 @@ class MockPlayer {
   
     get serial() { return this.#serial_; }
 
+    get packetLossPercentage() { return this.#packetLossPercentage_; }
+    set packetLossPercentageForTesting(value) { this.#packetLossPercentage_ = value; }
+
+    get ping() { return this.#ping_; }
+    set pingForTesting(value) { this.#ping_ = value; }
+
     isServerAdmin() { return this.#isServerAdmin_; }
     setServerAdminForTesting(value) { this.#isServerAdmin_ = value; }
 
@@ -73,7 +83,16 @@ class MockPlayer {
 
     isNonPlayerCharacter() { return this.#isNpc_; }
 
+    kick() { this.disconnectForTesting(/* reason= */ 2); }
+
     setNameForGuestLogin(value) { this.#name_ = value; }
+
+    disconnectForTesting(reason = 0) {
+        dispatchEvent('playerdisconnect', {
+            playerid: this.#id_,
+            reason: reason
+        });
+    }
 
     // ---------------------------------------------------------------------------------------------
     // Section: Physics
@@ -120,6 +139,9 @@ class MockPlayer {
     // Section: State
     // ---------------------------------------------------------------------------------------------
 
+    get color() { return this.#color_; }
+    set color(value) { this.#color_ = value; }
+
     get health() { return this.#health_; }
     set health(value) { this.#health_ = value; }
 
@@ -128,6 +150,9 @@ class MockPlayer {
 
     get controllable() { throw new Error('Unable to get whether the player is controllable.'); }
     set controllable(value) { /* no need to mock write-only values */ }
+
+    get skin() { return this.#skin_; }
+    set skin(value) { this.#skin_ = value; }
 
     get specialAction() { return this.#specialAction_; }
     set specialAction(value) { this.#specialAction_ = value; }
@@ -158,9 +183,6 @@ class MockPlayer {
 
         this.userId_ = null;
         this.specialAction_ = Player.SPECIAL_ACTION_NONE;
-
-        this.packetLossPercent_ = 0;
-        this.ping_ = 30;
 
         this.dialogPromiseResolve_ = null;
         this.dialogPromise_ = new Promise(resolve => {
@@ -193,8 +215,6 @@ class MockPlayer {
 
         this.currentVehicleId_ = null;
         this.currentVehicleSeat_ = 0;
-
-        this.cashMoney_ = 0;
 
         this.playerSettings_ = new PlayerSettings();
 
@@ -275,13 +295,6 @@ class MockPlayer {
 
         return true;
     }
-
-    get packetLossPercent() { return this.packetLossPercent_; }
-    get ping() { return this.ping_; }
-
-    // Kicks the player from the server. The user of this function is responsible for making sure
-    // that the reason for the kick is properly recorded.
-    kick() { this.disconnect(2 /* reason */); }
 
     // Gets or sets the special action the player is currently engaged in. The values must be one of
     // the Player.SPECIAL_ACTION_* constants static to this class.
@@ -582,14 +595,6 @@ class MockPlayer {
             playerid: this.id_,
             newkeys: newkeys,
             oldkeys: oldkeys
-        });
-    }
-
-    // Disconnects the player from the server. They will be removed from the PlayerManager too.
-    disconnect(reason = 0) {
-        server.playerManager.onPlayerDisconnect({
-            playerid: this.id_,
-            reason: reason
         });
     }
 

@@ -71,8 +71,13 @@ class ObjectRemover {
     // removed from the map for them.
     onPlayerConnect(player) {
         this.removedObjects_.forEach(removedObject => {
-            player.removeGameObject(
-                removedObject.modelId, removedObject.position, removedObject.radius);
+            const { modelId, position, radius } = removedObject;
+
+            if (server.isTest())
+                return;
+
+            pawnInvoke('RemoveBuildingForPlayer', 'iiffff', player.id, modelId, position.x,
+                                                            position.y, position.z, radius);
         });
     }
 

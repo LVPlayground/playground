@@ -63,7 +63,7 @@ export class CleoProAimDetector extends AbuseDetector {
             return;  // bullet sync is different when surfing on a vehicle
         
         const velocityMagnitude = player.velocity.magnitude;
-        const { source, target } = player.getLastShotVectors();
+        const { source, target } = this.getPlayerLastShotVectors();
 
         const victimPosition = hitPlayer.position;
 
@@ -78,5 +78,20 @@ export class CleoProAimDetector extends AbuseDetector {
 
         console.log(`ProAim [${player.name}][${velocityMagnitude}][${cameraTargetDifference}]` +
                     `[${playerDistance}][${cameraFrontVectorStr}][${cameraPositionStr}]`);
+    }
+
+    getPlayerLastShotVectors(player) {
+        if (server.isTest()) {
+            return {
+                source: new Vector(0, 0, 0),
+                target: new Vector(0, 0, 0),
+            };
+        }
+
+        const positions = pawnInvoke('GetPlayerLastShotVectors', 'iFFFFFF', player.id);
+        return {
+            source: new Vector(positions[0], positions[1], positions[2]),
+            target: new Vector(positions[3], positions[4], positions[5]),
+        };
     }
 }

@@ -17,7 +17,19 @@ import { murmur3hash } from 'base/murmur3hash.js';
 // that would otherwise be infeasible.
 class MockPlayer {
     #id_ = null;
+    #level_ = null;
     #connectionState_ = null; // remove
+
+    // To be removed:
+    #playerSettings_ = null;
+    #syncedData_ = null;
+    #gangColor_ = null;
+    #gangId_ = null;
+    #levelIsTemporary_ = false;
+    #messageLevel_ = 0;
+    #undercover_ = false;
+    #userId_ = null;
+    #vip_ = false;
 
     #name_ = null;
     #gpci_ = null;
@@ -66,10 +78,22 @@ class MockPlayer {
     #vehicleSeat_ = null;
     #isSurfingVehicle_ = false;
 
+    #streamerObjectsUpdated_ = false;
+
+    constructor(playerId, event) {
+        this.#id_ = playerId;
+
+        this.#playerSettings_ = new PlayerSettings();
+        this.#syncedData_ = new MockPlayerSyncedData(playerId);
+
+        this.initialize(event);
+    }
+
     // Initializes the mock player with static information that generally will not change for the
     // duration of the player's session. The |params| object is available.
     initialize(params) {
         this.#connectionState_ = Player.kConnectionEstablished;  // remove
+        this.#level_ = params.level || Player.LEVEL_PLAYER;  // remove
 
         this.#name_ = params.name || 'Player' + this.#id_;
         this.#gpci_ = params.gpci || 'FAKELONGHASHOF40CHARACTERSHEH';
@@ -172,7 +196,7 @@ class MockPlayer {
 
     get virtualWorld() { return this.#virtualWorld_; }
     set virtualWorld(value) {
-        if (this.syncedData_.isIsolated())
+        if (this.#syncedData_.isIsolated())
             return;
 
         this.#virtualWorld_ = value;
@@ -182,17 +206,20 @@ class MockPlayer {
     // Section: State
     // ---------------------------------------------------------------------------------------------
 
+    get armour() { return this.#armour_; }
+    set armour(value) { this.#armour_ = value; }
+
     get color() { return this.#color_; }
     set color(value) { this.#color_ = value; }
+
+    get controllable() { throw new Error('Unable to get whether the player is controllable.'); }
+    set controllable(value) { /* no need to mock write-only values */ }
 
     get health() { return this.#health_; }
     set health(value) { this.#health_ = value; }
 
-    get armour() { return this.#armour_; }
-    set armour(value) { this.#armour_ = value; }
-
-    get controllable() { throw new Error('Unable to get whether the player is controllable.'); }
-    set controllable(value) { /* no need to mock write-only values */ }
+    get level() { return this.#level_; }
+    set level(value) { this.#level_ = value; }
 
     get skin() { return this.#skin_; }
     set skin(value) { this.#skin_ = value; }
@@ -201,7 +228,10 @@ class MockPlayer {
     set specialAction(value) { this.#specialAction_ = value; }
 
     get state() { return this.#state_; }
-    set stateForTesting(value) { this.#state_ = value; }
+
+    isAdministrator() { return this.#level_ >= Player.LEVEL_ADMINISTRATOR; }
+
+    isManagement() { return this.#level_ >= Player.LEVEL_MANAGEMENT; }
 
     isMinimized() { return this.#isMinimized_; }
     setMinimizedForTesting(value) { this.#isMinimized_ = value; }
@@ -373,6 +403,43 @@ class MockPlayer {
     // Stuff that needs a better home
     // ---------------------------------------------------------------------------------------------
 
+    get settings() { return this.#playerSettings_; }
+    get syncedData() { return this.#syncedData_; }
+
+    restoreState() {}
+    serializeState() {}
+
+    get levelIsTemporary() { return this.#levelIsTemporary_; }
+    set levelIsTemporary(value) { this.#levelIsTemporary_ = value; }
+
+    isTemporaryAdministrator() {
+        return this.isAdministrator() && this.#levelIsTemporary_;
+    }  // remove
+
+    updateStreamerObjects() { this.#streamerObjectsUpdated_ = true; }
+    updateStreamer(position, virtualWorld, interiorId, type) {}
+
+    streamerObjectsUpdatedForTesting() { return this.#streamerObjectsUpdated_; }
+
+    get messageLevel() { return this.#messageLevel_; }
+    set messageLevel(value) { this.#messageLevel_ = value; }
+
+    get userId() { return this.#userId_; }
+    set userId(value) { this.#userId_ = value; }
+
+    get gangId() { return this.#gangId_; }
+    set gangId(value) { this.#gangId_ = value; }
+
+    get gangColor() { return this.#gangColor_; }
+    set gangColor(value) { this.#gangColor_ = value; }
+
+    isRegistered() { return this.#userId_ !== null; }
+
+    isUndercover() { return this.#undercover_; }
+    setUndercover(value) { this.#undercover_ = value; }
+
+    isVip() { return this.#vip_; }
+    setVip(value) { this.#vip_ = value; }
 
     // ---------------------------------------------------------------------------------------------
     // Instrumentation for testing purposes
@@ -510,116 +577,6 @@ class MockPlayer {
             oldkeys: oldkeys
         });
     }
-
-
-
-
-
-    constructor(playerId, event) {
-        this.#id_ = playerId;
-        this.id_ = playerId;
-
-        this.level_ = event.level || Player.LEVEL_PLAYER;
-        this.levelIsTemporary_ = false;
-        this.vip_ = false;
-        this.undercover_ = false;
-        this.gangId_ = null;
-
-        this.syncedData_ = new MockPlayerSyncedData(this.id_);
-
-        this.userId_ = null;
-
-
-        this.gangColor_ = null;
-        this.removedObjectCount_ = 0;
-        this.messageLevel_ = 0;
-
-        this.streamerObjectsUpdated_ = false;
-
-        this.playerSettings_ = new PlayerSettings();
-
-        this.initialize(event);
-    }
-
-
-
-    get level() { return this.level_; }
-    set level(value) { this.level_ = value; }
-
-    get levelIsTemporary() { return this.levelIsTemporary_; }
-    set levelIsTemporary(value) { this.levelIsTemporary_ = value; }
-
-    get syncedData() { return this.syncedData_; }
-
-    isAdministrator() {
-        return this.level_ == Player.LEVEL_ADMINISTRATOR ||
-               this.level_ == Player.LEVEL_MANAGEMENT;
-    }
-
-    isTemporaryAdministrator() {
-        return this.isAdministrator() && this.levelIsTemporary_;
-      }
-
-    isManagement() { return this.level_ == Player.LEVEL_MANAGEMENT; }
-
-    isUndercover() { return this.undercover_; }
-
-    isRegistered() { return this.userId_ != null; }
-
-    get userId() { return this.userId_; }
-
-    // Returns whether this player is a VIP member of Las Venturas Playground.
-    isVip() { return this.vip_; }
-
-    // Sets whether the player is a VIP member. Only exposed for testing purposes.
-    setVip(value) { this.vip_ = value; }
-
-    // Gets or sets the Id of the gang this player is part of.
-    get gangId() { return this.gangId_; }
-    set gangId(value) { this.gangId_ = value; }
-
-    
-
-    // Gets the most recent shot vectors for the player.
-    getLastShotVectors() {
-        return {
-            source: new Vector(0, 0, 0),
-            target: new Vector(0, 0, 0),
-        };
-    }
-
-    // Serializes the player's current state into a buffer.
-    serializeState() {}
-
-    // Restores the player's previous state from a buffer.
-    restoreState() {}
-
-    // Removes default game objects from the map of model |modelId| that are within |radius| units
-    // of the |position|. Should be called while the player is connecting to the server.
-    removeGameObject(modelId, position, radius) {
-        this.removedObjectCount_++;
-    }
-
-    // Gets the number of objects that have been removed from the map for this player.
-    get removedObjectCount() { return this.removedObjectCount_; }
-
-    // Gets or sets the message level at which this player would like to receive messages.
-    get messageLevel() { return this.messageLevel_; }
-    set messageLevel(value) { this.messageLevel_ = value; }
-
-    // Gets or sets the gang color of this player. May be NULL when no color has been defined.
-    get gangColor() { return this.gangColor_; }
-    set gangColor(value) { this.gangColor_ = value; }
-
-    
-
-    
-
-    updateStreamerObjects() { this.streamerObjectsUpdated_ = true; }
-
-    streamerObjectsUpdated() { return this.streamerObjectsUpdated_; }
-
-    get settings() { return this.playerSettings_; }
 }
 
 export default MockPlayer;

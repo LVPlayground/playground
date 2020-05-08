@@ -163,16 +163,16 @@ class PlayerManager {
 
         switch (event.newlevel) {
             case 3:  // Management
-                player.level_ = Player.LEVEL_MANAGEMENT;
-                player.levelIsTemporary_ = false;
+                player.level = Player.LEVEL_MANAGEMENT;
+                player.levelIsTemporary = false;
                 break;
             case 2:  // Administrator
-                player.level_ = Player.LEVEL_ADMINISTRATOR;
-                player.levelIsTemporary_ = !!event.temporary;
+                player.level = Player.LEVEL_ADMINISTRATOR;
+                player.levelIsTemporary = !!event.temporary;
                 break;
             default:
-                player.level_ = Player.LEVEL_PLAYER;
-                player.levelIsTemporary_ = false;
+                player.level = Player.LEVEL_PLAYER;
+                player.levelIsTemporary = false;
                 break;
         }
 
@@ -189,9 +189,9 @@ class PlayerManager {
         if (!player)
             return;  // the event has been received for an invalid player
 
-        player.userId_ = event.userid;
-        player.vip_ = !!event.vip;
-        player.undercover_ = !!event.undercover;
+        player.userId = event.userid;
+        player.setVip(!!event.vip);
+        player.setUndercover(!!event.undercover);
 
         this.notifyObservers('onPlayerLogin', player, event);
     }

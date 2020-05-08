@@ -83,7 +83,19 @@ class Player extends Supplementable {
     // ---------------------------------------------------------------------------------------------
 
     #id_ = null;
+    #level_ = null;
     #connectionState_ = null;
+
+    // To be removed:
+    #playerSettings_ = null;
+    #syncedData_ = null;
+    #activity_ = 0;
+    #gangId_ = null;
+    #levelIsTemporary_ = false;
+    #messageLevel_ = 0;
+    #undercover_ = false;
+    #userId_ = null;
+    #vip_ = false;
 
     #name_ = null;
     #gpci_ = null;
@@ -98,10 +110,13 @@ class Player extends Supplementable {
         super();
 
         this.#id_ = id;
+        this.#level_ = Player.LEVEL_PLAYER;
         this.#connectionState_ = Player.kConnectionEstablished;
 
+        this.#playerSettings_ = new PlayerSettings();
+        this.#syncedData_ = new PlayerSyncedData(id);
+
         this.initialize();
-        this.initializeDeprecated();
     }
 
     // Initializes the player immediately after construction. Populates caches of static player
@@ -178,7 +193,7 @@ class Player extends Supplementable {
 
     get virtualWorld() { return pawnInvoke('GetPlayerVirtualWorld', 'i', this.#id_); }
     set virtualWorld(value) {
-        if (this.syncedData_.isIsolated())
+        if (this.#syncedData_.isIsolated())
             return;
 
         pawnInvoke('SetPlayerVirtualWorld', 'ii', this.#id_, value);
@@ -202,6 +217,9 @@ class Player extends Supplementable {
         pawnInvoke('TogglePlayerControllable', 'ii', this.#id_, value ? 1 : 0);
     }
 
+    get level() { return this.#level_; }
+    set level(value) { this.#level_ = value; }
+
     get skin() { return pawnInvoke('GetPlayerSkin', 'i', this.#id_); }
     set skin(value) { pawnInvoke('SetPlayerSkin', 'ii', this.#id_, value); }
 
@@ -209,6 +227,10 @@ class Player extends Supplementable {
     set specialAction(value) { pawnInvoke('SetPlayerSpecialAction', 'ii', this.#id_, value); }
 
     get state() { return pawnInvoke('GetPlayerState', 'i', this.#id_); }
+
+    isAdministrator() { return this.#level_ >= Player.LEVEL_ADMINISTRATOR; }
+
+    isManagement() { return this.#level_ >= Player.LEVEL_MANAGEMENT; }
 
     isMinimized() { return isPlayerMinimized(this.#id_); }
 
@@ -252,7 +274,7 @@ class Player extends Supplementable {
         if (message instanceof Message)
             message = Message.format(message, ...args);
 
-        pawnInvoke('SendClientMessage', 'iis', this.id_, 0xFFFFFFFF, message.toString());
+        pawnInvoke('SendClientMessage', 'iis', this.#id_, 0xFFFFFFFF, message.toString());
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -322,16 +344,16 @@ class Player extends Supplementable {
     }
 
     enterVehicle(vehicle, seat = 0) {
-        if (this.syncedData_.isIsolated() && vehicle.virtualWorld != this.virtualWorld)
+        if (this.#syncedData_.isIsolated() && vehicle.virtualWorld != this.virtualWorld)
             return;
 
         if (this.#vehicle_)
             this.leaveVehicleWithAnimation();
 
         if (typeof vehicle === 'number')
-            pawnInvoke('PutPlayerInVehicle', 'iii', this.id_, vehicle, seat);
+            pawnInvoke('PutPlayerInVehicle', 'iii', this.#id_, vehicle, seat);
         else if (vehicle instanceof Vehicle)
-            pawnInvoke('PutPlayerInVehicle', 'iii', this.id_, vehicle.id, seat);
+            pawnInvoke('PutPlayerInVehicle', 'iii', this.#id_, vehicle.id, seat);
         else
             throw new Error('Unknown vehicle to put the player in: ' + vehicle);
     }
@@ -344,160 +366,59 @@ class Player extends Supplementable {
     leaveVehicleWithAnimation() { pawnInvoke('RemovePlayerFromVehicle', 'i', this.#id_); }
 
     // ---------------------------------------------------------------------------------------------
-    // Section: Interaction
-    // ---------------------------------------------------------------------------------------------
-
-
-    // ---------------------------------------------------------------------------------------------
     // Stuff that needs a better home
     // ---------------------------------------------------------------------------------------------
 
-    
+    get settings() { return this.#playerSettings_; }
+    get syncedData() { return this.#syncedData_; }
 
+    restoreState() { pawnInvoke('OnSerializePlayerState', 'iii', this.#id_, 0, -1); }
+    serializeState(restoreOnSpawn = false) {
+        pawnInvoke('OnSerializePlayerState', 'iii', this.#id_, 1, restoreOnSpawn ? 1 : 0);
+    }
 
-    // ---------------------------------------------------------------------------------------------
+    get levelIsTemporary() { return this.#levelIsTemporary_; }
+    set levelIsTemporary(value) { this.#levelIsTemporary_ = value; }
 
+    isTemporaryAdministrator() { return this.isAdministrator() && this.#levelIsTemporary_; }
 
+    updateStreamerObjects() { pawnInvoke('Streamer_Update', 'ii', this.#id_, 0); }
+    updateStreamer(position, virtualWorld, interiorId, type) {
+        pawnInvoke('Streamer_UpdateEx', 'ifffiii', this.#id_, position.x, position.y, position.z,
+                   virtualWorld, interiorId, type);
+    }
 
+    get activity() { return this.#activity_; }
+    set activityInternal(value) { this.#activity_ = value; }
+    set activity(activity) {
+        this.#activity_ = activity;
 
+        // Asynchronously inform the Pawn script of the activity change.
+        Promise.resolve().then(() =>
+            pawnInvoke('OnPlayerActivityChange', 'ii', this.#id_, activity));
+    }
 
+    get messageLevel() { return this.#messageLevel_; }
+    set messageLevel(value) { this.#messageLevel_ = value; }
 
+    get userId() { return this.#userId_; }
+    set userId(value) { this.#userId_ = value; }
 
-    
+    get gangId() { return this.#gangId_; }
+    set gangId(value) { this.#gangId_ = value; }
 
+    get gangColor() { throw new Error('Unable to read the gang color for this player.'); }
+    set gangColor(value) {
+        pawnInvoke('OnUpdatePlayerGangColor', 'ii', this.#id_, value ? value.toNumberRGBA() : 0);
+    }
 
+    isRegistered() { return this.#userId_ !== null; }
 
-  // Creates a new instance of the Player class for |playerId|.
-  initializeDeprecated() {
-    const playerId = this.#id_;
+    isUndercover() { return this.#undercover_; }
+    setUndercover(value) { this.#undercover_ = value; }
 
-    this.id_ = playerId;
-    this.syncedData_ = new PlayerSyncedData(playerId);
-
-    this.level_ = Player.LEVEL_PLAYER;
-    this.levelIsTemporary_ = false;
-    
-    this.vip_ = false;
-    this.undercover_ = false;
-
-    this.userId_ = null;
-    this.gangId_ = null;
-
-    this.activity_ = Player.PLAYER_ACTIVITY_NONE;
-    this.messageLevel_ = 0;
-
-    this.playerSettings_ = new PlayerSettings();
-  }
-
-  // Gets the level of this player. Synchronized with the gamemode using the `levelchange` event.
-  get level() { return this.level_; }
-
-  // Gets whether the player's level is temporary. Certain restrictions might apply in that case.
-  get levelIsTemporary() { return this.levelIsTemporary_; }
-
-  // Gets the PlayerSynchedData object, representing data that's synchronized between the Pawn and
-  // JavaScript implementations of Las Venturas Playground.
-  get syncedData() { return this.syncedData_; }
-
-  // Returns whether the player is an administrator on Las Venturas Playground.
-  isAdministrator() {
-    return this.level_ == Player.LEVEL_ADMINISTRATOR ||
-           this.level_ == Player.LEVEL_MANAGEMENT;
-  }
-
-  // Returns whether the player is a temporary administrator.
-  isTemporaryAdministrator() {
-    return this.isAdministrator() && this.levelIsTemporary_;
-  }
-
-  // Returns whether the player is a Management member on Las Venturas Playground.
-  isManagement() { return this.level_ == Player.LEVEL_MANAGEMENT; }
-
-  // Returns whether the player is undercover, i.e. does not use their own account.
-  isUndercover() { return this.undercover_; }
-
-  // Returns whether the player is registered and logged in to their account.
-  isRegistered() { return this.userId_ !== null; }
-
-  // Gets the user Id of the player's account if they have identified to it.
-  get userId() { return this.userId_; }
-
-  // Returns whether this player is a VIP member of Las Venturas Playground.
-  isVip() { return this.vip_; }
-
-  // Gets or sets the Id of the gang this player is part of.
-  get gangId() { return this.gangId_; }
-  set gangId(value) { this.gangId_ = value; }
-
-
-  // Gets or sets the gang color of this player. May be NULL when no color has been defined.
-  get gangColor() { throw new Error('Player.gangColor() has not been implemented yet.'); }
-  set gangColor(value) {
-    pawnInvoke('OnUpdatePlayerGangColor', 'ii', this.id_, value ? value.toNumberRGBA() : 0);
-  }
-
-  // Returns the player's last shot vectors as two vectors: source and target.
-  getLastShotVectors() {
-    const positions = pawnInvoke('GetPlayerLastShotVectors', 'iFFFFFF', this.id_);
-    return {
-      source: new Vector(positions[0], positions[1], positions[2]),
-      target: new Vector(positions[3], positions[4], positions[5]),
-    };
-  }
-
-  serializeState(restoreOnSpawn = false) {
-    pawnInvoke('OnSerializePlayerState', 'iii', this.id_, 1 /* serialize */, restoreOnSpawn ? 1 :0);
-  }
-
-  restoreState() {
-    pawnInvoke('OnSerializePlayerState', 'iii', this.id_, 0 /* serialize */, -1);
-  }
-
-  // Returns or updates the activity of this player. Updating the activity will be propagated to
-  // the Pawn part of the gamemode as well.
-  get activity() { return this.activity_; }
-  set activity(activity) {
-    this.activity_ = activity;
-
-    // Asynchronously inform the Pawn script of the activity change.
-    Promise.resolve().then(() =>
-        pawnInvoke('OnPlayerActivityChange', 'ii', this.id_, activity));
-  }
-
-  // Gets the message level at which this player would like to receive messages. Only applicable
-  // to administrators on the server.
-  get messageLevel() { return this.messageLevel_; }
-
-  // Removes default game objects from the map of model |modelId| that are within |radius| units
-  // of the |position|. Should be called while the player is connecting to the server.
-  removeGameObject(modelId, position, radius) {
-    pawnInvoke('RemoveBuildingForPlayer', 'iiffff', this.id_, modelId, position.x, position.y,
-               position.z, radius);
-  }
-
-  // Toggles display of the statistics display in the player's bottom-right corner.
-  toggleStatisticsDisplay(enabled) {
-    Promise.resolve().then(() =>
-        pawnInvoke('OnToggleStatisticsDisplay', 'ii', this.id_, enabled ? 1 : 0));
-  }
-
-  // -----------------------------------------------------------------------------------------------
-  // TODO: The following methods should not be on the common Player object, but rather provided by
-  // a feature of sorts.
-
-  updateStreamerObjects() {
-    pawnInvoke('Streamer_Update', 'ii', this.id_, 0 /* STREAMER_TYPE_OBJECT */);
-  }
-
-  updateStreamer(position, virtualWorld, interiorId, type) {
-    pawnInvoke('Streamer_UpdateEx', 'ifffiii', this.id_, position.x, position.y, position.z,
-               virtualWorld, interiorId, type);
-  }
-
-  // Settings for the player stored inside the database.
-  get settings() {
-    return this.playerSettings_;
-  }
+    isVip() { return this.#vip_; }
+    setVip(value) { this.#vip_ = value; }
 };
 
 // The level of a player. Can be accessed using the `level` property on a Player instance.
@@ -516,7 +437,7 @@ self.addEventListener('playeractivitychange', event => {
   if (!player)
     return;
 
-  player.activity_ = event.activity;
+  player.activityInternal = event.activity;
 });
 
 // Called when a player's message level changes. This event is custom to Las Venturas Playground.
@@ -525,7 +446,7 @@ self.addEventListener('messagelevelchange', event => {
   if (!player)
     return;
 
-  player.messageLevel_ = event.messagelevel;
+  player.messageLevel = event.messagelevel;
 });
 
 // Utility function: convert a player's level to a string.

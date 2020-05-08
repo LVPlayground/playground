@@ -63,7 +63,8 @@ class InteriorSelectorUI {
         this.ensureSelecting();
 
         player.setSpectating(true);
-        player.toggleStatisticsDisplay(false);
+
+        Promise.resolve().then(() => pawnInvoke('OnToggleStatisticsDisplay', 'ii', player.id, 0));
     }
 
     // Makes sure that the player continues to have a cursor available to them for the duration of
@@ -127,10 +128,12 @@ class InteriorSelectorUI {
     dispose() {
         this.active_ = false;
 
-        pawnInvoke('CancelSelectTextDraw', 'i', this.player_.id);
+        Promise.resolve().then(() => {
+            pawnInvoke('CancelSelectTextDraw', 'i', this.player_.id);
+            pawnInvoke('OnToggleStatisticsDisplay', 'ii', this.player_.id, 1);
+        });
 
         this.player_.setSpectating(false);
-        this.player_.toggleStatisticsDisplay(true);
 
         this.acceptButton_.hideForPlayer(this.player_);
         this.cancelButton_.hideForPlayer(this.player_);

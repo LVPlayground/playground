@@ -4,10 +4,12 @@
 
 import Assert from 'base/test/assert.js';
 import { Player } from 'entities/player.js';
+import { PlayerAccountSupplement } from 'features/account/player_account_supplement.js';
 import Server from './server.js';
 
 import 'base/index.d.ts';
 import 'base/test/index.d.ts';
+import 'entities/index.d.ts';
 
 declare global {
     // Global functions provided by PlaygroundJS.
@@ -38,6 +40,14 @@ declare global {
 
     const console: Console;
     let server: Server;
+
+    // ---------------------------------------------------------------------------------------------
+    // Supplements
+    // ---------------------------------------------------------------------------------------------
+
+    interface Player {
+        account?: PlayerAccountSupplement;
+    }
 
     // ---------------------------------------------------------------------------------------------
     // Test infrastructure

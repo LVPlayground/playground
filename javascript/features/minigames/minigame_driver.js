@@ -138,7 +138,7 @@ class MinigameDriver {
             return;  // events are not relevant if the minigame is not active
 
         if (newState == Player.STATE_DRIVER)
-            this.minigame_.onPlayerEnterVehicle(player, player.currentVehicle());
+            this.minigame_.onPlayerEnterVehicle(player, player.vehicle);
         else if (oldState == Player.STATE_DRIVER)
             this.minigame_.onPlayerLeaveVehicle(player);
     }

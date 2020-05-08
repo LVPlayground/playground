@@ -27,6 +27,9 @@ import { toFloat } from 'base/float.js';
 //     What are their health and armour values? What is the player currently doing, and how are they
 //     moving around the world—with what appearance?
 //
+//   * Vehicles
+//     Players spend a lot of time in their vehicles. Which vehicle are they in, and in which seat?
+//     They could also be *on* a vehicle, surfing, which changes how their weapons sync.
 //
 // This class is not directly appropriate for testing, as the Pawn calls would fail. To that end, in
 // tests a Player will be represented by the MockPlayer object, which overrides many of the routines
@@ -38,6 +41,11 @@ import { toFloat } from 'base/float.js';
 // If you are considering extending the Player object with additional functionality, take a look at
 // the Supplementable system in //base/supplementable.js instead.
 class Player extends Supplementable {
+    // Constants applicable to the player's current connection to the server.
+    static kConnectionEstablished = 1;
+    static kConnectionClosing = 2;
+    static kConnectionClosed = 3;
+
     // Constants applicable to the `Player.specialAction` property.
     static kSpecialActionNone = 0;
     static kSpecialActionCrouching = 1;  // read-only
@@ -72,7 +80,7 @@ class Player extends Supplementable {
     // ---------------------------------------------------------------------------------------------
 
     #id_ = null;
-    #connected_ = null;
+    #connectionState_ = null;
 
     #name_ = null;
     #gpci_ = null;
@@ -80,11 +88,14 @@ class Player extends Supplementable {
     #ipAddress_ = null;
     #isNpc_ = null;
 
+    #vehicle_ = null;
+    #vehicleSeat_ = null;
+
     constructor(id) {
         super();
 
         this.#id_ = id;
-        this.#connected_ = true;
+        this.#connectionState_ = Player.kConnectionEstablished;
 
         this.initialize();
         this.initializeDeprecated();
@@ -99,6 +110,9 @@ class Player extends Supplementable {
         this.#ipAddress_ = pawnInvoke('GetPlayerIp', 'iS', this.#id_);
         this.#isNpc_ = !!pawnInvoke('IsPlayerNPC', 'i', this.#id_);
     }
+
+    notifyDisconnecting() { this.#connectionState_ = Player.kConnectionClosing; }
+    notifyDisconnected() { this.#connectionState_ = Player.kConnectionClosed; }
 
     // ---------------------------------------------------------------------------------------------
     // Section: Identity
@@ -128,7 +142,10 @@ class Player extends Supplementable {
 
     isServerAdmin() { return !!pawnInvoke('IsPlayerAdmin', 'i', this.#id_); }
 
-    isConnected() { return this.#connected_; }
+    isConnected() {
+        return this.#connectionState_ === Player.kConnectionEstablished ||
+               this.#connectionState_ === Player.kConnectionClosing;
+    }
 
     isNonPlayerCharacter() { return this.#isNpc_; }
 
@@ -193,6 +210,46 @@ class Player extends Supplementable {
     isMinimized() { return isPlayerMinimized(this.#id_); }
 
     // ---------------------------------------------------------------------------------------------
+    // Section: Vehicles
+    // ---------------------------------------------------------------------------------------------
+
+    get vehicle() { return this.#vehicle_; }
+    set vehicle(value) { this.#vehicle_ = value; }
+  
+    get vehicleSeat() { return this.#vehicleSeat_; }
+    set vehicleSeat(value) { this.#vehicleSeat_ = value; }
+
+    get vehicleCollisionsEnabled() { throw new Error('Unable to read this setting.'); }
+    set vehicleCollisionsEnabled(value) {
+        pawnInvoke('DisableRemoteVehicleCollisions', 'ii', this.#id_, value ? 0 : 1);
+    }
+
+    enterVehicle(vehicle, seat = 0) {
+        if (this.syncedData_.isIsolated() && vehicle.virtualWorld != this.virtualWorld)
+            return;
+
+        if (this.#vehicle_)
+            this.leaveVehicleWithAnimation();
+
+        if (typeof vehicle === 'number')
+            pawnInvoke('PutPlayerInVehicle', 'iii', this.id_, vehicle, seat);
+        else if (vehicle instanceof Vehicle)
+            pawnInvoke('PutPlayerInVehicle', 'iii', this.id_, vehicle.id, seat);
+        else
+            throw new Error('Unknown vehicle to put the player in: ' + vehicle);
+    }
+
+    isSurfingVehicle() {
+        return pawnInvoke('GetPlayerSurfingVehicleID', 'i', this.#id_) !== Vehicle.kInvalidId;
+    }
+
+    leaveVehicle() { this.position = this.position; }
+    leaveVehicleWithAnimation() { pawnInvoke('RemovePlayerFromVehicle', 'i', this.#id_); }
+
+    // ---------------------------------------------------------------------------------------------
+
+
+
 
 
 
@@ -207,8 +264,6 @@ class Player extends Supplementable {
 
     this.id_ = playerId;
     this.syncedData_ = new PlayerSyncedData(playerId);
-
-    this.disconnecting_ = false;
 
     this.level_ = Player.LEVEL_PLAYER;
     this.levelIsTemporary_ = false;
@@ -227,21 +282,6 @@ class Player extends Supplementable {
     this.vehicleSeat_ = null;
 
     this.playerSettings_ = new PlayerSettings();
-  }
-
-
-  // Returns whether the player is currently in process of disconnecting.
-  isDisconnecting() { return this.disconnecting_; }
-
-  // Marks the player as being in process of disconnecting from the server.
-  notifyDisconnecting() {
-    this.disconnecting_ = true;
-  }
-
-  // Marks the player as having disconnected from the server.
-  notifyDisconnected() {
-    this.#connected_ = false;
-    this.disconnecting_ = false;
   }
 
   // Gets the level of this player. Synchronized with the gamemode using the `levelchange` event.
@@ -283,30 +323,6 @@ class Player extends Supplementable {
   // Gets or sets the Id of the gang this player is part of.
   get gangId() { return this.gangId_; }
   set gangId(value) { this.gangId_ = value; }
-
-
-  // Gets the vehicle the player is currently driving in. May be NULL.
-  get vehicle() { return this.vehicle_; }
-
-  // Gets the seat in the |vehicle| the player is currently sitting in. May be NULL when the player
-  // is not driving a vehicle. May be one of the Vehicle.SEAT_* constants.
-  get vehicleSeat() { return this.vehicleSeat_; }
-
-  // Returns the Id of the vehicle the player is currently driving in, or the ID of the seat in
-  // which the player is sitting whilst driving the vehicle. Should only be used by the manager.
-  findVehicleId() { return pawnInvoke('GetPlayerVehicleID', 'i', this.id_) || null; }
-  findVehicleSeat() { return pawnInvoke('GetPlayerVehicleSeat', 'i', this.id_); }
-
-  // Makes the player enter the given |vehicle|, optionally in the given |seat|.
-  enterVehicle(vehicle, seat = 0 /* driver */) {
-    if (this.syncedData_.isIsolated() && vehicle.virtualWorld != this.virtualWorld_)
-      return;
-
-    pawnInvoke('PutPlayerInVehicle', 'iii', this.id_, vehicle.id, seat);
-  }
-
-  // Makes the player leave the vehicle they're currently in.
-  leaveVehicle() { this.position = this.position; }
 
   // Gets or sets the time for this player. It will be returned, and must be set, as an array having
   // two entries: hours and minutes.
@@ -355,52 +371,6 @@ class Player extends Supplementable {
   // Clears the animations applied to the player.
   clearAnimations() { pawnInvoke('ClearAnimations', 'i', this.id_); }
 
-  // Gets or sets whether vehicle collisions should be enabled for this player.
-  get vehicleCollisionsEnabled() { return this.vehicleCollisionsEnabled_; }
-  set vehicleCollisionsEnabled(value) {
-    pawnInvoke('DisableRemoteVehicleCollisions', 'ii', this.id_, value ? 0 : 1);
-    this.vehicleCollisionsEnabled_ = !!value;
-  }
-
-  // Returns whether the player is currently surfing a vehicle.
-  isSurfingVehicle() {
-    return pawnInvoke('GetPlayerSurfingVehicleID', 'i', this.id_) !== Player.INVALID_ID;
-  }
-
-  // Returns the vehicle the player is currently driving in, when the player is in a vehicle and
-  // the vehicle is owned by the JavaScript code.
-  currentVehicle() {
-    return server.vehicleManager.getById(pawnInvoke('GetPlayerVehicleID', 'i', this.id_));
-  }
-
-  // Returns whether the player is in an vehicle. If |vehicle| is provided, this method will check
-  // whether the player is in that particular vehicle. Otherwise any vehicle will do.
-  isInVehicle(vehicle) {
-    if (typeof vehicle === 'number')
-      return pawnInvoke('GetPlayerVehicleID', 'i') == vehicle;
-
-    // TODO: Handle Vehicle instances for |vehicle|.
-
-    return pawnInvoke('IsPlayerInAnyVehicle', 'i', this.id_);
-  }
-
-  // Removes the player from the vehicle they're currently in.
-  removeFromVehicle() { pawnInvoke('RemovePlayerFromVehicle', 'i', this.id_); }
-
-  // Puts the player in |vehicle|, optionally defining |seat| as the seat they should sit in. If the
-  // player already is in a vehicle, they will be removed from that before being put in the other in
-  // order to work around a SA-MP bug where they may show up in the wrong vehicle for some players.
-  putInVehicle(vehicle, seat = 0) {
-    if (this.isInVehicle())
-      this.removeFromVehicle();
-
-    if (typeof vehicle === 'number')
-      pawnInvoke('PutPlayerInVehicle', 'iii', this.id_, vehicle, seat);
-    else if (vehicle instanceof Vehicle)
-      pawnInvoke('PutPlayerInVehicle', 'iii', this.id_, vehicle.id, seat);
-    else
-      throw new Error('Unknown vehicle to put the player in: ' + vehicle);
-  }
 
   // Gets or sets the gang color of this player. May be NULL when no color has been defined.
   get gangColor() { throw new Error('Player.gangColor() has not been implemented yet.'); }

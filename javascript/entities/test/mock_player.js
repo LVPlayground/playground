@@ -17,7 +17,7 @@ import { murmur3hash } from 'base/murmur3hash.js';
 // that would otherwise be infeasible.
 class MockPlayer {
     #id_ = null;
-    #connected_ = null; // remove
+    #connectionState_ = null; // remove
 
     #name_ = null;
     #gpci_ = null;
@@ -43,10 +43,14 @@ class MockPlayer {
     #state_ = Player.kStateOnFoot;
     #isMinimized_ = false;
 
+    #vehicle_ = null;
+    #vehicleSeat_ = null;
+    #isSurfingVehicle_ = false;
+
     // Initializes the mock player with static information that generally will not change for the
     // duration of the player's session. The |params| object is available.
     initialize(params) {
-        this.#connected_ = true;  // remove
+        this.#connectionState_ = Player.kConnectionEstablished;  // remove
 
         this.#name_ = params.name || 'Player' + this.#id_;
         this.#gpci_ = params.gpci || 'FAKELONGHASHOF40CHARACTERSHEH';
@@ -54,6 +58,9 @@ class MockPlayer {
         this.#ipAddress_ = params.ip || '127.0.0.1';
         this.#isNpc_ = params.npc || false;;
     }
+
+    notifyDisconnecting() { this.#connectionState_ = Player.kConnectionClosing; }
+    notifyDisconnected() { this.#connectionState_ = Player.kConnectionClosed; }
 
     // ---------------------------------------------------------------------------------------------
     // Section: Identity
@@ -79,7 +86,16 @@ class MockPlayer {
     isServerAdmin() { return this.#isServerAdmin_; }
     setServerAdminForTesting(value) { this.#isServerAdmin_ = value; }
 
-    isConnected() { return this.#connected_; }
+    // remove
+    isConnected() {
+        return this.#connectionState_ === Player.kConnectionEstablished ||
+               this.#connectionState_ === Player.kConnectionClosing;
+    }
+
+    // remove
+    isDisconnecting() {
+        return this.#connectionState_ === Player.kConnectionClosing;
+    }
 
     isNonPlayerCharacter() { return this.#isNpc_; }
 
@@ -104,13 +120,16 @@ class MockPlayer {
 
         // Testing behaviour: using SetPlayerPos() while the player is in a vehicle will eject them
         // from the vehicle. Emulate this behaviour by issuing a state change event.
-        if (this.vehicle_ !== null) {
+        if (this.#vehicle_ !== null) {
             dispatchEvent('playerstatechange', {
                 playerid: this.#id_,
-                oldstate: this.vehicleSeat_ === Vehicle.SEAT_DRIVER ? Player.STATE_DRIVER
-                                                                    : Player.STATE_PASSENGER,
-                newstate: Player.STATE_ON_FOOT,
+                oldstate: this.#vehicleSeat_ == Vehicle.SEAT_DRIVER ? Player.kStateVehicleDriver
+                                                                    : Player.kStateVehiclePassenger,
+                newstate: Player.kStateOnFoot,
             });
+
+            this.#vehicle_ = null;
+            this.#vehicleSeat_ = null;
         }
 
         // Testing behaviour: players moving around will naturally cause them to be near pickups,
@@ -164,6 +183,41 @@ class MockPlayer {
     setMinimizedForTesting(value) { this.#isMinimized_ = value; }
 
     // ---------------------------------------------------------------------------------------------
+    // Section: Vehicles
+    // ---------------------------------------------------------------------------------------------
+
+    get vehicle() { return this.#vehicle_; }
+    set vehicle(value) { this.#vehicle_ = value; }
+  
+    get vehicleSeat() { return this.#vehicleSeat_; }
+    set vehicleSeat(value) { this.#vehicleSeat_ = value; }
+
+    get vehicleCollisionsEnabled() { throw new Error('Unable to read this setting.'); }
+    set vehicleCollisionsEnabled(value) { /* no need to mock write-only values */ }
+
+    enterVehicle(vehicle, seat = 0) {
+        this.#vehicle_ = vehicle;
+        this.#vehicleSeat_ = seat;
+
+        dispatchEvent('playerstatechange', {
+            playerid: this.#id_,
+            oldstate: Player.kStateOnFoot,
+            newstate: seat === 0 ? Player.kStateVehicleDriver
+                                 : Player.kStateVehiclePassenger
+        });
+    }
+
+    isSurfingVehicle() { return this.#isSurfingVehicle_; }
+    setSurfingVehicleForTesting(value) { this.#isSurfingVehicle_ = value; }
+
+    leaveVehicle() { this.position = this.position; }  // remove
+    leaveVehicleWithAnimation() { this.leaveVehicle(); }
+
+    // ---------------------------------------------------------------------------------------------
+
+
+
+    // ---------------------------------------------------------------------------------------------
 
 
 
@@ -200,21 +254,12 @@ class MockPlayer {
         this.messages_ = [];
 
         this.gangColor_ = null;
-        this.vehicleCollisionsEnabled_ = true;
         this.removedObjectCount_ = 0;
         this.messageLevel_ = 0;
 
         this.streamerObjectsUpdated_ = false;
 
-        this.disconnecting_ = false;
-
         this.streamUrl_ = null;
-
-        this.vehicle_ = null;
-        this.vehicleSeat_ = null;
-
-        this.currentVehicleId_ = null;
-        this.currentVehicleSeat_ = 0;
 
         this.playerSettings_ = new PlayerSettings();
 
@@ -222,17 +267,6 @@ class MockPlayer {
     }
 
 
-
-    isDisconnecting() { return this.disconnecting_; }
-
-    notifyDisconnecting() {
-        this.disconnecting_ = true;
-    }
-
-    notifyDisconnected() {
-        this.#connected_ = false;
-        this.disconnecting_ = false;
-    }
 
     get level() { return this.level_; }
     set level(value) { this.level_ = value; }
@@ -269,44 +303,8 @@ class MockPlayer {
     get gangId() { return this.gangId_; }
     set gangId(value) { this.gangId_ = value; }
 
-    // Gets the vehicle the player is currently driving in. May be NULL.
-    get vehicle() { return this.vehicle_; }
-
-    // Gets the seat in the |vehicle| the player is currently sitting in. May be NULL when the player
-    // is not driving a vehicle. May be one of the Vehicle.SEAT_* constants.
-    get vehicleSeat() { return this.vehicleSeat_; }
-
-    // Returns the Id of the vehicle the player is currently driving in, or the ID of the seat in
-    // which the player is sitting whilst driving the vehicle. Should only be used by the manager.
-    findVehicleId() { return this.currentVehicleId_; }
-    findVehicleSeat() { return this.currentVehicleSeat_; }
-
-    // Makes the player enter the given |vehicle|, optionally in the given |seat|.
-    enterVehicle(vehicle, seat = 0 /* driver */) {
-        this.currentVehicleId_ = vehicle.id;
-        this.currentVehicleSeat_ = seat;
-
-        global.dispatchEvent('playerstatechange', {
-            playerid: this.id_,
-            oldstate: Player.STATE_ON_FOOT,
-            newstate: seat === 0 ? Player.STATE_DRIVER
-                                 : Player.STATE_PASSENGER
-        });
-
-        return true;
-    }
-
-    // Gets or sets the special action the player is currently engaged in. The values must be one of
-    // the Player.SPECIAL_ACTION_* constants static to this class.
-    get specialAction() { return this.specialAction_; }
-    set specialAction(value) { this.specialAction_ = value; }
-
     // Clears the animations applied to the player.
     clearAnimations() {}
-
-    // Gets or sets whether vehicle collisions should be enabled for this player.
-    get vehicleCollisionsEnabled() { return this.vehicleCollisionsEnabled_; }
-    set vehicleCollisionsEnabled(value) { this.vehicleCollisionsEnabled_ = value; }
 
     // Fake implementation of the ShowPlayerDialog() native. Used to be able to mock responses to
     // dialogs and make that entire sub-system testable as well.
@@ -424,12 +422,6 @@ class MockPlayer {
     get messageLevel() { return this.messageLevel_; }
     set messageLevel(value) { this.messageLevel_ = value; }
 
-    isSurfingVehicle() { return false; }
-
-    // Returns the vehicle the player is currently driving in, when the player is in a vehicle and
-    // the vehicle is owned by the JavaScript code.
-    currentVehicle() { return null; }
-
     // Gets or sets the gang color of this player. May be NULL when no color has been defined.
     get gangColor() { return this.gangColor_; }
     set gangColor(value) { this.gangColor_ = value; }
@@ -509,21 +501,6 @@ class MockPlayer {
         });
     }
 
-    // Makes the player leave the vehicle they're currently in.
-    leaveVehicle() {
-        if (!this.vehicle_)
-            return false;
-
-        global.dispatchEvent('playerstatechange', {
-            playerid: this.id_,
-            oldstate: this.vehicleSeat_ === 0 ? Player.STATE_DRIVER
-                                              : Player.STATE_PASSENGER,
-            newstate: Player.STATE_ON_FOOT
-        });
-
-        return true;
-    }
-
     // Changes the player's state from |oldState| to |newState|.
     changeState({ oldState, newState } = {}) {
         global.dispatchEvent('playerstatechange', {
@@ -596,11 +573,6 @@ class MockPlayer {
             newkeys: newkeys,
             oldkeys: oldkeys
         });
-    }
-
-    // Tells the test whether the player is in a vehicle
-    isInVehicle() {
-        return this.currentVehicle() != null;
     }
 
     updateStreamerObjects() { this.streamerObjectsUpdated_ = true; }

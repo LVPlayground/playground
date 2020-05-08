@@ -110,7 +110,7 @@ class RaceMinigame extends Minigame {
                 const playerData = this.dataForPlayer(player);
 
                 // Put the player in their designated vehicle, and disable collisions for them.
-                player.putInVehicle(playerData.vehicle);
+                player.enterVehicle(playerData.vehicle);
                 player.vehicleCollisionsEnabled = false;
 
                 // Display the score board for the |player|.

@@ -212,17 +212,25 @@ class PlayerManager {
 
             vehicle.onPlayerLeaveVehicle(player);
 
-            player.vehicle_ = null;
-            player.vehicleSeat_ = null;
+            player.vehicle = null;
+            player.vehicleSeat = null;
         }
 
         if (event.newstate === Player.STATE_DRIVER || event.newstate === Player.STATE_PASSENGER) {
-            const vehicle = server.vehicleManager.getById(player.findVehicleId());
+            const vehicleId =
+                server.isTest() ? player.vehicle?.id
+                                : pawnInvoke('GetPlayerVehicleID', 'i', player.id);
+
+            const vehicleSeat =
+                server.isTest() ? player.vehicleSeat
+                                : pawnInvoke('GetPlayerVehicleSeat', 'i', player.id);
+
+            const vehicle = server.vehicleManager.getById(vehicleId);
             if (!vehicle)
                 return;  // the vehicle isn't managed by JavaScript
 
-            player.vehicle_ = vehicle;
-            player.vehicleSeat_ = player.findVehicleSeat();
+            player.vehicle = vehicle;
+            player.vehicleSeat = vehicleSeat;
 
             vehicle.onPlayerEnterVehicle(player);
 
@@ -248,8 +256,8 @@ class PlayerManager {
 
             player.vehicle.onPlayerLeaveVehicle(player);
 
-            player.vehicle_ = null;
-            player.vehicleSeat_ = null;
+            player.vehicle = null;
+            player.vehicleSeat = null;
         }
 
         // Remove knowledge of the |player| from the player manager.

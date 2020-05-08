@@ -68,7 +68,7 @@ class PositioningCommands {
     }
 
     onUpCommand(player, distance) {
-        if (player.isInVehicle()) {
+        if (player.vehicle) {
             const playerVehicleId = this.getVehicleOfPlayer(player.id);
 
             const playerVehiclePosition = this.getPositionOfVehicle(playerVehicleId);
@@ -87,7 +87,7 @@ class PositioningCommands {
     }
 
     onForwardCommand(player, distance) {
-        if (player.isInVehicle()) {
+        if (player.vehicle) {
             const playerVehicleId = this.getVehicleOfPlayer(player.id);
 
             const pvPosition = this.getPositionOfVehicle(playerVehicleId);

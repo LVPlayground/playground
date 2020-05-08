@@ -73,7 +73,7 @@ class InteriorSelectorUI {
             if (!this.player_.isConnected())
                 return;
 
-            this.player_.setSelectTextDraw(true, BUTTON_HOVER_COLOR);
+            pawnInvoke('SelectTextDraw', 'ii', this.player_.id, BUTTON_HOVER_COLOR.toNumberRGBA());
             await seconds(1);
         }
     }
@@ -127,8 +127,9 @@ class InteriorSelectorUI {
     dispose() {
         this.active_ = false;
 
+        pawnInvoke('CancelSelectTextDraw', 'i', this.player_.id);
+
         this.player_.setSpectating(false);
-        this.player_.setSelectTextDraw(false);
         this.player_.toggleStatisticsDisplay(true);
 
         this.acceptButton_.hideForPlayer(this.player_);

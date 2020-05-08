@@ -16,20 +16,14 @@ import { toFloat } from 'base/float.js';
 // abilities are therefore grouped in a series of sections:
 //
 //   * Identity
-//     Contains information on who the player is: their ID, nickname, IP address and serial. Most
-//     of this information is constant, and will have been cached by the `initialize()` method.
-//
 //   * Physics
-//     Where in the world are they? In which interior ID and virtual world? How fast are they
-//     going? All of these properties have both getters and setters.
-//
 //   * State
-//     What are their health and armour values? What is the player currently doing, and how are they
-//     moving around the world—with what appearance?
+//   * Environment
+//
+//   * Audio
+//   * Visual
 //
 //   * Vehicles
-//     Players spend a lot of time in their vehicles. Which vehicle are they in, and in which seat?
-//     They could also be *on* a vehicle, surfing, which changes how their weapons sync.
 //
 // This class is not directly appropriate for testing, as the Pawn calls would fail. To that end, in
 // tests a Player will be represented by the MockPlayer object, which overrides many of the routines
@@ -45,6 +39,14 @@ class Player extends Supplementable {
     static kConnectionEstablished = 1;
     static kConnectionClosing = 2;
     static kConnectionClosed = 3;
+
+    // Constants applicable to the `Player.fightingStyle` property.
+    static kFightingStyleNormal = 4;
+    static kFightingStyleBoxing = 5;
+    static kFightingStyleKungFu = 6;
+    static kFightingStyleKneeHead = 7;
+    static kFightingStyleGrabKick = 15;
+    static kFightingStyleElbow = 16;
 
     // Constants applicable to the `Player.specialAction` property.
     static kSpecialActionNone = 0;
@@ -210,6 +212,71 @@ class Player extends Supplementable {
     isMinimized() { return isPlayerMinimized(this.#id_); }
 
     // ---------------------------------------------------------------------------------------------
+    // Section: Environment
+    // ---------------------------------------------------------------------------------------------
+
+    get drunkLevel() { return pawnInvoke('GetPlayerDrunkLevel', 'i', this.#id_); }
+    set drunkLevel(value) { pawnInvoke('SetPlayerDrunkLevel', 'ii', this.#id_, value); }
+
+    get fightingStyle() { return pawnInvoke('GetPlayerFightingStyle', 'i', this.#id_); }
+    set fightingStyle(value) { pawnInvoke('SetPlayerFightingStyle', 'ii', this.#id_, value); }
+
+    get score() { return pawnInvoke('GetPlayerScore', 'i', this.#id_); }
+    set score(value) { pawnInvoke('SetPlayerScore', 'ii', this.#id_, value); }
+
+    get team() { return pawnInvoke('GetPlayerTeam', 'i', this.#id_); }
+    set team(value) { pawnInvoke('SetPlayerTeam', 'ii', this.#id_, value); }
+
+    get time() { return pawnInvoke('GetPlayerTime', 'iII', this.#id_); }
+    set time(value) { pawnInvoke('SetPlayerTime', 'iii', this.#id_, value[0], value[1]); }
+
+    get wantedLevel() { return pawnInvoke('GetPlayerWantedLevel', 'i', this.#id_); }
+    set wantedLevel(value) { pawnInvoke('SetPlayerWantedLevel', 'ii', this.#id_, value); }
+
+    get weather() { throw new Error('Unable to get the current weather for players.'); }
+    set weather(value) { pawnInvoke('SetPlayerWeather', 'ii', this.#id_, value); }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: Audio
+    // ---------------------------------------------------------------------------------------------
+
+    playAudioStream(url) {
+        pawnInvoke('PlayAudioStreamForPlayer', 'isffffi', this.#id_, url, 0, 0, 0, 50, 0);
+    }
+
+    playSound(soundId) { pawnInvoke('PlayerPlaySound', 'iifff', this.#id_, soundId, 0, 0, 0); }
+
+    stopAudioStream() { pawnInvoke('StopAudioStreamForPlayer', 'i', this.#id_); }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: Visual
+    // ---------------------------------------------------------------------------------------------
+
+    get cameraPosition() {
+        return new Vector(...pawnInvoke('GetPlayerCameraPos', 'iFFF', this.#id_));
+    }
+
+    get cameraFrontVector() {
+        return new Vector(...pawnInvoke('GetPlayerCameraFrontVector', 'iFFF', this.#id_));
+    }
+
+    interpolateCamera(positionFrom, positionTo, targetFrom, targetTo, duration) {
+        pawnInvoke('InterpolateCameraPos', 'iffffffii', this.#id_, positionFrom.x, positionFrom.y,
+                   positionFrom.z, positionTo.x, positionTo.y, positionTo.z, duration, 1);
+        pawnInvoke('InterpolateCameraLookAt', 'iffffffii', this.#id_, targetFrom.x, targetFrom.y,
+                   targetFrom.z, targetTo.x, targetTo.y, targetTo.z, duration, 1);
+    }
+
+    resetCamera() { pawnInvoke('SetCameraBehindPlayer', 'i', this.#id_); }
+
+    setCamera(position, target) {
+        pawnInvoke('SetPlayerCameraPos', 'ifff', this.#id_, position.x, position.y, position.z);
+        pawnInvoke('SetPlayerCameraLookAt', 'ifffi', this.#id_, target.x, target.y, target.z, 2);
+    }
+  
+    setSpectating(value) { pawnInvoke('TogglePlayerSpectating', 'ii', this.#id_, value ? 1 : 0); }
+
+    // ---------------------------------------------------------------------------------------------
     // Section: Vehicles
     // ---------------------------------------------------------------------------------------------
 
@@ -247,6 +314,13 @@ class Player extends Supplementable {
     leaveVehicleWithAnimation() { pawnInvoke('RemovePlayerFromVehicle', 'i', this.#id_); }
 
     // ---------------------------------------------------------------------------------------------
+    // Section: Camera
+    // ---------------------------------------------------------------------------------------------
+
+
+
+
+    // ---------------------------------------------------------------------------------------------
 
 
 
@@ -274,12 +348,8 @@ class Player extends Supplementable {
     this.userId_ = null;
     this.gangId_ = null;
 
-    this.vehicleCollisionsEnabled_ = true;
     this.activity_ = Player.PLAYER_ACTIVITY_NONE;
     this.messageLevel_ = 0;
-
-    this.vehicle_ = null;
-    this.vehicleSeat_ = null;
 
     this.playerSettings_ = new PlayerSettings();
   }
@@ -323,19 +393,6 @@ class Player extends Supplementable {
   // Gets or sets the Id of the gang this player is part of.
   get gangId() { return this.gangId_; }
   set gangId(value) { this.gangId_ = value; }
-
-  // Gets or sets the time for this player. It will be returned, and must be set, as an array having
-  // two entries: hours and minutes.
-  get time() { return pawnInvoke('GetPlayerTime', 'iII', this.id); }
-  set time(value) { pawnInvoke('SetPlayerTime', 'iii', this.id, value[0], value[1]); }
-
-  // Sets the player's weather. We cannot provide a getter for this, given that SA-MP does not
-  // expose whatever weather is current for the player. Silly.
-  set weather(value) { pawnInvoke('SetPlayerWeather', 'ii', this.id_, value); }
-
-  // Gets or sets the drunk level of this player.
-  get drunkLevel() { return pawnInvoke('GetPlayerDrunkLevel', 'i', this.id_); }
-  set drunkLevel(value) { pawnInvoke('SetPlayerDrunkLevel', 'ii', this.id_, value); }
 
   // Returns an object with the keys that the player is currently pressing.
   getKeys() {
@@ -381,21 +438,6 @@ class Player extends Supplementable {
   // Respawns the player.
   respawn() { pawnInvoke('SpawnPlayer', 'i', this.id_); }
 
-  // Sets whether the player should be in spectator mode. Disabling spectator mode will force them
-  // to respawn immediately after, which may be an unintended side-effect.
-  setSpectating(spectating) {
-    pawnInvoke('TogglePlayerSpectating', 'ii', this.id_, spectating ? 1 : 0);
-  }
-
-  // Sets whether the player is currently selecting a text draw on their screen. If so, the
-  // |hoverColor| can be supplied to highlight the selected text draws.
-  setSelectTextDraw(selecting, hoverColor = null) {
-    if (selecting)
-      pawnInvoke('SelectTextDraw', 'ii', this.id_, (hoverColor || Color.WHITE).toNumberRGBA());
-    else
-      pawnInvoke('CancelSelectTextDraw', 'i', this.id_);
-  }
-
   // Returns the player's last shot vectors as two vectors: source and target.
   getLastShotVectors() {
     const positions = pawnInvoke('GetPlayerLastShotVectors', 'iFFFFFF', this.id_);
@@ -403,50 +445,6 @@ class Player extends Supplementable {
       source: new Vector(positions[0], positions[1], positions[2]),
       target: new Vector(positions[3], positions[4], positions[5]),
     };
-  }
-
-  // Returns a vector of the position of the player's camera.
-  get cameraPosition() {
-    return new Vector(...pawnInvoke('GetPlayerCameraPos', 'iFFF', this.id_));
-  }
-
-  // Returns a vector of the front-vector of the player's camera.
-  get cameraFrontVector() {
-    return new Vector(...pawnInvoke('GetPlayerCameraFrontVector', 'iFFF', this.id_));
-  }
-
-  // Sets the player's camera to |position| and |target|, both of which must be vectors. The camera
-  // position is interpolated becaue this makes it play nice with spectating and camera streaming.
-  setCamera(position, target) {
-    pawnInvoke('SetPlayerCameraPos', 'ifff', this.id_, position.x, position.y, position.z);
-    pawnInvoke('SetPlayerCameraLookAt', 'ifffi', this.id_, target.x, target.y, target.z, 2);
-  }
-
-  // Interpolates the player's camera from |positionFrom|, |targetFrom| to |positionTo|, |targetTo|,
-  // which must be vectors, in |duration| milliseconds.
-  interpolateCamera(positionFrom, positionTo, targetFrom, targetTo, duration) {
-    pawnInvoke('InterpolateCameraPos', 'iffffffii', this.id_, positionFrom.x, positionFrom.y,
-               positionFrom.z, positionTo.x, positionTo.y, positionTo.z, duration, 1);
-    pawnInvoke('InterpolateCameraLookAt', 'iffffffii', this.id_, targetFrom.x, targetFrom.y,
-               targetFrom.z, targetTo.x, targetTo.y, targetTo.z, duration, 1);
-  }
-
-  // Resets the player's camera to be positioned behind them.
-  resetCamera() {
-    pawnInvoke('SetCameraBehindPlayer', 'i', this.id_);
-  }
-
-  // Plays the audio stream at |streamUrl| for the player.
-  playAudioStream(streamUrl) {
-    pawnInvoke('PlayAudioStreamForPlayer', 'isffffi', this.id_, streamUrl, 0, 0, 0, 50, 0);
-  }
-
-  // Stops the playback of any audio stream for the player.
-  stopAudioStream() { pawnInvoke('StopAudioStreamForPlayer', 'i', this.id_); }
-
-  // Plays |soundId| for the player at their current position.
-  playSound(soundId) {
-    pawnInvoke('PlayerPlaySound', 'iifff', this.id_, soundId, 0, 0, 0);
   }
 
   serializeState(restoreOnSpawn = false) {

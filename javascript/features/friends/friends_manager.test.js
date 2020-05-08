@@ -45,11 +45,11 @@ describe('FriendsManager', (it, beforeEach, afterEach) => {
         assert.equal(friends.offline[0], 'Lucy');
         assert.equal(friends.offline[1], 'Russell');
 
-        assert.isNull(gunther.lastPlayedSound);
+        assert.isNull(gunther.soundIdForTesting);
 
         server.playerManager.onPlayerConnect({ playerid: 100, name: 'Lucy' });
 
-        assert.isNotNull(gunther.lastPlayedSound);
+        assert.isNotNull(gunther.soundIdForTesting);
     });
 
     it('should remove stored data when a player disconnects', async(assert) => {

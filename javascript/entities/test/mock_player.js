@@ -43,6 +43,16 @@ class MockPlayer {
     #state_ = Player.kStateOnFoot;
     #isMinimized_ = false;
 
+    #drunkLevel_ = 0;
+    #fightingStyle_ = Player.kFightingStyleNormal;
+    #score_ = 0;
+    #team_ = 255;  // NO_TEAM
+    #time_ = [0, 0];
+    #wantedLevel_ = 0;
+
+    #streamUrl_ = null;
+    #soundId_ = null;
+
     #vehicle_ = null;
     #vehicleSeat_ = null;
     #isSurfingVehicle_ = false;
@@ -183,6 +193,59 @@ class MockPlayer {
     setMinimizedForTesting(value) { this.#isMinimized_ = value; }
 
     // ---------------------------------------------------------------------------------------------
+    // Section: Environment
+    // ---------------------------------------------------------------------------------------------
+
+    get drunkLevel() { return this.#drunkLevel_; }
+    set drunkLevel(value) { this.#drunkLevel_ = value; }
+
+    get fightingStyle() { return this.#fightingStyle_; }
+    set fightingStyle(value) { this.#fightingStyle_ = value; }
+
+    get score() { return this.#score_; }
+    set score(value) { this.#score_ = value; }
+
+    get team() { return this.#team_; }
+    set team(value) { this.#team_ = value; }
+
+    get time() { return this.#time_; }
+    set time(value) { this.#time_ = value; }
+
+    get wantedLevel() { return this.#wantedLevel_; }
+    set wantedLevel(value) { this.#wantedLevel_ = value; }
+
+    get weather() { throw new Error('Unable to get the current weather for players.'); }
+    set weather(value) { /* no need to mock write-only values */ }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: Audio
+    // ---------------------------------------------------------------------------------------------
+
+    playAudioStream(url) { this.#streamUrl_ = url; }
+
+    playSound(soundId) { this.#soundId_ = soundId; }
+
+    stopAudioStream() { this.#streamUrl_ = null; }
+
+    get soundIdForTesting() { return this.#soundId_; }
+    get streamUrlForTesting() { return this.#streamUrl_; }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: Visual
+    // ---------------------------------------------------------------------------------------------
+
+    get cameraPosition() { return new Vector(0, 0, 0); }
+    get cameraFrontVector() { return new Vector(0, 0, 0); }
+
+    interpolateCamera(positionFrom, positionTo, targetFrom, targetTo, duration) {}
+
+    resetCamera() {}
+
+    setCamera(position, target) {}
+
+    setSpectating(value) {}
+
+    // ---------------------------------------------------------------------------------------------
     // Section: Vehicles
     // ---------------------------------------------------------------------------------------------
 
@@ -248,8 +311,6 @@ class MockPlayer {
         this.lastDialogStyle_ = null;
         this.lastDialogLabel_ = null;
         this.lastDialogMessage_ = null;
-
-        this.lastPlayedSound_ = null;
 
         this.messages_ = [];
 
@@ -364,10 +425,6 @@ class MockPlayer {
     // Gets the messages that have been sent to this player.
     get messages() { return this.messages_; }
 
-    // Sets whether the player should be in spectator mode. Disabling spectator mode will force them
-    // to respawn immediately after, which may be an unintended side-effect.
-    setSpectating(spectating) {}
-
     // Gets the most recent shot vectors for the player.
     getLastShotVectors() {
         return {
@@ -376,35 +433,11 @@ class MockPlayer {
         };
     }
 
-    // Sets the player's camera to |position| and |target|, both of which must be vectors.
-    setCamera(position, target) {}
-
-    // Interpolates the player's camera from |positionFrom|, |targetFrom| to |positionTo|, |targetTo|,
-    // which must be vectors, in |duration| milliseconds.
-    interpolateCamera(positionFrom, positionTo, targetFrom, targetTo, duration) {}
-
-    // Resets the player camera to its default behaviour.
-    resetCamera() {}
-
     // Serializes the player's current state into a buffer.
     serializeState() {}
 
     // Restores the player's previous state from a buffer.
     restoreState() {}
-
-    // Plays the audio stream at |streamUrl| for the player.
-    playAudioStream(streamUrl) { this.streamUrl_ = streamUrl; }
-
-    // Stops the playback of any audio stream for the player.
-    stopAudioStream() { this.streamUrl_ = null; }
-
-    // For testing: gets the URL of the audio stream the player is currently listening to.
-    get streamUrl() { return this.streamUrl_; }
-
-    // Fake playing a sound for this player. Stores the soundId in |lastPlayedSound_|.
-    playSound(soundId) {
-        this.lastPlayedSound_ = soundId;
-    }
 
     // Removes default game objects from the map of model |modelId| that are within |radius| units
     // of the |position|. Should be called while the player is connecting to the server.
@@ -415,9 +448,6 @@ class MockPlayer {
     // Gets the number of objects that have been removed from the map for this player.
     get removedObjectCount() { return this.removedObjectCount_; }
 
-    // Gets the most recently played sound for this player.
-    get lastPlayedSound() { return this.lastPlayedSound_; }
-
     // Gets or sets the message level at which this player would like to receive messages.
     get messageLevel() { return this.messageLevel_; }
     set messageLevel(value) { this.messageLevel_ = value; }
@@ -425,9 +455,6 @@ class MockPlayer {
     // Gets or sets the gang color of this player. May be NULL when no color has been defined.
     get gangColor() { return this.gangColor_; }
     set gangColor(value) { this.gangColor_ = value; }
-
-    // Gets the color applied to this player.
-    get color() { return Color.WHITE; }
 
     // Respawns the player.
     respawn() {

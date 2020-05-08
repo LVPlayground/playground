@@ -120,7 +120,7 @@ describe('PropertySettings', (it, beforeEach) => {
 
     it('should allow VIPs to update the audio stream URL of their house', async(assert) => {
         assert.isFalse(location.settings.hasAudioStream());
-        assert.isNull(gunther.streamUrl);
+        assert.isNull(gunther.streamUrlForTesting);
 
         gunther.respondToDialog({ listitem: SETTINGS_MENU_INDEX }).then(
             () => gunther.respondToDialog({ listitem: 3 /* Change the stream URL */ })).then(
@@ -130,7 +130,7 @@ describe('PropertySettings', (it, beforeEach) => {
         assert.isTrue(await gunther.issueCommand('/house settings'));
         assert.isTrue(location.settings.hasAudioStream());
         assert.equal(location.settings.streamUrl, 'https://example.com/foo.mp3');
-        assert.equal(gunther.streamUrl, 'https://example.com/foo.mp3');
+        assert.equal(gunther.streamUrlForTesting, 'https://example.com/foo.mp3');
 
         gunther.respondToDialog({ listitem: SETTINGS_MENU_INDEX }).then(
             () => gunther.respondToDialog({ listitem: 3 /* Change the stream URL */ })).then(
@@ -139,7 +139,7 @@ describe('PropertySettings', (it, beforeEach) => {
 
         assert.isTrue(await gunther.issueCommand('/house settings'));
         assert.isFalse(location.settings.hasAudioStream());
-        assert.isNull(gunther.streamUrl);
+        assert.isNull(gunther.streamUrlForTesting);
     });
 
     it('should allow house spawn settings to be updated', async(assert) => {
@@ -165,10 +165,10 @@ describe('PropertySettings', (it, beforeEach) => {
 
         location.settings.streamUrl = 'http://example.com/mystream.mp3';
 
-        assert.isNull(gunther.streamUrl);
+        assert.isNull(gunther.streamUrlForTesting);
         manager.forceEnterHouse(gunther, location);
-        assert.equal(gunther.streamUrl, 'http://example.com/mystream.mp3');
+        assert.equal(gunther.streamUrlForTesting, 'http://example.com/mystream.mp3');
         manager.forceExitHouse(gunther, location);
-        assert.isNull(gunther.streamUrl);
+        assert.isNull(gunther.streamUrlForTesting);
     });
 });

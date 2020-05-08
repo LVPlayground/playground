@@ -289,14 +289,14 @@ describe('MinigameManager', (it, beforeEach, afterEach) => {
         // This test does not care about the minigame's state management.
         minigame.driver_.state = Minigame.STATE_RUNNING;
 
-        gunther.changeState({ newState: Player.STATE_DRIVER,
-                              oldState: Player.STATE_ON_FOOT });
+        gunther.changeState({ newState: Player.kStateVehicleDriver,
+                              oldState: Player.kStateOnFoot });
 
         assert.equal(minigame.enterVehicles.length, 1);
         assert.equal(minigame.leaveVehicles.length, 0);
 
-        gunther.changeState({ newState: Player.STATE_ON_FOOT,
-                              oldState: Player.STATE_DRIVER });
+        gunther.changeState({ newState: Player.kStateOnFoot,
+                              oldState: Player.kStateVehicleDriver });
 
         assert.equal(minigame.enterVehicles.length, 1);
         assert.equal(minigame.leaveVehicles.length, 1);

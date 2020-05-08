@@ -20,9 +20,10 @@ import { toFloat } from 'base/float.js';
 //   * State
 //   * Environment
 //
+//   * Interaction
+//
 //   * Audio
 //   * Visual
-//
 //   * Vehicles
 //
 // This class is not directly appropriate for testing, as the Pawn calls would fail. To that end, in
@@ -211,6 +212,8 @@ class Player extends Supplementable {
 
     isMinimized() { return isPlayerMinimized(this.#id_); }
 
+    respawn() { pawnInvoke('SpawnPlayer', 'i', this.#id_); }
+
     // ---------------------------------------------------------------------------------------------
     // Section: Environment
     // ---------------------------------------------------------------------------------------------
@@ -237,6 +240,22 @@ class Player extends Supplementable {
     set weather(value) { pawnInvoke('SetPlayerWeather', 'ii', this.#id_, value); }
 
     // ---------------------------------------------------------------------------------------------
+    // Section: Interaction
+    // ---------------------------------------------------------------------------------------------
+
+    showDialog(dialogId, style, caption, message, leftButton, rightButton) {
+        pawnInvoke('ShowPlayerDialog', 'iiissss', this.#id_, dialogId, style, caption, message,
+                                                  leftButton, rightButton);
+    }
+
+    sendMessage(message, ...args) {
+        if (message instanceof Message)
+            message = Message.format(message, ...args);
+
+        pawnInvoke('SendClientMessage', 'iis', this.id_, 0xFFFFFFFF, message.toString());
+    }
+
+    // ---------------------------------------------------------------------------------------------
     // Section: Audio
     // ---------------------------------------------------------------------------------------------
 
@@ -251,6 +270,17 @@ class Player extends Supplementable {
     // ---------------------------------------------------------------------------------------------
     // Section: Visual
     // ---------------------------------------------------------------------------------------------
+
+    animate({ library, name, delta = 4.1, loop = false, lock = false, freeze = false,
+              time = 0, forceSync = false } = {}) {
+        pawnInvoke('ApplyAnimation', 'issfiiiiii',
+            this.#id_, library, name, delta, loop ? 1 : 0, lock ? 1 : 0, lock ? 1 : 0,
+            freeze ? 1 : 0, time, forceSync ? 1 : 0);
+    }
+
+    get animationIndex() { return pawnInvoke('GetPlayerAnimationIndex', 'i', this.#id_); }
+
+    clearAnimations() { pawnInvoke('ClearAnimations', 'i', this.#id_); }
 
     get cameraPosition() {
         return new Vector(...pawnInvoke('GetPlayerCameraPos', 'iFFF', this.#id_));
@@ -314,10 +344,15 @@ class Player extends Supplementable {
     leaveVehicleWithAnimation() { pawnInvoke('RemovePlayerFromVehicle', 'i', this.#id_); }
 
     // ---------------------------------------------------------------------------------------------
-    // Section: Camera
+    // Section: Interaction
     // ---------------------------------------------------------------------------------------------
 
 
+    // ---------------------------------------------------------------------------------------------
+    // Stuff that needs a better home
+    // ---------------------------------------------------------------------------------------------
+
+    
 
 
     // ---------------------------------------------------------------------------------------------
@@ -394,49 +429,12 @@ class Player extends Supplementable {
   get gangId() { return this.gangId_; }
   set gangId(value) { this.gangId_ = value; }
 
-  // Returns an object with the keys that the player is currently pressing.
-  getKeys() {
-    const [keys, updown, leftright] = pawnInvoke('GetPlayerKeys', 'iIII', this.id_);
-    return {
-      aim: keys & 128 /* KEY_AIM */,
-      crouch: keys & 2 /* KEY_CROUCH */,
-      fire: keys & 4 /* KEY_JUMP */,
-      jump: keys & 32 /* SNEAK_ABOUT */,
-      sprint: keys & 8 /* PED_SPRINT */,
-
-      up: updown === -128 /* KEY_UP */,
-      down: updown === 128 /* KEY_DOWN */,
-      left: leftright === -128 /* KEY_LEFT */,
-      right: leftright === 128 /* KEY_RIGHT */
-    };
-  }
-
-  // Applies the animation from |library| and |name| to the player. The |loop| argument decides
-  // whether it should loop until the |time| runs out. |lock| determines whether the player should
-  // be returned to their position after the animation finishes, and |freeze| determines whether
-  // the player should be frozen after the animation finishes.
-  animate({ library, name, delta = 4.1, loop = false, lock = false, freeze = false,
-            time = 0, forceSync = false } = {}) {
-    pawnInvoke('ApplyAnimation', 'issfiiiiii', this.id_, library, name, delta, loop ? 1 : 0,
-                                              lock ? 1 : 0, lock ? 1 : 0, freeze ? 1 : 0,
-                                              time, forceSync ? 1 : 0);
-  }
-
-  // Gets the current animation index applying to this player.
-  get animationIndex() { return pawnInvoke('GetPlayerAnimationIndex', 'i', this.id_); }
-
-  // Clears the animations applied to the player.
-  clearAnimations() { pawnInvoke('ClearAnimations', 'i', this.id_); }
-
 
   // Gets or sets the gang color of this player. May be NULL when no color has been defined.
   get gangColor() { throw new Error('Player.gangColor() has not been implemented yet.'); }
   set gangColor(value) {
     pawnInvoke('OnUpdatePlayerGangColor', 'ii', this.id_, value ? value.toNumberRGBA() : 0);
   }
-
-  // Respawns the player.
-  respawn() { pawnInvoke('SpawnPlayer', 'i', this.id_); }
 
   // Returns the player's last shot vectors as two vectors: source and target.
   getLastShotVectors() {
@@ -470,23 +468,6 @@ class Player extends Supplementable {
   // to administrators on the server.
   get messageLevel() { return this.messageLevel_; }
 
-  // Displays the dialog for |caption| explained by |message| to the player.
-  showDialog(dialogId, style, caption, message, leftButton, rightButton) {
-    pawnInvoke('ShowPlayerDialog', 'iiissss', this.id_, dialogId, style, caption, message,
-               leftButton, rightButton);
-  }
-
-  // Sends |message| to the player. The |message| can either be a scalar JavaScript value or an
-  // instance of the Message class that exists in //base if you wish to use colors.
-  sendMessage(message, ...args) {
-    // TODO: Verify that any formatting used in |message| is valid.
-
-    if (message instanceof Message)
-      message = Message.format(message, ...args);
-
-    pawnInvoke('SendClientMessage', 'iis', this.id_, 0xFFFFFFFF, message.toString());
-  }
-
   // Removes default game objects from the map of model |modelId| that are within |radius| units
   // of the |position|. Should be called while the player is connecting to the server.
   removeGameObject(modelId, position, radius) {
@@ -519,46 +500,10 @@ class Player extends Supplementable {
   }
 };
 
-// Invalid player id. Must be equal to SA-MP's INVALID_PLAYER_ID definition.
-Player.INVALID_ID = 0xFFFF;
-
 // The level of a player. Can be accessed using the `level` property on a Player instance.
 Player.LEVEL_PLAYER = 0;
 Player.LEVEL_ADMINISTRATOR = 1;
 Player.LEVEL_MANAGEMENT = 2;
-
-// The states a player can be in. Used by Player.state and `playerstatechange` events.
-Player.STATE_NONE = 0;
-Player.STATE_ON_FOOT = 1;
-Player.STATE_DRIVER = 2;
-Player.STATE_PASSENGER = 3;
-Player.STATE_EXIT_VEHICLE = 4;
-Player.STATE_ENTER_VEHICLE_DRIVER = 5;
-Player.STATE_ENTER_VEHICLE_PASSENGER = 6;
-Player.STATE_WASTED = 7;
-Player.STATE_SPAWNED = 8;
-Player.STATE_SPECTATING = 9;
-
-// The special actions that a player can be engaged in. Used by Player.specialAction.
-Player.SPECIAL_ACTION_NONE = 0;
-Player.SPECIAL_ACTION_DUCK = 1;
-Player.SPECIAL_ACTION_USEJETPACK = 2;
-Player.SPECIAL_ACTION_ENTER_VEHICLE = 3;
-Player.SPECIAL_ACTION_EXIT_VEHICLE = 4;
-Player.SPECIAL_ACTION_DANCE1 = 5;
-Player.SPECIAL_ACTION_DANCE2 = 6;
-Player.SPECIAL_ACTION_DANCE3 = 7;
-Player.SPECIAL_ACTION_DANCE4 = 8;
-Player.SPECIAL_ACTION_HANDSUP = 10;
-Player.SPECIAL_ACTION_USECELLPHONE = 11;
-Player.SPECIAL_ACTION_SITTING = 12;
-Player.SPECIAL_ACTION_STOPUSECELLPHONE = 13;
-Player.SPECIAL_ACTION_DRINK_BEER = 20;
-Player.SPECIAL_ACTION_SMOKE_CIGGY = 21;
-Player.SPECIAL_ACTION_DRINK_WINE = 22;
-Player.SPECIAL_ACTION_DRINK_SPRUNK = 23;
-Player.SPECIAL_ACTION_CUFFED = 24;
-Player.SPECIAL_ACTION_CARRY = 25;
 
 // DO NOT ADD NEW VALUES TO THIS ENUMERATION WITHOUT ALSO ADDING THEM TO PAWN.
 //     //pawn/Entities/Players/PlayerActivity.pwn

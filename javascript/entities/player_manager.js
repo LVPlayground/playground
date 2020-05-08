@@ -203,7 +203,7 @@ class PlayerManager {
         if (!player)
             return;  // the player isn't valid
 
-        if (event.oldstate === Player.STATE_DRIVER || event.oldstate === Player.STATE_PASSENGER) {
+        if ([Player.kStateVehicleDriver, Player.kStateVehiclePassenger].includes(event.oldstate)) {
             const vehicle = player.vehicle;
             if (!vehicle)
                 return;  // the vehicle isn't managed by JavaScript
@@ -216,7 +216,7 @@ class PlayerManager {
             player.vehicleSeat = null;
         }
 
-        if (event.newstate === Player.STATE_DRIVER || event.newstate === Player.STATE_PASSENGER) {
+        if ([Player.kStateVehicleDriver, Player.kStateVehiclePassenger].includes(event.newstate)) {
             const vehicleId =
                 server.isTest() ? player.vehicle?.id
                                 : pawnInvoke('GetPlayerVehicleID', 'i', player.id);

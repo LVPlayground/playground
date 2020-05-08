@@ -44,8 +44,8 @@ class RadioManager {
             return;  // invalid player
 
         const isListening = this.listening_.has(player);
-        const shouldBeListening = event.newstate == Player.STATE_DRIVER ||
-                                  event.newstate == Player.STATE_PASSENGER;
+        const shouldBeListening = event.newstate == Player.kStateVehicleDriver ||
+                                  event.newstate == Player.kStateVehiclePassenger;
 
         if (shouldBeListening && !isListening && this.isEnabled())
             this.startRadio(player);

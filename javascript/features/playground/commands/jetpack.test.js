@@ -30,7 +30,7 @@ describe('JetpackCommand', (it, beforeEach, afterEach) => {
         assert.isTrue(await gunther.issueCommand('/jetpack'));
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.LVP_JETPACK_NOT_AVAILABLE_VW);
-        assert.equal(gunther.specialAction, Player.SPECIAL_ACTION_NONE);
+        assert.equal(gunther.specialAction, Player.kSpecialActionNone);
     });
 
     it('should enable administrators to give a jetpack to another player', async(assert) => {
@@ -48,12 +48,12 @@ describe('JetpackCommand', (it, beforeEach, afterEach) => {
         assert.equal(russell.messages[0], Message.format(Message.LVP_JETPACK_GRANTED, gunther.name,
                                                          gunther.id));
 
-        assert.equal(russell.specialAction, Player.SPECIAL_ACTION_USEJETPACK);
+        assert.equal(russell.specialAction, Player.kSpecialActionJetpack);
     });
 
     it('should enable administrators to remove administrators from players', assert => {
         const russell = server.playerManager.getById(1 /* Russell */);
-        russell.specialAction = Player.SPECIAL_ACTION_USEJETPACK;
+        russell.specialAction = Player.kSpecialActionJetpack;
 
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
@@ -67,6 +67,6 @@ describe('JetpackCommand', (it, beforeEach, afterEach) => {
         assert.equal(russell.messages[0], Message.format(Message.LVP_JETPACK_REMOVED, gunther.name,
                                                          gunther.id));
 
-        assert.equal(russell.specialAction, Player.SPECIAL_ACTION_NONE);
+        assert.equal(russell.specialAction, Player.kSpecialActionNone);
     });
 });

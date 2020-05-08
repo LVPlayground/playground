@@ -50,6 +50,15 @@ class MockPlayer {
     #time_ = [0, 0];
     #wantedLevel_ = 0;
 
+    #messages_ = [];
+    #lastDialogId_ = null;
+    #lastDialogTitle_ = null;
+    #lastDialogStyle_ = null;
+    #lastDialogLabel_ = null;
+    #lastDialogMessage_ = null;
+    #lastDialogPromise_ = null;
+    #lastDialogPromiseResolve_ = null;
+
     #streamUrl_ = null;
     #soundId_ = null;
 
@@ -66,7 +75,12 @@ class MockPlayer {
         this.#gpci_ = params.gpci || 'FAKELONGHASHOF40CHARACTERSHEH';
         this.#serial_ = murmur3hash(this.#gpci_ || 'npc');
         this.#ipAddress_ = params.ip || '127.0.0.1';
-        this.#isNpc_ = params.npc || false;;
+        this.#isNpc_ = params.npc || false;
+
+        this.#lastDialogPromiseResolve_ = null;
+        this.#lastDialogPromise_ = new Promise(resolve => {
+            this.#lastDialogPromiseResolve_ = resolve;
+        });
     }
 
     notifyDisconnecting() { this.#connectionState_ = Player.kConnectionClosing; }
@@ -192,6 +206,19 @@ class MockPlayer {
     isMinimized() { return this.#isMinimized_; }
     setMinimizedForTesting(value) { this.#isMinimized_ = value; }
 
+    respawn() {
+        let defaultPrevented = false;
+
+        // Testing behaviour: returns whether another part of Las Venturas Playground is handling
+        // the spawn, which is indicated by them preventing the event's default behaviour.
+        dispatchEvent('playerspawn', {
+            preventDefault: () => defaultPrevented = true,
+            playerid: this.#id_
+        });
+
+        return defaultPrevented;
+    }
+
     // ---------------------------------------------------------------------------------------------
     // Section: Environment
     // ---------------------------------------------------------------------------------------------
@@ -218,6 +245,66 @@ class MockPlayer {
     set weather(value) { /* no need to mock write-only values */ }
 
     // ---------------------------------------------------------------------------------------------
+    // Section: Interaction
+    // ---------------------------------------------------------------------------------------------
+
+    showDialog(dialogId, style, caption, message, leftButton, rightButton) {
+        this.#lastDialogId_ = dialogId;
+        this.#lastDialogTitle_ = caption;
+        this.#lastDialogStyle_ = style;
+        this.#lastDialogLabel_ = rightButton;
+        this.#lastDialogMessage_ = message;
+
+        this.#lastDialogPromiseResolve_();
+    }
+
+    // Gets the most recent message that has been displayed in a dialog to the player.
+    get lastDialog() { return this.#lastDialogMessage_; }
+    get lastDialogTitle() { return this.#lastDialogTitle_; }
+    get lastDialogStyle() { return this.#lastDialogStyle_; }
+    get lastDialogLabel() { return this.#lastDialogLabel_; }
+
+    // Advanced method to get the last dialog as a menu table.
+    getLastDialogAsTable(hasColumns = true) {
+        if (!this.#lastDialogMessage_)
+            throw new Error('No last message is available to output as a table.');
+        
+        const lines = this.#lastDialogMessage_.split('\n');
+        if (!hasColumns)
+            return lines;
+
+        return {
+            columns: lines.shift().split('\t'),
+            rows: lines.map(line => line.split('\t'))
+        };
+    }
+
+    // Clears the last dialog that has been shown to this player.
+    clearLastDialog() {
+        this.#lastDialogId_ = null;
+        this.#lastDialogTitle_ = null;
+        this.#lastDialogStyle_ = null;
+        this.#lastDialogLabel_ = null;
+        this.#lastDialogMessage_ = null;
+    }
+
+    // Sends |message| to the player. It will be stored in the local messages array and can be
+    // retrieved through the |messages| getter.
+    sendMessage(message, ...args) {
+        if (message instanceof Message)
+            message = Message.format(message, ...args);
+
+        if (message.length <= 144) // SA-MP-implementation does not send longer messages
+            this.#messages_.push(message.toString());
+    }
+
+    // Clears the messages that have been sent to this player.
+    clearMessages() { this.#messages_ = []; }
+
+    // Gets the messages that have been sent to this player.
+    get messages() { return this.#messages_; }
+
+    // ---------------------------------------------------------------------------------------------
     // Section: Audio
     // ---------------------------------------------------------------------------------------------
 
@@ -233,6 +320,12 @@ class MockPlayer {
     // ---------------------------------------------------------------------------------------------
     // Section: Visual
     // ---------------------------------------------------------------------------------------------
+
+    animate(options) {}
+
+    get animationIndex() { return 0; }
+
+    clearAnimations() {}
 
     get cameraPosition() { return new Vector(0, 0, 0); }
     get cameraFrontVector() { return new Vector(0, 0, 0); }
@@ -277,10 +370,146 @@ class MockPlayer {
     leaveVehicleWithAnimation() { this.leaveVehicle(); }
 
     // ---------------------------------------------------------------------------------------------
-
+    // Stuff that needs a better home
+    // ---------------------------------------------------------------------------------------------
 
 
     // ---------------------------------------------------------------------------------------------
+    // Instrumentation for testing purposes
+    // ---------------------------------------------------------------------------------------------
+
+    // Identifies the player to a fake account. The options can be specified optionally.
+    identify({ userId = 42, vip = 0, gangId = 0, undercover = 0 } = {}) {
+        server.playerManager.onPlayerLogin({
+            playerid: this.#id_,
+            userid: userId,
+            vip: vip,
+            gangid: gangId,
+            undercover: undercover
+        });
+    }
+
+    // Issues |message| as if it has been said by this user. Returns whether the event with which
+    // the chat message had been issues was prevented.
+    issueMessage(message) {
+        let defaultPrevented = false;
+
+        dispatchEvent('playertext', {
+            preventDefault: () => defaultPrevented = true,
+
+            playerid: this.#id_,
+            text: message
+        });
+
+        return defaultPrevented;
+    }
+
+    // Issues |commandText| as if it had been send by this player. Returns whether the event with
+    // which the command had been issued was prevented.
+    async issueCommand(commandText) {
+        let defaultPrevented = false;
+
+        await server.commandManager.onPlayerCommandText({
+            preventDefault: () => defaultPrevented = true,
+
+            playerid: this.#id_,
+            cmdtext: commandText
+        });
+
+        return defaultPrevented;
+    }
+
+    // Responds to an upcoming dialog with the given values. The dialog Id that has been shown
+    // for the player will be inserted automatically. Responses are forcefully asynchronous.
+    respondToDialog({ response = 1 /* left button */, listitem = 0, inputtext = '' } = {}) {
+        return this.#lastDialogPromise_.then(() => {
+            dispatchEvent('dialogresponse', {
+                playerid: this.#id_,
+                dialogid: this.#lastDialogId_,
+                response: response,
+                listitem: listitem,
+                inputtext: inputtext
+            });
+
+            return this.#lastDialogPromise_ = new Promise(resolve => {
+                this.#lastDialogPromiseResolve_ = resolve;
+            });
+        });
+    }
+
+    // Changes the player's state from |oldState| to |newState|.
+    changeState({ oldState, newState } = {}) {
+        dispatchEvent('playerstatechange', {
+            playerid: this.#id_,
+            oldstate: oldState,
+            newstate: newState
+        });
+    }
+
+    // Triggers an event indicating that the player died.
+    die(killerPlayer = null, reason = 0) {
+        dispatchEvent('playerdeath', {
+            playerid: this.#id_,
+            killerid: killerPlayer ? killerPlayer.id
+                                   : Player.kInvalidId,
+            reason: reason
+        });
+    }
+
+    // Makes this player fire a shot. All related events will be fired. The |target| may either be
+    // a Player or a Vehicle instance, or NULL when the shot didn't hit anything.
+    shoot({ target = null, weaponid = 28 /* Uzi */, hitOffset = null, damageAmount = null,
+            bodypart = 3 /* BODY_PART_CHEST */ } = {}) {
+        let hitType = 0 /* BULLET_HIT_TYPE_NONE */;
+
+        if (target instanceof MockPlayer)
+            hitType = 1 /* BULLET_HIT_TYPE_PLAYER */;
+        else if (target instanceof MockVehicle)
+            hitType = 2 /* BULLET_HIT_TYPE_VEHICLE */;
+
+        hitOffset = hitOffset || new Vector(5, 5, 2);
+
+        dispatchEvent('playerweaponshot', {
+            playerid: this.#id_,
+            weaponid: weaponid,
+            hittype: hitType,
+            hitid: target ? target.id : -1,
+            fX: hitOffset.x,
+            fY: hitOffset.y,
+            fZ: hitOffset.z
+        });
+
+        if (!(target instanceof MockPlayer))
+            return;
+
+        let damage = damageAmount || Math.floor(Math.random() * 100) + 10;
+
+        dispatchEvent('playergivedamage', {
+            playerid: this.#id_,
+            damagedid: target.id,
+            amount: damage,
+            weaponid: weaponid,
+            bodypart: bodypart
+        });
+
+        dispatchEvent('playertakedamage', {
+            playerid: target.id,
+            issuerid: this.#id_,
+            amount: damage,
+            weaponid: weaponid,
+            bodypart: bodypart
+        });
+    }
+
+    // Makes this player press a particular key. The value of both |newkeys| and |oldkeys| can be
+    // found on the SA-MP wiki: https://wiki.sa-mp.com/wiki/Keys
+    keyPress(newkeys, oldkeys = 0) {
+        dispatchEvent('playerkeystatechange', {
+            playerid: this.#id_,
+            newkeys: newkeys,
+            oldkeys: oldkeys
+        });
+    }
 
 
 
@@ -299,28 +528,13 @@ class MockPlayer {
         this.syncedData_ = new MockPlayerSyncedData(this.id_);
 
         this.userId_ = null;
-        this.specialAction_ = Player.SPECIAL_ACTION_NONE;
 
-        this.dialogPromiseResolve_ = null;
-        this.dialogPromise_ = new Promise(resolve => {
-            this.dialogPromiseResolve_ = resolve;
-        });
-
-        this.lastDialogId_ = null;
-        this.lastDialogTitle_ = null;
-        this.lastDialogStyle_ = null;
-        this.lastDialogLabel_ = null;
-        this.lastDialogMessage_ = null;
-
-        this.messages_ = [];
 
         this.gangColor_ = null;
         this.removedObjectCount_ = 0;
         this.messageLevel_ = 0;
 
         this.streamerObjectsUpdated_ = false;
-
-        this.streamUrl_ = null;
 
         this.playerSettings_ = new PlayerSettings();
 
@@ -364,66 +578,7 @@ class MockPlayer {
     get gangId() { return this.gangId_; }
     set gangId(value) { this.gangId_ = value; }
 
-    // Clears the animations applied to the player.
-    clearAnimations() {}
-
-    // Fake implementation of the ShowPlayerDialog() native. Used to be able to mock responses to
-    // dialogs and make that entire sub-system testable as well.
-    showDialog(dialogId, style, caption, message, leftButton, rightButton) {
-        this.lastDialogId_ = dialogId;
-        this.lastDialogTitle_ = caption;
-        this.lastDialogStyle_ = style;
-        this.lastDialogLabel_ = rightButton;
-        this.lastDialogMessage_ = message;
-
-        this.dialogPromiseResolve_();
-    }
-
-    // Gets the most recent message that has been displayed in a dialog to the player.
-    get lastDialog() { return this.lastDialogMessage_; }
-    get lastDialogTitle() { return this.lastDialogTitle_; }
-    get lastDialogStyle() { return this.lastDialogStyle_; }
-    get lastDialogLabel() { return this.lastDialogLabel_; }
-
-    // Advanced method to get the last dialog as a menu table.
-    getLastDialogAsTable(hasColumns = true) {
-        if (!this.lastDialogMessage_)
-            throw new Error('No last message is available to output as a table.');
-        
-        const lines = this.lastDialogMessage_.split('\n');
-        if (!hasColumns)
-            return lines;
-
-        return {
-            columns: lines.shift().split('\t'),
-            rows: lines.map(line => line.split('\t'))
-        };
-    }
-
-    // Sends |message| to the player. It will be stored in the local messages array and can be
-    // retrieved through the |messages| getter.
-    sendMessage(message, ...args) {
-        if (message instanceof Message)
-            message = Message.format(message, ...args);
-
-        if (message.length <= 144) // SA-MP-implementation does not send longer messages
-            this.messages_.push(message.toString());
-    }
-
-    // Clears the messages that have been sent to this player.
-    clearMessages() { this.messages_ = []; }
-
-    // Clears the last dialog that has been shown to this player.
-    clearLastDialog() {
-        this.lastDialogId_ = null;
-        this.lastDialogTitle_ = null;
-        this.lastDialogStyle_ = null;
-        this.lastDialogLabel_ = null;
-        this.lastDialogMessage_ = null;
-    }
-
-    // Gets the messages that have been sent to this player.
-    get messages() { return this.messages_; }
+    
 
     // Gets the most recent shot vectors for the player.
     getLastShotVectors() {
@@ -456,151 +611,9 @@ class MockPlayer {
     get gangColor() { return this.gangColor_; }
     set gangColor(value) { this.gangColor_ = value; }
 
-    // Respawns the player.
-    respawn() {
-        let defaultPrevented = false;
+    
 
-        global.dispatchEvent('playerspawn', {
-            preventDefault: () => defaultPrevented = true,
-            playerid: this.id_
-        });
-
-        return defaultPrevented;
-    }
-
-    // Identifies the player to a fake account. The options can be specified optionally.
-    identify({ userId = 42, vip = 0, gangId = 0, undercover = 0 } = {}) {
-        server.playerManager.onPlayerLogin({
-            playerid: this.id_,
-            userid: userId,
-            vip: vip,
-            gangid: gangId,
-            undercover: undercover
-        });
-    }
-
-    // Issues |message| as if it has been said by this user. Returns whether the event with which
-    // the chat message had been issues was prevented.
-    issueMessage(message) {
-        let defaultPrevented = false;
-
-        // TODO(Russell): Should this talk directly to the CommunicationManager?
-        global.dispatchEvent('playertext', {
-            preventDefault: () => defaultPrevented = true,
-
-            playerid: this.id_,
-            text: message
-        });
-
-        return defaultPrevented;
-    }
-
-    // Issues |commandText| as if it had been send by this player. Returns whether the event with
-    // which the command had been issued was prevented.
-    async issueCommand(commandText) {
-        let defaultPrevented = false;
-
-        await server.commandManager.onPlayerCommandText({
-            preventDefault: () => defaultPrevented = true,
-
-            playerid: this.id_,
-            cmdtext: commandText
-        });
-
-        return defaultPrevented;
-    }
-
-    // Responds to an upcoming dialog with the given values. The dialog Id that has been shown
-    // for the player will be inserted automatically. Responses are forcefully asynchronous.
-    respondToDialog({ response = 1 /* left button */, listitem = 0, inputtext = '' } = {}) {
-        return this.dialogPromise_.then(() => {
-            global.dispatchEvent('dialogresponse', {
-                playerid: this.id_,
-                dialogid: this.lastDialogId_,
-                response: response,
-                listitem: listitem,
-                inputtext: inputtext
-            });
-
-            return this.dialogPromise_ = new Promise(resolve => {
-                this.dialogPromiseResolve_ = resolve;
-            });
-        });
-    }
-
-    // Changes the player's state from |oldState| to |newState|.
-    changeState({ oldState, newState } = {}) {
-        global.dispatchEvent('playerstatechange', {
-            playerid: this.id_,
-            oldstate: oldState,
-            newstate: newState
-        });
-    }
-
-    // Triggers an event indicating that the player died.
-    die(killerPlayer = null, reason = 0) {
-        global.dispatchEvent('playerdeath', {
-            playerid: this.id_,
-            killerid: killerPlayer ? killerPlayer.id
-                                   : Player.INVALID_ID,
-            reason: reason
-        });
-    }
-
-    // Makes this player fire a shot. All related events will be fired. The |target| may either be
-    // a Player or a Vehicle instance, or NULL when the shot didn't hit anything.
-    shoot({ target = null, weaponid = 28 /* Uzi */, hitOffset = null, damageAmount = null,
-            bodypart = 3 /* BODY_PART_CHEST */ } = {}) {
-        let hitType = 0 /* BULLET_HIT_TYPE_NONE */;
-
-        if (target instanceof MockPlayer)
-            hitType = 1 /* BULLET_HIT_TYPE_PLAYER */;
-        else if (target instanceof MockVehicle)
-            hitType = 2 /* BULLET_HIT_TYPE_VEHICLE */;
-
-        hitOffset = hitOffset || new Vector(5, 5, 2);
-
-        global.dispatchEvent('playerweaponshot', {
-            playerid: this.id_,
-            weaponid: weaponid,
-            hittype: hitType,
-            hitid: target ? target.id : -1,
-            fX: hitOffset.x,
-            fY: hitOffset.y,
-            fZ: hitOffset.z
-        });
-
-        if (!(target instanceof MockPlayer))
-            return;
-
-        let damage = damageAmount || Math.floor(Math.random() * 100) + 10;
-
-        global.dispatchEvent('playergivedamage', {
-            playerid: this.id_,
-            damagedid: target.id,
-            amount: damage,
-            weaponid: weaponid,
-            bodypart: bodypart
-        });
-
-        global.dispatchEvent('playertakedamage', {
-            playerid: target.id,
-            issuerid: this.id_,
-            amount: damage,
-            weaponid: weaponid,
-            bodypart: bodypart
-        });
-    }
-
-    // Makes this player press a particular key. The value of both |newkeys| and |oldkeys| can be
-    // found on the SA-MP wiki: https://wiki.sa-mp.com/wiki/Keys
-    keyPress(newkeys, oldkeys = 0) {
-        global.dispatchEvent('playerkeystatechange', {
-            playerid: this.id_,
-            newkeys: newkeys,
-            oldkeys: oldkeys
-        });
-    }
+    
 
     updateStreamerObjects() { this.streamerObjectsUpdated_ = true; }
 

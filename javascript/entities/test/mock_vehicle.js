@@ -239,9 +239,9 @@ class MockVehicle {
         for (const player of this.getOccupants()) {
             global.dispatchEvent('playerstatechange', {
                 playerid: player.id,
-                oldstate: player.vehicleSeat == Vehicle.SEAT_DRIVER ? Player.STATE_DRIVER
-                                                                    : Player.STATE_PASSENGER,
-                newstate: Player.STATE_ON_FOOT
+                oldstate: player.vehicleSeat == Vehicle.SEAT_DRIVER ? Player.kStateVehicleDriver
+                                                                    : Player.kStateVehiclePassenger,
+                newstate: Player.kStateOnFoot
             });
         }
     }
@@ -275,7 +275,7 @@ class MockVehicle {
     death() {
         global.dispatchEvent('vehicledeath', {
             vehicleid: this.id_,
-            killerid: Player.INVALID_ID
+            killerid: Player.kInvalidId
         });
     }
 

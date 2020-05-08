@@ -36,6 +36,9 @@ import { toFloat } from 'base/float.js';
 // If you are considering extending the Player object with additional functionality, take a look at
 // the Supplementable system in //base/supplementable.js instead.
 export class Player extends Supplementable {
+    // ID indicating that a particular Player ID is explicitly not valid.
+    static kInvalidId = 65535;
+
     // Constants applicable to the player's current connection to the server.
     static kConnectionEstablished = 1;
     static kConnectionClosing = 2;

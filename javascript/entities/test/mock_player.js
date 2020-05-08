@@ -33,6 +33,12 @@ class MockPlayer {
     #virtualWorld_ = 0;
     #velocity_ = new Vector(0, 0, 0);
 
+    #health_ = 100.0;
+    #armour_ = 100.0;
+    #specialAction_ = Player.kSpecialActionNone;
+    #state_ = Player.kStateOnFoot;
+    #isMinimized_ = false;
+
     // Initializes the mock player with static information that generally will not change for the
     // duration of the player's session. The |params| object is available.
     initialize(params) {
@@ -111,6 +117,29 @@ class MockPlayer {
     }
 
     // ---------------------------------------------------------------------------------------------
+    // Section: State
+    // ---------------------------------------------------------------------------------------------
+
+    get health() { return this.#health_; }
+    set health(value) { this.#health_ = value; }
+
+    get armour() { return this.#armour_; }
+    set armour(value) { this.#armour_ = value; }
+
+    get controllable() { throw new Error('Unable to get whether the player is controllable.'); }
+    set controllable(value) { /* no need to mock write-only values */ }
+
+    get specialAction() { return this.#specialAction_; }
+    set specialAction(value) { this.#specialAction_ = value; }
+
+    get state() { return this.#state_; }
+    set stateForTesting(value) { this.#state_ = value; }
+
+    isMinimized() { return this.#isMinimized_; }
+    setMinimizedForTesting(value) { this.#isMinimized_ = value; }
+
+    // ---------------------------------------------------------------------------------------------
+
 
 
 
@@ -126,9 +155,6 @@ class MockPlayer {
         this.gangId_ = null;
 
         this.syncedData_ = new MockPlayerSyncedData(this.id_);
-
-        this.health_ = 100;
-        this.armour_ = 100;
 
         this.userId_ = null;
         this.specialAction_ = Player.SPECIAL_ACTION_NONE;
@@ -158,7 +184,6 @@ class MockPlayer {
 
         this.streamerObjectsUpdated_ = false;
 
-        this.minimized_ = false;
         this.disconnecting_ = false;
 
         this.streamUrl_ = null;
@@ -177,8 +202,6 @@ class MockPlayer {
     }
 
 
-    isMinimized() { return this.minimized_; }
-    setMinimized(minimized) { this.minimized_ = minimized; }
 
     isDisconnecting() { return this.disconnecting_; }
 
@@ -225,14 +248,6 @@ class MockPlayer {
     // Gets or sets the Id of the gang this player is part of.
     get gangId() { return this.gangId_; }
     set gangId(value) { this.gangId_ = value; }
-
-    // Gets or sets the health of the player.
-    get health() { return this.health_ }
-    set health(value) { this.health_ = value; }
-
-    // Gets or sets the armour level of the player.
-    get armour() { return this.armour_; }
-    set armour(value) { this.armour_ = value; }
 
     // Gets the vehicle the player is currently driving in. May be NULL.
     get vehicle() { return this.vehicle_; }
@@ -586,9 +601,6 @@ class MockPlayer {
     updateStreamerObjects() { this.streamerObjectsUpdated_ = true; }
 
     streamerObjectsUpdated() { return this.streamerObjectsUpdated_; }
-
-    get cashMoney() { return this.cashMoney_; }
-    giveCashMoney(amount) { this.cashMoney_ += amount;}
 
     get settings() { return this.playerSettings_; }
 }

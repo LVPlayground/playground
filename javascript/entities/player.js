@@ -23,6 +23,9 @@ import { toFloat } from 'base/float.js';
 //     Where in the world are they? In which interior ID and virtual world? How fast are they
 //     going? All of these properties have both getters and setters.
 //
+//   * State
+//     What are their health and armour values?
+//
 //
 // This class is not directly appropriate for testing, as the Pawn calls would fail. To that end, in
 // tests a Player will be represented by the MockPlayer object, which overrides many of the routines
@@ -34,6 +37,39 @@ import { toFloat } from 'base/float.js';
 // If you are considering extending the Player object with additional functionality, take a look at
 // the Supplementable system in //base/supplementable.js instead.
 class Player extends Supplementable {
+    // Constants applicable to the `Player.specialAction` property.
+    static kSpecialActionNone = 0;
+    static kSpecialActionCrouching = 1;  // read-only
+    static kSpecialActionJetpack = 2;
+    static kSpecialActionEnterVehicle = 3;  // read-only
+    static kSpecialActionLeaveVehicle = 4;  // read-only
+    static kSpecialActionDance1 = 5;
+    static kSpecialActionDance2 = 6;
+    static kSpecialActionDance3 = 7;
+    static kSpecialActionDance4 = 8;
+    static kSpecialActionHandsUp = 10;
+    static kSpecialActionCellphone = 11;
+    static kSpecialActionSitting = 12;  // read-only
+    static kSpecialActionCellphoneDiscard = 13;
+    static kSpecialActionDrinkBeer = 20;
+    static kSpecialActionSmokeCiggy = 21;
+    static kSpecialActionDrinkWine = 22;
+    static kSpecialActionDrinkSprunk = 23;
+    static kSpecialActionCuffed = 24;  // does not work on skin 0 (CJ)
+    static kSpecialActionCarry = 25;  // does not work on skin 0 (CJ)
+    static kSpecialActionPissing = 68;
+
+    // Constants applicable to the `Player.state` property.
+    static kStateNone = 0;
+    static kStateOnFoot = 1;
+    static kStateVehicleDriver = 2;
+    static kStateVehiclePassenger = 3;
+    static kStateWasted = 7;
+    static kStateSpawned = 8;
+    static kStateSpectating = 9;
+
+    // ---------------------------------------------------------------------------------------------
+
     #id_ = null;
     #connected_ = null;
 
@@ -44,6 +80,8 @@ class Player extends Supplementable {
     #isNpc_ = null;
 
     constructor(id) {
+        super();
+
         this.#id_ = id;
         this.#connected_ = true;
 
@@ -118,6 +156,29 @@ class Player extends Supplementable {
     }
 
     // ---------------------------------------------------------------------------------------------
+    // Section: State
+    // ---------------------------------------------------------------------------------------------
+
+    get health() { return pawnInvoke('GetPlayerHealth', 'iF', this.#id_); }
+    set health(value) { pawnInvoke('SetPlayerHealth', 'if', this.#id_, value); }
+
+    get armour() { return pawnInvoke('GetPlayerArmour', 'iF', this.#id_); }
+    set armour(value) { pawnInvoke('SetPlayerArmour', 'if', this.#id_, value); }
+
+    get controllable() { throw new Error('Unable to get whether the player is controllable.'); }
+    set controllable(value) {
+        pawnInvoke('TogglePlayerControllable', 'ii', this.#id_, value ? 1 : 0);
+    }
+
+    get specialAction() { return pawnInvoke('GetPlayerSpecialAction', 'i', this.#id_); }
+    set specialAction(value) { pawnInvoke('SetPlayerSpecialAction', 'ii', this.#id_, value); }
+
+    get state() { return pawnInvoke('GetPlayerState', 'i', this.#id_); }
+
+    isMinimized() { return isPlayerMinimized(this.#id_); }
+
+    // ---------------------------------------------------------------------------------------------
+
 
 
 
@@ -154,8 +215,6 @@ class Player extends Supplementable {
     this.playerSettings_ = new PlayerSettings();
   }
 
-  // Returns whether the player is connected, but has minimized their game.
-  isMinimized() { return isPlayerMinimized(this.id_); }
 
   // Returns whether the player is currently in process of disconnecting.
   isDisconnecting() { return this.disconnecting_; }
@@ -211,13 +270,6 @@ class Player extends Supplementable {
   get gangId() { return this.gangId_; }
   set gangId(value) { this.gangId_ = value; }
 
-  // Gets or sets the health of the player.
-  get health() { return pawnInvoke('GetPlayerHealth', 'iF', this.id_); }
-  set health(value) { pawnInvoke('SetPlayerHealth', 'if', this.id_, value); }
-
-  // Gets or sets the armour level of the player.
-  get armour() { return pawnInvoke('GetPlayerArmour', 'iF', this.id_); }
-  set armour(value) { pawnInvoke('SetPlayerArmour', 'if', this.id_, value); }
 
   // Gets the vehicle the player is currently driving in. May be NULL.
   get vehicle() { return this.vehicle_; }
@@ -251,10 +303,6 @@ class Player extends Supplementable {
   // expose whatever weather is current for the player. Silly.
   set weather(value) { pawnInvoke('SetPlayerWeather', 'ii', this.id_, value); }
 
-  // Sets whether the player should be controllable. We cannot provide a getter for this, given that
-  // SA-MP does not expose an IsPlayerControllable native. Silly.
-  set controllable(value) { pawnInvoke('TogglePlayerControllable', 'ii', this.id_, value ? 1 : 0); }
-
   // Gets or sets the drunk level of this player.
   get drunkLevel() { return pawnInvoke('GetPlayerDrunkLevel', 'i', this.id_); }
   set drunkLevel(value) { pawnInvoke('SetPlayerDrunkLevel', 'ii', this.id_, value); }
@@ -262,11 +310,6 @@ class Player extends Supplementable {
   // Kicks the player from the server. The user of this function is responsible for making sure
   // that the reason for the kick is properly recorded.
   kick() { pawnInvoke('Kick', 'i', this.id_); }
-
-  // Gets or sets the special action the player is currently engaged in. The values must be one of
-  // the Player.SPECIAL_ACTION_* constants static to this class.
-  get specialAction() { return pawnInvoke('GetPlayerSpecialAction', 'i', this.id_); }
-  set specialAction(value) { pawnInvoke('SetPlayerSpecialAction', 'ii', this.id_, value); }
 
   // Returns an object with the keys that the player is currently pressing.
   getKeys() {
@@ -503,14 +546,6 @@ class Player extends Supplementable {
   updateStreamer(position, virtualWorld, interiorId, type) {
     pawnInvoke('Streamer_UpdateEx', 'ifffiii', this.id_, position.x, position.y, position.z,
                virtualWorld, interiorId, type);
-  }
-
-  // This should definitely NOT be here at ALL. Money should perhaps be a separate class since we
-  // have it serverside handled and you have cash- and bankmoney.
-  // Note: Because I don't know for how long this is going to be here I have added this method including a property on
-  // the mock_player.
-  giveCashMoney(amount) {
-    pawnInvoke('GivePlayerMoney', 'ii', this.id_, amount);
   }
 
   // Settings for the player stored inside the database.

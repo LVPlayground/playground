@@ -8,9 +8,10 @@ import ScopedCallbacks from 'base/scoped_callbacks.js';
 // have and when we have to stop. At the end we of course want to give out the correct prize to the correct person.
 class KilltimeManager {
     // Sets up all the properties needed for the faature including adding an eventlistenter to keep track of the kills.
-    constructor(announce, economy) {
+    constructor(announce, economy, finance) {
         this.announce_ = announce;
         this.economy_ = economy;
+        this.finance_ = finance;
         this.isRunning_ = false;
         this.scoreMap_ = new Map();
         this.callbacks_ = new ScopedCallbacks();
@@ -103,7 +104,7 @@ class KilltimeManager {
             return;
 
         const winner = server.playerManager.getByName(playerName);
-        winner.giveCashMoney(prizeMoney);
+        this.finance_().givePlayerCash(winner, prizeMoney);
     }
 
     // Return the plater with the most kills, unless it is found twice. Then there is no winner.

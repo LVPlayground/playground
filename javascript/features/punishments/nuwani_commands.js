@@ -9,6 +9,9 @@ import { format } from 'base/string_formatter.js';
 import { fromNow } from 'base/time.js';
 import { isIpAddress, isIpRange, isPartOfRangeBan } from 'features/nuwani_commands/ip_utilities.js';
 
+// By default, only show entries added in the past year when using !why.
+const kDefaultPlayerRecordRecencyDays = 365;
+
 // Implementation of a series of commands that enables administrators to revoke access from certain
 // players, IP addresses and serial numbers from the server, as well as understanding why someone
 // might not have access. This includes a series of tools for understanding IP and serial usage.
@@ -107,7 +110,9 @@ export class NuwaniCommands {
         // !why [nickname]
         this.commandManager_.buildCommand('why')
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'nickname', type: CommandBuilder.WORD_PARAMETER }])
+            .parameters([
+                { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
+                { name: 'maxAge', type: CommandBuilder.NUMBER_PARAMETER, optional: true }])
             .build(NuwaniCommands.prototype.onWhyCommand.bind(this));
 
         // !unban [nickname | ip | ip range | serial] [reason]
@@ -558,11 +563,11 @@ export class NuwaniCommands {
         context.respond(`5Result: ` + responseBans.join(', '));
     }
 
-    // !why [nickname]
+    // !why [nickname] [maxAge=365]
     //
     // Displays the recent entries in the permanent record of the given |player|.
-    async onWhyCommand(context, nickname) {
-        const { total, logs } = await this.database_.getLogEntries({ nickname, limit: 5 });
+    async onWhyCommand(context, nickname, maxAge = kDefaultPlayerRecordRecencyDays) {
+        const { total, logs } = await this.database_.getLogEntries({ nickname, maxAge, limit: 5 });
         if (!logs.length) {
             context.respond(`4Error: No logs could be found for ${nickname}.`);
             return;

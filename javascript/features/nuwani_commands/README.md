@@ -31,7 +31,7 @@ If you're interested in _how_ to use Nuwani as an administrator, please see our
   * `!removealias [nickname] [alias]`: removes the given alias from the player.
   * `!say [message]`: clearly highlights the given message to all players.
   * `!serialinfo [nickname | serial]  [maxAge = 1095]`: displays serial info for the nickname.
-  * `!why [nickname]`: displays the most recent entries in a player's record.
+  * `!why [nickname] [maxAge = 365]`: displays the most recent entries in a player's record.
   * `!unban [ip | ip range | serial] [reason]`: lifts the ban for the given reason.
 
 ## Commands available to VIPs on IRC

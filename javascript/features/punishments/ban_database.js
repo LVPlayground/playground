@@ -20,7 +20,8 @@ const GET_LOG_ENTRIES_QUERY = `
     FROM
         logs
     WHERE
-        subject_nickname = ?
+        subject_nickname = ? AND
+        DATE_SUB(NOW(), INTERVAL ? DAY) < log_date
     ORDER BY
         log_date DESC
     LIMIT
@@ -211,8 +212,8 @@ export class BanDatabase {
     static kMaximumIpRangeCountManagement = 256 * 256 * 256;  // 0.*.*.*
     
     // Gets the |limit| most recent log entries stored for the given |nickname|.
-    async getLogEntries({ nickname, limit = 5 } = {}) {
-        const { total, results } = await this._getLogEntriesQuery({ nickname, limit });
+    async getLogEntries({ nickname, maxAge = 365, limit = 5 } = {}) {
+        const { total, results } = await this._getLogEntriesQuery({ nickname, maxAge, limit });
         const logs = [];
 
         for (const row of results)
@@ -222,10 +223,10 @@ export class BanDatabase {
     }
 
     // Actually runs the query for getting the |limit| most recent log entries from |nickname|.
-    async _getLogEntriesQuery({ nickname, limit }) {
+    async _getLogEntriesQuery({ nickname, maxAge, limit }) {
         const [ totalResult, entriesResult ] = await Promise.all([
             server.database.query(GET_LOG_ENTRIES_COUNT_QUERY, nickname),
-            server.database.query(GET_LOG_ENTRIES_QUERY, nickname, limit)
+            server.database.query(GET_LOG_ENTRIES_QUERY, nickname, maxAge, limit)
         ]);
 
         const total = totalResult && totalResult.rows.length ? totalResult.rows[0].total : 0;

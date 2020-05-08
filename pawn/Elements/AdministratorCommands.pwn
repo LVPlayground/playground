@@ -975,7 +975,7 @@ lvp_show(playerId, params[]) {
     
     else if (!strcmp(showParameter, "discord", true, 4)) {
         showInfo = true;
-        format(g_message, sizeof(g_message), "Join us on Official LVP Discord Server at www.discord.sa-mp.nl ");
+        format(g_message, sizeof(g_message), "Join us on official LVP Discord Server at discord.sa-mp.nl");
     }
 
     else if (!strcmp(showParameter, "report", true, 6)) {
@@ -1063,7 +1063,7 @@ lvp_show(playerId, params[]) {
     }
 
 ShowHelp:
-    SendClientMessage(playerId, Color::Information, "Usage: /show [beg/caps/donate/forum/interior/nick/reg/report/rules/ship/spam/swear/discord/weaps]");
+    SendClientMessage(playerId, Color::Information, "Usage: /show [beg/caps/discord/donate/forum/interior/nick/reg/report/rules/ship/spam/swear/weaps]");
 
     return 1;
 }

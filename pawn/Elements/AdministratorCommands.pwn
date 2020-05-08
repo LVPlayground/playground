@@ -972,6 +972,11 @@ lvp_show(playerId, params[]) {
         showInfo = true;
         format(g_message, sizeof(g_message), "Save money and stats! Register your nickname at www.sa-mp.nl");
     }
+    
+    else if (!strcmp(showParameter, "discord", true, 4)) {
+        showInfo = true;
+        format(g_message, sizeof(g_message), "Join us on Official LVP Discord Server at www.discord.sa-mp.nl ");
+    }
 
     else if (!strcmp(showParameter, "report", true, 6)) {
         showInfo = true;
@@ -1058,7 +1063,7 @@ lvp_show(playerId, params[]) {
     }
 
 ShowHelp:
-    SendClientMessage(playerId, Color::Information, "Usage: /show [beg/caps/donate/forum/interior/nick/reg/report/rules/ship/spam/swear/ts/weaps]");
+    SendClientMessage(playerId, Color::Information, "Usage: /show [beg/caps/donate/forum/interior/nick/reg/report/rules/ship/spam/swear/discord/weaps]");
 
     return 1;
 }

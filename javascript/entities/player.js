@@ -35,6 +35,7 @@ class Player {
 
     this.userId_ = null;
     this.gangId_ = null;
+    this.skinId_ = null;
 
     this.vehicleCollisionsEnabled_ = true;
     this.activity_ = Player.PLAYER_ACTIVITY_NONE;
@@ -133,7 +134,11 @@ class Player {
   // Gets or sets the Id of the gang this player is part of.
   get gangId() { return this.gangId_; }
   set gangId(value) { this.gangId_ = value; }
-
+  
+  // Gets or sets the Id of the skin for the player.
+  get skinId() { return this.skinId_; }
+  set skinId(value) { this.skinId_ = value; }
+  
   // Gets or sets the virtual world the player is part of.
   get virtualWorld() { return pawnInvoke('GetPlayerVirtualWorld', 'i', this.id_); }
   set virtualWorld(value) {

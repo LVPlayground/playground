@@ -23,12 +23,21 @@ class MockGangDatabase {
 
         switch (userId) {
             case MockGangDatabase.HKO_MEMBER_USER_ID:
-                gangInfo = { role: Gang.ROLE_MEMBER, useGangColor: false,
-                             gang: mockedGangInfo.hko };
+                gangInfo = { 
+                    role: Gang.ROLE_MEMBER, 
+                    useGangColor: false,
+                    gang: mockedGangInfo.hko,
+                    skinId: 80085
+                };
                 break;
 
             case MockGangDatabase.HKO_LEADER_USER_ID:
-                gangInfo = { role: Gang.ROLE_LEADER, useGangColor: true, gang: mockedGangInfo.hko };
+                gangInfo = { 
+                    role: Gang.ROLE_LEADER, 
+                    useGangColor: true, 
+                    gang: mockedGangInfo.hko,
+                    skinId: 80085 
+                };
                 break;
         }
 
@@ -58,7 +67,8 @@ class MockGangDatabase {
                 name: name,
                 goal: goal,
                 color: null,
-                chatEncryptionExpiry: 0
+                chatEncryptionExpiry: 0,
+                skinId: 80085
             };
         }
 

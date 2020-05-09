@@ -128,6 +128,19 @@ class SpawnManager <playerId (MAX_PLAYERS)> {
     }
 
     /**
+     * Updates the skinId of the player. But does not set it at the instant moment.
+     * Will return false if an invalid skinId is given.
+     *
+     * @param skinId Id of the skin which has been selected.
+     */
+    public setSkinIdUponNextSpawn(skinId) {     
+        if (m_beforeInitialClassSelection)   
+            SetSpawnInfo(playerId, 0, skinId, 1346.17, 2807.06, 10.82, 320.0, 0, 0, 0, 0, 0, 0);
+
+        m_skinId = skinId;
+    }
+
+    /**
      * When the MySQL server is local or for other reasons just responding very quickly, it is
      * possible that we know whether the player is registered before class selection commences. In
      * that case, spawn the player immediately, which will force a single-skin waiting scenario.
@@ -453,4 +466,18 @@ public OnHideIdentifyMessageForPlayer(playerId) {
 
     SpawnManager(playerId)->hideNeedToIdentifyMessage();
     return 1;
+}
+
+forward OnSetPlayerSkinId(playerId, skinId, bool: uponNextSpawn);
+public OnSetPlayerSkinId(playerId, skinId, bool: uponNextSpawn) {
+    if(uponNextSpawn) {
+        SpawnManager(playerId)->setSkinIdUponNextSpawn(skinId);
+    } else {
+        SpawnManager(playerId)->setSkinId(skinId, false);
+    }
+}
+
+forward OnGetPlayerSkinId(playerId);
+public OnGetPlayerSkinId(playerId) {
+    return SpawnManager(playerId)->skinId();
 }

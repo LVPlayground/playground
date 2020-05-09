@@ -76,6 +76,8 @@ class MockPlayer {
         this.currentVehicleSeat_ = 0;
 
         this.cashMoney_ = 0;
+        
+        this.skinId = 1337;
 
         this.playerSettings_ = new PlayerSettings();
     }
@@ -148,6 +150,10 @@ class MockPlayer {
     // Gets or sets the Id of the gang this player is part of.
     get gangId() { return this.gangId_; }
     set gangId(value) { this.gangId_ = value; }
+
+    // Gets or sets the Id of the skin for the player.
+    get skinId() { return this.skinId_; }
+    set skinId(value) { this.skinId_ = value; }
 
     // Gets or sets the interior the player is part of. Moving them to the wrong interior will mess up
   // their visual state significantly, as all world objects may disappear.

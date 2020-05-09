@@ -226,7 +226,8 @@ class GangDatabase {
                 name: info.gang_name,
                 goal: info.gang_goal,
                 color: info.gang_color ? Color.fromNumberRGBA(info.gang_color) : null,
-                chatEncryptionExpiry: info.encryption_expire || 0
+                chatEncryptionExpiry: info.encryption_expire || 0,
+                skinId: 44
             }
         };
     }
@@ -284,7 +285,8 @@ class GangDatabase {
             name: name,
             goal: goal,
             color: null,
-            chatEncryptionExpiry: 0
+            chatEncryptionExpiry: 0,
+            skinId: null
         };
     }
 
@@ -352,6 +354,10 @@ class GangDatabase {
         await server.database.query(
             PURCHASE_CHAT_ENCRYPTION_QUERY, gang.id, player.id, encryptionTime,
             gang.chatEncryptionExpiry);
+    }
+
+    async updateSkinId(gang, skinId) {
+        
     }
 
     // Updates the color of the |gang| to |color|. Returns a promise that will be resolved when the

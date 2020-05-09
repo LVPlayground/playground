@@ -4,7 +4,11 @@
 
 import Gang from 'features/gangs/gang.js';
 import GangDatabase from 'features/gangs/gang_database.js';
+import PlayerSetting from 'entities/player_setting.js';
+import PlayerSettingsDatabase from 'features/playground/database/player_settings_database.js';
+
 import MockGangDatabase from 'features/gangs/test/mock_gang_database.js';
+import MockPlayerSettingsDatabase from 'features/playground/database/test/mock_player_settings_database.js';
 
 // The gang manager is responsible for managing all current information associated with gangs
 // whose players are logged in to Las Venturas Playground. It also mediates between the commands,
@@ -13,6 +17,10 @@ class GangManager {
     constructor(settings) {
         this.database_ = server.isTest() ? new MockGangDatabase()
                                          : new GangDatabase();
+                                         
+    // The database instance used to read and write persistent values.
+    this.playerSettingsDatabase_ = server.isTest() ? new MockPlayerSettingsDatabase()
+                                                  : new PlayerSettingsDatabase();
 
         this.gangs_ = new Map();
         this.gangPlayers_ = new WeakMap();
@@ -88,7 +96,6 @@ class GangManager {
                 throw new Error('The gang is too similar to [' + result.tag + '] ' + result.name);
 
             return this.database_.createGangWithLeader(player, tag, name, goal);
-
         }).then(gangInfo => {
             if (!player.isConnected())
                 return null;  // the player is not connected to the server anymore
@@ -277,6 +284,46 @@ class GangManager {
         gang.setUsesGangColor(player, useGangColor);
     }
 
+    async updateSkinId(gang, skinId) {
+        if(skinId < 0 || skinId > 299 || skinId == 121) {
+            return;
+        }
+
+        await this.database_.updateSkinId(gang, skinId);
+
+        gang.updateSkinId(skinId);
+
+        this.invokeObservers('onGangSettingUpdated', gang);
+    }
+
+    // Updates the preference of the |player| within |gang| to use te common gang skin when the
+    // |usesGangSkin| parameter is set to true, or their personal color otherwise.
+    async updateSkinPreference(gang, player, usesGangSkin) { 
+        if(gang.usesGangSkin(player) === usesGangSkin)
+            return;
+            
+        var setting = player.settings.settings.get(`${PlayerSetting.CATEGORY.GANG}/${PlayerSetting.GANG.USE_SKIN}`  );
+        console.log(setting);
+        // Either delete or write the new |value| from or to the database.
+        if (usesGangSkin === setting.defaultValue)
+            await this.playerSettingsDatabase_.deleteSetting(setting, player.userId);
+        else
+            await this.playerSettingsDatabase_.writeSetting(setting, player.userId);
+
+        gang.setUsesGangSkin(player, usesGangSkin);
+
+        usesGangSkin && gang.skinId !== null && gang.skinId !== undefined ?
+            this.setSkinInPawnCode(player.id, gang.skinId, true) :
+            this.setSkinInPawnCode(player.id, player.skinId, true);        
+    }
+
+    // Call the spawn manager to update player skin.
+    async setSkinInPawnCode(playerId, skinId, uponNextSpawn) {
+        var shouldUpdateUponNextSpawn = uponNextSpawn === false ? 0 : 1;
+        
+        pawnInvoke('OnSetPlayerSkinId', 'iii', playerId, skinId, shouldUpdateUponNextSpawn);
+    }
+
     // Updates the |gang|'s name to be |name|. Will return a promise when the operation has
     // completed, TRUE means the tag has been changed, FALSE means another gang owns it.
     async updateName(gang, name) {
@@ -340,6 +387,10 @@ class GangManager {
 
             // Associate the |gang| with the |player|.
             this.gangPlayers_.set(player, gang);
+
+            if(gang.usesGangSkin(player) && gang.skinId !== null && gang.skinId !== undefined) {
+                this.setSkinInPawnCode(player.id, gang.skinId, false);
+            }
 
             // Inform observers about the |player| whose part of |gang| now being online.
             this.invokeObservers('onGangMemberConnected', player.userId, gang.id);

@@ -1017,7 +1017,12 @@ lvp_show(playerId, params[]) {
         showInfo = true;
         format(g_message, sizeof(g_message), "The pirate ship is a peace zone! Please don't hit, shoot or throw grenades on it!");
     }
-
+    
+    else if (!strcmp(showParameter, "spraytag", true, 8)) {
+        showInfo = true;
+        format(g_message, sizeof(g_message), "Want to Spawn vehicles like /tur, /inf, /vor, /nrg , /sul ? . Complete Spraying all the 100 Spraytags found across LV and have fun spawning vehicles!");
+    }
+    
     else if (!strcmp(showParameter, "interior", true, 8)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "Running in to interiors or houses, pausing and teleporting away while being attacked or fighting are NOT allowed!");
@@ -1058,10 +1063,11 @@ lvp_show(playerId, params[]) {
     }
 
 ShowHelp:
-    SendClientMessage(playerId, Color::Information, "Usage: /show [beg/caps/donate/forum/interior/nick/reg/report/rules/ship/spam/swear/ts/weaps]");
+    SendClientMessage(playerId, Color::Information, "Usage: /show [beg/caps/donate/forum/interior/nick/reg/report/rules/ship/spam/spraytag/swear/ts/weaps]");
 
     return 1;
 }
+
 
 lvp_showreport(playerId, params[]) {
     if (Command->parameterCount(params) == 0) {

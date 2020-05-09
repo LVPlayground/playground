@@ -41,7 +41,7 @@ class DeathFeed extends Feature {
     this.disabledPlayers_.add(player.id);
 
     for (let fakeDeathIndex = 0; fakeDeathIndex < DEATH_FEED_VISIBLE_LENGTH; ++fakeDeathIndex)
-      this.sendDeathMessage(player, UNASSIGNED_PLAYER_ID, Player.INVALID_ID, 0);
+      this.sendDeathMessage(player, UNASSIGNED_PLAYER_ID, Player.kInvalidId, 0);
   }
 
   // Enables the death feed for |player|. The five most recent deaths will be send to their client

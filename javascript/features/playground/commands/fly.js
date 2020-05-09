@@ -76,7 +76,7 @@ class FlyCommand extends Command {
 
         let velocityFactor = 1;
         while (this.flying_.get(subject) && subject.isConnected()) {
-            const keys = subject.getKeys();
+            const keys = this.getPlayerKeys(subject);
 
             let cameraFrontVector = null;
 
@@ -171,6 +171,24 @@ class FlyCommand extends Command {
             freeze: true,
             forceSync: true
         });
+    }
+
+    // Utility function to get a labelled version of the keys the player is pressing.
+    getPlayerKeys(player) {
+        const [keys, updown, leftright] = pawnInvoke('GetPlayerKeys', 'iIII', player.id);
+
+        return {
+            aim: keys & 128 /* KEY_AIM */,
+            crouch: keys & 2 /* KEY_CROUCH */,
+            fire: keys & 4 /* KEY_JUMP */,
+            jump: keys & 32 /* SNEAK_ABOUT */,
+            sprint: keys & 8 /* PED_SPRINT */,
+
+            up: updown === -128 /* KEY_UP */,
+            down: updown === 128 /* KEY_DOWN */,
+            left: leftright === -128 /* KEY_LEFT */,
+            right: leftright === 128 /* KEY_RIGHT */
+        };
     }
 
     // Called when a player respawns or dies. They have to stop flying in these situations.

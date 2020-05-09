@@ -31,6 +31,16 @@ export class MockAccountDatabase extends AccountDatabase {
     }
 
     // Overridden.
+    async loadAccountData(userId) {
+        return null;
+    }
+
+    // Overridden.
+    async saveAccountData(accountData) {
+        return true;
+    }
+
+    // Overridden.
     async getPlayerSummaryInfo(nickname) {
         if (['NameThatDoesNotExist', 'NewNick', 'newski', 'Joe'].includes(nickname))
             return null;

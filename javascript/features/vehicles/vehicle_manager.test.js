@@ -174,7 +174,7 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.isNull(russell.vehicle);
         assert.isNull(lucy.vehicle);
 
-        lucy.disconnect();  // the management should consider this as a signal
+        lucy.disconnectForTesting();  // the management should consider this as a signal
 
         await server.clock.advance(500);  // half a second
 

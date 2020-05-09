@@ -32,7 +32,7 @@ class JetpackCommand extends Command {
 
         // Is the administrator removing a jetpack from this player instead of granting one?
         if (player.isAdministrator() && action === 'remove') {
-            subject.specialAction = Player.SPECIAL_ACTION_NONE;
+            subject.specialAction = Player.kSpecialActionNone;
             subject.clearAnimations();
 
             subject.sendMessage(Message.LVP_JETPACK_REMOVED, player.name, player.id);
@@ -47,7 +47,7 @@ class JetpackCommand extends Command {
         }
 
         // Grant a jetpack to the |subject|.
-        subject.specialAction = Player.SPECIAL_ACTION_USEJETPACK;
+        subject.specialAction = Player.kSpecialActionJetpack;
 
         if (subject !== player) {
             player.sendMessage(Message.LVP_JETPACK_GRANTED_OTHER, subject.name, subject.id);

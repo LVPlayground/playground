@@ -5,6 +5,8 @@
 // Represents and encapsulates the lifetime of a Vehicle on the San Andreas: Multiplayer server.
 // Provides quick and idiomatic access to the vehicle's properties.
 class Vehicle {
+    static kInvalidId = 65535;
+
     constructor(manager, options) {
         this.manager_ = manager;
         this.modelId_ = options.modelId;

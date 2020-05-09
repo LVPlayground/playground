@@ -23,7 +23,7 @@ class FreeVip {
         player.sendMessage('season. It won\'t last for long, so please enjoy your new abilities!');
         player.sendMessage('Consider donating on https://sa-mp.nl/donate if you like it!');
 
-        player.vip_ = true;
+        player.setVip(true);
 
         // Make sure that the Pawn code is aware of their VIP rights as well.
         pawnInvoke('OnGrantVipToPlayer', 'i', player.id);

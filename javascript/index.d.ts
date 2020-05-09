@@ -3,9 +3,13 @@
 // be found in the LICENSE file.
 
 import Assert from 'base/test/assert.js';
+import { Player } from 'entities/player.js';
+import { PlayerAccountSupplement } from 'features/account/player_account_supplement.js';
+import Server from './server.js';
 
 import 'base/index.d.ts';
 import 'base/test/index.d.ts';
+import 'entities/index.d.ts';
 
 declare global {
     // Global functions provided by PlaygroundJS.
@@ -35,12 +39,15 @@ declare global {
     }
 
     const console: Console;
-
-    interface Server {
-        isTest(): boolean;
-    }
-
     let server: Server;
+
+    // ---------------------------------------------------------------------------------------------
+    // Supplements
+    // ---------------------------------------------------------------------------------------------
+
+    interface Player {
+        account?: PlayerAccountSupplement;
+    }
 
     // ---------------------------------------------------------------------------------------------
     // Test infrastructure
@@ -48,8 +55,9 @@ declare global {
 
     type TestCaseFunction = (assert: Assert) => any;
     type TestCaseDefinition = (description: string, testCase: TestCaseFunction) => void;
-    type TestSuiteFunction =
-        (it: TestCaseDefinition, beforeEach: TestCaseFunction, afterEach: TestCaseFunction) => void;
+    type TestSuiteFunction = (it: TestCaseDefinition,
+                              beforeEach: (fn: TestCaseFunction) => void,
+                              afterEach: (fn: TestCaseFunction) => void) => void;
 
     function describe(what: string, populateFn: TestSuiteFunction);
 }

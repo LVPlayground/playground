@@ -11,9 +11,6 @@ class MockPawnInvoke {
     constructor() {
         this.calls_ = [];
 
-        if (instance !== null)
-            throw new Error('Another MockPawnInvoke instance has already been created.');
-
         instance = this;
 
         // Store the global `pawnInvoke` function so that we can restore it in dispose().
@@ -21,7 +18,7 @@ class MockPawnInvoke {
         this.enable();
     }
 
-    // Returns the current MockPawnInvoke instance, if any.
+    // Returns the latest MockPawnInvoke instance, if any.
     static getInstance() {
         return instance;
     }

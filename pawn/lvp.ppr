@@ -96,6 +96,7 @@
     <DiskObject>\Features\Account\ForcedGuestDialog.pwn</DiskObject>
     <DiskObject>\Features\Account\GpciLogger.pwn</DiskObject>
     <DiskObject>\Features\Account\LegacyAccountBridge.pwn</DiskObject>
+    <DiskObject>\Features\Account\MultipleSessionDialog.pwn</DiskObject>
     <DiskObject>\Features\Account\NicknameGenerator.pwn</DiskObject>
     <DiskObject>\Features\Account\UndercoverAdministrator.pwn</DiskObject>
     <DiskObject>\Features\Christmas.pwn</DiskObject>

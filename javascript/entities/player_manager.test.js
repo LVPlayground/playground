@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import MockPlayer from 'entities/test/mock_player.js';
+import { MockPlayer } from 'entities/test/mock_player.js';
 import PlayerManager from 'entities/player_manager.js';
 
 describe('PlayerManager', (it, beforeEach, afterEach) => {
@@ -234,22 +234,22 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
             position: new Vector(1000, 1500, 2000)
         });
 
-        assert.isTrue(gunther.enterVehicle(vehicle));
+        gunther.enterVehicle(vehicle);
 
         assert.equal(enteredCounter, 1);
         assert.equal(leftCounter, 0);
 
-        assert.isTrue(gunther.leaveVehicle());
+        gunther.leaveVehicle();
 
         assert.equal(enteredCounter, 1);
         assert.equal(leftCounter, 1);
 
-        assert.isTrue(gunther.enterVehicle(vehicle));
+        gunther.enterVehicle(vehicle);
 
         assert.equal(enteredCounter, 2);
         assert.equal(leftCounter, 1);
 
-        gunther.disconnect();
+        gunther.disconnectForTesting();
 
         assert.equal(enteredCounter, 2);
         assert.equal(leftCounter, 2);
@@ -278,7 +278,7 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         assert.equal([...vehicle.getPassengers()].length, 0);
 
         // (1) Make |gunther| enter the vehicle as the driver.
-        assert.isTrue(gunther.enterVehicle(vehicle, Vehicle.SEAT_DRIVER));
+        gunther.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
 
         assert.equal(gunther.vehicle, vehicle);
         assert.equal(gunther.vehicleSeat, Vehicle.SEAT_DRIVER);
@@ -291,7 +291,7 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         assert.equal([...vehicle.getPassengers()].length, 0);
 
         // (2) Make |russell| enter the vehicle as a passenger.
-        assert.isTrue(russell.enterVehicle(vehicle, Vehicle.SEAT_PASSENGER));
+        russell.enterVehicle(vehicle, Vehicle.SEAT_PASSENGER);
 
         assert.equal(russell.vehicle, vehicle);
         assert.equal(russell.vehicleSeat, Vehicle.SEAT_PASSENGER);
@@ -304,7 +304,7 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         assert.equal([...vehicle.getPassengers()].length, 1);
 
         // (3) Make |gunther| leave the vehicle, leaving |russell| by himself.
-        assert.isTrue(gunther.leaveVehicle());
+        gunther.leaveVehicle();
 
         assert.isNull(gunther.vehicle);
         assert.isNull(gunther.vehicleSeat);
@@ -317,7 +317,7 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         assert.equal([...vehicle.getPassengers()].length, 1);
 
         // (4) Make |russell| leave the vehicle as well.
-        assert.isTrue(russell.leaveVehicle());
+        russell.leaveVehicle();
 
         assert.isNull(russell.vehicle);
         assert.isNull(russell.vehicleSeat);
@@ -349,7 +349,7 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         assert.equal([...vehicle.getPassengers()].length, 0);
 
         // (1) Make |gunther| enter the vehicle as the driver.
-        assert.isTrue(gunther.enterVehicle(vehicle, Vehicle.SEAT_DRIVER));
+        gunther.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
 
         assert.equal(gunther.vehicle, vehicle);
         assert.equal(gunther.vehicleSeat, Vehicle.SEAT_DRIVER);
@@ -362,7 +362,7 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         assert.equal([...vehicle.getPassengers()].length, 0);
 
         // (2) Disconnect |gunther| from the server.
-        gunther.disconnect();
+        gunther.disconnectForTesting();
 
         assert.isNull(gunther.vehicle);
         assert.isNull(gunther.vehicleSeat);

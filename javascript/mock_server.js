@@ -19,11 +19,12 @@ import MockObject from 'entities/test/mock_object.js';
 import MockPawnInvoke from 'base/test/mock_pawn_invoke.js';
 import MockPickup from 'entities/test/mock_pickup.js';
 import MockPickupManager from 'entities/test/mock_pickup_manager.js';
-import MockPlayer from 'entities/test/mock_player.js';
+import { MockPlayer } from 'entities/test/mock_player.js';
 import MockTextLabel from 'entities/test/mock_text_label.js';
 import MockVehicle from 'entities/test/mock_vehicle.js';
 
 import Abuse from 'features/abuse/abuse.js';
+import Account from 'features/account/account.js';
 import Announce from 'features/announce/announce.js';
 import Communication from 'features/communication/communication.js';
 import Finance from 'features/finance/finance.js';
@@ -59,6 +60,7 @@ class MockServer {
         // Register features whose production versions are suitable for testing.
         this.featureManager_.registerFeaturesForTests({
             abuse: Abuse,
+            account: Account,
             announce: Announce,  // TODO: Move functionality to |communication|. See #309.
             communication: Communication,
             finance: Finance,

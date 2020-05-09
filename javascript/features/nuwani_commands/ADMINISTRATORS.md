@@ -175,7 +175,7 @@ addition to that, we also log each time a ban gets lifted.
     passing a different value for the `maxAge` argument, a number of days.
 
 ### ⯈ I want to find out what a player's record is
-**Command**: `!why [nickname]`
+**Command**: `!why [nickname] [maxAge = 365]`
 
 #### Examples
 ```
@@ -185,6 +185,8 @@ addition to that, we also log each time a ban gets lifted.
 #### Notes
   * The 5 most recent entries on the player's record will be displayed. Additional information is
     available through the website, which the command will give you a link for.
+  * Only entries added in the past year will be displayed by default. An additional parameter can
+    be used to display more, but administrators are discouraged from doing so.
 
 ### ⯈ I want to add a note to a player's record
 **Command**: `!addnote [nickname] [note]`

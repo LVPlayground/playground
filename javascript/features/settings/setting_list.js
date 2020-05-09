@@ -56,6 +56,15 @@ export default [
     new Setting('financial', 'community_contribution_vip_base', Setting.TYPE_NUMBER, 2500000, 'Starting at what wealth level should VIPs contribute?'),
     new Setting('financial', 'community_contribution_vip_pct', Setting.TYPE_NUMBER, 3, 'What percentage of cash should VIPs contribute?'),
 
+    /** Gang-related settings */
+    new Setting('gangs', 'zones_area_bonus_members', Setting.TYPE_NUMBER, 8, 'Starting at how many members will an area bonus be applied?'),
+    new Setting('gangs', 'zones_area_bonus_members_pct', Setting.TYPE_NUMBER, 20, 'Area increase percentage granted for the member bonus.'),
+    new Setting('gangs', 'zones_area_max_distance', Setting.TYPE_NUMBER, 100, 'Maximum distance from the mean for gang areas.'),
+    new Setting('gangs', 'zones_area_min_edge_length', Setting.TYPE_NUMBER, 50, 'Minimum length of each of the areas edges (width/height).'),
+    new Setting('gangs', 'zones_area_min_representation', Setting.TYPE_NUMBER, 50, 'Representation percentage required for gang areas.'),
+    new Setting('gangs', 'zones_area_padding_pct', Setting.TYPE_NUMBER, 20, 'Percentage of padding applied over the strictly enclosing area.'),
+    new Setting('gangs', 'zones_cluster_limit', Setting.TYPE_NUMBER, 8, 'Maximum number of clusters when running k-means clustering.'),
+
     /** Radio related settings */
     new Setting('radio', 'default_channel', Setting.TYPE_STRING, 'LVP Radio', 'Name of the default radio channel.'),
     new Setting('radio', 'enabled', Setting.TYPE_BOOLEAN, true, 'Should the radio feature be enabled?'),

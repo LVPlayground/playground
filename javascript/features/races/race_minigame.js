@@ -84,7 +84,7 @@ class RaceMinigame extends Minigame {
 
                 // Move the player to the right virtual world and interior for the race.
                 player.virtualWorld = this.virtualWorld;
-                player.interior = this.race_.interior;
+                player.interiorId = this.race_.interior;
 
                 // Apply the environmental effects of the race (weather, time) to the player.
                 player.weather = this.race_.weather;
@@ -110,7 +110,7 @@ class RaceMinigame extends Minigame {
                 const playerData = this.dataForPlayer(player);
 
                 // Put the player in their designated vehicle, and disable collisions for them.
-                player.putInVehicle(playerData.vehicle);
+                player.enterVehicle(playerData.vehicle);
                 player.vehicleCollisionsEnabled = false;
 
                 // Display the score board for the |player|.

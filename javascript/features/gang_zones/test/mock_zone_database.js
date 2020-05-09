@@ -18,13 +18,34 @@ export class MockZoneDatabase extends ZoneDatabase {
     // this feature. There could be other houses too, but we'll ignore those.
     async populateTestHouses(houses) {
         const houseManager = houses.manager_;
-        const housesForTesting = [
-            {
-                gangId: kGangBA,
-                userId: 9001,  // [BA]AzKiller
-                location: [ 1500.0, 1500.0, 20.0 ],
-            }
+        const clownHousesForTesting = [
+            [ 2564.6738, 1580.9309, 10.8203 ],
+            [ 2563.9091, 1571.9478, 10.8203 ],
+            [ 2563.9909, 1551.9309, 10.8203 ],
+            [ 2564.4260, 1541.9356, 10.8203 ],
+            [ 2533.8684, 1507.8079, 11.5713 ],
+            [ 2483.4956, 1526.7932, 11.2776 ],
+            [ 2394.7351, 692.5378, 11.4531 ],
+            [ 2397.9511, 732.6172, 11.4609 ],
+            [ 2347.2226, 693.9076, 11.4609 ],
+            [ 2348.5305, 734.4151, 11.4682 ],
+            [ 2315.2888, 692.7879, 11.4609 ],
+            [ 2260.3251, 734.7573, 11.4609 ],
+            [ 911.4104, -1120.0834, 24.0340 ],
+            [ 885.1795, -1088.2911, 24.2968 ],
+            [ 849.2283, -1088.3745, 24.2968 ],
+            [ 838.3325, -1112.0974, 24.1613 ],
+            [ 813.7155, -1102.8255, 25.7877 ],
+            [ 845.3483, -1080.4429, 24.2968 ],
         ];
+
+        const housesForTesting = clownHousesForTesting.map((location, index) => {
+            return {
+                gangId: kGangBA,
+                userId: 9001 + (index % 6),
+                location
+            };
+        });
 
         const gunther = server.playerManager.getById(/* Gunther= */ 0);
         for (const houseForTesting of housesForTesting) {

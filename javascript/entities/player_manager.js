@@ -24,13 +24,9 @@ class PlayerManager {
         this.callbacks_.addEventListener(
             'playerlevelchange', PlayerManager.prototype.onPlayerLevelChange.bind(this));
         this.callbacks_.addEventListener(
-            'playerlogin', PlayerManager.prototype.onPlayerLogin.bind(this));
-        this.callbacks_.addEventListener(
             'playerstatechange', PlayerManager.prototype.onPlayerStateChange.bind(this));
         this.callbacks_.addEventListener(
             'playerdisconnect', PlayerManager.prototype.onPlayerDisconnect.bind(this));
-        this.callbacks_.addEventListener(
-            'playerguestlogin', PlayerManager.prototype.onPlayerGuestLogin.bind(this));
 
         // Implementation of the UpdatePlayerSyncedData() Pawn native.
         provideNative('UpdatePlayerSyncedData', 'iiifs',
@@ -134,7 +130,8 @@ class PlayerManager {
         }
 
         // Pass the |event| as it may contain additional meta-data when used by tests.
-        const player = new this.playerConstructor_(playerId, event);
+        const player = new this.playerConstructor_(playerId);
+        player.initialize(event);
 
         // Associate the |player| instance with the |playerId|.
         this.players_.set(playerId, player);
@@ -167,16 +164,16 @@ class PlayerManager {
 
         switch (event.newlevel) {
             case 3:  // Management
-                player.level_ = Player.LEVEL_MANAGEMENT;
-                player.levelIsTemporary_ = false;
+                player.level = Player.LEVEL_MANAGEMENT;
+                player.levelIsTemporary = false;
                 break;
             case 2:  // Administrator
-                player.level_ = Player.LEVEL_ADMINISTRATOR;
-                player.levelIsTemporary_ = !!event.temporary;
+                player.level = Player.LEVEL_ADMINISTRATOR;
+                player.levelIsTemporary = !!event.temporary;
                 break;
             default:
-                player.level_ = Player.LEVEL_PLAYER;
-                player.levelIsTemporary_ = false;
+                player.level = Player.LEVEL_PLAYER;
+                player.levelIsTemporary = false;
                 break;
         }
 
@@ -185,28 +182,19 @@ class PlayerManager {
 
     // Called when a player logs in to their account. This marks availability of their user data
     // and the fact that their identity has been verified.
+    //
+    // This method is called by the Account feature when loaded. Observer delivery is delayed on the
+    // player's account data being loaded from the database.
     onPlayerLogin(event) {
         const player = this.players_.get(event.playerid);
         if (!player)
             return;  // the event has been received for an invalid player
 
-        player.userId_ = event.userid;
-        player.vip_ = !!event.vip;
-        player.undercover_ = !!event.undercover;
+        player.userId = event.userid;
+        player.setVip(!!event.vip);
+        player.setUndercover(!!event.undercover);
 
         this.notifyObservers('onPlayerLogin', player, event);
-    }
-
-    // Called when a player decides to play as guest. This changes the name of the player so the
-    // player-object needs to be updated to have the new name.
-    onPlayerGuestLogin(event) {
-        const player = this.players_.get(event.playerId);
-        if (!player)
-            return;  // the event has been received for an invalid player
-
-        player.name_ = event.guestPlayerName;
-
-        this.notifyObservers('onPlayerGuestLogin', player, event);
     }
 
     // Called when a player's state changes. Handles players entering and leaving vehicles, and
@@ -216,7 +204,7 @@ class PlayerManager {
         if (!player)
             return;  // the player isn't valid
 
-        if (event.oldstate === Player.STATE_DRIVER || event.oldstate === Player.STATE_PASSENGER) {
+        if ([Player.kStateVehicleDriver, Player.kStateVehiclePassenger].includes(event.oldstate)) {
             const vehicle = player.vehicle;
             if (!vehicle)
                 return;  // the vehicle isn't managed by JavaScript
@@ -225,17 +213,25 @@ class PlayerManager {
 
             vehicle.onPlayerLeaveVehicle(player);
 
-            player.vehicle_ = null;
-            player.vehicleSeat_ = null;
+            player.vehicle = null;
+            player.vehicleSeat = null;
         }
 
-        if (event.newstate === Player.STATE_DRIVER || event.newstate === Player.STATE_PASSENGER) {
-            const vehicle = server.vehicleManager.getById(player.findVehicleId());
+        if ([Player.kStateVehicleDriver, Player.kStateVehiclePassenger].includes(event.newstate)) {
+            const vehicleId =
+                server.isTest() ? player.vehicle?.id
+                                : pawnInvoke('GetPlayerVehicleID', 'i', player.id);
+
+            const vehicleSeat =
+                server.isTest() ? player.vehicleSeat
+                                : pawnInvoke('GetPlayerVehicleSeat', 'i', player.id);
+
+            const vehicle = server.vehicleManager.getById(vehicleId);
             if (!vehicle)
                 return;  // the vehicle isn't managed by JavaScript
 
-            player.vehicle_ = vehicle;
-            player.vehicleSeat_ = player.findVehicleSeat();
+            player.vehicle = vehicle;
+            player.vehicleSeat = vehicleSeat;
 
             vehicle.onPlayerEnterVehicle(player);
 
@@ -261,8 +257,8 @@ class PlayerManager {
 
             player.vehicle.onPlayerLeaveVehicle(player);
 
-            player.vehicle_ = null;
-            player.vehicleSeat_ = null;
+            player.vehicle = null;
+            player.vehicleSeat = null;
         }
 
         // Remove knowledge of the |player| from the player manager.

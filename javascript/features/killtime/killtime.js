@@ -18,7 +18,10 @@ class Killtime extends Feature {
         // Killtime prizes are calculated by our economy-feature
         const economy = this.defineDependency('economy');
 
-        this.manager_ = new KilltimeManager(announce, economy);
+        // This feature gives players some cash when they win.
+        const finance = this.defineDependency('finance');
+
+        this.manager_ = new KilltimeManager(announce, economy, finance);
         this.commands_ = new KilltimeCommands(this.manager_);
     }
 

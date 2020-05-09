@@ -69,21 +69,4 @@ describe('IrcChatCommands', (it, beforeEach, afterEach) => {
                      Message.format(Message.IRC_CHAT_MESSAGE_SENT, channel, gunther.name,
                                     'some words'));
     });
-
-    it('/man should send a message for RCON admins to .management', assert => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-        const channel = '#LVP.Management';
-
-        assert.isFalse(gunther.isRegistered());
-        assert.equal(gunther.level, Player.LEVEL_PLAYER);
-
-        gunther.setRconAdmin(true);
-
-        assert.isTrue(gunther.issueCommand('/man some words'));
-
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0],
-                     Message.format(Message.IRC_CHAT_MESSAGE_SENT, channel, gunther.name,
-                                    'some words'));
-    });
 });

@@ -26,9 +26,9 @@
   "BANK_NOT_ENOUGH_FUNDS": "@error There aren't enough funds in your bank account to withdraw %$.",
   "BANK_NO_AVAILABLE_CASH": "@error You cannot carry more than %$ in cash.",
   "BANK_NO_AVAILABLE_BALANCE": "@error The bank is not willing to store more than %$ for you.",
-  "BANK_BALANCE": "{FFEB3B}* Your current account balance is {FF9800}%${FFEB3B}. You bank is willing to store up to {FF9800}%${FFEB3B}.",
-  "BANK_STORED": "{FFEB3B}* The have deposited {FF9800}%${FFEB3B}. Your new account balance is {FF9800}%${FFEB3B}.",
-  "BANK_WITHDRAWN": "{FFEB3B}* You have withdrawn {FF9800}%${FFEB3B}. Your new account balance is {FF9800}%${FFEB3B}.",
+  "BANK_BALANCE": "{2196F3}* Your current account balance is {BBDEFB}%${2196F3}. You bank is willing to store up to {BBDEFB}%${2196F3}.",
+  "BANK_STORED": "{2196F3}* The have deposited {BBDEFB}%${2196F3}. Your new account balance is {BBDEFB}%${2196F3}.",
+  "BANK_WITHDRAWN": "{2196F3}* You have withdrawn {BBDEFB}%${2196F3}. Your new account balance is {BBDEFB}%${2196F3}.",
 
   "COMMAND_ERROR_INSUFFICIENT_RIGHTS": "@error Sorry, this command is only available to %s.",
   "COMMAND_ERROR_INSUFFICIENT_RIGHTS_BETA": "@error Sorry, you must have a registered account in order to use this command.",

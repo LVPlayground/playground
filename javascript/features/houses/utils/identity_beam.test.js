@@ -34,7 +34,7 @@ describe('IdentityBeam', it => {
         assert.equal(objects[0].rotation.z, 45);
         assert.equal(objects[1].rotation.z, 135);
 
-        assert.isTrue(gunther.streamerObjectsUpdated());
+        assert.isTrue(gunther.streamerObjectsUpdatedForTesting);
     });
 
     it('should create a label for the beam when requested', assert => {

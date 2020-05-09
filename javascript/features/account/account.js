@@ -4,8 +4,12 @@
 
 import { AccountCommands } from 'features/account/account_commands.js';
 import { AccountDatabase } from 'features/account/account_database.js';
+import { AccountManager } from 'features/account/account_manager.js';
 import { AccountNuwaniCommands } from 'features/account/account_nuwani_commands.js';
 import Feature from 'components/feature_manager/feature.js';
+import { PlayerAccountSupplement } from 'features/account/player_account_supplement.js';
+
+import { MockAccountDatabase } from 'features/account/test/mock_account_database.js';
 
 // The account feature centralizes our interaction with player account data, for example their
 // ability to log in, manage their account and their settings.
@@ -28,7 +32,15 @@ export default class Account extends Feature {
 
         // The database powers the actual storage layer shared between the commands and other logic
         // provided by this feature. There's only a single instance of it.
-        this.database_ = new AccountDatabase();
+        this.database_ = server.isTest() ? new MockAccountDatabase()
+                                         : new AccountDatabase();
+
+        // The account manager, responsible for keeping track of account data & saving thereof.
+        this.manager_ = new AccountManager(this.database_);
+
+        // Provide the Account supplement to the Player class. This makes the `account` accessor
+        // available on each player connected to the server.
+        Player.provideSupplement('account', PlayerAccountSupplement, this.manager_);
 
         // The in-game commands will be made available using this object.
         this.commands_ =
@@ -46,6 +58,11 @@ export default class Account extends Feature {
     }
 
     dispose() {
+        Player.provideSupplement('account', null);
+
+        this.manager_.dispose();
+        this.manager_ = null;
+
         this.nuwaniCommands_.dispose();
         this.commands_.dispose();
     }

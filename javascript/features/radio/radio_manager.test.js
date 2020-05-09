@@ -62,15 +62,15 @@ describe('RadioManager', (it, beforeEach, afterEach) => {
         assert.isTrue(manager.isEnabled());
 
         assert.isFalse(manager.isListening(gunther));
-        assert.isNull(gunther.streamUrl);
+        assert.isNull(gunther.streamUrlForTesting);
 
         manager.startRadio(gunther, true /* initialWait */);
         assert.isTrue(manager.isListening(gunther));
-        assert.equal(gunther.streamUrl, selection.defaultChannel.stream);
+        assert.equal(gunther.streamUrlForTesting, selection.defaultChannel.stream);
 
         manager.stopRadio(gunther);
         assert.isFalse(manager.isListening(gunther));
-        assert.isNull(gunther.streamUrl);
+        assert.isNull(gunther.streamUrlForTesting);
     });
 
     it('should start the radio when a player enters a vehicle', assert => {
@@ -79,19 +79,19 @@ describe('RadioManager', (it, beforeEach, afterEach) => {
 
         assert.isFalse(manager.isListening(gunther));
         assert.isFalse(manager.isEligible(gunther));
-        assert.isNull(gunther.streamUrl);
+        assert.isNull(gunther.streamUrlForTesting);
 
         // Enter the vehicle as a driver.
         {
             gunther.enterVehicle(vehicle, 0 /* driver seat */);
             assert.isTrue(manager.isListening(gunther));
             assert.isTrue(manager.isEligible(gunther));
-            assert.equal(gunther.streamUrl, selection.defaultChannel.stream);
+            assert.equal(gunther.streamUrlForTesting, selection.defaultChannel.stream);
 
             gunther.leaveVehicle();
             assert.isFalse(manager.isListening(gunther));
             assert.isFalse(manager.isEligible(gunther));
-            assert.isNull(gunther.streamUrl);
+            assert.isNull(gunther.streamUrlForTesting);
         }
 
         // Enter the vehicle as a passenger.
@@ -99,12 +99,12 @@ describe('RadioManager', (it, beforeEach, afterEach) => {
             gunther.enterVehicle(vehicle, 1 /* passenger seat */);
             assert.isTrue(manager.isListening(gunther));
             assert.isTrue(manager.isEligible(gunther));
-            assert.equal(gunther.streamUrl, selection.defaultChannel.stream);
+            assert.equal(gunther.streamUrlForTesting, selection.defaultChannel.stream);
 
             gunther.leaveVehicle();
             assert.isFalse(manager.isListening(gunther));
             assert.isFalse(manager.isEligible(gunther));
-            assert.isNull(gunther.streamUrl);
+            assert.isNull(gunther.streamUrlForTesting);
         }
     });
 
@@ -152,7 +152,7 @@ describe('RadioManager', (it, beforeEach, afterEach) => {
         {
             gunther.enterVehicle(vehicle, 0 /* driver seat */);
             assert.isFalse(manager.isListening(gunther));
-            assert.isNull(gunther.streamUrl);
+            assert.isNull(gunther.streamUrlForTesting);
         }
     });
 

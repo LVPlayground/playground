@@ -169,7 +169,7 @@ describe('GangManager', (it, beforeEach) => {
         assert.isTrue(gang.usesGangColor(gunther));
         assert.isNotNull(gunther.gangColor);
 
-        gunther.disconnect();
+        gunther.disconnectForTesting();
 
         assert.isFalse(gang.hasPlayer(gunther));
         assert.isNull(manager.gangForPlayer(gunther));

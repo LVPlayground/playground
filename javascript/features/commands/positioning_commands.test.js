@@ -20,21 +20,21 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
 
         gunther.position = new Vector(0, 1, 2);
         const guntherPosition = gunther.position;
-        gunther.facingAngle = 3;
+        gunther.rotation = 3;
 
         assert.isTrue(gunther.issueCommand('/pos'));
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0],
             Message.format(Message.POSITIONING_CURRENT_POSITION, guntherPosition.x,
-                guntherPosition.y, guntherPosition.z, gunther.facingAngle));
+                guntherPosition.y, guntherPosition.z, gunther.rotation));
     });
 
     it('/pos x y z should only show the position to the player', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         gunther.position = new Vector(0, 1, 2);
-        gunther.facingAngle = 3;
+        gunther.rotation = 3;
 
         assert.isTrue(gunther.issueCommand('/pos 3 4 5'));
 
@@ -43,7 +43,7 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0],
             Message.format(Message.POSITIONING_CURRENT_POSITION, guntherPosition.x,
-                guntherPosition.y, guntherPosition.z, gunther.facingAngle));
+                guntherPosition.y, guntherPosition.z, gunther.rotation));
         assert.equal(guntherPosition.x, 0);
         assert.equal(guntherPosition.y, 1);
         assert.equal(guntherPosition.z, 2);
@@ -55,14 +55,14 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
         gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(0, 1, 2);
         const guntherPosition = gunther.position;
-        gunther.facingAngle = 3;
+        gunther.rotation = 3;
 
         assert.isTrue(gunther.issueCommand('/pos'));
 
         assert.equal(gunther.messages.length, 2);
         assert.equal(gunther.messages[0],
             Message.format(Message.POSITIONING_CURRENT_POSITION, guntherPosition.x,
-                guntherPosition.y, guntherPosition.z, gunther.facingAngle));
+                guntherPosition.y, guntherPosition.z, gunther.rotation));
         assert.equal(gunther.messages[1], Message.POSITIONING_OTHER_USAGE_POS);
     });
 
@@ -120,7 +120,7 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
         gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(11, 12, 13);
-        gunther.facingAngle = 42;
+        gunther.rotation = 42;
 
         assert.isTrue(gunther.issueCommand('/forward 8'));
 

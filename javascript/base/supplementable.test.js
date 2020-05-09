@@ -90,5 +90,13 @@ describe('Supplementable', it => {
         assert.equal(typeof newInstance.double, 'undefined');
         assert.equal(typeof existingInstance.double, 'undefined');
         assert.equal(typeof finalInstance.double, 'undefined');
+
+        // A new supplement can be added again as well.
+        assert.doesNotThrow(() =>
+            MySupplementable.provideSupplement('double', MySupplement, 2));
+        
+        // Clean up after the test.
+        assert.doesNotThrow(() => MySupplementable.provideSupplement('double', null));
+        assert.doesNotThrow(() => MySupplementable.provideSupplement('triple', null));
     });
 });

@@ -111,7 +111,7 @@ describe('PlaygroundAccessTracker', (it, beforeEach, afterEach) => {
         assert.equal(tracker.getExceptionCount('foo'), 1);
         assert.isTrue(tracker.canAccessCommand('foo', gunther1));
 
-        gunther1.disconnect();
+        gunther1.disconnectForTesting();
 
         assert.equal(tracker.getExceptionCount('foo'), 0);
         assert.isFalse(tracker.canAccessCommand('foo', gunther1));
@@ -124,7 +124,7 @@ describe('PlaygroundAccessTracker', (it, beforeEach, afterEach) => {
         assert.isTrue(tracker.canAccessCommand('foo', gunther2));
         assert.equal(tracker.getExceptionCount('foo'), 1);
 
-        gunther2.disconnect();
+        gunther2.disconnectForTesting();
 
         assert.equal(tracker.getExceptionCount('foo'), 0);
 

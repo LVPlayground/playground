@@ -35,3 +35,39 @@ centralized [in the `nuwani_commands` feature](../nuwani_commands/).
   * `!removealias [nickname] [alias]`: removes the given alias from the player.
   * `!setvalue [nickname] [field] [value]`: updates a particular field in the player's account.
   * `!supported`: displays a list of the supported fields for altering player data.
+
+## Account data supplement
+This feature provides the `Player.account` supplement, which makes all account data associated with
+a particular player available to all other code on the server. The account data will be loaded when
+a player identifies to their account. When available, all data will be synchronously available for
+both reading and updating as follows:
+
+```javascript
+function getBankAccountBalance(player) {
+    if (!player.account || !player.account.hasIdentified())
+        return 0;  // they either aren't registered, or haven't logged in yet
+    
+    return player.account.bankAccountBalance;
+}
+
+function setBankAccountBalance(player, balance) {
+    if (!player.account || !player.account.hasIdentified())
+        throw new Error('You cannot update bank account for unidentified players!');
+    
+    player.account.bankAccountBalance = balance;
+}
+```
+
+You don't have to worry about writing the data back to the database, this will be done automatically
+by this feature, both periodically during the session and on player disconnection.
+
+### Adding a data type to be synchronised
+There are a few steps involved in making a new account property available. In summary:
+
+  1. Add the field to the appropriate queries in [account_database.js](account_database.js).
+  1. Add the field, getter and optionally the setter in [account_data.js](account_data.js).
+  1. Add the necessary properties in [player_account_supplement.js](player_account_supplement.js).
+  1. Declare victory.
+
+If your field importance justified periodic saving rather than just at player disconnection time,
+add a call to `this.requestStore()` in the setter you wrote in [account_data.js](account_data.js).

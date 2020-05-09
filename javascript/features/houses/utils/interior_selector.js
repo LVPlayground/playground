@@ -110,7 +110,7 @@ class InteriorSelector {
 
         // Make sure that the player is in the correct interior to view this interior, and in their
         // own virtual world so that they're not bothered by others.
-        this.player_.interior = interior.interior;
+        this.player_.interiorId = interior.interior;
         this.player_.virtualWorld = VirtualWorld.forPlayer(this.player_);
 
         // Force-update the streamer for this player to make sure custom houses are visible.

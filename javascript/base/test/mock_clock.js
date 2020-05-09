@@ -5,14 +5,6 @@
 import Clock from 'base/clock.js';
 import PriorityQueue from 'base/priority_queue.js';
 
-// Private variable to ensure that only a single MockClock exists at any given time. This is
-// important because it will override the wait() method on the global.
-let existingInstance = null;
-
-// The previous value of the global wait() function. Will be mocked by the MockClock and be driven
-// by advancing the time using `server.clock.advance()`.
-let previousWait = null;
-
 // Mocked version of the clock that will be used for tests. Beyond the normal functionality, the
 // clock can be advanced by a given number of milliseconds.
 class MockClock {
@@ -26,12 +18,6 @@ class MockClock {
 
             return lhs.time > rhs.time ? 1 : -1;
         });
-
-        if (existingInstance !== null)
-            throw new Error('Another clock instance has already been created.');
-
-        existingInstance = this;
-        previousWait = wait;
 
         // Override the global `wait` function with the version to be mocked by this class.
         wait = MockClock.prototype.wait.bind(this);
@@ -80,13 +66,7 @@ class MockClock {
         });
     }
 
-    // Disposes of the instance.
-    dispose() {
-        wait = previousWait;
-
-        previousWait = null;
-        existingInstance = null;
-    }
+    dispose() {}
 }
 
 // Carry-over the formatRelativeTime() implementation from the real Clock.

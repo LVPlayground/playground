@@ -257,7 +257,7 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
         assert.equal(onlineFriends.online[0], russell.name);
         assert.equal(onlineFriends.offline.length, 0);
 
-        russell.disconnect();
+        russell.disconnectForTesting();
 
         assert.isFalse(russell.isConnected());
 

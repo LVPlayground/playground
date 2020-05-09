@@ -17,16 +17,6 @@ describe('ObjectRemover', (it, beforeEach, afterEach) => {
 
     afterEach(() => objectRemover.dispose());
 
-    it('should remove Joe\'s Garage when players connect', assert => {
-        assert.doesNotThrow(() => objectRemover.load('data/favours/joe_house_objects.json'));
-
-        assert.equal(gunther.removedObjectCount, 0);
-
-        objectRemover.onPlayerConnect(gunther);
-
-        assert.isAbove(gunther.removedObjectCount, 0);
-    });
-
     it('can optimize a list of objects by using the radius cleverly', assert => {
         objectRemover.removedObjects_ = [
             { modelId: 1000, position: new Vector(1, 0, 0), radius: 0.25 },

@@ -126,7 +126,7 @@ describe('PickupManager', (it, beforeEach) => {
         assert.equal(observer.enteredCount, 1);
         assert.equal(observer.leftCount, 0);
 
-        gunther.disconnect();
+        gunther.disconnectForTesting();
 
         await server.clock.advance(10000 /* 10 seconds */);
 

@@ -48,7 +48,10 @@ class TestSuite {
       const test = this.tests_[i];
 
       const assert = new Assert(this, test.description);
+  
+      const originalPawnInvoke = global.pawnInvoke;
       const originalServer = global.server;
+      const originalWait = global.wait;
 
       let carriedException = null;
 
@@ -102,8 +105,10 @@ class TestSuite {
           carriedException = error;
 
       }).then(() => {
-        // (8) Restore the original value of the |server| global.
+        // (8) Restore the original value of the globals.
+        global.pawnInvoke = originalPawnInvoke;
         global.server = originalServer;
+        global.wait = originalWait;
 
         // (9) If an exception was thrown, either in the test body, or in the afterEach() method,
         // rethrow it now so that this test will be marked as flaky.

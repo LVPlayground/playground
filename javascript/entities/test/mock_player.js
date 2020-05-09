@@ -2,270 +2,253 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import MockPlayerSyncedData from 'entities/test/mock_player_synced_data.js';
 import MockVehicle from 'entities/test/mock_vehicle.js';
-import PlayerSettings from 'entities/player_settings.js';
+import { Player } from 'entities/player.js';
+import { Vector } from 'base/vector.js';
 
 import { murmur3hash } from 'base/murmur3hash.js';
 
-// Mocked player. Has the same interface and abilities as a real Player object, except that it does
-// not rely on the SA-MP server to be available, nor communicates with Pawn.
-class MockPlayer {
-    constructor(playerId, event) {
-        this.id_ = playerId;
+// MockPlayer
+//
+// Implementation of the Player interface that specifically exists to enable running tests on the
+// server because the Player does not actually exist. No Pawn calls will be made. Additional
+// functionality has been added for testing purposes, to allow for modifications and inspection
+// that would otherwise be infeasible.
+export class MockPlayer extends Player {
+    #name_ = null;
+    #gpci_ = null;
+    #serial_ = null;
+    #packetLossPercentage_ = 0;
+    #ping_ = 30;
+    #ipAddress_ = null;
+    #isNpc_ = null;
 
-        this.name_ = event.name || 'Player' + playerId;
-        this.level_ = event.level || Player.LEVEL_PLAYER;
-        this.levelIsTemporary_ = false;
-        this.rconAdmin_ = false;
-        this.vip_ = false;
-        this.undercover_ = false;
-        this.gangId_ = null;
+    #isServerAdmin_ = false;
 
-        this.syncedData_ = new MockPlayerSyncedData(this.id_);
+    #position_ = new Vector(0, 0, 0);
+    #rotation_ = 0;
+    #interiorId_ = 0;
+    #virtualWorld_ = 0;
+    #velocity_ = new Vector(0, 0, 0);
 
-        this.nonPlayerCharacter_ = event.npc || false;
+    #color_ = Color.WHITE;
+    #health_ = 100.0;
+    #armour_ = 100.0;
+    #skin_ = 308;  // San Fierro Paramedic (EMT)
+    #specialAction_ = Player.kSpecialActionNone;
+    #state_ = Player.kStateOnFoot;
+    #isMinimized_ = false;
 
-        this.health_ = 100;
-        this.armour_ = 100;
+    #drunkLevel_ = 0;
+    #fightingStyle_ = Player.kFightingStyleNormal;
+    #score_ = 0;
+    #team_ = 255;  // NO_TEAM
+    #time_ = [0, 0];
+    #wantedLevel_ = 0;
 
-        this.interiorId_ = 0;
-        this.virtualWorld_ = 0;
-        this.userId_ = null;
-        this.ipAddress_ = event.ip || '127.0.0.1';
-        this.gpci_ = event.gpci || 'FAKELONGHASHOF40CHARACTERSHEH';
-        this.serial_ = murmur3hash(this.gpci_ || 'bot');
-        this.position_ = new Vector(0, 0, 0);
-        this.specialAction_ = Player.SPECIAL_ACTION_NONE;
+    #messages_ = [];
+    #lastDialogId_ = null;
+    #lastDialogTitle_ = null;
+    #lastDialogStyle_ = null;
+    #lastDialogLabel_ = null;
+    #lastDialogMessage_ = null;
+    #lastDialogPromise_ = null;
+    #lastDialogPromiseResolve_ = null;
 
-        this.packetLossPercent_ = 0;
-        this.ping_ = 30;
+    #streamUrl_ = null;
+    #soundId_ = null;
 
-        this.dialogPromiseResolve_ = null;
-        this.dialogPromise_ = new Promise(resolve => {
-            this.dialogPromiseResolve_ = resolve;
+    #isSurfingVehicle_ = false;
+
+    // To be removed:
+    #gangColor_ = null;
+    #streamerObjectsUpdated_ = false;
+
+    // Initializes the mock player with static information that generally will not change for the
+    // duration of the player's session. The |params| object is available.
+    initialize(params) {
+        this.#name_ = params.name || 'Player' + this.id;
+        this.#gpci_ = params.gpci || 'FAKELONGHASHOF40CHARACTERSHEH';
+        this.#serial_ = murmur3hash(this.#gpci_ || 'npc');
+        this.#ipAddress_ = params.ip || '127.0.0.1';
+        this.#isNpc_ = params.npc || false;
+
+        this.#lastDialogPromiseResolve_ = null;
+        this.#lastDialogPromise_ = new Promise(resolve => {
+            this.#lastDialogPromiseResolve_ = resolve;
         });
-
-        this.lastDialogId_ = null;
-        this.lastDialogTitle_ = null;
-        this.lastDialogStyle_ = null;
-        this.lastDialogLabel_ = null;
-        this.lastDialogMessage_ = null;
-
-        this.lastPlayedSound_ = null;
-
-        this.messages_ = [];
-
-        this.gangColor_ = null;
-        this.vehicleCollisionsEnabled_ = true;
-        this.removedObjectCount_ = 0;
-        this.messageLevel_ = 0;
-
-        this.streamerObjectsUpdated_ = false;
-
-        this.connected_ = true;
-        this.minimized_ = false;
-        this.disconnecting_ = false;
-
-        this.streamUrl_ = null;
-
-        this.vehicle_ = null;
-        this.vehicleSeat_ = null;
-
-        this.currentVehicleId_ = null;
-        this.currentVehicleSeat_ = 0;
-
-        this.cashMoney_ = 0;
-        
-        this.skinId = 1337;
-
-        this.playerSettings_ = new PlayerSettings();
     }
 
-    get id() { return this.id_; }
+    // ---------------------------------------------------------------------------------------------
+    // Section: Identity
+    // ---------------------------------------------------------------------------------------------
 
-    isConnected() { return this.connected_; }
+    get name() { return this.#name_; }
+    set name(value) { this.#name_ = value; }
 
-    // Returns whether the player is a non-player character.
-    isNonPlayerCharacter() { return this.nonPlayerCharacter_; }
-    setNonPlayerCharacter(value) { this.nonPlayerCharacter_ = value; }
+    get ip() { return this.#ipAddress_; }
 
-    isMinimized() { return this.minimized_; }
-    setMinimized(minimized) { this.minimized_ = minimized; }
+    get gpci() { return this.#gpci_; }
+  
+    get serial() { return this.#serial_; }
 
-    isDisconnecting() { return this.disconnecting_; }
+    get packetLossPercentage() { return this.#packetLossPercentage_; }
+    set packetLossPercentageForTesting(value) { this.#packetLossPercentage_ = value; }
 
-    notifyDisconnecting() {
-        this.disconnecting_ = true;
+    get ping() { return this.#ping_; }
+    set pingForTesting(value) { this.#ping_ = value; }
+
+    isServerAdmin() { return this.#isServerAdmin_; }
+    setServerAdminForTesting(value) { this.#isServerAdmin_ = value; }
+
+    isNonPlayerCharacter() { return this.#isNpc_; }
+
+    kick() { this.disconnectForTesting(/* reason= */ 2); }
+
+    setNameForGuestLogin(value) { this.#name_ = value; }
+
+    disconnectForTesting(reason = 0) {
+        dispatchEvent('playerdisconnect', {
+            playerid: this.id,
+            reason: reason
+        });
     }
 
-    notifyDisconnected() {
-        this.connected_ = false;
-        this.disconnecting_ = false;
-    }
+    // ---------------------------------------------------------------------------------------------
+    // Section: Physics
+    // ---------------------------------------------------------------------------------------------
 
-    get name() { return this.name_; }
-    set name(value) { this.name_ = value; }
-
-    get ip() { return this.ipAddress_; }
-
-    get gpci() { return this.gpci_; }
-
-    get serial() { return this.serial_; }
-
-    get level() { return this.level_; }
-    set level(value) { this.level_ = value; }
-
-    get levelIsTemporary() { return this.levelIsTemporary_; }
-    set levelIsTemporary(value) { this.levelIsTemporary_ = value; }
-
-    get syncedData() { return this.syncedData_; }
-
-    isAdministrator() {
-        return this.level_ == Player.LEVEL_ADMINISTRATOR ||
-               this.level_ == Player.LEVEL_MANAGEMENT;
-    }
-
-    isTemporaryAdministrator() {
-        return this.isAdministrator() && this.levelIsTemporary_;
-      }
-
-    isManagement() { return this.level_ == Player.LEVEL_MANAGEMENT; }
-
-    isUndercover() { return this.undercover_; }
-
-    isRconAdmin() { return this.rconAdmin_; }
-    setRconAdmin(value) { this.rconAdmin_ = value; }
-
-    isRegistered() { return this.userId_ != null; }
-
-    get userId() { return this.userId_; }
-
-    // Returns whether this player is a VIP member of Las Venturas Playground.
-    isVip() { return this.vip_; }
-
-    // Sets whether the player is a VIP member. Only exposed for testing purposes.
-    setVip(value) { this.vip_ = value; }
-
-    // Gets or sets the Id of the gang this player is part of.
-    get gangId() { return this.gangId_; }
-    set gangId(value) { this.gangId_ = value; }
-
-    // Gets or sets the Id of the skin for the player.
-    get skinId() { return this.skinId_; }
-    set skinId(value) { this.skinId_ = value; }
-
-    // Gets or sets the interior the player is part of. Moving them to the wrong interior will mess up
-  // their visual state significantly, as all world objects may disappear.
-    get interiorId() { return this.interiorId_; }
-    set interiorId(value) { this.interiorId_ = value; }
-
-    // Gets or sets the virtual world the player is part of.
-    get virtualWorld() { return this.virtualWorld_; }
-    set virtualWorld(value) {
-        if (this.syncedData_.isIsolated())
-          return;
-
-        this.virtualWorld_ = value;
-    }
-
-    // Gets or sets the position of this player.
-    get position() { return this.position_; }
+    get position() { return this.#position_; }
     set position(value) {
-        this.position_ = value;
+        this.#position_ = value;
 
-        // Fake a state change if the player is currently in a vehicle.
-        if (this.vehicle_ != null) {
-            server.playerManager.onPlayerStateChange({
-                playerid: this.id_,
-                oldstate: this.vehicleSeat_ === Vehicle.SEAT_DRIVER ? Player.STATE_DRIVER
-                                                                    : Player.STATE_PASSENGER,
-                newstate: Player.STATE_ON_FOOT
+        // Testing behaviour: using SetPlayerPos() while the player is in a vehicle will eject them
+        // from the vehicle. Emulate this behaviour by issuing a state change event.
+        if (this.vehicle !== null) {
+            dispatchEvent('playerstatechange', {
+                playerid: this.id,
+                oldstate: this.vehicleSeat == Vehicle.SEAT_DRIVER ? Player.kStateVehicleDriver
+                                                                  : Player.kStateVehiclePassenger,
+                newstate: Player.kStateOnFoot,
             });
+
+            this.vehicle_ = null;
+            this.vehicleSeat_ = null;
         }
 
-        // Fake pickup events if the player happened to have stepped in a pickup.
+        // Testing behaviour: players moving around will naturally cause them to be near pickups,
+        // which are events that aren't naturally generated in a test setup. Fake it.
         server.pickupManager.onPlayerPositionChanged(this);
     }
 
-    // Gets or sets the health of the player.
-    get health() { return this.health_ }
-    set health(value) { this.health_ = value; }
+    get rotation() { return this.#rotation_; }
+    set rotation(value) { this.#rotation_ = value; }
 
-    // Gets or sets the armour level of the player.
-    get armour() { return this.armour_; }
-    set armour(value) { this.armour_ = value; }
+    get velocity() { return this.#velocity_; }
+    set velocity(value) { this.#velocity_ = value; }
 
-    // Gets the vehicle the player is currently driving in. May be NULL.
-    get vehicle() { return this.vehicle_; }
+    get interiorId() { return this.#interiorId_; }
+    set interiorId(value) { this.#interiorId_ = value; }
 
-    // Gets the seat in the |vehicle| the player is currently sitting in. May be NULL when the player
-    // is not driving a vehicle. May be one of the Vehicle.SEAT_* constants.
-    get vehicleSeat() { return this.vehicleSeat_; }
+    get virtualWorld() { return this.#virtualWorld_; }
+    set virtualWorld(value) {
+        if (this.syncedData.isIsolated())
+            return;
 
-    // Returns the Id of the vehicle the player is currently driving in, or the ID of the seat in
-    // which the player is sitting whilst driving the vehicle. Should only be used by the manager.
-    findVehicleId() { return this.currentVehicleId_; }
-    findVehicleSeat() { return this.currentVehicleSeat_; }
-
-    // Makes the player enter the given |vehicle|, optionally in the given |seat|.
-    enterVehicle(vehicle, seat = 0 /* driver */) {
-        this.currentVehicleId_ = vehicle.id;
-        this.currentVehicleSeat_ = seat;
-
-        global.dispatchEvent('playerstatechange', {
-            playerid: this.id_,
-            oldstate: Player.STATE_ON_FOOT,
-            newstate: seat === 0 ? Player.STATE_DRIVER
-                                 : Player.STATE_PASSENGER
-        });
-
-        return true;
+        this.#virtualWorld_ = value;
     }
 
-    get packetLossPercent() { return this.packetLossPercent_; }
-    get ping() { return this.ping_; }
+    // ---------------------------------------------------------------------------------------------
+    // Section: State
+    // ---------------------------------------------------------------------------------------------
 
-    // Kicks the player from the server. The user of this function is responsible for making sure
-    // that the reason for the kick is properly recorded.
-    kick() { this.disconnect(2 /* reason */); }
+    get armour() { return this.#armour_; }
+    set armour(value) { this.#armour_ = value; }
 
-    // Gets or sets the special action the player is currently engaged in. The values must be one of
-    // the Player.SPECIAL_ACTION_* constants static to this class.
-    get specialAction() { return this.specialAction_; }
-    set specialAction(value) { this.specialAction_ = value; }
+    get color() { return this.#color_; }
+    set color(value) { this.#color_ = value; }
 
-    // Clears the animations applied to the player.
-    clearAnimations() {}
+    get controllable() { throw new Error('Unable to get whether the player is controllable.'); }
+    set controllable(value) { /* no need to mock write-only values */ }
 
-    // Gets or sets whether vehicle collisions should be enabled for this player.
-    get vehicleCollisionsEnabled() { return this.vehicleCollisionsEnabled_; }
-    set vehicleCollisionsEnabled(value) { this.vehicleCollisionsEnabled_ = value; }
+    get health() { return this.#health_; }
+    set health(value) { this.#health_ = value; }
 
-    // Fake implementation of the ShowPlayerDialog() native. Used to be able to mock responses to
-    // dialogs and make that entire sub-system testable as well.
+    get skin() { return this.#skin_; }
+    set skin(value) { this.#skin_ = value; }
+
+    get specialAction() { return this.#specialAction_; }
+    set specialAction(value) { this.#specialAction_ = value; }
+
+    get state() { return this.#state_; }
+
+    isMinimized() { return this.#isMinimized_; }
+    setMinimizedForTesting(value) { this.#isMinimized_ = value; }
+
+    respawn() {
+        let defaultPrevented = false;
+
+        // Testing behaviour: returns whether another part of Las Venturas Playground is handling
+        // the spawn, which is indicated by them preventing the event's default behaviour.
+        dispatchEvent('playerspawn', {
+            preventDefault: () => defaultPrevented = true,
+            playerid: this.id
+        });
+
+        return defaultPrevented;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: Environment
+    // ---------------------------------------------------------------------------------------------
+
+    get drunkLevel() { return this.#drunkLevel_; }
+    set drunkLevel(value) { this.#drunkLevel_ = value; }
+
+    get fightingStyle() { return this.#fightingStyle_; }
+    set fightingStyle(value) { this.#fightingStyle_ = value; }
+
+    get score() { return this.#score_; }
+    set score(value) { this.#score_ = value; }
+
+    get team() { return this.#team_; }
+    set team(value) { this.#team_ = value; }
+
+    get time() { return this.#time_; }
+    set time(value) { this.#time_ = value; }
+
+    get wantedLevel() { return this.#wantedLevel_; }
+    set wantedLevel(value) { this.#wantedLevel_ = value; }
+
+    get weather() { throw new Error('Unable to get the current weather for players.'); }
+    set weather(value) { /* no need to mock write-only values */ }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: Interaction
+    // ---------------------------------------------------------------------------------------------
+
     showDialog(dialogId, style, caption, message, leftButton, rightButton) {
-        this.lastDialogId_ = dialogId;
-        this.lastDialogTitle_ = caption;
-        this.lastDialogStyle_ = style;
-        this.lastDialogLabel_ = rightButton;
-        this.lastDialogMessage_ = message;
+        this.#lastDialogId_ = dialogId;
+        this.#lastDialogTitle_ = caption;
+        this.#lastDialogStyle_ = style;
+        this.#lastDialogLabel_ = rightButton;
+        this.#lastDialogMessage_ = message;
 
-        this.dialogPromiseResolve_();
+        this.#lastDialogPromiseResolve_();
     }
 
     // Gets the most recent message that has been displayed in a dialog to the player.
-    get lastDialog() { return this.lastDialogMessage_; }
-    get lastDialogTitle() { return this.lastDialogTitle_; }
-    get lastDialogStyle() { return this.lastDialogStyle_; }
-    get lastDialogLabel() { return this.lastDialogLabel_; }
+    get lastDialog() { return this.#lastDialogMessage_; }
+    get lastDialogTitle() { return this.#lastDialogTitle_; }
+    get lastDialogStyle() { return this.#lastDialogStyle_; }
+    get lastDialogLabel() { return this.#lastDialogLabel_; }
 
     // Advanced method to get the last dialog as a menu table.
     getLastDialogAsTable(hasColumns = true) {
-        if (!this.lastDialogMessage_)
+        if (!this.#lastDialogMessage_)
             throw new Error('No last message is available to output as a table.');
         
-        const lines = this.lastDialogMessage_.split('\n');
+        const lines = this.#lastDialogMessage_.split('\n');
         if (!hasColumns)
             return lines;
 
@@ -275,6 +258,15 @@ class MockPlayer {
         };
     }
 
+    // Clears the last dialog that has been shown to this player.
+    clearLastDialog() {
+        this.#lastDialogId_ = null;
+        this.#lastDialogTitle_ = null;
+        this.#lastDialogStyle_ = null;
+        this.#lastDialogLabel_ = null;
+        this.#lastDialogMessage_ = null;
+    }
+
     // Sends |message| to the player. It will be stored in the local messages array and can be
     // retrieved through the |messages| getter.
     sendMessage(message, ...args) {
@@ -282,111 +274,96 @@ class MockPlayer {
             message = Message.format(message, ...args);
 
         if (message.length <= 144) // SA-MP-implementation does not send longer messages
-            this.messages_.push(message.toString());
+            this.#messages_.push(message.toString());
     }
 
     // Clears the messages that have been sent to this player.
-    clearMessages() { this.messages_ = []; }
-
-    // Clears the last dialog that has been shown to this player.
-    clearLastDialog() {
-        this.lastDialogId_ = null;
-        this.lastDialogTitle_ = null;
-        this.lastDialogStyle_ = null;
-        this.lastDialogLabel_ = null;
-        this.lastDialogMessage_ = null;
-    }
+    clearMessages() { this.#messages_ = []; }
 
     // Gets the messages that have been sent to this player.
-    get messages() { return this.messages_; }
+    get messages() { return this.#messages_; }
 
-    // Sets whether the player should be in spectator mode. Disabling spectator mode will force them
-    // to respawn immediately after, which may be an unintended side-effect.
-    setSpectating(spectating) {}
+    // ---------------------------------------------------------------------------------------------
+    // Section: Audio
+    // ---------------------------------------------------------------------------------------------
 
-    // Gets the most recent shot vectors for the player.
-    getLastShotVectors() {
-        return {
-            source: new Vector(0, 0, 0),
-            target: new Vector(0, 0, 0),
-        };
-    }
+    playAudioStream(url) { this.#streamUrl_ = url; }
 
-    // Sets the player's camera to |position| and |target|, both of which must be vectors.
-    setCamera(position, target) {}
+    playSound(soundId) { this.#soundId_ = soundId; }
 
-    // Interpolates the player's camera from |positionFrom|, |targetFrom| to |positionTo|, |targetTo|,
-    // which must be vectors, in |duration| milliseconds.
+    stopAudioStream() { this.#streamUrl_ = null; }
+
+    get soundIdForTesting() { return this.#soundId_; }
+    get streamUrlForTesting() { return this.#streamUrl_; }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: Visual
+    // ---------------------------------------------------------------------------------------------
+
+    animate(options) {}
+
+    get animationIndex() { return 0; }
+
+    clearAnimations() {}
+
+    get cameraPosition() { return new Vector(0, 0, 0); }
+    get cameraFrontVector() { return new Vector(0, 0, 0); }
+
     interpolateCamera(positionFrom, positionTo, targetFrom, targetTo, duration) {}
 
-    // Resets the player camera to its default behaviour.
     resetCamera() {}
 
-    // Serializes the player's current state into a buffer.
+    setCamera(position, target) {}
+
+    setSpectating(value) {}
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: Vehicles
+    // ---------------------------------------------------------------------------------------------
+
+    get vehicleCollisionsEnabled() { throw new Error('Unable to read this setting.'); }
+    set vehicleCollisionsEnabled(value) { /* no need to mock write-only values */ }
+
+    enterVehicle(vehicle, seat = 0) {
+        this.vehicle = vehicle;
+        this.vehicleSeat = seat;
+
+        dispatchEvent('playerstatechange', {
+            playerid: this.id,
+            oldstate: Player.kStateOnFoot,
+            newstate: seat === 0 ? Player.kStateVehicleDriver
+                                 : Player.kStateVehiclePassenger
+        });
+    }
+
+    isSurfingVehicle() { return this.#isSurfingVehicle_; }
+    setSurfingVehicleForTesting(value) { this.#isSurfingVehicle_ = value; }
+
+    leaveVehicleWithAnimation() { this.leaveVehicle(); }
+
+    // ---------------------------------------------------------------------------------------------
+    // Stuff that needs a better home
+    // ---------------------------------------------------------------------------------------------
+
+    restoreState() {}
     serializeState() {}
 
-    // Restores the player's previous state from a buffer.
-    restoreState() {}
+    updateStreamerObjects() { this.#streamerObjectsUpdated_ = true; }
+    updateStreamer(position, virtualWorld, interiorId, type) {}
 
-    // Plays the audio stream at |streamUrl| for the player.
-    playAudioStream(streamUrl) { this.streamUrl_ = streamUrl; }
+    streamerObjectsUpdatedForTesting() { return this.#streamerObjectsUpdated_; }
 
-    // Stops the playback of any audio stream for the player.
-    stopAudioStream() { this.streamUrl_ = null; }
+    get gangColor() { return this.#gangColor_; }
+    set gangColor(value) { this.#gangColor_ = value; }
 
-    // For testing: gets the URL of the audio stream the player is currently listening to.
-    get streamUrl() { return this.streamUrl_; }
-
-    // Fake playing a sound for this player. Stores the soundId in |lastPlayedSound_|.
-    playSound(soundId) {
-        this.lastPlayedSound_ = soundId;
-    }
-
-    // Removes default game objects from the map of model |modelId| that are within |radius| units
-    // of the |position|. Should be called while the player is connecting to the server.
-    removeGameObject(modelId, position, radius) {
-        this.removedObjectCount_++;
-    }
-
-    // Gets the number of objects that have been removed from the map for this player.
-    get removedObjectCount() { return this.removedObjectCount_; }
-
-    // Gets the most recently played sound for this player.
-    get lastPlayedSound() { return this.lastPlayedSound_; }
-
-    // Gets or sets the message level at which this player would like to receive messages.
-    get messageLevel() { return this.messageLevel_; }
-    set messageLevel(value) { this.messageLevel_ = value; }
-
-    isSurfingVehicle() { return false; }
-
-    // Returns the vehicle the player is currently driving in, when the player is in a vehicle and
-    // the vehicle is owned by the JavaScript code.
-    currentVehicle() { return null; }
-
-    // Gets or sets the gang color of this player. May be NULL when no color has been defined.
-    get gangColor() { return this.gangColor_; }
-    set gangColor(value) { this.gangColor_ = value; }
-
-    // Gets the color applied to this player.
-    get color() { return Color.WHITE; }
-
-    // Respawns the player.
-    respawn() {
-        let defaultPrevented = false;
-
-        global.dispatchEvent('playerspawn', {
-            preventDefault: () => defaultPrevented = true,
-            playerid: this.id_
-        });
-
-        return defaultPrevented;
-    }
+    // ---------------------------------------------------------------------------------------------
+    // Instrumentation for testing purposes
+    // ---------------------------------------------------------------------------------------------
 
     // Identifies the player to a fake account. The options can be specified optionally.
     identify({ userId = 42, vip = 0, gangId = 0, undercover = 0 } = {}) {
         server.playerManager.onPlayerLogin({
-            playerid: this.id_,
+            playerid: this.id,
             userid: userId,
             vip: vip,
             gangid: gangId,
@@ -399,11 +376,10 @@ class MockPlayer {
     issueMessage(message) {
         let defaultPrevented = false;
 
-        // TODO(Russell): Should this talk directly to the CommunicationManager?
-        global.dispatchEvent('playertext', {
+        dispatchEvent('playertext', {
             preventDefault: () => defaultPrevented = true,
 
-            playerid: this.id_,
+            playerid: this.id,
             text: message
         });
 
@@ -418,7 +394,7 @@ class MockPlayer {
         await server.commandManager.onPlayerCommandText({
             preventDefault: () => defaultPrevented = true,
 
-            playerid: this.id_,
+            playerid: this.id,
             cmdtext: commandText
         });
 
@@ -428,40 +404,25 @@ class MockPlayer {
     // Responds to an upcoming dialog with the given values. The dialog Id that has been shown
     // for the player will be inserted automatically. Responses are forcefully asynchronous.
     respondToDialog({ response = 1 /* left button */, listitem = 0, inputtext = '' } = {}) {
-        return this.dialogPromise_.then(() => {
-            global.dispatchEvent('dialogresponse', {
-                playerid: this.id_,
-                dialogid: this.lastDialogId_,
+        return this.#lastDialogPromise_.then(() => {
+            dispatchEvent('dialogresponse', {
+                playerid: this.id,
+                dialogid: this.#lastDialogId_,
                 response: response,
                 listitem: listitem,
                 inputtext: inputtext
             });
 
-            return this.dialogPromise_ = new Promise(resolve => {
-                this.dialogPromiseResolve_ = resolve;
+            return this.#lastDialogPromise_ = new Promise(resolve => {
+                this.#lastDialogPromiseResolve_ = resolve;
             });
         });
     }
 
-    // Makes the player leave the vehicle they're currently in.
-    leaveVehicle() {
-        if (!this.vehicle_)
-            return false;
-
-        global.dispatchEvent('playerstatechange', {
-            playerid: this.id_,
-            oldstate: this.vehicleSeat_ === 0 ? Player.STATE_DRIVER
-                                              : Player.STATE_PASSENGER,
-            newstate: Player.STATE_ON_FOOT
-        });
-
-        return true;
-    }
-
     // Changes the player's state from |oldState| to |newState|.
     changeState({ oldState, newState } = {}) {
-        global.dispatchEvent('playerstatechange', {
-            playerid: this.id_,
+        dispatchEvent('playerstatechange', {
+            playerid: this.id,
             oldstate: oldState,
             newstate: newState
         });
@@ -469,10 +430,10 @@ class MockPlayer {
 
     // Triggers an event indicating that the player died.
     die(killerPlayer = null, reason = 0) {
-        global.dispatchEvent('playerdeath', {
-            playerid: this.id_,
+        dispatchEvent('playerdeath', {
+            playerid: this.id,
             killerid: killerPlayer ? killerPlayer.id
-                                   : Player.INVALID_ID,
+                                   : Player.kInvalidId,
             reason: reason
         });
     }
@@ -490,8 +451,8 @@ class MockPlayer {
 
         hitOffset = hitOffset || new Vector(5, 5, 2);
 
-        global.dispatchEvent('playerweaponshot', {
-            playerid: this.id_,
+        dispatchEvent('playerweaponshot', {
+            playerid: this.id,
             weaponid: weaponid,
             hittype: hitType,
             hitid: target ? target.id : -1,
@@ -505,17 +466,17 @@ class MockPlayer {
 
         let damage = damageAmount || Math.floor(Math.random() * 100) + 10;
 
-        global.dispatchEvent('playergivedamage', {
-            playerid: this.id_,
+        dispatchEvent('playergivedamage', {
+            playerid: this.id,
             damagedid: target.id,
             amount: damage,
             weaponid: weaponid,
             bodypart: bodypart
         });
 
-        global.dispatchEvent('playertakedamage', {
+        dispatchEvent('playertakedamage', {
             playerid: target.id,
-            issuerid: this.id_,
+            issuerid: this.id,
             amount: damage,
             weaponid: weaponid,
             bodypart: bodypart
@@ -525,34 +486,10 @@ class MockPlayer {
     // Makes this player press a particular key. The value of both |newkeys| and |oldkeys| can be
     // found on the SA-MP wiki: https://wiki.sa-mp.com/wiki/Keys
     keyPress(newkeys, oldkeys = 0) {
-        global.dispatchEvent('playerkeystatechange', {
-            playerid: this.id_,
+        dispatchEvent('playerkeystatechange', {
+            playerid: this.id,
             newkeys: newkeys,
             oldkeys: oldkeys
         });
     }
-
-    // Disconnects the player from the server. They will be removed from the PlayerManager too.
-    disconnect(reason = 0) {
-        server.playerManager.onPlayerDisconnect({
-            playerid: this.id_,
-            reason: reason
-        });
-    }
-
-    // Tells the test whether the player is in a vehicle
-    isInVehicle() {
-        return this.currentVehicle() != null;
-    }
-
-    updateStreamerObjects() { this.streamerObjectsUpdated_ = true; }
-
-    streamerObjectsUpdated() { return this.streamerObjectsUpdated_; }
-
-    get cashMoney() { return this.cashMoney_; }
-    giveCashMoney(amount) { this.cashMoney_ += amount;}
-
-    get settings() { return this.playerSettings_; }
 }
-
-export default MockPlayer;

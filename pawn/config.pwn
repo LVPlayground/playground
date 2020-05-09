@@ -14,8 +14,8 @@
  * @author Russell Krupke <russell@sa-mp.nl>
  */
 class Version {
-    public const Major = 42;
-    public const Minor = 3;
+    public const Major = 43;
+    public const Minor = 0;
 };
 
 /**

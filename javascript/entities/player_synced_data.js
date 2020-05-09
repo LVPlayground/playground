@@ -41,6 +41,9 @@ class PlayerSyncedData {
 
     // Synchronizes the value for |property| with Pawn.
     async sync(property, value) {
+        if (server.isTest())
+            return;  // nothing to sync when running a test
+
         await milliseconds(1);  // avoid call re-entrancy
         switch (property) {
             // Integral properties.

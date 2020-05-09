@@ -110,13 +110,15 @@ describe('Killtime', (it, beforeEach) => {
         gunther.clearMessages();
         assert.isTrue(gunther.issueCommand('/killtime stop'));
 
+        const finance = server.featureManager.loadFeature('finance');
+
         assert.equal(gunther.messages.length, 2);
         assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_ADMIN_STOPPED));
         assert.equal(gunther.messages[1],
             Message.format(Message.ANNOUNCE_ALL, Message.format(Message.KILLTIME_WINNER, gunther.name + ' with 2 kills', prizeMessage)));
-        assert.equal(gunther.cashMoney, prizeMoney);
-        assert.equal(russell.cashMoney, 0);
-        assert.equal(luce.cashMoney, 0);
+        assert.equal(finance.getPlayerCash(gunther), prizeMoney);
+        assert.equal(finance.getPlayerCash(russell), 0);
+        assert.equal(finance.getPlayerCash(luce), 0);
     });
 
     it('should show that the time is over without a winner', async(assert) => {
@@ -165,13 +167,15 @@ describe('Killtime', (it, beforeEach) => {
 
         await server.clock.advance(60 * 1000);
 
+        const finance = server.featureManager.loadFeature('finance');
+
         assert.equal(gunther.messages.length, 2);
         assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_AUTO_STOPPED));
         assert.equal(gunther.messages[1],
             Message.format(Message.ANNOUNCE_ALL, Message.format(Message.KILLTIME_WINNER, russell.name + ' with 3 kills', prizeMessage)));
-        assert.equal(gunther.cashMoney, 0);
-        assert.equal(russell.cashMoney, prizeMoney);
-        assert.equal(luce.cashMoney, 0);
+        assert.equal(finance.getPlayerCash(gunther), 0);
+        assert.equal(finance.getPlayerCash(russell), prizeMoney);
+        assert.equal(finance.getPlayerCash(luce), 0);
     });
 
     it('should register a kill 1 second before the minutely announceTopKiller', async(assert) => {

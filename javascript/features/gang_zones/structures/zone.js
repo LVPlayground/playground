@@ -4,7 +4,7 @@
 // @ts-check
 
 // The alpha channel value for each of the gang zones drawn on the map.
-const kGangZoneAlphaChannel = 0xAA;
+const kGangZoneAlphaChannel = 0x44;
 
 // Represents a gang zone live on the server. These must only be created by the ZoneCalculator, and
 // in tests when exact data is not desirable.

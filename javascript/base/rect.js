@@ -74,6 +74,12 @@ class Rect {
         return new Rect(this.minX_ + units[3], this.minY_ + units[2],
                         this.maxX_ - units[1], this.maxY_ - units[0]);
     }
+
+    // Returns whether the |other| rectangle overlaps with this one. (Touching is not enough.)
+    overlaps(other) {
+        return this.minX_ < other.maxX_ && this.maxX_ > other.minX_ &&
+               this.minY_ < other.maxY_ && this.maxY_ > other.minY;
+    }
 };
 
 global.Rect = Rect;

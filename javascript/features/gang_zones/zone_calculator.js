@@ -1,6 +1,10 @@
 // Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
+// @ts-check
+
+import { Vector } from 'base/vector.js';
+import { Zone } from 'features/gang_zones/structures/zone.js';
 
 import { getClustersForSanAndreas } from 'features/gang_zones/clustering.js';
 
@@ -8,10 +12,15 @@ import { getClustersForSanAndreas } from 'features/gang_zones/clustering.js';
 // which will be used to determine whether display of a zone is appropriate.
 export class ZoneCalculator {
     manager_ = null;
+    settings_ = null;
+
+    // Map of gangId (number) => Set of live Zone instances on the server.
+    zones_ = null;
 
     constructor(manager, settings) {
         this.manager_ = manager;
         this.settings_ = settings;
+        this.zones_ = new Map();
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -22,18 +31,46 @@ export class ZoneCalculator {
     // or more gang zones. This is also called when new active gangs are being introduced.
     onGangUpdated(zoneGang) {
         const areas = this.computeGangAreas(zoneGang);
-        if (areas.length) {
-            console.log(`${zoneGang.name} has ${areas.length} areas.`);
-            for (const { area } of areas) {
-                console.log(`- [${area.minX}, ${area.minY}, ${area.maxX}, ${area.maxY}]`)
+        if (!areas.length)
+            return;  // this gang does not have any areas
+        
+        let zones = this.zones_.get(zoneGang.id);
+        if (!zones)
+            this.zones_.set(zoneGang.id, zones = new Set());
+        
+        // Iterate over each of the |areas|. Try to match them against the existing zones, because
+        // it's possible that the mean of a zone moves around as members get added and deleted. This
+        // effectively is O(n^2), but because we limit the number of zones per gang to ~8 the actual
+        // number of calculations that we'd hit continued to be reasonable.
+        areas.forEach(info => {
+            for (const existingZone of zones) {
+                if (!existingZone.area.overlaps(info.area))
+                    continue;
+                
+                existingZone.update(info);
+
+                this.manager_.updateZone(existingZone);
+                return;
             }
-        }
+
+            const zone = new Zone(zoneGang, info);
+            zones.add(zone);
+
+            this.manager_.createZone(zone);
+        });
     }
 
     // Called when the |zoneGang| has been deactivated, and no longer deserves a gang zone because
     // one of the earlier requirements has failed.
     onGangDeactivated(zoneGang) {
-
+        const zones = this.zones_.get(zoneGang.id);
+        if (!zones)
+            return;  // the gang qualified for zones, but never actually had any
+        
+        for (const zone of zones)
+            this.manager_.deleteZone(zone);
+        
+        this.zones_.delete(zoneGang.id);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -59,7 +96,7 @@ export class ZoneCalculator {
         const kMaximumDistanceFromAreaMean = this.getSettingValue('zones_area_max_distance');
 
         for (const { mean } of clusters) {
-            const meanVector = new Vector(...mean);
+            const meanVector = new Vector(mean[0], mean[1], /* z= */ 0);
 
             let bounds = {
                 x: { min: Number.MAX_SAFE_INTEGER, max: Number.MIN_SAFE_INTEGER },
@@ -121,8 +158,8 @@ export class ZoneCalculator {
             // Store all relevant information of the area, as other parts of the system might want
             // to visualize and explain why a certain area has a certain size.
             areas.push({
-                memberCount: members.length,
-                houseCount: locations.length,
+                memberCount: members.size,
+                houseCount: locations.size,
                 representation: Math.round(representationFraction * 100),
                 enclosingArea,
                 paddedArea,
@@ -141,7 +178,5 @@ export class ZoneCalculator {
         return this.settings_().getValue('gangs/' + setting);
     }
 
-    dispose() {
-
-    }
+    dispose() {}
 }

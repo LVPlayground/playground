@@ -7,11 +7,20 @@ import { MockZoneDatabase } from 'features/gang_zones/test/mock_zone_database.js
 import Settings from 'features/settings/settings.js';
 import { ZoneCalculator } from 'features/gang_zones/zone_calculator.js';
 import { ZoneDataAggregator } from 'features/gang_zones/zone_data_aggregator.js';
-import { ZoneManager } from 'features/gang_zones/zone_manager.js';
 
 import createHousesTestEnvironment from 'features/houses/test/test_environment.js';
 
 describe('ZoneCalculator', (it, beforeEach, afterEach) => {
+    // Fake that implements the methods expected by the ZoneCalculator in the ZoneManager for the
+    // creation, updating and deletion of gang zones, that allows for introspection for testing.
+    class FakeZoneManager {
+        zones = new Set();
+
+        createZone(zone) { this.zones.add(zone); }
+        updateZone(zone) { /* no need, given that |zones| is a set */ }
+        deleteZone(zone) { this.zones.delete(zone); }
+    }
+
     /**
      * @type ZoneDataAggregator
      */
@@ -23,7 +32,7 @@ describe('ZoneCalculator', (it, beforeEach, afterEach) => {
     let calculator = null;
 
     /**
-     * @type ZoneManager
+     * @type FakeZoneManager
      */
     let manager = null;
 
@@ -37,7 +46,7 @@ describe('ZoneCalculator', (it, beforeEach, afterEach) => {
         
         settings = server.featureManager.loadFeature('settings');
 
-        manager = new ZoneManager();
+        manager = new FakeZoneManager();
         calculator = new ZoneCalculator(manager, () => settings);
 
         const database = new MockZoneDatabase();
@@ -50,10 +59,7 @@ describe('ZoneCalculator', (it, beforeEach, afterEach) => {
         await aggregator.initialize();
     });
 
-    afterEach(() => {
-        calculator.dispose();
-        manager.dispose();
-    });
+    afterEach(() => calculator.dispose());
 
     it('is able to limit the number of gang areas', async (assert) => {
         const zoneGangBA = aggregator.activeGangs.get(MockZoneDatabase.BA);
@@ -68,7 +74,7 @@ describe('ZoneCalculator', (it, beforeEach, afterEach) => {
         assert.equal(calculator.computeGangAreas(zoneGangBA).length, 3);
     });
 
-    it('is able to apply a member bonus factor to area calculations', async (assert) => {
+    it('is able to apply a member bonus factor to area calculations', assert => {
         const zoneGangBA = aggregator.activeGangs.get(MockZoneDatabase.BA);
         assert.isNotNull(zoneGangBA);
 
@@ -105,5 +111,46 @@ describe('ZoneCalculator', (it, beforeEach, afterEach) => {
         const regularAreas = calculator.computeGangAreas(zoneGangBA);
         assert.equal(regularAreas.length, 3);
         assert.equal(regularAreas.filter(info => info.bonuses.includes('member_bonus')).length, 0);
+    });
+
+    it('is able to tell the manager which zones should be created and deleted', assert => {
+        const zoneGangBA = aggregator.activeGangs.get(MockZoneDatabase.BA);
+        assert.isNotNull(zoneGangBA);
+
+        assert.equal(manager.zones.size, 0);
+
+        calculator.onGangUpdated(zoneGangBA);
+        assert.isAbove(manager.zones.size, 1);
+
+        calculator.onGangDeactivated(zoneGangBA);
+        assert.equal(manager.zones.size, 0);
+    });
+
+    it('is able to tell the manager which zones should be updated', assert => {
+        const zoneGangBA = aggregator.activeGangs.get(MockZoneDatabase.BA);
+        assert.isNotNull(zoneGangBA);
+
+        assert.equal(manager.zones.size, 0);
+
+        calculator.onGangUpdated(zoneGangBA);
+
+        const zoneCountWithPadding = manager.zones.size;
+        assert.isAbove(zoneCountWithPadding, 1);
+
+        let totalAreaWithPadding = 0;
+        for (const zone of manager.zones)
+            totalAreaWithPadding += zone.area.area;
+
+        // Remove the area padding, which will cause the zone's size to shrink.
+        settings.setValue('gangs/zones_area_padding_pct', 0);
+
+        calculator.onGangUpdated(zoneGangBA);
+        assert.equal(manager.zones.size, zoneCountWithPadding);
+
+        let totalAreaWithoutPadding = 0;
+        for (const zone of manager.zones)
+            totalAreaWithoutPadding += zone.area.area;
+
+        assert.isBelow(totalAreaWithoutPadding, totalAreaWithPadding);
     });
 });

@@ -34,4 +34,18 @@ describe('Rect', it => {
         assert.deepEqual(rect.shrink(10), new Rect(110, 90, 140, 110));
         assert.deepEqual(rect.shrink(20, 15), new Rect(120, 95, 130, 105));
     });
+
+    it('should be able to determine rectangular overlap', assert => {
+        const rect = new Rect(0, 0, 100, 100);
+
+        assert.isTrue(rect.overlaps(new Rect(-20, 40, 120, 60))); // vertical overlap
+        assert.isTrue(rect.overlaps(new Rect(40, -20, 60, 120))); // horizontal overlap
+        assert.isTrue(rect.overlaps(new Rect(-10, -10, 110, 110)));  // engulfs
+        assert.isTrue(rect.overlaps(new Rect(40, 40, 60, 60)));  // contains
+
+        assert.isFalse(rect.overlaps(new Rect(-10, -10, 0, 0)));  // touches
+        assert.isFalse(rect.overlaps(new Rect(100, 0, 200, 100)));  // adjacent
+
+        assert.isFalse(rect.overlaps(new Rect(600, 600, 700, 700)));  // somewhere else
+    });
 });

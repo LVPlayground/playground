@@ -302,8 +302,9 @@ class GangManager {
         if(gang.usesGangSkin(player) === usesGangSkin)
             return;
             
-        var setting = player.settings.settings.get(`${PlayerSetting.CATEGORY.GANG}/${PlayerSetting.GANG.USE_SKIN}`  );
-        console.log(setting);
+        var setting = player.settings.settings
+            .get(`${PlayerSetting.CATEGORY.GANG}/${PlayerSetting.GANG.USE_SKIN}`);
+            
         // Either delete or write the new |value| from or to the database.
         if (usesGangSkin === setting.defaultValue)
             await this.playerSettingsDatabase_.deleteSetting(setting, player.userId);
@@ -314,7 +315,7 @@ class GangManager {
 
         usesGangSkin && gang.skinId !== null && gang.skinId !== undefined ?
             this.setSkinInPawnCode(player.id, gang.skinId, true) :
-            this.setSkinInPawnCode(player.id, player.skinId, true);        
+            this.setSkinInPawnCode(player.id, player.skin, true);        
     }
 
     // Call the spawn manager to update player skin.

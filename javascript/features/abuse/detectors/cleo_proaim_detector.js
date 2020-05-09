@@ -63,7 +63,7 @@ export class CleoProAimDetector extends AbuseDetector {
             return;  // bullet sync is different when surfing on a vehicle
         
         const velocityMagnitude = player.velocity.magnitude;
-        const { source, target } = this.getPlayerLastShotVectors();
+        const { source, target } = this.getPlayerLastShotVectors(player);
 
         const victimPosition = hitPlayer.position;
 

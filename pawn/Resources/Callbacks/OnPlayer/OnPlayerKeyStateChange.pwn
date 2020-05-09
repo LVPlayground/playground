@@ -11,7 +11,7 @@
  * @param newkeys A map of the keys currently held.
  * @param oldkeys A map of the keys held prior to the current change.
  */
-public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
+LegacyPlayerKeyStateChange(playerid, newkeys, oldkeys) {
     if (Player(playerid)->isNonPlayerCharacter() == true)
         return 0;
 

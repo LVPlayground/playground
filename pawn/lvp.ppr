@@ -96,6 +96,7 @@
     <DiskObject>\Features\Account\ForcedGuestDialog.pwn</DiskObject>
     <DiskObject>\Features\Account\GpciLogger.pwn</DiskObject>
     <DiskObject>\Features\Account\LegacyAccountBridge.pwn</DiskObject>
+    <DiskObject>\Features\Account\MultipleSessionDialog.pwn</DiskObject>
     <DiskObject>\Features\Account\NicknameGenerator.pwn</DiskObject>
     <DiskObject>\Features\Account\UndercoverAdministrator.pwn</DiskObject>
     <DiskObject>\Features\Christmas.pwn</DiskObject>
@@ -360,7 +361,6 @@
     <DiskObject>\Resources\Minigames\Derby\Derby7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby9.pwn</DiskObject>
-    <DiskObject>\Features\Account\MultipleSessionDialog.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

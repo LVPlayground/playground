@@ -125,7 +125,22 @@ export class ZoneCalculator {
             if (representationFraction < kMinimumRepresentationInArea)
                 continue;
 
+            const kAreaMinimumEdgeLength = this.getSettingValue('zones_area_min_edge_length');
             const kAreaPaddingFactor = this.getSettingValue('zones_area_padding_pct') / 100;
+
+            // Make sure that both the width and height of the zone meet the minimum length setting,
+            // or extend out from the center when this is not the case.
+            if ((bounds.x.max - bounds.x.min) < kAreaMinimumEdgeLength) {
+                const extension = (kAreaMinimumEdgeLength - (bounds.x.max - bounds.x.min)) / 2;
+                bounds.x.min -= extension;
+                bounds.x.max += extension;
+            }
+
+            if ((bounds.y.max - bounds.y.min) < kAreaMinimumEdgeLength) {
+                const extension = (kAreaMinimumEdgeLength - (bounds.y.max - bounds.y.min)) / 2;
+                bounds.y.min -= extension;
+                bounds.y.max += extension;
+            }
 
             const bonuses = [];
             const enclosingArea = new Rect(bounds.x.min, bounds.y.min, bounds.x.max, bounds.y.max);

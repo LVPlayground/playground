@@ -48,5 +48,14 @@ which the gang members' houses are distributed.
 
 For each of those clusters, we then identify the houses that are within a hundred units from
 the cluster's mean, to ensure that the houses are truly close together. We then make sure that at
-least 60% of the gang's active members are represented in the area. If this is the case, the area
+least 50% of the gang's active members are represented in the area. If this is the case, the area
 surrounding the cluster will be considered a _gang area_.
+
+There are certain _area size bonuses_ available as well:
+
+  1. At least eight active gang members have a house in the area.
+
+### Appendix: future considerations
+
+  * `ZoneCalculator::computeGangAreas()` could consider different distance requirements depending on
+    the member representation factor in the area.

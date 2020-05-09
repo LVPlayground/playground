@@ -55,8 +55,9 @@ declare global {
 
     type TestCaseFunction = (assert: Assert) => any;
     type TestCaseDefinition = (description: string, testCase: TestCaseFunction) => void;
-    type TestSuiteFunction =
-        (it: TestCaseDefinition, beforeEach: TestCaseFunction, afterEach: TestCaseFunction) => void;
+    type TestSuiteFunction = (it: TestCaseDefinition,
+                              beforeEach: (fn: TestCaseFunction) => void,
+                              afterEach: (fn: TestCaseFunction) => void) => void;
 
     function describe(what: string, populateFn: TestSuiteFunction);
 }

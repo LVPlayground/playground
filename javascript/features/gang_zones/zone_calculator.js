@@ -4,20 +4,14 @@
 
 import { getClustersForSanAndreas } from 'features/gang_zones/clustering.js';
 
-// The maximum distance a house may be from the gang area's center in order to be part of it.
-const kMaximumDistance = 100;
-
-// The minimum fraction of active gang members that need to have a house in the gang area in order
-// for the area to be considered as a real gang area.
-const kMinimumActiveMemberFractionForArea = 0.5;
-
 // The zone calculator is notified whenever updated information of an active gang is available,
 // which will be used to determine whether display of a zone is appropriate.
 export class ZoneCalculator {
     manager_ = null;
 
-    constructor(manager) {
+    constructor(manager, settings) {
         this.manager_ = manager;
+        this.settings_ = settings;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -55,13 +49,19 @@ export class ZoneCalculator {
                 houseLocations.push([ location.position.x, location.position.y, location ]);
         }
 
-        const clusters = getClustersForSanAndreas(houseLocations, { maximumClusters: 8 });
         const areas = [];
+        const clusters = getClustersForSanAndreas(houseLocations, {
+            maximumClusters: this.getSettingValue('zones_cluster_limit'),
+        });
+
+        const kMinimumRepresentationInArea =
+            this.getSettingValue('zones_area_min_representation') / 100;
+        const kMaximumDistanceFromAreaMean = this.getSettingValue('zones_area_max_distance');
 
         for (const { mean } of clusters) {
             const meanVector = new Vector(...mean);
 
-            let area = {
+            let bounds = {
                 x: { min: Number.MAX_SAFE_INTEGER, max: Number.MIN_SAFE_INTEGER },
                 y: { min: Number.MAX_SAFE_INTEGER, max: Number.MIN_SAFE_INTEGER },
             };
@@ -69,30 +69,65 @@ export class ZoneCalculator {
             let locations = new Set();
             let members = new Set();
 
+            // Find all the locations that are close enough to the cluster's mean. We store both the
+            // location and the owning member to determine the representation factor.
             for (const [,, location] of houseLocations) {
-                // Note:
-                // Could we have different |kMaximumDistance| depending on the gang's representation
-                // faction in this area?
-                if (!location.position.closeTo(meanVector, kMaximumDistance))
+                if (!location.position.closeTo(meanVector, kMaximumDistanceFromAreaMean))
                     continue;
                 
                 locations.add(location);
                 members.add(location.settings.ownerId);
 
-                area.x.min = Math.min(area.x.min, location.position.x);
-                area.x.max = Math.max(area.x.max, location.position.x);
-                area.y.min = Math.min(area.y.min, location.position.y);
-                area.y.max = Math.max(area.y.max, location.position.y);
+                bounds.x.min = Math.min(bounds.x.min, location.position.x);
+                bounds.x.max = Math.max(bounds.x.max, location.position.x);
+                bounds.y.min = Math.min(bounds.y.min, location.position.y);
+                bounds.y.max = Math.max(bounds.y.max, location.position.y);
             }
 
             const representationFraction = members.size / zoneGang.members.size;
-            if (representationFraction < kMinimumActiveMemberFractionForArea)
+            if (representationFraction < kMinimumRepresentationInArea)
                 continue;
 
+            const kAreaPaddingFactor = this.getSettingValue('zones_area_padding_pct') / 100;
+
+            const bonuses = [];
+            const enclosingArea = new Rect(bounds.x.min, bounds.y.min, bounds.x.max, bounds.y.max);
+
+            // Apply the |kAreaPaddingFactor| to the enclosing area, because the entrance positions
+            // of the individual houses are not supposed to be entirely on the boundary.
+            const horizontalPadding = enclosingArea.width * kAreaPaddingFactor;
+            const verticalPadding = enclosingArea.height * kAreaPaddingFactor;
+            
+            const paddedArea = enclosingArea.extend(horizontalPadding, verticalPadding);
+            let area = paddedArea;
+
+            // Apply the area bonuses to the padded area. These have different requirements, and are
+            // documented properly in the README.md file.
+            let bonusFactor = 0;
+
+            // (1) Member bonus: increase when the area has a certain number of active members.
+            if (members.size >= this.getSettingValue('zones_area_bonus_members')) {
+                bonusFactor += this.getSettingValue('zones_area_bonus_members_pct') / 100;
+                bonuses.push('member_bonus');
+            }
+
+            if (bonusFactor > 0) {
+                const horizontalBonusPadding = paddedArea.width * bonusFactor;
+                const verticalBonusPadding = paddedArea.height * bonusFactor;
+
+                area = paddedArea.extend(horizontalBonusPadding, verticalBonusPadding);
+            }
+
+            // Store all relevant information of the area, as other parts of the system might want
+            // to visualize and explain why a certain area has a certain size.
             areas.push({
-                mean: meanVector,
-                area: new Rect(area.x.min, area.y.min, area.x.max, area.y.max),
-                locations: locations.size
+                memberCount: members.length,
+                houseCount: locations.length,
+                representation: Math.round(representationFraction * 100),
+                enclosingArea,
+                paddedArea,
+                bonuses,
+                area
             });
         }
 
@@ -100,6 +135,11 @@ export class ZoneCalculator {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    // Returns the value of the |setting| in the gangs/ namespace.
+    getSettingValue(setting) {
+        return this.settings_().getValue('gangs/' + setting);
+    }
 
     dispose() {
 

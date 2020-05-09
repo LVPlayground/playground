@@ -144,7 +144,7 @@ export class Player extends Supplementable {
         pawnInvoke('SetPlayerName', 'is', this.#id_, value);
         pawnInvoke('OnPlayerNameChange', 'i', this.#id_);
 
-        this.#name_ = value;    
+        this.#name_ = value;
     }
 
     get ip() { return this.#ipAddress_; }

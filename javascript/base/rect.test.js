@@ -48,4 +48,10 @@ describe('Rect', it => {
 
         assert.isFalse(rect.overlaps(new Rect(600, 600, 700, 700)));  // somewhere else
     });
+
+    it('should be able to convert a rectangle to a string', assert => {
+        const rect = new Rect(50, 50, 150, 170);
+
+        assert.equal(rect.toString(), 'x: 50, y: 50, width: 100, height: 120');
+    });
 });

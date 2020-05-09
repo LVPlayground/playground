@@ -80,6 +80,10 @@ class Rect {
         return this.minX_ < other.maxX_ && this.maxX_ > other.minX_ &&
                this.minY_ < other.maxY_ && this.maxY_ > other.minY;
     }
+
+    toString() {
+        return `x: ${this.minX_}, y: ${this.minY_}, width: ${this.width}, height: ${this.height}`;
+    }
 };
 
 global.Rect = Rect;

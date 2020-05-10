@@ -2,17 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import PlayerSettings from 'features/player_settings/player_settings.js';
-
 describe('PlayerSettingsManager', (it, beforeEach, afterEach) => {
     let manager = null;
     let playerSettings = null;
 
     beforeEach(() => {
-        server.featureManager.registerFeaturesForTests({
-            player_settings: PlayerSettings
-        });
-
         playerSettings = server.featureManager.loadFeature('player_settings');
 
         manager = playerSettings.manager_;

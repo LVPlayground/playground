@@ -67,11 +67,11 @@ class MockServer {
             finance: Finance,
             gangs: Gangs,
             nuwani: MockNuwani,
+            player_settings: PlayerSettings,
             playground: MockPlayground,
             radio: Radio,
             settings: Settings,
-            streamer: Streamer,
-            player_settings: PlayerSettings
+            streamer: Streamer
         });
 
         // Connect a series of fake players to the server.

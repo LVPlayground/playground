@@ -81,9 +81,12 @@ class PlayerManager {
     find({ nameOrId = null, returnPlayer = false } = {}) {
         // TODO(Russell): Implement this method properly.
 
-        const playerId = parseInt(nameOrId, 10 /* base */);
-        if (!Number.isNaN(playerId) && this.players_.has(playerId))
-            return this.players_.get(playerId);
+        if (/^\d+$/.test(nameOrId)) {
+            const playerId = parseInt(nameOrId, 10 /* base */);
+        
+            if (!Number.isNaN(playerId) && this.players_.has(playerId))
+                return this.players_.get(playerId);
+        }
 
         return this.getByName(nameOrId, true /* fuzzy */);
     }

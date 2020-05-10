@@ -176,6 +176,19 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
 
     // TODO(Russell): Properly test the find() method.
 
+    it('should do some sensible number verification in the find() function', assert => {
+        assert.equal(manager.count, 0);
+
+        manager.onPlayerConnect({ playerid: 42, name: 'Russell' });
+
+        assert.equal(manager.count, 1);
+
+        assert.isNull(manager.find({ nameOrId: '42.11.41.128' }));
+
+        assert.equal(manager.find({ nameOrId: '42' }).name, 'Russell');
+        assert.equal(manager.find({ nameOrId: 'Russell' }).id, 42);
+    });
+
     it('should know about the number of connected players', assert => {
         assert.equal(manager.count, 0);
 

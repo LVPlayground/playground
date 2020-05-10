@@ -18,11 +18,10 @@ const kDefaultPlayerRecordRecencyDays = 365;
 export class NuwaniCommands {
     commandManager_ = null;
 
-    constructor(commandManager, announce, BanDatabaseConstructor = BanDatabase) {
+    constructor(commandManager, announce, database) {
         this.commandManager_ = commandManager;
         this.announce_ = announce;
-
-        this.database_ = new BanDatabaseConstructor();
+        this.database_ = database;
 
         // !addnote [nickname] [note]
         this.commandManager_.buildCommand('addnote')

@@ -34,6 +34,7 @@ import Finance from 'features/finance/finance.js';
 import Gangs from 'features/gangs/gangs.js';
 import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
 import MockPlayground from 'features/playground/test/mock_playground.js';
+import Punishments from 'features/punishments/punishments.js';
 import Radio from 'features/radio/radio.js';
 import Settings from 'features/settings/settings.js';
 import Streamer from 'features/streamer/streamer.js';
@@ -75,6 +76,7 @@ class MockServer {
             gangs: Gangs,
             nuwani: MockNuwani,
             playground: MockPlayground,
+            punishments: Punishments,
             radio: Radio,
             settings: Settings,
             streamer: Streamer

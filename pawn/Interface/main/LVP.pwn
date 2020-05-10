@@ -31,6 +31,11 @@ ResetPlayerWeapons(playerId) {
     return ResetPlayerWeaponsREAL(playerId);
 }
 
+forward OnResetPlayerWeapons(playerId);
+public OnResetPlayerWeapons(playerId) {
+    ResetPlayerWeapons(playerId);
+}
+
 str_shift(string[], start) {
     new i;
     for (i = 0; i < start; i++) {

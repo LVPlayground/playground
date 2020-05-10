@@ -35,6 +35,7 @@ import Gangs from 'features/gangs/gangs.js';
 import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
 import MockPlayground from 'features/playground/test/mock_playground.js';
 import PlayerSettings from 'features/player_settings/player_settings.js';
+import PlayerWeapons from 'features/player_weapons/player_weapons.js';
 import Punishments from 'features/punishments/punishments.js';
 import Radio from 'features/radio/radio.js';
 import Settings from 'features/settings/settings.js';
@@ -77,6 +78,7 @@ class MockServer {
             gangs: Gangs,
             nuwani: MockNuwani,
             player_settings: PlayerSettings,
+            player_weapons: PlayerWeapons,
             playground: MockPlayground,
             punishments: Punishments,
             radio: Radio,

@@ -1020,7 +1020,7 @@ lvp_show(playerId, params[]) {
     
     else if (!strcmp(showParameter, "spraytag", true, 8)) {
         showInfo = true;
-        format(g_message, sizeof(g_message), "Want to Spawn vehicles like /tur, /inf, /vor, /nrg , /sul ? . Complete Spraying all the 100 Spraytags found across LV and have fun spawning vehicles!");
+        format(g_message, sizeof(g_message), "Spray all 100 tags found around Las Venturas, and get the ability to spawn your own vehicles!");
     }
     
     else if (!strcmp(showParameter, "interior", true, 8)) {

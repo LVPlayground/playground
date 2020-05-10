@@ -411,7 +411,9 @@ export class AccountCommands {
     // be paginated, and entries from the player's full history can be seen.
     async displayRecord(currentPlayer, targetPlayer) {
         const player = targetPlayer || currentPlayer;
-        const record = await this.database_.getPlayerRecord(player.userId);
+        const record = await this.database_.getPlayerRecord(player.userId, {
+            includeNotes: currentPlayer.isAdministrator(),
+        });
 
         if (!record.length) {
             return alert(currentPlayer, {

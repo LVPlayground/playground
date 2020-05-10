@@ -2,19 +2,24 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Supplement } from 'base/supplementable.js';
 import PlayerSetting from 'entities/player_setting.js';
-import SettingList from 'entities/player_setting_list.js';
 
+// Supplements the Player object with an `settings` accessor, giving other features access to the
+// persistent settings of the players. If player is not registered settings are not persistent.
+export class PlayerSettingsSupplement extends Supplement {
+    player_ = null;
+    manager_ = null;
 
-// Provides the ability to get and set settings for a player that should persist between server restarts. 
-// Values that have been changed from their defaults will be stored in the database.
-class PlayerSettings {
-    constructor() {
-        // Map of setting identifiers (as "category/subcategory/subcommand") to the corresponding Setting instance.
+    constructor(player, manager, initialValues) {
+        super();
+        this.player_ = player;
+        this.manager_ = manager;
+
         this.settings_ = new Map();
 
         // Import the settings from the |SettingList| in to the local state.
-        for (const setting of SettingList)
+        for (const setting of initialValues)
             this.settings_.set(setting.identifier, setting.clone());
     }
 
@@ -23,10 +28,19 @@ class PlayerSettings {
 
     // Gets the map of all settings with category set as announcement
     get announcementSettings() {
-        return new Map([...this.settings_].filter(([key, setting]) => setting.category == PlayerSetting.CATEGORY.ANNOUNCEMENT));
+        return new Map([...this.settings_]
+            .filter(([_, setting]) => setting.category == PlayerSetting.CATEGORY.ANNOUNCEMENT));
     }
 
-    // ---------------------------------------------------------------------------------------------
+    // Gets the setting currently assigned to the |identifier|. Will throw when the |identifier| is
+    // not known to the settings system, since we can't return anything sensible in that case.
+    getSetting(identifier) {
+        const setting = this.settings_.get(identifier);
+        if (!setting)
+            throw new Error('Invalid setting given: ' + identifier);
+
+        return setting;
+    }
 
     // Gets the value currently assigned to the |identifier|. Will throw when the |identifier| is
     // not known to the settings system, since we can't return anything sensible in that case.
@@ -40,7 +54,7 @@ class PlayerSettings {
 
     // Sets the value of the setting identified by |identifier| to |value|. Type checking will be
     // done to make sure that the updated value is valid for the setting.
-    setValue(identifier, value, userId) {
+    setValue(identifier, value) {
         const setting = this.settings_.get(identifier);
         if (!setting)
             throw new Error('Invalid setting given: ' + identifier);
@@ -58,8 +72,18 @@ class PlayerSettings {
         setting.value = value;
     }
 
-    // ---------------------------------------------------------------------------------------------
+    // Updates setting of the player. Will also update the database if the player is registered.
+    updateSetting(identifier, value) {
+        this.setValue(identifier, value);
 
+        if (this.player_.isRegistered()) {
+            return;
+        }
+
+        this.manager_.updateSettingsInDatabase(player, identifier, value);
+    }
+
+    // ---------------------------------------------------------------------------------------------
     dispose() {
         for (const setting of this.settings_.values())
             setting.value = setting.defaultValue;
@@ -68,5 +92,3 @@ class PlayerSettings {
         this.settings_ = null;
     }
 }
-
-export default PlayerSettings;

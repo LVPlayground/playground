@@ -434,24 +434,6 @@ Player.LEVEL_MANAGEMENT = 2;
 Player.PLAYER_ACTIVITY_NONE = 0;
 Player.PLAYER_ACTIVITY_JS_RACE = 1;
 
-// Called when a player's activity changes. This event is custom to Las Venturas Playground.
-self.addEventListener('playeractivitychange', event => {
-  const player = server.playerManager.getById(event.playerid);
-  if (!player)
-    return;
-
-  player.activityInternal = event.activity;
-});
-
-// Called when a player's message level changes. This event is custom to Las Venturas Playground.
-self.addEventListener('messagelevelchange', event => {
-  const player = server.playerManager.getById(event.playerid);
-  if (!player)
-    return;
-
-  player.messageLevel = event.messagelevel;
-});
-
 // Utility function: convert a player's level to a string.
 global.playerLevelToString = (level, plural = false) => {
   switch (level) {

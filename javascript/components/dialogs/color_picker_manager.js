@@ -8,7 +8,7 @@ const registry = new WeakMap();
 // Manages the color pickers, displayed through Pawn, that players may have requested from features
 // which are implemented in JavaScript. A central registry is required as multiple people may be
 // using the color pickers at the same time.
-class ColorPickerManager {
+export class ColorPickerManager {
     // Registers the |colorPicker| as being active for |player|.
     static register(player, colorPicker) {
         if (registry.has(player))
@@ -32,13 +32,3 @@ class ColorPickerManager {
         registry.delete(player);
     }
 }
-
-// Listens to `colorpickerresponse` events triggered by the Pawn code.
-global.addEventListener('colorpickerresponse', event => {
-    const player = server.playerManager.getById(event.playerid);
-    const color = event.color ? Color.fromNumberRGBA(event.color) : null /* dismissed */;
-
-    ColorPickerManager.sendResult(player, color);
-});
-
-export default ColorPickerManager;

@@ -17,6 +17,9 @@ class Announce extends Feature {
 
         // The announce feature reads out the settings to know wha to announce to IRC.
         const settings = this.defineDependency('settings');
+
+        // The announce feature reads the player.settings supplement.
+        this.defineDependency('player_settings');
         
         this.manager_ = new AnnounceManager(nuwani, settings);
     }

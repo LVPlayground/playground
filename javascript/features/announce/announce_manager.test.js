@@ -10,6 +10,7 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
     let nuwani = null;
 
     beforeEach(() => {
+        server.featureManager.loadFeature('player_settings');
         nuwani = server.featureManager.loadFeature('nuwani');
         const settings = server.featureManager.loadFeature('settings');
 

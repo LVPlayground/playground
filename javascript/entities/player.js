@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 import PlayerSyncedData from 'entities/player_synced_data.js';
-import PlayerSettings from 'entities/player_settings.js';
 import { Supplementable } from 'base/supplementable.js';
 
 import { murmur3hash } from 'base/murmur3hash.js';
@@ -90,7 +89,6 @@ export class Player extends Supplementable {
     #connectionState_ = null;
 
     // To be removed:
-    #playerSettings_ = null;
     #syncedData_ = null;
     #activity_ = 0;
     #gangId_ = null;
@@ -116,7 +114,6 @@ export class Player extends Supplementable {
         this.#level_ = Player.LEVEL_PLAYER;
         this.#connectionState_ = Player.kConnectionEstablished;
 
-        this.#playerSettings_ = new PlayerSettings();
         this.#syncedData_ = new PlayerSyncedData(id);
     }
 
@@ -371,8 +368,6 @@ export class Player extends Supplementable {
     // ---------------------------------------------------------------------------------------------
     // Stuff that needs a better home
     // ---------------------------------------------------------------------------------------------
-
-    get settings() { return this.#playerSettings_; }
     get syncedData() { return this.#syncedData_; }
 
     restoreState() { pawnInvoke('OnSerializePlayerState', 'iii', this.#id_, 0, -1); }

@@ -31,6 +31,7 @@ import Finance from 'features/finance/finance.js';
 import Gangs from 'features/gangs/gangs.js';
 import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
 import MockPlayground from 'features/playground/test/mock_playground.js';
+import PlayerSettings from 'features/player_settings/player_settings.js';
 import Radio from 'features/radio/radio.js';
 import Settings from 'features/settings/settings.js';
 import Streamer from 'features/streamer/streamer.js';
@@ -69,7 +70,8 @@ class MockServer {
             playground: MockPlayground,
             radio: Radio,
             settings: Settings,
-            streamer: Streamer
+            streamer: Streamer,
+            player_settings: PlayerSettings
         });
 
         // Connect a series of fake players to the server.

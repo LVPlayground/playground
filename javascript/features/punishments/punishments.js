@@ -37,7 +37,7 @@ export default class Punishments extends Feature {
                                          : new BanDatabase();
 
         // Provides the in-game commands related to punishing players.
-        this.commands_ = new PunishmentCommands(this.database_, settings);
+        this.commands_ = new PunishmentCommands(this.database_, this.announce_, settings);
 
         this.initializeNuwaniCommands();
     }

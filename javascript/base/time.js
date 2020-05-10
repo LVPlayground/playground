@@ -8,6 +8,36 @@ global.seconds = seconds => wait(seconds * 1000);
 global.minutes = minutes => wait(minutes * 60 * 1000);
 global.hours = hours => wait(hours * 60 * 60 * 1000);
 
+// Returns a formatted version of the given |date|. If |includeTime| is given, the time will be
+// included in the output as well.
+//
+//   January 9, 2020
+//   January 9, 2020 at 1:51 PM
+export function formatDate(date, includeTime = false) {
+    const kMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
+                        'September', 'October', 'November', 'December'];
+
+    if (Number.isNaN(date.getTime()))
+        return '[invalid date]';
+
+    let formattedDate = `${kMonths[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+    if (includeTime) {
+        let hour, suffix;
+        if (date.getHours() === 0)
+            [hour, suffix] = [12, 'AM'];
+        else if (date.getHours() < 12)
+            [hour, suffix] = [date.getHours(), 'AM'];
+        else if (date.getHours() === 12)
+            [hour, suffix] = [12, 'PM'];
+        else
+            [hour, suffix] = [date.getHours() - 12, 'PM'];
+
+        formattedDate += ` at ${hour}:${('0' + date.getMinutes()).substr(-2)} ${suffix}`
+    }
+
+    return formattedDate;
+}
+
 // Utility function for formatting "time since", e.g. a difference of 60 seconds ending up being a
 // string that says "1 minute ago". The |suffix| is optional, but included by default.
 export function fromNow({ date, suffix = true } = {}) {

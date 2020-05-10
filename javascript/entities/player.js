@@ -52,6 +52,11 @@ export class Player extends Supplementable {
     static kFightingStyleGrabKick = 15;
     static kFightingStyleElbow = 16;
 
+    // Constants applicable to the `Player.level` property.
+    static LEVEL_PLAYER = 0;
+    static LEVEL_ADMINISTRATOR = 1;
+    static LEVEL_MANAGEMENT = 2;
+
     // Constants applicable to the `Player.specialAction` property.
     static kSpecialActionNone = 0;
     static kSpecialActionCrouching = 1;  // read-only
@@ -423,11 +428,6 @@ export class Player extends Supplementable {
     isVip() { return this.#vip_; }
     setVip(value) { this.#vip_ = value; }
 };
-
-// The level of a player. Can be accessed using the `level` property on a Player instance.
-Player.LEVEL_PLAYER = 0;
-Player.LEVEL_ADMINISTRATOR = 1;
-Player.LEVEL_MANAGEMENT = 2;
 
 // DO NOT ADD NEW VALUES TO THIS ENUMERATION WITHOUT ALSO ADDING THEM TO PAWN.
 //     //pawn/Entities/Players/PlayerActivity.pwn

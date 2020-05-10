@@ -15,7 +15,7 @@
  */
 class Version {
     public const Major = 43;
-    public const Minor = 1;
+    public const Minor = 2;
 };
 
 /**
@@ -38,7 +38,7 @@ class Debug {
 };
 
 // Set this to 1 if you'd like to build Las Venturas Playground in release mode (lead devs only).
-#define BuildGamemodeInReleaseMode 1
+#define BuildGamemodeInReleaseMode 0
 
 // Try to include the private release configuration file. This are necessary to authenticate with
 // the MySQL database and distribute echo to the right location, among other things.

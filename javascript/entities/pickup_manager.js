@@ -147,6 +147,7 @@ class PickupManager {
 
     // Removes all existing pickups from the server.
     dispose() {
+        this.callbacks_.dispose();
         this.pickups_.forEach(pickup => pickup.dispose());
 
         if (this.pickups_.size != 0)

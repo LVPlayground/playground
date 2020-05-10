@@ -13,11 +13,11 @@ stock IsModelRemoteControlVehicle(modelId) {
 }
 
 // Ejects the given |playerId| from the vehicle they're currently in.
-stock EjectPlayerFromVehicle(playerId) {
+stock EjectPlayerFromVehicle(playerId, Float: offsetZ = 0.5) {
     new Float: position[3];
 
     GetPlayerPos(playerId, position[0], position[1], position[2]);
-    SetPlayerPos(playerId, position[0], position[1], position[2]);
+    SetPlayerPos(playerId, position[0], position[1], position[2] + offsetZ);
 }
 
 public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
@@ -25,9 +25,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
     // avoids having to listen to the `playerkeystatechange` event in JavaScript.
     if (PRESSED(KEY_SECONDARY_ATTACK)) {
         new const currentVehicle = GetPlayerVehicleID(playerid);
-
         // Allow the player to leave the vehicle if they're currently in one.
-        if (currentVehicle != INVALID_VEHICLE_ID) {
+        if (currentVehicle > 0 && currentVehicle != INVALID_VEHICLE_ID) {
             new const currentVehicleModel = GetVehicleModel(currentVehicle);
             if (IsModelRemoteControlVehicle(currentVehicleModel))
                 EjectPlayerFromVehicle(playerid);

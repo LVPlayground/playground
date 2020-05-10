@@ -39,7 +39,7 @@ testRunner.run('.*\.test\.js').then(time => {
         'nuwani',
 
         // Low level features, which may only depend on each other and foundational features.
-        'abuse', 'announce', 'communication', 'economy', 'finance', 'location', 'logger', 'minigames',
+        'abuse', 'announce', 'communication', 'economy', 'finance', 'location', 'minigames',
         'settings', 'streamer',
 
         // Gang-related features

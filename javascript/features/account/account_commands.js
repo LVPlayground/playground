@@ -9,6 +9,7 @@ import Question from 'components/dialogs/question.js';
 
 import alert from 'components/dialogs/alert.js';
 import confirm from 'components/dialogs/confirm.js';
+import { formatDate } from 'base/time.js';
 
 // Provides access to in-game commands related to account management. Access to the individual
 // abilities is gated through the Playground feature, which manages command access.
@@ -271,7 +272,7 @@ export class AccountCommands {
 
         for (const alias of aliases.aliases) {
             const nickname = alias.nickname;
-            const lastActive = alias.lastSeen ? this.formatDate(alias.lastSeen) : '{BEC7CC}(never)';
+            const lastActive = alias.lastSeen ? formatDate(alias.lastSeen) : '{BEC7CC}(never)';
 
             dialog.addItem(
                 nickname, lastActive,
@@ -411,7 +412,9 @@ export class AccountCommands {
     // be paginated, and entries from the player's full history can be seen.
     async displayRecord(currentPlayer, targetPlayer) {
         const player = targetPlayer || currentPlayer;
-        const record = await this.database_.getPlayerRecord(player.userId);
+        const record = await this.database_.getPlayerRecord(player.userId, {
+            includeNotes: currentPlayer.isAdministrator(),
+        });
 
         if (!record.length) {
             return alert(currentPlayer, {
@@ -431,7 +434,7 @@ export class AccountCommands {
         for (const entry of record) {
             const type = entry.type[0].toUpperCase() + entry.type.slice(1);
 
-            display.addItem(this.formatDate(entry.date), type, entry.issuedBy, entry.reason);
+            display.addItem(formatDate(entry.date), type, entry.issuedBy, entry.reason);
         }
 
         await display.displayForPlayer(currentPlayer);
@@ -461,43 +464,13 @@ export class AccountCommands {
         ], { pageSize: this.getSettingValue('session_page_count') });
 
         for (const session of sessions) {
-            const date = this.formatDate(session.date, true);
+            const date = formatDate(session.date, true);
             const duration = this.formatDuration(session.duration);
 
             display.addItem(date, session.nickname, duration, session.ip);
         }
 
         await display.displayForPlayer(currentPlayer);
-    }
-
-    // Returns a formatted version of the given |date|. If |includeTime| is given, the time will be
-    // included in the output as well.
-    //
-    //   January 9, 2020
-    //   January 9, 2020 at 1:51 PM
-    formatDate(date, includeTime = false) {
-        const kMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
-                         'September', 'October', 'November', 'December'];
-
-        if (Number.isNaN(date.getTime()))
-            return '[invalid date]';
-
-        let formattedDate = `${kMonths[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
-        if (includeTime) {
-            let hour, suffix;
-            if (date.getHours() === 0)
-                [hour, suffix] = [12, 'AM'];
-            else if (date.getHours() < 12)
-                [hour, suffix] = [date.getHours(), 'AM'];
-            else if (date.getHours() === 12)
-                [hour, suffix] = [12, 'PM'];
-            else
-                [hour, suffix] = [date.getHours() - 12, 'PM'];
-
-            formattedDate += ` at ${hour}:${('0' + date.getMinutes()).substr(-2)} ${suffix}`
-        }
-
-        return formattedDate;
     }
 
     // Returns a formatted version of the duration, which is assumed to be no longer than ~hours.

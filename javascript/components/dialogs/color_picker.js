@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import ColorPickerManager from 'components/dialogs/color_picker_manager.js';
+import { ColorPickerManager } from 'components/dialogs/color_picker_manager.js';
 
 // Private symbol ensuring that the ColorPicker constructor won't be used.
 const PrivateSymbol = Symbol('Please use the static methods.');

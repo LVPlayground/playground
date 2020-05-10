@@ -2,11 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import CheckpointManager from 'components/checkpoints/checkpoint_manager.js';
-
-// Create an instance of the manager for race checkpoints.
-let manager = new CheckpointManager(CheckpointManager.RACE_CHECKPOINTS);
-
 // The race checkpoint class encapsulates information about a checkpoint of the race type. Only a
 // single checkpoint can be displayed to a player at any given time.
 class RaceCheckpoint {
@@ -32,13 +27,13 @@ class RaceCheckpoint {
   // Displays the checkpoint for |player|. Returns a promise that will be resolved when the player
   // enters the checkpoint, or rejected when the player disconnects from the server.
   displayForPlayer(player) {
-    return manager.displayForPlayer(player, this);
+    return server.raceCheckpointManager.displayForPlayer(player, this);
   }
 
   // Hides the checkpoint for |player|. The promise resolved by the displayForPlayer() method will
   // be rejected, as the player has not entered the checkpoint.
   hideForPlayer(player) {
-    manager.hideForPlayer(player, this);
+    server.raceCheckpointManager.hideForPlayer(player, this);
   }
 };
 

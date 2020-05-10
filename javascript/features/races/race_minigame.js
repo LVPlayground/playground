@@ -19,7 +19,7 @@ const UpdateTickerInterval = 147;
 // This class represents an on-going race minigame. The race defines the maximum number of players,
 // and the lifetime of the minigame will be controlled by the minigame manager.
 class RaceMinigame extends Minigame {
-    constructor(race, database, logger) {
+    constructor(race, database) {
         console.log('[Race] Race "' + race.name + '" has been created.');
 
         super({
@@ -32,7 +32,6 @@ class RaceMinigame extends Minigame {
 
         this.race_ = race;
         this.database_ = database;
-        this.logger_ = logger;
 
         // Update counter for resetting vehicle damages if vehicles should have godmode.
         this.resetVehicleDamageCounter_ = 0;
@@ -233,8 +232,6 @@ class RaceMinigame extends Minigame {
             const passedCheckpointTime = highResolutionTime() - this.startTime_;
 
             playerData.recordTime(passedCheckpointIndex, passedCheckpointTime);
-            this.logger_().recordRaceCheckpointResult(
-                player, this.race_.id, passedCheckpointIndex, passedCheckpointTime);
         }
 
         // Check whether the |player| has passed the final checkpoint.
@@ -243,10 +240,6 @@ class RaceMinigame extends Minigame {
 
             FinishedMessage.displayForPlayer(player).then(() =>
                 this.removePlayer(player, Minigame.REASON_FINISHED));
-
-            this.logger_().recordRaceResult(
-                player, this.race_.id, highResolutionTime() - this.startTime_)
-
             return;
         }
 

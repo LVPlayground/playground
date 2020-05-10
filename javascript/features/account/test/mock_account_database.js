@@ -67,7 +67,7 @@ export class MockAccountDatabase extends AccountDatabase {
     }
 
     // Overridden.
-    async _getPlayerRecordQuery(userId) {
+    async _getPlayerRecordQuery(userId, { includeNotes }) {
         if (userId != 1337)
             return [];
 

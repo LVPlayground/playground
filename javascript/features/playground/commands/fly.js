@@ -203,6 +203,7 @@ class FlyCommand extends Command {
 
     dispose() {
         this.callbacks_.dispose();
+        this.callbacks_ = null;
     }
 }
 

@@ -529,20 +529,6 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         ]);
     });
 
-    it('is able to format dates for display', async (assert) => {
-        assert.equal(commands.formatDate(new Date('xxx')), '[invalid date]');
-        assert.equal(commands.formatDate(new Date('2020-05-01 14:12:15')), 'May 1, 2020');
-        assert.equal(commands.formatDate(new Date('2020-01-11 10:01:12')), 'January 11, 2020');
-        assert.equal(commands.formatDate(new Date('2019-12-30 22:15:11')), 'December 30, 2019');
-
-        assert.equal(commands.formatDate(new Date('2020-05-01 14:12:15'), true),
-                     'May 1, 2020 at 2:12 PM');
-        assert.equal(commands.formatDate(new Date('2020-01-11 10:01:12'), true),
-                     'January 11, 2020 at 10:01 AM');
-        assert.equal(commands.formatDate(new Date('2019-12-30 22:15:11'), true),
-                     'December 30, 2019 at 10:15 PM');
-    });
-
     it('is able to format duration', async (assert) => {
         assert.equal(commands.formatDuration(0), '0:00:00');
         assert.equal(commands.formatDuration(1), '0:00:01');

@@ -76,7 +76,7 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
             PlayerSetting.ANNOUNCEMENT.HOUSES,  PlayerSetting.SUBCOMMAND.HOUSES_SELL);
 
         assert.equal(gunther.messages.length, 0);
-        assert.equal(nuwani.messagesForTesting.length, 0);
+        assert.equal(nuwani.messagesForTesting.length, 1);
     });
     
     
@@ -89,7 +89,7 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
             PlayerSetting.ANNOUNCEMENT.HOUSES,  PlayerSetting.SUBCOMMAND.HOUSES_SELL);
 
         assert.equal(gunther.messages.length, 0);
-        assert.equal(nuwani.messagesForTesting.length, 0);
+        assert.equal(nuwani.messagesForTesting.length, 1);
     });
     
     it('should not announce to nuwani if it is not enabled', assert => {
@@ -104,7 +104,7 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
         announceManager.announceToAdministratorsWithFilter('Hey guys!!11!!!1!!!', 
             PlayerSetting.ANNOUNCEMENT.UNCATEGORIZED, PlayerSetting.SUBCOMMAND.GENERAL);
 
-        assert.equal(nuwani.messagesForTesting.length, 0);
+        assert.equal(nuwani.messagesForTesting.length, 1);
     });
 
     it('should distribute messages to players', assert => {

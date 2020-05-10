@@ -21,6 +21,8 @@ describe('Isolate', (it, beforeEach, afterEach) => {
         russell.level = Player.LEVEL_MANAGEMENT;
     });
 
+    afterEach(() => commands.dispose());
+
     it('should be able to isolate players', async assert => {
         gunther.virtualWorld = 10;
         assert.isFalse(gunther.syncedData.isIsolated());

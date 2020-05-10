@@ -9,9 +9,8 @@ import RaceMinigame from 'features/races/race_minigame.js';
 // The race manager is in charge of meditating between the race database, the commands and the
 // minigame feature that will drive the actual races.
 class RaceManager {
-    constructor(database, minigames, logger) {
+    constructor(database, minigames) {
         this.database_ = new RaceDatabase(database);
-        this.logger_ = logger;
 
         this.minigameCategory_ = minigames().createCategory('races');
         this.minigames_ = minigames;
@@ -102,7 +101,7 @@ class RaceManager {
             return;
         }
 
-        const raceMinigame = new RaceMinigame(race, this.database_, this.logger_);
+        const raceMinigame = new RaceMinigame(race, this.database_);
 
         // Alternatively we create a new race that the player will be invited to join in to.
         this.minigames_().createMinigame(this.minigameCategory_, raceMinigame, player);

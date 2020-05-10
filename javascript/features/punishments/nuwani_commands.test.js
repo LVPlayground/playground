@@ -3,8 +3,6 @@
 // be found in the LICENSE file.
 
 import { BanDatabase } from 'features/punishments/ban_database.js';
-import { MockBanDatabase } from 'features/punishments/test/mock_ban_database.js';
-import { NuwaniCommands } from 'features/punishments/nuwani_commands.js';
 import { TestBot } from 'features/nuwani/test/test_bot.js';
 
 import { ip2long } from 'features/nuwani_commands/ip_utilities.js';
@@ -23,13 +21,13 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
     let lucy = null;
 
     beforeEach(() => {
-        const announce = server.featureManager.loadFeature('announce');
+        const feature = server.featureManager.loadFeature('punishments');
         const nuwani = server.featureManager.loadFeature('nuwani');
 
         bot = new TestBot();
         commandManager = nuwani.commandManager;
-        commands = new NuwaniCommands(nuwani.commandManager, () => announce, MockBanDatabase);
-        database = commands.database_;
+        commands = feature.nuwaniCommands_;
+        database = feature.database_;
 
         gunther = server.playerManager.getById(/* Gunther= */ 0);
         gunther.level = Player.LEVEL_ADMINISTRATOR;
@@ -39,10 +37,7 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         lucy.identify();
     });
 
-    afterEach(() => {
-        commands.dispose();
-        bot.dispose();
-    });
+    afterEach(() => bot.dispose());
 
     // Utility function for validating that the ban duration has a sensible length.
     async function assertDurationConstraints(assert, commandBase) {

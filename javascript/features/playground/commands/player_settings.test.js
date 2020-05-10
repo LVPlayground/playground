@@ -5,13 +5,15 @@
 import PlayerSetting from 'entities/player_setting.js';
 import MockPlaygroundCommands from 'features/playground/test/mock_playground_commands.js';
 
-describe('PlayerSettingsCommands', (it, beforeEach) => {
+describe('PlayerSettingsCommands', (it, beforeEach, afterEach) => {
     let commands = null;
 
     beforeEach(async (assert) => {
         commands = new MockPlaygroundCommands();
         await commands.loadCommands();
     });
+
+    afterEach(() => commands.dispose());
 
     it('should not let players use the playersettings command', async (assert) => {
         const gunther = server.playerManager.getById(0);

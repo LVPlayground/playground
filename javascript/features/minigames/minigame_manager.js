@@ -273,6 +273,7 @@ class MinigameManager {
 
     dispose() {
         this.callbacks_.dispose();
+        this.callbacks_ = null;
 
         server.vehicleManager.removeObserver(this);
         server.playerManager.removeObserver(this);

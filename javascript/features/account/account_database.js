@@ -109,7 +109,7 @@ const PLAYER_LOG_ENTRIES_QUERY = `
         users ON users.user_id = logs.user_id
     WHERE
         subject_user_id = ? AND
-        log_type != 'note'
+        (? = 1 OR log_type != 'note')
     ORDER BY
         log_date DESC`;
 
@@ -271,8 +271,8 @@ export class AccountDatabase {
 
     // Gets the player record for the given |userId|. All entries returned from this function are
     // safe to be shared with the player directly.
-    async getPlayerRecord(userId) {
-        const results = await this._getPlayerRecordQuery(userId);
+    async getPlayerRecord(userId, { includeNotes = false } = {}) {
+        const results = await this._getPlayerRecordQuery(userId, { includeNotes });
         const record = [];
 
         for (const row of results) {
@@ -289,8 +289,9 @@ export class AccountDatabase {
     }
 
     // Actually executes the MySQL query for getting entries out of a player's log.
-    async _getPlayerRecordQuery(userId) {
-        const results = await server.database.query(PLAYER_LOG_ENTRIES_QUERY, userId);
+    async _getPlayerRecordQuery(userId, { includeNotes }) {
+        const results =
+            await server.database.query(PLAYER_LOG_ENTRIES_QUERY, userId, includeNotes ? 1 : 0);
         return results ? results.rows : [];
     }
 

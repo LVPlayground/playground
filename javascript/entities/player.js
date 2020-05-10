@@ -51,6 +51,11 @@ export class Player extends Supplementable {
     static kFightingStyleGrabKick = 15;
     static kFightingStyleElbow = 16;
 
+    // Constants applicable to the `Player.level` property.
+    static LEVEL_PLAYER = 0;
+    static LEVEL_ADMINISTRATOR = 1;
+    static LEVEL_MANAGEMENT = 2;
+
     // Constants applicable to the `Player.specialAction` property.
     static kSpecialActionNone = 0;
     static kSpecialActionCrouching = 1;  // read-only
@@ -419,33 +424,10 @@ export class Player extends Supplementable {
     setVip(value) { this.#vip_ = value; }
 };
 
-// The level of a player. Can be accessed using the `level` property on a Player instance.
-Player.LEVEL_PLAYER = 0;
-Player.LEVEL_ADMINISTRATOR = 1;
-Player.LEVEL_MANAGEMENT = 2;
-
 // DO NOT ADD NEW VALUES TO THIS ENUMERATION WITHOUT ALSO ADDING THEM TO PAWN.
 //     //pawn/Entities/Players/PlayerActivity.pwn
 Player.PLAYER_ACTIVITY_NONE = 0;
 Player.PLAYER_ACTIVITY_JS_RACE = 1;
-
-// Called when a player's activity changes. This event is custom to Las Venturas Playground.
-self.addEventListener('playeractivitychange', event => {
-  const player = server.playerManager.getById(event.playerid);
-  if (!player)
-    return;
-
-  player.activityInternal = event.activity;
-});
-
-// Called when a player's message level changes. This event is custom to Las Venturas Playground.
-self.addEventListener('messagelevelchange', event => {
-  const player = server.playerManager.getById(event.playerid);
-  if (!player)
-    return;
-
-  player.messageLevel = event.messagelevel;
-});
 
 // Utility function: convert a player's level to a string.
 global.playerLevelToString = (level, plural = false) => {

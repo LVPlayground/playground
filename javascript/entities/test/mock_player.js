@@ -482,14 +482,4 @@ export class MockPlayer extends Player {
             bodypart: bodypart
         });
     }
-
-    // Makes this player press a particular key. The value of both |newkeys| and |oldkeys| can be
-    // found on the SA-MP wiki: https://wiki.sa-mp.com/wiki/Keys
-    keyPress(newkeys, oldkeys = 0) {
-        dispatchEvent('playerkeystatechange', {
-            playerid: this.id,
-            newkeys: newkeys,
-            oldkeys: oldkeys
-        });
-    }
 }

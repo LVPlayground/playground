@@ -227,6 +227,8 @@
 
 #include "Interface/JavaScriptBridge.pwn"
 
+#include "Driver/Driver.pwn"
+
 main() {
     /// @todo Move these calls elsewhere. We do need them, though :/
     CompilerDebug->beforePublicFunction('m', 'a', 'i', 'n');

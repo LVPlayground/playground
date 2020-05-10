@@ -34,6 +34,6 @@ export class FinancialDatabase {
 
     // Writes the current account balance owned by the |player| to be |amount|.
     async setPlayerAccountBalance(player, amount) {
-        await server.database.query(SET_PLAYER_BALANCE_QUERY, player.userId, amount);
+        await server.database.query(SET_PLAYER_BALANCE_QUERY, amount, player.userId);
     }
 }

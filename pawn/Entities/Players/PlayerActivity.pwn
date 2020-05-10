@@ -11,6 +11,7 @@
 enum PlayerActivityType {
     PlayerActivityNone = 0,
     PlayerActivityJsRace = 1,
+    PlayerActivityDmZone = 2
 
     // Please update GetPlayerMinigameName() when adding new JavaScript values to this enumeration.
 };

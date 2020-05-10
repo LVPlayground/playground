@@ -433,6 +433,8 @@ Player.LEVEL_MANAGEMENT = 2;
 //     //pawn/Entities/Players/PlayerActivity.pwn
 Player.PLAYER_ACTIVITY_NONE = 0;
 Player.PLAYER_ACTIVITY_JS_RACE = 1;
+Player.PLAYER_ACTIVITY_JS_DM_ZONE = 2;
+
 
 // Called when a player's activity changes. This event is custom to Las Venturas Playground.
 self.addEventListener('playeractivitychange', event => {

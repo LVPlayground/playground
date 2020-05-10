@@ -95,6 +95,8 @@ GetPlayerMinigameName(playerId) {
         switch (PlayerActivity(playerId)->get()) {
             case PlayerActivityJsRace:
                 format(notice, sizeof(notice), "Racing");
+            case PlayerActivityDmZone:
+                format(notice, sizeof(notice), "Death Matching");            
             default:
                 format(notice, sizeof(notice), "Unknown");
         }

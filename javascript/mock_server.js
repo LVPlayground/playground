@@ -93,6 +93,12 @@ class MockServer {
         ].forEach(event => this.playerManager_.onPlayerConnect(event));
     }
 
+    // Initialize the features that are required for the system to operate.
+    initialize() {
+        // Provides the `Player.account` supplement, which many features depend on.
+        server.featureManager.loadFeature('account');
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     // Gets the database. Will throw an exception because it's not available in tests.

@@ -34,6 +34,8 @@ testRunner.run('.*\.test\.js').then(time => {
     notifyReady();  // allow the SA-MP server to start accepting connections
 
     server = new Server();
+    server.initialize();
+
     server.featureManager.loadFeatures([
         // Foundational features. These must not have dependencies on any other features.
         'nuwani',

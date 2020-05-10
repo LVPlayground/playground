@@ -51,7 +51,7 @@ class FeatureManager {
 
             const featureFilename = 'features/' + feature + '/' + feature + '.js';
             const featureConstructor = (await import(featureFilename)).default;
-            
+
             this.dependencyGraph_.createNode(feature);
             this.registeredFeatures_.set(feature, featureConstructor);
         }

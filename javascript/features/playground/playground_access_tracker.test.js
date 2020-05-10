@@ -10,9 +10,9 @@ describe('PlaygroundAccessTracker', (it, beforeEach, afterEach) => {
     beforeEach(() => tracker = new PlaygroundAccessTracker());
     afterEach(() => tracker.dispose());
 
-    it('should be able to determine whether a player can use a command', assert => {
+    it('should be able to determine whether a player can use a command', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
+        await gunther.identify();
 
         tracker.registerCommand('foo', Player.LEVEL_MANAGEMENT);
 
@@ -46,7 +46,7 @@ describe('PlaygroundAccessTracker', (it, beforeEach, afterEach) => {
         assert.equal(tracker.getCommandLevel('foo'), Player.LEVEL_MANAGEMENT);
     });
 
-    it('should only allow exceptions for registered players', assert => {
+    it('should only allow exceptions for registered players', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         assert.isFalse(gunther.isRegistered());
@@ -60,7 +60,7 @@ describe('PlaygroundAccessTracker', (it, beforeEach, afterEach) => {
 
         assert.isFalse(tracker.hasException('foo', gunther));
 
-        gunther.identify();
+        await gunther.identify();
 
         assert.isFalse(tracker.canAccessCommand('foo', gunther));
 
@@ -74,9 +74,9 @@ describe('PlaygroundAccessTracker', (it, beforeEach, afterEach) => {
         assert.isFalse(tracker.canAccessCommand('foo', gunther));
     });
 
-    it('should only allow exceptions for existing commands', assert => {
+    it('should only allow exceptions for existing commands', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
+        await gunther.identify();
 
         assert.isTrue(gunther.isRegistered());
 
@@ -102,7 +102,7 @@ describe('PlaygroundAccessTracker', (it, beforeEach, afterEach) => {
         const gunther2 = server.playerManager.getById(1 /* Russell, will identify as Gunther */);
         const gunther3 = server.playerManager.getById(2 /* Lucy, will identify as Gunther */);
 
-        gunther1.identify({ userId: 144 });
+        await gunther1.identify({ userId: 144 });
         assert.isTrue(gunther1.isRegistered());
 
         tracker.registerCommand('foo', Player.LEVEL_MANAGEMENT);
@@ -117,7 +117,7 @@ describe('PlaygroundAccessTracker', (it, beforeEach, afterEach) => {
         assert.isFalse(tracker.canAccessCommand('foo', gunther1));
         assert.isFalse(tracker.canAccessCommand('foo', gunther2));
 
-        gunther2.identify({ userId: 144 });
+        await gunther2.identify({ userId: 144 });
         assert.isTrue(gunther2.isRegistered());
 
         // The exception should have been re-granted for userId = 144.
@@ -131,7 +131,7 @@ describe('PlaygroundAccessTracker', (it, beforeEach, afterEach) => {
         // The restoration feature expires after five minutes. Verify that as well.
         await server.clock.advance(5 * 60 * 1000);
 
-        gunther3.identify({ userId: 144 });
+        await gunther3.identify({ userId: 144 });
         assert.isTrue(gunther3.isRegistered());
 
         // The exception should *not* have been re-granted for userId = 144.

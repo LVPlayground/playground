@@ -31,10 +31,8 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
 
         gunther = server.playerManager.getById(/* Gunther= */ 0);
         gunther.level = Player.LEVEL_ADMINISTRATOR;
-        gunther.identify();
 
         lucy = server.playerManager.getById(/* Lucy= */ 2);
-        lucy.identify();
     });
 
     afterEach(() => bot.dispose());
@@ -91,6 +89,7 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
         await assertNoteConstraints(assert, '!addnote Specifer');
+        await lucy.identify();
 
         const regularNote = await issueCommand(bot, commandManager, {
             source: kCommandSource,
@@ -139,6 +138,7 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
 
         await assertDurationConstraints(assert, `!ban ${lucy.id} ? reason`);
         await assertNoteConstraints(assert, `!ban ${lucy.id} 5`);
+        await lucy.identify();
 
         assert.isTrue(lucy.isConnected());
 
@@ -552,6 +552,7 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
         await assertNoteConstraints(assert, '!kick 0');
+        await lucy.identify();
 
         assert.isTrue(lucy.isConnected());
 

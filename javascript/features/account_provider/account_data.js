@@ -38,6 +38,8 @@ export class AccountData {
     initializeFromDatabase(databaseRow) {
         this.userId_ = databaseRow.user_id;
         this.bankAccountBalance_ = databaseRow.money_bank;
+
+        this.hasIdentified_ = true;
     }
 
     // Called when the account data is being written to the database. Can happen multiple times for

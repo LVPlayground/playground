@@ -36,9 +36,9 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         assert.equal(counter, 2);
     });
 
-    it('should fire past events for newly attached observers', assert => {
+    it('should fire past events for newly attached observers', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
+        await gunther.identify();
 
         let connectionCounter = 0;
         let loginCounter = 0;

@@ -76,11 +76,11 @@ export class PlayerSettingsSupplement extends Supplement {
     updateSetting(identifier, value) {
         this.setValue(identifier, value);
 
-        if (this.player_.isRegistered()) {
+        if (!this.player_.isRegistered()) {
             return;
         }
 
-        this.manager_.updateSettingsInDatabase(player, identifier, value);
+        this.manager_.updateSettingsInDatabase(this.player_, identifier, value);
     }
 
     // ---------------------------------------------------------------------------------------------

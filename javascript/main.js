@@ -37,8 +37,19 @@ testRunner.run('.*\.test\.js').then(time => {
     server.initialize();
 
     server.featureManager.loadFeatures([
-        // Foundational features. These must not have dependencies on any other features.
+        // -----------------------------------------------------------------------------------------
+        // Foundational features.
+        //
+        // These features provide critical functionality. They may not depend on other features.
+        // Good examples of functionality are supplements, or cross-feature providers.
+        // -----------------------------------------------------------------------------------------
+
+        'account_provider',
         'nuwani',
+
+        // -----------------------------------------------------------------------------------------
+        // Regular features
+        // -----------------------------------------------------------------------------------------
 
         // Low level features, which may only depend on each other and foundational features.
         'abuse', 'announce', 'communication', 'economy', 'finance', 'location', 'minigames',

@@ -13,7 +13,7 @@ describe('SecretPrivateMessageCommand', (it, beforeEach, afterEach) => {
         await commands.loadCommands();
 
         lucy = server.playerManager.getById(2 /* Lucy */);
-        lucy.identify();
+        await lucy.identify();
 
         // Enable |lucy| to use the command by adding an exception.
         commands.access.addException('spm', lucy);

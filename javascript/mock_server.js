@@ -28,6 +28,7 @@ import MockVehicle from 'entities/test/mock_vehicle.js';
 
 import Abuse from 'features/abuse/abuse.js';
 import Account from 'features/account/account.js';
+import AccountProvider from 'features/account_provider/account_provider.js';
 import Announce from 'features/announce/announce.js';
 import Communication from 'features/communication/communication.js';
 import Finance from 'features/finance/finance.js';
@@ -71,6 +72,7 @@ class MockServer {
         this.featureManager_.registerFeaturesForTests({
             abuse: Abuse,
             account: Account,
+            account_provider: AccountProvider,
             announce: Announce,  // TODO: Move functionality to |communication|. See #309.
             communication: Communication,
             finance: Finance,
@@ -93,10 +95,10 @@ class MockServer {
         ].forEach(event => this.playerManager_.onPlayerConnect(event));
     }
 
-    // Initialize the features that are required for the system to operate.
+    // Initialize the features that are required for the system to operate. In general this should
+    // be limited to foundational features that have no dependencies of their own.
     initialize() {
-        // Provides the `Player.account` supplement, which many features depend on.
-        server.featureManager.loadFeature('account');
+        this.featureManager_.loadFeature('account_provider');
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { AccountData } from 'features/account_provider/account_data.js';
 import ScopedCallbacks from 'base/scoped_callbacks.js';
 
 // The account manager keeps track of in-game players and ensures that all information necessary to
@@ -43,9 +44,24 @@ export class AccountManager {
     // Called when a player has identified to their account. Starts to load their account data and
     // make it available to other parts of the server. Invoked as a Pawn event.
     onPlayerLoginEvent(event) { 
-        // TODO: Load the player's account.
+        const player = server.playerManager.getById(event.playerid);
+        const userId = event.userid;
 
-        server.playerManager.onPlayerLogin(event);
+        if (!player || !userId)
+            return;  // either the given player or user Id in the event are invalid.
+
+        const accountData = new AccountData();
+        
+        this.accounts_.set(player, accountData);
+        this.database_.loadAccountData(userId).then(databaseData => {
+            if (!databaseData || !player.isConnected())
+                return;  // the |player| has disconnected from the server since
+
+            accountData.initializeFromDatabase(databaseData);
+
+            // Now that the player's account has been initialized, tell the rest of the server.
+            server.playerManager.onPlayerLogin(event);
+        });
     }
 
     // Called when a player was asked to identify, but failed to and has been logged in as a guest
@@ -58,7 +74,13 @@ export class AccountManager {
 
     // Called when the |player| has disconnected from the server.
     onPlayerDisconnect(player) {
-        // TODO: Save & unload the player's account.
+        const accountData = this.accounts_.get(player);
+        if (!accountData || !accountData.hasIdentified())
+            return;  // the |player| was never identified to their account
+        
+        // Deliberately do not wait for the save operation to complete.
+        this.database_.saveAccountData(accountData.prepareForDatabase());
+        this.accounts_.delete(player);
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -24,7 +24,7 @@ describe('PlayerSettingsManager', (it, beforeEach, afterEach) => {
 
     it('should write database if changed setting is given', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
+        await gunther.identify();
 
         assert.equal(manager.database_.writeCalls, 0);
 
@@ -35,7 +35,7 @@ describe('PlayerSettingsManager', (it, beforeEach, afterEach) => {
 
     it('should delete setting from database if default value setting is given', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
+        await gunther.identify();
 
         assert.equal(manager.database_.deleteCalls, 0);
 
@@ -49,7 +49,7 @@ describe('PlayerSettingsManager', (it, beforeEach, afterEach) => {
 
         assert.equal(manager.database_.loadCalls, 0);
 
-        gunther.identify();
+        await gunther.identify();
 
         assert.equal(manager.database_.loadCalls, 1);
     });

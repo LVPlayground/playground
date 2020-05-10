@@ -224,7 +224,7 @@ describe('VehicleManager', (it, beforeEach) => {
     });
 
     it('should apply vehicle access settings when creating them', async(assert) => {
-        gunther.identify({ userId: 5198 });
+        await gunther.identify({ userId: 5198 });
 
         const vehicle = manager.createVehicle(HYDRA);
         assert.isTrue(vehicle.isConnected());
@@ -276,8 +276,8 @@ describe('VehicleManager', (it, beforeEach) => {
     it('should reset vehicle access settings when they respawn', async(assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
 
-        gunther.identify({ userId: 8432 });
-        russell.identify({ userId: 1451 });
+        await gunther.identify({ userId: 8432 });
+        await russell.identify({ userId: 1451 });
 
         const vehicle = manager.createVehicle(HYDRA);
         assert.isTrue(vehicle.isConnected());
@@ -348,7 +348,6 @@ describe('VehicleManager', (it, beforeEach) => {
 
     it('should limit the ephemeral vehicles to five for administrators', assert => {
         const russell = server.playerManager.getById(1 /* Russell */);
-        russell.identify();
 
         gunther.level = Player.LEVEL_ADMINISTRATOR;
         russell.level = Player.LEVEL_PLAYER;

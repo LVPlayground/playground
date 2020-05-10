@@ -14,10 +14,8 @@ describe('Isolate', (it, beforeEach, afterEach) => {
         await commands.loadCommands();
 
         gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
 
         russell = server.playerManager.getById(1 /* Russell */);
-        russell.identify();
         russell.level = Player.LEVEL_MANAGEMENT;
     });
 

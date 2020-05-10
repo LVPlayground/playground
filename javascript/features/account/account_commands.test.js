@@ -43,7 +43,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should fail if there are no available options', async (assert) => {
-        russell.identify({ vip: 1 });
+        await russell.identify({ vip: 1 });
 
         settings.setValue('account/nickname_control', false);
         settings.setValue('account/password_control', false);
@@ -58,7 +58,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should hide the appropriate options for regular players', async (assert) => {
-        russell.identify({ vip: 0 });
+        await russell.identify({ vip: 0 });
 
         russell.respondToDialog({ response: 0 /* Dismiss */ });
         assert.isTrue(await russell.issueCommand('/account'));
@@ -72,8 +72,8 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should hide the appropriate options for third party usage', async (assert) => {
-        gunther.identify({ vip: 0 });
-        russell.identify();
+        await gunther.identify({ vip: 0 });
+        await russell.identify();
 
         russell.respondToDialog({ response: 0 /* Dismiss */ });
         assert.isTrue(await russell.issueCommand('/account Gunther'));
@@ -85,8 +85,8 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should hide the appropriate options for third party usage', async (assert) => {
-        gunther.identify({ vip: 1 });
-        russell.identify();
+        await gunther.identify({ vip: 1 });
+        await russell.identify();
 
         russell.respondToDialog({ response: 0 /* Dismiss */ });
         assert.isTrue(await russell.issueCommand('/account Gunther'));
@@ -99,7 +99,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable players to change their nickname', async (assert) => {
-        gunther.identify({ userId: 42 });
+        await gunther.identify({ userId: 42 });
 
         // (1) The player may only change their name once per X days.
         gunther.respondToDialog({ listitem: 0 /* Change your nickname */ }).then(
@@ -213,7 +213,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     it('should enable players to change their password', async (assert) => {
         assert.isTrue(database.canUpdatePasswords());
         
-        gunther.identify({ userId: 42 });
+        await gunther.identify({ userId: 42 });
 
         // (1a) The player is able to abort the flow to change their password.
         gunther.respondToDialog({ listitem: 1 /* Change your password */ }).then(
@@ -292,7 +292,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable VIPs to see a list of their aliases', async (assert) => {
-        gunther.identify({ userId: 42, vip: 1 });
+        await gunther.identify({ userId: 42, vip: 1 });
 
         gunther.respondToDialog({ listitem: 2 /* Manage nickname aliases */ }).then(
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
@@ -307,7 +307,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable VIPs to create an alias', async (assert) => {
-        gunther.identify({ userId: 42, vip: 1 });
+        await gunther.identify({ userId: 42, vip: 1 });
 
         settings.setValue('account/vip_alias_limit_player', 3);
 
@@ -321,7 +321,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         assert.includes(gunther.lastDialog, 'only been 4 days');
         assert.isNull(database.aliasMutation);
 
-        russell.identify({ userId: 42, vip: 1 });
+        await russell.identify({ userId: 42, vip: 1 });
 
         // (2) No alias frequency limit for administrators.
         russell.respondToDialog({ listitem: 2 /* Manage nickname aliases */ }).then(
@@ -403,7 +403,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable VIPs to delete an alias', async (assert) => {
-        gunther.identify({ userId: 42, vip: 1 });
+        await gunther.identify({ userId: 42, vip: 1 });
 
         // (1) Aliases created less than |vip_alias_limit_days| days ago cannot be deleted.
         gunther.respondToDialog({ listitem: 2 /* Manage nickname aliases */ }).then(
@@ -450,7 +450,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should be able to show the record of a player', async (assert) => {
-        gunther.identify({ userId: 42, vip: 1 });
+        await gunther.identify({ userId: 42, vip: 1 });
 
         // (1) An error message is shown when the player's log is clean.
         gunther.respondToDialog({ listitem: 3 /* View your record */ }).then(
@@ -459,7 +459,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(await gunther.issueCommand('/account'));
         assert.equal(gunther.lastDialogTitle, 'Account management');
 
-        russell.identify({ userId: 1337, vip: 1 });
+        await russell.identify({ userId: 1337, vip: 1 });
 
         // (2) A dialog with entries is shown when the player's log has entries.
         russell.respondToDialog({ listitem: 3 /* View your record */ }).then(
@@ -487,7 +487,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should be able to display the recent sessions of a player', async (assert) => {
-        gunther.identify({ userId: 42, vip: 1 });
+        await gunther.identify({ userId: 42, vip: 1 });
 
         // (1) An error message is shown when the player's log is clean.
         gunther.respondToDialog({ listitem: 4 /* View your recent sessions */ }).then(
@@ -496,7 +496,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(await gunther.issueCommand('/account'));
         assert.equal(gunther.lastDialogTitle, 'Account management');
 
-        russell.identify({ userId: 1337, vip: 1 });
+        await russell.identify({ userId: 1337, vip: 1 });
 
         // (2) A dialog with entries is shown when the player's log has entries.
         russell.respondToDialog({ listitem: 4 /* View your recent sessions */ }).then(

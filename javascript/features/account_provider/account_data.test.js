@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { AccountData } from 'features/account/account_data.js';
+import { AccountData } from 'features/account_provider/account_data.js';
 
 describe('AccountData', it => {
     it('should be uninitialized until identification', assert => {

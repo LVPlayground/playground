@@ -18,7 +18,6 @@ describe('AbuseMonitor', (it, beforeEach) => {
     it('should be able to detect and kick fake non-player characters', assert => {
         const russell = server.playerManager.getById(1 /* Russell */);
 
-        russell.identify();
         russell.level = Player.LEVEL_ADMINISTRATOR;
 
         // Connect the evil bot to the server. They should be kicked immediately after.

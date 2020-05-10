@@ -16,23 +16,22 @@ describe('IrcChatCommands', (it, beforeEach, afterEach) => {
         ircChatCommands.dispose();
     });
 
-    it('/crew should not be usable for normal players', assert => {
+    it('/crew should not be usable for normal players', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        assert.isTrue(gunther.issueCommand('/crew test 2'));
+        assert.isTrue(await gunther.issueCommand('/crew test 2'));
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0],
                      Message.format(Message.COMMAND_ERROR_INSUFFICIENT_RIGHTS, 'administrators'));
     });
 
-    it('/man should not be usable for administrators', assert => {
+    it('/man should not be usable for administrators', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
-        assert.isTrue(gunther.issueCommand('/man some words'));
+        assert.isTrue(await gunther.issueCommand('/man some words'));
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0],
@@ -40,14 +39,14 @@ describe('IrcChatCommands', (it, beforeEach, afterEach) => {
                                     'specific people'));
     });
 
-    it('/crew should send a message for administrators to .crew', assert => {
+    it('/crew should send a message for administrators to .crew', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const channel = '#LVP.Crew';
 
-        gunther.identify();
+        await gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
-        assert.isTrue(gunther.issueCommand('/crew test 2'));
+        assert.isTrue(await gunther.issueCommand('/crew test 2'));
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0],
@@ -55,14 +54,14 @@ describe('IrcChatCommands', (it, beforeEach, afterEach) => {
                                     'test 2'));
     });
 
-    it('/man should send a message for managers to .management', assert => {
+    it('/man should send a message for managers to .management', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const channel = '#LVP.Management';
 
-        gunther.identify();
+        await gunther.identify();
         gunther.level = Player.LEVEL_MANAGEMENT;
 
-        assert.isTrue(gunther.issueCommand('/man some words'));
+        assert.isTrue(await gunther.issueCommand('/man some words'));
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0],

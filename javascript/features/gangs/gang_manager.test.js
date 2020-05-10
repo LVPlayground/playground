@@ -27,8 +27,8 @@ describe('GangManager', (it, beforeEach) => {
 
         assert.isNull(manager.gangForPlayer(gunther));
 
-        gunther.identify({ userId: MockGangDatabase.HKO_LEADER_USER_ID,
-                           gangId: MockGangDatabase.HKO_GANG_ID });
+        await gunther.identify({ userId: MockGangDatabase.HKO_LEADER_USER_ID,
+                                 gangId: MockGangDatabase.HKO_GANG_ID });
 
         // The database result will be loaded through a promise, continue the test asynchronously.
         await Promise.resolve();
@@ -48,7 +48,7 @@ describe('GangManager', (it, beforeEach) => {
     });
 
     it('should create a gang and make the player its leader', async(assert) => {
-        gunther.identify({ userId: MockGangDatabase.CC_LEADER_USER_ID });
+        await gunther.identify({ userId: MockGangDatabase.CC_LEADER_USER_ID });
 
         const gang = await manager.createGangForPlayer(gunther, 'CC', 'name', 'goal');
 
@@ -62,8 +62,8 @@ describe('GangManager', (it, beforeEach) => {
         assert.equal(gang.memberCount, 1);
     });
 
-    it('should refuse to create a gang when it causes ambiguity', assert => {
-        gunther.identify({ userId: MockGangDatabase.CC_LEADER_USER_ID });
+    it('should refuse to create a gang when it causes ambiguity', async(assert) => {
+        await gunther.identify({ userId: MockGangDatabase.CC_LEADER_USER_ID });
 
         return manager.createGangForPlayer(gunther, 'HKO', 'name', 'goal').then(
             () => assert.unexpectedResolution(),
@@ -72,7 +72,7 @@ describe('GangManager', (it, beforeEach) => {
     });
 
     it('should be able to purchase additional encryption time for the gang', async(assert) => {
-        gunther.identify({ userId: MockGangDatabase.CC_LEADER_USER_ID });
+        await gunther.identify({ userId: MockGangDatabase.CC_LEADER_USER_ID });
 
         const gang = await manager.createGangForPlayer(gunther, 'CC', 'name', 'goal');
         assert.isNotNull(gang);
@@ -94,8 +94,8 @@ describe('GangManager', (it, beforeEach) => {
     it('should be able to update member preferences in regards to gang color', async(assert) => {
         assert.isNull(manager.gangForPlayer(gunther));
 
-        gunther.identify({ userId: MockGangDatabase.HKO_LEADER_USER_ID,
-                           gangId: MockGangDatabase.HKO_GANG_ID });
+        await gunther.identify({ userId: MockGangDatabase.HKO_LEADER_USER_ID,
+                                 gangId: MockGangDatabase.HKO_GANG_ID });
 
         // The database result will be loaded through a promise, continue the test asynchronously.
         await Promise.resolve();
@@ -115,8 +115,8 @@ describe('GangManager', (it, beforeEach) => {
     it('should respect member color preferences when they connect to the server', async(assert) => {
         assert.isNull(manager.gangForPlayer(gunther));
 
-        gunther.identify({ userId: MockGangDatabase.HKO_MEMBER_USER_ID,
-                           gangId: MockGangDatabase.HKO_GANG_ID });
+        await gunther.identify({ userId: MockGangDatabase.HKO_MEMBER_USER_ID,
+                                 gangId: MockGangDatabase.HKO_GANG_ID });
 
         // The database result will be loaded through a promise, continue the test asynchronously.
         await Promise.resolve();
@@ -132,8 +132,8 @@ describe('GangManager', (it, beforeEach) => {
     it('should load and unload gang data on connectivity events', async(assert) => {
         assert.isNull(manager.gangForPlayer(gunther));
 
-        gunther.identify({ userId: MockGangDatabase.HKO_LEADER_USER_ID,
-                           gangId: MockGangDatabase.HKO_GANG_ID });
+        await gunther.identify({ userId: MockGangDatabase.HKO_LEADER_USER_ID,
+                                 gangId: MockGangDatabase.HKO_GANG_ID });
 
         // The database result will be loaded through a promise, continue the test asynchronously.
         await Promise.resolve();
@@ -157,7 +157,7 @@ describe('GangManager', (it, beforeEach) => {
     it('should issue events to attached observers when membership changes', async(assert) => {
         assert.isNull(manager.gangForPlayer(gunther));
 
-        gunther.identify();
+        await gunther.identify();
 
         let connectedCount = 0;
         let joinedUserCount = 0;
@@ -193,8 +193,8 @@ describe('GangManager', (it, beforeEach) => {
         assert.equal(joinedUserCount, 1);
         assert.equal(leftUserCount, 0);
 
-        gunther.identify({ userId: MockGangDatabase.HKO_LEADER_USER_ID,
-                           gangId: MockGangDatabase.HKO_GANG_ID });
+        await gunther.identify({ userId: MockGangDatabase.HKO_LEADER_USER_ID,
+                                 gangId: MockGangDatabase.HKO_GANG_ID });
 
         // The database result will be loaded through a promise, continue the test asynchronously.
         await Promise.resolve();

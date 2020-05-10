@@ -22,27 +22,26 @@ export class PlayerAccountSupplement extends Supplement {
 
     // Returns whether the player has registered with Las Venturas Playground.
     isRegistered() {
-        return this.manager_.getAccountDataForPlayer(player) !== undefined;
+        return this.manager_.getAccountDataForPlayer(this.player_) !== undefined;
     }
 
     // Returns whether the player, when registered, has identified to their account.
     isIdentified() {
-        const accountData = this.manager_.getAccountDataForPlayer(player);
+        const accountData = this.manager_.getAccountDataForPlayer(this.player_);
         return accountData && accountData.hasIdentified();
     }
 
     // Gets their user Id. Only available if they've identified, undefined otherwise. Read-only.
-    get userId() { return this.manager_.getAccountDataForPlayer(player)?.userId; }
+    get userId() { return this.manager_.getAccountDataForPlayer(this.player_)?.userId; }
 
     // Gets or sets the balance of their bank account. Limited to the valid range of JavaScript
     // integers, stored as an int64_t in the MySQL database.
     get bankAccountBalance() {
-        return this.manager_.getAccountDataForPlayer(player)?.bankAccountBalance;
+        return this.manager_.getAccountDataForPlayer(this.player_)?.bankAccountBalance || 0;
     }
-
     set bankAccountBalance(balance) {
-        const accountData = this.manager_.getAccountDataForPlayer(player);
-        if (accountData)
+        const accountData = this.manager_.getAccountDataForPlayer(this.player_);
+        if (accountData && accountData.hasIdentified())
             accountData.bankAccountBalance = balance;
     }
 }

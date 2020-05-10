@@ -16,7 +16,7 @@ describe('VehicleCommands', (it, beforeEach) => {
 
     beforeEach(async(assert) => {
         gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify({ userId: 42 });
+        await gunther.identify({ userId: 42 });
 
         server.featureManager.registerFeaturesForTests({
             vehicles: Vehicles
@@ -78,7 +78,7 @@ describe('VehicleCommands', (it, beforeEach) => {
             assert.equal(russell.messages[0], Message.VEHICLE_LOCK_UNREGISTERED);
 
             russell.clearMessages();
-            russell.identify({ userId: 8951 });
+            await russell.identify({ userId: 8951 });
         }
 
         // (2) Registered players shouldn't be able to lock vehicles they're not driving.
@@ -138,7 +138,7 @@ describe('VehicleCommands', (it, beforeEach) => {
             assert.equal(russell.messages[0], Message.VEHICLE_UNLOCK_UNREGISTERED);
 
             russell.clearMessages();
-            russell.identify({ userId: 8951 });
+            await russell.identify({ userId: 8951 });
         }
 
         manager.access.restrictToPlayer(databaseVehicle, russell.userId);

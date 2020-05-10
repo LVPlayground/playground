@@ -10,7 +10,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
     let commands = null;
     let gunther = null;
 
-    beforeEach(() => {
+    beforeEach(async() => {
         const announce = server.featureManager.loadFeature('announce');
         const nuwani = server.featureManager.loadFeature('nuwani');
         const settings = server.featureManager.loadFeature('settings');
@@ -19,7 +19,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         commands = new PlaygroundCommands(access, () => announce, () => nuwani, () => settings);
 
         gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
+        await gunther.identify();
     });
 
     afterEach(() => {
@@ -54,7 +54,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         const COMMAND_NAME = 'aaaaaaa';
 
         const russell = server.playerManager.getById(1 /* Russell */);
-        russell.identify();
+        await russell.identify();
 
         gunther.level = Player.LEVEL_MANAGEMENT;
 

@@ -361,14 +361,26 @@ export class MockPlayer extends Player {
     // ---------------------------------------------------------------------------------------------
 
     // Identifies the player to a fake account. The options can be specified optionally.
-    identify({ userId = 42, vip = 0, gangId = 0, undercover = 0 } = {}) {
-        server.playerManager.onPlayerLogin({
+    async identify({ userId = 42, vip = 0, gangId = 0, undercover = 0 } = {}) {
+        let resolver = null;
+
+        const observerPromise = new Promise(resolve => resolver = resolve);
+        const observer = new class {
+            onPlayerLogin(player) {
+                server.playerManager.removeObserver(observer);
+                resolver();
+            }
+        };
+
+        server.playerManager.addObserver(observer);
+        dispatchEvent('playerlogin', {
             playerid: this.id,
             userid: userId,
-            vip: vip,
             gangid: gangId,
-            undercover: undercover
+            undercover, vip,
         });
+
+        await observerPromise;
     }
 
     // Issues |message| as if it has been said by this user. Returns whether the event with which

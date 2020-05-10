@@ -2,21 +2,26 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import ScopedCallbacks from 'base/scoped_callbacks.js';
+
 // The dialog manager manages allocation of the dialog ids to individual dialogs that should be
 // shown to users. The SA-MP server imposes a maximum of 32767 dialogs to exist at any given time,
 // but the dynamic nature of JavaScript allows us to intelligently get around that.
 //
 // This interface should not be used directly, except by the Dialog class and by tests. Creating
 // multiple instances may cause duplicate dialog ids to be given out.
-class DialogManager {
+export class DialogManager {
   constructor() {
     this.dialogs_ = {};
     this.playerDialogs_ = {};
 
+    this.callbacks_ = new ScopedCallbacks();
+
     // Attach the global event listeners which we need to reliably handle dialog responses.
-    // TODO(Russell): We need a weak event binding model for events like these.
-    global.addEventListener('dialogresponse', DialogManager.prototype.onDialogResponse.bind(this));
-    global.addEventListener('playerdisconnect', DialogManager.prototype.onPlayerDisconnect.bind(this));
+    this.callbacks_.addEventListener(
+        'dialogresponse', DialogManager.prototype.onDialogResponse.bind(this));
+    this.callbacks_.addEventListener(
+        'playerdisconnect', DialogManager.prototype.onPlayerDisconnect.bind(this));
   }
 
   // Displays a dialog for |player|. This method will return a promise that will resolve when the
@@ -85,6 +90,11 @@ class DialogManager {
 
     return dialogId;
   }
+
+  dispose() {
+    this.callbacks_.dispose();
+    this.callbacks_ = null;
+  }
 };
 
 // The lowest dialog id that is under the control of the DialogManager.
@@ -92,5 +102,3 @@ DialogManager.MIN_DIALOG_ID = 25000;
 
 // The highest dialog id that is under the control of the DialogManager.
 DialogManager.MAX_DIALOG_ID = 30000;
-
-export default DialogManager;

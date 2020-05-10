@@ -2,15 +2,22 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import ScopedCallbacks from 'base/scoped_callbacks.js';
+
 // The text draw manager keeps track of which text draws are being displayed to which users.
-class TextDrawManager {
+export class TextDrawManager {
   constructor() {
     // Object keeping track of all in-game players and their associated text-draws.
     this.players_ = {};
 
+    this.callbacks_ = new ScopedCallbacks();
+
     // Listen to the `playerdisconnect` event to clear state of leaving players.
-    global.addEventListener('playerclickplayertextdraw', this.__proto__.onPlayerClickPlayerTextDraw.bind(this));
-    global.addEventListener('playerdisconnect', this.__proto__.onPlayerDisconnect.bind(this));
+    this.callbacks_.addEventListener(
+        'playerclickplayertextdraw',
+        TextDrawManager.prototype.onPlayerClickPlayerTextDraw.bind(this));
+    this.callbacks_.addEventListener(
+        'playerdisconnect', TextDrawManager.prototype.onPlayerDisconnect.bind(this));
   }
 
   // Creates |textDraw| for |player| unless it's already being displayed. Returns NULL when the text
@@ -76,6 +83,9 @@ class TextDrawManager {
   onPlayerDisconnect(event) {
     delete this.players_[event.playerid];
   }
-};
 
-export default TextDrawManager;
+  dispose() {
+    this.callbacks_.dispose();
+    this.callbacks_ = null;
+  }
+};

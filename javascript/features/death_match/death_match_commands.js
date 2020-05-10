@@ -7,20 +7,25 @@ import CommandBuilder from 'components/command_manager/command_builder.js';
 // Contains the /dm command for players to allow to teleport to a DM zone with specific weapons.
 export class DeathMatchCommands {    
 
-    constructor() {
+    constructor(manager) {
         server.commandManager.buildCommand('dm')
             .parameters([{ name: 'zone', type: CommandBuilder.NUMBER_PARAMETER }])
         .build(DeathMatchCommands.prototype.onDmCommand.bind(this));
+
+        this.manager_ = manager;
     }
 
     // The DM command is being used.
     onDmCommand(player, zone) { 
-        if(zone === null || zone === undefined || zone !== 1) {
+        if(zone === null || zone === undefined || typeof zone !== 'number') {
             // TODO (OttoRocket): Have a DM zone manager that keeps track of all zones and 
             // locations. Allowing message with all valid zones shown.
 
             player.sendMessage(Message.DEATH_MATCH_INVALID_ZONE, zone);
         }
+
+        this.manager_.goToDmZone(player, zone);
+
     }
 
 

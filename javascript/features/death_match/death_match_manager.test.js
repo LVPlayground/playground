@@ -13,4 +13,19 @@ describe('DeathMatchManager', (it, beforeEach) => {
         manager = new DeathMatchManger(abuse);
     });
 
+    it('should show message for player if using invalid dm zone', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        manager.goToDmZone(gunther, 0);
+
+        assert.equal(gunther.messages.length, 2);
+        assert.isTrue(
+            gunther.messages[0].includes(
+                Message.format(Message.DEATH_MATCH_INVALID_ZONE, 0)));
+        assert.isTrue(
+            gunther.messages[1].includes(
+                Message.format(Message.DEATH_MATCH_AVAILABLE_ZONES, 
+                    manager.validDmZones().join(', '))));
+    });
+
 });

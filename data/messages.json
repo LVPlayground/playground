@@ -38,6 +38,7 @@
   "COMMAND_UNSUPPORTED": "@error Sorry, this functionality has not yet been implemented.",
   "COMMAND_USAGE": "@usage %s",
 
+  "DEATH_MATCH_AVAILABLE_ZONES" : "Available DM zones are: /dm %s.",
   "DEATH_MATCH_INVALID_ZONE" : "zone %d is not a valid zone.",
 
   "DEBUG_FRAME_COUNTER": "{33AA33}The server averaged %d FPS in the last %d seconds.",

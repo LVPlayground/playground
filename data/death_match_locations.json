@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "name": "LV FightClub",
+        
+        "interior_id": 0,
+        "world": 115,
+        "spawn_positions": [
+            { "position": [ 2096.18, 2186.78, 10.82 ], "rotation": 136.84 },
+            { "position": [ 2068.54, 2157.53, 10.82 ], "rotation": 311.35 },
+            { "position": [ 2068.54, 2186.78, 10.82 ], "rotation": 222.67 },
+            { "position": [ 2096.18, 2157.53, 10.82 ], "rotation":  33.75 },
+            { "position": [ 2068.54, 2172.16, 10.82 ], "rotation": 270.00 },
+            { "position": [ 2082.36, 2186.78, 10.82 ], "rotation": 180.00 },
+            { "position": [ 2082.36, 2157.53, 10.82 ], "rotation":   0.00 },
+            { "position": [ 2096.18, 2172.16, 10.82 ], "rotation":  90.00 }
+        ],
+        "boundaries": [ 2110.8208, 2055.1360, 2200.4045, 2144.6980 ]
+    }
+]

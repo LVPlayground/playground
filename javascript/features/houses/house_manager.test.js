@@ -138,7 +138,7 @@ describe('HouseManager', (it, beforeEach) => {
 
         assert.equal(location.settings.name, gunther.name + '\'s house');
 
-        assert.equal(location.settings.ownerId, gunther.userId);
+        assert.equal(location.settings.ownerId, gunther.account.userId);
         assert.equal(location.settings.ownerName, gunther.name);
 
         assert.closeTo(location.settings.purchaseTime, Date.now() / 1000, 5);

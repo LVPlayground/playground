@@ -269,7 +269,7 @@ class HouseEntranceController {
     // Determines whether the |player| has access to the |location|. This is the case when they're
     // the owner or are on the friends list of the owning player.
     async hasAccessToHouse(location, player) {
-        if (!player.isRegistered()) {
+        if (!player.account.isRegistered()) {
             player.sendMessage(Message.HOUSE_NO_ACCESS_UNREGISTERED, location.settings.ownerName);
             return false;
         }
@@ -281,7 +281,7 @@ class HouseEntranceController {
             return false;
         }
 
-        if (player.userId == location.settings.ownerId)
+        if (player.account.userId == location.settings.ownerId)
             return true;
 
         let message = null;

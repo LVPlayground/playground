@@ -180,8 +180,8 @@ class RaceMinigame extends Minigame {
         let registeredPlayers = {};
 
         for (const player of this.activePlayers) {
-            if (player.isRegistered())
-                registeredPlayers[player.userId] = player;
+            if (player.account.isRegistered())
+                registeredPlayers[player.account.userId] = player;
         }
 
         const userIds = Object.keys(registeredPlayers);
@@ -391,7 +391,7 @@ class RaceMinigame extends Minigame {
         // Mark the player as being controllable again, so that they're not frozen for no reason.
         player.controllable = true;
 
-        if (reason != Minigame.REASON_FINISHED || !player.isRegistered())
+        if (reason != Minigame.REASON_FINISHED || !player.account.isRegistered())
             return;  // the race's result does not have to be stored
 
         const totalTimeSeconds = totalTime / 1000;
@@ -406,7 +406,7 @@ class RaceMinigame extends Minigame {
 
         // Store the player's result in the database.
         this.database_.storeRaceResult(
-            this.race_.id, player.userId, rank, totalTime, checkpointTimes);
+            this.race_.id, player.account.userId, rank, totalTime, checkpointTimes);
     }
 
     dispose() {

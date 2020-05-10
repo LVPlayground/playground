@@ -30,7 +30,7 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should show an error when adding a friend as an unregistered player', async(assert) => {
-        assert.isFalse(gunther.isRegistered());
+        assert.isFalse(gunther.account.isRegistered());
 
         assert.isTrue(await gunther.issueCommand('/friends add ' + russell.name));
 
@@ -41,7 +41,7 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     it('should show an error when adding an unregistered player as a friend', async(assert) => {
         await gunther.identify();
 
-        assert.isTrue(gunther.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
         assert.isTrue(await gunther.issueCommand('/friends add ' + russell.name));
 
         assert.equal(gunther.messages.length, 1);
@@ -52,7 +52,7 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     it('should show an error when adding oneself as a friend', async(assert) => {
         await gunther.identify();
 
-        assert.isTrue(gunther.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
         assert.isTrue(await gunther.issueCommand('/friends add ' + gunther.name));
 
         assert.equal(gunther.messages.length, 1);
@@ -63,8 +63,8 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
         await gunther.identify();
         await russell.identify();
 
-        assert.isTrue(gunther.isRegistered());
-        assert.isTrue(russell.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
+        assert.isTrue(russell.account.isRegistered());
 
         assert.isTrue(await gunther.issueCommand('/friends add ' + russell.id));
 
@@ -79,7 +79,7 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should show an error when listing friends as an unregistered player', async(assert) => {
-        assert.isFalse(gunther.isRegistered());
+        assert.isFalse(gunther.account.isRegistered());
 
         assert.isTrue(await gunther.issueCommand('/friends'));
 
@@ -90,7 +90,7 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     it('should list friends of the current player when there are none', async(assert) => {
         await gunther.identify();
 
-        assert.isTrue(gunther.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
 
         const friends = await friendsManager.getFriends(gunther);
         assert.equal(friends.online.length, 0);
@@ -130,7 +130,7 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
 
         await friendsManager.addFriend(russell, gunther);
 
-        assert.isTrue(gunther.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
         assert.isFalse(gunther.isAdministrator());
 
         assert.isTrue(await gunther.issueCommand('/friends ' + russell.id));
@@ -148,9 +148,9 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
         await russell.identify();
         await lucy.identify();
 
-        assert.isTrue(gunther.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
         assert.isTrue(gunther.isAdministrator());
-        assert.isTrue(russell.isRegistered());
+        assert.isTrue(russell.account.isRegistered());
 
         await friendsManager.addFriend(gunther, lucy);
 
@@ -173,9 +173,9 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
         await russell.identify();
         await lucy.identify();
 
-        assert.isTrue(gunther.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
         assert.isTrue(gunther.isAdministrator());
-        assert.isTrue(russell.isRegistered());
+        assert.isTrue(russell.account.isRegistered());
 
         await friendsManager.addFriend(russell, lucy);
 
@@ -187,7 +187,7 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should show an error removing friends as an unregistered player', async(assert) => {
-        assert.isFalse(gunther.isRegistered());
+        assert.isFalse(gunther.account.isRegistered());
 
         assert.isTrue(await gunther.issueCommand('/friends remove ' + russell.name));
 
@@ -199,8 +199,8 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
         await gunther.identify();
         await russell.identify();
 
-        assert.isTrue(gunther.isRegistered());
-        assert.isTrue(russell.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
+        assert.isTrue(russell.account.isRegistered());
 
         await friendsManager.addFriend(gunther, russell);
 
@@ -223,8 +223,8 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
         await gunther.identify();
         await russell.identify();
 
-        assert.isTrue(gunther.isRegistered());
-        assert.isTrue(russell.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
+        assert.isTrue(russell.account.isRegistered());
 
         await friendsManager.addFriend(gunther, russell);
 
@@ -247,8 +247,8 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
         await gunther.identify();
         await russell.identify({ userId: 1337 });
 
-        assert.isTrue(gunther.isRegistered());
-        assert.isTrue(russell.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
+        assert.isTrue(russell.account.isRegistered());
 
         await friendsManager.addFriend(gunther, russell);
 

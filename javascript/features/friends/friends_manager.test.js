@@ -26,8 +26,8 @@ describe('FriendsManager', (it, beforeEach, afterEach) => {
         await russell.identify({ userId: 1337 });
         await gunther.identify({ userId: 50 });
 
-        assert.isTrue(gunther.isRegistered());
-        assert.isTrue(russell.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
+        assert.isTrue(russell.account.isRegistered());
 
         const friends = await friendsManager.getFriends(gunther);
         assert.equal(friends.online.length, 1);
@@ -56,22 +56,24 @@ describe('FriendsManager', (it, beforeEach, afterEach) => {
         await gunther.identify({ userId: 50 });
         await russell.identify();
 
-        assert.isTrue(gunther.isRegistered());
-        assert.isTrue(russell.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
+        assert.isTrue(russell.account.isRegistered());
 
         const friends = await friendsManager.getFriends(gunther);
         assert.isTrue(friendsManager.friends_.has(gunther));
         assert.isTrue(friendsManager.loadPromises_.has(gunther));
-        assert.isTrue(friendsManager.lastActive_.hasOwnProperty(gunther.userId));
-        assert.equal(friendsManager.lastActive_[gunther.userId], FriendsManager.CURRENTLY_ONLINE);
+        assert.isTrue(friendsManager.lastActive_.hasOwnProperty(gunther.account.userId));
+        assert.equal(friendsManager.lastActive_[gunther.account.userId], FriendsManager.CURRENTLY_ONLINE);
+
+        const guntherUserId = gunther.account.userId;
 
         gunther.disconnectForTesting();
 
         assert.isFalse(friendsManager.friends_.has(gunther));
         assert.isFalse(friendsManager.loadPromises_.has(gunther));
-        assert.isTrue(friendsManager.lastActive_.hasOwnProperty(gunther.userId));
+        assert.isTrue(friendsManager.lastActive_.hasOwnProperty(guntherUserId));
         assert.notEqual(
-            friendsManager.lastActive_[gunther.userId], FriendsManager.CURRENTLY_ONLINE);
+            friendsManager.lastActive_[guntherUserId], FriendsManager.CURRENTLY_ONLINE);
     });
 
     it('should by able to tell if one friended one without them being online', async(assert) => {

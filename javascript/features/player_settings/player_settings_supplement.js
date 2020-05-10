@@ -76,7 +76,7 @@ export class PlayerSettingsSupplement extends Supplement {
     updateSetting(identifier, value) {
         this.setValue(identifier, value);
 
-        if (!this.player_.isRegistered()) {
+        if (!this.player_.account.isRegistered()) {
             return;
         }
 

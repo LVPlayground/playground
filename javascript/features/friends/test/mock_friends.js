@@ -21,11 +21,11 @@ class MockFriends extends Feature {
     // Asynchronously returns whether |player| has added |friendPlayer| as a friend. Both players
     // must be registered and logged in to their accounts.
     async hasFriend(player, friendPlayer) {
-        const friends = this.mockedFriends_.get(player.userId);
+        const friends = this.mockedFriends_.get(player.account.userId);
         if (!friends)
             return false;
 
-        return friends.has(friendPlayer.userId);
+        return friends.has(friendPlayer.account.userId);
     }
 
     // Asynchronously returns whether |player| is on the list of friends of |friendUserId|. The
@@ -35,7 +35,7 @@ class MockFriends extends Feature {
         if (!friends)
             return false;
 
-        return friends.has(player.userId);
+        return friends.has(player.account.userId);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -44,18 +44,18 @@ class MockFriends extends Feature {
 
     // Adds |toPlayer| as a friend to the list of |fromPlayer|.
     addFriend(fromPlayer, toPlayer) {
-        if (!this.mockedFriends_.has(fromPlayer.userId))
-            this.mockedFriends_.set(fromPlayer.userId, new Set());
+        if (!this.mockedFriends_.has(fromPlayer.account.userId))
+            this.mockedFriends_.set(fromPlayer.account.userId, new Set());
 
-        this.mockedFriends_.get(fromPlayer.userId).add(toPlayer.userId);
+        this.mockedFriends_.get(fromPlayer.account.userId).add(toPlayer.account.userId);
     }
 
     // Removes |toPlayer| from the list of friends of |fromPlayer|.
     removeFriend(fromPlayer, toPlayer) {
-        if (!this.mockedFriends_.has(fromPlayer.userId))
+        if (!this.mockedFriends_.has(fromPlayer.account.userId))
             return;
 
-        this.mockedFriends_.get(fromPlayer.userId).delete(toPlayer.userId);
+        this.mockedFriends_.get(fromPlayer.account.userId).delete(toPlayer.account.userId);
     }
 
     // ---------------------------------------------------------------------------------------------

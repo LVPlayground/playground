@@ -32,7 +32,7 @@ export class PlayerAccountSupplement extends Supplement {
     }
 
     // Gets their user Id. Only available if they've identified, undefined otherwise. Read-only.
-    get userId() { return this.manager_.getAccountDataForPlayer(this.player_)?.userId; }
+    get userId() { return this.manager_.getAccountDataForPlayer(this.player_)?.userId || null; }
 
     // Gets or sets the balance of their bank account. Limited to the valid range of JavaScript
     // integers, stored as an int64_t in the MySQL database.

@@ -223,7 +223,7 @@ class Pickups extends HouseExtension {
 
     // Called when the |feature| has to be activated for the |player|.
     onFeatureActivate(location, feature, player) {
-        const isOwner = player.userId == location.settings.ownerId;
+        const isOwner = player.account.userId == location.settings.ownerId;
 
         const ownerName = location.settings.ownerName;
         const owner = location.settings.owner;

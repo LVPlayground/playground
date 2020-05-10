@@ -22,6 +22,8 @@ class PlaygroundAccessTracker {
         this.cachedExceptions_ = new Map();
         this.cachedExceptionsToken_ = new Map();
 
+        this.userIds_ = new WeakMap();
+
         server.playerManager.addObserver(this);
     }
 
@@ -92,7 +94,7 @@ class PlaygroundAccessTracker {
         if (!this.commandLevels_.has(command))
             throw new Error('Invalid command given: ' + command);
 
-        if (!player.isRegistered())
+        if (!player.account.isRegistered())
             throw new Error('Player ' + player.name + ' (Id:' + player.id + ') is not registered.');
 
         let exceptions = this.exceptions_.get(player);
@@ -137,7 +139,7 @@ class PlaygroundAccessTracker {
         if (!this.commandLevels_.has(command))
             throw new Error('Invalid command given: ' + command);
 
-        if (!player.isRegistered())
+        if (!player.account.isRegistered())
             return false;  // unregistered players cannot have exceptions.
 
         const exceptions = this.exceptions_.get(player);
@@ -153,7 +155,7 @@ class PlaygroundAccessTracker {
         if (!this.commandLevels_.has(command))
             throw new Error('Invalid command given: ' + command);
 
-        if (!player.isRegistered())
+        if (!player.account.isRegistered())
             throw new Error('Player ' + player.name + ' (Id:' + player.id + ') is not registered.');
 
         const exceptions = this.exceptions_.get(player);
@@ -171,14 +173,17 @@ class PlaygroundAccessTracker {
     // Called when |player| has logged in to their account. Exceptions granted to them in a session
     // no longer than a few minutes ago will be restored.
     onPlayerLogin(player) {
-        const cachedExceptions = this.cachedExceptions_.get(player.userId);
+        const userId = player.account.userId;
+        this.userIds_.set(player, userId);
+
+        const cachedExceptions = this.cachedExceptions_.get(userId);
         if (!cachedExceptions)
             return;
 
         this.exceptions_.set(player, cachedExceptions);
 
-        this.cachedExceptions_.delete(player.userId);
-        this.cachedExceptionsToken_.delete(player.userId);
+        this.cachedExceptions_.delete(userId);
+        this.cachedExceptionsToken_.delete(userId);
 
         player.sendMessage(Message.LVP_CMD_EXCEPTION_RESTORED, cachedExceptions.size);
     }
@@ -194,7 +199,8 @@ class PlaygroundAccessTracker {
         if (!exceptions.size)
             return;
 
-        const userId = player.userId;
+        const userId = this.userIds_.get(player);
+        this.userIds_.delete(player);
 
         // Use a random token to avoid issues with players who rapidly reconnect multiple times.
         const token = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);

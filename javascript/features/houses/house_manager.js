@@ -27,6 +27,7 @@ class HouseManager {
         this.observers_ = new Set();
         this.extensions_ = new Set();
         this.locations_ = new Set();
+        this.userIds_ = new WeakMap();
 
         this.announce_ = announce;
 
@@ -159,7 +160,7 @@ class HouseManager {
     // Creates a new house location at |locationInfo| as issued by |player|. The |locationInfo| must
     // be an object having a {position, facingAngle, interiorId}.
     async createLocation(player, locationInfo) {
-        if (!player.isRegistered())
+        if (!player.account.isRegistered())
             throw new Error('The |player| must be registered in order to create a location.');
 
         const id = await this.database_.createLocation(player, locationInfo);
@@ -175,7 +176,7 @@ class HouseManager {
     // Creates a new parking lot for |location| at |parkingLot|. The |player| will be written to
     // the database to attribute creation of the parking lot.
     async createLocationParkingLot(player, location, parkingLot) {
-        if (!player.isRegistered())
+        if (!player.account.isRegistered())
             throw new Error('The |player| must be registered in order to create a parking lot.');
 
         if (!this.locations_.has(location))
@@ -194,7 +195,7 @@ class HouseManager {
     // Creates a new house in |location| owned by the |player|. The house interior of the house is
     // identified by |interiorId|, which must be included in the InteriorList.
     async createHouse(player, location, interiorId) {
-        if (!player.isRegistered())
+        if (!player.account.isRegistered())
             throw new Error('The |player| must be registered in order to own a house.');
 
         if (!this.locations_.has(location))
@@ -405,8 +406,8 @@ class HouseManager {
     }
 
     // Returns the houses owned by |player|. Assumes that the data has been loaded already.
-    getHousesForPlayer(player) {
-        return this.getHousesForUser(player.userId);
+    getHousesForPlayer(player, userId = null) {
+        return this.getHousesForUser(userId ?? player.account.userId);
     }
 
     // Returns the houses owned by |userId|. Assumes that the data has been loaded already.
@@ -547,6 +548,8 @@ class HouseManager {
     // Called when the |player| has logged in to their account. Will check whether house names have
     // to be updated (in case the player changed their nickname).
     async onPlayerLogin(player) {
+        this.userIds_.set(player, player.account.userId);
+
         if (player.isUndercover())
             return;  // skip this update when the |player| is undercover
 
@@ -567,8 +570,10 @@ class HouseManager {
     // Called when the |player| has disconnected from the server. If they own houses, the owner
     // properties of their houses will be set to NULL again.
     onPlayerDisconnect(player) {
-        for (const location of this.getHousesForPlayer(player))
+        for (const location of this.getHousesForPlayer(player, this.userIds_.get(player)))
             location.settings.owner = null;
+        
+        this.userIds_.delete(player);
     }
 
     // ---------------------------------------------------------------------------------------------

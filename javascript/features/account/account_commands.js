@@ -50,7 +50,7 @@ export class AccountCommands {
     async onAccountCommand(currentPlayer, targetPlayer) {
         const player = targetPlayer || currentPlayer;
 
-        if (!player.isRegistered()) {
+        if (!player.account.isRegistered()) {
             currentPlayer.sendMessage(Message.ACCOUNT_NOT_REGISTERED, player.name);
             return;
         }
@@ -412,7 +412,7 @@ export class AccountCommands {
     // be paginated, and entries from the player's full history can be seen.
     async displayRecord(currentPlayer, targetPlayer) {
         const player = targetPlayer || currentPlayer;
-        const record = await this.database_.getPlayerRecord(player.userId, {
+        const record = await this.database_.getPlayerRecord(player.account.userId, {
             includeNotes: currentPlayer.isAdministrator(),
         });
 
@@ -444,7 +444,7 @@ export class AccountCommands {
     async displaySessions(currentPlayer, targetPlayer) {
         const player = targetPlayer || currentPlayer;
         const sessions = await this.database_.getPlayerSessions({
-            userId: player.userId,
+            userId: player.account.userId,
             limit: this.getSettingValue('session_count'),
         });
 

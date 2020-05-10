@@ -184,11 +184,11 @@ describe('HouseEntranceController', (it, beforeEach) => {
         assert.equal(location.settings.ownerId, 42);
         assert.equal(location.settings.ownerGangId, null);
 
-        controller.onUserJoinGang(russell.userId, 1501);
+        controller.onUserJoinGang(russell.account.userId, 1501);
 
         assert.equal(location.settings.ownerGangId, 1501);
 
-        controller.onUserLeaveGang(russell.userId, 1501);
+        controller.onUserLeaveGang(russell.account.userId, 1501);
 
         assert.equal(location.settings.ownerGangId, null);
     });

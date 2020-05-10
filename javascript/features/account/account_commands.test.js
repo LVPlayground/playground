@@ -35,7 +35,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     afterEach(() => commands.dispose());
 
     it('should not work if the player is not registered', async (assert) => {
-        assert.isFalse(russell.isRegistered());
+        assert.isFalse(russell.account.isRegistered());
         assert.isTrue(await russell.issueCommand('/account'));
 
         assert.equal(russell.messages.length, 1);

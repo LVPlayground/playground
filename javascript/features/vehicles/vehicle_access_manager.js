@@ -23,7 +23,7 @@ class VehicleAccessManager {
         switch (lock.type) {
             // Requires the |player| to be the sole person allowed to enter the vehicle.
             case VehicleAccessManager.LOCK_PLAYER:
-                return player.isRegistered() && player.userId === lock.userId;
+                return player.account.userId === lock.userId;
 
             // Requires the |player| to have a minimum level for accessing the vehicle.
             case VehicleAccessManager.LOCK_PLAYER_LEVEL:

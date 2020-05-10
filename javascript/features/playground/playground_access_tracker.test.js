@@ -49,7 +49,7 @@ describe('PlaygroundAccessTracker', (it, beforeEach, afterEach) => {
     it('should only allow exceptions for registered players', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        assert.isFalse(gunther.isRegistered());
+        assert.isFalse(gunther.account.isRegistered());
 
         tracker.registerCommand('foo', Player.LEVEL_MANAGEMENT);
 
@@ -78,7 +78,7 @@ describe('PlaygroundAccessTracker', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         await gunther.identify();
 
-        assert.isTrue(gunther.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
 
         assert.throws(() => tracker.canAccessCommand('foo', gunther));
         assert.throws(() => tracker.addException('foo', gunther));
@@ -103,7 +103,7 @@ describe('PlaygroundAccessTracker', (it, beforeEach, afterEach) => {
         const gunther3 = server.playerManager.getById(2 /* Lucy, will identify as Gunther */);
 
         await gunther1.identify({ userId: 144 });
-        assert.isTrue(gunther1.isRegistered());
+        assert.isTrue(gunther1.account.isRegistered());
 
         tracker.registerCommand('foo', Player.LEVEL_MANAGEMENT);
         tracker.addException('foo', gunther1);
@@ -118,7 +118,7 @@ describe('PlaygroundAccessTracker', (it, beforeEach, afterEach) => {
         assert.isFalse(tracker.canAccessCommand('foo', gunther2));
 
         await gunther2.identify({ userId: 144 });
-        assert.isTrue(gunther2.isRegistered());
+        assert.isTrue(gunther2.account.isRegistered());
 
         // The exception should have been re-granted for userId = 144.
         assert.isTrue(tracker.canAccessCommand('foo', gunther2));
@@ -132,7 +132,7 @@ describe('PlaygroundAccessTracker', (it, beforeEach, afterEach) => {
         await server.clock.advance(5 * 60 * 1000);
 
         await gunther3.identify({ userId: 144 });
-        assert.isTrue(gunther3.isRegistered());
+        assert.isTrue(gunther3.account.isRegistered());
 
         // The exception should *not* have been re-granted for userId = 144.
         assert.isFalse(tracker.canAccessCommand('foo', gunther3));

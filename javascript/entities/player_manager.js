@@ -114,7 +114,7 @@ class PlayerManager {
             if ('onPlayerConnect' in observer)
                 observer.onPlayerConnect(player);
 
-            if ('onPlayerLogin' in observer && player.isRegistered())
+            if ('onPlayerLogin' in observer && player.account.isRegistered())
                 observer.onPlayerLogin(player, {});
         }
     }

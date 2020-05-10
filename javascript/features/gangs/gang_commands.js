@@ -95,7 +95,7 @@ class GangCommands {
     // eligible, it will start a wizard of dialog boxes requesting the necessary information from
     // the player. All values must be unique among other gangs in the database.
     async onGangCreateCommand(player) {
-        if (!player.isRegistered()) {
+        if (!player.account.isRegistered()) {
             player.sendMessage(Message.GANGS_NOT_REGISTERED);
             return;
         }
@@ -151,7 +151,7 @@ class GangCommands {
         }
 
         // The invitee must be registered with Las Venturas Playground.
-        if (!invitee.isRegistered()) {
+        if (!invitee.account.isRegistered()) {
             player.sendMessage(Message.GANG_INVITE_NOT_REGISTERED, invitee.name);
             return;
         }

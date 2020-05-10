@@ -94,7 +94,7 @@ export class PunishmentCommands {
             this.database_.unban(entry.id),
             this.database_.addEntry({
                 type: BanDatabase.kTypeUnban,
-                sourceUserId: player.userId,
+                sourceUserId: player.account.userId,
                 sourceNickname: player.name,
                 subjectNickname: entry.nickname,
                 note: reason

@@ -17,12 +17,12 @@ export class PlayerSettingsManager {
 
     // Loads the settings of the player when a player has logged in
     onPlayerLogin(player) {
-        if (!player.isRegistered()) {
+        if (!player.account.isRegistered()) {
             return;
         }
 
         // Load the existing persistent values from the database, and apply them to the local state.
-        Promise.resolve(this.database_.loadSettings(player.userId)).then(settings => {
+        Promise.resolve(this.database_.loadSettings(player.account.userId)).then(settings => {
             for (const [identifier, value] of settings) {
                 try {
                     this.setValue(identifier, value);
@@ -37,16 +37,15 @@ export class PlayerSettingsManager {
     // Store the player data in the database.
     // Throws error if player has no userId
     updateSettingsInDatabase(player, identifier, value) {
-        if (player.userId === null || player.userId === undefined) {
+        if (!player.account.userId)
             throw new Error('Unknown player in database. Player has no userId');
-        }
 
-        var setting = player.settings.getSetting(identifier);
+        const setting = player.settings.getSetting(identifier);
 
         // Either delete or write the new |value| from or to the database. Don't block on it.
         if (value === setting.defaultValue)
-            this.database_.deleteSetting(setting, player.userId);
+            this.database_.deleteSetting(setting, player.account.userId);
         else
-            this.database_.writeSetting(setting, player.userId);
+            this.database_.writeSetting(setting, player.account.userId);
     }
 }

@@ -276,7 +276,7 @@ class GangDatabase {
         gangId = results.insertId;
 
         await server.database.query(
-            GANG_CREATE_MEMBER_QUERY, player.userId, results.insertId, 'Leader');
+            GANG_CREATE_MEMBER_QUERY, player.account.userId, results.insertId, 'Leader');
 
         return {
             id: gangId,
@@ -309,7 +309,7 @@ class GangDatabase {
     // Adds |player| to |gang|. Returns a promise that will be resolved when the information has
     // been stored in the database.
     async addPlayerToGang(player, gang) {
-        const userId = player.userId;
+        const userId = player.account.userId;
         const gangId = gang.id;
 
         await server.database.query(GANG_CREATE_MEMBER_QUERY, userId, gangId, 'Member');
@@ -326,7 +326,7 @@ class GangDatabase {
     // will be resolved with the userId, name and current role of the newly suggested leader.
     async determineSuccessionAfterDeparture(player, gang) {
         const results =
-            await server.database.query(GANG_DETERMINE_NEXT_LEADER, player.userId, gang.id);
+            await server.database.query(GANG_DETERMINE_NEXT_LEADER, player.account.userId, gang.id);
 
         if (results.rows.length === 0)
             return null;
@@ -364,7 +364,8 @@ class GangDatabase {
     // will be resolved when the database has been updated with the new information.
     async updateColorPreference(gang, player, useGangColor) {
         await server.database.query(
-            GANG_UPDATE_COLOR_PREFERENCES_QUERY, useGangColor ? 1 : 0, player.userId, gang.id);
+            GANG_UPDATE_COLOR_PREFERENCES_QUERY, useGangColor ? 1 : 0,
+            player.account.userId, gang.id);
     }
 
     // Updates the name of the |gang| to |name|. Returns a promise that will be resolved when the

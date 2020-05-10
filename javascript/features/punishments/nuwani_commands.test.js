@@ -122,7 +122,7 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         assert.isNotNull(database.addedEntry);
         assert.equal(database.addedEntry.type, BanDatabase.kTypeNote);
         assert.equal(database.addedEntry.sourceNickname, kCommandSourceUsername);
-        assert.equal(database.addedEntry.subjectUserId, lucy.userId);
+        assert.equal(database.addedEntry.subjectUserId, lucy.account.userId);
         assert.equal(database.addedEntry.subjectNickname, lucy.name);
         assert.equal(database.addedEntry.note, 'Has been in-game for weeks?!');
 
@@ -139,6 +139,8 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         await assertDurationConstraints(assert, `!ban ${lucy.id} ? reason`);
         await assertNoteConstraints(assert, `!ban ${lucy.id} 5`);
         await lucy.identify();
+
+        const userId = lucy.account.userId;
 
         assert.isTrue(lucy.isConnected());
 
@@ -164,7 +166,7 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         assert.equal(database.addedEntry.banIpRangeStart, ip2long(ipAddress));
         assert.equal(database.addedEntry.banIpRangeEnd, ip2long(ipAddress));
         assert.equal(database.addedEntry.sourceNickname, kCommandSourceUsername);
-        assert.equal(database.addedEntry.subjectUserId, lucy.userId);
+        assert.equal(database.addedEntry.subjectUserId, userId);
         assert.equal(database.addedEntry.subjectNickname, lucy.name);
         assert.equal(database.addedEntry.note, 'Idling on the ship');
 
@@ -554,6 +556,8 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         await assertNoteConstraints(assert, '!kick 0');
         await lucy.identify();
 
+        const userId = lucy.account.userId;
+
         assert.isTrue(lucy.isConnected());
 
         const result = await issueCommand(bot, commandManager, {
@@ -574,7 +578,7 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         assert.isNotNull(database.addedEntry);
         assert.equal(database.addedEntry.type, BanDatabase.kTypeKick);
         assert.equal(database.addedEntry.sourceNickname, kCommandSourceUsername);
-        assert.equal(database.addedEntry.subjectUserId, lucy.userId);
+        assert.equal(database.addedEntry.subjectUserId, userId);
         assert.equal(database.addedEntry.subjectNickname, lucy.name);
         assert.equal(database.addedEntry.note, 'Idling on the ship');
 

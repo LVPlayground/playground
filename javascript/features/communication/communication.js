@@ -32,7 +32,7 @@ export default class Communication extends Feature {
         this.filter_ = new MessageFilter();
 
         this.manager_ = new CommunicationManager(this.filter_, nuwani);
-        this.natives_ = new CommunicationNatives(this.manager_);
+        this.natives_ = new CommunicationNatives(this);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -62,8 +62,8 @@ export default class Communication extends Feature {
     getReplacements() {
         let replacements = [];
 
-        for (const replacements of this.filter_.replacements) {
-            if (replacements.after.length > 0) {
+        for (const replacement of this.filter_.replacements) {
+            if (replacement.after.length > 0) {
                 replacements.push({
                     before: replacement.before,
                     after: replacement.after,
@@ -117,8 +117,8 @@ export default class Communication extends Feature {
     getBlockedWords() {
         let blockedWords = [];
 
-        for (const replacements of this.filter_.replacements) {
-            if (!replacements.after.length) {
+        for (const replacement of this.filter_.replacements) {
+            if (!replacement.after.length) {
                 blockedWords.push({
                     word: replacement.before,
                     nickname: replacement.nickname,
@@ -141,7 +141,7 @@ export default class Communication extends Feature {
         if (word.length < kMinimumReplacementLength)
             throw new Error(`The |word| must be >=${kMinimumReplacementLength} characters.`);
         
-        return await this.filter_.addReplacement(player, after);
+        return await this.filter_.addReplacement(player, word);
     }
 
     // Removes the blocked word identified by |word|. The |player| is included for symmetry, and

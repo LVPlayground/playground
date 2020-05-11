@@ -6,7 +6,7 @@
 const kRecapitalizeMinimumMessageLength = 10;
 
 // Minimum uppercase-to-lowercase ratio before recapitalizing.
-const kRecapitalizeMinimumCapitalRatio = .7;
+const kRecapitalizeMinimumCapitalRatio = .8;
 
 // Common initialisms that we allow to be capitalized.
 const kCommonInitialisms = new Set([
@@ -20,7 +20,34 @@ export class MessageFilter {
     // Filters the given |message|, as sent by the |player|. If the filter decides to block this
     // message, the |player| will be informed about this.
     filter(player, message) {
+        // (1) Force-recapitalize the sentence if it's longer than a certain length, and the ratio
+        // between lower-case and upper-case characters exceeds a defined threshold.
+        if (message.length > kRecapitalizeMinimumMessageLength &&
+                this.determineCaseRatio(message) > kRecapitalizeMinimumCapitalRatio) {
+            message = this.recapitalize(message);
+        }
 
+
+        return message;
+    }
+
+    // Determines the ratio of upper-case characters in the full sentence. Punctuation signs,
+    // numbers and other non-A-Z characters will be ignored.
+    determineCaseRatio(message) {
+        let lowercaseCount = 0;
+        let uppercaseCount = 0;
+        
+        for (let i = 0; i < message.length; ++i) {
+            const charCode = message.charCodeAt(i);
+            if (charCode >= 65 /* A */ && charCode <= 90 /* Z */)
+                ++uppercaseCount;
+            else if (charCode >= 97 /* a */ && charCode <= 122 /* z */)
+                ++lowercaseCount;
+        }
+
+        const totalCount = lowercaseCount + uppercaseCount;
+        return totalCount > 0 ? uppercaseCount / totalCount
+                              : 0;
     }
 
     // Completely recapitalizes a message. Sentence case will be applied, a few common acronyms will
@@ -59,8 +86,18 @@ export class MessageFilter {
         reformattedMessage = reformattedMessage.trimRight();
 
         // (5) Make sure that their sentence ends with a punctuation mark.
-        if (!/[.?!]$/.test(reformattedMessage))
+        if (!/[.?!]$/.test(reformattedMessage)) {
+            const firstWords = reformattedMessage.match(/(?:^|(?:[\.\?!]\s))(\w+)/g);
+            if (firstWords && firstWords.length > 0) {
+                const finalStart = firstWords.pop().toLowerCase();
+                for (const questionIndicator of ['what', 'why', 'how', 'is']) {
+                    if (finalStart.endsWith(questionIndicator))
+                        return reformattedMessage + '?';
+                }
+            }
+
             reformattedMessage += '.';
+        }
 
         return reformattedMessage;
     }

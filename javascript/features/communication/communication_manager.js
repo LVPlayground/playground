@@ -101,7 +101,7 @@ export class CommunicationManager {
         // an informative message about when the mute is due to expire.
         {
             const remainingSeconds = this.muteManager_.getPlayerRemainingMuteTime(player);
-            if (remainingSeconds > 0) {
+            if (remainingSeconds > 0 && unprocessedMessage[0] != '@') {
                 const expiration = new Date(Date.now() + remainingSeconds * 1000);
                 const formattedExpiration = relativeTime({ date1: new Date(), date2: expiration });
 

@@ -5,7 +5,10 @@
 // Provides a series of commands associated with communication on Las Venturas Playground.
 export class CommunicationCommands {
     constructor() {
-
+        // /mute [player] [duration=3]
+        // /muteall [on/off]
+        // /muted
+        // /unmute [player]
     }
 
     dispose() {}

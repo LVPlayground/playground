@@ -25,8 +25,10 @@ export class MuteManager {
             return null;  // they haven't been muted this session
         
         const currentTime = server.clock.monotonicallyIncreasingTime();
-        if (player.account.mutedUntil < currentTime)
-            return null;  // mute has expired
+        if (player.account.mutedUntil < currentTime) {
+            player.account.mutedUntil = 0;
+            return null;
+        }
 
         return Math.ceil((player.account.mutedUntil - currentTime) / 1000);
     }

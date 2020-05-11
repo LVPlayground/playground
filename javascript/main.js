@@ -46,6 +46,7 @@ testRunner.run('.*\.test\.js').then(time => {
 
         'account_provider',
         'nuwani',
+        'settings',
 
         // -----------------------------------------------------------------------------------------
         // Regular features
@@ -53,7 +54,7 @@ testRunner.run('.*\.test\.js').then(time => {
 
         // Low level features, which may only depend on each other and foundational features.
         'abuse', 'announce', 'communication', 'economy', 'finance', 'location', 'minigames',
-        'settings', 'streamer',
+        'streamer',
 
         // Gang-related features
         'gang_chat', 'gang_zones', 'gangs',

@@ -16,23 +16,6 @@ public OnPlayerText(playerid, text[]) {
 
     PlayerIdlePenalty->resetCurrentIdleTime(playerid);
 
-    // A muted player can't chat unless it's the admins he wants to chat with.
-    if (MuteManager->isMuted(playerid) && text[0] != '@') {
-        if (MuteManager->muteDuration(playerid) == -1)
-            SendClientMessage(playerid, Color::Error, "You're permanently muted and won't be able to chat.");
-        else {
-            new durationText[10];
-            Time->formatRemainingTime(MuteManager->muteDuration(playerid), durationText,
-                sizeof(durationText), /** force minutes **/ true);
-            format(message, sizeof(message), "You're muted for another %s minutes and won't be able to chat.",
-                durationText);
-            SendClientMessage(playerid, Color::Error, message);
-        }
-
-        SendClientMessage(playerid, Color::Error, "Please read the /rules. If you have a question use @<message> to contact an administrator.");
-        return 0;
-    }
-
     // Perhaps the player still has to login?
     if (Player(playerid)->isLoggedIn() == false && Player(playerid)->isRegistered() == true && text[0] != '@') {
         SendClientMessage(playerid, Color::Error, "Please login before chatting in the textbox.");

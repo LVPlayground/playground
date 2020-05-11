@@ -46,10 +46,8 @@ export default class ReactionTests extends Feature {
         // particular type of tests, for example repeat-the-word, or calculations.
         this.strategies_ = [
             CalculationStrategy,
-            CalculationStrategy,
             RandomStrategy,
-            RandomStrategy,
-            RememberStrategy,  // TODO: Move to 1/3rd for each
+            RememberStrategy,
         ];
 
         // Immediately schedule the first reaction test to start.
@@ -77,15 +75,28 @@ export default class ReactionTests extends Feature {
             this.startReactionTest(token));
     }
 
-    // Returns whether the test should be skipped. This could be the case because there are no
-    // players in-game, in which case we don't want to spam people watching via Nuwani.
-    shouldSkipReactionTest() {
+    // Picks a reaction test strategy. In essense this picks a random reaction tests which meets the
+    // requirements to be ran at the current time, which is player-based.
+    createReactionTestStrategy() {
+        let candidateStrategies = [];
+        let onlinePlayerCount = 0;
+
         for (const player of server.playerManager) {
             if (!player.isNonPlayerCharacter())
-                return false;
+                ++onlinePlayerCount;
         }
 
-        return true;
+        // Determine the candidate strategies based on them matching the requirements.
+        for (const strategyConstructor of this.strategies_) {
+            if (strategyConstructor.kMinimumPlayerCount <= onlinePlayerCount)
+                candidateStrategies.push(strategyConstructor);
+        }
+
+        if (!candidateStrategies.length)
+            return null;  // none of the strategies wishes to be ran at this time
+        
+        const index = Math.floor(Math.random() * candidateStrategies.length);
+        return new candidateStrategies[index](this.settings_);
     }
 
     // Announces the given |message| with the |params| to all players eligible to participate.
@@ -102,19 +113,14 @@ export default class ReactionTests extends Feature {
         if (this.activeTestToken_ !== activeTestToken)
             return;  // the token has expired, another test was scheduled
 
-        // Fast-path: skip this test if the conditions for running a test are not met.
-        if (this.shouldSkipReactionTest()) {
-            this.scheduleNextTest();
+        const strategy = this.createReactionTestStrategy();
+        if (!strategy)
             return;
-        }
-
-        const prize = this.settings_().getValue('playground/reaction_test_prize');
-        const strategyIndex = Math.floor(Math.random() * this.strategies_.length);
-        const strategy = new this.strategies_[strategyIndex](this.settings_);
 
         // Actually start the test. This will make all the necessary announcements too.
         strategy.start(
-            ReactionTests.prototype.announceToPlayers.bind(this), this.nuwani_, prize);
+            ReactionTests.prototype.announceToPlayers.bind(this), this.nuwani_,
+            this.settings_().getValue('playground/reaction_test_prize'));
 
         this.activeTest_ = strategy;
         this.activeTestStart_ = server.clock.monotonicallyIncreasingTime();

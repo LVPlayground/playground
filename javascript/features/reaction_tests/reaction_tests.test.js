@@ -52,19 +52,46 @@ describe('ReactionTests', (it, beforeEach) => {
         }
     });
 
-    it('should be able to determine when to skip tests', assert => {
-        assert.isFalse(driver.shouldSkipReactionTest());
+    it('should be able to determine a condition test based on player counts', assert => {
+        const strategies = new Map();
+        
+        // Create a mapping of |minimumPlayerCount| => |strategies[]|
+        for (const strategyConstructor of driver.strategies_) {
+            if (!strategies.has(strategyConstructor.kMinimumPlayerCount))
+                strategies.set(strategyConstructor.kMinimumPlayerCount, new Set());
+            
+            strategies.get(strategyConstructor.kMinimumPlayerCount).add(strategyConstructor);
+        }
 
+        // Mark all currently online players as NPCs so that they get ignored. This means that,
+        // unless there are strategies that run with no players, none should be created.
         for (let player of server.playerManager)
             player.setIsNonPlayerCharacterForTesting(true);
 
-        assert.isTrue(driver.shouldSkipReactionTest());
+        if (!strategies.has(0))
+            assert.isNull(driver.createReactionTestStrategy());
+        
+        // For each of the player counts, determine that the particular strategy can be picked.
+        let candidates = new Set();
+        let connectedPlayers = 0;
 
-        dispatchEvent('playerconnect', {
-            playerid: 42,
-        });
+        for (const [playerCount, strategyCandidates] of strategies) {
+            while (connectedPlayers < playerCount) {
+                dispatchEvent('playerconnect', {
+                    playerid: 10 + (connectedPlayers++),
+                });
+            }
 
-        assert.isFalse(driver.shouldSkipReactionTest());
+            for (const candidate of strategyCandidates) {
+                candidates.add(candidate);
+                while (true) {
+                    if (driver.createReactionTestStrategy() instanceof candidate)
+                        break;
+                }
+            }
+        }
+
+        assert.equal(candidates.size, driver.strategies_.length);
     });
 
     it('should enable players to win reaction tests', async (assert) => {

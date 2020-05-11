@@ -7,6 +7,9 @@ import { Strategy } from 'features/reaction_tests/strategy.js';
 // This strategy works by creating a reasonably simple calculation for the player to solve. It could
 // be simple addition/substraction, but it's also possible for them to include a multiplication.
 export class CalculationStrategy extends Strategy {
+    // How many players should be on the server in order to consider this strategy?
+    static kMinimumPlayerCount = 1;
+
     answer_ = null;
     calculation_ = null;
     settings_ = null;

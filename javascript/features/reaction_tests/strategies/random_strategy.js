@@ -7,6 +7,9 @@ import { Strategy } from 'features/reaction_tests/strategy.js';
 // This strategy works by creating a string of random characters which must be repeated by the
 // player in order to win. There is a little bit of variety in phrase length and character use.
 export class RandomStrategy extends Strategy {
+    // How many players should be on the server in order to consider this strategy?
+    static kMinimumPlayerCount = 1;
+
     // Minimum and maximum lengths, in characters, of a generated random string.
     static kMinimumLength = 7;
     static kMaximumLength = 9;

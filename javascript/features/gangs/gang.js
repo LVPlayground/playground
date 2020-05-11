@@ -107,14 +107,6 @@ class Gang {
 
     // Sets whether the |player| will use the gang's skin.
     setUsesGangSkin(player, usesGangSkin) {
-        if (typeof usesGangSkin !== 'boolean') {
-            throw new Error('usesGangSkin has to be a boolean value.');
-        }
-
-        if (player === null || player === undefined || typeof player !== 'object') {
-            throw new Error('Player is not defined.')
-        }
-
         player.settings.updateSetting(
             `${PlayerSetting.CATEGORY.GANG}/${PlayerSetting.GANG.USE_SKIN}`,
             usesGangSkin);

@@ -485,7 +485,7 @@ class GangCommands {
                     skinId);
 
                 this.announce_().announceToAdministratorsWithFilter(
-                    Message.GANG_ANNOUNCE_NEW_COLOR, 
+                    Message.GANG_ANNOUNCE_NEW_SKIN, 
                     PlayerSetting.ANNOUNCEMENT.GANGS, 
                     PlayerSetting.SUBCOMMAND.GANGS_CHANGED_SKIN,
                     player.name, player.id, gang.name,

@@ -20,6 +20,5 @@ export default [
     new PlayerSetting(PlayerSetting.CATEGORY.ANNOUNCEMENT, PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_TELEPORTED, 'houses teleported', PlayerSetting.TYPE_BOOLEAN, true, 'This is the house teleport command.'),
 
     new PlayerSetting(PlayerSetting.CATEGORY.GANG, PlayerSetting.GANG.USE_SKIN, null, 'gang use skin', PlayerSetting.TYPE_BOOLEAN, true, 'This determines whether the player wants to use the gang\'s skin.')
-    
 ];
 

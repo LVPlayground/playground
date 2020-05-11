@@ -278,9 +278,8 @@ class GangManager {
     }
 
     async updateSkinId(gang, skinId) {
-        if (skinId < 0 || skinId > 299 || skinId == 121) {
+        if (skinId < 0 || skinId > 299 || skinId == 121)
             return;
-        }
 
         await this.database_.updateSkinId(gang, skinId);
 
@@ -297,9 +296,8 @@ class GangManager {
 
         gang.setUsesGangSkin(player, usesGangSkin);
 
-        if(usesGangSkin === true) {
+        if(usesGangSkin === true) 
             this.setSkinInPawnCode(player.id, gang.skinId, true);
-        }
     }
 
     // Call the spawn manager to update player skin.

@@ -137,6 +137,8 @@ class MockGangDatabase {
 
     async updateColor(gang, color) {}
 
+    async updateSkinId(gang, skinId) {}
+
     async updateColorPreference(gang, player, useGangColor) {}
 
     async updateName(gang, name) {}

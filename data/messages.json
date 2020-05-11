@@ -321,6 +321,8 @@
   "RADIO_PREFERRED_DEFAULT": "You will be listening to the default radio channel again.",
   "RADIO_PREFERRED_DISABLED": "You have disabled the in-game radio.",
 
+  "REACTION_TEST_RANDOM_ANNOUNCE": "{FFFF00}The first one who says \"%s\" wins %$!",
+
   "REPORT_MESSAGE": "{33AA33}Your report has been delivered to the crew{FFFFFF}: Player: %s (Id:%d) - Reason: %s",
   "REPORT_ALREADY_REPORTED": "@error We have already received a report about %s and are on it. Thank you!",
 

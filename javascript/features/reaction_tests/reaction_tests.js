@@ -3,6 +3,9 @@
 // be found in the LICENSE file.
 
 import Feature from 'components/feature_manager/feature.js';
+import { RandomStrategy } from 'features/reaction_tests/strategies/random_strategy.js';
+
+import { format } from 'base/string_formatter.js';
 
 // Las Venturas Playground supports a variety of different reaction tests. They're shown in chat at
 // certain intervals, and require players to repeat characters, do basic calculations or remember
@@ -35,7 +38,7 @@ export default class ReactionTests extends Feature {
         // Array of the available strategies for reaction tests. Each of those corresponds to a
         // particular type of tests, for example repeat-the-word, or calculations.
         this.strategies_ = [
-            // TODO
+            new RandomStrategy(),
         ];
 
         // Immediately schedule the first reaction test to start.
@@ -70,6 +73,14 @@ export default class ReactionTests extends Feature {
         }
 
         return true;
+    }
+
+    // Announces the given |message| with the |params| to all players eligible to participate.
+    announceToPlayers(message, ...params) {
+        const assembledMessage = format(message, ...params);
+
+        for (const player of server.playerManager)
+            player.sendMessage(assembledMessage);
     }
 
     // Starts the next reaction test. First the token is verified to make sure it's still the latest

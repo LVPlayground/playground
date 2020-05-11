@@ -42,7 +42,7 @@
     "fightclub-winner": "<color:13>*** %s (Id:%d) has won the fight against %s (Id:%d) with a score of %d : %d.",
     "fightclub-draw": "<color:13>*** The fight between %s (Id:%d) and %s (Id:%d) ended in a draw.",
 
-    "reaction-remember": "<color:6>*** Players have been asked to remember a number to win %$!",
+    "reaction-remember": "<color:6>*** Players have been asked to remember a number in order to win %$!",
     "reaction-remember-2": "<color:6>*** Players have been asked to repeat the number they were asked to remember to win %$!",
     "reaction-repeat": "<color:6>*** First player to type %s wins %$!",
     "reaction-calculate": "<color:6>*** First player to calculate %s wins %$!",

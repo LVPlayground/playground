@@ -17,6 +17,7 @@ export class AccountData {
 
     userId_ = undefined;
     bankAccountBalance_ = undefined;
+    reactionTests_ = undefined;
 
     // Gets the permanent user Id that has been assigned to this user. Read-only.
     get userId() { return this.userId_; }
@@ -28,6 +29,10 @@ export class AccountData {
         this.bankAccountBalance_ = balance;
         this.requestUpdate();
     }
+
+    // Gets or sets the number of reaction tests that this player has won.
+    get reactionTests() { return this.reactionTests_; }
+    set reactionTests(value) { this.reactionTests_ = value; }
 
     // Returns whether the player is registered with Las Venturas Playground.
     isRegistered() { return this.isRegistered_; }
@@ -43,6 +48,7 @@ export class AccountData {
     initializeFromDatabase(databaseRow) {
         this.userId_ = databaseRow.user_id;
         this.bankAccountBalance_ = databaseRow.money_bank;
+        this.reactionTests_ = databaseRow.stats_reaction;
 
         this.isRegistered_ = true;
         this.hasIdentified_ = true;
@@ -55,6 +61,7 @@ export class AccountData {
         return {
             user_id: this.userId_,
             money_bank: this.bankAccountBalance_,
+            stats_reaction: this.reactionTests_,
         };
     }
 

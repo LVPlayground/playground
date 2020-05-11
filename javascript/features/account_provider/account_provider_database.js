@@ -6,7 +6,8 @@
 const ACCOUNT_LOAD_QUERY = `
     SELECT
         users_mutable.user_id,
-        users_mutable.money_bank
+        users_mutable.money_bank,
+        users_mutable.stats_reaction
     FROM
         users_mutable
     WHERE
@@ -18,7 +19,8 @@ const ACCOUNT_SAVE_QUERY = `
     UPDATE
         users_mutable
     SET
-        users_mutable.money_bank = ?
+        users_mutable.money_bank = ?,
+        users_mutable.stats_reaction = ?
     WHERE
         users_mutable.user_id = ?`;
 
@@ -37,7 +39,8 @@ export class AccountProviderDatabase {
     // the `loadAccountData()` method. Generally composited by the AccountData structure.
     async saveAccountData(accountData) {
         await server.database.query(
-            ACCOUNT_SAVE_QUERY, accountData.money_bank, accountData.user_id);
+            ACCOUNT_SAVE_QUERY, accountData.money_bank, accountData.stats_reaction,
+            accountData.user_id);
 
         return true;
     }

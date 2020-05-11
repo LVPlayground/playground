@@ -46,4 +46,8 @@ export class PlayerAccountSupplement extends Supplement {
         if (this.data_.hasIdentified())
             this.data_.bankAccountBalance = balance;
     }
+
+    // Gets or sets the number of reaction tests that the player has won.
+    get reactionTests() { return this.data_.reactionTests || 0; }
+    set reactionTests(value) { this.data_.reactionTests = value; }
 }

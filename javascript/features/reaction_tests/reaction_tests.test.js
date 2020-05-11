@@ -72,6 +72,7 @@ describe('ReactionTests', (it, beforeEach) => {
         await server.clock.advance((delay + jitter) * 1000);
 
         assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.account.reactionTests, 0);
         
         // (1) The first player to give the right answer will be awarded the money.
         await server.clock.advance(2567);
@@ -81,6 +82,7 @@ describe('ReactionTests', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 3);
         assert.includes(gunther.messages[1], 'in 2.57 seconds');
         assert.equal(gunther.messages[2], Message.format(Message.REACTION_TEST_WON, prize));
+        assert.equal(gunther.account.reactionTests, 1);
 
         // (2) Subsequent players will receive a generic "too late!" message.
         assert.equal(lucy.messages.length, 2);
@@ -89,6 +91,7 @@ describe('ReactionTests', (it, beforeEach) => {
 
         lucy.issueMessage(driver.activeTest_.answer);
 
+        assert.equal(lucy.account.reactionTests, 0);
         assert.equal(lucy.messages.length, 3);
         assert.equal(
             lucy.messages[2], Message.format(Message.REACTION_TEST_TOO_LATE, gunther.name, 1.23));

@@ -136,10 +136,21 @@ export default class ReactionTests extends Feature {
 
         } else {
             const difference = Math.round((currentTime - this.activeTestStart_) / 10) / 100;
+            const previousWins = player.account.reactionTests;
 
             this.nuwani_().echo('reaction-result', player.name, player.id, difference);
-            this.announceToPlayers(
-                Message.REACTION_TEST_ANNOUNCE_WINNER, player.name, difference);
+            if (previousWins <= 1) {
+                const message = previousWins === 0 ? Message.REACTION_TEST_ANNOUNCE_WINNER_FIRST
+                                                   : Message.REACTION_TEST_ANNOUNCE_WINNER_SECOND;
+
+                this.announceToPlayers(message, player.name, difference);
+            } else {
+                this.announceToPlayers(
+                    Message.REACTION_TEST_ANNOUNCE_WINNER, player.name, difference, previousWins);
+            }
+
+            // Increment the number of wins in the player's statistics.
+            player.account.reactionTests++;
 
             // Finally, let the |player| know about the prize they've won.
             player.sendMessage(Message.REACTION_TEST_WON, prize);

@@ -66,6 +66,7 @@ export default [
     new Setting('gangs', 'zones_cluster_limit', Setting.TYPE_NUMBER, 8, 'Maximum number of clusters when running k-means clustering.'),
 
     /** Playground related settings */
+    new Setting('playground', 'reaction_test_multiplication_pct', Setting.TYPE_NUMBER, 25, 'What percentage of calculation tests should be multiplication?'),
     new Setting('playground', 'reaction_test_delay_sec', Setting.TYPE_NUMBER, 270, 'Average time between reaction tests.'),
     new Setting('playground', 'reaction_test_expire_sec', Setting.TYPE_NUMBER, 300, 'After how many seconds does a reaction test expire?'),
     new Setting('playground', 'reaction_test_jitter_sec', Setting.TYPE_NUMBER, 150, 'Jitter to apply to the delay to reduce predictability.'),

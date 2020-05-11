@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { CalculationStrategy } from 'features/reaction_tests/strategies/calculation_strategy.js';
 import Feature from 'components/feature_manager/feature.js';
 import { RandomStrategy } from 'features/reaction_tests/strategies/random_strategy.js';
 
@@ -43,6 +44,7 @@ export default class ReactionTests extends Feature {
         // Array of the available strategies for reaction tests. Each of those corresponds to a
         // particular type of tests, for example repeat-the-word, or calculations.
         this.strategies_ = [
+            CalculationStrategy,
             RandomStrategy,
         ];
 
@@ -102,7 +104,7 @@ export default class ReactionTests extends Feature {
 
         const prize = this.settings_().getValue('playground/reaction_test_prize');
         const strategyIndex = Math.floor(Math.random() * this.strategies_.length);
-        const strategy = new this.strategies_[strategyIndex];
+        const strategy = new this.strategies_[strategyIndex](this.settings_);
 
         // Actually start the test. This will make all the necessary announcements too.
         strategy.start(

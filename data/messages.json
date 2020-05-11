@@ -321,6 +321,7 @@
   "RADIO_PREFERRED_DEFAULT": "You will be listening to the default radio channel again.",
   "RADIO_PREFERRED_DISABLED": "You have disabled the in-game radio.",
 
+  "REACTION_TEST_ANNOUNCE_CALCULATE": "{FFFF00}The first one who calculates \"%s\" wins %$!",
   "REACTION_TEST_ANNOUNCE_REPEAT": "{FFFF00}The first one who repeats \"%s\" wins %$!",
   "REACTION_TEST_ANNOUNCE_WINNER_FIRST": "{FFFF00}%s has won the reaction test in %d seconds. This is their first win!",
   "REACTION_TEST_ANNOUNCE_WINNER_SECOND": "{FFFF00}%s has won the reaction test in %d seconds. They've won once before.",

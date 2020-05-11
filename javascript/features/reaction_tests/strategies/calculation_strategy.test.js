@@ -2,39 +2,40 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { RandomStrategy } from 'features/reaction_tests/strategies/random_strategy.js';
+import { CalculationStrategy } from 'features/reaction_tests/strategies/calculation_strategy.js';
 
-describe('RandomStrategy', (it, beforeEach) => {
+describe('CalculationStrategy', (it, beforeEach) => {
     let announceFn = null;
     let nuwani = null;
+    let settings = null;
 
     beforeEach(() => {
         const driver = server.featureManager.loadFeature('reaction_tests');
 
         announceFn = driver.__proto__.announceToPlayers.bind(driver);
         nuwani = server.featureManager.loadFeature('nuwani');
+        settings = server.featureManager.loadFeature('settings');
     });
 
-    it('is able to compute random strings of the exported specifications', assert => {
+    it('is able to calculate random strings of the exported specifications', assert => {
         for (let i = 0; i < 25; ++i) {
-            const strategy = new RandomStrategy();
+            const strategy = new CalculationStrategy(() => settings);
 
             strategy.start(announceFn, nuwani, 0);
 
             const answer = strategy.answer;
+            const calculation = strategy.calculation;
 
             assert.typeOf(answer, 'string');
-            assert.isAboveOrEqual(answer.length, RandomStrategy.kMinimumLength);
-            assert.isBelowOrEqual(answer.length, RandomStrategy.kMaximumLength);
+            assert.typeOf(calculation, 'string');
 
-            for (const character of answer)
-                assert.includes(RandomStrategy.kAlphabet, character);
+            assert.equal(parseInt(answer, 10), eval(calculation));
         }
     });
 
     it('announces new tests to in-game players and Nuwani users', assert => {
         const gunther = server.playerManager.getById(/* Gunther= */ 0);
-        const strategy = new RandomStrategy();
+        const strategy = new CalculationStrategy(() => settings);
 
         assert.equal(gunther.messages.length, 0);
         assert.equal(nuwani.messagesForTesting.length, 0);
@@ -44,12 +45,12 @@ describe('RandomStrategy', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.equal(
             gunther.messages[0],
-            Message.format(Message.REACTION_TEST_ANNOUNCE_REPEAT, strategy.answer, 1234));
+            Message.format(Message.REACTION_TEST_ANNOUNCE_CALCULATE, strategy.calculation, 1234));
 
         assert.equal(nuwani.messagesForTesting.length, 1);
         assert.deepEqual(nuwani.messagesForTesting[0], {
-            tag: 'reaction-repeat',
-            params: [ strategy.answer, 1234 ]
+            tag: 'reaction-calculate',
+            params: [ strategy.calculation, 1234 ]
         });
     });
 });

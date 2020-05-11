@@ -18,6 +18,7 @@ export class RememberStrategy extends Strategy {
     static kStateStopped = 3;
     
     answer_ = null;
+    answerOffsetTimeMs_ = null;
     settings_ = null;
     state_ = RememberStrategy.kStateUninitialized;
     
@@ -29,6 +30,9 @@ export class RememberStrategy extends Strategy {
 
     // Gets the answer to the current reaction test. May be NULL.
     get answer() { return this.answer_; }
+
+    // Time, in milliseconds, to offset the player's actual answer time with.
+    get answerOffsetTimeMs() { return this.answerOffsetTimeMs_; }
 
     // Starts a new test provided by this strategy. The question must be determined, and it should
     // be announced to people in-game and available through Nuwani accordingly.
@@ -46,8 +50,8 @@ export class RememberStrategy extends Strategy {
         const delay = this.settings_().getValue('playground/reaction_test_remember_delay_sec');
         const jitter = this.settings_().getValue('playground/reaction_test_remember_jitter_sec');
 
-        const actualDelay = this.randomInteger(delay - jitter, delay + jitter);
-        wait(actualDelay * 1000).then(() => {
+        this.answerOffsetTimeMs_ = this.randomInteger(delay - jitter, delay + jitter) * 1000;
+        wait(this.answerOffsetTimeMs_).then(() => {
             if (this.state_ != RememberStrategy.kStateWaiting)
                 return;  // the test has been stopped
             

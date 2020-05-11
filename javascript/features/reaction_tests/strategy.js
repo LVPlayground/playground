@@ -14,6 +14,9 @@ export class Strategy {
     // Gets the answer to the current reaction test. May be NULL.
     get answer() { throw new Error('This getter must be overridden by the strategy.'); }
 
+    // Time, in milliseconds, to offset the player's actual answer time with.
+    get answerOffsetTimeMs() { return 0; }
+
     // Verifies whether the |message| is, or contains, the answer to this reaction test.
     verify(message) {
         throw new Error('This method must be overridden by the strategy.');

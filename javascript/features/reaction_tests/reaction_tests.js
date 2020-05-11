@@ -143,8 +143,10 @@ export default class ReactionTests extends Feature {
                 Message.REACTION_TEST_TOO_LATE, this.activeTestWinnerName_, difference);
 
         } else {
-            const difference = Math.round((currentTime - this.activeTestStart_) / 10) / 100;
             const previousWins = player.account.reactionTests;
+            const differenceOffset = this.activeTest_.answerOffsetTimeMs;
+            const difference =
+                Math.round((currentTime - (this.activeTestStart_ + differenceOffset)) / 10) / 100;
 
             this.nuwani_().echo('reaction-result', player.name, player.id, difference);
             if (previousWins <= 1) {

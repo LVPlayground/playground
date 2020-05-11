@@ -2,20 +2,20 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { AccountData } from 'features/account_provider/account_data.js';
+import { PlayerAccountSupplement } from 'features/account_provider/player_account_supplement.js';
 
-describe('AccountData', it => {
+describe('PlayerAccountSupplement', it => {
     it('should be uninitialized until identification', assert => {
-        const data = new AccountData();
-        assert.isFalse(data.hasIdentified());
+        const data = new PlayerAccountSupplement();
+        assert.isFalse(data.isIdentified());
         assert.isFalse(data.hasRequestedUpdate());
 
-        assert.isUndefined(data.userId);
-        assert.isUndefined(data.bankAccountBalance);
+        assert.isNull(data.userId);
+        assert.equal(data.bankAccountBalance, 0);
     });
 
     it('should be able to flag high priority database updates', assert => {
-        const data = new AccountData();
+        const data = new PlayerAccountSupplement();
         assert.isFalse(data.hasRequestedUpdate());
 
         // Normally setters for data properties would be calling this method.

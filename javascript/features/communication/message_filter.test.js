@@ -14,7 +14,9 @@ describe('MessageFilter', (it, beforeEach) => {
     });
 
     it('should be able to remove excess capitals from a message', assert => {
-
+        assert.equal(filter.filter(gunther, 'WHAT?!!!?!!'), 'What?!'),
+        assert.equal(filter.filter(gunther, 'HELLO WORLD'), 'Hello world.');
+        assert.equal(filter.filter(gunther, '123456789'), '123456789');
     });
 
     it('should be able to completely recapitalize a sentence', assert => {
@@ -36,5 +38,10 @@ describe('MessageFilter', (it, beforeEach) => {
         // (4) Fix player capitalization.
         assert.equal(filter.recapitalize('WTF IS A GUNTHER?!`!!'), 'WTF is a Gunther?!');
         assert.equal(filter.recapitalize('GUNTHER RUSSELL LUCYYY'), 'Gunther Russell Lucyyy.');
+
+        // (5) Finish sentence with proper punctuation.
+        assert.equal(filter.recapitalize('why are you doing that'), 'Why are you doing that?');
+        assert.equal(filter.recapitalize('Hum... what is that'), 'Hum... what is that?');
+        assert.equal(filter.recapitalize('i dont get it'), 'I dont get it.');
     });
 });

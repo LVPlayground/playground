@@ -30,7 +30,7 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should show an error when adding a friend as an unregistered player', async(assert) => {
-        assert.isFalse(gunther.isRegistered());
+        assert.isFalse(gunther.account.isRegistered());
 
         assert.isTrue(await gunther.issueCommand('/friends add ' + russell.name));
 
@@ -39,9 +39,9 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should show an error when adding an unregistered player as a friend', async(assert) => {
-        gunther.identify();
+        await gunther.identify();
 
-        assert.isTrue(gunther.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
         assert.isTrue(await gunther.issueCommand('/friends add ' + russell.name));
 
         assert.equal(gunther.messages.length, 1);
@@ -50,9 +50,9 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should show an error when adding oneself as a friend', async(assert) => {
-        gunther.identify();
+        await gunther.identify();
 
-        assert.isTrue(gunther.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
         assert.isTrue(await gunther.issueCommand('/friends add ' + gunther.name));
 
         assert.equal(gunther.messages.length, 1);
@@ -60,11 +60,11 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should allow players to add others as their friends', async(assert) => {
-        gunther.identify();
-        russell.identify();
+        await gunther.identify();
+        await russell.identify();
 
-        assert.isTrue(gunther.isRegistered());
-        assert.isTrue(russell.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
+        assert.isTrue(russell.account.isRegistered());
 
         assert.isTrue(await gunther.issueCommand('/friends add ' + russell.id));
 
@@ -79,7 +79,7 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should show an error when listing friends as an unregistered player', async(assert) => {
-        assert.isFalse(gunther.isRegistered());
+        assert.isFalse(gunther.account.isRegistered());
 
         assert.isTrue(await gunther.issueCommand('/friends'));
 
@@ -88,9 +88,9 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should list friends of the current player when there are none', async(assert) => {
-        gunther.identify();
+        await gunther.identify();
 
-        assert.isTrue(gunther.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
 
         const friends = await friendsManager.getFriends(gunther);
         assert.equal(friends.online.length, 0);
@@ -105,9 +105,9 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     it('should list friends of the current player when they have some', async(assert) => {
         const lucy = server.playerManager.getById(2 /* Lucy */);
 
-        gunther.identify();
-        russell.identify();
-        lucy.identify();
+        await gunther.identify();
+        await russell.identify();
+        await lucy.identify();
 
         await Promise.all([ friendsManager.addFriend(gunther, russell),
                             friendsManager.addFriend(gunther, lucy) ]);
@@ -125,12 +125,12 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should not allow players to list friends of another player', async(assert) => {
-        gunther.identify();
-        russell.identify();
+        await gunther.identify();
+        await russell.identify();
 
         await friendsManager.addFriend(russell, gunther);
 
-        assert.isTrue(gunther.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
         assert.isFalse(gunther.isAdministrator());
 
         assert.isTrue(await gunther.issueCommand('/friends ' + russell.id));
@@ -142,15 +142,15 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     it('should list friends of another player as an admin when they have none', async(assert) => {
         const lucy = server.playerManager.getById(2 /* Lucy */);
 
-        gunther.identify();
+        await gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
-        russell.identify();
-        lucy.identify();
+        await russell.identify();
+        await lucy.identify();
 
-        assert.isTrue(gunther.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
         assert.isTrue(gunther.isAdministrator());
-        assert.isTrue(russell.isRegistered());
+        assert.isTrue(russell.account.isRegistered());
 
         await friendsManager.addFriend(gunther, lucy);
 
@@ -167,15 +167,15 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     it('should list friends of another player as an admin when they have some', async(assert) => {
         const lucy = server.playerManager.getById(2 /* Lucy */);
 
-        gunther.identify();
+        await gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
-        russell.identify();
-        lucy.identify();
+        await russell.identify();
+        await lucy.identify();
 
-        assert.isTrue(gunther.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
         assert.isTrue(gunther.isAdministrator());
-        assert.isTrue(russell.isRegistered());
+        assert.isTrue(russell.account.isRegistered());
 
         await friendsManager.addFriend(russell, lucy);
 
@@ -187,7 +187,7 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should show an error removing friends as an unregistered player', async(assert) => {
-        assert.isFalse(gunther.isRegistered());
+        assert.isFalse(gunther.account.isRegistered());
 
         assert.isTrue(await gunther.issueCommand('/friends remove ' + russell.name));
 
@@ -196,11 +196,11 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable removing friends by name who are online on the server', async(assert) => {
-        gunther.identify();
-        russell.identify();
+        await gunther.identify();
+        await russell.identify();
 
-        assert.isTrue(gunther.isRegistered());
-        assert.isTrue(russell.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
+        assert.isTrue(russell.account.isRegistered());
 
         await friendsManager.addFriend(gunther, russell);
 
@@ -220,11 +220,11 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable removing friends by id who are online on the server', async(assert) => {
-        gunther.identify();
-        russell.identify();
+        await gunther.identify();
+        await russell.identify();
 
-        assert.isTrue(gunther.isRegistered());
-        assert.isTrue(russell.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
+        assert.isTrue(russell.account.isRegistered());
 
         await friendsManager.addFriend(gunther, russell);
 
@@ -244,11 +244,11 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable removing friends by name who are not online on the server', async(assert) => {
-        gunther.identify();
-        russell.identify({ userId: 1337 });
+        await gunther.identify();
+        await russell.identify({ userId: 1337 });
 
-        assert.isTrue(gunther.isRegistered());
-        assert.isTrue(russell.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
+        assert.isTrue(russell.account.isRegistered());
 
         await friendsManager.addFriend(gunther, russell);
 

@@ -21,7 +21,7 @@ describe('FreeVip', (it, beforeEach, afterEach) => {
 
     it('should grant VIP to registered players without VIP', async assert => {
         settings.setValue('decorations/holidays_free_vip', true);
-        gunther.identify({ vip: 0 });
+        await gunther.identify({ vip: 0 });
 
         assert.isFalse(gunther.isVip());
 
@@ -35,7 +35,7 @@ describe('FreeVip', (it, beforeEach, afterEach) => {
 
     it('should not grant VIP to registered players with VIP', async assert => {
         settings.setValue('decorations/holidays_free_vip', true);
-        gunther.identify({ vip: 1 });
+        await gunther.identify({ vip: 1 });
 
         assert.isTrue(gunther.isVip());
 
@@ -58,7 +58,7 @@ describe('FreeVip', (it, beforeEach, afterEach) => {
 
     it('should not grant anyone VIP if the feature is disabled', async assert => {
         settings.setValue('decorations/holidays_free_vip', false);
-        gunther.identify({ vip: 0 });
+        await gunther.identify({ vip: 0 });
 
         assert.isFalse(gunther.isVip());
 

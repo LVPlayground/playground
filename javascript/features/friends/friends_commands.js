@@ -26,12 +26,12 @@ class FriendsCommands {
     // Called when a player types `/friends add`. Adds |friendPlayer| as a friend of |player|. This
     // will persist between playing sessions.
     async onFriendsAddCommand(player, friendPlayer) {
-        if (!player.isRegistered()) {
+        if (!player.account.isRegistered()) {
             player.sendMessage(Message.FRIENDS_ERROR_NOT_REGISTERED);
             return;
         }
 
-        if (!friendPlayer.isRegistered()) {
+        if (!friendPlayer.account.isRegistered()) {
             player.sendMessage(Message.FRIENDS_ERROR_FRIEND_NOT_REGISTERED, friendPlayer.name);
             return;
         }
@@ -51,7 +51,7 @@ class FriendsCommands {
     async onListFriendsCommand(player, parameterPlayer) {
         const subjectPlayer = parameterPlayer || player;
 
-        if (!subjectPlayer.isRegistered()) {
+        if (!subjectPlayer.account.isRegistered()) {
             player.sendMessage(Message.FRIENDS_ERROR_NOT_REGISTERED);
             return;
         }
@@ -96,7 +96,7 @@ class FriendsCommands {
 
     // Removes |name| as a friend of |player|. This will persist between playing sessions.
     async onFriendsRemoveCommand(player, name) {
-        if (!player.isRegistered()) {
+        if (!player.account.isRegistered()) {
             player.sendMessage(Message.FRIENDS_ERROR_NOT_REGISTERED);
             return;
         }

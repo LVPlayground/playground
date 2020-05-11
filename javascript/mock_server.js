@@ -28,6 +28,7 @@ import MockVehicle from 'entities/test/mock_vehicle.js';
 
 import Abuse from 'features/abuse/abuse.js';
 import Account from 'features/account/account.js';
+import AccountProvider from 'features/account_provider/account_provider.js';
 import Announce from 'features/announce/announce.js';
 import Communication from 'features/communication/communication.js';
 import Finance from 'features/finance/finance.js';
@@ -38,6 +39,7 @@ import PlayerSettings from 'features/player_settings/player_settings.js';
 import PlayerWeapons from 'features/player_weapons/player_weapons.js';
 import Punishments from 'features/punishments/punishments.js';
 import Radio from 'features/radio/radio.js';
+import ReactionTests from 'features/reaction_tests/reaction_tests.js';
 import Settings from 'features/settings/settings.js';
 import Streamer from 'features/streamer/streamer.js';
 
@@ -72,6 +74,7 @@ class MockServer {
         this.featureManager_.registerFeaturesForTests({
             abuse: Abuse,
             account: Account,
+            account_provider: AccountProvider,
             announce: Announce,  // TODO: Move functionality to |communication|. See #309.
             communication: Communication,
             finance: Finance,
@@ -82,6 +85,7 @@ class MockServer {
             playground: MockPlayground,
             punishments: Punishments,
             radio: Radio,
+            reaction_tests: ReactionTests,
             settings: Settings,
             streamer: Streamer
         });
@@ -93,6 +97,12 @@ class MockServer {
             { playerid: 2, name: 'Lucy' }
 
         ].forEach(event => this.playerManager_.onPlayerConnect(event));
+    }
+
+    // Initialize the features that are required for the system to operate. In general this should
+    // be limited to foundational features that have no dependencies of their own.
+    initialize() {
+        this.featureManager_.loadFeature('account_provider');
     }
 
     // ---------------------------------------------------------------------------------------------

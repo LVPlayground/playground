@@ -549,7 +549,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(resetfc,        7, AdministratorLevel);
     lvp_command(resetmatch,    10, AdministratorLevel);
 #endif
-    lvp_command(reactiontest,  12, AdministratorLevel);
     lvp_command(chase,          5, AdministratorLevel);
     lvp_command(fetch,          5, AdministratorLevel);
     lvp_command(stopchase,      9, AdministratorLevel);
@@ -1038,11 +1037,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if (SpamTracker->isSpamming(playerid)) {
-            SendClientMessage(playerid, Color::Error, "Please don't spam /me.");
-            return 1;
-        }
-
         new actionText[256];
         actionText = right(cmdtext, (strlen(cmdtext)-4));
 
@@ -1067,8 +1061,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         format(string, sizeof(string), "%d %s %s", playerid, Player(playerid)->nicknameString(), actionText);
         EchoMessage("status", "dss", string);
-
-        SpamTracker->record(playerid, actionText);
 
         return 1;
     }

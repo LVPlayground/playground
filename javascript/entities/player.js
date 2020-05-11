@@ -100,7 +100,6 @@ export class Player extends Supplementable {
     #levelIsTemporary_ = false;
     #messageLevel_ = 0;
     #undercover_ = false;
-    #userId_ = null;
     #vip_ = false;
 
     #name_ = null;
@@ -404,18 +403,8 @@ export class Player extends Supplementable {
     get messageLevel() { return this.#messageLevel_; }
     set messageLevel(value) { this.#messageLevel_ = value; }
 
-    get userId() { return this.#userId_; }
-    set userId(value) { this.#userId_ = value; }
-
     get gangId() { return this.#gangId_; }
     set gangId(value) { this.#gangId_ = value; }
-
-    get gangColor() { throw new Error('Unable to read the gang color for this player.'); }
-    set gangColor(value) {
-        pawnInvoke('OnUpdatePlayerGangColor', 'ii', this.#id_, value ? value.toNumberRGBA() : 0);
-    }
-
-    isRegistered() { return this.#userId_ !== null; }
 
     isUndercover() { return this.#undercover_; }
     setUndercover(value) { this.#undercover_ = value; }

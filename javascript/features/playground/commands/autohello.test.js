@@ -13,7 +13,7 @@ describe('AutoHello', (it, beforeEach, afterEach) => {
         await commands.loadCommands();
 
         gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
+        await gunther.identify();
 
         // Enable |gunther| to use the command by adding an exception.
         commands.access.addException('autohello', gunther);
@@ -48,7 +48,7 @@ describe('AutoHello', (it, beforeEach, afterEach) => {
 
         assert.equal(joe.messages.length, 0);
 
-        joe.identify({ userId: 5001 });
+        await joe.identify({ userId: 5001 });
 
         await server.clock.advance(10 * 60 * 1000);  // maximum delay of the welcome message
 
@@ -69,7 +69,7 @@ describe('AutoHello', (it, beforeEach, afterEach) => {
 
         assert.equal(joe.messages.length, 0);
 
-        joe.identify({ userId: 5001 });
+        await joe.identify({ userId: 5001 });
 
         await server.clock.advance(10 * 60 * 1000);  // maximum delay of the welcome message
 
@@ -88,7 +88,7 @@ describe('AutoHello', (it, beforeEach, afterEach) => {
 
         assert.equal(joseph.messages.length, 0);
 
-        joseph.identify({ userId: 5001 });
+        await joseph.identify({ userId: 5001 });
 
         await server.clock.advance(10 * 60 * 1000);  // maximum delay of the welcome message
 

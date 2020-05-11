@@ -54,7 +54,7 @@ class VisitorLog extends HouseExtension {
     // Called when the |player| has visited the |location|. Will be logged in the database. In order
     // to avoid somebody spamming a visitor log, re-entries will be ignored for a period of time.
     onPlayerEnterHouse(player, location) {
-        if (!player.isRegistered())
+        if (!player.account.isRegistered())
             return;  // unregistered players should not be able to enter houses
 
         if (player.isUndercover())

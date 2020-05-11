@@ -11,6 +11,7 @@
     "chat": "<color:2>[%d] <color:7>%s:<color> %s",
     "chat-admin": "<prefix:%><color:12>Admin chat <color:2>[%d] <color:7>%s:<color> %s",
     "chat-admin-irc": "<prefix:%><color:12>Admin chat <color:2>[IRC] <color:7>%s:<color> %s",
+    "chat-admin-offline": "<target:#LVP.Crew><color:7>Message from <color:5>%s <color:7>(Id:%d):<color> %s",
     "chat-call": "<prefix:%><color:7>Call from <color:5>%s <color:7>(Id:%d) to <color:5>%s <color:7>(Id:%d):<color> %s",
     "chat-from-irc": "<color:2>[IRC] <color:7>%s:<color> %s",
     "chat-gang": "<prefix:%><color:2>*** <color:7>Gang %s (Id:%d) <color:2>[%d] <color:7>%s:<color> %s",
@@ -42,8 +43,10 @@
     "fightclub-winner": "<color:13>*** %s (Id:%d) has won the fight against %s (Id:%d) with a score of %d : %d.",
     "fightclub-draw": "<color:13>*** The fight between %s (Id:%d) and %s (Id:%d) ended in a draw.",
 
-    "reaction-repeat": "<color:6>*** First player to type %s{1} wins %${0}!",
-    "reaction-calculate": "<color:6>*** First player to calculate %s{1} wins %${0}!",
+    "reaction-remember": "<color:6>*** Players have been asked to remember a number in order to win %$!",
+    "reaction-remember-2": "<color:6>*** Players have been asked to repeat the number they were asked to remember to win %$!",
+    "reaction-repeat": "<color:6>*** First player to type %s wins %$!",
+    "reaction-calculate": "<color:6>*** First player to calculate %s wins %$!",
     "reaction-result": "<color:6>*** %s (Id:%d) has won the reaction test in %d seconds!",
 
     "merchant": "<color:3>*** The merchant wants to purchase a %s{1} for %${0}."

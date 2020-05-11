@@ -8,14 +8,14 @@ describe('PunishmentCommands', (it, beforeEach) => {
     let database = null;
     let gunther = null;
 
-    beforeEach(() => {
+    beforeEach(async() => {
         const feature = server.featureManager.loadFeature('punishments');
 
         commands = feature.commands_;
         database = feature.database_;
 
         gunther = server.playerManager.getById(/* Gunther= */ 0);
-        gunther.identify();
+        await gunther.identify();
     });
 
     it('should be able to display the most recent bans on the server', async (assert) => {
@@ -88,7 +88,7 @@ describe('PunishmentCommands', (it, beforeEach) => {
 
         assert.isNotNull(database.addedEntry);
         assert.equal(database.addedEntry.type, 'unban');
-        assert.equal(database.addedEntry.sourceUserId, gunther.userId);
+        assert.equal(database.addedEntry.sourceUserId, gunther.account.userId);
         assert.equal(database.addedEntry.sourceNickname, gunther.name);
         assert.equal(database.addedEntry.subjectNickname, '[BB]Joe');
         assert.equal(database.addedEntry.note, 'reason');

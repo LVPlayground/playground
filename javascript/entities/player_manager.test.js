@@ -36,9 +36,9 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         assert.equal(counter, 2);
     });
 
-    it('should fire past events for newly attached observers', assert => {
+    it('should fire past events for newly attached observers', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
+        await gunther.identify();
 
         let connectionCounter = 0;
         let loginCounter = 0;
@@ -127,22 +127,6 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         manager.onPlayerLogin({ playerid: 42, userid: 42 });
 
         assert.equal(counter, 1);
-    });
-
-    it('should store all information associated to a login with the player', assert => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-
-        assert.isFalse(gunther.isRegistered());
-        assert.isFalse(gunther.isVip());
-
-        server.playerManager.onPlayerLogin({
-            playerid: gunther.id,
-            userid: 42,
-            vip: 1
-        });
-
-        assert.isTrue(gunther.isRegistered());
-        assert.isTrue(gunther.isVip())
     });
 
     it('should be able to find players by ID', assert => {

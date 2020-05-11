@@ -13,7 +13,6 @@ Information for adding new achievements:
 Add a CAchieve__something which get calls to check if a player makes an achievement
 Example for reactionachievements CAchieve__ReactionWin
 Call this function in the stuff where it should get
-Example for reactionachievements add in CReaction__Win in reaction.pwn
 Add the thing in CAchieve__Achieved
 
 REMEMBER TO MAKE IT RESET IN CAchieve__OnPlayerConnect
@@ -212,34 +211,6 @@ CAchieve__SprayTag(playerid) {
         case 90: CAchieve__Achieved(playerid, SPRAY90);
         case 100: CAchieve__Achieved(playerid, SPRAY100);
     }
-}
-
-CAchieve__ReactionWin(playerid, Float: fDiff) {
-    if (iGlobalStats[ACreaction][ACplayerid] == playerid) {
-        iGlobalStats[ACreaction][ACamount]++;
-
-        switch (iGlobalStats[ACreaction][ACamount]) {
-            case 3: CAchieve__Achieved(playerid, ACREACTION3);
-            case 5: CAchieve__Achieved(playerid, ACREACTION5);
-            case 10: CAchieve__Achieved(playerid, ACREACTION10);
-        }
-    } else {
-        iGlobalStats[ACreaction][ACplayerid] = playerid;
-        iGlobalStats[ACreaction][ACamount] = 1;
-    }
-
-    if (fDiff >= 3.0 && fDiff < 5.0)
-        CAchieve__Achieved(playerid, ACQREACTION5);
-
-    if (fDiff < 3.0) {
-        CAchieve__Achieved(playerid, ACQREACTION5, 1);
-        CAchieve__Achieved(playerid, ACQREACTION3);
-    }
-
-    if (PlayerInfo[playerid][reactionTestWins] >= 1000)
-        CAchieve__Achieved(playerid, ACREACTION1000);
-    if (PlayerInfo[playerid][reactionTestWins] >= 2500)
-        CAchieve__Achieved(playerid, ACREACTION2500);
 }
 
 CAchieve__OnPlayerDeath(playerid, killerid) {

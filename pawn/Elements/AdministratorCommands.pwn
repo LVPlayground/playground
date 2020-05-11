@@ -1113,13 +1113,6 @@ lvp_hs(playerId, params[]) {
     #pragma unused params
 }
 
-lvp_reactiontest(playerId, params[]) {
-    CReaction__OnCommand(playerId);
-
-    return 1;
-    #pragma unused params
-}
-
 lvp_announce(playerId, params[]) {
     if (Command->parameterCount(params) == 0) {
         SendClientMessage(playerId, Color::Information, "Usage: /announce [message]");

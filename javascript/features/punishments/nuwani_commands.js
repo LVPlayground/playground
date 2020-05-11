@@ -136,8 +136,8 @@ export class NuwaniCommands {
 
         const subjectPlayer = server.playerManager.getByName(nickname);
         if (subjectPlayer !== null) {
-            if (subjectPlayer.isRegistered())
-                subjectUserId = subjectPlayer.userId;
+            if (subjectPlayer.account.isRegistered())
+                subjectUserId = subjectPlayer.account.userId;
 
             this.announce_().announceToAdministrators(
                 Message.NUWANI_ADMIN_ADDED_NOTE, context.nickname, subjectPlayer.name,
@@ -172,6 +172,8 @@ export class NuwaniCommands {
     async onBanPlayerCommand(context, player, days, reason) {
         if (!this.validateDuration(context, days) || !this.validateNote(context, reason))
             return;
+        
+        let userId = player.account.userId ?? 0;
 
         this.announce_().announceToAdministrators(
             Message.NUWANI_ADMIN_BANNED, context.nickname, player.name, player.id, days, reason);
@@ -184,7 +186,7 @@ export class NuwaniCommands {
             banDurationDays: days,
             banIpAddress: player.ip,
             sourceNickname: context.nickname,
-            subjectUserId: player.userId ?? 0,
+            subjectUserId: userId,
             subjectNickname: player.name,
             note: reason
         });
@@ -379,6 +381,8 @@ export class NuwaniCommands {
         if (!this.validateNote(context, reason))
             return;
 
+        const userId = player.account.userId ?? 0;
+
         this.announce_().announceToAdministrators(
             Message.NUWANI_ADMIN_KICKED, context.nickname, player.name, player.id, reason);
 
@@ -388,7 +392,7 @@ export class NuwaniCommands {
         const success = await this.database_.addEntry({
             type: BanDatabase.kTypeKick,
             sourceNickname: context.nickname,
-            subjectUserId: player.userId ?? 0,
+            subjectUserId: userId,
             subjectNickname: player.name,
             note: reason
         });

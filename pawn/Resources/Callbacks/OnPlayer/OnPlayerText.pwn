@@ -28,10 +28,6 @@ public OnPlayerText(playerid, text[]) {
 
     PlayerIdlePenalty->resetCurrentIdleTime(playerid);
 
-    SpamTracker->record(playerid, text);
-
-    CReaction__OnText(playerid, text);
-
     // Enforce a typo in "George" (as "Geroge") when this feature has been enabled.
     if (g_enforceGeorgeTypo)
         EnforceSameLengthTypo(text, "george", "geroge");
@@ -67,63 +63,15 @@ public OnPlayerText(playerid, text[]) {
         return 0;
     }
 
-    // Block spamming of this user in the various chats.
-    if (SpamTracker->isSpamming(playerid)) {
-        SendClientMessage(playerid, Color::Error, "Please do not spam on Las Venturas Playground!");
-        return 0;
-    }
-
     // Check for CAPS.
     if (g_NoCaps[playerid] == true) {
         for (new i = 0; i < strlen(text); i++)
             text[i] = tolower(text[i]);
     }
 
-    // Crew chat (@).
-    if (text[0] == '@' && strlen(text) > 1) {
-        new prefix[MAX_PLAYER_NAME];
-
-        if (Account(playerid)->userId() == 31797 /* Luce */)
-            format(prefix, sizeof(prefix), "Lady");
-        else if (Account(playerid)->userId() == 29685 /* TEF */)
-            format(prefix, sizeof(prefix), "The");
-        else if (Player(playerid)->isManagement() == true)
-            format(prefix, sizeof(prefix), "Manager");
-        else if (Player(playerid)->isAdministrator() == true)
-            format(prefix, sizeof(prefix), "Admin");
-        else
-            format(prefix, sizeof(prefix), "Message from");
-
-        format(message, sizeof(message), "* %s %s (Id:%d): %s", prefix,
-            Player(playerid)->nicknameString(), playerid, text[1]);
-
-        for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
-            if (Player(subjectId)->isConnected() == false || Player(subjectId)->isAdministrator() == false)
-                continue;
-
-            SendClientMessage(subjectId, Color::AdministratorColor, message);
-        }
-
-        if (Player(playerid)->isAdministrator() == false) {
-            format(message, sizeof(message), "Your message has been sent to the crew: {FFFFFF}%s", text[1]);
-            SendClientMessage(playerid, Color::Success, message);
-        }
-
-        format(message, sizeof(message), "%d %s %s", playerid, Player(playerid)->nicknameString(), text[1]);
-        EchoMessage("chat-admin", "dsz", message);
-
-        return 0;
-    }
-
     // Apply the effects of a full server mute.
     if (IsCommunicationMuted() && !Player(playerid)->isAdministrator()) {
         SendClientMessage(playerid, Color::Error, "Sorry, an administrator is making an announcement.");
-        return 0;
-    }
-
-    // VIP chat (# - requires VIP level).
-    if (text[0] == '#' && strlen(text) > 1) {
-        VeryImportantPlayersCommands->onVipChatCommand(playerid, text);
         return 0;
     }
 

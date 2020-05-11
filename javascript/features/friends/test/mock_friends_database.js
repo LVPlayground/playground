@@ -6,7 +6,7 @@
 // actual FriendsDatabase class, but is intended to be used for testing.
 class MockFriendsDatabase {
     async loadFriends(player) {
-        if (player.userId != 50)
+        if (player.account.userId != 50)
             return [];
 
         return [

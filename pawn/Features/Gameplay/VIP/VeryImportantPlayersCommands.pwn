@@ -69,46 +69,6 @@ class VeryImportantPlayersCommands {
     }
 
     /**
-     * VIP players ingame have the possibility to send messages to other ingame VIPs with #. From
-     * the #LVP.vip IRC channel, VIPs can use !vip to chat along with ingame VIPs.
-     * 
-     * @param playerId Id of the player who executed this command.
-     * @param message Message that needs to be send to ingame VIPs.
-     * @command #[message]
-     */
-    public onVipChatCommand(playerId, message[]) {
-        if (Player(playerId)->isVip() == false && Player(playerId)->isAdministrator() == false) {
-            SendClientMessage(playerId, Color::Error, "This is a VIP only command. For more information, check out \"/donate\"!");
-            return 1;
-        }
-
-        new const bool: isIsolated = PlayerSyncedData(playerId)->isolated();
-
-        // Send message to all ingame VIPs and (undercover)admins.
-        new notice[256];
-        format(notice, sizeof(notice), "[VIP] [%d] %s: %s", playerId, Player(playerId)->nicknameString(),
-            message[1]);
-
-        for (new player = 0; player <= PlayerManager->highestPlayerId(); ++player) {
-            if (Player(player)->isConnected() == false || (Player(player)->isVip() == false
-                && Player(player)->isAdministrator() == false))
-                continue; /* either not connected or not VIP/crew */
-
-            if (LegacyIsPlayerIgnored(player, playerId) == true)
-                continue; /* the player is ignoring this VIP */
-
-            if (isIsolated && player != playerId)
-                continue; /* isolated players are ghosted */
-
-            SendClientMessage(player, Color::VipChat, notice);
-        }
-
-        format(notice, sizeof(notice), "%d %s %s", playerId, Player(playerId)->nicknameString(), message[1]);
-        EchoMessage("chat-vip", "dsz", notice);
-        return 1;
-    }
-
-    /**
      * Having a little influence on your own environment can really help out in some situations. Hence
      * Las Venturas Playground offers its VIPs to change their own weather at free will. We've also
      * added a funny weathertype called 'drugs'.

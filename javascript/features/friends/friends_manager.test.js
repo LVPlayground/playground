@@ -12,7 +12,7 @@ describe('FriendsManager', (it, beforeEach, afterEach) => {
     // The friendsManager instance to use for the tests. Will be reset after each test.
     let friendsManager = null;
 
-    beforeEach(() => {
+    beforeEach(async() => {
         gunther = server.playerManager.getById(0 /* Gunther */);
         russell = server.playerManager.getById(1 /* Russell */);
 
@@ -23,11 +23,11 @@ describe('FriendsManager', (it, beforeEach, afterEach) => {
     afterEach(() => friendsManager.dispose());
 
     it('should load the list of friends when a player logs in', async(assert) => {
-        gunther.identify({ userId: 50 });
-        russell.identify({ userId: 1337 });
+        await russell.identify({ userId: 1337 });
+        await gunther.identify({ userId: 50 });
 
-        assert.isTrue(gunther.isRegistered());
-        assert.isTrue(russell.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
+        assert.isTrue(russell.account.isRegistered());
 
         const friends = await friendsManager.getFriends(gunther);
         assert.equal(friends.online.length, 1);
@@ -38,7 +38,7 @@ describe('FriendsManager', (it, beforeEach, afterEach) => {
     });
 
     it('should play a sound when a friend connects to the server', async(assert) => {
-        gunther.identify({ userId: 50 });
+        await gunther.identify({ userId: 50 });
 
         const friends = await friendsManager.getFriends(gunther);
         assert.equal(friends.offline.length, 2);
@@ -53,33 +53,35 @@ describe('FriendsManager', (it, beforeEach, afterEach) => {
     });
 
     it('should remove stored data when a player disconnects', async(assert) => {
-        gunther.identify();
-        russell.identify();
+        await gunther.identify({ userId: 50 });
+        await russell.identify();
 
-        assert.isTrue(gunther.isRegistered());
-        assert.isTrue(russell.isRegistered());
+        assert.isTrue(gunther.account.isRegistered());
+        assert.isTrue(russell.account.isRegistered());
 
         const friends = await friendsManager.getFriends(gunther);
         assert.isTrue(friendsManager.friends_.has(gunther));
         assert.isTrue(friendsManager.loadPromises_.has(gunther));
-        assert.isTrue(friendsManager.lastActive_.hasOwnProperty(gunther.userId));
-        assert.equal(friendsManager.lastActive_[gunther.userId], FriendsManager.CURRENTLY_ONLINE);
+        assert.isTrue(friendsManager.lastActive_.hasOwnProperty(gunther.account.userId));
+        assert.equal(friendsManager.lastActive_[gunther.account.userId], FriendsManager.CURRENTLY_ONLINE);
+
+        const guntherUserId = gunther.account.userId;
 
         gunther.disconnectForTesting();
 
         assert.isFalse(friendsManager.friends_.has(gunther));
         assert.isFalse(friendsManager.loadPromises_.has(gunther));
-        assert.isTrue(friendsManager.lastActive_.hasOwnProperty(gunther.userId));
+        assert.isTrue(friendsManager.lastActive_.hasOwnProperty(guntherUserId));
         assert.notEqual(
-            friendsManager.lastActive_[gunther.userId], FriendsManager.CURRENTLY_ONLINE);
+            friendsManager.lastActive_[guntherUserId], FriendsManager.CURRENTLY_ONLINE);
     });
 
     it('should by able to tell if one friended one without them being online', async(assert) => {
-        gunther.identify({ userId: 1000 });
+        await gunther.identify({ userId: 1000 });
 
         assert.isTrue(await friendsManager.isFriendedBy(gunther, 50));
 
-        russell.identify({ userId: 50 });
+        await russell.identify({ userId: 50 });
 
         assert.isTrue(await friendsManager.isFriendedBy(gunther, 50));
         assert.isTrue(await friendsManager.hasFriend(russell, gunther));

@@ -44,6 +44,8 @@ class Server {
         this.npcManager_ = new NpcManager(Npc, this.playerManager_);
     }
 
+    initialize() {}
+
     // ---------------------------------------------------------------------------------------------
 
     // Gets the connection to the Las Venturas Playground database.

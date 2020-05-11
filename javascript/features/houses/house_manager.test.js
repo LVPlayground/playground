@@ -45,7 +45,7 @@ describe('HouseManager', (it, beforeEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const locationCount = manager.locationCount;
 
-        gunther.identify();
+        await gunther.identify();
 
         await manager.createLocation(gunther, validLocation);
 
@@ -79,7 +79,7 @@ describe('HouseManager', (it, beforeEach) => {
         const locationCount = manager.locationCount;
 
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
+        await gunther.identify();
 
         await manager.createLocation(gunther, validLocation);
         assert.equal(manager.locationCount, locationCount + 1);
@@ -96,7 +96,7 @@ describe('HouseManager', (it, beforeEach) => {
 
     it('should be able to create and remove parking lot locations', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
+        await gunther.identify();
 
         const location = await manager.findClosestLocation(gunther);
         assert.isNotNull(location);
@@ -124,7 +124,7 @@ describe('HouseManager', (it, beforeEach) => {
 
     it('should be able to create houses given a location', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
+        await gunther.identify();
 
         const location = await manager.findClosestLocation(gunther);
         assert.isTrue(location.isAvailable());
@@ -138,7 +138,7 @@ describe('HouseManager', (it, beforeEach) => {
 
         assert.equal(location.settings.name, gunther.name + '\'s house');
 
-        assert.equal(location.settings.ownerId, gunther.userId);
+        assert.equal(location.settings.ownerId, gunther.account.userId);
         assert.equal(location.settings.ownerName, gunther.name);
 
         assert.closeTo(location.settings.purchaseTime, Date.now() / 1000, 5);
@@ -150,7 +150,7 @@ describe('HouseManager', (it, beforeEach) => {
     it('should be able to remove houses from a given location', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.position = new Vector(500, 500, 500);
-        gunther.identify();
+        await gunther.identify();
 
         const location = await manager.findClosestLocation(gunther);
         assert.isFalse(location.isAvailable());
@@ -167,7 +167,7 @@ describe('HouseManager', (it, beforeEach) => {
 
     it('should be able to tell which house a player is in', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify({ userId: 42 });
+        await gunther.identify({ userId: 42 });
 
         // Teleport Gunther to the entrance of his house, making him enter it.
         gunther.position = new Vector(500, 500, 500);
@@ -362,7 +362,7 @@ describe('HouseManager', (it, beforeEach) => {
 
     it('should inform house extensions when houses are created and destroyed', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify({ userId: 5000 });
+        await gunther.identify({ userId: 5000 });
 
         let locationCreatedCalls = 0;
         let locationRemovedCalls = 0;
@@ -427,9 +427,9 @@ describe('HouseManager', (it, beforeEach) => {
         assert.equal(houseRemovedCalls, 1);
     });
 
-    it('should update house owner names when a player logs in with another name', assert => {
+    it('should update owner names when a player logs in with another name', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
+        await gunther.identify();
 
         const houses = manager.getHousesForPlayer(gunther);
         assert.equal(houses.length, 1);
@@ -442,7 +442,7 @@ describe('HouseManager', (it, beforeEach) => {
         // (2) Make sure that the name will be updated when gunther's has, and he logs in again.
         {
             gunther.name = 'Guntah';
-            gunther.identify();
+            await gunther.identify();
 
             assert.equal(houses[0].settings.ownerName, 'Guntah');
         }
@@ -450,13 +450,13 @@ describe('HouseManager', (it, beforeEach) => {
         // (3) Make sure that the name *won't* be updated when Gunther's undercover.
         {
             gunther.name = 'Goontahr';
-            gunther.identify({ undercover: 1 });
+            await gunther.identify({ undercover: 1 });
 
             assert.equal(houses[0].settings.ownerName, 'Guntah');
         }
     });
 
-    it('should keep track of the owner\'s Player object when they are online', assert => {
+    it('should keep track of the owner\'s Player object when they are online', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         const houses = manager.getHousesForUser(42 /* Gunther's user Id */);
@@ -466,7 +466,7 @@ describe('HouseManager', (it, beforeEach) => {
 
         assert.isNull(house.settings.owner);
 
-        gunther.identify();
+        await gunther.identify();
 
         assert.isNotNull(house.settings.owner);
         assert.equal(house.settings.owner, gunther);

@@ -1,9 +1,9 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
 // This class is responsible for exposing an API for communication to Pawn in the form of natives.
-class CommunicationNatives {
+export class CommunicationNatives {
     constructor(manager) {
         this.manager_ = manager;
 
@@ -22,5 +22,3 @@ class CommunicationNatives {
         provideNative('IsCommunicationMuted', '', () => 0);
     }
 }
-
-export default CommunicationNatives;

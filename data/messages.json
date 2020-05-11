@@ -38,6 +38,12 @@
   "COMMAND_UNSUPPORTED": "@error Sorry, this functionality has not yet been implemented.",
   "COMMAND_USAGE": "@usage %s",
 
+  "COMMUNICATION_ADMIN_MESSAGE": "{FFFF00}* %s %s (Id:%d): %s",
+  "COMMUNICATION_ADMIN_SENT": "@success Your message has been sent to the administrators.",
+  "COMMUNICATION_SPAM_BLOCKED": "@error Your message has been blocked by our spam filter.",
+  "COMMUNICATION_VIP_MESSAGE": "{00E1E1}[VIP] [%d] %s: %s",
+  "COMMUNICATION_VIP_NO_ACCESS": "@error Only VIPs are allowed to use this chat. Check out {2196F3}/donate{FFFFFF} for more information!",
+
   "DEBUG_FRAME_COUNTER": "{33AA33}The server averaged %d FPS in the last %d seconds.",
   "DEBUG_TRACE_INVALID_TIME": "@error A trace must last between 0 and 300 seconds.",
   "DEBUG_TRACE_STARTED": "{33AA33}The trace you requested is now being recorded.",
@@ -320,6 +326,16 @@
   "RADIO_PREFERRED_CHANNEL_CHANGED": "Your preferred channel has been updated to {FFA500}%s{A9C4E4}.",
   "RADIO_PREFERRED_DEFAULT": "You will be listening to the default radio channel again.",
   "RADIO_PREFERRED_DISABLED": "You have disabled the in-game radio.",
+
+  "REACTION_TEST_ANNOUNCE_CALCULATE": "{FFFF00}The first one who calculates \"%s\" wins %$!",
+  "REACTION_TEST_ANNOUNCE_REMEMBER": "{FFFF00}You've been asked to remember the number %d...",
+  "REACTION_TEST_ANNOUNCE_REMEMBER_2": "{FFFF00}The first one to repeat the number you had to remember wins %$!",
+  "REACTION_TEST_ANNOUNCE_REPEAT": "{FFFF00}The first one who repeats \"%s\" wins %$!",
+  "REACTION_TEST_ANNOUNCE_WINNER_FIRST": "{FFFF00}%s has won the reaction test in %d seconds. This is their first win!",
+  "REACTION_TEST_ANNOUNCE_WINNER_SECOND": "{FFFF00}%s has won the reaction test in %d seconds. They've won once before.",
+  "REACTION_TEST_ANNOUNCE_WINNER": "{FFFF00}%s has won the reaction test in %d seconds. They've won %d times before.",
+  "REACTION_TEST_TOO_LATE": "{DC143C}Too late! %s beat you to the right answer, and were %s seconds faster.",
+  "REACTION_TEST_WON": "{33AA33}Congratulations! You have been awarded %$.",
 
   "REPORT_MESSAGE": "{33AA33}Your report has been delivered to the crew{FFFFFF}: Player: %s (Id:%d) - Reason: %s",
   "REPORT_ALREADY_REPORTED": "@error We have already received a report about %s and are on it. Thank you!",

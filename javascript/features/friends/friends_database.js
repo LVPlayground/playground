@@ -51,7 +51,7 @@ const REMOVE_QUERY = `
 class FriendsDatabase {
     // Asynchronously loads the friends for |player| from the database.
     async loadFriends(player) {
-        const results = await server.database.query(LOAD_QUERY, player.userId);
+        const results = await server.database.query(LOAD_QUERY, player.account.userId);
 
         let friends = [];
 
@@ -78,12 +78,12 @@ class FriendsDatabase {
 
     // Asynchronously adds a relationship from |player| to |friend|.
     async addFriend(player, friend) {
-        await server.database.query(ADD_QUERY, player.userId, friend.userId);
+        await server.database.query(ADD_QUERY, player.account.userId, friend.account.userId);
     }
 
     // Asynchronously removes the relationship from |player| to the friend with |friendUserId|.
     async removeFriend(player, friendUserId) {
-        await server.database.query(REMOVE_QUERY, player.userId, friendUserId);
+        await server.database.query(REMOVE_QUERY, player.account.userId, friendUserId);
     }
 }
 

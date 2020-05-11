@@ -9,11 +9,11 @@ describe('FinancialCommands', (it, beforeEach) => {
     let lucy = null;
     let regulator = null;
 
-    beforeEach(() => {
+    beforeEach(async() => {
         gunther = server.playerManager.getById(/* Gunther= */ 0);
 
         lucy = server.playerManager.getById(/* Lucy= */ 2);
-        lucy.identify();
+        await lucy.identify();
 
         regulator = server.featureManager.loadFeature('finance').regulator_;
     });

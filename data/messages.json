@@ -38,6 +38,8 @@
   "COMMAND_UNSUPPORTED": "@error Sorry, this functionality has not yet been implemented.",
   "COMMAND_USAGE": "@usage %s",
 
+  "COMMUNICATION_ADMIN_MESSAGE": "{FFFF00}* %s %s (Id:%d): %s",
+  "COMMUNICATION_ADMIN_SENT": "@success Your message has been sent to the administrators.",
   "COMMUNICATION_VIP_MESSAGE": "{00E1E1}[VIP] [%d] %s: %s",
   "COMMUNICATION_VIP_NO_ACCESS": "@error Only VIPs are allowed to use this chat. Check out {2196F3}/donate{FFFFFF} for more information!",
 

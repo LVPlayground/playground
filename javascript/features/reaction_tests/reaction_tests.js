@@ -71,8 +71,10 @@ export default class ReactionTests extends Feature {
     // token, to allow tests to be re-started for any reason whilst another one is pending.
     scheduleNextTest() {
         const delay = this.calculateDelayForNextTest();
+        const token = ++this.activeTestToken_;
+
         wait(delay * 1000).then(() =>
-            this.startReactionTest(++this.activeTestToken_));
+            this.startReactionTest(token));
     }
 
     // Returns whether the test should be skipped. This could be the case because there are no
@@ -177,6 +179,9 @@ export default class ReactionTests extends Feature {
         if (this.activeTestToken_ !== activeTestToken)
             return;  // the token has expired, another test was scheduled
         
+        if (this.activeTestWinnerTime_ !== null)
+            return;  // someone answered the previous reaction test, another was scheduled
+
         this.activeTest_.stop();
         this.activeTest_ = null;
 

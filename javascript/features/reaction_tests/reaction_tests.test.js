@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import ReactionTests from 'features/reaction_tests/reaction_tests.js';
+import { RememberStrategy } from 'features/reaction_tests/strategies/remember_strategy.js';
 import Settings from 'features/settings/settings.js';
 
 describe('ReactionTests', (it, beforeEach) => {
@@ -31,6 +32,11 @@ describe('ReactionTests', (it, beforeEach) => {
         gunther = server.playerManager.getById(/* Gunther= */ 0);
         lucy = server.playerManager.getById(/* Lucy= */ 2);
         settings = server.featureManager.loadFeature('settings');
+
+        // Have a a level of determinism in these tests to avoid flaky failures.
+        driver.strategies_ = driver.strategies_.filter(strategyConstructor => {
+            return strategyConstructor !== RememberStrategy;
+        });
     });
 
     it('should be able to calculate delays in range of delay & jitter settings', assert => {

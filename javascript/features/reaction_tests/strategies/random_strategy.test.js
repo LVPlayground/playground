@@ -29,6 +29,8 @@ describe('RandomStrategy', (it, beforeEach) => {
 
             for (const character of answer)
                 assert.includes(RandomStrategy.kAlphabet, character);
+            
+            strategy.stop();
         }
     });
 
@@ -51,5 +53,7 @@ describe('RandomStrategy', (it, beforeEach) => {
             tag: 'reaction-repeat',
             params: [ strategy.answer, 1234 ]
         });
+
+        strategy.stop();
     });
 });

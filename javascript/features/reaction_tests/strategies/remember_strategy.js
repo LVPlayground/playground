@@ -69,7 +69,7 @@ export class RememberStrategy extends Strategy {
         if (this.state_ !== RememberStrategy.kStateActive)
             return false;
 
-        return message == this.answer_.toString();
+        return message.replace(/,/g, '') == this.answer_.toString();
     }
 
     // Called when the strategy is no longer relevant. Optional to implement.

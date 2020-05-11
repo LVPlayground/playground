@@ -30,6 +30,8 @@ describe('CalculationStrategy', (it, beforeEach) => {
             assert.typeOf(calculation, 'string');
 
             assert.equal(parseInt(answer, 10), eval(calculation));
+
+            strategy.stop();
         }
     });
 
@@ -52,5 +54,7 @@ describe('CalculationStrategy', (it, beforeEach) => {
             tag: 'reaction-calculate',
             params: [ strategy.calculation, 1234 ]
         });
+
+        strategy.stop();
     });
 });

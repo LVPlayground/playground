@@ -11,6 +11,7 @@ describe('RememberStrategy', (it, beforeEach) => {
 
     beforeEach(() => {
         const driver = server.featureManager.loadFeature('reaction_tests');
+        driver.activeTestToken_ = null;  // disable other tests
 
         announceFn = driver.__proto__.announceToPlayers.bind(driver);
         nuwani = server.featureManager.loadFeature('nuwani');
@@ -75,6 +76,30 @@ describe('RememberStrategy', (it, beforeEach) => {
         });
 
         // The answer should now be accepted.
-        assert.isTrue(strategy.verify(strategy.answer));
+        assert.isTrue(strategy.verify(strategy.answer.toString()));
+
+        strategy.stop();
+    });
+
+    it('should ignore thousand separators when validating the answer', assert => {
+        const strategy = new RememberStrategy(() => settings);
+
+        strategy.state_ = RememberStrategy.kStateActive;
+        strategy.answer_ = 123456;
+
+        assert.isTrue(strategy.verify('123,456'));
+
+        strategy.stop();
+    });
+
+    it('should work sensibly with default server settings', assert => {
+        const delay = settings.getValue('playground/reaction_test_remember_delay_sec');
+        const jitter = settings.getValue('playground/reaction_test_remember_jitter_sec');
+
+        const expire = settings.getValue('playground/reaction_test_expire_sec');
+
+        // If this test fails, then the expire time is shorter than the maximum wait time for the
+        // remember tests. This means that player's wont have the chance to answer.
+        assert.isBelow(delay + jitter, expire);
     });
 });

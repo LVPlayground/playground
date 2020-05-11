@@ -6,6 +6,7 @@ import { CommunicationManager } from 'features/communication/communication_manag
 import { CommunicationNatives } from 'features/communication/communication_natives.js';
 import Feature from 'components/feature_manager/feature.js';
 import { MessageFilter } from 'features/communication/message_filter.js';
+import { MuteManager } from 'features/communication/mute_manager.js';
 
 // Minimum length of any replacement to avoid affecting too many messages.
 const kMinimumReplacementLength = 3;
@@ -31,8 +32,11 @@ export default class Communication extends Feature {
         // The message filter, which every message on Las Venturas Playground will be subject to.
         this.filter_ = new MessageFilter();
 
-        this.manager_ = new CommunicationManager(this.filter_, nuwani);
-        this.natives_ = new CommunicationNatives(this);
+        // The mute manager controls who's currently able to communicate on the server.
+        this.muteManager_ = new MuteManager();
+
+        this.manager_ = new CommunicationManager(this.filter_, this.muteManager_, nuwani);
+        this.natives_ = new CommunicationNatives(this.muteManager_);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -166,7 +170,7 @@ export default class Communication extends Feature {
     // Returns whether all player-generated communication on the server should be muted, unless it
     // was issued by administrators or Management members.
     isCommunicationMuted() {
-        return false;
+        return this.muteManager_.isCommunicationMuted();
     }
 
     // ---------------------------------------------------------------------------------------------

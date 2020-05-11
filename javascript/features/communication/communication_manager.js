@@ -12,15 +12,18 @@ import { VipChannel } from 'features/communication/channels/vip_channel.js';
 export class CommunicationManager {
     callbacks_ = null;
     delegates_ = null;
+    messageFilter_ = null;
+    muteManager_ = null;
     nuwani_ = null;
 
     genericChannels_ = null;
     prefixChannels_ = null;
     spamTracker_ = null;
     
-    constructor(messageFilter, nuwani) {
+    constructor(messageFilter, muteManager, nuwani) {
         this.delegates_ = new Set();
         this.messageFilter_ = messageFilter;
+        this.muteManager_ = muteManager;
         this.nuwani_ = nuwani;
 
         this.callbacks_ = new ScopedCallbacks();
@@ -83,6 +86,11 @@ export class CommunicationManager {
 
         if (!player || !unprocessedMessage || !unprocessedMessage.length)
             return;  // the player is not connected to the server, or they sent an invalid message
+
+        if (this.muteManager_.isCommunicationMuted() && !player.isAdministrator()) {
+            event.preventDefault();
+            return;
+        }
 
         if (this.spamTracker_.isSpamming(player, unprocessedMessage)) {
             event.preventDefault();

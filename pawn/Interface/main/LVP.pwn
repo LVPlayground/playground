@@ -33,7 +33,7 @@ ResetPlayerWeapons(playerId) {
 
 forward OnResetPlayerWeapons(playerId);
 public OnResetPlayerWeapons(playerId) {
-    ResetPlayerWeapons(playerId);
+    return ResetPlayerWeapons(playerId);
 }
 
 str_shift(string[], start) {

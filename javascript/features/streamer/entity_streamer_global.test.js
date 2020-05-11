@@ -277,15 +277,15 @@ describe('EntityStreamerGlobal', it => {
     });
 
     it('should never reach the entity limit, even with lots of player movement', async(assert) => {
-        // Make sure that 50 players are connected to the server.
-        for (let playerId = 0; playerId < 50; ++playerId) {
+        // Make sure that 25 players are connected to the server.
+        for (let playerId = 0; playerId < 25; ++playerId) {
             if (server.playerManager.getById(playerId) !== null)
                 continue;
 
             server.playerManager.onPlayerConnect({ playerid: playerId, name: 'Player' + playerId });
         }
 
-        assert.equal(server.playerManager.count, 50);
+        assert.equal(server.playerManager.count, 25);
 
         const streamer = new MyEntityStreamer({ maxVisible: 500 });
 
@@ -303,7 +303,7 @@ describe('EntityStreamerGlobal', it => {
 
         // For 30 iterations, teleport the players to random positions within that grid and do a
         // full stream that will rearrange the created entities. This mimics the worst-case load of
-        // streaming a thousand entities to 50 players over the course of half a minute.
+        // streaming a thousand entities to 25 players over the course of half a minute.
         for (let iteration = 0; iteration < 30; ++iteration) {
             server.playerManager.forEach(player =>
                 player.position = new Vector(randomCoord(), randomCoord(), 0));
@@ -316,8 +316,8 @@ describe('EntityStreamerGlobal', it => {
         assert.isAbove(streamer.activeEntityCount, 498);
     });
 
-    it('should be able to stream 75,000 entities for 100 players, 10 times', async(assert) => {
-        const ENTITY_COUNT = 75000;
+    it('should be able to stream 7500 entities for 100 players, 10 times', async(assert) => {
+        const ENTITY_COUNT = 7500;
         const PLAYER_COUNT = 100;
 
         // Maximum time, in milliseconds, that streaming should take for this test to be quiet.

@@ -2,15 +2,21 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { DeathMatchManger } from "features/death_match/death_match_manager.js";
+import AbuseConstants from 'features/abuse/abuse_constants.js';
+import DeathMatch from 'features/death_match/death_match.js';
 
 describe('DeathMatchManager', (it, beforeEach) => {
     let manager = null;
 
-    beforeEach(async => {
-        
-        const abuse = server.featureManager.getFeatureForTests('abuse');
-        manager = new DeathMatchManger(abuse);
+    beforeEach(async => {        
+        server.featureManager.registerFeaturesForTests({
+            death_match: DeathMatch
+        });
+
+        server.featureManager.loadFeature('death_match');
+
+        const deathMatch = server.featureManager.getFeatureForTests('death_match');
+        manager = deathMatch.manager_;
     });
 
     it('should show message for player if using invalid dm zone', async(assert) => {
@@ -26,6 +32,32 @@ describe('DeathMatchManager', (it, beforeEach) => {
             gunther.messages[1].includes(
                 Message.format(Message.DEATH_MATCH_AVAILABLE_ZONES, 
                     manager.validDmZones().join(', '))));
+    });
+
+    it('should not enable players to go to a DM zone when they might abuse it', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        gunther.identify({ userId: 42 });
+        gunther.shoot({ target: russell });
+
+        manager.goToDmZone(gunther, 1);
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.DEATH_MATCH_TELEPORT_BLOCKED,
+                           AbuseConstants.REASON_FIRED_WEAPON));
+    });
+
+    it('should set player settings if going to dm zone', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        manager.goToDmZone(gunther, 1);
+        
+        assert.equal(gunther.activity, Player.PLAYER_ACTIVITY_JS_DM_ZONE);
+        assert.equal(gunther.health, 100);
+        assert.equal(gunther.armour, 100);
     });
 
 });

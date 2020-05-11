@@ -1,8 +1,18 @@
 [
     {
         "id": 1,
-        "name": "LV FightClub",
-        
+        "name": "LV RW FightClub",
+        "weather": 10,
+        "time": 12,
+
+        "player_health" : 100,
+        "player_armour" : 100,
+
+        "weapons" : [
+            { "weapon_id" : 26, "ammo": 1337 },
+            { "weapon_id" : 28, "ammo": 80085 }
+        ],
+    
         "interior_id": 0,
         "world": 115,
         "spawn_positions": [

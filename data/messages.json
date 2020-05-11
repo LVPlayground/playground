@@ -40,6 +40,7 @@
 
   "DEATH_MATCH_AVAILABLE_ZONES" : "Available DM zones are: /dm %s.",
   "DEATH_MATCH_INVALID_ZONE" : "zone %d is not a valid zone.",
+  "DEATH_MATCH_TELEPORT_BLOCKED": "@error Sorry, you can't enter a DM zone now because you %s.",
 
   "DEBUG_FRAME_COUNTER": "{33AA33}The server averaged %d FPS in the last %d seconds.",
   "DEBUG_TRACE_INVALID_TIME": "@error A trace must last between 0 and 300 seconds.",

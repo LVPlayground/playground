@@ -11,6 +11,7 @@ export class DeathMatchManger {
         this.abuse_ = abuse;
     }
 
+    // The player wants to join the death match.
     goToDmZone(player, zone) {
         if (!DeathMatchLocation.hasLocation(zone)) {
             player.sendMessage(Message.DEATH_MATCH_INVALID_ZONE, zone);
@@ -18,34 +19,44 @@ export class DeathMatchManger {
             return;
         }
 
-        //TODO (OttoRocket): check for abuse.
+        const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: true });
 
-        //TODO (OttoRocket): Write unit tests. (Should've done first anyway!)
-        const location = DeathMatchLocation.getById(zone);
+        // Bail out if the |player| is not currently allowed to teleport.
+        if (!teleportStatus.allowed) {
+            player.sendMessage(Message.DEATH_MATCH_TELEPORT_BLOCKED, teleportStatus.reason);
+            return;
+        }
 
-        player.activity = Player.PLAYER_ACTIVITY_JS_DM_ZONE;
-
+        const location = DeathMatchLocation.getById(zone);        
         const spawnPosition = this.findRandomSpawnPosition(location);
-
+        
+        player.activity = Player.PLAYER_ACTIVITY_JS_DM_ZONE;
         player.position = spawnPosition.position;
         player.rotation = spawnPosition.rotation;
-        player.health = 100; //TODO (OttoRocket): Make configurable.
-        player.armour = 100; //TODO (OttoRocket): Make configurable.
-        player.weather = 10; //TODO (OttoRocket): Make configurable.
-        player.time = 12; //TODO (OttoRocket): Make configurable.
+        player.health = location.playerHealth;
+        player.armour = location.playerArmour;
+        player.weather = location.weather;
+        player.time = [location.time, 0];
         player.virtualWorld = location.world;
-        player.interiorId = location.interior_id;
+        player.interiorId = location.interiorId;
+        
+        //TODO: Set player bounds
 
-        //TODO (OttoRocket): Allow to configure playing a custom fight start audio stream.
+        //TODO: Reset weapons
+        for(const weaponInfo of location.weapons) {
+            // TODO: set weapons.
+        }
+
+        // TODO: Announce player has joined DM zone.
     }
 
     // This returns a semi-random spawn index. It keeps the first quarter of locations used in 
     // memory and will try at max 10 times to generate a not recently randomized spawn index.
     findRandomSpawnPosition(location, attempt = 0) {
-        // TODO (OttoRocket): Find a better way to get length than this shitty array casting.
-        var spawnIndex = Math.floor(Math.random() * [...location.spawnPositions].length);
+        var spawnPositions = [...location.spawnPositions];
+        var spawnIndex = Math.floor(Math.random() * spawnPositions.length);
         if (attempt > 10) {
-            return [...location.spawnPositions][spawnIndex];
+            return spawnPositions[spawnIndex];
         }
 
         if (this.lastQuarterUsedLocationsQueue.includes(spawnIndex)) {
@@ -54,12 +65,12 @@ export class DeathMatchManger {
 
         this.lastQuarterUsedLocationsQueue.push(spawnIndex);
         if (this.lastQuarterUsedLocationsQueue.length >
-            Math.floor([...location.spawnPositions].length / 4)
+            Math.floor(spawnPositions.length / 4)
         ) {
             this.lastQuarterUsedLocationsQueue.pop();
         }
 
-        return [...location.spawnPositions][spawnIndex];
+        return spawnPositions[spawnIndex];
     }
 
     // Returns all dm location IDs known.

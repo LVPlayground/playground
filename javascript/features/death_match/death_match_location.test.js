@@ -19,7 +19,7 @@ describe('DeathMatchLocation', (it) => {
         const location = DeathMatchLocation.getById(1);
 
         assert.isNotNull(location);
-        assert.equal(location.name, 'LV FightClub');
+        assert.equal(location.name, 'LV RW FightClub');
 
         assert.throws(() => DeathMatchLocation.getById(null));
         assert.throws(() => DeathMatchLocation.getById(0));

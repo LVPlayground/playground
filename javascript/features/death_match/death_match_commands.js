@@ -8,7 +8,7 @@ import CommandBuilder from 'components/command_manager/command_builder.js';
 export class DeathMatchCommands {    
 
     constructor(manager) {
-        server.commandManager.buildCommand('dm')
+        server.commandManager.buildCommand('deathmatch')
             .parameters([{ name: 'zone', type: CommandBuilder.NUMBER_PARAMETER }])
         .build(DeathMatchCommands.prototype.onDmCommand.bind(this));
 
@@ -26,6 +26,6 @@ export class DeathMatchCommands {
 
     // Cleans up the state created by this class, i.e. removes the commands.
     dispose() {
-        server.commandManager.removeCommand('dm');
+        server.commandManager.removeCommand('deathmatch');
     }
 }

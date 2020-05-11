@@ -69,6 +69,22 @@ export class DeathMatchLocation {
         this.name_ = locationInfo.name;
 
         this.interiorId_ = locationInfo.interior_id;
+        this.world_ = locationInfo.world;
+
+        this.weather_ = locationInfo.weather ?? 10;
+        this.time_ = locationInfo.time ?? 12;
+
+        this.playerHealth_ = locationInfo.player_health ?? 100;
+        this.playerArmour_ = locationInfo.player_armour ?? 0;
+
+        this.weapons_ = new Set();
+
+        locationInfo.weapons.forEach(weaponInfo => {
+            this.weapons_.add({
+                weaponId: weaponInfo.weapon_id,
+                ammo: weaponInfo.ammo
+            });
+        });
 
         this.spawnPositions_ = new Set();
 
@@ -90,6 +106,16 @@ export class DeathMatchLocation {
 
     // Gets the interior Id in which the location exists.
     get interiorId() { return this.interiorId_; }
+
+    get world() { return this.world_; }
+
+    get weather() { return this.weather_; }
+    get time() { return this.time_; }
+
+    get playerHealth() { return this.playerHealth_; }
+    get playerArmour() { return this.playerArmour_; }
+
+    get weapons() { return this.weapons_.values(); }
 
     // Gets an iterator with the spawn positions to use. These also determine the maximum amount of
     // of teams taking part of a match in this location.

@@ -213,34 +213,6 @@ CAchieve__SprayTag(playerid) {
     }
 }
 
-CAchieve__ReactionWin(playerid, Float: fDiff) {
-    if (iGlobalStats[ACreaction][ACplayerid] == playerid) {
-        iGlobalStats[ACreaction][ACamount]++;
-
-        switch (iGlobalStats[ACreaction][ACamount]) {
-            case 3: CAchieve__Achieved(playerid, ACREACTION3);
-            case 5: CAchieve__Achieved(playerid, ACREACTION5);
-            case 10: CAchieve__Achieved(playerid, ACREACTION10);
-        }
-    } else {
-        iGlobalStats[ACreaction][ACplayerid] = playerid;
-        iGlobalStats[ACreaction][ACamount] = 1;
-    }
-
-    if (fDiff >= 3.0 && fDiff < 5.0)
-        CAchieve__Achieved(playerid, ACQREACTION5);
-
-    if (fDiff < 3.0) {
-        CAchieve__Achieved(playerid, ACQREACTION5, 1);
-        CAchieve__Achieved(playerid, ACQREACTION3);
-    }
-
-    if (PlayerInfo[playerid][reactionTestWins] >= 1000)
-        CAchieve__Achieved(playerid, ACREACTION1000);
-    if (PlayerInfo[playerid][reactionTestWins] >= 2500)
-        CAchieve__Achieved(playerid, ACREACTION2500);
-}
-
 CAchieve__OnPlayerDeath(playerid, killerid) {
     if (killerid != Player::InvalidId) {
         if (iGlobalStats[ACkills][ACplayerid] == killerid) {

@@ -13,10 +13,14 @@ export default class Communication extends Feature {
     constructor() {
         super();
 
-        // This is a foundational feature.
+        // This is a foundational feature. It's only allowed to depend on other foundational
+        // features, as communication is a cricial part of the server.
         this.markFoundational();
 
-        this.manager_ = new CommunicationManager();
+        // Depend on Nuwani for being able to distribute communication to non-game destinations.
+        const nuwani = this.defineDependency('nuwani');
+
+        this.manager_ = new CommunicationManager(nuwani);
         this.natives_ = new CommunicationNatives(this.manager_);
     }
 

@@ -119,12 +119,6 @@ public OnPlayerText(playerid, text[]) {
         return 0;
     }
 
-    // VIP chat (# - requires VIP level).
-    if (text[0] == '#' && strlen(text) > 1) {
-        VeryImportantPlayersCommands->onVipChatCommand(playerid, text);
-        return 0;
-    }
-
     if (CRobbery__OnText(playerid, text)) return 0;
     if (CShell__OnText(playerid, text)) return 0;
     if (CLyse__OnText(playerid, text)) return 0;

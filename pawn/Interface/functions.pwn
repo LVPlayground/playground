@@ -787,10 +787,6 @@ ClearPlayerMenus(playerId) {
     return 1;
 }
 
-randomex(min, max) {
-    return random(max - min) + min;
-}
-
 SetPlayerSkinEx(playerId, skinId) {
     if (Player(playerId)->isConnected() == false)
         return 0;

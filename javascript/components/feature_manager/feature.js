@@ -9,6 +9,9 @@ class Feature {
         this.liveReloadEnabled_ = true;
     }
 
+    // Returns whether this is a foundational feature.
+    isFoundational() { return this.foundationalFeature_; }
+
     // Returns whether live reload has been enabled for this feature.
     isLiveReloadEnabled() { return this.liveReloadEnabled_; }
 
@@ -16,10 +19,7 @@ class Feature {
     // not be declared, or when a circular dependency would be created. This method is safe to be
     // called any number of times.
     defineDependency(featureName) {
-        if (this.foundationalFeature_)
-            throw new Error('Foundational features may not define dependencies.');
-
-        return server.featureManager.defineDependency(this, featureName);
+        return server.featureManager.defineDependency(this, featureName, this.foundationalFeature_);
     }
 
     // Defines that the feature is not eligible for live reload.

@@ -40,8 +40,8 @@ testRunner.run('.*\.test\.js').then(time => {
         // -----------------------------------------------------------------------------------------
         // Foundational features.
         //
-        // These features provide critical functionality. They may not depend on other features.
-        // Good examples of functionality are supplements, or cross-feature providers.
+        // These features provide critical functionality. They may not depend on other features
+        // except for the other foundational features, without circular dependencies.
         // -----------------------------------------------------------------------------------------
 
         'account_provider',

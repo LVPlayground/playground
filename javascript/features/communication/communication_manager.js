@@ -2,17 +2,48 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { AdministratorChannel } from 'features/communication/channels/administrator_channel.js';
 import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { VipChannel } from 'features/communication/channels/vip_channel.js';
 
 // The communication manager is responsible for making sure that the different capabilities play
 // well together, and is the main entry point for the OnPlayerText callback contents as well.
 export class CommunicationManager {
-    constructor() {
+    callbacks_ = null;
+    delegates_ = null;
+    nuwani_ = null;
+
+    genericChannels_ = null;
+    prefixChannels_ = null;
+    
+    constructor(nuwani) {
         this.delegates_ = new Set();
+        this.nuwani_ = nuwani;
 
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
             'playertext', CommunicationManager.prototype.onPlayerText.bind(this));
+        
+        this.genericChannels_ = new Set();
+        this.prefixChannels_ = new Map();
+
+        // The list of predefined channels. Other channels exists, for example gang chat, but they
+        // have to be added to this feature as a Delegate instead.
+        const kChannels = [
+            new AdministratorChannel(),
+            new VipChannel(),
+        ];
+
+        // Split the |kChannels| based on whether they're a prefix channel or a generic channel.
+        for (const channel of kChannels) {
+            const prefix = channel.getPrefix();
+            if (!prefix)
+                this.genericChannels_.add(channel);
+            else if (prefix.length == 1)
+                this.prefixChannels_.set(prefix, channel);
+            else
+                throw new Error('Channel prefixes must be exactly one character long.')
+        }
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -42,7 +73,7 @@ export class CommunicationManager {
     // asynchronously, to free up the server for further processing in between server frames.
     onPlayerText(event) {
         const player = server.playerManager.getById(event.playerid);
-        const message = event.text;
+        const message = event.text?.trim();
 
         if (!player || !message || !message.length)
             return;  // the player is not connected to the server, or they sent an invalid message
@@ -50,11 +81,30 @@ export class CommunicationManager {
         // TODO: Once most communication is handled by JavaScript, do all further processing on a
         // deferred task instead.
 
-        for (let delegate of this.delegates_) {
+        // TODO: Handle functionality such as muting players (and/or everyone) before actually
+        // sending the message anywhere.
+
+        for (const delegate of this.delegates_) {
             if (!!delegate.onPlayerText(player, message)) {
                 event.preventDefault();
                 return;
             }
+        }
+
+        // First check prefix-based channels, as we can check them off quite easily.
+        const prefixChannel = this.prefixChannels_.get(message[0]);
+        if (prefixChannel !== undefined) {
+            event.preventDefault();
+
+            if (!prefixChannel.confirmChannelAccessForPlayer(player))
+                return;  // they have no access, an error message has been sent
+            
+            const unprefixedMessage = message.substring(1).trimLeft();
+            if (!unprefixedMessage.length)
+                return;  // their message literally was just the prefix, ignore it
+
+            prefixChannel.distribute(player, unprefixedMessage, this.nuwani_());
+            return;
         }
 
         // TODO(Russell): Add further processing here.

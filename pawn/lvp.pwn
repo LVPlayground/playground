@@ -156,7 +156,6 @@
 
 // Other Games:
 #include Resources/Games/Bonuses.pwn
-#include Resources/Games/Reaction.pwn
 #include Resources/Games/Achievements.pwn
 #include Resources/Games/Chase.pwn
 #include Resources/Games/Export.pwn

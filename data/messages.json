@@ -38,6 +38,9 @@
   "COMMAND_UNSUPPORTED": "@error Sorry, this functionality has not yet been implemented.",
   "COMMAND_USAGE": "@usage %s",
 
+  "COMMUNICATION_VIP_MESSAGE": "{00E1E1}[VIP] [%d] %s: %s",
+  "COMMUNICATION_VIP_NO_ACCESS": "@error Only VIPs are allowed to use this chat. Check out {2196F3}/donate{FFFFFF} for more information!",
+
   "DEBUG_FRAME_COUNTER": "{33AA33}The server averaged %d FPS in the last %d seconds.",
   "DEBUG_TRACE_INVALID_TIME": "@error A trace must last between 0 and 300 seconds.",
   "DEBUG_TRACE_STARTED": "{33AA33}The trace you requested is now being recorded.",

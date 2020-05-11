@@ -37,7 +37,7 @@ export class RandomStrategy extends Strategy {
         announceFn(Message.REACTION_TEST_ANNOUNCE_REPEAT, this.answer_, prize);
 
         // Announce the test to everyone reading along through Nuwani.
-        nuwani.echo('reaction-repeat', this.answer_, prize);
+        nuwani().echo('reaction-repeat', this.answer_, prize);
     }
 
     // Verifies whether the |message| is, or contains, the answer to this reaction test.

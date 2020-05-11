@@ -21,7 +21,7 @@ describe('CalculationStrategy', (it, beforeEach) => {
         for (let i = 0; i < 25; ++i) {
             const strategy = new CalculationStrategy(() => settings);
 
-            strategy.start(announceFn, nuwani, 0);
+            strategy.start(announceFn, () => nuwani, 0);
 
             const answer = strategy.answer;
             const calculation = strategy.calculation;
@@ -40,7 +40,7 @@ describe('CalculationStrategy', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 0);
         assert.equal(nuwani.messagesForTesting.length, 0);
 
-        strategy.start(announceFn, nuwani, 1234);
+        strategy.start(announceFn, () => nuwani, 1234);
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(

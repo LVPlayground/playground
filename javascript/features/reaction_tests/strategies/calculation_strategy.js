@@ -38,7 +38,7 @@ export class CalculationStrategy extends Strategy {
         announceFn(Message.REACTION_TEST_ANNOUNCE_CALCULATE, this.calculation_, prize);
 
         // Announce the test to everyone reading along through Nuwani.
-        nuwani.echo('reaction-calculate', this.calculation_, prize);
+        nuwani().echo('reaction-calculate', this.calculation_, prize);
     }
 
     // Verifies whether the |message| is, or contains, the answer to this reaction test.

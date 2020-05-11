@@ -108,7 +108,7 @@ export default class ReactionTests extends Feature {
 
         // Actually start the test. This will make all the necessary announcements too.
         strategy.start(
-            ReactionTests.prototype.announceToPlayers.bind(this), this.nuwani_(), prize);
+            ReactionTests.prototype.announceToPlayers.bind(this), this.nuwani_, prize);
 
         this.activeTest_ = strategy;
         this.activeTestStart_ = server.clock.monotonicallyIncreasingTime();
@@ -173,6 +173,7 @@ export default class ReactionTests extends Feature {
         if (this.activeTestToken_ !== activeTestToken)
             return;  // the token has expired, another test was scheduled
         
+        this.activeTest_.stop();
         this.activeTest_ = null;
 
         this.scheduleNextTest();
@@ -182,6 +183,11 @@ export default class ReactionTests extends Feature {
 
     dispose() {
         this.communication_.removeReloadObserver(this);
+
+        if (this.activeTest_) {
+            this.activeTest_.stop();
+            this.activeTest_ = null;
+        }
 
         this.activeTestToken_ = null;
     }

@@ -18,4 +18,7 @@ export class Strategy {
     verify(message) {
         throw new Error('This method must be overridden by the strategy.');
     }
+
+    // Called when the strategy is no longer relevant. Optional to implement.
+    stop() {}
 }

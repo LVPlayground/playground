@@ -10,7 +10,7 @@ const kRecapitalizeMinimumCapitalRatio = .7;
 
 // Common initialisms that we allow to be capitalized.
 const kCommonInitialisms = new Set([
-    /\b(FYI)\b/ig, /\b(GG)\b/ig, /\b(WTF)\b/ig,
+    /\b(FYI)\b/ig, /\b(GG)\b/ig, /\b(LVP)\b/ig, /\b(WTF)\b/ig,
 ]);
 
 // The message filter is responsible for filtering the contents of messages. This could include
@@ -56,6 +56,12 @@ export class MessageFilter {
             reformattedMessage = reformattedMessage.replace(nameExpression, player.name);
         }
 
-        return reformattedMessage.trimRight();
+        reformattedMessage = reformattedMessage.trimRight();
+
+        // (5) Make sure that their sentence ends with a punctuation mark.
+        if (!/[.?!]$/.test(reformattedMessage))
+            reformattedMessage += '.';
+
+        return reformattedMessage;
     }
 }

@@ -38,6 +38,7 @@ import MockPlayground from 'features/playground/test/mock_playground.js';
 import PlayerSettings from 'features/player_settings/player_settings.js';
 import Punishments from 'features/punishments/punishments.js';
 import Radio from 'features/radio/radio.js';
+import ReactionTests from 'features/reaction_tests/reaction_tests.js';
 import Settings from 'features/settings/settings.js';
 import Streamer from 'features/streamer/streamer.js';
 
@@ -82,6 +83,7 @@ class MockServer {
             playground: MockPlayground,
             punishments: Punishments,
             radio: Radio,
+            reaction_tests: ReactionTests,
             settings: Settings,
             streamer: Streamer
         });

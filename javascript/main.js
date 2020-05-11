@@ -69,6 +69,9 @@ testRunner.run('.*\.test\.js').then(time => {
         // Player-related features
         'account', 'player_favours', 'player_settings',
 
+        // Communication features
+        'reaction_tests',
+
         // -----------------------------------------------------------------------------------------
 
         // v1 features - these need to be cleaned up

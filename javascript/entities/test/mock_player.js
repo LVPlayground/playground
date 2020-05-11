@@ -104,6 +104,8 @@ export class MockPlayer extends Player {
 
     kick() { this.disconnectForTesting(/* reason= */ 2); }
 
+    setIsNonPlayerCharacterForTesting(value) { this.#isNpc_ = value; }
+
     setNameForGuestLogin(value) { this.#name_ = value; }
 
     disconnectForTesting(reason = 0) {

@@ -24,10 +24,10 @@ export class AccountManager {
         this.callbacks_.addEventListener(
             'playerguestlogin', AccountManager.prototype.onPlayerGuestLoginEvent.bind(this));
 
-        server.playerManager.addObserver(this);
+        server.playerManager.addObserver(this, /* replayHistory= */ true);
     }
 
-    // Returns the AccountData associated with the given |player|, or undefined when there is none.
+    // Returns the AccountData associated with the given |player|.
     getAccountDataForPlayer(player) {
         return this.accounts_.get(player);
     }
@@ -37,6 +37,8 @@ export class AccountManager {
     // ---------------------------------------------------------------------------------------------
 
     onPlayerConnect(player) {
+        this.accounts_.set(player, new AccountData());
+
         // Implement this method when account management completely moves to JavaScript. We have to
         // start loading their profile data, and check whether they're banned or not.
     }
@@ -50,14 +52,11 @@ export class AccountManager {
         if (!player || !userId)
             return;  // either the given player or user Id in the event are invalid.
 
-        const accountData = new AccountData();
-        
-        this.accounts_.set(player, accountData);
         this.database_.loadAccountData(userId).then(databaseData => {
             if (!databaseData || !player.isConnected())
                 return;  // the |player| has disconnected from the server since
 
-            accountData.initializeFromDatabase(databaseData);
+            this.accounts_.get(player).initializeFromDatabase(databaseData);
 
             // Now that the player's account has been initialized, tell the rest of the server.
             server.playerManager.onPlayerLogin(event);

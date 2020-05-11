@@ -10,6 +10,8 @@
 // When writing important properties, their setter is able to call the `requestUpdate()` method.
 // This will queue up the data to be synchronized with the database in the very near future.
 export class AccountData {
+    isRegistered_ = false;
+
     hasIdentified_ = false;
     hasRequestedUpdate_ = false;
 
@@ -27,6 +29,9 @@ export class AccountData {
         this.requestUpdate();
     }
 
+    // Returns whether the player is registered with Las Venturas Playground.
+    isRegistered() { return this.isRegistered_; }
+
     // Returns whether the player owning this account has completed identification.
     hasIdentified() { return this.hasIdentified_; }
 
@@ -39,6 +44,7 @@ export class AccountData {
         this.userId_ = databaseRow.user_id;
         this.bankAccountBalance_ = databaseRow.money_bank;
 
+        this.isRegistered_ = true;
         this.hasIdentified_ = true;
     }
 

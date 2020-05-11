@@ -7,6 +7,8 @@ import ScopedCallbacks from 'base/scoped_callbacks.js';
 import { SpamTracker } from 'features/communication/spam_tracker.js';
 import { VipChannel } from 'features/communication/channels/vip_channel.js';
 
+import { relativeTime } from 'base/time.js';
+
 // The communication manager is responsible for making sure that the different capabilities play
 // well together, and is the main entry point for the OnPlayerText callback contents as well.
 export class CommunicationManager {
@@ -87,11 +89,31 @@ export class CommunicationManager {
         if (!player || !unprocessedMessage || !unprocessedMessage.length)
             return;  // the player is not connected to the server, or they sent an invalid message
 
+        // The entire server might be muted, we will drop the player's message in that case.
         if (this.muteManager_.isCommunicationMuted() && !player.isAdministrator()) {
+            player.sendMessage(Message.COMMUNICATION_SERVER_MUTE_BLOCKED);
+
             event.preventDefault();
             return;
         }
 
+        // The |player| might be muted themselves. The message will be dropped, and we'll show them
+        // an informative message about when the mute is due to expire.
+        {
+            const remainingSeconds = this.muteManager_.getPlayerRemainingMuteTime(player);
+            if (remainingSeconds > 0) {
+                const expiration = new Date(Date.now() + remainingSeconds * 1000);
+                const formattedExpiration = relativeTime({ date1: new Date(), date2: expiration });
+
+                player.sendMessage(Message.COMMUNICATION_MUTE_BLOCKED, formattedExpiration.text);
+
+                event.preventDefault();
+                return;
+            }
+        }
+
+        // Pass the |unprocessedMessage| through the spam filter, which ensures that the |player| is
+        // not trying to make everyone else on the server go crazy by... overcommunicating.
         if (this.spamTracker_.isSpamming(player, unprocessedMessage)) {
             event.preventDefault();
             return;

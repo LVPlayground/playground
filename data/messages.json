@@ -41,6 +41,8 @@
   "COMMUNICATION_ADMIN_MESSAGE": "{FFFF00}* %s %s (Id:%d): %s",
   "COMMUNICATION_ADMIN_SENT": "@success Your message has been sent to the administrators.",
   "COMMUNICATION_FILTER_BLOCKED": "@error Your message has been blocked because of a forbidden word.",
+  "COMMUNICATION_MUTE_BLOCKED": "@error Your message has been blocked because you're muted for another %s.",
+  "COMMUNICATION_SERVER_MUTE_BLOCKED": "@error Your message has beeb blocked before all communication has been muted.",
   "COMMUNICATION_SERVER_MUTED": "{DC143C}*** %s has muted all communication on the server.",
   "COMMUNICATION_SERVER_UNMUTED": "{DC143C}*** %s has unmuted all communication on the server.",
   "COMMUNICATION_SPAM_BLOCKED": "@error Your message has been blocked by our spam filter.",

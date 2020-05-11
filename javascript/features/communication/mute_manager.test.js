@@ -35,26 +35,58 @@ describe('MuteManager', (it, beforeEach) => {
         assert.equal(messageCount, 1);
 
         muteManager.setCommunicationMuted(gunther, true);
-
         assert.isTrue(muteManager.isCommunicationMuted());
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(
-            gunther.messages[0], Message.format(Message.COMMUNICATION_SERVER_MUTED, gunther.name));
-        
+
         gunther.issueMessage('Hello world!');
         assert.equal(messageCount, 1);
 
-        muteManager.setCommunicationMuted(gunther, false);
-
-        assert.equal(gunther.messages.length, 2);
+        assert.equal(gunther.messages.length, 1);
         assert.equal(
-            gunther.messages[1], Message.format(Message.COMMUNICATION_SERVER_UNMUTED, gunther.name))
-        
+            gunther.messages[0], Message.format(Message.COMMUNICATION_SERVER_MUTE_BLOCKED));
+
+        muteManager.setCommunicationMuted(gunther, false);
+        assert.isFalse(muteManager.isCommunicationMuted());
+
         gunther.issueMessage('Hello world!');
         assert.equal(messageCount, 2);
     });
     
-    it('should be able to control per-player mutes', assert => {
+    it('should be able to control per-player mutes', async (assert) => {
+        let messageCount = 0;
 
+        manager.addDelegate(new class {
+            onPlayerText(player, message) {
+                messageCount++;
+                return true;  // handled
+            }
+        });
+
+        assert.equal(messageCount, 0);
+
+        gunther.issueMessage('Hello world!');
+        assert.equal(messageCount, 1);
+
+        muteManager.mutePlayer(gunther, 300);
+        assert.equal(muteManager.getPlayerRemainingMuteTime(gunther), 300);
+
+        gunther.issueMessage('Hello world!');
+        assert.equal(messageCount, 1);
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0], Message.format(Message.COMMUNICATION_MUTE_BLOCKED, '5 minutes'));
+        
+        await server.clock.advance(300 * 1000);
+
+        assert.isFalse(!!muteManager.getPlayerRemainingMuteTime(gunther));
+
+        gunther.issueMessage('Hello world!');
+        assert.equal(messageCount, 2);
+
+        muteManager.mutePlayer(gunther, 200);
+        assert.equal(muteManager.getPlayerRemainingMuteTime(gunther), 200);
+
+        muteManager.unmutePlayer(gunther);
+        assert.isFalse(!!muteManager.getPlayerRemainingMuteTime(gunther));
     });
 });

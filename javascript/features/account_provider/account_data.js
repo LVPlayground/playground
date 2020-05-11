@@ -18,6 +18,7 @@ export class AccountData {
     userId_ = undefined;
     bankAccountBalance_ = undefined;
     reactionTests_ = undefined;
+    mutedUntil_ = undefined;
 
     // Gets the permanent user Id that has been assigned to this user. Read-only.
     get userId() { return this.userId_; }
@@ -34,6 +35,10 @@ export class AccountData {
     get reactionTests() { return this.reactionTests_; }
     set reactionTests(value) { this.reactionTests_ = value; }
 
+    // Gets or sets the time until when the player has been muted, if at all.
+    get mutedUntil() { return this.mutedUntil_; }
+    set mutedUntil(value) { this.mutedUntil_ = value; }
+
     // Returns whether the player is registered with Las Venturas Playground.
     isRegistered() { return this.isRegistered_; }
 
@@ -49,6 +54,11 @@ export class AccountData {
         this.userId_ = databaseRow.user_id;
         this.bankAccountBalance_ = databaseRow.money_bank;
         this.reactionTests_ = databaseRow.stats_reaction;
+        this.mutedUntil_ = undefined;
+
+        // |muted| is stored as the number of remaining seconds on their punishment.
+        if (databaseRow.muted > 0)
+            this.mutedUntil_ = server.clock.monotonicallyIncreasingTime() + 1000 * databaseRow.muted
 
         this.isRegistered_ = true;
         this.hasIdentified_ = true;
@@ -57,11 +67,14 @@ export class AccountData {
     // Called when the account data is being written to the database. Can happen multiple times for
     // the lifetime of this object.
     prepareForDatabase() {
+        const currentTime = server.clock.monotonicallyIncreasingTime();
+
         this.hasRequestedUpdate_ = false;
         return {
             user_id: this.userId_,
             money_bank: this.bankAccountBalance_,
             stats_reaction: this.reactionTests_,
+            muted: Math.max(Math.floor(((this.mutedUntil_ || currentTime) - currentTime) / 1000), 0),
         };
     }
 

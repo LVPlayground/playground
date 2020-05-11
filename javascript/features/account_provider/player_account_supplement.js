@@ -50,4 +50,8 @@ export class PlayerAccountSupplement extends Supplement {
     // Gets or sets the number of reaction tests that the player has won.
     get reactionTests() { return this.data_.reactionTests || 0; }
     set reactionTests(value) { this.data_.reactionTests = value; }
+
+    // Gets or sets the time until when the player has been muted, if at all.
+    get mutedUntil() { return this.data_.mutedUntil || 0; }
+    set mutedUntil(value) { this.data_.mutedUntil = value; }
 }

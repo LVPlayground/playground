@@ -13,35 +13,32 @@ export class MuteManager {
         return this.communicationMuted_;
     }
 
-    // Toggles whether server communications are muted altogether. Will cause a public announcement
-    // about |player| changing the server's communication abilities.
+    // Toggles whether server communications are muted altogether.
     setCommunicationMuted(player, muted) {
-        if (this.communicationMuted_ === !!muted)
-            return;  // no change
-
-        for (const otherPlayer of server.playerManager) {
-            if (!!muted)
-                otherPlayer.sendMessage(Message.COMMUNICATION_SERVER_MUTED, player.name);
-            else
-                otherPlayer.sendMessage(Message.COMMUNICATION_SERVER_UNMUTED, player.name);
-        }
-
         this.communicationMuted_ = !!muted;
     }
 
-    // Returns whether the |player| is currently muted.
-    isPlayerMuted(player) {
+    // Returns the number of seconds the |player| still will be muted for. Will return a falsy value
+    // if the |player| is not currently muted.
+    getPlayerRemainingMuteTime(player) {
+        if (!player.account.mutedUntil)
+            return null;  // they haven't been muted this session
+        
+        const currentTime = server.clock.monotonicallyIncreasingTime();
+        if (player.account.mutedUntil < currentTime)
+            return null;  // mute has expired
 
+        return Math.ceil((player.account.mutedUntil - currentTime) / 1000);
     }
 
     // Mutes the |player| for the given time in |seconds|. This will persist between playing
     // sessions, so them reconnecting to the server will not make a difference.
     mutePlayer(player, seconds) {
-
+        player.account.mutedUntil = server.clock.monotonicallyIncreasingTime() + 1000 * seconds;
     }
 
     // Removes any mutes that the |player| is currently subject to.
     unmutePlayer(player) {
-
+        player.account.mutedUntil = 0;
     }
 }

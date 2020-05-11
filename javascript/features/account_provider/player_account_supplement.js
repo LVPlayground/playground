@@ -55,7 +55,7 @@ export class PlayerAccountSupplement extends Supplement {
         this.userId_ = databaseRow.user_id;
         this.bankAccountBalance_ = databaseRow.money_bank;
         this.reactionTests_ = databaseRow.stats_reaction;
-        this.mutedUntil_ = undefined;
+        this.mutedUntil_ = null;
 
         // |muted| is stored as the number of remaining seconds on their punishment.
         if (databaseRow.muted > 0)

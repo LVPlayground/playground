@@ -109,7 +109,6 @@ describe('GangManager', (it, beforeEach) => {
         await manager.updateColorPreference(gang, gunther, false);
 
         assert.isFalse(gang.usesGangColor(gunther));
-        assert.isNull(gunther.gangColor);
     });
 
     it('should respect member color preferences when they connect to the server', async(assert) => {
@@ -126,7 +125,6 @@ describe('GangManager', (it, beforeEach) => {
         assert.isNotNull(gang);
 
         assert.isFalse(gang.usesGangColor(gunther));
-        assert.isNull(gunther.gangColor);
     });
 
     it('should load and unload gang data on connectivity events', async(assert) => {

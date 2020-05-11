@@ -406,11 +406,6 @@ export class Player extends Supplementable {
     get gangId() { return this.#gangId_; }
     set gangId(value) { this.#gangId_ = value; }
 
-    get gangColor() { throw new Error('Unable to read the gang color for this player.'); }
-    set gangColor(value) {
-        pawnInvoke('OnUpdatePlayerGangColor', 'ii', this.#id_, value ? value.toNumberRGBA() : 0);
-    }
-
     isUndercover() { return this.#undercover_; }
     setUndercover(value) { this.#undercover_ = value; }
 

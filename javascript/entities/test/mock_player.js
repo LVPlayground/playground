@@ -61,7 +61,6 @@ export class MockPlayer extends Player {
     #isSurfingVehicle_ = false;
 
     // To be removed:
-    #gangColor_ = null;
     #streamerObjectsUpdated_ = false;
 
     // Initializes the mock player with static information that generally will not change for the
@@ -352,9 +351,6 @@ export class MockPlayer extends Player {
     updateStreamer(position, virtualWorld, interiorId, type) {}
 
     streamerObjectsUpdatedForTesting() { return this.#streamerObjectsUpdated_; }
-
-    get gangColor() { return this.#gangColor_; }
-    set gangColor(value) { this.#gangColor_ = value; }
 
     // ---------------------------------------------------------------------------------------------
     // Instrumentation for testing purposes

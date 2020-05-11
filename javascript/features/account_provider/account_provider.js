@@ -17,6 +17,9 @@ export default class AccountProvider extends Feature {
     constructor() {
         super();
 
+        // This is a foundational feature.
+        this.markFoundational();
+
         // The database powers the actual storage layer shared between the commands and other logic
         // provided by this feature. There's only a single instance of it.
         this.database_ = server.isTest() ? new MockAccountProviderDatabase()

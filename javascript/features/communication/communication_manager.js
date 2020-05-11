@@ -1,4 +1,4 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
@@ -6,7 +6,7 @@ import ScopedCallbacks from 'base/scoped_callbacks.js';
 
 // The communication manager is responsible for making sure that the different capabilities play
 // well together, and is the main entry point for the OnPlayerText callback contents as well.
-class CommunicationManager {
+export class CommunicationManager {
     constructor() {
         this.delegates_ = new Set();
 
@@ -14,6 +14,8 @@ class CommunicationManager {
         this.callbacks_.addEventListener(
             'playertext', CommunicationManager.prototype.onPlayerText.bind(this));
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Adds |delegate| to the list of delegates that will be given the chance to handle a chat
     // message before normal processing continues.
@@ -30,16 +32,14 @@ class CommunicationManager {
         this.delegates_.delete(delegate);
     }
 
-    // Returns whether all communication on the server should be muted. This has to be set and re-
-    // set by an administrator or Management member.
-    isCommunicationMuted() {
-        // TODO: Hook this up with some /muteall command.
-        return false;
-    }
+    // ---------------------------------------------------------------------------------------------
 
     // Called when a player sends a textual message to the server. This could be one of many things:
     // a chat message to either a specific group of people or everyone, answering a chat message,
     // communicating with another player in a phone call, or one of several other options.
+    //
+    // The |event| is answered as soon as possible. Actual processing of the message will be done
+    // asynchronously, to free up the server for further processing in between server frames.
     onPlayerText(event) {
         const player = server.playerManager.getById(event.playerid);
         const message = event.text;
@@ -47,14 +47,11 @@ class CommunicationManager {
         if (!player || !message || !message.length)
             return;  // the player is not connected to the server, or they sent an invalid message
 
-        for (let delegate of this.delegates_) {
-            const handled = delegate.onPlayerText(player, message);
-            if (typeof handled !== 'boolean') {
-                throw new Error('The onPlayerText method must return a boolean: ' +
-                                delegate.constructor.name);
-            }
+        // TODO: Once most communication is handled by JavaScript, do all further processing on a
+        // deferred task instead.
 
-            if (handled) {
+        for (let delegate of this.delegates_) {
+            if (!!delegate.onPlayerText(player, message)) {
                 event.preventDefault();
                 return;
             }
@@ -63,9 +60,13 @@ class CommunicationManager {
         // TODO(Russell): Add further processing here.
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     dispose() {
         this.callbacks_.dispose();
+        this.callbacks_ = null;
+
+        this.delegates_.clear();
+        this.delegates_ = null;
     }
 }
-
-export default CommunicationManager;

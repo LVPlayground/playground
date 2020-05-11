@@ -1,15 +1,15 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import CommunicationManager from 'features/communication/communication_manager.js';
-import CommunicationNatives from 'features/communication/communication_natives.js';
+import { CommunicationManager } from 'features/communication/communication_manager.js';
+import { CommunicationNatives } from 'features/communication/communication_natives.js';
 import Feature from 'components/feature_manager/feature.js';
 
 // The communication feature manages the low-level communicative capabilities of players, for
 // example the main chat, interactive commands and can defer to delegates for more specific chats,
 // for example administrator, gang and VIP chats.
-class Communication extends Feature {
+export default class Communication extends Feature {
     constructor() {
         super();
 
@@ -42,7 +42,7 @@ class Communication extends Feature {
     // Returns whether all player-generated communication on the server should be muted, unless it
     // was issued by administrators or Management members.
     isCommunicationMuted() {
-        return this.manager_.isCommunicationMuted();
+        return false;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -52,5 +52,3 @@ class Communication extends Feature {
         this.manager_.dispose();
     }
 }
-
-export default Communication;

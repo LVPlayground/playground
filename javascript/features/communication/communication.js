@@ -13,6 +13,9 @@ class Communication extends Feature {
     constructor() {
         super();
 
+        // This is a foundational feature.
+        this.markFoundational();
+
         this.manager_ = new CommunicationManager();
         this.natives_ = new CommunicationNatives(this.manager_);
     }

@@ -43,7 +43,7 @@ class Gang {
 
     // Gets the color of members of this gang.
     get color() { return this.color_; }
-    
+
     // Gets the skin of members of this gang.
     get skinId() { return this.skinId_; }
 
@@ -96,7 +96,7 @@ class Gang {
             return;
 
         setPlayerGangColor(player, useGangColor ? this.color_
-                                                : null);
+            : null);
     }
 
     // Returns whether the |player| will use the gang's skin.
@@ -107,15 +107,17 @@ class Gang {
 
     // Sets whether the |player| will use the gang's skin.
     setUsesGangSkin(player, usesGangSkin) {
-        if(typeof usesGangSkin !== 'boolean') {
+        if (typeof usesGangSkin !== 'boolean') {
             throw new Error('usesGangSkin has to be a boolean value.');
         }
 
-        if(player === null || player === undefined || typeof player !== 'object') {
+        if (player === null || player === undefined || typeof player !== 'object') {
             throw new Error('Player is not defined.')
         }
 
-        player.settings.setValue(`${PlayerSetting.CATEGORY.GANG}/${PlayerSetting.GANG.USE_SKIN}`, usesGangSkin);
+        player.settings.updateSetting(
+            `${PlayerSetting.CATEGORY.GANG}/${PlayerSetting.GANG.USE_SKIN}`,
+            usesGangSkin);
     }
 
     // Returns whether |player| is part of this gang.
@@ -137,7 +139,7 @@ class Gang {
     updateColor(color) {
         this.color_ = color;
 
-        for (const [ player, settings ] of this.members_.entries()) {
+        for (const [player, settings] of this.members_.entries()) {
             if (player.isDisconnecting())
                 continue;
 
@@ -149,9 +151,9 @@ class Gang {
     }
 
     // Updates the skin of this gang.
-    updateSkinId(skinId) { 
-        this.skinId_ = skinId;        
-        for (const [ player, settings ] of this.members_.entries()) {
+    updateSkinId(skinId) {
+        this.skinId_ = skinId;
+        for (const [player, settings] of this.members_.entries()) {
             if (player.isDisconnecting())
                 continue;
 

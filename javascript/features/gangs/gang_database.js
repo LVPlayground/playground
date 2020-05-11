@@ -159,6 +159,15 @@ const PURCHASE_CHAT_ENCRYPTION_QUERY = `
     VALUES
         (?, ?, NOW(), ?, FROM_UNIXTIME(?))`;
 
+// Query to update the skin of a gang.
+const GANG_UPDATE_SKIN_QUERY = `
+    UPDATE
+        gangs
+    SET
+        gangs.gang_skin = ?
+    WHERE
+        gangs.gang_id = ?`;
+
 // Query to update the color of a gang.
 const GANG_UPDATE_COLOR_QUERY = `
     UPDATE
@@ -227,7 +236,7 @@ class GangDatabase {
                 goal: info.gang_goal,
                 color: info.gang_color ? Color.fromNumberRGBA(info.gang_color) : null,
                 chatEncryptionExpiry: info.encryption_expire || 0,
-                skinId: 44
+                skinId: info.gang_skin
             }
         };
     }
@@ -356,7 +365,10 @@ class GangDatabase {
             gang.chatEncryptionExpiry);
     }
 
+    // Updates the skin of the |gang| to |skinId|. Returns a promise that will be resolved when the
+    // database has been updated with the new information.
     async updateSkinId(gang, skinId) {
+        await server.database.query(GANG_UPDATE_SKIN_QUERY, skinId, gang.id);
         
     }
 

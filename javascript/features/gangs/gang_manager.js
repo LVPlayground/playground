@@ -4,11 +4,8 @@
 
 import Gang from 'features/gangs/gang.js';
 import GangDatabase from 'features/gangs/gang_database.js';
-import PlayerSetting from 'entities/player_setting.js';
-import PlayerSettingsDatabase from 'features/playground/database/player_settings_database.js';
 
 import MockGangDatabase from 'features/gangs/test/mock_gang_database.js';
-import MockPlayerSettingsDatabase from 'features/playground/database/test/mock_player_settings_database.js';
 
 // The gang manager is responsible for managing all current information associated with gangs
 // whose players are logged in to Las Venturas Playground. It also mediates between the commands,
@@ -16,11 +13,7 @@ import MockPlayerSettingsDatabase from 'features/playground/database/test/mock_p
 class GangManager {
     constructor(settings) {
         this.database_ = server.isTest() ? new MockGangDatabase()
-                                         : new GangDatabase();
-                                         
-    // The database instance used to read and write persistent values.
-    this.playerSettingsDatabase_ = server.isTest() ? new MockPlayerSettingsDatabase()
-                                                  : new PlayerSettingsDatabase();
+            : new GangDatabase();
 
         this.gangs_ = new Map();
         this.gangPlayers_ = new WeakMap();
@@ -285,7 +278,7 @@ class GangManager {
     }
 
     async updateSkinId(gang, skinId) {
-        if(skinId < 0 || skinId > 299 || skinId == 121) {
+        if (skinId < 0 || skinId > 299 || skinId == 121) {
             return;
         }
 
@@ -298,30 +291,21 @@ class GangManager {
 
     // Updates the preference of the |player| within |gang| to use te common gang skin when the
     // |usesGangSkin| parameter is set to true, or their personal color otherwise.
-    async updateSkinPreference(gang, player, usesGangSkin) { 
-        if(gang.usesGangSkin(player) === usesGangSkin)
+    async updateSkinPreference(gang, player, usesGangSkin) {
+        if (gang.usesGangSkin(player) === usesGangSkin)
             return;
-            
-        var setting = player.settings.settings
-            .get(`${PlayerSetting.CATEGORY.GANG}/${PlayerSetting.GANG.USE_SKIN}`);
-            
-        // Either delete or write the new |value| from or to the database.
-        if (usesGangSkin === setting.defaultValue)
-            await this.playerSettingsDatabase_.deleteSetting(setting, player.userId);
-        else
-            await this.playerSettingsDatabase_.writeSetting(setting, player.userId);
 
         gang.setUsesGangSkin(player, usesGangSkin);
 
         usesGangSkin && gang.skinId !== null && gang.skinId !== undefined ?
             this.setSkinInPawnCode(player.id, gang.skinId, true) :
-            this.setSkinInPawnCode(player.id, player.skin, true);        
+            this.setSkinInPawnCode(player.id, player.skin, true);
     }
 
     // Call the spawn manager to update player skin.
     async setSkinInPawnCode(playerId, skinId, uponNextSpawn) {
         var shouldUpdateUponNextSpawn = uponNextSpawn === false ? 0 : 1;
-        
+
         pawnInvoke('OnSetPlayerSkinId', 'iii', playerId, skinId, shouldUpdateUponNextSpawn);
     }
 
@@ -371,7 +355,7 @@ class GangManager {
 
             if (result === null) {
                 console.log('[GangManager] Player ' + player.name + ' is said to be in a gang, ' +
-                            'but the associated information cannot be loaded.');
+                    'but the associated information cannot be loaded.');
                 return;
             }
 
@@ -389,7 +373,7 @@ class GangManager {
             // Associate the |gang| with the |player|.
             this.gangPlayers_.set(player, gang);
 
-            if(gang.usesGangSkin(player) && gang.skinId !== null && gang.skinId !== undefined) {
+            if (gang.usesGangSkin(player) && gang.skinId !== null && gang.skinId !== undefined) {
                 this.setSkinInPawnCode(player.id, gang.skinId, false);
             }
 

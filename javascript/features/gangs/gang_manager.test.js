@@ -130,7 +130,7 @@ describe('GangManager', (it, beforeEach) => {
     it('should be able to update member preferences in regards to gang skin', async(assert) => {
         assert.isNull(manager.gangForPlayer(gunther));
 
-        gunther.identify({ userId: MockGangDatabase.HKO_MEMBER_USER_ID,
+        await gunther.identify({ userId: MockGangDatabase.HKO_MEMBER_USER_ID,
                            gangId: MockGangDatabase.HKO_GANG_ID });
 
         // The database result will be loaded through a promise, continue the test asynchronously.

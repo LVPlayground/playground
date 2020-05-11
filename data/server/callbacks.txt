@@ -12,6 +12,7 @@ forward OnPlayerLogin(playerid, userid, vip, gangid, undercover);
 forward OnPlayerResolvedDeath(playerid, killerid, reason);
 forward OnSetiOwnershipChange(playerid);
 forward OnPlayerGuestLogin(playerId, guestPlayerName[]);
+forward OnSetPlayerSkinId(playerId, skinId, bool: uponNextSpawn);
 
 # SA-MP callbacks
 forward OnGameModeInit();

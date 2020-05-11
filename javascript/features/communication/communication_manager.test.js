@@ -203,8 +203,4 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         
         assert.equal(nuwani.messagesForTesting.length, 2);
     });
-
-
-
-    it.fails();
 });

@@ -63,14 +63,6 @@ class PrivateMessagingManager {
             return 1;
         }
 
-        SpamTracker->record(senderId, message);
-
-        // Block the message if the player is spamming.
-        if (SpamTracker->isSpamming(senderId)) {
-            SendClientMessage(senderId, Color::Error, "Please don't spam PM.");
-            return 1;
-        }
-
         // Store sender for our receiver, so we can check later if our sender is still online if
         // the receiver uses /r.
         format(m_lastPrivateMessageSenderName[receiverId], 25, "%s", sender);
@@ -147,14 +139,6 @@ class PrivateMessagingManager {
     public sendPrivateIrcMessage(senderId, sender[], receiver[], message[]) {
         if (MuteManager->isMuted(senderId) == true) {
             SendClientMessage(senderId, Color::Error, "You can't PM when you are muted.");
-            return 1;
-        }
-
-        SpamTracker->record(senderId, message);
-
-        // Block the message if the player is spamming.
-        if (SpamTracker->isSpamming(senderId)) {
-            SendClientMessage(senderId, Color::Error, "Please don't spam PM.");
             return 1;
         }
 

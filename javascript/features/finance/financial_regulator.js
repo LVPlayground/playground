@@ -2,9 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { FinancialDatabase } from 'features/finance/financial_database.js';
 import { FinancialNativeCalls } from 'features/finance/financial_natives.js';
-import { MockFinancialDatabase } from 'features/finance/test/mock_financial_database.js';
 import { MoneyIndicator } from 'features/finance/visual/money_indicator.js';
 
 // The financial regulator is responsible for managing money in Las Venturas Playground. It
@@ -22,20 +20,12 @@ export class FinancialRegulator {
     static kMinimumBankAmount = 0;
 
     nativeCalls_ = null;
-    database_ = null;
 
     // Map from |player| => |amount|, indicating the amount of cash they carry.
     cash_ = new WeakMap();
 
-    // Map from |player| => |amount|, indicating the amount of money in their bank account.
-    balance_ = new WeakMap();
-
     constructor(FinancialNativeCallsConstructor = FinancialNativeCalls) {
         this.nativeCalls_ = new FinancialNativeCallsConstructor();
-        this.database_ = server.isTest() ? new MockFinancialDatabase()
-                                         : new FinancialDatabase();
-
-        server.playerManager.addObserver(this);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -44,10 +34,7 @@ export class FinancialRegulator {
 
     // Returns the current account balance from |player|.
     async getAccountBalance(player) {
-        if (!this.balance_.has(player))
-            this.balance_.set(player, await this.database_.getPlayerAccountBalance(player));
-        
-        return this.balance_.get(player);
+        return player.account.bankAccountBalance;
     }
     
     // Deposits the given |amount| to the account owned by |player|. Will throw in case the deposit
@@ -61,7 +48,7 @@ export class FinancialRegulator {
         if ((FinancialRegulator.kMaximumBankAmount - currentBalance) < amount)
             throw new Error('Deposit would push the account past its limit.');
         
-        this.balance_.set(player, currentBalance + amount);
+        player.account.bankAccountBalance = currentBalance + amount;
         return true;
     }
 
@@ -76,17 +63,8 @@ export class FinancialRegulator {
         if ((FinancialRegulator.kMinimumBankAmount + currentBalance) < amount)
             throw new Error('Withdrawal would push account below its limit.');
         
-        this.balance_.set(player, currentBalance - amount);
+        player.account.bankAccountBalance = currentBalance - amount;
         return true;
-    }
-
-    // Called when the given |player| disconnects from Las Venturas Playground. We have to write
-    // the new bank account balance to the database if they used it this session.
-    onPlayerDisconnect(player) {
-        if (!this.balance_.has(player))
-            return;  // no mutations
-        
-        this.database_.setPlayerAccountBalance(player, this.balance_.get(player));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -121,7 +99,5 @@ export class FinancialRegulator {
 
     // ---------------------------------------------------------------------------------------------
 
-    dispose() {
-        server.playerManager.removeObserver(this);
-    }
+    dispose() {}
 }

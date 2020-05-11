@@ -43,7 +43,6 @@ public OnGameModeInit() {
     CWWTW__Initialize();            // Walkies Weapons Team War
 #endif
     CExport__CreateMap();           // Export
-    CReaction__Initialize();        // Reaction test
     CHideGame__Initialize();        // Hide & Seek
 #if Feature::DisableFights == 0
     rwResetData(true);              // RWTW

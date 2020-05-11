@@ -10,11 +10,14 @@
 // When writing important properties, their setter is able to call the `requestUpdate()` method.
 // This will queue up the data to be synchronized with the database in the very near future.
 export class AccountData {
+    isRegistered_ = false;
+
     hasIdentified_ = false;
     hasRequestedUpdate_ = false;
 
     userId_ = undefined;
     bankAccountBalance_ = undefined;
+    reactionTests_ = undefined;
 
     // Gets the permanent user Id that has been assigned to this user. Read-only.
     get userId() { return this.userId_; }
@@ -27,6 +30,13 @@ export class AccountData {
         this.requestUpdate();
     }
 
+    // Gets or sets the number of reaction tests that this player has won.
+    get reactionTests() { return this.reactionTests_; }
+    set reactionTests(value) { this.reactionTests_ = value; }
+
+    // Returns whether the player is registered with Las Venturas Playground.
+    isRegistered() { return this.isRegistered_; }
+
     // Returns whether the player owning this account has completed identification.
     hasIdentified() { return this.hasIdentified_; }
 
@@ -38,6 +48,10 @@ export class AccountData {
     initializeFromDatabase(databaseRow) {
         this.userId_ = databaseRow.user_id;
         this.bankAccountBalance_ = databaseRow.money_bank;
+        this.reactionTests_ = databaseRow.stats_reaction;
+
+        this.isRegistered_ = true;
+        this.hasIdentified_ = true;
     }
 
     // Called when the account data is being written to the database. Can happen multiple times for
@@ -47,6 +61,7 @@ export class AccountData {
         return {
             user_id: this.userId_,
             money_bank: this.bankAccountBalance_,
+            stats_reaction: this.reactionTests_,
         };
     }
 

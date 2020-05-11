@@ -140,7 +140,7 @@ export class FinancialCommunityContribution {
                 this.settings_().getValue('financial/community_contribution_vip_base');
             collectionPercentage =
                 this.settings_().getValue('financial/community_contribution_vip_pct');
-        } else if (player.isRegistered()) {
+        } else if (player.account.isRegistered()) {
             collectionBase =
                 this.settings_().getValue('financial/community_contribution_player_base');
             collectionPercentage =

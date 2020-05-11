@@ -5,26 +5,6 @@
 import { ip2long, long2ip } from 'features/nuwani_commands/ip_utilities.js';
 import { sha1 } from 'features/nuwani_commands/sha1.js';
 
-// Query to load account information when a player has identified with the server.
-const ACCOUNT_LOAD_QUERY = `
-    SELECT
-        users_mutable.user_id,
-        users_mutable.money_bank
-    FROM
-        users_mutable
-    WHERE
-        users_mutable.user_id = ?`;
-
-// Query to store account information when a player disconnects from the server, or for periodic
-// updates when an important player property has been changed.
-const ACCOUNT_SAVE_QUERY = `
-    UPDATE
-        users_mutable
-    SET
-        users_mutable.money_bank = ?
-    WHERE
-        users_mutable.user_id = ?`;
-
 // Query to update a player's (hashed) password to the given hashed value and salt.
 const CHANGE_PASSWORD_QUERY = `
     UPDATE
@@ -109,7 +89,7 @@ const PLAYER_LOG_ENTRIES_QUERY = `
         users ON users.user_id = logs.user_id
     WHERE
         subject_user_id = ? AND
-        log_type != 'note'
+        (? = 1 OR log_type != 'note')
     ORDER BY
         log_date DESC`;
 
@@ -232,21 +212,6 @@ export class AccountDatabase {
         this.passwordSalt_ = passwordSalt;
     }
 
-    // Loads the account data for the given |userId|. Will return the raw database row, which is to
-    // be parsed and applied by the AccountData structure. Returns NULL if there are no results.
-    async loadAccountData(userId) {
-        const results = server.database.query(ACCOUNT_LOAD_QUERY, userId);
-        return results && results.rows.length ? results.rows[0]
-                                              : null;
-    }
-
-    // Stores the given |accountData|, which must follow the database column names as returned by
-    // the `loadAccountData()` method. Generally composited by the AccountData structure.
-    async saveAccountData(accountData) {
-        server.database.query(ACCOUNT_SAVE_QUERY, accountData.money_bank, accountData.user_id);
-        return true;
-    }
-
     // Retrieves portions of the player information for the given |nickname| from the database that
     // will be used for outputting their information on IRC.
     async getPlayerSummaryInfo(nickname) {
@@ -271,8 +236,8 @@ export class AccountDatabase {
 
     // Gets the player record for the given |userId|. All entries returned from this function are
     // safe to be shared with the player directly.
-    async getPlayerRecord(userId) {
-        const results = await this._getPlayerRecordQuery(userId);
+    async getPlayerRecord(userId, { includeNotes = false } = {}) {
+        const results = await this._getPlayerRecordQuery(userId, { includeNotes });
         const record = [];
 
         for (const row of results) {
@@ -289,8 +254,9 @@ export class AccountDatabase {
     }
 
     // Actually executes the MySQL query for getting entries out of a player's log.
-    async _getPlayerRecordQuery(userId) {
-        const results = await server.database.query(PLAYER_LOG_ENTRIES_QUERY, userId);
+    async _getPlayerRecordQuery(userId, { includeNotes }) {
+        const results =
+            await server.database.query(PLAYER_LOG_ENTRIES_QUERY, userId, includeNotes ? 1 : 0);
         return results ? results.rows : [];
     }
 

@@ -31,7 +31,7 @@ const DELETE_SETTING_QUERY = `
 
 // Class that provides interaction with the database for reading, writing and removing player
 // setting overrides. All methods in this class are asynchronous since they communicate with MySQL.
-class PlayerSettingsDatabase {
+export class PlayerSettingsDatabase {
     // Loads all known setting overrides from the database.
     async loadSettings(userId) {
         const settings = new Map();
@@ -57,5 +57,3 @@ class PlayerSettingsDatabase {
             DELETE_SETTING_QUERY, setting.identifier, userId);
     }
 }
-
-export default PlayerSettingsDatabase;

@@ -3,11 +3,14 @@
 // be found in the LICENSE file.
 
 import ActorManager from 'entities/actor_manager.js';
+import { CheckpointManager } from 'components/checkpoints/checkpoint_manager.js';
 import CommandManager from 'components/command_manager/command_manager.js';
+import { DialogManager } from 'components/dialogs/dialog_manager.js';
 import FeatureManager from 'components/feature_manager/feature_manager.js';
 import NpcManager from 'entities/npc_manager.js';
 import ObjectManager from 'entities/object_manager.js';
 import PlayerManager from 'entities/player_manager.js';
+import { TextDrawManager } from 'components/text_draw/text_draw_manager.js';
 import TextLabelManager from 'entities/text_label_manager.js';
 import VehicleManager from 'entities/vehicle_manager.js';
 import VirtualWorldManager from 'entities/virtual_world_manager.js';
@@ -25,13 +28,17 @@ import MockVehicle from 'entities/test/mock_vehicle.js';
 
 import Abuse from 'features/abuse/abuse.js';
 import Account from 'features/account/account.js';
+import AccountProvider from 'features/account_provider/account_provider.js';
 import Announce from 'features/announce/announce.js';
 import Communication from 'features/communication/communication.js';
 import Finance from 'features/finance/finance.js';
 import Gangs from 'features/gangs/gangs.js';
 import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
 import MockPlayground from 'features/playground/test/mock_playground.js';
+import PlayerSettings from 'features/player_settings/player_settings.js';
+import Punishments from 'features/punishments/punishments.js';
 import Radio from 'features/radio/radio.js';
+import ReactionTests from 'features/reaction_tests/reaction_tests.js';
 import Settings from 'features/settings/settings.js';
 import Streamer from 'features/streamer/streamer.js';
 
@@ -47,6 +54,11 @@ class MockServer {
         this.commandManager_ = new CommandManager();
         this.featureManager_ = new FeatureManager();
 
+        this.checkpointManager_ = new CheckpointManager(CheckpointManager.kNormalCheckpoints);
+        this.dialogManager_ = new DialogManager();
+        this.raceCheckpointManager_ = new CheckpointManager(CheckpointManager.kRaceCheckpoints);
+        this.textDrawManager_ = new TextDrawManager();
+
         this.actorManager_ = new ActorManager(MockActor /* actorConstructor */);
         this.objectManager_ = new ObjectManager(MockObject /* objectConstructor */);
         this.pickupManager_ = new MockPickupManager(MockPickup /* pickupConstructor */);
@@ -61,13 +73,17 @@ class MockServer {
         this.featureManager_.registerFeaturesForTests({
             abuse: Abuse,
             account: Account,
+            account_provider: AccountProvider,
             announce: Announce,  // TODO: Move functionality to |communication|. See #309.
             communication: Communication,
             finance: Finance,
             gangs: Gangs,
             nuwani: MockNuwani,
+            player_settings: PlayerSettings,
             playground: MockPlayground,
+            punishments: Punishments,
             radio: Radio,
+            reaction_tests: ReactionTests,
             settings: Settings,
             streamer: Streamer
         });
@@ -79,6 +95,12 @@ class MockServer {
             { playerid: 2, name: 'Lucy' }
 
         ].forEach(event => this.playerManager_.onPlayerConnect(event));
+    }
+
+    // Initialize the features that are required for the system to operate. In general this should
+    // be limited to foundational features that have no dependencies of their own.
+    initialize() {
+        this.featureManager_.loadFeature('account_provider');
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -96,6 +118,20 @@ class MockServer {
 
     // Gets the feature manager. This is a real instance.
     get featureManager() { return this.featureManager_; }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Gets the manager that's responsible for checkpoints.
+    get checkpointManager() { return this.checkpointManager_; }
+
+    // Gets the manager that's responsible for managing dialogs.
+    get dialogManager() { return this.dialogManager_; }
+
+    // Gets the manager that's responsible for race checkpoints on the server.
+    get raceCheckpointManager() { return this.raceCheckpointManager_; }
+
+    // Gets the manager that's responsible for text draws.
+    get textDrawManager() { return this.textDrawManager_; }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -135,6 +171,11 @@ class MockServer {
     async dispose() {
         this.featureManager_.dispose();
         this.commandManager_.dispose();
+
+        this.checkpointManager_.dispose();
+        this.dialogManager_.dispose();
+        this.raceCheckpointManager_.dispose();
+        this.textDrawManager_.dispose();
 
         await this.npcManager_.dispose();
 

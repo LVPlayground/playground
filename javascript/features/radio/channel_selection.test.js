@@ -75,7 +75,6 @@ describe('ChannelSelection', (it, beforeEach, afterEach) => {
         assert.equal(selection.channels.length, 2);
 
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
         gunther.level = Player.LEVEL_MANAGEMENT;
 
         assert.equal(settings.getValue('radio/default_channel'), 'LVP Radio');

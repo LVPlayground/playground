@@ -3,8 +3,6 @@
 // be found in the LICENSE file.
 
 import { BanDatabase } from 'features/punishments/ban_database.js';
-import { MockBanDatabase } from 'features/punishments/test/mock_ban_database.js';
-import { NuwaniCommands } from 'features/punishments/nuwani_commands.js';
 import { TestBot } from 'features/nuwani/test/test_bot.js';
 
 import { ip2long } from 'features/nuwani_commands/ip_utilities.js';
@@ -23,26 +21,21 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
     let lucy = null;
 
     beforeEach(() => {
-        const announce = server.featureManager.loadFeature('announce');
+        const feature = server.featureManager.loadFeature('punishments');
         const nuwani = server.featureManager.loadFeature('nuwani');
 
         bot = new TestBot();
         commandManager = nuwani.commandManager;
-        commands = new NuwaniCommands(nuwani.commandManager, () => announce, MockBanDatabase);
-        database = commands.database_;
+        commands = feature.nuwaniCommands_;
+        database = feature.database_;
 
         gunther = server.playerManager.getById(/* Gunther= */ 0);
         gunther.level = Player.LEVEL_ADMINISTRATOR;
-        gunther.identify();
 
         lucy = server.playerManager.getById(/* Lucy= */ 2);
-        lucy.identify();
     });
 
-    afterEach(() => {
-        commands.dispose();
-        bot.dispose();
-    });
+    afterEach(() => bot.dispose());
 
     // Utility function for validating that the ban duration has a sensible length.
     async function assertDurationConstraints(assert, commandBase) {
@@ -96,6 +89,7 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
         await assertNoteConstraints(assert, '!addnote Specifer');
+        await lucy.identify();
 
         const regularNote = await issueCommand(bot, commandManager, {
             source: kCommandSource,
@@ -128,7 +122,7 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         assert.isNotNull(database.addedEntry);
         assert.equal(database.addedEntry.type, BanDatabase.kTypeNote);
         assert.equal(database.addedEntry.sourceNickname, kCommandSourceUsername);
-        assert.equal(database.addedEntry.subjectUserId, lucy.userId);
+        assert.equal(database.addedEntry.subjectUserId, lucy.account.userId);
         assert.equal(database.addedEntry.subjectNickname, lucy.name);
         assert.equal(database.addedEntry.note, 'Has been in-game for weeks?!');
 
@@ -144,6 +138,9 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
 
         await assertDurationConstraints(assert, `!ban ${lucy.id} ? reason`);
         await assertNoteConstraints(assert, `!ban ${lucy.id} 5`);
+        await lucy.identify();
+
+        const userId = lucy.account.userId;
 
         assert.isTrue(lucy.isConnected());
 
@@ -169,7 +166,7 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         assert.equal(database.addedEntry.banIpRangeStart, ip2long(ipAddress));
         assert.equal(database.addedEntry.banIpRangeEnd, ip2long(ipAddress));
         assert.equal(database.addedEntry.sourceNickname, kCommandSourceUsername);
-        assert.equal(database.addedEntry.subjectUserId, lucy.userId);
+        assert.equal(database.addedEntry.subjectUserId, userId);
         assert.equal(database.addedEntry.subjectNickname, lucy.name);
         assert.equal(database.addedEntry.note, 'Idling on the ship');
 
@@ -557,6 +554,9 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
         await assertNoteConstraints(assert, '!kick 0');
+        await lucy.identify();
+
+        const userId = lucy.account.userId;
 
         assert.isTrue(lucy.isConnected());
 
@@ -578,7 +578,7 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         assert.isNotNull(database.addedEntry);
         assert.equal(database.addedEntry.type, BanDatabase.kTypeKick);
         assert.equal(database.addedEntry.sourceNickname, kCommandSourceUsername);
-        assert.equal(database.addedEntry.subjectUserId, lucy.userId);
+        assert.equal(database.addedEntry.subjectUserId, userId);
         assert.equal(database.addedEntry.subjectNickname, lucy.name);
         assert.equal(database.addedEntry.note, 'Idling on the ship');
 

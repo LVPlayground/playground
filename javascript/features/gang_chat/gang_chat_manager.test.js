@@ -49,7 +49,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         const player = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
 
-        player.identify();
+        await player.identify();
 
         const gang = await GangTester.createGang(player);
 
@@ -80,7 +80,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         const player = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
 
-        player.identify();
+        await player.identify();
 
         const gang = await GangTester.createGang(player);
 
@@ -116,7 +116,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
     it('should distribute the message to people on IRC', async(assert) => {
         const player = server.playerManager.getById(0 /* Gunther */);
 
-        player.identify();
+        await player.identify();
         const gang = await GangTester.createGang(player);
 
         assert.isTrue(await player.issueMessage('!hello'));
@@ -138,7 +138,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         const player = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
 
-        player.identify();
+        await player.identify();
 
         const gang = await GangTester.createGang(player);
 
@@ -161,7 +161,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         const player = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
 
-        player.identify();
+        await player.identify();
 
         const gang = await GangTester.createGang(player);
 
@@ -194,7 +194,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         const player = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
 
-        player.identify();
+        await player.identify();
 
         const gang = await GangTester.createGang(player);
 
@@ -223,7 +223,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         const player = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
 
-        player.identify();
+        await player.identify();
 
         const gang = await GangTester.createGang(player, { tag: 'hKo' });
 
@@ -257,7 +257,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
 
-        gunther.identify();
+        await gunther.identify();
 
         const gang = await GangTester.createGang(gunther, { chatEncryptionExpiry: 86400 });
 
@@ -271,7 +271,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
 
     it('should identify gang chat messages that are encrypted', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
+        await gunther.identify();
 
         const gang =
             await GangTester.createGang(gunther, { chatEncryptionExpiry: 0 /* not encrypted */ });
@@ -296,7 +296,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
 
-        gunther.identify();
+        await gunther.identify();
 
         const gang = await GangTester.createGang(gunther, { chatEncryptionExpiry: 86400 });
 
@@ -317,7 +317,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         const player = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
 
-        player.identify();
+        await player.identify();
         player.syncedData.setIsolated(true);
 
         const gang = await GangTester.createGang(player);

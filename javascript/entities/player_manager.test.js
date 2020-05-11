@@ -36,9 +36,9 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         assert.equal(counter, 2);
     });
 
-    it('should fire past events for newly attached observers', assert => {
+    it('should fire past events for newly attached observers', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
+        await gunther.identify();
 
         let connectionCounter = 0;
         let loginCounter = 0;
@@ -129,22 +129,6 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         assert.equal(counter, 1);
     });
 
-    it('should store all information associated to a login with the player', assert => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-
-        assert.isFalse(gunther.isRegistered());
-        assert.isFalse(gunther.isVip());
-
-        server.playerManager.onPlayerLogin({
-            playerid: gunther.id,
-            userid: 42,
-            vip: 1
-        });
-
-        assert.isTrue(gunther.isRegistered());
-        assert.isTrue(gunther.isVip())
-    });
-
     it('should be able to find players by ID', assert => {
         assert.isNull(manager.getById(42));
 
@@ -175,6 +159,19 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
     });
 
     // TODO(Russell): Properly test the find() method.
+
+    it('should do some sensible number verification in the find() function', assert => {
+        assert.equal(manager.count, 0);
+
+        manager.onPlayerConnect({ playerid: 42, name: 'Russell' });
+
+        assert.equal(manager.count, 1);
+
+        assert.isNull(manager.find({ nameOrId: '42.11.41.128' }));
+
+        assert.equal(manager.find({ nameOrId: '42' }).name, 'Russell');
+        assert.equal(manager.find({ nameOrId: 'Russell' }).id, 42);
+    });
 
     it('should know about the number of connected players', assert => {
         assert.equal(manager.count, 0);

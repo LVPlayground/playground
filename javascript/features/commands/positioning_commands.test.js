@@ -15,14 +15,14 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
         positioningCommands.dispose();
     });
 
-    it('/pos should show the x, y, z-coörds and rotation to the player', assert => {
+    it('/pos should show the x, y, z-coörds and rotation to the player', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         gunther.position = new Vector(0, 1, 2);
         const guntherPosition = gunther.position;
         gunther.rotation = 3;
 
-        assert.isTrue(gunther.issueCommand('/pos'));
+        assert.isTrue(await gunther.issueCommand('/pos'));
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0],
@@ -30,13 +30,13 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
                 guntherPosition.y, guntherPosition.z, gunther.rotation));
     });
 
-    it('/pos x y z should only show the position to the player', assert => {
+    it('/pos x y z should only show the position to the player', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         gunther.position = new Vector(0, 1, 2);
         gunther.rotation = 3;
 
-        assert.isTrue(gunther.issueCommand('/pos 3 4 5'));
+        assert.isTrue(await gunther.issueCommand('/pos 3 4 5'));
 
         const guntherPosition = gunther.position;
 
@@ -49,7 +49,7 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
         assert.equal(guntherPosition.z, 2);
     });
 
-    it('/pos should show the x, y, z-coörds, rotation and other usage to the admin', assert => {
+    it('/pos should show the coords, rotation and other usage to the admin', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         gunther.level = Player.LEVEL_ADMINISTRATOR;
@@ -57,7 +57,7 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
         const guntherPosition = gunther.position;
         gunther.rotation = 3;
 
-        assert.isTrue(gunther.issueCommand('/pos'));
+        assert.isTrue(await gunther.issueCommand('/pos'));
 
         assert.equal(gunther.messages.length, 2);
         assert.equal(gunther.messages[0],
@@ -66,14 +66,14 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
         assert.equal(gunther.messages[1], Message.POSITIONING_OTHER_USAGE_POS);
     });
 
-    it('/pos x y z should change the position of an administrator', assert => {
+    it('/pos x y z should change the position of an administrator', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        gunther.identify();
+        await gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(0, 1, 2);
 
-        assert.isTrue(gunther.issueCommand('/pos 3 4 5'));
+        assert.isTrue(await gunther.issueCommand('/pos 3 4 5'));
 
         const guntherPosition = gunther.position;
         assert.equal(guntherPosition.x, 3);
@@ -81,48 +81,48 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
         assert.equal(guntherPosition.z, 5);
     });
 
-    it('/up can\'t be executed by a player', assert => {
+    it('/up can\'t be executed by a player', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         gunther.position = new Vector(1, 2, 3);
 
-        assert.isTrue(gunther.issueCommand('/up 5'));
+        assert.isTrue(await gunther.issueCommand('/up 5'));
 
         assert.equal(gunther.position.z, 3);
     });
 
-    it('/up places the crewmember on foot [distance] higher', assert => {
+    it('/up places the crewmember on foot [distance] higher', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        gunther.identify();
+        await gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(1, 2, 3);
 
-        assert.isTrue(gunther.issueCommand('/up 5'));
+        assert.isTrue(await gunther.issueCommand('/up 5'));
 
         assert.equal(gunther.position.z, 8);
     });
 
-    it('/forward can\'t be executed by a player', assert => {
+    it('/forward can\'t be executed by a player', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
     
         gunther.position = new Vector(11, 12, 13);
     
-        assert.isTrue(gunther.issueCommand('/forward 3'));
+        assert.isTrue(await gunther.issueCommand('/forward 3'));
     
         assert.equal(gunther.position.x, 11);
         assert.equal(gunther.position.y, 12);
     });
 
-    it('/forward places the crewmember on foot [distance] further', assert => {
+    it('/forward places the crewmember on foot [distance] further', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        gunther.identify();
+        await gunther.identify();
         gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(11, 12, 13);
         gunther.rotation = 42;
 
-        assert.isTrue(gunther.issueCommand('/forward 8'));
+        assert.isTrue(await gunther.issueCommand('/forward 8'));
 
         assert.equal(gunther.position.x, 5.646955149129134);
         assert.equal(gunther.position.y, 17.945158603819152);

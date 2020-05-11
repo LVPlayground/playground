@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import ScopedCallbacks from 'base/scoped_callbacks.js';
+
 // Id of the sound that should be played when a player enters a checkpoint.
 const CHECKPOINT_ENTER_SOUND_ID = 1058;
 
@@ -11,19 +13,26 @@ const CHECKPOINT_ENTER_SOUND_ID = 1058;
 //
 // WARNING: DO NOT USE THIS CLASS FOR NORMAL CHECKPOINTS YET. I haven't assessed how the Pawn part
 // of the server uses checkpoints, and it may very well be that we need synchronization.
-class CheckpointManager {
+export class CheckpointManager {
+  static kNormalCheckpoints = 0;
+  static kRaceCheckpoints = 1;
+
   constructor(type) {
     this.type_ = type;
     this.playerMap_ = new Map();
 
     // The normal events are called `player{enter,leave}checkpoint`, whereas the race checkpoint
     // events are named the same, just with the word "race" in between the text.
-    let eventSuffix = type == CheckpointManager.NORMAL_CHECKPOINTS ? 'checkpoint'
+    let eventSuffix = type == CheckpointManager.kNormalCheckpoints ? 'checkpoint'
                                                                    : 'racecheckpoint';
 
+    this.callbacks_ = new ScopedCallbacks();
+
     // TODO: Is there a use-case in which we'd like to know the leave event?
-    global.addEventListener('playerenter' + eventSuffix, CheckpointManager.prototype.onEnter.bind(this));
-    global.addEventListener('playerdisconnect', CheckpointManager.prototype.onDisconnect.bind(this));
+    this.callbacks_.addEventListener(
+        'playerenter' + eventSuffix, CheckpointManager.prototype.onEnter.bind(this));
+    this.callbacks_.addEventListener(
+        'playerdisconnect', CheckpointManager.prototype.onDisconnect.bind(this));
   }
 
   // Displays the |checkpoint| for |player|. Returns a promise that will be resolved when the player
@@ -35,7 +44,7 @@ class CheckpointManager {
       let position = checkpoint.position;
       let size = checkpoint.size;
 
-      if (this.type_ == CheckpointManager.NORMAL_CHECKPOINTS) {
+      if (this.type_ == CheckpointManager.kNormalCheckpoints) {
         pawnInvoke('SetPlayerCheckpoint', 'iffff', player.id, position.x, position.y, position.z, size);
       } else {
         let next = checkpoint.nextPosition;
@@ -90,10 +99,9 @@ class CheckpointManager {
 
     resolver.reject();
   }
+
+  dispose() {
+    this.callbacks_.dispose();
+    this.callbacks_ = null;
+  }
 };
-
-// The type of checkpoint that the manager is responsible for.
-CheckpointManager.NORMAL_CHECKPOINTS = 0;
-CheckpointManager.RACE_CHECKPOINTS = 1;
-
-export default CheckpointManager;

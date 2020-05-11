@@ -58,8 +58,8 @@ describe('GangCommands', (it, beforeEach) => {
         assert.equal(player.messages[0], Message.GANGS_NOT_REGISTERED);
     });
 
-    it('should not allow players already part of a gang to create a new one', assert => {
-        player.identify();
+    it('should not allow players already part of a gang to create a new one', async (assert) => {
+        await player.identify();
 
         addPlayerToGang(player, createGang(), Gang.ROLE_MEMBER);
 
@@ -70,7 +70,7 @@ describe('GangCommands', (it, beforeEach) => {
     });
 
     it('should not allow players to create a gang that already exists', async(assert) => {
-        player.identify();
+        await player.identify();
 
         // Three questions will be asked: the name, tag and goal of the gang.
         player.respondToDialog({ inputtext: 'Homely Kitchen Olives' }).then(() =>
@@ -86,7 +86,7 @@ describe('GangCommands', (it, beforeEach) => {
     });
 
     it('should allow players to create a new gang', async(assert) => {
-        player.identify();
+        await player.identify();
 
         // Three questions will be asked: the name, tag and goal of the gang.
         player.respondToDialog({ inputtext: 'Creative Creatures' }).then(() =>
@@ -106,16 +106,16 @@ describe('GangCommands', (it, beforeEach) => {
         assert.isTrue(gang.hasPlayer(player));
     });
 
-    it('should not allow invitations when the player is not in a gang', assert => {
-        player.identify();
+    it('should not allow invitations when the player is not in a gang', async (assert) => {
+        await player.identify();
 
         assert.isTrue(player.issueCommand('/gang invite Russell'));
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], Message.GANG_NOT_IN_GANG);
     });
 
-    it('should not allow invitations when the player is not a manager or up', assert => {
-        player.identify();
+    it('should not allow invitations when the player is not a manager or up', async (assert) => {
+        await player.identify();
 
         addPlayerToGang(player, createGang(), Gang.ROLE_MEMBER);
 
@@ -124,8 +124,8 @@ describe('GangCommands', (it, beforeEach) => {
         assert.equal(player.messages[0], Message.GANG_INVITE_NO_MANAGER);
     });
 
-    it('should not allow invitations to oneself', assert => {
-        player.identify();
+    it('should not allow invitations to oneself', async (assert) => {
+        await player.identify();
 
         addPlayerToGang(player, createGang(), Gang.ROLE_MANAGER);
 
@@ -134,8 +134,8 @@ describe('GangCommands', (it, beforeEach) => {
         assert.equal(player.messages[0], Message.GANG_INVITE_SELF);
     });
 
-    it('should not allow invitations to unregistered players', assert => {
-        player.identify();
+    it('should not allow invitations to unregistered players', async (assert) => {
+        await player.identify();
 
         addPlayerToGang(player, createGang(), Gang.ROLE_MANAGER);
 
@@ -145,12 +145,12 @@ describe('GangCommands', (it, beforeEach) => {
             player.messages[0], Message.format(Message.GANG_INVITE_NOT_REGISTERED, 'Russell'));
     });
 
-    it('should not allow invitations to unregistered players', assert => {
+    it('should not allow invitations to unregistered players', async (assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         const gang = createGang();
 
-        player.identify();
-        russell.identify();
+        await player.identify();
+        await russell.identify();
 
         addPlayerToGang(player, gang, Gang.ROLE_MANAGER);
         addPlayerToGang(russell, gang, Gang.ROLE_MEMBER);
@@ -160,11 +160,11 @@ describe('GangCommands', (it, beforeEach) => {
         assert.equal(player.messages[0], Message.format(Message.GANG_INVITE_IS_MEMBER, 'Russell'));
     });
 
-    it('should not allow people to hammer others with invitations', assert => {
+    it('should not allow people to hammer others with invitations', async (assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
 
-        player.identify();
-        russell.identify();
+        await player.identify();
+        await russell.identify();
 
         addPlayerToGang(player, createGang(), Gang.ROLE_MANAGER);
 
@@ -189,14 +189,14 @@ describe('GangCommands', (it, beforeEach) => {
         assert.equal(player.messages[0], Message.GANG_JOIN_NO_INVITATION);
     });
 
-    it('should not allow players who are part of a gang to accept an invitation', assert => {
+    it('should not allow players who in a gang to accept an invitation', async (assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         const russellGang = createGang();
 
         russell.level = Player.LEVEL_ADMINISTRATOR;
 
-        player.identify();
-        russell.identify();
+        await player.identify();
+        await russell.identify();
 
         addPlayerToGang(player, createGang(), Gang.ROLE_MANAGER);
         addPlayerToGang(russell, russellGang, Gang.ROLE_MEMBER);
@@ -219,8 +219,8 @@ describe('GangCommands', (it, beforeEach) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         russell.level = Player.LEVEL_ADMINISTRATOR;
 
-        player.identify();
-        russell.identify();
+        await player.identify();
+        await russell.identify();
 
         addPlayerToGang(player, createGang(), Gang.ROLE_MANAGER);
 
@@ -249,8 +249,8 @@ describe('GangCommands', (it, beforeEach) => {
         assert.equal(player.messages[0], Message.GANG_NOT_IN_GANG);
     });
 
-    it('should not allow members to kick other members', assert => {
-        player.identify();
+    it('should not allow members to kick other members', async (assert) => {
+        await player.identify();
 
         addPlayerToGang(player, createGang(), Gang.ROLE_MEMBER);
 
@@ -264,7 +264,7 @@ describe('GangCommands', (it, beforeEach) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         const gang = createGang({ tag: 'HKO' });
 
-        player.identify();
+        await player.identify();
 
         addPlayerToGang(russell, gang, Gang.ROLE_MANAGER);
         addPlayerToGang(player, gang, Gang.ROLE_MANAGER);
@@ -279,7 +279,7 @@ describe('GangCommands', (it, beforeEach) => {
     it('should not allow managers and leaders to kick themselves', async(assert) => {
         const gang = createGang({ tag: 'HKO2' });
 
-        player.identify();
+        await player.identify();
 
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
 
@@ -294,8 +294,8 @@ describe('GangCommands', (it, beforeEach) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         const gang = createGang({ tag: 'HKO2' });
 
-        player.identify();
-        russell.identify({ userId: 1337 });
+        await player.identify();
+        await russell.identify({ userId: 1337 });
 
         addPlayerToGang(russell, gang, Gang.ROLE_LEADER);
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
@@ -312,8 +312,8 @@ describe('GangCommands', (it, beforeEach) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         const gang = createGang({ tag: 'HKO2' });
 
-        player.identify();
-        russell.identify({ userId: 1337 });
+        await player.identify();
+        await russell.identify({ userId: 1337 });
 
         addPlayerToGang(russell, gang, Gang.ROLE_LEADER);
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
@@ -329,7 +329,7 @@ describe('GangCommands', (it, beforeEach) => {
     it('should allow managers and leaders to kick offline people from the gang', async(assert) => {
         const gang = createGang({ tag: 'HKO3' });
 
-        player.identify();
+        await player.identify();
 
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
 
@@ -347,7 +347,7 @@ describe('GangCommands', (it, beforeEach) => {
     });
 
     it('should allow players to leave the gang as members', async(assert) => {
-        player.identify();
+        await player.identify();
 
         addPlayerToGang(player, createGang(), Gang.ROLE_MEMBER);
 
@@ -363,7 +363,7 @@ describe('GangCommands', (it, beforeEach) => {
     });
 
     it('should allow players to abort leaving their gang', async(assert) => {
-        player.identify();
+        await player.identify();
 
         addPlayerToGang(player, createGang(), Gang.ROLE_MEMBER);
 
@@ -378,7 +378,7 @@ describe('GangCommands', (it, beforeEach) => {
     });
 
     it('should allow leaders to leave their gang if they are the only member', async(assert) => {
-        player.identify();
+        await player.identify();
 
         addPlayerToGang(player, createGang(), Gang.ROLE_LEADER);
 
@@ -394,7 +394,7 @@ describe('GangCommands', (it, beforeEach) => {
     });
 
     it('should allow leaders to leave their gang after confirming succession', async(assert) => {
-        player.identify();
+        await player.identify();
 
         addPlayerToGang(player, createGang({ tag: 'CC' }), Gang.ROLE_LEADER);
 
@@ -413,7 +413,7 @@ describe('GangCommands', (it, beforeEach) => {
     });
 
     it('should allow leaders to cancel leaving their gang', async(assert) => {
-        player.identify();
+        await player.identify();
 
         addPlayerToGang(player, createGang({ tag: 'CC' }), Gang.ROLE_LEADER);
 
@@ -431,8 +431,8 @@ describe('GangCommands', (it, beforeEach) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         const gang = createGang({ tag: 'CC' });
 
-        player.identify();
-        russell.identify({ userId: 1337 });
+        await player.identify();
+        await russell.identify({ userId: 1337 });
 
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
         addPlayerToGang(russell, gang, Gang.ROLE_MEMBER);
@@ -470,7 +470,7 @@ describe('GangCommands', (it, beforeEach) => {
     });
 
     it('should not enable leaders to edit their own settings', async(assert) => {
-        player.identify();
+        await player.identify();
 
         addPlayerToGang(player, createGang(), Gang.ROLE_LEADER);
 
@@ -488,8 +488,8 @@ describe('GangCommands', (it, beforeEach) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         const gang = createGang();
 
-        player.identify();
-        russell.identify({ userId: 1337 });
+        await player.identify();
+        await russell.identify({ userId: 1337 });
 
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
         addPlayerToGang(russell, gang, Gang.ROLE_MANAGER);
@@ -510,8 +510,8 @@ describe('GangCommands', (it, beforeEach) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         const gang = createGang();
 
-        player.identify();
-        russell.identify({ userId: 1337 });
+        await player.identify();
+        await russell.identify({ userId: 1337 });
 
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
         addPlayerToGang(russell, gang, Gang.ROLE_MANAGER);
@@ -532,7 +532,7 @@ describe('GangCommands', (it, beforeEach) => {
     it('should enable leaders to change the color of their gang', async(assert) => {
         const gang = createGang();
 
-        player.identify();
+        await player.identify();
 
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
 
@@ -553,7 +553,7 @@ describe('GangCommands', (it, beforeEach) => {
     it('should enable managers to purchase gang chat encryption time', async(assert) => {
         const gang = createGang();
 
-        player.identify({ userId: 1337 });
+        await player.identify({ userId: 1337 });
 
         addPlayerToGang(player, gang, Gang.ROLE_MANAGER);
 
@@ -579,7 +579,7 @@ describe('GangCommands', (it, beforeEach) => {
     it('should do balance checks when purchasing gang chat encryption time', async(assert) => {
         const gang = createGang();
 
-        player.identify({ userId: 1337 });
+        await player.identify({ userId: 1337 });
 
         addPlayerToGang(player, gang, Gang.ROLE_MANAGER);
 
@@ -603,7 +603,7 @@ describe('GangCommands', (it, beforeEach) => {
     it('should not enable leaders to change the name to an existing one', async(assert) => {
         const gang = createGang({ name: 'Candy Crush' });
 
-        player.identify();
+        await player.identify();
 
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
 
@@ -624,7 +624,7 @@ describe('GangCommands', (it, beforeEach) => {
     it('should enable leaders to change the name of their gang', async(assert) => {
         const gang = createGang({ name: 'Candy Crush' });
 
-        player.identify();
+        await player.identify();
 
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
 
@@ -646,7 +646,7 @@ describe('GangCommands', (it, beforeEach) => {
     it('should not enable leaders to change the tag to an existing one', async(assert) => {
         const gang = createGang({ tag: 'CC' });
 
-        player.identify();
+        await player.identify();
 
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
 
@@ -667,7 +667,7 @@ describe('GangCommands', (it, beforeEach) => {
     it('should not enable leaders to change the tag to an invalid one', async(assert) => {
         const gang = createGang({ tag: 'CC' });
 
-        player.identify();
+        await player.identify();
 
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
 
@@ -699,7 +699,7 @@ describe('GangCommands', (it, beforeEach) => {
     it('should enable leaders to change the tag of their gang', async(assert) => {
         const gang = createGang({ tag: 'CC' });
 
-        player.identify();
+        await player.identify();
 
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
 
@@ -720,7 +720,7 @@ describe('GangCommands', (it, beforeEach) => {
     it('should enable leaders to change the goal of their gang', async(assert) => {
         const gang = createGang({ tag: 'CC', goal: 'We rule!' });
 
-        player.identify();
+        await player.identify();
 
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
 
@@ -742,7 +742,7 @@ describe('GangCommands', (it, beforeEach) => {
     it('should enable members to choose whether to use the gang color', async(assert) => {
         const gang = createGang({ tag: 'CC', goal: 'We rule!' });
 
-        player.identify();
+        await player.identify();
 
         addPlayerToGang(player, gang, Gang.ROLE_MEMBER);
 

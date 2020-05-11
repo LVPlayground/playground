@@ -4,6 +4,7 @@
 
 import { AdministratorChannel } from 'features/communication/channels/administrator_channel.js';
 import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { SpamTracker } from 'features/communication/spam_tracker.js';
 import { VipChannel } from 'features/communication/channels/vip_channel.js';
 
 // The communication manager is responsible for making sure that the different capabilities play
@@ -15,6 +16,7 @@ export class CommunicationManager {
 
     genericChannels_ = null;
     prefixChannels_ = null;
+    spamTracker_ = null;
     
     constructor(nuwani) {
         this.delegates_ = new Set();
@@ -44,6 +46,9 @@ export class CommunicationManager {
             else
                 throw new Error('Channel prefixes must be exactly one character long.')
         }
+
+        // Create the spam tracker, which verifies that players aren't being naughty.
+        this.spamTracker_ = new SpamTracker();
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -77,6 +82,11 @@ export class CommunicationManager {
 
         if (!player || !message || !message.length)
             return;  // the player is not connected to the server, or they sent an invalid message
+
+        if (this.spamTracker_.isSpamming(player, message)) {
+            event.preventDefault();
+            return;
+        }
 
         // TODO: Once most communication is handled by JavaScript, do all further processing on a
         // deferred task instead.

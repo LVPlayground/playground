@@ -28,8 +28,6 @@ public OnPlayerText(playerid, text[]) {
 
     PlayerIdlePenalty->resetCurrentIdleTime(playerid);
 
-    SpamTracker->record(playerid, text);
-
     // Enforce a typo in "George" (as "Geroge") when this feature has been enabled.
     if (g_enforceGeorgeTypo)
         EnforceSameLengthTypo(text, "george", "geroge");
@@ -62,12 +60,6 @@ public OnPlayerText(playerid, text[]) {
     if (Player(playerid)->isLoggedIn() == false && Player(playerid)->isRegistered() == true && text[0] != '@') {
         SendClientMessage(playerid, Color::Error, "Please login before chatting in the textbox.");
         SendClientMessage(playerid, Color::Error, "Troubles logging in? Contact the crew using @<message>.");
-        return 0;
-    }
-
-    // Block spamming of this user in the various chats.
-    if (SpamTracker->isSpamming(playerid)) {
-        SendClientMessage(playerid, Color::Error, "Please do not spam on Las Venturas Playground!");
         return 0;
     }
 

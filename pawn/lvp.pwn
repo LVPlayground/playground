@@ -97,7 +97,6 @@
 // each file of which includes additional files as they see fit.
 #include "Features/Account.pwn"
 #include "Features/Christmas.pwn"
-#include "Features/Communication/SpamTracker.pwn"
 #include "Features/Deathmatch.pwn"
 #include "Features/Environment.pwn"
 #include "Features/External.pwn"

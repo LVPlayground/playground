@@ -19,6 +19,15 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         russell = server.playerManager.getById(/* Russell= */ 1);
     });
 
+    it('integrates with the spam tracker', assert => {
+        const excessivelyLongMessage = 'a'.repeat(1024);
+
+        assert.equal(gunther.messages.length, 0);
+        assert.isTrue(gunther.issueMessage(excessivelyLongMessage));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.COMMUNICATION_SPAM_BLOCKED));
+    });
+
     it('should allow delegates to intercept received messages', assert => {
         let invocationCount = 0;
 

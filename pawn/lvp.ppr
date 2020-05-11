@@ -104,9 +104,6 @@
     <DiskObject>\Features\Christmas.pwn</DiskObject>
     <DiskObject>\Features\Christmas\</DiskObject>
     <DiskObject>\Features\Christmas\GiftHunting.pwn</DiskObject>
-    <DiskObject>\Features\Communication\</DiskObject>
-    <DiskObject>\Features\Communication\SpamTracker.pwn</DiskObject>
-    <DiskObject>\Features\Communication\SpamTrackerTest.pwn</DiskObject>
     <DiskObject>\Features\Deathmatch.pwn</DiskObject>
     <DiskObject>\Features\Deathmatch\</DiskObject>
     <DiskObject>\Features\Deathmatch\Ammunation\</DiskObject>

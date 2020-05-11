@@ -15,6 +15,23 @@ const LOAD_REPLACEMENTS_QUERY = `
     LEFT JOIN
         users ON users.user_id = replacements.user_id`;
 
+// MySQL query for storing replacement information in the database.
+const STORE_REPLACEMENT_QUERY = `
+    INSERT INTO
+        replacements
+        (user_id, replacement_before, replacement_after)
+    VALUES
+        (?, ?, ?)`;
+
+// MySQL query for removing a replacement query from the database, keyed by ID.
+const REMOVE_REPLACEMENT_QUERY = `
+    DELETE FROM
+        replacements
+    WHERE
+        id = ?
+    LIMIT
+        1`;
+
 // Minimum message length before considering recapitalization.
 const kRecapitalizeMinimumMessageLength = 10;
 
@@ -39,7 +56,39 @@ export class MessageFilter {
 
     constructor() {
         this.replacements_ = new Set();
-        this.loadReplacements();
+        this.loadReplacementsFromDatabase();
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Gets access to all the replacements that exist in the message filter.
+    get replacements() { return this.replacements_; };
+
+    // Adds the given replacement, changing |before| into |after|, as introduced by |player|. If
+    // |after| is the empty string, then the word will be blocked instead.
+    async addReplacement(player, before, after = '') {
+        const replacement = {
+            id: await this.addReplacementToDatabase(player, before, after),
+            userId: player.account.userId,
+            nickname: player.name,
+            before, after,
+            expression: new RegExp('(' + escape(before) + ')', 'gi'),
+        };
+
+        this.replacements_.add(replacement);
+    }
+
+    // Removes the replacement identified by the given |before|.
+    async removeReplacement(before) {
+        for (const replacement of this.replacements_) {
+            if (replacement.before !== before)
+                continue;
+            
+            await this.removeReplacementFromDatabase(replacement.id);
+
+            this.replacements_.delete(replacement);
+            return;
+        }
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -60,7 +109,10 @@ export class MessageFilter {
             if (!replacement.expression.test(message))
                 continue;
             
-            // TODO: Blocked words.
+            if (!replacement.after.length) {
+                player.sendMessage(Message.COMMUNICATION_FILTER_BLOCKED);
+                return null;
+            }
 
             message = this.applyReplacement(message, replacement);
         }
@@ -161,7 +213,7 @@ export class MessageFilter {
 
     // Loads the replacements from the database, once a connection has been established. Mocked out
     // for testing purposes, because we don't want tests accessing the database.
-    async loadReplacements() {
+    async loadReplacementsFromDatabase() {
         let replacements = [
             {
                 id: 1,
@@ -191,5 +243,25 @@ export class MessageFilter {
                 expression: new RegExp('(' + escape(replacement.replacement_before) + ')', 'gi'),
             });
         }
+    }
+
+    // Writes the replacement with the given information to the database, and returns the ID.
+    async addReplacementToDatabase(player, before, after) {
+        if (server.isTest())
+            return Math.floor(Math.random() * 100000);
+        
+        const results = await server.database.query(
+            STORE_REPLACEMENT_QUERY, player.account.userId, before, after);
+
+        return results ? results.insertId
+                       : null;
+    }
+
+    // Removes the replacement identified by the |replacementId| from the database.
+    async removeReplacementFromDatabase(replacementId) {
+        if (server.isTest())
+            return;
+        
+        await server.database.query(REMOVE_REPLACEMENT_QUERY, replacementId);
     }
 }

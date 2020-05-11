@@ -19,8 +19,30 @@ describe('MessageFilter', (it, beforeEach) => {
         assert.equal(filter.filter(gunther, '123456789'), '123456789');
     });
 
-    it('should be able to maintain a list of replacements', assert => {
-        
+    it('should be able to maintain a list of replacements', async (assert) => {
+        assert.equal(Array.from(filter.replacements).length, 1);
+        assert.equal(filter.filter(gunther, 'George'), 'Geroge'),
+
+        await filter.addReplacement(gunther, 'Lucy', 'Luce');
+        assert.equal(Array.from(filter.replacements).length, 2);
+        assert.equal(filter.filter(gunther, 'hey lucy!'), 'hey luce!');
+
+        await filter.removeReplacement('George');
+        assert.equal(Array.from(filter.replacements).length, 1);
+        assert.equal(filter.filter(gunther, 'George'), 'George');
+    });
+
+    it('should be able to maintain a list of blocked words', async (assert) => {
+        assert.equal(filter.filter(gunther, 'Hey Luce!'), 'Hey Luce!');
+
+        await filter.addReplacement(gunther, 'Luce');
+        assert.isNull(filter.filter(gunther, 'Hey Luce!'));
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.COMMUNICATION_FILTER_BLOCKED));
+
+        await filter.removeReplacement('Luce');
+        assert.equal(filter.filter(gunther, 'Hey Luce!'), 'Hey Luce!');
     });
 
     it('should be able to completely recapitalize a sentence', assert => {

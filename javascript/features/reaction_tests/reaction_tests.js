@@ -15,8 +15,13 @@ export default class ReactionTests extends Feature {
     nuwani_ = null;
     settings_ = null;
 
-    nextTestToken_ = 0;
     strategies_ = null;
+
+    activeTest_ = null;
+    activeTestStart_ = null;
+    activeTestToken_ = 0;
+    activeTestWinnerName_ = null;
+    activeTestWinnerTime_ = null;
 
     constructor() {
         super();
@@ -38,7 +43,7 @@ export default class ReactionTests extends Feature {
         // Array of the available strategies for reaction tests. Each of those corresponds to a
         // particular type of tests, for example repeat-the-word, or calculations.
         this.strategies_ = [
-            new RandomStrategy(),
+            RandomStrategy,
         ];
 
         // Immediately schedule the first reaction test to start.
@@ -61,7 +66,7 @@ export default class ReactionTests extends Feature {
     scheduleNextTest() {
         const delay = this.calculateDelayForNextTest();
         wait(delay * 1000).then(() =>
-            this.startReactionTest(++nextTestToken_));
+            this.startReactionTest(++this.activeTestToken_));
     }
 
     // Returns whether the test should be skipped. This could be the case because there are no
@@ -85,17 +90,26 @@ export default class ReactionTests extends Feature {
 
     // Starts the next reaction test. First the token is verified to make sure it's still the latest
     // scheduled test, then we check requirements, then we launch a test.
-    startReactionTest(nextTestToken) {
-        if (this.nextTestToken_ !== nextTestToken)
+    startReactionTest(activeTestToken) {
+        if (this.activeTestToken_ !== activeTestToken)
             return;  // the token has expired, another test was scheduled
-        
+
         // Fast-path: skip this test if the conditions for running a test are not met.
         if (this.shouldSkipReactionTest()) {
             this.scheduleNextTest();
             return;
         }
 
-        // TODO
+        const prize = this.settings_().getValue('playground/reaction_test_prize');
+        const strategyIndex = Math.floor(Math.random() * this.strategies_.length);
+        const strategy = new this.strategies_[strategyIndex];
+
+        // Actually start the test. This will make all the necessary announcements too.
+        strategy.start(
+            ReactionTests.prototype.announceToPlayers.bind(this), this.nuwani_(), prize);
+
+        this.activeTest_ = strategy;
+        this.activeTestStart_ = server.clock.monotonicallyIncreasingTime();
 
         this.scheduleNextTest();
     }
@@ -103,7 +117,33 @@ export default class ReactionTests extends Feature {
     // Called when the |player| has sent the given |message|. If a test is active, and they've got
     // the right answer, then it's something we should be handling.
     onPlayerText(player, message) {
-        return false;
+        if (!this.activeTest_ || !this.activeTest_.verify(message))
+            return false;
+        
+        const prize = this.settings_().getValue('playground/reaction_test_prize');
+
+        const currentTime = server.clock.monotonicallyIncreasingTime();
+        
+
+        if (this.activeTestWinnerName_ && this.activeTestWinnerName_ === player.name) {
+            // TODO: Repeat answer. Nice gimmick.
+        } else if (this.activeTestWinnerName_) {
+            // TODO: Too late.
+        } else {
+            const difference = Math.round((currentTime - this.activeTestStart_) / 10) / 100;
+
+            this.nuwani_().echo('reaction-result', player.name, player.id, difference);
+            this.announceToPlayers(
+                Message.REACTION_TEST_ANNOUNCE_WINNER, player.name, difference);
+
+            // Finally, let the |player| know about the prize they've won.
+            player.sendMessage(Message.REACTION_TEST_WON, prize);
+
+            this.activeTestWinnerName_ = player.name;
+            this.activeTestWinnerTime_ = currentTime;
+        }
+
+        return true;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -111,6 +151,6 @@ export default class ReactionTests extends Feature {
     dispose() {
         this.communication_.removeReloadObserver(this);
 
-        this.nextTestToken_ = null;
+        this.activeTestToken_ = null;
     }
 }

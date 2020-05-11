@@ -21,7 +21,7 @@ describe('RandomStrategy', (it, beforeEach) => {
 
             strategy.start(announceFn, nuwani, 0);
 
-            const answer = strategy.getAnswer();
+            const answer = strategy.answer;
 
             assert.typeOf(answer, 'string');
             assert.isAboveOrEqual(answer.length, RandomStrategy.kMinimumLength);
@@ -44,12 +44,12 @@ describe('RandomStrategy', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.equal(
             gunther.messages[0],
-            Message.format(Message.REACTION_TEST_RANDOM_ANNOUNCE, strategy.getAnswer(), 1234));
+            Message.format(Message.REACTION_TEST_ANNOUNCE_REPEAT, strategy.answer, 1234));
 
         assert.equal(nuwani.messagesForTesting.length, 1);
         assert.deepEqual(nuwani.messagesForTesting[0], {
             tag: 'reaction-repeat',
-            params: [ strategy.getAnswer(), 1234 ]
+            params: [ strategy.answer, 1234 ]
         });
     });
 });

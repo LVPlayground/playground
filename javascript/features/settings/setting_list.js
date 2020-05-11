@@ -68,6 +68,7 @@ export default [
     /** Playground related settings */
     new Setting('playground', 'reaction_test_delay_sec', Setting.TYPE_NUMBER, 270, 'Average time between reaction tests.'),
     new Setting('playground', 'reaction_test_jitter_sec', Setting.TYPE_NUMBER, 150, 'Jitter to apply to the delay to reduce predictability.'),
+    new Setting('playground', 'reaction_test_prize', Setting.TYPE_NUMBER, 5000, 'How much money will a player get for winning a reaction test?'),
 
     /** Radio related settings */
     new Setting('radio', 'default_channel', Setting.TYPE_STRING, 'LVP Radio', 'Name of the default radio channel.'),

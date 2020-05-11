@@ -16,6 +16,9 @@ export class RandomStrategy extends Strategy {
 
     answer_ = null;
 
+    // Gets the answer to the current reaction test. May be NULL.
+    get answer() { return this.answer_; }
+
     // Starts a new test provided by this strategy. The question must be determined, and it should
     // be announced to people in-game and available through Nuwani accordingly.
     start(announceFn, nuwani, prize) {
@@ -31,14 +34,14 @@ export class RandomStrategy extends Strategy {
         }
 
         // Announce the test to all in-game participants.
-        announceFn(Message.REACTION_TEST_RANDOM_ANNOUNCE, this.answer_, prize);
+        announceFn(Message.REACTION_TEST_ANNOUNCE_REPEAT, this.answer_, prize);
 
         // Announce the test to everyone reading along through Nuwani.
         nuwani.echo('reaction-repeat', this.answer_, prize);
     }
 
-    // Returns the answer 
-    getAnswer() {
-        return this.answer_;
+    // Verifies whether the |message| is, or contains, the answer to this reaction test.
+    verify(message) {
+        return message.toUpperCase() === this.answer_;
     }
 }

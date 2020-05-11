@@ -19,6 +19,10 @@ describe('MessageFilter', (it, beforeEach) => {
         assert.equal(filter.filter(gunther, '123456789'), '123456789');
     });
 
+    it('should be able to maintain a list of replacements', assert => {
+        
+    });
+
     it('should be able to completely recapitalize a sentence', assert => {
         // (1) Remove excess exclamation and question marks
         assert.equal(filter.recapitalize('HUH??!!'), 'Huh?!');
@@ -43,5 +47,43 @@ describe('MessageFilter', (it, beforeEach) => {
         assert.equal(filter.recapitalize('why are you doing that'), 'Why are you doing that?');
         assert.equal(filter.recapitalize('Hum... what is that'), 'Hum... what is that?');
         assert.equal(filter.recapitalize('i dont get it'), 'I dont get it.');
+    });
+
+    it('should be able to apply a replacement while maintaining case', assert => {
+        const replacement = {
+            before: 'George',
+            after: 'Geroge',
+            expression: /(George)/gi,
+        };
+
+        assert.equal(filter.applyReplacement('George', replacement), 'Geroge');
+        assert.equal(filter.applyReplacement('GEORGE', replacement), 'GEROGE');
+        assert.equal(filter.applyReplacement('gEoRgE', replacement), 'gErOgE');
+
+        assert.equal(filter.applyReplacement('George George', replacement), 'Geroge Geroge');
+        assert.equal(filter.applyReplacement('GEORGE george', replacement), 'GEROGE geroge');
+        assert.equal(filter.applyReplacement('a GeOrge b', replacement), 'a GeRoge b');
+
+        const shorter = {
+            before: 'Cake',
+            after: 'Pie',
+            expression: /(Cake)/gi,
+        }
+
+        assert.equal(filter.applyReplacement('Cake', shorter), 'Pie');
+        assert.equal(filter.applyReplacement('CaKe', shorter), 'PiE');
+        assert.equal(filter.applyReplacement('CAKE', shorter), 'PIE');
+        assert.equal(filter.applyReplacement('cake', shorter), 'pie');
+
+        const longer = {
+            before: 'Pie',
+            after: 'Cake',
+            expression: /(Pie)/gi,
+        }
+
+        assert.equal(filter.applyReplacement('Pie', longer), 'Cake');
+        assert.equal(filter.applyReplacement('PiE', longer), 'CaKe');
+        assert.equal(filter.applyReplacement('PIE', longer), 'CAKe');
+        assert.equal(filter.applyReplacement('pie', longer), 'cake');
     });
 });

@@ -133,9 +133,8 @@ class SpawnManager <playerId (MAX_PLAYERS)> {
      *
      * @param skinId Id of the skin which has been selected.
      */
-    public setSkinIdUponNextSpawn(skinId) {     
-        if (m_beforeInitialClassSelection)   
-            SetSpawnInfo(playerId, 0, skinId, 1346.17, 2807.06, 10.82, 320.0, 0, 0, 0, 0, 0, 0);
+    public setSkinIdUponNextSpawn(skinId) {
+        SetSpawnInfo(playerId, 0, skinId, 1346.17, 2807.06, 10.82, 320.0, 0, 0, 0, 0, 0, 0);
 
         m_skinId = skinId;
     }
@@ -473,11 +472,6 @@ public OnSetPlayerSkinId(playerId, skinId, bool: uponNextSpawn) {
     if(uponNextSpawn) {
         SpawnManager(playerId)->setSkinIdUponNextSpawn(skinId);
     } else {
-        SpawnManager(playerId)->setSkinId(skinId, false);
+        SpawnManager(playerId)->setSkinId(skinId, true);
     }
-}
-
-forward OnGetPlayerSkinId(playerId);
-public OnGetPlayerSkinId(playerId) {
-    return SpawnManager(playerId)->skinId();
 }

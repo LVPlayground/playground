@@ -297,9 +297,9 @@ class GangManager {
 
         gang.setUsesGangSkin(player, usesGangSkin);
 
-        usesGangSkin && gang.skinId !== null && gang.skinId !== undefined ?
-            this.setSkinInPawnCode(player.id, gang.skinId, true) :
-            this.setSkinInPawnCode(player.id, player.skin, true);
+        if(usesGangSkin === true) {
+            this.setSkinInPawnCode(player.id, gang.skinId, true);
+        }
     }
 
     // Call the spawn manager to update player skin.

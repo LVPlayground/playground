@@ -153,7 +153,7 @@ class Gang {
     // Updates the skin of this gang.
     updateSkinId(skinId) {
         this.skinId_ = skinId;
-        for (const [player, settings] of this.members_.entries()) {
+        for (const [player, _] of this.members_.entries()) {
             if (player.isDisconnecting())
                 continue;
 

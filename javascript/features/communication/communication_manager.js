@@ -18,8 +18,9 @@ export class CommunicationManager {
     prefixChannels_ = null;
     spamTracker_ = null;
     
-    constructor(nuwani) {
+    constructor(messageFilter, nuwani) {
         this.delegates_ = new Set();
+        this.messageFilter_ = messageFilter;
         this.nuwani_ = nuwani;
 
         this.callbacks_ = new ScopedCallbacks();
@@ -78,12 +79,19 @@ export class CommunicationManager {
     // asynchronously, to free up the server for further processing in between server frames.
     onPlayerText(event) {
         const player = server.playerManager.getById(event.playerid);
-        const message = event.text?.trim();
+        const unprocessedMessage = event.text?.trim();
 
-        if (!player || !message || !message.length)
+        if (!player || !unprocessedMessage || !unprocessedMessage.length)
             return;  // the player is not connected to the server, or they sent an invalid message
 
-        if (this.spamTracker_.isSpamming(player, message)) {
+        if (this.spamTracker_.isSpamming(player, unprocessedMessage)) {
+            event.preventDefault();
+            return;
+        }
+
+        // Process the |message| through the message filter, which may block it as well.
+        const message = this.messageFilter_.filter(player, unprocessedMessage);
+        if (!message) {
             event.preventDefault();
             return;
         }

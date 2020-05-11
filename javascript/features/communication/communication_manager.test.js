@@ -28,6 +28,26 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         assert.equal(gunther.messages[0], Message.format(Message.COMMUNICATION_SPAM_BLOCKED));
     });
 
+    it('integrates with the message filter', assert => {
+        const messages = [];
+
+        manager.addDelegate(new class {
+            onPlayerText(player, message) {
+                messages.push(message);
+                return true;  // handled
+            }
+        });
+
+        assert.isTrue(gunther.issueMessage('hello'));
+        assert.isTrue(gunther.issueMessage('HELLO WORLD'));
+        assert.isTrue(gunther.issueMessage('Hey George'));
+
+        assert.equal(messages.length, 3);
+        assert.equal(messages[0], 'hello');
+        assert.equal(messages[1], 'Hello world.');
+        assert.equal(messages[2], 'Hey Geroge');
+    });
+
     it('should allow delegates to intercept received messages', assert => {
         let invocationCount = 0;
 

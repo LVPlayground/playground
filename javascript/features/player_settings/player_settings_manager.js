@@ -25,7 +25,7 @@ export class PlayerSettingsManager {
         Promise.resolve(this.database_.loadSettings(player.account.userId)).then(settings => {
             for (const [identifier, value] of settings) {
                 try {
-                    this.setValue(identifier, value);
+                    player.settings.setValue(identifier, value);
                 } catch (exception) {
                     console.log(`Warning: Unable to restore the player setting of ${identifier}:`);
                     console.log(exception);

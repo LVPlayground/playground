@@ -29,7 +29,7 @@ class ActivityLog extends Feature {
       'OnPlayerResolvedDeath',  // { playerid, killerid, reason }
 //    'OnPlayerWeaponShot',     // { playerid, weaponid, hittype, hitid, fX, fY, fZ }
       'OnPlayerConnect',        // { playerid }
-      'OnPlayerLogin',          // { playerid, userid, vip, gangId, undercover }
+//      'OnPlayerLogin',          // { playerid, userid, vip, gangId, undercover }
       'OnPlayerGuestLogin',     // { playerId, guestPlayerName[]  }
       'OnPlayerDisconnect',     // { playerid, reason }
 

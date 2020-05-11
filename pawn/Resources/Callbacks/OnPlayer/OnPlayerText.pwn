@@ -40,16 +40,6 @@ public OnPlayerText(playerid, text[]) {
         return 0;
     }
 
-    // Apply the effects of a full server mute.
-    if (IsCommunicationMuted() && !Player(playerid)->isAdministrator()) {
-        SendClientMessage(playerid, Color::Error, "Sorry, an administrator is making an announcement.");
-        return 0;
-    }
-
-    if (CRobbery__OnText(playerid, text)) return 0;
-    if (CShell__OnText(playerid, text)) return 0;
-    if (CLyse__OnText(playerid, text)) return 0;
-
 #if Feature::DisableFights == 0
     if (CWWTW__OnText(playerid, text)) return 0;
 #endif

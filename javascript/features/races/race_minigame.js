@@ -19,7 +19,7 @@ const UpdateTickerInterval = 147;
 // This class represents an on-going race minigame. The race defines the maximum number of players,
 // and the lifetime of the minigame will be controlled by the minigame manager.
 class RaceMinigame extends Minigame {
-    constructor(race, database, logger) {
+    constructor(race, database) {
         console.log('[Race] Race "' + race.name + '" has been created.');
 
         super({
@@ -32,7 +32,6 @@ class RaceMinigame extends Minigame {
 
         this.race_ = race;
         this.database_ = database;
-        this.logger_ = logger;
 
         // Update counter for resetting vehicle damages if vehicles should have godmode.
         this.resetVehicleDamageCounter_ = 0;
@@ -181,8 +180,8 @@ class RaceMinigame extends Minigame {
         let registeredPlayers = {};
 
         for (const player of this.activePlayers) {
-            if (player.isRegistered())
-                registeredPlayers[player.userId] = player;
+            if (player.account.isRegistered())
+                registeredPlayers[player.account.userId] = player;
         }
 
         const userIds = Object.keys(registeredPlayers);
@@ -233,8 +232,6 @@ class RaceMinigame extends Minigame {
             const passedCheckpointTime = highResolutionTime() - this.startTime_;
 
             playerData.recordTime(passedCheckpointIndex, passedCheckpointTime);
-            this.logger_().recordRaceCheckpointResult(
-                player, this.race_.id, passedCheckpointIndex, passedCheckpointTime);
         }
 
         // Check whether the |player| has passed the final checkpoint.
@@ -243,10 +240,6 @@ class RaceMinigame extends Minigame {
 
             FinishedMessage.displayForPlayer(player).then(() =>
                 this.removePlayer(player, Minigame.REASON_FINISHED));
-
-            this.logger_().recordRaceResult(
-                player, this.race_.id, highResolutionTime() - this.startTime_)
-
             return;
         }
 
@@ -398,7 +391,7 @@ class RaceMinigame extends Minigame {
         // Mark the player as being controllable again, so that they're not frozen for no reason.
         player.controllable = true;
 
-        if (reason != Minigame.REASON_FINISHED || !player.isRegistered())
+        if (reason != Minigame.REASON_FINISHED || !player.account.isRegistered())
             return;  // the race's result does not have to be stored
 
         const totalTimeSeconds = totalTime / 1000;
@@ -413,7 +406,7 @@ class RaceMinigame extends Minigame {
 
         // Store the player's result in the database.
         this.database_.storeRaceResult(
-            this.race_.id, player.userId, rank, totalTime, checkpointTimes);
+            this.race_.id, player.account.userId, rank, totalTime, checkpointTimes);
     }
 
     dispose() {

@@ -5,44 +5,49 @@
 import { Supplement } from 'base/supplementable.js';
 
 // Supplements the Player object with an `account` accessor, giving other features access to the
-// information associated with a player's account. Because it's not certain that a player is
-// registered with Las Venturas Playground, the optional chaining operator is your friend here:
-//
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining
+// information associated with a player's account.
 export class PlayerAccountSupplement extends Supplement {
     player_ = null;
     manager_ = null;
+
+    // The AccountData instance that's been created for this player.
+    data_ = null;
 
     constructor(player, manager) {
         super();
 
         this.player_ = player;
         this.manager_ = manager;
+
+        this.data_ = this.manager_.getAccountDataForPlayer(this.player_);
     }
 
     // Returns whether the player has registered with Las Venturas Playground.
     isRegistered() {
-        return this.manager_.getAccountDataForPlayer(player) !== undefined;
+        return this.data_.isRegistered();
     }
 
     // Returns whether the player, when registered, has identified to their account.
     isIdentified() {
-        const accountData = this.manager_.getAccountDataForPlayer(player);
-        return accountData && accountData.hasIdentified();
+        return this.data_.hasIdentified();
     }
 
     // Gets their user Id. Only available if they've identified, undefined otherwise. Read-only.
-    get userId() { return this.manager_.getAccountDataForPlayer(player)?.userId; }
+    get userId() {
+        return this.data_.userId;
+    }
 
     // Gets or sets the balance of their bank account. Limited to the valid range of JavaScript
     // integers, stored as an int64_t in the MySQL database.
     get bankAccountBalance() {
-        return this.manager_.getAccountDataForPlayer(player)?.bankAccountBalance;
+        return this.data_.bankAccountBalance || 0;
+    }
+    set bankAccountBalance(balance) {
+        if (this.data_.hasIdentified())
+            this.data_.bankAccountBalance = balance;
     }
 
-    set bankAccountBalance(balance) {
-        const accountData = this.manager_.getAccountDataForPlayer(player);
-        if (accountData)
-            accountData.bankAccountBalance = balance;
-    }
+    // Gets or sets the number of reaction tests that the player has won.
+    get reactionTests() { return this.data_.reactionTests || 0; }
+    set reactionTests(value) { this.data_.reactionTests = value; }
 }

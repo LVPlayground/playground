@@ -98,13 +98,6 @@ class AnnounceManager {
             player.sendMessage(formattedMessage);
         });
 
-        const item = this.settings_().getValue(generalIdentifier);
-        const subItem = this.settings_().getValue(specificIdentifier);
-
-        if (item === false || subItem === false) {
-            return;
-        }
-
         this.nuwani_().echo(AdminTag, message);
     }
 

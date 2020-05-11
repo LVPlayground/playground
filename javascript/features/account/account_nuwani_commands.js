@@ -304,7 +304,7 @@ export class AccountNuwaniCommands {
                 return;
             
             const name = player.name;
-            const registered = player.isRegistered();
+            const registered = player.account.isRegistered();
             const vip = player.isVip();
             const level = player.isUndercover() ? Player.LEVEL_PLAYER
                                                 : player.level;

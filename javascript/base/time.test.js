@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { from, fromNow, to, toNow } from 'base/time.js';
+import { formatDate, from, fromNow, to, toNow } from 'base/time.js';
 
 describe('Time', it => {
     it('should add code sugar for millisecond waits', async(assert) => {
@@ -63,6 +63,20 @@ describe('Time', it => {
         assert.isFalse(invoked);
         await server.clock.advance(2 * 60 * 60 * 1000);
         assert.isTrue(invoked);
+    });
+
+    it('is able to format dates for display', async (assert) => {
+        assert.equal(formatDate(new Date('xxx')), '[invalid date]');
+        assert.equal(formatDate(new Date('2020-05-01 14:12:15')), 'May 1, 2020');
+        assert.equal(formatDate(new Date('2020-01-11 10:01:12')), 'January 11, 2020');
+        assert.equal(formatDate(new Date('2019-12-30 22:15:11')), 'December 30, 2019');
+
+        assert.equal(formatDate(new Date('2020-05-01 14:12:15'), true),
+                     'May 1, 2020 at 2:12 PM');
+        assert.equal(formatDate(new Date('2020-01-11 10:01:12'), true),
+                     'January 11, 2020 at 10:01 AM');
+        assert.equal(formatDate(new Date('2019-12-30 22:15:11'), true),
+                     'December 30, 2019 at 10:15 PM');
     });
 
     it('should be able to format relative times', assert => {

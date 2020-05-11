@@ -20,11 +20,17 @@ class PlayerManager {
         this.callbacks_.addEventListener(
             'playerconnect', PlayerManager.prototype.onPlayerConnect.bind(this));
         this.callbacks_.addEventListener(
-            'playerlevelchange', PlayerManager.prototype.onPlayerLevelChange.bind(this));
-        this.callbacks_.addEventListener(
             'playerstatechange', PlayerManager.prototype.onPlayerStateChange.bind(this));
         this.callbacks_.addEventListener(
             'playerdisconnect', PlayerManager.prototype.onPlayerDisconnect.bind(this));
+        
+        // Events custom to Las Venturas Playground
+        this.callbacks_.addEventListener(
+            'playeractivitychange', PlayerManager.prototype.onPlayerActivityChange.bind(this));
+        this.callbacks_.addEventListener(
+            'playerlevelchange', PlayerManager.prototype.onPlayerLevelChange.bind(this));
+        this.callbacks_.addEventListener(
+            'messagelevelchange', PlayerManager.prototype.onPlayerMessageLevelChange.bind(this));
 
         // Implementation of the UpdatePlayerSyncedData() Pawn native.
         provideNative('UpdatePlayerSyncedData', 'iiifs',
@@ -75,9 +81,12 @@ class PlayerManager {
     find({ nameOrId = null, returnPlayer = false } = {}) {
         // TODO(Russell): Implement this method properly.
 
-        const playerId = parseInt(nameOrId, 10 /* base */);
-        if (!Number.isNaN(playerId) && this.players_.has(playerId))
-            return this.players_.get(playerId);
+        if (/^\d+$/.test(nameOrId)) {
+            const playerId = parseInt(nameOrId, 10 /* base */);
+        
+            if (!Number.isNaN(playerId) && this.players_.has(playerId))
+                return this.players_.get(playerId);
+        }
 
         return this.getByName(nameOrId, true /* fuzzy */);
     }
@@ -105,7 +114,7 @@ class PlayerManager {
             if ('onPlayerConnect' in observer)
                 observer.onPlayerConnect(player);
 
-            if ('onPlayerLogin' in observer && player.isRegistered())
+            if ('onPlayerLogin' in observer && player.account.isRegistered())
                 observer.onPlayerLogin(player, {});
         }
     }
@@ -138,6 +147,15 @@ class PlayerManager {
         this.notifyObservers('onPlayerConnect', player);
     }
 
+    // Called when a player's activity has changed in Pawn, which we have to align in our state.
+    onPlayerActivityChange(event) {
+        const player = this.players_.get(event.playerid);
+        if (!player)
+            return;  // the event has been received for an invalid player
+        
+        player.activityInternal = event.activity;
+    }
+
     // Called when a player's level on the server changes, for example because they log in to their
     // account, they get temporary rights or take their own rights away.
     onPlayerLevelChange(event) {
@@ -161,6 +179,15 @@ class PlayerManager {
         }
 
         this.notifyObservers('onPlayerLevelChange', player);
+    }
+
+    // Called when a player's message level has changed in the Pawn world.
+    onPlayerMessageLevelChange(event) {
+        const player = this.players_.get(event.playerid);
+        if (!player)
+            return;  // the event has been received for an invalid player
+        
+        player.messagelevel = event.messagelevel;
     }
 
     // Called when a player logs in to their account. This marks availability of their user data

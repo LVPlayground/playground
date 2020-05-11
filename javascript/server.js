@@ -3,14 +3,17 @@
 // be found in the LICENSE file.
 
 import ActorManager from 'entities/actor_manager.js';
+import { CheckpointManager } from 'components/checkpoints/checkpoint_manager.js';
 import Clock from 'base/clock.js';
 import CommandManager from 'components/command_manager/command_manager.js';
 import Database from 'components/database/database.js';
+import { DialogManager } from 'components/dialogs/dialog_manager.js';
 import FeatureManager from 'components/feature_manager/feature_manager.js';
 import NpcManager from 'entities/npc_manager.js';
 import ObjectManager from 'entities/object_manager.js';
 import PickupManager from 'entities/pickup_manager.js';
 import PlayerManager from 'entities/player_manager.js';
+import { TextDrawManager } from 'components/text_draw/text_draw_manager.js';
 import TextLabelManager from 'entities/text_label_manager.js';
 import VehicleManager from 'entities/vehicle_manager.js';
 import VirtualWorldManager from 'entities/virtual_world_manager.js';
@@ -25,6 +28,11 @@ class Server {
         this.commandManager_ = new CommandManager();
         this.featureManager_ = new FeatureManager();
 
+        this.checkpointManager_ = new CheckpointManager(CheckpointManager.kNormalCheckpoints);
+        this.dialogManager_ = new DialogManager();
+        this.raceCheckpointManager_ = new CheckpointManager(CheckpointManager.kRaceCheckpoints);
+        this.textDrawManager_ = new TextDrawManager();
+
         this.actorManager_ = new ActorManager();
         this.objectManager_ = new ObjectManager();
         this.pickupManager_ = new PickupManager();
@@ -34,9 +42,9 @@ class Server {
         this.virtualWorldManager_ = new VirtualWorldManager();
 
         this.npcManager_ = new NpcManager(Npc, this.playerManager_);
-
-        // TODO(Russell): The DialogManager should be owned by the Server instance.
     }
+
+    initialize() {}
 
     // ---------------------------------------------------------------------------------------------
 
@@ -53,6 +61,20 @@ class Server {
 
     // Gets the feature manager, which is responsible for tracking all enabled features.
     get featureManager() { return this.featureManager_; }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Gets the manager that's responsible for checkpoints.
+    get checkpointManager() { return this.checkpointManager_; }
+
+    // Gets the manager that's responsible for managing dialogs.
+    get dialogManager() { return this.dialogManager_; }
+
+    // Gets the manager that's responsible for race checkpoints on the server.
+    get raceCheckpointManager() { return this.raceCheckpointManager_; }
+
+    // Gets the manager that's responsible for text draws.
+    get textDrawManager() { return this.textDrawManager_; }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -91,6 +113,11 @@ class Server {
     async dispose() {
         this.featureManager_.dispose();
         this.commandManager_.dispose();
+
+        this.checkpointManager_.dispose();
+        this.dialogManager_.dispose();
+        this.raceCheckpointManager_.dispose();
+        this.textDrawManager_.dispose();
 
         await this.npcManager_.dispose();
 

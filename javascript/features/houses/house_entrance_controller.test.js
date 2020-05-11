@@ -60,7 +60,7 @@ describe('HouseEntranceController', (it, beforeEach) => {
 
     it('should allow players en enter a house through its portal', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify({ userId: 42 });
+        await gunther.identify({ userId: 42 });
 
         assert.isNull(controller.getCurrentHouseForPlayer(gunther));
 
@@ -111,8 +111,8 @@ describe('HouseEntranceController', (it, beforeEach) => {
         assert.isFalse(await controller.hasAccessToHouse(location, gunther));
         assert.isFalse(await controller.hasAccessToHouse(location, russell));
 
-        gunther.identify({ userId: 43 });
-        russell.identify({ userId: 42 });
+        await gunther.identify({ userId: 43 });
+        await russell.identify({ userId: 42 });
 
         // (2) Russell can always access his own house.
         assert.isTrue(await controller.hasAccessToHouse(location, russell));
@@ -174,7 +174,7 @@ describe('HouseEntranceController', (it, beforeEach) => {
 
     it('should update house owner gang data when they join or leave a gang', async(assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
-        russell.identify({ userId: 42 });
+        await russell.identify({ userId: 42 });
 
         russell.position = new Vector(500, 500, 500);
 
@@ -184,11 +184,11 @@ describe('HouseEntranceController', (it, beforeEach) => {
         assert.equal(location.settings.ownerId, 42);
         assert.equal(location.settings.ownerGangId, null);
 
-        controller.onUserJoinGang(russell.userId, 1501);
+        controller.onUserJoinGang(russell.account.userId, 1501);
 
         assert.equal(location.settings.ownerGangId, 1501);
 
-        controller.onUserLeaveGang(russell.userId, 1501);
+        controller.onUserLeaveGang(russell.account.userId, 1501);
 
         assert.equal(location.settings.ownerGangId, null);
     });

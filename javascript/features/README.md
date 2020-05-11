@@ -30,11 +30,11 @@ The following features have been implemented in JavaScript.
   - **[Gangs](gangs/)**: Provides the persistent gangs feature, as well as the `/gang` command.
   - **[Houses](houses/)**: Provide the ability for player-owned houses in the main world.
   - **[Location](location/)**: Provides functionality related to a player's location.
-  - **[Logger](logger/)**: Provides APIs for storing in-game events in the Elastic stack.
   - **[Minigames](minigames/)**: Provides common infrastructure for minigame features.
   - **[Player favours](player_favours/)**: Various smaller features implemented specifically for
     the benefit of certain players.
   - **[Playground](playground/)**: Features created for the identity of Las Venturas Playground.
+  - **[PlayerSettings](playersettings/)**: This allows to add (persistent) settings for the player.
   - **[Report](report/)**: Give the ability to players to report other players when they use illegal
     stuff.
   - **[Settings](settings/)**: Framework providing fast, categorized and persistent settings.

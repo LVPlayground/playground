@@ -280,31 +280,6 @@ CShell__SignupProcess(playerid)
     return 1;
 }
 
-// CShell__OnText
-// Author: tomozj
-// This function will be called when someone types a string. If this function
-// returns 1 or true, then OnPlayerText will be cancelled and the text will not
-// be shown in the mainchat.
-CShell__OnText(playerid, text[])
-{
-    if(g_RivershellState != RIVERSHELL_STATE_RUNNING || !g_RivershellPlayer[playerid]) {
-        // Minigame not active, or player not in the minigame..
-        return 0;
-    }
-
-    if(!strcmp(text[0], ";", true, 1)) {
-        // TEAM CHAT YAYA !!!!!
-        new string[256];
-        new teamstr[7];
-        new teamid = p_Team[playerid];
-        if(teamid == TEAM_BLUE) teamstr = "Blue";
-        else teamstr = "Green";
-        format(string, 256, "* [%s Team] %s: %s", teamstr, PlayerName(playerid), text[1]);
-        CShell__TeamMsg(teamid, COLOR_LIGHTBLUE, string);
-        return 1;
-    }
-    return 0;
-}
 // CShell__TeamMsg. This function manages any team messages that may get sent to
 // the team such as boat steals and perhaps team chat.
 CShell__TeamMsg(Rteam,color,msg[])

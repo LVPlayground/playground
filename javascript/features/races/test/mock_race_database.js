@@ -14,7 +14,7 @@ class MockRaceDatabase {
 
     loadRecordTimesForPlayer(player) {
         let times = new Map();
-        if (player.isRegistered())
+        if (player.account.isRegistered())
             times.set(42, 83 /* 1:23 */);
 
         return Promise.resolve(times);

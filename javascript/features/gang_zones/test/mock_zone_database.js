@@ -49,7 +49,7 @@ export class MockZoneDatabase extends ZoneDatabase {
 
         const gunther = server.playerManager.getById(/* Gunther= */ 0);
         for (const houseForTesting of housesForTesting) {
-            gunther.identify({ userId: houseForTesting.userId });
+            await gunther.identify({ userId: houseForTesting.userId });
             gunther.gangId = houseForTesting.gangId;
 
             const location = await houseManager.createLocation(gunther, {

@@ -227,25 +227,25 @@ class HouseCommands {
     // from, optionally |filter|ed, after which they get a list of houses owned by the subject.
     // Players using this command will get their own dialog immediately.
     async onHouseGotoCommand(player, filter) {
-        if (!player.isRegistered()) {
+        if (!player.account.isRegistered()) {
             player.sendMessage(Message.HOUSE_GOTO_UNREGISTERED);
             return;
         }
 
         if (!player.isAdministrator())
-            return await this.displayHouseGotoDialog(player, player.userId);
+            return await this.displayHouseGotoDialog(player, player.account.userId);
 
         const potentialPlayerId = parseFloat(filter);
 
         // Fast-path to display another player's houses when |filter| is a player Id.
         if (!isNaN(potentialPlayerId) && isFinite(potentialPlayerId)) {
             const subject = server.playerManager.getById(potentialPlayerId);
-            if (!subject || !subject.isRegistered()) {
+            if (!subject || !subject.account.isRegistered()) {
                 player.sendMessage(Message.HOUSE_GOTO_NONE_FOUND);
                 return;
             }
 
-            return await this.displayHouseGotoDialog(player, subject.userId);
+            return await this.displayHouseGotoDialog(player, subject.account.userId);
         }
 
         const menu = new Menu('Select a house owner', ['Nickname', 'Owned houses']);
@@ -542,7 +542,7 @@ class HouseCommands {
             return;
         }
 
-        const isOwner = location.settings.ownerId === player.userId;
+        const isOwner = location.settings.ownerId === player.account.userId;
         if (!isOwner && (!player.isAdministrator() || player.isTemporaryAdministrator())) {
             player.sendMessage(Message.HOUSE_SETTINGS_NOT_OWNER);
             return;

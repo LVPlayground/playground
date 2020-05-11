@@ -109,7 +109,7 @@ export class FinancialCommands {
     // The |player| must be registered with Las Venturas Playground in order to be able to use their
     // bank account. If they aren't, display a consistent error message.
     requireRegisteredPlayer(player) {
-        if (!player.isRegistered()) {
+        if (!player.account.isRegistered()) {
             player.sendMessage(Message.BANK_NEED_ACCOUNT);
             return false;
         }

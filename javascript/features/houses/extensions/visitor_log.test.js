@@ -14,7 +14,7 @@ describe('VisitorLog', (it, beforeEach) => {
 
     beforeEach(async(assert) => {
         gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify({ userId: 42 });
+        await gunther.identify({ userId: 42 });
 
         ({ manager } = await createTestEnvironment());
 
@@ -37,7 +37,7 @@ describe('VisitorLog', (it, beforeEach) => {
         }
 
         const russell = server.playerManager.getById(1 /* Russell */);
-        russell.identify({ userId: 5001 });
+        await russell.identify({ userId: 5001 });
 
         manager.forceEnterHouse(russell, location);
 
@@ -106,7 +106,7 @@ describe('VisitorLog', (it, beforeEach) => {
         gunther.setVip(true);
 
         const russell = server.playerManager.getById(1 /* Russell */);
-        russell.identify({ userId: 5001 });
+        await russell.identify({ userId: 5001 });
 
         manager.forceEnterHouse(russell, location);
 

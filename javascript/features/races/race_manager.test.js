@@ -85,11 +85,11 @@ describe('RaceManager', (it, beforeEach, afterEach) => {
         });
     });
 
-    it('should include personal record times for registered players', assert => {
+    it('should include personal record times for registered players', async (assert) => {
         const race = new Race({ id: 42 });
         manager.registerRace(race);
 
-        gunther.identify();
+        await gunther.identify();
 
         return manager.loadRecordTimesForPlayer(gunther).then(races => {
             assert.equal(races.length, 1);
@@ -100,12 +100,12 @@ describe('RaceManager', (it, beforeEach, afterEach) => {
         });
     });
 
-    it('should be able to include all-time high scores when getting personal scores', assert => {
+    it('should be able to include all-time scores when getting personal scores', async (assert) => {
         const race = new Race({ id: 42 });
 
         manager.registerRace(race);
 
-        gunther.identify();
+        await gunther.identify();
 
         return manager.loadRecordTimes().then(() => {
             return manager.loadRecordTimesForPlayer(gunther);

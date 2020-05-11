@@ -13,6 +13,7 @@ class FriendsManager {
         this.friends_ = new Map();
         this.lastActive_ = {};
         this.loadPromises_ = new Map();
+        this.userIds_ = new WeakMap();
 
         // Cached data from a userId to the list of friends of that userId.
         this.friendsCache_ = new Map();
@@ -30,15 +31,15 @@ class FriendsManager {
 
         await this.database_.addFriend(player, friendPlayer);
 
-        if (this.friendsCache_.has(player.userId))
-            this.friendsCache_.get(player.userId).add(friendPlayer.userId);
+        if (this.friendsCache_.has(player.account.userId))
+            this.friendsCache_.get(player.account.userId).add(friendPlayer.account.userId);
 
         let friends = this.friends_.get(player);
         if (!friends)
             return;  // the player has disconnected from the server since
 
         friends.push({
-            userId: friendPlayer.userId,
+            userId: friendPlayer.account.userId,
             name: friendPlayer.name,
             lastSeen: Date.now()
         });
@@ -47,12 +48,12 @@ class FriendsManager {
     // Asynchronously returns whether |player| has added |friendPlayer| as a friend. Both players
     // must be registered and logged in to their accounts.
     async hasFriend(player, friendPlayer) {
-        if (!player.isRegistered() || !friendPlayer.isRegistered())
+        if (!player.account.isRegistered() || !friendPlayer.account.isRegistered())
             return false;
 
         await this.waitUntilPlayerDataLoaded(player);
         for (const friend of this.friends_.get(player)) {
-            if (friend.userId === friendPlayer.userId)
+            if (friend.userId === friendPlayer.account.userId)
                 return true;
         }
 
@@ -65,12 +66,12 @@ class FriendsManager {
         if (!this.friendsCache_.has(friendUserId))
             this.friendsCache_.set(friendUserId, await this.database_.getFriendsSet(friendUserId));
 
-        return this.friendsCache_.get(friendUserId).has(player.userId);
+        return this.friendsCache_.get(friendUserId).has(player.account.userId);
     }
 
     // Asynchronously returns the list of friends of |player|.
     async getFriends(player) {
-        if (!player.isRegistered())
+        if (!player.account.isRegistered())
             return { online: [], offline: [] };
 
         await this.waitUntilPlayerDataLoaded(player);
@@ -91,7 +92,7 @@ class FriendsManager {
     // Asynchronously removes |friendName| as a friend of |player|, which does not have to be their
     // complete nickname. The |player| must be registered and logged in to their account.
     async removeFriend(player, friendName) {
-        if (!player.isRegistered())
+        if (!player.account.isRegistered())
             throw new Error('The |player| must be registered.');
 
         await this.waitUntilPlayerDataLoaded(player);
@@ -124,8 +125,8 @@ class FriendsManager {
 
         await this.database_.removeFriend(player, removeUserId);
 
-        if (this.friendsCache_.has(player.userId))
-            this.friendsCache_.get(player.userId).delete(removeUserId);
+        if (this.friendsCache_.has(player.account.userId))
+            this.friendsCache_.get(player.account.userId).delete(removeUserId);
 
         return { success: true, nickname: removeNickname }
     }
@@ -147,7 +148,8 @@ class FriendsManager {
 
     // Called when a player logs in to their account. Will start loading their friends.
     onPlayerLogin(player) {
-        this.lastActive_[player.userId] = FriendsManager.CURRENTLY_ONLINE;
+        this.lastActive_[player.account.userId] = FriendsManager.CURRENTLY_ONLINE;
+        this.userIds_.set(player, player.account.userId);
 
         this.loadPromises_.set(player, this.database_.loadFriends(player).then(friends => {
             this.friends_.set(player, friends);
@@ -156,12 +158,15 @@ class FriendsManager {
     }
 
     // Called when a player disconnects from Las Venturas Playground. Clears their friend list.
-    onPlayerDisconnect(player, reason) {
+    onPlayerDisconnect(player) {
         this.friends_.delete(player);
         this.loadPromises_.delete(player);
 
-        if (player.isRegistered())
-            this.lastActive_[player.userId] = Date.now();
+        const userId = this.userIds_.get(player);
+        if (userId) {
+            this.lastActive_[userId] = Date.now();
+            this.userIds_.delete(player);
+        }
     }
 
     dispose() {

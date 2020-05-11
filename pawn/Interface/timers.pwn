@@ -45,7 +45,6 @@ class DeprecatedTimerRuntime {
         waterFightProcess();
 #endif
 
-        CReaction__Process();
         CDerby__Process();
         CRobbery__Process();
 
@@ -154,8 +153,6 @@ class DeprecatedTimerRuntime {
         }
 
         TaxUpdate();
-
-        CReaction__ReactionExpire();
 
         if (++m_threeMinuteTicker == 3) {
             FreeTaxi();

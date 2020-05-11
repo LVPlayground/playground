@@ -5,6 +5,7 @@
 import { CalculationStrategy } from 'features/reaction_tests/strategies/calculation_strategy.js';
 import Feature from 'components/feature_manager/feature.js';
 import { RandomStrategy } from 'features/reaction_tests/strategies/random_strategy.js';
+import { RememberStrategy } from 'features/reaction_tests/strategies/remember_strategy.js';
 
 import { format } from 'base/string_formatter.js';
 
@@ -45,7 +46,10 @@ export default class ReactionTests extends Feature {
         // particular type of tests, for example repeat-the-word, or calculations.
         this.strategies_ = [
             CalculationStrategy,
+            CalculationStrategy,
             RandomStrategy,
+            RandomStrategy,
+            RememberStrategy,  // TODO: Move to 1/3rd for each
         ];
 
         // Immediately schedule the first reaction test to start.

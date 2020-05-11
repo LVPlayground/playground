@@ -549,7 +549,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(resetfc,        7, AdministratorLevel);
     lvp_command(resetmatch,    10, AdministratorLevel);
 #endif
-    lvp_command(reactiontest,  12, AdministratorLevel);
     lvp_command(chase,          5, AdministratorLevel);
     lvp_command(fetch,          5, AdministratorLevel);
     lvp_command(stopchase,      9, AdministratorLevel);

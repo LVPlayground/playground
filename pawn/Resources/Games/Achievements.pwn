@@ -13,7 +13,6 @@ Information for adding new achievements:
 Add a CAchieve__something which get calls to check if a player makes an achievement
 Example for reactionachievements CAchieve__ReactionWin
 Call this function in the stuff where it should get
-Example for reactionachievements add in CReaction__Win in reaction.pwn
 Add the thing in CAchieve__Achieved
 
 REMEMBER TO MAKE IT RESET IN CAchieve__OnPlayerConnect

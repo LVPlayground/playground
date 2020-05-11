@@ -2,6 +2,8 @@
 <Project>
   <FileList>
     <DiskObject>\config.pwn</DiskObject>
+    <DiskObject>\Driver\</DiskObject>
+    <DiskObject>\Driver\Driver.pwn</DiskObject>
     <DiskObject>\Elements\</DiskObject>
     <DiskObject>\Elements\AdministratorCommands.pwn</DiskObject>
     <DiskObject>\Elements\Player\</DiskObject>
@@ -277,7 +279,6 @@
     <DiskObject>\Resources\Games\Export.pwn</DiskObject>
     <DiskObject>\Resources\Games\FightClub.pwn</DiskObject>
     <DiskObject>\Resources\Games\Grand_Theft_Auto.pwn</DiskObject>
-    <DiskObject>\Resources\Games\Reaction.pwn</DiskObject>
     <DiskObject>\Resources\Maps\</DiskObject>
     <DiskObject>\Resources\Maps\IslandDM.pwn</DiskObject>
     <DiskObject>\Resources\Maps\main.pwn</DiskObject>
@@ -361,8 +362,6 @@
     <DiskObject>\Resources\Minigames\Derby\Derby7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby9.pwn</DiskObject>
-    <DiskObject>\Driver\</DiskObject>
-    <DiskObject>\Driver\Driver.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

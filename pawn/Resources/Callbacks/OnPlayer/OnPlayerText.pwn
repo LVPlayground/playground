@@ -30,8 +30,6 @@ public OnPlayerText(playerid, text[]) {
 
     SpamTracker->record(playerid, text);
 
-    CReaction__OnText(playerid, text);
-
     // Enforce a typo in "George" (as "Geroge") when this feature has been enabled.
     if (g_enforceGeorgeTypo)
         EnforceSameLengthTypo(text, "george", "geroge");

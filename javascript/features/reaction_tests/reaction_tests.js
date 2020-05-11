@@ -110,8 +110,12 @@ export default class ReactionTests extends Feature {
 
         this.activeTest_ = strategy;
         this.activeTestStart_ = server.clock.monotonicallyIncreasingTime();
+        this.activeTestWinnerName_ = null;
+        this.activeTestWinnerTime_ = null;
 
-        this.scheduleNextTest();
+        const timeout = this.settings_().getValue('playground/reaction_test_expire_sec');
+        wait(timeout * 1000).then(() =>
+            this.reactionTestTimedOut(this.activeTestToken_));
     }
 
     // Called when the |player| has sent the given |message|. If a test is active, and they've got
@@ -120,15 +124,16 @@ export default class ReactionTests extends Feature {
         if (!this.activeTest_ || !this.activeTest_.verify(message))
             return false;
         
+        const currentTime = server.clock.monotonicallyIncreasingTime();
         const prize = this.settings_().getValue('playground/reaction_test_prize');
 
-        const currentTime = server.clock.monotonicallyIncreasingTime();
-        
-
         if (this.activeTestWinnerName_ && this.activeTestWinnerName_ === player.name) {
-            // TODO: Repeat answer. Nice gimmick.
+            // Do nothing, the player's just repeating themselves. Cocky!
         } else if (this.activeTestWinnerName_) {
-            // TODO: Too late.
+            const difference = Math.round((currentTime - this.activeTestWinnerTime_) / 10) / 100;
+            player.sendMessage(
+                Message.REACTION_TEST_TOO_LATE, this.activeTestWinnerName_, difference);
+
         } else {
             const difference = Math.round((currentTime - this.activeTestStart_) / 10) / 100;
 
@@ -141,9 +146,23 @@ export default class ReactionTests extends Feature {
 
             this.activeTestWinnerName_ = player.name;
             this.activeTestWinnerTime_ = currentTime;
+
+            // Schedule the next test now that someone has given an answer.
+            this.scheduleNextTest();
         }
 
         return true;
+    }
+
+    // Called when a reaction test may have timed out. We verify this by checking the token. If it
+    // has timed out, then we'll request scheduling of a new test.
+    reactionTestTimedOut(activeTestToken) {
+        if (this.activeTestToken_ !== activeTestToken)
+            return;  // the token has expired, another test was scheduled
+        
+        this.activeTest_ = null;
+
+        this.scheduleNextTest();
     }
 
     // ---------------------------------------------------------------------------------------------

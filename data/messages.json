@@ -323,8 +323,7 @@
 
   "REACTION_TEST_ANNOUNCE_REPEAT": "{FFFF00}The first one who repeats \"%s\" wins %$!",
   "REACTION_TEST_ANNOUNCE_WINNER": "{FFFF00}%s has won the reaction test in %d seconds.",
-
-  "REACTION_TEST_TOO_LATE": "{DC143C}You are too late! %s beat you to the right answer by %s seconds.",
+  "REACTION_TEST_TOO_LATE": "{DC143C}Too late! %s beat you to the right answer, and were %s seconds faster.",
   "REACTION_TEST_WON": "{33AA33}Congratulations! You have been awarded %$.",
 
   "REPORT_MESSAGE": "{33AA33}Your report has been delivered to the crew{FFFFFF}: Player: %s (Id:%d) - Reason: %s",

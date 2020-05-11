@@ -82,7 +82,61 @@ describe('ReactionTests', (it, beforeEach) => {
         assert.includes(gunther.messages[1], 'in 2.57 seconds');
         assert.equal(gunther.messages[2], Message.format(Message.REACTION_TEST_WON, prize));
 
+        // (2) Subsequent players will receive a generic "too late!" message.
+        assert.equal(lucy.messages.length, 2);
+
+        await server.clock.advance(1234);
+
+        lucy.issueMessage(driver.activeTest_.answer);
+
+        assert.equal(lucy.messages.length, 3);
+        assert.equal(
+            lucy.messages[2], Message.format(Message.REACTION_TEST_TOO_LATE, gunther.name, 1.23));
     });
 
-    it.fails();
+    it('should automatically schedule a new test after someone won', async (assert) => {
+        const delay = settings.getValue('playground/reaction_test_delay_sec');
+        const jitter = settings.getValue('playground/reaction_test_jitter_sec');
+
+        assert.equal(gunther.messages.length, 0);
+
+        // Wait until we're certain that the first reaction test has started.
+        await server.clock.advance((delay + jitter) * 1000);
+
+        assert.equal(gunther.messages.length, 1);
+
+        gunther.issueMessage(driver.activeTest_.answer);
+        assert.equal(gunther.messages.length, 3);
+
+        // Wait until we're certain that the next reaction test has started.
+        await server.clock.advance((delay + jitter) * 1000);
+
+        assert.equal(gunther.messages.length, 4);
+    });
+
+    it('should automatically schedule a new test after one times out', async (assert) => {
+        const delay = settings.getValue('playground/reaction_test_delay_sec');
+        const jitter = settings.getValue('playground/reaction_test_jitter_sec');
+        const timeout = settings.getValue('playground/reaction_test_expire_sec');
+
+        assert.equal(gunther.messages.length, 0);
+
+        // Wait until we're certain that the first reaction test has started.
+        await server.clock.advance((delay + jitter) * 1000);
+
+        assert.equal(gunther.messages.length, 1);
+
+        const answer = driver.activeTest_.answer;
+
+        // Wait for the timeout. Giving the right answer thereafter will be ignored.
+        await server.clock.advance(timeout * 1000);
+
+        gunther.issueMessage(answer);
+        assert.equal(gunther.messages.length, 1);
+
+        // Wait until we're certain that the next reaction test has started.
+        await server.clock.advance((delay + jitter) * 1000);
+
+        assert.equal(gunther.messages.length, 2);
+    });
 });

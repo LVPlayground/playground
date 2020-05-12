@@ -406,7 +406,79 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable administrators to change communication substitutions', async (assert) => {
+        function hasSubstitution(value) {
+            return !!communication.getReplacements().filter(({before}) => before === value).length;
+        }
 
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isFalse(hasSubstitution('lucy'));
+        assert.isTrue(hasSubstitution('george'));
+
+        // (1) Just viewing the substitutions should be fine.
+        gunther.respondToDialog({ listitem: kSubstitutionIndex }).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 0);
+
+        // (2) Adding a new substitution word must meet the requirements.
+        gunther.respondToDialog({ listitem: kSubstitutionIndex }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Add a new substitution */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'e' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 0);
+
+        gunther.respondToDialog({ listitem: kSubstitutionIndex }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Add a new substitution */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'Lucy' })).then(
+            () => gunther.respondToDialog({ inputtext: '' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 0);
+
+        // (3) Adding a new substitution must check that it doesn't exist yet.
+        gunther.respondToDialog({ listitem: kSubstitutionIndex }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Add a new substitution */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'George' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 0);
+
+        // (4) Adding a new substitution should work just fine.
+        gunther.respondToDialog({ listitem: kSubstitutionIndex }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Add a new substitution */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'Lucy' })).then(
+            () => gunther.respondToDialog({ inputtext: 'Luce' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 1);
+        assert.includes(
+            gunther.messages[0],
+            Message.format(Message.LVP_ANNOUNCE_SUBSTITUTION_ADDED, gunther.name, gunther.id,
+                           'lucy', 'luce'));
+
+        assert.isTrue(hasSubstitution('lucy'));
+
+        // (5) Removing a substitution should be fine after confirmation.
+        gunther.respondToDialog({ listitem: kSubstitutionIndex }).then(
+            () => gunther.respondToDialog({ listitem: 3 /* Assumed to be 'Lucy' */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'bananas' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 2);
+        assert.includes(
+            gunther.messages[1],
+            Message.format(Message.LVP_ANNOUNCE_SUBSTITUTION_REMOVED, gunther.name, gunther.id,
+                           'lucy'));
+
+        assert.isFalse(hasSubstitution('lucy'));
     });
 
     it('should be able to live reload the message formatting file', async(assert) => {

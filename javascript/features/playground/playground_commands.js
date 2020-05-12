@@ -463,7 +463,7 @@ class PlaygroundCommands {
             if (!wordToBlock)
                 return;  // the |player| abandoned the flow
             
-            const lowerCaseWordToBlock = wordToBlock.toLowerCase();
+            const lowerCaseWordToBlock = wordToBlock.trim().toLowerCase();
 
             // Verify that the |lowerCaseWordToBlock| has not already been blocked on the server.
             for (const existingWord of words) {
@@ -503,10 +503,10 @@ class PlaygroundCommands {
                 if (!confirmation)
                     return;  // the |player| abandoned the flow
 
-                // Actually block the |lowerCaseWordToBlock| now.
+                // Actually remove the |word| from the blocked word list.
                 this.communication_().removeBlockedWord(player, word);
 
-                // Inform administrators of the newly blocked word.
+                // Inform administrators of the re-allowed word.
                 this.announce_().announceToAdministrators(
                     Message.LVP_ANNOUNCE_WORD_UNBLOCKED, player.name, player.id, word);
                 
@@ -566,7 +566,93 @@ class PlaygroundCommands {
     // Handles the option for the |player| to add or remove substitutions that will apply to
     // communication throughout Las Venturas Playground.
     async handleSubstitutions(player) {
-        // TODO   
+        const words = this.communication_().getReplacements();
+
+        const menu = new Menu('Substitutions', ['Phrase', 'Substitution', 'Added by']);
+        menu.addItem('Add a new substitution', '-', '-', async () => {
+            const before = await Question.ask(player, {
+                question: 'Which word do you want to substitute?',
+                constraints: {
+                    validation: /^.{3,24}$/i,
+                    explanation: 'The word must be between 3 and 24 characters in length.',
+                    abort: 'Sorry, you did not enter a valid word to replace.',
+                }
+            });
+
+            if (!before)
+                return;  // the |player| abandoned the flow
+
+            const after = await Question.ask(player, {
+                question: 'Which word should it be substituted with?',
+                constraints: {
+                    validation: /^.{1,24}$/i,
+                    explanation: 'The substitution must be between 1 and 24 characters in length.',
+                    abort: 'Sorry, you did not enter a valid word to substitute.',
+                }
+            });
+
+            if (!after)
+                return;  // the |player| abandoned the flow
+                
+            const lowerCaseBefore = before.trim().toLowerCase();
+            const lowerCaseAfter = after.trim().toLowerCase();
+
+            // Verify that the |lowerCaseBefore| is not already being substituted to something else.
+            for (const existingWord of words) {
+                if (existingWord.before !== lowerCaseBefore)
+                    continue;
+                
+                return alert(player, {
+                    title: 'Substitutions',
+                    message: `The word "${lowerCaseBefore}" is already being substituted.`
+                });
+            }
+
+            // Actually block the |lowerCaseWordToBlock| now.
+            this.communication_().addReplacement(player, lowerCaseBefore, lowerCaseAfter);
+
+            // Inform administrators of the newly blocked word.
+            this.announce_().announceToAdministrators(
+                Message.LVP_ANNOUNCE_SUBSTITUTION_ADDED, player.name, player.id, lowerCaseBefore,
+                lowerCaseAfter);
+            
+            // Confirm the action to the |player|.
+            return alert(player, {
+                title: 'Substitutions',
+                message: `The word "${lowerCaseBefore}" will now be substituted with "` +
+                         `${lowerCaseAfter}" on the server.`
+            });
+        });
+
+        // Add a delimiter before listing all the existing substitutions.
+        menu.addItem('-----', '-----', '-----');
+
+        for (const { before, after, nickname } of words.sort()) {
+            menu.addItem(before, after, nickname, async() => {
+                const confirmation = await confirm(player, {
+                    title: 'Substitutions',
+                    message: `Are you sure that you want remove the substitution for "${before}"?`,
+                });
+
+                if (!confirmation)
+                    return;  // the |player| abandoned the flow
+
+                // Actually remove the substitution for the |before|.
+                this.communication_().removeReplacement(player, before);
+
+                // Inform administrators of the substitution which has been removed.
+                this.announce_().announceToAdministrators(
+                    Message.LVP_ANNOUNCE_SUBSTITUTION_REMOVED, player.name, player.id, before,
+                    after);
+
+                return alert(player, {
+                    title: 'Substitutions',
+                    message: `The word "${before}" will now be substituted to "${after}".`
+                });
+            });
+        }
+
+        await menu.displayForPlayer(player);
     }
 
     // Handles interaction with feature-specific settings for the given |player|, in the given

@@ -219,8 +219,8 @@ export class MessageFilter {
                 id: 1,
                 user_id: 116118,
                 username: 'Russell',
-                replacement_before: 'George',
-                replacement_after: 'Geroge',
+                replacement_before: 'george',
+                replacement_after: 'geroge',
             },
             {
                 id: 2,

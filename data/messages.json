@@ -272,6 +272,8 @@
   "LVP_ANNOUNCE_SETTING_TOGGLED": "%s (Id:%d) has %s the '%s' setting.",
   "LVP_ANNOUNCE_SETTING_UPDATED_NUM": "%s (Id:%d) has updated the '%s' setting to '%d'.",
   "LVP_ANNOUNCE_SETTING_UPDATED_STRING": "%s (Id:%d) has updated the '%s' setting to '%s'.",
+  "LVP_ANNOUNCE_SUBSTITUTION_ADDED": "%s (Id:%d) has created a substitution from \"%s\" to \"%s\".",
+  "LVP_ANNOUNCE_SUBSTITUTION_REMOVED": "%s (Id:%d) has removed the substitution for \"%s\".",
   "LVP_ANNOUNCE_WORD_BLOCKED": "%s (Id:%d) has blocked the word \"%s\".",
   "LVP_ANNOUNCE_WORD_UNBLOCKED": "%s (Id:%d) has unblocked the word \"%s\".",
   "LVP_CMD_EXCEPTION_GRANTED": "{ADFF2F}*** %s (Id:%d) has given you an exception to use /%s.",

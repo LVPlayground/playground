@@ -115,7 +115,7 @@ stock SetPlayerVirtualWorldHook(playerId, virtualWorldId) {
 // We override the TextDrawCreate method in beta builds because there is quite a bit of code around
 // which tries to destroy TextDraws with Id=0, even though this is perfectly valid. In such cases,
 // crash the current execution path for the sake of getting a stack trace.
-#if BETA_TEST == 1
+#if BuildGamemodeInReleaseMode == 0
 
 TextDrawDestroyHook(Text: textDrawId) {
     if (_: textDrawId == 0)

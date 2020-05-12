@@ -100,7 +100,7 @@ class Database {
         new port = 3336;
         JSON->readInteger(portNode, port);
 
-        mysql_debug(Debug::EnableDatabaseLogging);
+        mysql_debug(0);  // return to 1 to debug MySQL queries
         m_connectionId = mysql_connect(hostname, username, password, database, port);
     }
 

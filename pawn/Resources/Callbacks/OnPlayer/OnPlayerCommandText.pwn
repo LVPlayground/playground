@@ -89,7 +89,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     if (Annotation::ProcessCommand(cmd, playerid, cmdtext[idx]) == 1)
         return 1;
 
-#if BETA_TEST == 1
+#if BuildGamemodeInReleaseMode == 0
         if(!strcmp(cmdtext, "/vehid", true))
         {
             new str[128];

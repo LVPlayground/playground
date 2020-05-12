@@ -5,49 +5,80 @@
 import { Supplement } from 'base/supplementable.js';
 
 // Supplements the Player object with an `account` accessor, giving other features access to the
-// information associated with a player's account.
+// information associated with a player's account. This supplement will be created for players who
+// are registered on the server, as well as players who are visiting us as a guest.
 export class PlayerAccountSupplement extends Supplement {
-    player_ = null;
-    manager_ = null;
+    isRegistered_ = false;
+    isIdentified_ = false;
 
-    // The AccountData instance that's been created for this player.
-    data_ = null;
+    hasRequestedUpdate_ = false;
 
-    constructor(player, manager) {
-        super();
+    userId_ = null;
+    bankAccountBalance_ = 0;
+    reactionTests_ = 0;
+    mutedUntil_ = null;
 
-        this.player_ = player;
-        this.manager_ = manager;
+    // Gets the permanent user Id that has been assigned to this user. Read-only.
+    get userId() { return this.userId_; }
 
-        this.data_ = this.manager_.getAccountDataForPlayer(this.player_);
-    }
-
-    // Returns whether the player has registered with Las Venturas Playground.
-    isRegistered() {
-        return this.data_.isRegistered();
-    }
-
-    // Returns whether the player, when registered, has identified to their account.
-    isIdentified() {
-        return this.data_.hasIdentified();
-    }
-
-    // Gets their user Id. Only available if they've identified, undefined otherwise. Read-only.
-    get userId() {
-        return this.data_.userId;
-    }
-
-    // Gets or sets the balance of their bank account. Limited to the valid range of JavaScript
-    // integers, stored as an int64_t in the MySQL database.
-    get bankAccountBalance() {
-        return this.data_.bankAccountBalance || 0;
-    }
+    // Gets or sets the balance this user has on their bank account. Writes will be processed as
+    // high priority, because 
+    get bankAccountBalance() { return this.bankAccountBalance_; }
     set bankAccountBalance(balance) {
-        if (this.data_.hasIdentified())
-            this.data_.bankAccountBalance = balance;
+        if (!this.isIdentified_)
+            return;  // deliberately break this for guests
+
+        this.bankAccountBalance_ = balance;
+        this.requestUpdate();
     }
 
-    // Gets or sets the number of reaction tests that the player has won.
-    get reactionTests() { return this.data_.reactionTests || 0; }
-    set reactionTests(value) { this.data_.reactionTests = value; }
+    // Gets or sets the number of reaction tests that this player has won.
+    get reactionTests() { return this.reactionTests_; }
+    set reactionTests(value) { this.reactionTests_ = value; }
+
+    // Gets or sets the time until when the player has been muted, if at all.
+    get mutedUntil() { return this.mutedUntil_; }
+    set mutedUntil(value) { this.mutedUntil_ = value; }
+
+    // Returns whether the player is registered with Las Venturas Playground.
+    isRegistered() { return this.isRegistered_; }
+
+    // Returns whether the player owning this account has completed identification.
+    isIdentified() { return this.isIdentified_; }
+
+    // Returns whether this account data has requested an update, for fields of high importance.
+    hasRequestedUpdate() { return this.hasRequestedUpdate_; }
+
+    // Called when the account data is being initialized from the database. Should do the necessary
+    // data transformations to make the data types appropriate for JavaScript. (E.g. colours.)
+    initializeFromDatabase(databaseRow) {
+        this.userId_ = databaseRow.user_id;
+        this.bankAccountBalance_ = databaseRow.money_bank;
+        this.reactionTests_ = databaseRow.stats_reaction;
+        this.mutedUntil_ = null;
+
+        // |muted| is stored as the number of remaining seconds on their punishment.
+        if (databaseRow.muted > 0)
+            this.mutedUntil_ = server.clock.monotonicallyIncreasingTime() + 1000 * databaseRow.muted
+
+        this.isRegistered_ = true;
+        this.isIdentified_ = true;
+    }
+
+    // Called when the account data is being written to the database. Can happen multiple times for
+    // the lifetime of this object.
+    prepareForDatabase() {
+        const currentTime = server.clock.monotonicallyIncreasingTime();
+
+        this.hasRequestedUpdate_ = false;
+        return {
+            user_id: this.userId_,
+            money_bank: this.bankAccountBalance_,
+            stats_reaction: this.reactionTests_,
+            muted: Math.max(Math.floor(((this.mutedUntil_ || currentTime) - currentTime) / 1000), 0),
+        };
+    }
+
+    // Call this method when a property write should be reflected in the database with priority.
+    requestUpdate() { this.hasRequestedUpdate_ = true; }
 }

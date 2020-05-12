@@ -70,7 +70,7 @@ testRunner.run('.*\.test\.js').then(time => {
         'account', 'player_favours', 'player_settings', 'player_weapons',
 
         // Communication features
-        'reaction_tests',
+        'communication_commands', 'reaction_tests',
 
         // -----------------------------------------------------------------------------------------
 

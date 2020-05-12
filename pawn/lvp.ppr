@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <Project>
   <FileList>
-    <DiskObject>\config.pwn</DiskObject>
     <DiskObject>\Driver\</DiskObject>
     <DiskObject>\Driver\Driver.pwn</DiskObject>
     <DiskObject>\Elements\</DiskObject>
@@ -150,9 +149,6 @@
     <DiskObject>\Features\Gameplay\Colors\ColorPicker.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\FixPlayerCommands.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\Commands\Mute\</DiskObject>
-    <DiskObject>\Features\Gameplay\Commands\Mute\MuteCommands.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\Commands\Mute\MuteManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\PlayerInfoHandler.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\PlayerSpectateHandler.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\</DiskObject>
@@ -244,7 +240,6 @@
     <DiskObject>\Interface\vars.pwn</DiskObject>
     <DiskObject>\Interface\ZoneLayer.pwn</DiskObject>
     <DiskObject>\Interface\ZoneManager.pwn</DiskObject>
-    <DiskObject>\lvp.pwn</DiskObject>
     <DiskObject>\release.pwn</DiskObject>
     <DiskObject>\Resources\</DiskObject>
     <DiskObject>\Resources\Callbacks\</DiskObject>
@@ -359,6 +354,9 @@
     <DiskObject>\Resources\Minigames\Derby\Derby7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby9.pwn</DiskObject>
+    <DiskObject>\Driver\ThirdParty\</DiskObject>
+    <DiskObject>\Driver\ThirdParty\weapon-config.inc</DiskObject>
+    <DiskObject>\Driver\ThirdParty\sky.inc</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

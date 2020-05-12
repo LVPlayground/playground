@@ -2,7 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { AccountData } from 'features/account_provider/account_data.js';
 import ScopedCallbacks from 'base/scoped_callbacks.js';
 
 // The account manager keeps track of in-game players and ensures that all information necessary to
@@ -10,13 +9,8 @@ import ScopedCallbacks from 'base/scoped_callbacks.js';
 export class AccountManager {
     database_ = null;
 
-    // Map from |Player| to the AccountData instance for their account, if any.
-    accounts_ = null;
-
     constructor(database) {
         this.database_ = database;
-
-        this.accounts_ = new Map();
 
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
@@ -27,18 +21,11 @@ export class AccountManager {
         server.playerManager.addObserver(this, /* replayHistory= */ true);
     }
 
-    // Returns the AccountData associated with the given |player|.
-    getAccountDataForPlayer(player) {
-        return this.accounts_.get(player);
-    }
-
     // ---------------------------------------------------------------------------------------------
     // PlayerManager observers
     // ---------------------------------------------------------------------------------------------
 
     onPlayerConnect(player) {
-        this.accounts_.set(player, new AccountData());
-
         // Implement this method when account management completely moves to JavaScript. We have to
         // start loading their profile data, and check whether they're banned or not.
     }
@@ -56,7 +43,7 @@ export class AccountManager {
             if (!databaseData || !player.isConnected())
                 return;  // the |player| has disconnected from the server since
 
-            this.accounts_.get(player).initializeFromDatabase(databaseData);
+            player.account.initializeFromDatabase(databaseData);
 
             // Now that the player's account has been initialized, tell the rest of the server.
             server.playerManager.onPlayerLogin(event);
@@ -73,13 +60,11 @@ export class AccountManager {
 
     // Called when the |player| has disconnected from the server.
     onPlayerDisconnect(player) {
-        const accountData = this.accounts_.get(player);
-        if (!accountData || !accountData.hasIdentified())
+        if (!player.account.isIdentified())
             return;  // the |player| was never identified to their account
-        
+
         // Deliberately do not wait for the save operation to complete.
-        this.database_.saveAccountData(accountData.prepareForDatabase());
-        this.accounts_.delete(player);
+        this.database_.saveAccountData(player.account.prepareForDatabase());
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -89,8 +74,5 @@ export class AccountManager {
 
         this.callbacks_.dispose();
         this.callbacks_ = null;
-
-        this.accounts_.clear();
-        this.accounts_ = null;
     }
 }

@@ -38,11 +38,6 @@ class CallCommands {
             return 1;
         }
 
-        if (MuteManager->isMuted(playerId) == true) {
-            SendClientMessage(playerId, Color::Error, "You're currently muted and cannot use the phone.");
-            return 1;
-        }
-
         new callerId = Command->playerParameter(params, 0, playerId);
         if (callerId == Player::InvalidId)
             return 1;

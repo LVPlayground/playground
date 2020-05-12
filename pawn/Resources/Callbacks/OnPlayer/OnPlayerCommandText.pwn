@@ -89,7 +89,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     if (Annotation::ProcessCommand(cmd, playerid, cmdtext[idx]) == 1)
         return 1;
 
-#if BETA_TEST == 1
+#if BuildGamemodeInReleaseMode == 0
         if(!strcmp(cmdtext, "/vehid", true))
         {
             new str[128];
@@ -539,7 +539,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     // Commands for administrators:
     lvp_command(clear,          5, AdministratorLevel);
     lvp_command(show,           4, AdministratorLevel);
-    lvp_command(showreport,    10, AdministratorLevel);
     lvp_command(p,              1, AdministratorLevel);
     lvp_command(t,              1, AdministratorLevel);
     lvp_command(announce,       8, AdministratorLevel);
@@ -1022,18 +1021,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         new message[128];
         message = strtok(cmdtext, idx);
 
-        if (MuteManager->isMuted(playerid)) {
-            SendClientMessage(playerid, Color::Error, "Error: You can't use this command whilst being muted.");
-            return 1;
-        }
-
         if (!strlen(message)) {
             SendClientMessage(playerid, Color::Information, "Usage: /me [message]");
-            return 1;
-        }
-
-        if (IsCommunicationMuted() && !Player(playerid)->isAdministrator()) {
-            SendClientMessage(playerid, Color::Error, "Sorry, an administrator is making an announcement.");
             return 1;
         }
 

@@ -230,7 +230,7 @@ public OnVehicleMod(playerid, vehicleid, componentid) {
     return _: VehicleEvents(vehicleid)->onVehicleMod(playerid, componentid);
 }
 
-public OnVehicleDeath(vehicleid) {
+public OnVehicleDeath(vehicleid, killerid) {
     if (Vehicle(vehicleid)->isValid() == false)
         return 0; // don't handle invalid vehicles.
 
@@ -238,6 +238,7 @@ public OnVehicleDeath(vehicleid) {
 
     VehicleEvents(vehicleid)->onVehicleDeath();
     return 1;
+    #pragma unused killerid
 }
 
 public OnVehicleSpawn(vehicleid) {

@@ -2,11 +2,16 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-native SetPlayerPosREAL(playerid, Float: x, Float: y, Float: z) = SetPlayerPos;
-SetPlayerPos(playerId, Float: x, Float: y, Float: z) {
+SetPlayerPosHook(playerId, Float: x, Float: y, Float: z) {
     TeleportCheatAddException(playerId);
-    return SetPlayerPosREAL(playerId, Float: x, Float: y, Float: z);
+    return SetPlayerPos(playerId, Float: x, Float: y, Float: z);
 }
+
+#if Feature::EnableServerSideWeaponConfig
+    #undef SetPlayerPos
+#endif
+
+#define SetPlayerPos SetPlayerPosHook
 
 new g_iSavedWeatherID;
 GetMainWorldWeatherId() {
@@ -25,11 +30,11 @@ strval2(const string[]) {
 }
 #define strval(%1) strval2(%1)
 
-native ResetPlayerWeaponsREAL(playerid) = ResetPlayerWeapons;
-ResetPlayerWeapons(playerId) {
+ResetPlayerWeaponsHook(playerId) {
     ClearSafeWeapons(playerId);
-    return ResetPlayerWeaponsREAL(playerId);
+    return ResetPlayerWeapons(playerId);
 }
+#define ResetPlayerWeapons ResetPlayerWeaponsHook
 
 forward OnResetPlayerWeapons(playerId);
 public OnResetPlayerWeapons(playerId) {

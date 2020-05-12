@@ -23,9 +23,6 @@ public PasswordVerificationCallback(resultId, playerId) {
  * @author Russell Krupke <russell@sa-mp.nl>
  */
 class PasswordVerificationRequest {
-    // The password salt which will be used to encrypt the player's password.
-    const PrivatePasswordSalt = Configuration::PasswordSalt;
-
     // Id of the query in the Query Builder that will generate the MySQL query for us.
     new m_queryId;
 
@@ -56,7 +53,7 @@ class PasswordVerificationRequest {
     public createForPlayer(playerId, userId, password[]) {
         new queryString[256];
 
-        QueryBuilder(m_queryId)->apply(queryString, sizeof(queryString), userId, password, PrivatePasswordSalt);
+        QueryBuilder(m_queryId)->apply(queryString, sizeof(queryString), userId, password, PasswordSalt);
         if (strlen(queryString))
             Database->query(queryString, "PasswordVerificationCallback", playerId);
     }

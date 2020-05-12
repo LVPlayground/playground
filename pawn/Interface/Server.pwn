@@ -2,8 +2,6 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-#include "Interface/Server/a_samp.pwn"
-
 // Provided by SA-MP, but not defined in the include files.
 native gpci(playerid, serial[], len);
 native IsValidVehicle(vehicleid);
@@ -15,12 +13,6 @@ native GetPlayerMoneyJS(playerid);
 native GivePlayerMoneyJS(playerid, amount);
 native ResetPlayerMoneyJS(playerid);
 native DepositToAccountJS(playerid, amount);
-
-// The OnPlayerUpdate callback should never reach Pawn. If the following message is seen on the
-// console, it means that PlaygroundJS' interception of the callback is failing.
-public OnPlayerUpdate(playerid) {
-    printf("OnPlayerUpdate routed to Pawn -- please contact Russell!");
-}
 
 // Provided by the Communication feature in JavaScript.
 native GetPlayerTeleportStatus(playerId, timeLimited);
@@ -75,6 +67,13 @@ stock AddStaticVehicleHook({Float,_}:...) { return Vehicle::InvalidId; }
 stock AddStaticVehicleExHook({Float,_}:...) { return Vehicle::InvalidId; }
 
 // And override the methods by telling the scanner to use the hooked methods instead.
+#if Feature::EnableServerSideWeaponConfig
+    #undef CreateVehicle
+    #undef DestroyVehicle
+    #undef AddStaticVehicle
+    #undef AddStaticVehicleEx
+#endif
+
 #define CreateVehicle       CreateVehicleHook
 #define DestroyVehicle      DestroyVehicleHook
 #define AddStaticVehicle    AddStaticVehicleHook
@@ -109,6 +108,10 @@ stock SetPlayerVirtualWorldHook(playerId, virtualWorldId) {
 }
 
 // And override the actual natives so that they're caught by our hook.
+#if Feature::EnableServerSideWeaponConfig
+    #undef SetPlayerVirtualWorld
+#endif
+
 #define SetPlayerVirtualWorld SetPlayerVirtualWorldHook
 
 // -------------------------------------------------------------------------------------------------
@@ -123,6 +126,10 @@ TextDrawDestroyHook(Text: textDrawId) {
 
     return TextDrawDestroy(textDrawId);
 }
+
+#if Feature::EnableServerSideWeaponConfig
+    #undef TextDrawDestroy
+#endif
 
 #define TextDrawDestroy TextDrawDestroyHook
 

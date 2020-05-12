@@ -31,7 +31,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             if (IsModelRemoteControlVehicle(currentVehicleModel))
                 EjectPlayerFromVehicle(playerid);
 
-            return;
+            return 1;
 
         // Allow the player to enter a remote control vehicle if they're near one.
         } else {
@@ -75,10 +75,11 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
                 }
 
                 PutPlayerInVehicle(playerid, candidateVehicleId, /* driver= */ 0);
-                return;
+                return 1;
             }
         }
     }
 
     LegacyPlayerKeyStateChange(playerid, newkeys, oldkeys);
+    return 1;
 }

@@ -51,6 +51,17 @@
 #include "config.pwn"
 #include "release.pwn"
 
+#include "Interface/Server/a_samp.pwn"
+
+#if Feature::EnableServerSideWeaponConfig
+
+#define WC_CUSTOM_VENDING_MACHINES false
+
+#include "Driver/ThirdParty/sky.inc"
+#include "Driver/ThirdParty/weapon-config.inc"
+
+#endif
+
 // Include native function declarations and libraries, which don't contain modifications by us.
 #include "Interface/Server.pwn"
 

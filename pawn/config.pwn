@@ -33,11 +33,16 @@ class Feature {
     public const DisableFights = 0;
 
     /** **************************************************************************************** **/
-    /// Christmas
 
-    // A present is dropped somewhere in Las Venturas; when a player picks it up, he receives a 
-    // random gift.
+    // A present is dropped somewhere in San Andreas. Finding it will present the player with a gift
     public const EnableGiftHunting = 0;
+
+    // Controls whether server-side weapon configuration will be enabled. This uses Oscar Broman's
+    // weapon-config.inc script, with options specific to Las Venturas Playground:
+    //
+    // https://github.com/oscar-broman/samp-weapon-config
+    //
+    public const EnableServerSideWeaponConfig = 0;
 
     /** **************************************************************************************** **/
 };

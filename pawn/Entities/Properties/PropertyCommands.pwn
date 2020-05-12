@@ -834,7 +834,7 @@ class PropertyCommands {
             format(message, sizeof(message), "You've successfully sold all of your properties, and earned %s!", earnings);
             SendClientMessage(playerId, Color::Success, message);
 
-            format(message, sizeof(message), "%s %d %.0f", Player(playerId)->nicknameString(), playerId, actualEarnings);
+            format(message, sizeof(message), "%s %d %d", Player(playerId)->nicknameString(), playerId, actualEarnings);
 
             EchoMessage("sell-all", "sdd", message);
             return 1;

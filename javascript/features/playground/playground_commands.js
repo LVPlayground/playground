@@ -56,7 +56,7 @@ class PlaygroundCommands {
                 .parameters([ { name: 'feature', type: CommandBuilder.WORD_PARAMETER } ])
                 .build(PlaygroundCommands.prototype.onPlaygroundReloadCommand.bind(this))
             .sub('settings')
-                .restrict(Player.LEVEL_MANAGEMENT)
+                .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(PlaygroundCommands.prototype.onPlaygroundSettingsCommand.bind(this))
             .build(PlaygroundCommands.prototype.onPlaygroundCommand.bind(this));
     }
@@ -381,91 +381,123 @@ class PlaygroundCommands {
         player.sendMessage(Message.LVP_RELOAD_RELOADED, feature);
     }
 
-    // Displays a series of menus to Management members that want to inspect or make changes to how
-    // certain features on the server work, for example, the abuse and housing systems.
+    // Displays a series of menus to administrators and Management members that want to inspect, or
+    // make changes to, how certain features on the server work. The availability of options depends
+    // on the legel of the |player| calling this command.
     async onPlaygroundSettingsCommand(player) {
-        const categories = new Map();
+        const categories = new Map(); // label => { settings, listener }
         const menu = new Menu('Choose a category of settings', ['Category', 'Settings']);
 
-        // Identify the categories of settings that exist on the server.
-        for (const setting of this.settings_().getSettings()) {
-            if (!categories.has(setting.category))
-                categories.set(setting.category, new Set());
+        // Administrators and Management members alive have access to the word filters.
+        // TODO:
 
-            categories.get(setting.category).add(setting);
+        // Management members have access to individual settings for all features on the server as
+        // well. These require far more context to be able to effectively toggle.
+        if (player.isManagement()) {
+            const settingCategories = new Map();
+
+            // (1) Split up all available settings in categories & settings belonging to them.
+            for (const setting of this.settings_().getSettings()) {
+                if (!settingCategories.has(setting.category))
+                    settingCategories.set(setting.category, new Set());
+    
+                settingCategories.get(setting.category).add(setting);
+            }
+
+            // (2) Create a label and listener for each of the setting categories.
+            for (const [category, categorySettings] of settingCategories.entries()) {
+                const label = category[0].toUpperCase() + category.substring(1);
+                const settings = `${categorySettings.size} settings`;
+                const listener =
+                    PlaygroundCommands.prototype.handleSettingCategory.bind(this, player, category);
+                
+                categories.set(label, { settings, listener });
+            }
         }
 
+        // Now sort the available |categories|, compile the menu, and display it to the |player|.
         const sortedCategories = Array.from(categories.keys()).sort();
         for (const category of sortedCategories) {
-            const settings = categories.get(category);
-            const settingsLabel = settings.size == 1 ? '1 setting'
-                                                     : settings.size + ' settings';
+            const { settings, listener } = categories.get(category);
 
-            // Adds a menu item to display the entries in the |category|.
-            menu.addItem(category, settingsLabel, async(player) => {
-                const sortedSettings =
-                    Array.from(settings).sort((lhs, rhs) => lhs.name.localeCompare(rhs.name));
-
-                const innerMenu = new Menu('Choose a setting', ['Setting', 'Value']);
-                for (const setting of sortedSettings) {
-                    let valueLabel = 'null';
-
-                    switch (setting.type) {
-                        case Setting.TYPE_BOOLEAN:
-                            valueLabel = setting.value ? 'enabled' : 'disabled';
-                            if (setting.value != setting.defaultValue) {
-                                valueLabel = '{FFFF00}' + valueLabel + '{FFFFFF} (default: ' +
-                                             (setting.defaultValue ? 'enabled' : 'disabled') + ')';
-                            }
-
-                            break;
-
-                        case Setting.TYPE_NUMBER:
-                            valueLabel = '' + setting.value;
-                            if (setting.value != setting.defaultValue) {
-                                valueLabel = '{FFFF00}' + valueLabel + '{FFFFFF} (default: ' +
-                                             setting.defaultValue + ')';
-                            }
-
-                            break;
-
-                        case Setting.TYPE_STRING:
-                            valueLabel = setting.value;
-                            if (setting.value != setting.defaultValue) {
-                                valueLabel = '{FFFF00}' + valueLabel + '{FFFFFF} (default: ' +
-                                             setting.defaultValue + ')';
-                            }
-
-                            break;
-
-                        default:
-                            throw new Error('Invalid setting type for ' + setting.name);
-                    }
-
-                    // Add a menu item for the particular setting, that will in turn defer to a
-                    // function that allows the particular setting to be changed.
-                    innerMenu.addItem(setting.name, valueLabel, async(player) => {
-                        switch (setting.type) {
-                            case Setting.TYPE_BOOLEAN:
-                                await this.handleBooleanSettingModification(player, setting);
-                                break;
-
-                            case Setting.TYPE_NUMBER:
-                                await this.handleNumberSettingModification(player, setting);
-                                break;
-
-                            case Setting.TYPE_STRING:
-                                await this.handleStringSettingModification(player, setting);
-                                break;
-                        }
-                    });
-                }
-
-                await innerMenu.displayForPlayer(player);
-            });
+            menu.addItem(category, settings, listener);
         }
 
         await menu.displayForPlayer(player);
+    }
+
+    // Handles interaction with feature-specific settings for the given |player|, in the given
+    // |category|. The actual settings part of this category will be re-computed on call.
+    async handleSettingCategory(player, category) {
+        const settings = new Set();
+
+        // Fetch the settings which are part of the given |category| first.
+        for (const setting of this.settings_().getSettings()) {
+            if (setting.category !== category)
+                continue;
+
+            settings.add(setting);
+        }
+
+        const sortedSettings =
+            Array.from(settings).sort((lhs, rhs) => lhs.name.localeCompare(rhs.name));
+
+        const innerMenu = new Menu('Choose a setting', ['Setting', 'Value']);
+        for (const setting of sortedSettings) {
+            let valueLabel = 'null';
+
+            switch (setting.type) {
+                case Setting.TYPE_BOOLEAN:
+                    valueLabel = setting.value ? 'enabled' : 'disabled';
+                    if (setting.value != setting.defaultValue) {
+                        valueLabel = '{FFFF00}' + valueLabel + '{FFFFFF} (default: ' +
+                                        (setting.defaultValue ? 'enabled' : 'disabled') + ')';
+                    }
+
+                    break;
+
+                case Setting.TYPE_NUMBER:
+                    valueLabel = '' + setting.value;
+                    if (setting.value != setting.defaultValue) {
+                        valueLabel = '{FFFF00}' + valueLabel + '{FFFFFF} (default: ' +
+                                        setting.defaultValue + ')';
+                    }
+
+                    break;
+
+                case Setting.TYPE_STRING:
+                    valueLabel = setting.value;
+                    if (setting.value != setting.defaultValue) {
+                        valueLabel = '{FFFF00}' + valueLabel + '{FFFFFF} (default: ' +
+                                        setting.defaultValue + ')';
+                    }
+
+                    break;
+
+                default:
+                    throw new Error('Invalid setting type for ' + setting.name);
+            }
+
+            // Add a menu item for the particular setting, that will in turn defer to a
+            // function that allows the particular setting to be changed.
+            innerMenu.addItem(setting.name, valueLabel, async(player) => {
+                switch (setting.type) {
+                    case Setting.TYPE_BOOLEAN:
+                        await this.handleBooleanSettingModification(player, setting);
+                        break;
+
+                    case Setting.TYPE_NUMBER:
+                        await this.handleNumberSettingModification(player, setting);
+                        break;
+
+                    case Setting.TYPE_STRING:
+                        await this.handleStringSettingModification(player, setting);
+                        break;
+                }
+            });
+        }
+
+        await innerMenu.displayForPlayer(player);
     }
 
     // Handles the |player| modifying the |setting|, which represents a boolean value.
@@ -590,10 +622,10 @@ class PlaygroundCommands {
         let options = [];
 
         if (player.isAdministrator())
-            options.push('access');
+            options.push('access', 'settings');
 
         if (player.isManagement())
-            options.push('profile', 'reload', 'settings');
+            options.push('profile', 'reload');
 
         player.sendMessage(Message.LVP_PLAYGROUND_HEADER);
         if (!options.length)

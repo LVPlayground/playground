@@ -9,8 +9,6 @@
  * @param text The text the player typed.
  */
 public OnPlayerText(playerid, text[]) {
-    new message[145];
-
     if (!strlen(text))
         return 0;
 
@@ -23,10 +21,6 @@ public OnPlayerText(playerid, text[]) {
         return 0;
     }
 
-#if Feature::DisableFights == 0
-    if (CWWTW__OnText(playerid, text)) return 0;
-#endif
-
     // Phone calls.
     if (CallManager->isCalling(playerid) == true) {
         new calleeId = CallManager->isCallingId(playerid);
@@ -38,6 +32,8 @@ public OnPlayerText(playerid, text[]) {
 
     new const bool: playerInMainWorld = IsPlayerInMainWorld(playerid);
     new const playerVirtualWorld = GetPlayerVirtualWorld(playerid);
+
+    new message[145];
 
     // Add it to the echo-feed, so it shows up on IRC as well.
     if (playerInMainWorld) {

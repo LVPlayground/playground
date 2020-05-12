@@ -7,6 +7,7 @@ import { AdministratorChannel } from 'features/communication/channels/administra
 describe('CommunicationManager', (it, beforeEach, afterEach) => {
     let gunther = null;
     let manager = null;
+    let muteManager = null;
     let nuwani = null;
     let russell = null;
 
@@ -15,6 +16,7 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
 
         gunther = server.playerManager.getById(/* Gunther= */ 0);
         manager = communication.manager_;
+        muteManager = communication.muteManager_;
         nuwani = server.featureManager.loadFeature('nuwani');
         russell = server.playerManager.getById(/* Russell= */ 1);
     });
@@ -26,6 +28,26 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         assert.isTrue(gunther.issueMessage(excessivelyLongMessage));
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.format(Message.COMMUNICATION_SPAM_BLOCKED));
+    });
+
+    it('integrates with the message filter', assert => {
+        const messages = [];
+
+        manager.addDelegate(new class {
+            onPlayerText(player, message) {
+                messages.push(message);
+                return true;  // handled
+            }
+        });
+
+        assert.isTrue(gunther.issueMessage('hello'));
+        assert.isTrue(gunther.issueMessage('HELLO WORLD'));
+        assert.isTrue(gunther.issueMessage('Hey George'));
+
+        assert.equal(messages.length, 3);
+        assert.equal(messages[0], 'hello');
+        assert.equal(messages[1], 'Hello world.');
+        assert.equal(messages[2], 'Hey Geroge');
     });
 
     it('should allow delegates to intercept received messages', assert => {
@@ -114,16 +136,27 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
             params: [ russell.id, russell.name, 'Test' ],
         });
 
-        // (4) Messages sent by an isolated person.
+        // (4) Muted players can still send messages to admin chat.
+        muteManager.mutePlayer(gunther, 60);
+
+        assert.isTrue(gunther.issueMessage('Testcase'));
+        assert.equal(gunther.messages.length, 4);
+        assert.equal(russell.messages.length, 1);
+
+        assert.isTrue(gunther.issueMessage('@Testcase'));
+        assert.equal(gunther.messages.length, 5);
+        assert.equal(russell.messages.length, 2);
+
+        // (5) Messages sent by an isolated person.
         gunther.syncedData.setIsolated(true);
 
         assert.isTrue(gunther.issueMessage('@WTF!'));
 
-        assert.equal(gunther.messages.length, 4);
-        assert.equal(gunther.messages[3], Message.format(Message.COMMUNICATION_ADMIN_SENT));
+        assert.equal(gunther.messages.length, 6);
+        assert.equal(gunther.messages[5], Message.format(Message.COMMUNICATION_ADMIN_SENT));
 
-        assert.equal(russell.messages.length, 1);  // unchanged
-        assert.equal(nuwani.messagesForTesting.length, 4);  // unchanged
+        assert.equal(russell.messages.length, 2);  // unchanged
+        assert.equal(nuwani.messagesForTesting.length, 5);  // unchanged
     });
 
     it('should have a series of specialization in the administrator chat', assert => {

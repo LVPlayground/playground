@@ -1087,32 +1087,6 @@ CLyse__StateUpdate(playerid,newstate)
 
 }
 
-// Called from OnPlayerText, checks for team chat.
-CLyse__OnText(playerid, text[])
-{
-    if (CLyse__GetPlayerState(playerid) != LYSE_STATE_RUNNING)
-        return 0;
-
-
-    if(!strcmp(text[0], ";", true, 1))
-    {
-        new szTeamMsg[128];
-
-        if(CLyse__GetPlayerTeam(playerid) == TEAM_GREEN)
-        {
-            format(szTeamMsg, 128, "%s: %s", PlayerName(playerid),  text[1]);
-            CLyse__TeamMsg(TEAM_GREEN, Color::Green, szTeamMsg);
-            return 1;
-        }
-
-        format(szTeamMsg, 128, "%s: %s", PlayerName(playerid),  text[1]);
-        CLyse__TeamMsg(TEAM_BLUE, COLOR_LIGHTBLUE, szTeamMsg);
-        return 1;
-    }
-    return 0;
-}
-
-
 // CLyse__TeamMsg
 // Show a msg to a team
 CLyse__TeamMsg(iLyseTeam, iLyseColor, szMsg[])

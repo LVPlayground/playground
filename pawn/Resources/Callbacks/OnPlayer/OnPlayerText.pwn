@@ -2,18 +2,6 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-EnforceSameLengthTypo(text[], original[], replacement[]) {
-    new const length = strlen(original);
-    new const offset = strfind(text, original, true);
-
-    if (offset > -1) {
-        for (new i = offset, j = 0; i < offset + length; ++i, ++j) {
-            text[i] = text[i] >= 65 && text[i] <= 90 ? toupper(replacement[j])
-                                                     : replacement[j];
-        }
-    }
-}
-
 /**
  * Called when the player sends a chat message.
  *
@@ -28,56 +16,12 @@ public OnPlayerText(playerid, text[]) {
 
     PlayerIdlePenalty->resetCurrentIdleTime(playerid);
 
-    // Enforce a typo in "George" (as "Geroge") when this feature has been enabled.
-    if (g_enforceGeorgeTypo)
-        EnforceSameLengthTypo(text, "george", "geroge");
-
-    // Enforce a typo in "vary" (as "v*ry") when this feature has been enabled.
-    // Enforce a typo in "very" (as "vary") when this feature has been enabled.
-    if (g_enforceVaryTypo)
-        EnforceSameLengthTypo(text, "vary", "v*ry");
-    else if (g_enforceVeryTypo)
-        EnforceSameLengthTypo(text, "very", "vary");
-
-    // A muted player can't chat unless it's the admins he wants to chat with.
-    if (MuteManager->isMuted(playerid) && text[0] != '@') {
-        if (MuteManager->muteDuration(playerid) == -1)
-            SendClientMessage(playerid, Color::Error, "You're permanently muted and won't be able to chat.");
-        else {
-            new durationText[10];
-            Time->formatRemainingTime(MuteManager->muteDuration(playerid), durationText,
-                sizeof(durationText), /** force minutes **/ true);
-            format(message, sizeof(message), "You're muted for another %s minutes and won't be able to chat.",
-                durationText);
-            SendClientMessage(playerid, Color::Error, message);
-        }
-
-        SendClientMessage(playerid, Color::Error, "Please read the /rules. If you have a question use @<message> to contact an administrator.");
-        return 0;
-    }
-
     // Perhaps the player still has to login?
     if (Player(playerid)->isLoggedIn() == false && Player(playerid)->isRegistered() == true && text[0] != '@') {
         SendClientMessage(playerid, Color::Error, "Please login before chatting in the textbox.");
         SendClientMessage(playerid, Color::Error, "Troubles logging in? Contact the crew using @<message>.");
         return 0;
     }
-
-    // Check for CAPS.
-    if (g_NoCaps[playerid] == true) {
-        for (new i = 0; i < strlen(text); i++)
-            text[i] = tolower(text[i]);
-    }
-
-    // Apply the effects of a full server mute.
-    if (IsCommunicationMuted() && !Player(playerid)->isAdministrator()) {
-        SendClientMessage(playerid, Color::Error, "Sorry, an administrator is making an announcement.");
-        return 0;
-    }
-
-    if (CRobbery__OnText(playerid, text)) return 0;
-    if (CShell__OnText(playerid, text)) return 0;
-    if (CLyse__OnText(playerid, text)) return 0;
 
 #if Feature::DisableFights == 0
     if (CWWTW__OnText(playerid, text)) return 0;

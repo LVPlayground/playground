@@ -89,7 +89,7 @@
 
 
 // Can this derby be ran with just one player? This is used for testing.
-#if BETA_TEST == 0
+#if BuildGamemodeInReleaseMode == 1
     #define DERBY_ALLOW_SINGLE 0
 #else
     #define DERBY_ALLOW_SINGLE 1

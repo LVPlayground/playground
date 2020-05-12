@@ -23,11 +23,6 @@
 #include "Features/Gameplay/Jail/JailController.pwn"
 #include "Features/Gameplay/Jail/JailCommands.pwn"
 
-// Spammers, advertisers and insulters should be punished for their poor choice of words, and
-// therefore we offer staff the ability to mute these players.
-#include "Features/Gameplay/Commands/Mute/MuteManager.pwn"
-#include "Features/Gameplay/Commands/Mute/MuteCommands.pwn"
-
 // Players of Las Venturas Playground have the ability to sent private messages to each other,
 // or phone up another player.
 #include "Features/Gameplay/Communication/PrivateMessagingManager.pwn"

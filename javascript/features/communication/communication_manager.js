@@ -7,19 +7,25 @@ import ScopedCallbacks from 'base/scoped_callbacks.js';
 import { SpamTracker } from 'features/communication/spam_tracker.js';
 import { VipChannel } from 'features/communication/channels/vip_channel.js';
 
+import { relativeTime } from 'base/time.js';
+
 // The communication manager is responsible for making sure that the different capabilities play
 // well together, and is the main entry point for the OnPlayerText callback contents as well.
 export class CommunicationManager {
     callbacks_ = null;
     delegates_ = null;
+    messageFilter_ = null;
+    muteManager_ = null;
     nuwani_ = null;
 
     genericChannels_ = null;
     prefixChannels_ = null;
     spamTracker_ = null;
     
-    constructor(nuwani) {
+    constructor(messageFilter, muteManager, nuwani) {
         this.delegates_ = new Set();
+        this.messageFilter_ = messageFilter;
+        this.muteManager_ = muteManager;
         this.nuwani_ = nuwani;
 
         this.callbacks_ = new ScopedCallbacks();
@@ -78,12 +84,44 @@ export class CommunicationManager {
     // asynchronously, to free up the server for further processing in between server frames.
     onPlayerText(event) {
         const player = server.playerManager.getById(event.playerid);
-        const message = event.text?.trim();
+        const unprocessedMessage = event.text?.trim();
 
-        if (!player || !message || !message.length)
+        if (!player || !unprocessedMessage || !unprocessedMessage.length)
             return;  // the player is not connected to the server, or they sent an invalid message
 
-        if (this.spamTracker_.isSpamming(player, message)) {
+        // The entire server might be muted, we will drop the player's message in that case.
+        if (this.muteManager_.isCommunicationMuted() && !player.isAdministrator()) {
+            player.sendMessage(Message.COMMUNICATION_SERVER_MUTE_BLOCKED);
+
+            event.preventDefault();
+            return;
+        }
+
+        // The |player| might be muted themselves. The message will be dropped, and we'll show them
+        // an informative message about when the mute is due to expire.
+        {
+            const remainingSeconds = this.muteManager_.getPlayerRemainingMuteTime(player);
+            if (remainingSeconds > 0 && unprocessedMessage[0] != '@') {
+                const expiration = new Date(Date.now() + remainingSeconds * 1000);
+                const formattedExpiration = relativeTime({ date1: new Date(), date2: expiration });
+
+                player.sendMessage(Message.COMMUNICATION_MUTE_BLOCKED, formattedExpiration.text);
+
+                event.preventDefault();
+                return;
+            }
+        }
+
+        // Pass the |unprocessedMessage| through the spam filter, which ensures that the |player| is
+        // not trying to make everyone else on the server go crazy by... overcommunicating.
+        if (this.spamTracker_.isSpamming(player, unprocessedMessage)) {
+            event.preventDefault();
+            return;
+        }
+
+        // Process the |message| through the message filter, which may block it as well.
+        const message = this.messageFilter_.filter(player, unprocessedMessage);
+        if (!message) {
             event.preventDefault();
             return;
         }

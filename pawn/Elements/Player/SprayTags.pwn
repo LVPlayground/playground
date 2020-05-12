@@ -194,7 +194,7 @@ sprayTagCreate(Float:fPosX, Float:fPosY, Float:fPosZ, Float:fRotX, Float:fRotY, 
 
 
     // If this is a BETA test show the location of the spray tag.
-    #if BETA_TEST == 1
+    #if BuildGamemodeInReleaseMode == 0
         CreateDynamicMapIcon(fPosX, fPosY, fPosZ, 63, 0, 0, 0, -1, 400);
     #endif
 }

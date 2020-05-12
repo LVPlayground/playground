@@ -31,6 +31,7 @@ import Account from 'features/account/account.js';
 import AccountProvider from 'features/account_provider/account_provider.js';
 import Announce from 'features/announce/announce.js';
 import Communication from 'features/communication/communication.js';
+import CommunicationCommands from 'features/communication_commands/communication_commands.js';
 import Finance from 'features/finance/finance.js';
 import Gangs from 'features/gangs/gangs.js';
 import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
@@ -76,6 +77,7 @@ class MockServer {
             account_provider: AccountProvider,
             announce: Announce,  // TODO: Move functionality to |communication|. See #309.
             communication: Communication,
+            communication_commands: CommunicationCommands,
             finance: Finance,
             gangs: Gangs,
             nuwani: MockNuwani,

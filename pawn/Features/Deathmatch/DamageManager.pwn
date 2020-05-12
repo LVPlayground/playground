@@ -206,6 +206,34 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: 
     return 1;
 }
 
+#if Feature::EnableServerSideWeaponConfig
+
+public OnPlayerDamage(&playerid, &Float:amount, &issuerid, &weapon, &bodypart) {
+    if (issuerid == Player::InvalidId)
+        return 1;
+
+    // Keep track of the last person who hit a player.
+    DamageManager(playerid)->setLastHitId(issuerid);
+    DamageManager(playerid)->setLastHitTime(Time->currentTime());
+
+    // If the player is currently not residing on the ship, or if the damage is not self-inflicted,
+    // set the player as currently fighting.
+    if (!ShipManager->isPlayerWalkingOnShip(playerid))
+        DamageManager(playerid)->setFighting(Time->currentTime());
+
+    // Deal noteworthy more damage for sniper headshots.
+    if (!ShipManager->isPlayerWalkingOnShip(playerid) && weapon == WEAPON_SNIPER && bodypart == BODY_PART_HEAD)
+        DamageManager(issuerid)->dealHeadShot(playerid);
+
+    // Play the hitsound if the player enabled it.
+    if (PlayerSettings(issuerid)->isPlayerHitSoundEnabled())
+        PlayerPlaySound(issuerid, 17802, 0, 0, 0);
+
+    return 1;
+}
+
+#else  // !Feature::EnableServerSideWeaponConfig
+
 /**
  * This callback is initiated whenever a player's client records damage dealt.
  *
@@ -258,3 +286,5 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
     return 1;
     #pragma unused playerid, amount, weaponid, bodypart
 }
+
+#endif  // Feature::EnableServerSideWeaponConfig

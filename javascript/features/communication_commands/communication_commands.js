@@ -127,7 +127,31 @@ export default class CommunicationCommands extends Feature {
     // Shows a message to the given player on how to report players in the future, and mutes them
     // automatically for two minutes to make sure that they get the point.
     onShowReportCommand(player, targetPlayer) {
+        const timeRemaining = this.muteManager.getPlayerRemainingMuteTime(targetPlayer);
+        if (timeRemaining > 0) {
+            player.sendMessage(
+                Message.MUTE_SHOW_REPORT_ALREADY_MUTED, targetPlayer.name, targetPlayer.id);
+            return;
+        }
 
+        const kDurationSeconds = 120;
+        const kDuration = '2 minutes';
+
+        this.muteManager.mutePlayer(targetPlayer, kDurationSeconds);
+
+        // Inform the |targetPlayer| about how to report, as well as their punishment.
+        targetPlayer.sendMessage(Message.MUTE_SHOW_REPORT_BORDER);
+        targetPlayer.sendMessage(
+            Message.MUTE_SHOW_REPORT_MESSAGE_1, player.name, player.id, kDuration);
+        targetPlayer.sendMessage(Message.MUTE_SHOW_REPORT_MESSAGE_2);
+        targetPlayer.sendMessage(Message.MUTE_SHOW_REPORT_BORDER);
+
+        // Inform in-game administrators and the |player| themselves of the mute.
+        this.announce_().announceToAdministrators(
+            Message.MUTE_ADMIN_MUTED, player.name, player.id, targetPlayer.name, targetPlayer.id,
+            kDuration);
+
+        player.sendMessage(Message.MUTE_MUTED, targetPlayer.name, targetPlayer.id, kDuration);
     }
 
     // /unmute [player]

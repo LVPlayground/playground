@@ -474,6 +474,7 @@ class GangCommands {
             });
 
             menu.addItem('Member skin', gang.skinId ?? '-', async() => {
+                // TODO: We'll probably want to move this to a class selection class in the future.
                 const availableSkins = JSON.parse(readFile('data/player_classes.json'));
 
                 let question = SKIN_QUESTION;                

@@ -10,6 +10,8 @@ import PlaygroundAccessTracker from 'features/playground/playground_access_track
 import Question from 'components/dialogs/question.js';
 import Setting from 'entities/setting.js';
 
+import alert from 'components/dialogs/alert.js';
+import confirm from 'components/dialogs/confirm.js';
 import { isSafeInteger, toSafeInteger } from 'base/string_util.js';
 
 // Directory in which the CPU profiles will be stored.
@@ -451,7 +453,43 @@ class PlaygroundCommands {
     // Handles players' ability to communicate on the server, which administrators have the ability
     // to toggle with the `/lvp settings` command.
     async handleBlockCommunication(player) {
-        // TODO
+        let muted = this.communication_().isCommunicationMuted();
+        let label = muted ? 'enable' : 'disable';
+
+        const confirmation = await confirm(player, {
+            title: 'Communication',
+            message: `Are you sure that you want to {FFA500}${label}{A9C4E4} all communication?`,
+        });
+
+        if (!confirmation)
+            return;  // the |player| changed their mind
+
+        muted = !muted;  // flip the flag!
+        label = muted ? 'disabled' : 'enabled';
+
+        this.communication_().setCommunicationMuted(muted);
+
+        const attributedAnnouncement =
+            Message.format(Message.LVP_ANNOUNCE_COMMUNICATION_BLOCKED, player.name, player.id,
+                           label);
+
+        // (1) Announce to all in-game administrators and everyone on IRC.
+        this.announce_().announceToAdministrators(attributedAnnouncement);
+        this.nuwani_().echo('notice-announce', attributedAnnouncement);
+
+        // (2) Announce to all in-game players.
+        const announcement =
+            Message.format(muted ? Message.COMMUNICATION_SERVER_MUTED
+                                 : Message.COMMUNICATION_SERVER_UNMUTED, player.name);
+
+        for (const recipient of server.playerManager)
+            recipient.sendMessage(announcement);
+        
+        // (3 Let the |player| know what they've just done.
+        return alert(player, {
+            title: 'Communication',
+            message: 'All communication on Las Venturas Playground has been ' + label
+        });
     }
 
     // Handles the option for the |player| to add or remove substitutions that will apply to

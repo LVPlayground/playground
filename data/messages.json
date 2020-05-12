@@ -263,6 +263,7 @@
   "LVP_ANNOUNCE_CMD_LEVEL": "%s (Id:%d) has changed the level of /%s to %s.",
   "LVP_ANNOUNCE_CMD_REMOVED_EXCEPTION": "%s (Id:%d) has revoked %s ability to use /%s.",
   "LVP_ANNOUNCE_CMD_REVOKED": "%s has removed the /%s command from players again.",
+  "LVP_ANNOUNCE_COMMUNICATION_BLOCKED": "%s (Id:%d) has %s the server's communication channels.",
   "LVP_ANNOUNCE_FEATURE_RELOADED": "%s (Id:%d) has reloaded the '%s' feature.",
   "LVP_ANNOUNCE_PLAYER_ISOLATED_1": "%s (Id:%d) has been isolated by %s (Id:%s), and is now excluded from the game.",
   "LVP_ANNOUNCE_PLAYER_ISOLATED_2": "Administrators will continue to see their messages, other players won't.",
@@ -299,9 +300,6 @@
 
   "MUTE_ADMIN_MUTED": "%s (Id:%d) has muted %s (Id:%d) for %s.",
   "MUTE_ADMIN_UNMUTED": "%s (Id:%d) has unmuted %s (Id:%d).",
-  "MUTE_ALL_ADMIN": "%s (Id:%d) has %s the server's communication channels.",
-  "MUTE_ALL_USAGE": "@usage /muteall [on/off]",
-  "MUTE_ALL_NO_CHANGE": "@error The server's communication is already %s.",
   "MUTE_MUTED": "@success %s (Id:%d) has been muted for %s.",
   "MUTE_MUTED_NOBODY": "@error Nobody on the server is muted right now.",
   "MUTE_MUTED_LIST": "* {DC143C}%s{FFFFFF} (Id:%d) will be muted for another %s.",

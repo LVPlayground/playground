@@ -285,12 +285,63 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(gunther.messages[0].includes('Hello World'));
     });
 
+    // Only non-feature-settings are available to administrators.
+    const kBlockedWordsIndex = 0;
+    const kCommunicationIndex = 1;
+    const kSubstitutionIndex = 2;
+
     it('should enable administrators to change the blocked words', async (assert) => {
 
     });
 
     it('should enable administrators to block and unblock all communication', async (assert) => {
+        assert.isFalse(communication.isCommunicationMuted());
 
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        // (1) Click on the menu option, but then change their mind.
+        gunther.respondToDialog({ listitem: kCommunicationIndex }).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 0);
+        
+        assert.isFalse(communication.isCommunicationMuted());
+
+        // (2) Disables communication.
+        gunther.respondToDialog({ listitem: kCommunicationIndex }).then(
+            () => gunther.respondToDialog({ response: 1 /* Disable communication */ })).then(
+            () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+
+        assert.isTrue(communication.isCommunicationMuted());
+        assert.equal(gunther.messages.length, 2);
+        assert.includes(
+            gunther.messages[0],
+            Message.format(Message.LVP_ANNOUNCE_COMMUNICATION_BLOCKED, gunther.name, gunther.id,
+                           'disabled'));
+
+        assert.equal(
+            gunther.messages[1], Message.format(Message.COMMUNICATION_SERVER_MUTED, gunther.name));
+
+        // (3) Enables communication.
+        gunther.respondToDialog({ listitem: kCommunicationIndex }).then(
+            () => gunther.respondToDialog({ response: 1 /* Enable communication */ })).then(
+            () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+
+        assert.isFalse(communication.isCommunicationMuted());
+        assert.equal(gunther.messages.length, 4);
+        assert.includes(
+            gunther.messages[2],
+            Message.format(Message.LVP_ANNOUNCE_COMMUNICATION_BLOCKED, gunther.name, gunther.id,
+                           'enabled'));
+
+        assert.equal(
+            gunther.messages[3],
+            Message.format(Message.COMMUNICATION_SERVER_UNMUTED, gunther.name));
     });
 
     it('should enable administrators to change communication substitutions', async (assert) => {

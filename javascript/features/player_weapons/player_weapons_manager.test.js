@@ -15,9 +15,7 @@ describe('PlayerSettingsManager', (it, beforeEach, afterEach) => {
     });
 
     it('should invoke the pawn command upon trying to give a weapon.', assert => {
-        let counter = 0;
-
-        var mockPawnInvoke = MockPawnInvoke.getInstance();
+        const mockPawnInvoke = MockPawnInvoke.getInstance();
 
         manager.giveWeapon(0, 24, 1000);
 
@@ -29,9 +27,7 @@ describe('PlayerSettingsManager', (it, beforeEach, afterEach) => {
     });
 
     it('should invoke the pawn command upon trying to reset weapons.', assert => {
-        let counter = 0;
-
-        var mockPawnInvoke = MockPawnInvoke.getInstance();
+        const mockPawnInvoke = MockPawnInvoke.getInstance();
 
         manager.resetWeapons(0);
 

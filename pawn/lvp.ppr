@@ -150,9 +150,6 @@
     <DiskObject>\Features\Gameplay\Colors\ColorPicker.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\FixPlayerCommands.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\Commands\Mute\</DiskObject>
-    <DiskObject>\Features\Gameplay\Commands\Mute\MuteCommands.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\Commands\Mute\MuteManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\PlayerInfoHandler.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\PlayerSpectateHandler.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\</DiskObject>

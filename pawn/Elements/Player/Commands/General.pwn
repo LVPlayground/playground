@@ -748,12 +748,6 @@ lvp_leave(playerid,params[]) {
 // Notes: Improved & removed a SetTimer statement.
 lvp_showmessage(playerid,params[])
 {
-    if(MuteManager->isMuted(playerid))
-    {
-        SendClientMessage(playerid,Color::Red,"You can't send a showmessage when you're muted!");
-        return 1;
-    }
-
     new const price = GetEconomyValue(ShowMessageCommand);
     new message[128];
 
@@ -766,11 +760,6 @@ lvp_showmessage(playerid,params[])
     // has a showmessage been done recently?
     if(Time->currentTime() - lastShowmsg < 4) {
         SendClientMessage(playerid,Color::Red,"* A showmessage is currently active.");
-        return 1;
-    }
-
-    if (IsCommunicationMuted() && !Player(playerid)->isAdministrator()) {
-        SendClientMessage(playerid, Color::Error, "Sorry, an administrator is making an announcement.");
         return 1;
     }
 

@@ -23,6 +23,16 @@ export default class CommunicationCommands extends Feature {
         this.announce_ = this.defineDependency('announce');
         this.communication_ = this.defineDependency('communication');
 
+        // TODO:
+        // - /call
+        // - /ignore
+        // - /ignored
+        // - /ircpm
+        // - /me
+        // - /pm
+        // - /r
+        // - /unignore
+
         // /mute [player] [duration=3]
         server.commandManager.buildCommand('mute')
             .restrict(Player.LEVEL_ADMINISTRATOR)

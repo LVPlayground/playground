@@ -975,42 +975,6 @@ ShowHelp:
     return 1;
 }
 
-lvp_showreport(playerId, params[]) {
-    if (Command->parameterCount(params) == 0) {
-        SendClientMessage(playerId, Color::Information, "Usage: /showreport [player]");
-        return 1;
-    }
-
-    new subjectId = Command->playerParameter(params, 0, playerId);
-    if (subjectId == Player::InvalidId)
-        return 1;
-
-    SendClientMessage(subjectId, Color::Red, "-------------------");
-    SendClientMessage(subjectId, Color::Warning, REPORT_MESSAGE);
-
-    // Inform the mutee.
-    format(g_message, sizeof(g_message), "You have been muted for two minutes by %s (Id:%d).",
-        Player(playerId)->nicknameString(), playerId);
-    SendClientMessage(subjectId, Color::Error, g_message);
-
-    SendClientMessage(subjectId, Color::Red, "-------------------");
-
-    // Apply the mute. Make it silent.
-    MuteManager->mutePlayer(subjectId, 2, true /* silent */);
-
-    // Inform other administrators.
-    format(g_message, sizeof(g_message), "%s (Id:%d) muted %s (Id:%d) for two minutes.",
-        Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId);
-    Admin(playerId, g_message);
-
-    // Inform the muter.
-    format(g_message, sizeof(g_message), "%s (Id:%d) has been warned and muted for two minutes.",
-        Player(subjectId)->nicknameString(), subjectId);
-    SendClientMessage(playerId, Color::Success, g_message);
-
-    return 1;
-}
-
 lvp_hs(playerId, params[]) {
     if (PlayerSettings(playerId)->isPlayerHitSoundEnabled()) {
         SendClientMessage(playerId, Color::Success, "You have disabled your hit sound.");

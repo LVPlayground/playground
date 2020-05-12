@@ -291,7 +291,68 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
     const kSubstitutionIndex = 2;
 
     it('should enable administrators to change the blocked words', async (assert) => {
+        function hasBlockedWord(checkWord) {
+            return !!communication.getBlockedWords().filter(({word}) => word === checkWord).length;
+        }
 
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isFalse(hasBlockedWord('bananas'));
+        assert.isTrue(hasBlockedWord('/quit'));
+
+        // (1) Just viewing the blocked words should be fine.
+        gunther.respondToDialog({ listitem: kBlockedWordsIndex }).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 0);
+
+        // (2) Adding a new blocked word must meet the requirements.
+        gunther.respondToDialog({ listitem: kBlockedWordsIndex }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Add a new blocked word */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'e' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 0);
+
+        // (3) Adding a new blocked word must check that it doesn't exist yet.
+        gunther.respondToDialog({ listitem: kBlockedWordsIndex }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Add a new blocked word */ })).then(
+            () => gunther.respondToDialog({ inputtext: '/quit' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 0);
+
+        // (4) Adding a new blocked word should work just fine.
+        gunther.respondToDialog({ listitem: kBlockedWordsIndex }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Add a new blocked word */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'bananas' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 1);
+        assert.includes(
+            gunther.messages[0],
+            Message.format(Message.LVP_ANNOUNCE_WORD_BLOCKED, gunther.name, gunther.id, 'bananas'));
+
+        assert.isTrue(hasBlockedWord('bananas'));
+
+        // (5) Removing a blocked word should be fine after confirmation.
+        gunther.respondToDialog({ listitem: kBlockedWordsIndex }).then(
+            () => gunther.respondToDialog({ listitem: 3 /* Assumed to be 'bananas' */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'bananas' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 2);
+        assert.includes(
+            gunther.messages[1],
+            Message.format(Message.LVP_ANNOUNCE_WORD_UNBLOCKED, gunther.name, gunther.id,
+                           'bananas'));
+
+        assert.isFalse(hasBlockedWord('bananas'));
     });
 
     it('should enable administrators to block and unblock all communication', async (assert) => {

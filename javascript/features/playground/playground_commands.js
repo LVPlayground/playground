@@ -447,7 +447,78 @@ class PlaygroundCommands {
     // Handles the list of blocked words which players are forbidden to say on the server.
     // Communication that contains one (or more) of these words will be blocked.
     async handleBlockedWords(player) {
-        // TODO
+        const words = this.communication_().getBlockedWords();
+
+        const menu = new Menu('Blocked words', ['Blocked word', 'Added by']);
+        menu.addItem('Block a new word', '-', async () => {
+            const wordToBlock = await Question.ask(player, {
+                question: 'Which word do you want to block?',
+                constraints: {
+                    validation: /^.{3,24}$/i,
+                    explanation: 'The word must be between 3 and 24 characters in length.',
+                    abort: 'Sorry, you did not enter a valid word to block.',
+                }
+            });
+
+            if (!wordToBlock)
+                return;  // the |player| abandoned the flow
+            
+            const lowerCaseWordToBlock = wordToBlock.toLowerCase();
+
+            // Verify that the |lowerCaseWordToBlock| has not already been blocked on the server.
+            for (const existingWord of words) {
+                if (existingWord.word !== lowerCaseWordToBlock)
+                    continue;
+                
+                return alert(player, {
+                    title: 'Blocked words',
+                    message: `The word "${lowerCaseWordToBlock}" has already been blocked.`
+                });
+            }
+
+            // Actually block the |lowerCaseWordToBlock| now.
+            this.communication_().addBlockedWord(player, lowerCaseWordToBlock);
+
+            // Inform administrators of the newly blocked word.
+            this.announce_().announceToAdministrators(
+                Message.LVP_ANNOUNCE_WORD_BLOCKED, player.name, player.id, lowerCaseWordToBlock);
+            
+            // Confirm the action to the |player|.
+            return alert(player, {
+                title: 'Blocked words',
+                message: `The word "${lowerCaseWordToBlock}" has been blocked on the server.`
+            });
+        });
+
+        // Add a delimiter before listing all the currently blocked words.
+        menu.addItem('-----', '-----');
+
+        for (const { word, nickname } of words.sort()) {
+            menu.addItem(word, nickname, async() => {
+                const confirmation = await confirm(player, {
+                    title: 'Blocked words',
+                    message: `Are you sure that you want to unblock the word "${word}"?`,
+                });
+
+                if (!confirmation)
+                    return;  // the |player| abandoned the flow
+
+                // Actually block the |lowerCaseWordToBlock| now.
+                this.communication_().removeBlockedWord(player, word);
+
+                // Inform administrators of the newly blocked word.
+                this.announce_().announceToAdministrators(
+                    Message.LVP_ANNOUNCE_WORD_UNBLOCKED, player.name, player.id, word);
+                
+                // Confirm the action to the |player|.
+                return alert(player, {
+                    title: 'Blocked words',
+                    message: `The word "${word}" has been unblocked on the server.`
+                });
+            });
+        }
+
+        await menu.displayForPlayer(player);
     }
 
     // Handles players' ability to communicate on the server, which administrators have the ability

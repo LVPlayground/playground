@@ -221,6 +221,13 @@ export class MessageFilter {
                 username: 'Russell',
                 replacement_before: 'George',
                 replacement_after: 'Geroge',
+            },
+            {
+                id: 2,
+                user_id: 116118,
+                username: 'Russell',
+                replacement_before: '/quit',
+                replacement_after: '',
             }
         ];
 

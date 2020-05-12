@@ -5,7 +5,7 @@
 import PlayerSetting from 'entities/player_setting.js';
 import MockPlaygroundCommands from 'features/playground/test/mock_playground_commands.js';
 
-describe('PlayerSettingsCommands', (it, beforeEach) => {
+describe('PlayerSettingsCommands', (it, beforeEach, afterEach) => {
     let commands = null;
 
     beforeEach(async (assert) => {
@@ -13,22 +13,22 @@ describe('PlayerSettingsCommands', (it, beforeEach) => {
         await commands.loadCommands();
     });
 
+    afterEach(() => commands.dispose());
+
     it('should not let players use the playersettings command', async (assert) => {
         const gunther = server.playerManager.getById(0);
 
-        gunther.identify();
         gunther.level = Player.LEVEL_PLAYER
 
         assert.isTrue(await gunther.issueCommand('/playersettings'));
-
         assert.equal(gunther.messages.length, 1);
     });
 
     it('should let admins use the playersettings command', async (assert) => {
         const gunther = server.playerManager.getById(0);
 
-        gunther.identify();
-        gunther.level = Player.LEVEL_ADMINISTRATOR;        
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+        await gunther.identify();
 
         gunther.respondToDialog({ listitem: 0 /* Assumed `announcements` */ }).then(
             () => gunther.respondToDialog({ listitem: 0 /* Assumed to be general */ })).then(

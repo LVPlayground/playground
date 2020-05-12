@@ -132,7 +132,7 @@ class VehicleCommands {
         // https://github.com/LVPlayground/playground/issues/343
 
         // Bail out if the |player| is not registered, which we require for vehicle locks.
-        if (!player.isRegistered()) {
+        if (!player.account.isRegistered()) {
             player.sendMessage(Message.VEHICLE_LOCK_UNREGISTERED);
             return;
         }
@@ -156,7 +156,7 @@ class VehicleCommands {
         }
 
         // Restrict access to the |databaseVehicle| to |player|.
-        this.manager_.access.restrictToPlayer(databaseVehicle, player.userId);
+        this.manager_.access.restrictToPlayer(databaseVehicle, player.account.userId);
 
         player.sendMessage(Message.VEHICLE_LOCKED, player.vehicle.model.name);
     }
@@ -170,7 +170,7 @@ class VehicleCommands {
         // https://github.com/LVPlayground/playground/issues/343
 
         // Bail out if the |player| is not registered, which we require for vehicle locks.
-        if (!player.isRegistered()) {
+        if (!player.account.isRegistered()) {
             player.sendMessage(Message.VEHICLE_UNLOCK_UNREGISTERED);
             return;
         }
@@ -502,7 +502,7 @@ class VehicleCommands {
         // Make sure that the closest vehicle is not restricted to a particular player.
         const databaseVehicle = this.manager_.getManagedDatabaseVehicle(areaInfo.closestVehicle);
         if (databaseVehicle && databaseVehicle.accessType == DatabaseVehicle.ACCESS_TYPE_PLAYER &&
-            databaseVehicle.accessValue != player.userId /* it may be the |player|'s vehicle */) {
+                databaseVehicle.accessValue != player.account.userId) {
             player.sendMessage(Message.VEHICLE_ENTER_RESTRICTED);
             return;
         }

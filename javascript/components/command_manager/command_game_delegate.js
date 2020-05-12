@@ -13,7 +13,7 @@ export default class CommandGameDelegate {
 
     // Returns whether the |player is registered with the server.
     isRegistered(player) {
-        return player.isRegistered();
+        return player.account.isRegistered();
     }
 
     // Returns the level of the |source|, which in this case is a Player.

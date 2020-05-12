@@ -20,7 +20,6 @@ describe('RadioCommands', (it, beforeEach) => {
         settings = server.featureManager.loadFeature('settings');
 
         gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
     });
 
     it('should disable the commands when the radio feature is unavailable', async assert => {

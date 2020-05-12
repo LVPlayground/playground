@@ -34,13 +34,28 @@ testRunner.run('.*\.test\.js').then(time => {
     notifyReady();  // allow the SA-MP server to start accepting connections
 
     server = new Server();
+    server.initialize();
+
     server.featureManager.loadFeatures([
-        // Foundational features. These must not have dependencies on any other features.
+        // -----------------------------------------------------------------------------------------
+        // Foundational features.
+        //
+        // These features provide critical functionality. They may not depend on other features
+        // except for the other foundational features, without circular dependencies.
+        // -----------------------------------------------------------------------------------------
+
+        'account_provider',
+        'communication',
         'nuwani',
+        'settings',
+
+        // -----------------------------------------------------------------------------------------
+        // Regular features
+        // -----------------------------------------------------------------------------------------
 
         // Low level features, which may only depend on each other and foundational features.
-        'abuse', 'announce', 'communication', 'economy', 'finance', 'location', 'logger', 'minigames',
-        'settings', 'streamer',
+        'abuse', 'announce', 'economy', 'finance', 'location', 'minigames',
+        'streamer',
 
         // Gang-related features
         'gang_chat', 'gang_zones', 'gangs',
@@ -52,7 +67,10 @@ testRunner.run('.*\.test\.js').then(time => {
         'friends', 'killtime', 'nuwani_commands', 'playground', 'punishments', 'radio', 'report', 'vehicles',
 
         // Player-related features
-        'account', 'player_favours',
+        'account', 'player_favours', 'player_settings',
+
+        // Communication features
+        'communication_commands', 'reaction_tests',
 
         // -----------------------------------------------------------------------------------------
 

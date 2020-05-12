@@ -283,43 +283,6 @@ TimeHelp:
     if (!Player(playerId)->isManagement())
         goto SetHelp;
 
-
-    if (!strcmp(setParameter, "george", true, 6)) {
-        if (Command->parameterCount(params) < 2) {
-            SendClientMessage(playerId, Color::Information, "Usage: /set george [on/off]");
-            return 1;
-        }
-
-        g_enforceGeorgeTypo = Command->booleanParameter(params, 1);
-
-        SendClientMessage(playerId, Color::Success, "The setting has been updated!");
-        return 1;
-    }
-
-    if (!strcmp(setParameter, "very", true, 4)) {
-        if (Command->parameterCount(params) < 2) {
-            SendClientMessage(playerId, Color::Information, "Usage: /set very [on/off]");
-            return 1;
-        }
-
-        g_enforceVeryTypo = Command->booleanParameter(params, 1);
-
-        SendClientMessage(playerId, Color::Success, "The setting has been updated!");
-        return 1;
-    }
-
-    if (!strcmp(setParameter, "vary", true, 4)) {
-        if (Command->parameterCount(params) < 2) {
-            SendClientMessage(playerId, Color::Information, "Usage: /set vary [on/off]");
-            return 1;
-        }
-
-        g_enforceVaryTypo = Command->booleanParameter(params, 1);
-
-        SendClientMessage(playerId, Color::Success, "The setting has been updated!");
-        return 1;
-    }
-
     if (!strcmp(setParameter, "gravity", true, 7)) {
         new Float: gravity = Command->floatParameter(params, 1);
         if (gravity < -0.15 || gravity > 0.15) {
@@ -644,57 +607,6 @@ lvp_p(playerId, params[]) {
         return 1;
     }
 
-    if (!strcmp(playerParameter, "nocaps", true, 6)) {
-        if (Command->parameterCount(params) != 3)
-            goto CapsHelp;
-
-        new capsParameter[4];
-        Command->stringParameter(params, 2, capsParameter, sizeof(capsParameter));
-
-        if (!strcmp(capsParameter, "on", true, 2)) {
-            if (g_NoCaps[subjectId] == true) {
-                SendClientMessage(playerId, Color::Error, "This player already has anti-caps filter enabled.");
-                return 1;
-            }
-
-            g_NoCaps[subjectId] = true;
-
-            format(g_message, sizeof(g_message), "Anti-caps filter enabled for %s (Id:%d).",
-                Player(subjectId)->nicknameString(), subjectId);
-            SendClientMessage(playerId, Color::Success, g_message);
-
-            format(g_message, sizeof(g_message), "%s (Id:%d) has enabled the anti-caps filter for %s (Id:%d).",
-                Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId);
-            Admin(playerId, g_message);
-
-            return 1;
-        }
-
-        if (!strcmp(capsParameter, "off", true, 3)) {
-            if (g_NoCaps[subjectId] == false) {
-                SendClientMessage(playerId, Color::Error, "This player already has anti-caps filter disabled.");
-                return 1;
-            }
-
-            g_NoCaps[subjectId] = false;
-
-            format(g_message, sizeof(g_message), "Anti-caps filter disabled for %s (Id:%d).",
-                Player(subjectId)->nicknameString(), subjectId);
-            SendClientMessage(playerId, Color::Success, g_message);
-
-            format(g_message, sizeof(g_message), "%s (Id:%d) has disabled the anti-caps filter for %s (Id:%d).",
-                Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId);
-            Admin(playerId, g_message);
-
-            return 1;
-        }
-
-        CapsHelp:
-        SendClientMessage(playerId, Color::Information, "Usage: /p [player] nocaps [on/off]");
-
-        return 1;
-    }
-
     if (!strcmp(playerParameter, "handofgod", true, 9)) {
         new Float: position[3];
         GetPlayerPos(subjectId, position[0], position[1], position[2]);
@@ -941,7 +853,7 @@ GodHelp:
 
     if (Player(playerId)->isAdministrator() == true) {
         SendClientMessage(playerId, Color::Information, " achievements, armor, burn, (un)cage, cash, deathmessage, (un)freeze, (give/take)admin, god,");
-        SendClientMessage(playerId, Color::Information, " handofgod, health, hide, kill, maptp, nocaps, nuke, weapon, weaponinfo, properties,");
+        SendClientMessage(playerId, Color::Information, " handofgod, health, hide, kill, maptp, nuke, weapon, weaponinfo, properties,");
         SendClientMessage(playerId, Color::Information, " removeweapon, resetspawnweapons, resetweapons, skin, spawnweapons, teleport, vallow");
     }
 
@@ -1068,43 +980,6 @@ ShowHelp:
     return 1;
 }
 
-
-lvp_showreport(playerId, params[]) {
-    if (Command->parameterCount(params) == 0) {
-        SendClientMessage(playerId, Color::Information, "Usage: /showreport [player]");
-        return 1;
-    }
-
-    new subjectId = Command->playerParameter(params, 0, playerId);
-    if (subjectId == Player::InvalidId)
-        return 1;
-
-    SendClientMessage(subjectId, Color::Red, "-------------------");
-    SendClientMessage(subjectId, Color::Warning, REPORT_MESSAGE);
-
-    // Inform the mutee.
-    format(g_message, sizeof(g_message), "You have been muted for two minutes by %s (Id:%d).",
-        Player(playerId)->nicknameString(), playerId);
-    SendClientMessage(subjectId, Color::Error, g_message);
-
-    SendClientMessage(subjectId, Color::Red, "-------------------");
-
-    // Apply the mute. Make it silent.
-    MuteManager->mutePlayer(subjectId, 2, true /* silent */);
-
-    // Inform other administrators.
-    format(g_message, sizeof(g_message), "%s (Id:%d) muted %s (Id:%d) for two minutes.",
-        Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId);
-    Admin(playerId, g_message);
-
-    // Inform the muter.
-    format(g_message, sizeof(g_message), "%s (Id:%d) has been warned and muted for two minutes.",
-        Player(subjectId)->nicknameString(), subjectId);
-    SendClientMessage(playerId, Color::Success, g_message);
-
-    return 1;
-}
-
 lvp_hs(playerId, params[]) {
     if (PlayerSettings(playerId)->isPlayerHitSoundEnabled()) {
         SendClientMessage(playerId, Color::Success, "You have disabled your hit sound.");
@@ -1114,13 +989,6 @@ lvp_hs(playerId, params[]) {
         SendClientMessage(playerId, Color::Success, "You have enabled your hit sound.");
         PlayerSettings(playerId)->setPlayerHitSoundEnabled(true);
     }
-
-    return 1;
-    #pragma unused params
-}
-
-lvp_reactiontest(playerId, params[]) {
-    CReaction__OnCommand(playerId);
 
     return 1;
     #pragma unused params

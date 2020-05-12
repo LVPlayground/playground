@@ -29,10 +29,6 @@ AddSpawnPos(Float: spawnPosX, Float: spawnPosY, Float: spawnPosZ, Float: spawnAn
     g_spawnPositions[spawnPositionCount][interiorId] = spawnInteriorId;
     spawnPositionCount++;
 
-#if BETA_TEST == 1 && Debug::EnableVisualVerbosity == 1
-    CreateDynamicMapIcon(spawnPosX, spawnPosY, spawnPosZ, 35, -1, 0, -1, -1, 200);
-#endif
-
     return 1;
 }
 

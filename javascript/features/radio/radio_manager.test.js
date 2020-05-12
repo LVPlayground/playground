@@ -34,7 +34,6 @@ describe('RadioManager', (it, beforeEach, afterEach) => {
         manager = new RadioManager(selection, () => settings);
 
         gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
 
         vehicle = server.vehicleManager.createVehicle({
             modelId: 411 /* Infernus */,

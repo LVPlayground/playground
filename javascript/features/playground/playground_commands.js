@@ -251,7 +251,7 @@ class PlaygroundCommands {
             return await grantCommandException(commandName, player);
         }
 
-        if (!subject.isRegistered()) {
+        if (!subject.account.isRegistered()) {
             return await MessageBox.display(player, {
                 title: 'Unable to grant an exception',
                 message: 'Exceptions can only be granted to registered players. Consider asking ' +

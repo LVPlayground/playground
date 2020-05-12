@@ -65,7 +65,7 @@ describe('ZoneCalculator', (it, beforeEach, afterEach) => {
         const zoneGangBA = aggregator.activeGangs.get(MockZoneDatabase.BA);
         assert.isNotNull(zoneGangBA);
 
-        for (let count = 2; count <= 8; ++count) {
+        for (let count = 2; count < 8; ++count) {
             settings.setValue('gangs/zones_cluster_limit', count);
             assert.isBelowOrEqual(calculator.computeGangAreas(zoneGangBA).length, count);
         }

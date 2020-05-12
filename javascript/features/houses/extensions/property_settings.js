@@ -198,7 +198,7 @@ class PropertySettings extends HouseExtension {
                 Message.HOUSE_WELCOME_MESSAGE, location.settings.ownerName, welcomeMessage);
         }
 
-        if (player.userId === location.settings.ownerId)
+        if (player.account.userId === location.settings.ownerId)
             player.sendMessage(Message.HOUSE_WELCOME, player.name);
 
         if (location.settings.hasAudioStream())

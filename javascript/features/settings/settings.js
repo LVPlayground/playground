@@ -16,6 +16,9 @@ class Settings extends Feature {
     constructor() {
         super();
 
+        // This is a foundational feature.
+        this.markFoundational();
+
         // The database instance used to read and write persistent values.
         this.database_ = server.isTest() ? new MockSettingsDatabase()
                                          : new SettingsDatabase();

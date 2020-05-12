@@ -242,7 +242,7 @@ describe('CommandBuilder', (it, beforeEach) => {
     assert.deepEqual(wordValues, ['hello', 'subcommand']);
   });
 
-  it('should restrict values to player levels', assert => {
+  it('should restrict values to player levels', async (assert) => {
     let invoked = false;
 
     builder('testcommand')
@@ -252,7 +252,7 @@ describe('CommandBuilder', (it, beforeEach) => {
     listener(player, '');
     assert.isFalse(invoked);
 
-    player.identify();
+    await player.identify();
     player.level = Player.LEVEL_ADMINISTRATOR;
 
     listener(player, '');
@@ -307,7 +307,7 @@ describe('CommandBuilder', (it, beforeEach) => {
     assert.equal(Message.filter(lastMessage), 'Error: Sorry, this command is only available to administrators.');
   });
 
-  it('should restrict values to permanent player levels', assert => {
+  it('should restrict values to permanent player levels', async (assert) => {
     let invoked = false;
 
     builder('testcommand')
@@ -317,7 +317,7 @@ describe('CommandBuilder', (it, beforeEach) => {
     listener(player, '');
     assert.isFalse(invoked);
 
-    player.identify();
+    await player.identify();
     player.level = Player.LEVEL_ADMINISTRATOR;
     player.levelIsTemporary = true;
 
@@ -330,7 +330,7 @@ describe('CommandBuilder', (it, beforeEach) => {
     assert.isTrue(invoked);
   });
 
-  it('should restrict sub-commands to permanent player levels', assert => {
+  it('should restrict sub-commands to permanent player levels', async (assert) => {
     let subInvoked = 0;
     let invoked = 0;
   
@@ -346,7 +346,7 @@ describe('CommandBuilder', (it, beforeEach) => {
     assert.equal(subInvoked, 0);
     assert.equal(invoked, 1);
 
-    player.identify();
+    await player.identify();
     player.level = Player.LEVEL_ADMINISTRATOR;
     player.levelIsTemporary = true;
 

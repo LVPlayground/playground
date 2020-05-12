@@ -132,6 +132,9 @@ class Account <playerId (MAX_PLAYERS)> {
     public onPasswordVerificationComplete(bool: verified, userId) {
         if (verified) {
             for (new i = 0; i < PlayerManager->highestPlayerId(); ++i) {
+                if (!Player(i)->isConnected())
+                    continue;
+
                 if (Account(i)->userId() != userId)
                     continue;
 

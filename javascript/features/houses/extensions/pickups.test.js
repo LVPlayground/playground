@@ -15,10 +15,10 @@ describe('Pickups', (it, beforeEach) => {
 
     beforeEach(async(assert) => {
         gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify({ userId: 42 });
+        await gunther.identify({ userId: 42 });
 
         russell = server.playerManager.getById(1 /* Russell */);
-        russell.identify({ userId: 12356 });
+        await russell.identify({ userId: 12356 });
 
         // Give Gunther 25 million dollars to spend on house pickups.
         await server.featureManager.loadFeature('finance').depositToPlayerAccount(

@@ -29,7 +29,7 @@ class ActivityLog extends Feature {
       'OnPlayerResolvedDeath',  // { playerid, killerid, reason }
 //    'OnPlayerWeaponShot',     // { playerid, weaponid, hittype, hitid, fX, fY, fZ }
       'OnPlayerConnect',        // { playerid }
-      'OnPlayerLogin',          // { playerid, userid, vip, gangId, undercover }
+//      'OnPlayerLogin',          // { playerid, userid, vip, gangId, undercover }
       'OnPlayerGuestLogin',     // { playerId, guestPlayerName[]  }
       'OnPlayerDisconnect',     // { playerid, reason }
 
@@ -54,14 +54,14 @@ class ActivityLog extends Feature {
     if (!player)
       return;
 
-    const userId = player.isRegistered() ? player.userId : null;
+    const userId = player.account.userId;
     const position = player.position;
 
     const killer = server.playerManager.getById(event.killerid);
     if (!killer)
       this.recorder_.writeDeath(userId, position, event.reason);
     else
-      this.recorder_.writeKill(userId, killer.isRegistered() ? killer.userId : null, position, event.reason);
+      this.recorder_.writeKill(userId, killer.account.userId, position, event.reason);
   }
 
   // Called when a player has fired from a weapon. Only |event|s that hit a player or a vehicle will
@@ -75,14 +75,14 @@ class ActivityLog extends Feature {
     if (!player)
       return;
 
-    const userId = player.isRegistered() ? player.userId : null;
+    const userId = player.account.userId;
     const position = player.position;
 
     let targetUserId = null;
     if (event.hittype == 1 /* BULLET_HIT_TYPE_PLAYER */) {
       const targetPlayer = server.playerManager.getById(event.hitid);
-      if (targetPlayer && targetPlayer.isRegistered())
-        targetUserId = targetPlayer.userId;
+      if (targetPlayer && targetPlayer.account.isRegistered())
+        targetUserId = targetPlayer.account.userId;
     }
 
     // TODO(Russell): It would be great if we could consider the driver of the vehicle that's being
@@ -120,7 +120,7 @@ class ActivityLog extends Feature {
       return;
 
     const sessionId = this.playerSessionIdMap_.get(player.id);
-    this.recorder_.writeUpdateSessionAtLogin(sessionId, player.userId);
+    this.recorder_.writeUpdateSessionAtLogin(sessionId, player.account.userId);
   }
 
   // Called at the moment a player with an already used nickname wants to play as guest. In that

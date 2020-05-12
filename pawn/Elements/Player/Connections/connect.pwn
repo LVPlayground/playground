@@ -47,7 +47,7 @@ OnPlayerLVPConnect(playerid) {
     GetPlayerName(playerid, PlayerInfo[playerid][playerName], 32);
     iRconLoginAttempts[playerid] = 0;
 
-#if BETA_TEST == 1
+#if BuildGamemodeInReleaseMode == 0
     new ver[32], str[128];
     GetPlayerVersion(playerid, ver, 32);
 

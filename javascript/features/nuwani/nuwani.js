@@ -40,6 +40,9 @@ export default class Nuwani extends Feature {
     constructor() {
         super();
 
+        // This is a foundational feature.
+        this.markFoundational();
+
         this.configuration_ = new Configuration();
 
         // The Runtime is responsible for connectivity with the IRC Network, in accordance with the

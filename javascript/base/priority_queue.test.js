@@ -101,7 +101,7 @@ describe('PriorityQueue', it => {
 
     it('should work with larger quantities of numbers', assert => {
         const queue = new PriorityQueue(ascendingComparator);
-        const count = 10000;
+        const count = 1000;
 
         for (let i = 0; i < count; ++i)
             queue.push(Math.floor(Math.random() * count));

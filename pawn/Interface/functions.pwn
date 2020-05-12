@@ -233,7 +233,6 @@ ResetPlayerStats(playerId) {
     MyCarBombs[playerId] = false;
     g_PlayerInBombShop[playerId][0] = false;
     g_PlayerInBombShop[playerId][1] = false;
-    g_NoCaps[playerId] = false;
     tempLevel[playerId] = 0;
     CancelTaxi(playerId);
     g_TextShow[playerId] = 0;
@@ -253,7 +252,6 @@ ResetPlayerStats(playerId) {
     CFightClub__SetDeathCount(playerId, 0);
 #endif
     g_PlayerMenu[playerId] = 0;
-    g_NoCaps[playerId] = false;
     bPlayerWeaponStored[playerId] = 0;
     showMessagesEnabled[playerId] = true;
     g_PlayerMenu[playerId] = 0;
@@ -785,10 +783,6 @@ ClearPlayerMenus(playerId) {
     TogglePlayerControllable(playerId, true);
 
     return 1;
-}
-
-randomex(min, max) {
-    return random(max - min) + min;
 }
 
 SetPlayerSkinEx(playerId, skinId) {

@@ -11,6 +11,8 @@ describe('FinancialRegulator', (it, beforeEach, afterEach) => {
     let regulator = null;
 
     beforeEach(() => {
+        server.featureManager.loadFeature('account');
+
         gunther = server.playerManager.getById(/* Gunther= */ 0);
         regulator = new FinancialRegulator(MockFinancialNativeCalls);
     });
@@ -50,18 +52,17 @@ describe('FinancialRegulator', (it, beforeEach, afterEach) => {
     });
 
     it('should be able to keep track of values in bank accounts', async (assert) => {
+        await gunther.identify();
+
         assert.equal(await regulator.getAccountBalance(gunther), 0);
-        assert.equal(regulator.database_.readCalls, 1);
-        assert.equal(regulator.database_.writeCalls, 0);
+        assert.equal(gunther.account.bankAccountBalance, 0);
 
         assert.isTrue(await regulator.depositToAccount(gunther, 1500));
         assert.equal(await regulator.getAccountBalance(gunther), 1500);
-        assert.equal(regulator.database_.readCalls, 1);
-        assert.equal(regulator.database_.writeCalls, 0);
+        assert.equal(gunther.account.bankAccountBalance, 1500);
 
         assert.isTrue(await regulator.withdrawFromAccount(gunther, 800));
         assert.equal(await regulator.getAccountBalance(gunther), 700);
-        assert.equal(regulator.database_.readCalls, 1);
-        assert.equal(regulator.database_.writeCalls, 0);
+        assert.equal(gunther.account.bankAccountBalance, 700);
     });
 });

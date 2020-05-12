@@ -28,6 +28,15 @@ public OnGameModeInit() {
 
 // *************************************************************************************************
 
+#if Feature::EnableServerSideWeaponConfig
+
+    SetCbugAllowed(true);
+    SetDamageSounds(0, 0);
+    SetVehiclePassengerDamage(true);
+    SetVehicleUnoccupiedDamage(false);
+
+#endif
+
     SetTimer("CExport__NewWantedVehicle", 10000, 0);  // Initialise exports ten seconds from now
 
     CChase__Initialize();           // Chase
@@ -43,7 +52,6 @@ public OnGameModeInit() {
     CWWTW__Initialize();            // Walkies Weapons Team War
 #endif
     CExport__CreateMap();           // Export
-    CReaction__Initialize();        // Reaction test
     CHideGame__Initialize();        // Hide & Seek
 #if Feature::DisableFights == 0
     rwResetData(true);              // RWTW
@@ -139,10 +147,6 @@ public OnGameModeInit() {
     CreatePickup(1242,2,-1495.4761,1278.3402,7.1797 );
 
     CreatePickup(1241, 3, 1680.3677,1757.0861,10.8277);
-
-    g_enforceGeorgeTypo = false;
-    g_enforceVaryTypo = false;
-    g_enforceVeryTypo = false;
 
     g_iShipIcon = CreatePickup(1239, 2, 2021.8129, 1545.2087, 10.8231 );    // info icon
     g_TrainPickup_0 = CreatePickup(1239,3, 2855.7217,1290.7852,11.3906 );    // Train icon 0

@@ -89,7 +89,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     if (Annotation::ProcessCommand(cmd, playerid, cmdtext[idx]) == 1)
         return 1;
 
-#if BETA_TEST == 1
+#if BuildGamemodeInReleaseMode == 0
         if(!strcmp(cmdtext, "/vehid", true))
         {
             new str[128];
@@ -539,7 +539,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     // Commands for administrators:
     lvp_command(clear,          5, AdministratorLevel);
     lvp_command(show,           4, AdministratorLevel);
-    lvp_command(showreport,    10, AdministratorLevel);
     lvp_command(p,              1, AdministratorLevel);
     lvp_command(t,              1, AdministratorLevel);
     lvp_command(announce,       8, AdministratorLevel);
@@ -549,7 +548,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(resetfc,        7, AdministratorLevel);
     lvp_command(resetmatch,    10, AdministratorLevel);
 #endif
-    lvp_command(reactiontest,  12, AdministratorLevel);
     lvp_command(chase,          5, AdministratorLevel);
     lvp_command(fetch,          5, AdministratorLevel);
     lvp_command(stopchase,      9, AdministratorLevel);
@@ -1023,23 +1021,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         new message[128];
         message = strtok(cmdtext, idx);
 
-        if (MuteManager->isMuted(playerid)) {
-            SendClientMessage(playerid, Color::Error, "Error: You can't use this command whilst being muted.");
-            return 1;
-        }
-
         if (!strlen(message)) {
             SendClientMessage(playerid, Color::Information, "Usage: /me [message]");
-            return 1;
-        }
-
-        if (IsCommunicationMuted() && !Player(playerid)->isAdministrator()) {
-            SendClientMessage(playerid, Color::Error, "Sorry, an administrator is making an announcement.");
-            return 1;
-        }
-
-        if (SpamTracker->isSpamming(playerid)) {
-            SendClientMessage(playerid, Color::Error, "Please don't spam /me.");
             return 1;
         }
 
@@ -1067,8 +1050,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         format(string, sizeof(string), "%d %s %s", playerid, Player(playerid)->nicknameString(), actionText);
         EchoMessage("status", "dss", string);
-
-        SpamTracker->record(playerid, actionText);
 
         return 1;
     }

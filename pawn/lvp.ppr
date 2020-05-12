@@ -357,6 +357,8 @@
     <DiskObject>\Driver\ThirdParty\</DiskObject>
     <DiskObject>\Driver\ThirdParty\weapon-config.inc</DiskObject>
     <DiskObject>\Driver\ThirdParty\sky.inc</DiskObject>
+    <DiskObject>\config.pwn</DiskObject>
+    <DiskObject>\lvp.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

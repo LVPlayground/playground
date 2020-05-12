@@ -9,6 +9,7 @@ import Setting from 'entities/setting.js';
 describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
     let access = null;
     let commands = null;
+    let communication = null;
     let gunther = null;
 
     beforeEach(async() => {
@@ -16,8 +17,11 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         const nuwani = server.featureManager.loadFeature('nuwani');
         const settings = server.featureManager.loadFeature('settings');
 
+        communication = server.featureManager.loadFeature('communication');
+
         access = new PlaygroundAccessTracker();
-        commands = new PlaygroundCommands(access, () => announce, () => nuwani, () => settings);
+        commands = new PlaygroundCommands(
+            access, () => announce, () => communication, () => nuwani, () => settings);
 
         gunther = server.playerManager.getById(0 /* Gunther */);
         await gunther.identify();
@@ -279,6 +283,18 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.isTrue(gunther.messages[0].includes('my_setting'));
         assert.isTrue(gunther.messages[0].includes('Hello World'));
+    });
+
+    it('should enable administrators to change the blocked words', async (assert) => {
+
+    });
+
+    it('should enable administrators to block and unblock all communication', async (assert) => {
+
+    });
+
+    it('should enable administrators to change communication substitutions', async (assert) => {
+
     });
 
     it('should be able to live reload the message formatting file', async(assert) => {

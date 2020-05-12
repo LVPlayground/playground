@@ -22,8 +22,9 @@ function capitalizeFirstLetter(string) {
 
 // A series of general commands that don't fit in any particular
 class PlaygroundCommands {
-    constructor(access, announce, nuwani, settings) {
+    constructor(access, announce, communication, nuwani, settings) {
         this.announce_ = announce;
+        this.communication_ = communication;
         this.nuwani_ = nuwani;
         this.settings_ = settings;
 
@@ -388,8 +389,23 @@ class PlaygroundCommands {
         const categories = new Map(); // label => { settings, listener }
         const menu = new Menu('Choose a category of settings', ['Category', 'Settings']);
 
+        const communication = this.communication_();
+
         // Administrators and Management members alive have access to the word filters.
-        // TODO:
+        categories.set('Blocked words', {
+            settings: communication.getBlockedWords().length + ' words',
+            listener: PlaygroundCommands.prototype.handleBlockedWords.bind(this, player),
+        });
+
+        categories.set('Player communication', {
+            settings: communication.isCommunicationMuted() ? '{FFFF00}disabled' : 'enabled',
+            listener: PlaygroundCommands.prototype.handleBlockCommunication.bind(this, player),
+        });
+
+        categories.set('Substitutions', {
+            settings: communication.getReplacements().length + ' words',
+            listener: PlaygroundCommands.prototype.handleSubstitutions.bind(this, player),
+        });
 
         // Management members have access to individual settings for all features on the server as
         // well. These require far more context to be able to effectively toggle.
@@ -424,6 +440,24 @@ class PlaygroundCommands {
         }
 
         await menu.displayForPlayer(player);
+    }
+
+    // Handles the list of blocked words which players are forbidden to say on the server.
+    // Communication that contains one (or more) of these words will be blocked.
+    async handleBlockedWords(player) {
+        // TODO
+    }
+
+    // Handles players' ability to communicate on the server, which administrators have the ability
+    // to toggle with the `/lvp settings` command.
+    async handleBlockCommunication(player) {
+        // TODO
+    }
+
+    // Handles the option for the |player| to add or remove substitutions that will apply to
+    // communication throughout Las Venturas Playground.
+    async handleSubstitutions(player) {
+        // TODO   
     }
 
     // Handles interaction with feature-specific settings for the given |player|, in the given

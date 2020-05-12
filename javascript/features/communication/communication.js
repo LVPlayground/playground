@@ -173,6 +173,11 @@ export default class Communication extends Feature {
         return this.muteManager_.isCommunicationMuted();
     }
 
+    // Toggles whether server communications are muted altogether.
+    setCommunicationMuted(muted) {
+        this.muteManager_.setCommunicationMuted(muted);
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     dispose() {

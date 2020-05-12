@@ -34,7 +34,7 @@ describe('MuteManager', (it, beforeEach) => {
         gunther.issueMessage('Hello world!');
         assert.equal(messageCount, 1);
 
-        muteManager.setCommunicationMuted(gunther, true);
+        muteManager.setCommunicationMuted(true);
         assert.isTrue(muteManager.isCommunicationMuted());
 
         gunther.issueMessage('Hello world!');
@@ -44,7 +44,7 @@ describe('MuteManager', (it, beforeEach) => {
         assert.equal(
             gunther.messages[0], Message.format(Message.COMMUNICATION_SERVER_MUTE_BLOCKED));
 
-        muteManager.setCommunicationMuted(gunther, false);
+        muteManager.setCommunicationMuted(false);
         assert.isFalse(muteManager.isCommunicationMuted());
 
         gunther.issueMessage('Hello world!');

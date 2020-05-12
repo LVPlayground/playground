@@ -92,8 +92,30 @@ export default class CommunicationCommands extends Feature {
     //
     // Enables the player to mute all communications on the server, except for other administrators.
     // This should rarely be used, only in cases where there are major incidents.
-    onMuteAllCommand(player) {
+    onMuteAllCommand(player, enabledText) {
+        if (!['on', 'off'].includes(enabledText)) {
+            player.sendMessage(Message.MUTE_ALL_USAGE);
+            return;
+        }
 
+        const enable = enabledText === 'on';
+
+        if (this.muteManager.isCommunicationMuted() === enable) {
+            player.sendMessage(Message.MUTE_ALL_NO_CHANGE, enable ? 'disabled' : 'enabled');
+            return;
+        }
+
+        this.muteManager.setCommunicationMuted(enable);
+
+        this.announce_().announceToAdministrators(
+            Message.MUTE_ALL_ADMIN, player.name, player.id, enable ? 'disabled' : 'enabled');
+
+        const formattedMessage =
+            Message.format(enable ? Message.COMMUNICATION_SERVER_MUTED
+                                  : Message.COMMUNICATION_SERVER_UNMUTED, player.name);
+
+        for (const otherPlayer of server.playerManager)
+            otherPlayer.sendMessage(formattedMessage);
     }
 
     // /muted

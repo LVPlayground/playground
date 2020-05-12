@@ -99,10 +99,47 @@ describe('CommunicationCommands', (it, beforeEach) => {
         assert.isNull(muteManager.getPlayerRemainingMuteTime(gunther));
     });
 
+    it('should be able to lock down communication on the server', async (assert) => {
+        assert.isFalse(muteManager.isCommunicationMuted());
+
+        assert.isTrue(await russell.issueCommand('/muteall pizza'));
+
+        assert.equal(russell.messages.length, 1);
+        assert.equal(russell.messages[0], Message.format(Message.MUTE_ALL_USAGE));
+
+        assert.isTrue(await russell.issueCommand('/muteall off'));
+
+        assert.equal(russell.messages.length, 2);
+        assert.equal(russell.messages[1], Message.format(Message.MUTE_ALL_NO_CHANGE, 'enabled'));
+
+        assert.isTrue(await russell.issueCommand('/muteall on'));
+        assert.isTrue(muteManager.isCommunicationMuted());
+
+        assert.equal(russell.messages.length, 4);
+        assert.includes(
+            russell.messages[2],
+            Message.format(Message.MUTE_ALL_ADMIN, russell.name, russell.id, 'disabled'));
+        
+        assert.equal(
+            russell.messages[3], Message.format(Message.COMMUNICATION_SERVER_MUTED, russell.name));
+        
+        assert.isTrue(await russell.issueCommand('/muteall off'));
+        assert.isFalse(muteManager.isCommunicationMuted());
+
+        assert.equal(russell.messages.length, 6);
+        assert.includes(
+            russell.messages[4],
+            Message.format(Message.MUTE_ALL_ADMIN, russell.name, russell.id, 'enabled'));
+        
+        assert.equal(
+            russell.messages[5], Message.format(Message.COMMUNICATION_SERVER_UNMUTED, russell.name))
+    });
+
     it('should be able to show people how to report others', async (assert) => {
         assert.isNull(muteManager.getPlayerRemainingMuteTime(gunther));
 
         assert.isTrue(await russell.issueCommand('/showreport Gunther'));
+        assert.isAbove(muteManager.getPlayerRemainingMuteTime(gunther), 0);
 
         assert.equal(russell.messages.length, 2);
         assert.includes(

@@ -14,7 +14,7 @@ export class MuteManager {
     }
 
     // Toggles whether server communications are muted altogether.
-    setCommunicationMuted(player, muted) {
+    setCommunicationMuted(muted) {
         this.communicationMuted_ = !!muted;
     }
 

@@ -299,6 +299,9 @@
 
   "MUTE_ADMIN_MUTED": "%s (Id:%d) has muted %s (Id:%d) for %s.",
   "MUTE_ADMIN_UNMUTED": "%s (Id:%d) has unmuted %s (Id:%d).",
+  "MUTE_ALL_ADMIN": "%s (Id:%d) has %s the server's communication channels.",
+  "MUTE_ALL_USAGE": "@usage /muteall [on/off]",
+  "MUTE_ALL_NO_CHANGE": "@error The server's communication is already %s.",
   "MUTE_MUTED": "@success %s (Id:%d) has been muted for %s.",
   "MUTE_MUTED_NOBODY": "@error Nobody on the server is muted right now.",
   "MUTE_MUTED_LIST": "* {DC143C}%s{FFFFFF} (Id:%d) will be muted for another %s.",

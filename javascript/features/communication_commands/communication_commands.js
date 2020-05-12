@@ -41,12 +41,6 @@ export default class CommunicationCommands extends Feature {
                 { name: 'duration', type: CommandBuilder.NUMBER_PARAMETER, optional: true }])
             .build(CommunicationCommands.prototype.onMuteCommand.bind(this));
 
-        // /muteall [on/off]
-        server.commandManager.buildCommand('muteall')
-            .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'on/off', type: CommandBuilder.WORD_PARAMETER }])
-            .build(CommunicationCommands.prototype.onMuteAllCommand.bind(this));
-
         // /muted
         server.commandManager.buildCommand('muted')
             .restrict(Player.LEVEL_ADMINISTRATOR)
@@ -96,36 +90,6 @@ export default class CommunicationCommands extends Feature {
             proposedText);
 
         player.sendMessage(Message.MUTE_MUTED, targetPlayer.name, targetPlayer.id, proposedText);
-    }
-
-    // /muteall [on/off]
-    //
-    // Enables the player to mute all communications on the server, except for other administrators.
-    // This should rarely be used, only in cases where there are major incidents.
-    onMuteAllCommand(player, enabledText) {
-        if (!['on', 'off'].includes(enabledText)) {
-            player.sendMessage(Message.MUTE_ALL_USAGE);
-            return;
-        }
-
-        const enable = enabledText === 'on';
-
-        if (this.muteManager.isCommunicationMuted() === enable) {
-            player.sendMessage(Message.MUTE_ALL_NO_CHANGE, enable ? 'disabled' : 'enabled');
-            return;
-        }
-
-        this.muteManager.setCommunicationMuted(enable);
-
-        this.announce_().announceToAdministrators(
-            Message.MUTE_ALL_ADMIN, player.name, player.id, enable ? 'disabled' : 'enabled');
-
-        const formattedMessage =
-            Message.format(enable ? Message.COMMUNICATION_SERVER_MUTED
-                                  : Message.COMMUNICATION_SERVER_UNMUTED, player.name);
-
-        for (const otherPlayer of server.playerManager)
-            otherPlayer.sendMessage(formattedMessage);
     }
 
     // /muted
@@ -210,7 +174,6 @@ export default class CommunicationCommands extends Feature {
         server.commandManager.removeCommand('unmute');
         server.commandManager.removeCommand('showreport');
         server.commandManager.removeCommand('muted');
-        server.commandManager.removeCommand('muteall');
         server.commandManager.removeCommand('mute');
     }
 }

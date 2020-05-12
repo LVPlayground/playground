@@ -13,7 +13,7 @@ import MockGangDatabase from 'features/gangs/test/mock_gang_database.js';
 class GangManager {
     constructor(settings) {
         this.database_ = server.isTest() ? new MockGangDatabase()
-            : new GangDatabase();
+                                         : new GangDatabase();
 
         this.gangs_ = new Map();
         this.gangPlayers_ = new WeakMap();
@@ -302,7 +302,7 @@ class GangManager {
 
     // Call the spawn manager to update player skin.
     async setSkinInPawnCode(playerId, skinId, uponNextSpawn) {
-        var shouldUpdateUponNextSpawn = uponNextSpawn === false ? 0 : 1;
+        const shouldUpdateUponNextSpawn = uponNextSpawn === false ? 0 : 1;
 
         pawnInvoke('OnSetPlayerSkinId', 'iii', playerId, skinId, shouldUpdateUponNextSpawn);
     }

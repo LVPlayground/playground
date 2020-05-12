@@ -27,7 +27,7 @@ class MockGangDatabase {
                     role: Gang.ROLE_MEMBER, 
                     useGangColor: false,
                     gang: mockedGangInfo.hko,
-                    skinId: 80085
+                    skinId: 42
                 };
                 break;
 
@@ -36,7 +36,7 @@ class MockGangDatabase {
                     role: Gang.ROLE_LEADER, 
                     useGangColor: true, 
                     gang: mockedGangInfo.hko,
-                    skinId: 80085 
+                    skinId: 42 
                 };
                 break;
         }
@@ -68,7 +68,7 @@ class MockGangDatabase {
                 goal: goal,
                 color: null,
                 chatEncryptionExpiry: 0,
-                skinId: 80085
+                skinId: 42
             };
         }
 

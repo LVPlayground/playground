@@ -59,6 +59,7 @@ const SKIN_QUESTION = {
     question: 'Choose your gang\'s skin',
     message: 'What is the skin your gang will use?',
     constraints: {
+        // The validation will be updated based upon the entries of player_classes.json
         validation: /^([0-9]|[1-9][0-9]|1[0-1][0-9]|120|12[2-9]|1[3-9][3-9]|2[0-9][0-9])$/u,
         explanation: 'The skin your members will have if enabled',
 
@@ -472,8 +473,13 @@ class GangCommands {
                 });
             });
 
-            menu.addItem('Member skin', gang.skinId, async() => {
-                const answer = await Question.ask(player, SKIN_QUESTION);
+            menu.addItem('Member skin', gang.skinId ?? '-', async() => {
+                const availableSkins = JSON.parse(readFile('data/player_classes.json'));
+
+                let question = SKIN_QUESTION;                
+                question.constraints.validation = new RegExp(`^(${availableSkins.join('|')})$`);
+                
+                const answer = await Question.ask(player, question);
                 if (!answer)
                     return;  // the leader decided to not update the gang's skin
 

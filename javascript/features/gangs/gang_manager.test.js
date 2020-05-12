@@ -131,7 +131,7 @@ describe('GangManager', (it, beforeEach) => {
         assert.isNull(manager.gangForPlayer(gunther));
 
         await gunther.identify({ userId: MockGangDatabase.HKO_MEMBER_USER_ID,
-                           gangId: MockGangDatabase.HKO_GANG_ID });
+                                 gangId: MockGangDatabase.HKO_GANG_ID });
 
         // The database result will be loaded through a promise, continue the test asynchronously.
         await Promise.resolve();

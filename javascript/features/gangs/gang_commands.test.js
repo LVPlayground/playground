@@ -551,6 +551,24 @@ describe('GangCommands', (it, beforeEach) => {
             Message.format(Message.GANG_SETTINGS_NEW_SKIN, 11));
     });
 
+    it('should not allow leaders to change the skin into an unavailable skin', async(assert) => {
+        const gang = createGang();
+
+        await player.identify();
+
+        addPlayerToGang(player, gang, Gang.ROLE_LEADER);
+
+        assert.equal(gang.skinId, null);
+
+        player.respondToDialog({ listitem: 2 /* Member skin */ }).then(() =>
+            player.respondToDialog({ inputtext: '1' })).then(() =>
+            player.respondToDialog({ response: 0 /* Ok */}));
+
+        assert.isTrue(await player.issueCommand('/gang settings'));
+
+        assert.deepEqual(gang.skinId, null);
+    });
+
     it('should enable leaders to change the color of their gang', async(assert) => {
         const gang = createGang();
 

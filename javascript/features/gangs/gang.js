@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import PlayerSetting from 'entities/player_setting.js';
-
 // Updates the |player|'s gang color to the given |color|, if any.
 function setPlayerGangColor(player, color) {
     if (!server.isTest())
@@ -101,15 +99,12 @@ class Gang {
 
     // Returns whether the |player| will use the gang's skin.
     usesGangSkin(player) {
-        return player.settings
-            .getValue(`${PlayerSetting.CATEGORY.GANG}/${PlayerSetting.GANG.USE_SKIN}`) === true;
+        return player.settings.getValue("gang/use_skin") === true;
     }
 
     // Sets whether the |player| will use the gang's skin.
     setUsesGangSkin(player, usesGangSkin) {
-        player.settings.updateSetting(
-            `${PlayerSetting.CATEGORY.GANG}/${PlayerSetting.GANG.USE_SKIN}`,
-            usesGangSkin);
+        player.settings.updateSetting('gang/use_skin', usesGangSkin);
     }
 
     // Returns whether |player| is part of this gang.
@@ -131,7 +126,7 @@ class Gang {
     updateColor(color) {
         this.color_ = color;
 
-        for (const [player, settings] of this.members_.entries()) {
+        for (const player of this.members_.keys()) {
             if (player.isDisconnecting())
                 continue;
 
@@ -145,7 +140,7 @@ class Gang {
     // Updates the skin of this gang.
     updateSkinId(skinId) {
         this.skinId_ = skinId;
-        for (const [player, _] of this.members_.entries()) {
+        for (const player of this.members_.keys()) {
             if (player.isDisconnecting())
                 continue;
 

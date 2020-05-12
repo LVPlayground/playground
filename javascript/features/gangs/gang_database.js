@@ -368,8 +368,7 @@ class GangDatabase {
     // Updates the skin of the |gang| to |skinId|. Returns a promise that will be resolved when the
     // database has been updated with the new information.
     async updateSkinId(gang, skinId) {
-        await server.database.query(GANG_UPDATE_SKIN_QUERY, skinId, gang.id);
-        
+        await server.database.query(GANG_UPDATE_SKIN_QUERY, skinId, gang.id);        
     }
 
     // Updates the color of the |gang| to |color|. Returns a promise that will be resolved when the

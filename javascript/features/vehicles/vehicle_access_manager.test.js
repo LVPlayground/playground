@@ -29,16 +29,16 @@ describe('VehicleAccessManager', (it, beforeEach, afterEach) => {
             manager.dispose();
     });
 
-    it('should be able to restrict vehicles to registered players', assert => {
+    it('should be able to restrict vehicles to registered players', async(assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
 
-        assert.isFalse(gunther.isRegistered());
+        assert.isFalse(gunther.account.isRegistered());
 
         assert.isFalse(manager.isLocked(storedVehicle));
         assert.isTrue(manager.canAccessVehicle(gunther, storedVehicle));
         assert.isTrue(manager.canAccessVehicle(russell, storedVehicle));
 
-        gunther.identify({ userId: 5101 });
+        await gunther.identify({ userId: 5101 });
 
         manager.restrictToPlayer(storedVehicle, 5101);
 
@@ -46,7 +46,7 @@ describe('VehicleAccessManager', (it, beforeEach, afterEach) => {
         assert.isTrue(manager.canAccessVehicle(gunther, storedVehicle));
         assert.isFalse(manager.canAccessVehicle(russell, storedVehicle));
 
-        russell.identify({ userId: 9003 });
+        await russell.identify({ userId: 9003 });
 
         assert.isTrue(manager.isLocked(storedVehicle));
         assert.isTrue(manager.canAccessVehicle(gunther, storedVehicle));

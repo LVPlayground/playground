@@ -16,7 +16,7 @@ describe('VehicleCommands', (it, beforeEach) => {
 
     beforeEach(async(assert) => {
         gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify({ userId: 42 });
+        await gunther.identify({ userId: 42 });
 
         server.featureManager.registerFeaturesForTests({
             vehicles: Vehicles
@@ -57,7 +57,7 @@ describe('VehicleCommands', (it, beforeEach) => {
 
     it('should be able to /lock vehicles on the server', async(assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
-        assert.isFalse(russell.isRegistered());
+        assert.isFalse(russell.account.isRegistered());
 
         assert.isTrue(createVehicleForPlayer(russell));
         assert.isNotNull(russell.vehicle);
@@ -78,7 +78,7 @@ describe('VehicleCommands', (it, beforeEach) => {
             assert.equal(russell.messages[0], Message.VEHICLE_LOCK_UNREGISTERED);
 
             russell.clearMessages();
-            russell.identify({ userId: 8951 });
+            await russell.identify({ userId: 8951 });
         }
 
         // (2) Registered players shouldn't be able to lock vehicles they're not driving.
@@ -121,7 +121,7 @@ describe('VehicleCommands', (it, beforeEach) => {
 
     it('should be able to /unlock vehicles on the server', async(assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
-        assert.isFalse(russell.isRegistered());
+        assert.isFalse(russell.account.isRegistered());
 
         assert.isTrue(createVehicleForPlayer(russell));
         assert.isNotNull(russell.vehicle);
@@ -138,10 +138,10 @@ describe('VehicleCommands', (it, beforeEach) => {
             assert.equal(russell.messages[0], Message.VEHICLE_UNLOCK_UNREGISTERED);
 
             russell.clearMessages();
-            russell.identify({ userId: 8951 });
+            await russell.identify({ userId: 8951 });
         }
 
-        manager.access.restrictToPlayer(databaseVehicle, russell.userId);
+        manager.access.restrictToPlayer(databaseVehicle, russell.account.userId);
 
         assert.isTrue(manager.access.isLocked(databaseVehicle));
         assert.isTrue(manager.access.canAccessVehicle(russell, databaseVehicle));

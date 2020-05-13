@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import DialogManager from 'components/dialogs/dialog_manager.js';
-
 // The different kind of available dialogs in SA-MP.
 // http://wiki.sa-mp.com/wiki/Dialog_Styles
 const DIALOG_STYLE_MSGBOX = 0;
@@ -12,10 +10,6 @@ const DIALOG_STYLE_LIST = 2;
 const DIALOG_STYLE_PASSWORD = 3;
 const DIALOG_STYLE_TABLIST = 4;
 const DIALOG_STYLE_TABLIST_HEADERS = 5;
-
-// Private instance of the dialog manager, forcing all users to go through the
-// static methods provided on the Dialog class.
-let manager = new DialogManager();
 
 // The dialog class provides a mid-level abstraction layer to the dialog features of the SA-MP
 // server. There are higher-level alternatives available to certain types of input dialogs that are
@@ -36,7 +30,7 @@ class Dialog {
   // an empty string. This method returns a promise that will resolve with the clicked-on button
   // (|response|), or reject when the player disconnects while it's being shown.
   static displayMessage(player, caption, message, leftButton, rightButton) {
-    return manager.displayForPlayer(player, DIALOG_STYLE_MSGBOX, caption, message, leftButton, rightButton).then(result => {
+    return server.dialogManager.displayForPlayer(player, DIALOG_STYLE_MSGBOX, caption, message, leftButton, rightButton).then(result => {
       return { response: result.response };
     });
   }
@@ -46,7 +40,7 @@ class Dialog {
     const type = isPrivate ? DIALOG_STYLE_PASSWORD
                            : DIALOG_STYLE_INPUT;
 
-    return manager.displayForPlayer(player, type, caption, message, leftButton, rightButton).then(result => {
+    return server.dialogManager.displayForPlayer(player, type, caption, message, leftButton, rightButton).then(result => {
       return { response: result.response, text: result.inputtext };
     });
   }
@@ -58,7 +52,7 @@ class Dialog {
     let style = isList ? DIALOG_STYLE_LIST
                        : DIALOG_STYLE_TABLIST_HEADERS;
 
-    return manager.displayForPlayer(player, style, caption, content, leftButton, rightButton).then(result => {
+    return server.dialogManager.displayForPlayer(player, style, caption, content, leftButton, rightButton).then(result => {
       return { response: result.response, item: result.listitem };
     });
   }

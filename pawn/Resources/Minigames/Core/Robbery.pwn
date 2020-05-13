@@ -704,34 +704,6 @@ CRobbery__OnKey(playerid, key)
     return 1;
 }
 
-// CRobbery__OnText
-// When someone types something, this is called.
-CRobbery__OnText(playerid, text[])
-{
-    if(CRobbery__GetPlayerStatus(playerid) != ROBSTATUS_PLAYING) {
-        // Not taking part..
-        return 0;
-    }
-
-    if(!strcmp(text[0], ";", true, 1)) {
-        // TEAM CHAT YAYA
-        new string[256];
-        new teamstr[7];
-        new teamid = CRobbery__GetPlayerTeam(playerid);
-        if(teamid == 0) teamstr = "Attack";
-        else teamstr = "Defend";
-        format(string, 256, "* [Team %s] %s: %s", teamstr, PlayerName(playerid), text[1]);
-        CRobbery__TeamMsg(teamid, COLOR_LIGHTBLUE, string);
-        return 1;
-    }
-
-    for (new i = 0; i <= PlayerManager->highestPlayerId(); i++) {
-        if(CRobbery__GetPlayerStatus(i) == ROBSTATUS_PLAYING)
-            SendPlayerMessageToPlayer(i, playerid, text);
-    }
-    return 1;
-}
-
 // CRobbery__Disconnect
 // If a player disconnects, then.. yeah.
 CRobbery__Disconnect(playerid)

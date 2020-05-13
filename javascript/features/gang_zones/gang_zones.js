@@ -25,13 +25,16 @@ export default class GangZones extends Feature {
         // The GangZones feature depends on houses, as they influence the zone dominance algorithm.
         const houses = this.defineDependency('houses');
 
+        // Various behaviour related to gang zones is configurable through settings.
+        const settings = this.defineDependency('settings');
+
         // The ZoneManager is responsible for actually creating and destroying the zones on the map,
         // and keepnig track of which players are in them.
         this.manager_ = new ZoneManager();
 
         // Responsible for taking knowledge from the ZoneDataAggregator and using it to determine
         // which and how large the to-be-created gang zones should be.
-        this.calculator_ = new ZoneCalculator();
+        this.calculator_ = new ZoneCalculator(this.manager_, settings);
 
         // Responsible for aggregating all member and house data of gangs and their members, to
         // pass to the ZoneCalculator for determining applicability of a zone, and at which size.

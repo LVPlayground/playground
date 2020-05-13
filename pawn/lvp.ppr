@@ -2,6 +2,11 @@
 <Project>
   <FileList>
     <DiskObject>\config.pwn</DiskObject>
+    <DiskObject>\Driver\</DiskObject>
+    <DiskObject>\Driver\Driver.pwn</DiskObject>
+    <DiskObject>\Driver\ThirdParty\</DiskObject>
+    <DiskObject>\Driver\ThirdParty\sky.inc</DiskObject>
+    <DiskObject>\Driver\ThirdParty\weapon-config.inc</DiskObject>
     <DiskObject>\Elements\</DiskObject>
     <DiskObject>\Elements\AdministratorCommands.pwn</DiskObject>
     <DiskObject>\Elements\Player\</DiskObject>
@@ -53,7 +58,6 @@
     <DiskObject>\Entities\Players\PlayerActivity.pwn</DiskObject>
     <DiskObject>\Entities\Players\PlayerEvents.pwn</DiskObject>
     <DiskObject>\Entities\Players\PlayerFlags.pwn</DiskObject>
-    <DiskObject>\Entities\Players\PlayerIdlePenalty.pwn</DiskObject>
     <DiskObject>\Entities\Players\PlayerManager.pwn</DiskObject>
     <DiskObject>\Entities\Players\PlayerManager.tests.pwn</DiskObject>
     <DiskObject>\Entities\Players\PlayerMessageLevels.pwn</DiskObject>
@@ -96,14 +100,12 @@
     <DiskObject>\Features\Account\ForcedGuestDialog.pwn</DiskObject>
     <DiskObject>\Features\Account\GpciLogger.pwn</DiskObject>
     <DiskObject>\Features\Account\LegacyAccountBridge.pwn</DiskObject>
+    <DiskObject>\Features\Account\MultipleSessionDialog.pwn</DiskObject>
     <DiskObject>\Features\Account\NicknameGenerator.pwn</DiskObject>
     <DiskObject>\Features\Account\UndercoverAdministrator.pwn</DiskObject>
     <DiskObject>\Features\Christmas.pwn</DiskObject>
     <DiskObject>\Features\Christmas\</DiskObject>
     <DiskObject>\Features\Christmas\GiftHunting.pwn</DiskObject>
-    <DiskObject>\Features\Communication\</DiskObject>
-    <DiskObject>\Features\Communication\SpamTracker.pwn</DiskObject>
-    <DiskObject>\Features\Communication\SpamTrackerTest.pwn</DiskObject>
     <DiskObject>\Features\Deathmatch.pwn</DiskObject>
     <DiskObject>\Features\Deathmatch\</DiskObject>
     <DiskObject>\Features\Deathmatch\Ammunation\</DiskObject>
@@ -150,15 +152,10 @@
     <DiskObject>\Features\Gameplay\Colors\ColorPicker.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\FixPlayerCommands.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\Commands\Mute\</DiskObject>
-    <DiskObject>\Features\Gameplay\Commands\Mute\MuteCommands.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\Commands\Mute\MuteManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\PlayerInfoHandler.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\PlayerSpectateHandler.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\Announcements.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\Communication\CallCommands.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\Communication\CallManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\PrivateMessagingCommands.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\PrivateMessagingManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\Responses.pwn</DiskObject>
@@ -262,7 +259,6 @@
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStateChange.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStreamIn.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStreamOut.pwn</DiskObject>
-    <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerText.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\OnDialogResponse.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\OnDynamicObjectMoved.pwn</DiskObject>
@@ -276,7 +272,6 @@
     <DiskObject>\Resources\Games\Export.pwn</DiskObject>
     <DiskObject>\Resources\Games\FightClub.pwn</DiskObject>
     <DiskObject>\Resources\Games\Grand_Theft_Auto.pwn</DiskObject>
-    <DiskObject>\Resources\Games\Reaction.pwn</DiskObject>
     <DiskObject>\Resources\Maps\</DiskObject>
     <DiskObject>\Resources\Maps\IslandDM.pwn</DiskObject>
     <DiskObject>\Resources\Maps\main.pwn</DiskObject>

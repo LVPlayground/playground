@@ -2,17 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import TextDrawManager from 'components/text_draw/text_draw_manager.js';
-
 // Sensible maximum shadow size that may be used for a text draw.
 const MAXIMUM_SHADOW_SIZE = 24;
 
 // Returns whether |value| is an array having two values, both of which are numbers.
 let isTwoNumberArray = value =>
     Array.isArray(value) && value.length == 2 && typeof value[0] === 'number' && typeof value[1] === 'number';
-
-// Create an instance of the text draw manager that will do our bookkeeping.
-let manager = new TextDrawManager();
 
 // Represents a text draw region that can be shown to a player. There is no limit to the amount of
 // text draws that can be created, however, at most 256 can be presented to a player at any given
@@ -100,7 +95,7 @@ class TextDraw {
   // Updates the text of the text draw to |value|. If the text draw is being displayed to |player|,
   // the visible state on their screen will be updated as well.
   updateTextForPlayer(player, text) {
-    let textDrawId = manager.getForPlayer(player, this);
+    let textDrawId = server.textDrawManager.getForPlayer(player, this);
     if (textDrawId !== null)
       pawnInvoke('PlayerTextDrawSetString', 'iis', player.id, textDrawId, text);
   }
@@ -212,7 +207,7 @@ class TextDraw {
   // Builds and displays the text draw to |player|. This method is a no-op if the text draw is
   // already being shown for the player.
   displayForPlayer(player) {
-    let textDrawId = manager.createForPlayer(player, this);
+    let textDrawId = server.textDrawManager.createForPlayer(player, this);
     if (textDrawId === null)
       return true;  // |this| is already being displayed.
 
@@ -269,7 +264,7 @@ class TextDraw {
 
   // Hides the text draw from |player| their screen if it's currently being shown.
   hideForPlayer(player) {
-    return manager.hideForPlayer(player, this);
+    return server.textDrawManager.hideForPlayer(player, this);
   }
 };
 

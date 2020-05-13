@@ -239,7 +239,8 @@ class PickupController {
  */
 public OnPlayerPickUpPickup(playerid, pickupid) {
     if (PickupController->onPlayerPickUpPickup(playerid, pickupid))
-        return;
+        return 1;
 
     LegacyOnPlayerPickUpPickup(playerid, pickupid);
+    return 1;
 }

@@ -61,7 +61,6 @@ export class MockPlayer extends Player {
     #isSurfingVehicle_ = false;
 
     // To be removed:
-    #gangColor_ = null;
     #streamerObjectsUpdated_ = false;
 
     // Initializes the mock player with static information that generally will not change for the
@@ -104,6 +103,8 @@ export class MockPlayer extends Player {
     isNonPlayerCharacter() { return this.#isNpc_; }
 
     kick() { this.disconnectForTesting(/* reason= */ 2); }
+
+    setIsNonPlayerCharacterForTesting(value) { this.#isNpc_ = value; }
 
     setNameForGuestLogin(value) { this.#name_ = value; }
 
@@ -353,37 +354,40 @@ export class MockPlayer extends Player {
 
     streamerObjectsUpdatedForTesting() { return this.#streamerObjectsUpdated_; }
 
-    get gangColor() { return this.#gangColor_; }
-    set gangColor(value) { this.#gangColor_ = value; }
-
     // ---------------------------------------------------------------------------------------------
     // Instrumentation for testing purposes
     // ---------------------------------------------------------------------------------------------
 
     // Identifies the player to a fake account. The options can be specified optionally.
-    identify({ userId = 42, vip = 0, gangId = 0, undercover = 0 } = {}) {
-        server.playerManager.onPlayerLogin({
+    async identify({ userId = 42, vip = 0, gangId = 0, undercover = 0 } = {}) {
+        let resolver = null;
+
+        const observerPromise = new Promise(resolve => resolver = resolve);
+        const observer = new class {
+            onPlayerLogin(player) {
+                server.playerManager.removeObserver(observer);
+                resolver();
+            }
+        };
+
+        server.playerManager.addObserver(observer);
+        dispatchEvent('playerlogin', {
             playerid: this.id,
             userid: userId,
-            vip: vip,
             gangid: gangId,
-            undercover: undercover
+            undercover, vip,
         });
+
+        await observerPromise;
     }
 
     // Issues |message| as if it has been said by this user. Returns whether the event with which
     // the chat message had been issues was prevented.
-    issueMessage(message) {
-        let defaultPrevented = false;
-
+    async issueMessage(message) {
         dispatchEvent('playertext', {
-            preventDefault: () => defaultPrevented = true,
-
             playerid: this.id,
             text: message
         });
-
-        return defaultPrevented;
     }
 
     // Issues |commandText| as if it had been send by this player. Returns whether the event with
@@ -480,16 +484,6 @@ export class MockPlayer extends Player {
             amount: damage,
             weaponid: weaponid,
             bodypart: bodypart
-        });
-    }
-
-    // Makes this player press a particular key. The value of both |newkeys| and |oldkeys| can be
-    // found on the SA-MP wiki: https://wiki.sa-mp.com/wiki/Keys
-    keyPress(newkeys, oldkeys = 0) {
-        dispatchEvent('playerkeystatechange', {
-            playerid: this.id,
-            newkeys: newkeys,
-            oldkeys: oldkeys
         });
     }
 }

@@ -4,6 +4,7 @@
 
 import Gang from 'features/gangs/gang.js';
 import GangDatabase from 'features/gangs/gang_database.js';
+
 import MockGangDatabase from 'features/gangs/test/mock_gang_database.js';
 
 // The gang manager is responsible for managing all current information associated with gangs
@@ -77,7 +78,7 @@ class GangManager {
     // successful, |player| will be added to the gang as its leader. Error messages thrown by this
     // method may be presented to users.
     createGangForPlayer(player, tag, name, goal) {
-        if (!player.isRegistered())
+        if (!player.account.isRegistered())
             return Promise.reject(new Error('You must be registered in order to create a gang.'));
 
         if (this.gangPlayers_.has(player))
@@ -88,7 +89,6 @@ class GangManager {
                 throw new Error('The gang is too similar to [' + result.tag + '] ' + result.name);
 
             return this.database_.createGangWithLeader(player, tag, name, goal);
-
         }).then(gangInfo => {
             if (!player.isConnected())
                 return null;  // the player is not connected to the server anymore
@@ -103,7 +103,7 @@ class GangManager {
             this.gangs_.set(gang.id, gang);
 
             // Announce the |player|'s new gang to observers.
-            this.invokeObservers('onUserJoinGang', player.userId, gang.id, gang)
+            this.invokeObservers('onUserJoinGang', player.account.userId, gang.id, gang)
 
             return gang;
         });
@@ -124,7 +124,7 @@ class GangManager {
             };
 
             for (let player of gang.members)
-                gangPlayers[player.userId] = player;
+                gangPlayers[player.account.userId] = player;
 
             members.forEach(member => {
                 const memberInfo = {
@@ -163,7 +163,7 @@ class GangManager {
     // Adds |player| to the |gang|. This will also be reflected in the database. A promise will be
     // returned that will be resolved when the removal has been completed.
     async addPlayerToGang(player, gang) {
-        if (!player.isRegistered())
+        if (!player.account.isRegistered())
             throw new Error('The player must registered in order to join a gang.');
 
         if (this.gangPlayers_.has(player))
@@ -180,7 +180,7 @@ class GangManager {
         this.gangPlayers_.set(player, gang);
 
         // Announce the |player|'s new gang to observers.
-        this.invokeObservers('onUserJoinGang', player.userId, gang.id, gang);
+        this.invokeObservers('onUserJoinGang', player.account.userId, gang.id, gang);
 
         return gang;
     }
@@ -191,7 +191,7 @@ class GangManager {
         if (!gang.hasPlayer(player))
             throw new Error('The |player| is not part of the |gang|.');
 
-        await this.database_.removePlayerFromGang(player.userId, gang);
+        await this.database_.removePlayerFromGang(player.account.userId, gang);
 
         // Remove the association of |player| with the |gang|.
         gang.removePlayer(player);
@@ -200,7 +200,7 @@ class GangManager {
         this.gangPlayers_.delete(player);
 
         // Announce the |player|'s departure to observers.
-        this.invokeObservers('onUserLeaveGang', player.userId, gang.id);
+        this.invokeObservers('onUserLeaveGang', player.account.userId, gang.id);
 
         if (!gang.memberCount)
             this.gangs_.delete(gang.id);
@@ -236,7 +236,7 @@ class GangManager {
         await this.database_.updateRoleForUserId(userId, gang, role);
 
         for (const player of gang.members) {
-            if (player.userId !== userId)
+            if (player.account.userId !== userId)
                 continue;
 
             gang.addPlayer(player, role);
@@ -275,6 +275,36 @@ class GangManager {
         await this.database_.updateColorPreference(gang, player, useGangColor);
 
         gang.setUsesGangColor(player, useGangColor);
+    }
+
+    async updateSkinId(gang, skinId) {
+        if (skinId < 0 || skinId > 299 || skinId == 121)
+            return;
+
+        await this.database_.updateSkinId(gang, skinId);
+
+        gang.updateSkinId(skinId);
+
+        this.invokeObservers('onGangSettingUpdated', gang);
+    }
+
+    // Updates the preference of the |player| within |gang| to use te common gang skin when the
+    // |usesGangSkin| parameter is set to true, or their personal color otherwise.
+    async updateSkinPreference(gang, player, usesGangSkin) {
+        if (gang.usesGangSkin(player) === usesGangSkin)
+            return;
+
+        gang.setUsesGangSkin(player, usesGangSkin);
+
+        if(usesGangSkin === true) 
+            this.setSkinInPawnCode(player.id, gang.skinId, true);
+    }
+
+    // Call the spawn manager to update player skin.
+    async setSkinInPawnCode(playerId, skinId, uponNextSpawn) {
+        const shouldUpdateUponNextSpawn = uponNextSpawn === false ? 0 : 1;
+
+        pawnInvoke('OnSetPlayerSkinId', 'iii', playerId, skinId, shouldUpdateUponNextSpawn);
     }
 
     // Updates the |gang|'s name to be |name|. Will return a promise when the operation has
@@ -317,13 +347,13 @@ class GangManager {
         if (!eventData.hasOwnProperty('gangid') || !eventData.gangid)
             return;
 
-        this.database_.loadGangForPlayer(player.userId, eventData.gangid).then(result => {
+        this.database_.loadGangForPlayer(player.account.userId, eventData.gangid).then(result => {
             if (!player.isConnected())
                 return;  // the player is not connected to the server anymore
 
             if (result === null) {
                 console.log('[GangManager] Player ' + player.name + ' is said to be in a gang, ' +
-                            'but the associated information cannot be loaded.');
+                    'but the associated information cannot be loaded.');
                 return;
             }
 
@@ -341,8 +371,12 @@ class GangManager {
             // Associate the |gang| with the |player|.
             this.gangPlayers_.set(player, gang);
 
+            if (gang.usesGangSkin(player) && gang.skinId !== null && gang.skinId !== undefined) {
+                this.setSkinInPawnCode(player.id, gang.skinId, false);
+            }
+
             // Inform observers about the |player| whose part of |gang| now being online.
-            this.invokeObservers('onGangMemberConnected', player.userId, gang.id);
+            this.invokeObservers('onGangMemberConnected', player.account.userId, gang.id);
         });
     }
 

@@ -51,6 +51,17 @@
 #include "config.pwn"
 #include "release.pwn"
 
+#include "Interface/Server/a_samp.pwn"
+
+#if Feature::EnableServerSideWeaponConfig
+
+#define WC_CUSTOM_VENDING_MACHINES false
+
+#include "Driver/ThirdParty/sky.inc"
+#include "Driver/ThirdParty/weapon-config.inc"
+
+#endif
+
 // Include native function declarations and libraries, which don't contain modifications by us.
 #include "Interface/Server.pwn"
 
@@ -97,7 +108,6 @@
 // each file of which includes additional files as they see fit.
 #include "Features/Account.pwn"
 #include "Features/Christmas.pwn"
-#include "Features/Communication/SpamTracker.pwn"
 #include "Features/Deathmatch.pwn"
 #include "Features/Environment.pwn"
 #include "Features/External.pwn"
@@ -156,7 +166,6 @@
 
 // Other Games:
 #include Resources/Games/Bonuses.pwn
-#include Resources/Games/Reaction.pwn
 #include Resources/Games/Achievements.pwn
 #include Resources/Games/Chase.pwn
 #include Resources/Games/Export.pwn
@@ -214,7 +223,6 @@
 #include Resources/Callbacks/OnPlayer/OnPlayerLeaveCheckpoint.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerEnterRaceCheckpoint.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerKeyStateChange.pwn
-#include Resources/Callbacks/OnPlayer/OnPlayerText.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerStateChange.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerInteriorChange.pwn
 #include Resources/Callbacks/Others/OnGameModeInit.pwn
@@ -226,6 +234,8 @@
 #include "Entities/Pickups/LegacyProcessing.pwn"
 
 #include "Interface/JavaScriptBridge.pwn"
+
+#include "Driver/Driver.pwn"
 
 main() {
     /// @todo Move these calls elsewhere. We do need them, though :/

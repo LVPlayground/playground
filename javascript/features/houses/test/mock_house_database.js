@@ -87,7 +87,7 @@ class MockHouseDatabase {
             id: this.mockHouseId_++,
             name: player.name + '\'s house',
 
-            ownerId: player.userId,
+            ownerId: player.account.userId,
             ownerGangId: player.gangId,
             ownerName: player.name,
 

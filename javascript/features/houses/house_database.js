@@ -421,7 +421,7 @@ class HouseDatabase {
 
         const data = await server.database.query(
             CREATE_LOCATION_QUERY, position.x, position.y, position.z, facingAngle, interiorId,
-            player.userId);
+            player.account.userId);
 
         return data.insertId;
     }
@@ -431,7 +431,7 @@ class HouseDatabase {
         const position = parkingLot.position;
         const data = await server.database.query(
             CREATE_PARKING_LOT_QUERY, location.id, position.x, position.y, position.z,
-            parkingLot.rotation, parkingLot.interiorId, player.userId);
+            parkingLot.rotation, parkingLot.interiorId, player.account.userId);
 
         return data.insertId;
     }
@@ -440,13 +440,13 @@ class HouseDatabase {
     async createHouse(player, location, interiorId) {
         const name = player.name + '\'s house';
         const data = await server.database.query(
-            CREATE_HOUSE_QUERY, location.id, player.userId, interiorId, name);
+            CREATE_HOUSE_QUERY, location.id, player.account.userId, interiorId, name);
 
         return {
             id: data.insertId,
             name: name,
 
-            ownerId: player.userId,
+            ownerId: player.account.userId,
             ownerGangId: player.gangId,
             ownerName: player.name,
 
@@ -473,7 +473,8 @@ class HouseDatabase {
 
     // Creates a log entry noting that the |player| has visited the |location|.
     async createHouseVisitorLog(location, player) {
-        await server.database.query(CREATE_HOUSE_VISITOR_LOG, location.settings.id, player.userId);
+        await server.database.query(
+            CREATE_HOUSE_VISITOR_LOG, location.settings.id, player.account.userId);
     }
 
     // Creates a vehicle with |vehicleInfo| in the |parkingLot| associated with the house at

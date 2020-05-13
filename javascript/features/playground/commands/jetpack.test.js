@@ -13,7 +13,7 @@ describe('JetpackCommand', (it, beforeEach, afterEach) => {
         await commands.loadCommands();
 
         gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify();
+        await gunther.identify();
 
         // Enable |gunther| to use the command by adding an exception.
         commands.access.addException('jetpack', gunther);

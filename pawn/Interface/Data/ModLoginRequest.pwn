@@ -23,9 +23,6 @@ public ModLoginResultCallback(resultId, playerId) {
  * @author Russell Krupke <russell@sa-mp.nl>
  */
 class ModLoginRequest {
-    // The password salt which will be used to encrypt the player's password.
-    const PrivatePasswordSalt = Configuration::PasswordSalt;
-
     // Id of the QueryBuilder instance that will be used for creating the right queries.
     new m_queryId;
 
@@ -56,7 +53,7 @@ class ModLoginRequest {
     public createForPlayer(playerId, username[], password[]) {
         new queryString[256];
 
-        QueryBuilder(m_queryId)->apply(queryString, sizeof(queryString), username, password, PrivatePasswordSalt);
+        QueryBuilder(m_queryId)->apply(queryString, sizeof(queryString), username, password, PasswordSalt);
         if (strlen(queryString))
             Database->query(queryString, "ModLoginResultCallback", playerId);
     }

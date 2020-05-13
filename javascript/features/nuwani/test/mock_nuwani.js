@@ -40,6 +40,9 @@ export class MockNuwani extends Feature {
     constructor() {
         super();
 
+        // Nuwani is considered to be a foundational feature.
+        this.markFoundational();
+
         this.configuration_ = new Configuration();
 
         this.runtime_ = new Runtime(this.configuration_, /* BotConstructor= */ TestBot);

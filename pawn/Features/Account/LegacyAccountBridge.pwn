@@ -118,11 +118,6 @@ class LegacyAccountBridge {
         }
 
         new onlineTime = (gameplayhours[playerId] * 3600 + gameplayminutes[playerId] * 60 + gameplayseconds[playerId]);
-        new sessionTime = Time->currentTime() - Player(playerId)->connectionTime();
-
-        new penaltyTime = PlayerIdlePenalty->getPlayerPenaltyTime(playerId);
-        if (penaltyTime > 0 && penaltyTime < sessionTime)
-            onlineTime -= penaltyTime;
 
         // TODO: Remove the following fields.
         // * plus_points
@@ -152,7 +147,6 @@ class LegacyAccountBridge {
                 "message_level = %d, " ...
                 "preferred_radio_channel = \"%s\", " ...
 
-                "stats_reaction = %d, " ...
                 "stats_minigame = %d, " ...
                 "stats_exports = %d, " ...
                 "stats_packages = %d, " ...
@@ -195,7 +189,6 @@ class LegacyAccountBridge {
                 PlayerSyncedData(playerId)->preferredRadioChannel(),
 
                 // General statistics
-                PlayerInfo[playerId][reactionTestWins],
                 WonMinigame[playerId],
                 playerVehExp[playerId],
                 PlayerInfo[playerId][fPackages],

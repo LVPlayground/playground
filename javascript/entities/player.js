@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 import PlayerSyncedData from 'entities/player_synced_data.js';
-import PlayerSettings from 'entities/player_settings.js';
 import { Supplementable } from 'base/supplementable.js';
 
 import { murmur3hash } from 'base/murmur3hash.js';
@@ -36,6 +35,9 @@ import { toFloat } from 'base/float.js';
 // If you are considering extending the Player object with additional functionality, take a look at
 // the Supplementable system in //base/supplementable.js instead.
 export class Player extends Supplementable {
+    // ID indicating that a particular Player ID is explicitly not valid.
+    static kInvalidId = 65535;
+
     // Constants applicable to the player's current connection to the server.
     static kConnectionEstablished = 1;
     static kConnectionClosing = 2;
@@ -48,6 +50,11 @@ export class Player extends Supplementable {
     static kFightingStyleKneeHead = 7;
     static kFightingStyleGrabKick = 15;
     static kFightingStyleElbow = 16;
+
+    // Constants applicable to the `Player.level` property.
+    static LEVEL_PLAYER = 0;
+    static LEVEL_ADMINISTRATOR = 1;
+    static LEVEL_MANAGEMENT = 2;
 
     // Constants applicable to the `Player.specialAction` property.
     static kSpecialActionNone = 0;
@@ -87,14 +94,12 @@ export class Player extends Supplementable {
     #connectionState_ = null;
 
     // To be removed:
-    #playerSettings_ = null;
     #syncedData_ = null;
     #activity_ = 0;
     #gangId_ = null;
     #levelIsTemporary_ = false;
     #messageLevel_ = 0;
     #undercover_ = false;
-    #userId_ = null;
     #vip_ = false;
 
     #name_ = null;
@@ -113,7 +118,6 @@ export class Player extends Supplementable {
         this.#level_ = Player.LEVEL_PLAYER;
         this.#connectionState_ = Player.kConnectionEstablished;
 
-        this.#playerSettings_ = new PlayerSettings();
         this.#syncedData_ = new PlayerSyncedData(id);
     }
 
@@ -141,7 +145,7 @@ export class Player extends Supplementable {
         pawnInvoke('SetPlayerName', 'is', this.#id_, value);
         pawnInvoke('OnPlayerNameChange', 'i', this.#id_);
 
-        this.#name_ = value;    
+        this.#name_ = value;
     }
 
     get ip() { return this.#ipAddress_; }
@@ -368,8 +372,6 @@ export class Player extends Supplementable {
     // ---------------------------------------------------------------------------------------------
     // Stuff that needs a better home
     // ---------------------------------------------------------------------------------------------
-
-    get settings() { return this.#playerSettings_; }
     get syncedData() { return this.#syncedData_; }
 
     restoreState() { pawnInvoke('OnSerializePlayerState', 'iii', this.#id_, 0, -1); }
@@ -401,18 +403,8 @@ export class Player extends Supplementable {
     get messageLevel() { return this.#messageLevel_; }
     set messageLevel(value) { this.#messageLevel_ = value; }
 
-    get userId() { return this.#userId_; }
-    set userId(value) { this.#userId_ = value; }
-
     get gangId() { return this.#gangId_; }
     set gangId(value) { this.#gangId_ = value; }
-
-    get gangColor() { throw new Error('Unable to read the gang color for this player.'); }
-    set gangColor(value) {
-        pawnInvoke('OnUpdatePlayerGangColor', 'ii', this.#id_, value ? value.toNumberRGBA() : 0);
-    }
-
-    isRegistered() { return this.#userId_ !== null; }
 
     isUndercover() { return this.#undercover_; }
     setUndercover(value) { this.#undercover_ = value; }
@@ -421,33 +413,10 @@ export class Player extends Supplementable {
     setVip(value) { this.#vip_ = value; }
 };
 
-// The level of a player. Can be accessed using the `level` property on a Player instance.
-Player.LEVEL_PLAYER = 0;
-Player.LEVEL_ADMINISTRATOR = 1;
-Player.LEVEL_MANAGEMENT = 2;
-
 // DO NOT ADD NEW VALUES TO THIS ENUMERATION WITHOUT ALSO ADDING THEM TO PAWN.
 //     //pawn/Entities/Players/PlayerActivity.pwn
 Player.PLAYER_ACTIVITY_NONE = 0;
 Player.PLAYER_ACTIVITY_JS_RACE = 1;
-
-// Called when a player's activity changes. This event is custom to Las Venturas Playground.
-self.addEventListener('playeractivitychange', event => {
-  const player = server.playerManager.getById(event.playerid);
-  if (!player)
-    return;
-
-  player.activityInternal = event.activity;
-});
-
-// Called when a player's message level changes. This event is custom to Las Venturas Playground.
-self.addEventListener('messagelevelchange', event => {
-  const player = server.playerManager.getById(event.playerid);
-  if (!player)
-    return;
-
-  player.messageLevel = event.messagelevel;
-});
 
 // Utility function: convert a player's level to a string.
 global.playerLevelToString = (level, plural = false) => {

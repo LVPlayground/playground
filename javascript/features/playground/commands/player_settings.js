@@ -3,50 +3,22 @@
 // be found in the LICENSE file.
 
 import Command from 'features/playground/command.js';
-import CommandBuilder from 'components/command_manager/command_builder.js';
 import Menu from 'components/menu/menu.js';
 import MessageBox from 'components/dialogs/message_box.js';
-import PlayerSettingsDatabase from 'features/playground/database/player_settings_database.js';
-
-import MockPlayerSettingsDatabase from 'features/playground/database/test/mock_player_settings_database.js';
 
 // This class provides the /playersettings command available to administrators to manage 
 // there desired settings.
-class PlayerSettingsCommands extends Command {
+export default class PlayerSettingsCommands extends Command {
     get name() { return 'playersettings'; }
     get defaultPlayerLevel() { return Player.LEVEL_ADMINISTRATOR; }
 
     constructor() {
         super();
-        // The database instance used to read and write persistent values.
-        this.database_ = server.isTest() ? new MockPlayerSettingsDatabase()
-            : new PlayerSettingsDatabase();
-
-        server.playerManager.addObserver(this, true /* replayHistory */);
     }
 
     build(commandBuilder) {
         commandBuilder
             .build(PlayerSettingsCommands.prototype.onPlayerSettingsCommand.bind(this));
-    }
-    
-    // Loads the settings of the player when a player has logged in
-    onPlayerLogin(player) {
-        if(player.userId === null || player.userId === undefined) {
-            return;
-        }   
-        
-        // Load the existing persistent values from the database, and apply them to the local state.
-        Promise.resolve(this.database_.loadSettings(player.userId)).then(settings => {
-            for (const [identifier, value] of settings) {
-                try {
-                    player.settings.setValue(identifier, value);
-                } catch (exception) {
-                    console.log('Warning: Unable to restore the player setting of ' + identifier + ': ' +
-                        exception);
-                }
-            }
-        });
     }
 
     // Creates the menu for the player to choose what setting to change.
@@ -71,7 +43,7 @@ class PlayerSettingsCommands extends Command {
             // Adds a menu item to display the entries in the |category|.
             menu.addItem(category, settingsLabel, async (player) => {
                 const sortedSettings =
-                    Array.from(subCommands  ).sort((lhs, rhs) => lhs.name.localeCompare(rhs.name));
+                    Array.from(subCommands).sort((lhs, rhs) => lhs.name.localeCompare(rhs.name));
 
                 const innerMenu = new Menu('Choose a setting', ['Setting', 'Value']);
                 for (const setting of sortedSettings) {
@@ -108,7 +80,7 @@ class PlayerSettingsCommands extends Command {
             (!setting.defaultValue ? ' {FFFFFF}(default)' : '');
 
         menu.addItem(enableLabel, async (player) => {
-            this.updateSetting(player, setting.identifier, true);
+            player.settings.updateSetting(setting.identifier, true);
 
             return await MessageBox.display(player, {
                 title: 'The announcement has been enabled!',
@@ -117,7 +89,7 @@ class PlayerSettingsCommands extends Command {
         });
 
         menu.addItem(disableLabel, async (player) => {
-            this.updateSetting(player, setting.identifier, false);
+            player.settings.updateSetting(setting.identifier, false);
 
             return await MessageBox.display(player, {
                 title: 'The announcement has been disabled!',
@@ -128,19 +100,4 @@ class PlayerSettingsCommands extends Command {
         await menu.displayForPlayer(player);
     }
 
-    updateSetting(player, identifier, value) {
-        player.settings.setValue(identifier, value);
-        
-        var setting = player.settings.settings.get(identifier);
-
-        // Either delete or write the new |value| from or to the database. Don't block on it.
-        if (value === setting.defaultValue)
-            this.database_.deleteSetting(setting, player.userId);
-        else
-            this.database_.writeSetting(setting, player.userId);
-        
-    }
-
 }
-
-export default PlayerSettingsCommands;

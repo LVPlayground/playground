@@ -58,6 +58,7 @@ class TestSuite {
       yield Promise.resolve().then(() => {
         // (1) Install the MockServer as the global `server` object.
         global.server = new MockServer();
+        global.server.initialize();
 
         // (2) Execute the beforeEach function, which will be considered asynchronous if it returns
         // a promise. Otherwise resolve the preparation step immediately.

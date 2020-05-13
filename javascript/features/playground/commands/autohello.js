@@ -50,6 +50,7 @@ class AutoHelloMessageCommand extends Command {
         this.greeters_ = new Set();
         this.reconnected_ = new Map();
         this.ignored_ = new Set();
+        this.userIds_ = new WeakMap();
 
         // Observe the PlayerManager for disconnecting and logging in players.
         server.playerManager.addObserver(this);
@@ -82,13 +83,14 @@ class AutoHelloMessageCommand extends Command {
     async onPlayerDisconnect(player) {
         this.greeters_.delete(player);
 
-        if (!player.isRegistered())
+        if (!this.userIds_.has(player))
             return;
 
         const uniqueSymbol = Symbol('Reconnection for ' + player.name);
-        const userId = player.userId;
+        const userId = this.userIds_.get(player);
 
         this.reconnected_.set(userId, uniqueSymbol);
+        this.userIds_.delete(player);
 
         await minutes(ReconnectionTimeout);
 
@@ -104,7 +106,9 @@ class AutoHelloMessageCommand extends Command {
         if (player.isUndercover())
             return;
 
-        if (!this.greeters_.size || this.ignored_.has(player.userId))
+        this.userIds_.set(player, player.account.userId);
+
+        if (!this.greeters_.size || this.ignored_.has(player.account.userId))
             return;
 
         for (const greeter of this.greeters_)
@@ -117,7 +121,7 @@ class AutoHelloMessageCommand extends Command {
         if (!player.isConnected() || !greeter.isConnected())
             return;
 
-        const userId = player.userId;
+        const userId = player.account.userId;
 
         const isReconnect = this.reconnected_.has(userId);
         const message = isReconnect ? 'wb %s'

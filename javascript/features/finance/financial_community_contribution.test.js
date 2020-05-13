@@ -30,12 +30,12 @@ describe('FinancialCommunityContribution', (it, beforeEach) => {
         regulator.setPlayerCashAmount(gunther, guestBase + 1000000);
 
         let russell = server.playerManager.getById(/* Russell= */ 1);
-        russell.identify({ vip: 0 });
+        await russell.identify({ vip: 0 });
 
         regulator.setPlayerCashAmount(russell, playerBase + 1000000);
 
         let lucy = server.playerManager.getById(/* Lucy= */ 2);
-        lucy.identify({ vip: 1 });
+        await lucy.identify({ vip: 1 });
 
         regulator.setPlayerCashAmount(lucy, vipBase + 1000000);
 

@@ -224,7 +224,7 @@ describe('VehicleManager', (it, beforeEach) => {
     });
 
     it('should apply vehicle access settings when creating them', async(assert) => {
-        gunther.identify({ userId: 5198 });
+        await gunther.identify({ userId: 5198 });
 
         const vehicle = manager.createVehicle(HYDRA);
         assert.isTrue(vehicle.isConnected());
@@ -237,7 +237,7 @@ describe('VehicleManager', (it, beforeEach) => {
 
         // Update the values directly. They should carry over when storing the vehicle.
         databaseVehicle.accessType = DatabaseVehicle.ACCESS_TYPE_PLAYER;
-        databaseVehicle.accessValue = gunther.userId;
+        databaseVehicle.accessValue = gunther.account.userId;
 
         const updatedVehicle = await manager.storeVehicle(vehicle);
 
@@ -246,7 +246,7 @@ describe('VehicleManager', (it, beforeEach) => {
 
         // Make sure that the values were carried over appropriately.
         assert.equal(updatedDatabaseVehicle.accessType, DatabaseVehicle.ACCESS_TYPE_PLAYER);
-        assert.equal(updatedDatabaseVehicle.accessValue, gunther.userId);
+        assert.equal(updatedDatabaseVehicle.accessValue, gunther.account.userId);
 
         // Make sure that the given rights were applied in the VehicleAccessManager.
         assert.isTrue(
@@ -276,8 +276,8 @@ describe('VehicleManager', (it, beforeEach) => {
     it('should reset vehicle access settings when they respawn', async(assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
 
-        gunther.identify({ userId: 8432 });
-        russell.identify({ userId: 1451 });
+        await gunther.identify({ userId: 8432 });
+        await russell.identify({ userId: 1451 });
 
         const vehicle = manager.createVehicle(HYDRA);
         assert.isTrue(vehicle.isConnected());
@@ -286,7 +286,7 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.isNotNull(databaseVehicle);
 
         await manager.updateVehicleAccess(
-            vehicle, DatabaseVehicle.ACCESS_TYPE_PLAYER, gunther.userId);
+            vehicle, DatabaseVehicle.ACCESS_TYPE_PLAYER, gunther.account.userId);
 
         // Make sure that the given rights were applied in the VehicleAccessManager.
         assert.isTrue(manager.access.isLocked(databaseVehicle, VehicleAccessManager.LOCK_PLAYER));
@@ -296,7 +296,7 @@ describe('VehicleManager', (it, beforeEach) => {
 
         // Pretend as if Russell is locking the vehicle. Normally this wouldn't be possible, unless
         // Russell was an administrator and used the `/v enter` command.
-        manager.access.restrictToPlayer(databaseVehicle, russell.userId);
+        manager.access.restrictToPlayer(databaseVehicle, russell.account.userId);
 
         assert.isFalse(manager.access.canAccessVehicle(gunther, databaseVehicle));
         assert.isTrue(manager.access.canAccessVehicle(russell, databaseVehicle));
@@ -348,7 +348,6 @@ describe('VehicleManager', (it, beforeEach) => {
 
     it('should limit the ephemeral vehicles to five for administrators', assert => {
         const russell = server.playerManager.getById(1 /* Russell */);
-        russell.identify();
 
         gunther.level = Player.LEVEL_ADMINISTRATOR;
         russell.level = Player.LEVEL_PLAYER;

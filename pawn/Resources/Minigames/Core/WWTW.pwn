@@ -154,32 +154,6 @@ bool: CWWT__IsPlaying(playerId) {
     return WWTW_PlayerData[playerId][iStatus] == WWTW_STATE_PLAYING;
 }
 
-// CWWTW__OnText
-// Called in OnPlayerText
-CWWTW__OnText(playerid, text[])
-{
-    // He's not taking part of the minigame
-    if (WWTW_PlayerData[playerid][iStatus] != WWTW_STATE_PLAYING )
-        return 0;
-
-    if (!strcmp(text[0], ";", true, 1))
-    {
-        // Team chat here
-        new string[256], sTeamName[7];
-        new iTeamID = WWTW_PlayerData[playerid][iPlayerTeam];
-        if(iTeamID == 0) sTeamName = "Attack"; else sTeamName = "Defend";
-        format(string, 256, "* [Team %s] %s: %s", sTeamName, PlayerName(playerid), text[1]);
-        CWWTW__SendTeamMsg(iTeamID, COLOR_LIGHTBLUE, string);
-        return 1;
-    }
-
-    for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-    {
-        if(WWTW_PlayerData[i][iStatus] == WWTW_STATE_PLAYING) SendPlayerMessageToPlayer(i, playerid, text);
-    }
-    return 1;
-}
-
 // WWTW__Disconnect
 // Called in OnPlayerDisconnect obviously
 CWWTW__OnDisconnect(playerid)
@@ -367,21 +341,6 @@ CWWTW__OnExit(playerid, iReason)
                     return 1;
                 }
             }
-        }
-    }
-    return 1;
-}
-
-
-// CWWTW__SendTeamMsg
-// This sends a message to a team
-CWWTW__SendTeamMsg(iTeamID, sHex, sMessage[])
-{
-    for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-    {
-        if(WWTW_PlayerData[i][iStatus] == WWTW_STATE_PLAYING && WWTW_PlayerData[i][iPlayerTeam] == iTeamID)
-        {
-            SendClientMessage(i, sHex, sMessage);
         }
     }
     return 1;

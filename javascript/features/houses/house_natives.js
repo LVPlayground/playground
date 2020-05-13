@@ -17,7 +17,7 @@ class HouseNatives {
     // This method must return a number.
     spawnPlayerInHouse(playerId) {
         const player = server.playerManager.getById(playerId);
-        if (!player || !player.isRegistered())
+        if (!player || !player.account.isRegistered())
             return 0;
 
         for (const location of this.manager_.getHousesForPlayer(player)) {

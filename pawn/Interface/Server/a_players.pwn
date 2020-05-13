@@ -60,7 +60,7 @@ native SetSpawnInfo(playerid, team, skin, Float:x, Float:y, Float:z, Float:rotat
 native SpawnPlayer(playerid);
 
 // Player info
-//native SetPlayerPos(playerid, Float:x, Float:y, Float:z);
+native SetPlayerPos(playerid, Float:x, Float:y, Float:z);
 native SetPlayerPosFindZ(playerid, Float:x, Float:y, Float:z);
 native GetPlayerPos(playerid, &Float:x, &Float:y, &Float:z);
 native SetPlayerFacingAngle(playerid,Float:ang);
@@ -90,7 +90,7 @@ native GetPlayerColor(playerid);
 native SetPlayerSkin(playerid, skinid);
 native GetPlayerSkin(playerid);
 native GivePlayerWeapon(playerid, weaponid, ammo);
-//native ResetPlayerWeapons(playerid);
+native ResetPlayerWeapons(playerid);
 native SetPlayerArmedWeapon(playerid, weaponid);
 native GetPlayerWeaponData(playerid, slot, &weapons, &ammo);
 native GivePlayerMoney(playerid,money);
@@ -235,7 +235,7 @@ native InterpolateCameraPos(playerid, Float:FromX, Float:FromY, Float:FromZ, Flo
 native InterpolateCameraLookAt(playerid, Float:FromX, Float:FromY, Float:FromZ, Float:ToX, Float:ToY, Float:ToZ, time, cut = CAMERA_CUT);
 
 // Player conditionals
-//native IsPlayerConnected(playerid); // Please use: Player(playerid)->isConnected()
+native IsPlayerConnected(playerid); // Please use: Player(playerid)->isConnected()
 native IsPlayerInVehicle(playerid, vehicleid);
 native IsPlayerInAnyVehicle(playerid);
 native IsPlayerInCheckpoint(playerid);

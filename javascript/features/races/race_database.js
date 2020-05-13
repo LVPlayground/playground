@@ -103,10 +103,11 @@ class RaceDatabase {
     loadRecordTimesForPlayer(player) {
         let times = new Map();
 
-        if (!player.isRegistered())
+        if (!player.account.isRegistered())
             return Promise.resolve(times);
 
-        return this.database_.query(FETCH_BEST_PLAYER_TIMES_QUERY, player.userId).then(result => {
+        return this.database_.query(FETCH_BEST_PLAYER_TIMES_QUERY, player.account.userId).then(
+                result => {
             result.rows.forEach(row =>
                 times.set(row.race_id, Math.round(row.result_time / 1000)));
 

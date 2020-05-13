@@ -159,6 +159,15 @@ const PURCHASE_CHAT_ENCRYPTION_QUERY = `
     VALUES
         (?, ?, NOW(), ?, FROM_UNIXTIME(?))`;
 
+// Query to update the skin of a gang.
+const GANG_UPDATE_SKIN_QUERY = `
+    UPDATE
+        gangs
+    SET
+        gangs.gang_skin = ?
+    WHERE
+        gangs.gang_id = ?`;
+
 // Query to update the color of a gang.
 const GANG_UPDATE_COLOR_QUERY = `
     UPDATE
@@ -226,7 +235,8 @@ class GangDatabase {
                 name: info.gang_name,
                 goal: info.gang_goal,
                 color: info.gang_color ? Color.fromNumberRGBA(info.gang_color) : null,
-                chatEncryptionExpiry: info.encryption_expire || 0
+                chatEncryptionExpiry: info.encryption_expire || 0,
+                skinId: info.gang_skin
             }
         };
     }
@@ -276,7 +286,7 @@ class GangDatabase {
         gangId = results.insertId;
 
         await server.database.query(
-            GANG_CREATE_MEMBER_QUERY, player.userId, results.insertId, 'Leader');
+            GANG_CREATE_MEMBER_QUERY, player.account.userId, results.insertId, 'Leader');
 
         return {
             id: gangId,
@@ -284,7 +294,8 @@ class GangDatabase {
             name: name,
             goal: goal,
             color: null,
-            chatEncryptionExpiry: 0
+            chatEncryptionExpiry: 0,
+            skinId: null
         };
     }
 
@@ -309,7 +320,7 @@ class GangDatabase {
     // Adds |player| to |gang|. Returns a promise that will be resolved when the information has
     // been stored in the database.
     async addPlayerToGang(player, gang) {
-        const userId = player.userId;
+        const userId = player.account.userId;
         const gangId = gang.id;
 
         await server.database.query(GANG_CREATE_MEMBER_QUERY, userId, gangId, 'Member');
@@ -326,7 +337,7 @@ class GangDatabase {
     // will be resolved with the userId, name and current role of the newly suggested leader.
     async determineSuccessionAfterDeparture(player, gang) {
         const results =
-            await server.database.query(GANG_DETERMINE_NEXT_LEADER, player.userId, gang.id);
+            await server.database.query(GANG_DETERMINE_NEXT_LEADER, player.account.userId, gang.id);
 
         if (results.rows.length === 0)
             return null;
@@ -354,6 +365,12 @@ class GangDatabase {
             gang.chatEncryptionExpiry);
     }
 
+    // Updates the skin of the |gang| to |skinId|. Returns a promise that will be resolved when the
+    // database has been updated with the new information.
+    async updateSkinId(gang, skinId) {
+        await server.database.query(GANG_UPDATE_SKIN_QUERY, skinId, gang.id);        
+    }
+
     // Updates the color of the |gang| to |color|. Returns a promise that will be resolved when the
     // database has been updated with the new information.
     async updateColor(gang, color) {
@@ -364,7 +381,8 @@ class GangDatabase {
     // will be resolved when the database has been updated with the new information.
     async updateColorPreference(gang, player, useGangColor) {
         await server.database.query(
-            GANG_UPDATE_COLOR_PREFERENCES_QUERY, useGangColor ? 1 : 0, player.userId, gang.id);
+            GANG_UPDATE_COLOR_PREFERENCES_QUERY, useGangColor ? 1 : 0,
+            player.account.userId, gang.id);
     }
 
     // Updates the name of the |gang| to |name|. Returns a promise that will be resolved when the

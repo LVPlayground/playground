@@ -88,6 +88,11 @@ class Color {
                 ('0' + this.b_.toString(16)).substr(-2) +
                 ('0' + this.a_.toString(16)).substr(-2)).toUpperCase();
     }
+
+    // Returns the current color with the given |alpha| channel.
+    withAlpha(alpha) {
+        return new Color(PrivateSymbol, this.r_, this.g_, this.b_, alpha);
+    }
 };
 
 // Define common colors as static properties on the Color class.

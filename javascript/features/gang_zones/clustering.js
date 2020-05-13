@@ -11,20 +11,20 @@
 // that they have built a base there. The data identified by this algorithm should be further
 // processed based on maximum distance.
 
-// Maximum number of iterations that the algorithm may do.
-const kMaxIterations = 250;
+// Number of iterations that the algorithm will do.
+const kIterations = 250;
 
 // Predefined clusters in the world of San Andreas. We have defined up 12 clusters here, which is
 // enough to decently serve 12*12*2= 288 |points| with ideal distribution.
 const kClusters = [
     [  1700,  2100 ],  // Las Venturas
+    [   600, -2200 ],  // San Fierro
     [  1900,   100 ],  // Bone County
     [ -1650, -2350 ],  // Mount Chiliad
-    [ -1600,  2100 ],  // Los Santos
-    [   600, -2200 ],  // San Fierro
     [   200,  1400 ],  // Red County
     [  2100, -1350 ],  // Tierra Robada
     [ -1350,  -750 ],  // Flint County
+    [ -1600,  2100 ],  // Los Santos
     [ -2550, -1850 ],  // Whetstone
     [ -1024,  2200 ],  // Las Colinas
     [  2350, -2450 ],  // Bayside Marina
@@ -46,7 +46,7 @@ export function getClustersForSanAndreas(points, { maximumClusters = null } = {}
 function getClustersWithMeans(points, means) {
     let clusters = createInitialClusters(means);
 
-    for (let iteration = 0; iteration < kMaxIterations; ++iteration) {
+    for (let iteration = 0; iteration < kIterations; ++iteration) {
         clusters.forEach(cluster => cluster.points = []);
 
         populateClusters(points, clusters);

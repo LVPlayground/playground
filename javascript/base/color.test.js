@@ -68,4 +68,18 @@ describe('Color', it => {
             assert.equal(Color.fromNumberRGBA(number).toNumberRGBA(), number);
         }
     });
+
+    it('supports cloning with a different alpha channel', assert => {
+        const blueish = Color.fromNumberRGBA(0x0201FF7F);
+        assert.equal(blueish.r, 2);
+        assert.equal(blueish.g, 1);
+        assert.equal(blueish.b, 255);
+        assert.equal(blueish.a, 127);
+
+        const transparentBlueish = blueish.withAlpha(250);
+        assert.equal(transparentBlueish.r, 2);
+        assert.equal(transparentBlueish.g, 1);
+        assert.equal(transparentBlueish.b, 255);
+        assert.equal(transparentBlueish.a, 250);
+    });
 });

@@ -29,8 +29,6 @@ new Vip;
 new VipExit;
 new iPlayerInVipRoom[MAX_PLAYERS];
 new sPlayerWeapons[MAX_PLAYERS][14][2];
-new bool: g_Ignore[MAX_PLAYERS][MAX_PLAYERS];
-new bool: g_NoCaps[MAX_PLAYERS];
 new g_TrainPickup_0;
 new g_TrainPickup_1;
 new g_TrainPickup_2;
@@ -85,10 +83,6 @@ new g_RivershellState;
 new g_RivershellPlayer[MAX_PLAYERS];
 new isPlayerBrief[MAX_PLAYERS];
 new briefStatus;
-
-new bool: g_enforceGeorgeTypo;
-new bool: g_enforceVaryTypo;
-new bool: g_enforceVeryTypo;
 
 enum ePlayerPosition {
     Float:fSavedPosX,

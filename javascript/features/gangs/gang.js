@@ -2,6 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+// Updates the |player|'s gang color to the given |color|, if any.
+function setPlayerGangColor(player, color) {
+    if (!server.isTest())
+        pawnInvoke('OnUpdatePlayerGangColor', 'ii', player.id, color ? color.toNumberRGBA() : 0);
+}
+
 // Encapsulates the information associated with a gang. Changes to data stored in this class should
 // only be made from the Gang Manager, since it may have to be propagated to multiple places.
 class Gang {
@@ -11,6 +17,7 @@ class Gang {
         this.name_ = info.name;
         this.goal_ = info.goal;
         this.color_ = info.color;
+        this.skinId_ = info.skinId;
 
         this.chatEncryptionExpiry_ = info.chatEncryptionExpiry;
 
@@ -35,6 +42,9 @@ class Gang {
     // Gets the color of members of this gang.
     get color() { return this.color_; }
 
+    // Gets the skin of members of this gang.
+    get skinId() { return this.skinId_; }
+
     // Gets or sets the expiry time, in seconds since the UNIX epoch, at which the chat encryption
     // for this gang expires. Should only be updated by the GangManager.
     get chatEncryptionExpiry() { return this.chatEncryptionExpiry_; }
@@ -53,7 +63,7 @@ class Gang {
         this.members_.set(player, { role, useGangColor });
 
         if (this.color_ && this.usesGangColor(player))
-            player.gangColor = this.color_;
+            setPlayerGangColor(player, this.color_);
 
         player.gangId = this.id_;
     }
@@ -83,8 +93,18 @@ class Gang {
         if (!this.color_)
             return;
 
-        player.gangColor = useGangColor ? this.color_
-                                        : null;
+        setPlayerGangColor(player, useGangColor ? this.color_
+            : null);
+    }
+
+    // Returns whether the |player| will use the gang's skin.
+    usesGangSkin(player) {
+        return player.settings.getValue("gang/use_skin") === true;
+    }
+
+    // Sets whether the |player| will use the gang's skin.
+    setUsesGangSkin(player, usesGangSkin) {
+        player.settings.updateSetting('gang/use_skin', usesGangSkin);
     }
 
     // Returns whether |player| is part of this gang.
@@ -97,7 +117,7 @@ class Gang {
         this.members_.delete(player);
 
         if (!player.isDisconnecting() && this.usesGangColor(player))
-            player.gangColor = null;
+            setPlayerGangColor(player, null);
 
         player.gangId = null;
     }
@@ -106,14 +126,29 @@ class Gang {
     updateColor(color) {
         this.color_ = color;
 
-        for (const [ player, settings ] of this.members_.entries()) {
+        for (const player of this.members_.keys()) {
             if (player.isDisconnecting())
                 continue;
 
             if (!this.usesGangColor(player))
                 continue;
 
-            player.gangColor = color;
+            setPlayerGangColor(player, color);
+        }
+    }
+
+    // Updates the skin of this gang.
+    updateSkinId(skinId) {
+        this.skinId_ = skinId;
+        for (const player of this.members_.keys()) {
+            if (player.isDisconnecting())
+                continue;
+
+            if (!this.usesGangSkin(player))
+                continue;
+
+            // Set the skin of all members. Will be done upon next spawn to avoid abuse.
+            pawnInvoke('OnSetPlayerSkinId', 'iii', player.id, skinId, 1);
         }
     }
 }

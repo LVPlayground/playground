@@ -207,7 +207,7 @@ class FeatureManager {
 
     // Defines a dependency from |feature| (instance) to |dependencyName|. Throws an exception when
     // the dependency does not exist, or a circular dependency is being created.
-    defineDependency(feature, dependencyName) {
+    defineDependency(feature, dependencyName, isFoundational) {
         if (!this.registeredFeatures_.has(dependencyName)) {
             throw new Error('Cannot declare a dependency on "' + dependencyName + '": ' +
                             'invalid dependency name.');
@@ -226,6 +226,9 @@ class FeatureManager {
 
         // Actually load the feature now that we know it's not a circular dependency.
         const dependency = this.loadFeature(dependencyName);
+
+        if (isFoundational && !dependency.isFoundational())
+            throw new Error('Foundational features may only depend on other foundational features.')
 
         this.dependencyGraph_.createDependencyEdge(featureName, dependencyName);
 

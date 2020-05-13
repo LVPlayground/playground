@@ -4,9 +4,6 @@
 
 import ScopedCallbacks from 'base/scoped_callbacks.js';
 
-// Range, in units, that enter and exit keys will work around a remote controllable vehicle.
-const RemoteControllableVehicleRange = 2;
-
 // Number of milliseconds before running a trailer status update.
 const TrailerStatusUpdateTimeMs = 1250;
 
@@ -20,7 +17,6 @@ class VehicleManager {
         this.observers_ = new Set();
 
         this.vehicles_ = new Map();
-        this.rcVehicles_ = new Set();
 
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
@@ -46,9 +42,6 @@ class VehicleManager {
 
     // Gets the number of vehicles currently created on the server.
     get count() { return this.vehicles_.size; }
-
-    // Gets the number of remote controllable vehicles currently created on the server.
-    get remoteControllableCount() { return this.rcVehicles_.size; }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -92,10 +85,6 @@ class VehicleManager {
         });
 
         this.vehicles_.set(vehicle.id, vehicle);
-
-        if (vehicle.model.isRemoteControllable())
-            this.rcVehicles_.add(vehicle);
-
         return vehicle;
     }
 
@@ -134,58 +123,6 @@ class VehicleManager {
 
         if (vehicle.isLockedForPlayer(player))
             vehicle.lockForPlayer(player);
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
-    // Called by the Player Manager when the player potentially requests to enter or exit their
-    // vehicle. Applies the special processing needed in order to support RC Vehicles.
-    onPlayerVehicleEnterExit(player) {
-        const currentVehicle = player.vehicle;
-
-        if (currentVehicle) {
-            if (!currentVehicle.model.isRemoteControllable())
-                return;  // the |player| is driving a vehicle, but it's not a RC vehicle.
-
-            player.leaveVehicle();
-            return;
-        }
-
-        const squaredMaximum = RemoteControllableVehicleRange * RemoteControllableVehicleRange;
-        const position = player.position;
-
-        const nearbyVehicles = [];
-
-        for (const vehicle of this.rcVehicles_) {
-            const squaredDistance = position.squaredDistanceTo(vehicle.position);
-            if (squaredDistance > squaredMaximum)
-                continue;  // the vehicle is out of range
-
-            if (vehicle.isLockedForPlayer(player))
-                continue;  // they do not have access to the vehicle
-
-            nearbyVehicles.push({ vehicle, squaredDistance });
-        }
-
-        if (!nearbyVehicles.length)
-            return;  // there are no remote controllable vehicles near the |player|
-
-        // Sort the |nearbyVehicles| so that we select the vehicle closest to the |player|.
-        nearbyVehicles.sort((lhs, rhs) => {
-            if (lhs.squaredDistance === rhs.squaredDistance)
-                return 0;
-
-            return lhs.squaredDistance > rhs.squaredDistance ? 1 : -1;
-        });
-
-        const { vehicle } = nearbyVehicles[0];
-
-        // Eject the vehicle's current driver, if there is one.
-        if (vehicle.driver)
-            vehicle.driver.leaveVehicle();
-
-        // Make the |player| enter the vehicle by teleporting them in.
-        player.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -290,9 +227,6 @@ class VehicleManager {
             vehicle.trailer.parent = null;
             vehicle.trailer = null;
         }
-
-        if (vehicle.model.isRemoteControllable())
-            this.rcVehicles_.delete(vehicle);
 
         this.vehicles_.delete(vehicle.id);
     }

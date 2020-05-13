@@ -66,6 +66,9 @@ class Account <playerId (MAX_PLAYERS)> {
         if (registered == false)
             return;
 
+        // Let JavaScript know about the player being registered.
+        SetIsRegistered(playerId, true);
+
         Player(playerId)->setIsRegistered(true);
         Player(playerId)->setIsLoggedIn(false);
         m_loginAttemptCount = 0;
@@ -130,10 +133,25 @@ class Account <playerId (MAX_PLAYERS)> {
      * @param userId Id of the user they were trying to log in as.
      */
     public onPasswordVerificationComplete(bool: verified, userId) {
-        if (verified)
+        if (verified) {
+            for (new i = 0; i < PlayerManager->highestPlayerId(); ++i) {
+                if (!Player(i)->isConnected())
+                    continue;
+
+                if (Account(i)->userId() != userId)
+                    continue;
+
+                if (playerId == i)
+                    continue;
+
+                MultipleSessionDialog(playerId)->show(i);
+                return;
+            }
+
             this->identifyPlayerForUserId(userId);
-        else
+        } else {
             this->displayPasswordDialog(true);
+        }
     }
 
     /**

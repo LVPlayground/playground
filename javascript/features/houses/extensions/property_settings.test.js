@@ -14,7 +14,7 @@ describe('PropertySettings', (it, beforeEach) => {
 
     beforeEach(async(assert) => {
         gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.identify({ userId: 42, vip: 1 });
+        await gunther.identify({ userId: 42, vip: 1 });
 
         ({ manager } = await createTestEnvironment());
 

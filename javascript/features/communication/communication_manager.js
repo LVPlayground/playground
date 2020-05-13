@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { AdministratorChannel } from 'features/communication/channels/administrator_channel.js';
+import { CallChannel } from 'features/communication/channels/call_channel.js';
 import ScopedCallbacks from 'base/scoped_callbacks.js';
 import { SpamTracker } from 'features/communication/spam_tracker.js';
 import { VipChannel } from 'features/communication/channels/vip_channel.js';
@@ -18,6 +19,7 @@ export class CommunicationManager {
     muteManager_ = null;
     nuwani_ = null;
 
+    callChannel_ = null;
     genericChannels_ = null;
     prefixChannels_ = null;
     spamTracker_ = null;
@@ -40,10 +42,14 @@ export class CommunicationManager {
         const kChannels = [
             new AdministratorChannel(),
             new VipChannel(),
+            new CallChannel(),
         ];
 
         // Split the |kChannels| based on whether they're a prefix channel or a generic channel.
         for (const channel of kChannels) {
+            if (channel instanceof CallChannel)
+                this.callChannel_ = channel;
+
             const prefix = channel.getPrefix();
             if (!prefix)
                 this.genericChannels_.add(channel);
@@ -56,6 +62,9 @@ export class CommunicationManager {
         // Create the spam tracker, which verifies that players aren't being naughty.
         this.spamTracker_ = new SpamTracker();
     }
+
+    // Returns the channel used for phone conversations.
+    getCallChannel() { return this.callChannel_; }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -129,9 +138,6 @@ export class CommunicationManager {
         // TODO: Once most communication is handled by JavaScript, do all further processing on a
         // deferred task instead.
 
-        // TODO: Handle functionality such as muting players (and/or everyone) before actually
-        // sending the message anywhere.
-
         for (const delegate of this.delegates_) {
             if (!!delegate.onPlayerText(player, message)) {
                 event.preventDefault();
@@ -155,7 +161,17 @@ export class CommunicationManager {
             return;
         }
 
-        // TODO(Russell): Add further processing here.
+        // Then check all the generic channels to determine if the call should go there.
+        for (const genericChannel of this.genericChannels_) {
+            if (!genericChannel.confirmChannelAccessForPlayer(player))
+                continue;  // they are not able to use this channel right now
+            
+            genericChannel.distribute(player, message, this.nuwani_());
+            return;
+        }
+
+        // Nothing was able to handle the player's message. It will disappear in a void forever.
+        // Another potential Shakespearean remark lost.
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -163,6 +179,15 @@ export class CommunicationManager {
     dispose() {
         this.callbacks_.dispose();
         this.callbacks_ = null;
+
+        for (const channel of this.genericChannels_)
+            channel.dispose();
+        
+        for (const channel of this.prefixChannels_.values())
+            channel.dispose();
+
+        this.genericChannels_.clear();
+        this.prefixChannels_.clear();
 
         this.delegates_.clear();
         this.delegates_ = null;

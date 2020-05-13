@@ -24,7 +24,9 @@ export default class CommunicationCommands extends Feature {
         this.communication_ = this.defineDependency('communication');
 
         // TODO:
+        // - /answer
         // - /call
+        // - /hangup
         // - /ignore
         // - /ignored
         // - /ircpm

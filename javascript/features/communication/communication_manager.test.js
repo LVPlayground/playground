@@ -236,4 +236,78 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         
         assert.equal(nuwani.messagesForTesting.length, 2);
     });
+
+    it('should provide the ability to have phone conversations', assert => {
+        const lucy = server.playerManager.getById(/* Lucy= */ 2);
+
+        const channel = manager.getCallChannel();
+        assert.isNotNull(channel);
+
+        assert.isUndefined(channel.getConversationPartner(gunther));
+        assert.isUndefined(channel.getConversationPartner(russell));
+
+        assert.isFalse(channel.confirmChannelAccessForPlayer(gunther));
+        assert.isFalse(channel.confirmChannelAccessForPlayer(russell));
+
+        channel.establish(gunther, russell);
+
+        assert.equal(channel.getConversationPartner(gunther), russell);
+        assert.equal(channel.getConversationPartner(russell), gunther);
+
+        assert.isTrue(channel.confirmChannelAccessForPlayer(gunther));
+        assert.isTrue(channel.confirmChannelAccessForPlayer(russell));
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.COMMUNICATION_CALL_CONNECTED, russell.name));
+
+        assert.equal(russell.messages.length, 1);
+        assert.equal(
+            russell.messages[0],
+            Message.format(Message.COMMUNICATION_CALL_CONNECTED, gunther.name));
+
+        gunther.issueMessage('Hey, how are you?');
+
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(
+            gunther.messages[1],
+            Message.format(Message.COMMUNICATION_CALL_MESSAGE, gunther.id, gunther.name,
+                           'Hey, how are you?'));
+
+        assert.equal(russell.messages.length, 2);
+        assert.equal(russell.messages[1], gunther.messages[1]);
+
+        assert.equal(lucy.messages.length, 0);
+
+        russell.disconnectForTesting();
+
+        assert.isUndefined(channel.getConversationPartner(gunther));
+        assert.isFalse(channel.confirmChannelAccessForPlayer(gunther));
+
+        assert.equal(gunther.messages.length, 3);
+        assert.equal(
+            gunther.messages[2],
+            Message.format(Message.COMMUNICATION_CALL_DISCONNECTED_LEFT, russell.name));
+        
+        channel.establish(gunther, lucy);
+
+        assert.equal(channel.getConversationPartner(gunther), lucy);
+        assert.isTrue(channel.confirmChannelAccessForPlayer(gunther));
+        assert.isTrue(channel.confirmChannelAccessForPlayer(lucy));
+
+        channel.disconnect(lucy, gunther);
+
+        assert.equal(gunther.messages.length, 5);
+        assert.equal(
+            gunther.messages[4],
+            Message.format(Message.COMMUNICATION_CALL_DISCONNECTED, lucy.name, 'they'));
+
+        assert.equal(lucy.messages.length, 2);
+        assert.equal(
+            lucy.messages[1],
+            Message.format(Message.COMMUNICATION_CALL_DISCONNECTED, gunther.name, 'you'));
+    });
+
+    it.fails();
 });

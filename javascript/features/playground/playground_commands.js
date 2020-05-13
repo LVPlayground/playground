@@ -452,7 +452,8 @@ class PlaygroundCommands {
         const menu = new Menu('Blocked words', ['Blocked word', 'Added by']);
         menu.addItem('Block a new word', '-', async () => {
             const wordToBlock = await Question.ask(player, {
-                question: 'Which word do you want to block?',
+                question: 'Blocked words',
+                message: 'Which word do you want to block?',
                 constraints: {
                     validation: /^.{3,24}$/i,
                     explanation: 'The word must be between 3 and 24 characters in length.',
@@ -571,7 +572,8 @@ class PlaygroundCommands {
         const menu = new Menu('Substitutions', ['Phrase', 'Substitution', 'Added by']);
         menu.addItem('Add a new substitution', '-', '-', async () => {
             const before = await Question.ask(player, {
-                question: 'Which word do you want to substitute?',
+                question: 'Substitutions',
+                message: 'Which word do you want to substitute?',
                 constraints: {
                     validation: /^.{3,24}$/i,
                     explanation: 'The word must be between 3 and 24 characters in length.',
@@ -583,7 +585,8 @@ class PlaygroundCommands {
                 return;  // the |player| abandoned the flow
 
             const after = await Question.ask(player, {
-                question: 'Which word should it be substituted with?',
+                question: 'Substitutions',
+                message: 'Which word should it be substituted with?',
                 constraints: {
                     validation: /^.{1,24}$/i,
                     explanation: 'The substitution must be between 1 and 24 characters in length.',

@@ -6,7 +6,6 @@ import { AdministratorChannel } from 'features/communication/channels/administra
 import { CallChannel } from 'features/communication/channels/call_channel.js';
 import { PublicChannel } from 'features/communication/channels/public_channel.js';
 import ScopedCallbacks from 'base/scoped_callbacks.js';
-import { SpamTracker } from 'features/communication/spam_tracker.js';
 import { VipChannel } from 'features/communication/channels/vip_channel.js';
 
 import { relativeTime } from 'base/time.js';
@@ -25,10 +24,11 @@ export class CommunicationManager {
     prefixChannels_ = null;
     spamTracker_ = null;
     
-    constructor(messageFilter, muteManager, nuwani) {
+    constructor(messageFilter, muteManager, spamTracker, nuwani) {
         this.delegates_ = new Set();
         this.messageFilter_ = messageFilter;
         this.muteManager_ = muteManager;
+        this.spamTracker_ = spamTracker;
         this.nuwani_ = nuwani;
 
         this.callbacks_ = new ScopedCallbacks();
@@ -60,9 +60,6 @@ export class CommunicationManager {
             else
                 throw new Error('Channel prefixes must be exactly one character long.')
         }
-
-        // Create the spam tracker, which verifies that players aren't being naughty.
-        this.spamTracker_ = new SpamTracker();
     }
 
     // Returns the channel used for phone conversations.

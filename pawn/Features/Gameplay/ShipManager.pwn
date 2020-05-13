@@ -313,8 +313,7 @@ class ShipManager {
                 return 1;
             }
 
-            if (!PlayerIdlePenalty->isIdle(playerId))
-                this->issueMoneyToPlayer(playerId);
+            this->issueMoneyToPlayer(playerId);
 
             if (Player(playerId)->isAdministrator() == false) {
                 ResetPlayerWeapons(playerId);

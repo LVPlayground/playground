@@ -12,8 +12,6 @@ public OnPlayerText(playerid, text[]) {
     if (!strlen(text))
         return 0;
 
-    PlayerIdlePenalty->resetCurrentIdleTime(playerid);
-
     new const bool: playerInMainWorld = IsPlayerInMainWorld(playerid);
     new const playerVirtualWorld = GetPlayerVirtualWorld(playerid);
 

@@ -118,11 +118,6 @@ class LegacyAccountBridge {
         }
 
         new onlineTime = (gameplayhours[playerId] * 3600 + gameplayminutes[playerId] * 60 + gameplayseconds[playerId]);
-        new sessionTime = Time->currentTime() - Player(playerId)->connectionTime();
-
-        new penaltyTime = PlayerIdlePenalty->getPlayerPenaltyTime(playerId);
-        if (penaltyTime > 0 && penaltyTime < sessionTime)
-            onlineTime -= penaltyTime;
 
         // TODO: Remove the following fields.
         // * plus_points

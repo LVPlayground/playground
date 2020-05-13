@@ -11,4 +11,3 @@
 #include "Entities/Players/PlayerManager.pwn"
 #include "Entities/Players/PlayerEvents.pwn"
 #include "Entities/Players/PlayerMessageLevels.pwn"
-#include "Entities/Players/PlayerIdlePenalty.pwn"

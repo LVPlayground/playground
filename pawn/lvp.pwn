@@ -223,7 +223,6 @@
 #include Resources/Callbacks/OnPlayer/OnPlayerLeaveCheckpoint.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerEnterRaceCheckpoint.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerKeyStateChange.pwn
-#include Resources/Callbacks/OnPlayer/OnPlayerText.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerStateChange.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerInteriorChange.pwn
 #include Resources/Callbacks/Others/OnGameModeInit.pwn

@@ -502,9 +502,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(World,          5, PlayerLevel);
 
     // General player commands:
-	lvp_command(Ignore,         6, PlayerLevel);
-    lvp_command(Unignore,       8, PlayerLevel);
-    lvp_command(Ignored,        7, PlayerLevel);
     lvp_command(Commands,       8, PlayerLevel);
     lvp_command(cmds,           4, PlayerLevel);
     lvp_command(Minigames,      9, PlayerLevel);
@@ -1033,7 +1030,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         format(string, sizeof(string), "* %s %s", Player(playerid)->nicknameString(), actionText);
         for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
-            if (!Player(subjectId)->isConnected() || g_Ignore[subjectId][playerid])
+            if (!Player(subjectId)->isConnected())
                 continue;
 
             if (GetPlayerVirtualWorld(subjectId) != GetPlayerVirtualWorld(playerid)

@@ -259,7 +259,6 @@
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStateChange.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStreamIn.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStreamOut.pwn</DiskObject>
-    <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerText.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\OnDialogResponse.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\OnDynamicObjectMoved.pwn</DiskObject>

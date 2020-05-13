@@ -29,7 +29,6 @@ new Vip;
 new VipExit;
 new iPlayerInVipRoom[MAX_PLAYERS];
 new sPlayerWeapons[MAX_PLAYERS][14][2];
-new bool: g_Ignore[MAX_PLAYERS][MAX_PLAYERS];
 new g_TrainPickup_0;
 new g_TrainPickup_1;
 new g_TrainPickup_2;

@@ -34,7 +34,9 @@ class ReportCommands {
         }
 
         this.announce_().announceReportToAdministrators(player, reportedPlayer, reason);
-
+        this.nuwani_().echo(
+            'report', player.name, player.id, reportedPlayer.name, reportedPlayer.id, reason);
+        
         // Admins already get the notice themselves due to above announce and thus know it already
         if (player.isAdministrator())
             return;

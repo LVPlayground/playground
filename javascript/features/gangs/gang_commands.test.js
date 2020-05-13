@@ -32,7 +32,8 @@ describe('GangCommands', (it, beforeEach) => {
             name: name,
             goal: goal || 'Testing gang',
             color: color,
-            chatEncryptionExpiry: 0
+            chatEncryptionExpiry: 0,
+            skinId: null,
         }));
 
         return manager.gangs_.get(gangId);
@@ -528,6 +529,46 @@ describe('GangCommands', (it, beforeEach) => {
         assert.isFalse(gang.hasPlayer(russell));
     });
 
+    it('should enable leaders to change the skin of their gang', async(assert) => {
+        const gang = createGang();
+
+        await player.identify();
+
+        addPlayerToGang(player, gang, Gang.ROLE_LEADER);
+
+        assert.equal(gang.skinId, null);
+
+        player.respondToDialog({ listitem: 2 /* Member skin */ }).then(() =>
+            player.respondToDialog({ inputtext: '11' })).then(() =>
+            player.respondToDialog({ response: 0 /* Ok */}));
+
+        assert.isTrue(await player.issueCommand('/gang settings'));
+
+        assert.deepEqual(gang.skinId, 11);
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.lastDialog,
+            Message.format(Message.GANG_SETTINGS_NEW_SKIN, 11));
+    });
+
+    it('should not allow leaders to change the skin into an unavailable skin', async(assert) => {
+        const gang = createGang();
+
+        await player.identify();
+
+        addPlayerToGang(player, gang, Gang.ROLE_LEADER);
+
+        assert.equal(gang.skinId, null);
+
+        player.respondToDialog({ listitem: 2 /* Member skin */ }).then(() =>
+            player.respondToDialog({ inputtext: '1' })).then(() =>
+            player.respondToDialog({ response: 0 /* Ok */}));
+
+        assert.isTrue(await player.issueCommand('/gang settings'));
+
+        assert.deepEqual(gang.skinId, null);
+    });
+
     it('should enable leaders to change the color of their gang', async(assert) => {
         const gang = createGang();
 
@@ -608,7 +649,7 @@ describe('GangCommands', (it, beforeEach) => {
 
         assert.equal(gang.name, 'Candy Crush');
 
-        player.respondToDialog({ listitem: 3 /* Gang name */ }).then(() =>
+        player.respondToDialog({ listitem: 4 /* Gang name */ }).then(() =>
             player.respondToDialog({ inputtext: 'Hello Kitty Online' })).then(() =>
             player.respondToDialog({ response: 0 /* Ok */}));
 
@@ -629,7 +670,7 @@ describe('GangCommands', (it, beforeEach) => {
 
         assert.equal(gang.name, 'Candy Crush');
 
-        player.respondToDialog({ listitem: 3 /* Gang name */ }).then(() =>
+        player.respondToDialog({ listitem: 4 /* Gang name */ }).then(() =>
             player.respondToDialog({ inputtext: 'Thundering Offline Kittens' })).then(() =>
             player.respondToDialog({ response: 0 /* Ok */}));
 
@@ -651,7 +692,7 @@ describe('GangCommands', (it, beforeEach) => {
 
         assert.equal(gang.tag, 'CC');
 
-        player.respondToDialog({ listitem: 4 /* Gang tag */ }).then(() =>
+        player.respondToDialog({ listitem: 5 /* Gang tag */ }).then(() =>
             player.respondToDialog({ inputtext: 'HKO' })).then(() =>
             player.respondToDialog({ response: 0 /* Ok */}));
 
@@ -683,7 +724,7 @@ describe('GangCommands', (it, beforeEach) => {
         ];
 
         for (const tag of invalidTags) {
-            player.respondToDialog({ listitem: 4 /* Gang tag */ }).then(() =>
+            player.respondToDialog({ listitem: 5 /* Gang tag */ }).then(() =>
                 player.respondToDialog({ inputtext: tag })).then(() =>
                 player.respondToDialog({ response: 0 /* Ok */}));
 
@@ -704,7 +745,7 @@ describe('GangCommands', (it, beforeEach) => {
 
         assert.equal(gang.tag, 'CC');
 
-        player.respondToDialog({ listitem: 4 /* Gang tag */ }).then(() =>
+        player.respondToDialog({ listitem: 5 /* Gang tag */ }).then(() =>
             player.respondToDialog({ inputtext: 'GG' })).then(() =>
             player.respondToDialog({ response: 0 /* Ok */}));
 
@@ -725,7 +766,7 @@ describe('GangCommands', (it, beforeEach) => {
 
         assert.equal(gang.goal, 'We rule!');
 
-        player.respondToDialog({ listitem: 5 /* Gang goal */ }).then(() =>
+        player.respondToDialog({ listitem: 6 /* Gang goal */ }).then(() =>
             player.respondToDialog({ inputtext: 'We rule more!' })).then(() =>
             player.respondToDialog({ response: 0 /* Ok */}));
 
@@ -756,6 +797,25 @@ describe('GangCommands', (it, beforeEach) => {
 
         assert.isFalse(gang.usesGangColor(player));
     });
+    
+        it('should enable members to choose whether to use the gang skin', async(assert) => {
+            const gang = createGang({ tag: 'EZ', goal: 'Be the easiest to kill.' });
+    
+            player.identify();
+    
+            addPlayerToGang(player, gang, Gang.ROLE_MEMBER);
+    
+            assert.isTrue(gang.usesGangSkin(player));
+    
+            player.respondToDialog({ listitem: 1 /* Gang skin */ }).then(() =>
+                player.respondToDialog({ listitem: 1 /* use personal skin */ })).then(() =>
+                player.respondToDialog({ response: 0 /* Ok */}));
+    
+            assert.isTrue(await player.issueCommand('/gang settings'));
+            assert.equal(player.messages.length, 0);
+    
+            assert.isFalse(gang.usesGangSkin(player));
+        });
 
     it('should be able to display information about the gang command', assert => {
         assert.isTrue(player.issueCommand('/gang'));

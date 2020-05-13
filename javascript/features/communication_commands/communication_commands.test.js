@@ -213,6 +213,26 @@ describe('CommunicationCommands', (it, beforeEach) => {
         assert.isNull(muteManager.getPlayerRemainingMuteTime(gunther));
     });
 
+    it('should be able to show IRC-style status messages', async (assert) => {
+        // (1) Integration of the command with the Communication feature
+        muteManager.setCommunicationMuted(true);
+
+        assert.isTrue(await russell.issueCommand('/me is testing'));
+        assert.equal(russell.messages.length, 1);
+        assert.equal(
+            russell.messages[0], Message.format(Message.COMMUNICATION_SERVER_MUTE_BLOCKED));
+        
+        muteManager.setCommunicationMuted(false);
+        assert.equal(gunther.messages[0]);
+
+        // (2) Ability to send a regular message.
+        assert.isTrue(await russell.issueCommand('/me is testing'));
+        assert.equal(russell.messages.length, 2);
+        assert.equal(
+            russell.messages[1],
+            Message.format(Message.COMMUNICATION_ME, russell.name, 'is testing'));
+    });
+
     it('should be able to show people how to report others', async (assert) => {
         assert.isNull(muteManager.getPlayerRemainingMuteTime(gunther));
 

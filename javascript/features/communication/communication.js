@@ -179,7 +179,7 @@ export default class Communication extends Feature {
     // Processes the given |message|, as sent by |player|, preparing it for distribution. It will be
     // routed through the spam tracker, then through the message filter. Returns the |message|,
     // which may be modified, or NULL in case the message should not be distributed.
-    processMessageForDistribution(player, message) {
+    processForDistribution(player, message) {
         if (this.muteManager_.isCommunicationMuted()) {
             player.sendMessage(Message.COMMUNICATION_SERVER_MUTE_BLOCKED);
             return null;

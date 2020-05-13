@@ -14,7 +14,7 @@ export class PublicChannel extends Channel {
         const playerColor = player.color.toHexRGB();
 
         const playerVirtualWorld = player.virtualWorld;
-        const playerInMainWorld = this.isMainVirtualWorld(playerVirtualWorld);
+        const playerInMainWorld = VirtualWorld.isMainWorldForCommunication(playerVirtualWorld);
         const playerIsAdministrator = player.isAdministrator();
 
         // Message to send to players in another virtual world.
@@ -35,13 +35,16 @@ export class PublicChannel extends Channel {
 
         for (const recipient of server.playerManager) {
             const recipientVirtualWorld = recipient.virtualWorld;
-            const recipientInMainWorld = this.isMainVirtualWorld(recipientVirtualWorld);
+            const recipientInMainWorld =
+                VirtualWorld.isMainWorldForCommunication(recipientVirtualWorld);
 
-            if (recipientInMainWorld && playerInMainWorld)
+            // Whether the |recipient| and the |player| are considered to be in the same world.
+            const sameWorld = (recipientInMainWorld && playerInMainWorld) ||
+                              (recipientVirtualWorld === playerVirtualWorld);
+
+            if (sameWorld)
                 recipient.sendMessage(formattedSameWorldMessage);
-            else if (recipientVirtualWorld === playerVirtualWorld)
-                recipient.sendMessage(formattedSameWorldMessage);
-            else if (playerIsAdministrator)
+            else if (recipient.isAdministrator())
                 recipient.sendMessage(formattedCrossWorldMessage);
         }
 
@@ -50,14 +53,5 @@ export class PublicChannel extends Channel {
             nuwani.echo('chat', player.id, player.name, message);
         else
             nuwani.echo('chat-world', playerVirtualWorld, player.id, player.name, message);
-    }
-
-    // Returns whether the given |virtualWorld| should be considered the main world.
-    isMainVirtualWorld(virtualWorld) {
-        return virtualWorld === 0 ||  // main world
-               virtualWorld === 101 ||  // Caligula's Palace Casino
-              (virtualWorld >= 1201 && virtualWorld <= 2000) ||  // interiors
-              (virtualWorld >= 2001 && virtualWorld <= 7000) ||  // houses
-              (virtualWorld >= 7001 && virtualWorld <= 8000);    // player isolated worlds
     }
 }

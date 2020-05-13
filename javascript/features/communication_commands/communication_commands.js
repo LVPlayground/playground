@@ -16,6 +16,7 @@ export const kCallExpirationTimeSec = 15;
 export default class CommunicationCommands extends Feature {
     announce_ = null;
     communication_ = null;
+    nuwani_ = null;
 
     dialToken_ = new WeakMap();
     dialing_ = new WeakMap();
@@ -31,6 +32,7 @@ export default class CommunicationCommands extends Feature {
 
         this.announce_ = this.defineDependency('announce');
         this.communication_ = this.defineDependency('communication');
+        this.nuwani_ = this.defineDependency('nuwani');
 
         // TODO:
         // - /announce
@@ -38,7 +40,6 @@ export default class CommunicationCommands extends Feature {
         // - /ignore
         // - /ignored
         // - /ircpm
-        // - /me
         // - /pm
         // - /r
         // - /show
@@ -59,6 +60,11 @@ export default class CommunicationCommands extends Feature {
         // /hangup
         server.commandManager.buildCommand('hangup')
             .build(CommunicationCommands.prototype.onHangupCommand.bind(this));
+
+        // /me [message]
+        server.commandManager.buildCommand('me')
+            .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
+            .build(CommunicationCommands.prototype.onMeCommand.bind(this));
 
         // /mute [player] [duration=3]
         server.commandManager.buildCommand('mute')
@@ -169,6 +175,52 @@ export default class CommunicationCommands extends Feature {
         }
 
         this.callChannel.disconnect(player, targetPlayer);
+    }
+
+    // /me [message]
+    //
+    // Shows an IRC-styled 
+    onMeCommand(player, unprocessedMessage) {
+        const message = this.communication_().processForDistribution(player, unprocessedMessage);
+        if (!message)
+            return;  // the message has been blocked
+
+        const formattedMessage = Message.format(Message.COMMUNICATION_ME, player.name, message);
+
+        // Bail out quickly if the |player| has been isolated.
+        if (player.syncedData.isIsolated()) {
+            player.sendMessage(formattedMessage);
+            return;
+        }
+
+        this.distributeToPlayersInSameVirtualWorld(player, formattedMessage);
+        this.nuwani_().echo('status', player.id, player.name, message);
+    }
+
+    // Distributes the given |formattedMessage| to players who are either in the same world as them,
+    // where all worlds that the main world consist of are considered as one, as well as to people
+    // in the crew who have opted to receive all messages from everyone.
+    distributeToPlayersInSameVirtualWorld(player, formattedMessage) {
+        const playerVirtualWorld = player.virtualWorld;
+        const playerInMainWorld = VirtualWorld.isMainWorldForCommunication(playerVirtualWorld);
+
+        for (const recipient of server.playerManager) {
+            const recipientVirtualWorld = recipient.virtualWorld;
+            const recipientInMainWorld =
+                VirtualWorld.isMainWorldForCommunication(recipientVirtualWorld);
+
+            let shouldReceiveMessage = false;
+            if (recipientVirtualWorld === playerVirtualWorld)
+                shouldReceiveMessage = true;  // both players are in the same world
+            else if (recipientInMainWorld && playerInMainWorld)
+                shouldReceiveMessage = true;  // both players are in the main world
+            else if (recipient.isAdministrator())
+                shouldReceiveMessage = true;  // the |recipient| is an administrator
+
+            // Send the |formattedMessage| to the |recipient| if they are supposed to read it.
+            if (shouldReceiveMessage)
+                recipient.sendMessage(formattedMessage);
+        }
     }
 
     // /mute [player] [duration=3]

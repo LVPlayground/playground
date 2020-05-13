@@ -917,7 +917,7 @@ lvp_show(playerId, params[]) {
 
     else if (!strcmp(showParameter, "nick", true, 4)) {
         showInfo = true;
-        format(g_message, sizeof(g_message), "Need a nickchange? Join irc.gtanet.com and /msg Nuwani !changenick");
+        format(g_message, sizeof(g_message), "Need a nickchange? Use /account -> Change your nickname or ask an administrator!");
     }
 
     else if (!strcmp(showParameter, "spam", true, 4)) {
@@ -929,12 +929,12 @@ lvp_show(playerId, params[]) {
         showInfo = true;
         format(g_message, sizeof(g_message), "The pirate ship is a peace zone! Please don't hit, shoot or throw grenades on it!");
     }
-    
+
     else if (!strcmp(showParameter, "spraytag", true, 8)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "Spray all 100 tags found around Las Venturas, and get the ability to spawn your own vehicles!");
     }
-    
+
     else if (!strcmp(showParameter, "interior", true, 8)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "Running in to interiors or houses, pausing and teleporting away while being attacked or fighting are NOT allowed!");

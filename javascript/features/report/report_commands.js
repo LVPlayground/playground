@@ -7,8 +7,9 @@ import CommandBuilder from 'components/command_manager/command_builder.js';
 // Here we introduce the manager for the /report-command to give users the ability to send the
 // message to the (IRC-)admins.
 class ReportCommands {
-    constructor(announce) {
+    constructor(announce, nuwani) {
         this.announce_ = announce;
+        this.nuwani_ = nuwani;
 
         this.reportedPlayersWeakMap_ = new WeakMap();
 

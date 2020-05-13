@@ -57,6 +57,7 @@
   "COMMUNICATION_DIAL_REQUEST": "{DC143C}[Phone] %s is calling you. Respond by using either {FFFFFF}/answer{DC143C} or {FFFFFF}/reject{DC143C}.",
   "COMMUNICATION_DIAL_WAITING": "{DC143C}[Phone] You are currently dialing %s...",
   "COMMUNICATION_FILTER_BLOCKED": "@error Your message has been blocked because of a forbidden word.",
+  "COMMUNICATION_LOGIN_BLOCKED": "@error Your message has been blocked because you need to login first. Use '@hi' to reach administrators.",
   "COMMUNICATION_MUTE_BLOCKED": "@error Your message has been blocked because you're muted for another %s.",
   "COMMUNICATION_SERVER_MUTE_BLOCKED": "@error Your message has beeb blocked before all communication has been muted.",
   "COMMUNICATION_SERVER_MUTED": "{DC143C}*** %s has muted all communication on the server.",

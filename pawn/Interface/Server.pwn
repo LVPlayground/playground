@@ -7,6 +7,8 @@ native gpci(playerid, serial[], len);
 native IsValidVehicle(vehicleid);
 
 // Provided by the PlaygroundJS plugin.
+native SetIsRegistered(playerid, bool: isRegistered);
+
 native IsPlayerMinimized(playerId);
 
 native GetPlayerMoneyJS(playerid);

@@ -21,6 +21,25 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         russell = server.playerManager.getById(/* Russell= */ 1);
     });
 
+    it('should block messages until the registered player identifies', assert => {
+        const messages = [];
+
+        manager.addDelegate(new class {
+            onPlayerText(player, message) {
+                messages.push(message);
+                return true;  // handled
+            }
+        });
+
+        // Hack hack hack :)
+        gunther.account.isRegistered_ = true;
+        gunther.account.isIdentified_ = false;
+
+        assert.isTrue(gunther.issueMessage('Hello everyone!'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.COMMUNICATION_LOGIN_BLOCKED));
+    });
+
     it('integrates with the spam tracker', assert => {
         const excessivelyLongMessage = 'a'.repeat(1024);
 

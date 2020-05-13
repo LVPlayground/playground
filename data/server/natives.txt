@@ -5,6 +5,9 @@
 # native EchoMessage(tag[], format[], message[]);
 EchoMessage
 
+# native SetIsRegistered(playerid, bool: isRegistered);
+SetIsRegistered
+
 # native UpdatePlayerSyncedData(playerId, property, intValue, Float: floatValue, stringValue[]);
 UpdatePlayerSyncedData
 

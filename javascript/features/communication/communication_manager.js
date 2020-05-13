@@ -98,6 +98,15 @@ export class CommunicationManager {
         if (!player || !unprocessedMessage || !unprocessedMessage.length)
             return;  // the player is not connected to the server, or they sent an invalid message
 
+        // The |player| might still be identifying themselves, in which case they're muted.
+        if (player.account.isRegistered() && !player.account.isIdentified() &&
+                unprocessedMessage[0] != '@' /* allow messages to administrators */) {
+            player.sendMessage(Message.COMMUNICATION_LOGIN_BLOCKED);
+
+            event.preventDefault();
+            return;
+        }
+
         // The entire server might be muted, we will drop the player's message in that case.
         if (this.muteManager_.isCommunicationMuted() && !player.isAdministrator()) {
             player.sendMessage(Message.COMMUNICATION_SERVER_MUTE_BLOCKED);

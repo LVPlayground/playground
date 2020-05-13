@@ -14,13 +14,6 @@ public OnPlayerText(playerid, text[]) {
 
     PlayerIdlePenalty->resetCurrentIdleTime(playerid);
 
-    // Perhaps the player still has to login?
-    if (Player(playerid)->isLoggedIn() == false && Player(playerid)->isRegistered() == true && text[0] != '@') {
-        SendClientMessage(playerid, Color::Error, "Please login before chatting in the textbox.");
-        SendClientMessage(playerid, Color::Error, "Troubles logging in? Contact the crew using @<message>.");
-        return 0;
-    }
-
     new const bool: playerInMainWorld = IsPlayerInMainWorld(playerid);
     new const playerVirtualWorld = GetPlayerVirtualWorld(playerid);
 

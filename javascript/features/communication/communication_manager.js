@@ -4,6 +4,7 @@
 
 import { AdministratorChannel } from 'features/communication/channels/administrator_channel.js';
 import { CallChannel } from 'features/communication/channels/call_channel.js';
+import { PublicChannel } from 'features/communication/channels/public_channel.js';
 import ScopedCallbacks from 'base/scoped_callbacks.js';
 import { SpamTracker } from 'features/communication/spam_tracker.js';
 import { VipChannel } from 'features/communication/channels/vip_channel.js';
@@ -43,6 +44,7 @@ export class CommunicationManager {
             new AdministratorChannel(),
             new VipChannel(),
             new CallChannel(),
+            new PublicChannel(),
         ];
 
         // Split the |kChannels| based on whether they're a prefix channel or a generic channel.

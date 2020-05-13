@@ -41,6 +41,10 @@ export default class CommunicationCommands extends Feature {
         // - /me
         // - /pm
         // - /r
+        // - /show
+        // - /showmessage
+        // - /slap
+        // - /slapb(ack)
         // - /unignore
 
         // /answer

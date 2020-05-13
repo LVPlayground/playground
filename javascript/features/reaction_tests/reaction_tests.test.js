@@ -167,12 +167,12 @@ describe('ReactionTests', (it, beforeEach) => {
         // Wait for the timeout. Giving the right answer thereafter will be ignored.
         await server.clock.advance(timeout * 1000);
 
-        gunther.issueMessage(answer);
-        assert.equal(gunther.messages.length, 1);
+        gunther.issueMessage(answer);  // goes to main chat
+        assert.equal(gunther.messages.length, 2);
 
         // Wait until we're certain that the next reaction test has started.
         await server.clock.advance((delay + jitter) * 1000);
 
-        assert.equal(gunther.messages.length, 2);
+        assert.equal(gunther.messages.length, 3);
     });
 });

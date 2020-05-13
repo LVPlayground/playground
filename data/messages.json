@@ -58,6 +58,7 @@
   "COMMUNICATION_DIAL_WAITING": "{DC143C}[Phone] You are currently dialing %s...",
   "COMMUNICATION_FILTER_BLOCKED": "@error Your message has been blocked because of a forbidden word.",
   "COMMUNICATION_LOGIN_BLOCKED": "@error Your message has been blocked because you need to login first. Use '@hi' to reach administrators.",
+  "COMMUNICATION_MESSAGE": "{%s}[%d] %s:{FFFFFF} %s",
   "COMMUNICATION_MUTE_BLOCKED": "@error Your message has been blocked because you're muted for another %s.",
   "COMMUNICATION_SERVER_MUTE_BLOCKED": "@error Your message has beeb blocked before all communication has been muted.",
   "COMMUNICATION_SERVER_MUTED": "{DC143C}*** %s has muted all communication on the server.",
@@ -65,6 +66,7 @@
   "COMMUNICATION_SPAM_BLOCKED": "@error Your message has been blocked by our spam filter.",
   "COMMUNICATION_VIP_MESSAGE": "{00E1E1}[VIP] [%d] %s:{FFFFFF} %s",
   "COMMUNICATION_VIP_NO_ACCESS": "@error Only VIPs are allowed to use this chat. Check out {2196F3}/donate{FFFFFF} for more information!",
+  "COMMUNICATION_WORLD_MESSAGE": "{%s}[%d][World: %d] %s:{FFFFFF} %s",
 
   "DEBUG_FRAME_COUNTER": "{33AA33}The server averaged %d FPS in the last %d seconds.",
   "DEBUG_TRACE_INVALID_TIME": "@error A trace must last between 0 and 300 seconds.",

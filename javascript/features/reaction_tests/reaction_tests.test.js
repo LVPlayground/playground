@@ -110,7 +110,7 @@ describe('ReactionTests', (it, beforeEach) => {
         // (1) The first player to give the right answer will be awarded the money.
         await server.clock.advance(2560);
 
-        gunther.issueMessage(driver.activeTest_.answer);
+        await gunther.issueMessage(driver.activeTest_.answer);
 
         assert.equal(gunther.messages.length, 3);
         assert.includes(gunther.messages[1], 'in 2.56 seconds');
@@ -122,7 +122,7 @@ describe('ReactionTests', (it, beforeEach) => {
 
         await server.clock.advance(1230);
 
-        lucy.issueMessage(driver.activeTest_.answer);
+        await lucy.issueMessage(driver.activeTest_.answer);
 
         assert.equal(lucy.account.reactionTests, 0);
         assert.equal(lucy.messages.length, 3);
@@ -141,7 +141,7 @@ describe('ReactionTests', (it, beforeEach) => {
 
         assert.equal(gunther.messages.length, 1);
 
-        gunther.issueMessage(driver.activeTest_.answer);
+        await gunther.issueMessage(driver.activeTest_.answer);
         assert.equal(gunther.messages.length, 3);
 
         // Wait until we're certain that the next reaction test has started.
@@ -167,7 +167,7 @@ describe('ReactionTests', (it, beforeEach) => {
         // Wait for the timeout. Giving the right answer thereafter will be ignored.
         await server.clock.advance(timeout * 1000);
 
-        gunther.issueMessage(answer);  // goes to main chat
+        await gunther.issueMessage(answer);  // goes to main chat
         assert.equal(gunther.messages.length, 2);
 
         // Wait until we're certain that the next reaction test has started.

@@ -97,20 +97,19 @@ export class CommunicationManager {
         if (!player || !unprocessedMessage || !unprocessedMessage.length)
             return;  // the player is not connected to the server, or they sent an invalid message
 
+        // TODO: Once most communication is handled by JavaScript, do all further processing on a
+        // deferred task instead.
+
         // The |player| might still be identifying themselves, in which case they're muted.
         if (player.account.isRegistered() && !player.account.isIdentified() &&
                 unprocessedMessage[0] != '@' /* allow messages to administrators */) {
             player.sendMessage(Message.COMMUNICATION_LOGIN_BLOCKED);
-
-            event.preventDefault();
             return;
         }
 
         // The entire server might be muted, we will drop the player's message in that case.
         if (this.muteManager_.isCommunicationMuted() && !player.isAdministrator()) {
             player.sendMessage(Message.COMMUNICATION_SERVER_MUTE_BLOCKED);
-
-            event.preventDefault();
             return;
         }
 
@@ -123,41 +122,28 @@ export class CommunicationManager {
                 const formattedExpiration = relativeTime({ date1: new Date(), date2: expiration });
 
                 player.sendMessage(Message.COMMUNICATION_MUTE_BLOCKED, formattedExpiration.text);
-
-                event.preventDefault();
                 return;
             }
         }
 
         // Pass the |unprocessedMessage| through the spam filter, which ensures that the |player| is
         // not trying to make everyone else on the server go crazy by... overcommunicating.
-        if (this.spamTracker_.isSpamming(player, unprocessedMessage)) {
-            event.preventDefault();
+        if (this.spamTracker_.isSpamming(player, unprocessedMessage))
             return;
-        }
 
         // Process the |message| through the message filter, which may block it as well.
         const message = this.messageFilter_.filter(player, unprocessedMessage);
-        if (!message) {
-            event.preventDefault();
+        if (!message)
             return;
-        }
-
-        // TODO: Once most communication is handled by JavaScript, do all further processing on a
-        // deferred task instead.
 
         for (const delegate of this.delegates_) {
-            if (!!delegate.onPlayerText(player, message)) {
-                event.preventDefault();
+            if (!!delegate.onPlayerText(player, message))
                 return;
-            }
         }
 
         // First check prefix-based channels, as we can check them off quite easily.
         const prefixChannel = this.prefixChannels_.get(message[0]);
         if (prefixChannel !== undefined) {
-            event.preventDefault();
-
             if (!prefixChannel.confirmChannelAccessForPlayer(player))
                 return;  // they have no access, an error message has been sent
             

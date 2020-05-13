@@ -43,7 +43,7 @@ const GET_ACTIVE_MEMBERS_FOR_GANG_QUERY = `
     LEFT JOIN
         users_mutable ON users_mutable.user_id = users_gangs.user_id
     WHERE
-        users_gangs.gang_id = ?
+        users_gangs.gang_id = ? AND
         users_gangs.left_gang IS NULL AND
         (
             (users_mutable.online_time >= 3600000) OR

@@ -28,7 +28,7 @@ export class AccountManager {
     // Sets whether the |playerid| is registered, and has to identify to their account prior to
     // being able to interact with the server.
     setIsRegistered(playerid, isRegistered) {
-        const player = server.playerManager.getById(event.playerid);
+        const player = server.playerManager.getById(playerid);
         if (player)
             player.account.isRegistered_ = !!isRegistered;
         

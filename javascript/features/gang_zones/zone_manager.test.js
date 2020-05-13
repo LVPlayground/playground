@@ -8,16 +8,20 @@ import { ZoneGang } from 'features/gang_zones/structures/zone_gang.js';
 import { ZoneManager } from 'features/gang_zones/zone_manager.js';
 import { Zone } from 'features/gang_zones/structures/zone.js';
 
-describe('ZoneManager', (it, beforeEach) => {
+describe('ZoneManager', (it, beforeEach, afterEach) => {
     // Fake class representing the same interface as ZoneNatives, to mock out what the manager would
     // have done on the SA-MP server to create the gang zones.
     class FakeZoneNatives {
         zoneId_ = 1;
         zones = new Map();
+        showForPlayerCalls = 0;
 
         createZone(area, color) {
             this.zones.set(this.zoneId_, { area, color });
             return this.zoneId_++;
+        }
+        showZoneForPlayer(player, zoneId, color) {
+            this.showForPlayerCalls++;
         }
         deleteZone(zoneId) {
             this.zones.delete(zoneId);
@@ -38,6 +42,8 @@ describe('ZoneManager', (it, beforeEach) => {
         natives = new FakeZoneNatives();
         manager = new ZoneManager(natives);
     });
+
+    afterEach(() => manager.dispose());
 
     it('should be able to create, update and delete zones on the server', assert => {
         const zoneGang = new ZoneGang(/* id= */ 9001);
@@ -68,6 +74,12 @@ describe('ZoneManager', (it, beforeEach) => {
             assert.equal(createdZone.area.minX, 20);
             assert.equal(createdZone.area.minY, 30);
         }
+
+        assert.equal(natives.showForPlayerCalls, 0);
+        dispatchEvent('playerspawn', {
+            playerid: server.playerManager.getById(/* Gunther= */ 0).id,
+        });
+        assert.equal(natives.showForPlayerCalls, 1);
 
         manager.deleteZone(zone);
         assert.equal(natives.zones.size, 0);

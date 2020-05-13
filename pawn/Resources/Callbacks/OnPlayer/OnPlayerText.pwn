@@ -21,15 +21,6 @@ public OnPlayerText(playerid, text[]) {
         return 0;
     }
 
-    // Phone calls.
-    if (CallManager->isCalling(playerid) == true) {
-        new calleeId = CallManager->isCallingId(playerid);
-        if (CallManager->isCalling(calleeId) == true)
-            CallManager->onPhoneMessage(playerid, calleeId, text);
-
-        return 0;
-    }
-
     new const bool: playerInMainWorld = IsPlayerInMainWorld(playerid);
     new const playerVirtualWorld = GetPlayerVirtualWorld(playerid);
 

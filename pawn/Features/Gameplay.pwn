@@ -27,8 +27,6 @@
 // or phone up another player.
 #include "Features/Gameplay/Communication/PrivateMessagingManager.pwn"
 #include "Features/Gameplay/Communication/PrivateMessagingCommands.pwn"
-#include "Features/Gameplay/Communication/CallManager.pwn"
-#include "Features/Gameplay/Communication/CallCommands.pwn"
 
 // We have various features intended to enhance the experience available to our more regular players
 // and those who donated to Las Venturas Playground. The VIP classes together manage the features,

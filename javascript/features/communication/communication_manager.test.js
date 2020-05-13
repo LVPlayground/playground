@@ -308,6 +308,4 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
             lucy.messages[1],
             Message.format(Message.COMMUNICATION_CALL_DISCONNECTED, gunther.name, 'you'));
     });
-
-    it.fails();
 });

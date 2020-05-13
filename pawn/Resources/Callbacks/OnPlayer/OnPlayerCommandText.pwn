@@ -1012,43 +1012,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         return 1;
     }
 
-    if (strcmp(cmd, "/me", true) == 0) {
-        new message[128];
-        message = strtok(cmdtext, idx);
-
-        if (!strlen(message)) {
-            SendClientMessage(playerid, Color::Information, "Usage: /me [message]");
-            return 1;
-        }
-
-        new actionText[256];
-        actionText = right(cmdtext, (strlen(cmdtext)-4));
-
-        new const bool: isIsolated = PlayerSyncedData(playerid)->isolated();
-
-        SetPlayerChatBubble(playerid, actionText, ColorManager->playerColor(playerid), 50, 10*1000);
-
-        format(string, sizeof(string), "* %s %s", Player(playerid)->nicknameString(), actionText);
-        for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
-            if (!Player(subjectId)->isConnected())
-                continue;
-
-            if (GetPlayerVirtualWorld(subjectId) != GetPlayerVirtualWorld(playerid)
-                && (!PlayerSettings(subjectId)->isAllVirtualWorldChatEnabled() || !Player(subjectId)->isAdministrator()))
-                continue;
-
-            if (isIsolated && subjectId != playerid)
-                continue;
-
-            SendClientMessage(subjectId, ColorManager->playerColor(playerid), string);
-        }
-
-        format(string, sizeof(string), "%d %s %s", playerid, Player(playerid)->nicknameString(), actionText);
-        EchoMessage("status", "dss", string);
-
-        return 1;
-    }
-
     if (strcmp(cmd, "/borrow", true) == 0) {
         new amount[128];
         amount = strtok(cmdtext, idx);

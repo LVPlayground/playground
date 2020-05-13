@@ -479,14 +479,6 @@ Float:GetDistance(playerId, Float: x, Float: y, Float: z) {
     return floatsqroot(floatpower(floatsqroot(floatpower(floatsub(x2, x1), 2) + floatpower(floatsub(y2, y1), 2)), 2) + floatpower(floatsub(z2, z1), 2));
 }
 
-right(source[], len) {
-    new retval[255], srclen;
-    srclen = strlen(source);
-    strmid(retval, source, srclen - len, srclen, sizeof(retval));
-
-    return retval;
-}
-
 formatPrice(price) {
     new string[256], formatted[256];
 

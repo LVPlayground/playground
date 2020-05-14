@@ -14,6 +14,7 @@ native IsPlayerMinimized(playerId);
 native GetPlayerMoneyJS(playerid);
 native GivePlayerMoneyJS(playerid, amount);
 native ResetPlayerMoneyJS(playerid);
+native GetAccountBalanceJS(playerid, balance[]);
 native DepositToAccountJS(playerid, amount);
 
 // Provided by the Communication feature in JavaScript.

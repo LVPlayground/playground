@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { format } from 'base/string_formatter.js';
+
 // Wrapper for any native Pawn function calls the disposition monitor has to make, to make sure that
 // these can be overridden by the JavaScript testing routines.
 export class FinancialNativeCalls {
@@ -25,6 +27,8 @@ export class FinancialNatives {
             'GivePlayerMoneyJS', 'ii', FinancialNatives.prototype.givePlayerMoney.bind(this));
         provideNative(
             'ResetPlayerMoneyJS', 'i', FinancialNatives.prototype.resetPlayerMoney.bind(this));
+        provideNative(
+            'GetAccountBalanceJS', 'iS', FinancialNatives.prototype.getAccountBalance.bind(this));
         provideNative(
             'DepositToAccountJS', 'ii', FinancialNatives.prototype.depositToAccount.bind(this));
     }
@@ -57,6 +61,15 @@ export class FinancialNatives {
         return 0;
     }
 
+    // native GetAccountBalanceJS(playerid, balance[]);
+    getAccountBalance(playerid) {
+        const player = server.playerManager.getById(playerid);
+        if (player)
+            return [ format('%$', player.account.bankAccountBalance) ];
+        
+        return [ '$0' ];
+    }
+
     // native DepositToAccountJS(playerid, amount);
     depositToAccount(playerid, amount) {
         const player = server.playerManager.getById(playerid);
@@ -74,6 +87,7 @@ export class FinancialNatives {
 
     dispose() {
         provideNative('DepositToAccountJS', 'ii', () => 0);
+        provideNative('GetAccountBalanceJS', 'iS', () => [ '$0' ]);
         provideNative('GetPlayerMoneyJS', 'i', () => 0);
         provideNative('GivePlayerMoneyJS', 'ii', () => 0);
         provideNative('ResetPlayerMoneyJS', 'i', () => 0);

@@ -67,7 +67,7 @@ testRunner.run('.*\.test\.js').then(time => {
         'friends', 'killtime', 'nuwani_commands', 'playground', 'punishments', 'radio', 'report', 'vehicles',
 
         // Player-related features
-        'account', 'player_favours', 'player_settings', 'player_weapons',
+        'account', 'player_favours', 'player_settings',
 
         // Communication features
         'communication_commands', 'reaction_tests',

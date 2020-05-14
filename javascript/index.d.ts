@@ -6,7 +6,6 @@ import Assert from 'base/test/assert.js';
 import { Player } from 'entities/player.js';
 import { PlayerAccountSupplement } from 'features/account_provider/player_account_supplement.js';
 import { PlayerSettingsSupplement } from 'features/player_settings/player_settings_supplement.js';
-import { PlayerWeaponSupplement } from 'features/player_weapons/player_weapons_supplement.js';
 import Server from './server.js';
 
 import 'base/index.d.ts';
@@ -50,7 +49,6 @@ declare global {
     interface Player {
         account?: PlayerAccountSupplement;
         settings?: PlayerSettingsSupplement;
-        weapons?: PlayerWeaponSupplement
     }
 
     // ---------------------------------------------------------------------------------------------

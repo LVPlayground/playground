@@ -71,6 +71,7 @@
   "DEATH_MATCH_AVAILABLE_ZONES" : "Available DM zones are: /dm %s.",
   "DEATH_MATCH_INVALID_ZONE" : "zone %d is not a valid zone.",
   "DEATH_MATCH_TELEPORT_BLOCKED": "@error Sorry, you can't enter a DM zone now because you %s.",
+  "DEATH_MATCH_TELEPORTED": "%s has joined /deathmatch %d",
   "COMMUNICATION_ADMIN_MESSAGE": "{FFFF00}* %s %s (Id:%d): %s",
 
   "DEBUG_FRAME_COUNTER": "{33AA33}The server averaged %d FPS in the last %d seconds.",

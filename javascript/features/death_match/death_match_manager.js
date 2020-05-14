@@ -7,8 +7,9 @@ import { DeathMatchLocation } from 'features/death_match/death_match_location.js
 export class DeathMatchManger {
     lastQuarterUsedLocationsQueue = [];
 
-    constructor(abuse) {
+    constructor(abuse, announce) {
         this.abuse_ = abuse;
+        this.announce_ = announce;
     }
 
     // The player wants to join the death match.
@@ -39,15 +40,16 @@ export class DeathMatchManger {
         player.time = [location.time, 0];
         player.virtualWorld = location.world;
         player.interiorId = location.interiorId;
-        
-        //TODO: Set player bounds
 
-        //TODO: Reset weapons
+        player.setPlayerBounds(location.boundaries[0], location.boundaries[1], 
+            location.boundaries[2], location.boundaries[3]);
+
+        player.resetWeapons();
         for(const weaponInfo of location.weapons) {
-            // TODO: set weapons.
+            player.giveWeapon(weaponInfo.weaponId, weaponInfo.ammo);
         }
 
-        // TODO: Announce player has joined DM zone.
+        this.announce_announceToPlayers(Message.DEATH_MATCH_TELEPORTED, player.name, zone);
     }
 
     // This returns a semi-random spawn index. It keeps the first quarter of locations used in 

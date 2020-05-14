@@ -39,7 +39,7 @@ class PlayerActivity <playerId (MAX_PLAYERS)> {
      * Returns whether the player is engaged in a JavaScript-owned activity.
      */
     public bool: isJavaScriptActivity() {
-        return m_activity == PlayerActivityJsRace;
+        return m_activity != PlayerActivityNone;
     }
 
     /**

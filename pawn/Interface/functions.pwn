@@ -731,8 +731,6 @@ GameTextForAllEx(const message[], time, style, playerWorldId = -1) {
 
             GameTextForPlayer(playerId, message, time, style);
         }
-
-        lastShowmsg = Time->currentTime();
     }
     return 1;
 }

@@ -430,7 +430,7 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                 return 1;
 
             switch(listitem) {
-                case 0: ShowPlayerDialog(playerid, DIALOG_COMMANDS_MAIN, DIALOG_STYLE_MSGBOX, "Main commands", "/help\r\n/stats\r\n/nos\r\n/getstats\r\n/showmessage\r\n/world\r\n/my\r\n/minigames\r\n/jump\r\n/cd", "Back", "Exit");
+                case 0: ShowPlayerDialog(playerid, DIALOG_COMMANDS_MAIN, DIALOG_STYLE_MSGBOX, "Main commands", "/help\r\n/stats\r\n/nos\r\n/getstats\r\n/world\r\n/my\r\n/minigames\r\n/jump\r\n/cd", "Back", "Exit");
                 case 1: ShowPlayerDialog(playerid, DIALOG_COMMANDS_COMMUNICATION, DIALOG_STYLE_MSGBOX, "Communication commands", "@ (contact crew)\r\n# (VIP-chat)\r\n! (Gang-chat)\r\n/me\r\n/pm\r\n/r(eply)\r\n/ircpm\r\n/call\r\n/answer\r\n/hangup\r\n/ignore\r\n/unignore\r\n/ignored", "Continue", "Exit");
 			    case 2: ShowPlayerDialog(playerid, DIALOG_COMMANDS_TELEPORTATION, DIALOG_STYLE_MSGBOX, "Teleportation commands", "/locations\r\n/taxi\r\n/tow\r\n/tp\r\n/ctp\r\n/dive\r\n/cardive\r\n/locate\r\n/tune\r\n/world", "Continue", "Exit");
                 case 3: ShowPlayerDialog(playerid, DIALOG_COMMANDS_FIGHTING, DIALOG_STYLE_MSGBOX, "Fighting commands", "/bounties\r\n/hitman\r\n/fight\r\n/gangs", "Continue", "Exit");

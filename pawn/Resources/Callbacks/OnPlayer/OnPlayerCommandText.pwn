@@ -520,7 +520,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(countdown,      9, PlayerLevel);
     lvp_command(interest,       8, PlayerLevel);
     lvp_command(stats,          5, PlayerLevel);
-    lvp_command(showmessage,   11, PlayerLevel);
     lvp_command(jump,           4, PlayerLevel);
     lvp_command(tune,           4, PlayerLevel);
     lvp_command(My,             2, PlayerLevel);

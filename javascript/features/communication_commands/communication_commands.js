@@ -52,7 +52,6 @@ export default class CommunicationCommands extends Feature {
         // - /ircpm
         // - /pm
         // - /r
-        // - /showmessage
         // - /slap
         // - /slapb(ack)
 

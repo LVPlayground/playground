@@ -45,7 +45,6 @@ new HeliKill[MAX_PLAYERS];
 new preventKillLamers[MAX_PLAYERS];
 new playerVehExp[MAX_PLAYERS];
 new g_PlayerMenu[ MAX_PLAYERS ];
-new lastShowmsg;
 new isInSF[MAX_PLAYERS];
 new g_bPlayerGodmode[ MAX_PLAYERS ];
 new g_LastSlapTime[MAX_PLAYERS];

@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import MockPawnInvoke from 'base/test/mock_pawn_invoke.js';
+
 import { kCallExpirationTimeSec } from 'features/communication_commands/communication_commands.js';
 
 describe('CommunicationCommands', (it, beforeEach) => {
@@ -33,6 +35,16 @@ describe('CommunicationCommands', (it, beforeEach) => {
 
         assert.equal(gunther.messages.length, 3);
         assert.includes(gunther.messages[1], 'Hello Geroge!!');
+    });
+
+    it('should enable administrators to clear the chat', async (assert) => {
+        const mockInvoke = MockPawnInvoke.getInstance();
+        const currentCalls = mockInvoke.calls.length;
+
+        assert.isTrue(await russell.issueCommand('/clear'));
+
+        assert.equal(mockInvoke.calls.length, currentCalls + 120);
+        assert.equal(mockInvoke.calls[currentCalls].fn, 'SendClientMessageToAll');
     });
 
     it('should enable people to call each other', async (assert) => {

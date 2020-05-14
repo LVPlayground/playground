@@ -48,6 +48,7 @@
   "COMMUNICATION_CALL_DISCONNECTED_LEFT": "{DC143C}[Phone] Your conversation with %s has ended because they left the server.",
   "COMMUNICATION_CALL_DISCONNECTED_UNLOAD": "{DC143C}[Phone] Your conversation with %s has ended because the feature is being reloaded.",
   "COMMUNICATION_CALL_MESSAGE": "{DC143C}[Phone] [%d] %s:{FFFFFF} %s",
+  "COMMUNICATION_CLEAR_ADMIN": "%s (Id:%s) has cleared the chat.",
   "COMMUNICATION_DIAL_ANSWER_UNKNOWN": "{DC143C}[Phone] There are no calls to answer right now.",
   "COMMUNICATION_DIAL_BUSY_SELF": "{DC143C}[Phone] Your phone is already calling %s. Use {FFFFFF}/hangup{DC143C} first.",
   "COMMUNICATION_DIAL_BUSY_RECIPIENT": "{DC143C}[Phone] %s is already using their phone, they need to hang up first.",

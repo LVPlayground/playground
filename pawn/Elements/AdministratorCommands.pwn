@@ -998,14 +998,3 @@ lvp_hs(playerId, params[]) {
     return 1;
     #pragma unused params
 }
-
-lvp_clear(playerId, params[]) {
-    for (new j = 1; j <= 120; j++)
-        SendClientMessageToAll(0, "\n");
-
-    format(g_message, sizeof(g_message), "%s (Id:%d) has cleared the chat.", Player(playerId)->nicknameString(), playerId);
-    Admin(playerId, g_message);
-
-    return 1;
-    #pragma unused params
-}

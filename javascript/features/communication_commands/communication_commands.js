@@ -38,7 +38,6 @@ export default class CommunicationCommands extends Feature {
         this.nuwani_ = this.defineDependency('nuwani');
 
         // TODO:
-        // - /clear
         // - /ircpm
         // - /pm
         // - /r
@@ -61,6 +60,11 @@ export default class CommunicationCommands extends Feature {
         server.commandManager.buildCommand('call')
             .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
             .build(CommunicationCommands.prototype.onCallCommand.bind(this));
+
+        // /clear
+        server.commandManager.buildCommand('clear')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .build(CommunicationCommands.prototype.onClearCommand.bind(this));
 
         // /hangup
         server.commandManager.buildCommand('hangup')
@@ -204,6 +208,21 @@ export default class CommunicationCommands extends Feature {
             player.sendMessage(Message.COMMUNICATION_DIAL_EXPIRED, targetPlayer.name);
             targetPlayer.sendMessage(Message.COMMUNICATION_DIAL_EXPIRED_RECIPIENT, player.name);
         });
+    }
+
+    // /clear
+    //
+    // Clears the chat box for all in-game players. This is generally useful when someone has said
+    // something truly awful that shouldn't be seen by anyone.
+    onClearCommand(player) {
+        const kEmptyMessages = 120;
+
+        // Use SendClientMessageToAll() to reduce the number of individual Pawn calls.
+        for (let message = 0; message < kEmptyMessages; ++message)
+            pawnInvoke('SendClientMessageToAll', 'is', 0, ' ');
+        
+        this.announce_().announceToAdministrators(
+            Message.COMMUNICATION_CLEAR_ADMIN, player.name, player.id);
     }
 
     // /hangup
@@ -464,6 +483,7 @@ export default class CommunicationCommands extends Feature {
         server.commandManager.removeCommand('ignored');
         server.commandManager.removeCommand('ignore');
         server.commandManager.removeCommand('hangup');
+        server.commandManager.removeCommand('clear');
         server.commandManager.removeCommand('call');
         server.commandManager.removeCommand('answer');
         server.commandManager.removeCommand('announce');

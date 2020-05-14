@@ -27,6 +27,10 @@ export class CommunicationCommands {
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(CommunicationCommands.prototype.onAnnounceCommand.bind(this));
 
+        // !discord
+        this.commandManager_.buildCommand('discord')
+            .build(CommunicationCommands.prototype.onDiscordCommand.bind(this));
+
         // !msg [message]
         this.commandManager_.buildCommand('msg')
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
@@ -100,6 +104,13 @@ export class CommunicationCommands {
         this.nuwani_().echo('notice-announce', message);
 
         context.respond('3Success: The announcement has been published.');
+    }
+
+    // !discord
+    //
+    // Displays information on how people can join our Discord channel.
+    onDiscordCommand(context) {
+        context.respond('5LVP Discord: https://discord.sa-mp.nl/');
     }
 
     // !msg [message]
@@ -179,6 +190,7 @@ export class CommunicationCommands {
         this.commandManager_.removeCommand('say');
         this.commandManager_.removeCommand('pm');
         this.commandManager_.removeCommand('msg');
+        this.commandManager_.removeCommand('discord');
         this.commandManager_.removeCommand('announce');
         this.commandManager_.removeCommand('admin');
     }

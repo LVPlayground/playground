@@ -83,6 +83,60 @@ describe('DirectCommunicationCommands', (it, beforeEach) => {
             Message.format(Message.COMMUNICATION_PM_IRC_SENDER, 'Nuwani', 'Hey Geroge!'));
     });
 
+    it('should be possible to send regular private messages', async (assert) => {
+        const lucy = server.playerManager.getById(/* Lucy= */ 2);
+        const nuwani = server.featureManager.loadFeature('nuwani');
+
+        // (1) It's not possible to send a message to oneself.
+        assert.isTrue(await gunther.issueCommand('/pm Gunther Hello!'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.COMMUNICATION_SPM_SELF));
+
+        // (2) Players can send private messages to each other.
+        assert.isTrue(await gunther.issueCommand('/pm Lucy Hi'));
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(
+            gunther.messages[1],
+            Message.format(Message.COMMUNICATION_PM_SENDER, lucy.name, lucy.id, 'Hi'));
+
+        assert.equal(lucy.messages.length, 1);
+        assert.equal(
+            lucy.messages[0],
+            Message.format(Message.COMMUNICATION_PM_RECEIVER, gunther.name, gunther.id, 'Hi'));
+
+        // (3) Players can reply with the `/r` command.
+        assert.isTrue(await lucy.issueCommand('/r notgeorge'));
+        assert.equal(gunther.messages.length, 3);
+        assert.equal(
+            gunther.messages[2],
+            Message.format(Message.COMMUNICATION_PM_RECEIVER, lucy.name, lucy.id, 'notgeroge'));
+
+        assert.equal(lucy.messages.length, 2);
+        assert.equal(
+            lucy.messages[1],
+            Message.format(Message.COMMUNICATION_PM_SENDER, gunther.name, gunther.id, 'notgeroge'));
+
+        // (4) Administrators are appropriately informed.
+        assert.equal(russell.messages.length, 2);
+        assert.equal(
+            russell.messages[1],
+            Message.format(Message.COMMUNICATION_PM_ADMIN, lucy.name, lucy.id, gunther.name,
+                           gunther.id, 'notgeroge'));
+
+        // (5) People watching on IRC are appropriately informed.
+        assert.equal(nuwani.messagesForTesting.length, 2);
+        assert.deepEqual(nuwani.messagesForTesting[1], {
+            tag: 'chat-private',
+            params: [
+                lucy.name,
+                lucy.id,
+                gunther.name,
+                gunther.id,
+                'notgeroge',
+            ],
+        });
+    });
+
     it('should be able to send secret private messages', async (assert) => {
         const playground = server.featureManager.loadFeature('playground');
 

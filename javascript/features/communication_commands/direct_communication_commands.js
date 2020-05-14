@@ -10,7 +10,8 @@ import ScopedCallbacks from 'base/scoped_callbacks.js';
 export class DirectCommunicationCommands {
     // Types of recent communication to power the `/r` command.
     static kIrcPM = 0;
-    static kSecretPM = 1;
+    static kPM = 1;
+    static kSecretPM = 2;
 
     callbacks_ = null;
     communication_ = null;
@@ -36,15 +37,18 @@ export class DirectCommunicationCommands {
             this, DirectCommunicationCommands.prototype.registerTrackedCommands);
 
         this.registerTrackedCommands();
-
-        // TODO:
-        // - /pm
         
         // /ircpm [username] [message]
         server.commandManager.buildCommand('ircpm')
             .parameters([ { name: 'username',  type: CommandBuilder.WORD_PARAMETER },
                           { name: 'message', type: CommandBuilder.SENTENCE_PARAMETER } ])
             .build(DirectCommunicationCommands.prototype.onIrcPrivateMessageCommand.bind(this));
+
+        // /pm [player] [message]
+        server.commandManager.buildCommand('pm')
+            .parameters([ { name: 'player',  type: CommandBuilder.PLAYER_PARAMETER },
+                          { name: 'message', type: CommandBuilder.SENTENCE_PARAMETER } ])
+            .build(DirectCommunicationCommands.prototype.onPrivateMessageCommand.bind(this));
 
         // /r [message]
         server.commandManager.buildCommand('r')
@@ -54,7 +58,7 @@ export class DirectCommunicationCommands {
         // /spm [player] [message]
         server.commandManager.buildCommand('spm')
             .restrict(player => this.playground_().canAccessCommand(player, 'spm'))
-            .parameters([ { name: 'target',  type: CommandBuilder.PLAYER_PARAMETER },
+            .parameters([ { name: 'player',  type: CommandBuilder.PLAYER_PARAMETER },
                           { name: 'message', type: CommandBuilder.SENTENCE_PARAMETER } ])
             .build(DirectCommunicationCommands.prototype.onSecretPrivateMessageCommand.bind(this));
     }
@@ -86,7 +90,7 @@ export class DirectCommunicationCommands {
 
         // Share the message with administrators in-game as well.
         for (const otherPlayer of server.playerManager) {
-            if (!otherPlayer.isAdministrator())
+            if (!otherPlayer.isAdministrator() || otherPlayer === player)
                 continue;
             
             otherPlayer.sendMessage(adminMessage);
@@ -108,6 +112,46 @@ export class DirectCommunicationCommands {
             type: DirectCommunicationCommands.kIrcPM,
             username: event.username,
             id: player.id,
+        });
+    }
+
+    // /pm [player] [message]
+    //
+    // Enables players to send private messages to each other. They're not really private because
+    // administrators are able to see them, but other players are not. It's something.
+    onPrivateMessageCommand(player, target, unprocessedMessage) {
+        if (player === target) {
+            player.sendMessage(Message.COMMUNICATION_PM_SELF);
+            return;
+        }
+
+        const message = this.communication_().processForDistribution(player, unprocessedMessage);
+        if (!message)
+            return;  // the message was blocked
+        
+        player.sendMessage(Message.COMMUNICATION_PM_SENDER, target.name, target.id, message);
+        target.sendMessage(Message.COMMUNICATION_PM_RECEIVER, player.name, player.id, message);
+
+        this.nuwani_().echo(
+            'chat-private', player.name, player.id, target.name, target.id, message);
+        
+        const adminMessage =
+            Message.format(Message.COMMUNICATION_PM_ADMIN, player.name, player.id, target.name,
+                           target.id, message);
+
+        // Inform in-game administrators about the message as well.
+        for (const otherPlayer of server.playerManager) {
+            if (otherPlayer.isAdministrator() && otherPlayer !== player && otherPlayer !== target)
+                otherPlayer.sendMessage(adminMessage);
+        }
+
+        // Store the interaction to enable |target| to use the `/r` command. This could enable the
+        // |target| to use `/spm` without an exception, but hey, that's probably ok.
+        this.previousMessage_.set(target, {
+            type: DirectCommunicationCommands.kPM,
+            userId: player.account.userId,
+            id: player.id,
+            name: player.id,
         });
     }
 
@@ -156,6 +200,9 @@ export class DirectCommunicationCommands {
             case DirectCommunicationCommands.kIrcPM:
                 this.onIrcPrivateMessageCommand(player, previousMessage.username, message);
                 return;
+            case DirectCommunicationCommands.kPM:
+                this.onPrivateMessageCommand(player, target, message);
+                return;
             case DirectCommunicationCommands.kSecretPM:
                 this.onSecretPrivateMessageCommand(player, target, message);
                 return;
@@ -189,6 +236,7 @@ export class DirectCommunicationCommands {
 
     dispose() {
         server.commandManager.removeCommand('ircpm');
+        server.commandManager.removeCommand('pm');
         server.commandManager.removeCommand('spm');
         server.commandManager.removeCommand('r');
 

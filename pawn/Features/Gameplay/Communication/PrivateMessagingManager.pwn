@@ -97,7 +97,7 @@ class PrivateMessagingManager {
             SendClientMessage(player, Color::PlayerStatistics, notice);
         }
 
-        // Show the message to the receiver.
+        // Show the message to the sender.
         format(notice, sizeof(notice), "{FCF545}PM to [%d] %s: {FFFFFF}%s", receiverId, receiver, message);
         SendClientMessage(senderId, Color::White, notice);
 

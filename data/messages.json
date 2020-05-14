@@ -22,6 +22,8 @@
   "ANNOUNCE_MINIGAME": "{CCD782}Sign up for the {838F31}%s{CCD782}! Type {838F31}%s{CCD782} to join.",
   "ANNOUNCE_NEWS_MINIGAME_JOINED": "~r~~h~%s~w~ has signed up for ~y~%s~w~ (~p~%s~w~)",
   "ANNOUNCE_REPORT": "{FFFF00}* Report by %s (Id:%d): Player: %s (Id:%d) - Reason: %s",
+  "ANNOUNCE_SHOW_ADMIN": "%s (Id:%d) has used /show %s.",
+  "ANNOUNCE_SHOW_UNKNOWN": "@usage /show [%s]",
   "ANNOUNCEMENT_TOGGLED":  "@success The {FFA500}%s{A9C4E4} announcement has been %s for you.",
 
   "BANK_NEED_ACCOUNT": "@error You need to register on https://sa-mp.nl/ to get a bank account!",
@@ -65,7 +67,7 @@
   "COMMUNICATION_MESSAGE": "{%s}[%d] %s:{FFFFFF} %s",
   "COMMUNICATION_ME": "* %s %s",
   "COMMUNICATION_MUTE_BLOCKED": "@error Your message has been blocked because you're muted for another %s.",
-  "COMMUNICATION_SERVER_MUTE_BLOCKED": "@error Your message has beeb blocked because all communication has been muted.",
+  "COMMUNICATION_SERVER_MUTE_BLOCKED": "@error Your message has been blocked because all communication has been muted.",
   "COMMUNICATION_SERVER_MUTED": "{DC143C}*** %s has muted all communication on the server.",
   "COMMUNICATION_SERVER_UNMUTED": "{DC143C}*** %s has unmuted all communication on the server.",
   "COMMUNICATION_SPAM_BLOCKED": "@error Your message has been blocked by our spam filter.",

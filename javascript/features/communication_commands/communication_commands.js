@@ -7,6 +7,9 @@ import Feature from 'components/feature_manager/feature.js';
 
 import { relativeTime } from 'base/time.js';
 
+// In which file are messages for the `/show` command stored?
+const kShowCommandDataFile = 'data/show.json';
+
 // After how many seconds does a `/call` expire, because they didn't pick up?
 export const kCallExpirationTimeSec = 15;
 
@@ -20,6 +23,7 @@ export default class CommunicationCommands extends Feature {
 
     dialToken_ = new WeakMap();
     dialing_ = new WeakMap();
+    showMessages_ = null;
 
     // Gets the CallChannel from the Communication feature.
     get callChannel() { return this.communication_().manager_.getCallChannel(); }
@@ -41,10 +45,13 @@ export default class CommunicationCommands extends Feature {
         // - /ircpm
         // - /pm
         // - /r
-        // - /show
         // - /showmessage
         // - /slap
         // - /slapb(ack)
+
+        // TODO:
+        // - Gunther running /show in 5 minute intervals:
+        //   {"beg", "donate", "irc", "report", "rules", "forum", "reg", "swear", "weapons"};
 
         // /announce [message]
         server.commandManager.buildCommand('announce')
@@ -103,6 +110,14 @@ export default class CommunicationCommands extends Feature {
         // /reject
         server.commandManager.buildCommand('reject')
             .build(CommunicationCommands.prototype.onRejectCommand.bind(this));
+
+        // /show [message] [player]?
+        server.commandManager.buildCommand('show')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .parameters([
+                { name: 'message', type: CommandBuilder.WORD_PARAMETER },
+                { name: 'player', type: CommandBuilder.PLAYER_PARAMETER, optional: true }])
+            .build(CommunicationCommands.prototype.onShowCommand.bind(this));
 
         // /showreport
         server.commandManager.buildCommand('showreport')
@@ -322,8 +337,16 @@ export default class CommunicationCommands extends Feature {
                 visibilityManager.selectMessageForPlayer(player, playerVirtualWorld, recipient,
                                                          { localMessage, remoteMessage });
 
-            if (recipientMessage)
+            if (!recipientMessage)
+                continue;  // the |recipient| should not receive the message
+
+            if (!Array.isArray(recipientMessage)) {
                 recipient.sendMessage(recipientMessage);
+                continue;
+            }
+
+            for (const message of recipientMessage)
+                recipient.sendMessage(message);
         }
     }
 
@@ -405,6 +428,45 @@ export default class CommunicationCommands extends Feature {
         this.dialing_.delete(targetPlayer);
     }
 
+    // /show [message] [player]?
+    //
+    // Shows a particular |message| to the user. The individual messages will be loaded from a JSON
+    // file, lazily, on first usage of the actual command.
+    onShowCommand(player, message, targetPlayer) {
+        if (!this.showMessages_) {
+            const messages = JSON.parse(readFile(kShowCommandDataFile));
+
+            this.showMessages_ = new Map();
+            for (const [identifier, text] of Object.entries(messages))
+                this.showMessages_.set(identifier, text);
+        }
+
+        const messageText = this.showMessages_.get(message);
+        if (!messageText) {
+            player.sendMessage(Message.ANNOUNCE_SHOW_UNKNOWN,
+                               Array.from(this.showMessages_.keys()).sort().join('/'));
+            return;
+        }
+
+        // Fast-path if there is a |targetPlayer|, just send the message to them.
+        if (targetPlayer) {
+            targetPlayer.sendMessage(Message.ANNOUNCE_HEADER);
+            targetPlayer.sendMessage(Message.ANNOUNCE_MESSAGE, messageText);
+            targetPlayer.sendMessage(Message.ANNOUNCE_HEADER);
+            return;
+        }
+
+        const header = Message.ANNOUNCE_HEADER;
+        const localMessage = Message.format(Message.ANNOUNCE_ALL, messageText);
+
+        // Assume that the |player| is sending the message in context, so the recipients should be
+        // in the same world as they are -- this automatically excludes minigames.
+        this.distributeMessageToPlayers(player, [ header, localMessage, header ], null);
+
+        this.announce_().announceToAdministrators(
+            Message.ANNOUNCE_SHOW_ADMIN, player.name, player.id, message);
+    }
+
     // /showreport [player]
     //
     // Shows a message to the given player on how to report players in the future, and mutes them
@@ -477,6 +539,7 @@ export default class CommunicationCommands extends Feature {
         server.commandManager.removeCommand('unmute');
         server.commandManager.removeCommand('unignore');
         server.commandManager.removeCommand('showreport');
+        server.commandManager.removeCommand('show');
         server.commandManager.removeCommand('reject');
         server.commandManager.removeCommand('muted');
         server.commandManager.removeCommand('mute');

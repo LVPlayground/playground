@@ -26,7 +26,6 @@ class DeprecatedTimerRuntime {
 
     new m_fiveSecondTicker = 0;
     new m_threeMinuteTicker = 0;
-    new m_fiveMinuteTicker = 0;
     new m_twentyMinuteTicker = 0;
     new m_ninetyMinuteTicker = 0;
 
@@ -159,12 +158,6 @@ class DeprecatedTimerRuntime {
             ShootingPlaceUpdate();
 
             m_threeMinuteTicker = 0;
-        }
-
-        if (++m_fiveMinuteTicker == 5) {
-            ShowServerMessage();
-
-            m_fiveMinuteTicker = 0;
         }
 
         if (++m_twentyMinuteTicker == 20) {

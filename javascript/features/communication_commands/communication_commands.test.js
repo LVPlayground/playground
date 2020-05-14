@@ -306,6 +306,37 @@ describe('CommunicationCommands', (it, beforeEach) => {
             Message.format(Message.COMMUNICATION_ME, russell.name, 'is testing'));
     });
 
+    it('should be able to show predefined messages to players', async (assert) => {
+        const lucy = server.playerManager.getById(/* Lucy= */ 2);
+
+        // (1) Unknown messages & preparing the cache.
+        assert.isTrue(await russell.issueCommand('/show bananaphone'));
+        assert.equal(russell.messages.length, 1);
+        assert.includes(russell.messages[0], '/show [');
+
+        assert.includes(russell.messages[0], '/report/');  // we expect "report" for the next tests
+
+        // (2) Showing a message to all players.
+        assert.isTrue(await russell.issueCommand('/show report'));
+
+        assert.equal(gunther.messages.length, 3);
+        assert.equal(gunther.messages[0], Message.ANNOUNCE_HEADER);
+        assert.includes(gunther.messages[1], 'using /report [');  // this fails if the message changes
+        assert.equal(gunther.messages[2], Message.ANNOUNCE_HEADER);
+
+        assert.equal(lucy.messages.length, 3);
+
+        // (3) Showing a message to a particular player.
+        assert.isTrue(await russell.issueCommand('/show report Lucy'));
+
+        assert.equal(gunther.messages.length, 3);  // no change for Gunther
+
+        assert.equal(lucy.messages.length, 6);
+        assert.equal(lucy.messages[3], Message.ANNOUNCE_HEADER);
+        assert.includes(lucy.messages[4], 'using /report [');  // this fails if the message changes
+        assert.equal(lucy.messages[5], Message.ANNOUNCE_HEADER);
+    });
+
     it('should be able to show people how to report others', async (assert) => {
         assert.isNull(muteManager.getPlayerRemainingMuteTime(gunther));
 

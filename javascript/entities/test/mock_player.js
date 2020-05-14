@@ -383,17 +383,11 @@ export class MockPlayer extends Player {
 
     // Issues |message| as if it has been said by this user. Returns whether the event with which
     // the chat message had been issues was prevented.
-    issueMessage(message) {
-        let defaultPrevented = false;
-
+    async issueMessage(message) {
         dispatchEvent('playertext', {
-            preventDefault: () => defaultPrevented = true,
-
             playerid: this.id,
             text: message
         });
-
-        return defaultPrevented;
     }
 
     // Issues |commandText| as if it had been send by this player. Returns whether the event with

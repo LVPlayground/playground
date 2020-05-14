@@ -28,6 +28,15 @@ public OnGameModeInit() {
 
 // *************************************************************************************************
 
+#if Feature::EnableServerSideWeaponConfig
+
+    SetCbugAllowed(true);
+    SetDamageSounds(0, 0);
+    SetVehiclePassengerDamage(true);
+    SetVehicleUnoccupiedDamage(false);
+
+#endif
+
     SetTimer("CExport__NewWantedVehicle", 10000, 0);  // Initialise exports ten seconds from now
 
     CChase__Initialize();           // Chase

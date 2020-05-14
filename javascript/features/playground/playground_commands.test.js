@@ -4,10 +4,12 @@
 
 import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
 import PlaygroundCommands from 'features/playground/playground_commands.js';
+import Setting from 'entities/setting.js';
 
 describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
     let access = null;
     let commands = null;
+    let communication = null;
     let gunther = null;
 
     beforeEach(async() => {
@@ -15,8 +17,11 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         const nuwani = server.featureManager.loadFeature('nuwani');
         const settings = server.featureManager.loadFeature('settings');
 
+        communication = server.featureManager.loadFeature('communication');
+
         access = new PlaygroundAccessTracker();
-        commands = new PlaygroundCommands(access, () => announce, () => nuwani, () => settings);
+        commands = new PlaygroundCommands(
+            access, () => announce, () => communication, () => nuwani, () => settings);
 
         gunther = server.playerManager.getById(0 /* Gunther */);
         await gunther.identify();
@@ -171,105 +176,309 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
 
     it('should be able to change boolean settings', async(assert) => {
         const settings = server.featureManager.loadFeature('settings');
-        settings.setValue('decorations/holidays_free_vip', /* enabled= */ true);
+        settings.createSettingForTesting({
+            category: 'aaa_category',
+            setting: 'my_setting',
+            type: Setting.TYPE_BOOLEAN,
+            value: true,
+            description: 'My wonderful boolean setting.'
+        });
 
         gunther.level = Player.LEVEL_MANAGEMENT;
 
-        // Disable the `holidays_free_vip` section in the `abuse` section.
-        gunther.respondToDialog({ listitem: 3 /* Assumed `decorations` */ }).then(
-            () => gunther.respondToDialog({ listitem: 0 /* Assumed to be Holiday VIP */ })).then(
+        // (1) Verify that the setting can be disabled.
+        gunther.respondToDialog({ listitem: 0 /* Assumed `aaa_category` */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Assumed to be `my_setting` */ })).then(
             () => gunther.respondToDialog({ listitem: 1 /* Disable */ })).then(
             () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
 
-        assert.isTrue(settings.getValue('decorations/holidays_free_vip'));
+        assert.isTrue(settings.getValue('aaa_category/my_setting'));
         assert.isTrue(await gunther.issueCommand('/lvp settings'));
-        assert.isFalse(settings.getValue('decorations/holidays_free_vip'));
+        assert.isFalse(settings.getValue('aaa_category/my_setting'));
 
         assert.equal(gunther.messages.length, 1);
-        assert.isTrue(gunther.messages[0].includes('holidays_free_vip'));
+        assert.isTrue(gunther.messages[0].includes('my_setting'));
         assert.isTrue(gunther.messages[0].includes('disabled'));
 
         gunther.clearMessages();
 
-        var indexOfDecorationSetting = [...settings.getSettings()]
-            .map(setting => setting.category)
-            .filter((value, index, self) => self.indexOf(value) === index)
-            .sort()
-            .indexOf('decorations');
-
-        // Enable the `holidays_free_vip` section in the `abuse` section.
-        gunther.respondToDialog({ listitem: indexOfDecorationSetting /* Assumed `decorations` */ }).then(
-            () => gunther.respondToDialog({ listitem: 0 /* Assumed to be Holiday VIP */ })).then(
+        // (2) Verify that the setting can be enabled.
+        gunther.respondToDialog({ listitem: 0 /* Assumed `aaa_category` */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Assumed to be `my_setting` */ })).then(
             () => gunther.respondToDialog({ listitem: 0 /* Disable */ })).then(
             () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
 
         assert.isTrue(await gunther.issueCommand('/lvp settings'));
-        assert.isTrue(settings.getValue('decorations/holidays_free_vip'));
+        assert.isTrue(settings.getValue('aaa_category/my_setting'));
 
         assert.equal(gunther.messages.length, 1);
-        assert.isTrue(gunther.messages[0].includes('holidays_free_vip'));
+        assert.isTrue(gunther.messages[0].includes('my_setting'));
         assert.isTrue(gunther.messages[0].includes('enabled'));
     });
 
     it('should be able to change numeric settings', async(assert) => {
         const settings = server.featureManager.loadFeature('settings');
+        settings.createSettingForTesting({
+            category: 'aaa_category',
+            setting: 'my_setting',
+            type: Setting.TYPE_NUMBER,
+            value: 10,
+            description: 'My wonderful numeric setting.'
+        });
 
         gunther.level = Player.LEVEL_MANAGEMENT;
 
-        // Disable the `spawn_vehicle_admin_override` section in the `abuse` section.
-        gunther.respondToDialog({ listitem: 0 /* Assumed `abuse` */ }).then(
-            () => gunther.respondToDialog({ listitem: 0 /* Assumed to be the damage time */ })).then(
+        // (1) Change the setting away from its default value.
+        gunther.respondToDialog({ listitem: 0 /* Assumed `aaa_category` */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Assumed to be `my_setting` */ })).then(
             () => gunther.respondToDialog({ response: 1, inputtext: '2000' })).then(
             () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
 
-        assert.equal(settings.getValue('abuse/blocker_damage_issued_time'), 10);
+        assert.equal(settings.getValue('aaa_category/my_setting'), 10);
         assert.isTrue(await gunther.issueCommand('/lvp settings'));
-        assert.equal(settings.getValue('abuse/blocker_damage_issued_time'), 2000);
+        assert.equal(settings.getValue('aaa_category/my_setting'), 2000);
 
         assert.equal(gunther.messages.length, 1);
-        assert.isTrue(gunther.messages[0].includes('blocker_damage_issued_time'));
+        assert.isTrue(gunther.messages[0].includes('my_setting'));
         assert.isTrue(gunther.messages[0].includes('2,000'));
 
         gunther.clearMessages();
 
-        // Enable the `spawn_vehicle_admin_override` section in the `abuse` section.
-        gunther.respondToDialog({ listitem: 0 /* Assumed `abuse` */ }).then(
-            () => gunther.respondToDialog({ listitem: 0 /* Assumed to be the damage time */ })).then(
+        // (2) Change the setting back to its default value.
+        gunther.respondToDialog({ listitem: 0 /* Assumed `aaa_category` */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Assumed to be `my_setting` */ })).then(
             () => gunther.respondToDialog({ response: 1, inputtext: '10' })).then(
             () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
 
         assert.isTrue(await gunther.issueCommand('/lvp settings'));
-        assert.equal(settings.getValue('abuse/blocker_damage_issued_time'), 10);
+        assert.equal(settings.getValue('aaa_category/my_setting'), 10);
 
         assert.equal(gunther.messages.length, 1);
-        assert.isTrue(gunther.messages[0].includes('blocker_damage_issued_time'));
+        assert.isTrue(gunther.messages[0].includes('my_setting'));
         assert.isTrue(gunther.messages[0].includes('10'));
     });
 
     it('should be able to change textual settings', async(assert) => {
         const settings = server.featureManager.loadFeature('settings');
+        settings.createSettingForTesting({
+            category: 'aaa_category',
+            setting: 'my_setting',
+            type: Setting.TYPE_STRING,
+            value: 'LVP Radio',
+            description: 'My wonderful welcome message.'
+        });
 
         gunther.level = Player.LEVEL_MANAGEMENT;
-        
-        var indexOfRadioSetting = [...settings.getSettings()]
-            .map(setting => setting.category)
-            .filter((value, index, self) => self.indexOf(value) === index)
-            .sort()
-            .indexOf('radio');
 
-        // Change the `default_channel` section in the `radio` section.
-        gunther.respondToDialog({ listitem: indexOfRadioSetting /* Assumed `radio` */ }).then(
-            () => gunther.respondToDialog({ listitem: 0 /* Assumed to be `default_channel` */ })).then(
+        // (1) Change the value of the string setting
+        gunther.respondToDialog({ listitem: 0 /* Assumed `aaa_category` */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Assumed to be `my_setting` */ })).then(
             () => gunther.respondToDialog({ response: 1, inputtext: 'Hello World' })).then(
             () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
 
-        assert.equal(settings.getValue('radio/default_channel'), 'LVP Radio');
+        assert.equal(settings.getValue('aaa_category/my_setting'), 'LVP Radio');
         assert.isTrue(await gunther.issueCommand('/lvp settings'));
-        assert.equal(settings.getValue('radio/default_channel'), 'Hello World');
+        assert.equal(settings.getValue('aaa_category/my_setting'), 'Hello World');
 
         assert.equal(gunther.messages.length, 1);
-        assert.isTrue(gunther.messages[0].includes('default_channel'));
+        assert.isTrue(gunther.messages[0].includes('my_setting'));
         assert.isTrue(gunther.messages[0].includes('Hello World'));
+    });
+
+    // Only non-feature-settings are available to administrators.
+    const kBlockedWordsIndex = 0;
+    const kCommunicationIndex = 1;
+    const kSubstitutionIndex = 2;
+
+    it('should enable administrators to change the blocked words', async (assert) => {
+        function hasBlockedWord(checkWord) {
+            return !!communication.getBlockedWords().filter(({word}) => word === checkWord).length;
+        }
+
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isFalse(hasBlockedWord('bananas'));
+        assert.isTrue(hasBlockedWord('/quit'));
+
+        // (1) Just viewing the blocked words should be fine.
+        gunther.respondToDialog({ listitem: kBlockedWordsIndex }).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 0);
+
+        // (2) Adding a new blocked word must meet the requirements.
+        gunther.respondToDialog({ listitem: kBlockedWordsIndex }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Add a new blocked word */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'e' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 0);
+
+        // (3) Adding a new blocked word must check that it doesn't exist yet.
+        gunther.respondToDialog({ listitem: kBlockedWordsIndex }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Add a new blocked word */ })).then(
+            () => gunther.respondToDialog({ inputtext: '/quit' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 0);
+
+        // (4) Adding a new blocked word should work just fine.
+        gunther.respondToDialog({ listitem: kBlockedWordsIndex }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Add a new blocked word */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'bananas' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 1);
+        assert.includes(
+            gunther.messages[0],
+            Message.format(Message.LVP_ANNOUNCE_WORD_BLOCKED, gunther.name, gunther.id, 'bananas'));
+
+        assert.isTrue(hasBlockedWord('bananas'));
+
+        // (5) Removing a blocked word should be fine after confirmation.
+        gunther.respondToDialog({ listitem: kBlockedWordsIndex }).then(
+            () => gunther.respondToDialog({ listitem: 3 /* Assumed to be 'bananas' */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'bananas' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 2);
+        assert.includes(
+            gunther.messages[1],
+            Message.format(Message.LVP_ANNOUNCE_WORD_UNBLOCKED, gunther.name, gunther.id,
+                           'bananas'));
+
+        assert.isFalse(hasBlockedWord('bananas'));
+    });
+
+    it('should enable administrators to block and unblock all communication', async (assert) => {
+        assert.isFalse(communication.isCommunicationMuted());
+
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        // (1) Click on the menu option, but then change their mind.
+        gunther.respondToDialog({ listitem: kCommunicationIndex }).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 0);
+        
+        assert.isFalse(communication.isCommunicationMuted());
+
+        // (2) Disables communication.
+        gunther.respondToDialog({ listitem: kCommunicationIndex }).then(
+            () => gunther.respondToDialog({ response: 1 /* Disable communication */ })).then(
+            () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+
+        assert.isTrue(communication.isCommunicationMuted());
+        assert.equal(gunther.messages.length, 2);
+        assert.includes(
+            gunther.messages[0],
+            Message.format(Message.LVP_ANNOUNCE_COMMUNICATION_BLOCKED, gunther.name, gunther.id,
+                           'disabled'));
+
+        assert.equal(
+            gunther.messages[1], Message.format(Message.COMMUNICATION_SERVER_MUTED, gunther.name));
+
+        // (3) Enables communication.
+        gunther.respondToDialog({ listitem: kCommunicationIndex }).then(
+            () => gunther.respondToDialog({ response: 1 /* Enable communication */ })).then(
+            () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+
+        assert.isFalse(communication.isCommunicationMuted());
+        assert.equal(gunther.messages.length, 4);
+        assert.includes(
+            gunther.messages[2],
+            Message.format(Message.LVP_ANNOUNCE_COMMUNICATION_BLOCKED, gunther.name, gunther.id,
+                           'enabled'));
+
+        assert.equal(
+            gunther.messages[3],
+            Message.format(Message.COMMUNICATION_SERVER_UNMUTED, gunther.name));
+    });
+
+    it('should enable administrators to change communication substitutions', async (assert) => {
+        function hasSubstitution(value) {
+            return !!communication.getReplacements().filter(({before}) => before === value).length;
+        }
+
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isFalse(hasSubstitution('lucy'));
+        assert.isTrue(hasSubstitution('george'));
+
+        // (1) Just viewing the substitutions should be fine.
+        gunther.respondToDialog({ listitem: kSubstitutionIndex }).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 0);
+
+        // (2) Adding a new substitution word must meet the requirements.
+        gunther.respondToDialog({ listitem: kSubstitutionIndex }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Add a new substitution */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'e' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 0);
+
+        gunther.respondToDialog({ listitem: kSubstitutionIndex }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Add a new substitution */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'Lucy' })).then(
+            () => gunther.respondToDialog({ inputtext: '' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 0);
+
+        // (3) Adding a new substitution must check that it doesn't exist yet.
+        gunther.respondToDialog({ listitem: kSubstitutionIndex }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Add a new substitution */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'George' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 0);
+
+        // (4) Adding a new substitution should work just fine.
+        gunther.respondToDialog({ listitem: kSubstitutionIndex }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Add a new substitution */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'Lucy' })).then(
+            () => gunther.respondToDialog({ inputtext: 'Luce' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 1);
+        assert.includes(
+            gunther.messages[0],
+            Message.format(Message.LVP_ANNOUNCE_SUBSTITUTION_ADDED, gunther.name, gunther.id,
+                           'lucy', 'luce'));
+
+        assert.isTrue(hasSubstitution('lucy'));
+
+        // (5) Removing a substitution should be fine after confirmation.
+        gunther.respondToDialog({ listitem: kSubstitutionIndex }).then(
+            () => gunther.respondToDialog({ listitem: 3 /* Assumed to be 'Lucy' */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'bananas' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 2);
+        assert.includes(
+            gunther.messages[1],
+            Message.format(Message.LVP_ANNOUNCE_SUBSTITUTION_REMOVED, gunther.name, gunther.id,
+                           'lucy'));
+
+        assert.isFalse(hasSubstitution('lucy'));
     });
 
     it('should be able to live reload the message formatting file', async(assert) => {

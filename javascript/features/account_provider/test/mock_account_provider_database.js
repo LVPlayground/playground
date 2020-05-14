@@ -13,6 +13,7 @@ export class MockAccountProviderDatabase extends AccountProviderDatabase {
             user_id: userId,
             money_bank: 0,
             stats_reaction: 0,
+            muted: 0,
         };
     }
 

@@ -39,16 +39,6 @@ class PrivateMessagingCommands {
             return 1;
         }
 
-        if (LegacyIsPlayerIgnored(playerId, receiverId)) {
-            SendClientMessage(playerId, Color::Error, "You're currently ignoring this player. Use /unignore!");
-            return 1;
-        }
-
-        if (LegacyIsPlayerIgnored(receiverId, playerId)) {
-            SendClientMessage(playerId, Color::Error, "This player is currently ignoring you.");
-            return 1;
-        }
-
         if (IsCommunicationMuted() && !Player(playerId)->isAdministrator()) {
             SendClientMessage(playerId, Color::Error, "Sorry, an administrator is making an announcement.");
             return 1;
@@ -117,16 +107,6 @@ class PrivateMessagingCommands {
             if (strcmp(lastMessageSenderName, currentMessageSenderName, false) != 0 ||
                 Player(lastMessageSenderId)->isConnected() == false) {
                 SendClientMessage(playerId, Color::Error, "This player has logged off.");
-                return 1;
-            }
-
-            if (LegacyIsPlayerIgnored(playerId, lastMessageSenderId)) {
-                SendClientMessage(playerId, Color::Error, "You're currently ignoring this player. Use /unignore!");
-                return 1;
-            }
-
-            if (LegacyIsPlayerIgnored(lastMessageSenderId, playerId)) {
-                SendClientMessage(playerId, Color::Error, "This player is currently ignoring you.");
                 return 1;
             }
 

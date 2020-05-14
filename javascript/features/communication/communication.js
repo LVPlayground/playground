@@ -6,6 +6,11 @@ import { CommunicationManager } from 'features/communication/communication_manag
 import { CommunicationNatives } from 'features/communication/communication_natives.js';
 import Feature from 'components/feature_manager/feature.js';
 import { MessageFilter } from 'features/communication/message_filter.js';
+import { MessageVisibilityManager } from 'features/communication/message_visibility_manager.js';
+import { MuteManager } from 'features/communication/mute_manager.js';
+import { SpamTracker } from 'features/communication/spam_tracker.js';
+
+import { relativeTime } from 'base/time.js';
 
 // Minimum length of any replacement to avoid affecting too many messages.
 const kMinimumReplacementLength = 3;
@@ -17,6 +22,8 @@ export default class Communication extends Feature {
     filter_ = null;
     manager_ = null;
     natives_ = null;
+    spamTracker_ = null;
+    visibilityManager_ = null;
 
     constructor() {
         super();
@@ -31,8 +38,19 @@ export default class Communication extends Feature {
         // The message filter, which every message on Las Venturas Playground will be subject to.
         this.filter_ = new MessageFilter();
 
-        this.manager_ = new CommunicationManager(this.filter_, nuwani);
-        this.natives_ = new CommunicationNatives(this);
+        // The mute manager controls who's currently able to communicate on the server.
+        this.muteManager_ = new MuteManager();
+
+        // The spam tracker keeps track of potential spammers on the server.
+        this.spamTracker_ = new SpamTracker();
+
+        // Decides whether a particular messages should be visible to a particular player.
+        this.visibilityManager_ = new MessageVisibilityManager();
+
+        this.manager_ = new CommunicationManager(
+            this.filter_, this.muteManager_, this.spamTracker_, this.visibilityManager_, nuwani);
+
+        this.natives_ = new CommunicationNatives(this.muteManager_);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -163,15 +181,48 @@ export default class Communication extends Feature {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Processes the given |message|, as sent by |player|, preparing it for distribution. It will be
+    // routed through the spam tracker, then through the message filter. Returns the |message|,
+    // which may be modified, or NULL in case the message should not be distributed.
+    processForDistribution(player, message) {
+        if (this.muteManager_.isCommunicationMuted()) {
+            player.sendMessage(Message.COMMUNICATION_SERVER_MUTE_BLOCKED);
+            return null;
+        }
+
+        const remainingSeconds = this.muteManager_.getPlayerRemainingMuteTime(player);
+        if (remainingSeconds > 0) {
+            const expiration = new Date(Date.now() + remainingSeconds * 1000);
+            const formattedExpiration = relativeTime({ date1: new Date(), date2: expiration });
+
+            player.sendMessage(Message.COMMUNICATION_MUTE_BLOCKED, formattedExpiration.text);
+            return null;
+        }
+
+        if (this.spamTracker_.isSpamming(player, message))
+            return null;
+
+        return this.filter_.filter(player, message);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Returns whether all player-generated communication on the server should be muted, unless it
     // was issued by administrators or Management members.
     isCommunicationMuted() {
-        return false;
+        return this.muteManager_.isCommunicationMuted();
+    }
+
+    // Toggles whether server communications are muted altogether.
+    setCommunicationMuted(muted) {
+        this.muteManager_.setCommunicationMuted(muted);
     }
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        this.visibilityManager_.dispose();
+
         this.natives_.dispose();
         this.manager_.dispose();
     }

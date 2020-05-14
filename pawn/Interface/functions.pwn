@@ -34,10 +34,6 @@ LegacySetValidKillerVariables(forPlayerId, killerId, reasonId) {
     validReasonId[forPlayerId] = reasonId;
 }
 
-bool: LegacyIsPlayerIgnored(playerId, subjectId) {
-    return !!g_Ignore[playerId][subjectId];
-}
-
 bool: LegacyIsUserTempAdmin(playerId) {
     return tempLevel[playerId] > 0;
 }
@@ -197,13 +193,6 @@ ResetPlayerGameStateVariables(playerId) {
 }
 
 ResetPlayerStats(playerId) {
-    for (new i = 0; i < MAX_PLAYERS; i++) g_Ignore[playerId][i] = false;
-    for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
-        if (!Player(subjectId)->isConnected() || g_Ignore[subjectId][playerId] == false)
-            continue;
-
-        g_Ignore[subjectId][playerId] = false;
-    }
     g_VirtualWorld[playerId] = 0;
 #if Feature::DisableFights == 0
     IsPlayerWatchingFC[playerId] = false;
@@ -488,14 +477,6 @@ Float:GetDistance(playerId, Float: x, Float: y, Float: z) {
     z2 = z;
 
     return floatsqroot(floatpower(floatsqroot(floatpower(floatsub(x2, x1), 2) + floatpower(floatsub(y2, y1), 2)), 2) + floatpower(floatsub(z2, z1), 2));
-}
-
-right(source[], len) {
-    new retval[255], srclen;
-    srclen = strlen(source);
-    strmid(retval, source, srclen - len, srclen, sizeof(retval));
-
-    return retval;
 }
 
 formatPrice(price) {

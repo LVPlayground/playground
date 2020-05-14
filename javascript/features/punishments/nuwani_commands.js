@@ -578,7 +578,7 @@ export class NuwaniCommands {
 
         const url = 'https://profile.sa-mp.nl/bans/' + encodeURIComponent(nickname);
 
-        context.respond(`4*** Player log for ${nickname} (${total} items) - ${url}`);
+        context.respond(`4*** Player log for ${nickname} (${total} items) - ${url}`);
         for (const entry of logs) {
             const date = entry.date.toISOString().replace(/^(.+?)T(.+?)\..*$/, '$1 $2');
             const attribution = `${entry.type} by ${entry.issuedBy}`;

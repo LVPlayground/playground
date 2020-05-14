@@ -41,13 +41,11 @@ export class FinancialNatives {
         const player = server.playerManager.getById(playerid);
         if (!player)
             return 0;
-        
-        // TODO: Display the MoneyIndicator once ported from Pawn.
 
         this.regulator_.setPlayerCashAmount(
             player, this.regulator_.getPlayerCashAmount(player) + amount);
         
-        return 0;
+        return 1;
     }
 
     // native ResetPlayerMoneyJS(playerid);
@@ -63,7 +61,13 @@ export class FinancialNatives {
     depositToAccount(playerid, amount) {
         const player = server.playerManager.getById(playerid);
         if (player)
+            return 0;
+
+        try {
             this.regulator_.depositToAccount(player, amount);
+            return 1;
+
+        } catch {}
         
         return 0;
     }

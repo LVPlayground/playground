@@ -1,74 +1,30 @@
-// Copyright 2006-2015 Las Venturas Playground. All rights reserved.
+// Copyright 2006-2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
 /**
- * Determining the version number may be done using some basic mathematics. The major version will
- * increment by one for each full period of eight weeks since July 13, 2012. The minor version will
- * equal the remainder, so anything between zero and seven weeks. The revision will be incremented
- * by one for each release, but will be re-set when either the major or minor version changes.
- *
- * An online tool to view the current major and minor versions is available here:
- * http://development.sa-mp.nl/version.php
- *
- * @author Russell Krupke <russell@sa-mp.nl>
+ * The version number of the current Las Venturas Playground mode. There is no mechanism for
+ * incrementing this version. Significant changes justify a new Major release, use your gut feel.
  */
 class Version {
     public const Major = 44;
     public const Minor = 0;
 };
 
-/**
- * Various debugging features can be toggled on or off by changing the defines in this class. Please
- * be sure to clearly document what toggling a constant will have for an effect on the gamemode.
- *
- * @author Russell Krupke <russell@sa-mp.nl>
- */
-class Debug {
-    // Timer debugging is useful to track down performance issues or crashes. It will announce
-    // timers before they run, and give a brief overview of their run-time after they're done.
-    public const EnableTimerDebugging = 0;
-
-    // Enable visual verbosity, i.e. map icons for spawn positions, properties and cash points.
-    public const EnableVisualVerbosity = 0;
-
-    // Logging MySQL queries can often be useful for debugging purposes. It's possible to choose
-    // whether to enable logging these queries or not.
-    public const EnableDatabaseLogging = 0;
-};
-
-// Set this to 1 if you'd like to build Las Venturas Playground in release mode (lead devs only).
+// Set this to 1 if you'd like to build Las Venturas Playground in release mode. This affects
+// whether config-release.pwn tries to define the prod password salt.
 #define BuildGamemodeInReleaseMode 0
 
-// Try to include the private release configuration file. This are necessary to authenticate with
-// the MySQL database and distribute echo to the right location, among other things.
+// Try to include the private release configuration file. If it can't be loaded, the staging server
+// value for the password salt will be used instead.
 #tryinclude "config-release.pwn"
 
-// In case no database credentials have been supplied by earlier, private configuration files yet,
-// create the default settings. The same goes for the echo settings.
-#if !defined DatabaseCredentialsSupplied
+#if !defined PasswordSalt
     #define PasswordSalt        "^&lvp__@"
-    #define BETA_TEST           1
 #endif
 
-/**
- * Any compile-time gamemode configuration should be added as a public constant to this class. They
- * may be referred to from anywhere, and should have no dynamic behavior at all. Toggling the
- * availability of individual features should be done in the Feature class further down.
- *
- * @author Russell Krupke <russell@sa-mp.nl>
- */
-class Configuration {
-    // What is the salt used to hash passwords more securely?
-    public const PasswordSalt = PasswordSalt;
-};
-
-/**
- * Toggling the availability of certain features should be done by changing their values in this
- * class. Please follow existing conventions and add features based on their alphabetical order.
- *
- * @author Russell Krupke <russell@sa-mp.nl>
- */
+// Toggling the availability of certain features should be done by changing their values in this
+// class. Please follow existing conventions and add features based on their alphabetical order.
 class Feature {
     /** **************************************************************************************** **/
     /// Moving stuff to JavaScript defines.
@@ -77,12 +33,16 @@ class Feature {
     public const DisableFights = 0;
 
     /** **************************************************************************************** **/
-    /// Christmas
 
-    // A present is dropped somewhere in Las Venturas; when a player picks it up, he receives a 
-    // random gift.
+    // A present is dropped somewhere in San Andreas. Finding it will present the player with a gift
     public const EnableGiftHunting = 0;
 
-    /** **************************************************************************************** **/
+    // Controls whether server-side weapon configuration will be enabled. This uses Oscar Broman's
+    // weapon-config.inc script, with options specific to Las Venturas Playground:
+    //
+    // https://github.com/oscar-broman/samp-weapon-config
+    //
+    public const EnableServerSideWeaponConfig = !BuildGamemodeInReleaseMode;
 
+    /** **************************************************************************************** **/
 };

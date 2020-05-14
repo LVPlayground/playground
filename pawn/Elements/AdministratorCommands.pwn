@@ -884,6 +884,11 @@ lvp_show(playerId, params[]) {
         showInfo = true;
         format(g_message, sizeof(g_message), "Save money and stats! Register your nickname at www.sa-mp.nl");
     }
+    
+    else if (!strcmp(showParameter, "discord", true, 7)) {
+        showInfo = true;
+        format(g_message, sizeof(g_message), "Join us on official LVP Discord Server at discord.sa-mp.nl");
+    }
 
     else if (!strcmp(showParameter, "report", true, 6)) {
         showInfo = true;
@@ -917,7 +922,7 @@ lvp_show(playerId, params[]) {
 
     else if (!strcmp(showParameter, "nick", true, 4)) {
         showInfo = true;
-        format(g_message, sizeof(g_message), "Need a nickchange? Join irc.gtanet.com and /msg Nuwani !changenick");
+        format(g_message, sizeof(g_message), "Need a nickchange? Use /account -> Change your nickname or ask an administrator!");
     }
 
     else if (!strcmp(showParameter, "spam", true, 4)) {
@@ -928,6 +933,11 @@ lvp_show(playerId, params[]) {
     else if (!strcmp(showParameter, "ship", true, 4)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "The pirate ship is a peace zone! Please don't hit, shoot or throw grenades on it!");
+    }
+
+    else if (!strcmp(showParameter, "spraytag", true, 8)) {
+        showInfo = true;
+        format(g_message, sizeof(g_message), "Spray all 100 tags found around Las Venturas, and get the ability to spawn your own vehicles!");
     }
 
     else if (!strcmp(showParameter, "interior", true, 8)) {
@@ -970,43 +980,7 @@ lvp_show(playerId, params[]) {
     }
 
 ShowHelp:
-    SendClientMessage(playerId, Color::Information, "Usage: /show [beg/caps/donate/forum/interior/nick/reg/report/rules/ship/spam/swear/ts/weaps]");
-
-    return 1;
-}
-
-lvp_showreport(playerId, params[]) {
-    if (Command->parameterCount(params) == 0) {
-        SendClientMessage(playerId, Color::Information, "Usage: /showreport [player]");
-        return 1;
-    }
-
-    new subjectId = Command->playerParameter(params, 0, playerId);
-    if (subjectId == Player::InvalidId)
-        return 1;
-
-    SendClientMessage(subjectId, Color::Red, "-------------------");
-    SendClientMessage(subjectId, Color::Warning, REPORT_MESSAGE);
-
-    // Inform the mutee.
-    format(g_message, sizeof(g_message), "You have been muted for two minutes by %s (Id:%d).",
-        Player(playerId)->nicknameString(), playerId);
-    SendClientMessage(subjectId, Color::Error, g_message);
-
-    SendClientMessage(subjectId, Color::Red, "-------------------");
-
-    // Apply the mute. Make it silent.
-    MuteManager->mutePlayer(subjectId, 2, true /* silent */);
-
-    // Inform other administrators.
-    format(g_message, sizeof(g_message), "%s (Id:%d) muted %s (Id:%d) for two minutes.",
-        Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId);
-    Admin(playerId, g_message);
-
-    // Inform the muter.
-    format(g_message, sizeof(g_message), "%s (Id:%d) has been warned and muted for two minutes.",
-        Player(subjectId)->nicknameString(), subjectId);
-    SendClientMessage(playerId, Color::Success, g_message);
+    SendClientMessage(playerId, Color::Information, "Usage: /show [beg/caps/discord/donate/forum/interior/nick/reg/report/rules/ship/spam/spraytag/swear/weaps]");
 
     return 1;
 }

@@ -20,15 +20,15 @@ describe('MessageFilter', (it, beforeEach) => {
     });
 
     it('should be able to maintain a list of replacements', async (assert) => {
-        assert.equal(Array.from(filter.replacements).length, 1);
+        assert.equal(Array.from(filter.replacements).length, 2);
         assert.equal(filter.filter(gunther, 'George'), 'Geroge'),
 
         await filter.addReplacement(gunther, 'Lucy', 'Luce');
-        assert.equal(Array.from(filter.replacements).length, 2);
+        assert.equal(Array.from(filter.replacements).length, 3);
         assert.equal(filter.filter(gunther, 'hey lucy!'), 'hey luce!');
 
-        await filter.removeReplacement('George');
-        assert.equal(Array.from(filter.replacements).length, 1);
+        await filter.removeReplacement('george');
+        assert.equal(Array.from(filter.replacements).length, 2);
         assert.equal(filter.filter(gunther, 'George'), 'George');
     });
 

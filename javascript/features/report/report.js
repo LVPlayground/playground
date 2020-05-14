@@ -14,7 +14,10 @@ class Report extends Feature {
         // Be able to send a certain message to a certain public
         const announce = this.defineDependency('announce');
 
-        this.commands_ = new ReportCommands(announce);
+        // Be able to send reports to the crew channel on IRC.
+        const nuwani = this.defineDependency('nuwani');
+
+        this.commands_ = new ReportCommands(announce, nuwani);
     }
 
     dispose() {

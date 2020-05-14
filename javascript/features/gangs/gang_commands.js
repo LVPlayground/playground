@@ -11,6 +11,7 @@ import Dialog from 'components/dialogs/dialog.js';
 import Gang from 'features/gangs/gang.js';
 import GangDatabase from 'features/gangs/gang_database.js';
 import Menu from 'components/menu/menu.js';
+import PlayerSetting from 'entities/player_setting.js';
 import Question from 'components/dialogs/question.js';
 import QuestionSequence from 'components/dialogs/question_sequence.js';
 
@@ -50,6 +51,19 @@ const GOAL_QUESTION = {
                      'not contain very exotic characters.',
 
         abort: 'Sorry, a gang must have a valid goal!'
+    }
+};
+
+// Options for asking the player what the gang's skin should be.
+const SKIN_QUESTION = {
+    question: 'Choose your gang\'s skin',
+    message: 'What is the skin your gang will use?',
+    constraints: {
+        // The validation will be updated based upon the entries of player_classes.json
+        validation: /^([0-9]|[1-9][0-9]|1[0-1][0-9]|120|12[2-9]|1[3-9][3-9]|2[0-9][0-9])$/u,
+        explanation: 'The skin your members will have if enabled',
+
+        abort: 'Sorry, a gang must have a valid skin!'
     }
 };
 
@@ -458,6 +472,40 @@ class GangCommands {
                     message: formattedMessage
                 });
             });
+
+            menu.addItem('Member skin', gang.skinId ?? '-', async() => {
+                // TODO: We'll probably want to move this to a class selection class in the future.
+                const availableSkins = JSON.parse(readFile('data/player_classes.json'));
+
+                let question = SKIN_QUESTION;                
+                question.constraints.validation = new RegExp(`^(${availableSkins.join('|')})$`);
+                
+                const answer = await Question.ask(player, question);
+                if (!answer)
+                    return;  // the leader decided to not update the gang's skin
+
+                const skinId = +answer;
+                await this.manager_.updateSkinId(gang, skinId);
+
+                this.manager_.announceToGang(
+                    gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_SKIN, player.name,
+                    skinId);
+
+                this.announce_().announceToAdministratorsWithFilter(
+                    Message.GANG_ANNOUNCE_NEW_SKIN, 
+                    PlayerSetting.ANNOUNCEMENT.GANGS, 
+                    PlayerSetting.SUBCOMMAND.GANGS_CHANGED_SKIN,
+                    player.name, player.id, gang.name,
+                    skinId);
+
+                const formattedMessage =
+                    Message.format(Message.GANG_SETTINGS_NEW_SKIN, skinId);
+
+                await alert(player, {
+                    title: 'The color has been updated',
+                    message: formattedMessage
+                });
+            });
         }
 
         if (isManager) {
@@ -616,6 +664,35 @@ class GangCommands {
             });
 
             await colorMenu.displayForPlayer(player);
+        });
+
+        const usesGangSkin = gang.usesGangSkin(player);
+        const gangSkinPreferenceUsage = usesGangSkin ? 'Gang skin'
+                                                     : 'Personal skin';
+        
+        // All members have the ability to change their skin preference. This enables gangs,
+        // for example BA, to use the clown skin.
+        menu.addItem('My skin', gangSkinPreferenceUsage, async() => {
+            const skinMenu =
+                new Menu('Do you want to use the gang\'s skin?', ['Option', 'Selected']);
+
+                skinMenu.addItem('Yes, use the gang skin', usesGangSkin ? 'X' : '', async() => {
+                await this.manager_.updateSkinPreference(gang, player, true);
+                await alert(player, {
+                    title: 'Your skin has been updated',
+                    message: Message.GANG_SETTINGS_USE_GANG_SKIN
+                });
+            });
+
+            skinMenu.addItem('No, use my personal skin', !usesGangSkin ? 'X' : '', async() => {
+                await this.manager_.updateSkinPreference(gang, player, false);
+                await alert(player, {
+                    title: 'Your skin has been updated',
+                    message: Message.GANG_SETTINGS_USE_PERSONAL_SKIN
+                });
+            });
+
+            await skinMenu.displayForPlayer(player);
         });
 
         await menu.displayForPlayer(player);

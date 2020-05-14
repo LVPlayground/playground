@@ -7,6 +7,7 @@ import { AdministratorChannel } from 'features/communication/channels/administra
 describe('CommunicationManager', (it, beforeEach, afterEach) => {
     let gunther = null;
     let manager = null;
+    let muteManager = null;
     let nuwani = null;
     let russell = null;
 
@@ -15,20 +16,12 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
 
         gunther = server.playerManager.getById(/* Gunther= */ 0);
         manager = communication.manager_;
+        muteManager = communication.muteManager_;
         nuwani = server.featureManager.loadFeature('nuwani');
         russell = server.playerManager.getById(/* Russell= */ 1);
     });
 
-    it('integrates with the spam tracker', assert => {
-        const excessivelyLongMessage = 'a'.repeat(1024);
-
-        assert.equal(gunther.messages.length, 0);
-        assert.isTrue(gunther.issueMessage(excessivelyLongMessage));
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.format(Message.COMMUNICATION_SPAM_BLOCKED));
-    });
-
-    it('integrates with the message filter', assert => {
+    it('should block messages until the registered player identifies', async (assert) => {
         const messages = [];
 
         manager.addDelegate(new class {
@@ -38,9 +31,37 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
             }
         });
 
-        assert.isTrue(gunther.issueMessage('hello'));
-        assert.isTrue(gunther.issueMessage('HELLO WORLD'));
-        assert.isTrue(gunther.issueMessage('Hey George'));
+        // Hack hack hack :)
+        gunther.account.isRegistered_ = true;
+        gunther.account.isIdentified_ = false;
+
+        await gunther.issueMessage('Hello everyone!');
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.COMMUNICATION_LOGIN_BLOCKED));
+    });
+
+    it('integrates with the spam tracker', async (assert) => {
+        const excessivelyLongMessage = 'a'.repeat(1024);
+
+        assert.equal(gunther.messages.length, 0);
+        await gunther.issueMessage(excessivelyLongMessage);
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.COMMUNICATION_SPAM_BLOCKED));
+    });
+
+    it('integrates with the message filter', async (assert) => {
+        const messages = [];
+
+        manager.addDelegate(new class {
+            onPlayerText(player, message) {
+                messages.push(message);
+                return true;  // handled
+            }
+        });
+
+        await gunther.issueMessage('hello');
+        await gunther.issueMessage('HELLO WORLD');
+        await gunther.issueMessage('Hey George');
 
         assert.equal(messages.length, 3);
         assert.equal(messages[0], 'hello');
@@ -48,7 +69,7 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         assert.equal(messages[2], 'Hey Geroge');
     });
 
-    it('should allow delegates to intercept received messages', assert => {
+    it('should allow delegates to intercept received messages', async (assert) => {
         let invocationCount = 0;
 
         manager.addDelegate(new class {
@@ -65,16 +86,16 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
             }
         });
 
-        assert.isTrue(gunther.issueMessage('hello'));
+        await gunther.issueMessage('hello');
         assert.equal(invocationCount, 1);
     });
 
-    it('should be able to provide administrator chat', assert => {
+    it('should be able to provide administrator chat', async (assert) => {
         assert.isFalse(gunther.isAdministrator());
         assert.isFalse(russell.isAdministrator());
 
         // (1) Messages sent by a non-administrator, with no administrators in-game.
-        assert.isTrue(gunther.issueMessage('@Hey'));
+        await gunther.issueMessage('@Hey');
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.format(Message.COMMUNICATION_ADMIN_SENT));
@@ -95,7 +116,7 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         // (2) Messages sent by an administrator, with an administrator in-game.
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
-        assert.isTrue(gunther.issueMessage('@Yo'));
+        await gunther.issueMessage('@Yo');
 
         assert.equal(gunther.messages.length, 2);
         assert.equal(
@@ -114,7 +135,7 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         // (3) Messages sent by a Manager, with other administrators in-game.
         russell.level = Player.LEVEL_MANAGEMENT;
 
-        assert.isTrue(russell.issueMessage('@Test'));
+        await russell.issueMessage('@Test');
 
         assert.equal(gunther.messages.length, 3);
         assert.equal(
@@ -134,16 +155,27 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
             params: [ russell.id, russell.name, 'Test' ],
         });
 
-        // (4) Messages sent by an isolated person.
+        // (4) Muted players can still send messages to admin chat.
+        muteManager.mutePlayer(gunther, 60);
+
+        await gunther.issueMessage('Testcase');
+        assert.equal(gunther.messages.length, 4);
+        assert.equal(russell.messages.length, 1);
+
+        await gunther.issueMessage('@Testcase');
+        assert.equal(gunther.messages.length, 5);
+        assert.equal(russell.messages.length, 2);
+
+        // (5) Messages sent by an isolated person.
         gunther.syncedData.setIsolated(true);
 
-        assert.isTrue(gunther.issueMessage('@WTF!'));
+        await gunther.issueMessage('@WTF!');
 
-        assert.equal(gunther.messages.length, 4);
-        assert.equal(gunther.messages[3], Message.format(Message.COMMUNICATION_ADMIN_SENT));
+        assert.equal(gunther.messages.length, 6);
+        assert.equal(gunther.messages[5], Message.format(Message.COMMUNICATION_ADMIN_SENT));
 
-        assert.equal(russell.messages.length, 1);  // unchanged
-        assert.equal(nuwani.messagesForTesting.length, 4);  // unchanged
+        assert.equal(russell.messages.length, 2);  // unchanged
+        assert.equal(nuwani.messagesForTesting.length, 5);  // unchanged
     });
 
     it('should have a series of specialization in the administrator chat', assert => {
@@ -166,11 +198,11 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         assert.equal(channel.getPrefixForPlayer(gunther), 'Manager');
     });
 
-    it('should be able to provide a private VIP chat', assert => {
+    it('should be able to provide a private VIP chat', async (assert) => {
         assert.isFalse(gunther.isVip());
         assert.isFalse(russell.isVip());
 
-        assert.isTrue(gunther.issueMessage('#Hello!'));
+        await gunther.issueMessage('#Hello!');
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.format(Message.COMMUNICATION_VIP_NO_ACCESS));
@@ -180,7 +212,7 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
 
         gunther.setVip(true);
 
-        assert.isTrue(gunther.issueMessage('#Heya!'));
+        await gunther.issueMessage('#Heya!');
 
         assert.equal(gunther.messages.length, 2);
         assert.equal(
@@ -197,7 +229,7 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
 
         russell.setVip(true);
 
-        assert.isTrue(gunther.issueMessage('#Boo!'));
+        await gunther.issueMessage('#Boo!');
 
         assert.equal(gunther.messages.length, 3);
         assert.equal(
@@ -213,7 +245,7 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
 
         russell.syncedData.setIsolated(true);
 
-        assert.isTrue(russell.issueMessage('#Silence'));
+        await russell.issueMessage('#Silence');
 
         assert.equal(gunther.messages.length, 3); // no change
         assert.equal(russell.messages.length, 2);
@@ -222,5 +254,77 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
             Message.format(Message.COMMUNICATION_VIP_MESSAGE, russell.id, russell.name, 'Silence'));
         
         assert.equal(nuwani.messagesForTesting.length, 2);
+    });
+
+    it('should provide the ability to have phone conversations', async (assert) => {
+        const lucy = server.playerManager.getById(/* Lucy= */ 2);
+
+        const channel = manager.getCallChannel();
+        assert.isNotNull(channel);
+
+        assert.isUndefined(channel.getConversationPartner(gunther));
+        assert.isUndefined(channel.getConversationPartner(russell));
+
+        assert.isFalse(channel.confirmChannelAccessForPlayer(gunther));
+        assert.isFalse(channel.confirmChannelAccessForPlayer(russell));
+
+        channel.establish(gunther, russell);
+
+        assert.equal(channel.getConversationPartner(gunther), russell);
+        assert.equal(channel.getConversationPartner(russell), gunther);
+
+        assert.isTrue(channel.confirmChannelAccessForPlayer(gunther));
+        assert.isTrue(channel.confirmChannelAccessForPlayer(russell));
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.COMMUNICATION_CALL_CONNECTED, russell.name));
+
+        assert.equal(russell.messages.length, 1);
+        assert.equal(
+            russell.messages[0],
+            Message.format(Message.COMMUNICATION_CALL_CONNECTED, gunther.name));
+
+        await gunther.issueMessage('Hey, how are you?');
+
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(
+            gunther.messages[1],
+            Message.format(Message.COMMUNICATION_CALL_MESSAGE, gunther.id, gunther.name,
+                           'Hey, how are you?'));
+
+        assert.equal(russell.messages.length, 2);
+        assert.equal(russell.messages[1], gunther.messages[1]);
+
+        assert.equal(lucy.messages.length, 0);
+
+        russell.disconnectForTesting();
+
+        assert.isUndefined(channel.getConversationPartner(gunther));
+        assert.isFalse(channel.confirmChannelAccessForPlayer(gunther));
+
+        assert.equal(gunther.messages.length, 3);
+        assert.equal(
+            gunther.messages[2],
+            Message.format(Message.COMMUNICATION_CALL_DISCONNECTED_LEFT, russell.name));
+        
+        channel.establish(gunther, lucy);
+
+        assert.equal(channel.getConversationPartner(gunther), lucy);
+        assert.isTrue(channel.confirmChannelAccessForPlayer(gunther));
+        assert.isTrue(channel.confirmChannelAccessForPlayer(lucy));
+
+        channel.disconnect(lucy, gunther);
+
+        assert.equal(gunther.messages.length, 5);
+        assert.equal(
+            gunther.messages[4],
+            Message.format(Message.COMMUNICATION_CALL_DISCONNECTED, lucy.name, 'they'));
+
+        assert.equal(lucy.messages.length, 2);
+        assert.equal(
+            lucy.messages[1],
+            Message.format(Message.COMMUNICATION_CALL_DISCONNECTED, gunther.name, 'you'));
     });
 });

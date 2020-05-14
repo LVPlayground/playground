@@ -58,11 +58,6 @@ class PrivateMessagingManager {
      * @param message The message to be send.
      */
     public sendPrivateMessage(senderId, sender[], receiverId, receiver[], message[]) {
-        if (MuteManager->isMuted(senderId) == true) {
-            SendClientMessage(senderId, Color::Error, "You can't PM when you are muted.");
-            return 1;
-        }
-
         // Store sender for our receiver, so we can check later if our sender is still online if
         // the receiver uses /r.
         format(m_lastPrivateMessageSenderName[receiverId], 25, "%s", sender);
@@ -137,11 +132,6 @@ class PrivateMessagingManager {
      * @param message The message to be send.
      */
     public sendPrivateIrcMessage(senderId, sender[], receiver[], message[]) {
-        if (MuteManager->isMuted(senderId) == true) {
-            SendClientMessage(senderId, Color::Error, "You can't PM when you are muted.");
-            return 1;
-        }
-
         // Store the receiver for our sender, so he can use /r to chat along.
         format(m_lastPrivateMessageSenderName[senderId], 25, "%s", receiver);
         m_lastPrivateMessageSenderId[senderId] = Player::InvalidId;

@@ -18,4 +18,7 @@ export class Channel {
     distribute(player, message, nuwani) {
         throw new Error('Channels are expected to define how messages distribute.');
     }
+
+    // Disposes of the Channel, and any lasting state it may have.
+    dispose() {}
 }

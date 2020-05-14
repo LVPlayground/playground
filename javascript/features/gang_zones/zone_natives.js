@@ -13,6 +13,10 @@ export class ZoneNatives {
         return zoneId;
     }
 
+    showZoneForPlayer(player, zoneId, color) {
+        pawnInvoke('GangZoneShowForPlayer', 'iii', player.id, zoneId, color.toNumberRGBA());
+    }
+
     deleteZone(zoneId) {
         pawnInvoke('GangZoneDestroy', 'i', zoneId);
     }

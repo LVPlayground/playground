@@ -12,6 +12,9 @@ forward OnPlayerLogin(playerid, userid, vip, gangid, undercover);
 forward OnPlayerResolvedDeath(playerid, killerid, reason);
 forward OnSetiOwnershipChange(playerid);
 forward OnPlayerGuestLogin(playerId, guestPlayerName[]);
+forward OnSetPlayerSkinId(playerId, skinId, bool: uponNextSpawn);
+forward OnGiveWeapon(playerId, weaponId, ammo);
+forward OnResetPlayerWeapons(playerId);
 
 # SA-MP callbacks
 forward OnGameModeInit();
@@ -24,7 +27,7 @@ forward OnPlayerDisconnect(playerid, reason);
 forward OnPlayerDeath(playerid, killerid, reason);
 forward OnVehicleSpawn(vehicleid);
 forward OnVehicleDeath(vehicleid, killerid);
-[Cancelable] forward OnPlayerText(playerid, text[]);
+forward OnPlayerText(playerid, text[]);
 [Cancelable, ReturnOne] forward OnPlayerCommandText(playerid, cmdtext[]);
 forward OnPlayerRequestClass(playerid, classid);
 forward OnPlayerEnterVehicle(playerid, vehicleid, ispassenger);

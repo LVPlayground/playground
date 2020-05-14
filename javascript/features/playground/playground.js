@@ -17,6 +17,9 @@ class Playground extends Feature {
         // Used for announcing changes in feature availability to players.
         this.announce_ = this.defineDependency('announce');
 
+        // Used for controlling the message filter, as well as server-wide communication.
+        const communication = this.defineDependency('communication');
+
         // Used for distributing messages to Nuwani, where applicable.
         this.nuwani_ = this.defineDependency('nuwani');
         this.nuwani_.addReloadObserver(this, () => this.initializeNuwaniCommands());
@@ -25,11 +28,11 @@ class Playground extends Feature {
         const settings = this.defineDependency('settings');
 
         this.access_ = new PlaygroundAccessTracker();
-
         this.manager_ = new PlaygroundManager(settings);
-
         this.commands_ =
-            new PlaygroundCommands(this.access_, this.announce_, this.nuwani_, settings);
+            new PlaygroundCommands(this.access_, this.announce_, communication, this.nuwani_,
+                                   settings);
+
         this.commands_.loadCommands();
 
         // Activate the features that should be activated by default.

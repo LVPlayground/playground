@@ -176,6 +176,20 @@ export class Player extends Supplementable {
     setNameForGuestLogin(value) { this.#name_ = value; }
 
     // ---------------------------------------------------------------------------------------------
+    // Section: Weapons
+    // ---------------------------------------------------------------------------------------------
+
+    // Give a player a certain weapon with ammo.
+    giveWeapon(weaponId, ammo) {
+        return pawnInvoke('OnGiveWeapon', 'iii', this.#id_, weaponId, ammo);
+    }
+
+    // Resets all the weapons a player has.
+    resetWeapons() {
+        return pawnInvoke('OnResetPlayerWeapons', 'i', this.#id_);
+    }
+
+    // ---------------------------------------------------------------------------------------------
     // Section: Physics
     // ---------------------------------------------------------------------------------------------
 

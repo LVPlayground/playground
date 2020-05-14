@@ -384,10 +384,19 @@ export class MockPlayer extends Player {
     // Issues |message| as if it has been said by this user. Returns whether the event with which
     // the chat message had been issues was prevented.
     async issueMessage(message) {
+        let resolver = null;
+
+        const observerPromise = new Promise(resolve => resolver = resolve);
+
         dispatchEvent('playertext', {
             playerid: this.id,
-            text: message
+            text: message,
+
+            // Injected for tests, should be called when processing the message is complete.
+            resolver,
         });
+
+        await observerPromise;
     }
 
     // Issues |commandText| as if it had been send by this player. Returns whether the event with

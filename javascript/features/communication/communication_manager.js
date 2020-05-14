@@ -100,9 +100,19 @@ export class CommunicationManager {
         if (!player || !unprocessedMessage || !unprocessedMessage.length)
             return;  // the player is not connected to the server, or they sent an invalid message
 
-        // TODO: Once most communication is handled by JavaScript, do all further processing on a
-        // deferred task instead.
+        // Tests inject a |resolver| property in the |event|, which is to be invoked when the
+        // message has been processed. This is not necessary for production usage.
+        if (event.resolver) {
+            Promise.resolve().then(() => this.handlePlayerMessage(player, unprocessedMessage))
+                             .then(event.resolver);
+        } else {
+            Promise.resolve().then(() => this.handlePlayerMessage(player, unprocessedMessage));
+        }
+    }
 
+    // Asynchronous handling of player's text messages. This introduces a server frame's delay,
+    // approximately 4ms, for the benefit of taking it out of the critical path.
+    handlePlayerMessage(player, unprocessedMessage) {
         // The |player| might still be identifying themselves, in which case they're muted.
         if (player.account.isRegistered() && !player.account.isIdentified() &&
                 unprocessedMessage[0] != '@' /* allow messages to administrators */) {

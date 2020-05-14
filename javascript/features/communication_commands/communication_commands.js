@@ -4,6 +4,7 @@
 
 import { CallCommands } from 'features/communication_commands/call_commands.js';
 import CommandBuilder from 'components/command_manager/command_builder.js';
+import { DirectCommunicationCommands } from 'features/communication_commands/direct_communication_commands.js';
 import Feature from 'components/feature_manager/feature.js';
 import { IgnoreCommands } from 'features/communication_commands/ignore_commands.js';
 import { MuteCommands } from 'features/communication_commands/mute_commands.js'
@@ -35,15 +36,22 @@ export default class CommunicationCommands extends Feature {
     constructor() {
         super();
 
+        // Used to send messages to in-game administrators.
         this.announce_ = this.defineDependency('announce');
+
+        // This series of commands services the Communication feature.
         this.communication_ = this.defineDependency('communication');
+
+        // Used to send non-channel communication to people watching through Nuwani.
         this.nuwani_ = this.defineDependency('nuwani');
+
+        // Used to make the required level for certain commands configurable.
+        const playground = this.defineDependency('playground');
+
+        // Used to make certain parts of communication configurable.
         this.settings_ = this.defineDependency('settings');
 
         // TODO:
-        // - /ircpm
-        // - /pm
-        // - /r
         // - /slap
         // - /slapb(ack)
 
@@ -51,6 +59,7 @@ export default class CommunicationCommands extends Feature {
         // which is reflected in the following array of command groups.
         this.commands_ = [
             new CallCommands(this.communication_),
+            new DirectCommunicationCommands(this.communication_, playground),
             new IgnoreCommands(this.communication_),
             new MuteCommands(this.announce_, this.communication_),
         ];

@@ -8,18 +8,14 @@ describe('CommunicationCommands', (it, beforeEach) => {
     let gunther = null;
     let russell = null;
 
-    let callChannel = null;
     let muteManager = null;
-    let visibilityManager = null;
 
     beforeEach(async() => {
         server.featureManager.loadFeature('communication_commands');
 
         const communication = server.featureManager.loadFeature('communication');
 
-        callChannel = communication.manager_.getCallChannel();
         muteManager = communication.muteManager_;
-        visibilityManager = communication.visibilityManager_;
 
         gunther = server.playerManager.getById(/* Gunther= */ 0);
         russell = server.playerManager.getById(/* Russell= */ 1);
@@ -119,39 +115,5 @@ describe('CommunicationCommands', (it, beforeEach) => {
             server.clock.advance(kIntervalSec * 1000),
             guntherCyclePromise
         ]);
-    });
-
-    it('should be able to show people how to report others', async (assert) => {
-        assert.isNull(muteManager.getPlayerRemainingMuteTime(gunther));
-
-        assert.isTrue(await russell.issueCommand('/showreport Gunther'));
-        assert.isAbove(muteManager.getPlayerRemainingMuteTime(gunther), 0);
-
-        assert.equal(russell.messages.length, 2);
-        assert.includes(
-            russell.messages[0],
-            Message.format(Message.MUTE_ADMIN_MUTED, russell.name, russell.id, gunther.name,
-                gunther.id, '2 minutes'));
-            
-        assert.equal(
-            russell.messages[1],
-            Message.format(Message.MUTE_MUTED, gunther.name, gunther.id, '2 minutes'));
-        
-        assert.equal(gunther.messages.length, 4);
-        assert.equal(gunther.messages[0], Message.MUTE_SHOW_REPORT_BORDER);
-        assert.equal(
-            gunther.messages[1],
-            Message.format(Message.MUTE_SHOW_REPORT_MESSAGE_1, russell.name, russell.id, 
-                           '2 minutes'));
-
-        assert.equal(gunther.messages[2], Message.MUTE_SHOW_REPORT_MESSAGE_2);
-        assert.equal(gunther.messages[3], Message.MUTE_SHOW_REPORT_BORDER);
-
-        assert.isTrue(await russell.issueCommand('/showreport Gunther'));
-
-        assert.equal(russell.messages.length, 3);
-        assert.equal(
-            russell.messages[2],
-            Message.format(Message.MUTE_SHOW_REPORT_ALREADY_MUTED, gunther.name, gunther.id));
     });
 });

@@ -7,11 +7,15 @@ import Feature from 'components/feature_manager/feature.js';
 
 import { relativeTime } from 'base/time.js';
 
-// In which file are messages for the `/show` command stored?
-const kShowCommandDataFile = 'data/show.json';
-
 // After how many seconds does a `/call` expire, because they didn't pick up?
 export const kCallExpirationTimeSec = 15;
+
+// Set of `/show` messages that Gunther will issue at a particular interval.
+const kGuntherMessages =
+    ['beg', 'discord', 'donate', 'forum', 'irc', 'reg', 'report', 'rules', 'weapons'];
+
+// In which file are messages for the `/show` command stored?
+const kShowCommandDataFile = 'data/show.json';
 
 // Provides a series of commands associated with communication on Las Venturas Playground. These
 // commands directly serve the Communication feature, but require a dependency on the `announce`
@@ -19,7 +23,9 @@ export const kCallExpirationTimeSec = 15;
 export default class CommunicationCommands extends Feature {
     announce_ = null;
     communication_ = null;
+    disposed_ = false;
     nuwani_ = null;
+    settings_ = null;
 
     dialToken_ = new WeakMap();
     dialing_ = new WeakMap();
@@ -40,6 +46,7 @@ export default class CommunicationCommands extends Feature {
         this.announce_ = this.defineDependency('announce');
         this.communication_ = this.defineDependency('communication');
         this.nuwani_ = this.defineDependency('nuwani');
+        this.settings_ = this.defineDependency('settings');
 
         // TODO:
         // - /ircpm
@@ -48,10 +55,6 @@ export default class CommunicationCommands extends Feature {
         // - /showmessage
         // - /slap
         // - /slapb(ack)
-
-        // TODO:
-        // - Gunther running /show in 5 minute intervals:
-        //   {"beg", "donate", "irc", "report", "rules", "forum", "reg", "swear", "weapons"};
 
         // /announce [message]
         server.commandManager.buildCommand('announce')
@@ -135,6 +138,28 @@ export default class CommunicationCommands extends Feature {
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
             .build(CommunicationCommands.prototype.onUnmuteCommand.bind(this));
+        
+        // Unless we're in a test, start the GuntherCycle which will automatically use the /show
+        // command with his credentials with a number of predefined commands.
+        if (!server.isTest())
+            this.runTheGuntherCycle();
+    }
+
+    // The Gunther cycle will spin for the lifetime of this object, displaying a `/show` message at
+    // a configured interval.
+    async runTheGuntherCycle() {
+        do {
+            await wait(this.settings_().getValue('playground/gunther_help_interval_sec') * 1000);
+            if (this.disposed_)
+                return;
+            
+            const message = kGuntherMessages[Math.floor(Math.random() * kGuntherMessages.length)];
+            const gunther = server.playerManager.getByName('Gunther', false);
+
+            if (gunther)
+                this.onShowCommand(gunther, message, null);
+
+        } while (true);
     }
 
     // /announce
@@ -536,6 +561,8 @@ export default class CommunicationCommands extends Feature {
     }
 
     dispose() {
+        this.disposed_ = true;
+
         server.commandManager.removeCommand('unmute');
         server.commandManager.removeCommand('unignore');
         server.commandManager.removeCommand('showreport');

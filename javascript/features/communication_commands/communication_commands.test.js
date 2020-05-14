@@ -337,6 +337,31 @@ describe('CommunicationCommands', (it, beforeEach) => {
         assert.equal(lucy.messages[5], Message.ANNOUNCE_HEADER);
     });
 
+    it('should automatically show predefined messages at a configured interval', async (assert) => {
+        const feature = server.featureManager.loadFeature('communication_commands');
+        const guntherCyclePromise = feature.runTheGuntherCycle();
+        const settings = server.featureManager.loadFeature('settings');
+
+        const kIntervalSec = 300;
+
+        settings.setValue('playground/gunther_help_interval_sec', kIntervalSec);
+
+        assert.equal(gunther.messages.length, 0);
+
+        await server.clock.advance(kIntervalSec * 1000);
+        assert.equal(gunther.messages.length, 3);
+
+        await server.clock.advance(kIntervalSec * 1000);
+        assert.equal(gunther.messages.length, 6);
+        
+        feature.disposed_ = true;  // fake a dispose() call
+
+        await Promise.all([
+            server.clock.advance(kIntervalSec * 1000),
+            guntherCyclePromise
+        ]);
+    });
+
     it('should be able to show people how to report others', async (assert) => {
         assert.isNull(muteManager.getPlayerRemainingMuteTime(gunther));
 

@@ -5,6 +5,9 @@
 import CommandBuilder from 'components/command_manager/command_builder.js';
 import ScopedCallbacks from 'base/scoped_callbacks.js';
 
+// Id of the sound to play when a player has received a message.
+const kMessageReceivedSoundId = 1058;
+
 // Encapsulates a series of commands that enable players to directly communicate 1:1, as opposed to
 // most of the other communication channels which are public(ish).
 export class DirectCommunicationCommands {
@@ -107,6 +110,8 @@ export class DirectCommunicationCommands {
         if (!player || !event.username)
             return;  // the |player| does not exist.
 
+        player.playSound(kMessageReceivedSoundId);
+
         // Store the interaction to enable |player| to use the `/r` command.
         this.previousMessage_.set(player, {
             type: DirectCommunicationCommands.kIrcPM,
@@ -136,8 +141,10 @@ export class DirectCommunicationCommands {
         
         player.sendMessage(Message.COMMUNICATION_PM_SENDER, target.name, target.id, message);
 
-        if (!this.visibilityManager.isPlayerOnIgnoreList(target, player))
+        if (!this.visibilityManager.isPlayerOnIgnoreList(target, player)) {
             target.sendMessage(Message.COMMUNICATION_PM_RECEIVER, player.name, player.id, message);
+            target.playSound(kMessageReceivedSoundId);
+        }
 
         this.nuwani_().echo(
             'chat-private', player.name, player.id, target.name, target.id, message);
@@ -229,6 +236,8 @@ export class DirectCommunicationCommands {
         }
 
         target.sendMessage(Message.COMMUNICATION_SPM_RECEIVER, player.name, player.id, message);
+        target.playSound(kMessageReceivedSoundId);
+
         player.sendMessage(Message.COMMUNICATION_SPM_SENDER, target.name, target.id, message);
         
         // Store the interaction to enable |target| to use the `/r` command. This could enable the

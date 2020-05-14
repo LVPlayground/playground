@@ -156,8 +156,6 @@
     <DiskObject>\Features\Gameplay\Commands\PlayerSpectateHandler.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\Announcements.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\Communication\PrivateMessagingCommands.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\Communication\PrivateMessagingManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\Responses.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Jail\</DiskObject>
     <DiskObject>\Features\Gameplay\Jail\JailCommands.pwn</DiskObject>

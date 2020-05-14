@@ -13,6 +13,8 @@ forward OnPlayerResolvedDeath(playerid, killerid, reason);
 forward OnSetiOwnershipChange(playerid);
 forward OnPlayerGuestLogin(playerId, guestPlayerName[]);
 forward OnSetPlayerSkinId(playerId, skinId, bool: uponNextSpawn);
+forward OnGiveWeapon(playerId, weaponId, ammo);
+forward OnResetPlayerWeapons(playerId);
 
 # SA-MP callbacks
 forward OnGameModeInit();

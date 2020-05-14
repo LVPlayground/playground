@@ -34,8 +34,12 @@ ResetPlayerWeaponsHook(playerId) {
     ClearSafeWeapons(playerId);
     return ResetPlayerWeapons(playerId);
 }
-
 #define ResetPlayerWeapons ResetPlayerWeaponsHook
+
+forward OnResetPlayerWeapons(playerId);
+public OnResetPlayerWeapons(playerId) {
+    return ResetPlayerWeapons(playerId);
+}
 
 str_shift(string[], start) {
     new i;

@@ -79,6 +79,11 @@ GiveWeapon(playerId, weaponId, ammo) {
     return 1;
 }
 
+forward OnGiveWeapon(playerId, weaponId, ammo);
+public OnGiveWeapon(playerId, weaponId, ammo) {
+    return GiveWeapon(playerId, weaponId, ammo);
+}
+
 ClearSafeWeapons(playerId) {
     for (new weaponId; weaponId <= WeaponUtilities::HighestWeaponId; weaponId++)
         g_PlayerWeapon[playerId][weaponId] = 0;

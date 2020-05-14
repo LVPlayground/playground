@@ -6,6 +6,7 @@ import { CommunicationManager } from 'features/communication/communication_manag
 import { CommunicationNatives } from 'features/communication/communication_natives.js';
 import Feature from 'components/feature_manager/feature.js';
 import { MessageFilter } from 'features/communication/message_filter.js';
+import { MessageVisibilityManager } from 'features/communication/message_visibility_manager.js';
 import { MuteManager } from 'features/communication/mute_manager.js';
 import { SpamTracker } from 'features/communication/spam_tracker.js';
 
@@ -22,6 +23,7 @@ export default class Communication extends Feature {
     manager_ = null;
     natives_ = null;
     spamTracker_ = null;
+    visibilityManager_ = null;
 
     constructor() {
         super();
@@ -42,8 +44,11 @@ export default class Communication extends Feature {
         // The spam tracker keeps track of potential spammers on the server.
         this.spamTracker_ = new SpamTracker();
 
+        // Decides whether a particular messages should be visible to a particular player.
+        this.visibilityManager_ = new MessageVisibilityManager();
+
         this.manager_ = new CommunicationManager(
-            this.filter_, this.muteManager_, this.spamTracker_, nuwani);
+            this.filter_, this.muteManager_, this.spamTracker_, this.visibilityManager_, nuwani);
 
         this.natives_ = new CommunicationNatives(this.muteManager_);
     }
@@ -216,6 +221,8 @@ export default class Communication extends Feature {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        this.visibilityManager_.dispose();
+
         this.natives_.dispose();
         this.manager_.dispose();
     }

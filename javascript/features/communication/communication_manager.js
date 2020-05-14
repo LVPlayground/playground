@@ -17,6 +17,7 @@ export class CommunicationManager {
     delegates_ = null;
     messageFilter_ = null;
     muteManager_ = null;
+    visibilityManager_ = null;
     nuwani_ = null;
 
     callChannel_ = null;
@@ -24,11 +25,13 @@ export class CommunicationManager {
     prefixChannels_ = null;
     spamTracker_ = null;
     
-    constructor(messageFilter, muteManager, spamTracker, nuwani) {
+    constructor(messageFilter, muteManager, spamTracker, visibilityManager, nuwani) {
         this.delegates_ = new Set();
         this.messageFilter_ = messageFilter;
         this.muteManager_ = muteManager;
         this.spamTracker_ = spamTracker;
+        this.visibilityManager_ = visibilityManager;
+
         this.nuwani_ = nuwani;
 
         this.callbacks_ = new ScopedCallbacks();
@@ -44,7 +47,7 @@ export class CommunicationManager {
             new AdministratorChannel(),
             new VipChannel(),
             new CallChannel(),
-            new PublicChannel(),
+            new PublicChannel(this.visibilityManager_),
         ];
 
         // Split the |kChannels| based on whether they're a prefix channel or a generic channel.

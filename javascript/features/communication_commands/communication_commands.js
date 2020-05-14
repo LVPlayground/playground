@@ -27,6 +27,9 @@ export default class CommunicationCommands extends Feature {
     // Gets the MuteManager from the Communication feature, which we service.
     get muteManager() { return this.communication_().muteManager_; }
 
+    // Gets the MessageVisibilityManager from the Communication feature.
+    get visibilityManager() { return this.communication_().visibilityManager_; }
+
     constructor() {
         super();
 
@@ -179,7 +182,8 @@ export default class CommunicationCommands extends Feature {
 
     // /me [message]
     //
-    // Shows an IRC-styled 
+    // Shows an IRC-styled status update, which is a convenient way for players to relay how they're
+    // doing. An example could be "/me is eating a banana", but consider that they might be lying.
     onMeCommand(player, unprocessedMessage) {
         const message = this.communication_().processForDistribution(player, unprocessedMessage);
         if (!message)
@@ -193,33 +197,23 @@ export default class CommunicationCommands extends Feature {
             return;
         }
 
-        this.distributeToPlayersInSameVirtualWorld(player, formattedMessage);
+        this.distributeMessageToPlayers(player, formattedMessage, formattedMessage);
         this.nuwani_().echo('status', player.id, player.name, message);
     }
 
-    // Distributes the given |formattedMessage| to players who are either in the same world as them,
-    // where all worlds that the main world consist of are considered as one, as well as to people
-    // in the crew who have opted to receive all messages from everyone.
-    distributeToPlayersInSameVirtualWorld(player, formattedMessage) {
+    // Distributes the given |formattedMessage| to the players who are supposed to receive it per
+    // the MessageVisibilityManager included in the Communication feature.
+    distributeMessageToPlayers(player, localMessage, remoteMessage) {
         const playerVirtualWorld = player.virtualWorld;
-        const playerInMainWorld = VirtualWorld.isMainWorldForCommunication(playerVirtualWorld);
 
+        const visibilityManager = this.visibilityManager;
         for (const recipient of server.playerManager) {
-            const recipientVirtualWorld = recipient.virtualWorld;
-            const recipientInMainWorld =
-                VirtualWorld.isMainWorldForCommunication(recipientVirtualWorld);
+            const recipientMessage =
+                visibilityManager.selectMessageForPlayer(player, playerVirtualWorld, recipient,
+                                                         { localMessage, remoteMessage });
 
-            let shouldReceiveMessage = false;
-            if (recipientVirtualWorld === playerVirtualWorld)
-                shouldReceiveMessage = true;  // both players are in the same world
-            else if (recipientInMainWorld && playerInMainWorld)
-                shouldReceiveMessage = true;  // both players are in the main world
-            else if (recipient.isAdministrator())
-                shouldReceiveMessage = true;  // the |recipient| is an administrator
-
-            // Send the |formattedMessage| to the |recipient| if they are supposed to read it.
-            if (shouldReceiveMessage)
-                recipient.sendMessage(formattedMessage);
+            if (recipientMessage)
+                recipient.sendMessage(recipientMessage);
         }
     }
 

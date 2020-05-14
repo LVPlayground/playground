@@ -125,12 +125,19 @@ export class DirectCommunicationCommands {
             return;
         }
 
+        if (this.visibilityManager.isPlayerOnIgnoreList(player, target)) {
+            player.sendMessage(Message.COMMUNICATION_PM_IGNORED);
+            return;
+        }
+
         const message = this.communication_().processForDistribution(player, unprocessedMessage);
         if (!message)
             return;  // the message was blocked
         
         player.sendMessage(Message.COMMUNICATION_PM_SENDER, target.name, target.id, message);
-        target.sendMessage(Message.COMMUNICATION_PM_RECEIVER, player.name, player.id, message);
+
+        if (!this.visibilityManager.isPlayerOnIgnoreList(target, player))
+            target.sendMessage(Message.COMMUNICATION_PM_RECEIVER, player.name, player.id, message);
 
         this.nuwani_().echo(
             'chat-private', player.name, player.id, target.name, target.id, message);

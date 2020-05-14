@@ -73,6 +73,7 @@
   "COMMUNICATION_PM_IRC_RECEIVER": "{FFDC18}PM from %s (IRC): {FFFFFF}%s",
   "COMMUNICATION_PM_IRC_SENDER": "{FCF545}* PM to %s (IRC): {FFFFFF}%s",
   "COMMUNICATION_PM_ADMIN": "{FF9900}* PM: %s (Id:%d) to %s (Id:%d):{FFFFFF} %s",
+  "COMMUNICATION_PM_IGNORED": "@error You cannot send messages to people you are ignoring.",
   "COMMUNICATION_PM_RECEIVER": "{FFDC18}* PM from %s (Id:%d): {FFFFFF}%s",
   "COMMUNICATION_PM_SELF": "@error You cannot send messages to yourself.",
   "COMMUNICATION_PM_SENDER": "{FCF545}* PM to %s (Id:%d): {FFFFFF}%s",

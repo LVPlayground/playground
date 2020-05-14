@@ -137,6 +137,27 @@ describe('DirectCommunicationCommands', (it, beforeEach) => {
         });
     });
 
+    it('sending and receiving private messages honors the ignored list', async (assert) => {
+        assert.isFalse(visibilityManager.isPlayerOnIgnoreList(gunther, russell));
+        
+        visibilityManager.addPlayerToIgnoreList(gunther, russell);
+        assert.isTrue(visibilityManager.isPlayerOnIgnoreList(gunther, russell));
+
+        // (1) Gunther is not allowed to send messages to Russell
+        assert.isTrue(await gunther.issueCommand('/pm Russell lolm8'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.COMMUNICATION_PM_IGNORED));
+
+        // (2) Gunther does not receive messages from Russell
+        assert.isTrue(await russell.issueCommand('/pm Gunther yam8'));
+        assert.equal(russell.messages.length, 1);
+        assert.equal(
+            russell.messages[0],
+            Message.format(Message.COMMUNICATION_PM_SENDER, gunther.name, gunther.id, 'yam8'));
+
+        assert.equal(gunther.messages.length, 1);  // unchanged
+    });
+
     it('should be able to send secret private messages', async (assert) => {
         const playground = server.featureManager.loadFeature('playground');
 

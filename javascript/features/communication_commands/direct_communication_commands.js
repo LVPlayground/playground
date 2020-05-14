@@ -3,13 +3,16 @@
 // be found in the LICENSE file.
 
 import CommandBuilder from 'components/command_manager/command_builder.js';
+import ScopedCallbacks from 'base/scoped_callbacks.js';
 
 // Encapsulates a series of commands that enable players to directly communicate 1:1, as opposed to
 // most of the other communication channels which are public(ish).
 export class DirectCommunicationCommands {
     // Types of recent communication to power the `/r` command.
-    static kSecretPM = 0;
+    static kIrcPM = 0;
+    static kSecretPM = 1;
 
+    callbacks_ = null;
     communication_ = null;
     nuwani_ = null;
     playground_ = null;
@@ -23,6 +26,10 @@ export class DirectCommunicationCommands {
     constructor(communication, nuwani, playground) {
         this.communication_ = communication;
         this.nuwani_ = nuwani;
+
+        this.callbacks_ = new ScopedCallbacks();
+        this.callbacks_.addEventListener(
+            'ircmessage', DirectCommunicationCommands.prototype.onIrcMessageReceived.bind(this));
 
         this.playground_ = playground;
         this.playground_.addReloadObserver(
@@ -89,6 +96,21 @@ export class DirectCommunicationCommands {
         player.sendMessage(Message.COMMUNICATION_PM_IRC_SENDER, username, message);
     }
 
+    // Called when an IRC message has been received. This allows us to store that fact, enabling the
+    // `/r` command to work with IRC PMs as well.
+    onIrcMessageReceived(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player || !event.username)
+            return;  // the |player| does not exist.
+
+        // Store the interaction to enable |player| to use the `/r` command.
+        this.previousMessage_.set(player, {
+            type: DirectCommunicationCommands.kIrcPM,
+            username: event.username,
+            id: player.id,
+        });
+    }
+
     // /r [message]
     //
     // Enables players to quickly respond to the last message they received. This encapsulates all
@@ -100,32 +122,40 @@ export class DirectCommunicationCommands {
         }
 
         let previousMessage = this.previousMessage_.get(player);
-        let target = server.playerManager.getById(previousMessage.id);
+        let target = null;
 
         // If the |target| has disconnected from the server, we'll do a best effort scan of other
         // players on the server to see if one matches their previous user ID.
-        if (!target || target.name !== previousMessage.name) {
-            for (const otherPlayer of server.playerManager) {
-                if (otherPlayer.account.userId !== previousMessage.userId)
-                    continue;
-                
-                previousMessage.id = otherPlayer.id;
-                previousMessage.name = otherPlayer.name;
-                target = otherPlayer;
-
-                // Store the |previousMessage| so that we don't have to repeat this again.
-                this.previousMessage_.set(player, previousMessage);
-                break;
-            }
+        if (previousMessage.type != DirectCommunicationCommands.kIrcPM) {
+            target = server.playerManager.getById(previousMessage.id);
 
             if (!target || target.name !== previousMessage.name) {
-                player.sendMessage(Message.COMMUNICATION_REPLY_DISCONNECTED, previousMessage.name);
-                return;
+                for (const otherPlayer of server.playerManager) {
+                    if (otherPlayer.account.userId !== previousMessage.userId)
+                        continue;
+                    
+                    previousMessage.id = otherPlayer.id;
+                    previousMessage.name = otherPlayer.name;
+                    target = otherPlayer;
+
+                    // Store the |previousMessage| so that we don't have to repeat this again.
+                    this.previousMessage_.set(player, previousMessage);
+                    break;
+                }
+
+                if (!target || target.name !== previousMessage.name) {
+                    player.sendMessage(
+                        Message.COMMUNICATION_REPLY_DISCONNECTED, previousMessage.name);
+                    return;
+                }
             }
         }
 
         // Now call the right method depending on the communication mechanism used.
         switch (previousMessage.type) {
+            case DirectCommunicationCommands.kIrcPM:
+                this.onIrcPrivateMessageCommand(player, previousMessage.username, message);
+                return;
             case DirectCommunicationCommands.kSecretPM:
                 this.onSecretPrivateMessageCommand(player, target, message);
                 return;
@@ -161,6 +191,9 @@ export class DirectCommunicationCommands {
         server.commandManager.removeCommand('ircpm');
         server.commandManager.removeCommand('spm');
         server.commandManager.removeCommand('r');
+
+        this.callbacks_.dispose();
+        this.callbacks_ = null;
 
         this.playground_().unregisterCommand('spm');
         this.playground_.removeReloadObserver(this);

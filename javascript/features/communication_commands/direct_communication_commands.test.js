@@ -68,6 +68,21 @@ describe('DirectCommunicationCommands', (it, beforeEach) => {
         });
     });
 
+    it('should be able to reply to IRC messages', async (assert) => {
+        gunther.setVip(true);
+
+        dispatchEvent('ircmessage', {
+            playerid: gunther.id,
+            username: 'Nuwani',
+        });
+
+        assert.isTrue(await gunther.issueCommand('/r Hey George!'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.COMMUNICATION_PM_IRC_SENDER, 'Nuwani', 'Hey Geroge!'));
+    });
+
     it('should be able to send secret private messages', async (assert) => {
         const playground = server.featureManager.loadFeature('playground');
 

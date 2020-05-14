@@ -884,7 +884,7 @@ lvp_show(playerId, params[]) {
         showInfo = true;
         format(g_message, sizeof(g_message), "Save money and stats! Register your nickname at www.sa-mp.nl");
     }
-    
+
     else if (!strcmp(showParameter, "discord", true, 7)) {
         showInfo = true;
         format(g_message, sizeof(g_message), "Join us on official LVP Discord Server at discord.sa-mp.nl");
@@ -997,23 +997,6 @@ lvp_hs(playerId, params[]) {
 
     return 1;
     #pragma unused params
-}
-
-lvp_announce(playerId, params[]) {
-    if (Command->parameterCount(params) == 0) {
-        SendClientMessage(playerId, Color::Information, "Usage: /announce [message]");
-        return 1;
-    }
-
-    SendClientMessageToAll(Color::Red, "-------------------");
-    SendClientMessageToAll(Color::Warning, params);
-    SendClientMessageToAll(Color::Red, "-------------------");
-
-    format(g_message, sizeof(g_message), "Announce by %s (Id:%d): %s", Player(playerId)->nicknameString(), playerId, params);
-    Admin(playerId, g_message);
-
-    EchoMessage("notice-announce", "z", params);
-    return 1;
 }
 
 lvp_clear(playerId, params[]) {

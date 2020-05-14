@@ -28,6 +28,13 @@ describe('CommunicationCommands', (it, beforeEach) => {
         await russell.identify();
     });
 
+    it('should enable administrators to make announcements', async (assert) => {
+        assert.isTrue(await russell.issueCommand('/announce Hello George!!'));
+
+        assert.equal(gunther.messages.length, 3);
+        assert.includes(gunther.messages[1], 'Hello Geroge!!');
+    });
+
     it('should enable people to call each other', async (assert) => {
         assert.isUndefined(callChannel.getConversationPartner(gunther));
         assert.isUndefined(callChannel.getConversationPartner(russell));

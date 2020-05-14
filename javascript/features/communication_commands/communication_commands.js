@@ -38,7 +38,6 @@ export default class CommunicationCommands extends Feature {
         this.nuwani_ = this.defineDependency('nuwani');
 
         // TODO:
-        // - /announce
         // - /clear
         // - /ircpm
         // - /pm
@@ -47,6 +46,12 @@ export default class CommunicationCommands extends Feature {
         // - /showmessage
         // - /slap
         // - /slapb(ack)
+
+        // /announce [message]
+        server.commandManager.buildCommand('announce')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
+            .build(CommunicationCommands.prototype.onAnnounceCommand.bind(this));
 
         // /answer
         server.commandManager.buildCommand('answer')
@@ -111,6 +116,26 @@ export default class CommunicationCommands extends Feature {
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
             .build(CommunicationCommands.prototype.onUnmuteCommand.bind(this));
+    }
+
+    // /announce
+    //
+    // Announces the given |message| to the world. Subject to communication filtering.
+    onAnnounceCommand(player, unprocessedMessage) {
+        const message = this.communication_().processForDistribution(player, unprocessedMessage);
+        if (!message)
+            return;  // the message was blocked
+        
+        for (const player of server.playerManager) {
+            player.sendMessage(Message.ANNOUNCE_HEADER);
+            player.sendMessage(Message.ANNOUNCE_MESSAGE, message);
+            player.sendMessage(Message.ANNOUNCE_HEADER);
+        }
+
+        this.announce_().announceToAdministrators(
+            Message.format(Message.ANNOUNCE_ADMIN_NOTICE, player.name, player.id, message));
+        
+        this.nuwani_().echo('notice-announce', message);
     }
 
     // /answer
@@ -441,5 +466,6 @@ export default class CommunicationCommands extends Feature {
         server.commandManager.removeCommand('hangup');
         server.commandManager.removeCommand('call');
         server.commandManager.removeCommand('answer');
+        server.commandManager.removeCommand('announce');
     }
 }

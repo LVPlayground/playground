@@ -536,7 +536,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(show,           4, AdministratorLevel);
     lvp_command(p,              1, AdministratorLevel);
     lvp_command(t,              1, AdministratorLevel);
-    lvp_command(announce,       8, AdministratorLevel);
     lvp_command(hasfix,         6, AdministratorLevel);
 
 #if Feature::DisableFights == 0

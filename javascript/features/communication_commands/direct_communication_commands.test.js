@@ -22,6 +22,52 @@ describe('DirectCommunicationCommands', (it, beforeEach) => {
         await russell.identify();
     });
 
+    it('should be able to send messages to people on IRC', async (assert) => {
+        const nuwani = server.featureManager.loadFeature('nuwani');
+
+        // (1) It doesn't work if |gunther| is not a VIP.
+        assert.isTrue(await gunther.issueCommand('/ircpm Nuwani Hey man!'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.COMMUNICATION_IRCPM_NO_VIP));
+
+        gunther.setVip(true);
+
+        // (2) It's subject to the regular spam and message filters.
+        assert.isTrue(await gunther.issueCommand('/ircpm Nuwani Hey man!'));
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(
+            gunther.messages[1],
+            Message.format(Message.COMMUNICATION_PM_IRC_SENDER, 'Nuwani', 'Hey man!'));
+
+        assert.equal(nuwani.messagesForTesting.length, 2);
+        assert.deepEqual(nuwani.messagesForTesting[0], {
+            tag: 'chat-irc-notice',
+            params: [
+                'Nuwani',
+                gunther.name,
+                gunther.id,
+                'Hey man!',
+            ]
+        });
+
+        // (3) It shares the message with administrators.
+        assert.equal(russell.messages.length, 1);
+        assert.equal(
+            russell.messages[0],
+            Message.format(Message.COMMUNICATION_IRCPM_ADMIN, gunther.name, gunther.id, 'Nuwani',
+                           'Hey man!'));
+
+        assert.deepEqual(nuwani.messagesForTesting[1], {
+            tag: 'chat-private-to-irc',
+            params: [
+                gunther.name,
+                gunther.id,
+                'Nuwani',
+                'Hey man!',
+            ]
+        });
+    });
+
     it('should be able to send secret private messages', async (assert) => {
         const playground = server.featureManager.loadFeature('playground');
 

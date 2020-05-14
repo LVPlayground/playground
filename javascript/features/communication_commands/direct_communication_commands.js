@@ -11,6 +11,7 @@ export class DirectCommunicationCommands {
     static kSecretPM = 0;
 
     communication_ = null;
+    nuwani_ = null;
     playground_ = null;
 
     // WeakMap from |player| to a struct of {type, id, name} of last received message.
@@ -19,8 +20,10 @@ export class DirectCommunicationCommands {
     // Gets the MessageVisibilityManager from the Communication feature.
     get visibilityManager() { return this.communication_().visibilityManager_; }
 
-    constructor(communication, playground) {
+    constructor(communication, nuwani, playground) {
         this.communication_ = communication;
+        this.nuwani_ = nuwani;
+
         this.playground_ = playground;
         this.playground_.addReloadObserver(
             this, DirectCommunicationCommands.prototype.registerTrackedCommands);
@@ -28,9 +31,14 @@ export class DirectCommunicationCommands {
         this.registerTrackedCommands();
 
         // TODO:
-        // - /ircpm
         // - /pm
         
+        // /ircpm [username] [message]
+        server.commandManager.buildCommand('ircpm')
+            .parameters([ { name: 'username',  type: CommandBuilder.WORD_PARAMETER },
+                          { name: 'message', type: CommandBuilder.SENTENCE_PARAMETER } ])
+            .build(DirectCommunicationCommands.prototype.onIrcPrivateMessageCommand.bind(this));
+
         // /r [message]
         server.commandManager.buildCommand('r')
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
@@ -47,6 +55,38 @@ export class DirectCommunicationCommands {
     // Registers the commands with configurable access with the Playground feature.
     registerTrackedCommands() {
         this.playground_().registerCommand('spm', Player.LEVEL_MANAGEMENT);
+    }
+
+    // /ircpm [username] [message]
+    //
+    // Enables VIPs to send messages directly to people on IRC through Nuwani. They will be sent as
+    // NOTICE commands. Command is not available to non-VIPs.
+    onIrcPrivateMessageCommand(player, username, unprocessedMessage) {
+        if (!player.isVip()) {
+            player.sendMessage(Message.COMMUNICATION_IRCPM_NO_VIP);
+            return;
+        }
+
+        const message = this.communication_().processForDistribution(player, unprocessedMessage);
+        if (!message)
+            return;  // the message was blocked
+
+        this.nuwani_().echo('chat-irc-notice', username, player.name, player.id, message);
+        this.nuwani_().echo('chat-private-to-irc', player.name, player.id, username, message);
+
+        const adminMessage = Message.format(
+            Message.COMMUNICATION_IRCPM_ADMIN, player.name, player.id, username, message);
+
+        // Share the message with administrators in-game as well.
+        for (const otherPlayer of server.playerManager) {
+            if (!otherPlayer.isAdministrator())
+                continue;
+            
+            otherPlayer.sendMessage(adminMessage);
+        }
+
+        // Let the |player| themselves know that the message was sent.
+        player.sendMessage(Message.COMMUNICATION_PM_IRC_SENDER, username, message);
     }
 
     // /r [message]
@@ -118,6 +158,7 @@ export class DirectCommunicationCommands {
     }
 
     dispose() {
+        server.commandManager.removeCommand('ircpm');
         server.commandManager.removeCommand('spm');
         server.commandManager.removeCommand('r');
 

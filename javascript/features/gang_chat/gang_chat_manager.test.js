@@ -25,21 +25,11 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
 
     afterEach(() => manager.dispose());
 
-    it('should ignore messages that are not meant for gang chat', assert => {
-        const player = server.playerManager.getById(0 /* Gunther */);
-
-        assert.isFalse(player.issueMessage(''));
-        assert.isFalse(player.issueMessage('Hello, world!'));
-        assert.isFalse(player.issueMessage('!'));
-        assert.isFalse(player.issueMessage('!!message'));
-        assert.isFalse(player.issueMessage('!!! omg'));
-    });
-
-    it('should send a warning message if the player is not in a gang', assert => {
+    it('should send a warning message if the player is not in a gang', async(assert) => {
         const player = server.playerManager.getById(0 /* Gunther */);
 
         assert.isNull(gangs.getGangForPlayer(player));
-        assert.isTrue(player.issueMessage('!hello'));
+        await player.issueMessage('!hello');
 
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], Message.GANG_CHAT_NO_GANG);
@@ -56,7 +46,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         const expectedMessage =
             Message.format(Message.GANG_CHAT, gang.tag, player.id, player.name, 'hello');
 
-        assert.isTrue(player.issueMessage('!  hello  '));
+        await player.issueMessage('!  hello  ');
 
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], expectedMessage);
@@ -67,7 +57,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
 
         gang.addPlayer(russell);
 
-        assert.isTrue(player.issueMessage('!  hello  '));
+        await player.issueMessage('!  hello  ');
 
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], expectedMessage);
@@ -91,7 +81,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
             Message.format(Message.GANG_CHAT, gang.tag, player.id, player.name, 'hello');
 
         assert.isFalse(gang.hasPlayer(russell));
-        assert.isTrue(player.issueMessage('!  hello  '));
+        await player.issueMessage('!  hello  ');
 
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], expectedMessage);
@@ -104,7 +94,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         player.clearMessages();
         russell.clearMessages();
 
-        assert.isTrue(player.issueMessage('!  hello  '));
+        await player.issueMessage('!  hello  ');
 
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], expectedMessage);
@@ -119,7 +109,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         await player.identify();
         const gang = await GangTester.createGang(player);
 
-        assert.isTrue(await player.issueMessage('!hello'));
+        await player.issueMessage('!hello');
 
         assert.equal(nuwani.messagesForTesting.length, 1);
         assert.deepEqual(nuwani.messagesForTesting[0], {
@@ -149,7 +139,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
             Message.format(Message.GANG_CHAT, gang.tag, player.id, player.name, 'hello');
 
         assert.isFalse(gang.hasPlayer(russell));
-        assert.isTrue(player.issueMessage('!  hello  '));
+        await player.issueMessage('!  hello  ');
 
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], expectedMessage);
@@ -178,7 +168,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         const expectedMessage =
             Message.format(Message.GANG_CHAT, gang.tag, player.id, player.name, 'hello');
 
-        assert.isTrue(player.issueMessage('!hello'));
+        await player.issueMessage('!hello');
 
         assert.isTrue(gang.hasPlayer(player));
         assert.equal(player.messages.length, 1);
@@ -200,7 +190,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
 
         russell.level = Player.LEVEL_ADMINISTRATOR;
 
-        assert.isTrue(russell.issueMessage('!!OMG hello'));
+        await russell.issueMessage('!!OMG hello');
 
         assert.isTrue(gang.hasPlayer(player));
         assert.equal(player.messages.length, 0);
@@ -209,11 +199,11 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         assert.equal(russell.messages[0], Message.format(Message.GANG_CHAT_NO_GANG_FOUND, 'OMG'));
     });
 
-    it('should show usage information to admins using two exclamation marks', assert => {
+    it('should show usage information to admins using two exclamation marks', async (assert) => {
         const player = server.playerManager.getById(0 /* Gunther */);
         player.level = Player.LEVEL_ADMINISTRATOR;
 
-        assert.isTrue(player.issueMessage('!!'));
+        await player.issueMessage('!!');
 
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], Message.GANG_CHAT_REMOTE_USAGE);
@@ -230,7 +220,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         russell.level = Player.LEVEL_ADMINISTRATOR;
         russell.messageLevel = 0 /* do not see gang chat */;
 
-        assert.isTrue(russell.issueMessage('!!HKO hello'));
+        await russell.issueMessage('!!HKO hello');
 
         const expectedMessage =
             Message.format(Message.GANG_CHAT_REMOTE, gang.tag, russell.id, russell.name, 'hello');
@@ -246,11 +236,11 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         assert.equal(russell.messages[0], expectedMessage);
     });
 
-    it('should ignore three exclamation marks for administrators as well', assert => {
+    it('should ignore three exclamation marks for administrators as well', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
-        assert.isFalse(gunther.issueMessage('!!!what happened'));
+        await gunther.issueMessage('!!!what happened');
     });
 
     it('should warn the new Seti@Home owner of gangs having chat encryption', async(assert) => {
@@ -276,7 +266,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         const gang =
             await GangTester.createGang(gunther, { chatEncryptionExpiry: 0 /* not encrypted */ });
 
-        assert.isTrue(gunther.issueMessage('!unencrypted'));
+        await gunther.issueMessage('!unencrypted');
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.format(Message.GANG_CHAT, gang.tag, gunther.id,
                                                          gunther.name, 'unencrypted'));
@@ -286,7 +276,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         // Fake the |gang| having purchased a day worth of message encryption.
         gang.chatEncryptionExpiry = Math.floor(server.clock.currentTime() / 1000) + 86400;
 
-        assert.isTrue(gunther.issueMessage('!encrypted'));
+        await gunther.issueMessage('!encrypted');
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.format(Message.GANG_CHAT_ENCRYPTED, gang.tag,
                                                          gunther.id, gunther.name, 'encrypted'));
@@ -307,7 +297,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         assert.equal(russell.messages.length, 1);
         russell.clearMessages();
 
-        assert.isTrue(gunther.issueMessage('!this message is encrypted'));
+        await gunther.issueMessage('!this message is encrypted');
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(russell.messages.length, 0);
@@ -324,7 +314,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         const expectedMessage =
             Message.format(Message.GANG_CHAT, gang.tag, player.id, player.name, 'hello');
 
-        assert.isTrue(player.issueMessage('!  hello  '));
+        await player.issueMessage('!  hello  ');
 
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], expectedMessage);
@@ -335,7 +325,7 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
 
         gang.addPlayer(russell);
 
-        assert.isTrue(player.issueMessage('!  hello  '));
+        await player.issueMessage('!  hello  ');
 
         assert.equal(player.messages.length, 1);
         assert.equal(player.messages[0], expectedMessage);

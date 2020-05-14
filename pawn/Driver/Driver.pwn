@@ -83,3 +83,6 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
     LegacyPlayerKeyStateChange(playerid, newkeys, oldkeys);
     return 1;
 }
+
+// Define so that JavaScript can intercept the events.
+public OnPlayerText(playerid, text[]) {}

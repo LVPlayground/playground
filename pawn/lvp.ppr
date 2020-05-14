@@ -1,8 +1,12 @@
 <?xml version="1.0"?>
 <Project>
   <FileList>
+    <DiskObject>\config.pwn</DiskObject>
     <DiskObject>\Driver\</DiskObject>
     <DiskObject>\Driver\Driver.pwn</DiskObject>
+    <DiskObject>\Driver\ThirdParty\</DiskObject>
+    <DiskObject>\Driver\ThirdParty\sky.inc</DiskObject>
+    <DiskObject>\Driver\ThirdParty\weapon-config.inc</DiskObject>
     <DiskObject>\Elements\</DiskObject>
     <DiskObject>\Elements\AdministratorCommands.pwn</DiskObject>
     <DiskObject>\Elements\Player\</DiskObject>
@@ -54,7 +58,6 @@
     <DiskObject>\Entities\Players\PlayerActivity.pwn</DiskObject>
     <DiskObject>\Entities\Players\PlayerEvents.pwn</DiskObject>
     <DiskObject>\Entities\Players\PlayerFlags.pwn</DiskObject>
-    <DiskObject>\Entities\Players\PlayerIdlePenalty.pwn</DiskObject>
     <DiskObject>\Entities\Players\PlayerManager.pwn</DiskObject>
     <DiskObject>\Entities\Players\PlayerManager.tests.pwn</DiskObject>
     <DiskObject>\Entities\Players\PlayerMessageLevels.pwn</DiskObject>
@@ -153,8 +156,6 @@
     <DiskObject>\Features\Gameplay\Commands\PlayerSpectateHandler.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\Announcements.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\Communication\CallCommands.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\Communication\CallManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\PrivateMessagingCommands.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\PrivateMessagingManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\Responses.pwn</DiskObject>
@@ -240,6 +241,7 @@
     <DiskObject>\Interface\vars.pwn</DiskObject>
     <DiskObject>\Interface\ZoneLayer.pwn</DiskObject>
     <DiskObject>\Interface\ZoneManager.pwn</DiskObject>
+    <DiskObject>\lvp.pwn</DiskObject>
     <DiskObject>\release.pwn</DiskObject>
     <DiskObject>\Resources\</DiskObject>
     <DiskObject>\Resources\Callbacks\</DiskObject>
@@ -257,7 +259,6 @@
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStateChange.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStreamIn.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStreamOut.pwn</DiskObject>
-    <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerText.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\OnDialogResponse.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\OnDynamicObjectMoved.pwn</DiskObject>
@@ -354,9 +355,6 @@
     <DiskObject>\Resources\Minigames\Derby\Derby7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby9.pwn</DiskObject>
-    <DiskObject>\Driver\ThirdParty\</DiskObject>
-    <DiskObject>\Driver\ThirdParty\weapon-config.inc</DiskObject>
-    <DiskObject>\Driver\ThirdParty\sky.inc</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

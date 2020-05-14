@@ -42,8 +42,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     if (!Player(playerid)->isConnected())
         return 1; // we haven't marked this player as being connected
 
-    PlayerIdlePenalty->resetCurrentIdleTime(playerid);
-
     new cmd[256], idx;
     cmd = strtok(cmdtext, idx);
 
@@ -504,9 +502,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(World,          5, PlayerLevel);
 
     // General player commands:
-	lvp_command(Ignore,         6, PlayerLevel);
-    lvp_command(Unignore,       8, PlayerLevel);
-    lvp_command(Ignored,        7, PlayerLevel);
     lvp_command(Commands,       8, PlayerLevel);
     lvp_command(cmds,           4, PlayerLevel);
     lvp_command(Minigames,      9, PlayerLevel);
@@ -1014,43 +1009,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             SendClientMessage(playerid, COLOR_ORANGE, "12: LV Fight Club 13: Balloon (/t only)");
         else
             SendClientMessage(playerid, COLOR_ORANGE, "12: LV Fight Club");
-        return 1;
-    }
-
-    if (strcmp(cmd, "/me", true) == 0) {
-        new message[128];
-        message = strtok(cmdtext, idx);
-
-        if (!strlen(message)) {
-            SendClientMessage(playerid, Color::Information, "Usage: /me [message]");
-            return 1;
-        }
-
-        new actionText[256];
-        actionText = right(cmdtext, (strlen(cmdtext)-4));
-
-        new const bool: isIsolated = PlayerSyncedData(playerid)->isolated();
-
-        SetPlayerChatBubble(playerid, actionText, ColorManager->playerColor(playerid), 50, 10*1000);
-
-        format(string, sizeof(string), "* %s %s", Player(playerid)->nicknameString(), actionText);
-        for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
-            if (!Player(subjectId)->isConnected() || g_Ignore[subjectId][playerid])
-                continue;
-
-            if (GetPlayerVirtualWorld(subjectId) != GetPlayerVirtualWorld(playerid)
-                && (!PlayerSettings(subjectId)->isAllVirtualWorldChatEnabled() || !Player(subjectId)->isAdministrator()))
-                continue;
-
-            if (isIsolated && subjectId != playerid)
-                continue;
-
-            SendClientMessage(subjectId, ColorManager->playerColor(playerid), string);
-        }
-
-        format(string, sizeof(string), "%d %s %s", playerid, Player(playerid)->nicknameString(), actionText);
-        EchoMessage("status", "dss", string);
-
         return 1;
     }
 

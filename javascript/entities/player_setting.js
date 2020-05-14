@@ -19,7 +19,13 @@ class PlayerSetting extends Setting {
     get subCommand() { return this.subCommand_; }
 
     // Gets an identifier for the setting that contains both its category and its name.
-    get identifier() { return `${this.category_}/${this.group_}/${this.subCommand_}`; }
+    get identifier() { 
+        if(this.subCommand !== null && this.subCommand_ !== undefined) {
+            return `${this.category_}/${this.group_}/${this.subCommand_}`; 
+        }
+
+        return  `${this.category_}/${this.group_}`;
+    }
 
     clone() {
         return new PlayerSetting(this.category_, this.group_, this.subCommand_, this.name_, this.type_, this.value_, this.description_);
@@ -34,13 +40,17 @@ PlayerSetting.TYPE_STRING = 2;
 
 PlayerSetting.CATEGORY = { };
 PlayerSetting.CATEGORY.ANNOUNCEMENT = 'announcement';
+PlayerSetting.CATEGORY.GANG = 'gang';
 
 PlayerSetting.ANNOUNCEMENT = { };
 PlayerSetting.ANNOUNCEMENT.UNCATEGORIZED = 'uncategorized';
+PlayerSetting.ANNOUNCEMENT.GANGS = 'gangs';
 PlayerSetting.ANNOUNCEMENT.HOUSES = 'houses';
 
 PlayerSetting.SUBCOMMAND = { };
 PlayerSetting.SUBCOMMAND.GENERAL = 'general';
+
+PlayerSetting.SUBCOMMAND.GANGS_CHANGED_SKIN = 'skin changed';
 
 PlayerSetting.SUBCOMMAND.HOUSES_BUY = 'buy';
 PlayerSetting.SUBCOMMAND.HOUSES_CREATED = 'created';
@@ -48,5 +58,9 @@ PlayerSetting.SUBCOMMAND.HOUSES_DELETED = 'deleted';
 PlayerSetting.SUBCOMMAND.HOUSES_EVICTED = 'evicted';
 PlayerSetting.SUBCOMMAND.HOUSES_SELL = 'sell';
 PlayerSetting.SUBCOMMAND.HOUSES_TELEPORTED = 'teleported';
+
+
+PlayerSetting.GANG = { };
+PlayerSetting.GANG.USE_SKIN = 'use_skin';
 
 export default PlayerSetting;

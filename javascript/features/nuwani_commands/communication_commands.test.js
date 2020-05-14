@@ -100,6 +100,16 @@ describe('CommunicationCommands', (it, beforeEach, afterEach) => {
         assert.equal(nuwani.messagesForTesting[1].tag, 'notice-announce');
     });
 
+    it('should be able to share a Discord link', async (assert) => {
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!discord',
+        });
+
+        assert.equal(result.length, 1);
+        assert.includes(result[0], 'https://discord.sa-mp.nl/');
+    });
+
     it('should be able to send messages to in-game players', async (assert) => {
         const wrongChannelResult = await issueCommand(bot, commandManager, {
             source: kCommandSource,

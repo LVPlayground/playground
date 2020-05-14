@@ -159,6 +159,14 @@ class Settings extends Feature {
 
     // ---------------------------------------------------------------------------------------------
 
+    // For testing purposes, it might be needed to actually create a setting.
+    createSettingForTesting({ category, setting, type, value, description }) {
+        this.settings_.set(
+            `${category}/${setting}`, new Setting(category, setting, type, value, description));
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     dispose() {
         for (const setting of this.settings_.values())
             setting.value = setting.defaultValue;

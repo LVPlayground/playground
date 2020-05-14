@@ -18,7 +18,21 @@ export class AccountManager {
         this.callbacks_.addEventListener(
             'playerguestlogin', AccountManager.prototype.onPlayerGuestLoginEvent.bind(this));
 
+        provideNative('SetIsRegistered', 'ii', AccountManager.prototype.setIsRegistered.bind(this));
+
         server.playerManager.addObserver(this, /* replayHistory= */ true);
+    }
+
+    // native SetIsRegistered(playerid, bool: isRegistered);
+    //
+    // Sets whether the |playerid| is registered, and has to identify to their account prior to
+    // being able to interact with the server.
+    setIsRegistered(playerid, isRegistered) {
+        const player = server.playerManager.getById(playerid);
+        if (player)
+            player.account.isRegistered_ = !!isRegistered;
+        
+        return 0;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -71,6 +85,8 @@ export class AccountManager {
 
     dispose() {
         server.playerManager.removeObserver(this);
+
+        provideNative('SetIsRegistered', 'ii', () => 0);
 
         this.callbacks_.dispose();
         this.callbacks_ = null;

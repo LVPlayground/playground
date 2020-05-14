@@ -127,6 +127,27 @@ describe('GangManager', (it, beforeEach) => {
         assert.isFalse(gang.usesGangColor(gunther));
     });
 
+    it('should be able to update member preferences in regards to gang skin', async(assert) => {
+        assert.isNull(manager.gangForPlayer(gunther));
+
+        await gunther.identify({ userId: MockGangDatabase.HKO_MEMBER_USER_ID,
+                                 gangId: MockGangDatabase.HKO_GANG_ID });
+
+        // The database result will be loaded through a promise, continue the test asynchronously.
+        await Promise.resolve();
+
+        const gang = manager.gangForPlayer(gunther);
+
+        assert.isTrue(gang.hasPlayer(gunther));
+        assert.isTrue(gang.usesGangSkin(gunther));
+        gunther.skinId = 144;
+
+        await manager.updateSkinPreference(gang, gunther, false);
+
+        assert.isFalse(gang.usesGangSkin(gunther));
+        assert.equal(gunther.skinId, 144);
+    });
+
     it('should load and unload gang data on connectivity events', async(assert) => {
         assert.isNull(manager.gangForPlayer(gunther));
 

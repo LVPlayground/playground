@@ -273,12 +273,20 @@ class PropertyManager {
                 continue;
             }
 
-            DepositToAccountJS(playerId, payoutAmount[playerId]);
+            if (DepositToAccountJS(playerId, payoutAmount[playerId])) {
+                format(message, sizeof(message),
+                    "You have earned {40CCFF}$%s{FFFFFF} with your properties, which has been deposited into your bank account.",
+                    formatPrice(payoutAmount[playerId]));
 
-            format(message, sizeof(message),
-                "You have earned {40CCFF}$%s{FFFFFF} with your properties, which has been deposited into your bank account.",
-                formatPrice(payoutAmount[playerId]));
-            SendClientMessage(playerId, Color::Information, message);
+                SendClientMessage(playerId, Color::Information, message);
+
+            } else {
+                format(message, sizeof(message),
+                    "You have earned {40CCFF}$%s{FFFFFF} with your properties, which you've received in cash as your account is full.",
+                    formatPrice(payoutAmount[playerId]));
+
+                SendClientMessage(playerId, Color::Information, message);
+            }
         }
 
         if (m_propertyTycoonAmount < tycoonAmount) {

@@ -7,31 +7,67 @@ import Feature from 'components/feature_manager/feature.js';
 
 import { relativeTime } from 'base/time.js';
 
+// After how many seconds does a `/call` expire, because they didn't pick up?
+export const kCallExpirationTimeSec = 15;
+
 // Provides a series of commands associated with communication on Las Venturas Playground. These
 // commands directly serve the Communication feature, but require a dependency on the `announce`
 // feature which is prohibited given that Communication is a foundational feature.
 export default class CommunicationCommands extends Feature {
     announce_ = null;
     communication_ = null;
+    nuwani_ = null;
+
+    dialToken_ = new WeakMap();
+    dialing_ = new WeakMap();
+
+    // Gets the CallChannel from the Communication feature.
+    get callChannel() { return this.communication_().manager_.getCallChannel(); }
 
     // Gets the MuteManager from the Communication feature, which we service.
     get muteManager() { return this.communication_().muteManager_; }
+
+    // Gets the MessageVisibilityManager from the Communication feature.
+    get visibilityManager() { return this.communication_().visibilityManager_; }
 
     constructor() {
         super();
 
         this.announce_ = this.defineDependency('announce');
         this.communication_ = this.defineDependency('communication');
+        this.nuwani_ = this.defineDependency('nuwani');
 
         // TODO:
-        // - /call
+        // - /announce
+        // - /clear
         // - /ignore
         // - /ignored
         // - /ircpm
-        // - /me
         // - /pm
         // - /r
+        // - /show
+        // - /showmessage
+        // - /slap
+        // - /slapb(ack)
         // - /unignore
+
+        // /answer
+        server.commandManager.buildCommand('answer')
+            .build(CommunicationCommands.prototype.onAnswerCommand.bind(this));
+
+        // /call [player]
+        server.commandManager.buildCommand('call')
+            .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
+            .build(CommunicationCommands.prototype.onCallCommand.bind(this));
+
+        // /hangup
+        server.commandManager.buildCommand('hangup')
+            .build(CommunicationCommands.prototype.onHangupCommand.bind(this));
+
+        // /me [message]
+        server.commandManager.buildCommand('me')
+            .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
+            .build(CommunicationCommands.prototype.onMeCommand.bind(this));
 
         // /mute [player] [duration=3]
         server.commandManager.buildCommand('mute')
@@ -41,16 +77,14 @@ export default class CommunicationCommands extends Feature {
                 { name: 'duration', type: CommandBuilder.NUMBER_PARAMETER, optional: true }])
             .build(CommunicationCommands.prototype.onMuteCommand.bind(this));
 
-        // /muteall [on/off]
-        server.commandManager.buildCommand('muteall')
-            .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'on/off', type: CommandBuilder.WORD_PARAMETER }])
-            .build(CommunicationCommands.prototype.onMuteAllCommand.bind(this));
-
         // /muted
         server.commandManager.buildCommand('muted')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .build(CommunicationCommands.prototype.onMutedCommand.bind(this));
+
+        // /reject
+        server.commandManager.buildCommand('reject')
+            .build(CommunicationCommands.prototype.onRejectCommand.bind(this));
 
         // /showreport
         server.commandManager.buildCommand('showreport')
@@ -63,6 +97,124 @@ export default class CommunicationCommands extends Feature {
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
             .build(CommunicationCommands.prototype.onUnmuteCommand.bind(this));
+    }
+
+    // /answer
+    //
+    // Answers any in-progress dials to establish a phone call connection with the dialing player.
+    onAnswerCommand(player) {
+        const targetPlayer = this.dialing_.get(player);
+        if (!targetPlayer) {
+            player.sendMessage(Message.COMMUNICATION_DIAL_ANSWER_UNKNOWN);
+            return;
+        }
+
+        this.callChannel.establish(player, targetPlayer);
+
+        this.dialToken_.delete(targetPlayer);
+
+        this.dialing_.delete(player);
+        this.dialing_.delete(targetPlayer);
+    }
+
+    // /call [player]
+    //
+    // Begins calling the |targetPlayer| to establish a phone call. They have to acknowledge the
+    // request, and it will automatically expire after |kCallExpirationTimeSec| seconds.
+    onCallCommand(player, targetPlayer) {
+        const currentRecipient =
+            this.callChannel.getConversationPartner(player) || this.dialing_.get(player);
+    
+        // Bail out if the |player| is already on the phone.
+        if (currentRecipient) {
+            player.sendMessage(Message.COMMUNICATION_DIAL_BUSY_SELF, currentRecipient.name);
+            return;
+        }
+
+        // Bail out if the |targetPlayer| is already on the phone.
+        if (!!this.callChannel.getConversationPartner(targetPlayer) ||
+                this.dialing_.has(targetPlayer)) {
+            player.sendMessage(Message.COMMUNICATION_DIAL_BUSY_RECIPIENT, targetPlayer.name);
+            return;
+        }
+
+        const dialToken = Symbol('unique dial token');
+
+        // Store the |dialToken| to verify uniqueness of the call after the dial expires.
+        this.dialToken_.set(player, dialToken);
+
+        this.dialing_.set(player, targetPlayer);
+        this.dialing_.set(targetPlayer, player);
+
+        targetPlayer.sendMessage(Message.COMMUNICATION_DIAL_REQUEST, player.name);
+        player.sendMessage(Message.COMMUNICATION_DIAL_WAITING, targetPlayer.name);
+
+        // The call will automatically expire after a predefined amount of time.
+        wait(kCallExpirationTimeSec * 1000).then(() => {
+            if (this.dialToken_.get(player) !== dialToken)
+                return;  // the call didn't expire
+            
+            this.dialToken_.delete(player);
+            this.dialing_.delete(player);
+
+            this.dialing_.delete(targetPlayer);
+
+            if (!player.isConnected() || !targetPlayer.isConnected())
+                return;  // either of the recipients has disconnected from the server
+            
+            player.sendMessage(Message.COMMUNICATION_DIAL_EXPIRED, targetPlayer.name);
+            targetPlayer.sendMessage(Message.COMMUNICATION_DIAL_EXPIRED_RECIPIENT, player.name);
+        });
+    }
+
+    // /hangup
+    //
+    // Ends any established phone conversations immediately.
+    onHangupCommand(player) {
+        const targetPlayer = this.callChannel.getConversationPartner(player);
+        if (!targetPlayer) {
+            player.sendMessage(Message.COMMUNICATION_DIAL_HANGUP_UNKNOWN);
+            return;
+        }
+
+        this.callChannel.disconnect(player, targetPlayer);
+    }
+
+    // /me [message]
+    //
+    // Shows an IRC-styled status update, which is a convenient way for players to relay how they're
+    // doing. An example could be "/me is eating a banana", but consider that they might be lying.
+    onMeCommand(player, unprocessedMessage) {
+        const message = this.communication_().processForDistribution(player, unprocessedMessage);
+        if (!message)
+            return;  // the message has been blocked
+
+        const formattedMessage = Message.format(Message.COMMUNICATION_ME, player.name, message);
+
+        // Bail out quickly if the |player| has been isolated.
+        if (player.syncedData.isIsolated()) {
+            player.sendMessage(formattedMessage);
+            return;
+        }
+
+        this.distributeMessageToPlayers(player, formattedMessage, formattedMessage);
+        this.nuwani_().echo('status', player.id, player.name, message);
+    }
+
+    // Distributes the given |formattedMessage| to the players who are supposed to receive it per
+    // the MessageVisibilityManager included in the Communication feature.
+    distributeMessageToPlayers(player, localMessage, remoteMessage) {
+        const playerVirtualWorld = player.virtualWorld;
+
+        const visibilityManager = this.visibilityManager;
+        for (const recipient of server.playerManager) {
+            const recipientMessage =
+                visibilityManager.selectMessageForPlayer(player, playerVirtualWorld, recipient,
+                                                         { localMessage, remoteMessage });
+
+            if (recipientMessage)
+                recipient.sendMessage(recipientMessage);
+        }
     }
 
     // /mute [player] [duration=3]
@@ -98,36 +250,6 @@ export default class CommunicationCommands extends Feature {
         player.sendMessage(Message.MUTE_MUTED, targetPlayer.name, targetPlayer.id, proposedText);
     }
 
-    // /muteall [on/off]
-    //
-    // Enables the player to mute all communications on the server, except for other administrators.
-    // This should rarely be used, only in cases where there are major incidents.
-    onMuteAllCommand(player, enabledText) {
-        if (!['on', 'off'].includes(enabledText)) {
-            player.sendMessage(Message.MUTE_ALL_USAGE);
-            return;
-        }
-
-        const enable = enabledText === 'on';
-
-        if (this.muteManager.isCommunicationMuted() === enable) {
-            player.sendMessage(Message.MUTE_ALL_NO_CHANGE, enable ? 'disabled' : 'enabled');
-            return;
-        }
-
-        this.muteManager.setCommunicationMuted(enable);
-
-        this.announce_().announceToAdministrators(
-            Message.MUTE_ALL_ADMIN, player.name, player.id, enable ? 'disabled' : 'enabled');
-
-        const formattedMessage =
-            Message.format(enable ? Message.COMMUNICATION_SERVER_MUTED
-                                  : Message.COMMUNICATION_SERVER_UNMUTED, player.name);
-
-        for (const otherPlayer of server.playerManager)
-            otherPlayer.sendMessage(formattedMessage);
-    }
-
     // /muted
     //
     // Displays an overview of the currently muted players to |player|, and how much time they have
@@ -152,6 +274,25 @@ export default class CommunicationCommands extends Feature {
 
         if (!hasMutedPlayers)
             player.sendMessage(Message.MUTE_MUTED_NOBODY);
+    }
+
+    // /reject
+    //
+    // Rejects any incoming phone conversation requests.
+    onRejectCommand(player) {
+        const targetPlayer = this.dialing_.get(player);
+        if (!targetPlayer) {
+            player.sendMessage(Message.COMMUNICATION_DIAL_REJECT_UNKNOWN);
+            return;
+        }
+
+        player.sendMessage(Message.COMMUNICATION_DIAL_REJECTED, targetPlayer.name);
+        targetPlayer.sendMessage(Message.COMMUNICATION_DIAL_REJECTED_RECIPIENT, player.name);
+
+        this.dialToken_.delete(targetPlayer);
+
+        this.dialing_.delete(player);
+        this.dialing_.delete(targetPlayer);
     }
 
     // /showreport [player]
@@ -209,8 +350,11 @@ export default class CommunicationCommands extends Feature {
     dispose() {
         server.commandManager.removeCommand('unmute');
         server.commandManager.removeCommand('showreport');
+        server.commandManager.removeCommand('reject');
         server.commandManager.removeCommand('muted');
-        server.commandManager.removeCommand('muteall');
         server.commandManager.removeCommand('mute');
+        server.commandManager.removeCommand('hangup');
+        server.commandManager.removeCommand('call');
+        server.commandManager.removeCommand('answer');
     }
 }

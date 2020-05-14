@@ -3,11 +3,13 @@
 // be found in the LICENSE file.
 // @ts-check
 
+import ScopedCallbacks from 'base/scoped_callbacks.js';
 import { ZoneNatives } from 'features/gang_zones/zone_natives.js';
 
 // The ZoneManager receives updates from the ZoneCalculator whenever a gang zone has to be created,
 // removed, or amended based on changes in gangs, their members and/or their houses.
 export class ZoneManager {
+    callbacks_ = null;
     natives_ = null;
 
     // Map from Zone instance to an integer representing the zone on the SA-MP server.
@@ -16,6 +18,10 @@ export class ZoneManager {
     constructor(natives = null) {
         this.natives_ = natives ?? new ZoneNatives();
         this.zones_ = new Map();
+
+        this.callbacks_ = new ScopedCallbacks();
+        this.callbacks_.addEventListener(
+            'playerspawn', ZoneManager.prototype.onPlayerSpawn.bind(this));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -56,7 +62,22 @@ export class ZoneManager {
         this.zones_.delete(zone);
     }
 
+    // ---------------------------------------------------------------------------------------------
+
+    // Gang zones have to be shown each time a player spawns, rather than just once.
+    onPlayerSpawn(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player)
+            return;  // the event was invoked for an invalid player
+
+        for (const [zoneId, zone] of this.zones_)
+            this.natives_.showZoneForPlayer(player.id, zoneId, zone.color);
+    }
+
     // --------------------------------------------------------------------------------------------
 
-    dispose() {}
+    dispose() {
+        this.callbacks_.dispose();
+        this.callbacks_ = null;
+    }
 }

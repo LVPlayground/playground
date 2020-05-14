@@ -66,6 +66,9 @@ class Account <playerId (MAX_PLAYERS)> {
         if (registered == false)
             return;
 
+        // Let JavaScript know about the player being registered.
+        SetIsRegistered(playerId, true);
+
         Player(playerId)->setIsRegistered(true);
         Player(playerId)->setIsLoggedIn(false);
         m_loginAttemptCount = 0;

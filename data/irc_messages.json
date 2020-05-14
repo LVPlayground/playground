@@ -31,6 +31,8 @@
 
     "status": "<color:2>[%d] <color:7>%s %s",
 
+    "report": "<target:#LVP.Crew><color:7>Report from <color:5>%s <color:7>(Id:%d) about <color:5>%s <color:7>(Id:%d):<color> %s",
+
     "death": "<color:4>*** %s has died.",
     "kill": "<color:4>*** %s (Id:%d) has been killed by %s (Id:%d): %s",
     "kill-no-reason": "<color:4>*** %s (Id:%d) has been killed by %s (Id:%d)",

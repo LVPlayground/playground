@@ -60,6 +60,16 @@ class VirtualWorld {
     return worldId == 0;
   }
 
+  // Returns whether the |virtualWorld| is considered to be one of the main worlds for communication
+  // purposes. I actually am not sure what `isMainWorld` is supposed to do.
+  static isMainWorldForCommunication(virtualWorld) {
+    return virtualWorld === 0 ||  // main world
+           virtualWorld === 101 ||  // Caligula's Palace Casino
+          (virtualWorld >= 1201 && virtualWorld <= 2000) ||  // interiors
+          (virtualWorld >= 2001 && virtualWorld <= 7000) ||  // houses
+          (virtualWorld >= 7001 && virtualWorld <= 8000);    // player isolated worlds
+  }
+
   // Releases a virtual world, which means that other parts of the gamemode will be able to use it.
   static release(worldId) {
     delete acquiredVirtualWorlds[worldId];

@@ -33,11 +33,11 @@ describe('DirectCommunicationCommands', (it, beforeEach) => {
         gunther.setVip(true);
 
         // (2) It's subject to the regular spam and message filters.
-        assert.isTrue(await gunther.issueCommand('/ircpm Nuwani Hey man!'));
+        assert.isTrue(await gunther.issueCommand('/ircpm Nuwani Hey George!'));
         assert.equal(gunther.messages.length, 2);
         assert.equal(
             gunther.messages[1],
-            Message.format(Message.COMMUNICATION_PM_IRC_SENDER, 'Nuwani', 'Hey man!'));
+            Message.format(Message.COMMUNICATION_PM_IRC_SENDER, 'Nuwani', 'Hey Geroge!'));
 
         assert.equal(nuwani.messagesForTesting.length, 2);
         assert.deepEqual(nuwani.messagesForTesting[0], {
@@ -46,7 +46,7 @@ describe('DirectCommunicationCommands', (it, beforeEach) => {
                 'Nuwani',
                 gunther.name,
                 gunther.id,
-                'Hey man!',
+                'Hey Geroge!',
             ]
         });
 
@@ -55,7 +55,7 @@ describe('DirectCommunicationCommands', (it, beforeEach) => {
         assert.equal(
             russell.messages[0],
             Message.format(Message.COMMUNICATION_IRCPM_ADMIN, gunther.name, gunther.id, 'Nuwani',
-                           'Hey man!'));
+                           'Hey Geroge!'));
 
         assert.deepEqual(nuwani.messagesForTesting[1], {
             tag: 'chat-private-to-irc',
@@ -63,7 +63,7 @@ describe('DirectCommunicationCommands', (it, beforeEach) => {
                 gunther.name,
                 gunther.id,
                 'Nuwani',
-                'Hey man!',
+                'Hey Geroge!',
             ]
         });
     });

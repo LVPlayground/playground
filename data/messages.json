@@ -258,6 +258,13 @@
   "HOUSE_WELCOME": "{10F441}Welcome home, %s! Type `{DDFFDD}/house settings{10F441}` to manage your house.",
   "HOUSE_WELCOME_MESSAGE": "{10F441}%s says{FFFFFF}: %s",
 
+  "IGNORE_ADDED_PLAYER": "@success You won't be seeing communication from %s anymore.",
+  "IGNORE_ADDED_REDUNDANT": "@error You can't ignore %s twice!",
+  "IGNORE_IGNORED_NOBODY": "@error Nobody is being ignored right now.",
+  "IGNORE_IGNORED": "{33AA33}Ignored players:{FFFFFF} %s",
+  "IGNORE_REMOVED_PLAYER": "@success You'll start to receive messages from %s again.",
+  "IGNORE_REMOVED_REDUNDANT": "@error You aren't ignoring %s right now.",
+
   "IRC_CHAT_MESSAGE_SENT": "{33AA33}Message sent to {FFFFFF}%s {33AA33}as {FFFFFF}%s{33AA33}: {FFFFFF}%s",
 
   "IRC_ADMIN_MESSAGE": "{FFFF00}* %s %s (IRC): %s",

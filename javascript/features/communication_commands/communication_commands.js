@@ -40,8 +40,6 @@ export default class CommunicationCommands extends Feature {
         // TODO:
         // - /announce
         // - /clear
-        // - /ignore
-        // - /ignored
         // - /ircpm
         // - /pm
         // - /r
@@ -49,7 +47,6 @@ export default class CommunicationCommands extends Feature {
         // - /showmessage
         // - /slap
         // - /slapb(ack)
-        // - /unignore
 
         // /answer
         server.commandManager.buildCommand('answer')
@@ -63,6 +60,18 @@ export default class CommunicationCommands extends Feature {
         // /hangup
         server.commandManager.buildCommand('hangup')
             .build(CommunicationCommands.prototype.onHangupCommand.bind(this));
+
+        // /ignore [player]
+        server.commandManager.buildCommand('ignore')
+            .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
+            .build(CommunicationCommands.prototype.onIgnoreCommand.bind(this));
+
+        // /ignored
+        server.commandManager.buildCommand('ignored')
+            .sub(CommandBuilder.PLAYER_PARAMETER)
+                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .build(CommunicationCommands.prototype.onIgnoredCommand.bind(this))
+            .build(CommunicationCommands.prototype.onIgnoredCommand.bind(this));
 
         // /me [message]
         server.commandManager.buildCommand('me')
@@ -91,6 +100,11 @@ export default class CommunicationCommands extends Feature {
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
             .build(CommunicationCommands.prototype.onShowReportCommand.bind(this));
+
+        // /unignore [player]
+        server.commandManager.buildCommand('unignore')
+            .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
+            .build(CommunicationCommands.prototype.onUnignoreCommand.bind(this));
 
         // /unmute [player]
         server.commandManager.buildCommand('unmute')
@@ -178,6 +192,58 @@ export default class CommunicationCommands extends Feature {
         }
 
         this.callChannel.disconnect(player, targetPlayer);
+    }
+
+    // /ignore [player]
+    //
+    // Makes the given |player| ignore the selected |subject|. No further communication will be
+    // received from them, although they may still see other evidence of them existing.
+    onIgnoreCommand(player, subject) {
+        const ignored = this.visibilityManager.getIgnoredPlayers(player);
+        if (ignored.includes(subject)) {
+            player.sendMessage(Message.IGNORE_ADDED_REDUNDANT, subject.name);
+            return;
+        }
+
+        this.visibilityManager.addPlayerToIgnoreList(player, subject);
+
+        player.sendMessage(Message.IGNORE_ADDED_PLAYER, subject.name);
+    }
+
+    // /ignored [player]?
+    //
+    // Gives an overview of who the |player| has ignored. Administrators are able to use the command
+    // on other players as well, as it helps them to debug what's going on.
+    onIgnoredCommand(currentPlayer, targetPlayer) {
+        const player = targetPlayer || currentPlayer;
+
+        const ignored = this.visibilityManager.getIgnoredPlayers(player);
+        if (!ignored.length) {
+            currentPlayer.sendMessage(Message.IGNORE_IGNORED_NOBODY);
+            return;
+        }
+
+        const ignoredPlayers = [];
+        for (const ignoredPlayer of ignored) {
+            if (!ignoredPlayer.isConnected()) {
+                this.visibilityManager.removePlayerFromIgnoreList(player, ignoredPlayer);
+                continue;
+            }
+            
+            ignoredPlayers.push(`${ignoredPlayer.name} (Id:${ignoredPlayer.id})`);
+        }
+
+        // It's possible that there were left-over players who have disconnected since.
+        if (!ignoredPlayers.length) {
+            currentPlayer.sendMessage(Message.IGNORE_IGNORED_NOBODY);
+            return;
+        }
+
+        // Send the list of |ignoredPlayers| in batches of five to keep the messages short.
+        while (ignoredPlayers.length) {
+            currentPlayer.sendMessage(
+                Message.IGNORE_IGNORED, ignoredPlayers.splice(0, 5).join(', '));
+        }
     }
 
     // /me [message]
@@ -327,6 +393,22 @@ export default class CommunicationCommands extends Feature {
         player.sendMessage(Message.MUTE_MUTED, targetPlayer.name, targetPlayer.id, kDuration);
     }
 
+    // /unignore [player]
+    //
+    // Removes the given |subject| from the ignore list specific to |player|. They'll start to
+    // receive all communication sent by them again.
+    onUnignoreCommand(player, subject) {
+        const ignored = this.visibilityManager.getIgnoredPlayers(player);
+        if (!ignored.includes(subject)) {
+            player.sendMessage(Message.IGNORE_REMOVED_REDUNDANT, subject.name);
+            return;
+        }
+
+        this.visibilityManager.removePlayerFromIgnoreList(player, subject);
+
+        player.sendMessage(Message.IGNORE_REMOVED_PLAYER, subject.name);
+    }
+
     // /unmute [player]
     //
     // Immediately unmutes the given player for an unspecified reason. They'll be able to use all
@@ -349,10 +431,13 @@ export default class CommunicationCommands extends Feature {
 
     dispose() {
         server.commandManager.removeCommand('unmute');
+        server.commandManager.removeCommand('unignore');
         server.commandManager.removeCommand('showreport');
         server.commandManager.removeCommand('reject');
         server.commandManager.removeCommand('muted');
         server.commandManager.removeCommand('mute');
+        server.commandManager.removeCommand('ignored');
+        server.commandManager.removeCommand('ignore');
         server.commandManager.removeCommand('hangup');
         server.commandManager.removeCommand('call');
         server.commandManager.removeCommand('answer');

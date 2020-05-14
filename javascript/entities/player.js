@@ -181,12 +181,12 @@ export class Player extends Supplementable {
 
     // Give a player a certain weapon with ammo.
     giveWeapon(weaponId, ammo) {
-        return pawnInvoke('OnGiveWeapon', 'iii', this.#id_, weaponId, ammo);
+        pawnInvoke('OnGiveWeapon', 'iii', this.#id_, weaponId, ammo);
     }
 
     // Resets all the weapons a player has.
     resetWeapons() {
-        return pawnInvoke('OnResetPlayerWeapons', 'i', this.#id_);
+        pawnInvoke('OnResetPlayerWeapons', 'i', this.#id_);
     }
 
     // ---------------------------------------------------------------------------------------------

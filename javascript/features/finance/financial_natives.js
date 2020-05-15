@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { FinancialRegulator } from 'features/finance/financial_regulator.js';
+
 import { format } from 'base/string_formatter.js';
 
 // Wrapper for any native Pawn function calls the disposition monitor has to make, to make sure that
@@ -73,16 +75,17 @@ export class FinancialNatives {
     // native DepositToAccountJS(playerid, amount);
     depositToAccount(playerid, amount) {
         const player = server.playerManager.getById(playerid);
-        if (player)
-            return 0;
+        if (!player || amount < 0)
+            return 0;  // invalid |playerid|, or the |amount| is negative
 
-        try {
-            this.regulator_.depositToAccount(player, amount);
-            return 1;
+        const availableBalance =
+            FinancialRegulator.kMaximumBankAmount - this.regulator_.getAccountBalance(player);
 
-        } catch {}
-        
-        return 0;
+        if (amount > availableBalance)
+            return 0;  // not enough available balance
+
+        this.regulator_.depositToAccount(player, amount);
+        return 1;
     }
 
     dispose() {

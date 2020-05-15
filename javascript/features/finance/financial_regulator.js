@@ -33,14 +33,14 @@ export class FinancialRegulator {
     // ---------------------------------------------------------------------------------------------
 
     // Returns the current account balance from |player|.
-    async getAccountBalance(player) {
+    getAccountBalance(player) {
         return player.account.bankAccountBalance;
     }
     
     // Deposits the given |amount| to the account owned by |player|. Will throw in case the deposit
     // for whatever reason is not possible.
-    async depositToAccount(player, amount) {
-        const currentBalance = await this.getAccountBalance(player);  // force load
+    depositToAccount(player, amount) {
+        const currentBalance = this.getAccountBalance(player);
 
         if (amount < 0)
             throw new Error('This method must not be used for withdrawing money.');
@@ -54,8 +54,8 @@ export class FinancialRegulator {
 
     // Withdraws the given |amount| from the account owned by |player|. Will throw in case the
     // withdrawal is not possible for any reason, for example because they're out of money.
-    async withdrawFromAccount(player, amount) {
-        const currentBalance = await this.getAccountBalance(player);  // force load
+    withdrawFromAccount(player, amount) {
+        const currentBalance = this.getAccountBalance(player);
 
         if (amount < 0)
             throw new Error('This method must not be used for depositing money.');

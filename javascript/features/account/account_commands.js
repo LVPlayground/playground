@@ -208,6 +208,7 @@ export class AccountCommands {
         const verifyCurrentPassword = await Question.ask(player, {
             question: 'Changing your password',
             message: 'Enter your current password to verify your identity',
+            isPrivate: true,  // display this as a password
             constraints: {
                 validation: AccountDatabase.prototype.validatePassword.bind(
                                 this.database_, player.name),
@@ -225,6 +226,7 @@ export class AccountCommands {
         const password = await Question.ask(player, {
             question: 'Changing your password',
             message: 'Enter the new password that you have in mind',
+            isPrivate: true,  // display this as a password field
             constraints: {
                 validation: AccountCommands.prototype.isSufficientlySecurePassword.bind(this),
                 explanation: 'The password must be at least 8 characters long, and contain at ' +
@@ -234,6 +236,22 @@ export class AccountCommands {
         });
 
         if (!password)
+            return;  // the user aborted out of the flow
+
+        // The |player| must confirm that they indeed picked the right password, so we ask again.
+        const confirmPassword = await Question.ask(player, {
+            question: 'Changing your password',
+            message: 'Please enter your password again to verify.',
+            isPrivate: true,  // display this as a password field
+            constraints: {
+                validation: input => input === password,
+                explanation: 'You must enter exactly the same password again to make sure that ' +
+                             'you didn\'t accidentally misspell it.',
+                abort: 'Sorry, you need to confirm your password!'
+            }
+        });
+
+        if (!confirmPassword || confirmPassword !== password)
             return;  // the user aborted out of the flow
 
         // Now execute the command to actually change the password in the database.

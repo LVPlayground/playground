@@ -106,7 +106,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/account'));
-        assert.includes(gunther.lastDialog, 'only been 14 days since you');
+        assert.includes(gunther.lastDialog, 'only been 13 days since you');
 
         assert.equal(database.passwordQueries.length, 0);
         assert.isNull(database.nameMutation);
@@ -272,15 +272,30 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         assert.equal(database.passwordQueries.length, 6);
         assert.equal(database.changePassQueries.length, 0);
 
-        // (4) The player is able to change their password.
+        // (5) The user needs to confirm the password they want to change theirs to.
         gunther.respondToDialog({ listitem: 1 /* Change your password */ }).then(
             () => gunther.respondToDialog({ inputtext: 'correct-pass' })).then(
             () => gunther.respondToDialog({ inputtext: 'new-pass' })).then(
+            () => gunther.respondToDialog({ inputtext: 'new-pazz' })).then(  // <-- typo!
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/account'));
 
         assert.equal(database.passwordQueries.length, 7);
+        assert.equal(database.changePassQueries.length, 0);
+
+        assert.includes(gunther.lastDialog, 'enter exactly the same password again');
+
+        // (4) The player is able to change their password.
+        gunther.respondToDialog({ listitem: 1 /* Change your password */ }).then(
+            () => gunther.respondToDialog({ inputtext: 'correct-pass' })).then(
+            () => gunther.respondToDialog({ inputtext: 'new-pass' })).then(
+            () => gunther.respondToDialog({ inputtext: 'new-pass' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/account'));
+
+        assert.equal(database.passwordQueries.length, 8);
         assert.equal(database.changePassQueries.length, 1);
         assert.equal(database.changePassQueries[0].nickname, 'Gunther');
 

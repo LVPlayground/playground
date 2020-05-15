@@ -116,9 +116,16 @@ export default class ReactionTests extends Feature {
         if (this.activeTestToken_ !== activeTestToken)
             return;  // the token has expired, another test was scheduled
 
+        const timeout = this.settings_().getValue('playground/reaction_test_expire_sec');
+
         const strategy = this.createReactionTestStrategy();
-        if (!strategy)
+
+        // If there are no tests that could be scheduled right now, try again after the timeout, as
+        // new players may have joined the server since.
+        if (!strategy) {
+            wait(timeout * 1000).then(() => this.scheduleNextTest());
             return;
+        }
 
         // Actually start the test. This will make all the necessary announcements too.
         strategy.start(
@@ -130,7 +137,6 @@ export default class ReactionTests extends Feature {
         this.activeTestWinnerName_ = null;
         this.activeTestWinnerTime_ = null;
 
-        const timeout = this.settings_().getValue('playground/reaction_test_expire_sec');
         wait(timeout * 1000).then(() =>
             this.reactionTestTimedOut(activeTestToken));
     }

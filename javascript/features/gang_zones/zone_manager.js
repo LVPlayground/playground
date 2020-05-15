@@ -70,8 +70,8 @@ export class ZoneManager {
         if (!player)
             return;  // the event was invoked for an invalid player
 
-        for (const [zone, zoneId] of this.zones_)
-            this.natives_.showZoneForPlayer(player.id, zoneId, zone.color);
+        for (const [zone, zoneId] of this.zones_.entries())
+            this.natives_.showZoneForPlayer(player, zoneId, zone.color);
     }
 
     // --------------------------------------------------------------------------------------------

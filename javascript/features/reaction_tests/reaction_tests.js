@@ -182,6 +182,9 @@ export default class ReactionTests extends Feature {
 
             // Schedule the next test now that someone has given an answer.
             this.scheduleNextTest();
+
+            // The answer given by the first winning player should be shown in main chat.
+            return false;
         }
 
         return true;

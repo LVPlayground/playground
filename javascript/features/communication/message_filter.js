@@ -155,8 +155,9 @@ export class MessageFilter {
             const sentences = message.replace(/([.?!])\s*(?=[A-Z])/g, '$1Ω').split('Ω');
             for (let sentence of sentences) {
                 sentence = sentence[0].toUpperCase() + sentence.substring(1).toLowerCase();
+                sentence = sentence.replace(/\bi\b/ig, 'I');
 
-                // (3)) Uppercase common initialisms.
+                // (3)) Uppercase common initialisms, as well as "I".
                 for (const initialism of kCommonInitialisms)
                     sentence = sentence.replace(initialism, (_, word) => word.toUpperCase());
 

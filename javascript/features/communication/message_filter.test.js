@@ -66,7 +66,7 @@ describe('MessageFilter', (it, beforeEach) => {
         assert.equal(filter.recapitalize('GUNTHER RUSSELL LUCYYY'), 'Gunther Russell Lucyyy.');
 
         // (5) Finish sentence with proper punctuation.
-        assert.equal(filter.recapitalize('why are you doing that'), 'Why are you doing that?');
+        assert.equal(filter.recapitalize('why am i doing that'), 'Why am I doing that?');
         assert.equal(filter.recapitalize('Hum... what is that'), 'Hum... what is that?');
         assert.equal(filter.recapitalize('i dont get it'), 'I dont get it.');
     });

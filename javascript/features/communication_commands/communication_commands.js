@@ -84,7 +84,7 @@ export default class CommunicationCommands extends Feature {
         server.commandManager.buildCommand('show')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
-                { name: 'message', type: CommandBuilder.WORD_PARAMETER },
+                { name: 'message', type: CommandBuilder.WORD_PARAMETER, optional: true },
                 { name: 'player', type: CommandBuilder.PLAYER_PARAMETER, optional: true }])
             .build(CommunicationCommands.prototype.onShowCommand.bind(this));
 

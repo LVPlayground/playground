@@ -201,6 +201,8 @@ export class MockAccountDatabase extends AccountDatabase {
                 return 623925203;  // 37.48.87.211
             case 'last_seen':
                 return '2019-12-24 12:44:41';
+            case 'skin_id':
+                return 121;
             default:
                 throw new Error('Field not defined for testing: ' + fieldName);
         }

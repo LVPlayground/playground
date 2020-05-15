@@ -178,32 +178,6 @@ describe('AccountDatabase', it => {
         assert.equal(instance.updatedValue, 'Player');
     });
 
-    it('should be able to format and update bank account types', async (assert) => {
-        const instance = new MockAccountDatabase();
-
-        const value = await instance.getPlayerField('[BB]Ricky92', 'money_bank_type');
-        assert.isTrue(typeof value === 'string');
-        assert.equal(value, 'Premier');
-
-        const invalidValues = ['normal', 'SuperAccount', 'premier'];
-        for (const invalidValue of invalidValues) {
-            try {
-                await instance.updatePlayerField('nickname', 'money_bank_type', invalidValue);
-                assert.notReached();
-    
-            } catch (exception) {
-                assert.includes(exception.message, 'not a valid bank account type');
-            }
-        }
-
-        const result = await instance.updatePlayerField('nickname', 'money_bank_type', 'Normal');
-        assert.isTrue(typeof result === 'string');
-        assert.strictEqual(result, 'Normal');
-
-        assert.isTrue(typeof instance.updatedValue === 'string');
-        assert.equal(instance.updatedValue, 'Normal');
-    });
-
     it('should be able to format and update last seen IP addresses', async (assert) => {
         const instance = new MockAccountDatabase();
 
@@ -364,5 +338,17 @@ describe('AccountDatabase', it => {
         assert.equal(instance.nameMutation.userId, 4050);
         assert.equal(instance.nameMutation.nickname, '[BB]Ricky92');
         assert.equal(instance.nameMutation.newNickname, 'NewNick');
+    });
+
+    it('should only list valid admin-changeable fields for !getvalue & co.', assert => {
+        const instance = new MockAccountDatabase();
+
+        const administratorFields = instance.getSupportedFieldsForAdministrators();
+        const fields = instance.getSupportedFields();
+
+        // If this check fails, one of the fields returned from getSupportedFieldsForAdministrators
+        // is not a valid, supported database field anymore. Make sure it's aligned.
+        for (const fieldName of administratorFields)
+            assert.isTrue(fieldName in fields);
     });
 });

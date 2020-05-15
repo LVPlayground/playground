@@ -33,6 +33,9 @@ describe('AccountNuwaniCommands', (it, beforeEach, afterEach) => {
         bot.dispose();
     });
 
+    const kFieldAccessibleByAdmins = 'skin_id';
+    const kFieldNotAccessibleByAdmins = 'online_time';
+
     it('should make it possible to add an alias to an account', async (assert) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
@@ -182,15 +185,28 @@ describe('AccountNuwaniCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should be able to display a list of supported database fields', async (assert) => {
-        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'a');
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
-        const result = await issueCommand(bot, commandManager, {
+        const adminResult = await issueCommand(bot, commandManager, {
             source: kCommandSource,
             command: '!supported',
         });
 
-        assert.equal(result.length, 1);
-        assert.includes(result[0], 'Supported fields');
+        assert.equal(adminResult.length, 1);
+        assert.includes(adminResult[0], 'Supported fields');
+        assert.includes(adminResult[0], kFieldAccessibleByAdmins);
+        assert.doesNotInclude(adminResult[0], kFieldNotAccessibleByAdmins);
+
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'a');
+
+        const managementResult = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!supported',
+        });
+
+        assert.equal(managementResult.length, 1);
+        assert.includes(managementResult[0], 'Supported fields');
+        assert.includes(managementResult[0], kFieldNotAccessibleByAdmins);
     });
 
     it('should be able to get individual account values for a player', async (assert) => {
@@ -267,6 +283,44 @@ describe('AccountNuwaniCommands', (it, beforeEach, afterEach) => {
         assert.equal(result.length, 1);
         assert.doesNotInclude(result[0], 'Error');
         assert.includes(result[0], 'Success');
+    });
+
+    it('should enable administrators to update certain fields as well', async (assert) => {
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
+
+        const noAccessGetResult = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!getvalue [BB]Ricky92 ' + kFieldNotAccessibleByAdmins,
+        });
+
+        assert.equal(noAccessGetResult.length, 1);
+        assert.includes(noAccessGetResult[0], 'Error');
+        assert.includes(noAccessGetResult[0], 'is not accessible');
+
+        const getResult = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!getvalue [BB]Ricky92 ' + kFieldAccessibleByAdmins,
+        });
+
+        assert.equal(getResult.length, 1);
+        assert.doesNotInclude(getResult[0], 'Error');
+
+        const setResult = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!setvalue [BB]Ricky92 ' + kFieldAccessibleByAdmins + ' 1234',
+        });
+
+        assert.equal(setResult.length, 1);
+        assert.doesNotInclude(setResult[0], 'Error');
+
+        const noAccessSetResult = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!setvalue [BB]Ricky92 ' + kFieldNotAccessibleByAdmins + ' 1234',
+        });
+
+        assert.equal(noAccessSetResult.length, 1);
+        assert.includes(noAccessSetResult[0], 'Error');
+        assert.includes(noAccessSetResult[0], 'is not accessible');
     });
 
     it('should be able to list all in-game players', async (assert) => {

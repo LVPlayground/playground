@@ -291,8 +291,8 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         assert.equal(gunther.messages.length, 2);
         assert.equal(
             gunther.messages[1],
-            Message.format(Message.COMMUNICATION_CALL_MESSAGE, gunther.id, gunther.name,
-                           'Hey, how are you?'));
+            Message.format(Message.COMMUNICATION_CALL_MESSAGE, gunther.color.toHexRGB(), gunther.id,
+                           gunther.name, 'Hey, how are you?'));
 
         assert.equal(russell.messages.length, 2);
         assert.equal(russell.messages[1], gunther.messages[1]);

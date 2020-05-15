@@ -6,7 +6,7 @@ import { BanDatabase } from 'features/punishments/ban_database.js';
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
 import { format } from 'base/string_formatter.js';
-import { fromNow } from 'base/time.js';
+import { fromNow, relativeTime } from 'base/time.js';
 import { isIpAddress, isIpRange, isPartOfRangeBan } from 'features/nuwani_commands/ip_utilities.js';
 
 // By default, only show entries added in the past year when using !why.
@@ -585,7 +585,11 @@ export class NuwaniCommands {
             const reason = entry.reason;
 
             const banValue = entry.ip || entry.range || entry.serial;
-            const ban = banValue ? ` 14(${banValue})` : '';
+            const banDuration = entry.expiration.getTime() > entry.date.getTime()
+                    ? ', ' + relativeTime({ date1: entry.date, date2: entry.expiration }).text
+                    : '';
+
+            const ban = banValue ? ` 14(${banValue}${banDuration})` : '';
 
             context.respond(`4[${date}] 3(${attribution}): ${reason}${ban}`);
         }

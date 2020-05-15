@@ -58,7 +58,8 @@ describe('CommunicationCommands', (it, beforeEach) => {
         assert.equal(russell.messages.length, 2);
         assert.equal(
             russell.messages[1],
-            Message.format(Message.COMMUNICATION_ME, russell.name, 'is testing'));
+            Message.format(Message.COMMUNICATION_ME, russell.color.toHexRGB(), russell.name,
+                           'is testing'));
     });
 
     it('should be able to show predefined messages to players', async (assert) => {

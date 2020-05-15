@@ -155,7 +155,8 @@ export default class CommunicationCommands extends Feature {
         if (!message)
             return;  // the message has been blocked
 
-        const formattedMessage = Message.format(Message.COMMUNICATION_ME, player.name, message);
+        const formattedMessage = Message.format(
+            Message.COMMUNICATION_ME, player.color.toHexRGB(), player.name, message);
 
         // Bail out quickly if the |player| has been isolated.
         if (player.syncedData.isIsolated()) {

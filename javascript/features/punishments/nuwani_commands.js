@@ -162,7 +162,7 @@ export class NuwaniCommands {
     //
     // Shows information about how to use the !ban command, since it's quite a complicated command.
     onBanCommand(context) {
-        context.respondWithUsage('!ban [player | ip | range | serial]');
+        context.respondWithUsage('!ban [[player] | ip | range | serial]');
     }
 
     // !ban [player] [days] [reason]

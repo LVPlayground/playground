@@ -95,6 +95,8 @@ describe('ReactionTests', (it, beforeEach) => {
     });
 
     it('should enable players to win reaction tests', async (assert) => {
+        const finance = server.featureManager.loadFeature('finance');
+
         const delay = settings.getValue('playground/reaction_test_delay_sec');
         const jitter = settings.getValue('playground/reaction_test_jitter_sec');
         const prize = settings.getValue('playground/reaction_test_prize');
@@ -106,6 +108,7 @@ describe('ReactionTests', (it, beforeEach) => {
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.account.reactionTests, 0);
+        assert.equal(finance.getPlayerCash(gunther), 0);
         
         // (1) The first player to give the right answer will be awarded the money.
         await server.clock.advance(2560);
@@ -116,6 +119,7 @@ describe('ReactionTests', (it, beforeEach) => {
         assert.includes(gunther.messages[1], 'in 2.56 seconds');
         assert.equal(gunther.messages[2], Message.format(Message.REACTION_TEST_WON, prize));
         assert.equal(gunther.account.reactionTests, 1);
+        assert.equal(finance.getPlayerCash(gunther), prize);
 
         // (2) Subsequent players will receive a generic "too late!" message.
         assert.equal(lucy.messages.length, 2);

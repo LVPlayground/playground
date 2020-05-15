@@ -35,6 +35,9 @@ export default class ReactionTests extends Feature {
 
         this.communication_().addDelegate(this);
 
+        // Need to be able to actually award money to players.
+        this.finance_ = this.defineDependency('finance');
+
         // This feature depends on Nuwani to be able to echo messages.
         this.nuwani_ = this.defineDependency('nuwani');
 
@@ -167,6 +170,9 @@ export default class ReactionTests extends Feature {
 
             // Increment the number of wins in the player's statistics.
             player.account.reactionTests++;
+
+            // Give them their prize money.
+            this.finance_().givePlayerCash(player, prize);
 
             // Finally, let the |player| know about the prize they've won.
             player.sendMessage(Message.REACTION_TEST_WON, prize);

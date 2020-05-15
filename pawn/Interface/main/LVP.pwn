@@ -7,7 +7,7 @@ SetPlayerPosHook(playerId, Float: x, Float: y, Float: z) {
     return SetPlayerPos(playerId, Float: x, Float: y, Float: z);
 }
 
-#if Feature::EnableServerSideWeaponConfig
+#if Feature::EnableServerSideWeaponConfig == 1
     #undef SetPlayerPos
 #endif
 

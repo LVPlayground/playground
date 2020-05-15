@@ -70,7 +70,7 @@ stock AddStaticVehicleHook({Float,_}:...) { return Vehicle::InvalidId; }
 stock AddStaticVehicleExHook({Float,_}:...) { return Vehicle::InvalidId; }
 
 // And override the methods by telling the scanner to use the hooked methods instead.
-#if Feature::EnableServerSideWeaponConfig
+#if Feature::EnableServerSideWeaponConfig == 1
     #undef CreateVehicle
     #undef DestroyVehicle
     #undef AddStaticVehicle
@@ -111,7 +111,7 @@ stock SetPlayerVirtualWorldHook(playerId, virtualWorldId) {
 }
 
 // And override the actual natives so that they're caught by our hook.
-#if Feature::EnableServerSideWeaponConfig
+#if Feature::EnableServerSideWeaponConfig == 1
     #undef SetPlayerVirtualWorld
 #endif
 
@@ -130,7 +130,7 @@ TextDrawDestroyHook(Text: textDrawId) {
     return TextDrawDestroy(textDrawId);
 }
 
-#if Feature::EnableServerSideWeaponConfig
+#if Feature::EnableServerSideWeaponConfig == 1
     #undef TextDrawDestroy
 #endif
 

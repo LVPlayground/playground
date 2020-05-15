@@ -53,7 +53,7 @@
 
 #include "Interface/Server/a_samp.pwn"
 
-#if Feature::EnableServerSideWeaponConfig
+#if Feature::EnableServerSideWeaponConfig == 1
 
 #define WC_CUSTOM_VENDING_MACHINES false
 

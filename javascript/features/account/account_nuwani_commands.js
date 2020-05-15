@@ -306,10 +306,11 @@ export class AccountNuwaniCommands {
             const name = player.name;
             const registered = player.account.isRegistered();
             const vip = player.isVip();
+            const minimized = isPlayerMinimized(player.id);
             const level = player.isUndercover() ? Player.LEVEL_PLAYER
                                                 : player.level;
 
-            players.push({ name, registered, vip, level });
+            players.push({ name, registered, vip, level, minimized });
         });
 
         // (2) Sort the list of |players| alphabetically for display. 
@@ -318,6 +319,7 @@ export class AccountNuwaniCommands {
         // (3) Format each of the entries in |players| in accordance with the information we've
         // gathered on them.
         for (const info of players) {
+            let prefix = info.minimized ? '' : '';
             let color = '';
 
             if (!info.registered) {
@@ -340,7 +342,10 @@ export class AccountNuwaniCommands {
                 }
             }
 
-            formattedPlayers.push(color + info.name + (color ? '' : ''));
+            
+
+            formattedPlayers.push(
+                prefix + color + info.name + (color ? '' : '') + (info.minimized ? '' : ''));
         }
 
         // (4) Output the formatted result to the requester on IRC.

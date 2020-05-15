@@ -28,7 +28,7 @@ public OnGameModeInit() {
 
 // *************************************************************************************************
 
-#if Feature::EnableServerSideWeaponConfig
+#if Feature::EnableServerSideWeaponConfig == 1
 
     SetCbugAllowed(true);
     SetDamageSounds(0, 0);

@@ -165,7 +165,7 @@ export class DirectCommunicationCommands {
             type: DirectCommunicationCommands.kPM,
             userId: player.account.userId,
             id: player.id,
-            name: player.id,
+            name: player.name,
         });
     }
 
@@ -246,7 +246,7 @@ export class DirectCommunicationCommands {
             type: DirectCommunicationCommands.kSecretPM,
             userId: player.account.userId,
             id: player.id,
-            name: player.id,
+            name: player.name,
         });
     }
 

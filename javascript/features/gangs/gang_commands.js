@@ -452,7 +452,7 @@ class GangCommands {
                 if (!color)
                     return;  // the leader decided to not update the gang's color
 
-                const colorName = '0x' + color.toHexRGB();
+                const colorName = '#' + color.toHexRGB();
 
                 await this.manager_.updateColor(gang, color);
 

@@ -132,7 +132,7 @@ export default class ReactionTests extends Feature {
 
         const timeout = this.settings_().getValue('playground/reaction_test_expire_sec');
         wait(timeout * 1000).then(() =>
-            this.reactionTestTimedOut(this.activeTestToken_));
+            this.reactionTestTimedOut(activeTestToken));
     }
 
     // Called when the |player| has sent the given |message|. If a test is active, and they've got

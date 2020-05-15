@@ -197,7 +197,7 @@ export default class CommunicationCommands extends Feature {
         }
 
         const header = Message.ANNOUNCE_HEADER;
-        const localMessage = Message.format(Message.ANNOUNCE_ALL, messageText);
+        const localMessage = Message.format(Message.ANNOUNCE_MESSAGE, messageText);
 
         // Assume that the |player| is sending the message in context, so the recipients should be
         // in the same world as they are -- this automatically excludes minigames.

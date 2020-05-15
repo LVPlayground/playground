@@ -88,5 +88,5 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 public OnPlayerText(playerid, text[]) {}
 
 #if Feature::EnableServerSideWeaponConfig == 0
-public OnPlayerUpdate(playerid) {}
+public OnPlayerUpdate(playerid) { return 1; }
 #endif

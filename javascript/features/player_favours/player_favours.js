@@ -81,6 +81,11 @@ class PlayerFavours extends Feature {
         });
 
         // -----------------------------------------------------------------------------------------
+        // TheMightyQ (https://forum.sa-mp.nl/user-16597.html)
+
+        this.objectGroups_.push(ObjectGroup.create('data/favours/tmz_house_objects.json', 0, 0));
+
+        // -----------------------------------------------------------------------------------------
         // Xanland (https://sa-mp.nl/players/423/xanland.html)
 
         this.objectRemover_.load('data/favours/xanland_lvairport_entrance.json');

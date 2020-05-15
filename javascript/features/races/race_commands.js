@@ -49,7 +49,7 @@ class RaceCommands {
                 return player.sendMessage(Message.RACE_ERROR_NO_RACES_AVAILABLE);
 
             // A player's personal best time will be displayed if they're registered.
-            let displayPersonalBest = player.isRegistered();
+            let displayPersonalBest = player.account.isRegistered();
 
             let columns = ['Race', 'Best time'];
             if (displayPersonalBest)

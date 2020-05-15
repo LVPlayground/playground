@@ -86,3 +86,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
 // Define so that JavaScript can intercept the events.
 public OnPlayerText(playerid, text[]) {}
+
+#if Feature::EnableServerSideWeaponConfig == 0
+public OnPlayerUpdate(playerid) {}
+#endif

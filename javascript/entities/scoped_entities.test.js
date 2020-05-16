@@ -207,7 +207,8 @@ describe('ScopedEntities', it => {
         assert.equal(pickup.virtualWorld, 0);
 
         const textLabel = entities.createTextLabel({ text: 'Hi', position: new Vector(0, 0, 0) });
-        assert.equal(textLabel.virtualWorld, 0);
+        assert.deepEqual(textLabel.interiors, [ -1 ]);
+        assert.deepEqual(textLabel.virtualWorlds, [ -1 ]);
 
         const vehicle = entities.createVehicle({ modelId: 411, position: new Vector(12, 13, 14) });
         assert.equal(vehicle.interiorId, 0);
@@ -232,7 +233,8 @@ describe('ScopedEntities', it => {
         assert.equal(pickup.virtualWorld, 42);
 
         const textLabel = entities.createTextLabel({ text: 'Hi', position: new Vector(0, 0, 0) });
-        assert.equal(textLabel.virtualWorld, 42);
+        assert.deepEqual(textLabel.interiors, [ 7 ]);
+        assert.deepEqual(textLabel.virtualWorlds, [ 42 ]);
 
         const vehicle = entities.createVehicle({ modelId: 411, position: new Vector(12, 13, 14) });
         assert.equal(vehicle.interiorId, 7);

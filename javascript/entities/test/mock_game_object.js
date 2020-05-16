@@ -22,7 +22,7 @@ export class MockGameObject extends GameObject {
     }
 
     // Overridden to avoid destroying a real object on the server.
-    destroy() {}
+    destroyInternal() {}
 
     // ---------------------------------------------------------------------------------------------
 

@@ -1,4 +1,4 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
@@ -47,7 +47,7 @@ export class GameObject {
             /* ry= */ options.rotation.y,
             /* rz= */ options.rotation.z,
             /* streamdistance= */ options.streamDistance,
-            /* drawDistance= */ options.drawDistance,
+            /* drawdistance= */ options.drawDistance,
             /* worlds= */ options.virtualWorlds,
             /* interiors= */ options.interiors,
             /* players= */ options.players,
@@ -97,7 +97,7 @@ export class GameObject {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        this.destroy();
+        this.destroyInternal();
 
         this.#id_ = GameObject.kInvalidId;
 

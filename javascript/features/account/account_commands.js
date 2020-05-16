@@ -458,7 +458,7 @@ export class AccountCommands {
         display.addItem('Registered', formatDate(information.registered, true));
         display.addItem('Level', information.level);
         display.addItem('Karma', format('%d', information.karma));
-        display.addItem('-----', '-----');
+        display.addItem('----------', '----------');
 
         // The financial information of an account is only accessible by the player themselves, or
         // by Management members who have ways of getting it anyway.
@@ -470,7 +470,7 @@ export class AccountCommands {
 
             display.addItem('VIP', information.vip ? 'Yes' : 'No');
             display.addItem('Donations', donations);
-            display.addItem('-----', '-----');
+            display.addItem('----------', '----------');
         }
 
         display.addItem('Sessions', information.sessions);

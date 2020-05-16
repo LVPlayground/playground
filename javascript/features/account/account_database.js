@@ -343,7 +343,7 @@ export class AccountDatabase {
     // Actually executes the MySQL query for getting an account's information.
     async _getAccountInformationQuery(userId) {
         const results = await server.database.query(PLAYER_INFORMATION_QUERY, userId);
-        return results ? results.rows : [];
+        return results ? results.rows[0] : [];
     }
 
     // Gets the list of aliases owned by the |nickname|, including their username.

@@ -501,8 +501,8 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
                 '23,457',
             ],
             [
-                '-----',
-                '-----',
+                '----------',
+                '----------',
             ],
             [
                 'VIP',
@@ -513,8 +513,8 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
                 '1,235 euro',
             ],
             [
-                '-----',
-                '-----',
+                '----------',
+                '----------',
             ],
             [
                 'Sessions',

@@ -209,6 +209,10 @@ class MockVehicle {
 
     // ---------------------------------------------------------------------------------------------
 
+    toggleEngine(engineRunning) {}
+
+    // ---------------------------------------------------------------------------------------------
+
     // Returns whether the vehicle is currently within streaming range of |player|.
     inRangeForPlayer(player) {
         return player.position.squaredDistanceTo(this.position_) < (300 * 300);

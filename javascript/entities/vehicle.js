@@ -242,6 +242,20 @@ class Vehicle {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Toggles whether the engine for this vehicle is running.
+    toggleEngine(engineRunning) {
+        const [engine, lights, alarm, doors, bonnet, boot, objective] =
+            pawnInvoke('GetVehicleParamsEx', 'iIIIIIII', this.id_);
+        
+        if (!!engine === engineRunning)
+            return;  // no change from the current engine status
+
+        pawnInvoke('SetVehicleParamsEx', 'iiiiiiii', this.id_, engineRunning ? 1 : 0, lights, alarm,
+                                                     doors, bonnet, boot, objective);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Returns whether the vehicle is currently within streaming range of |player|.
     inRangeForPlayer(player) {
         return !!pawnInvoke('IsVehicleStreamedIn', 'ii', this.id_, player.id);

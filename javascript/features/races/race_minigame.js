@@ -108,10 +108,10 @@ class RaceMinigame extends Minigame {
                 // Put the player in their designated vehicle, and disable collisions for them.
                 player.enterVehicle(playerData.vehicle);
                 player.vehicleCollisionsEnabled = false;
-                player.controllable = false;
 
                 // Display the score board for the |player|.
                 playerData.scoreBoard.displayForPlayer(participantCount);
+                playerData.vehicle.toggleEngine(false);
 
                 // Create the first checkpoint for the player, so they know where to go.
                 this.nextCheckpoint(player);
@@ -210,7 +210,7 @@ class RaceMinigame extends Minigame {
 
         // Unfreeze all players and allow them to begin racing.
         for (const player of this.activePlayers)
-            player.controllable = true;
+            player.vehicle.toggleEngine(true);
 
         this.startTime_ = highResolutionTime();
 

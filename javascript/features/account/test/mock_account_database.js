@@ -112,7 +112,11 @@ export class MockAccountDatabase extends AccountDatabase {
             username: 'Russell',
             level: 'Management',
             is_vip: 1,
+            donations: 123456,
             sessions: 24,
+            registered: '2016-05-04 12:14:15',
+            email: 'info@sa-mp.nl',
+            karma: 23456.78
         };
     }
 

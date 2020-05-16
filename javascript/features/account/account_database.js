@@ -115,9 +115,31 @@ const PLAYER_INFORMATION_QUERY = `
         users.username,
         users.level,
         users.is_vip,
-        (SELECT COUNT(1) FROM sessions WHERE user_id = users.user_id) AS sessions
+        (
+            SELECT
+                SUM(revenue_amount)
+            FROM
+                lvp_website.financial_revenue
+            WHERE
+                sender_id = users_links.user_id
+        ) AS donations,
+        (
+            SELECT
+                COUNT(1)
+            FROM
+                sessions
+            WHERE
+                user_id = users.user_id
+        ) AS sessions,
+        b.registered,
+        b.email,
+        b.karma
     FROM
         users
+    LEFT JOIN
+        lvp_website.users_links ON users_links.samp_id = users.user_id
+    LEFT JOIN
+        lvp_website.users b ON b.user_id = users_links.user_id
     WHERE
         users.user_id = ?`;
 
@@ -297,11 +319,23 @@ export class AccountDatabase {
 
     // Gets various bits of information about an account from the database.
     async getAccountInformation(userId) {
-        const information = await this._getAccountInformationQuery(userId);
+        let information = null;
+        try {
+            information = await this._getAccountInformationQuery(userId);
+        } catch {
+            // Getting account information requires access to the website's database, which is not
+            // allowed for the staging (and/or local) environments. 
+            return null;
+        }
+
         return {
             username: information.username,
+            email: information.email,
+            registered: new Date(information.registered),
+            karma: Math.round(information.karma),
             level: information.level,
-            vip: information.is_vip ? 'Yes' : 'No',
+            vip: information.is_vip,
+            donations: information.donations / 100,
             sessions: information.sessions,
         };
     }

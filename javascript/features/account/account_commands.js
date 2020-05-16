@@ -10,6 +10,7 @@ import Question from 'components/dialogs/question.js';
 import alert from 'components/dialogs/alert.js';
 import confirm from 'components/dialogs/confirm.js';
 import { formatDate } from 'base/time.js';
+import { format } from 'base/string_formatter.js';
 
 // Provides access to in-game commands related to account management. Access to the individual
 // abilities is gated through the Playground feature, which manages command access.
@@ -439,14 +440,35 @@ export class AccountCommands {
     async displayInfo(currentPlayer, targetPlayer) {
         const player = targetPlayer || currentPlayer;
         const information = await this.database_.getAccountInformation(player.account.userId);
+        if (!information) {
+            return alert(player, {
+                title: 'Account information of ' + player.name,
+                message: 'The information could not be retrieved. Note that this feature is not ' +
+                         'available on the staging and local servers.',
+            });
+        }
 
         const display = new Menu('Account information of ' + player.name, [
             'Property',
             'Value',
         ]);
 
-        for (const [property, value] of Object.entries(information))
-            display.addItem(property[0].toUpperCase() + property.substring(1), value);
+        display.addItem('Username', information.username);
+        display.addItem('E-mail', information.email);
+        display.addItem('Registered', formatDate(information.registered, true));
+        display.addItem('Level', information.level);
+        display.addItem('Karma', format('%d', information.karma));
+        display.addItem('-----', '-----');
+
+        if (information.vip || information.donations > 0) {
+            const donations = format('%$', information.donations).replace('$', '') + ' euro';
+
+            display.addItem('VIP', information.vip ? 'Yes' : 'No');
+            display.addItem('Donations', donations);
+            display.addItem('-----', '-----');
+        }
+
+        display.addItem('Sessions', information.sessions);
 
         await display.displayForPlayer(currentPlayer);
     }

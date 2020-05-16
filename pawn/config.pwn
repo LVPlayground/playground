@@ -13,7 +13,7 @@ class Version {
 
 // Set this to 1 if you'd like to build Las Venturas Playground in release mode. This affects
 // whether config-release.pwn tries to define the prod password salt.
-#define BuildGamemodeInReleaseMode 1
+#define BuildGamemodeInReleaseMode 0
 
 // Try to include the private release configuration file. If it can't be loaded, the staging server
 // value for the password salt will be used instead.

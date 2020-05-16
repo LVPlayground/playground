@@ -460,7 +460,12 @@ export class AccountCommands {
         display.addItem('Karma', format('%d', information.karma));
         display.addItem('-----', '-----');
 
-        if (information.vip || information.donations > 0) {
+        // The financial information of an account is only accessible by the player themselves, or
+        // by Management members who have ways of getting it anyway.
+        const canAccessFinancialInformation =
+            currentPlayer.isManagement() || player === currentPlayer;
+
+        if ((information.vip || information.donations > 0) && canAccessFinancialInformation) {
             const donations = format('%$', information.donations).replace('$', '') + ' euro';
 
             display.addItem('VIP', information.vip ? 'Yes' : 'No');

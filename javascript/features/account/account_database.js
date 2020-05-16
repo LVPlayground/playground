@@ -109,6 +109,17 @@ const PLAYER_SESSIONS_QUERY = `
     LIMIT
         ?`;
 
+// Query to get information about a particular account from the database.
+const PLAYER_INFORMATION_QUERY = `
+    SELECT
+        users.username,
+        users.level,
+        users.is_vip
+    FROM
+        users
+    WHERE
+        users.user_id = ?`;
+
 // Query to get the aliases associated with a nickname, as well as a flag on whether a particular
 // entry is their main username.
 const PLAYER_ALIASES_QUERY = `
@@ -280,6 +291,22 @@ export class AccountDatabase {
     // Actually executes the MySQL query for getting a player's most recent sessions.
     async _getPlayerSessionsQuery({ userId, limit }) {
         const results = await server.database.query(PLAYER_SESSIONS_QUERY, userId, limit);
+        return results ? results.rows : [];
+    }
+
+    // Gets various bits of information about an account from the database.
+    async getAccountInformation(userId) {
+        const information = await this._getAccountInformationQuery(userId);
+        return {
+            username: information.username,
+            level: information.level,
+            vip: information.is_vip ? 'Yes' : 'No',
+        };
+    }
+
+    // Actually executes the MySQL query for getting an account's information.
+    async _getAccountInformationQuery(userId) {
+        const results = await server.database.query(PLAYER_INFORMATION_QUERY, userId);
         return results ? results.rows : [];
     }
 

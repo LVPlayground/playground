@@ -107,6 +107,15 @@ export class MockAccountDatabase extends AccountDatabase {
     }
 
     // Overridden.
+    async _getAccountInformationQuery(userId) {
+        return {
+            username: 'Russell',
+            level: 'Management',
+            is_vip: 1,
+        };
+    }
+
+    // Overridden.
     async getAliases(nickname) {
         if (['FakeUser', 'AliasName', 'AmazingRicky', 'NewNick'].includes(nickname))
             return null;

@@ -28,6 +28,7 @@ export default [
     new Setting('abuse', 'warning_report_limit', Setting.TYPE_NUMBER, 3, 'Number of types to report a specific abuse type for a player.'),
 
     /** Account related settings */
+    new Setting('account', 'info_visibility', Setting.TYPE_BOOLEAN, true, 'Should players be able to see information about their account?'),
     new Setting('account', 'nickname_control', Setting.TYPE_BOOLEAN, true, 'Should players be able to change their nickname?'),
     new Setting('account', 'nickname_limit_days', Setting.TYPE_NUMBER, 14, 'Minimum number of days between nickname changes.'),
     new Setting('account', 'password_control', Setting.TYPE_BOOLEAN, true, 'Should players be able to change their password?'),

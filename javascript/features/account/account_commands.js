@@ -60,6 +60,7 @@ export class AccountCommands {
             changename: this.getSettingValue('nickname_control'),
             changepass: this.database_.canUpdatePasswords() &&
                         this.getSettingValue('password_control'),
+            information: this.getSettingValue('info_visibility'),
             record: this.getSettingValue('record_visibility'),
             sessions: this.getSettingValue('session_visibility'),
         };
@@ -90,6 +91,13 @@ export class AccountCommands {
             dialog.addItem(
                 'Manage nickname aliases',
                 AccountCommands.prototype.manageAliases.bind(this, currentPlayer, targetPlayer));
+        }
+
+        // Enables the |player| to see information about their account.
+        if (features.information) {
+            dialog.addItem(
+                'View account information',
+                AccountCommands.prototype.displayInfo.bind(this, currentPlayer, targetPlayer));
         }
 
         // Enables the |player| to view their record, with the exception of notes as they are only
@@ -424,6 +432,23 @@ export class AccountCommands {
             title: 'Alias management',
             message: `The alias ${alias.nickname} has been deleted.`
         });
+    }
+
+    // Displays a menu to the |currentPlayer| with information about the account owned by either
+    // themselves of the |targetPlayer|.
+    async displayInfo(currentPlayer, targetPlayer) {
+        const player = targetPlayer || currentPlayer;
+        const information = await this.database_.getAccountInformation(player.account.userId);
+
+        const display = new Menu('Account information of ' + player.name, [
+            'Property',
+            'Value',
+        ]);
+
+        for (const [property, value] of Object.entries(information))
+            display.addItem(property[0].toUpperCase() + property.substring(1), value);
+
+        await display.displayForPlayer(currentPlayer);
     }
 
     // Displays a menu to the |currentPlayer| with the player record of their target. The Menu will

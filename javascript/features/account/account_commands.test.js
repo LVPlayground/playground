@@ -45,6 +45,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     it('should fail if there are no available options', async (assert) => {
         await russell.identify({ vip: 1 });
 
+        settings.setValue('account/info_visibility', false);
         settings.setValue('account/nickname_control', false);
         settings.setValue('account/password_control', false);
         settings.setValue('account/vip_alias_control', false);
@@ -66,6 +67,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         assert.deepEqual(russell.getLastDialogAsTable(/* hasColumns= */ false), [
             'Change your nickname',
             'Change your password',
+            'View account information',
             'View player record',
             'View recent sessions',
         ]);
@@ -79,6 +81,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(await russell.issueCommand('/account Gunther'));
 
         assert.deepEqual(russell.getLastDialogAsTable(/* hasColumns= */ false), [
+            'View account information',
             'View player record',
             'View recent sessions',
         ]);
@@ -93,6 +96,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
 
         assert.deepEqual(russell.getLastDialogAsTable(/* hasColumns= */ false), [
             'Manage nickname aliases',
+            'View account information',
             'View player record',
             'View recent sessions',
         ]);
@@ -464,11 +468,38 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
                            'WoodPecker'));
     });
 
+    it('should be able to show information about an account', async (assert) => {
+        await russell.identify({ userId: 42, vip: 1 });
+
+        russell.respondToDialog({ listitem: 3 /* View account information */ }).then(
+            () => russell.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await russell.issueCommand('/account'));
+        assert.equal(russell.lastDialogTitle, 'Account information of Russell');
+
+        const result = russell.getLastDialogAsTable();
+        assert.equal(result.rows.length, 3);
+        assert.deepEqual(result.rows, [
+            [
+                'Username',
+                'Russell',
+            ],
+            [
+                'Level',
+                'Management',
+            ],
+            [
+                'Vip',
+                'Yes',
+            ],
+        ]);
+    });
+
     it('should be able to show the record of a player', async (assert) => {
         await gunther.identify({ userId: 42, vip: 1 });
 
         // (1) An error message is shown when the player's log is clean.
-        gunther.respondToDialog({ listitem: 3 /* View your record */ }).then(
+        gunther.respondToDialog({ listitem: 4 /* View your record */ }).then(
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/account'));
@@ -477,7 +508,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         await russell.identify({ userId: 1337, vip: 1 });
 
         // (2) A dialog with entries is shown when the player's log has entries.
-        russell.respondToDialog({ listitem: 3 /* View your record */ }).then(
+        russell.respondToDialog({ listitem: 4 /* View your record */ }).then(
             () => russell.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await russell.issueCommand('/account'));
@@ -505,7 +536,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         await gunther.identify({ userId: 42, vip: 1 });
 
         // (1) An error message is shown when the player's log is clean.
-        gunther.respondToDialog({ listitem: 4 /* View your recent sessions */ }).then(
+        gunther.respondToDialog({ listitem: 5 /* View your recent sessions */ }).then(
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/account'));
@@ -514,7 +545,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         await russell.identify({ userId: 1337, vip: 1 });
 
         // (2) A dialog with entries is shown when the player's log has entries.
-        russell.respondToDialog({ listitem: 4 /* View your recent sessions */ }).then(
+        russell.respondToDialog({ listitem: 5 /* View your recent sessions */ }).then(
             () => russell.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await russell.issueCommand('/account'));

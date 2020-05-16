@@ -89,9 +89,6 @@ class RaceMinigame extends Minigame {
                 player.weather = this.race_.weather;
                 player.time = this.race_.time;
 
-                // Freeze the player so that they cannot begin racing yet.
-                player.controllable = false;
-
                 // Force a streamer update for the player, to make sure everything is in place.
                 player.updateStreamer(position, this.virtualWorld, this.race_.interior,
                                       0 /* STREAMER_TYPE_OBJECT */);
@@ -111,6 +108,7 @@ class RaceMinigame extends Minigame {
                 // Put the player in their designated vehicle, and disable collisions for them.
                 player.enterVehicle(playerData.vehicle);
                 player.vehicleCollisionsEnabled = false;
+                player.controllable = false;
 
                 // Display the score board for the |player|.
                 playerData.scoreBoard.displayForPlayer(participantCount);

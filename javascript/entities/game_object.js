@@ -4,146 +4,107 @@
 
 // Defines the interface available to game objects created for players in the game. New objects
 // are only meant to be constructed through the ObjectManager.
-class GameObject {
-    constructor(manager, options) {
-        this.manager_ = manager;
+export class GameObject {
+    // Id to represent an invalid object. Maps to INVALID_STREAMER_ID, which is (0).
+    static kInvalidId = 0;
 
-        this.modelId_ = options.modelId;
+    #id_ = null;
+    #manager_ = null;
 
-        this.drawDistance_ = options.drawDistance;
-        this.streamDistance_ = options.streamDistance;
+    #modelId_ = null;
+    #drawDistance_ = null;
+    #streamDistance_ = null;
 
-        this.virtualWorld_ = options.virtualWorld;
-        this.interiorId_ = options.interiorId;
+    #interiors_ = null;
+    #virtualWorlds_ = null;
 
-        this.id_ = pawnInvoke('CreateDynamicObjectEx', 'iffffffffaaaaiiiii', options.modelId,
-                              options.position.x, options.position.y, options.position.z,
-                              options.rotation.x, options.rotation.y, options.rotation.z,
-                              options.streamDistance, options.drawDistance, [options.virtualWorld],
-                              [options.interiorId], [-1], [-1], 0 /* priority */, 1 /* maxworlds */,
-                              1 /* maxinteriors */, 1 /* maxplayers */, 1 /* maxareas */);
+    constructor(manager) {
+        this.#manager_ = manager;
+    }
 
-        if (this.id_ === GameObject.INVALID_ID)
+    initialize(options) {
+        this.#modelId_ = options.modelId;
+
+        this.#drawDistance_ = options.drawDistance;
+        this.#streamDistance_ = options.streamDistance;
+
+        this.#interiors_ = options.interiors;
+        this.#virtualWorlds_ = options.virtualWorlds;
+
+        this.#id_ = this.createInternal(options);
+        if (this.#id_ === GameObject.kInvalidId)
             throw new Error('Unable to create the object with model Id #' + options.modelId);
-
-        this.cameraCollisionsEnabled_ = true;
-        this.moving_ = false;
-
-        // Promise resolver that is to be used when the current movement has to be prematurely
-        // finished, for example because another move started or because it was aborted altogether.
-        this.stopCurrentMoveResolver_ = null;
     }
 
-    // Gets the id the streamer assigned to this object.
-    get id() { return this.id_; }
+    // Creates the actual object on the server. May be overridden for testing purposes.
+    createInternal(options) {
+        return pawnInvoke('CreateDynamicObjectEx', 'iffffffffaaaaiiiii',
+            /* modelid= */ options.modelId,
+            /* x= */ options.position.x,
+            /* y= */ options.position.y,
+            /* z= */ options.position.z,
+            /* rx= */ options.rotation.x,
+            /* ry= */ options.rotation.y,
+            /* rz= */ options.rotation.z,
+            /* streamdistance= */ options.streamDistance,
+            /* drawDistance= */ options.drawDistance,
+            /* worlds= */ options.virtualWorlds,
+            /* interiors= */ options.interiors,
+            /* players= */ options.players,
+            /* areas= */ options.areas,
+            /* priority= */ options.priority,
+            /* maxworlds= */ options.virtualWorlds.length,
+            /* maxinteriors= */ options.interiors.length,
+            /* maxplayers= */ options.players.length,
+            /* maxareas= */ options.areas.length);
+    }
 
-    // Returns whether the object still exists on the server.
-    isConnected() { return this.id_ !== null; }
+    // Destroys the actual object on the server. May be overridden for testing purposes.
+    destroyInternal() { pawnInvoke('DestroyDynamicObject', 'i', this.#id_); }
 
-    // Gets the Id of the model that is visually epresenting this object.
-    get modelId() { return this.modelId_; }
+    // ---------------------------------------------------------------------------------------------
 
-    // Gets or sets the position of the object in the world.
-    get position() { return new Vector(...pawnInvoke('GetDynamicObjectPos', 'iFFF', this.id_)); }
+    get id() { return this.#id_; }
+
+    get modelId() { return this.#modelId_; }
+    get drawDistance() { return this.#drawDistance_; }
+    get streamDistance() { return this.#streamDistance_; }
+
+    get interiors() { return this.#interiors_; }
+    get virtualWorlds() { return this.#virtualWorlds_; }
+
+    isConnected() { return this.#id_ !== GameObject.kInvalidId; }
+
+    // ---------------------------------------------------------------------------------------------
+
+    get position() { return new Vector(...pawnInvoke('GetDynamicObjectPos', 'iFFF', this.#id_)); }
     set position(value) {
-        pawnInvoke('SetDynamicObjectPos', 'ifff', this.id_, value.x, value.y, value.z);
+        pawnInvoke('SetDynamicObjectPos', 'ifff', this.#id_, value.x, value.y, value.z);
     }
 
-    // Gets or sets the rotation, in 3D space, of the object in the world.
-    get rotation() { return new Vector(...pawnInvoke('GetDynamicObjectRot', 'iFFF', this.id_)); }
+    get rotation() { return new Vector(...pawnInvoke('GetDynamicObjectRot', 'iFFF', this.#id_)); }
     set rotation(value) {
-        pawnInvoke('SetDynamicObjectRot', 'ifff', this.id_, value.x, value.y, value.z);
+        pawnInvoke('SetDynamicObjectRot', 'ifff', this.#id_, value.x, value.y, value.z);
     }
 
-    // Gets the draw distance of the object.
-    get drawDistance() { return this.drawDistance_; }
+    // ---------------------------------------------------------------------------------------------
 
-    // Gets the streaming distance the streamer will apply to this object.
-    get streamDistance() { return this.streamDistance_; }
-
-    // Gets the virtual world in which this object will be visible. Will return -1 when the object
-    // should be visible in all virtual worlds.
-    get virtualWorld() { return this.virtualWorld_; }
-
-    // Gets the interior Id in which the object will be visible. Will return -1 when the object
-    // should be visible in all interiors.
-    get interiorId() { return this.interiorId_; }
-
-    // Returns whether camera collisions are enabled for this object. They are by default.
-    areCameraCollisionsEnabled() {
-        return !!pawnInvoke('GetDynamicObjectNoCameraCol', 'i', this.id_);
-    }
-
-    // Disables collisions between the player's camera and the object. This only has an effect
-    // outside of the common San Andreas map coordinates (beyond -3000 and 3000).
-    disableCameraCollisions() { pawnInvoke('SetDynamicObjectNoCameraCol', 'i', this.id_); }
-
-    // Returns whether the object is currently moving.
-    isMoving() { return !!pawnInvoke('IsDynamicObjectMoving', 'i', this.id_); }
-
-    // Moves the object to |position| with |rotation| over a period of |durationMs| milliseconds.
-    // This an asynchronous function, and can be waited on to finish.
-    async moveTo(position, rotation, durationMs) {
-        if (this.stopCurrentMoveResolver_)
-            this.stopCurrentMoveResolver_();
-
-        const distanceUnits = position.distanceTo(this.position);
-        const speed = distanceUnits / (durationMs / 1000);
-
-        pawnInvoke('MoveDynamicObject', 'ifffffff', this.id_, position.x, position.y, position.z,
-                   speed, rotation.x, rotation.y, rotation.z);
-
-        const stopPromise = new Promise(resolve => this.stopCurrentMoveResolver_ = resolve);
-        await Promise.race([
-            wait(durationMs),
-            stopPromise
-        ]);
-
-        this.stopCurrentMoveResolver_ = null;
-    }
-
-    // Stops moving the object immediately.
-    stopMove() {
-        pawnInvoke('StopDynamicObject', 'i', this.id_);
-        if (this.stopCurrentMoveResolver_)
-            this.stopCurrentMoveResolver_();
-    }
-
-    // Attaches the object to |object| at |offset| with |rotation|, both of which must be vectors.
-    // Optionally |synchronize| can be set, which will synchronize the |object| when this one moves.
-    attachToObject(object, offset, rotation, synchronize = false) {
-        pawnInvoke('AttachDynamicObjectToObject', 'iiffffffi', this.id_, object.id, offset.x,
-                   offset.y, offset.z, rotation.x, rotation.y, rotation.z, synchronize ? 1 : 0);
-    }
-
-    // Attaches the object to |player| at |offset| with |rotation|, both of which must be vectors.
-    attachToPlayer(player, offset, rotation) {
-        pawnInvoke('AttachDynamicObjectToPlayer', 'iiffffff', this.id_, player.id, offset.x,
-                   offset.y, offset.z, rotation.x, rotation.y, rotation.z);
-    }
-
-    // Attaches the object to |vehicle| at |offset| with |rotation|, both of which must be vectors.
     attachToVehicle(vehicle, offset, rotation) {
-        pawnInvoke('AttachDynamicObjectToVehicle', 'iiffffff', this.id_, vehicle.id, offset.x,
+        pawnInvoke('AttachDynamicObjectToVehicle', 'iiffffff', this.#id_, vehicle.id, offset.x,
                    offset.y, offset.z, rotation.x, rotation.y, rotation.z);
     }
 
-    // Enables the object editor for this object for |player|.
-    enableEditorForPlayer(player) { pawnInvoke('EditDynamicObject', 'ii', player.id, this.id_); }
-
-    // TODO(Russell): Design an API for the material-related natives available to objects.
+    // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        pawnInvoke('DestroyDynamicObject', 'i', this.id_);
-        this.id_ = null;
+        this.destroy();
 
-        this.manager_.didDisposeObject(this);
-        this.manager_ = null;
+        this.#id_ = GameObject.kInvalidId;
+
+        this.#manager_.didDisposeObject(this);
+        this.#manager_ = null;
     }
 }
-
-// The Id that is used to represent invalid objects (INVALID_STREAMER_ID in Pawn).
-GameObject.INVALID_ID = 0;
 
 // Expose the GameObject object globally since it will be commonly used.
 global.GameObject = GameObject;

@@ -17,8 +17,8 @@ import VirtualWorldManager from 'entities/virtual_world_manager.js';
 
 import MockActor from 'entities/test/mock_actor.js';
 import MockClock from 'base/test/mock_clock.js';
+import { MockGameObject } from 'entities/test/mock_game_object.js';
 import MockNpc from 'entities/test/mock_npc.js';
-import MockObject from 'entities/test/mock_object.js';
 import MockPawnInvoke from 'base/test/mock_pawn_invoke.js';
 import MockPickup from 'entities/test/mock_pickup.js';
 import MockPickupManager from 'entities/test/mock_pickup_manager.js';
@@ -62,7 +62,7 @@ class MockServer {
         this.textDrawManager_ = new TextDrawManager();
 
         this.actorManager_ = new ActorManager(MockActor /* actorConstructor */);
-        this.objectManager_ = new ObjectManager(MockObject /* objectConstructor */);
+        this.objectManager_ = new ObjectManager(MockGameObject /* objectConstructor */);
         this.pickupManager_ = new MockPickupManager(MockPickup /* pickupConstructor */);
         this.playerManager_ = new PlayerManager(MockPlayer /* playerConstructor */);
         this.textLabelManager_ = new TextLabelManager(MockTextLabel /* textLabelConstructor */);

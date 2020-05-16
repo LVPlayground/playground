@@ -200,8 +200,8 @@ describe('ScopedEntities', it => {
 
         const object = entities.createObject({ modelId: 1225, position: new Vector(1, 2, 3),
                                                rotation: new Vector(4, 5, 6) });
-        assert.equal(object.interiorId, -1);
-        assert.equal(object.virtualWorld, -1);
+        assert.deepEqual(object.interiors, [-1]);
+        assert.deepEqual(object.virtualWorlds, [-1]);
 
         const pickup = entities.createPickup({ modelId: 322, position: new Vector(0, 0, 0) });
         assert.equal(pickup.virtualWorld, 0);
@@ -225,8 +225,8 @@ describe('ScopedEntities', it => {
 
         const object = entities.createObject({ modelId: 1225, position: new Vector(1, 2, 3),
                                                rotation: new Vector(4, 5, 6) });
-        assert.equal(object.interiorId, 7);
-        assert.equal(object.virtualWorld, 42);
+        assert.deepEqual(object.interiors, [7]);
+        assert.deepEqual(object.virtualWorlds, [42]);
 
         const pickup = entities.createPickup({ modelId: 322, position: new Vector(0, 0, 0) });
         assert.equal(pickup.virtualWorld, 42);

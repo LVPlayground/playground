@@ -16,17 +16,24 @@ class ObjectManager {
     // Creates a new object with the given options. The options are based on the available settings
     // as part of the Object Streamer, and can be changed after the object's creation.
     createObject({ modelId, position, rotation, interiorId = -1, virtualWorld = -1 } = {}) {
-        const object = new this.objectConstructor_(this, {
+        const object = new this.objectConstructor_(this);
+
+        // Initializes the |object| with all the configuration passed to the manager.
+        object.initialize({
             modelId: modelId,
 
             position: position,
             rotation: rotation,
 
-            interiorId: interiorId,
-            virtualWorld: virtualWorld,
+            interiors: [ interiorId ],
+            virtualWorlds: [ virtualWorld ],
 
             streamDistance: 300,
-            drawDistance: 0
+            drawDistance: 0,
+            priority: 0,
+
+            players: [ -1 ],
+            areas: [ -1 ], 
         });
 
         this.objects_.add(object);

@@ -16,9 +16,8 @@ describe('AccountManager', (it, beforeEach) => {
 
         dispatchEvent('playerguestlogin', {
             playerId: gunther.id,
-            guestPlayerName: 'NotGunther',
         });
 
-        assert.equal(gunther.name, 'NotGunther');
+        assert.notEqual(gunther.name, 'Gunther');
     });
 });

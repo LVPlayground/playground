@@ -146,6 +146,9 @@ export class Player extends Supplementable {
         pawnInvoke('OnPlayerNameChange', 'i', this.#id_);
 
         this.#name_ = value;
+
+        // Let other parts in the gamemode know about the name change.
+        server.playerManager.onPlayerNameChange(this, /* update= */ false);
     }
 
     get ip() { return this.#ipAddress_; }
@@ -173,7 +176,7 @@ export class Player extends Supplementable {
 
     kick() { pawnInvoke('Kick', 'i', this.#id_); }
 
-    setNameForGuestLogin(value) { this.#name_ = value; }
+    updateName() { this.#name_ = pawnInvoke('GetPlayerName', 'iS', this.#id_); }
 
     // ---------------------------------------------------------------------------------------------
     // Section: Weapons

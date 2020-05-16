@@ -106,7 +106,7 @@ export class MockPlayer extends Player {
 
     setIsNonPlayerCharacterForTesting(value) { this.#isNpc_ = value; }
 
-    setNameForGuestLogin(value) { this.#name_ = value; }
+    updateName() { this.#name_ += 'a'; /* any change will do */ }
 
     disconnectForTesting(reason = 0) {
         dispatchEvent('playerdisconnect', {

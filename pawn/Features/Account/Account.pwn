@@ -212,7 +212,7 @@ class Account <playerId (MAX_PLAYERS)> {
         Annotation::ExpandList<OnPlayerGuestLogin>(playerId);
 
         // Broadcast an OnPlayerGuestLogin callback that can be intercepted by other scripts.
-        CallRemoteFunction("OnPlayerGuestLogin", "is", playerId, Player(playerId)->nicknameString());
+        CallRemoteFunction("OnPlayerGuestLogin", "i", playerId);
     }
 
     /**
@@ -288,5 +288,5 @@ class Account <playerId (MAX_PLAYERS)> {
 forward OnPlayerLogin(playerid, userid, vip, gangId, undercover);
 public OnPlayerLogin(playerid, userid, vip, gangId, undercover) {}
 
-forward OnPlayerGuestLogin(playerId, guestPlayerName[]);
-public OnPlayerGuestLogin(playerId, guestPlayerName[]) {}
+forward OnPlayerGuestLogin(playerId);
+public OnPlayerGuestLogin(playerId) {}

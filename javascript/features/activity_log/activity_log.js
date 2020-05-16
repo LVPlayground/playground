@@ -27,7 +27,6 @@ class ActivityLog extends Feature {
 
     [
       'OnPlayerResolvedDeath',  // { playerid, killerid, reason }
-//    'OnPlayerWeaponShot',     // { playerid, weaponid, hittype, hitid, fX, fY, fZ }
       'OnPlayerConnect',        // { playerid }
 //      'OnPlayerLogin',          // { playerid, userid, vip, gangId, undercover }
       'OnPlayerGuestLogin',     // { playerId, guestPlayerName[]  }
@@ -62,35 +61,6 @@ class ActivityLog extends Feature {
       this.recorder_.writeDeath(userId, position, event.reason);
     else
       this.recorder_.writeKill(userId, killer.account.userId, position, event.reason);
-  }
-
-  // Called when a player has fired from a weapon. Only |event|s that hit a player or a vehicle will
-  // be recorded, with all available information and the distance of the shot.
-  onPlayerWeaponShot(event) {
-    if (event.hittype != 1 /* BULLET_HIT_TYPE_PLAYER */ &&
-        event.hittype != 2 /* BULLET_HIT_TYPE_VEHICLE */)
-      return;
-
-    const player = server.playerManager.getById(event.playerid);
-    if (!player)
-      return;
-
-    const userId = player.account.userId;
-    const position = player.position;
-
-    let targetUserId = null;
-    if (event.hittype == 1 /* BULLET_HIT_TYPE_PLAYER */) {
-      const targetPlayer = server.playerManager.getById(event.hitid);
-      if (targetPlayer && targetPlayer.account.isRegistered())
-        targetUserId = targetPlayer.account.userId;
-    }
-
-    // TODO(Russell): It would be great if we could consider the driver of the vehicle that's being
-    // hit here as well, but iterating over all players for every shot would be too expensive :/.
-
-    const targetDistance = new Vector(event.fX, event.fY, event.fZ).magnitude;
-
-    this.recorder_.writeHit(userId, targetUserId, targetDistance, event.weaponid, position);
   }
 
   // Called when a player connects. Logs the name, numeric variant of their ip and hashed serial to

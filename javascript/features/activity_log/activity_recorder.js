@@ -93,13 +93,6 @@ class ActivityRecorder {
     this.database_.query(ACTIVITY_LOG_DEATHS_INSERT, userId, position.x, position.y, position.z, reason);
   }
 
-  // Writes the hit to the database, indicating that |userId| (may be NULL) has hit |targetId| (may
-  // be NULL) with a |weaponId| at a distance of |targetDistance|.
-  writeHit(userId, targetId, targetDistance, weaponId, position) {
-    this.database_.query(ACTIVITY_LOG_HITS_INSERT, userId, targetId, targetDistance, weaponId,
-                         position.x, position.y, position.z);
-  }
-
   // Writes a kill to the database, indicating that |userId| (may be NULL) has been killed by
   // |killerId| (may be NULL) at |position| for the given |reason|.
   writeKill(userId, killerId, position, reason) {

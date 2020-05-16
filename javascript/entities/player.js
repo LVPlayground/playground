@@ -400,7 +400,7 @@ export class Player extends Supplementable {
 
     updateStreamerObjects() { pawnInvoke('Streamer_Update', 'ii', this.#id_, 0); }
     updateStreamer(position, virtualWorld, interiorId, type) {
-        pawnInvoke('Streamer_UpdateEx', 'ifffiii', this.#id_, position.x, position.y, position.z,
+        pawnInvoke('Streamer_UpdateEx', 'ifffiiiii', this.#id_, position.x, position.y, position.z,
                    virtualWorld, interiorId, type, /* compensatedTime= */ -1,
                    /* freezePlayer= */ 1);
     }

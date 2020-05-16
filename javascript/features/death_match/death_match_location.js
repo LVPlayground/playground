@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import virtualWorld from 'entities/virtual_world.js';
+
 // Private symbol ensuring that the DeathMatchLocation constructor won't be used.
 const PrivateSymbol = Symbol('Please use the static methods.');
 
@@ -45,7 +47,7 @@ export class DeathMatchLocation {
             throw new TypeError('Illegal call. The DeathMatch data is already initialized.');
 
         const locationInfos = JSON.parse(readFile(DeathMatchLocationDataFile));
-        
+
         locationInfos.forEach(locationInfo => {
             const location = new DeathMatchLocation(PrivateSymbol, locationInfo);
 
@@ -56,11 +58,11 @@ export class DeathMatchLocation {
         });
     }
 
-     // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
 
-     // Private constructor to create a new death match location.
-     // Should only be used within the DeathMatchLocation class.
-     constructor(privateSymbol, locationInfo) {
+    // Private constructor to create a new death match location.
+    // Should only be used within the DeathMatchLocation class.
+    constructor(privateSymbol, locationInfo) {
         if (privateSymbol !== PrivateSymbol)
             throw new TypeError('Illegal constructor. Use the static methods instead.');
 
@@ -69,7 +71,7 @@ export class DeathMatchLocation {
         this.name_ = locationInfo.name;
 
         this.interiorId_ = locationInfo.interior_id;
-        this.world_ = locationInfo.world;
+        this.world_ = virtualWorld.acquire('DeathMatch: ' + locationInfo.name);
 
         this.weather_ = locationInfo.weather ?? 10;
         this.time_ = locationInfo.time ?? 12;
@@ -86,6 +88,8 @@ export class DeathMatchLocation {
             });
         });
 
+        this.boundaries_ = locationInfo.boundaries;
+
         this.spawnPositions_ = new Set();
 
         locationInfo.spawn_positions.forEach(positionInfo => {
@@ -94,8 +98,6 @@ export class DeathMatchLocation {
                 rotation: positionInfo.rotation
             });
         });
-
-        this.boundaries_ = locationInfo.boundaries;
     }
 
     // Gets the internal Id as which this location is known.

@@ -114,7 +114,8 @@ const PLAYER_INFORMATION_QUERY = `
     SELECT
         users.username,
         users.level,
-        users.is_vip
+        users.is_vip,
+        (SELECT COUNT(1) FROM sessions WHERE user_id = users.user_id) AS sessions
     FROM
         users
     WHERE
@@ -301,6 +302,7 @@ export class AccountDatabase {
             username: information.username,
             level: information.level,
             vip: information.is_vip ? 'Yes' : 'No',
+            sessions: information.sessions,
         };
     }
 

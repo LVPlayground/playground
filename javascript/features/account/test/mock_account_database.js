@@ -112,6 +112,7 @@ export class MockAccountDatabase extends AccountDatabase {
             username: 'Russell',
             level: 'Management',
             is_vip: 1,
+            sessions: 24,
         };
     }
 

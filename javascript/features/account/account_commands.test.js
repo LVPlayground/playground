@@ -478,7 +478,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         assert.equal(russell.lastDialogTitle, 'Account information of Russell');
 
         const result = russell.getLastDialogAsTable();
-        assert.equal(result.rows.length, 3);
+        assert.equal(result.rows.length, 4);
         assert.deepEqual(result.rows, [
             [
                 'Username',
@@ -491,6 +491,10 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
             [
                 'Vip',
                 'Yes',
+            ],
+            [
+                'Sessions',
+                '24',
             ],
         ]);
     });

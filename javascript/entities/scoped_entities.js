@@ -69,10 +69,10 @@ class ScopedEntities {
             throw new Error('Unable to create the object, this object has been disposed of.');
 
         if (this.interiorId_)
-            options.interiorId = this.interiorId_;
+            options.interiors = [ this.interiorId_ ];
 
         if (this.virtualWorld_)
-            options.virtualWorld = this.virtualWorld_;
+            options.virtualWorlds = [ this.virtualWorld_ ];
 
         const object = server.objectManager.createObject(options);
 

@@ -14,8 +14,9 @@ class ObjectManager {
     get count() { return this.objects_.size; }
 
     // Creates a new object with the given options. The options are based on the available settings
-    // as part of the Object Streamer, and can be changed after the object's creation.
-    createObject({ modelId, position, rotation, interiorId = -1, virtualWorld = -1 } = {}) {
+    // as part of the Object Streamer, and some can be changed after the object's creation.
+    createObject({ modelId, position, rotation, interiors = null, interiorId = -1,
+                   virtualWorlds = null, virtualWorld = -1, players = null, playerId = -1 } = {}) {
         const object = new this.objectConstructor_(this);
 
         // Initializes the |object| with all the configuration passed to the manager.
@@ -25,15 +26,14 @@ class ObjectManager {
             position: position,
             rotation: rotation,
 
-            interiors: [ interiorId ],
-            virtualWorlds: [ virtualWorld ],
-
-            streamDistance: 300,
-            drawDistance: 0,
-            priority: 0,
-
-            players: [ -1 ],
+            interiors: interiors ?? [ interiorId ],
+            virtualWorlds: virtualWorlds ?? [ virtualWorld ],
+            players: players ?? [ playerId ],
             areas: [ -1 ], 
+
+            streamDistance: 300.0,
+            drawDistance: 0.0,
+            priority: 0,
         });
 
         this.objects_.add(object);

@@ -34,7 +34,6 @@ export class CommunicationCommands {
         // !help
         this.commandManager_.buildCommand('help')
             .build(CommunicationCommands.prototype.onHelpCommand.bind(this));
-    
 
         // !msg [message]
         this.commandManager_.buildCommand('msg')
@@ -120,10 +119,14 @@ export class CommunicationCommands {
 
     // !help
     //
-    // Displays information on how people can join our Discord channel.
+    // Displays information on how people can use Nuwani on IRC.
     onHelpCommand(context) {
-        context.respond('5Available IRC commands: !getid, !getname, !msg, !players, !pm, !vip, !discord');
-        context.respond('Register for an account on https://sa-mp.nl/ , and use the in-game "/account" command to change your name, password or settings.');
+        context.respond(
+            '5Available IRC commands: !getid, !getname, !msg, !players, !pm, !vip, !discord');
+
+        context.respond(
+            'Register for an account on https://sa-mp.nl/, and use the in-game "5/account" ' +
+            'command to change your name, password and settings.');
     }
 
     // !msg [message]

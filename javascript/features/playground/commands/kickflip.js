@@ -18,7 +18,7 @@ class KickFlipCommand extends Command {
 
     // Note that this implementation uses pawnInvoke() because the target vehicle may not be owned
     // by the JavaScript code, and the command should work for all vehicles.
-    onKickFlipCommand(player, target, factor) {
+    onKickFlipCommand(player, target) {
         const vehicleId = pawnInvoke('GetPlayerVehicleID', 'i', target.id);
         if (vehicleId == 0 || vehicleId > 3000) {
             player.sendMessage(Message.COMMAND_ERROR, target.name + ' is not driving a vehicle.');

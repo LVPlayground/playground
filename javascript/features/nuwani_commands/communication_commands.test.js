@@ -110,7 +110,7 @@ describe('CommunicationCommands', (it, beforeEach, afterEach) => {
         assert.includes(result[0], 'https://discord.sa-mp.nl/');
     });
 
-    it('cmds', async (assert) => {
+    it('responds to the !hello command', async (assert) => {
         const result = await issueCommand(bot, commandManager, {
             source: kCommandSource,
             command: '!help',
@@ -118,7 +118,9 @@ describe('CommunicationCommands', (it, beforeEach, afterEach) => {
         
         assert.equal(result.length, 2);
         assert.includes(result[0], '!getid, !getname, !msg, !players, !pm, !vip, !discord');
-        assert.includes(result[1], 'To register an account, visit: www.sa-mp.nl and use the in-game "/account" command to change your name, password or settings.');');
+        assert.includes(
+            result[1], 'Register for an account on https://sa-mp.nl/, and use the in-game ' +
+                       '"/account" command to change your name, password and settings.');
      }); 
 
     it('should be able to send messages to in-game players', async (assert) => {

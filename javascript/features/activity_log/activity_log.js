@@ -1,165 +1,112 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import ActivityRecorder from 'features/activity_log/activity_recorder.js';
+import { ActivityRecorder } from 'features/activity_log/activity_recorder.js';
 import Feature from 'components/feature_manager/feature.js';
 import ScopedCallbacks from 'base/scoped_callbacks.js';
 
 import { murmur3hash } from 'base/murmur3hash.js';
 
-// IRC tag used to show the players name, id, ip and gpci
-const JoinIpGpciTag = 'join-ip-gpci';
-
 // The activity log feature keeps track of many in-game events and logs them to the database. This
 // is part of an effort to gather more information with Las Venturas Playground, enabling analysis
 // of area, vehicle and weapon usage among many other statistics.
-class ActivityLog extends Feature {
-  constructor() {
-    super();
+export default class ActivityLog extends Feature {
+    nuwani_ = null;
 
-    this.callbacks_ = new ScopedCallbacks();
-    this.recorder_ = new ActivityRecorder(server.database);
+    callbacks_ = null;
+    recorder_ = null;
+    sessionIds_ = new WeakMap();
 
-    // Translates OnPawnEventName to respectively `onPawnEventName` or `pawneventname`.
-    const toMethodName = name => name.charAt(0).toLowerCase() + name.slice(1);
-    const toEventName = name => name.slice(2).toLowerCase();
+    constructor() {
+        super();
 
-    [
-      'OnPlayerResolvedDeath',  // { playerid, killerid, reason }
-//    'OnPlayerWeaponShot',     // { playerid, weaponid, hittype, hitid, fX, fY, fZ }
-      'OnPlayerConnect',        // { playerid }
-//      'OnPlayerLogin',          // { playerid, userid, vip, gangId, undercover }
-      'OnPlayerGuestLogin',     // { playerId, guestPlayerName[]  }
-      'OnPlayerDisconnect',     // { playerid, reason }
+        // To be able to show the IP and GPCI on IRC
+        this.nuwani_ = this.defineDependency('nuwani');
 
-    ].forEach(name =>
-        this.callbacks_.addEventListener(toEventName(name), this.__proto__[toMethodName(name)].bind(this)));
+        // Writes all the interactions to the database.
+        this.recorder_ = new ActivityRecorder();
 
-    this.playerSessionIdMap_ = new Map(); // { playerid, sessionid )
+        // Listens to various callbacks that are not issued by one of the entity managers, and we
+        // thus have to implement ourselves.
+        this.callbacks_ = new ScopedCallbacks();
+        this.callbacks_.addEventListener(
+            'playerresolveddeath', ActivityLog.prototype.onPlayerDeath.bind(this));
 
-    // To be able to show the IP and GPCI on IRC
-    this.nuwani_ = this.defineDependency('nuwani');
+        // Provides the `MurmurIIIHashGenerateHash` native, which is exposed to Pawn to allow it to
+        // do serial ban checks during a player's connection routine.
+        provideNative('MurmurIIIHashGenerateHash', 'siS', (key, maxLength) => {
+            return [ murmur3hash(key).toString() ];
+        });
 
-    // Provide the MurmurIIIHashGenerateHash native function to Pawn now that it still needs it.
-    provideNative('MurmurIIIHashGenerateHash', 'siS', (key, maxLength) => {
-      return [ murmur3hash(key).toString() ];
-    });
-  }
-
-  // Called when a confirmed death has happened with the corrected Id of the killer, if any. The
-  // |event| contains the { playerid, killerid, reason } about the death.
-  onPlayerResolvedDeath(event) {
-    const player = server.playerManager.getById(event.playerid);
-    if (!player)
-      return;
-
-    const userId = player.account.userId;
-    const position = player.position;
-
-    const killer = server.playerManager.getById(event.killerid);
-    if (!killer)
-      this.recorder_.writeDeath(userId, position, event.reason);
-    else
-      this.recorder_.writeKill(userId, killer.account.userId, position, event.reason);
-  }
-
-  // Called when a player has fired from a weapon. Only |event|s that hit a player or a vehicle will
-  // be recorded, with all available information and the distance of the shot.
-  onPlayerWeaponShot(event) {
-    if (event.hittype != 1 /* BULLET_HIT_TYPE_PLAYER */ &&
-        event.hittype != 2 /* BULLET_HIT_TYPE_VEHICLE */)
-      return;
-
-    const player = server.playerManager.getById(event.playerid);
-    if (!player)
-      return;
-
-    const userId = player.account.userId;
-    const position = player.position;
-
-    let targetUserId = null;
-    if (event.hittype == 1 /* BULLET_HIT_TYPE_PLAYER */) {
-      const targetPlayer = server.playerManager.getById(event.hitid);
-      if (targetPlayer && targetPlayer.account.isRegistered())
-        targetUserId = targetPlayer.account.userId;
+        // Observes the PlayerManager, to be informed of changes in player events.
+        server.playerManager.addObserver(this);
     }
 
-    // TODO(Russell): It would be great if we could consider the driver of the vehicle that's being
-    // hit here as well, but iterating over all players for every shot would be too expensive :/.
+    // ---------------------------------------------------------------------------------------------
 
-    const targetDistance = new Vector(event.fX, event.fY, event.fZ).magnitude;
+    // Called when the |player| has connected to Las Venturas Playground.
+    onPlayerConnect(player) {
+        this.recorder_.createPlayerSession(player).then(sessionId => {
+            if (!player.isConnected())
+                return;  // the |player| has disconnected since
+            
+            this.sessionIds_.set(player, sessionId);
+        });
 
-    this.recorder_.writeHit(userId, targetUserId, targetDistance, event.weaponid, position);
-  }
+        // Anounce the player's IP address and serial number to people watching Nuwani.
+        this.nuwani_().echo('join-ip-gpci', player.name, player.id, player.ip, player.serial);
+    }
 
-  // Called when a player connects. Logs the name, numeric variant of their ip and hashed serial to
-  // the database to be able to keep track of them.
-  onPlayerConnect(event) {
-    const player = server.playerManager.getById(event.playerid);
-    if (!player || player.isNonPlayerCharacter())
-      return;
+    // Called when the |player| has logged in to their account.
+    onPlayerLogin(player) {
+        const sessionId = this.sessionIds_.get(player);
+        if (sessionId)
+            this.recorder_.updateSessionOnIdentification(sessionId, player);
+    }
 
-    const numericIpAddress = this.ip2long(player.ip);
+    // Called when the |player| has had their name changed to something else.
+    onPlayerNameChange(player) {
+        const sessionId = this.sessionIds_.get(player);
+        if (sessionId)
+            this.recorder_.updateSessionOnNameChange(sessionId, player);
+    }
 
-    this.nuwani_().echo(JoinIpGpciTag, player.name, player.id, player.ip, player.serial);
+    // Called when a death has occurred. This is an event sourced from Pawn, and thus untrusted.
+    onPlayerDeath(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player)
+            return;  // the |event| was sent for an invalid player
+        
+        const killer = server.playerManager.getById(event.killerid);
+        const reason = event.reason;
 
-    this.recorder_.getIdFromWriteInsertSessionAtConnect(player.name, numericIpAddress, player.serial).then (result => {
-      this.playerSessionIdMap_.set(player.id, result.sessionId);
-    });
-  }
+        if (!killer)
+            this.recorder_.recordPlayerDeath(player, reason);
+        else
+            this.recorder_.recordPlayerKill(player, killer, reason);
+    }
 
-  // Called at the moment a player logged in with a correct password. In this successful case we can
-  // update the session with the userid of the player.
-  onPlayerLogin(event) {
-    const player = server.playerManager.getById(event.playerid);
-    if (!player || player.isNonPlayerCharacter())
-      return;
+    // Called when the |player| has disconnected from Las Venturas Playground.
+    onPlayerDisconnect(player) {
+        const sessionId = this.sessionIds_.get(player);
+        if (!sessionId)
+            return;  // no session is known for the given |player|
+        
+        this.recorder_.finalizePlayerSession(sessionId);
+        this.sessionIds_.delete(player);
+    }
 
-    if (!this.playerSessionIdMap_.has(player.id))
-      return;
+    // ---------------------------------------------------------------------------------------------
 
-    const sessionId = this.playerSessionIdMap_.get(player.id);
-    this.recorder_.writeUpdateSessionAtLogin(sessionId, player.account.userId);
-  }
+    dispose() {
+        server.playerManager.removeObserver(this);
 
-  // Called at the moment a player with an already used nickname wants to play as guest. In that
-  // case his name changes and we should adjust that in the db.
-  onPlayerGuestLogin(event) {
-    const player = server.playerManager.getById(event.playerId);
-    if (!player || player.isNonPlayerCharacter())
-      return;
+        provideNative('MurmurIIIHashGenerateHash', 'siS', () => [ '0' ]);
 
-    if (!this.playerSessionIdMap_.has(player.id))
-      return;
+        this.callbacks_.dispose();
+        this.callbacks_ = null;
 
-    const sessionId = this.playerSessionIdMap_.get(player.id);
-    const guestPlayerName = pawnInvoke('GetPlayerName', 'iS', player.id);
-
-    this.recorder_.writeUpdateSessionAtGuestLogin(sessionId, guestPlayerName);
-  }
-
-  // Called when a player somehow leaves the server.
-  onPlayerDisconnect(event) {
-    if (!this.playerSessionIdMap_.has(event.playerid))
-      return;
-
-    const sessionId = this.playerSessionIdMap_.get(event.playerid);
-    this.recorder_.writeUpdateSessionAtDisconnect(sessionId, Date.now());
-
-    this.playerSessionIdMap_.delete(event.playerid);
-  }
-
-  // TODO: move this to a better place!
-  // Converts an IP to an int to store in the database
-  ip2long (ip) {
-    const numericParts = ip.split('.');
-
-    return ((((((+numericParts[0])*256)
-               +(+numericParts[1]))*256)
-               +(+numericParts[2]))*256)
-               +(+numericParts[3]);
-  }
-};
-
-export default ActivityLog;
+        this.recorder_ = null;
+    }
+}

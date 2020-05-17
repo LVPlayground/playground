@@ -89,9 +89,6 @@ class RaceMinigame extends Minigame {
                 player.weather = this.race_.weather;
                 player.time = this.race_.time;
 
-                // Freeze the player so that they cannot begin racing yet.
-                player.controllable = false;
-
                 // Force a streamer update for the player, to make sure everything is in place.
                 player.updateStreamer(position, this.virtualWorld, this.race_.interior,
                                       0 /* STREAMER_TYPE_OBJECT */);
@@ -114,6 +111,7 @@ class RaceMinigame extends Minigame {
 
                 // Display the score board for the |player|.
                 playerData.scoreBoard.displayForPlayer(participantCount);
+                playerData.vehicle.toggleEngine(false);
 
                 // Create the first checkpoint for the player, so they know where to go.
                 this.nextCheckpoint(player);
@@ -212,7 +210,7 @@ class RaceMinigame extends Minigame {
 
         // Unfreeze all players and allow them to begin racing.
         for (const player of this.activePlayers)
-            player.controllable = true;
+            player.vehicle.toggleEngine(true);
 
         this.startTime_ = highResolutionTime();
 

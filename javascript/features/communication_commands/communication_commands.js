@@ -2,13 +2,19 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { CallCommands } from 'features/communication_commands/call_commands.js';
 import CommandBuilder from 'components/command_manager/command_builder.js';
+import { DirectCommunicationCommands } from 'features/communication_commands/direct_communication_commands.js';
 import Feature from 'components/feature_manager/feature.js';
+import { IgnoreCommands } from 'features/communication_commands/ignore_commands.js';
+import { MuteCommands } from 'features/communication_commands/mute_commands.js'
 
-import { relativeTime } from 'base/time.js';
+// Set of `/show` messages that Gunther will issue at a particular interval.
+const kGuntherMessages =
+    ['beg', 'discord', 'donate', 'forum', 'irc', 'reg', 'report', 'rules', 'weapons'];
 
-// After how many seconds does a `/call` expire, because they didn't pick up?
-export const kCallExpirationTimeSec = 15;
+// In which file are messages for the `/show` command stored?
+const kShowCommandDataFile = 'data/show.json';
 
 // Provides a series of commands associated with communication on Las Venturas Playground. These
 // commands directly serve the Communication feature, but require a dependency on the `announce`
@@ -17,15 +23,12 @@ export default class CommunicationCommands extends Feature {
     announce_ = null;
     communication_ = null;
     nuwani_ = null;
+    settings_ = null;
 
-    dialToken_ = new WeakMap();
-    dialing_ = new WeakMap();
+    commands_ = null;
+    disposed_ = false;
 
-    // Gets the CallChannel from the Communication feature.
-    get callChannel() { return this.communication_().manager_.getCallChannel(); }
-
-    // Gets the MuteManager from the Communication feature, which we service.
-    get muteManager() { return this.communication_().muteManager_; }
+    showMessages_ = null;
 
     // Gets the MessageVisibilityManager from the Communication feature.
     get visibilityManager() { return this.communication_().visibilityManager_; }
@@ -33,151 +36,114 @@ export default class CommunicationCommands extends Feature {
     constructor() {
         super();
 
+        // Used to send messages to in-game administrators.
         this.announce_ = this.defineDependency('announce');
+
+        // This series of commands services the Communication feature.
         this.communication_ = this.defineDependency('communication');
+
+        // Used to send non-channel communication to people watching through Nuwani.
         this.nuwani_ = this.defineDependency('nuwani');
 
+        // Used to make the required level for certain commands configurable.
+        const playground = this.defineDependency('playground');
+
+        // Used to make certain parts of communication configurable.
+        this.settings_ = this.defineDependency('settings');
+
         // TODO:
-        // - /announce
-        // - /clear
-        // - /ignore
-        // - /ignored
-        // - /ircpm
-        // - /pm
-        // - /r
-        // - /show
-        // - /showmessage
         // - /slap
         // - /slapb(ack)
-        // - /unignore
 
-        // /answer
-        server.commandManager.buildCommand('answer')
-            .build(CommunicationCommands.prototype.onAnswerCommand.bind(this));
+        // Implementation of various commands have been grouped together to keep things organised,
+        // which is reflected in the following array of command groups.
+        this.commands_ = [
+            new CallCommands(this.communication_),
+            new DirectCommunicationCommands(this.communication_, this.nuwani_, playground),
+            new IgnoreCommands(this.communication_),
+            new MuteCommands(this.announce_, this.communication_),
+        ];
 
-        // /call [player]
-        server.commandManager.buildCommand('call')
-            .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
-            .build(CommunicationCommands.prototype.onCallCommand.bind(this));
-
-        // /hangup
-        server.commandManager.buildCommand('hangup')
-            .build(CommunicationCommands.prototype.onHangupCommand.bind(this));
+        // /announce [message]
+        server.commandManager.buildCommand('announce')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
+            .build(CommunicationCommands.prototype.onAnnounceCommand.bind(this));
+        
+        // /clear
+        server.commandManager.buildCommand('clear')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .build(CommunicationCommands.prototype.onClearCommand.bind(this));
 
         // /me [message]
         server.commandManager.buildCommand('me')
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(CommunicationCommands.prototype.onMeCommand.bind(this));
 
-        // /mute [player] [duration=3]
-        server.commandManager.buildCommand('mute')
+        // /show [message] [player]?
+        server.commandManager.buildCommand('show')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
-                { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
-                { name: 'duration', type: CommandBuilder.NUMBER_PARAMETER, optional: true }])
-            .build(CommunicationCommands.prototype.onMuteCommand.bind(this));
+                { name: 'message', type: CommandBuilder.WORD_PARAMETER, optional: true },
+                { name: 'player', type: CommandBuilder.PLAYER_PARAMETER, optional: true }])
+            .build(CommunicationCommands.prototype.onShowCommand.bind(this));
 
-        // /muted
-        server.commandManager.buildCommand('muted')
-            .restrict(Player.LEVEL_ADMINISTRATOR)
-            .build(CommunicationCommands.prototype.onMutedCommand.bind(this));
-
-        // /reject
-        server.commandManager.buildCommand('reject')
-            .build(CommunicationCommands.prototype.onRejectCommand.bind(this));
-
-        // /showreport
-        server.commandManager.buildCommand('showreport')
-            .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
-            .build(CommunicationCommands.prototype.onShowReportCommand.bind(this));
-
-        // /unmute [player]
-        server.commandManager.buildCommand('unmute')
-            .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
-            .build(CommunicationCommands.prototype.onUnmuteCommand.bind(this));
+        // Unless we're in a test, start the GuntherCycle which will automatically use the /show
+        // command with his credentials with a number of predefined commands.
+        if (!server.isTest())
+            this.runTheGuntherCycle();
     }
 
-    // /answer
-    //
-    // Answers any in-progress dials to establish a phone call connection with the dialing player.
-    onAnswerCommand(player) {
-        const targetPlayer = this.dialing_.get(player);
-        if (!targetPlayer) {
-            player.sendMessage(Message.COMMUNICATION_DIAL_ANSWER_UNKNOWN);
-            return;
-        }
-
-        this.callChannel.establish(player, targetPlayer);
-
-        this.dialToken_.delete(targetPlayer);
-
-        this.dialing_.delete(player);
-        this.dialing_.delete(targetPlayer);
-    }
-
-    // /call [player]
-    //
-    // Begins calling the |targetPlayer| to establish a phone call. They have to acknowledge the
-    // request, and it will automatically expire after |kCallExpirationTimeSec| seconds.
-    onCallCommand(player, targetPlayer) {
-        const currentRecipient =
-            this.callChannel.getConversationPartner(player) || this.dialing_.get(player);
-    
-        // Bail out if the |player| is already on the phone.
-        if (currentRecipient) {
-            player.sendMessage(Message.COMMUNICATION_DIAL_BUSY_SELF, currentRecipient.name);
-            return;
-        }
-
-        // Bail out if the |targetPlayer| is already on the phone.
-        if (!!this.callChannel.getConversationPartner(targetPlayer) ||
-                this.dialing_.has(targetPlayer)) {
-            player.sendMessage(Message.COMMUNICATION_DIAL_BUSY_RECIPIENT, targetPlayer.name);
-            return;
-        }
-
-        const dialToken = Symbol('unique dial token');
-
-        // Store the |dialToken| to verify uniqueness of the call after the dial expires.
-        this.dialToken_.set(player, dialToken);
-
-        this.dialing_.set(player, targetPlayer);
-        this.dialing_.set(targetPlayer, player);
-
-        targetPlayer.sendMessage(Message.COMMUNICATION_DIAL_REQUEST, player.name);
-        player.sendMessage(Message.COMMUNICATION_DIAL_WAITING, targetPlayer.name);
-
-        // The call will automatically expire after a predefined amount of time.
-        wait(kCallExpirationTimeSec * 1000).then(() => {
-            if (this.dialToken_.get(player) !== dialToken)
-                return;  // the call didn't expire
+    // The Gunther cycle will spin for the lifetime of this object, displaying a `/show` message at
+    // a configured interval.
+    async runTheGuntherCycle() {
+        do {
+            await wait(this.settings_().getValue('playground/gunther_help_interval_sec') * 1000);
+            if (this.disposed_)
+                return;
             
-            this.dialToken_.delete(player);
-            this.dialing_.delete(player);
+            const message = kGuntherMessages[Math.floor(Math.random() * kGuntherMessages.length)];
+            const gunther = server.playerManager.getByName('Gunther', false);
 
-            this.dialing_.delete(targetPlayer);
+            if (gunther)
+                this.onShowCommand(gunther, message, null);
 
-            if (!player.isConnected() || !targetPlayer.isConnected())
-                return;  // either of the recipients has disconnected from the server
-            
-            player.sendMessage(Message.COMMUNICATION_DIAL_EXPIRED, targetPlayer.name);
-            targetPlayer.sendMessage(Message.COMMUNICATION_DIAL_EXPIRED_RECIPIENT, player.name);
-        });
+        } while (true);
     }
 
-    // /hangup
+    // /announce
     //
-    // Ends any established phone conversations immediately.
-    onHangupCommand(player) {
-        const targetPlayer = this.callChannel.getConversationPartner(player);
-        if (!targetPlayer) {
-            player.sendMessage(Message.COMMUNICATION_DIAL_HANGUP_UNKNOWN);
-            return;
+    // Announces the given |message| to the world. Subject to communication filtering.
+    onAnnounceCommand(player, unprocessedMessage) {
+        const message = this.communication_().processForDistribution(player, unprocessedMessage);
+        if (!message)
+            return;  // the message was blocked
+        
+        for (const player of server.playerManager) {
+            player.sendMessage(Message.ANNOUNCE_HEADER);
+            player.sendMessage(Message.ANNOUNCE_MESSAGE, message);
+            player.sendMessage(Message.ANNOUNCE_HEADER);
         }
 
-        this.callChannel.disconnect(player, targetPlayer);
+        this.announce_().announceToAdministrators(
+            Message.format(Message.ANNOUNCE_ADMIN_NOTICE, player.name, player.id, message));
+        
+        this.nuwani_().echo('notice-announce', message);
+    }
+
+    // /clear
+    //
+    // Clears the chat box for all in-game players. This is generally useful when someone has said
+    // something truly awful that shouldn't be seen by anyone.
+    onClearCommand(player) {
+        const kEmptyMessages = 120;
+
+        // Use SendClientMessageToAll() to reduce the number of individual Pawn calls.
+        for (let message = 0; message < kEmptyMessages; ++message)
+            pawnInvoke('SendClientMessageToAll', 'is', 0, ' ');
+        
+        this.announce_().announceToAdministrators(
+            Message.COMMUNICATION_CLEAR_ADMIN, player.name, player.id);
     }
 
     // /me [message]
@@ -189,7 +155,8 @@ export default class CommunicationCommands extends Feature {
         if (!message)
             return;  // the message has been blocked
 
-        const formattedMessage = Message.format(Message.COMMUNICATION_ME, player.name, message);
+        const formattedMessage = Message.format(
+            Message.COMMUNICATION_ME, player.color.toHexRGB(), player.name, message);
 
         // Bail out quickly if the |player| has been isolated.
         if (player.syncedData.isIsolated()) {
@@ -199,6 +166,45 @@ export default class CommunicationCommands extends Feature {
 
         this.distributeMessageToPlayers(player, formattedMessage, formattedMessage);
         this.nuwani_().echo('status', player.id, player.name, message);
+    }
+
+    // /show [message] [player]?
+    //
+    // Shows a particular |message| to the user. The individual messages will be loaded from a JSON
+    // file, lazily, on first usage of the actual command.
+    onShowCommand(player, message, targetPlayer) {
+        if (!this.showMessages_) {
+            const messages = JSON.parse(readFile(kShowCommandDataFile));
+
+            this.showMessages_ = new Map();
+            for (const [identifier, text] of Object.entries(messages))
+                this.showMessages_.set(identifier, text);
+        }
+
+        const messageText = this.showMessages_.get(message);
+        if (!messageText) {
+            player.sendMessage(Message.ANNOUNCE_SHOW_UNKNOWN,
+                               Array.from(this.showMessages_.keys()).sort().join('/'));
+            return;
+        }
+
+        // Fast-path if there is a |targetPlayer|, just send the message to them.
+        if (targetPlayer) {
+            targetPlayer.sendMessage(Message.ANNOUNCE_HEADER);
+            targetPlayer.sendMessage(Message.ANNOUNCE_MESSAGE, messageText);
+            targetPlayer.sendMessage(Message.ANNOUNCE_HEADER);
+            return;
+        }
+
+        const header = Message.ANNOUNCE_HEADER;
+        const localMessage = Message.format(Message.ANNOUNCE_MESSAGE, messageText);
+
+        // Assume that the |player| is sending the message in context, so the recipients should be
+        // in the same world as they are -- this automatically excludes minigames.
+        this.distributeMessageToPlayers(player, [ header, localMessage, header ], null);
+
+        this.announce_().announceToAdministrators(
+            Message.ANNOUNCE_SHOW_ADMIN, player.name, player.id, message);
     }
 
     // Distributes the given |formattedMessage| to the players who are supposed to receive it per
@@ -212,149 +218,28 @@ export default class CommunicationCommands extends Feature {
                 visibilityManager.selectMessageForPlayer(player, playerVirtualWorld, recipient,
                                                          { localMessage, remoteMessage });
 
-            if (recipientMessage)
+            if (!recipientMessage)
+                continue;  // the |recipient| should not receive the message
+
+            if (!Array.isArray(recipientMessage)) {
                 recipient.sendMessage(recipientMessage);
-        }
-    }
-
-    // /mute [player] [duration=3]
-    //
-    // Mutes the given player for the indicated amount of time, in minutes. This will cut off all
-    // ways of communication for them, except for administrator chat.
-    onMuteCommand(player, targetPlayer, duration = 3) {
-        const timeRemaining = this.muteManager.getPlayerRemainingMuteTime(targetPlayer);
-
-        const proposedTime = duration * 60;
-        const proposedText = relativeTime({
-            date1: new Date(),
-            date2: new Date(Date.now() + proposedTime * 1000 )
-        }).text;
-
-        this.muteManager.mutePlayer(targetPlayer, proposedTime);
-
-        if (!timeRemaining) {
-            targetPlayer.sendMessage(
-                Message.MUTE_MUTED_TARGET, player.name, player.id, proposedText);
-        } else {
-            const change = timeRemaining >= proposedTime ? 'decreased' : 'extended';
-
-            // Inform the |targetPlayer| about their punishment having changed.
-            targetPlayer.sendMessage(
-                Message.MUTE_MUTED_TARGET_UPDATE, player.name, player.id, change, proposedText);
-        }
-
-        this.announce_().announceToAdministrators(
-            Message.MUTE_ADMIN_MUTED, player.name, player.id, targetPlayer.name, targetPlayer.id,
-            proposedText);
-
-        player.sendMessage(Message.MUTE_MUTED, targetPlayer.name, targetPlayer.id, proposedText);
-    }
-
-    // /muted
-    //
-    // Displays an overview of the currently muted players to |player|, and how much time they have
-    // left before they automatically get unmuted.
-    onMutedCommand(player) {
-        let hasMutedPlayers = false;
-
-        for (const otherPlayer of server.playerManager) {
-            const remainingTime = this.muteManager.getPlayerRemainingMuteTime(otherPlayer);
-            if (!remainingTime)
                 continue;
+            }
 
-            hasMutedPlayers = true;
-
-            const duration = relativeTime({
-                date1: new Date(),
-                date2: new Date(Date.now() + remainingTime * 1000 )
-            }).text;
-
-            player.sendMessage(Message.MUTE_MUTED_LIST, otherPlayer.name, otherPlayer.id, duration);
+            for (const message of recipientMessage)
+                recipient.sendMessage(message);
         }
-
-        if (!hasMutedPlayers)
-            player.sendMessage(Message.MUTE_MUTED_NOBODY);
-    }
-
-    // /reject
-    //
-    // Rejects any incoming phone conversation requests.
-    onRejectCommand(player) {
-        const targetPlayer = this.dialing_.get(player);
-        if (!targetPlayer) {
-            player.sendMessage(Message.COMMUNICATION_DIAL_REJECT_UNKNOWN);
-            return;
-        }
-
-        player.sendMessage(Message.COMMUNICATION_DIAL_REJECTED, targetPlayer.name);
-        targetPlayer.sendMessage(Message.COMMUNICATION_DIAL_REJECTED_RECIPIENT, player.name);
-
-        this.dialToken_.delete(targetPlayer);
-
-        this.dialing_.delete(player);
-        this.dialing_.delete(targetPlayer);
-    }
-
-    // /showreport [player]
-    //
-    // Shows a message to the given player on how to report players in the future, and mutes them
-    // automatically for two minutes to make sure that they get the point.
-    onShowReportCommand(player, targetPlayer) {
-        const timeRemaining = this.muteManager.getPlayerRemainingMuteTime(targetPlayer);
-        if (timeRemaining > 0) {
-            player.sendMessage(
-                Message.MUTE_SHOW_REPORT_ALREADY_MUTED, targetPlayer.name, targetPlayer.id);
-            return;
-        }
-
-        const kDurationSeconds = 120;
-        const kDuration = '2 minutes';
-
-        this.muteManager.mutePlayer(targetPlayer, kDurationSeconds);
-
-        // Inform the |targetPlayer| about how to report, as well as their punishment.
-        targetPlayer.sendMessage(Message.MUTE_SHOW_REPORT_BORDER);
-        targetPlayer.sendMessage(
-            Message.MUTE_SHOW_REPORT_MESSAGE_1, player.name, player.id, kDuration);
-        targetPlayer.sendMessage(Message.MUTE_SHOW_REPORT_MESSAGE_2);
-        targetPlayer.sendMessage(Message.MUTE_SHOW_REPORT_BORDER);
-
-        // Inform in-game administrators and the |player| themselves of the mute.
-        this.announce_().announceToAdministrators(
-            Message.MUTE_ADMIN_MUTED, player.name, player.id, targetPlayer.name, targetPlayer.id,
-            kDuration);
-
-        player.sendMessage(Message.MUTE_MUTED, targetPlayer.name, targetPlayer.id, kDuration);
-    }
-
-    // /unmute [player]
-    //
-    // Immediately unmutes the given player for an unspecified reason. They'll be able to use all
-    // forms of communication on the server again.
-    onUnmuteCommand(player, targetPlayer) {
-        const timeRemaining = this.muteManager.getPlayerRemainingMuteTime(targetPlayer);
-        if (!timeRemaining) {
-            player.sendMessage(Message.MUTE_UNMUTE_NOT_MUTED, targetPlayer.name, targetPlayer.id);
-            return;
-        }
-
-        this.muteManager.unmutePlayer(targetPlayer);
-
-        this.announce_().announceToAdministrators(
-            Message.MUTE_ADMIN_UNMUTED, player.name, player.id, targetPlayer.name, targetPlayer.id);
-
-        targetPlayer.sendMessage(Message.MUTE_UNMUTED_TARGET, player.name, player.id);
-        player.sendMessage(Message.MUTE_UNMUTED, targetPlayer.name, targetPlayer.id);
     }
 
     dispose() {
-        server.commandManager.removeCommand('unmute');
-        server.commandManager.removeCommand('showreport');
-        server.commandManager.removeCommand('reject');
-        server.commandManager.removeCommand('muted');
-        server.commandManager.removeCommand('mute');
-        server.commandManager.removeCommand('hangup');
-        server.commandManager.removeCommand('call');
-        server.commandManager.removeCommand('answer');
+        this.disposed_ = true;
+
+        for (const commands of this.commands_)
+            commands.dispose();
+
+        server.commandManager.removeCommand('show');
+        server.commandManager.removeCommand('me');
+        server.commandManager.removeCommand('clear');
+        server.commandManager.removeCommand('announce');
     }
 }

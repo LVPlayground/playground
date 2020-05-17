@@ -21,8 +21,8 @@ class ObjectGroup {
                 modelId: object.modelId,
                 position: new Vector(...object.position),
                 rotation: new Vector(...object.rotation),
-                worlds: object.virtualWorld || virtualWorld,
-                interiors: object.interiorId || interiorId
+                virtualWorld: object.virtualWorld || virtualWorld,
+                interiorId: object.interiorId || interiorId
             });
         });
 

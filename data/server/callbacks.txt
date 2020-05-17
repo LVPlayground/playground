@@ -11,10 +11,14 @@ forward OnPlayerLevelChange(playerid, newlevel, temporary);
 forward OnPlayerLogin(playerid, userid, vip, gangid, undercover);
 forward OnPlayerResolvedDeath(playerid, killerid, reason);
 forward OnSetiOwnershipChange(playerid);
-forward OnPlayerGuestLogin(playerId, guestPlayerName[]);
+forward OnPlayerGuestLogin(playerId);
 forward OnSetPlayerSkinId(playerId, skinId, bool: uponNextSpawn);
 forward OnGiveWeapon(playerId, weaponId, ammo);
 forward OnResetPlayerWeapons(playerId);
+
+# Streamer callbacks
+[Deferred] forward OnPlayerEnterDynamicArea(playerid, areaid);
+[Deferred] forward OnPlayerLeaveDynamicArea(playerid, areaid);
 
 # SA-MP callbacks
 forward OnGameModeInit();
@@ -55,7 +59,7 @@ forward OnPlayerKeyStateChange(playerid, newkeys, oldkeys);
 forward OnRconLoginAttempt( ip[], password[], success );
 forward OnPlayerStreamIn(playerid, forplayerid);
 forward OnPlayerStreamOut(playerid, forplayerid);
-forward OnVehicleStreamIn(vehicleid, forplayerid);
+[Deferred] forward OnVehicleStreamIn(vehicleid, forplayerid);
 forward OnVehicleStreamOut(vehicleid, forplayerid);
 forward OnActorStreamIn(actorid, forplayerid);
 forward OnActorStreamOut(actorid, forplayerid);

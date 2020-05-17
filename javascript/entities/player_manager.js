@@ -190,6 +190,15 @@ class PlayerManager {
         player.messagelevel = event.messagelevel;
     }
 
+    // Called when the |player|'s nickname has changed into something else. Optionally, if the
+    // |resync| flag has been set, the |player| object will update its state first.
+    onPlayerNameChange(player, update = false) {
+        if (update)
+            player.updateName();
+        
+        this.notifyObservers('onPlayerNameChange', player);
+    }
+
     // Called when a player logs in to their account. This marks availability of their user data
     // and the fact that their identity has been verified.
     //

@@ -159,10 +159,12 @@ describe('CommunicationCommands', (it, beforeEach, afterEach) => {
         assert.equal(gunther.messages.length, 2);
         assert.equal(
             gunther.messages[0],
-            Message.format(Message.IRC_PRIVATE_MESSAGE, kCommandSourceUsername, 'Hey Gunther!'));
+            Message.format(Message.COMMUNICATION_PM_IRC_RECEIVER, kCommandSourceUsername,
+                           'Hey Gunther!'));
+
         assert.equal(
             gunther.messages[1],
-            Message.format(Message.IRC_PRIVATE_MESSAGE_ADMIN, kCommandSourceUsername, gunther.name,
+            Message.format(Message.COMMUNICATION_IRC_PM_ADMIN, kCommandSourceUsername, gunther.name,
                            gunther.id, 'Hey Gunther!'));
 
         assert.equal(nuwani.messagesForTesting.length, 1);

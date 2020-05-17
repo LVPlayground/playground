@@ -107,6 +107,20 @@ export class MockAccountDatabase extends AccountDatabase {
     }
 
     // Overridden.
+    async _getAccountInformationQuery(userId) {
+        return {
+            username: 'Russell',
+            level: 'Management',
+            is_vip: 1,
+            donations: 123456,
+            sessions: 24,
+            registered: '2016-05-04 12:14:15',
+            email: 'info@sa-mp.nl',
+            karma: 23456.78
+        };
+    }
+
+    // Overridden.
     async getAliases(nickname) {
         if (['FakeUser', 'AliasName', 'AmazingRicky', 'NewNick'].includes(nickname))
             return null;
@@ -149,7 +163,7 @@ export class MockAccountDatabase extends AccountDatabase {
         return [
             {
                 nickname: '[HOT]Lad1992',
-                date: new Date(Date.now() - 14 * 86400 * 1000),
+                date: new Date(Date.now() - 13 * 86400 * 1000),
             },
             {
                 nickname: 'Beamer',
@@ -201,6 +215,8 @@ export class MockAccountDatabase extends AccountDatabase {
                 return 623925203;  // 37.48.87.211
             case 'last_seen':
                 return '2019-12-24 12:44:41';
+            case 'skin_id':
+                return 121;
             default:
                 throw new Error('Field not defined for testing: ' + fieldName);
         }

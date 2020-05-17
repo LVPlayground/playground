@@ -14,13 +14,13 @@ function PlayerParser(argumentString) {
   if (result === null)
     return [argumentString, null];
 
-  let player = server.playerManager.find({ nameOrId: result[0], returnPlayer: true });
+  let player = server.playerManager.find({ nameOrId: result[1], returnPlayer: true });
   if (player === null) {
-    CommandBuilder.lastInvalidPlayerValue = result[0];
+    CommandBuilder.lastInvalidPlayerValue = result[1];
     return [argumentString, null];
   }
 
-  return [argumentString.substr(result[0].length), player];
+  return [argumentString.substr(result[1].length), player];
 }
 
 // The command builder provides a convenient interface to build commands on, together with all the

@@ -206,7 +206,7 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: 
     return 1;
 }
 
-#if Feature::EnableServerSideWeaponConfig
+#if Feature::EnableServerSideWeaponConfig == 1
 
 public OnPlayerDamage(&playerid, &Float:amount, &issuerid, &weapon, &bodypart) {
     if (issuerid == Player::InvalidId)
@@ -284,7 +284,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
     }
 
     return 1;
-    #pragma unused playerid, amount, weaponid, bodypart
+    #pragma unused amount
 }
 
 #endif  // Feature::EnableServerSideWeaponConfig

@@ -1,156 +1,115 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-// Query to insert new rows in the `activity_log_deaths` table.
-const ACTIVITY_LOG_DEATHS_INSERT = `
-    INSERT INTO
-      activity_log_deaths
-      (user_id, activity_timestamp, activity_position_x, activity_position_y, activity_position_z, activity_reason)
-    VALUES
-      (?, NOW(), ?, ?, ?, ?)`;
-
-// Query to insert a new row in the `activity_log_hits` table.
-const ACTIVITY_LOG_HITS_INSERT = `
-    INSERT INTO
-      activity_log_hits
-      (user_id, target_id, target_distance, weapon_id, activity_timestamp, activity_position_x, activity_position_y, activity_position_z)
-    VALUES
-      (?, ?, ?, ?, NOW(), ?, ?, ?)`;
-
-// Query to insert a new row in the `activity_log_kills` table.
-const ACTIVITY_LOG_KILLS_INSERT = `
-    INSERT INTO
-      activity_log_kills
-      (user_id, killer_id, activity_timestamp, activity_position_x, activity_position_y, activity_position_z, activity_reason)
-    VALUES
-      (?, ?, NOW(), ?, ?, ?, ?)`;
-
-// Query to insert a new row in the `activity_log_vehicle_deaths` table.
-const ACTIVITY_LOG_VEHICLE_DEATHS = `
-    INSERT INTO
-      activity_log_vehicle_deaths
-      (model_id, activity_timestamp, activity_position_x, activity_position_y, activity_position_z)
-    VALUES
-      (?, NOW(), ?, ?, ?)`;
-
 // Query to insert a new row in the `sessions` table.
-const ACTIVITY_LOG_SESSION_PLAYER_CONNECT_INSERT = `
+const CREATE_PLAYER_SESSION_QUERY = `
     INSERT INTO
-      sessions
-      (session_date, session_duration, user_id, nickname, ip_address, gpci_hash)
+        sessions
+        (session_date, session_duration, user_id, nickname, ip_address, gpci_hash)
     VALUES
-      (NOW(), 0, 0, ?, ?, ?)`;
+        (NOW(), 0, 0, ?, INET_ATON(?), ?)`;
 
-// Query to update the session-row of the player on successful login in the `sessions` table.
-const ACTIVITY_LOG_SESSION_PLAYER_LOGIN_UPDATE = `
+// Query to associate a session with user information of a particular account.
+const ASSOCIATE_PLAYER_SESSION_QUERY = `
     UPDATE
-      sessions
+        sessions
     SET
-      sessions.user_id = ?
+        sessions.user_id = ?
     WHERE
-      sessions.session_id = ?`;
+        sessions.session_id = ?`;
 
-// Query to update the session-row of the player on successful login in the `sessions` table.
-const ACTIVITY_LOG_SESSION_PLAYER_GUEST_LOGIN_UPDATE = `
+// Query to associate a player's latest nickname with their active session.
+const CHANGE_NAME_PLAYER_SESSION_QUERY = `
     UPDATE
-      sessions
+        sessions
     SET
-      sessions.nickname = ?
+        sessions.nickname = ?
     WHERE
-      sessions.session_id = ?`;
+        sessions.session_id = ?`;
 
-// Query to get the session_date datetime of the disconnecting player in the `sessions` table.
-const ACTIVITY_LOG_SESSION_START_DATETIME_SELECT = `
-    SELECT
-      sessions.session_date
-    FROM
-      sessions
-    WHERE
-      sessions.session_id = ?`;
+// Query to store a player's death in the database.
+const RECORD_DEATH_QUERY = `
+    INSERT INTO
+        activity_log_deaths
+        (user_id, activity_timestamp, activity_position_x, activity_position_y, activity_position_z,
+         activity_reason)
+    VALUES
+        (?, NOW(), ?, ?, ?, ?)`;
 
-// Query to update the session-row of the disconnecting player in the `sessions` table.
-const ACTIVITY_LOG_SESSION_PLAYER_DISCONNECT_UPDATE = `
+// Query to store a murder (!!!) on the server in the database.
+const RECORD_KILL_QUERY = `
+    INSERT INTO
+        activity_log_kills
+        (user_id, killer_id, activity_timestamp, activity_position_x, activity_position_y,
+         activity_position_z, activity_reason)
+    VALUES
+        (?, ?, NOW(), ?, ?, ?, ?)`;
+
+// Query to finalize an entry in the `sessions` table.
+const FINALIZE_PLAYER_SESSION_QUERY = `
     UPDATE
-      sessions
+        sessions
     SET
-      sessions.session_duration = ?
+        sessions.session_duration = TIMESTAMPDIFF(SECOND, session_date, NOW())
     WHERE
-      sessions.session_id = ?`;
+        sessions.session_id = ?`;
 
 // -------------------------------------------------------------------------------------------------
 
 // The activity recorder is responsible for actually recording the events that took place in-game,
 // in a more generalized fashion so that they can be written to the database.
-class ActivityRecorder {
-  constructor(database) {
-    this.database_ = database;
-  }
+export class ActivityRecorder {
+    static kInvalidSessionId = -1;
 
-  // Writes a death to the database, indicating that |userId| (may be NULL) has died at |position|
-  // for the given |reason|.
-  writeDeath(userId, position, reason) {
-    this.database_.query(ACTIVITY_LOG_DEATHS_INSERT, userId, position.x, position.y, position.z, reason);
-  }
+    // Creates a session in the database for the given |player|, and returns the created session Id.
+    async createPlayerSession(player) {
+        const result = server.database.query(
+            CREATE_PLAYER_SESSION_QUERY, player.name, player.ip, player.serial);
+        
+        return result?.insertId ?? ActivityRecorder.kInvalidSessionId;
+    }
 
-  // Writes the hit to the database, indicating that |userId| (may be NULL) has hit |targetId| (may
-  // be NULL) with a |weaponId| at a distance of |targetDistance|.
-  writeHit(userId, targetId, targetDistance, weaponId, position) {
-    this.database_.query(ACTIVITY_LOG_HITS_INSERT, userId, targetId, targetDistance, weaponId,
-                         position.x, position.y, position.z);
-  }
+    // Updates the |sessionId| with user information now that the |player| has identified to their
+    // account. This will ensure accurate tracking of playing time.
+    async updateSessionOnIdentification(sessionId, player) {
+        if (sessionId === ActivityRecorder.kInvalidSessionId)
+            return;  // the session could not be created when they connected
+        
+        server.database.query(ASSOCIATE_PLAYER_SESSION_QUERY, player.account.userId, sessionId);
+    }
 
-  // Writes a kill to the database, indicating that |userId| (may be NULL) has been killed by
-  // |killerId| (may be NULL) at |position| for the given |reason|.
-  writeKill(userId, killerId, position, reason) {
-    this.database_.query(ACTIVITY_LOG_KILLS_INSERT, userId, killerId, position.x, position.y, position.z, reason);
-  }
+    // Updates the |sessionId| with the |player|'s most recent nickname, after it has changed.
+    async updateSessionOnNameChange(sessionId, player) {
+        if (sessionId === ActivityRecorder.kInvalidSessionId)
+            return;  // the session could not be created when they connected
+        
+        server.database.query(CHANGE_NAME_PLAYER_SESSION_QUERY, player.name, sessionId);
+    }
 
-  // Writes the death of a vehicle of |modelId| at |position| to the database.
-  writeVehicleDeath(modelId, position) {
-    this.database_.query(ACTIVITY_LOG_VEHICLE_DEATHS, modelId, position.x, position.y, position.z);
-  }
+    // Records that the given |player| has died because of the given |reason|.
+    recordPlayerDeath(player, reason) {
+        const position = player.position;
 
-  // Writes a new session to the database of a player who just connected to log name, numeric
-  // variant of their ip and hashed serial.
-  // Returns the id of that row to be ablo to update it correctly later on.
-  getIdFromWriteInsertSessionAtConnect(playerName, numericIpAddress, hashedGpci) {
-    return this.database_.query(ACTIVITY_LOG_SESSION_PLAYER_CONNECT_INSERT, playerName, numericIpAddress, hashedGpci).then(result => {
-      if (result.insertId === null)
-        throw new Error('Unexpectedly got NULL as the inserted id.');
+        server.database.query(
+            RECORD_DEATH_QUERY, player.account.userId, position.x, position.y, position.z, reason);
+    }
 
-      return {
-          sessionId: result.insertId
-      };
-    });
-  }
+    // Records that the given |player| has been killed by |killer| because of the given |reason|.
+    recordPlayerKill(player, killer, reason) {
+        const position = player.position;
 
-  // Updates the row by rowId at login with the id of the registered user
-  writeUpdateSessionAtLogin(sessionId, userId) {
-    this.database_.query(ACTIVITY_LOG_SESSION_PLAYER_LOGIN_UPDATE, userId, sessionId);
-  }
+        server.database.query(
+            RECORD_KILL_QUERY, player.account.userId, killer.account.userId, position.x, position.y,
+            position.z, reason);
+    }
 
-  // Updates the row by rowId at login with the id of the registered user
-  writeUpdateSessionAtGuestLogin(sessionId, guestPlayerName) {
-    this.database_.query(ACTIVITY_LOG_SESSION_PLAYER_GUEST_LOGIN_UPDATE, guestPlayerName, sessionId);
-  }
+    // Finalizes a player's session in the database. This makes sure that the session's duration is
+    // updated appropriately, for statistical purposes.
+    async finalizePlayerSession(sessionId) {
+        if (sessionId === ActivityRecorder.kInvalidSessionId)
+            return;  // the session could not be created when they connected
 
-  // Updates the row by rowId when the player disconnects from the server to write the session dura-
-  // tion in seconds
-  writeUpdateSessionAtDisconnect(sessionId, currentDateTime) {
-      this.database_.query(ACTIVITY_LOG_SESSION_START_DATETIME_SELECT, sessionId).then(results => {
-          if (results.rows.length !== 1)
-              return null;
-
-          const startDateTime = Date.parse(results.rows[0].session_date);
-          if (!Number.isFinite(startDateTime))
-              return null;
-
-          const sessionDurationInSeconds = (currentDateTime / 1000) - (startDateTime / 1000);
-          this.database_.query(
-              ACTIVITY_LOG_SESSION_PLAYER_DISCONNECT_UPDATE, sessionDurationInSeconds, sessionId);
-      });
-  }
-};
-
-export default ActivityRecorder;
+        server.database.query(FINALIZE_PLAYER_SESSION_QUERY, sessionId);
+    }
+}

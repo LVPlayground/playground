@@ -23,8 +23,6 @@ class VehicleManager {
             'vehiclespawn', VehicleManager.prototype.onVehicleSpawn.bind(this));
         this.callbacks_.addEventListener(
             'vehicledeath', VehicleManager.prototype.onVehicleDeath.bind(this));
-        this.callbacks_.addEventListener(
-            'vehiclestreamin', VehicleManager.prototype.onVehicleStreamIn.bind(this));
 
         // TODO(Russell): Handle OnVehicleDamangeStatusUpdate
 

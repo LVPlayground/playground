@@ -361,11 +361,6 @@ FortCarsonUpdate() {
     return 1;
 }
 
-ShowServerMessage() {
-    new serverMessageCommands[9][7] = {"beg", "donate", "irc", "report", "rules", "forum", "reg", "swear", "weaps"};
-    lvp_show(GetPlayerId("Gunther"), serverMessageCommands[random(9)]);
-}
-
 UpdatePlayerIngameTime(playerId) {
     if (Player(playerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter() == true)
         return 0;
@@ -736,8 +731,6 @@ GameTextForAllEx(const message[], time, style, playerWorldId = -1) {
 
             GameTextForPlayer(playerId, message, time, style);
         }
-
-        lastShowmsg = Time->currentTime();
     }
     return 1;
 }

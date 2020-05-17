@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 // The text label manager is in control of all text labels created on Las Venturas Playground.
-class TextLabelManager {
+export default class TextLabelManager {
     constructor(textLabelConstructor = TextLabel) {
         this.textLabelConstructor_ = textLabelConstructor;
         this.textLabels_ = new Set();
@@ -13,10 +13,31 @@ class TextLabelManager {
     get count() { return this.textLabels_.size; }
 
     // Creates a new text label with the given options.
-    createTextLabel({ text, color = Color.WHITE, position, drawDistance = 50, virtualWorld = 0,
-                      testLineOfSight = false } = {}) {
-        const textLabel = new this.textLabelConstructor_(this, {
-            text, color, position, drawDistance, virtualWorld, testLineOfSight });
+    createTextLabel({ text, color = Color.WHITE, position, interiors = null, interiorId = -1,
+                      virtualWorlds = null, virtualWorld = -1, players = null, playerId = -1,
+                      testLineOfSight = false, drawDistance = 150 } = {}) {
+        const textLabel = new this.textLabelConstructor_(this);
+        
+        // Initializes the |textLabel| with all the configuration passed to the manager.
+        textLabel.initialize({
+            text,
+            color,
+            position,
+
+            attachedPlayerId: Player.kInvalidId,
+            attachedVehicleId: Vehicle.kInvalidId,
+
+            testLineOfSight,
+
+            drawDistance,
+            streamDistance: 200,
+            priority: 0,
+
+            virtualWorlds: virtualWorlds ?? [ virtualWorld ],
+            interiors: interiors ?? [ interiorId ],
+            players: players ?? [ playerId ],
+            areas: [ -1 ],
+        });
 
         this.textLabels_.add(textLabel);
         return textLabel;
@@ -39,5 +60,3 @@ class TextLabelManager {
             throw new Error('There are remaining text labels after disposing all of them.');
     }
 }
-
-export default TextLabelManager;

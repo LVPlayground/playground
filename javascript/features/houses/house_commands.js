@@ -769,6 +769,7 @@ class HouseCommands {
         server.commandManager.removeCommand('house');
 
         this.playground_().unregisterCommand('house');
+        this.playground_.removeReloadObserver(this);
 
         this.parkingLotCreator_.dispose();
         this.parkingLotCreator_ = null;

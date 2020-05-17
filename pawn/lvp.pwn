@@ -53,7 +53,7 @@
 
 #include "Interface/Server/a_samp.pwn"
 
-#if Feature::EnableServerSideWeaponConfig
+#if Feature::EnableServerSideWeaponConfig == 1
 
 #define WC_CUSTOM_VENDING_MACHINES false
 
@@ -84,8 +84,6 @@
 #include "Interface/JSON.pwn"
 #include "Interface/MySQL.pwn"
 #include "Interface/Time.pwn"
-#include "Interface/ZoneLayer.pwn"
-#include "Interface/ZoneManager.pwn"
 
 // Entity classes without dependencies.
 #include "Entities/Players.pwn"

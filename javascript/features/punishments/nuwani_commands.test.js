@@ -712,6 +712,7 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         assert.includes(resultsNickname[1], 'ban');
         assert.includes(resultsNickname[1], 'Testing serial information');
         assert.includes(resultsNickname[1], '2657120904');
+        assert.includes(resultsNickname[1], '1 month');
     });
 
     it('should be able to list previously issued bans', async (assert) => {

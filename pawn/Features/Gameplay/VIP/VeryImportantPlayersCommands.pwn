@@ -10,40 +10,6 @@
  */
 class VeryImportantPlayersCommands {
     /**
-     * VIPs have the ability to chat with IRC users whilst playing ingame. For this, they use the 
-     * /ircpm command, which works and looks just the same as the /pm command. To quickly reply
-     * to a /ircpm received message, /r(eply) should do fine.
-     * 
-     * @param playerId Id of the player who executed this command.
-     * @param user Username of the IRC user the message is send to.
-     * @param message Message that needs to be send.
-     * @command /ircpm [user] [message]
-     */
-    @command("ircpm")
-    public onIrcpmCommand(playerId, params[]) {
-        if (Player(playerId)->isVip() == false && Player(playerId)->isAdministrator() == false) {
-            SendClientMessage(playerId, Color::Error, "This is a VIP only command. For more information, check out \"/donate\"!");
-            return 1;
-        }
-
-        if (Command->parameterCount(params) < 2) {
-            SendClientMessage(playerId, Color::Information, "Usage: /ircpm [user] [message]");
-            return 1;
-        }
-
-        new sender[25], receiver[25], parameterOffset = 0;
-        format(sender, sizeof(sender), "%s", Player(playerId)->nicknameString());
-        Command->stringParameter(params, 0, receiver, sizeof(receiver));
-        parameterOffset = min(strlen(params), Command->startingIndexForParameter(params, 0)
-            + strlen(receiver) + 1);
-
-        PrivateMessagingManager->sendPrivateIrcMessage(playerId, sender[0], receiver[0],
-            params[parameterOffset]);
-
-        return 1;
-    }
-
-    /**
      * This command can be used by VIPs to list all their features and extras, allowing them to quickly
      * see what they have earned for donating.
      * 

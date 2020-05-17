@@ -109,6 +109,40 @@ const PLAYER_SESSIONS_QUERY = `
     LIMIT
         ?`;
 
+// Query to get information about a particular account from the database.
+const PLAYER_INFORMATION_QUERY = `
+    SELECT
+        users.username,
+        users.level,
+        users.is_vip,
+        (
+            SELECT
+                SUM(revenue_amount)
+            FROM
+                lvp_website.financial_revenue
+            WHERE
+                sender_id = users_links.user_id
+        ) AS donations,
+        (
+            SELECT
+                COUNT(1)
+            FROM
+                sessions
+            WHERE
+                user_id = users.user_id
+        ) AS sessions,
+        b.registered,
+        b.email,
+        b.karma
+    FROM
+        users
+    LEFT JOIN
+        lvp_website.users_links ON users_links.samp_id = users.user_id
+    LEFT JOIN
+        lvp_website.users b ON b.user_id = users_links.user_id
+    WHERE
+        users.user_id = ?`;
+
 // Query to get the aliases associated with a nickname, as well as a flag on whether a particular
 // entry is their main username.
 const PLAYER_ALIASES_QUERY = `
@@ -283,6 +317,35 @@ export class AccountDatabase {
         return results ? results.rows : [];
     }
 
+    // Gets various bits of information about an account from the database.
+    async getAccountInformation(userId) {
+        let information = null;
+        try {
+            information = await this._getAccountInformationQuery(userId);
+        } catch {
+            // Getting account information requires access to the website's database, which is not
+            // allowed for the staging (and/or local) environments. 
+            return null;
+        }
+
+        return {
+            username: information.username,
+            email: information.email,
+            registered: new Date(information.registered),
+            karma: Math.round(information.karma),
+            level: information.level,
+            vip: information.is_vip,
+            donations: information.donations / 100,
+            sessions: information.sessions,
+        };
+    }
+
+    // Actually executes the MySQL query for getting an account's information.
+    async _getAccountInformationQuery(userId) {
+        const results = await server.database.query(PLAYER_INFORMATION_QUERY, userId);
+        return results ? results.rows[0] : [];
+    }
+
     // Gets the list of aliases owned by the |nickname|, including their username.
     async getAliases(nickname) {
         const databaseResults = await server.database.query(PLAYER_ALIASES_QUERY, nickname);
@@ -415,6 +478,21 @@ export class AccountDatabase {
         return true;
     }
 
+    // Returns the fields which may be modified by administrators.
+    getSupportedFieldsForAdministrators() {
+        return [
+            'custom_color',
+            'death_message',
+            'money_bank',
+            'money_bounty',
+            'money_cash',
+            'money_debt',
+            'money_spawn',
+            'skin_id',
+            'validated',
+        ];
+    }
+
     // Returns which fields are supported by the !supported, !getvalue and !setvalue commands. This
     // is a hardcoded list because we only want to support a sub-set of the database column data.
     getSupportedFields() {
@@ -429,7 +507,6 @@ export class AccountDatabase {
             last_ip: { table: 'users_mutable', type: AccountDatabase.kTypeCustom },
             last_seen: { table: 'users_mutable', type: AccountDatabase.kTypeCustom },
             level: { table: 'users', type: AccountDatabase.kTypeCustom },
-            money_bank_type: { table: 'users_mutable', type: AccountDatabase.kTypeCustom },
             money_bank: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             money_bounty: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             money_cash: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
@@ -550,7 +627,6 @@ export class AccountDatabase {
         switch (fieldName) {
             case 'last_seen':
             case 'level':
-            case 'money_bank_type':
                 return value;
 
             case 'custom_color': {
@@ -631,13 +707,6 @@ export class AccountDatabase {
             case 'level':
                 if (!['Player', 'Administrator', 'Management'].includes(value))
                     throw new Error(`"${value}" is not a valid player level.`);
-                
-                processedValue = value;
-                break;
-            
-            case 'money_bank_type':
-                if (!['Normal', 'Premier'].includes(value))
-                    throw new Error(`"${value}" is not a valid bank account type.`);
                 
                 processedValue = value;
                 break;

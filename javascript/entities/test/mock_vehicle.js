@@ -209,6 +209,10 @@ class MockVehicle {
 
     // ---------------------------------------------------------------------------------------------
 
+    toggleEngine(engineRunning) {}
+
+    // ---------------------------------------------------------------------------------------------
+
     // Returns whether the vehicle is currently within streaming range of |player|.
     inRangeForPlayer(player) {
         return player.position.squaredDistanceTo(this.position_) < (300 * 300);
@@ -248,7 +252,7 @@ class MockVehicle {
 
     // Streams the vehicle in for the |player|.
     streamInForPlayer(player) {
-        global.dispatchEvent('vehiclestreamin', {
+        server.vehicleManager.onVehicleStreamIn({
             vehicleid: this.id_,
             forplayerid: player.id
         });

@@ -520,7 +520,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(countdown,      9, PlayerLevel);
     lvp_command(interest,       8, PlayerLevel);
     lvp_command(stats,          5, PlayerLevel);
-    lvp_command(showmessage,   11, PlayerLevel);
     lvp_command(jump,           4, PlayerLevel);
     lvp_command(tune,           4, PlayerLevel);
     lvp_command(My,             2, PlayerLevel);
@@ -532,11 +531,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(minigaming,    10, PlayerLevel);
 
     // Commands for administrators:
-    lvp_command(clear,          5, AdministratorLevel);
-    lvp_command(show,           4, AdministratorLevel);
     lvp_command(p,              1, AdministratorLevel);
     lvp_command(t,              1, AdministratorLevel);
-    lvp_command(announce,       8, AdministratorLevel);
     lvp_command(hasfix,         6, AdministratorLevel);
 
 #if Feature::DisableFights == 0

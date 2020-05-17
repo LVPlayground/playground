@@ -137,10 +137,10 @@ export class CommunicationCommands {
     // any channel, as the contents don't necessarily have to be public.
     onPrivageMessageCommand(context, player, message) {
         player.sendMessage(
-            Message.format(Message.IRC_PRIVATE_MESSAGE, context.nickname, message));
+            Message.format(Message.COMMUNICATION_PM_IRC_RECEIVER, context.nickname, message));
         
         const adminAnnouncement =
-            Message.format(Message.IRC_PRIVATE_MESSAGE_ADMIN, context.nickname, player.name,
+            Message.format(Message.COMMUNICATION_IRC_PM_ADMIN, context.nickname, player.name,
                            player.id, message);
 
         server.playerManager.forEach(player => {
@@ -152,6 +152,10 @@ export class CommunicationCommands {
             'chat-private-irc', context.nickname, player.name, player.id, message);
         
         context.respond(`3Success: Your message has been sent to ${player.name}`);
+        dispatchEvent('ircmessage', {
+            playerid: player.id,
+            username: context.nickname,
+        });
     }
 
     // !say [message]

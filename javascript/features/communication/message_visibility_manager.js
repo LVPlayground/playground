@@ -42,6 +42,14 @@ export class MessageVisibilityManager {
     // Returns an array with the Player objects that |player| is ignoring.
     getIgnoredPlayers(player) { return Array.from(this.ignored_.get(player) || []); }
 
+    // Returns whether the given |subject| has been ignored by the |player|.
+    isPlayerOnIgnoreList(player, subject) {
+        if (!this.ignored_.has(player))
+            return false;
+        
+        return this.ignored_.get(player).has(subject);
+    }
+
     // Adds the |subject| to the list of players that |player| is ignoring.
     addPlayerToIgnoreList(player, subject) {
         if (!this.ignored_.has(player))

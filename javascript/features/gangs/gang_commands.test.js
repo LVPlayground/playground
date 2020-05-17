@@ -587,7 +587,7 @@ describe('GangCommands', (it, beforeEach) => {
 
         assert.equal(player.messages.length, 1);
         assert.equal(player.lastDialog,
-            Message.format(Message.GANG_SETTINGS_NEW_COLOR, '0x' + gang.color.toHexRGB()));
+            Message.format(Message.GANG_SETTINGS_NEW_COLOR, '#' + gang.color.toHexRGB()));
     });
 
     it('should enable managers to purchase gang chat encryption time', async(assert) => {

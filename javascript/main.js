@@ -64,7 +64,8 @@ testRunner.run('.*\.test\.js').then(time => {
         'houses',
 
         // General smaller, self-contained features
-        'death_match', 'friends', 'killtime', 'nuwani_commands', 'playground', 'punishments', 'radio', 'report', 'vehicles',
+        'death_match', 'friends', 'killtime', 'nuwani_commands', 'playground', 'punishments', 'radio', 'report',
+        'vehicles', 'red_barrels',
 
         // Player-related features
         'account', 'player_favours', 'player_settings',

@@ -35,6 +35,9 @@ export default class ReactionTests extends Feature {
 
         this.communication_().addDelegate(this);
 
+        // Need to be able to actually award money to players.
+        this.finance_ = this.defineDependency('finance');
+
         // This feature depends on Nuwani to be able to echo messages.
         this.nuwani_ = this.defineDependency('nuwani');
 
@@ -113,9 +116,16 @@ export default class ReactionTests extends Feature {
         if (this.activeTestToken_ !== activeTestToken)
             return;  // the token has expired, another test was scheduled
 
+        const timeout = this.settings_().getValue('playground/reaction_test_expire_sec');
+
         const strategy = this.createReactionTestStrategy();
-        if (!strategy)
+
+        // If there are no tests that could be scheduled right now, try again after the timeout, as
+        // new players may have joined the server since.
+        if (!strategy) {
+            wait(timeout * 1000).then(() => this.scheduleNextTest());
             return;
+        }
 
         // Actually start the test. This will make all the necessary announcements too.
         strategy.start(
@@ -127,9 +137,8 @@ export default class ReactionTests extends Feature {
         this.activeTestWinnerName_ = null;
         this.activeTestWinnerTime_ = null;
 
-        const timeout = this.settings_().getValue('playground/reaction_test_expire_sec');
         wait(timeout * 1000).then(() =>
-            this.reactionTestTimedOut(this.activeTestToken_));
+            this.reactionTestTimedOut(activeTestToken));
     }
 
     // Called when the |player| has sent the given |message|. If a test is active, and they've got
@@ -168,6 +177,9 @@ export default class ReactionTests extends Feature {
             // Increment the number of wins in the player's statistics.
             player.account.reactionTests++;
 
+            // Give them their prize money.
+            this.finance_().givePlayerCash(player, prize);
+
             // Finally, let the |player| know about the prize they've won.
             player.sendMessage(Message.REACTION_TEST_WON, prize);
 
@@ -176,6 +188,9 @@ export default class ReactionTests extends Feature {
 
             // Schedule the next test now that someone has given an answer.
             this.scheduleNextTest();
+
+            // The answer given by the first winning player should be shown in main chat.
+            return false;
         }
 
         return true;

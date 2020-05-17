@@ -285,6 +285,7 @@ class PropertyManager {
                     "You have earned {40CCFF}$%s{FFFFFF} with your properties, which you've received in cash as your account is full.",
                     formatPrice(payoutAmount[playerId]));
 
+                GivePlayerMoneyJS(playerId, payoutAmount[playerId]);
                 SendClientMessage(playerId, Color::Information, message);
             }
         }

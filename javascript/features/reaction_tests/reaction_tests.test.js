@@ -95,6 +95,8 @@ describe('ReactionTests', (it, beforeEach) => {
     });
 
     it('should enable players to win reaction tests', async (assert) => {
+        const finance = server.featureManager.loadFeature('finance');
+
         const delay = settings.getValue('playground/reaction_test_delay_sec');
         const jitter = settings.getValue('playground/reaction_test_jitter_sec');
         const prize = settings.getValue('playground/reaction_test_prize');
@@ -106,28 +108,32 @@ describe('ReactionTests', (it, beforeEach) => {
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.account.reactionTests, 0);
+        assert.equal(finance.getPlayerCash(gunther), 0);
         
         // (1) The first player to give the right answer will be awarded the money.
         await server.clock.advance(2560);
 
         await gunther.issueMessage(driver.activeTest_.answer);
 
-        assert.equal(gunther.messages.length, 3);
+        assert.equal(gunther.messages.length, 4);
         assert.includes(gunther.messages[1], 'in 2.56 seconds');
         assert.equal(gunther.messages[2], Message.format(Message.REACTION_TEST_WON, prize));
+        assert.includes(gunther.messages[3], driver.activeTest_.answer);
+
         assert.equal(gunther.account.reactionTests, 1);
+        assert.equal(finance.getPlayerCash(gunther), prize);
 
         // (2) Subsequent players will receive a generic "too late!" message.
-        assert.equal(lucy.messages.length, 2);
+        assert.equal(lucy.messages.length, 3);
 
         await server.clock.advance(1230);
 
         await lucy.issueMessage(driver.activeTest_.answer);
 
         assert.equal(lucy.account.reactionTests, 0);
-        assert.equal(lucy.messages.length, 3);
+        assert.equal(lucy.messages.length, 4);
         assert.equal(
-            lucy.messages[2], Message.format(Message.REACTION_TEST_TOO_LATE, gunther.name, 1.23));
+            lucy.messages[3], Message.format(Message.REACTION_TEST_TOO_LATE, gunther.name, 1.23));
     });
 
     it('should automatically schedule a new test after someone won', async (assert) => {
@@ -142,12 +148,12 @@ describe('ReactionTests', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 1);
 
         await gunther.issueMessage(driver.activeTest_.answer);
-        assert.equal(gunther.messages.length, 3);
+        assert.equal(gunther.messages.length, 4);
 
         // Wait until we're certain that the next reaction test has started.
         await server.clock.advance((delay + jitter) * 1000);
 
-        assert.equal(gunther.messages.length, 4);
+        assert.equal(gunther.messages.length, 5);
     });
 
     it('should automatically schedule a new test after one times out', async (assert) => {

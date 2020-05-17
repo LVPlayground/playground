@@ -1,86 +1,135 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
 // Represents a 3D text-label that exists in the world. These are great at conveying smaller amounts
-// of information to players who are in range of them.
-class TextLabel {
-    constructor(manager, options) {
-        this.manager_ = manager;
+// of information to players who are in range of them. Powered by the streamer plugin.
+export class TextLabel {
+    // Id to represent an invalid text label. Maps to INVALID_STREAMER_ID, which is (0).
+    static kInvalidId = 0;
 
-        this.text_ = options.text;
-        this.color_ = options.color;
-        this.position_ = options.position;
-        this.drawDistance_ = options.drawDistance;
-        this.virtualWorld_ = options.virtualWorld;
-        this.testLineOfSight_ = options.testLineOfSight;
+    #id_ = null;
+    #manager_ = null;
 
-        this.attached_ = false;
+    #text_ = null;
+    #color_ = null;
+    #position_ = null;
 
-        this.id_ = pawnInvoke('Create3DTextLabel', 'siffffii', options.text,
-                              options.color.toNumberRGBA(), options.position.x, options.position.y,
-                              options.position.z, options.drawDistance, options.virtualWorld,
-                              options.testLineOfSight ? 1 : 0);
+    #attachedPlayer_ = null;
+    #attachedVehicle_ = null;
+
+    #testLineOfSight_ = null;
+    #virtualWorlds_ = null;
+    #interiors_ = null;
+    #players_ = null;
+
+    constructor(manager) {
+        this.#manager_ = manager;
     }
 
-    // Returns whether the text label still exists on the server.
-    isConnected() { return this.id_ !== null; }
+    initialize(options) {
+        this.#text_ = options.text;
+        this.#color_ = options.color;
+        this.#position_ = options.position;
 
-    // Returns whether the text label is attached to another entity.
-    isAttached() { return this.attached_; }
+        if (options.attachedPlayerId)
+            this.#attachedPlayer_ = server.playerManager.getById(options.attachToPlayerId);
+        
+        if (options.attachedVehicleId)
+            this.#attachedVehicle_ = server.vehicleManager.getById(options.attachedVehicleId);
+        
+        this.#testLineOfSight_ = options.testLineOfSight;
 
-    // Gets or sets the text that's being displayed using this text label.
-    get text() { return this.text_; }
+        this.#virtualWorlds_ = options.virtualWorlds;
+        this.#interiors_ = options.interiors;
+        this.#players_ = options.players;
+
+        this.#id_ = this.createInternal(options);
+        if (this.#id_ === TextLabel.kInvalidId)
+            throw new Error('Unable to create the object with text: ' + options.text);
+    }
+
+    // Creates the actual text label on the server. May be overridden for testing purposes.
+    createInternal(options) {
+        return pawnInvoke('CreateDynamic3DTextLabelEx', 'siffffiiifaaaaiiiii',
+            /* text= */ options.text,
+            /* color= */ options.color.toNumberRGBA(),
+            /* x= */ options.position.x,
+            /* y= */ options.position.y,
+            /* z= */ options.position.z,
+            /* drawdistance= */ options.drawDistance,
+            /* attachedplayer= */ options.attachedPlayerId,
+            /* attachedvehicle= */ options.attachedVehicleId,
+            /* testlos= */ options.testLineOfSight ? 1 : 0,
+            /* streamdistance= */ options.streamDistance,
+            /* worlds= */ options.virtualWorlds,
+            /* interiors= */ options.interiors,
+            /* players= */ options.players,
+            /* areas= */ options.areas,
+            /* priority= */ options.priority,
+            /* maxworlds= */ options.virtualWorlds.length,
+            /* maxinteriors= */ options.interiors.length,
+            /* maxplayers= */ options.players.length,
+            /* maxareas= */ options.areas.length);
+    }
+
+    // Destroys the actual text label on the server. May be overridden for testing purposes.
+    destroyInternal() { pawnInvoke('DestroyDynamic3DTextLabel', 'i', this.#id_); }
+
+    // Changes the text to |text| on the actual server. May be overridden for testing purposes.
+    updateInternal(color, text) {
+        pawnInvoke('UpdateDynamic3DTextLabelText', 'iis', this.#id_, color, text);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    get id() { return this.#id_; }
+
+    isConnected() { return this.#id_ !== TextLabel.kInvalidId; }
+
+    get text() { return this.#text_; }
     set text(value) {
-        this.text_ = text;
-        pawnInvoke(
-            'Update3DTextLabelText', 'iis', this.id_, this.color_.toNumberRGBA(), this.text_);
+        this.updateInternal(this.#color_, value);
+        this.#text_ = value;
     }
 
-    // Gets or sets the color in which the text on the text label is being drawn.
-    get color() { return this.color_; }
+    get color() { return this.#color_; }
     set color(value) {
-        this.color_ = color;
-        pawnInvoke(
-            'Update3DTextLabelText', 'iis', this.id_, this.color_.toNumberRGBA(), this.text_);
+        this.updateInternal(value, this.#text_);
+        this.#color_ = value;
     }
 
-    // Gets the position of the text label. This will be irrelevant if the text label has been
-    // attached to another entity in the world, which isAttached() will tell you.
-    get position() { return this.position_; }
+    get position() { return this.#position_; }
 
-    // Gets the draw distance of the label, i.e. the distance from which players will see it.
-    get drawDistance() { return this.drawDistance_; }
+    get attachedPlayer() {
+        if (this.#attachedPlayer_ && !this.#attachedPlayer_.isConnected())
+            this.#attachedPlayer_ = null;
 
-    // Gets the virtual world in which the text label is being shown.
-    get virtualWorld() { return this.virtualWorld_; }
-
-    // Returns whether the text draw tests for having a clear line-of-sight from the player.
-    testsLineOfSight() { return this.testLineOfSight_; }
-
-    // Attaches the text label to the |player| at |offset|.
-    attachToPlayer(player, offset) {
-        this.attached_ = true;
-
-        pawnInvoke('Attach3DTextLabelToPlayer', 'iifff', this.id_, player.id, offset.x,
-                   offset.y, offset.z);
+        return this.#attachedPlayer_;
     }
 
-    // Attaches the text label to the |vehicle| at |offset|.
-    attachToVehicle(vehicle, offset) {
-        this.attached_ = true;
+    get attachedVehicle() {
+        if (this.#attachedVehicle_ && !this.#attachedVehicle_.isConnected())
+            this.#attachedVehicle_ = null;
 
-        pawnInvoke('Attach3DTextLabelToVehicle', 'iifff', this.id_, vehicle.id, offset.x,
-                   offset.y, offset.z);
+        return this.#attachedVehicle_;
     }
+
+    get testsLineOfSight() { return this.#testLineOfSight_; }
+
+    get virtualWorlds() { return this.#virtualWorlds_; }
+    get interiors() { return this.#interiors_; }
+    get players() { return this.#players_; }
+
+    // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        pawnInvoke('Delete3DTextLabel', 'i', this.id_);
+        this.destroyInternal();
 
-        this.manager_.didDisposeTextLabel(this);
-        this.manager_ = null;
+        this.#id_ = TextLabel.kInvalidId;
 
-        this.id_ = null;
+        this.#manager_.didDisposeTextLabel(this);
+        this.#manager_ = null;
     }
 }
 

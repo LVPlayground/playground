@@ -3,10 +3,12 @@
 // be found in the LICENSE file.
 
 import ActorManager from 'entities/actor_manager.js';
+import { AreaManager } from 'entities/area_manager.js';
 import { CheckpointManager } from 'components/checkpoints/checkpoint_manager.js';
 import Clock from 'base/clock.js';
 import CommandManager from 'components/command_manager/command_manager.js';
 import Database from 'components/database/database.js';
+import { DeferredEventManager } from 'components/events/deferred_event_manager.js';
 import { DialogManager } from 'components/dialogs/dialog_manager.js';
 import FeatureManager from 'components/feature_manager/feature_manager.js';
 import NpcManager from 'entities/npc_manager.js';
@@ -26,6 +28,9 @@ class Server {
         this.clock_ = new Clock();
 
         this.commandManager_ = new CommandManager();
+        this.deferredEventManager_ = new DeferredEventManager();
+        this.deferredEventManager_.deferredEventDispatcher();
+
         this.featureManager_ = new FeatureManager();
 
         this.checkpointManager_ = new CheckpointManager(CheckpointManager.kNormalCheckpoints);
@@ -34,6 +39,7 @@ class Server {
         this.textDrawManager_ = new TextDrawManager();
 
         this.actorManager_ = new ActorManager();
+        this.areaManager_ = new AreaManager();
         this.objectManager_ = new ObjectManager();
         this.pickupManager_ = new PickupManager();
         this.playerManager_ = new PlayerManager();
@@ -81,6 +87,9 @@ class Server {
     // Gets the global actor manager, responsible for all actors in the game.
     get actorManager() { return this.actorManager_; }
 
+    // Gets the global area manager, responsible for all areas in the game.
+    get areaManager() { return this.areaManager_; }
+
     // Gets the global NPC manager, responsible for creating NPCs on the server.
     get npcManager() { return this.npcManager_; }
 
@@ -112,6 +121,7 @@ class Server {
     // Disposes and uninitializes the server object and all objects owned by it.
     async dispose() {
         this.featureManager_.dispose();
+        this.deferredEventManager_.dispose();
         this.commandManager_.dispose();
 
         this.checkpointManager_.dispose();
@@ -127,6 +137,7 @@ class Server {
         this.playerManager_.dispose();
         this.pickupManager_.dispose();
         this.objectManager_.dispose();
+        this.areaManager_.dispose();
         this.actorManager_.dispose();
 
         this.clock_.dispose();

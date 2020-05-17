@@ -7,6 +7,7 @@ import { CheckpointManager } from 'components/checkpoints/checkpoint_manager.js'
 import Clock from 'base/clock.js';
 import CommandManager from 'components/command_manager/command_manager.js';
 import Database from 'components/database/database.js';
+import { DeferredEventManager } from 'components/events/deferred_event_manager.js';
 import { DialogManager } from 'components/dialogs/dialog_manager.js';
 import FeatureManager from 'components/feature_manager/feature_manager.js';
 import NpcManager from 'entities/npc_manager.js';
@@ -26,6 +27,9 @@ class Server {
         this.clock_ = new Clock();
 
         this.commandManager_ = new CommandManager();
+        this.deferredEventManager_ = new DeferredEventManager();
+        this.deferredEventManager_.deferredEventDispatcher();
+
         this.featureManager_ = new FeatureManager();
 
         this.checkpointManager_ = new CheckpointManager(CheckpointManager.kNormalCheckpoints);
@@ -112,6 +116,7 @@ class Server {
     // Disposes and uninitializes the server object and all objects owned by it.
     async dispose() {
         this.featureManager_.dispose();
+        this.deferredEventManager_.dispose();
         this.commandManager_.dispose();
 
         this.checkpointManager_.dispose();

@@ -252,7 +252,7 @@ class MockVehicle {
 
     // Streams the vehicle in for the |player|.
     streamInForPlayer(player) {
-        global.dispatchEvent('vehiclestreamin', {
+        server.vehicleManager.onVehicleStreamIn({
             vehicleid: this.id_,
             forplayerid: player.id
         });

@@ -650,7 +650,7 @@ class PlaygroundCommands {
 
                 return alert(player, {
                     title: 'Substitutions',
-                    message: `The word "${before}" will now be substituted to "${after}".`
+                    message: `The word "${before}" will no longer be substituted.`
                 });
             });
         }

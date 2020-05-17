@@ -54,7 +54,7 @@ class ScopedEntities {
 
     // Creates a circular area consisting of |radius| units around the |center|. The z-coordinate of
     // both the |center| and the player's position will be ignored.
-    createCircularArea(center, radius, options) {
+    createCircularArea(center, radius, options = {}) {
         if (!this.areas_)
             throw new Error('Unable to create the area, this object has been disposed of.');
 
@@ -72,7 +72,7 @@ class ScopedEntities {
 
     // Creates a cubicle area consisting of the |rectangle|, from the |minimumZ| until the
     // |maximumZ| coordinates.
-    createCubicalArea(rectangle, minimumZ, maximumZ, options) {
+    createCubicalArea(rectangle, minimumZ, maximumZ, options = {}) {
         if (!this.areas_)
             throw new Error('Unable to create the area, this object has been disposed of.');
 
@@ -91,7 +91,7 @@ class ScopedEntities {
 
     // Creates a vertically cylindrical area consisting of |radius| units around the |center|, from
     // the |minimumZ| until the |maximumZ| coordinates.
-    createCylindricalArea(center, radius, minimumZ, maximumZ, options) {
+    createCylindricalArea(center, radius, minimumZ, maximumZ, options = {}) {
         if (!this.areas_)
             throw new Error('Unable to create the area, this object has been disposed of.');
 
@@ -110,7 +110,7 @@ class ScopedEntities {
 
     // Creates a polygonal area for each of the |points|, from the |minimumZ| until the |maximumZ|.
     // Each entry in |points| must be an array with two values, [x, y].
-    createPolygonalArea(points, minimumZ, maximumZ, options) {
+    createPolygonalArea(points, minimumZ, maximumZ, options = {}) {
         if (!this.areas_)
             throw new Error('Unable to create the area, this object has been disposed of.');
 
@@ -129,7 +129,7 @@ class ScopedEntities {
 
     // Creates a rectangular area consisting of the |rectangle|. The z-coordinate of the player's
     // position will be ignored.
-    createRectangularArea(rectangle, options) {
+    createRectangularArea(rectangle, options = {}) {
         if (!this.areas_)
             throw new Error('Unable to create the area, this object has been disposed of.');
 
@@ -146,7 +146,7 @@ class ScopedEntities {
     }
 
     // Creates a spherical area consisting of |radius| units around the |center| for {x, y, z}.
-    createSphericalArea(center, radius, options) {
+    createSphericalArea(center, radius, options = {}) {
         if (!this.areas_)
             throw new Error('Unable to create the area, this object has been disposed of.');
 

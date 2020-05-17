@@ -60,4 +60,91 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(gunther.armour, 100);
     });
 
+    it('should not do leave command if player is not in death match', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        gunther.identify({ userId: 42 });
+        gunther.shoot({ target: russell });
+        
+        assert.equal(manager.playersInDeathMatch_.size, 0);   
+        manager.leave(gunther);
+
+        assert.equal(gunther.messages.length, 0);
+        assert.equal(manager.playersInDeathMatch_.size, 0);        
+    });
+
+    it('should kill player upon leave if player recently shot.', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        gunther.identify({ userId: 42 });
+        manager.playersInDeathMatch_.set(gunther.id, 1);
+
+        gunther.shoot({ target: russell });
+
+        manager.leave(gunther);
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(manager.playersInDeathMatch_.size, 0);        
+    });
+
+    it('should let player leave death match', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        
+        gunther.identify({ userId: 42 });
+        manager.playersInDeathMatch_.set(gunther.id, 1);
+
+        manager.leave(gunther);
+
+        assert.equal(gunther.messages.length, 0);
+        assert.equal(manager.playersInDeathMatch_.size, 0);        
+    });
+
+    it('should let player leave death match', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        
+        gunther.identify({ userId: 42 });
+        manager.playersInDeathMatch_.set(gunther.id, 1);
+
+        manager.leave(gunther);
+
+        assert.equal(gunther.messages.length, 0);
+        assert.equal(manager.playersInDeathMatch_.size, 0);        
+    });
+
+    it('should not do death match spawn if player not in death match', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        
+        gunther.identify({ userId: 42 });
+        gunther.health = 99;
+        
+        manager.onPlayerSpawn({ playerid : gunther.id });
+
+        assert.equal(gunther.health, 99);       
+    });
+
+    it('should do death match spawn if player in death match', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        
+        gunther.identify({ userId: 42 });
+        gunther.health = 99;
+
+        manager.playersInDeathMatch_.set(gunther.id, 1);
+        
+        manager.onPlayerSpawn({ playerid : gunther.id });
+
+        assert.equal(gunther.health, 100);       
+    });
+
+    it('should remove player if he disconnects', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        
+        gunther.identify({ userId: 42 });
+        manager.playersInDeathMatch_.set(gunther.id,  1);
+        
+        manager.onPlayerDisconnect({ playerid : gunther.id });
+
+        assert.equal(manager.playersInDeathMatch_.has(gunther.id), false);     
+    });
 });

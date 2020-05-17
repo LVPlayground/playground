@@ -10,14 +10,14 @@ export class DeathMatchCommands {
     constructor(manager) {
         server.commandManager.buildCommand('deathmatch')
             .parameters([{ name: 'zone', type: CommandBuilder.NUMBER_PARAMETER }])
-        .build(DeathMatchCommands.prototype.onDmCommand.bind(this))
-        .buildCommand('leave')
-        .build(DeathMatchCommands.prototype.onLeaveCommand.bind(this));
+        .sub('leave')
+            .build(DeathMatchCommands.prototype.onLeaveCommand.bind(this))        
+        .build(DeathMatchCommands.prototype.onDmCommand.bind(this));
 
         this.manager_ = manager;
     }
 
-    // The DM command is being used.
+    // The death match command is being used.
     onDmCommand(player, zone) { 
         if(zone === null || zone === undefined || typeof zone !== 'number') {
             player.sendMessage(Message.DEATH_MATCH_INVALID_ZONE, zone);
@@ -30,7 +30,7 @@ export class DeathMatchCommands {
         this.manager_.leave(player);
     }
 
-    // Cleans up the state created by this class, i.e. removes the commands.
+    // Cleans up the state created by this class, i.e. removes the command.
     dispose() {
         server.commandManager.removeCommand('deathmatch');
     }

@@ -38,13 +38,15 @@ export class DeathMatchManger {
             return;
         }
 
+        this.playersInDeathMatch_.set(player.id, zone);
         this.spawnPlayer(player, zone);
 
-        this.playersInDeathMatch_.set(player.id, zone);
+        player.sendMessage(Message.DEATH_MATCH_INSTRUCTION_LEAVE, teleportStatus.reason);
         this.announce_().announceToPlayers(Message.DEATH_MATCH_TELEPORTED, player.name, zone);
     }
 
-    // The player decided to leave.
+    // The player decided to leave so we will make him re-spawn. The player will be killed so that 
+    // the person who last hit him will get the kill to avoid abuse.
     leave(player) {
         if(!this.playersInDeathMatch_.has(player.id)) {
             return;
@@ -53,7 +55,7 @@ export class DeathMatchManger {
         this.playersInDeathMatch_.delete(player.id);
         player.activity = Player.PLAYER_ACTIVITY_NONE;
         
-        // To avoid abuse we'll kill the player if he had recently fought and let him spawn that 
+        // To avoid abuse we'll kill the player if he had recently fought and let him re-spawn that 
         // way.
         const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: true });
         if (!teleportStatus.allowed) {
@@ -81,10 +83,9 @@ export class DeathMatchManger {
         player.virtualWorld = location.world;
         player.interiorId = location.interiorId;
 
-        // Do it in a tiny delay to make sure player is to avoid a 'out of bounds' message
+        // Do it in a tiny delay to avoid the player receiving an out of bounds message.
         wait(0).then(() => player.setPlayerBounds(location.boundaries[0], location.boundaries[1], 
-            location.boundaries[2], location.boundaries[3]));
-        
+            location.boundaries[2], location.boundaries[3]));        
 
         player.resetWeapons();
         for(const weaponInfo of location.weapons) {
@@ -93,7 +94,7 @@ export class DeathMatchManger {
     }
 
     // This returns a semi-random spawn index. It keeps the first quarter of locations used in 
-    // memory and will try at max 10 times to generate a not recently randomized spawn index.
+    // memory and will try at max 10 times to get a not recently used spawn index.
     findRandomSpawnPosition(location, attempt = 0) {
         var spawnPositions = [...location.spawnPositions];
         var spawnIndex = Math.floor(Math.random() * spawnPositions.length);
@@ -129,6 +130,7 @@ export class DeathMatchManger {
 
     // Called when a player disconnects from the server. Clears out all state for the player.
     onPlayerDisconnect(event) {
+        //console.log('wtf2');
         this.playersInDeathMatch_.delete(event.playerid);
     }
 

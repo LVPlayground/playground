@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import virtualWorld from 'entities/virtual_world.js';
-
 // Private symbol ensuring that the DeathMatchLocation constructor won't be used.
 const PrivateSymbol = Symbol('Please use the static methods.');
 
@@ -71,7 +69,7 @@ export class DeathMatchLocation {
         this.name_ = locationInfo.name;
 
         this.interiorId_ = locationInfo.interior_id;
-        this.world_ = virtualWorld.acquire('DeathMatch: ' + locationInfo.name);
+        this.world_ = VirtualWorld.acquire('DeathMatch: ' + locationInfo.name);
 
         this.weather_ = locationInfo.weather ?? 10;
         this.time_ = locationInfo.time ?? 12;

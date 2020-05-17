@@ -38,6 +38,7 @@
   "COMMAND_UNSUPPORTED": "@error Sorry, this functionality has not yet been implemented.",
   "COMMAND_USAGE": "@usage %s",
 
+  "COMMUNICATION_ADMIN_MESSAGE": "{FFFF00}* %s %s (Id:%d): %s",
   "COMMUNICATION_ADMIN_SENT": "@success Your message has been sent to the administrators.",
   "COMMUNICATION_CALL_CONNECTED": "{DC143C}[Phone] Your conversation with %s has been established. Use {FFFFFF}/hangup{DC143C} to hang up.",
   "COMMUNICATION_CALL_DISCONNECTED": "{DC143C}[Phone] Your conversation with %s has ended because %s hung up the phone.",
@@ -70,10 +71,10 @@
 
   "DEATH_MATCH_AVAILABLE_ZONES" : "Available DM zones are: /dm %s.",
   "DEATH_MATCH_INVALID_ZONE" : "Zone %d is not a valid zone.",
+  "DEATH_MATCH_INSTRUCTION_LEAVE": "Use \"/deathmatch leave\" to leave the deathmatch.",
   "DEATH_MATCH_LEAVE_KILLED": "You have been killed to avoid abuse because you %s.",
   "DEATH_MATCH_TELEPORT_BLOCKED": "@error Sorry, you can't enter a DM zone now because you %s.",
   "DEATH_MATCH_TELEPORTED": "%s has joined /deathmatch %d",
-  "COMMUNICATION_ADMIN_MESSAGE": "{FFFF00}* %s %s (Id:%d): %s",
 
   "DEBUG_FRAME_COUNTER": "{33AA33}The server averaged %d FPS in the last %d seconds.",
   "DEBUG_TRACE_INVALID_TIME": "@error A trace must last between 0 and 300 seconds.",

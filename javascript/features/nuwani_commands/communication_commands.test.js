@@ -116,14 +116,10 @@ describe('CommunicationCommands', (it, beforeEach, afterEach) => {
             command: '!help',
         });
         
-        
-        assert.equal(result.length, 3);
+        assert.equal(result.length, 2);
         assert.includes(result[0], '!getid, !getname, !msg, !players, !pm, !vip, !discord');
-        assert.includes(result[1], 'To register an account, visit: www.sa-mp.nl');
-        assert.includes(result[2], 'Nicknames, passwords, and aliases can be managed in-game with the /account command.');
-        
-    
-    }); 
+        assert.includes(result[1], 'To register an account, visit: www.sa-mp.nl and use the in-game "/account" command to change your name, password or settings.');');
+     }); 
 
     it('should be able to send messages to in-game players', async (assert) => {
         const wrongChannelResult = await issueCommand(bot, commandManager, {

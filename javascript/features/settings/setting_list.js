@@ -64,6 +64,7 @@ export default [
     new Setting('gangs', 'zones_area_min_edge_length', Setting.TYPE_NUMBER, 50, 'Minimum length of each of the areas edges (width/height).'),
     new Setting('gangs', 'zones_area_min_representation', Setting.TYPE_NUMBER, 50, 'Representation percentage required for gang areas.'),
     new Setting('gangs', 'zones_area_padding_pct', Setting.TYPE_NUMBER, 20, 'Percentage of padding applied over the strictly enclosing area.'),
+    new Setting('gangs', 'zones_cluter_iterations', Setting.TYPE_NUMBER, 250, 'Number of iterations to apply when running k-means clustering.'),
     new Setting('gangs', 'zones_cluster_limit', Setting.TYPE_NUMBER, 8, 'Maximum number of clusters when running k-means clustering.'),
 
     /** Playground related settings */

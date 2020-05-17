@@ -33,20 +33,21 @@ const kClusters = [
 
 // Specialization that calls `getClusters` with initial means based on likely locations in the San
 // Andreas world, to avoid having to rely on randomness in the algorithms. 
-export function getClustersForSanAndreas(points, { maximumClusters = null } = {}) {
+export function getClustersForSanAndreas(points, { maximumClusters = null,
+                                                   iterations = kIterations } = {}) {
     if (!maximumClusters)
         maximumClusters = Math.ceil(Math.sqrt(points.length / 2));
     
     maximumClusters = Math.min(maximumClusters, kClusters.length);
 
-    const clusters = getClustersWithMeans(points, kClusters.slice(0, maximumClusters));
+    const clusters = getClustersWithMeans(points, iterations, kClusters.slice(0, maximumClusters));
     return clusters.filter(cluster => !!cluster.points.length);
 }
 
-function getClustersWithMeans(points, means) {
+function getClustersWithMeans(points, iterations, means) {
     let clusters = createInitialClusters(means);
 
-    for (let iteration = 0; iteration < kIterations; ++iteration) {
+    for (let iteration = 0; iteration < iterations; ++iteration) {
         clusters.forEach(cluster => cluster.points = []);
 
         populateClusters(points, clusters);

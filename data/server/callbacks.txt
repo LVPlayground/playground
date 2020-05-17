@@ -16,6 +16,10 @@ forward OnSetPlayerSkinId(playerId, skinId, bool: uponNextSpawn);
 forward OnGiveWeapon(playerId, weaponId, ammo);
 forward OnResetPlayerWeapons(playerId);
 
+# Streamer callbacks
+[Deferred] forward OnPlayerEnterDynamicArea(playerid, areaid);
+[Deferred] forward OnPlayerLeaveDynamicArea(playerid, areaid);
+
 # SA-MP callbacks
 forward OnGameModeInit();
 forward OnGameModeExit();

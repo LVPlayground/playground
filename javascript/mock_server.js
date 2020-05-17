@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import ActorManager from 'entities/actor_manager.js';
+import { AreaManager } from 'entities/area_manager.js';
 import { CheckpointManager } from 'components/checkpoints/checkpoint_manager.js';
 import CommandManager from 'components/command_manager/command_manager.js';
 import { DialogManager } from 'components/dialogs/dialog_manager.js';
@@ -16,6 +17,7 @@ import VehicleManager from 'entities/vehicle_manager.js';
 import VirtualWorldManager from 'entities/virtual_world_manager.js';
 
 import MockActor from 'entities/test/mock_actor.js';
+import { MockArea } from 'entities/test/mock_area.js';
 import MockClock from 'base/test/mock_clock.js';
 import { MockGameObject } from 'entities/test/mock_game_object.js';
 import MockNpc from 'entities/test/mock_npc.js';
@@ -62,6 +64,7 @@ class MockServer {
         this.textDrawManager_ = new TextDrawManager();
 
         this.actorManager_ = new ActorManager(MockActor /* actorConstructor */);
+        this.areaManager_ = new AreaManager(MockArea /* areaConstructor */);
         this.objectManager_ = new ObjectManager(MockGameObject /* objectConstructor */);
         this.pickupManager_ = new MockPickupManager(MockPickup /* pickupConstructor */);
         this.playerManager_ = new PlayerManager(MockPlayer /* playerConstructor */);
@@ -142,6 +145,9 @@ class MockServer {
     // Gets the real actor manager that maintains mocked actors.
     get actorManager() { return this.actorManager_; }
 
+    // Gets the global area manager, responsible for all areas in the game.
+    get areaManager() { return this.areaManager_; }
+
     // Gets the global NPC manager, responsible for creating NPCs on the server.
     get npcManager() { return this.npcManager_; }
 
@@ -189,6 +195,7 @@ class MockServer {
         this.playerManager_.dispose();
         this.pickupManager_.dispose();
         this.objectManager_.dispose();
+        this.areaManager_.dispose();
         this.actorManager_.dispose();
 
         this.pawnInvoke_.dispose();

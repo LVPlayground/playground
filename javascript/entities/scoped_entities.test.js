@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Area } from 'entities/area.js';
 import ScopedEntities from 'entities/scoped_entities.js';
 
 describe('ScopedEntities', it => {
@@ -260,5 +261,76 @@ describe('ScopedEntities', it => {
 
         assert.throws(() =>
             entities.createVehicle({ modelId: 411, position: new Vector(12, 13, 14) }));
+    });
+
+    it('supports areas to be created on the server', async (assert) => {
+        const center = new Vector(10, 20, 30);
+        const radius = 40;
+        const rect = new Rect(50, 60, 70, 80);
+        const points = [ [ 10, 10 ], [ 60, 60 ], [ 110, 10 ] ];  // a triangle
+        const minimumZ = 90;
+        const maximumZ = 100;
+
+        const entities = new ScopedEntities();
+
+        const circle = entities.createCircularArea(center, radius);
+        assert.isTrue(entities.hasArea(circle));
+
+        assert.isTrue(circle.isConnected());
+        assert.equal(circle.type, Area.kTypeCircle);
+        assert.deepEqual(circle.center, center);
+        assert.equal(circle.radius, radius);
+
+        const cube = entities.createCubicalArea(rect, minimumZ, maximumZ);
+        assert.isTrue(entities.hasArea(cube));
+
+        assert.isTrue(cube.isConnected());
+        assert.equal(cube.type, Area.kTypeCube);
+        assert.deepEqual(cube.rectangle, rect);
+        assert.equal(cube.minimumZ, minimumZ);
+        assert.equal(cube.maximumZ, maximumZ);
+
+        const cylinder = entities.createCylindricalArea(center, radius, minimumZ, maximumZ);
+        assert.isTrue(entities.hasArea(cylinder));
+
+        assert.isTrue(cylinder.isConnected());
+        assert.equal(cylinder.type, Area.kTypeCylinder);
+        assert.deepEqual(cylinder.center, center);
+        assert.equal(cylinder.radius, radius);
+        assert.equal(cylinder.minimumZ, minimumZ);
+        assert.equal(cylinder.maximumZ, maximumZ);
+
+        const polygon = entities.createPolygonalArea(points, minimumZ, maximumZ);
+        assert.isTrue(entities.hasArea(polygon));
+
+        assert.isTrue(polygon.isConnected());
+        assert.equal(polygon.type, Area.kTypePolygon);
+        assert.deepEqual(polygon.points, points);
+        assert.equal(polygon.minimumZ, minimumZ);
+        assert.equal(polygon.maximumZ, maximumZ);
+
+        const rectangle = entities.createRectangularArea(rect);
+        assert.isTrue(entities.hasArea(rectangle));
+
+        assert.isTrue(rectangle.isConnected());
+        assert.equal(rectangle.type, Area.kTypeRectangle);
+        assert.deepEqual(rectangle.rectangle, rect);
+
+        const sphere = entities.createSphericalArea(center, radius);
+        assert.isTrue(entities.hasArea(sphere));
+
+        assert.isTrue(sphere.isConnected());
+        assert.equal(sphere.type, Area.kTypeSphere);
+        assert.deepEqual(sphere.center, center);
+        assert.equal(sphere.radius, radius);
+
+        entities.dispose();
+
+        assert.isFalse(circle.isConnected());
+        assert.isFalse(cube.isConnected());
+        assert.isFalse(cylinder.isConnected());
+        assert.isFalse(polygon.isConnected());
+        assert.isFalse(rectangle.isConnected());
+        assert.isFalse(sphere.isConnected());
     });
 });

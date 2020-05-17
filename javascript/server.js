@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import ActorManager from 'entities/actor_manager.js';
+import { AreaManager } from 'entities/area_manager.js';
 import { CheckpointManager } from 'components/checkpoints/checkpoint_manager.js';
 import Clock from 'base/clock.js';
 import CommandManager from 'components/command_manager/command_manager.js';
@@ -38,6 +39,7 @@ class Server {
         this.textDrawManager_ = new TextDrawManager();
 
         this.actorManager_ = new ActorManager();
+        this.areaManager_ = new AreaManager();
         this.objectManager_ = new ObjectManager();
         this.pickupManager_ = new PickupManager();
         this.playerManager_ = new PlayerManager();
@@ -84,6 +86,9 @@ class Server {
 
     // Gets the global actor manager, responsible for all actors in the game.
     get actorManager() { return this.actorManager_; }
+
+    // Gets the global area manager, responsible for all areas in the game.
+    get areaManager() { return this.areaManager_; }
 
     // Gets the global NPC manager, responsible for creating NPCs on the server.
     get npcManager() { return this.npcManager_; }
@@ -132,6 +137,7 @@ class Server {
         this.playerManager_.dispose();
         this.pickupManager_.dispose();
         this.objectManager_.dispose();
+        this.areaManager_.dispose();
         this.actorManager_.dispose();
 
         this.clock_.dispose();

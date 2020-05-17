@@ -20,6 +20,14 @@ export class DeferredEventManager {
             const events = getDeferredEvents();
             for (const { type, event } of events) {
                 switch (type) {
+                    case 'OnPlayerEnterDynamicArea':
+                        server.areaManager.onPlayerEnterArea(event);
+                        break;
+                    
+                    case 'OnPlayerLeaveDynamicArea':
+                        server.areaManager.onPlayerLeaveArea(event);
+                        break;
+
                     case 'OnVehicleStreamIn':
                         server.vehicleManager.onVehicleStreamIn(event);
                         break;

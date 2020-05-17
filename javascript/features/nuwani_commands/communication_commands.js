@@ -123,8 +123,7 @@ export class CommunicationCommands {
     // Displays information on how people can join our Discord channel.
     onHelpCommand(context) {
         context.respond('5Available IRC commands: !getid, !getname, !msg, !players, !pm, !vip, !discord');
-        context.respond('To register an account, visit: www.sa-mp.nl');
-        context.respond('Nicknames, passwords, and aliases can be managed in-game with the /account command.');
+        context.respond('Register for an account on https://sa-mp.nl/ , and use the in-game "/account" command to change your name, password or settings.');
     }
 
     // !msg [message]

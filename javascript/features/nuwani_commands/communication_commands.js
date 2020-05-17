@@ -30,6 +30,11 @@ export class CommunicationCommands {
         // !discord
         this.commandManager_.buildCommand('discord')
             .build(CommunicationCommands.prototype.onDiscordCommand.bind(this));
+        
+        // !help
+        this.commandManager_.buildCommand('help')
+            .build(CommunicationCommands.prototype.onHelpCommand.bind(this));
+    
 
         // !msg [message]
         this.commandManager_.buildCommand('msg')
@@ -113,6 +118,14 @@ export class CommunicationCommands {
         context.respond('5LVP Discord: https://discord.sa-mp.nl/');
     }
 
+    // !help
+    //
+    // Displays information on how people can join our Discord channel.
+    onHelpCommand(context) {
+        context.respond('5Available IRC commands: !getid, !getname, !msg, !players, !pm, !vip, !discord');
+        context.respond('Register for an account on https://sa-mp.nl/ , and use the in-game "/account" command to change your name, password or settings.');
+    }
+
     // !msg [message]
     //
     // Sends a regular message to in-game players who are in the main world. Everyone is able to
@@ -194,6 +207,7 @@ export class CommunicationCommands {
         this.commandManager_.removeCommand('say');
         this.commandManager_.removeCommand('pm');
         this.commandManager_.removeCommand('msg');
+        this.commandManager_.removeCommand('help');
         this.commandManager_.removeCommand('discord');
         this.commandManager_.removeCommand('announce');
         this.commandManager_.removeCommand('admin');

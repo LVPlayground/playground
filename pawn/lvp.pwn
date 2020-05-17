@@ -84,8 +84,6 @@
 #include "Interface/JSON.pwn"
 #include "Interface/MySQL.pwn"
 #include "Interface/Time.pwn"
-#include "Interface/ZoneLayer.pwn"
-#include "Interface/ZoneManager.pwn"
 
 // Entity classes without dependencies.
 #include "Entities/Players.pwn"

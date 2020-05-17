@@ -58,30 +58,60 @@ class ShipManager {
     // to keep track of this.
     new bool: m_isTheShiprailEnabled;
 
+    // The area surrounding the pirate ship, the ramp and the area before, provided by the Streamer.
+    new STREAMER_TAG_AREA: m_beforeRampArea;
+    new STREAMER_TAG_AREA: m_rampArea;
+    new STREAMER_TAG_AREA: m_shipArea;
+
     /**
      * In here we create the zones with the actual coördinates where the ship, the ramp of the ship
      * and the forbidden to fly-zones is/are. Also, the shiprail objects are initialized.
      */
     public __construct () {
-        new Float: shipRelatedAreas[8][5] = {
-            /* x1        y1         x2         y2       */
-            { 1995.0000, 1516.0000, 2006.0000, 1569.0000 }, // Ship
-            { 2005.0000, 1540.2500, 2024.0000, 1550.2500 }, // Shipramp
-            { 2026.5000, 1540.5000, 2033.0000, 1551.0000 }, // In front of shipramp
-            { 2023.7500, 1539.7500, 2026.5000, 1551.0000 }, // Poles
-            { 2005.0000, 1550.0000, 2023.0000, 1569.0000 }, // Right-top
-            { 1978.0000, 1500.0000, 1996.0000, 1569.0000 }, // Left-top, left, left-bottom
-            { 1995.0000, 1500.0000, 2024.0000, 1516.0000 }, // Bottom, right-bottom
-            { 2006.0000, 1516.0000, 2024.0000, 1540.5000 }  // Right
+        new Float: shipAreaMinZ = 0;
+        new Float: shipAreaMaxZ = 30;
+
+        new Float: shipAreaPolygon[] = {
+            1995.5940, 1516.6383,  // south-eastern corner of ship
+            2005.6711, 1516.6383,  // south-western corner of ship
+            2006.3826, 1524.8446,
+            2005.6117, 1539.7818,  // south-eastern side of ramp
+            2005.8014, 1553.7922,  // north-eastern side of ramp
+            2004.0792, 1566.2363,
+            2000.5907, 1569.7604,  // northern tip of ship
+            1997.2067, 1566.3329,
+            1995.5060, 1553.8690,
+            1995.9132, 1549.7366,
+            1995.0341, 1524.8315
         };
 
-        // Create a layer and the area for the ship itself and for the ramp in front of the ship.
-        ZoneManager->createLayer(ShipManager::ShipLayerId);
-        for (new coords = 0; coords < sizeof(shipRelatedAreas); ++coords) {
-            ZoneLayer(ShipManager::ShipLayerId)->createZone(
-                shipRelatedAreas[coords][0], shipRelatedAreas[coords][2], shipRelatedAreas[coords][1],
-                shipRelatedAreas[coords][3], 45.0 /* height */);
-        }
+        new Float: rampAreaPolygon[] = {
+            2005.6705, 1539.7363,  // south-eastern corner of ramp
+            2015.7131, 1540.4553,
+            2023.7876, 1540.4663,  // south-western corner of ramp
+            2025.2487, 1550.5581,  // north-western corner of ramp
+            2015.6420, 1549.9860,
+            2005.3781, 1549.8186   // north-eastern corner of ramp
+        };
+
+        new Float: beforeRampAreaPolygon[] = {
+            2023.9891, 1540.4663,  // south-eastern corner of area
+            2027.7648, 1540.4663,  // south-western corner of area
+            2029.4863, 1550.6461,  // north-western corner of area
+            2025.6086, 1550.6305   // north-eastern corner of area
+        };
+
+        m_beforeRampArea = CreateDynamicPolygon(beforeRampAreaPolygon, shipAreaMinZ, shipAreaMaxZ,
+                                                sizeof(beforeRampAreaPolygon), /* worldId= */ 0,
+                                                /* interiorId= */ 0, /* playerId= */ 0);
+
+        m_rampArea = CreateDynamicPolygon(rampAreaPolygon, shipAreaMinZ, shipAreaMaxZ,
+                                          sizeof(rampAreaPolygon), /* worldId= */ 0,
+                                          /* interiorId= */ 0, /* playerId= */ 0);
+
+        m_shipArea = CreateDynamicPolygon(shipAreaPolygon, shipAreaMinZ, shipAreaMaxZ,
+                                          sizeof(shipAreaPolygon), /* worldId= */ 0,
+                                          /* interiorId= */ 0, /* playerId= */ 0);
 
         // Create the shiprail objects.
         this->initializeObjects();
@@ -136,22 +166,21 @@ class ShipManager {
      * can apply the ShipManager-related features on the player.
      *
      * @param playerId Id of the player who just entered the ship.
-     * @param zoneId Id of the zone in the layer which they just entered.
+     * @param areaId Id of the zone in the layer which they just entered.
      */
-    @switch(OnPlayerEnterZone, ShipManager::ShipLayerId)
-    public onPlayerEnterShip(playerId, zoneId) {
-        if (GetPlayerVirtualWorld(playerId) != 0) {
-            return 1;
-        }
+    public onPlayerEnterShip(playerId, STREAMER_TAG_AREA: areaId) {
+        if (areaId == m_beforeRampArea) {
+            this->respawnPlayerVehicle(playerId);
+            m_activityOfPlayerOnShip[playerId] = JustLeft;
 
-        if (zoneId < 2) {
+        } else if (areaId == m_rampArea || areaId == m_shipArea) {
             this->respawnPlayerVehicle(playerId);
 
             if (DamageManager(playerId)->isPlayerFighting() == true) {
                 this->throwPlayerOffTheShip(playerId);
+    
                 ShowBoxForPlayer(playerId, "You have recently been in a gunfight, therefore cannot enter the ship at this moment");
-
-                return 1;
+                return;
             }
 
             if (m_playerHealthSpawnWeaponsSaved[playerId] == false) {
@@ -170,23 +199,6 @@ class ShipManager {
 
             m_activityOfPlayerOnShip[playerId] = Walking;
         }
-
-        if (zoneId > 1) {
-            this->respawnPlayerVehicle(playerId);
-            m_activityOfPlayerOnShip[playerId] = JustLeft;
-        }
-
-        if (zoneId == 3) {
-            new Float: positionX, Float: positionY, Float: positionZ;
-            GetPlayerPos(playerId, positionX, positionY, positionZ);
-
-            if (positionZ >= 13 && Player(playerId)->isAdministrator() == false) {
-                this->throwPlayerOffTheShip(playerId);
-                ShowBoxForPlayer(playerId, "You cannot stand on the ship-poles.");
-            }
-        }
-
-        return 1;
     }
 
     /**
@@ -273,16 +285,9 @@ class ShipManager {
      * @param playerId Id of the player who just left the ship.
      * @param zoneId Id of the zone in the layer which they just left.
      */
-    @switch(OnPlayerLeaveZone, ShipManager::ShipLayerId)
-    public onPlayerLeaveShip(playerId, zoneId) {
-        if (GetPlayerVirtualWorld(playerId) != 0) {
-            return 1;
-        }
-
-        m_activityOfPlayerOnShip[playerId] = JustLeft;
-
-        return 1;
-        #pragma unused zoneId
+    public onPlayerLeaveShip(playerId, STREAMER_TAG_AREA: areaId) {
+        if (areaId == m_rampArea || areaId == m_shipArea)
+            m_activityOfPlayerOnShip[playerId] = JustLeft;
     }
 
     /**

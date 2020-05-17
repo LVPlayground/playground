@@ -231,14 +231,11 @@
     <DiskObject>\Interface\Server\a_samp.pwn</DiskObject>
     <DiskObject>\Interface\Server\a_streamer.pwn</DiskObject>
     <DiskObject>\Interface\Server\a_vehicles.pwn</DiskObject>
-    <DiskObject>\Interface\Server\a_zones.pwn</DiskObject>
     <DiskObject>\Interface\Time.pwn</DiskObject>
     <DiskObject>\Interface\Time.tests.pwn</DiskObject>
     <DiskObject>\Interface\TimerController.pwn</DiskObject>
     <DiskObject>\Interface\timers.pwn</DiskObject>
     <DiskObject>\Interface\vars.pwn</DiskObject>
-    <DiskObject>\Interface\ZoneLayer.pwn</DiskObject>
-    <DiskObject>\Interface\ZoneManager.pwn</DiskObject>
     <DiskObject>\lvp.pwn</DiskObject>
     <DiskObject>\release.pwn</DiskObject>
     <DiskObject>\Resources\</DiskObject>

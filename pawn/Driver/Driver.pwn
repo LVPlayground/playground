@@ -84,6 +84,15 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
     return 1;
 }
 
+// Zone management, powered by the streamer.
+public OnPlayerEnterDynamicArea(playerid, STREAMER_TAG_AREA:areaid) {
+    ShipManager->onPlayerEnterShip(playerid, areaid);
+}
+
+public OnPlayerLeaveDynamicArea(playerid, STREAMER_TAG_AREA:areaid) {
+    ShipManager->onPlayerLeaveShip(playerid, areaid);
+}
+
 // Define so that JavaScript can intercept the events.
 public OnPlayerText(playerid, text[]) {}
 

@@ -27,9 +27,6 @@
  * @author Xander "Xanland" Hoogland <home@xanland.nl>
  */
 class ShipManager {
-    // The layer created here is to identify whether the player is on the ship.
-    public const ShipLayerId = @counter(ZoneLayer);
-
     // How much money does the player standing on the ship needs to get per second.
     const ShipIdlingMoneyAmount = 50;
 
@@ -68,9 +65,6 @@ class ShipManager {
      * and the forbidden to fly-zones is/are. Also, the shiprail objects are initialized.
      */
     public __construct () {
-        new Float: shipAreaMinZ = 0;
-        new Float: shipAreaMaxZ = 30;
-
         new Float: shipAreaPolygon[] = {
             1995.5940, 1516.6383,  // south-eastern corner of ship
             2005.6711, 1516.6383,  // south-western corner of ship
@@ -101,17 +95,17 @@ class ShipManager {
             2025.6086, 1550.6305   // north-eastern corner of area
         };
 
-        m_beforeRampArea = CreateDynamicPolygon(beforeRampAreaPolygon, shipAreaMinZ, shipAreaMaxZ,
-                                                sizeof(beforeRampAreaPolygon), /* worldId= */ 0,
-                                                /* interiorId= */ 0, /* playerId= */ 0);
+        m_beforeRampArea = CreateDynamicPolygon(
+            beforeRampAreaPolygon, /* minz =*/ 9, /* maxz= */ 40, sizeof(beforeRampAreaPolygon),
+            /* worldId= */ 0, /* interiorId= */ 0, /* playerId= */ -1);
 
-        m_rampArea = CreateDynamicPolygon(rampAreaPolygon, shipAreaMinZ, shipAreaMaxZ,
-                                          sizeof(rampAreaPolygon), /* worldId= */ 0,
-                                          /* interiorId= */ 0, /* playerId= */ 0);
+        m_rampArea = CreateDynamicPolygon(
+            rampAreaPolygon, /* minz= */ 9, /* maxz= */ 40, sizeof(rampAreaPolygon),
+            /* worldId= */ 0, /* interiorId= */ 0, /* playerId= */ -1);
 
-        m_shipArea = CreateDynamicPolygon(shipAreaPolygon, shipAreaMinZ, shipAreaMaxZ,
-                                          sizeof(shipAreaPolygon), /* worldId= */ 0,
-                                          /* interiorId= */ 0, /* playerId= */ 0);
+        m_shipArea = CreateDynamicPolygon(
+            shipAreaPolygon, /* minz =*/ 12, /* maxz= */ 40, sizeof(shipAreaPolygon),
+            /* worldId= */ 0, /* interiorId= */ 0, /* playerId= */ -1);
 
         // Create the shiprail objects.
         this->initializeObjects();
@@ -178,7 +172,7 @@ class ShipManager {
 
             if (DamageManager(playerId)->isPlayerFighting() == true) {
                 this->throwPlayerOffTheShip(playerId);
-    
+
                 ShowBoxForPlayer(playerId, "You have recently been in a gunfight, therefore cannot enter the ship at this moment");
                 return;
             }

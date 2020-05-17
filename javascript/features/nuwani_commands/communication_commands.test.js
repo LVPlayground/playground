@@ -110,6 +110,21 @@ describe('CommunicationCommands', (it, beforeEach, afterEach) => {
         assert.includes(result[0], 'https://discord.sa-mp.nl/');
     });
 
+    it('cmds', async (assert) => {
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!help',
+        });
+        
+        
+        assert.equal(result.length, 3);
+        assert.includes(result[0], '!getid, !getname, !msg, !players, !pm, !vip, !discord');
+        assert.includes(result[1], 'To register an account, visit: www.sa-mp.nl');
+        assert.includes(result[2], 'Nicknames, passwords, and aliases can be managed in-game with the /account command.');
+        
+    
+    }); 
+
     it('should be able to send messages to in-game players', async (assert) => {
         const wrongChannelResult = await issueCommand(bot, commandManager, {
             source: kCommandSource,

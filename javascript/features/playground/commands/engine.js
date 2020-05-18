@@ -33,7 +33,7 @@ export default class EngineCommand extends Command {
         } else {
             player.sendMessage(Message.COMMAND_SUCCESS, target.name + 
                 '\'s engine has been turned on.');
-                vehicleParams[0] = 1;         
+            vehicleParams[0] = 1;         
         }
 
         pawnInvoke('SetVehicleParamsEx', 'iiiiiiii', vehicleId, vehicleParams[0], vehicleParams[1], 

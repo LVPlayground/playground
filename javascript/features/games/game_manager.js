@@ -120,6 +120,7 @@ export class GameManager {
     // state to another kStateEngaged state is not, as that means something didn't get shut down.
     setPlayerActivity(player, activity) {
         if (!activity) {
+            player.syncedData.minigameName = null;
             this.activity_.delete(player);
             return;
         }
@@ -128,6 +129,7 @@ export class GameManager {
         if (currentActivity && currentActivity.getActivityState() === activity.getActivityState())
             throw new Error(`Cannot update a player's activity to the same activity state.`);
         
+        player.syncedData.minigameName = activity.getActivityName();
         this.activity_.set(player, activity);
     }
 

@@ -37,6 +37,7 @@ import CommunicationCommands from 'features/communication_commands/communication
 import Finance from 'features/finance/finance.js';
 import Games from 'features/games/games.js';
 import Gangs from 'features/gangs/gangs.js';
+import Haystack from 'features/haystack/haystack.js';
 import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
 import MockPlayground from 'features/playground/test/mock_playground.js';
 import PlayerSettings from 'features/player_settings/player_settings.js';
@@ -86,6 +87,7 @@ class MockServer {
             finance: Finance,
             games: Games,
             gangs: Gangs,
+            haystack: Haystack,
             nuwani: MockNuwani,
             player_settings: PlayerSettings,
             playground: MockPlayground,

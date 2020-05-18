@@ -91,7 +91,12 @@ GetPlayerMinigameName(playerId) {
         return notice;
     }
 
-    if (PlayerActivity(playerId)->isJavaScriptActivity()) {
+    if (PlayerSyncedData(playerId)->hasMinigameName()) {
+        format(notice, sizeof(notice), "%s", PlayerSyncedData(playerId)->minigameName());
+        return notice;
+    }
+
+    if (PlayerActivity(playerId)->isJavaScriptActivity()) {  // deprecated
         switch (PlayerActivity(playerId)->get()) {
             case PlayerActivityJsRace:
                 format(notice, sizeof(notice), "Racing");
@@ -195,8 +200,11 @@ CFightClub__GetDeathCount(playerId) { return g_FightClubStats[playerId][1]; }
 CFightClub__SetDeathCount(playerId, count) { g_FightClubStats[playerId][1] = count; }
 
 IsPlayerInMinigame(playerId) {
+    if (PlayerSyncedData(playerId)->hasMinigameName())
+        return 1;  // JavaScript-based minigame
+
     if (PlayerActivity(playerId)->isJavaScriptActivity())
-        return 1;
+        return 1; // deprecated
 
     if (IsPlayerInMapZone(playerId))
         return 1;
@@ -229,6 +237,9 @@ IsPlayerInMinigame(playerId) {
 IsPlayerMinigameFree(playerId) {
     if (!Player(playerId)->isConnected())
         return 0;
+
+    if (PlayerSyncedData(playerId)->hasMinigameName())
+        return 0;  // JavaScript-based minigame
 
     if (g_RivershellPlayer[playerId])
         return 0;

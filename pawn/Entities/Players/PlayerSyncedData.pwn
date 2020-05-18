@@ -5,9 +5,11 @@
 // Provided by PlaygroundJS for updating JavaScript data.
 native UpdatePlayerSyncedData(playerId, property, intValue, Float: floatValue, stringValue[]);
 
+// Next ID: 3
 enum PlayerSyncedDataProperty {
+    ISOLATED = 1,
+    MINIGAME_NAME = 2,
     PREFERRED_RADIO_CHANNEL = 0,
-    ISOLATED = 1
 };
 
 #define INVALID_INT 0
@@ -18,10 +20,12 @@ enum PlayerSyncedDataProperty {
 // these values will be reflected in the JavaScript code, and vice versa.
 class PlayerSyncedData <playerId (MAX_PLAYERS)> {
     new bool: m_isolated;
+    new m_minigameName[32];
     new m_preferredRadioChannel[64];
 
     public reset() {
         m_isolated = false;
+        m_minigameName[0] = 0;
         m_preferredRadioChannel[0] = 0;
     }
 
@@ -34,6 +38,20 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
     public setIsolated(bool: isolated) {
         m_isolated = isolated;
         this->sync(ISOLATED);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    public inline minigameName() {
+        return m_minigameName;
+    }
+
+    public inline hasMinigameName() {
+        return (m_minigameName[0] != 0);
+    }
+
+    public setMinigameName(minigameName[]) {
+        // Not meant to be set from Pawn, only from JavaScript.
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -56,6 +74,9 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
                 UpdatePlayerSyncedData(playerId, _: property, m_isolated ? 1 : 0, INVALID_FLOAT, INVALID_STRING);
 
             // Textual properties.
+            case MINIGAME_NAME:
+                UpdatePlayerSyncedData(playerId, _: property, INVALID_INT, INVALID_FLOAT, m_minigameName);
+
             case PREFERRED_RADIO_CHANNEL:
                 UpdatePlayerSyncedData(playerId, _: property, INVALID_INT, INVALID_FLOAT, m_preferredRadioChannel);
         }
@@ -65,6 +86,9 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
         switch (property) {
             case ISOLATED:
                 m_isolated = !!intValue;
+
+            case MINIGAME_NAME:
+                format(m_minigameName, sizeof(m_minigameName), "%s", stringValue);
 
             case PREFERRED_RADIO_CHANNEL:
                 format(m_preferredRadioChannel, sizeof(m_preferredRadioChannel), "%s", stringValue);

@@ -22,6 +22,11 @@ export class GameActivity {
             case GameActivity.kStateRegistered:
                 stateText = 'registered';
                 break;
+
+            case GameActivity.kStateEngaged:
+                stateText = 'engaged';
+                break;
+
             default:
                 throw new Error(`Invalid activity state: ${this.getActivityState()}`);
         }

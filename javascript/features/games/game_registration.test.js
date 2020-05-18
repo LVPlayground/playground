@@ -23,6 +23,8 @@ describe('GameRegistration', (it, beforeEach) => {
         lucy = server.playerManager.getById(/* Lucy= */ 2);
     });
 
+    const kContribution = 250;
+
     it('is able to determine the theoretical number of participants', assert => {
         assert.equal(GameRegistration.getTheoreticalNumberOfParticipants(manager), 3);
 
@@ -59,8 +61,10 @@ describe('GameRegistration', (it, beforeEach) => {
         const registration =
             new GameRegistration(description, GameRegistration.kTypePublic, manager);
 
-        assert.doesNotThrow(() => registration.registerPlayer(gunther));
-        assert.throws(() => registration.registerPlayer(gunther));
+        assert.doesNotThrow(() => registration.registerPlayer(gunther, kContribution));
+        assert.throws(() => registration.registerPlayer(gunther, kContribution));
+
+        assert.equal(registration.getPlayerContribution(gunther), kContribution);
 
         assert.doesNotThrow(() => registration.removePlayer(gunther));
         assert.throws(() => registration.removePlayer(gunther));
@@ -80,10 +84,10 @@ describe('GameRegistration', (it, beforeEach) => {
         
         assert.isFalse(registration.hasFinished());
 
-        registration.registerPlayer(gunther);  // first player
+        registration.registerPlayer(gunther, kContribution);  // first player
         assert.isFalse(registration.hasFinished());
 
-        registration.registerPlayer(russell);  // second (& maximum) player
+        registration.registerPlayer(russell, kContribution);  // second (& maximum) player
         assert.isTrue(registration.hasFinished());
     });
 
@@ -101,25 +105,26 @@ describe('GameRegistration', (it, beforeEach) => {
         
         assert.isFalse(registration.hasFinished());
 
-        registration.registerPlayer(gunther);
-        registration.registerPlayer(russell);
+        registration.registerPlayer(gunther, kContribution);
+        registration.registerPlayer(russell, kContribution);
         assert.isFalse(registration.hasFinished());
 
-        registration.registerPlayer(lucy);  // final available player on the server
+        registration.registerPlayer(lucy, kContribution);  // final available player on the server
         assert.isTrue(registration.hasFinished());
     });
 
-    it('should refund participants if the registration period expires', assert => {
+    it('should automatically cancel the game if the last participant leaves', assert => {
         class BubbleGame extends Game {}
 
         const description = new GameDescription(BubbleGame, { name: 'Bubble' });
         const registration =
             new GameRegistration(description, GameRegistration.kTypePublic, manager);
 
-        registration.registerPlayer(gunther, 1234);
-        assert.equal(registration.getPlayerContribution(gunther), 1234);
+        registration.registerPlayer(gunther, kContribution);
+        assert.isFalse(registration.hasFinished());
 
-        // TODO: Finish this functionality & test.
+        registration.removePlayer(gunther);
+        assert.isTrue(registration.hasFinished());
     });
 
     it('is able to stringify to something sensible', assert => {

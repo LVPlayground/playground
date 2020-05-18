@@ -51,6 +51,9 @@ export class GameRegistration extends GameActivity {
     // Returns whether the registration has finished, and the game has started or been cancelled.
     hasFinished() { return this.finished_; }
 
+    // Gets the map [player => contribution] of players who have signed up for this game.
+    get players() { return this.players_; }
+
     // Gets the type of registration this instance deals with. One of the aforementioned statics.
     get type() { return this.type_; }
 
@@ -107,7 +110,11 @@ export class GameRegistration extends GameActivity {
         this.manager_.setPlayerActivity(player, /* activity= */ null);
         this.players_.delete(player);
         
-        // TODO: Dispose of the registration if there are no players left.
+        // Immediately cancel the registration if there are no players left in this game.
+        if (!this.players_.size) {
+            this.manager_.cancelGameRegistration(this);
+            this.finished_ = true;
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

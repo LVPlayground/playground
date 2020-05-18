@@ -44,18 +44,44 @@ export class GameManager {
         return registrationsForGame;
     }
 
+    // Cancels the given |registration|, as the game will not be started because of an undefined
+    // reason. All participants must have had their activities cleared already.
+    cancelGameRegistration(registration) {
+        this.registrations_.delete(registration);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Starts the game described by |description| based on the given |registration| information, but
     // only if the minimum requirements for the game have been met.
     startGame(description, registration) {
         // TODO
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     // Immediately stops all games that are either accepting sign-ups or in-progress because the
     // game described by |description| will no longer be available.
     stopAllActiveGames(description) {
-        // TODO
+        for (const player of server.playerManager) {
+            const activity = this.activity_.get(player);
+            if (!activity || activity.description !== description)
+                continue;  // the |player| is not engaged in the |description| game
+
+            player.sendMessage(Message.GAME_REGISTRATION_RELOAD, activity.getActivityName());
+
+            switch (activity.getActivityState()) {
+                case GameActivity.kStateRegistered:
+                    activity.removePlayer(player);
+                    break;
+                
+                case GameActivity.kStateEngaged:
+                    // TODO: Deal with players having to leave active games.
+                    break;
+            }
+        }
     }
-    
+
     // ---------------------------------------------------------------------------------------------
 
     // Updates the |player|'s activity to |activity|. The state may only progress, so while moving

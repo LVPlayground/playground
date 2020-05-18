@@ -112,6 +112,7 @@
   "GAME_REGISTRATION_JOINED": "{CCD782}You have signed up for the {838F31}%s game{CCD782}! Type {838F31}/leave{CCD782} if you changed your mind.",
   "GAME_REGISTRATION_NOT_ENOUGH_MONEY": "@error Sorry, you need %$ to join the %s game.",
   "GAME_REGISTRATION_NOT_ENOUGH_PLAYERS": "@error Sorry, the %s game requires at least %d participants, but only %d are available right now.",
+  "GAME_REGISTRATION_RELOAD": "{CCD782}You have been removed from the {838F31}%s game{CCD782} because a Management member reloaded it.",
   "GAME_REGISTRATION_STARTED": "{CCD782}You have signed up for the {838F31}%s game{CCD782}, which started immediately. Enjoy!",
   "GAME_REGISTRATION_UNAVAILABLE": "@error Sorry, the %s game is currently unavailable.",
 

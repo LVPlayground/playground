@@ -24,7 +24,7 @@ export default class Games extends Feature {
 
         // The game manager keeps track of all active games on the server, regardless of how they
         // have been started. Expects to be instrumented by other components.
-        this.manager_ = new GameManager();
+        this.manager_ = new GameManager(finance);
 
         // The game registry keeps track of all the games that are available on the server. It will
         // further make sure that the commands for these games are available as appropriate.

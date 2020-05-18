@@ -8,11 +8,19 @@ import { GameRegistration } from 'features/games/game_registration.js';
 // The game manager is responsible for keeping track of and managing all active games on the server-
 // whether that be accepting sign-ups, or actually in progress.
 export class GameManager {
+    finance_ = null;
+
     // Map of |player| => GameActivity instances of a player's current activity, if any.
     activity_ = new WeakMap();
 
     // Set of GameRegistration instances that are currently accepting registrations.
     registrations_ = new Set();
+
+    constructor(finance) {
+        this.finance_ = finance;
+
+        server.playerManager.addObserver(this);
+    }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -70,8 +78,10 @@ export class GameManager {
 
             player.sendMessage(Message.GAME_REGISTRATION_RELOAD, activity.getActivityName());
 
+            let contribution = 0;
             switch (activity.getActivityState()) {
                 case GameActivity.kStateRegistered:
+                    contribution = activity.getPlayerContribution(player);
                     activity.removePlayer(player);
                     break;
                 
@@ -79,6 +89,27 @@ export class GameManager {
                     // TODO: Deal with players having to leave active games.
                     break;
             }
+
+            if (contribution > 0)
+                this.finance_().givePlayerCash(player, contribution);
+        }
+    }
+
+    // Called when the given |player| has disconnected from the server. This means that they'll be
+    // dropping out of whatever activity they were engaged in.
+    onPlayerDisconnect(player) {
+        const activity = this.activity_.get(player);
+        if (!activity)
+            return;  // the |player| was not engaged in any activity
+        
+        switch (activity.getActivityState()) {
+            case GameActivity.kStateRegistered:
+                activity.removePlayer(player);
+                break;
+            
+            case GameActivity.kStateEngaged:
+                // TODO: Deal with players having to leave active games.
+                break;
         }
     }
 
@@ -102,5 +133,7 @@ export class GameManager {
 
     // ---------------------------------------------------------------------------------------------
 
-    dispose() {}
+    dispose() {
+        server.playerManager.removeObserver(this);
+    }
 }

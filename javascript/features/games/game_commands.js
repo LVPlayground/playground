@@ -91,6 +91,17 @@ export class GameCommands {
             return;
         }
 
+        // If the |description| requires more players than currently are available, let's refuse to
+        // start the game, to avoid disappointment down the line.
+        const availablePlayers = GameRegistration.getTheoreticalNumberOfParticipants(this.manager_);
+        if (description.minimumPlayers > availablePlayers) {
+            player.sendMessage(
+                Message.GAME_REGISTRATION_NOT_ENOUGH_PLAYERS, description.name,
+                description.minimumPlayers, availablePlayers);
+
+            return;
+        }
+
         // Create a new registration flow for the |description|, to which all other players are
         // invited to participate. This enables future commands to join the game instead.
         const registration =
@@ -103,6 +114,13 @@ export class GameCommands {
 
         // Register the |player| to participate in the |registration|.
         registration.registerPlayer(player)
+
+        // If the |player| is the only on available for the game, and the game allows single-player
+        // participation, it's possible that it's immediately started.
+        if (registration.hasFinished()) {
+            player.sendMessage(Message.GAME_REGISTRATION_STARTED, registration.getActivityName());
+            return;
+        }
 
         player.sendMessage(Message.GAME_REGISTRATION_JOINED, registration.getActivityName());
         player.sendMessage(Message.GAME_REGISTRATION_CREATED, registration.duration);

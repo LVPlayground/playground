@@ -46,7 +46,7 @@ export class GameManager {
 
     // Starts the game described by |description| based on the given |registration| information, but
     // only if the minimum requirements for the game have been met.
-    startGame(registration, description) {
+    startGame(description, registration) {
         // TODO
     }
 

@@ -36,6 +36,7 @@ export class GameRegistration extends GameActivity {
     manager_ = null;
 
     description_ = null;
+    finished_ = false;
     type_ = null;
 
     players_ = null;
@@ -45,6 +46,9 @@ export class GameRegistration extends GameActivity {
 
     // Gets the duration, in seconds, for which this registration will wait.
     get duration() { return kDurationSeconds; }
+
+    // Returns whether the registration has finished, and the game has started or been cancelled.
+    hasFinished() { return this.finished_; }
 
     // Gets the type of registration this instance deals with. One of the aforementioned statics.
     get type() { return this.type_; }
@@ -69,7 +73,20 @@ export class GameRegistration extends GameActivity {
         this.manager_.setPlayerActivity(player, /* activity= */ this);
         this.players_.add(player);
 
-        // TODO: Check if the maximum number of players has been reached.
+        // Start the game immediately if the maximum number of players has signed up.
+        if (this.players_.size === this.description_.maximumPlayers) {
+            this.start();
+            return;
+        }
+
+        // Start the game immediately if the minimum number of players has been reached, and the
+        // total number of registrations is equal to the number of available players.
+        const availablePlayers = GameRegistration.getTheoreticalNumberOfParticipants(this.manager_);
+        if (this.players_.size >= this.description_.minimumPlayers &&
+                this.players_.size === availablePlayers) {
+            this.start();
+            return;
+        }
     }
 
     // Removes the |player| from the list of people registered to participate in this game. If there
@@ -82,6 +99,23 @@ export class GameRegistration extends GameActivity {
         this.players_.delete(player);
         
         // TODO: Dispose of the registration if there are no players left.
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Internal functionality
+
+    // Proceeds from accepting further registrations to actually starting the game, by requesting
+    // the manager to do so. Verify once again that all requirements have been met.
+    start() {
+        this.finished_ = true;
+
+        if (this.players_.size < this.description_.minimumPlayers)
+            throw new Error(`Attempting to start ${this} with less than the required players.`);
+        
+        if (this.players_.size > this.description_.maximumPlayers)
+            throw new Error(`Attempting to start ${this} with more than the allowed players.`);
+
+        this.manager_.startGame(this.description_, this);
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -66,6 +66,49 @@ describe('GameRegistration', (it, beforeEach) => {
         assert.throws(() => registration.removePlayer(gunther));
     });
 
+    it('should start the game when the maximum number of players have signed up', assert => {
+        class BubbleGame extends Game {}
+
+        const description = new GameDescription(BubbleGame, {
+            name: 'Bubble',
+            minimumPlayers: 2,
+            maximumPlayers: 2,
+        });
+
+        const registration =
+            new GameRegistration(description, GameRegistration.kTypePublic, manager);
+        
+        assert.isFalse(registration.hasFinished());
+
+        registration.registerPlayer(gunther);  // first player
+        assert.isFalse(registration.hasFinished());
+
+        registration.registerPlayer(russell);  // second (& maximum) player
+        assert.isTrue(registration.hasFinished());
+    });
+
+    it('should start the game when all available players have signed up', assert => {
+        class BubbleGame extends Game {}
+
+        const description = new GameDescription(BubbleGame, {
+            name: 'Bubble',
+            minimumPlayers: 2,
+            maximumPlayers: 8,
+        });
+
+        const registration =
+            new GameRegistration(description, GameRegistration.kTypePublic, manager);
+        
+        assert.isFalse(registration.hasFinished());
+
+        registration.registerPlayer(gunther);
+        registration.registerPlayer(russell);
+        assert.isFalse(registration.hasFinished());
+
+        registration.registerPlayer(lucy);  // final available player on the server
+        assert.isTrue(registration.hasFinished());
+    });
+
     it('is able to stringify to something sensible', assert => {
         class BubbleGame extends Game {}
 

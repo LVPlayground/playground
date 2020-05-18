@@ -2,6 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+// The default number of maximum players who can participate in a game.
+export const kDefaultMaximumPlayers = 4;
+
+// The default number of minimum players who can participate in a game.
+export const kDefaultMinimumPlayers = 2;
+
 // The default price of participating in a game. Can be overridden by individual games.
 export const kDefaultPrice = 250;
 
@@ -24,6 +30,8 @@ export class GameDescription {
 
     name_ = null;
     command_ = null;
+    maximumPlayers_ = kDefaultMaximumPlayers;
+    minimumPlayers_ = kDefaultMinimumPlayers;
     price_ = kDefaultPrice;
 
     // Gets the constructor which can be used to instantiate the game.
@@ -34,6 +42,12 @@ export class GameDescription {
 
     // Gets the name of the command which can be used to start the game. Optional, thus may be NULL.
     get command() { return this.command_; }
+
+    // Gets the maximum number of players who can participate in this game.
+    get maximumPlayers() { return this.maximumPlayers_; }
+
+    // Gets the minimum number of players who need to be online to participate in this game.
+    get minimumPlayers() { return this.minimumPlayers_; }
 
     // Gets the price for which someone can participate in this minigame.
     get price() { return this.price_; }
@@ -58,14 +72,32 @@ export class GameDescription {
         // -----------------------------------------------------------------------------------------
 
         if (options.hasOwnProperty('command')) {
-            if (typeof options.command !== 'string')
+            if (typeof options.command !== 'string' || !options.command.length)
                 throw new Error(`[${this.name_}] The game's command must be given as a string.`);
             
             this.command_ = options.command;
         }
 
+        if (options.hasOwnProperty('maximumPlayers')) {
+            if (typeof options.maximumPlayers !== 'number' ||
+                    !Number.isSafeInteger(options.maximumPlayers)) {
+                throw new Error(`[${this.name_}] The maximum player count must be a number.`);
+            }
+            
+            this.maximumPlayers_ = options.maximumPlayers;
+        }
+
+        if (options.hasOwnProperty('minimumPlayers')) {
+            if (typeof options.minimumPlayers !== 'number' ||
+                    !Number.isSafeInteger(options.minimumPlayers)) {
+                throw new Error(`[${this.name_}] The minimum player count must be a number.`);
+            }
+            
+            this.minimumPlayers_ = options.minimumPlayers;
+        }
+
         if (options.hasOwnProperty('price')) {
-            if (typeof options.price !== 'number')
+            if (typeof options.price !== 'number' || !Number.isSafeInteger(options.price))
                 throw new Error(`[${this.name_}] The game's price must be given as a number.`);
             
             this.price_ = options.price;

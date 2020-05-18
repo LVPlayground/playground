@@ -70,6 +70,7 @@ class PlaygroundCommands {
         const commandFiles = [
             'features/playground/commands/autohello.js',
             'features/playground/commands/boost.js',
+            'features/playground/commands/engine.js',
             'features/playground/commands/fancy.js',
             'features/playground/commands/fly.js',
             'features/playground/commands/jetpack.js',

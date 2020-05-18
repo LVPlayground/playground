@@ -34,9 +34,11 @@ describe('GameManager', (it, beforeEach) => {
             manager.createGameRegistration(description, GameRegistration.kTypePublic);
         
         assert.isNull(manager.getPlayerActivity(gunther));
+        assert.equal(gunther.syncedData.minigameName, '');
 
         registration.registerPlayer(gunther, kContribution);
         assert.equal(manager.getPlayerActivity(gunther), registration);
+        assert.equal(gunther.syncedData.minigameName, 'Bubble');
 
         assert.equal(finance.getPlayerCash(gunther), 0);
 
@@ -44,6 +46,8 @@ describe('GameManager', (it, beforeEach) => {
         manager.stopAllActiveGames(description);
 
         assert.isNull(manager.getPlayerActivity(gunther));
+        assert.equal(gunther.syncedData.minigameName, '');
+
         assert.equal(gunther.messages.length, 1);
         assert.equal(
             gunther.messages[0], Message.format(Message.GAME_REGISTRATION_RELOAD, 'Bubble'));

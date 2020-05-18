@@ -24,7 +24,7 @@
   "ANNOUNCE_REPORT": "{FFFF00}* Report by %s (Id:%d): Player: %s (Id:%d) - Reason: %s",
   "ANNOUNCE_SHOW_ADMIN": "%s (Id:%d) has used /show %s.",
   "ANNOUNCE_SHOW_UNKNOWN": "@usage /show [%s]",
-  "ANNOUNCEMENT_TOGGLED":  "@success The {FFA500}%s{A9C4E4} announcement has been %s for you.",
+  "ANNOUNCEMENT_TOGGLED": "@success The {FFA500}%s{A9C4E4} announcement has been %s for you.",
 
   "BANK_NEED_ACCOUNT": "@error You need to register on https://sa-mp.nl/ to get a bank account!",
   "BANK_NOT_ENOUGH_CASH": "@error You aren't carrying enough cash to deposit %$.",
@@ -42,6 +42,12 @@
   "COMMAND_SUCCESS": "@success %s",
   "COMMAND_UNSUPPORTED": "@error Sorry, this functionality has not yet been implemented.",
   "COMMAND_USAGE": "@usage %s",
+
+  "CRUISE_NOT_RUNNING": "@error {DC143C}Cruise{FFFFFF}: There is currently no cruise running! /cruise start to get one going.",
+  "CRUISE_RUNNING": "{DC143C}Cruise{FFFFFF}: A cruise is running, /ctp to the leader to join in!",
+  "CRUISE_STARTED": "{DC143C}Cruise{FFFFFF}: A cruise has started!",
+  "CRUISE_STOPPED": "{DC143C}Cruise{FFFFFF}: The cruise has stopped, see you next time!",
+  "CRUISE_USAGE": "@usage {DC143C}Cruise{FFFFFF}: /cruise [start/stop]",
 
   "COMMUNICATION_ADMIN_MESSAGE": "{FFFF00}* %s %s (Id:%d): %s",
   "COMMUNICATION_ADMIN_SENT": "@success Your message has been sent to the administrators.",
@@ -310,7 +316,7 @@
 
   "KILLTIME_ADMIN_STOPPED": "{DC143C}Killtime{FFFFFF}: An administrator has stopped the killtime. Luckily, the prize will still be handed.",
   "KILLTIME_AUTO_STOPPED": "{DC143C}Killtime{FFFFFF}: Time is up! The prize will be given out shortly.",
-  "KILLTIME_MAXIMUM_TEN_MINUTES": "{DC143C}Killtime{FFFFFF}: Sorry, there is a maximum of two minutes.",
+  "KILLTIME_MAXIMUM_TEN_MINUTES": "{DC143C}Killtime{FFFFFF}: Sorry, there is a maximum of ten minutes.",
   "KILLTIME_MINIMUM_TWO_MINUTES": "{DC143C}Killtime{FFFFFF}: Sorry, there is a minimum of two minutes.",
   "KILLTIME_STARTED": "{DC143C}Killtime{FFFFFF}: The following %d minutes is killing for a prize! Are you the one with the most kills?",
   "KILLTIME_TOPKILLER": "{DC143C}Killtime{FFFFFF}: Leading: %s. Hurry up and get more to win the prize of $%d or more!",

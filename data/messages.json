@@ -106,6 +106,7 @@
   "FRIENDS_REMOVED": "@success %s has been removed from your friends list.",
   "FRIENDS_USAGE": "{FFFFFF}Use '/friends add' to add a friend or '/friends remove' to remove one.",
 
+  "GAME_REGISTRATION_ALREADY_ENGAGED": "@error Sorry, but you are already engaged in the %s game.",
   "GAME_REGISTRATION_ALREADY_REGISTERED": "@error Sorry, but you have already registered for the %s game.",
   "GAME_REGISTRATION_ANNOUNCEMENT": "{CCD782}Sign up for the {838F31}%s game{CCD782}! Type {838F31}/%s{CCD782} to join for %$.",
   "GAME_REGISTRATION_CREATED": "{CCD782}Please allow for up to {838F31}%d seconds{CCD782} for the game to start.",

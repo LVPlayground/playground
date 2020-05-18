@@ -4,6 +4,7 @@
 
 import { GameActivity } from 'features/games/game_activity.js';
 import { GameRegistration } from 'features/games/game_registration.js';
+import { GameRuntime } from 'features/games/game_runtime.js';
 
 // The game manager is responsible for keeping track of and managing all active games on the server-
 // whether that be accepting sign-ups, or actually in progress.
@@ -15,6 +16,9 @@ export class GameManager {
 
     // Set of GameRegistration instances that are currently accepting registrations.
     registrations_ = new Set();
+
+    // Set of GameRuntime instances that are currently actively running games on the server.
+    runtimes_ = new Set();
 
     constructor(finance) {
         this.finance_ = finance;
@@ -60,10 +64,11 @@ export class GameManager {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Starts the game described by |description| based on the given |registration| information, but
-    // only if the minimum requirements for the game have been met.
+    // Starts the game described by |description| based on the given |registration| information. The
+    // new GameRuntime instance will take ownership of all player's activities.
     startGame(description, registration) {
-        // TODO
+        this.registrations_.delete(registration);
+        this.runtimes_.add(new GameRuntime(description, registration));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -78,20 +83,16 @@ export class GameManager {
 
             player.sendMessage(Message.GAME_REGISTRATION_RELOAD, activity.getActivityName());
 
-            let contribution = 0;
-            switch (activity.getActivityState()) {
-                case GameActivity.kStateRegistered:
-                    contribution = activity.getPlayerContribution(player);
-                    activity.removePlayer(player);
-                    break;
-                
-                case GameActivity.kStateEngaged:
-                    // TODO: Deal with players having to leave active games.
-                    break;
+            // Refund the player's money if the game hadn't started yet, so that they are able to
+            // do something else with it. If the game had started, they're out of luck.
+            if (activity.getActivityState() === GameActivity.kStateRegistered) {
+                const contribution = activity.getPlayerContribution(player);
+                if (contribution > 0)
+                    this.finance_().givePlayerCash(player, contribution);
             }
 
-            if (contribution > 0)
-                this.finance_().givePlayerCash(player, contribution);
+            // Force the |player| to leave the activity.
+            activity.removePlayer(player);
         }
     }
 
@@ -102,15 +103,7 @@ export class GameManager {
         if (!activity)
             return;  // the |player| was not engaged in any activity
         
-        switch (activity.getActivityState()) {
-            case GameActivity.kStateRegistered:
-                activity.removePlayer(player);
-                break;
-            
-            case GameActivity.kStateEngaged:
-                // TODO: Deal with players having to leave active games.
-                break;
-        }
+        activity.removePlayer(player);
     }
 
     // ---------------------------------------------------------------------------------------------

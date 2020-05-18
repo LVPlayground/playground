@@ -15,6 +15,9 @@ export class GameActivity {
     // Returns the name of the activity that this instance describes.
     getActivityName() { throw new Error(`getActivityName() must be overridden`); }
 
+    // Called when the |player| has to leave the activity.
+    removePlayer(player) { throw new Error(`removePlayer() must be overridden`); }
+
     // Called when the activity is being converted to a string.
     toString() {
         let stateText = null;

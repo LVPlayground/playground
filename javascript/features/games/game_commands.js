@@ -80,22 +80,16 @@ export class GameCommands {
 
         const activity = this.manager_.getPlayerActivity(player);
         if (activity) {
-            let contribution = 0;
-
-            switch (activity.getActivityState()) {
-                case GameActivity.kStateRegistered:
-                    contribution = activity.getPlayerContribution(player);
-                    activity.removePlayer(player);
-                    break;
-
-                case GameActivity.kStateEngaged:
-                    // TODO: Implement /leave for active games.
-                    break;
+            // If the game hasn't started yet and the |player| paid a fee to take part in it, we
+            // can refund that amount to them so that they can do something else instead.
+            if (activity.getActivityState() === GameActivity.kStateRegistered) {
+                const contribution = activity.getPlayerContribution(player);
+                if (contribution > 0)
+                    this.finance_().givePlayerCash(player, contribution);
             }
 
-            // Give the |player| their contribution back if the amount was known.
-            if (contribution > 0)
-                this.finance_().givePlayerCash(player, contribution);
+            // Remove the |player| from the activity.
+            activity.removePlayer(player);
 
             player.sendMessage(Message.GAME_REGISTRATION_LEFT, activity.getActivityName());
             return;
@@ -125,6 +119,9 @@ export class GameCommands {
             switch (activity.getActivityState()) {
                 case GameActivity.kStateRegistered:
                     message = Message.GAME_REGISTRATION_ALREADY_REGISTERED;
+                    break;
+                case GameActivity.kStateEngaged:
+                    message = Message.GAME_REGISTRATION_ALREADY_ENGAGED;
                     break;
                 default:
                     throw new Error(`Unknown activity: ${activity}`)

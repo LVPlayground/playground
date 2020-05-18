@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import CommandBuilder from 'components/command_manager/command_builder.js';
 import { GameActivity } from 'features/games/game_activity.js';
 import { GameRegistration } from 'features/games/game_registration.js';
 
@@ -30,6 +31,13 @@ export class GameCommands {
 
         // Set of commands that have been registered on the server for individual games.
         this.commands_ = new Set();
+
+        // /leave
+        server.commandManager.buildCommand('leave')
+            .sub(CommandBuilder.PLAYER_PARAMETER)
+                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .build(GameCommands.prototype.onLeaveCommand.bind(this))
+            .build(GameCommands.prototype.onLeaveCommand.bind(this));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -59,6 +67,48 @@ export class GameCommands {
         server.commandManager.removeCommand(commandName);
 
         this.commands_.delete(commandName);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // /leave [player]?
+    //
+    // Makes a player leave any game that they have registered for, or are participating in. If the
+    // JavaScript code is not aware of any activity, the command will be given to Pawn instead.
+    onLeaveCommand(currentPlayer, targetPlayer) {
+        const player = targetPlayer || currentPlayer;
+
+        const activity = this.manager_.getPlayerActivity(player);
+        if (activity) {
+            let contribution = 0;
+
+            switch (activity.getActivityState()) {
+                case GameActivity.kStateRegistered:
+                    contribution = activity.getPlayerContribution(player);
+                    activity.removePlayer(player);
+                    break;
+
+                case GameActivity.kStateEngaged:
+                    // TODO: Implement /leave for active games.
+                    break;
+            }
+
+            // Give the |player| their contribution back if the amount was known.
+            if (contribution > 0)
+                this.finance_().givePlayerCash(player, contribution);
+
+            player.sendMessage(Message.GAME_REGISTRATION_LEFT, activity.getActivityName());
+            return;
+        }
+
+        // Otherwise, forward the command to Pawn. Do this after a delay, to avoid re-entrancy
+        // issues. In practice this will be a delay of ~5 milliseconds.
+        if (!server.isTest()) {
+            pawnInvoke(
+                'SetTimerEx', 'siisii', 'OnPlayerLeaveCommand', /* interval= */ 0,
+                /* repeating= */ 0, /* format= */ 'ii', /* playerid= */ currentPlayer.id,
+                /* targetid= */ (targetPlayer ? targetPlayer.id : Player.kInvalidId));
+        }
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -203,9 +253,11 @@ export class GameCommands {
         this.registry_.setCommandDelegate(null);
         this.registry_ = null;
 
+        server.commandManager.removeCommand('leave');
+
         for (const commandName of this.commands_)
             server.commandManager.removeCommand(commandName);
-    
+
         this.commands_ = null;
     }
 }

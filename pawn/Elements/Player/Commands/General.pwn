@@ -699,17 +699,14 @@ l_Tune:
 }
 
 // Command: /leave
-lvp_leave(playerid,params[]) {
-    // Right. This command is unique. For players, it has to just simply leave
-    // them from the minigame, but for admins, if an ID is specified, we have
-    // to force the specified id to leave.
+//
+// The /leave command will be triggered by JavaScript when it cannot handle the event.
+forward OnPlayerLeaveCommand(playerid, targetid);
+public OnPlayerLeaveCommand(playerid, targetid) {
     new targetPlayer = playerid;
 
-    // right, we make a default var assigned to the playerid, however, if
-    // this command is used by an admin, and includes params, we assign
-    // that var to the value of the params!
-    if (strlen(params) > 0 && Player(playerid)->isAdministrator() == true)
-        targetPlayer = SelectPlayer(params);
+    if (Player(playerid)->isAdministrator() && Player(targetid)->isConnected())
+        targetPlayer = targetid;
 
     new MinigameType: minigameType = GetPlayerMinigameType(targetPlayer), name[48];
     strncpy(name, GetPlayerMinigameName(targetPlayer), sizeof(name));

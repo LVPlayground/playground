@@ -222,4 +222,33 @@ describe('GameCommands', (it, beforeEach) => {
         assert.isNotNull(manager.getPlayerActivity(gunther));
         assert.isNotNull(manager.getPlayerActivity(russell));
     });
+
+    it('enables players to cancel their registration with the /leave command', async (assert) => {
+        class BubbleGame extends Game {}
+
+        const description = new GameDescription(BubbleGame, {
+            name: 'Bubble',
+            command: 'bubblegame',
+            price: 1000,
+        });
+
+        // Create the command, give Gunther enough money to participate.
+        commands.createCommandForGame(description);
+        finance.givePlayerCash(gunther, 5000);
+
+        // Have Gunther start the Bubble game...
+        assert.isTrue(await gunther.issueCommand('/bubblegame'));
+        assert.equal(gunther.messages.length, 2);
+
+        assert.isNotNull(manager.getPlayerActivity(gunther));
+        assert.equal(finance.getPlayerCash(gunther), 4000);
+
+        // Have Gunther type the `/leave` command because they changed their mind.
+        assert.isTrue(await gunther.issueCommand('/leave'));
+        assert.equal(gunther.messages.length, 3);
+        assert.equal(gunther.messages[2], Message.format(Message.GAME_REGISTRATION_LEFT, 'Bubble'));
+
+        assert.isNull(manager.getPlayerActivity(gunther));
+        assert.equal(finance.getPlayerCash(gunther), 5000);
+    });
 });

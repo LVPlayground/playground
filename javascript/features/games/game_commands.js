@@ -8,16 +8,21 @@ import { GameRegistration } from 'features/games/game_registration.js';
 // This class is responsible for making sure that all the appropriate commands for games on the
 // server are made available, as well as canonical functionality such as the `/challenge` command.
 export class GameCommands {
-    commands_ = null;
     finance_ = null;
+    settings_ = null;
+
+    commands_ = null;
+    disposed_ = false;
     manager_ = null;
     registry_ = null;
 
     // Gets the |commands_| map for testing purposes.
     get commandsForTesting() { return this.commands_; }
 
-    constructor(finance, manager, registry) {
+    constructor(finance, settings, manager, registry) {
         this.finance_ = finance;
+        this.settings_ = settings;
+
         this.manager_ = manager;
 
         this.registry_ = registry;
@@ -137,8 +142,15 @@ export class GameCommands {
             return;
         }
 
+        // An asynchronous registration period will be started for the configured amount of time.
+        // Communicate this to the player, and schedule a start attempt after that time.
+        const expirationTimeSec = this.settings_().getValue('games/registration_expiration_sec');
+
         player.sendMessage(Message.GAME_REGISTRATION_JOINED, registration.getActivityName());
-        player.sendMessage(Message.GAME_REGISTRATION_CREATED, registration.duration);
+        player.sendMessage(Message.GAME_REGISTRATION_CREATED, expirationTimeSec);
+
+        wait(expirationTimeSec * 1000).then(() =>
+            this.onCommandRegistrationExpired(registration));
 
         // Send an e-mail to all other unengaged people on the server to see if the want to
         // participate in the game as well. They're welcome to sign up.
@@ -157,9 +169,37 @@ export class GameCommands {
         }
     }
 
+    // Called when the registration expiration for the given |registration| has expired. It's time
+    // to start the game, or refund the participating players their contribution.
+    onCommandRegistrationExpired(registration) {
+        if (registration.hasFinished() || this.disposed_)
+            return;  // the |registration| has already finished
+        
+        // If enough players have registered for the game, then we will be able to start it.
+        if (registration.players.size >= registration.description.minimumPlayers) {
+            registration.start();
+            return;
+        }
+
+        // Otherwise, it will have to be cancelled. Remove all players and tell them what's up.
+        for (const [ player, contribution ] of registration.players.entries()) {
+            // (1) Tell the |player| what's going on.
+            player.sendMessage(
+                Message.GAME_REGISTRATION_NOT_ENOUGH_REGISTRATIONS, registration.description.name);
+
+            // (2) Refund the |player| their |contribution|.
+            this.finance_().givePlayerCash(player, contribution);
+
+            // (3) Remove the |player| from the |registration|.
+            registration.removePlayer(player);
+        }
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        this.disposed_ = true;
+
         this.registry_.setCommandDelegate(null);
         this.registry_ = null;
 

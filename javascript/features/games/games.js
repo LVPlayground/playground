@@ -22,6 +22,9 @@ export default class Games extends Feature {
         // Participating in a game costs some money, but can also reward a prize.
         const finance = this.defineDependency('finance');
 
+        // Various aspects of the games framework are configurable through `/lvp settings`.
+        const settings = this.defineDependency('settings');
+
         // The game manager keeps track of all active games on the server, regardless of how they
         // have been started. Expects to be instrumented by other components.
         this.manager_ = new GameManager(finance);
@@ -31,7 +34,7 @@ export default class Games extends Feature {
         this.registry_ = new GameRegistry(this.manager_);
         
         // Implements the commands with which players can start and stop games.
-        this.commands_ = new GameCommands(finance, this.manager_, this.registry_);
+        this.commands_ = new GameCommands(finance, settings, this.manager_, this.registry_);
     }
 
     // ---------------------------------------------------------------------------------------------

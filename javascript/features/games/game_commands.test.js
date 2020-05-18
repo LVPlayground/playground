@@ -6,8 +6,6 @@ import { GameDescription } from 'features/games/game_description.js';
 import { GameRegistration } from 'features/games/game_registration.js';
 import { Game } from 'features/games/game.js';
 
-import { kDurationSeconds } from 'features/games/game_registration.js';
-
 describe('GameCommands', (it, beforeEach) => {
     let commands = null;
     let finance = null;
@@ -15,6 +13,7 @@ describe('GameCommands', (it, beforeEach) => {
     let lucy = null;
     let manager = null;
     let russell = null;
+    let settings = null;
 
     beforeEach(() => {
         const feature = server.featureManager.loadFeature('games');
@@ -23,6 +22,7 @@ describe('GameCommands', (it, beforeEach) => {
         manager = feature.manager_;
 
         finance = server.featureManager.loadFeature('finance');
+        settings = server.featureManager.loadFeature('settings');
 
         gunther = server.playerManager.getById(/* Gunther= */ 0);
         russell = server.playerManager.getById(/* Russell= */ 1);
@@ -63,6 +63,9 @@ describe('GameCommands', (it, beforeEach) => {
             price: 5000,
         });
 
+        // Configure the registration to expire after 25 seconds.
+        settings.setValue('games/registration_expiration_sec', 25);
+
         // Creates the `/bubblegame` command on the server, which players can use.
         commands.createCommandForGame(description);
 
@@ -75,8 +78,7 @@ describe('GameCommands', (it, beforeEach) => {
         assert.equal(
             gunther.messages[0], Message.format(Message.GAME_REGISTRATION_JOINED, 'Bubble'));
         assert.equal(
-            gunther.messages[1],
-            Message.format(Message.GAME_REGISTRATION_CREATED, kDurationSeconds));
+            gunther.messages[1], Message.format(Message.GAME_REGISTRATION_CREATED, 25));
 
         assert.isNotNull(manager.getPlayerActivity(gunther));
         assert.equal(manager.getPlayerActivity(gunther).getActivityName(), 'Bubble');
@@ -170,5 +172,54 @@ describe('GameCommands', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.equal(
             gunther.messages[0], Message.format(Message.GAME_REGISTRATION_STARTED, 'Bubble'));
+    });
+
+    it('should automatically try to start a game when the registration expires', async (assert) => {
+        class BubbleGame extends Game {}
+
+        const description = new GameDescription(BubbleGame, {
+            name: 'Bubble',
+            command: 'bubblegame',
+            minimumPlayers: 2,
+            maximumPlayers: 4,
+            price: 1000,
+        });
+
+        // Create the command, give Gunther enough money to participate, and fix the timeout.
+        commands.createCommandForGame(description);
+        finance.givePlayerCash(gunther, 5000);
+        settings.setValue('games/registration_expiration_sec', 25);
+
+        // Have Gunther start the Bubble game, but have it fail because of lack of participation.
+        assert.isTrue(await gunther.issueCommand('/bubblegame'));
+        assert.equal(gunther.messages.length, 2);
+
+        assert.isNotNull(manager.getPlayerActivity(gunther));
+        assert.equal(finance.getPlayerCash(gunther), 4000);
+
+        await server.clock.advance(25 * 1000);  // advance the time past expiration
+
+        assert.equal(finance.getPlayerCash(gunther), 5000);  // refunded
+        assert.equal(gunther.messages.length, 3);
+        assert.equal(
+            gunther.messages[2],
+            Message.format(Message.GAME_REGISTRATION_NOT_ENOUGH_REGISTRATIONS, 'Bubble'));
+        
+        assert.isNull(manager.getPlayerActivity(gunther));
+
+        // Have Gunther and Russell both sign up for the Bubble game, which means that it will
+        // start automatically after the registration expiration delay.
+        assert.isTrue(await gunther.issueCommand('/bubblegame'));
+        assert.equal(gunther.messages.length, 5);
+
+        finance.givePlayerCash(russell, 5000);
+
+        assert.isTrue(await russell.issueCommand('/bubblegame'));
+        assert.equal(russell.messages.length, 3);
+
+        await server.clock.advance(25 * 1000);  // advance the time past expiration
+
+        assert.isNotNull(manager.getPlayerActivity(gunther));
+        assert.isNotNull(manager.getPlayerActivity(russell));
     });
 });

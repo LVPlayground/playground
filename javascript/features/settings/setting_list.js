@@ -57,6 +57,9 @@ export default [
     new Setting('financial', 'community_contribution_vip_base', Setting.TYPE_NUMBER, 2500000, 'Starting at what wealth level should VIPs contribute?'),
     new Setting('financial', 'community_contribution_vip_pct', Setting.TYPE_NUMBER, 3, 'What percentage of cash should VIPs contribute?'),
 
+    /** Game-related settings */
+    new Setting('games', 'registration_expiration_sec', Setting.TYPE_NUMBER, 20, 'After how many seconds does a game registration expire?'),
+
     /** Gang-related settings */
     new Setting('gangs', 'zones_area_bonus_members', Setting.TYPE_NUMBER, 8, 'Starting at how many members will an area bonus be applied?'),
     new Setting('gangs', 'zones_area_bonus_members_pct', Setting.TYPE_NUMBER, 20, 'Area increase percentage granted for the member bonus.'),

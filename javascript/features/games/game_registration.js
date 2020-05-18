@@ -4,9 +4,6 @@
 
 import { GameActivity } from 'features/games/game_activity.js';
 
-// Duration, in seconds, for which a game registration will wait.
-export const kDurationSeconds = 20;
-
 // Encapsulates the state in a game where registrations are being accepted and tracked. Will let
 // the manager know when the registration process has finished.
 export class GameRegistration extends GameActivity {
@@ -44,9 +41,6 @@ export class GameRegistration extends GameActivity {
 
     // Gets the description of the game that this registration has been created for.
     get description() { return this.description_; }
-
-    // Gets the duration, in seconds, for which this registration will wait.
-    get duration() { return kDurationSeconds; }
 
     // Returns whether the registration has finished, and the game has started or been cancelled.
     hasFinished() { return this.finished_; }

@@ -5,6 +5,7 @@
 import Feature from 'components/feature_manager/feature.js';
 import { GameCommands } from 'features/games/game_commands.js';
 import { GameDescription } from 'features/games/game_description.js';
+import { GameManager } from 'features/games/game_manager.js';
 import { GameRegistry } from 'features/games/game_registry.js';
 
 // Base interface upon which minigames can be built. Provides the ability for players to start a
@@ -12,17 +13,22 @@ import { GameRegistry } from 'features/games/game_registry.js';
 // and consider it finished when either everyone leaves, or the game signals that there's a winner.
 export default class Games extends Feature {
     commands_ = null;
+    manager_ = null;
     registry_ = null;
 
     constructor() {
         super();
 
+        // The game manager keeps track of all active games on the server, regardless of how they
+        // have been started. Expects to be instrumented by other components.
+        this.manager_ = new GameManager();
+
         // The game registry keeps track of all the games that are available on the server. It will
         // further make sure that the commands for these games are available as appropriate.
-        this.registry_ = new GameRegistry();
+        this.registry_ = new GameRegistry(this.manager_);
         
         // Implements the commands with which players can start and stop games.
-        this.commands_ = new GameCommands(this.registry_);
+        this.commands_ = new GameCommands(this.manager_, this.registry_);
     }
 
     // ---------------------------------------------------------------------------------------------

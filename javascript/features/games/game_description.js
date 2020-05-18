@@ -2,6 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+// The default price of participating in a game. Can be overridden by individual games.
+export const kDefaultPrice = 250;
+
 // Determines if the given |gameConstructor| has a class named "Game" in its prototype chain. We
 // cannot use `isPrototypeOf` here, since the actual instances might be subtly different when live
 // reload has been used on the server.
@@ -21,6 +24,7 @@ export class GameDescription {
 
     name_ = null;
     command_ = null;
+    price_ = kDefaultPrice;
 
     // Gets the constructor which can be used to instantiate the game.
     get gameConstructor() { return this.gameConstructor_; }
@@ -30,6 +34,9 @@ export class GameDescription {
 
     // Gets the name of the command which can be used to start the game. Optional, thus may be NULL.
     get command() { return this.command_; }
+
+    // Gets the price for which someone can participate in this minigame.
+    get price() { return this.price_; }
 
     constructor(gameConstructor, options) {
         if (!hasGameInPrototype(gameConstructor))
@@ -55,6 +62,13 @@ export class GameDescription {
                 throw new Error(`[${this.name_}] The game's command must be given as a string.`);
             
             this.command_ = options.command;
+        }
+
+        if (options.hasOwnProperty('price')) {
+            if (typeof options.price !== 'number')
+                throw new Error(`[${this.name_}] The game's price must be given as a number.`);
+            
+            this.price_ = options.price;
         }
     }
 }

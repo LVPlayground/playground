@@ -6,12 +6,14 @@
 // options and the right way to start them.
 export class GameRegistry {
     commandDelegate_ = null;
+    manager_ = null;
 
     // Map of |gameConstructor| => |GameDescription| for each of the registered games on the server.
     games_ = null;
 
-    constructor() {
+    constructor(manager) {
         this.games_ = new Map();
+        this.manager_ = manager;
     }
 
     // Sets the command delegate for the registry, which has the ability to create and delete the
@@ -45,7 +47,8 @@ export class GameRegistry {
         if (this.commandDelegate_ && description.command)
             this.commandDelegate_.removeCommandForGame(description);
 
-        // TODO: Request all active games of this type to be stopped.
+        // Stops all active games of the given |description|, as it'll become unavailable.
+        this.manager_.stopAllActiveGames(description);
 
         this.games_.delete(gameConstructor);
     }

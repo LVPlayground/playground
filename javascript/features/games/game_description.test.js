@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { GameDescription } from 'features/games/game_description.js';
+import { GameDescription, kDefaultPrice } from 'features/games/game_description.js';
 import { Game } from 'features/games/game.js';
 
 describe('GameDescription', it => {
@@ -22,5 +22,6 @@ describe('GameDescription', it => {
         assert.equal(description.name, 'My game');
 
         assert.isNull(description.command);
+        assert.equal(description.price, kDefaultPrice);
     });
 });

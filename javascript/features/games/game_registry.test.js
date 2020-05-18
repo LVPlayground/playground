@@ -92,4 +92,31 @@ describe('GameRegistry', (it, beforeEach) => {
         assert.isFalse(commands.commandsForTesting.has('firstgame'));
         assert.isFalse(commands.commandsForTesting.has('secondgame'));
     });
+
+    it('tells the game manager to stop games of a particular type when needed', assert => {
+        class MyFirstGame extends Game {}
+
+        let stopCalls = 0;
+
+        const fakeManager = new class {
+            stopAllActiveGames(description) {
+                assert.strictEqual(description.gameConstructor, MyFirstGame);
+                assert.equal(description.name, 'My first game');
+
+                ++stopCalls;
+            }
+        };
+        
+        // Override the actual manager to capture the methods that would be called.
+        registry.manager_ = fakeManager;
+
+        registry.registerGame(new GameDescription(MyFirstGame, {
+            name: 'My first game',
+            command: 'firstgame',
+        }));
+
+        assert.equal(stopCalls, 0);
+        registry.removeGame(MyFirstGame);
+        assert.equal(stopCalls, 1);
+    });
 });

@@ -2,16 +2,22 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { GameActivity } from 'features/games/game_activity.js';
+import { GameRegistration } from 'features/games/game_registration.js';
+
 // This class is responsible for making sure that all the appropriate commands for games on the
 // server are made available, as well as canonical functionality such as the `/challenge` command.
 export class GameCommands {
     commands_ = null;
+    manager_ = null;
     registry_ = null;
 
     // Gets the |commands_| map for testing purposes.
     get commandsForTesting() { return this.commands_; }
 
-    constructor(registry) {
+    constructor(manager, registry) {
+        this.manager_ = manager;
+
         this.registry_ = registry;
         this.registry_.setCommandDelegate(this);
 
@@ -51,9 +57,71 @@ export class GameCommands {
     // ---------------------------------------------------------------------------------------------
 
     // Called when the |player| has executed the command necessary to start the game described in
-    // the given |description|. This will either sign them up, or start the sign-up flow.
+    // the given |description|. This will first check that they're not occupied with another
+    // activity just yet. If they aren't, it will either register them for an existing pending game,
+    // or create a new game just for them.
     onCommand(description, player) {
-        // TODO: Implement a basic sign-up flow.
+        const activity = this.manager_.getPlayerActivity(player);
+        if (activity) {
+            let message = null;
+
+            switch (activity.getActivityState()) {
+                case GameActivity.kStateRegistered:
+                    message = Message.GAME_REGISTRATION_ALREADY_REGISTERED;
+                    break;
+                default:
+                    throw new Error(`Unknown activity: ${activity}`)
+            }
+
+            player.sendMessage(message, activity.getActivityName());
+            return;
+        }
+
+        // Check if there are any existing games that the |player| might be able to join.
+        const pendingRegistrations = this.manager_.getPendingGameRegistrations(description);
+        for (const pendingRegistration of pendingRegistrations) {
+            if (pendingRegistration.type !== GameRegistration.kTypePublic)
+                continue;  // this is not a game to which everyone can sign up
+            
+            player.sendMessage(
+                Message.GAME_REGISTRATION_JOINED, pendingRegistration.getActivityName());
+
+            // Actually register the |player| to participate, and we're done here.
+            pendingRegistration.registerPlayer(player);
+            return;
+        }
+
+        // Create a new registration flow for the |description|, to which all other players are
+        // invited to participate. This enables future commands to join the game instead.
+        const registration =
+            this.manager_.createGameRegistration(description, GameRegistration.kTypePublic);
+
+        if (!registration) {
+            player.sendMessage(Message.GAME_REGISTRATION_UNAVAILABLE, description.name);
+            return;
+        }
+
+        player.sendMessage(Message.GAME_REGISTRATION_JOINED, registration.getActivityName());
+        player.sendMessage(Message.GAME_REGISTRATION_CREATED, registration.duration);
+
+        // Register the |player| to participate in the |registration|.
+        registration.registerPlayer(player)
+
+        // Send an e-mail to all other unengaged people on the server to see if the want to
+        // participate in the game as well. They're welcome to sign up.
+        const formattedAnnouncement =
+            Message.format(Message.GAME_REGISTRATION_ANNOUNCEMENT, description.name,
+                           description.command, description.price);
+
+        for (const recipient of server.playerManager) {
+            if (recipient === player || recipient.isNonPlayerCharacter())
+                continue;  // no need to send to either the |player| or to bots
+            
+            if (this.manager_.getPlayerActivity(recipient))
+                continue;  // the |recipient| is already involved in another game
+            
+            recipient.sendMessage(formattedAnnouncement);
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

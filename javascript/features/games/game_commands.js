@@ -101,11 +101,11 @@ export class GameCommands {
             return;
         }
 
-        player.sendMessage(Message.GAME_REGISTRATION_JOINED, registration.getActivityName());
-        player.sendMessage(Message.GAME_REGISTRATION_CREATED, registration.duration);
-
         // Register the |player| to participate in the |registration|.
         registration.registerPlayer(player)
+
+        player.sendMessage(Message.GAME_REGISTRATION_JOINED, registration.getActivityName());
+        player.sendMessage(Message.GAME_REGISTRATION_CREATED, registration.duration);
 
         // Send an e-mail to all other unengaged people on the server to see if the want to
         // participate in the game as well. They're welcome to sign up.

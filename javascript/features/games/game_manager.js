@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { GameActivity } from 'features/games/game_activity.js';
 import { GameRegistration } from 'features/games/game_registration.js';
 
 // The game manager is responsible for keeping track of and managing all active games on the server-
@@ -57,14 +58,20 @@ export class GameManager {
     
     // ---------------------------------------------------------------------------------------------
 
-    // Called when the given |player| has registered to participate in the |registration|.
-    onPlayerAddedToRegistration(player, registration) {
-        this.activity_.set(player, registration);
-    }
+    // Updates the |player|'s activity to |activity|. The state may only progress, so while moving
+    // from a kStateRegistered state to a kStateEngaged state is fine, moving from a kStateEngaged
+    // state to another kStateEngaged state is not, as that means something didn't get shut down.
+    setPlayerActivity(player, activity) {
+        if (!activity) {
+            this.activity_.delete(player);
+            return;
+        }
 
-    // Called when the given |player| has dropped out of the given |registration|.
-    onPlayerRemovedFromRegistration(player, registration) {
-        this.activity_.delete(player);
+        const currentActivity = this.activity_.get(player);
+        if (currentActivity && currentActivity.getActivityState() === activity.getActivityState())
+            throw new Error(`Cannot update a player's activity to the same activity state.`);
+        
+        this.activity_.set(player, activity);
     }
 
     // ---------------------------------------------------------------------------------------------

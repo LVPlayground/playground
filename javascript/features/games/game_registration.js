@@ -14,6 +14,25 @@ export class GameRegistration extends GameActivity {
     static kTypePublic = 0;
     static kTypeRestricted = 1;
 
+    // Returns the theoretical number of participants who can participate in a game right now. This
+    // is based on the connected players, excluding bots and those who are already engaged.
+    static getTheoreticalNumberOfParticipants(manager) {
+        let theoreticalParticipants = 0;
+
+        for (const player of server.playerManager) {
+            if (player.isNonPlayerCharacter())
+                continue;  // ignore bots
+            
+            const activity = manager.getPlayerActivity(player);
+            if (activity && activity.getActivityState() != GameActivity.kStateRegistered)
+                continue;  // they're already engaged in another game
+            
+            ++theoreticalParticipants;
+        }
+
+        return theoreticalParticipants;
+    }
+
     manager_ = null;
 
     description_ = null;
@@ -44,7 +63,10 @@ export class GameRegistration extends GameActivity {
     // Registers the |player| to participate in the game this registration's for. Request for the
     // game to start if the maximum number of participants has been reached.
     registerPlayer(player) {
-        this.manager_.onPlayerAddedToRegistration(player, this);
+        if (this.players_.has(player))
+            throw new Error(`${player.name} has already registered for ${this}.`);
+
+        this.manager_.setPlayerActivity(player, /* activity= */ this);
         this.players_.add(player);
 
         // TODO: Check if the maximum number of players has been reached.
@@ -53,9 +75,12 @@ export class GameRegistration extends GameActivity {
     // Removes the |player| from the list of people registered to participate in this game. If there
     // are no more participants left, the game can be disposed of.
     removePlayer(player) {
-        this.players_.delete(player);
-        this.manager_.onPlayerRemovedFromRegistration(player, this);
+        if (!this.players_.has(player))
+            throw new Error(`${player.name} has not yet registered for ${this}.`);
 
+        this.manager_.setPlayerActivity(player, /* activity= */ null);
+        this.players_.delete(player);
+        
         // TODO: Dispose of the registration if there are no players left.
     }
 

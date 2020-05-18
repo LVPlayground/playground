@@ -7,6 +7,7 @@
 export class GameActivity {
     // States of activity that a player could have in a particular game.
     static kStateRegistered = 0;
+    static kStateEngaged = 1;
 
     // Returns the state of activity that this instance describes.
     getActivityState() { throw new Error(`getActivityState() must be overridden`); }

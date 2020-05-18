@@ -64,11 +64,24 @@ export class GameManager {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Starts the game described by |description| based on the given |registration| information. The
-    // new GameRuntime instance will take ownership of all player's activities.
-    startGame(description, registration) {
+    // Runs the game described by |description| based on the given |registration| information. This
+    // method will return once the game has finished again.
+    async runGame(description, registration) {
         this.registrations_.delete(registration);
-        this.runtimes_.add(new GameRuntime(description, registration));
+
+        // Create the |runtime| and add it to the active runtime set.
+        const runtime = new GameRuntime(this, description);
+        this.runtimes_.add(runtime);
+
+        await runtime.initialize();
+
+        for (const [ player, contribution ] of registration.players)
+            await runtime.addPlayer(player, contribution);
+
+        await runtime.run();
+        await runtime.finalize();
+
+        this.runtimes_.delete(runtime);
     }
 
     // ---------------------------------------------------------------------------------------------

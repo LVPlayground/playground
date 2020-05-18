@@ -125,7 +125,7 @@ export class GameRegistration extends GameActivity {
         if (this.players_.size > this.description_.maximumPlayers)
             throw new Error(`Attempting to start ${this} with more than the allowed players.`);
 
-        this.manager_.startGame(this.description_, this);
+        this.manager_.runGame(this.description_, this);
     }
 
     // ---------------------------------------------------------------------------------------------

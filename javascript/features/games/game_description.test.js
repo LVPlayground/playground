@@ -6,7 +6,8 @@ import { Game } from 'features/games/game.js';
 import { GameDescription,
          kDefaultMaximumPlayers,
          kDefaultMinimumPlayers,
-         kDefaultPrice } from 'features/games/game_description.js';
+         kDefaultPrice,
+         kDefaultTickIntervalMs } from 'features/games/game_description.js';
 
 describe('GameDescription', it => {
     it('throws when the passed gameConstructor is not valid', assert => {
@@ -28,6 +29,7 @@ describe('GameDescription', it => {
         assert.equal(description.maximumPlayers, kDefaultMaximumPlayers);
         assert.equal(description.minimumPlayers, kDefaultMinimumPlayers);
         assert.equal(description.price, kDefaultPrice);
+        assert.equal(description.tick, kDefaultTickIntervalMs);
     });
 
     it('is able to validate the data being passed to the game', assert => {

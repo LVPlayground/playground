@@ -11,6 +11,9 @@ export const kDefaultMinimumPlayers = 2;
 // The default price of participating in a game. Can be overridden by individual games.
 export const kDefaultPrice = 250;
 
+// The default interval at which ticks will be delivered to a game.
+export const kDefaultTickIntervalMs = 1000;
+
 // Determines if the given |gameConstructor| has a class named "Game" in its prototype chain. We
 // cannot use `isPrototypeOf` here, since the actual instances might be subtly different when live
 // reload has been used on the server.
@@ -33,6 +36,7 @@ export class GameDescription {
     maximumPlayers_ = kDefaultMaximumPlayers;
     minimumPlayers_ = kDefaultMinimumPlayers;
     price_ = kDefaultPrice;
+    tick_ = kDefaultTickIntervalMs;
 
     // Gets the constructor which can be used to instantiate the game.
     get gameConstructor() { return this.gameConstructor_; }
@@ -51,6 +55,9 @@ export class GameDescription {
 
     // Gets the price for which someone can participate in this minigame.
     get price() { return this.price_; }
+
+    // Gets the tick rate at which the game will receive lifetime events.
+    get tick() { return this.tick_; }
 
     constructor(gameConstructor, options) {
         if (!hasGameInPrototype(gameConstructor))
@@ -101,6 +108,13 @@ export class GameDescription {
                 throw new Error(`[${this.name_}] The game's price must be given as a number.`);
             
             this.price_ = options.price;
+        }
+
+        if (options.hasOwnProperty('tick')) {
+            if (typeof options.tick !== 'number' || !Number.isSafeInteger(options.tick))
+                throw new Error(`[${this.name_}] The game's tick must be given as a number.`);
+            
+            this.tick_ = options.tick;
         }
     }
 }

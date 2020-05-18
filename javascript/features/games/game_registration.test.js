@@ -109,6 +109,19 @@ describe('GameRegistration', (it, beforeEach) => {
         assert.isTrue(registration.hasFinished());
     });
 
+    it('should refund participants if the registration period expires', assert => {
+        class BubbleGame extends Game {}
+
+        const description = new GameDescription(BubbleGame, { name: 'Bubble' });
+        const registration =
+            new GameRegistration(description, GameRegistration.kTypePublic, manager);
+
+        registration.registerPlayer(gunther, 1234);
+        assert.equal(registration.getPlayerContribution(gunther), 1234);
+
+        // TODO: Finish this functionality & test.
+    });
+
     it('is able to stringify to something sensible', assert => {
         class BubbleGame extends Game {}
 

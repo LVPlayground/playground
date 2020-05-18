@@ -9,13 +9,15 @@ import { GameRegistration } from 'features/games/game_registration.js';
 // server are made available, as well as canonical functionality such as the `/challenge` command.
 export class GameCommands {
     commands_ = null;
+    finance_ = null;
     manager_ = null;
     registry_ = null;
 
     // Gets the |commands_| map for testing purposes.
     get commandsForTesting() { return this.commands_; }
 
-    constructor(manager, registry) {
+    constructor(finance, manager, registry) {
+        this.finance_ = finance;
         this.manager_ = manager;
 
         this.registry_ = registry;
@@ -77,17 +79,27 @@ export class GameCommands {
             return;
         }
 
+        // Check if the player has enough money to participate in the game.
+        if (this.finance_().getPlayerCash(player) < description.price) {
+            player.sendMessage(
+                Message.GAME_REGISTRATION_NOT_ENOUGH_MONEY, description.price, description.name);
+            return;
+        }
+
         // Check if there are any existing games that the |player| might be able to join.
         const pendingRegistrations = this.manager_.getPendingGameRegistrations(description);
         for (const pendingRegistration of pendingRegistrations) {
             if (pendingRegistration.type !== GameRegistration.kTypePublic)
                 continue;  // this is not a game to which everyone can sign up
             
+            // Take the registration fee from the |player|.
+            this.finance_().takePlayerCash(player, description.price);
+
             player.sendMessage(
                 Message.GAME_REGISTRATION_JOINED, pendingRegistration.getActivityName());
 
             // Actually register the |player| to participate, and we're done here.
-            pendingRegistration.registerPlayer(player);
+            pendingRegistration.registerPlayer(player, description.price);
             return;
         }
 
@@ -112,8 +124,11 @@ export class GameCommands {
             return;
         }
 
+        // Take the registration fee from the |player|.
+        this.finance_().takePlayerCash(player, description.price);
+
         // Register the |player| to participate in the |registration|.
-        registration.registerPlayer(player)
+        registration.registerPlayer(player, description.price)
 
         // If the |player| is the only on available for the game, and the game allows single-player
         // participation, it's possible that it's immediately started.

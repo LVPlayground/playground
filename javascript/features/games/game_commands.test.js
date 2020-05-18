@@ -10,6 +10,7 @@ import { kDurationSeconds } from 'features/games/game_registration.js';
 
 describe('GameCommands', (it, beforeEach) => {
     let commands = null;
+    let finance = null;
     let gunther = null;
     let lucy = null;
     let manager = null;
@@ -20,6 +21,8 @@ describe('GameCommands', (it, beforeEach) => {
 
         commands = feature.commands_;
         manager = feature.manager_;
+
+        finance = server.featureManager.loadFeature('finance');
 
         gunther = server.playerManager.getById(/* Gunther= */ 0);
         russell = server.playerManager.getById(/* Russell= */ 1);
@@ -63,6 +66,9 @@ describe('GameCommands', (it, beforeEach) => {
         // Creates the `/bubblegame` command on the server, which players can use.
         commands.createCommandForGame(description);
 
+        // Give Gunther enough money to be able to play in the game.
+        finance.givePlayerCash(gunther, 5000);
+
         // (1) Have Gunther use the `/bubblegame` command to start a new game.
         assert.isTrue(await gunther.issueCommand('/bubblegame'));
         assert.equal(gunther.messages.length, 2);
@@ -88,14 +94,27 @@ describe('GameCommands', (it, beforeEach) => {
             gunther.messages[2],
             Message.format(Message.GAME_REGISTRATION_ALREADY_REGISTERED, 'Bubble'));
 
-        // (4) Russell should be able to join the created game.
+        // (4) There should be an error if Russell doesn't have enough money.
         assert.isTrue(await russell.issueCommand('/bubblegame'));
         assert.equal(russell.messages.length, 2);
         assert.equal(
-            russell.messages[1], Message.format(Message.GAME_REGISTRATION_JOINED, 'Bubble'));
+            russell.messages[1],
+            Message.format(Message.GAME_REGISTRATION_NOT_ENOUGH_MONEY, 5000, 'Bubble'));
+
+        finance.givePlayerCash(russell, 12500);
+            
+        // (5) Russell should be able to join the created game.
+        assert.isTrue(await russell.issueCommand('/bubblegame'));
+        assert.equal(russell.messages.length, 3);
+        assert.equal(
+            russell.messages[2], Message.format(Message.GAME_REGISTRATION_JOINED, 'Bubble'));
         
         assert.isNotNull(manager.getPlayerActivity(russell));
         assert.equal(manager.getPlayerActivity(russell).getActivityName(), 'Bubble');
+
+        // (6) Verify that the participation fee has been taken from both participants.
+        assert.equal(finance.getPlayerCash(gunther), 0);
+        assert.equal(finance.getPlayerCash(russell), 7500);
     });
 
     it('should warn players when there are not enough players for a game', async (assert) => {
@@ -111,6 +130,9 @@ describe('GameCommands', (it, beforeEach) => {
 
         // Creates the `/bubblegame` command on the server, which players can use.
         commands.createCommandForGame(description);
+
+        // Give Gunther enough money to be able to play in the game.
+        finance.givePlayerCash(gunther, 5000);
 
         assert.isTrue(await gunther.issueCommand('/bubblegame'));
         assert.equal(gunther.messages.length, 1);
@@ -133,6 +155,9 @@ describe('GameCommands', (it, beforeEach) => {
 
         // Creates the `/bubblegame` command on the server, which players can use.
         commands.createCommandForGame(description);
+
+        // Give Gunther enough money to be able to play in the game.
+        finance.givePlayerCash(gunther, 5000);
 
         // Mark |russell| and |lucy| as bots, so that there's only one available player.
         russell.setIsNonPlayerCharacterForTesting(true);

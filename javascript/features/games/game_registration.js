@@ -39,6 +39,7 @@ export class GameRegistration extends GameActivity {
     finished_ = false;
     type_ = null;
 
+    // Map from Player instance to the financial contribution they made to the game.
     players_ = null;
 
     // Gets the description of the game that this registration has been created for.
@@ -61,17 +62,17 @@ export class GameRegistration extends GameActivity {
         this.description_ = description;
         this.type_ = type;
 
-        this.players_ = new Set();
+        this.players_ = new Map();
     }
 
     // Registers the |player| to participate in the game this registration's for. Request for the
     // game to start if the maximum number of participants has been reached.
-    registerPlayer(player) {
+    registerPlayer(player, contribution) {
         if (this.players_.has(player))
             throw new Error(`${player.name} has already registered for ${this}.`);
 
         this.manager_.setPlayerActivity(player, /* activity= */ this);
-        this.players_.add(player);
+        this.players_.set(player, contribution);
 
         // Start the game immediately if the maximum number of players has signed up.
         if (this.players_.size === this.description_.maximumPlayers) {
@@ -87,6 +88,14 @@ export class GameRegistration extends GameActivity {
             this.start();
             return;
         }
+    }
+    
+    // Returns the amount of money |player| has contributed to the game.
+    getPlayerContribution(player) {
+        if (!this.players_.has(player))
+            throw new Error(`${player.name} has not yet registered for ${this}.`);
+        
+        return this.players_.get(player);
     }
 
     // Removes the |player| from the list of people registered to participate in this game. If there

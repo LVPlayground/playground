@@ -43,10 +43,11 @@
   "COMMAND_UNSUPPORTED": "@error Sorry, this functionality has not yet been implemented.",
   "COMMAND_USAGE": "@usage %s",
 
-  "CRUISE_USAGE": "{DC143C}Cruise{FFFFFF}: /cruise [start/stop]",
+  "CRUISE_NOT_RUNNING": "@error {DC143C}Cruise{FFFFFF}: There is currently no cruise running! /cruise start to get one going.",
+  "CRUISE_RUNNING": "{DC143C}Cruise{FFFFFF}: A cruise is running, /ctp to the leader to join in!",
   "CRUISE_STARTED": "{DC143C}Cruise{FFFFFF}: A cruise has started!",
   "CRUISE_STOPPED": "{DC143C}Cruise{FFFFFF}: The cruise has stopped, see you next time!",
-  "CRUISE_RUNNING": "{DC143C}Cruise{FFFFFF}: A cruise is running, /ctp to the leader to join in!",
+  "CRUISE_USAGE": "@usage {DC143C}Cruise{FFFFFF}: /cruise [start/stop]",
 
   "COMMUNICATION_ADMIN_MESSAGE": "{FFFF00}* %s %s (Id:%d): %s",
   "COMMUNICATION_ADMIN_SENT": "@success Your message has been sent to the administrators.",

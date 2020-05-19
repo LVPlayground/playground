@@ -21,6 +21,16 @@ describe('MuteCommands', (it, beforeEach) => {
 
         await russell.identify();
     });
+    
+    it('shows usage information when using the commands', async (assert) => {
+        assert.isTrue(await russell.issueCommand('/mute'));
+        assert.equal(russell.messages.length, 1);
+        assert.includes(russell.messages[0], '/mute [player] [duration=3]');
+
+        assert.isTrue(await russell.issueCommand('/unmute'));
+        assert.equal(russell.messages.length, 2);
+        assert.includes(russell.messages[1], '/unmute [player]');
+    });
 
     it('makes it possible to mute and unmute other players', async (assert) => {
         assert.isNull(muteManager.getPlayerRemainingMuteTime(gunther));

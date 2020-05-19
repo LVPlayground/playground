@@ -21,7 +21,7 @@ function hasGameInPrototype(gameConstructor) {
     let currentConstructor = gameConstructor;
     while (currentConstructor.name && currentConstructor.name !== 'Game')
         currentConstructor = currentConstructor.__proto__;
-    
+
     return currentConstructor.name === 'Game';
 }
 

@@ -59,7 +59,7 @@ export class GameRuntime extends GameActivity {
 
         this.game_ = new this.description_.gameConstructor(this, this.scopedEntities_);
 
-        await this.game_.onInitialize();
+        await this.game_.onInitialized();
 
         this.state_ = GameRuntime.kStateInitialized;
     }
@@ -101,7 +101,8 @@ export class GameRuntime extends GameActivity {
         if (![ GameRuntime.kStateInitialized, GameRuntime.kStateRunning ].includes(this.state_))
             throw new Error('Players may only be added to the game while it is running.');
 
-        // TODO: Save the |player|'s current state.
+        // Serialize the |player|'s state so that we can take them back after the game.
+        player.serializeState(/* restoreOnSpawn= */ false);
         
         // Tell the manager about the player now being engaged in this game.
         this.manager_.setPlayerActivity(player, this);
@@ -114,15 +115,16 @@ export class GameRuntime extends GameActivity {
 
     // Called when the |player| has to be removed from the game, either because they disconnected,
     // were forced out by an administrator, or chose to execute `/leave` themselves.
-    async removePlayer(player, disconnecting) {
+    async removePlayer(player, disconnecting = false) {
         if (this.state_ != GameRuntime.kStateRunning)
             throw new Error('Players may only be removed from the game while it is running.');
 
         // First remove the |player| from the game.
         await this.game_.onPlayerRemoved(player);
 
-        // TODO: Let the game know that the |player| is leaving.
-        // TODO: Restore the player's state.
+        // Restore the |player|'s state -- back as if nothing ever happened.
+        if (!disconnecting)
+            player.restoreState();
 
         this.manager_.setPlayerActivity(player, null);
         this.players_.delete(player);
@@ -133,18 +135,25 @@ export class GameRuntime extends GameActivity {
     // ---------------------------------------------------------------------------------------------
 
     // Signals that the |player| has lost. They will be removed from the game.
-    playerLost(player, score) {
+    async playerLost(player, score) {
+        // TODO: Store the |player|'s |score|, and the fact that they lost. (w/ rank)
 
+        return this.removePlayer(player);
     }
 
     // Signals that the |player| has won. They will be removed from the game.
-    playerWon(player, score) {
+    async playerWon(player, score) {
+        // TODO: Store the |player|'s |score|, and the fact that they won. (w/ rank)
+        // TODO: Grant the |player| their share of the prize money.
 
+        return this.removePlayer(player);
     }
 
-    // Immediately stops the game, and removes all players.
-    stop() {
-
+    // Immediately stops the game, and removes all players. None of the players will be considered
+    // either winners or losers, and their data will not be recorded.
+    async stop() {
+        for (const player of this.players_)
+            await this.removePlayer(player);
     }
 
     // ---------------------------------------------------------------------------------------------

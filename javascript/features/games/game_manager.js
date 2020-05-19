@@ -116,7 +116,7 @@ export class GameManager {
         if (!activity)
             return;  // the |player| was not engaged in any activity
         
-        activity.removePlayer(player);
+        activity.removePlayer(player, /* disconnecting= */ true);
     }
 
     // ---------------------------------------------------------------------------------------------

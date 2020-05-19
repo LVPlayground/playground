@@ -31,7 +31,7 @@ export class Game {
 
     // Called when the Game has just been created. Enables data to be loaded from disk / the
     // database, as well as objects to be initialized. Use the `scopedEntities` please.
-    async onInitialize() {}
+    async onInitialized() {}
 
     // Called at a periodic interval if the game requested a tick in its options.
     async onTick() {}

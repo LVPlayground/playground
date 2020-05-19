@@ -118,6 +118,16 @@ class StringParser {
 
       hadOptionalParameter = hadOptionalParameter || optional;
 
+      let defaultValue = null;
+
+      // Whether a default value has been given to the parameter.
+      if (optional && parameter.defaultValue !== null && parameter.defaultValue !== undefined) {
+        if (!['boolean', 'number', 'string'].includes(typeof parameter.defaultValue))
+          throw new Error('Default values may only be booleans, numbers and strings.');
+        
+        defaultValue = parameter.defaultValue;
+      }
+
       let value = parameter.hasOwnProperty('value') ? parameter.value : null;
 
       let error = null;
@@ -152,7 +162,7 @@ class StringParser {
       }
 
       // Push the sanitized parameter information to the local state.
-      this.parameters_.push({ optional, parser, error, value });
+      this.parameters_.push({ optional, parser, error, defaultValue, value });
     });
   }
 
@@ -176,8 +186,20 @@ class StringParser {
         continue;
       }
 
+      if (string.length) {
+        if (parameter.error)
+          return parameter.error;
+
+        return StringParser.ERROR_MISSING_PARAMETER;
+      }
+
       if (!parameter.optional)
-        return (string.length && parameter.error) ?? StringParser.ERROR_MISSING_PARAMETER;
+        return StringParser.ERROR_MISSING_PARAMETER
+
+      if (parameter.defaultValue !== null)
+        values.push(parameter.defaultValue);
+      else
+        values.push(undefined);
     }
 
     return values;

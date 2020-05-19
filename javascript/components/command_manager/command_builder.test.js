@@ -458,4 +458,16 @@ describe('CommandBuilder', (it, beforeEach) => {
     assert.isNull(parameterFoo);
   });
 
+  it('should properly check parameter existence for multiple parameters', assert => {
+    let foo, bar = null;
+
+    builder('testcommand')
+        .parameters([
+          { name: 'foo', type: CommandBuilder.PLAYER_PARAMETER },
+          { name: 'bar', type: CommandBuilder.NUMBER_PARAMETER, optional: true }])
+        .build((_, inFoo, inBar) => [foo, bar] = [inFoo, inBar]);
+
+    listener(player, '');
+    assert.equal(Message.filter(lastMessage), 'Usage: /testcommand [foo] [bar]');
+  });
 });

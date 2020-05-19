@@ -177,7 +177,7 @@ class StringParser {
       }
 
       if (!parameter.optional)
-        return parameter.error ?? StringParser.ERROR_MISSING_PARAMETER;
+        return (string.length && parameter.error) ?? StringParser.ERROR_MISSING_PARAMETER;
     }
 
     return values;

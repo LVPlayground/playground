@@ -10,39 +10,40 @@
  * change when you change a value, so that could cause a lot of bugus data to be collected.
  */
 enum InstrumentationType {
-    PlayerConnectActivity = 1,              // When a player connects to the server.
-    PlayerDisconnectActivity = 2,           // When a player disconnects from the server.
-    PlayerLoginActivity = 3,                // When a player logs in to their account.
-    FightClubInviteActivity = 4,            // When a player invites someone to a fight.
-    FightClubAcceptActivity = 5,            // When a player accepted a fightclub invite.
-    FightClubDenyActivity = 6,              // When a player denies a fightclub invite.
-    FightClubWatchActivity = 7,             // When a player watches another fightclub.
+    PlayerConnectActivity = 1,                       // When a player connects to the server.
+    PlayerDisconnectActivity = 2,                    // When a player disconnects from the server.
+    PlayerLoginActivity = 3,                         // When a player logs in to their account.
+    FightClubInviteActivity = 4,                     // When a player invites someone to a fight.
+    FightClubAcceptActivity = 5,                     // When a player accepted a fightclub invite.
+    FightClubDenyActivity = 6,                       // When a player denies a fightclub invite.
+    FightClubWatchActivity = 7,                      // When a player watches another fightclub.
     // [REMOVED] VehicleImportActivity = 8,
-    VehicleExportActivity = 9,              // When a player exports a vehicle (data0: model id).
-    ReactionTestCalculateActivity = 10,     // When a player answers a reaction test calculation.
-    ReactionTestRepeatActivity = 11,        // When a player repeats a reaction test text.
-    SpawnInfernusActivity = 12,             // When a player spawns an infernus through /inf.
-    VehicleArmedWithBombActivity = 13,      // When a player arms a vehicle with a bomb.
-    VehicleDetonateBombActivity = 14,       // When a vehicle armed with a bomb detonates.
-    PropertyPayoutActivity = 15,            // When a player receives payout from a property.
-    PropertyBoughtActivity = 16,            // When a player bought a new property.
-    PropertySoldActivity = 17,              // When a player sold a property they previously owned.
-    PropertiesRestoredActivity = 18,        // When a player's properties are restored on connect.
-    PlayerStateRestoredActivity = 19,       // When a player's state gets restored upon connection.
-    PlayerLoginAsGuestActivity = 20,        // When a player decides to log in as a guest.
-    PlayerLoginAsModeratorActivity = 21,    // When a moderator logs in to their account under another name.
-    GangCreatedActivity = 22,               // When a player creates a new gang.
-    GangJoinedActivity = 23,                // When a player joins an existing gang.
-    GangMessageActivity = 24,               // When a player sends a message to the gang.
-    BankWithdrawActivity = 25,              // When a player withdraws money from their account.
-    BankDepositActivity = 26,               // When a player deposits money into their account.
-    GangCreatedPersistentActivity = 27,     // When a persistent gang has been loaded from the database.
-    GangJoinedPersistentActivity = 28,      // When a player has joined a persistent gang.
-    PlayerVipLoginActivity = 29,            // When a very important player logs in to their account.
-    IgnorePlayerActivity = 30,              // When a player decides to ignore another player.
-    CreatedVehicleActivity = 31,            // When an administrator creates a vehicle with /v create.
-    DestroyedVehicleActivity = 32,          // When an administrator destroyes a vehicle with /v destroy.
-    JumpZoneEnteredActivity = 33            // When a player has been teleported to a jumpzone.
+    VehicleExportActivity = 9,                       // When a player exports a vehicle (data0: model id).
+    // [REMOVED] ReactionTestCalculateActivity = 10, // When a player answers a reaction test calculation.
+    // [REMOVED] ReactionTestRepeatActivity = 11,    // When a player repeats a reaction test text.
+    // [REMOVED] SpawnInfernusActivity = 12,         // When a player spawns an infernus through /inf.
+    VehicleArmedWithBombActivity = 13,               // When a player arms a vehicle with a bomb.
+    VehicleDetonateBombActivity = 14,                // When a vehicle armed with a bomb detonates.
+    // [REMOVED] PropertyPayoutActivity = 15,        // When a player receives payout from a property.
+    PropertyBoughtActivity = 16,                     // When a player bought a new property.
+    PropertySoldActivity = 17,                       // When a player sold a property they previously owned.
+    PropertiesRestoredActivity = 18,                 // When a player's properties are restored on connect.
+    // [REMOVED] PlayerStateRestoredActivity = 19,   // When a player's state gets restored upon connection.
+    PlayerLoginAsGuestActivity = 20,                 // When a player decides to log in as a guest.
+    PlayerLoginAsModeratorActivity = 21,             // When a moderator logs in to their account under another name.
+    // [REMOVED] GangCreatedActivity = 22,           // When a player creates a new gang.
+    // [REMOVED] GangJoinedActivity = 23,            // When a player joins an existing gang.
+    // [REMOVED] GangMessageActivity = 24,           // When a player sends a message to the gang.
+    // [REMOVED] BankWithdrawActivity = 25,          // When a player withdraws money from their account.
+    // [REMOVED] BankDepositActivity = 26,           // When a player deposits money into their account.
+    // [REMOVED] GangCreatedPersistentActivity = 27, // When a persistent gang has been loaded from the database.
+    // [REMOVED] GangJoinedPersistentActivity = 28,  // When a player has joined a persistent gang.
+    PlayerVipLoginActivity = 29,                     // When a very important player logs in to their account.
+    // [REMOVED] IgnorePlayerActivity = 30,          // When a player decides to ignore another player.
+    // [REMOVED] CreatedVehicleActivity = 31,        // When an administrator creates a vehicle with /v create.
+    // [REMOVED] DestroyedVehicleActivity = 32,      // When an administrator destroyes a vehicle with /v destroy.
+    JumpZoneEnteredActivity = 33,                    // When a player has been teleported to a jumpzone.
+    CommandExecutedActivity = 34                     // When a player executes a command (data0: name).
 };
 
 /**

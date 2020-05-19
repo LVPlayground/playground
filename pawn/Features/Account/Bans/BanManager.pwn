@@ -168,7 +168,7 @@ class BanManager {
 
         SendClientMessage(playerId, Color::Information, ""); // spacing.
         SendClientMessage(playerId, Color::Information, "You may appeal this ban on our forums (http://forum.sa-mp.nl) or on our IRC channel,");
-        SendClientMessage(playerId, Color::Information, "available through www.sa-mp.nl/chat");
+        SendClientMessage(playerId, Color::Information, "available through (sa-mp.nl/about/irc.html) , if not you can approach us on discord at (discord.sa-mp.nl)");
 
         m_automaticallyBanned[playerId] = true;
 

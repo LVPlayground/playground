@@ -92,10 +92,6 @@ OriginalOnPlayerSpawn(playerId) {
         ColorManager->setPlayerMarkerHidden(playerId, false);
     }
 
-    // Freeze the player for the drive-by menu.
-    if (Drivebyer[playerId] > -1)
-        TogglePlayerControllable(playerId, false);
-
 #if Feature::DisableFights == 0
     // Remove the player from a minigame. If the player isn't in any minigame, make sure the skin
     // and color are correct.

@@ -252,7 +252,6 @@ ResetPlayerStats(playerId) {
     g_RivershellPlayer[playerId] = 0;
     preventKillLamers[playerId] = 0;
     Drivebyer[playerId] = -1;
-    HeliKill[playerId] = 0;
     UserTemped[playerId] = "";
     PlayerHandOfGod[playerId] = 0;
     g_LastSlapTime[playerId] = 0;

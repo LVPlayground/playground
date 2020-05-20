@@ -35,14 +35,6 @@ describe('GameRuntime', (it, beforeEach) => {
         return runtime;
     }
 
-    // Runs the game described in |description| with a dedicated runtime, making the given set of
-    // |players| join it. Will not return until the game is finished.
-    async function runGame(description, players) {
-        const runtime = await prepareGame(description, players);
-        await runtime.run();
-        await runtime.finalize();
-    }
-
     // Runs the loop that keeps the game alive, i.e. continues to fire timers and microtasks in a
     // deterministic manner to match what would happen in a production environment.
     async function runGameLoop() {
@@ -71,19 +63,32 @@ describe('GameRuntime', (it, beforeEach) => {
     });
 
     it('should call the Game events in order', async (assert) => {
+        let spawnCount = 0;
+
         const events = [];
         const description = new GameDescription(class extends Game {
             async onInitialized() { events.push('onInitialized'); }
             async onPlayerAdded(player) { events.push('onPlayerAdded'); }
-            async onPlayerSpawned(player) { events.push('onPlayerSpawned'); }
-            async onTick() { events.push('onTick'); await this.stop(); }
+            async onPlayerSpawned(player) {
+                events.push('onPlayerSpawned');
+                if (++spawnCount === 3)
+                    await this.stop();
+            }
+            async onTick() { events.push('onTick'); }
             async onPlayerRemoved(player) { events.push('onPlayerRemoved'); }
             async onFinished() { events.push('onFinished'); }
 
         }, { name: 'Bubble' });
 
-        const game = runGame(description, [ gunther, russell ]);
+        const runtime = await prepareGame(description, [ gunther, russell ]);
+        const game = runtime.run();
+
         await runGameLoop();
+
+        dispatchEvent('playerspawn', { playerid: gunther.id });
+
+        await runGameLoop();
+        await runtime.finalize();
 
         assert.deepEqual(events, [
             'onInitialized',
@@ -92,8 +97,12 @@ describe('GameRuntime', (it, beforeEach) => {
             'onPlayerSpawned',
             'onPlayerSpawned',
             'onTick',
+            'onTick',
+            'onTick',
+            'onPlayerSpawned',
             'onPlayerRemoved',
             'onPlayerRemoved',
+            'onTick',
             'onFinished',
         ]);
 

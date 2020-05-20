@@ -13,6 +13,8 @@ new Float: g_storedPlayerPositions[MAX_PLAYERS][4];
 new g_storedPlayerInteriors[MAX_PLAYERS];
 new g_storedPlayerVirtualWorlds[MAX_PLAYERS];
 
+new bool: g_involvedInJavaScriptGame[MAX_PLAYERS];
+
 forward OnSerializePlayerState(playerid, serialize, restoreOnSpawn);
 public OnSerializePlayerState(playerid, serialize, restoreOnSpawn) {
     if (serialize) {
@@ -45,6 +47,8 @@ public OnSerializePlayerState(playerid, serialize, restoreOnSpawn) {
 
         if (restoreOnSpawn)
             SpawnManager(playerid)->requestRestoreOnSpawn();
+        else
+            g_involvedInJavaScriptGame[playerid] = true;
 
     } else {  // deserialize
         LoadPlayerGuns(playerid);
@@ -67,6 +71,14 @@ public OnSerializePlayerState(playerid, serialize, restoreOnSpawn) {
 
         SetCameraBehindPlayer(playerid);
     }
+}
+
+stock bool: IsInvolvedInJavaScriptGame(playerid) {
+    return g_involvedInJavaScriptGame[playerid];
+}
+
+stock SetInvolvedInJavaScriptGame(playerid, bool: involved) {
+    g_involvedInJavaScriptGame[playerid] = involved;
 }
 
 // Required by JavaScript, do not remove.

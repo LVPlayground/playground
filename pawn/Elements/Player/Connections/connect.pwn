@@ -12,6 +12,7 @@ OnPlayerLVPConnect(playerid) {
     }
 
     ResetDeathFloodCountForPlayer(playerid);
+    SetInvolvedInJavaScriptGame(playerid, false);
 
     ResetPlayerStats(playerid);
 

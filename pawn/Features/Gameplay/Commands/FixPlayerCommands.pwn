@@ -148,6 +148,7 @@ class FixPlayerCommands {
 
         SetPlayerWantedLevel(playerId, 0);
         RemovePlayerFromAnyGame(playerId);
+        SetInvolvedInJavaScriptGame(playerId, false);
 
         // @TODO: Get rid of the legacy stuff.
         LegacyFixPlayer(playerId);

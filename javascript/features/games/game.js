@@ -48,6 +48,10 @@ export class Game {
     // world that has been assigned to the game, but not in any particular interior.
     async onPlayerSpawned(player) {}
 
+    // Called when the |player| has either died, or been killed by the |killer| when that has been
+    // set. The |reason| indicates the death reason as to why they died.
+    async onPlayerDeath(player, killer, reason) {}
+
     // Called when the |player| has been removed from the game.
     async onPlayerRemoved(player) {}
 

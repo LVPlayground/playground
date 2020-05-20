@@ -6,6 +6,7 @@ import { CircularReadOnlyBuffer } from 'base/circular_read_only_buffer.js';
 import { GameActivity } from 'features/games/game_activity.js';
 import { GameRegistration } from 'features/games/game_registration.js';
 import { GameRuntime } from 'features/games/game_runtime.js';
+import ScopedCallbacks from 'base/scoped_callbacks.js';
 
 // Virtual worlds that have been allocated to games. Boundaries, inclusive.
 const kGameVirtualWorldRange = [ 115, 199 ];
@@ -14,6 +15,7 @@ const kGameVirtualWorldRange = [ 115, 199 ];
 // whether that be accepting sign-ups, or actually in progress.
 export class GameManager {
     finance_ = null;
+    callbacks_ = null;
 
     // Map of |player| => GameActivity instances of a player's current activity, if any.
     activity_ = new WeakMap();
@@ -29,6 +31,9 @@ export class GameManager {
 
     constructor(finance) {
         this.finance_ = finance;
+        this.callbacks_ = new ScopedCallbacks();
+        this.callbacks_.addEventListener(
+            'playerresolveddeath', GameManager.prototype.onPlayerDeath.bind(this));
 
         const worlds = [];
 
@@ -125,6 +130,23 @@ export class GameManager {
         }
     }
 
+    // Called when a player has died, and information about the kill has been resolved. This is an
+    // event coming from Pawn and therefore untrusted.
+    onPlayerDeath(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player)
+            return;  // the |player| couldn't be found, this is an invalid death
+        
+        const activity = this.activity_.get(player);
+        if (!activity || activity.getActivityState() != GameActivity.kStateEngaged)
+            return;  // the |player| isn't in a game, or the game hasn't started yet
+
+        const killer = server.playerManager.getById(event.killerid);
+
+        // Let the |activity| know about the fact that the player has died.
+        activity.onPlayerDeath(player, killer, event.reason);
+    }
+
     // Called when the given |player| has disconnected from the server. This means that they'll be
     // dropping out of whatever activity they were engaged in.
     onPlayerDisconnect(player) {
@@ -159,5 +181,8 @@ export class GameManager {
 
     dispose() {
         server.playerManager.removeObserver(this);
+
+        this.callbacks_.dispose();
+        this.callbacks_ = null;
     }
 }

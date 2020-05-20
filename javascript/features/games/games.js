@@ -59,5 +59,8 @@ export default class Games extends Feature {
 
         this.registry_.dispose();
         this.registry_ = null;
+
+        this.manager_.dispose();
+        this.manager_ = null;
     }
 }

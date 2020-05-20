@@ -29,6 +29,9 @@ export class GameRuntime extends GameActivity {
     // Gets the GameDescription instance that describes what we're running here.
     get description() { return this.description_; }
 
+    // Getst the state the game is in. Only exposed for testing purposes.
+    get stateForTesting() { return this.state_; }
+
     // Gets the virtual world that has bene allocated to this game.
     get virtualWorld() { return this.virtualWorld_; }
 
@@ -126,6 +129,18 @@ export class GameRuntime extends GameActivity {
 
         this.manager_.setPlayerActivity(player, null);
         this.players_.delete(player);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Events relevant to this game
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the |player| has died, possibly by action of the |killer|.
+    onPlayerDeath(player, killer, reason) {
+        if (!this.players_.has(player))
+            throw new Error(`Received "playerdeath" event for an unknown player: ${player}`);
+        
+        this.game_.onPlayerDeath(player, killer, reason);
     }
 
     // ---------------------------------------------------------------------------------------------

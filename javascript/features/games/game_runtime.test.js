@@ -2,9 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { GameActivity } from 'features/games/game_activity.js';
 import { GameDescription, kDefaultTickIntervalMs } from 'features/games/game_description.js';
 import { GameRuntime } from 'features/games/game_runtime.js';
 import { Game } from 'features/games/game.js';
+import { Vector } from 'base/vector.js';
 
 describe('GameRuntime', (it, beforeEach) => {
     let gunther = null;
@@ -23,7 +25,8 @@ describe('GameRuntime', (it, beforeEach) => {
     // Prepares the game run in |description|, but does not yet call `run()` and/or `finalize()`,
     // which is left as an exercise to the test.
     async function prepareGame(description, players) {
-        const runtime = new GameRuntime(manager, description);
+        const virtualWorld = Math.floor(Math.random() * 10000);
+        const runtime = new GameRuntime(manager, description, virtualWorld);
         
         await runtime.initialize();
         for (const player of players)
@@ -147,6 +150,139 @@ describe('GameRuntime', (it, beforeEach) => {
 
         await runtime.finalize();
         await Promise.all([ game, runGameLoop() ]);
+    });
+
+    it('should assign and maintain an appropriate ScopedEntities for each game', async (assert) => {
+        let vehicle = null;
+
+        const description = new GameDescription(class extends Game {
+            async onInitialized() {
+                vehicle = this.scopedEntities.createVehicle({
+                    modelId: 432,  // tank
+                    position: new Vector(0, 0, 0),
+                })
+            }
+        }, { name: 'Bubble' });
+
+        assert.isNull(vehicle);
+
+        const runtime = await prepareGame(description, [ gunther ]);
+        const game = runtime.run();
+
+        assert.isNotNull(vehicle);
+        assert.isTrue(vehicle.isConnected());
+        assert.equal(vehicle.virtualWorld, runtime.virtualWorld);
+
+        await Promise.all([ runtime.removePlayer(gunther), runGameLoop() ]);
+        await runtime.finalize();
+
+        await Promise.all([ game, runGameLoop() ]);
+
+        assert.isFalse(vehicle.isConnected());
+    });
+
+    it('should be able to run games through this feature end-to-end', async (assert) => {
+        const feature = server.featureManager.loadFeature('games');
+        const finance = server.featureManager.loadFeature('finance');
+        const settings = server.featureManager.loadFeature('settings');
+
+        const options = {
+            name: 'Bubble',
+            command: 'bubblegame',
+            minimumPlayers: 2,
+            maximumPlayers: 4,
+            price: 250,
+        };
+
+        let vehicles = [ null, null ];
+        feature.registerGame(class extends Game {
+            nextPlayerIndex_ = 0;
+            playerIndex_ = new Map();
+
+            async onInitialized() {
+                vehicles[0] = this.scopedEntities.createVehicle({
+                    modelId: 432,  // tank
+                    position: new Vector(0, 0, 0),
+                });
+
+                vehicles[1] = this.scopedEntities.createVehicle({
+                    modelId: 432,  // tank
+                    position: new Vector(20, 20, 0),
+                });
+            }
+
+            async onPlayerAdded(player) {
+                this.playerIndex_.set(player, this.nextPlayerIndex_++);
+            }
+
+            async onPlayerSpawned(player) {
+                player.enterVehicle(vehicles[this.playerIndex_.get(player)]);
+            }
+
+            async onPlayerDeath(player, killer, reason) {
+                this.playerLost(player);
+                this.playerWon(killer);
+            }
+
+        }, options);
+
+        finance.givePlayerCash(gunther, 400);
+        finance.givePlayerCash(russell, 1000);
+
+        assert.isTrue(await gunther.issueCommand('/bubblegame'));
+        assert.isTrue(await russell.issueCommand('/bubblegame'));
+
+        assert.equal(finance.getPlayerCash(gunther), 150);
+        assert.equal(finance.getPlayerCash(russell), 750);
+
+        assert.isNotNull(manager.getPlayerActivity(gunther));
+        assert.equal(
+            manager.getPlayerActivity(gunther).getActivityState(), GameActivity.kStateRegistered);
+
+        assert.isNotNull(manager.getPlayerActivity(russell));
+        assert.equal(
+            manager.getPlayerActivity(russell).getActivityState(), GameActivity.kStateRegistered);
+        
+        await server.clock.advance(settings.getValue('games/registration_expiration_sec') * 1000);
+        await runGameLoop();
+
+        assert.equal(manager.registrations_.size, 0);
+        assert.equal(manager.runtimes_.size, 1);
+
+        const runtime = [ ...manager.runtimes_.values() ][0];
+
+        assert.isNotNull(manager.getPlayerActivity(gunther));
+        assert.equal(
+            manager.getPlayerActivity(gunther).getActivityState(), GameActivity.kStateEngaged);
+
+        assert.isNotNull(manager.getPlayerActivity(russell));
+        assert.equal(
+            manager.getPlayerActivity(russell).getActivityState(), GameActivity.kStateEngaged);
+        
+        assert.equal(runtime.stateForTesting, GameRuntime.kStateRunning);
+
+        assert.isNotNull(vehicles[0]);
+        assert.equal(vehicles[0].virtualWorld, runtime.virtualWorld);
+        // TODO: Verify that Gunther is in the vehicle, in the right virtual world
+
+        assert.isNotNull(vehicles[1]);
+        assert.equal(vehicles[1].virtualWorld, runtime.virtualWorld);
+        // TODO: Verify that Russell is in the vehicle, in the right virtual world
+
+        // Have |russell| kill |gunther| with a minigun, because that's what you do in a Bubble game
+        dispatchEvent('playerresolveddeath', {
+            playerid: gunther.id,
+            killerid: russell.id,
+            reason: 38,  // WEAPON_MINIGUN
+        })
+
+        await runGameLoop();
+
+        // Both players have been told to leave the game, so it should now have been finalized.
+        assert.equal(runtime.stateForTesting, GameRuntime.kStateFinalized);
+        assert.equal(manager.runtimes_.size, 0);
+
+        // TODO: Award the prize money
     });
 
     it('should have a sensible description when casted to a string', assert => {

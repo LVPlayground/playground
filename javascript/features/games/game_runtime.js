@@ -6,6 +6,7 @@ import { GameActivity } from 'features/games/game_activity.js';
 import ScopedEntities from 'entities/scoped_entities.js';
 
 import { format } from 'base/string_formatter.js';
+import { showCountdownForPlayer } from 'features/games/game_countdown.js';
 
 // Provides the runtime for hosting a Game instance, i.e. takes care of forwarding the appropriate
 // events, manages players and lifetimes of objects, vehicles and other entities.
@@ -27,6 +28,7 @@ export class GameRuntime extends GameActivity {
     players_ = null;
     prizeMoney_ = 0;
     scopedEntities_ = null;
+    spawned_ = new WeakSet();
 
     // The actual game instance that contains the logic.
     game_ = null;
@@ -160,11 +162,19 @@ export class GameRuntime extends GameActivity {
 
     // Called when the |player| is spawning in the world, while playing in this game.
     async onPlayerSpawn(player) {
+        let countdown = undefined;
+
         // Make sure that the |player| is in the right virtual world.
         player.virtualWorld = this.virtualWorld_;
 
+        // Bind the countdown for |player| is this has been configured, and this is first spawn.
+        if (this.description_.countdown && !this.spawned_.has(player))
+            countdown = showCountdownForPlayer.bind(null, player, this.description);
+
         // Let the game do their magic when the player's ready.
-        await this.game_.onPlayerSpawned(player);
+        await this.game_.onPlayerSpawned(player, countdown);
+
+        this.spawned_.add(player);
     }
 
     // ---------------------------------------------------------------------------------------------

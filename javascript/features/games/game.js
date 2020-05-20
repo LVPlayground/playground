@@ -49,7 +49,9 @@ export class Game {
 
     // Called when the |player| has spawned in the game. They are already in the appropriate virtual
     // world that has been assigned to the game, but not in any particular interior.
-    async onPlayerSpawned(player) {}
+    // When a countdown has been configured for this game, a personalized experience will be
+    // included for the player in the |countdown| argument, which would be an asynchronous function.
+    async onPlayerSpawned(player, countdown) {}
 
     // Called when the |player| has either died, or been killed by the |killer| when that has been
     // set. The |reason| indicates the death reason as to why they died.

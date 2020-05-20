@@ -69,7 +69,7 @@ describe('GameRuntime', (it, beforeEach) => {
         const description = new GameDescription(class extends Game {
             async onInitialized() { events.push('onInitialized'); }
             async onPlayerAdded(player) { events.push('onPlayerAdded'); }
-            async onPlayerSpawned(player) {
+            async onPlayerSpawned(player, countdown) {
                 events.push('onPlayerSpawned');
                 if (++spawnCount === 3)
                     await this.stop();
@@ -188,6 +188,37 @@ describe('GameRuntime', (it, beforeEach) => {
         await Promise.all([ game, runGameLoop() ]);
 
         assert.isFalse(vehicle.isConnected());
+    });
+
+    it('includes a countdown when configured for the game', async (assert) => {
+        let personalizedCountdown = null;
+
+        const description = new GameDescription(class extends Game {
+            async onPlayerSpawned(player, countdown) {
+                personalizedCountdown = countdown;
+            }
+
+        }, {
+            name: 'Bubble',
+            goal: 'Have entities',
+            countdown: 4,
+            countdownCamera: [
+                new Vector(41.055019, -45.301830, 37.605308),
+                new Vector(30.323097, 86.002151, 44.803482),
+            ],
+            countdownView: [
+                new Vector(37.480472, -42.009181, 36.430114),
+                new Vector(29.568088, 81.170539, 43.761600),
+            ],
+        });
+
+        const runtime = await prepareGame(description, [ gunther ]);
+        const game = runtime.run();
+
+        assert.typeOf(personalizedCountdown, 'function');
+        assert.isTrue(await gunther.issueCommand('/leave'));
+
+        await Promise.all([ game, runGameLoop() ]);
     });
 
     it('should be able to run games through this feature end-to-end', async (assert) => {

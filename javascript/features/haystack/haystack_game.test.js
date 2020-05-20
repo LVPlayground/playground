@@ -16,4 +16,6 @@ describe('HaystackGame', (it, beforeEach) => {
     it('should have registered the game with the server', assert => {
         assert.isTrue(server.commandManager.hasCommand('newhaystack'));
     });
+
+    it('should not reset the players timer when they respawn', async (assert) => {});
 });

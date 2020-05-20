@@ -5,7 +5,7 @@
 import Feature from 'components/feature_manager/feature.js';
 import { HaystackGame } from 'features/haystack/haystack_game.js';
 
-// Provides the haystack game, in which players have to climb a series of hay stacks to reach the
+// Provides the haystack game, in which players have to climb a series of haystacks to reach the
 // top of the tower. Implemented on top of the Games infrastructure.
 export default class Haystack extends Feature {
     games_ = null;
@@ -24,6 +24,7 @@ export default class Haystack extends Feature {
     initialize() {
         this.games_().registerGame(HaystackGame, {
             name: 'Haystack',
+            goal: 'Beat all others to the top of the haystack!',
             command: 'newhaystack',
             minimumPlayers: 1,
             maximumPlayers: 20,

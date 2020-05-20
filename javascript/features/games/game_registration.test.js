@@ -57,7 +57,7 @@ describe('GameRegistration', (it, beforeEach) => {
     it('is strict about not signing up or removing players multiple times', assert => {
         class BubbleGame extends Game {}
 
-        const description = new GameDescription(BubbleGame, { name: 'Bubble' });
+        const description = new GameDescription(BubbleGame, { name: 'Bubble', goal: '' });
         const registration =
             new GameRegistration(description, GameRegistration.kTypePublic, manager);
 
@@ -75,6 +75,7 @@ describe('GameRegistration', (it, beforeEach) => {
 
         const description = new GameDescription(BubbleGame, {
             name: 'Bubble',
+            goal: 'Start the game when there are enough players',
             minimumPlayers: 2,
             maximumPlayers: 2,
         });
@@ -96,6 +97,7 @@ describe('GameRegistration', (it, beforeEach) => {
 
         const description = new GameDescription(BubbleGame, {
             name: 'Bubble',
+            goal: 'Start the game when everyone is in!',
             minimumPlayers: 2,
             maximumPlayers: 8,
         });
@@ -116,7 +118,7 @@ describe('GameRegistration', (it, beforeEach) => {
     it('should automatically cancel the game if the last participant leaves', assert => {
         class BubbleGame extends Game {}
 
-        const description = new GameDescription(BubbleGame, { name: 'Bubble' });
+        const description = new GameDescription(BubbleGame, { name: 'Bubble', goal: '' });
         const registration =
             new GameRegistration(description, GameRegistration.kTypePublic, manager);
 
@@ -130,7 +132,7 @@ describe('GameRegistration', (it, beforeEach) => {
     it('is able to stringify to something sensible', assert => {
         class BubbleGame extends Game {}
 
-        const description = new GameDescription(BubbleGame, { name: 'Bubble' });
+        const description = new GameDescription(BubbleGame, { name: 'Bubble', goal: '' });
         const registration =
             new GameRegistration(description, GameRegistration.kTypePublic, manager);
 

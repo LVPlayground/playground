@@ -22,12 +22,14 @@ describe('GameRegistry', (it, beforeEach) => {
         assert.doesNotThrow(() => {
             registry.registerGame(new GameDescription(MyFirstGame, {
                 name: 'My first game',
+                goal: 'Goal of the game',
             }));
         });
 
         assert.throws(() => {
             registry.registerGame(new GameDescription(MyFirstGame, {
                 name: 'My first game',
+                goal: 'Goal of another game!',
             }));
         });
 
@@ -45,6 +47,7 @@ describe('GameRegistry', (it, beforeEach) => {
 
         registry.registerGame(new GameDescription(MyFirstGame, {
             name: 'My first game',
+            goal: 'Make sure that commands are registered',
             command: 'firstgame',
         }));
 
@@ -55,6 +58,7 @@ describe('GameRegistry', (it, beforeEach) => {
         assert.throws(() => {
             registry.registerGame(new GameDescription(MyFirstGame, {
                 name: 'My first game again',
+                goal: 'Introduce a new command',
                 command: 'firstgame',
             }));
         });
@@ -62,6 +66,7 @@ describe('GameRegistry', (it, beforeEach) => {
         assert.throws(() => {
             registry.registerGame(new GameDescription(MySecondGame, {
                 name: 'My second game with a wrong command',
+                goal: 'Try to use an existing command',
                 command: 'firstgame',
             }));
         });
@@ -69,6 +74,7 @@ describe('GameRegistry', (it, beforeEach) => {
         // Able to register multiple games with commands.
         registry.registerGame(new GameDescription(MySecondGame, {
             name: 'My second game',
+            goal: 'Commands can be registered',
             command: 'secondgame',
         }));
 
@@ -78,6 +84,7 @@ describe('GameRegistry', (it, beforeEach) => {
         // Able to register games that do not have a command of their own.
         registry.registerGame(new GameDescription(MyThirdGame, {
             name: 'My third, command-less game',
+            goal: 'Another game without a command',
         }));
 
         // Able to remove games and their associated commands again.
@@ -112,6 +119,7 @@ describe('GameRegistry', (it, beforeEach) => {
 
         registry.registerGame(new GameDescription(MyFirstGame, {
             name: 'My first game',
+            goal: 'Make sure that games can be stopped.',
             command: 'firstgame',
         }));
 

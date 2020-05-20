@@ -46,7 +46,7 @@ describe('GameRuntime', (it, beforeEach) => {
     }
 
     it('should serialize and later on restore participant states', async (assert) => {
-        const description = new GameDescription(Game, { name: 'Bubble' });
+        const description = new GameDescription(Game, { name: 'Bubble', goal: '' });
         const runtime = new GameRuntime(manager, description);
 
         await runtime.initialize();
@@ -78,7 +78,7 @@ describe('GameRuntime', (it, beforeEach) => {
             async onPlayerRemoved(player) { events.push('onPlayerRemoved'); }
             async onFinished() { events.push('onFinished'); }
 
-        }, { name: 'Bubble' });
+        }, { name: 'Bubble', goal: 'Capture the events' });
 
         const runtime = await prepareGame(description, [ gunther, russell ]);
         const game = runtime.run();
@@ -110,7 +110,7 @@ describe('GameRuntime', (it, beforeEach) => {
     });
 
     it('should eject participants from a game when they disconnect', async (assert) => {
-        const description = new GameDescription(Game, { name: 'Bubble' });
+        const description = new GameDescription(Game, { name: 'Bubble', goal: '' });
         const runtime = await prepareGame(description, [ gunther, russell ]);
 
         assert.isNotNull(manager.getPlayerActivity(gunther));
@@ -137,7 +137,7 @@ describe('GameRuntime', (it, beforeEach) => {
     });
 
     it('should eject participants from a game when they use /leave', async (assert) => {
-        const description = new GameDescription(Game, { name: 'Bubble' });
+        const description = new GameDescription(Game, { name: 'Bubble', goal: '' });
         const runtime = await prepareGame(description, [ gunther, russell ]);
 
         assert.isNotNull(manager.getPlayerActivity(gunther));
@@ -171,7 +171,7 @@ describe('GameRuntime', (it, beforeEach) => {
                     position: new Vector(0, 0, 0),
                 })
             }
-        }, { name: 'Bubble' });
+        }, { name: 'Bubble', goal: 'Have entities' });
 
         assert.isNull(vehicle);
 
@@ -197,6 +197,7 @@ describe('GameRuntime', (it, beforeEach) => {
 
         const options = {
             name: 'Bubble',
+            goal: 'Kill each other with a minigun from a car',
             command: 'bubblegame',
             minimumPlayers: 2,
             maximumPlayers: 4,
@@ -311,7 +312,7 @@ describe('GameRuntime', (it, beforeEach) => {
     });
 
     it('is able to proportionally calculate the prize money', assert => {
-        const description = new GameDescription(Game, { name: 'Bubble' });
+        const description = new GameDescription(Game, { name: 'Bubble', goal: '' });
         const runtime = new GameRuntime(manager, description);
 
         runtime.prizeMoney_ = 10000;
@@ -353,7 +354,7 @@ describe('GameRuntime', (it, beforeEach) => {
     });
 
     it('should have a sensible description when casted to a string', assert => {
-        const description = new GameDescription(Game, { name: 'Bubble' });
+        const description = new GameDescription(Game, { name: 'Bubble', goal: '' });
         const runtime = new GameRuntime(manager, description);
 
         assert.equal(String(runtime), '[GameActivity: Bubble (engaged)]');

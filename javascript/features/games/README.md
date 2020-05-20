@@ -18,16 +18,32 @@ derby and racing games.
 
 ## Options when registering a game
 When registering a game with the `Games.registerGame()` function, you pass in a class that extends
-the [Game class](game.js) and an options dictionary. The follow options are available:
+the [Game class](game.js) and an options dictionary.
 
-Option           | Description
------------------|--------------
-`name`           | Name of the game, as a string.
-`command`        | Name of the command through which the game can be started. Optional.
-`minimumPlayers` | The minimum amount of players that should join the game. (Default is 2.)
-`maximumPlayers` | The maximum amount of players that should join the game. (Default is 4.)
-`price`          | The price players have to pay in order to participate. (Default is $250.)
-`tick`           | Frequency at which the `onTick()` event should be called. (Default is 1000ms.)
+### a) Required configuration
+
+Option            | Description
+------------------|--------------
+`name`            | Name of the game, as a string. **Required**.
+`goal`            | What do participants have to do to win this game? **Required**.
+
+### b) Optional configuration: countdown
+
+Option            | Description
+------------------|--------------
+`countdown`       | Time, in seconds, for which a countdown screen should be displayed.
+`countdownCamera` | Position of the camera during the countdown, array of [x, y, z] coordinates.
+`countdownView`   | Target of the camera during the countdown, array of [x, y, z] coordinates.
+
+### c) Optional configuration: misc
+
+Option            | Description
+------------------|--------------
+`command`         | Name of the command through which the game can be started. Optional.
+`minimumPlayers`  | The minimum amount of players that should join the game. (Default is 2.)
+`maximumPlayers`  | The maximum amount of players that should join the game. (Default is 4.)
+`price`           | The price players have to pay in order to participate. (Default is $250.)
+`tick`            | Frequency at which the `onTick()` event should be called. (Default is 1000ms.)
 
 ## Implementation details
 ![Image of architecture](https://github.com/LVPlayground/playground/blob/master/docs/games-api.png?raw=true)

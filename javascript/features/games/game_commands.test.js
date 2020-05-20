@@ -34,6 +34,7 @@ describe('GameCommands', (it, beforeEach) => {
 
         const description = new GameDescription(MyGame, {
             name: 'My game',
+            goal: 'Try out the command',
             command: 'mygame',
         });
 
@@ -59,6 +60,7 @@ describe('GameCommands', (it, beforeEach) => {
 
         const description = new GameDescription(BubbleGame, {
             name: 'Bubble',
+            goal: 'Have multiple people join it',
             command: 'bubblegame',
             price: 5000,
         });
@@ -124,6 +126,7 @@ describe('GameCommands', (it, beforeEach) => {
 
         const description = new GameDescription(BubbleGame, {
             name: 'Bubble',
+            goal: 'Make sure that we can count players',
             command: 'bubblegame',
             minimumPlayers: 5,
             maximumPlayers: 8,
@@ -150,6 +153,7 @@ describe('GameCommands', (it, beforeEach) => {
 
         const description = new GameDescription(BubbleGame, {
             name: 'Bubble',
+            goal: 'Avoid people from having to wait!',
             command: 'bubblegame',
             minimumPlayers: 1,
             maximumPlayers: 8,
@@ -179,6 +183,7 @@ describe('GameCommands', (it, beforeEach) => {
 
         const description = new GameDescription(BubbleGame, {
             name: 'Bubble',
+            goal: 'Have the registration time expire',
             command: 'bubblegame',
             minimumPlayers: 2,
             maximumPlayers: 4,
@@ -228,6 +233,7 @@ describe('GameCommands', (it, beforeEach) => {
 
         const description = new GameDescription(BubbleGame, {
             name: 'Bubble',
+            goal: 'Players must be able to leave',
             command: 'bubblegame',
             price: 1000,
         });

@@ -29,7 +29,7 @@ describe('GameManager', (it, beforeEach) => {
     it('is able to cancel registrations when the game is being reloaded', assert => {
         const finance = server.featureManager.loadFeature('finance');
 
-        const description = new GameDescription(BubbleGame, { name: 'Bubble' });
+        const description = new GameDescription(BubbleGame, { name: 'Bubble', goal: '' });
         const registration =
             manager.createGameRegistration(description, GameRegistration.kTypePublic);
         
@@ -59,7 +59,7 @@ describe('GameManager', (it, beforeEach) => {
     });
 
     it('is able to remove a player from a registration when they disconnect', assert => {
-        const description = new GameDescription(BubbleGame, { name: 'Bubble' });
+        const description = new GameDescription(BubbleGame, { name: 'Bubble', goal: '' });
         const registration =
             manager.createGameRegistration(description, GameRegistration.kTypePublic);
         

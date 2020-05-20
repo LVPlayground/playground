@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Vector } from 'base/vector.js';
+
 // The default number of maximum players who can participate in a game.
 export const kDefaultMaximumPlayers = 4;
 
@@ -32,17 +34,49 @@ export class GameDescription {
     gameConstructor_ = null;
 
     name_ = null;
+    goal_ = null;
+
+    countdown_ = null;
+    countdownCamera_ = null;
+    countdownView_ = null;
+
     command_ = null;
     maximumPlayers_ = kDefaultMaximumPlayers;
     minimumPlayers_ = kDefaultMinimumPlayers;
     price_ = kDefaultPrice;
     tick_ = kDefaultTickIntervalMs;
 
+    // ---------------------------------------------------------------------------------------------
+
     // Gets the constructor which can be used to instantiate the game.
     get gameConstructor() { return this.gameConstructor_; }
 
+    // ---------------------------------------------------------------------------------------------
+    // Required configuration
+    // ---------------------------------------------------------------------------------------------
+
     // Gets the name of this game.
     get name() { return this.name_; }
+
+    // Gets the explanation of the game's goal. What should players be doing?
+    get goal() { return this.goal_; }
+
+    // ---------------------------------------------------------------------------------------------
+    // Optional configuration: countdown
+    // ---------------------------------------------------------------------------------------------
+
+    // Gets the time, in seconds, for which a countdown screen should be displayed.
+    get countdown() { return this.countdown_; }
+
+    // Gets the position of the camera during the countdown.
+    get countdownCamera() { return this.countdownCamera_; }
+
+    // Gets the target, the view of the camera during the countdown.
+    get countdownView() { return this.countdownView_; }
+
+    // ---------------------------------------------------------------------------------------------
+    // Optional configuration: misc
+    // ---------------------------------------------------------------------------------------------
 
     // Gets the name of the command which can be used to start the game. Optional, thus may be NULL.
     get command() { return this.command_; }
@@ -59,6 +93,8 @@ export class GameDescription {
     // Gets the tick rate at which the game will receive lifetime events.
     get tick() { return this.tick_; }
 
+    // ---------------------------------------------------------------------------------------------
+
     constructor(gameConstructor, options) {
         if (!hasGameInPrototype(gameConstructor))
             throw new Error('Each game must override the `Game` base class in this feature.');
@@ -73,6 +109,38 @@ export class GameDescription {
             throw new Error('Each game must indicate its name as a string.');
 
         this.name_ = options.name;
+
+        if (!options.hasOwnProperty('goal') || typeof options.goal !== 'string')
+            throw new Error('Each game must indicate a the game\'s goal as a string.');
+
+        this.goal_ = options.goal;
+
+        // -----------------------------------------------------------------------------------------
+        // Section: optional countdown configuration
+        // -----------------------------------------------------------------------------------------
+
+        if (options.hasOwnProperty('countdown')) {
+            if (typeof options.countdown !== 'number' || !Number.isSafeInteger(options.countdown))
+                throw new Error(`[${this.name_}] The game's countdown must be given as a number.`);
+            
+            this.countdown_ = options.countdown;
+
+            if (!options.hasOwnProperty('countdownCamera'))
+                throw new Error(`[${this.name_}] The camera position is required for a countdown.`);
+
+            if (!Array.isArray(options.countdownCamera) || options.countdownCamera.length != 3)
+                throw new Error(`[${this.name_}] The camera position must be an [x, y, z] array.`);
+            
+            this.countdownCamera_ = new Vector(...options.countdownCamera);
+
+            if (!options.hasOwnProperty('countdownView'))
+                throw new Error(`[${this.name_}] The camera view is required for a countdown.`);
+
+            if (!Array.isArray(options.countdownView) || options.countdownView.length != 3)
+                throw new Error(`[${this.name_}] The camera view must be an [x, y, z] array.`);
+            
+            this.countdownView_ = new Vector(...options.countdownView);
+        }
 
         // -----------------------------------------------------------------------------------------
         // Section: optional options

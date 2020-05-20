@@ -348,7 +348,7 @@ class HouseCommands {
                 this.announce_().announceToAdministratorsWithFilter(
                     Message.HOUSE_ANNOUNCE_TELEPORTED, 
                     PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_TELEPORTED, 
-                    player.name, player.id);
+                    player.name, player.id, location.settings.name, location.settings.ownerName);
             });
         }
 

@@ -848,11 +848,16 @@ GodHelp:
         return 1;
     }
 
-    PlayerHelp:
+PlayerHelp:
     SendClientMessage(playerId, Color::Information, "Usage: /p [player] [command]:");
 
-    if (Player(playerId)->isAdministrator() == true) {
+    if (Player(playerId)->isAdministrator() == true && tempLevel[subjectId] == 2) {
+        SendClientMessage(playerId, Color::Information, " achievements, armor, burn, (un)cage, cash, (un)freeze, god,");
+    } else {
         SendClientMessage(playerId, Color::Information, " achievements, armor, burn, (un)cage, cash, deathmessage, (un)freeze, (give/take)admin, god,");
+    }
+
+    if (Player(playerId)->isAdministrator() == true) {
         SendClientMessage(playerId, Color::Information, " handofgod, health, hide, kill, maptp, nuke, weapon, weaponinfo, properties,");
         SendClientMessage(playerId, Color::Information, " removeweapon, resetspawnweapons, resetweapons, skin, spawnweapons, teleport, vallow");
     }

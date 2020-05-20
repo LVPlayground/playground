@@ -733,7 +733,9 @@ class HouseCommands {
         let options = ['buy', 'goto', 'settings'];
 
         if (player.isAdministrator())
-            options.push('create', 'enter', 'modify');
+            options.push('enter');
+        if (player.isAdministrator() && !player.isTemporaryAdministrator())
+            options.push('create', 'modify', 'remove', 'save');
         if (player.isManagement())
             options.push('interior');
 

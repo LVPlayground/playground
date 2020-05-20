@@ -554,7 +554,10 @@ class VehicleCommands {
             return;
 
         const globalOptions = ['density', 'enter', 'help', 'reset'];
-        const vehicleOptions = ['access', 'color', 'delete', 'health', 'respawn', 'save'];
+        const vehicleOptions = ['access', 'color', 'health', 'respawn'];
+
+        if (!player.isTemporaryAdministrator())
+            vehicleOptions.push('delete', 'save');
 
         if (player.isManagement()) {
             globalOptions.push('optimise');

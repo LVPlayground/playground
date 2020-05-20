@@ -449,6 +449,7 @@ class PlaygroundCommands {
     // Communication that contains one (or more) of these words will be blocked.
     async handleBlockedWords(player) {
         const words = this.communication_().getBlockedWords();
+        const substitutions = this.communication_().getReplacements();
 
         const menu = new Menu('Blocked words', ['Blocked word', 'Added by']);
         menu.addItem('Block a new word', '-', async () => {
@@ -475,6 +476,17 @@ class PlaygroundCommands {
                 return alert(player, {
                     title: 'Blocked words',
                     message: `The word "${lowerCaseWordToBlock}" has already been blocked.`
+                });
+            }
+
+            // Verify that the |lowerCaseWordToBlock| hasn't already been added as a substitution.
+            for (const existingSubstitution of substitutions) {
+                if (existingSubstitution.before !== lowerCaseWordToBlock)
+                    continue;
+                
+                return alert(player, {
+                    title: 'Blocked words',
+                    message: `The word "${lowerCaseWordToBlock}" already exists as a substitution.`
                 });
             }
 
@@ -568,7 +580,8 @@ class PlaygroundCommands {
     // Handles the option for the |player| to add or remove substitutions that will apply to
     // communication throughout Las Venturas Playground.
     async handleSubstitutions(player) {
-        const words = this.communication_().getReplacements();
+        const words = this.communication_().getBlockedWords();
+        const substitutions = this.communication_().getReplacements();
 
         const menu = new Menu('Substitutions', ['Phrase', 'Substitution', 'Added by']);
         menu.addItem('Add a new substitution', '-', '-', async () => {
@@ -602,13 +615,24 @@ class PlaygroundCommands {
             const lowerCaseAfter = after.trim().toLowerCase();
 
             // Verify that the |lowerCaseBefore| is not already being substituted to something else.
-            for (const existingWord of words) {
-                if (existingWord.before !== lowerCaseBefore)
+            for (const existingSubstitution of substitutions) {
+                if (existingSubstitution.before !== lowerCaseBefore)
                     continue;
                 
                 return alert(player, {
                     title: 'Substitutions',
                     message: `The word "${lowerCaseBefore}" is already being substituted.`
+                });
+            }
+
+            // Verify that the |lowerCaseBefore| is not already known as a blocked word.
+            for (const existingWord of words) {
+                if (existingWord.word !== lowerCaseBefore)
+                    continue;
+                
+                return alert(player, {
+                    title: 'Substitutions',
+                    message: `The word "${lowerCaseBefore}" already exists as a blocked word.`
                 });
             }
 
@@ -631,7 +655,7 @@ class PlaygroundCommands {
         // Add a delimiter before listing all the existing substitutions.
         menu.addItem('-----', '-----', '-----');
 
-        for (const { before, after, nickname } of words.sort()) {
+        for (const { before, after, nickname } of substitutions.sort()) {
             menu.addItem(before, after, nickname, async() => {
                 const confirmation = await confirm(player, {
                     title: 'Substitutions',

@@ -325,6 +325,14 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(await gunther.issueCommand('/lvp settings'));
         assert.equal(gunther.messages.length, 0);
 
+        gunther.respondToDialog({ listitem: kBlockedWordsIndex }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Add a new blocked word */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'george' /* substitution */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 0);
+
         // (4) Adding a new blocked word should work just fine.
         gunther.respondToDialog({ listitem: kBlockedWordsIndex }).then(
             () => gunther.respondToDialog({ listitem: 0 /* Add a new blocked word */ })).then(
@@ -444,6 +452,14 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         gunther.respondToDialog({ listitem: kSubstitutionIndex }).then(
             () => gunther.respondToDialog({ listitem: 0 /* Add a new substitution */ })).then(
             () => gunther.respondToDialog({ inputtext: 'George' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp settings'));
+        assert.equal(gunther.messages.length, 0);
+
+        gunther.respondToDialog({ listitem: kSubstitutionIndex }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Add a new substitution */ })).then(
+            () => gunther.respondToDialog({ inputtext: '/quit' /* a blocked word */ })).then(
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/lvp settings'));

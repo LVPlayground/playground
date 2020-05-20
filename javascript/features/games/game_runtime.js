@@ -79,7 +79,7 @@ export class GameRuntime extends GameActivity {
 
         this.state_ = GameRuntime.kStateRunning;
         for (const player of this.players_)
-            await this.game_.onPlayerSpawned(player);
+            await this.onPlayerSpawn(player);
 
         this.playerCount_ = this.players_.size;
 
@@ -155,6 +155,15 @@ export class GameRuntime extends GameActivity {
         this.game_.onPlayerDeath(player, killer, reason);
     }
 
+    // Called when the |player| is spawning in the world, while playing in this game.
+    async onPlayerSpawn(player) {
+        // Make sure that the |player| is in the right virtual world.
+        player.virtualWorld = this.virtualWorld_;
+
+        // Let the game do their magic when the player's ready.
+        await this.game_.onPlayerSpawned(player);
+    }
+
     // ---------------------------------------------------------------------------------------------
     // API available to the Game implementation.
     // ---------------------------------------------------------------------------------------------
@@ -166,7 +175,7 @@ export class GameRuntime extends GameActivity {
         // Confirms the result with the given |player|, and award prize money, if any.
         this.confirmResultWithPlayer(player, score);
 
-        return this.removePlayer(player);
+        await this.removePlayer(player);
     }
 
     // Signals that the |player| has won. They will be removed from the game.
@@ -176,7 +185,7 @@ export class GameRuntime extends GameActivity {
         // Confirms the result with the given |player|, and award prize money, if any.
         this.confirmResultWithPlayer(player, score);
 
-        return this.removePlayer(player);
+        await this.removePlayer(player);
     }
 
     // Immediately stops the game, and removes all players. None of the players will be considered

@@ -263,11 +263,13 @@ describe('GameRuntime', (it, beforeEach) => {
 
         assert.isNotNull(vehicles[0]);
         assert.equal(vehicles[0].virtualWorld, runtime.virtualWorld);
-        // TODO: Verify that Gunther is in the vehicle, in the right virtual world
+        assert.equal(gunther.vehicle, vehicles[0]);
+        assert.equal(gunther.virtualWorld, runtime.virtualWorld);
 
         assert.isNotNull(vehicles[1]);
         assert.equal(vehicles[1].virtualWorld, runtime.virtualWorld);
-        // TODO: Verify that Russell is in the vehicle, in the right virtual world
+        assert.equal(russell.vehicle, vehicles[1]);
+        assert.equal(russell.virtualWorld, runtime.virtualWorld);
 
         // Have |russell| kill |gunther| with a minigun, because that's what you do in a Bubble game
         dispatchEvent('playerresolveddeath', {

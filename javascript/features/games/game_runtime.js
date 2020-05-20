@@ -18,6 +18,7 @@ export class GameRuntime extends GameActivity {
     description_ = null;
     manager_ = null;
     state_ = null;
+    virtualWorld_ = null;
 
     players_ = null;
     scopedEntities_ = null;
@@ -25,20 +26,19 @@ export class GameRuntime extends GameActivity {
     // The actual game instance that contains the logic.
     game_ = null;
 
-    prizeMoney_ = null;
-
     // Gets the GameDescription instance that describes what we're running here.
     get description() { return this.description_; }
 
-    // Gets the total amount of prize money available for the winner(s) of this game.
-    get prizeMoney() { return this.prizeMoney_; }
+    // Gets the virtual world that has bene allocated to this game.
+    get virtualWorld() { return this.virtualWorld_; }
 
-    constructor(manager, description) {
+    constructor(manager, description, virtualWorld = 0) {
         super();
 
         this.description_ = description;
         this.manager_ = manager;
         this.state_ = GameRuntime.kStateUninitialized;
+        this.virtualWorld_ = virtualWorld;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -51,10 +51,8 @@ export class GameRuntime extends GameActivity {
         
         this.players_ = new Set();
         this.scopedEntities_ = new ScopedEntities({
-            interiorId: -1,
-
-            // TODO: Every game should have its own assigned virtual world
-            virtualWorld: 1000,
+            interiorId: -1,  // all interiors
+            virtualWorld: this.virtualWorld_,
         });
 
         this.game_ = new this.description_.gameConstructor(this, this.scopedEntities_);

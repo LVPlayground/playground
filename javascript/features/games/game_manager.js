@@ -2,9 +2,13 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { CircularReadOnlyBuffer } from 'base/circular_read_only_buffer.js';
 import { GameActivity } from 'features/games/game_activity.js';
 import { GameRegistration } from 'features/games/game_registration.js';
 import { GameRuntime } from 'features/games/game_runtime.js';
+
+// Virtual worlds that have been allocated to games. Boundaries, inclusive.
+const kGameVirtualWorldRange = [ 115, 199 ];
 
 // The game manager is responsible for keeping track of and managing all active games on the server-
 // whether that be accepting sign-ups, or actually in progress.
@@ -20,8 +24,20 @@ export class GameManager {
     // Set of GameRuntime instances that are currently actively running games on the server.
     runtimes_ = new Set();
 
+    // Circular buffer that's able to sequentially issue the virtual worlds assigned to games.
+    worlds_ = null;
+
     constructor(finance) {
         this.finance_ = finance;
+
+        const worlds = [];
+
+        // Populate the virtual worlds that can be used by games, the range of which is defined in
+        // the |kGameVirtualWorldRange| constant. Will be issued to games in sequence.
+        for (let world = kGameVirtualWorldRange[0]; world <= kGameVirtualWorldRange[1]; ++world)
+            worlds.push(world);
+
+        this.worlds_ = new CircularReadOnlyBuffer(...worlds);
 
         server.playerManager.addObserver(this);
     }
@@ -70,7 +86,7 @@ export class GameManager {
         this.registrations_.delete(registration);
 
         // Create the |runtime| and add it to the active runtime set.
-        const runtime = new GameRuntime(this, description);
+        const runtime = new GameRuntime(this, description, this.worlds_.next());
         this.runtimes_.add(runtime);
 
         await runtime.initialize();

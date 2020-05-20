@@ -20,6 +20,13 @@ declare module 'base/case_insensitive_map.js' {
     }
 }
 
+declare module 'base/circular_read_only_buffer.js' {
+    export class CircularReadOnlyBuffer<Type> {
+        constructor(...params: Type[]);
+        next() : Type;
+    }
+}
+
 declare module 'base/color.js' {
     export default class Color {
         static BLUE: Color;

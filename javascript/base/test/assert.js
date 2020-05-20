@@ -12,9 +12,15 @@ import MockPawnInvoke from 'base/test/mock_pawn_invoke.js';
 //     http://chaijs.com/api/assert/
 export default class Assert {
   constructor(suite, description) {
+    this.context_ = null;
     this.suite_ = suite;
     this.description_ = description;
   }
+
+  // -----------------------------------------------------------------------------------------------
+
+  setContext(context) { this.context_ = context; }
+  clearContext() { this.context_ = null; }
 
   // -----------------------------------------------------------------------------------------------
 
@@ -451,6 +457,9 @@ export default class Assert {
   // Reports |failure| by throwing an AssertionFailedError. This method should only be called by
   // methods within this class, tests should use the exposed assertions instead.
   reportFailure(message) {
+    if (this.context_)
+      message += ` [context: ${this.context_}]`;
+
     throw new AssertionFailedError({ suiteDescription: this.suite_.description,
                                      testDescription: this.description_,
                                      innerError: new Error() },

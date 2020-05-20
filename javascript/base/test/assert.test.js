@@ -335,4 +335,14 @@ describe('Assert', it => {
     assert.strictEqual('NaN', assert.toString(Number.NaN));
     assert.strictEqual('undefined', assert.toString(undefined));
   });
+
+  it('is able to provide context with an exception', assert => {
+    assert.setContext('gunther');
+
+    try {
+      assert.isTrue(false);
+    } catch (exception) {
+      assert.includes(exception.message, ' [context: gunther]');
+    }
+  });
 });

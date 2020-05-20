@@ -10,8 +10,10 @@ import { IgnoreCommands } from 'features/communication_commands/ignore_commands.
 import { MuteCommands } from 'features/communication_commands/mute_commands.js'
 
 // Set of `/show` messages that Gunther will issue at a particular interval.
-const kGuntherMessages =
-    ['beg', 'derby', 'discord', 'donate', 'forum', 'irc', 'minigames', 'reg', 'report', 'rules', 'stunt', 'weapons'];
+const kGuntherMessages = [
+    'beg', 'discord', 'donate', 'forum', 'irc', 'minigames', 'reg', 'report', 'rules', 'stunt',
+    'weapons'
+];
 
 // In which file are messages for the `/show` command stored?
 const kShowCommandDataFile = 'data/show.json';

@@ -34,6 +34,9 @@ export class GameRuntime extends GameActivity {
     // Gets the GameDescription instance that describes what we're running here.
     get description() { return this.description_; }
 
+    // Gets the set of players who are currently in the game. Exposed to the Game.
+    get players() { return this.players_; }
+
     // Getst the state the game is in. Only exposed for testing purposes.
     get stateForTesting() { return this.state_; }
 

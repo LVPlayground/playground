@@ -9,6 +9,9 @@ export class Game {
     // Accessors
     // ---------------------------------------------------------------------------------------------
 
+    // Gets the set of Players who are currently in the game.
+    get players() { return this.#runtime_.player; }
+
     // Gets the scoped entities which can be used to create objects, pickups and so on.
     get scopedEntities() { return this.#scopedEntities_; }
 

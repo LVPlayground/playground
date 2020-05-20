@@ -91,7 +91,7 @@ export class GameManager {
         this.registrations_.delete(registration);
 
         // Create the |runtime| and add it to the active runtime set.
-        const runtime = new GameRuntime(this, description, this.worlds_.next());
+        const runtime = new GameRuntime(this, description, this.finance_, this.worlds_.next());
         this.runtimes_.add(runtime);
 
         await runtime.initialize();

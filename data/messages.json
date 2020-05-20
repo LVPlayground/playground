@@ -124,6 +124,9 @@
   "GAME_REGISTRATION_RELOAD": "{CCD782}You have been removed from the {838F31}%s game{CCD782} because a Management member reloaded it.",
   "GAME_REGISTRATION_STARTED": "{CCD782}You have signed up for the {838F31}%s game{CCD782}, which started immediately. Enjoy!",
   "GAME_REGISTRATION_UNAVAILABLE": "@error Sorry, the %s game is currently unavailable.",
+  "GAME_RESULT_FINISHED": "{CCD782}You have finished the {838F31}%s game{CCD782} in {838F31}%d%s{CCD782} position, with a score of {838F31}%s{CCD782}.",
+  "GAME_RESULT_FINISHED_AWARD": "{CCD782}You've been awarded {838F31}%${CCD782}!",
+  "GAME_RESULT_FINISHED_NO_SCORE": "{CCD782}You have finished the {838F31}%s game{CCD782} in {838F31}%d%s{CCD782} position.",
 
   "GANG_ANNOUNCE_CREATED": "%s has just founded the %s gang!",
   "GANG_ANNOUNCE_INTERNAL": "{29B6F6}*** %s",

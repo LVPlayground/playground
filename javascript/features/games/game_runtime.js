@@ -5,6 +5,8 @@
 import { GameActivity } from 'features/games/game_activity.js';
 import ScopedEntities from 'entities/scoped_entities.js';
 
+import { format } from 'base/string_formatter.js';
+
 // Provides the runtime for hosting a Game instance, i.e. takes care of forwarding the appropriate
 // events, manages players and lifetimes of objects, vehicles and other entities.
 export class GameRuntime extends GameActivity {
@@ -16,11 +18,14 @@ export class GameRuntime extends GameActivity {
     static kStateFinalized = 4;
 
     description_ = null;
+    finance_ = null;
     manager_ = null;
     state_ = null;
     virtualWorld_ = null;
 
+    playerCount_ = 0;
     players_ = null;
+    prizeMoney_ = 0;
     scopedEntities_ = null;
 
     // The actual game instance that contains the logic.
@@ -35,10 +40,11 @@ export class GameRuntime extends GameActivity {
     // Gets the virtual world that has bene allocated to this game.
     get virtualWorld() { return this.virtualWorld_; }
 
-    constructor(manager, description, virtualWorld = 0) {
+    constructor(manager, description, finance, virtualWorld = 0) {
         super();
 
         this.description_ = description;
+        this.finance_ = finance;
         this.manager_ = manager;
         this.state_ = GameRuntime.kStateUninitialized;
         this.virtualWorld_ = virtualWorld;
@@ -72,6 +78,11 @@ export class GameRuntime extends GameActivity {
             throw new Error(`The runtime is only able to run after initialization.`);
 
         this.state_ = GameRuntime.kStateRunning;
+        for (const player of this.players_)
+            await this.game_.onPlayerSpawned(player);
+
+        this.playerCount_ = this.players_.size;
+
         while (this.players_.size) {
             await this.game_.onTick();
             await wait(this.description_.tick);
@@ -98,9 +109,11 @@ export class GameRuntime extends GameActivity {
     // ---------------------------------------------------------------------------------------------
 
     // Called when the |player| is being added to the game.
-    async addPlayer(player) {
+    async addPlayer(player, contribution) {
         if (![ GameRuntime.kStateInitialized, GameRuntime.kStateRunning ].includes(this.state_))
             throw new Error('Players may only be added to the game while it is running.');
+
+        this.prizeMoney_ += contribution;
 
         // Serialize the |player|'s state so that we can take them back after the game.
         player.serializeState(/* restoreOnSpawn= */ false);
@@ -111,7 +124,6 @@ export class GameRuntime extends GameActivity {
 
         // Formally introduce the |player| to the game.
         await this.game_.onPlayerAdded(player);
-        await this.game_.onPlayerSpawned(player);
     }
 
     // Called when the |player| has to be removed from the game, either because they disconnected,
@@ -148,16 +160,21 @@ export class GameRuntime extends GameActivity {
     // ---------------------------------------------------------------------------------------------
 
     // Signals that the |player| has lost. They will be removed from the game.
-    async playerLost(player, score) {
+    async playerLost(player, score = null) {
         // TODO: Store the |player|'s |score|, and the fact that they lost. (w/ rank)
+
+        // Confirms the result with the given |player|, and award prize money, if any.
+        this.confirmResultWithPlayer(player, score);
 
         return this.removePlayer(player);
     }
 
     // Signals that the |player| has won. They will be removed from the game.
-    async playerWon(player, score) {
+    async playerWon(player, score = null) {
         // TODO: Store the |player|'s |score|, and the fact that they won. (w/ rank)
-        // TODO: Grant the |player| their share of the prize money.
+
+        // Confirms the result with the given |player|, and award prize money, if any.
+        this.confirmResultWithPlayer(player, score);
 
         return this.removePlayer(player);
     }
@@ -167,6 +184,81 @@ export class GameRuntime extends GameActivity {
     async stop() {
         for (const player of this.players_)
             await this.removePlayer(player);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Utility functions (internal)
+    // ---------------------------------------------------------------------------------------------
+
+    // Confirms the results of the game with the |player|, who's just dropped out, and awards them
+    // with their share of the prize money if they've deserved any.
+    confirmResultWithPlayer(player, score) {
+        const position = this.players_.size;
+        const positionOrdinal = ['st','nd','rd'][((position + 90) % 100 - 10) % 10 - 1] || 'th';
+
+        const award = this.calculatePrizeMoneyShare();
+
+        // Inform the |player| of their position and score in the game.
+        if (score !== null) {
+            // TODO: Figure out how to format the |score|, as a number doesn't make sense.
+            const formattedScore = format('%d', score);
+
+            player.sendMessage(
+                Message.GAME_RESULT_FINISHED, this.description_.name, position, positionOrdinal,
+                formattedScore);
+
+        } else {
+            player.sendMessage(
+                Message.GAME_RESULT_FINISHED_NO_SCORE, this.description_.name, position,
+                positionOrdinal);
+        }
+
+        // Inform and award the |player| of their |award|, if any.
+        if (award === 0)
+            return;
+
+        this.finance_().givePlayerCash(player, award);
+
+        player.sendMessage(Message.GAME_RESULT_FINISHED_AWARD, award);
+    }
+
+    // Calculates the share of prize money that the next player who's to leave the game will
+    // receive. This depends on the number of participants in the game:
+    //
+    // * Single player: no money will be awarded at all.
+    // * Two players: winner takes all
+    // * Three players: 75%, 25%, nothing
+    // * Four or more players: 70%, 20%, 10%, nothing...
+    calculatePrizeMoneyShare() {
+        const remainingPlayers = this.players_.size;
+        switch (this.playerCount_) {
+            case 1:
+                return 0;  // no money will be awarded
+
+            case 2:
+                if (remainingPlayers === 1)
+                    return this.prizeMoney_;  // the winner
+                
+                return 0;  // the loser, no money will be awarded
+
+            case 3:
+                if (remainingPlayers === 2)
+                    return Math.floor(this.prizeMoney_ * 0.25);  // 2nd position
+                if (remainingPlayers === 1)
+                    return Math.floor(this.prizeMoney_ * 0.75);  // the winner
+                
+                return 0;  // 3rd position, no money will be awarded
+
+            default:
+                if (remainingPlayers === 3)
+                    return Math.floor(this.prizeMoney_ * 0.1);  // 3rd position
+                if (remainingPlayers === 2)
+                    return Math.floor(this.prizeMoney_ * 0.2);  // 2nd position
+                if (remainingPlayers === 1)
+                    return Math.floor(this.prizeMoney_ * 0.7);  // 1st position
+                
+                return 0;  // 4th or worse position, no money will be awarded
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -88,8 +88,8 @@ describe('GameRuntime', (it, beforeEach) => {
         assert.deepEqual(events, [
             'onInitialized',
             'onPlayerAdded',
-            'onPlayerSpawned',
             'onPlayerAdded',
+            'onPlayerSpawned',
             'onPlayerSpawned',
             'onTick',
             'onPlayerRemoved',
@@ -220,8 +220,8 @@ describe('GameRuntime', (it, beforeEach) => {
             }
 
             async onPlayerDeath(player, killer, reason) {
-                this.playerLost(player);
-                this.playerWon(killer);
+                await this.playerLost(player);
+                await this.playerWon(killer, 25);
             }
 
         }, options);
@@ -282,7 +282,63 @@ describe('GameRuntime', (it, beforeEach) => {
         assert.equal(runtime.stateForTesting, GameRuntime.kStateFinalized);
         assert.equal(manager.runtimes_.size, 0);
 
-        // TODO: Award the prize money
+        assert.equal(gunther.messages.length, 3);
+        assert.equal(
+            gunther.messages[2],
+            Message.format(Message.GAME_RESULT_FINISHED_NO_SCORE, 'Bubble', 2, 'nd'));
+
+        assert.equal(russell.messages.length, 4);
+        assert.equal(
+            russell.messages[2],
+            Message.format(Message.GAME_RESULT_FINISHED, 'Bubble', 1, 'st', 25));
+
+        assert.equal(russell.messages[3], Message.format(Message.GAME_RESULT_FINISHED_AWARD, 500));
+
+        // Make sure that the money has been divided as expected.
+        assert.equal(finance.getPlayerCash(gunther), 150);
+        assert.equal(finance.getPlayerCash(russell), 1250);
+    });
+
+    it('is able to proportionally calculate the prize money', assert => {
+        const description = new GameDescription(Game, { name: 'Bubble' });
+        const runtime = new GameRuntime(manager, description);
+
+        runtime.prizeMoney_ = 10000;
+
+        const expectedAwards = [
+            {
+                players: [ 'Gunther', 'Russell', 'Lucy', 'Joe' ],
+                awards: [ 7000, 2000, 1000, 0 ],
+            },
+            {
+                players: [ 'Gunther', 'Russell', 'Lucy' ],
+                awards: [ 7500, 2500, 0 ],
+            },
+            {
+                players: [ 'Gunther', 'Russell' ],
+                awards: [ 10000, 0 ],
+            },
+            {
+                players: [ 'Gunther' ],
+                awards: [ 0 ],
+            }
+        ];
+
+        for (const testCase of expectedAwards) {
+            runtime.players_ = new Set(testCase.players);
+            runtime.playerCount_ = testCase.players.length;
+
+            do {
+                const player = testCase.players.pop();
+                const award = testCase.awards.pop();
+
+                assert.setContext(`${runtime.playerCount_}p/${runtime.players_.size}/${player}`);
+                assert.equal(runtime.calculatePrizeMoneyShare(), award);
+
+                runtime.players_.delete(player);
+
+            } while (testCase.players.length > 0)
+        }
     });
 
     it('should have a sensible description when casted to a string', assert => {

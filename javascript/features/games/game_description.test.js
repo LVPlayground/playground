@@ -45,13 +45,19 @@ describe('GameDescription', it => {
             goal: 'Have a countdown screen',
 
             countdown: 5,
-            countdownCamera: [ 15, 25, 35 ],
-            countdownView: [ 10, 20, 30 ],
+            countdownCamera: [
+                new Vector(10, 20, 30),
+                new Vector(20, 30, 40),
+            ],
+            countdownView: [
+                new Vector(15, 25, 35),
+                new Vector(35, 45, 55),
+            ],
         });
 
         assert.equal(description.countdown, 5);
-        assert.deepEqual(description.countdownCamera, new Vector(15, 25, 35));
-        assert.deepEqual(description.countdownView, new Vector(10, 20, 30));
+        assert.equal(description.countdownCamera.length, 2);
+        assert.equal(description.countdownView.length, 2);
     });
 
     it('is able to validate the data being passed to the game', assert => {

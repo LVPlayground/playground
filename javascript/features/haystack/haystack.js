@@ -4,6 +4,7 @@
 
 import Feature from 'components/feature_manager/feature.js';
 import { HaystackGame } from 'features/haystack/haystack_game.js';
+import { Vector } from 'base/vector.js';
 
 // Provides the haystack game, in which players have to climb a series of haystacks to reach the
 // top of the tower. Implemented on top of the Games infrastructure.
@@ -25,6 +26,17 @@ export default class Haystack extends Feature {
         this.games_().registerGame(HaystackGame, {
             name: 'Haystack',
             goal: 'Beat all others to the top of the haystack!',
+
+            countdown: 4,
+            countdownCamera: [
+                new Vector(41.055019, -45.301830, 37.605308),
+                new Vector(30.323097, 86.002151, 44.803482),
+            ],
+            countdownView: [
+                new Vector(37.480472, -42.009181, 36.430114),
+                new Vector(29.568088, 81.170539, 43.761600),
+            ],
+
             command: 'newhaystack',
             minimumPlayers: 1,
             maximumPlayers: 20,

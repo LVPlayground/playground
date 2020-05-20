@@ -20,22 +20,22 @@ derby and racing games.
 When registering a game with the `Games.registerGame()` function, you pass in a class that extends
 the [Game class](game.js) and an options dictionary.
 
-### a) Required configuration
+### Required configuration
 
 Option            | Description
 ------------------|--------------
 `name`            | Name of the game, as a string. **Required**.
 `goal`            | What do participants have to do to win this game? **Required**.
 
-### b) Optional configuration: countdown
+### Optional configuration: countdown
 
 Option            | Description
 ------------------|--------------
 `countdown`       | Time, in seconds, for which a countdown screen should be displayed.
-`countdownCamera` | Position of the camera during the countdown, array of [x, y, z] coordinates.
-`countdownView`   | Target of the camera during the countdown, array of [x, y, z] coordinates.
+`countdownCamera` | Position of the camera during the countdown, array of two Vector objects.
+`countdownView`   | Target of the camera during the countdown, array of two Vector objects.
 
-### c) Optional configuration: misc
+### Optional configuration: misc
 
 Option            | Description
 ------------------|--------------

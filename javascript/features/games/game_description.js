@@ -68,10 +68,10 @@ export class GameDescription {
     // Gets the time, in seconds, for which a countdown screen should be displayed.
     get countdown() { return this.countdown_; }
 
-    // Gets the position of the camera during the countdown.
+    // Gets the position vectors of the camera during the countdown. (From -> To)
     get countdownCamera() { return this.countdownCamera_; }
 
-    // Gets the target, the view of the camera during the countdown.
+    // Gets the target, the view of the camera during the countdown. (From -> To)
     get countdownView() { return this.countdownView_; }
 
     // ---------------------------------------------------------------------------------------------
@@ -128,18 +128,32 @@ export class GameDescription {
             if (!options.hasOwnProperty('countdownCamera'))
                 throw new Error(`[${this.name_}] The camera position is required for a countdown.`);
 
-            if (!Array.isArray(options.countdownCamera) || options.countdownCamera.length != 3)
-                throw new Error(`[${this.name_}] The camera position must be an [x, y, z] array.`);
+            if (!Array.isArray(options.countdownCamera) || options.countdownCamera.length != 2) {
+                throw new Error(
+                    `[${this.name_}] The camera position must be an array with two Vectors.`);
+            }
             
-            this.countdownCamera_ = new Vector(...options.countdownCamera);
+            if (!(options.countdownCamera[0] instanceof Vector) ||
+                    !(options.countdownCamera[1] instanceof Vector)) {
+                throw new Error(`[${this.name_}] Each camera position must be a [x, y, z] Vector.`)
+            }
+
+            this.countdownCamera_ = options.countdownCamera;
 
             if (!options.hasOwnProperty('countdownView'))
                 throw new Error(`[${this.name_}] The camera view is required for a countdown.`);
 
-            if (!Array.isArray(options.countdownView) || options.countdownView.length != 3)
-                throw new Error(`[${this.name_}] The camera view must be an [x, y, z] array.`);
+            if (!Array.isArray(options.countdownView) || options.countdownView.length != 2) {
+                throw new Error(
+                    `[${this.name_}] The camera view must be an array with two Vectors.`);
+            }
             
-            this.countdownView_ = new Vector(...options.countdownView);
+            if (!(options.countdownView[0] instanceof Vector) ||
+                    !(options.countdownView[1] instanceof Vector)) {
+                throw new Error(`[${this.name_}] Each camera view must be a [x, y, z] Vector.`)
+            }
+
+            this.countdownView_ = options.countdownView;
         }
 
         // -----------------------------------------------------------------------------------------

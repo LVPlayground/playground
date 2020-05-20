@@ -20,15 +20,22 @@ describe('GameRuntime', (it, beforeEach) => {
         russell = server.playerManager.getById(/* Russell= */ 1);
     });
 
-    // Runs the game described in |description| with a dedicated runtime, making the given set of
-    // |players| join it. Will not return until the game is finished.
-    async function runGame(description, players) {
+    // Prepares the game run in |description|, but does not yet call `run()` and/or `finalize()`,
+    // which is left as an exercise to the test.
+    async function prepareGame(description, players) {
         const runtime = new GameRuntime(manager, description);
         
         await runtime.initialize();
         for (const player of players)
             await runtime.addPlayer(player);
         
+        return runtime;
+    }
+
+    // Runs the game described in |description| with a dedicated runtime, making the given set of
+    // |players| join it. Will not return until the game is finished.
+    async function runGame(description, players) {
+        const runtime = await prepareGame(description, players);
         await runtime.run();
         await runtime.finalize();
     }
@@ -88,6 +95,58 @@ describe('GameRuntime', (it, beforeEach) => {
         ]);
 
         await game;  // make sure that the game has finished
+    });
+
+    it('should eject participants from a game when they disconnect', async (assert) => {
+        const description = new GameDescription(Game, { name: 'Bubble' });
+        const runtime = await prepareGame(description, [ gunther, russell ]);
+
+        assert.isNotNull(manager.getPlayerActivity(gunther));
+        assert.isNotNull(manager.getPlayerActivity(russell));
+
+        const game = runtime.run();
+
+        gunther.disconnectForTesting();
+
+        await runGameLoop();
+
+        assert.isNull(manager.getPlayerActivity(gunther));
+        assert.isNotNull(manager.getPlayerActivity(russell));
+
+        russell.disconnectForTesting();
+
+        await runGameLoop();
+
+        assert.isNull(manager.getPlayerActivity(gunther));
+        assert.isNull(manager.getPlayerActivity(russell));
+
+        await runtime.finalize();
+        await Promise.all([ game, runGameLoop() ]);
+    });
+
+    it('should eject participants from a game when they use /leave', async (assert) => {
+        const description = new GameDescription(Game, { name: 'Bubble' });
+        const runtime = await prepareGame(description, [ gunther, russell ]);
+
+        assert.isNotNull(manager.getPlayerActivity(gunther));
+        assert.isNotNull(manager.getPlayerActivity(russell));
+
+        const game = runtime.run();
+
+        assert.isTrue(await gunther.issueCommand('/leave'));
+        await runGameLoop();
+
+        assert.isNull(manager.getPlayerActivity(gunther));
+        assert.isNotNull(manager.getPlayerActivity(russell));
+
+        assert.isTrue(await russell.issueCommand('/leave'));
+        await runGameLoop();
+
+        assert.isNull(manager.getPlayerActivity(gunther));
+        assert.isNull(manager.getPlayerActivity(russell));
+
+        await runtime.finalize();
+        await Promise.all([ game, runGameLoop() ]);
     });
 
     it('should have a sensible description when casted to a string', assert => {

@@ -260,8 +260,6 @@ export class GameCommands {
         settings.set('haystack/levels', 15);
         settings.set('haystack/nighttime', true);
 
-        console.log([...settings.entries()])
-
         return settings;
     }
 

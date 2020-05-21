@@ -87,8 +87,12 @@ export class GameRuntime extends GameActivity {
             throw new Error(`The runtime is only able to run after initialization.`);
 
         this.state_ = GameRuntime.kStateRunning;
+
+        const spawnPromises = [];
         for (const player of this.players_)
-            await this.onPlayerSpawn(player);
+            spawnPromises.push(this.onPlayerSpawn(player));
+
+        await Promise.all(spawnPromises);
 
         this.playerCount_ = this.players_.size;
 

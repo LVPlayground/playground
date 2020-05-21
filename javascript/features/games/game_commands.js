@@ -365,10 +365,12 @@ export class GameCommands {
     async displayInputSettingDialog(player, description, setting, currentValue) {
         let explanation = null;
         let validator = input => {
+            let typedInput = input;  // to hold the |input| in its appropriate type
+
             // (1) If the |setting| is a number, verify that it parses as a number.
             if (setting.type === Setting.TYPE_NUMBER) {
-                const floatValue = parseFloat(input);
-                if (Number.isNaN(floatValue) || !Number.isSafeInteger(floatValue)) {
+                typedInput = parseFloat(input);
+                if (Number.isNaN(typedInput) || !Number.isSafeInteger(typedInput)) {
                     explanation = `The input "${input}" is not a valid round number.`;
                     return false;
                 }
@@ -381,7 +383,7 @@ export class GameCommands {
             // throw when the |input| cannot be validated, forming the exception.
             if (description.settingsValidator) {
                 try {
-                    if (description.settingsValidator(setting.identifier, input))
+                    if (description.settingsValidator(setting.identifier, typedInput))
                         return true;
                     
                     explanation = 'The given value has not been accepted by the game.';

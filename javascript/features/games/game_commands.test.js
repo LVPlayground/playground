@@ -277,6 +277,51 @@ describe('GameCommands', (it, beforeEach) => {
         assert.strictEqual(settings.get('bubble/string'), 'banana');
     });
 
+    it('should only customize game settings if validation succeeds', async (assert) => {
+        class BubbleGame extends Game {}
+
+        const description = new GameDescription(BubbleGame, {
+            name: 'Bubble',
+            goal: 'Have the registration time expire',
+            command: 'bubblegame',
+
+            settingsValidator: (setting, value) => {
+                switch (setting) {
+                    case 'bubble/number':
+                        return value === 50;
+                    case 'bubble/string':
+                        return value === 'apple';
+                    default:
+                        throw new Error(`Invalid setting spotted: ${setting}`);
+                }
+            },
+            settings: [
+                new Setting('bubble', 'number', Setting.TYPE_NUMBER, 30, 'Numeric value'),
+                new Setting('bubble', 'string', Setting.TYPE_STRING, 'text', 'Textual value'),
+            ],
+        });
+
+        // (1) Ensure validation of numeric values.
+        gunther.respondToDialog({ listitem: 2 /* Numeric value */ }).then(
+            () => gunther.respondToDialog({ inputtext: '40' /* rejected */ })).then(
+            () => gunther.respondToDialog({ response: 1 /* Acknowledge */ })).then(
+            () => gunther.respondToDialog({ inputtext: '50' })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
+    
+        settings = await commands.determineSettings(description, /* custom= */ true, gunther);
+        assert.strictEqual(settings.get('bubble/number'), 50);
+
+        // (2) Ensure validation of textual values.
+        gunther.respondToDialog({ listitem: 3 /* Textual value */ }).then(
+            () => gunther.respondToDialog({ inputtext: 'banana' /* string */ })).then(
+            () => gunther.respondToDialog({ response: 1 /* Acknowledge */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'apple' })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
+    
+        settings = await commands.determineSettings(description, /* custom= */ true, gunther);
+        assert.strictEqual(settings.get('bubble/string'), 'apple');
+    });
+
     it('should automatically try to start a game when the registration expires', async (assert) => {
         class BubbleGame extends Game {}
 

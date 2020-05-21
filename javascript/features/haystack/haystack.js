@@ -40,6 +40,8 @@ export default class Haystack extends Feature {
             command: 'newhaystack',
             minimumPlayers: 1,
             maximumPlayers: 20,
+
+            tick: 500,
         });
     }
 

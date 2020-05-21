@@ -2,8 +2,15 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { HaystackGame, kEdge, kHayDensity, kLevels, kRockDensity } from 'features/haystack/haystack_game.js';
+import { HaystackGame,
+         kEdge,
+         kHayDensity,
+         kLevels,
+         kPlayerProgressInterval,
+         kRockDensity } from 'features/haystack/haystack_game.js';
+
 import ScopedEntities from 'entities/scoped_entities.js';
+import { Vector } from 'base/vector.js';
 
 describe('HaystackGame', (it, beforeEach) => {
     let gunther = null;
@@ -59,7 +66,11 @@ describe('HaystackGame', (it, beforeEach) => {
     });
 
     it('should be able to randomly move the haystacks around', async (assert) => {
-        const game = new HaystackGame(/* runtime= */ null, new ScopedEntities());
+        const fakeRuntime = new class {
+            get players() { return [ gunther ]; }
+        };
+
+        const game = new HaystackGame(fakeRuntime, new ScopedEntities());
         await game.onInitialized();
 
         let matrixHash = 0;
@@ -101,5 +112,37 @@ describe('HaystackGame', (it, beforeEach) => {
         }
     });
 
-    it('should not reset the players timer when they respawn', async (assert) => {});
+    it('should mark a player as having won when they reach the top', async (assert) => {
+        let victor = null;
+
+        const fakeRuntime = new class {
+            get players() { return [ gunther ]; }
+            playerWon(player) { victor = player; }
+        };
+
+        const game = new HaystackGame(fakeRuntime, new ScopedEntities());
+        await game.onInitialized();
+
+        assert.isNull(victor);
+
+        gunther.position = new Vector(-12, -12, 16);
+
+        // Tick. |gunther|'s position is well below the game's ceiling.
+        for (let tick = 0; tick < kPlayerProgressInterval; ++tick)
+            await game.onTick();
+        
+        gunther.position = new Vector(100, 100, (kLevels + 1) * 3);
+
+        // Tick. |gunther|'s up high enough, but not standing on the haystacks.
+        for (let tick = 0; tick < kPlayerProgressInterval; ++tick)
+            await game.onTick();
+    
+        gunther.position = new Vector(-12, -12, (kLevels + 2) * 3);
+
+        // Tick. |gunther| has won for reals this time.
+        for (let tick = 0; tick < kPlayerProgressInterval; ++tick)
+            await game.onTick();
+        
+        assert.isNotNull(victor);
+    });
 });

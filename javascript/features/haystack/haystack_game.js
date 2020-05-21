@@ -17,6 +17,9 @@ export const kLevels = 30;
 export const kHayDensity = .3;
 export const kRockDensity = .01;
 
+// Every how many game ticks should player progress be checked in the game?
+export const kPlayerProgressInterval = 2;
+
 // Implementation of the Game class specifically for the Haystack minigame. An instance of this
 // class will be created by the Games infrastructure when it's started.
 export class HaystackGame extends Game {
@@ -24,6 +27,9 @@ export class HaystackGame extends Game {
     static kPositionEmpty = 0;
     static kPositionHaystack = 1;
     static kPositionRock = 2;
+
+    // Counter to determine whether to check for winning players in a game tick.
+    counter_ = 0;
 
     // Matrix of the haystacks and rocks that have been created. Three-dimensional, [x][y][z].
     matrix_ = [];
@@ -115,8 +121,13 @@ export class HaystackGame extends Game {
             this.startTime_.set(player, server.clock.monotonicallyIncreasingTime());
     }
 
-    // Called every tick, i.e. every ~100ms for this game.
+    // Called every tick, i.e. every ~100ms for this game. Each tick will be considered to move one
+    // of the haystacks in the game, and every five ticks (~500ms) we'll check whether any of the
+    // players has reached the top of the haystack.
     async onTick() {
+        if ((this.counter_++) % kPlayerProgressInterval === 0)
+            this.updatePlayerProgress();
+
         const haystackArray = [ ...this.haystacks_ ];
 
         if (!haystackArray.length)
@@ -165,6 +176,41 @@ export class HaystackGame extends Game {
 
             this.haystacks_.add(target);
         });
+    }
+
+    // Checks the progress of each of the players in the game. This will be reflected in an on-
+    // screen UI, but will also be used to determine whether they've won.
+    updatePlayerProgress() {
+        // TODO: Display some sort of UI with their progress. Something like races do would be ace.
+
+        // Determine the area of the map in which a climbing player could be.
+        const rangeX = [ kEdge * -4, 1 * -4 ];
+        const rangeY = [ kEdge * -4, 1 * -4 ];
+
+        for (const player of this.players) {
+            const position = player.position;
+
+            let score = 0;  // on the ground
+
+            // Only consider their height if they're standing on one of the haystacks.
+            if (position.x >= rangeX[0] && position.x <= rangeX[1] &&
+                    position.y >= rangeY[0] && position.y <= rangeY[1]) {
+                score = Math.max(0, Math.min(Math.round(position.z / 3) - 1, kLevels + 1));
+            }
+
+            // TODO: Update the UI with the player's current position.
+
+            // If the player hasn't reached above the number of levels yet, they're still going.
+            if (score <= kLevels)
+                continue;
+
+            // Otherwise they've won. Their score will be the total time it took them, in seconds,
+            // rounded to two decimal points.
+            const totalTimeMs =
+                server.clock.monotonicallyIncreasingTime() - this.startTime_.get(player);
+
+            this.playerWon(player, Math.round(totalTimeMs / 10) / 100);
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

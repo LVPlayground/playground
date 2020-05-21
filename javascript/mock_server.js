@@ -205,6 +205,13 @@ class MockServer {
         this.pawnInvoke_.dispose();
         this.clock_.dispose();
     }
+
+    // If dispose() fails for any reason, then the `safeDispose` method will be called to remove any
+    // left-over global state. This avoids hundreds of tests from failing in succession.
+    async safeDispose() {
+        Player.provideSupplement('account', null);
+        Player.provideSupplement('settings', null);
+    }
 }
 
 export default MockServer;

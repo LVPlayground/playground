@@ -111,6 +111,8 @@ class TestSuite {
         if (carriedException === null)
           carriedException = error;
 
+        return global.server.safeDispose();
+
       }).then(() => {
         // (8) Restore the original value of the globals.
         global.pawnInvoke = originalPawnInvoke;

@@ -246,7 +246,7 @@ export class GameCommands {
         // If the |custom| flag has been set, start the customization flow. This allows the player
         // to change everything in |settings| within the defined boundaries.
         if (custom) {
-            const startDefault = confirm(player, {
+            const startDefault = await confirm(player, {
                 title: `Customize the ${description.name} game`,
                 message: `The ${description.name} game does not have any customization options ` +
                          `available. Do you want to start the default game instead?`,

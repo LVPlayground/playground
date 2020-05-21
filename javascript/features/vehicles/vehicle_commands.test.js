@@ -1014,7 +1014,7 @@ describe('VehicleCommands', (it, beforeEach) => {
         commands.dispose();
         commands.dispose = () => true;
 
-        assert.equal(server.commandManager.size, originalCommandCount - 9);
+        assert.equal(server.commandManager.size, originalCommandCount - 10);
     });
 
     it('should be able to update and tell the color(s) of vehicles', async(assert) => {

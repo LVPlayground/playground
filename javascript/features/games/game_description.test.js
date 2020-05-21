@@ -8,7 +8,10 @@ import { GameDescription,
          kDefaultMinimumPlayers,
          kDefaultPrice,
          kDefaultTickIntervalMs } from 'features/games/game_description.js';
+
+import Setting from 'entities/setting.js';
 import { Vector } from 'base/vector.js';
+
 
 describe('GameDescription', it => {
     it('throws when the passed gameConstructor is not valid', assert => {
@@ -58,6 +61,23 @@ describe('GameDescription', it => {
         assert.equal(description.countdown, 5);
         assert.equal(description.countdownCamera.length, 2);
         assert.equal(description.countdownView.length, 2);
+    });
+
+    it('is able to provide a series of configurable settings', assert => {
+        const description = new GameDescription(Game, {
+            name: 'My game',
+            goal: 'Have some settings',
+
+            settings: [
+                new Setting('game', 'bonus', Setting.TYPE_NUMBER, 0, 'Percentage of bonus points'),
+                new Setting('game', 'night', Setting.TYPE_BOOLEAN, false, 'Have it be night?'),
+            ]
+        });
+
+        assert.equal(description.settings.size, 2);
+        assert.isTrue(description.settings.has('game/bonus'));
+        assert.isTrue(description.settings.has('game/night'));
+        assert.isFalse(description.settings.get('game/night').defaultValue);
     });
 
     it('is able to validate the data being passed to the game', assert => {

@@ -29,11 +29,23 @@ Option            | Description
 
 ### Optional configuration: countdown
 
+_This will result in a `countdown` argument to be passed to the game's `onPlayerSpawned` function_
+_the first time a player spawns, which is an async function that games should call themselves._
+
 Option            | Description
 ------------------|--------------
 `countdown`       | Time, in seconds, for which a countdown screen should be displayed.
 `countdownCamera` | Position of the camera during the countdown, array of two Vector objects.
 `countdownView`   | Target of the camera during the countdown, array of two Vector objects.
+
+### Optional configuration: settings
+
+_Settings may be used to allow players to configure the game to their liking, either through the_
+_`/challenge` command, or by providing the `custom` argument to the game's own command._
+
+Option            | Description
+------------------|--------------
+`settings`        | Array of [Setting](../../entities/setting.js) instances for this game.
 
 ### Optional configuration: misc
 

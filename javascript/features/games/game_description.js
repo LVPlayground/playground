@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import Setting from 'entities/setting.js';
 import { Vector } from 'base/vector.js';
 
 // The default number of maximum players who can participate in a game.
@@ -46,6 +47,8 @@ export class GameDescription {
     price_ = kDefaultPrice;
     tick_ = kDefaultTickIntervalMs;
 
+    settings_ = new Map();
+
     // ---------------------------------------------------------------------------------------------
 
     // Gets the constructor which can be used to instantiate the game.
@@ -73,6 +76,13 @@ export class GameDescription {
 
     // Gets the target, the view of the camera during the countdown. (From -> To)
     get countdownView() { return this.countdownView_; }
+
+    // ---------------------------------------------------------------------------------------------
+    // Optional configuration: settings
+    // ---------------------------------------------------------------------------------------------
+
+    // Gets a map of the settings that can be configured for this game.
+    get settings() { return this.settings_; }
 
     // ---------------------------------------------------------------------------------------------
     // Optional configuration: misc
@@ -114,6 +124,25 @@ export class GameDescription {
             throw new Error('Each game must indicate a the game\'s goal as a string.');
 
         this.goal_ = options.goal;
+
+        // -----------------------------------------------------------------------------------------
+        // Section: optional settings configuration
+        // -----------------------------------------------------------------------------------------
+
+        if (options.hasOwnProperty('settings')) {
+            if (!Array.isArray(options.settings))
+                throw new Error(`[${this.name_}] The game's settings must be given as an array.`);
+            
+            for (const setting of options.settings) {
+                if (!(setting instanceof Setting))
+                    throw new Error(`[${this.name_}] Each setting must be a Setting instance.`);
+                
+                if (this.settings_.has(setting.identifier))
+                    throw new Error(`[${this.name_}] Setting ${setting.identifier} already exists.`)
+                
+                this.settings_.set(setting.identifier, setting);
+            }
+        }
 
         // -----------------------------------------------------------------------------------------
         // Section: optional countdown configuration

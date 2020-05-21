@@ -112,6 +112,7 @@ export class HaystackGame extends Game {
         player.updateStreamerObjects();
 
         player.time = this.settings_.time;
+        player.weather = this.settings_.weatherId;
 
         player.health = 100;
         player.armour = 0;
@@ -258,6 +259,7 @@ export class HaystackGame extends Game {
         let speedAdjustment = 0;  // adjustment in movement speed, in units/sec.
         let tickSkip = 5;  // number of ticks to skip when moving a haystack (lower = faster)
         let time = [ 12, 0 ];  // time to apply in the world during the game
+        let weatherId = 2;  // the weather to apply during the game
 
         switch (settings.get('haystack/difficulty')) {
             case 'easy':
@@ -283,6 +285,7 @@ export class HaystackGame extends Game {
                 rockDensity = .08;
                 speedAdjustment = 0.35;
                 tickSkip = 1;
+                weatherId = 9;
                 break;
         }
 

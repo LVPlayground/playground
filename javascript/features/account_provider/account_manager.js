@@ -4,6 +4,9 @@
 
 import ScopedCallbacks from 'base/scoped_callbacks.js';
 
+// Delay, in seconds, before a player's data will be written to the database after they disconnect.
+const kPlayerDisconnectQueryDelayMs = 1000;
+
 // The account manager keeps track of in-game players and ensures that all information necessary to
 // their account is loaded at the appropriate time, and will be securely stored when needed.
 export class AccountManager {
@@ -77,8 +80,10 @@ export class AccountManager {
         if (!player.account.isIdentified())
             return;  // the |player| was never identified to their account
 
-        // Deliberately do not wait for the save operation to complete.
-        this.database_.saveAccountData(player.account.prepareForDatabase());
+        // Have a second's delay before saving the player's data to the account, allowing for other
+        // parts of the game to make their final adjustments before they're gone.
+        wait(kPlayerDisconnectQueryDelayMs).then(() =>
+            this.database_.saveAccountData(player.account.prepareForDatabase()));
     }
 
     // ---------------------------------------------------------------------------------------------

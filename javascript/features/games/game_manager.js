@@ -8,6 +8,8 @@ import { GameRegistration } from 'features/games/game_registration.js';
 import { GameRuntime } from 'features/games/game_runtime.js';
 import ScopedCallbacks from 'base/scoped_callbacks.js';
 
+import { range } from 'base/range.js';
+
 // Virtual worlds that have been allocated to games. Boundaries, inclusive.
 const kGameVirtualWorldRange = [ 115, 199 ];
 
@@ -22,7 +24,9 @@ export class GameManager {
     // Map of |player| => GameActivity instances of a player's current activity, if any.
     activity_ = new WeakMap();
 
-    // Set of GameRegistration instances that are currently accepting registrations.
+    // Set of GameRegistration instances that are currently accepting registrations, and a circular
+    // read-only buffer that's able to issue registration IDs for games.
+    registrationIds_ = null;
     registrations_ = new Set();
 
     // Set of GameRuntime instances that are currently actively running games on the server.
@@ -41,14 +45,8 @@ export class GameManager {
         this.callbacks_.addEventListener(
             'playerspawn', GameManager.prototype.onPlayerSpawn.bind(this));
 
-        const worlds = [];
-
-        // Populate the virtual worlds that can be used by games, the range of which is defined in
-        // the |kGameVirtualWorldRange| constant. Will be issued to games in sequence.
-        for (let world = kGameVirtualWorldRange[0]; world <= kGameVirtualWorldRange[1]; ++world)
-            worlds.push(world);
-
-        this.worlds_ = new CircularReadOnlyBuffer(...worlds);
+        this.registrationIds_ = new CircularReadOnlyBuffer(...range(1, 99));
+        this.worlds_ = new CircularReadOnlyBuffer(...range(...kGameVirtualWorldRange));
 
         server.playerManager.addObserver(this);
     }
@@ -64,7 +62,8 @@ export class GameManager {
     // that's the job of whoever requested the game to be created. Will return the GameRegistration
     // instance when the request was successful, or NULL otherwise.
     createGameRegistration(description, settings, type) {
-        const registration = new GameRegistration(description, settings, type, this);
+        const registrationId = this.registrationIds_.next();
+        const registration = new GameRegistration(description, settings, type, registrationId, this)
 
         this.registrations_.add(registration);
         return registration;

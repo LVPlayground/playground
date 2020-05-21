@@ -30,6 +30,7 @@ export class GameRegistration extends GameActivity {
         return theoreticalParticipants;
     }
 
+    id_ = null;
     manager_ = null;
 
     description_ = null;
@@ -39,6 +40,9 @@ export class GameRegistration extends GameActivity {
 
     // Map from Player instance to the financial contribution they made to the game.
     players_ = null;
+
+    // Gets the ID that has been assigned to this game registration.
+    get id() { return this.id_; }
 
     // Gets the description of the game that this registration has been created for.
     get description() { return this.description_; }
@@ -55,9 +59,10 @@ export class GameRegistration extends GameActivity {
     // Gets the type of registration this instance deals with. One of the aforementioned statics.
     get type() { return this.type_; }
 
-    constructor(description, settings, type, manager) {
+    constructor(description, settings, type, id, manager) {
         super();
 
+        this.id_ = id;
         this.manager_ = manager;
 
         this.description_ = description;

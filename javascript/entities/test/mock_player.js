@@ -117,6 +117,24 @@ export class MockPlayer extends Player {
     }
 
     // ---------------------------------------------------------------------------------------------
+    // Section: Weapons
+    // ---------------------------------------------------------------------------------------------
+
+    // Give a player a certain weapon with ammo.
+    giveWeapon(weaponId, ammo) {
+        pawnInvoke('OnGiveWeapon', 'iii', this.id_, weaponId, ammo);
+    }
+
+    removeWeapon(weaponId) {
+         pawnInvoke('OnRemovePlayerWeapon', 'ii', this.id_, weaponId);
+    }
+
+    // Resets all the weapons a player has.
+    resetWeapons() {
+        pawnInvoke('OnResetPlayerWeapons', 'i', this.id_);
+    }
+
+    // ---------------------------------------------------------------------------------------------
     // Section: Physics
     // ---------------------------------------------------------------------------------------------
 

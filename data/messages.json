@@ -330,7 +330,8 @@
   "KILLTIME_MINIMUM_TWO_MINUTES": "{DC143C}Killtime{FFFFFF}: Sorry, there is a minimum of two minutes.",
   "KILLTIME_STARTED": "{DC143C}Killtime{FFFFFF}: The following %d minutes is killing for a prize! Are you the one with the most kills?",
   "KILLTIME_TOPKILLER": "{DC143C}Killtime{FFFFFF}: Leading: %s. Hurry up and get more to win the prize of $%d or more!",
-  "KILLTIME_USAGE": "{DC143C}Killtime{FFFFFF}: '/killtime start 4' for 4 minutes killtime, none = 2 minutes. '/killtime stop' to end.",
+  "KILLTIME_USAGE": "{DC143C}Killtime{FFFFFF}: '/killtime start 4 35' for 4 minutes killtime, none = 2 minutes. '/killtime stop' to end.",
+  "KILLTIME_INVALID_WEAPON": "{DC143C}Killtime{FFFFFF}: Sorry, this is not a valid weapon.",
   "KILLTIME_WINNER": "{DC143C}Killtime{FFFFFF}: The winner is: %s. %s",
   "KILLTIME_ENJOY_PRIZE": "Enjoy your prize of $%d!",
 

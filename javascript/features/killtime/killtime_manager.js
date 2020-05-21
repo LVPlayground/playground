@@ -15,6 +15,7 @@ class KilltimeManager {
         this.isRunning_ = false;
         this.scoreMap_ = new Map();
         this.callbacks_ = new ScopedCallbacks();
+        this.weapon_ = null;
 
         // Translates OnPawnEventName to respectively `onPawnEventName` or `pawneventname`.
         const toMethodName = name => name.charAt(0).toLowerCase() + name.slice(1);
@@ -24,19 +25,28 @@ class KilltimeManager {
             'OnPlayerDeath',  // { playerid, killerid, reason }
         ].forEach(name =>
             this.callbacks_.addEventListener(toEventName(name), this.__proto__[toMethodName(name)].bind(this)));
+        this.callbacks_.addEventListener(
+            'playerspawn', KilltimeManager.prototype.onPlayerSpawn.bind(this));
+    }
+
+    get validWeapons() { 
+        return [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 22, 23, 24, 25, 26, 27, 28, 
+                29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 42];
     }
 
     // Sets the killtime running for |minutes|, initializes the map for the scores and announces the killtime-start.
-    start(minutes) {
+    start(minutes, weapon) {
         this.isRunning_ = true;
         this.scoreMap_ = new Map();
 
         this.announce_().announceToPlayers(Message.KILLTIME_STARTED, minutes);
+        this.weapon_ = weapon;
         this.run(minutes);
     }
 
     // Keep the killtime running for |totalMinutes|, announces the halftimes and stops it when it's over.
     async run(totalMinutes) {
+        this.giveAllPlayersKillTimeWeapon();
         let minutesPassedBy = 0;
         while (this.isRunning_) {
             await minutes(1);
@@ -52,6 +62,39 @@ class KilltimeManager {
 
             this.announceTopKiller_();
         }
+    }
+
+    //Gives all currently online players the weapon
+    giveAllPlayersKillTimeWeapon() {
+        if(this.weapon_ === null || this.weapon_ === undefined)
+            return;
+
+        server.playerManager.forEach(player => this.givePlayerWeapon(player));
+    }
+
+    // Give player entity a weapon if he's supposed to.
+    givePlayerWeapon(player) {
+        if (player.isNonPlayerCharacter())
+            return;
+        if(player.activity !== Player.PLAYER_ACTIVITY_NONE)
+            return;
+
+        player.giveWeapon(this.weapon_, 9999);
+    }
+
+    onPlayerSpawn(event) {
+        if(!this.isRunning_)
+            return;
+        
+        const player = server.playerManager.getById(event.playerid);
+        if (!player)
+            return;  // invalid |player| given for the |event|
+
+            
+        if(this.weapon_ === null || this.weapon_ === undefined)
+            return;
+
+        this.givePlayerWeapon(player);
     }
 
     // Called every minute to announce the killer if someone has a specific amount of kills or nobody.
@@ -80,11 +123,29 @@ class KilltimeManager {
         if (player != null)
             stopMessage = Message.KILLTIME_ADMIN_STOPPED;
 
+        this.removePlayerKillTimeWeapons();
         this.announce_().announceToPlayers(stopMessage);
         this.announceWinner_();
 
         this.scoreMap_.clear();
 
+    }
+
+    //Gives all currently online players the weapon
+    removePlayerKillTimeWeapons() {        
+        if(this.weapon_ === null || this.weapon_ === undefined)
+            return;
+
+        server.playerManager.forEach(player => {
+            if (player.isNonPlayerCharacter())
+                return;
+            if(player.activity !== Player.PLAYER_ACTIVITY_NONE)
+                return;
+
+            player.removeWeapon(this.weapon_);            
+        });
+
+        this.weapon_ = null;
     }
 
     // Announces the winner in case someone has a specific amount of kills or nobody.

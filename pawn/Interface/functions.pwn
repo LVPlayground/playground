@@ -678,6 +678,11 @@ RemovePlayerWeapon(playerId, weaponId) {
     return 1;
 }
 
+forward OnRemovePlayerWeapon(playerId, weaponId);
+public OnRemovePlayerWeapon(playerId, weaponId) {
+    RemovePlayerWeapon(playerId, weaponId);
+}
+
 PlayerName(playerId) {                          
     new name[MAX_PLAYER_NAME+1];
     GetPlayerName(playerId, name, sizeof(name));

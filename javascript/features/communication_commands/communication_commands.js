@@ -185,8 +185,12 @@ export default class CommunicationCommands extends Feature {
 
         const messageText = this.showMessages_.get(message);
         if (!messageText) {
-            player.sendMessage(Message.ANNOUNCE_SHOW_UNKNOWN,
-                               Array.from(this.showMessages_.keys()).sort().join('/'));
+            const allMessages = Array.from(this.showMessages_.keys()).sort();
+            while (allMessages.length > 0) {
+                player.sendMessage(
+                    Message.ANNOUNCE_SHOW_UNKNOWN, allMessages.splice(0, 10).join('/'));
+            }
+            
             return;
         }
 

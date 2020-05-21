@@ -67,14 +67,15 @@ describe('CommunicationCommands', (it, beforeEach) => {
 
         // (1) Unknown messages & preparing the cache.
         assert.isTrue(await russell.issueCommand('/show'));
-        assert.equal(russell.messages.length, 1);
-        assert.includes(russell.messages[0], '/show [');
-
-        assert.isTrue(await russell.issueCommand('/show bananaphone'));
         assert.equal(russell.messages.length, 2);
+        assert.includes(russell.messages[0], '/show [');
         assert.includes(russell.messages[1], '/show [');
 
-        assert.includes(russell.messages[1], '/report/');  // we expect "report" for the next tests
+        assert.isTrue(await russell.issueCommand('/show bananaphone'));
+        assert.equal(russell.messages.length, 4);
+        assert.includes(russell.messages[2], '/show [');
+
+        assert.includes(russell.messages[3], '/report/');  // we expect "report" for the next tests
 
         // (2) Showing a message to all players.
         assert.isTrue(await russell.issueCommand('/show report'));

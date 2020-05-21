@@ -10,15 +10,8 @@ import { random } from 'base/random.js';
 // How many hay stacks will there by side by side?
 export const kEdge = 4;
 
-// How many levels of hay stacks will the participants have to climb?
-export const kLevels = 30;
-
-// How dense should the game be? A lower value means increased difficulty.
-export const kHayDensity = .3;
-export const kRockDensity = .01;
-
 // Every how many game ticks should player progress be checked in the game?
-export const kPlayerProgressInterval = 2;
+export const kPlayerProgressInterval = 8;
 
 // Implementation of the Game class specifically for the Haystack minigame. An instance of this
 // class will be created by the Games infrastructure when it's started.
@@ -38,14 +31,24 @@ export class HaystackGame extends Game {
     // their move operation has fully completed.
     haystacks_ = new Set();
 
+    // The settings for this game, which will be initialized based on the |settings| passed to us.
+    settings_ = null;
+
     // Map of |player| to the time, in milliseconds, at which they started the attempt.
     startTime_ = new WeakMap();
 
+    // Counter used to skip unnecessary updates, based on the difficulty level.
+    tickSkipCounter_ = 0;
+
     // Called when the game has been initialized. Here we create the haystacks and the rocks that
     // that the player is able to climb on.
-    async onInitialized() {
-        if ((kHayDensity + kRockDensity) >= 1)
+    async onInitialized(settings) {
+        this.settings_ = this.determineSettings(settings);
+
+        if ((this.settings_.hayDensity + this.settings_.rockDensity) >= 1)
             throw new Error(`The total density of the hay stack must not >=1`);
+
+        const kLevels = this.settings_.levels;
 
         for (let x = 0; x < kEdge; ++x) {
             this.matrix_[x] = [];
@@ -56,8 +59,8 @@ export class HaystackGame extends Game {
         }
 
         // Now populate the haystack objects in the matrix at the configured density.
-        const haystackObjects = Math.floor((kEdge * kEdge * kLevels) * kHayDensity);
-        const rockObjects = Math.floor((kEdge * kEdge * kLevels) * kRockDensity);
+        const haystackObjects = Math.floor((kEdge * kEdge * kLevels) * this.settings_.hayDensity);
+        const rockObjects = Math.floor((kEdge * kEdge * kLevels) * this.settings_.rockDensity);
 
         for (let haystack = 0; haystack < haystackObjects; ++haystack) {
             const [x, y, z] = this.findAvailablePosition();
@@ -108,6 +111,8 @@ export class HaystackGame extends Game {
 
         player.updateStreamerObjects();
 
+        player.time = this.settings_.time;
+
         player.health = 100;
         player.armour = 0;
 
@@ -127,6 +132,9 @@ export class HaystackGame extends Game {
     async onTick() {
         if ((this.counter_++) % kPlayerProgressInterval === 0)
             this.updatePlayerProgress();
+
+        if ((this.tickSkipCounter_++) % this.settings_.tickSkip !== 0)
+            return;  // skip this update
 
         const haystackArray = [ ...this.haystacks_ ];
 
@@ -151,7 +159,7 @@ export class HaystackGame extends Game {
         if (target.x < 0 || target.x >= kEdge || target.y < 0 || target.y >= kEdge)
             return;
         
-        if (target.z < 0 || target.z >= kLevels)
+        if (target.z < 0 || target.z >= this.settings_.levels)
             return;
 
         // The `target` position must not yet be occupied by something else.
@@ -195,13 +203,14 @@ export class HaystackGame extends Game {
             // Only consider their height if they're standing on one of the haystacks.
             if (position.x >= rangeX[0] && position.x <= rangeX[1] &&
                     position.y >= rangeY[0] && position.y <= rangeY[1]) {
-                score = Math.max(0, Math.min(Math.round(position.z / 3) - 1, kLevels + 1));
+                score = Math.max(0, Math.min(Math.round(position.z / 3) - 1,
+                                             this.settings_.levels + 1));
             }
 
             // TODO: Update the UI with the player's current position.
 
             // If the player hasn't reached above the number of levels yet, they're still going.
-            if (score <= kLevels)
+            if (score <= this.settings_.levels)
                 continue;
 
             // Otherwise they've won. Their score will be the total time it took them, in seconds,
@@ -223,16 +232,67 @@ export class HaystackGame extends Game {
         const kHorizontalRange = [ 0.75, 1.5 ];
         const kVerticalRange = [ 1, 2 ];
 
-        const progress = level / kLevels;
+        const progress = level / this.settings_.levels;
 
+        let vel = 0;
         switch (direction) {
             case 'x':
             case 'y':
-                return kHorizontalRange[0] + (kHorizontalRange[1] - kHorizontalRange[0]) * progress;
+                vel = kHorizontalRange[0] + (kHorizontalRange[1] - kHorizontalRange[0]) * progress;
+                break;
 
             case 'z':
-                return kVerticalRange[0] + (kVerticalRange[1] - kVerticalRange[0]) * progress;
+                vel = kVerticalRange[0] + (kVerticalRange[1] - kVerticalRange[0]) * progress;
+                break;
         }
+
+        return vel + this.settings_.speedAdjustment;
+    }
+
+    // Determines the internal configuration based on the given |settings|. These can be customized
+    // by players, to create custom experiences for the haystack game.
+    determineSettings(settings) {
+        let hayDensity = .3;  // density of haystack in the matrix
+        let levels = 30;  // number of levels that players will have to conqueror
+        let rockDensity = .01;  // density of rocks in the matrix
+        let speedAdjustment = 0;  // adjustment in movement speed, in units/sec.
+        let tickSkip = 5;  // number of ticks to skip when moving a haystack (lower = faster)
+        let time = [ 12, 0 ];  // time to apply in the world during the game
+
+        switch (settings.get('haystack/difficulty')) {
+            case 'easy':
+                hayDensity = .35;
+                rockDensity = 0;
+                speedAdjustment = -0.25;
+                tickSkip = 10;
+                break;
+            case 'normal':
+                hayDensity = .3;
+                rockDensity = .01;
+                speedAdjustment = 0;
+                tickSkip = 5;
+                break;
+            case 'difficult':
+                hayDensity = .25;
+                rockDensity = .04;
+                speedAdjustment = 0.25;
+                tickSkip = 3;
+                break;
+            case 'extreme':
+                hayDensity = .2;
+                rockDensity = .08;
+                speedAdjustment = 0.35;
+                tickSkip = 1;
+                break;
+        }
+
+        if (settings.has('haystack/levels'))
+            levels = settings.get('haystack/levels');
+
+        if (settings.get('haystack/nighttime') === true)
+            time = [ 1, 30 ];
+        
+        return { hayDensity, levels, rockDensity, speedAdjustment, tickSkip, time };
     }
 
     // Finds an available position in the matrix through randomness. That means that the algorithm
@@ -243,7 +303,7 @@ export class HaystackGame extends Game {
         do {
             x = random(0, kEdge);
             y = random(0, kEdge);
-            z = random(0, kLevels);
+            z = random(0, this.settings_.levels);
 
         } while (this.matrix_[x][y][z].type != HaystackGame.kPositionEmpty);
 

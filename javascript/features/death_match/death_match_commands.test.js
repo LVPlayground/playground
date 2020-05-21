@@ -26,9 +26,8 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.isTrue(await gunther.issueCommand('/deathmatch 1'));
 
         assert.equal(gunther.messages.length, 2);
-        assert.isTrue(
-            gunther.messages[0].includes(
-                Message.format(Message.DEATH_MATCH_INSTRUCTION_LEAVE, 0)));
+        assert.includes(gunther.messages[0], 
+            Message.format(Message.DEATH_MATCH_INSTRUCTION_LEAVE, 0));
     });
 
     it('should show message for player if using invalid dm zone', async(assert) => {
@@ -37,13 +36,10 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.isTrue(await gunther.issueCommand('/deathmatch 0'));
 
         assert.equal(gunther.messages.length, 2);
-        assert.isTrue(
-            gunther.messages[0].includes(
-                Message.format(Message.DEATH_MATCH_INVALID_ZONE, 0)));
-        assert.isTrue(
-            gunther.messages[1].includes(
-                Message.format(Message.DEATH_MATCH_AVAILABLE_ZONES, 
-                    manager.validDmZones().join(', '))));
+        assert.includes(gunther.messages[0], 
+            Message.format(Message.DEATH_MATCH_INVALID_ZONE, 0));
+        assert.includes(gunther.messages[1], Message.format(Message.DEATH_MATCH_AVAILABLE_ZONES, 
+            manager.validDmZones().join(', ')));
     });
 
     it('should allow to use death match leave', async(assert) => {

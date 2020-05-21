@@ -10,8 +10,8 @@ export class DeathMatchCommands {
     constructor(manager) {
         server.commandManager.buildCommand('deathmatch')
             .parameters([{ name: 'zone', type: CommandBuilder.NUMBER_PARAMETER }])
-        .sub('leave')
-            .build(DeathMatchCommands.prototype.onLeaveCommand.bind(this))        
+            .sub('leave')
+                .build(DeathMatchCommands.prototype.onLeaveCommand.bind(this))        
         .build(DeathMatchCommands.prototype.onDmCommand.bind(this));
 
         this.manager_ = manager;

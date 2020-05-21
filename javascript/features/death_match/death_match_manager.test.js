@@ -25,13 +25,9 @@ describe('DeathMatchManager', (it, beforeEach) => {
         manager.goToDmZone(gunther, 0);
 
         assert.equal(gunther.messages.length, 2);
-        assert.isTrue(
-            gunther.messages[0].includes(
-                Message.format(Message.DEATH_MATCH_INVALID_ZONE, 0)));
-        assert.isTrue(
-            gunther.messages[1].includes(
-                Message.format(Message.DEATH_MATCH_AVAILABLE_ZONES, 
-                    manager.validDmZones().join(', '))));
+        assert.includes(gunther.messages[0], Message.format(Message.DEATH_MATCH_INVALID_ZONE, 0));
+        assert.includes(gunther.messages[1],  Message.format(Message.DEATH_MATCH_AVAILABLE_ZONES,
+            manager.validDmZones().join(', ')));
     });
 
     it('should not enable players to go to a DM zone when they might abuse it', async(assert) => {

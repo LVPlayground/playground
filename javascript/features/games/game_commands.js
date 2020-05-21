@@ -6,10 +6,13 @@ import CommandBuilder from 'components/command_manager/command_builder.js';
 import { GameActivity } from 'features/games/game_activity.js';
 import { GameRegistration } from 'features/games/game_registration.js';
 
+import confirm from 'components/dialogs/confirm.js';
+
 // This class is responsible for making sure that all the appropriate commands for games on the
 // server are made available, as well as canonical functionality such as the `/challenge` command.
 export class GameCommands {
     finance_ = null;
+    nuwani_ = null;
     settings_ = null;
 
     commands_ = null;
@@ -20,8 +23,9 @@ export class GameCommands {
     // Gets the |commands_| map for testing purposes.
     get commandsForTesting() { return this.commands_; }
 
-    constructor(finance, settings, manager, registry) {
+    constructor(finance, nuwani, settings, manager, registry) {
         this.finance_ = finance;
+        this.nuwani_ = nuwani;
         this.settings_ = settings;
 
         this.manager_ = manager;
@@ -51,7 +55,9 @@ export class GameCommands {
         
         // Registers the |commandName| with the server, so that everyone can use it.
         server.commandManager.buildCommand(commandName)
-            .build(GameCommands.prototype.onCommand.bind(this, description));
+            .sub('custom')
+                .build(GameCommands.prototype.onCommand.bind(this, description, /* custom= */ true))
+            .build(GameCommands.prototype.onCommand.bind(this, description, /* custom= */ false));
         
         this.commands_.add(commandName);
     }
@@ -110,7 +116,15 @@ export class GameCommands {
     // the given |description|. This will first check that they're not occupied with another
     // activity just yet. If they aren't, it will either register them for an existing pending game,
     // or create a new game just for them.
-    onCommand(description, player) {
+    async onCommand(description, custom, player) {
+        const settings = await this.determineSettings(description, custom, player);
+        if (!settings)
+            return;  // the |player| aborted out of the flow
+
+        // If the |player| wants to customize the game first, let them have a go at that.
+        if (custom)
+            await this.customizeSettings(settings, description);
+
         const activity = this.manager_.getPlayerActivity(player);
         if (activity) {
             let message = null;
@@ -149,6 +163,9 @@ export class GameCommands {
             player.sendMessage(
                 Message.GAME_REGISTRATION_JOINED, pendingRegistration.getActivityName());
 
+            this.nuwani_().echo(
+                'notice-minigame', player.name, player.id, pendingRegistration.getActivityName());
+
             // Actually register the |player| to participate, and we're done here.
             pendingRegistration.registerPlayer(player, description.price);
             return;
@@ -165,9 +182,6 @@ export class GameCommands {
             return;
         }
 
-        // TODO: Allow the settings to be customized.
-        const settings = new Map(description.settings.entries());
-
         // Create a new registration flow for the |description|, to which all other players are
         // invited to participate. This enables future commands to join the game instead.
         const registration =
@@ -181,6 +195,10 @@ export class GameCommands {
 
         // Take the registration fee from the |player|.
         this.finance_().takePlayerCash(player, description.price);
+
+        // Let people watching Nuwani see that the minigame has started.
+        this.nuwani_().echo(
+            'notice-minigame', player.name, player.id, registration.getActivityName());
 
         // Register the |player| to participate in the |registration|.
         registration.registerPlayer(player, description.price)
@@ -202,7 +220,7 @@ export class GameCommands {
         wait(expirationTimeSec * 1000).then(() =>
             this.onCommandRegistrationExpired(registration));
 
-        // Send an e-mail to all other unengaged people on the server to see if the want to
+        // Send a message to all other unengaged people on the server to see if the want to
         // participate in the game as well. They're welcome to sign up.
         const formattedAnnouncement =
             Message.format(Message.GAME_REGISTRATION_ANNOUNCEMENT, description.name,
@@ -217,6 +235,35 @@ export class GameCommands {
             
             recipient.sendMessage(formattedAnnouncement);
         }
+    }
+
+    // Determines the settings for the game described by |description|. This will use the default
+    // settings, unless the |player| has indicated that they want to customize. (The |custom| flag.)
+    async determineSettings(description, custom, player) {
+        const settings = new Map();
+
+        // Populate the |settings| with the default configuration for the game.
+        for (const setting of description.settings)
+            settings.set(setting.identifier, setting.value);
+
+        // If the |custom| flag has been set, start the customization flow. This allows the player
+        // to change everything in |settings| within the defined boundaries.
+        if (custom) {
+            const startDefault = confirm(player, {
+                title: `Customize the ${description.name} game`,
+                message: `The ${description.name} game does not have any customization options ` +
+                         `available. Do you want to start the default game instead?`,
+            });
+
+            if (!startDefault)
+                return null;
+        }
+
+        settings.set('haystack/difficulty', 'extreme');
+        settings.set('haystack/levels', 15);
+        settings.set('haystack/nighttime', true);
+
+        return settings;
     }
 
     // Called when the registration expiration for the given |registration| has expired. It's time

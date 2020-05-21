@@ -29,10 +29,11 @@ describe('GameRuntime', (it, beforeEach) => {
     // which is left as an exercise to the test.
     async function prepareGame(description, players) {
         const finance = server.featureManager.loadFeature('finance');
+        const nuwani = server.featureManager.loadFeature('nuwani');
         const virtualWorld = Math.floor(Math.random() * 10000);
 
         const runtime =
-            new GameRuntime(manager, description, kDefaultSettings, finance, virtualWorld);
+            new GameRuntime(manager, description, kDefaultSettings, finance, nuwani, virtualWorld);
         
         await runtime.initialize();
         for (const player of players)

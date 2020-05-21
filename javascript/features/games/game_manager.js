@@ -15,6 +15,8 @@ const kGameVirtualWorldRange = [ 115, 199 ];
 // whether that be accepting sign-ups, or actually in progress.
 export class GameManager {
     finance_ = null;
+    nuwani_ = null;
+
     callbacks_ = null;
 
     // Map of |player| => GameActivity instances of a player's current activity, if any.
@@ -29,8 +31,10 @@ export class GameManager {
     // Circular buffer that's able to sequentially issue the virtual worlds assigned to games.
     worlds_ = null;
 
-    constructor(finance) {
+    constructor(finance, nuwani) {
         this.finance_ = finance;
+        this.nuwani_ = nuwani;
+
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
             'playerresolveddeath', GameManager.prototype.onPlayerDeath.bind(this));
@@ -94,7 +98,7 @@ export class GameManager {
 
         // Create the |runtime| and add it to the active runtime set.
         const runtime =
-            new GameRuntime(this, description, registration.settings, this.finance_,
+            new GameRuntime(this, description, registration.settings, this.finance_, this.nuwani_,
                             this.worlds_.next());
 
         this.runtimes_.add(runtime);

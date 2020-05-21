@@ -21,6 +21,7 @@ export class GameRuntime extends GameActivity {
     description_ = null;
     finance_ = null;
     manager_ = null;
+    nuwani_ = null;
     settings_ = null;
     state_ = null;
     virtualWorld_ = null;
@@ -46,12 +47,13 @@ export class GameRuntime extends GameActivity {
     // Gets the virtual world that has bene allocated to this game.
     get virtualWorld() { return this.virtualWorld_; }
 
-    constructor(manager, description, settings, finance, virtualWorld = 0) {
+    constructor(manager, description, settings, finance, nuwani, virtualWorld = 0) {
         super();
 
         this.description_ = description;
         this.finance_ = finance;
         this.manager_ = manager;
+        this.nuwani_ = nuwani;
         this.settings_ = settings;
         this.state_ = GameRuntime.kStateUninitialized;
         this.virtualWorld_ = virtualWorld;
@@ -221,6 +223,7 @@ export class GameRuntime extends GameActivity {
         const positionOrdinal = ['st','nd','rd'][((position + 90) % 100 - 10) % 10 - 1] || 'th';
 
         const award = this.calculatePrizeMoneyShare();
+        const name = this.description_.nameFn(this.settings_);
 
         // Inform the |player| of their position and score in the game.
         if (score !== null) {
@@ -228,13 +231,18 @@ export class GameRuntime extends GameActivity {
             const formattedScore = format('%d', score);
 
             player.sendMessage(
-                Message.GAME_RESULT_FINISHED, this.description_.name, position, positionOrdinal,
-                formattedScore);
+                Message.GAME_RESULT_FINISHED, name, position, positionOrdinal, formattedScore);
+
+            this.nuwani_().echo(
+                'notice-minigame-win-score', player.name, player.id, name, position,
+                positionOrdinal, formattedScore);
 
         } else {
             player.sendMessage(
-                Message.GAME_RESULT_FINISHED_NO_SCORE, this.description_.name, position,
-                positionOrdinal);
+                Message.GAME_RESULT_FINISHED_NO_SCORE, name, position, positionOrdinal);
+            
+            this.nuwani_().echo(
+                'notice-minigame-win', player.name, player.id, name, position, positionOrdinal);
         }
 
         // Inform and award the |player| of their |award|, if any.

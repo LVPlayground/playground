@@ -11,6 +11,7 @@
 enum PlayerActivityType {
     PlayerActivityNone = 0,
     PlayerActivityJsRace = 1,
+    PlayerActivityDmZone = 2
 
     // Please update GetPlayerMinigameName() when adding new JavaScript values to this enumeration.
 };
@@ -38,7 +39,7 @@ class PlayerActivity <playerId (MAX_PLAYERS)> {
      * Returns whether the player is engaged in a JavaScript-owned activity.
      */
     public bool: isJavaScriptActivity() {
-        return m_activity == PlayerActivityJsRace;
+        return m_activity != PlayerActivityNone;
     }
 
     /**

@@ -23,6 +23,7 @@ The following features have been implemented in JavaScript.
   - **[Announce](announce/)**: Provides the ability to announce events to players, administrators
     and IRC.
   - **[Communication](communication/)**: Provides the lower-level player communication capabilities.
+  - **[DeathMatch](death_match/)**: Enables players to fight each other in FFA a death match.
   - **[Economy](economy/)**: Provides primitives for managing LVP's economy.
   - **[Friends](friends/)**: Gives players the ability to list who their friends are, as well as
     the `/friends` command.

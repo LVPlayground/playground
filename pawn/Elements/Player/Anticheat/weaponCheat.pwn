@@ -81,7 +81,7 @@ GiveWeapon(playerId, weaponId, ammo) {
 
 forward OnGiveWeapon(playerId, weaponId, ammo);
 public OnGiveWeapon(playerId, weaponId, ammo) {
-    return GiveWeapon(playerId, weaponId, ammo);
+    GiveWeapon(playerId, weaponId, ammo);
 }
 
 ClearSafeWeapons(playerId) {

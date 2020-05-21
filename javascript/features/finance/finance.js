@@ -21,6 +21,8 @@ export default class Finance extends Feature {
     constructor() {
         super();
 
+        this.markFoundational();
+
         // Many parts about the in-game financial situation are configurable.
         const settings = this.defineDependency('settings');
 

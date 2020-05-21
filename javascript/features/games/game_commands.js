@@ -5,6 +5,8 @@
 import CommandBuilder from 'components/command_manager/command_builder.js';
 import { GameActivity } from 'features/games/game_activity.js';
 import { GameRegistration } from 'features/games/game_registration.js';
+import { Menu } from 'components/menu/menu.js';
+import Setting from 'entities/setting.js';
 
 import confirm from 'components/dialogs/confirm.js';
 
@@ -234,6 +236,10 @@ export class GameCommands {
         }
     }
 
+    // ---------------------------------------------------------------------------------------------
+    // Game configuration flow
+    // ---------------------------------------------------------------------------------------------
+
     // Determines the settings for the game described by |description|. This will use the default
     // settings, unless the |player| has indicated that they want to customize. (The |custom| flag.)
     async determineSettings(description, custom, player) {
@@ -263,12 +269,96 @@ export class GameCommands {
             return settings;
         }
 
-        settings.set('haystack/difficulty', 'extreme');
-        settings.set('haystack/levels', 15);
-        settings.set('haystack/nighttime', true);
+        // Otherwise we display the configuration flow to the |player|.
+        if (!await this.displaySettingsDialog(player, description, settings))
+            return null;
 
         return settings;
     }
+
+    // Displays the settings dialog for the game described by |description| to the |player|.
+    async displaySettingsDialog(player, description, settings) {
+        const dialog = new Menu(description.name, ['Setting', 'Value']);
+
+        dialog.addItem('Start the game!', '-');
+        dialog.addItem('----------', '----------');
+
+        for (const [ identifier, setting ] of description.settings) {
+            const label = setting.description;
+
+            const defaultValue = setting.defaultValue;
+            const currentValue = settings.get(identifier);
+
+            let valueLabel = null;
+            let listener = undefined;
+
+            switch (setting.type) {
+                case Setting.TYPE_BOOLEAN:
+                    valueLabel = !!currentValue ? 'enabled' : 'disabled';
+                    listener = async () => {
+                        const updatedValue =
+                            await this.displayEnumSettingDialog(
+                                player, label, ['enabled', 'disabled'], valueLabel);
+                        
+                        if (updatedValue === null)
+                            return;  // bail out of the flow
+                        
+                        settings.set(identifier, updatedValue);
+
+                        // Display the same dialog again, as there may be more settings to change.
+                        await this.displaySettingsDialog(player, description, settings);
+                    };
+                    break;
+
+                case Setting.TYPE_ENUM:
+                    valueLabel = currentValue;
+                    listener = async () => {
+                        const updatedValue =
+                            await this.displayEnumSettingDialog(
+                                player, label, setting.options, valueLabel);
+                        
+                        if (updatedValue === null)
+                            return;  // bail out of the flow
+                        
+                        settings.set(identifier, updatedValue);
+
+                        // Display the same dialog again, as there may be more settings to change.
+                        await this.displaySettingsDialog(player, description, settings);
+                    };
+                    break;
+
+                case Setting.TYPE_NUMBER:
+                    break;
+                case Setting.TYPE_STRING:
+                    break;
+            }
+
+            // Add the configuration setting to the |dialog| that's being built.
+            dialog.addItem(label, valueLabel, listener);
+        }
+
+        return await dialog.displayForPlayer(player);
+    }
+
+    // Displays a dialog that allows the player to change a particular boolean setting. The
+    // |options| must be an array with all available options, with |value| being the selected one.
+    async displayEnumSettingDialog(player, label, options, value) {
+        const dialog = new Menu(label);
+
+        for (const option of options) {
+            const label = option;
+            const prefix = option === value ? '{FFFF00}' : '';
+
+            dialog.addItem(prefix + label, () => value = option);
+        }
+
+        if (!await dialog.displayForPlayer(player))
+            return null;
+        
+        return value;
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Called when the registration expiration for the given |registration| has expired. It's time
     // to start the game, or refund the participating players their contribution.

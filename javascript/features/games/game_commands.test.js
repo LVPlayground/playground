@@ -5,6 +5,7 @@
 import { GameDescription } from 'features/games/game_description.js';
 import { GameRegistration } from 'features/games/game_registration.js';
 import { Game } from 'features/games/game.js';
+import Setting from 'entities/setting.js';
 
 describe('GameCommands', (it, beforeEach) => {
     let commands = null;
@@ -197,6 +198,68 @@ describe('GameCommands', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 0);
 
         assert.includes(gunther.lastDialog, 'does not have any customization options available');
+    });
+
+    it('should enable players to customize game settings', async (assert) => {
+        class BubbleGame extends Game {}
+
+        const description = new GameDescription(BubbleGame, {
+            name: 'Bubble',
+            goal: 'Have the registration time expire',
+            command: 'bubblegame',
+
+            settingsValidator: (setting, value) => true,
+            settings: [
+                new Setting('bubble', 'enum', ['easy', 'normal', 'hard'], 'normal', 'Enumeration'),
+                new Setting('bubble', 'number', Setting.TYPE_NUMBER, 30, 'Numeric value'),
+                new Setting('bubble', 'boolean', Setting.TYPE_BOOLEAN, false, 'Boolean value'),
+                new Setting('bubble', 'string', Setting.TYPE_STRING, 'text', 'Textual value'),
+            ],
+        });
+
+        let settings = null;
+
+        // (1) Gunther is able to cancel out of starting a new game.
+        gunther.respondToDialog({ response: 0 /* Dismiss */ });
+
+        settings = await commands.determineSettings(description, /* custom= */ true, gunther);
+        assert.isNull(settings);
+
+        // (2) Have Gunther change one of the enumeration values. These will be shown as a list.
+        gunther.respondToDialog({ listitem: 2 /* Enumeration */ }).then(
+            () => gunther.respondToDialog({ listitem: 2 /* hard */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
+
+        settings = await commands.determineSettings(description, /* custom= */ true, gunther);
+        assert.equal(settings.get('bubble/enum'), 'hard');
+
+        // (3) Have Gunther change one of the numeric values. This will be shown as a question.
+        // TODO
+    
+        // (4) Have Gunther change one of the boolean values. This will be a list.
+        gunther.respondToDialog({ listitem: 4 /* Boolean value */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* enabled */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
+
+        settings = await commands.determineSettings(description, /* custom= */ true, gunther);
+        assert.isTrue(settings.get('bubble/boolean'));
+
+        // (5) Have Gunther change one of the textual values. This will be shown as a question.
+        // TODO
+    });
+
+    it.fails();
+
+    it('should only customize game settings if validation succeeds', async (assert) => {
+
+
+
+    });
+
+    it('should not allow custom and default registration at the same time', async (assert) => {
+
+
+
     });
 
     it('should automatically try to start a game when the registration expires', async (assert) => {

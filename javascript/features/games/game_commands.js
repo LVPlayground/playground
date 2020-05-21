@@ -165,10 +165,14 @@ export class GameCommands {
             return;
         }
 
+        // TODO: Allow the settings to be customized.
+        const settings = new Map(description.settings.entries());
+
         // Create a new registration flow for the |description|, to which all other players are
         // invited to participate. This enables future commands to join the game instead.
         const registration =
-            this.manager_.createGameRegistration(description, GameRegistration.kTypePublic);
+            this.manager_.createGameRegistration(description, settings,
+                                                 GameRegistration.kTypePublic);
 
         if (!registration) {
             player.sendMessage(Message.GAME_REGISTRATION_UNAVAILABLE, description.name);

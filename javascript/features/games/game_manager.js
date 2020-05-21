@@ -59,8 +59,8 @@ export class GameManager {
     // Starts registration for a new game of the given |description|. No announcements will be sent,
     // that's the job of whoever requested the game to be created. Will return the GameRegistration
     // instance when the request was successful, or NULL otherwise.
-    createGameRegistration(description, type) {
-        const registration = new GameRegistration(description, type, this);
+    createGameRegistration(description, settings, type) {
+        const registration = new GameRegistration(description, settings, type, this);
 
         this.registrations_.add(registration);
         return registration;

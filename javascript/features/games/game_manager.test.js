@@ -31,7 +31,7 @@ describe('GameManager', (it, beforeEach) => {
 
         const description = new GameDescription(BubbleGame, { name: 'Bubble', goal: '' });
         const registration =
-            manager.createGameRegistration(description, GameRegistration.kTypePublic);
+            manager.createGameRegistration(description, new Map(), GameRegistration.kTypePublic);
         
         assert.isNull(manager.getPlayerActivity(gunther));
         assert.equal(gunther.syncedData.minigameName, '');
@@ -61,7 +61,7 @@ describe('GameManager', (it, beforeEach) => {
     it('is able to remove a player from a registration when they disconnect', assert => {
         const description = new GameDescription(BubbleGame, { name: 'Bubble', goal: '' });
         const registration =
-            manager.createGameRegistration(description, GameRegistration.kTypePublic);
+            manager.createGameRegistration(description, new Map(), GameRegistration.kTypePublic);
         
         assert.isNull(manager.getPlayerActivity(gunther));
 

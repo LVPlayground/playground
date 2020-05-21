@@ -34,6 +34,7 @@ export class GameRegistration extends GameActivity {
 
     description_ = null;
     finished_ = false;
+    settings_ = null;
     type_ = null;
 
     // Map from Player instance to the financial contribution they made to the game.
@@ -48,15 +49,19 @@ export class GameRegistration extends GameActivity {
     // Gets the map [player => contribution] of players who have signed up for this game.
     get players() { return this.players_; }
 
+    // Gets the settings that should apply over this game.
+    get settings() { return this.settings_; }
+
     // Gets the type of registration this instance deals with. One of the aforementioned statics.
     get type() { return this.type_; }
 
-    constructor(description, type, manager) {
+    constructor(description, settings, type, manager) {
         super();
 
         this.manager_ = manager;
 
         this.description_ = description;
+        this.settings_ = settings;
         this.type_ = type;
 
         this.players_ = new Map();
@@ -132,5 +137,5 @@ export class GameRegistration extends GameActivity {
     // GameActivity implementation
 
     getActivityState() { return GameActivity.kStateRegistered; }
-    getActivityName() { return this.description_.name; }
+    getActivityName() { return this.description_.nameFn(this.settings_); }
 }

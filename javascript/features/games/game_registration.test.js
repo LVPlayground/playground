@@ -59,7 +59,7 @@ describe('GameRegistration', (it, beforeEach) => {
 
         const description = new GameDescription(BubbleGame, { name: 'Bubble', goal: '' });
         const registration =
-            new GameRegistration(description, GameRegistration.kTypePublic, manager);
+            new GameRegistration(description, new Map(), GameRegistration.kTypePublic, manager);
 
         assert.doesNotThrow(() => registration.registerPlayer(gunther, kContribution));
         assert.throws(() => registration.registerPlayer(gunther, kContribution));
@@ -81,7 +81,7 @@ describe('GameRegistration', (it, beforeEach) => {
         });
 
         const registration =
-            new GameRegistration(description, GameRegistration.kTypePublic, manager);
+            new GameRegistration(description, new Map(), GameRegistration.kTypePublic, manager);
         
         assert.isFalse(registration.hasFinished());
 
@@ -103,7 +103,7 @@ describe('GameRegistration', (it, beforeEach) => {
         });
 
         const registration =
-            new GameRegistration(description, GameRegistration.kTypePublic, manager);
+            new GameRegistration(description, new Map(), GameRegistration.kTypePublic, manager);
         
         assert.isFalse(registration.hasFinished());
 
@@ -120,7 +120,7 @@ describe('GameRegistration', (it, beforeEach) => {
 
         const description = new GameDescription(BubbleGame, { name: 'Bubble', goal: '' });
         const registration =
-            new GameRegistration(description, GameRegistration.kTypePublic, manager);
+            new GameRegistration(description, new Map(), GameRegistration.kTypePublic, manager);
 
         registration.registerPlayer(gunther, kContribution);
         assert.isFalse(registration.hasFinished());
@@ -134,8 +134,24 @@ describe('GameRegistration', (it, beforeEach) => {
 
         const description = new GameDescription(BubbleGame, { name: 'Bubble', goal: '' });
         const registration =
-            new GameRegistration(description, GameRegistration.kTypePublic, manager);
+            new GameRegistration(description, new Map(), GameRegistration.kTypePublic, manager);
 
         assert.equal(String(registration), '[GameActivity: Bubble (registered)]');
+
+        const customDescription = new GameDescription(BubbleGame, {
+            name: (settings) => {
+                if (settings.has('bubble/difficulty'))
+                    return 'Extreme Bubble';
+                
+                return 'Bubble';
+            },
+            goal: ''
+        });
+
+        const customRegistration =
+            new GameRegistration(customDescription, new Map([ [ 'bubble/difficulty', 'extreme' ] ]),
+                                 GameRegistration.kTypePublic, manager);
+
+        assert.equal(String(customRegistration), '[GameActivity: Extreme Bubble (registered)]');
     });
 });

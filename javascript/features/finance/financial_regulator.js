@@ -4,6 +4,7 @@
 
 import { FinancialNativeCalls } from 'features/finance/financial_natives.js';
 import { MoneyIndicator } from 'features/finance/visual/money_indicator.js';
+import ScopedCallbacks from 'base/scoped_callbacks.js';
 
 // The financial regulator is responsible for managing money in Las Venturas Playground. It
 // maintains its own books, and will continuously align player's own monitary values with it. Some
@@ -19,12 +20,17 @@ export class FinancialRegulator {
     static kMaximumBankAmount = 5354228880;
     static kMinimumBankAmount = 0;
 
+    callbacks_ = null;
     nativeCalls_ = null;
     settings_ = null;
 
     constructor(settings, FinancialNativeCallsConstructor = FinancialNativeCalls) {
         this.nativeCalls_ = new FinancialNativeCallsConstructor();
         this.settings_ = settings;
+
+        this.callbacks_ = new ScopedCallbacks();
+        this.callbacks_.addEventListener(
+            'playerspawn', FinancialRegulator.prototype.onPlayerSpawn.bind(this));
 
         server.playerManager.addObserver(this);
     }
@@ -40,6 +46,18 @@ export class FinancialRegulator {
     // during their previous session will be refunded. They might get some more spawn money too.
     onPlayerLogin(player) {
         this.setPlayerCashAmount(player, player.account.cashBalance);
+    }
+
+    // Called when a player has spawned in the world. Award them their spawn money.
+    onPlayerSpawn(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player)
+            return;  // the |player| has not identified to their account yet
+
+        if (player.activity !== Player.PLAYER_ACTIVITY_NONE || player.syncedData.minigameName)
+            return;  // the |player| is doing some activity, skip this for now
+
+        this.setPlayerCashAmount(player, player.account.cashBalance + this.spawnMoney);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -115,5 +133,8 @@ export class FinancialRegulator {
 
     dispose() {
         server.playerManager.removeObserver(this);
+
+        this.callbacks_.dispose();
+        this.callbacks_ = null;
     }
 }

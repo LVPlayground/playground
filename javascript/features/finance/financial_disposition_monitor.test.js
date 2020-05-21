@@ -31,6 +31,8 @@ describe('FinancialDispositionMonitor', (it, beforeEach, afterEach) => {
         dispositionMonitor = new FinancialDispositionMonitor(regulator, MockFinancialNativeCalls);
     });
 
+    afterEach(() => regulator.dispose());
+
     it('corrects differences, regardless of how big the difference is', async (assert) => {
         const monitorPromise = dispositionMonitor.monitor();
 

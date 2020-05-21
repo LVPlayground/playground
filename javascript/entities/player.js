@@ -95,7 +95,7 @@ export class Player extends Supplementable {
 
     // To be removed:
     #syncedData_ = null;
-    #activity_ = 0;
+    #activity_ = Player.PLAYER_ACTIVITY_NONE;
     #gangId_ = null;
     #levelIsTemporary_ = false;
     #messageLevel_ = 0;

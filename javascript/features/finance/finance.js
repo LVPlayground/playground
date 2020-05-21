@@ -21,9 +21,6 @@ export default class Finance extends Feature {
     constructor() {
         super();
 
-        // Depend on the `account` feature, which provides the account supplement.
-        this.defineDependency('account');
-
         // Many parts about the in-game financial situation are configurable.
         const settings = this.defineDependency('settings');
 

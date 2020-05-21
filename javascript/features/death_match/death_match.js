@@ -20,5 +20,9 @@ export default class DeathMatch extends Feature {
 
     dispose() {
         this.commands_.dispose();
+        this.commands_ = null;
+
+        this.manager_.dispose();
+        this.manager_ = null;
     }
 }

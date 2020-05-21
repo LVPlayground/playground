@@ -138,4 +138,9 @@ export class DeathMatchManger {
     validDmZones() {
         return DeathMatchLocation.getAllLocationIds();
     }
+
+    dispose() {
+        this.callbacks_.dispose();
+        this.callbacks_ = null;
+    }
 }

@@ -220,6 +220,12 @@ class SpawnManager <playerId (MAX_PLAYERS)> {
         }
 
         // -----------------------------------------------------------------------------------------
+        // Has JavaScript requested authority over this player's spawns?
+
+        if (IsInvolvedInJavaScriptGame(playerId))
+            return true;
+
+        // -----------------------------------------------------------------------------------------
 
         // Is the player in jail? If they are, killing themselves will give them another two minutes
         // of jail time to enjoy. This will also apply when they reconnect to the server.

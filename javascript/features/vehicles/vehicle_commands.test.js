@@ -1014,7 +1014,7 @@ describe('VehicleCommands', (it, beforeEach) => {
         commands.dispose();
         commands.dispose = () => true;
 
-        assert.equal(server.commandManager.size, originalCommandCount - 9);
+        assert.equal(server.commandManager.size, originalCommandCount - 10);
     });
 
     it('should be able to update and tell the color(s) of vehicles', async(assert) => {
@@ -1069,12 +1069,6 @@ describe('VehicleCommands', (it, beforeEach) => {
         gunther.clearMessages();
         gunther.vehicle.primaryColor = 142;
         gunther.vehicle.secondaryColor = 241;
-
-        assert.isTrue(await gunther.issueCommand('/v color _ 210'));
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_COLOR_CURRENT, 142, 241));
-        assert.equal(gunther.vehicle.primaryColor, 142);
-        assert.equal(gunther.vehicle.secondaryColor, 241);
     });
 
     it('should pretend that the delete and save commands do not exist for temps', async(assert) => {

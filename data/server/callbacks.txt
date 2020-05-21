@@ -17,6 +17,7 @@ forward OnGiveWeapon(playerId, weaponId, ammo);
 forward OnResetPlayerWeapons(playerId);
 
 # Streamer callbacks
+[Deferred] forward OnDynamicObjectMoved(objectid);
 [Deferred] forward OnPlayerEnterDynamicArea(playerid, areaid);
 [Deferred] forward OnPlayerLeaveDynamicArea(playerid, areaid);
 

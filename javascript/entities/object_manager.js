@@ -7,7 +7,7 @@
 class ObjectManager {
     constructor(objectConstructor = GameObject) {
         this.objectConstructor_ = objectConstructor;
-        this.objects_ = new Set();
+        this.objects_ = new Map();
     }
 
     // Gets the number of objects currently created on the server.
@@ -36,17 +36,31 @@ class ObjectManager {
             priority: 0,
         });
 
-        this.objects_.add(object);
+        this.objects_.set(object.id, object);
         return object;
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the object in |event| has finished moving. If it's one created by JavaScript, let
+    // the GameObject instance know so that any listening promises can be resolved.
+    onObjectMoved(event) {
+        const object = this.objects_.get(event.objectid);
+        if (!object)
+            return;  // the |object| is not known to JavaScript
+        
+        object.onMoved();
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Removes the |object| from the maintained set of objects. Should only be used by the
     // GameObject implementation to inform the manager about their disposal.
     didDisposeObject(object) {
-        if (!this.objects_.has(object))
+        if (!this.objects_.has(object.id))
             throw new Error('Attempting to dispose an invalid object: ' + object);
 
-        this.objects_.delete(object);
+        this.objects_.delete(object.id);
     }
 
     // Removes all ramaining objects from the server.

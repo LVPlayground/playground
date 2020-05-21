@@ -23,7 +23,7 @@ export class MuteCommands {
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
                 { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
-                { name: 'duration', type: CommandBuilder.NUMBER_PARAMETER, optional: true }])
+                { name: 'duration', type: CommandBuilder.NUMBER_PARAMETER, defaultValue: 3 }])
             .build(MuteCommands.prototype.onMuteCommand.bind(this));
 
         // /muted

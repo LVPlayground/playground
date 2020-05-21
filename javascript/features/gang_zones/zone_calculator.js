@@ -89,6 +89,7 @@ export class ZoneCalculator {
         const areas = [];
         const clusters = getClustersForSanAndreas(houseLocations, {
             maximumClusters: this.getSettingValue('zones_cluster_limit'),
+            iterations: this.getSettingValue('zones_cluter_iterations'),
         });
 
         const kMinimumRepresentationInArea =

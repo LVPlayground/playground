@@ -58,6 +58,7 @@ export class MockPlayer extends Player {
     #streamUrl_ = null;
     #soundId_ = null;
 
+    #hasBeenSerializedForTesting_ = false;
     #isSurfingVehicle_ = false;
 
     // To be removed:
@@ -346,11 +347,13 @@ export class MockPlayer extends Player {
     // Stuff that needs a better home
     // ---------------------------------------------------------------------------------------------
 
-    restoreState() {}
-    serializeState() {}
+    restoreState() { this.#hasBeenSerializedForTesting_ = false; }
+    serializeState() { this.#hasBeenSerializedForTesting_ = true; }
 
     updateStreamerObjects() { this.#streamerObjectsUpdated_ = true; }
     updateStreamer(position, virtualWorld, interiorId, type) {}
+
+    get hasBeenSerializedForTesting() { return this.#hasBeenSerializedForTesting_; }
 
     streamerObjectsUpdatedForTesting() { return this.#streamerObjectsUpdated_; }
 

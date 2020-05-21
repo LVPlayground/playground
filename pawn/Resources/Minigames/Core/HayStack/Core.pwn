@@ -38,7 +38,7 @@
 #define SPEED_FACTOR            3000.0
 #define HAY_OBJECT              3374
 #define ROCK_OBJECT             1305
-#define HAY_WORLD               -1      // All worlds yey \o
+#define HAY_WORLD               30  // HAY_VIRTUAL_WORLD
 
 // Vars used within the class
 static CalcChange[4];

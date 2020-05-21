@@ -25,7 +25,7 @@ export class PunishmentCommands {
         // /lastbans [limit=10]
         server.commandManager.buildCommand('lastbans')
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'limit', type: CommandBuilder.NUMBER_PARAMETER, optional: true }])
+            .parameters([{ name: 'limit', type: CommandBuilder.NUMBER_PARAMETER, defaultValue: 10 }])
             .build(PunishmentCommands.prototype.onLastBansCommand.bind(this));
     }
 

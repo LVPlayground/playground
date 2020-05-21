@@ -41,7 +41,6 @@ new isGateOpen;
 new g_AllowWeapons[MAX_INTERIORS][MAX_PLAYERS];
 new g_FlagTime[MAX_PLAYERS];
 new Drivebyer[MAX_PLAYERS];
-new HeliKill[MAX_PLAYERS];
 new preventKillLamers[MAX_PLAYERS];
 new playerVehExp[MAX_PLAYERS];
 new g_PlayerMenu[ MAX_PLAYERS ];

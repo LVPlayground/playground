@@ -348,7 +348,7 @@ class HouseCommands {
                 this.announce_().announceToAdministratorsWithFilter(
                     Message.HOUSE_ANNOUNCE_TELEPORTED, 
                     PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_TELEPORTED, 
-                    player.name, player.id);
+                    player.name, player.id, location.settings.name, location.settings.ownerName);
             });
         }
 
@@ -733,7 +733,9 @@ class HouseCommands {
         let options = ['buy', 'goto', 'settings'];
 
         if (player.isAdministrator())
-            options.push('create', 'enter', 'modify');
+            options.push('enter');
+        if (player.isAdministrator() && !player.isTemporaryAdministrator())
+            options.push('create', 'modify', 'remove', 'save');
         if (player.isManagement())
             options.push('interior');
 

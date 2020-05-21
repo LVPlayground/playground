@@ -55,6 +55,10 @@ class VehicleCommands {
         server.commandManager.buildCommand('unlock')
             .build(VehicleCommands.prototype.onUnlockCommand.bind(this));
 
+        // Command: /seize
+        server.commandManager.buildCommand('seize')
+            .build(VehicleCommands.prototype.onSeizeCommand.bind(this));
+
         // Quick vehicle commands.
         for (const [command, modelId] of Object.entries(QuickVehicleCommands)) {
             server.commandManager.buildCommand(command)
@@ -198,6 +202,51 @@ class VehicleCommands {
         this.manager_.access.unlock(databaseVehicle);
 
         player.sendMessage(Message.VEHICLE_UNLOCKED, player.vehicle.model.name);
+    }
+
+    // Called when the player wants to seize the vehicle that they're in. This will move them to
+    // the driver seat, which only works when that seat is available. This command uses raw Pawn
+    // invocations to make sure it works on any vehicle.
+    onSeizeCommand(player) {
+        const vehicleId = pawnInvoke('GetPlayerVehicleID', 'i', player.id);
+        if (vehicleId === Vehicle.kInvalidId || !vehicleId) {
+            player.sendMessage(Message.VEHICLE_SEIZE_ON_FOOT);
+            return;
+        }
+
+        const seatId = pawnInvoke('GetPlayerVehicleSeat', 'i', player.id);
+        if (seatId === 0) {
+            player.sendMessage(Message.VEHICLE_SEIZE_DRIVER_SELF);
+            return;
+        }
+
+        const health = pawnInvoke('GetVehicleHealth', 'iF', vehicleId);
+        if (health <= 250) {
+            player.sendMessage(Message.VEHICLE_SEIZE_ON_FIRE);
+            return;
+        }
+
+        // Locate other players who are sitting in the same vehicle.
+        for (const otherPlayer of server.playerManager) {
+            const otherVehicleId = pawnInvoke('GetPlayerVehicleID', 'i', otherPlayer.id);
+            if (otherVehicleId !== vehicleId)
+                continue;
+            
+            const otherSeatId = pawnInvoke('GetPlayerVehicleSeat', 'i', otherPlayer.id);
+            if (otherSeatId === 0) {
+                player.sendMessage(Message.VEHICLE_SEIZE_DRIVER, otherPlayer.name);
+                return;
+            }
+        }
+
+        // Move them out of the vehicle first to avoid desyncs.
+        player.position = player.position;
+
+        // Now move them in to the vehicle again.
+        pawnInvoke('PutPlayerInVehicle', 'iii', player.id, vehicleId, /* driver= */ 0);
+
+        // They've seized the vehicle, good for them. Let them know :).
+        player.sendMessage(Message.VEHICLE_SEIZED);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -554,7 +603,10 @@ class VehicleCommands {
             return;
 
         const globalOptions = ['density', 'enter', 'help', 'reset'];
-        const vehicleOptions = ['access', 'color', 'delete', 'health', 'respawn', 'save'];
+        const vehicleOptions = ['access', 'color', 'health', 'respawn'];
+
+        if (!player.isTemporaryAdministrator())
+            vehicleOptions.push('delete', 'save');
 
         if (player.isManagement()) {
             globalOptions.push('optimise');
@@ -714,6 +766,8 @@ class VehicleCommands {
             server.commandManager.removeCommand(command);
 
         server.commandManager.removeCommand('v');
+
+        server.commandManager.removeCommand('seize');
 
         server.commandManager.removeCommand('lock');
         server.commandManager.removeCommand('unlock');

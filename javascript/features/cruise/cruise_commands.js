@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 // It needs to be possible for admins to start up and end the cruise. By this command we provide this functionality.
-class CruiseCommands {
+export class CruiseCommands {
     constructor(manager) {
         this.manager_ = manager;
 
@@ -17,19 +17,15 @@ class CruiseCommands {
     }
 
     onCruiseCommand(player) {
-        player.sendMessage(Message.COMMAND_USAGE, Message.CRUISE_USAGE);
+        player.sendMessage(Message.CRUISE_USAGE);
     }
 
-    onCruiseStartCommand() {
-        player.sendMessage(Message.CRUISE_STARTED);
-
-        this.manager_.start();
+    onCruiseStartCommand(player) {
+        this.manager_.start(player);
     }
 
-    onCruiseStopCommand() {
-        player.sendMessage(Message.CRUISE_STOPPED);
-
-        this.manager_.stop();
+    onCruiseStopCommand(player) {
+        this.manager_.stop(player);
     }
 
     // Cleans up the state created by this class, i.e. unregisters the commands.
@@ -37,5 +33,3 @@ class CruiseCommands {
         server.commandManager.removeCommand('cruise');
     }
 }
-
-export default CruiseCommands;

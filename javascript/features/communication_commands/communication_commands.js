@@ -10,8 +10,10 @@ import { IgnoreCommands } from 'features/communication_commands/ignore_commands.
 import { MuteCommands } from 'features/communication_commands/mute_commands.js'
 
 // Set of `/show` messages that Gunther will issue at a particular interval.
-const kGuntherMessages =
-    ['beg', 'discord', 'donate', 'forum', 'irc', 'reg', 'report', 'rules', 'weapons'];
+const kGuntherMessages = [
+    'beg', 'discord', 'donate', 'forum', 'irc', 'minigames', 'reg', 'report', 'rules', 'stunt',
+    'weapons'
+];
 
 // In which file are messages for the `/show` command stored?
 const kShowCommandDataFile = 'data/show.json';
@@ -183,8 +185,12 @@ export default class CommunicationCommands extends Feature {
 
         const messageText = this.showMessages_.get(message);
         if (!messageText) {
-            player.sendMessage(Message.ANNOUNCE_SHOW_UNKNOWN,
-                               Array.from(this.showMessages_.keys()).sort().join('/'));
+            const allMessages = Array.from(this.showMessages_.keys()).sort();
+            while (allMessages.length > 0) {
+                player.sendMessage(
+                    Message.ANNOUNCE_SHOW_UNKNOWN, allMessages.splice(0, 10).join('/'));
+            }
+            
             return;
         }
 

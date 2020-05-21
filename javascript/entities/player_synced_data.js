@@ -9,6 +9,7 @@ class PlayerSyncedData {
         this.playerId_ = playerId;
 
         this.isolated_ = false;
+        this.minigameName_ = '';
         this.preferredRadioChannel_ = '';
     }
 
@@ -23,6 +24,19 @@ class PlayerSyncedData {
 
         this.isolated_ = value;
         this.sync(PlayerSyncedData.ISOLATED, value);
+    }
+
+    // Gets or sets the name of the game that the player is currently engaged with. This will tell
+    // Pawn and/or JavaScript that the player should not be able to sign up for anything else.
+    get minigameName() { return this.minigameName_; }
+    set minigameName(value) {
+        value = value ?? '';  // allow this to be set to null
+
+        if (typeof value !== 'string')
+            throw new Error('The minigameName property must be a string.');
+
+        this.minigameName_ = value;
+        this.sync(PlayerSyncedData.MINIGAME_NAME, value);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -53,6 +67,7 @@ class PlayerSyncedData {
                 break;
 
             // Textual properties.
+            case PlayerSyncedData.MINIGAME_NAME:
             case PlayerSyncedData.PREFERRED_RADIO_CHANNEL:
                 pawnInvoke('OnPlayerSyncedDataChange', 'iiifs', this.playerId_, property,
                            0 /* invalid int */, 0.0 /* invalid float */, value);
@@ -70,6 +85,9 @@ class PlayerSyncedData {
             case PlayerSyncedData.ISOLATED:
                 this.isolated_ = !!intValue;
                 break;
+            case PlayerSyncedData.MINIGAME_NAME:
+                this.minigameName_ = stringValue;
+                break;
             case PlayerSyncedData.PREFERRED_RADIO_CHANNEL:
                 this.preferredRadioChannel_ = stringValue;
                 break;
@@ -78,7 +96,10 @@ class PlayerSyncedData {
 }
 
 // Setting keys for the individual properties.
-PlayerSyncedData.PREFERRED_RADIO_CHANNEL = 0;
+// Next ID: 3
 PlayerSyncedData.ISOLATED = 1;
+PlayerSyncedData.MINIGAME_NAME = 2;
+PlayerSyncedData.PREFERRED_RADIO_CHANNEL = 0;
+
 
 export default PlayerSyncedData;

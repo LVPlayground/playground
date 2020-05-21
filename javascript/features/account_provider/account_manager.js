@@ -80,6 +80,13 @@ export class AccountManager {
         if (!player.account.isIdentified())
             return;  // the |player| was never identified to their account
 
+        // When running a test, run the store immediately to get coverage over the functionality,
+        // but do not wait for the |kPlayerDisconnectQueryDelayMs| delay like we do in production.
+        if (server.isTest()) {
+            this.database_.saveAccountData(player.account.prepareForDatabase());
+            return;
+        }
+
         // Have a second's delay before saving the player's data to the account, allowing for other
         // parts of the game to make their final adjustments before they're gone.
         wait(kPlayerDisconnectQueryDelayMs).then(() =>

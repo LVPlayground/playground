@@ -157,7 +157,7 @@ class KilltimeManager {
 
     // Cleans up the state created by this class
     dispose() {
-        this.stop(null);
+        this.isRunning_ = false;  // disposal means we're out of time to do things
 
         this.announce_ = null;
 

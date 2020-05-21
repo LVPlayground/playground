@@ -13,8 +13,10 @@ describe('FinancialRegulator', (it, beforeEach, afterEach) => {
     beforeEach(() => {
         server.featureManager.loadFeature('account');
 
+        const settings = server.featureManager.loadFeature('settings');
+
         gunther = server.playerManager.getById(/* Gunther= */ 0);
-        regulator = new FinancialRegulator(MockFinancialNativeCalls);
+        regulator = new FinancialRegulator(settings, MockFinancialNativeCalls);
     });
 
     afterEach(() => regulator.dispose());

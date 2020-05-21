@@ -56,6 +56,7 @@ export default [
     new Setting('financial', 'community_contribution_player_pct', Setting.TYPE_NUMBER, 4, 'What percentage of cash should registered players contribute?'),
     new Setting('financial', 'community_contribution_vip_base', Setting.TYPE_NUMBER, 2500000, 'Starting at what wealth level should VIPs contribute?'),
     new Setting('financial', 'community_contribution_vip_pct', Setting.TYPE_NUMBER, 3, 'What percentage of cash should VIPs contribute?'),
+    new Setting('financial', 'spawn_money', Setting.TYPE_NUMBER, 10000, 'How much money should a player get when they spawn?'),
 
     /** Game-related settings */
     new Setting('games', 'registration_expiration_sec', Setting.TYPE_NUMBER, 20, 'After how many seconds does a game registration expire?'),

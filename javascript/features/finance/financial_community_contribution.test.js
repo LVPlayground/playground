@@ -18,7 +18,7 @@ describe('FinancialCommunityContribution', (it, beforeEach) => {
         gunther = server.playerManager.getById(/* Gunther= */ 0);
         settings = server.featureManager.loadFeature('settings');
 
-        regulator = new FinancialRegulator(MockFinancialNativeCalls);
+        regulator = new FinancialRegulator(settings, MockFinancialNativeCalls);
         contribution = new FinancialCommunityContribution(regulator, () => settings);
     });
 

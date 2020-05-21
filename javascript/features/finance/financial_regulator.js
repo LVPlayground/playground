@@ -20,12 +20,26 @@ export class FinancialRegulator {
     static kMinimumBankAmount = 0;
 
     nativeCalls_ = null;
+    settings_ = null;
 
-    // Map from |player| => |amount|, indicating the amount of cash they carry.
-    cash_ = new WeakMap();
-
-    constructor(FinancialNativeCallsConstructor = FinancialNativeCalls) {
+    constructor(settings, FinancialNativeCallsConstructor = FinancialNativeCalls) {
         this.nativeCalls_ = new FinancialNativeCallsConstructor();
+        this.settings_ = settings;
+
+        server.playerManager.addObserver(this);
+    }
+
+    // Gets the amount of spawn money players are supposed to get when they spawn.
+    get spawnMoney() { return this.settings_().getValue('financial/spawn_money'); }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: bank account
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the |player| has identified to their account. All the money they were carrying
+    // during their previous session will be refunded. They might get some more spawn money too.
+    onPlayerLogin(player) {
+        this.setPlayerCashAmount(player, player.account.cashBalance);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -73,7 +87,7 @@ export class FinancialRegulator {
 
     // Returns the amount of cash money the |player| is currently carrying.
     getPlayerCashAmount(player) {
-        return this.cash_.get(player) || 0;
+        return player.account.cashBalance;
     }
 
     // Updates the amount of cash money the |player| is currently carrying to the given |amount|.
@@ -86,9 +100,9 @@ export class FinancialRegulator {
         if (amount > FinancialRegulator.kMaximumCashAmount)
             amount = FinancialRegulator.kMaximumCashAmount;
         
-        const difference = amount - this.getPlayerCashAmount(player);
+        const difference = amount - player.account.cashBalance;
 
-        this.cash_.set(player, amount);
+        player.account.cashBalance = amount;
         if (isAdjustment)
             return;  // silent adjustment, all done here
 
@@ -99,5 +113,7 @@ export class FinancialRegulator {
 
     // ---------------------------------------------------------------------------------------------
 
-    dispose() {}
+    dispose() {
+        server.playerManager.removeObserver(this);
+    }
 }

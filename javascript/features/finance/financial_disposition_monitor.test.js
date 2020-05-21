@@ -25,7 +25,9 @@ describe('FinancialDispositionMonitor', (it, beforeEach, afterEach) => {
         russell = server.playerManager.getById(/* Russell= */ 1);
         lucy = server.playerManager.getById(/* Lucy= */ 2);
 
-        regulator = new FinancialRegulator(MockFinancialNativeCalls);
+        const settings = server.featureManager.loadFeature('settings');
+
+        regulator = new FinancialRegulator(settings, MockFinancialNativeCalls);
         dispositionMonitor = new FinancialDispositionMonitor(regulator, MockFinancialNativeCalls);
     });
 

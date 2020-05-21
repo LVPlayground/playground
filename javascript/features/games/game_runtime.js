@@ -21,6 +21,7 @@ export class GameRuntime extends GameActivity {
     description_ = null;
     finance_ = null;
     manager_ = null;
+    settings_ = null;
     state_ = null;
     virtualWorld_ = null;
 
@@ -45,12 +46,13 @@ export class GameRuntime extends GameActivity {
     // Gets the virtual world that has bene allocated to this game.
     get virtualWorld() { return this.virtualWorld_; }
 
-    constructor(manager, description, finance, virtualWorld = 0) {
+    constructor(manager, description, settings, finance, virtualWorld = 0) {
         super();
 
         this.description_ = description;
         this.finance_ = finance;
         this.manager_ = manager;
+        this.settings_ = settings;
         this.state_ = GameRuntime.kStateUninitialized;
         this.virtualWorld_ = virtualWorld;
     }
@@ -71,7 +73,7 @@ export class GameRuntime extends GameActivity {
 
         this.game_ = new this.description_.gameConstructor(this, this.scopedEntities_);
 
-        await this.game_.onInitialized();
+        await this.game_.onInitialized(this.settings_);
 
         this.state_ = GameRuntime.kStateInitialized;
     }
@@ -288,5 +290,5 @@ export class GameRuntime extends GameActivity {
     // ---------------------------------------------------------------------------------------------
 
     getActivityState() { return GameActivity.kStateEngaged; }
-    getActivityName() { return this.description_.name; }
+    getActivityName() { return this.description_.nameFn(this.settings_); }
 }

@@ -9,7 +9,7 @@ describe('random', it => {
         const cases = [
             [ 0, 100 ],
             [ -1000, 1000 ],
-            [  1000, 1000 ]
+            [  1000, 2000 ]
         ];
 
         for (const [min, max] of cases) {
@@ -19,7 +19,7 @@ describe('random', it => {
                 const value = random(min, max);
 
                 assert.isAboveOrEqual(value, min);
-                assert.isBelowOrEqual(value, max);
+                assert.isBelow(value, max);
             }
         }
     });
@@ -31,7 +31,7 @@ describe('random', it => {
             const value = random(100);
 
             assert.isAboveOrEqual(value, 0);
-            assert.isBelowOrEqual(value, 100);
+            assert.isBelow(value, 100);
         }
     });
 });

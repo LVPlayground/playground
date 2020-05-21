@@ -98,10 +98,9 @@ export class GameCommands {
         // Otherwise, forward the command to Pawn. Do this after a delay, to avoid re-entrancy
         // issues. In practice this will be a delay of ~5 milliseconds.
         if (!server.isTest()) {
-            pawnInvoke(
-                'SetTimerEx', 'siisii', 'OnPlayerLeaveCommand', /* interval= */ 0,
-                /* repeating= */ 0, /* format= */ 'ii', /* playerid= */ currentPlayer.id,
-                /* targetid= */ (targetPlayer ? targetPlayer.id : Player.kInvalidId));
+            wait(0).then(() => pawnInvoke(
+                'OnPlayerLeaveCommand', 'ii', currentPlayer.id, targetPlayer ? targetPlayer.id
+                                                                             : Player.kInvalidId));
         }
     }
 

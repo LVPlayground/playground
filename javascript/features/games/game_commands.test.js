@@ -178,6 +178,27 @@ describe('GameCommands', (it, beforeEach) => {
             gunther.messages[0], Message.format(Message.GAME_REGISTRATION_STARTED, 'Bubble'));
     });
 
+    it('should not allow players to customize games without settings', async (assert) => {
+        class BubbleGame extends Game {}
+
+        const description = new GameDescription(BubbleGame, {
+            name: 'Bubble',
+            goal: 'Have the registration time expire',
+            command: 'bubblegame',
+        });
+
+        // Create the command, give Gunther enough money to participate, and fix the timeout.
+        commands.createCommandForGame(description);
+
+        // Have Gunther execute the custom command, even though no settings are available.
+        gunther.respondToDialog({ response: 0 /* Dismiss */ });
+
+        assert.isTrue(await gunther.issueCommand('/bubblegame custom'));
+        assert.equal(gunther.messages.length, 0);
+
+        assert.includes(gunther.lastDialog, 'does not have any customization options available');
+    });
+
     it('should automatically try to start a game when the registration expires', async (assert) => {
         class BubbleGame extends Game {}
 

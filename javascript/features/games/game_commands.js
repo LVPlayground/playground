@@ -243,9 +243,14 @@ export class GameCommands {
         for (const [ identifier, setting ] of description.settings)
             settings.set(identifier, setting.defaultValue);
 
-        // If the |custom| flag has been set, start the customization flow. This allows the player
-        // to change everything in |settings| within the defined boundaries.
-        if (custom) {
+        // If the |custom| flag has not been set, return the |settings| immediately as we're done.
+        // Otherwise we begin the game customization flow.
+        if (!custom)
+            return settings;
+
+        // If no settings have been defined for this game, then there's nothing to customize. Ask
+        // the player what they're intending to happen in this scenario.
+        if (!settings.size) {
             const startDefault = await confirm(player, {
                 title: `Customize the ${description.name} game`,
                 message: `The ${description.name} game does not have any customization options ` +
@@ -254,6 +259,8 @@ export class GameCommands {
 
             if (!startDefault)
                 return null;
+            
+            return settings;
         }
 
         settings.set('haystack/difficulty', 'extreme');

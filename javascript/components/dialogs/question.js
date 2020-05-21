@@ -103,7 +103,11 @@ class Question {
             // If the player is able to make another attempt and an explanation message was given,
             // display that in a dialog box and allow them to try again unless they cancel.
             if (this.attempts_ > 0 && this.constraints_.explanation !== null) {
-                Dialog.displayMessage(this.player_, this.question_, this.constraints_.explanation,
+                let explanation = this.constraints_.explanation;
+                if (typeof explanation === 'function')
+                    explanation = explanation();
+
+                Dialog.displayMessage(this.player_, this.question_, explanation,
                                       'Try again', 'Cancel').then(result => {
                     // Bail out if the player clicked on "Cancel".
                     if (!result.response) {

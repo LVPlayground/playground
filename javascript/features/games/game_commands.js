@@ -6,6 +6,7 @@ import CommandBuilder from 'components/command_manager/command_builder.js';
 import { GameActivity } from 'features/games/game_activity.js';
 import { GameRegistration } from 'features/games/game_registration.js';
 import { Menu } from 'components/menu/menu.js';
+import Question from 'components/dialogs/question.js';
 import Setting from 'entities/setting.js';
 
 import confirm from 'components/dialogs/confirm.js';
@@ -288,61 +289,62 @@ export class GameCommands {
 
             const defaultValue = setting.defaultValue;
             const currentValue = settings.get(identifier);
+            const prefix = defaultValue !== currentValue ? '{FFFF00}' : '';
 
-            let valueLabel = null;
-            let listener = undefined;
+            let valueLabel = currentValue;
+            if (setting.type === Setting.TYPE_BOOLEAN)
+                valueLabel = !!currentValue ? 'enabled' : 'disabled';
 
-            switch (setting.type) {
-                case Setting.TYPE_BOOLEAN:
-                    valueLabel = !!currentValue ? 'enabled' : 'disabled';
-                    listener = async () => {
-                        const updatedValue =
-                            await this.displayEnumSettingDialog(
-                                player, label, ['enabled', 'disabled'], valueLabel);
-                        
-                        if (updatedValue === null)
-                            return;  // bail out of the flow
-                        
-                        settings.set(identifier, updatedValue);
+            // Create a listener that internally switches based on the type of this setting. This
+            // avoids a lot of code duplication, because most of the validation is consistent.
+            const listener = async () => {
+                let updatedValue = null;
 
-                        // Display the same dialog again, as there may be more settings to change.
-                        await this.displaySettingsDialog(player, description, settings);
-                    };
-                    break;
+                switch (setting.type) {
+                    case Setting.TYPE_BOOLEAN:
+                        updatedValue = await this.displayListSettingDialog(
+                                           player, label, ['enabled', 'disabled'], valueLabel);
 
-                case Setting.TYPE_ENUM:
-                    valueLabel = currentValue;
-                    listener = async () => {
-                        const updatedValue =
-                            await this.displayEnumSettingDialog(
-                                player, label, setting.options, valueLabel);
-                        
-                        if (updatedValue === null)
-                            return;  // bail out of the flow
-                        
-                        settings.set(identifier, updatedValue);
+                        if (updatedValue !== null)
+                            updatedValue = !!updatedValue;
 
-                        // Display the same dialog again, as there may be more settings to change.
-                        await this.displaySettingsDialog(player, description, settings);
-                    };
-                    break;
+                        break;
+                    
+                    case Setting.TYPE_ENUM:
+                        updatedValue = await this.displayListSettingDialog(
+                                           player, label, setting.options, currentValue);
+                        break;
+                    
+                    case Setting.TYPE_NUMBER:
+                        updatedValue = await this.displayInputSettingDialog(
+                                           player, description, setting, currentValue);
+                        break;
+                    
+                    case Setting.TYPE_STRING:
+                        updatedValue = await this.displayInputSettingDialog(
+                                           player, description, setting, currentValue);
+                        break;
+                }
 
-                case Setting.TYPE_NUMBER:
-                    break;
-                case Setting.TYPE_STRING:
-                    break;
-            }
+                if (updatedValue === null)
+                    return;  // bail out of the flow
+                
+                settings.set(identifier, updatedValue);
+
+                // Display the same dialog again, as there may be more settings to change.
+                await this.displaySettingsDialog(player, description, settings);
+            };
 
             // Add the configuration setting to the |dialog| that's being built.
-            dialog.addItem(label, valueLabel, listener);
+            dialog.addItem(label, prefix + valueLabel, listener);
         }
 
         return await dialog.displayForPlayer(player);
     }
 
-    // Displays a dialog that allows the player to change a particular boolean setting. The
+    // Displays a dialog that allows the player to change to a particular list of settings. The
     // |options| must be an array with all available options, with |value| being the selected one.
-    async displayEnumSettingDialog(player, label, options, value) {
+    async displayListSettingDialog(player, label, options, value) {
         const dialog = new Menu(label);
 
         for (const option of options) {
@@ -356,6 +358,62 @@ export class GameCommands {
             return null;
         
         return value;
+    }
+
+    // Displays a dialog that allows the player to input a value. This will still have to be
+    // validated against the constraints, thus this returns either a string or a number.
+    async displayInputSettingDialog(player, description, setting, currentValue) {
+        let explanation = null;
+        let validator = input => {
+            // (1) If the |setting| is a number, verify that it parses as a number.
+            if (setting.type === Setting.TYPE_NUMBER) {
+                const floatValue = parseFloat(input);
+                if (Number.isNaN(floatValue) || !Number.isSafeInteger(floatValue)) {
+                    explanation = `The input "${input}" is not a valid round number.`;
+                    return false;
+                }
+            } else if (setting.type === Setting.TYPE_STRING && !input.length) {
+                explanation = `The value for this setting cannot be empty.`;
+                return false;
+            }
+
+            // (2) Run the |input| through the |description|'s validator, when available. These will
+            // throw when the |input| cannot be validated, forming the exception.
+            if (description.settingsValidator) {
+                try {
+                    if (description.settingsValidator(setting.identifier, input))
+                        return true;
+                    
+                    explanation = 'The given value has not been accepted by the game.';
+                } catch (exception) {
+                    explanation = exception.message;
+                }
+
+                return false;
+            }
+
+            // (3) If there wasn't a validator, then we'll just accept whatever garbage the player
+            // happens to throw at us. They better handle it well!
+            return true;
+        };
+
+        const answer = await Question.ask(player, {
+            question: description.name,
+            message: `${setting.description} (current value: ${currentValue})`,
+            constraints: {
+                validation: validator,
+                explanation: () => explanation,
+                abort: 'Sorry, but you must provide a valid value.',
+            }
+        });
+
+        if (!answer)
+            return null;
+        
+        if (setting.type === Setting.TYPE_NUMBER)
+            return parseFloat(answer);
+
+        return answer;
     }
 
     // ---------------------------------------------------------------------------------------------

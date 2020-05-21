@@ -231,35 +231,50 @@ describe('GameCommands', (it, beforeEach) => {
             () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
 
         settings = await commands.determineSettings(description, /* custom= */ true, gunther);
-        assert.equal(settings.get('bubble/enum'), 'hard');
+        assert.strictEqual(settings.get('bubble/enum'), 'hard');
 
         // (3) Have Gunther change one of the numeric values. This will be shown as a question.
-        // TODO
+        gunther.respondToDialog({ listitem: 3 /* Numeric value */ }).then(
+            () => gunther.respondToDialog({ inputtext: 'banana' /* string, invalid */ })).then(
+            () => gunther.respondToDialog({ response: 1 /* Acknowledge */ })).then(
+            () => gunther.respondToDialog({ inputtext: '1234' })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
     
+        settings = await commands.determineSettings(description, /* custom= */ true, gunther);
+        assert.strictEqual(settings.get('bubble/number'), 1234);
+
         // (4) Have Gunther change one of the boolean values. This will be a list.
         gunther.respondToDialog({ listitem: 4 /* Boolean value */ }).then(
             () => gunther.respondToDialog({ listitem: 0 /* enabled */ })).then(
             () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
 
         settings = await commands.determineSettings(description, /* custom= */ true, gunther);
-        assert.isTrue(settings.get('bubble/boolean'));
+        assert.strictEqual(settings.get('bubble/boolean'), true);
 
         // (5) Have Gunther change one of the textual values. This will be shown as a question.
-        // TODO
-    });
+        gunther.respondToDialog({ listitem: 5 /* Textual value */ }).then(
+            () => gunther.respondToDialog({ inputtext: 'banana' /* string */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
+    
+        settings = await commands.determineSettings(description, /* custom= */ true, gunther);
+        assert.strictEqual(settings.get('bubble/string'), 'banana');
 
-    it.fails();
-
-    it('should only customize game settings if validation succeeds', async (assert) => {
-
-
-
-    });
-
-    it('should not allow custom and default registration at the same time', async (assert) => {
-
-
-
+        // (6) Create a flow where they change all of the settings in one go.
+        gunther.respondToDialog({ listitem: 2 /* Numeric value */ }).then(
+            () => gunther.respondToDialog({ listitem: 2 /* hard */ })).then(
+            () => gunther.respondToDialog({ listitem: 3 /* Numeric value */ })).then(
+            () => gunther.respondToDialog({ inputtext: '1234' })).then(
+            () => gunther.respondToDialog({ listitem: 4 /* Boolean value */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* enabled */ })).then(
+            () => gunther.respondToDialog({ listitem: 5 /* Textual value */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'banana' /* string */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
+        
+        settings = await commands.determineSettings(description, /* custom= */ true, gunther);
+        assert.strictEqual(settings.get('bubble/enum'), 'hard');
+        assert.strictEqual(settings.get('bubble/number'), 1234);
+        assert.strictEqual(settings.get('bubble/boolean'), true);
+        assert.strictEqual(settings.get('bubble/string'), 'banana');
     });
 
     it('should automatically try to start a game when the registration expires', async (assert) => {

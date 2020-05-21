@@ -38,7 +38,7 @@ ResetPlayerWeaponsHook(playerId) {
 
 forward OnResetPlayerWeapons(playerId);
 public OnResetPlayerWeapons(playerId) {
-    return ResetPlayerWeapons(playerId);
+    ResetPlayerWeapons(playerId);
 }
 
 str_shift(string[], start) {

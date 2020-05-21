@@ -184,12 +184,12 @@ export class Player extends Supplementable {
 
     // Give a player a certain weapon with ammo.
     giveWeapon(weaponId, ammo) {
-        return pawnInvoke('OnGiveWeapon', 'iii', this.#id_, weaponId, ammo);
+        wait(0).then(() => pawnInvoke('OnGiveWeapon', 'iii', this.#id_, weaponId, ammo));
     }
 
     // Resets all the weapons a player has.
     resetWeapons() {
-        return pawnInvoke('OnResetPlayerWeapons', 'i', this.#id_);
+        wait(0).then(() => pawnInvoke('OnResetPlayerWeapons', 'i', this.#id_));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -218,6 +218,10 @@ export class Player extends Supplementable {
             return;
 
         pawnInvoke('SetPlayerVirtualWorld', 'ii', this.#id_, value);
+    }
+
+    setPlayerBounds(maxX, minX, maxY, minY) {        
+        pawnInvoke('SetPlayerWorldBounds', 'iffff', this.#id_, maxX, minX, maxY, minY)
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -435,6 +439,8 @@ export class Player extends Supplementable {
 //     //pawn/Entities/Players/PlayerActivity.pwn
 Player.PLAYER_ACTIVITY_NONE = 0;
 Player.PLAYER_ACTIVITY_JS_RACE = 1;
+Player.PLAYER_ACTIVITY_JS_DM_ZONE = 2;
+
 
 // Utility function: convert a player's level to a string.
 global.playerLevelToString = (level, plural = false) => {

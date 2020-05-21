@@ -95,6 +95,13 @@
   "COMMUNICATION_VIP_NO_ACCESS": "@error Only VIPs are allowed to use this chat. Check out {2196F3}/donate{FFFFFF} for more information!",
   "COMMUNICATION_WORLD_MESSAGE": "{%s}[%d][World: %d] %s:{FFFFFF} %s",
 
+  "DEATH_MATCH_AVAILABLE_ZONES" : "Available DM zones are: /dm %s.",
+  "DEATH_MATCH_INVALID_ZONE" : "Zone %d is not a valid zone.",
+  "DEATH_MATCH_INSTRUCTION_LEAVE": "Use \"/deathmatch leave\" to leave the deathmatch.",
+  "DEATH_MATCH_LEAVE_KILLED": "You have been killed to avoid abuse because you %s.",
+  "DEATH_MATCH_TELEPORT_BLOCKED": "@error Sorry, you can't enter a DM zone now because you %s.",
+  "DEATH_MATCH_TELEPORTED": "%s has joined /deathmatch %d",
+
   "DEBUG_FRAME_COUNTER": "{33AA33}The server averaged %d FPS in the last %d seconds.",
   "DEBUG_TRACE_INVALID_TIME": "@error A trace must last between 0 and 300 seconds.",
   "DEBUG_TRACE_STARTED": "{33AA33}The trace you requested is now being recorded.",

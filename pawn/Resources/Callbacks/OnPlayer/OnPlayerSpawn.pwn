@@ -116,11 +116,5 @@ OriginalOnPlayerSpawn(playerId) {
         return true;
 #endif
 
-    if (!firstJoin[playerId] && GetPlayerMoney(playerId) > -1) {
-        GiveRegulatedMoney(playerId, SpawnMoney);
-    } else {
-        firstJoin[playerId] = 0;
-    }
-
     return 1;
 }

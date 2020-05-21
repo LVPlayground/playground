@@ -51,7 +51,6 @@ enum EconomyValueType {
     ReactionTest,
     ShipIdleMoney,
     SlapCommand,
-    SpawnMoney,
     TaxiPerKilometer,
     TaxiRide,
     TaxiRideOwnerShare,
@@ -118,7 +117,6 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case ReactionTest:                      return 5000;
         case ShipIdleMoney:                     return 25 * inputValue /* VIP multiplier */;
         case SlapCommand:                       return 500;
-        case SpawnMoney:                        return 10000;
         case TaxiPerKilometer:                  return 15;
         case TaxiRide:                          return GetEconomyValue(TaxiPerKilometer) * inputValue /* distance */;
         case TaxiRideOwnerShare:                return floatround(GetEconomyValue(TaxiPerKilometer) * inputValue /* distance */ * 0.1);

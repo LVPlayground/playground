@@ -33,10 +33,6 @@ class LegacyAccountBridge {
         // mutable: death_count
         MyDeaths[playerId] = DatabaseResult(resultId)->readInteger("death_count");
 
-        // mutable: money_cash
-        GivePlayerMoney(playerId, DatabaseResult(resultId)->readInteger("money_cash"));
-        SetPlayerScore(playerId, DatabaseResult(resultId)->readInteger("money_cash"));
-
         // mutable: money_debt
         iLoan[playerId] = DatabaseResult(resultId)->readInteger("money_debt");
         iLoanPercent[playerId] = 4; /* default to 4% */
@@ -140,7 +136,6 @@ class LegacyAccountBridge {
                 "kill_count = %d, " ...
                 "death_count = %d, " ...
 
-                "money_cash = %d, " ...
                 "money_debt = %d, " ...
                 "money_bounty = %d, " ...
 
@@ -181,7 +176,6 @@ class LegacyAccountBridge {
                 MyDeaths[playerId],
 
                 // Financial information
-                GetPlayerMoney(playerId),
                 iLoan[playerId],
                 HitmanTracker(playerId)->playerBounty(),
 

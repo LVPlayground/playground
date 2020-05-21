@@ -59,7 +59,7 @@ export default class Haystack extends Feature {
     generateName(settings) {
         let prefix = '';
         let suffix = '';
-        
+
         const difficulty = settings.get('haystack/difficulty');
         if (difficulty && difficulty !== 'normal')
             prefix = difficulty[0].toUpperCase() + difficulty.substring(1) + ' ';

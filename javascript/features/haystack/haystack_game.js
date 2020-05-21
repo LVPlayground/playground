@@ -295,7 +295,7 @@ export class HaystackGame extends Game {
         if (settings.get('haystack/nighttime') === true)
             time = [ 1, 30 ];
         
-        return { hayDensity, levels, rockDensity, speedAdjustment, tickSkip, time };
+        return { hayDensity, levels, rockDensity, speedAdjustment, tickSkip, time, weatherId };
     }
 
     // Finds an available position in the matrix through randomness. That means that the algorithm

@@ -117,13 +117,9 @@ export class GameCommands {
     // activity just yet. If they aren't, it will either register them for an existing pending game,
     // or create a new game just for them.
     async onCommand(description, custom, player) {
-        const settings = await this.determineSettings(description, custom, player);
-        if (!settings)
+        const gameSettings = await this.determineSettings(description, custom, player);
+        if (!gameSettings)
             return;  // the |player| aborted out of the flow
-
-        // If the |player| wants to customize the game first, let them have a go at that.
-        if (custom)
-            await this.customizeSettings(settings, description);
 
         const activity = this.manager_.getPlayerActivity(player);
         if (activity) {
@@ -185,11 +181,12 @@ export class GameCommands {
         // Create a new registration flow for the |description|, to which all other players are
         // invited to participate. This enables future commands to join the game instead.
         const registration =
-            this.manager_.createGameRegistration(description, settings,
+            this.manager_.createGameRegistration(description, gameSettings,
                                                  GameRegistration.kTypePublic);
 
         if (!registration) {
-            player.sendMessage(Message.GAME_REGISTRATION_UNAVAILABLE, description.name);
+            player.sendMessage(
+                Message.GAME_REGISTRATION_UNAVAILABLE, registration.getActivityName());
             return;
         }
 
@@ -223,7 +220,7 @@ export class GameCommands {
         // Send a message to all other unengaged people on the server to see if the want to
         // participate in the game as well. They're welcome to sign up.
         const formattedAnnouncement =
-            Message.format(Message.GAME_REGISTRATION_ANNOUNCEMENT, description.name,
+            Message.format(Message.GAME_REGISTRATION_ANNOUNCEMENT, registration.getActivityName(),
                            description.command, description.price);
 
         for (const recipient of server.playerManager) {
@@ -243,8 +240,8 @@ export class GameCommands {
         const settings = new Map();
 
         // Populate the |settings| with the default configuration for the game.
-        for (const setting of description.settings)
-            settings.set(setting.identifier, setting.value);
+        for (const [ identifier, setting ] of description.settings)
+            settings.set(identifier, setting.defaultValue);
 
         // If the |custom| flag has been set, start the customization flow. This allows the player
         // to change everything in |settings| within the defined boundaries.
@@ -262,6 +259,8 @@ export class GameCommands {
         settings.set('haystack/difficulty', 'extreme');
         settings.set('haystack/levels', 15);
         settings.set('haystack/nighttime', true);
+
+        console.log([...settings.entries()])
 
         return settings;
     }

@@ -257,7 +257,7 @@ class Account <playerId (MAX_PLAYERS)> {
         Admin(playerId, notice);
 
         // Broadcast an OnPlayerLogin callback that can be intercepted by other scripts.
-        CallRemoteFunction("OnPlayerLogin", "iiiii", playerId, m_userId, Player(playerId)->isVip(), AccountData(playerId)->gangId(), 1 /* undercover */);
+        CallRemoteFunction("OnPlayerLogin", "iiiii", playerId, originalUserId, Player(playerId)->isVip(), AccountData(playerId)->gangId(), 1 /* undercover */);
 
         Annotation::ExpandList<OnPlayerModLogin>(playerId);
 

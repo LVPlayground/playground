@@ -20,6 +20,10 @@ export class DeferredEventManager {
             const events = getDeferredEvents();
             for (const { type, event } of events) {
                 switch (type) {
+                    case 'OnDynamicObjectMoved':
+                        server.objectManager.onObjectMoved(event);
+                        break;
+
                     case 'OnPlayerEnterDynamicArea':
                         server.areaManager.onPlayerEnterArea(event);
                         break;

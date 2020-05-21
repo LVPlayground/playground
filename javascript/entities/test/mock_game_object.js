@@ -10,15 +10,21 @@ let globalMockObjectId = 0;
 // Mocked version of the GameObject, which represents objects created in the world of San Andreas.
 // Overrides all functionality that would end up calling into Pawn and/or the streamer plugin.
 export class MockGameObject extends GameObject {
+    #id_ = null;
+
     #position_ = null;
     #rotation_ = null;
+
+    #moveResolver_ = null;
 
     // Overridden to avoid creating a real object on the server.
     createInternal(options) {
         this.#position_ = options.position;
         this.#rotation_ = options.rotation;
 
-        return ++globalMockObjectId;
+        this.#id_ = ++globalMockObjectId;
+
+        return this.#id_;
     }
 
     // Overridden to avoid destroying a real object on the server.
@@ -35,4 +41,26 @@ export class MockGameObject extends GameObject {
     // ---------------------------------------------------------------------------------------------
 
     attachToVehicle(vehicle, offset, rotation) {}
+
+    // ---------------------------------------------------------------------------------------------
+
+    async moveTo(position, speed) {
+        return new Promise(resolve => {
+            this.#moveResolver_ = resolve;
+
+            server.objectManager.onObjectMoved({
+                objectid: this.#id_
+            });
+        });
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    onMoved() {
+        if (!this.#moveResolver_)
+            return;
+        
+        this.#moveResolver_();
+        this.#moveResolver_ = null;
+    }
 }

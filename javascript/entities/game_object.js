@@ -17,6 +17,7 @@ export class GameObject {
 
     #interiors_ = null;
     #virtualWorlds_ = null;
+    #moveResolver_ = null;
 
     constructor(manager) {
         this.#manager_ = manager;
@@ -96,13 +97,31 @@ export class GameObject {
 
     // ---------------------------------------------------------------------------------------------
 
+    async moveTo(position, speed) {
+        pawnInvoke(
+            'MoveDynamicObject', 'ifffffff', this.#id_, position.x, position.y, position.z,
+            speed, /* rx= */ -1000, /* ry= */ -1000, /* rz= */ -1000);
+        
+        return new Promise(resolve => this.#moveResolver_ = resolve);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    onMoved() {
+        if (!this.#moveResolver_)
+            return;
+
+        this.#moveResolver_();
+        this.#moveResolver_ = null;
+    }
+
     dispose() {
         this.destroyInternal();
 
-        this.#id_ = GameObject.kInvalidId;
-
         this.#manager_.didDisposeObject(this);
         this.#manager_ = null;
+
+        this.#id_ = GameObject.kInvalidId;
     }
 }
 

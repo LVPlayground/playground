@@ -22,11 +22,17 @@ describe('GameRuntime', (it, beforeEach) => {
         russell = server.playerManager.getById(/* Russell= */ 1);
     });
 
+    // Default settings, an empty map, to be made available to games.
+    const kDefaultSettings = new Map();
+
     // Prepares the game run in |description|, but does not yet call `run()` and/or `finalize()`,
     // which is left as an exercise to the test.
     async function prepareGame(description, players) {
+        const finance = server.featureManager.loadFeature('finance');
         const virtualWorld = Math.floor(Math.random() * 10000);
-        const runtime = new GameRuntime(manager, description, virtualWorld);
+
+        const runtime =
+            new GameRuntime(manager, description, kDefaultSettings, finance, virtualWorld);
         
         await runtime.initialize();
         for (const player of players)
@@ -47,7 +53,7 @@ describe('GameRuntime', (it, beforeEach) => {
 
     it('should serialize and later on restore participant states', async (assert) => {
         const description = new GameDescription(Game, { name: 'Bubble', goal: '' });
-        const runtime = new GameRuntime(manager, description);
+        const runtime = new GameRuntime(manager, description, kDefaultSettings);
 
         await runtime.initialize();
 
@@ -67,7 +73,7 @@ describe('GameRuntime', (it, beforeEach) => {
 
         const events = [];
         const description = new GameDescription(class extends Game {
-            async onInitialized() { events.push('onInitialized'); }
+            async onInitialized(settings) { events.push('onInitialized'); }
             async onPlayerAdded(player) { events.push('onPlayerAdded'); }
             async onPlayerSpawned(player, countdown) {
                 events.push('onPlayerSpawned');
@@ -165,7 +171,7 @@ describe('GameRuntime', (it, beforeEach) => {
         let vehicle = null;
 
         const description = new GameDescription(class extends Game {
-            async onInitialized() {
+            async onInitialized(settings) {
                 vehicle = this.scopedEntities.createVehicle({
                     modelId: 432,  // tank
                     position: new Vector(0, 0, 0),
@@ -240,7 +246,7 @@ describe('GameRuntime', (it, beforeEach) => {
             nextPlayerIndex_ = 0;
             playerIndex_ = new Map();
 
-            async onInitialized() {
+            async onInitialized(settings) {
                 vehicles[0] = this.scopedEntities.createVehicle({
                     modelId: 432,  // tank
                     position: new Vector(0, 0, 0),
@@ -344,7 +350,7 @@ describe('GameRuntime', (it, beforeEach) => {
 
     it('is able to proportionally calculate the prize money', assert => {
         const description = new GameDescription(Game, { name: 'Bubble', goal: '' });
-        const runtime = new GameRuntime(manager, description);
+        const runtime = new GameRuntime(manager, description, kDefaultSettings);
 
         runtime.prizeMoney_ = 10000;
 
@@ -386,8 +392,23 @@ describe('GameRuntime', (it, beforeEach) => {
 
     it('should have a sensible description when casted to a string', assert => {
         const description = new GameDescription(Game, { name: 'Bubble', goal: '' });
-        const runtime = new GameRuntime(manager, description);
+        const runtime = new GameRuntime(manager, description, kDefaultSettings);
 
         assert.equal(String(runtime), '[GameActivity: Bubble (engaged)]');
+
+        const customDescription = new GameDescription(Game, {
+            name: (settings) => {
+                if (settings.has('bubble/difficulty'))
+                    return 'Extreme Bubble';
+                
+                return 'Bubble';
+            },
+            goal: ''
+        });
+
+        const customRuntime = new GameRuntime(
+            manager, customDescription, new Map([ [ 'bubble/difficulty', 'extreme' ] ]));
+
+        assert.equal(String(customRuntime), '[GameActivity: Extreme Bubble (engaged)]');
     });
 });

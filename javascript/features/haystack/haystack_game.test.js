@@ -27,6 +27,24 @@ describe('HaystackGame', (it, beforeEach) => {
         assert.isTrue(server.commandManager.hasCommand('newhaystack'));
     });
 
+    it('is able to generate different names based on settings', async (assert) => {
+        const feature = server.featureManager.loadFeature('haystack');
+
+        assert.equal(feature.generateName(new Map()), 'Haystack');
+        assert.equal(
+            feature.generateName(new Map([ ['haystack/difficulty', 'extreme' ]])),
+            'Extreme Haystack');
+        
+        assert.equal(
+            feature.generateName(new Map([ ['haystack/levels', 25 ]])),
+            'Haystack x25');
+        
+        assert.equal(
+            feature.generateName(new Map([ ['haystack/difficulty', 'easy' ],
+                                           [ 'haystack/levels', 55 ] ])),
+            'Easy Haystack x55');
+    });
+
     it('should populate the matrix at the configured density', async (assert) => {
         const game = new HaystackGame(/* runtime= */ null, new ScopedEntities());
         await game.onInitialized();

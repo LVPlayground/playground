@@ -8,9 +8,20 @@ class Setting {
     constructor(category, name, type, value, description) {
         this.category_ = category;
         this.name_ = name;
-        this.type_ = type;
+
+        if (!Array.isArray(type)) {
+            this.type_ = type;
+            this.options_ = undefined;
+        } else {
+            this.type_ = Setting.TYPE_ENUM;
+            this.options_ = type;
+        }
 
         this.defaultValue_ = value;
+
+        if (this.type_ == Setting.TYPE_ENUM && !this.options_.includes(this.defaultValue_))
+            throw new Error(`The ${value} must be included in the valid option enumeration.`);
+
         this.value_ = value;
 
         this.description_ = description;
@@ -28,6 +39,9 @@ class Setting {
     // Gets the type of the setting. This is one of the Setting.TYPE_ constants.
     get type() { return this.type_; }
 
+    // Gets the valid options for an enumeration setting.
+    get options() { return this.options_; }
+
     // Gets the default value of the setting.
     get defaultValue() { return this.defaultValue_; }
 
@@ -44,5 +58,6 @@ class Setting {
 Setting.TYPE_BOOLEAN = 0;
 Setting.TYPE_NUMBER = 1;
 Setting.TYPE_STRING = 2;
+Setting.TYPE_ENUM = 3;
 
 export default Setting;

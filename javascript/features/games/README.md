@@ -22,40 +22,41 @@ the [Game class](game.js) and an options dictionary.
 
 ### Required configuration
 
-Option            | Description
-------------------|--------------
-`name`            | Name of the game, as a string. **Required**.
-`goal`            | What do participants have to do to win this game? **Required**.
+Option              | Description
+--------------------|--------------
+`name`              | Name of the game, as either a string or a function. **Required**.
+`goal`              | What do participants have to do to win this game? **Required**.
 
 ### Optional configuration: countdown
 
 _This will result in a `countdown` argument to be passed to the game's `onPlayerSpawned` function_
 _the first time a player spawns, which is an async function that games should call themselves._
 
-Option            | Description
-------------------|--------------
-`countdown`       | Time, in seconds, for which a countdown screen should be displayed.
-`countdownCamera` | Position of the camera during the countdown, array of two Vector objects.
-`countdownView`   | Target of the camera during the countdown, array of two Vector objects.
+Option              | Description
+--------------------|--------------
+`countdown`         | Time, in seconds, for which a countdown screen should be displayed.
+`countdownCamera`   | Position of the camera during the countdown, array of two Vector objects.
+`countdownView`     | Target of the camera during the countdown, array of two Vector objects.
 
 ### Optional configuration: settings
 
 _Settings may be used to allow players to configure the game to their liking, either through the_
 _`/challenge` command, or by providing the `custom` argument to the game's own command._
 
-Option            | Description
-------------------|--------------
-`settings`        | Array of [Setting](../../entities/setting.js) instances for this game.
+Option              | Description
+--------------------|--------------
+`settings`          | Array of [Setting](../../entities/setting.js) instances for this game.
+`settingsValidator` | Function to be called when one of the non-fixed-value settings is changed.
 
 ### Optional configuration: misc
 
-Option            | Description
-------------------|--------------
-`command`         | Name of the command through which the game can be started. Optional.
-`minimumPlayers`  | The minimum amount of players that should join the game. (Default is 2.)
-`maximumPlayers`  | The maximum amount of players that should join the game. (Default is 4.)
-`price`           | The price players have to pay in order to participate. (Default is $250.)
-`tick`            | Frequency at which the `onTick()` event should be called. (Default is 1000ms.)
+Option              | Description
+--------------------|--------------
+`command`           | Name of the command through which the game can be started. Optional.
+`minimumPlayers`    | The minimum amount of players that should join the game. (Default is 2.)
+`maximumPlayers`    | The maximum amount of players that should join the game. (Default is 4.)
+`price`             | The price players have to pay in order to participate. (Default is $250.)
+`tick`              | Frequency at which the `onTick()` event should be called. (Default is 1000ms.)
 
 ## Implementation details
 ![Image of architecture](https://github.com/LVPlayground/playground/blob/master/docs/games-api.png?raw=true)

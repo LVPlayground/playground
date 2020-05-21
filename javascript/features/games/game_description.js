@@ -48,6 +48,7 @@ export class GameDescription {
     tick_ = kDefaultTickIntervalMs;
 
     settings_ = new Map();
+    settingsValidator_ = null;
 
     // ---------------------------------------------------------------------------------------------
 
@@ -59,7 +60,10 @@ export class GameDescription {
     // ---------------------------------------------------------------------------------------------
 
     // Gets the name of this game.
-    get name() { return this.name_; }
+    get name() { return this.name_(new Map()); }
+
+    // Gets the function that can be used to generate the name with custom settings.
+    get nameFn() { return this.name_; }
 
     // Gets the explanation of the game's goal. What should players be doing?
     get goal() { return this.goal_; }
@@ -83,6 +87,9 @@ export class GameDescription {
 
     // Gets a map of the settings that can be configured for this game.
     get settings() { return this.settings_; }
+
+    // Gets the function, if any, which should be used to validate a custom setting.
+    get settingsValidator() { return this.settingsValidator_; }
 
     // ---------------------------------------------------------------------------------------------
     // Optional configuration: misc
@@ -115,10 +122,11 @@ export class GameDescription {
         // Section: required options
         // -----------------------------------------------------------------------------------------
 
-        if (!options.hasOwnProperty('name') || typeof options.name !== 'string')
-            throw new Error('Each game must indicate its name as a string.');
+        if (!options.hasOwnProperty('name') || !['function','string'].includes(typeof options.name))
+            throw new Error('Each game must indicate its name as a function or a string.');
 
-        this.name_ = options.name;
+        this.name_ = typeof options.name === 'string' ? () => options.name
+                                                      : options.name;
 
         if (!options.hasOwnProperty('goal') || typeof options.goal !== 'string')
             throw new Error('Each game must indicate a the game\'s goal as a string.');
@@ -131,16 +139,23 @@ export class GameDescription {
 
         if (options.hasOwnProperty('settings')) {
             if (!Array.isArray(options.settings))
-                throw new Error(`[${this.name_}] The game's settings must be given as an array.`);
+                throw new Error(`[${this.name}] The game's settings must be given as an array.`);
             
             for (const setting of options.settings) {
                 if (!(setting instanceof Setting))
-                    throw new Error(`[${this.name_}] Each setting must be a Setting instance.`);
+                    throw new Error(`[${this.name}] Each setting must be a Setting instance.`);
                 
                 if (this.settings_.has(setting.identifier))
-                    throw new Error(`[${this.name_}] Setting ${setting.identifier} already exists.`)
+                    throw new Error(`[${this.name}] Setting ${setting.identifier} already exists.`)
                 
                 this.settings_.set(setting.identifier, setting);
+            }
+
+            if (options.hasOwnProperty('settingsValidator')) {
+                if (typeof options.settingsValidator !== 'function')
+                    throw new Error(`[${this.name}] The setting validator must be a function.`);
+                
+                this.settingsValidator_ = options.settingsValidator;
             }
         }
 
@@ -150,36 +165,36 @@ export class GameDescription {
 
         if (options.hasOwnProperty('countdown')) {
             if (typeof options.countdown !== 'number' || !Number.isSafeInteger(options.countdown))
-                throw new Error(`[${this.name_}] The game's countdown must be given as a number.`);
+                throw new Error(`[${this.name}] The game's countdown must be given as a number.`);
             
             this.countdown_ = options.countdown;
 
             if (!options.hasOwnProperty('countdownCamera'))
-                throw new Error(`[${this.name_}] The camera position is required for a countdown.`);
+                throw new Error(`[${this.name}] The camera position is required for a countdown.`);
 
             if (!Array.isArray(options.countdownCamera) || options.countdownCamera.length != 2) {
                 throw new Error(
-                    `[${this.name_}] The camera position must be an array with two Vectors.`);
+                    `[${this.name}] The camera position must be an array with two Vectors.`);
             }
             
             if (!(options.countdownCamera[0] instanceof Vector) ||
                     !(options.countdownCamera[1] instanceof Vector)) {
-                throw new Error(`[${this.name_}] Each camera position must be a [x, y, z] Vector.`)
+                throw new Error(`[${this.name}] Each camera position must be a [x, y, z] Vector.`)
             }
 
             this.countdownCamera_ = options.countdownCamera;
 
             if (!options.hasOwnProperty('countdownView'))
-                throw new Error(`[${this.name_}] The camera view is required for a countdown.`);
+                throw new Error(`[${this.name}] The camera view is required for a countdown.`);
 
             if (!Array.isArray(options.countdownView) || options.countdownView.length != 2) {
                 throw new Error(
-                    `[${this.name_}] The camera view must be an array with two Vectors.`);
+                    `[${this.name}] The camera view must be an array with two Vectors.`);
             }
             
             if (!(options.countdownView[0] instanceof Vector) ||
                     !(options.countdownView[1] instanceof Vector)) {
-                throw new Error(`[${this.name_}] Each camera view must be a [x, y, z] Vector.`)
+                throw new Error(`[${this.name}] Each camera view must be a [x, y, z] Vector.`)
             }
 
             this.countdownView_ = options.countdownView;
@@ -191,7 +206,7 @@ export class GameDescription {
 
         if (options.hasOwnProperty('command')) {
             if (typeof options.command !== 'string' || !options.command.length)
-                throw new Error(`[${this.name_}] The game's command must be given as a string.`);
+                throw new Error(`[${this.name}] The game's command must be given as a string.`);
             
             this.command_ = options.command;
         }
@@ -199,7 +214,7 @@ export class GameDescription {
         if (options.hasOwnProperty('maximumPlayers')) {
             if (typeof options.maximumPlayers !== 'number' ||
                     !Number.isSafeInteger(options.maximumPlayers)) {
-                throw new Error(`[${this.name_}] The maximum player count must be a number.`);
+                throw new Error(`[${this.name}] The maximum player count must be a number.`);
             }
             
             this.maximumPlayers_ = options.maximumPlayers;
@@ -208,7 +223,7 @@ export class GameDescription {
         if (options.hasOwnProperty('minimumPlayers')) {
             if (typeof options.minimumPlayers !== 'number' ||
                     !Number.isSafeInteger(options.minimumPlayers)) {
-                throw new Error(`[${this.name_}] The minimum player count must be a number.`);
+                throw new Error(`[${this.name}] The minimum player count must be a number.`);
             }
             
             this.minimumPlayers_ = options.minimumPlayers;
@@ -216,14 +231,14 @@ export class GameDescription {
 
         if (options.hasOwnProperty('price')) {
             if (typeof options.price !== 'number' || !Number.isSafeInteger(options.price))
-                throw new Error(`[${this.name_}] The game's price must be given as a number.`);
+                throw new Error(`[${this.name}] The game's price must be given as a number.`);
             
             this.price_ = options.price;
         }
 
         if (options.hasOwnProperty('tick')) {
             if (typeof options.tick !== 'number' || !Number.isSafeInteger(options.tick))
-                throw new Error(`[${this.name_}] The game's tick must be given as a number.`);
+                throw new Error(`[${this.name}] The game's tick must be given as a number.`);
             
             this.tick_ = options.tick;
         }

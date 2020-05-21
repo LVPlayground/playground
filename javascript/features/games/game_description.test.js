@@ -35,11 +35,25 @@ describe('GameDescription', it => {
         assert.isNull(description.countdownCamera);
         assert.isNull(description.countdownView);
 
+        assert.instanceOf(description.settings, Map);
+        assert.equal(description.settings.size, 0);
+        assert.isNull(description.settingsValidator);
+
         assert.isNull(description.command);
         assert.equal(description.maximumPlayers, kDefaultMaximumPlayers);
         assert.equal(description.minimumPlayers, kDefaultMinimumPlayers);
         assert.equal(description.price, kDefaultPrice);
         assert.equal(description.tick, kDefaultTickIntervalMs);
+    });
+
+    it('allows the game name to be passed as a function', assert => {
+        const description = new GameDescription(Game, {
+            name: (settings) => 'My name',
+            goal: 'Make this test work',
+        });
+
+        assert.strictEqual(description.gameConstructor, Game);
+        assert.equal(description.name, 'My name');
     });
 
     it('is able to initialize countdown settings', assert => {
@@ -68,6 +82,7 @@ describe('GameDescription', it => {
             name: 'My game',
             goal: 'Have some settings',
 
+            settingsValidator: (identifier, value) => true,
             settings: [
                 new Setting('game', 'bonus', Setting.TYPE_NUMBER, 0, 'Percentage of bonus points'),
                 new Setting('game', 'night', Setting.TYPE_BOOLEAN, false, 'Have it be night?'),
@@ -78,6 +93,8 @@ describe('GameDescription', it => {
         assert.isTrue(description.settings.has('game/bonus'));
         assert.isTrue(description.settings.has('game/night'));
         assert.isFalse(description.settings.get('game/night').defaultValue);
+
+        assert.typeOf(description.settingsValidator, 'function');
     });
 
     it('is able to validate the data being passed to the game', assert => {

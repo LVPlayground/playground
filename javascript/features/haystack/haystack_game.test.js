@@ -58,5 +58,48 @@ describe('HaystackGame', (it, beforeEach) => {
         assert.closeTo(rockCount, totalCount * kRockDensity, 2);
     });
 
+    it('should be able to randomly move the haystacks around', async (assert) => {
+        const game = new HaystackGame(/* runtime= */ null, new ScopedEntities());
+        await game.onInitialized();
+
+        let matrixHash = 0;
+        let updateHash = 0;
+        
+        // Calculate a "hash" for the matrix's set up as it currently is.
+        for (let x = 0; x < kEdge; ++x)
+            for (let y = 0; y < kEdge; ++y)
+                for (let z = 0; z < kLevels; ++z)
+                    matrixHash += (x + 1) * (y + 100) * (z + 100) * (game.matrix_[x][y][z].type + 1)
+
+        // Fake 50 ticks, which should statistically lead to at least a few movements.
+        for (let iteration = 0; iteration < 50; ++iteration)
+            await game.onTick();
+
+        // Now calculate the hash again. We expect them to be different.
+        for (let x = 0; x < kEdge; ++x)
+            for (let y = 0; y < kEdge; ++y)
+                for (let z = 0; z < kLevels; ++z)
+                    updateHash += (x + 1) * (y + 100) * (z + 100) * (game.matrix_[x][y][z].type + 1)
+        
+        assert.notEqual(matrixHash, updateHash);
+    });
+
+    it('should move hay faster the further up the haystack we go', assert => {
+        const game = new HaystackGame(/* runtime= */ null, new ScopedEntities());
+
+        for (const direction of ['x', 'z']) {
+            let previous = game.determineMovementSpeed(0, direction);
+
+            for (let level = 1; level < kLevels; ++level) {
+                const current = game.determineMovementSpeed(level, direction);
+                
+                assert.setContext(`${level}/${direction}`);
+                assert.isAbove(current, previous);
+
+                previous = current;
+            }
+        }
+    });
+
     it('should not reset the players timer when they respawn', async (assert) => {});
 });

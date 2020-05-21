@@ -28,6 +28,10 @@ export class HaystackGame extends Game {
     // Matrix of the haystacks and rocks that have been created. Three-dimensional, [x][y][z].
     matrix_ = [];
 
+    // Set of positions ({x, y, z}) in which haystacks are located. Moving objects are removed until
+    // their move operation has fully completed.
+    haystacks_ = new Set();
+
     // Map of |player| to the time, in milliseconds, at which they started the attempt.
     startTime_ = new WeakMap();
 
@@ -52,6 +56,7 @@ export class HaystackGame extends Game {
         for (let haystack = 0; haystack < haystackObjects; ++haystack) {
             const [x, y, z] = this.findAvailablePosition();
 
+            this.haystacks_.add({ x, y, z });
             this.matrix_[x][y][z] = {
                 type: HaystackGame.kPositionHaystack,
                 object: this.scopedEntities.createObject({
@@ -112,12 +117,77 @@ export class HaystackGame extends Game {
 
     // Called every tick, i.e. every ~100ms for this game.
     async onTick() {
+        const haystackArray = [ ...this.haystacks_ ];
 
+        if (!haystackArray.length)
+            throw new Error(`There are no haystacks left in the game's set.`);
+
+        const position = haystackArray[random(0, haystackArray.length)];
+        const cell = this.matrix_[position.x][position.y][position.z];
+
+        if (cell.type != HaystackGame.kPositionHaystack)
+            throw new Error(`The identified haystack isn't known to be a haystack.`);
+
+        let target = Object.assign({}, position);
+
+        // Changes either [x, y, z] by [-1, 1], which maps to all valid haystack movement.
+        const direction = ['x', 'y', 'z'][random(0, 3)];
+        const mutation = [-1, 1][random(0, 2)];
+
+        target[direction] += mutation;
+
+        // The `target` position must be within bounds of the haystack matrix.
+        if (target.x < 0 || target.x >= kEdge || target.y < 0 || target.y >= kEdge)
+            return;
+        
+        if (target.z < 0 || target.z >= kLevels)
+            return;
+
+        // The `target` position must not yet be occupied by something else.
+        if (this.matrix_[target.x][target.y][target.z].type != HaystackGame.kPositionEmpty)
+            return;
+        
+        // Copy the |cell| over to the target destination, to mark it as occupied.
+        this.matrix_[target.x][target.y][target.z] = cell;
+
+        // Remove the |position| from the set of haystack objects that are able to move.
+        this.haystacks_.delete(position);
+
+        // The speed depends on the altitude, objects higher up will be moving faster.
+        const speed = this.determineMovementSpeed(target.z, direction);
+
+        // Move the object located in the |cell| to the new destination. When completed, mark the
+        // existing |cell| as empty, so that other haystacks are able to move in to it.
+        cell.object.moveTo(this.vectorForPosition(target.x, target.y, target.z), speed).then(() => {
+            this.matrix_[position.x][position.y][position.z] = {
+                type: HaystackGame.kPositionEmpty
+            };
+
+            this.haystacks_.add(target);
+        });
     }
 
     // ---------------------------------------------------------------------------------------------
     // Utility functions
     // ---------------------------------------------------------------------------------------------
+
+    // Determines the movement speed given the |level|, for a movement in the given |direction|.
+    // Movements at higher altitudes will be faster, to make the game more challenging.
+    determineMovementSpeed(level, direction) {
+        const kHorizontalRange = [ 0.75, 1.5 ];
+        const kVerticalRange = [ 1, 2 ];
+
+        const progress = level / kLevels;
+
+        switch (direction) {
+            case 'x':
+            case 'y':
+                return kHorizontalRange[0] + (kHorizontalRange[1] - kHorizontalRange[0]) * progress;
+
+            case 'z':
+                return kVerticalRange[0] + (kVerticalRange[1] - kVerticalRange[0]) * progress;
+        }
+    }
 
     // Finds an available position in the matrix through randomness. That means that the algorithm
     // is not very optimised, but as long as the matrix' density is <1 it should be fine.

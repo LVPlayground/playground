@@ -12,6 +12,9 @@ import { isIpAddress, isIpRange, isPartOfRangeBan } from 'features/nuwani_comman
 // By default, only show entries added in the past year when using !why.
 const kDefaultPlayerRecordRecencyDays = 365;
 
+// Delay kicking the player by this duration of time, to make sure that they receive the messages.
+export const kPlayerKickDelayMs = 1000;
+
 // Implementation of a series of commands that enables administrators to revoke access from certain
 // players, IP addresses and serial numbers from the server, as well as understanding why someone
 // might not have access. This includes a series of tools for understanding IP and serial usage.
@@ -179,7 +182,7 @@ export class NuwaniCommands {
             Message.NUWANI_ADMIN_BANNED, context.nickname, player.name, player.id, days, reason);
 
         player.sendMessage(Message.NUWANI_PLAYER_BANNED_NOTICE, context.nickname, days, reason);
-        player.kick();  // actually remove them from the server
+        wait(kPlayerKickDelayMs).then(() => player.kick());  // actually remove them from the server
 
         const success = await this.database_.addEntry({
             type: BanDatabase.kTypeBan,
@@ -387,7 +390,7 @@ export class NuwaniCommands {
             Message.NUWANI_ADMIN_KICKED, context.nickname, player.name, player.id, reason);
 
         player.sendMessage(Message.NUWANI_PLAYER_KICKED_NOTICE, context.nickname, reason);
-        player.kick();  // actually remove them from the server
+        wait(kPlayerKickDelayMs).then(() => player.kick());  // actually remove them from the server
 
         const success = await this.database_.addEntry({
             type: BanDatabase.kTypeKick,
@@ -690,7 +693,7 @@ export class NuwaniCommands {
             bannedPlayers.push([ player.name, player.id ]);
 
             player.sendMessage(Message.NUWANI_PLAYER_BANNED_NOTICE, nickname, days, reason);
-            player.kick();
+            wait(kPlayerKickDelayMs).then(() => player.kick());
         });
 
         // Tell administrators about the ban(s), in one message per three affected users.

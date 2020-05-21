@@ -8,6 +8,8 @@ import { TestBot } from 'features/nuwani/test/test_bot.js';
 import { ip2long } from 'features/nuwani_commands/ip_utilities.js';
 import { issueCommand } from 'features/nuwani/commands/command_helpers.js';
 
+import { kPlayerKickDelayMs } from 'features/punishments/nuwani_commands.js';
+
 // The source that will be used for this series of IRC command tests.
 const kCommandSourceUsername = 'Holsje';
 const kCommandSource = 'Holsje!theone@lvp.administrator';
@@ -150,6 +152,8 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
             command: `!ban ${lucy.name} 5 Idling on the ship`,
         });
 
+        await server.clock.advance(kPlayerKickDelayMs);
+
         assert.isFalse(lucy.isConnected());
         assert.equal(lucy.messages.length, 1);
         assert.equal(
@@ -246,6 +250,8 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
             ingameResult[0],
             'PRIVMSG #LVP.DevJS :Success: The IP address 8.8.8.8 has been banned from the game.');
         
+        await server.clock.advance(kPlayerKickDelayMs);
+
         assert.isFalse(evilJoe.isConnected());
         assert.equal(evilJoe.messages.length, 1);
         assert.equal(
@@ -362,6 +368,8 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
             ingameResult[0],
             'PRIVMSG #LVP.DevJS :Success: The IP range 8.8.*.* has been banned from the game.');
         
+        await server.clock.advance(kPlayerKickDelayMs);
+
         for (const player of evilJoes) {
             assert.isFalse(player.isConnected());
             assert.equal(player.messages.length, 1);
@@ -481,6 +489,8 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
             ingameResult[0],
             'PRIVMSG #LVP.DevJS :Success: The serial 648955637 has been banned from the game.');
         
+        await server.clock.advance(kPlayerKickDelayMs);
+
         assert.isFalse(evilJoe.isConnected());
         assert.equal(evilJoe.messages.length, 1);
         assert.equal(
@@ -564,6 +574,8 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
             source: kCommandSource,
             command: `!kick ${lucy.name} Idling on the ship`,
         });
+
+        await server.clock.advance(kPlayerKickDelayMs);
 
         assert.isFalse(lucy.isConnected());
         assert.equal(lucy.messages.length, 1);

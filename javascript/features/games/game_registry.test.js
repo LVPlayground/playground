@@ -26,15 +26,10 @@ describe('GameRegistry', (it, beforeEach) => {
             }));
         });
 
-        assert.throws(() => {
-            registry.registerGame(new GameDescription(MyFirstGame, {
-                name: 'My first game',
-                goal: 'Goal of another game!',
-            }));
-        });
+        assert.isTrue(registry.hasGame(MyFirstGame));
 
         assert.doesNotThrow(() => registry.removeGame(MyFirstGame));
-        assert.throws(() => registry.removeGame(MyFirstGame));
+        assert.isFalse(registry.hasGame(MyFirstGame));
     });
 
     it('should create and maintain commands for all of the registered games', assert => {
@@ -54,22 +49,8 @@ describe('GameRegistry', (it, beforeEach) => {
         assert.isTrue(commands.commandsForTesting.has('firstgame'));
         assert.isFalse(commands.commandsForTesting.has('secondgame'));
 
-        // Cannot re-register either the same game, or another game with the same command.
-        assert.throws(() => {
-            registry.registerGame(new GameDescription(MyFirstGame, {
-                name: 'My first game again',
-                goal: 'Introduce a new command',
-                command: 'firstgame',
-            }));
-        });
-
-        assert.throws(() => {
-            registry.registerGame(new GameDescription(MySecondGame, {
-                name: 'My second game with a wrong command',
-                goal: 'Try to use an existing command',
-                command: 'firstgame',
-            }));
-        });
+        assert.isTrue(registry.hasGame(MyFirstGame));
+        assert.isFalse(registry.hasGame(MySecondGame));
 
         // Able to register multiple games with commands.
         registry.registerGame(new GameDescription(MySecondGame, {
@@ -80,6 +61,9 @@ describe('GameRegistry', (it, beforeEach) => {
 
         assert.isTrue(commands.commandsForTesting.has('firstgame'));
         assert.isTrue(commands.commandsForTesting.has('secondgame'));
+
+        assert.isTrue(registry.hasGame(MyFirstGame));
+        assert.isTrue(registry.hasGame(MySecondGame));
 
         // Able to register games that do not have a command of their own.
         registry.registerGame(new GameDescription(MyThirdGame, {

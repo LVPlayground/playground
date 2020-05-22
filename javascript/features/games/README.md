@@ -56,6 +56,7 @@ Option              | Description
 `minimumPlayers`    | The minimum amount of players that should join the game. (Default is 2.)
 `maximumPlayers`    | The maximum amount of players that should join the game. (Default is 4.)
 `price`             | The price players have to pay in order to participate. (Default is $250.)
+`scoreType`         | Type of data the score contains. ({`number`, `time`})
 `tick`              | Frequency at which the `onTick()` event should be called. (Default is 1000ms.)
 
 ## Implementation details

@@ -116,4 +116,21 @@ describe('GameDescription', it => {
         assert.throws(() => new GameDescription(Game, { name: 'name', price: 'gold' }));
         assert.throws(() => new GameDescription(Game, { name: 'name', price: [] }));
     });
+    
+    it('is able to format game scores based on configuration', assert => {
+        const number = new GameDescription(Game, { name: 'n', goal: 'g', scoreType: 'number' });
+        const time = new GameDescription(Game, { name: 'n', goal: 'g', scoreType: 'time' });
+
+        assert.equal(number.formatScore(0), 'with a score of 0');
+        assert.equal(number.formatScore(1), 'with a score of 1');
+        assert.equal(number.formatScore(255), 'with a score of 255');
+        assert.equal(number.formatScore(1024), 'with a score of 1,024');
+
+        assert.equal(time.formatScore(1), 'in one second');
+        assert.equal(time.formatScore(25), 'in 25 seconds');
+        assert.equal(time.formatScore(60), 'in 1:00 minutes');
+        assert.equal(time.formatScore(91), 'in 1:31 minutes');
+        assert.equal(time.formatScore(3600), 'in 1:00 hours');
+        assert.equal(time.formatScore(3600 * 50), 'in a silly amount of time');
+    });
 });

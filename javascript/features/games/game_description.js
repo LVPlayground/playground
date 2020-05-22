@@ -5,6 +5,8 @@
 import Setting from 'entities/setting.js';
 import { Vector } from 'base/vector.js';
 
+import { format } from 'base/string_formatter.js';
+
 // The default number of maximum players who can participate in a game.
 export const kDefaultMaximumPlayers = 4;
 
@@ -32,6 +34,10 @@ function hasGameInPrototype(gameConstructor) {
 // sign-up, what their available options are, how the game will be represented and which events the
 // Game implementation of the game will receive. Immutable once created.
 export class GameDescription {
+    // Types of scores that a game can indicate.
+    static kScoreNumber = 0;
+    static kScoreTime = 1;
+
     gameConstructor_ = null;
 
     name_ = null;
@@ -45,6 +51,7 @@ export class GameDescription {
     maximumPlayers_ = kDefaultMaximumPlayers;
     minimumPlayers_ = kDefaultMinimumPlayers;
     price_ = kDefaultPrice;
+    scoreType_ = GameDescription.kScoreNumber;
     tick_ = kDefaultTickIntervalMs;
 
     settings_ = new Map();
@@ -109,6 +116,31 @@ export class GameDescription {
 
     // Gets the tick rate at which the game will receive lifetime events.
     get tick() { return this.tick_; }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Formats the given |score| per the guidelines configured for this game. The return value of
+    // this function must finish the sentence: "finished the Haystack game"...
+    formatScore(score) {
+        switch (this.scoreType_) {
+            case GameDescription.kScoreNumber:
+                return format('with a score of %d', score);
+            
+            case GameDescription.kScoreTime:
+                if (score === 1)
+                    return 'in one second';
+                else if (score < 60)
+                    return format('in %d seconds', score);
+                else if (score < 3600)
+                    return 'in ' + format('%t', score).replace(/^0/, '') + ' minutes';
+                else if (score < 24 * 3600)
+                    return 'in ' + format('%t', score).substring(0, 5).replace(/^0/, '') + ' hours';
+                else
+                    return 'in a silly amount of time';
+        }
+
+        return 'unknown score';
+    }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -234,6 +266,20 @@ export class GameDescription {
                 throw new Error(`[${this.name}] The game's price must be given as a number.`);
             
             this.price_ = options.price;
+        }
+
+        if (options.hasOwnProperty('scoreType')) {
+            const mapping = {
+                number: GameDescription.kScoreNumber,
+                time: GameDescription.kScoreTime,
+            };
+
+            if (!mapping.hasOwnProperty(options.scoreType)) {
+                throw new Error(`[${this.name}] The game's score type must be one of: ` +
+                                Object.keys(mapping).sort().join(', '));
+            }
+
+            this.scoreType_ = mapping[options.scoreType];
         }
 
         if (options.hasOwnProperty('tick')) {

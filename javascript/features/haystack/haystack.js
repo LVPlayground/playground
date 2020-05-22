@@ -89,6 +89,7 @@ export default class Haystack extends Feature {
     }
 
     dispose() {
+        this.games_.removeReloadObserver(this);
         this.games_().removeGame(HaystackGame);
     }
 }

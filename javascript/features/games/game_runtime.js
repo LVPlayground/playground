@@ -26,7 +26,10 @@ export class GameRuntime extends GameActivity {
     state_ = null;
     virtualWorld_ = null;
 
+    loserCount_ = 0;
     playerCount_ = 0;
+    winnerCount_ = 0;
+
     players_ = null;
     prizeMoney_ = 0;
     scopedEntities_ = null;
@@ -191,20 +194,24 @@ export class GameRuntime extends GameActivity {
 
     // Signals that the |player| has lost. They will be removed from the game.
     async playerLost(player, score = null) {
+        const position = this.playerCount_ - this.loserCount_++;
+
         // TODO: Store the |player|'s |score|, and the fact that they lost. (w/ rank)
 
         // Confirms the result with the given |player|, and award prize money, if any.
-        this.confirmResultWithPlayer(player, score);
+        this.confirmResultWithPlayer(player, score, position);
 
         await this.removePlayer(player);
     }
 
     // Signals that the |player| has won. They will be removed from the game.
     async playerWon(player, score = null) {
+        const position = ++this.winnerCount_;
+
         // TODO: Store the |player|'s |score|, and the fact that they won. (w/ rank)
 
         // Confirms the result with the given |player|, and award prize money, if any.
-        this.confirmResultWithPlayer(player, score);
+        this.confirmResultWithPlayer(player, score, position);
 
         await this.removePlayer(player);
     }
@@ -222,8 +229,7 @@ export class GameRuntime extends GameActivity {
 
     // Confirms the results of the game with the |player|, who's just dropped out, and awards them
     // with their share of the prize money if they've deserved any.
-    confirmResultWithPlayer(player, score) {
-        const position = this.players_.size;
+    confirmResultWithPlayer(player, score, position) {
         const positionOrdinal = ['st','nd','rd'][((position + 90) % 100 - 10) % 10 - 1] || 'th';
 
         const award = this.calculatePrizeMoneyShare();

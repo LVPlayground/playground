@@ -72,6 +72,7 @@ class PlaygroundCommands {
             'features/playground/commands/boost.js',
             'features/playground/commands/engine.js',
             'features/playground/commands/fancy.js',
+            'features/playground/commands/flap.js',
             'features/playground/commands/fly.js',
             'features/playground/commands/jetpack.js',
             'features/playground/commands/kickflip.js',

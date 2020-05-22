@@ -25,12 +25,8 @@ export class GameRegistry {
     // Registers the given game |description|, which contains all the information necessary for
     // figuring out how the game should be ran. Games will be stored keyed by their constructor.
     registerGame(description) {
-        if (this.games_.has(description.gameConstructor)) {
-            console.log(`WARNING: The ${description.name} game had already been registered.`);
-            
-            // Remove the game prior to re-registering it again.
-            this.removeGame(description.gameConstructor);
-        }
+        if (this.games_.has(description.gameConstructor))
+            throw new Error(`The ${description.name} game has already been registered.`);
         
         // Create the command through which players can start this game, if any.
         if (this.commandDelegate_ && description.command)
@@ -39,17 +35,12 @@ export class GameRegistry {
         this.games_.set(description.gameConstructor, description);
     }
 
-    // Returns whether the game with the given |gameConstructor| is known to the registry.
-    hasGame(gameConstructor) { return this.games_.has(gameConstructor); }
-
     // Removes the game previously registered with |gameConstructor| from the list of games that
     // are available on the server. In-progress games will be stopped immediately.
     removeGame(gameConstructor) {
-        if (!this.games_.has(gameConstructor)) {
-            console.log(`WARNING: The ${gameConstructor.name} game has not yet been registered.`);
-            return;
-        }
-
+        if (!this.games_.has(gameConstructor))
+            throw new Error('Attempting to remove a game that has not yet registered.');
+        
         const description = this.games_.get(gameConstructor);
 
         // Remove the command through which players could start this game, if any.

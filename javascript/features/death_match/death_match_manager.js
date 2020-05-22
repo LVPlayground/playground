@@ -80,7 +80,8 @@ export class DeathMatchManger {
         player.armour = location.playerArmour;
         player.weather = location.weather;
         player.time = [location.time, 0];
-        player.virtualWorld = location.world;
+        // Make sure this world is set last. TODO: Fix without wait. (e.g. use game API)
+        wait(1).then(() => player.virtualWorld = location.world);
         player.interiorId = location.interiorId;
 
         // Do it in a tiny delay to avoid the player receiving an out of bounds message.
@@ -110,7 +111,7 @@ export class DeathMatchManger {
         if (this.lastQuarterUsedLocationsQueue.length >
             Math.floor(spawnPositions.length / 4)
         ) {
-            this.lastQuarterUsedLocationsQueue.pop();
+            this.lastQuarterUsedLocationsQueue.shift();
         }
 
         return spawnPositions[spawnIndex];
@@ -124,6 +125,12 @@ export class DeathMatchManger {
 
         // The player is playing in a death match
         if(this.playersInDeathMatch_.has(player.id)) {
+            // Remove the player if he's not in the DM_ZONE activity
+            if(player.activity !== Player.PLAYER_ACTIVITY_JS_DM_ZONE) {
+                this.playersInDeathMatch_.delete(player.id);
+                return;
+            }
+
             this.spawnPlayer(player, this.playersInDeathMatch_.get(player.id));
         }
     }

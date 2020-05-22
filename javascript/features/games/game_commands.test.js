@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { GameActivity } from 'features/games/game_activity.js';
 import { GameDescription } from 'features/games/game_description.js';
 import { GameRegistration } from 'features/games/game_registration.js';
 import { Game } from 'features/games/game.js';
@@ -320,6 +321,92 @@ describe('GameCommands', (it, beforeEach) => {
     
         settings = await commands.determineSettings(description, /* custom= */ true, gunther);
         assert.strictEqual(settings.get('bubble/string'), 'apple');
+    });
+
+    it('should not allow custom and default registration at the same time', async (assert) => {
+        class BubbleGame extends Game {}
+
+        const description = new GameDescription(BubbleGame, {
+            name: (settings) => {
+                const difficulty = settings.get('bubble/enum') ?? 'normal';
+                return difficulty[0].toUpperCase() + difficulty.substring(1) + ' Bubble';
+            },
+            goal: 'Have the registration time expire',
+            command: 'bubblegame',
+
+            settingsValidator: (setting, value) => true,
+            settings: [
+                new Setting('bubble', 'enum', ['easy', 'normal', 'hard'], 'normal', 'Enumeration'),
+            ]
+        });
+
+        // Connect an extra player. Holsje can help out for this one.
+        server.playerManager.onPlayerConnect({ playerid: 3, name: 'Holsje' });
+
+        const holsje = server.playerManager.getById(/* Holsje= */ 3);
+        assert.isNotNull(holsje);
+
+        // Create the command, give the players enough money to participate.
+        commands.createCommandForGame(description);
+
+        finance.givePlayerCash(gunther, 5000);
+        finance.givePlayerCash(russell, 5000);
+        finance.givePlayerCash(lucy, 5000);
+        finance.givePlayerCash(holsje, 5000);
+
+        // (1) Have Gunther start a normal game.
+        assert.isTrue(await gunther.issueCommand('/bubblegame'));
+        
+        const guntherActivity = manager.getPlayerActivity(gunther);
+
+        assert.isNotNull(guntherActivity);
+        assert.equal(guntherActivity.getActivityName(), 'Normal Bubble');
+        assert.equal(guntherActivity.getActivityState(), GameActivity.kStateRegistered);
+
+        // (2) Have Russell start a custom game.
+        russell.respondToDialog({ listitem: 2 /* Difficulty */ }).then(
+            () => russell.respondToDialog({ listitem: 2 /* hard */ })).then(
+            () => russell.respondToDialog({ listitem: 0 /* Start the game! */ }));
+
+        assert.isTrue(await russell.issueCommand('/bubblegame custom'));
+
+        const russellActivity = manager.getPlayerActivity(russell);
+
+        assert.isNotNull(russellActivity);
+        assert.equal(russellActivity.getActivityName(), 'Hard Bubble');
+        assert.equal(russellActivity.getActivityState(), GameActivity.kStateRegistered);
+
+        assert.notStrictEqual(guntherActivity, russellActivity);
+
+        // (3) Have Lucy join the normal game, you know, to get started.
+        assert.isTrue(await lucy.issueCommand('/bubblegame'));
+
+        const lucyActivity = manager.getPlayerActivity(lucy);
+
+        assert.isNotNull(lucyActivity);
+        assert.equal(lucyActivity.getActivityName(), 'Normal Bubble');
+        assert.equal(lucyActivity.getActivityState(), GameActivity.kStateRegistered);
+
+        assert.strictEqual(lucyActivity, guntherActivity);
+
+        assert.equal(holsje.messages.length, 2);
+        assert.includes(holsje.messages[1], '/bubblegame 2');
+
+        // (4) Have Holsje try to join, but unfortunately they make a typo in the id first..
+        assert.isTrue(await holsje.issueCommand('/bubblegame 20'));
+        assert.equal(holsje.messages.length, 3);
+        assert.includes(holsje.messages[2], `isn't taking registrations anymore`);
+
+        // (5) And have Holsje join the hard game together with Russell
+        assert.isTrue(await holsje.issueCommand('/bubblegame 2'));
+
+        const holsjeActivity = manager.getPlayerActivity(holsje);
+
+        assert.isNotNull(holsjeActivity);
+        assert.equal(holsjeActivity.getActivityName(), 'Hard Bubble');
+        assert.equal(holsjeActivity.getActivityState(), GameActivity.kStateRegistered);
+
+        assert.strictEqual(holsjeActivity, russellActivity);
     });
 
     it('should automatically try to start a game when the registration expires', async (assert) => {

@@ -11,6 +11,19 @@ import Setting from 'entities/setting.js';
 
 import confirm from 'components/dialogs/confirm.js';
 
+// Returns whether the two given maps are equal to each other.
+function mapEquals(left, right) {
+    if (left.size !== right.size)
+        return false;
+    
+    for (const [ key, value ] of left) {
+        if (right.get(key) !== value)
+            return false;
+    }
+
+    return true;
+}
+
 // This class is responsible for making sure that all the appropriate commands for games on the
 // server are made available, as well as canonical functionality such as the `/challenge` command.
 export class GameCommands {
@@ -59,8 +72,10 @@ export class GameCommands {
         // Registers the |commandName| with the server, so that everyone can use it.
         server.commandManager.buildCommand(commandName)
             .sub('custom')
-                .build(GameCommands.prototype.onCommand.bind(this, description, /* custom= */ true))
-            .build(GameCommands.prototype.onCommand.bind(this, description, /* custom= */ false));
+                .build(GameCommands.prototype.onCommand.bind(this, description, /* custom */ true))
+            .sub(CommandBuilder.NUMBER_PARAMETER)
+                .build(GameCommands.prototype.onCommand.bind(this, description, /* custom */ false))
+            .build(GameCommands.prototype.onCommand.bind(this, description, /* custom */ false));
         
         this.commands_.add(commandName);
     }
@@ -119,9 +134,9 @@ export class GameCommands {
     // the given |description|. This will first check that they're not occupied with another
     // activity just yet. If they aren't, it will either register them for an existing pending game,
     // or create a new game just for them.
-    async onCommand(description, custom, player) {
-        const gameSettings = await this.determineSettings(description, custom, player);
-        if (!gameSettings)
+    async onCommand(description, custom, player, registrationId) {
+        const settings = await this.determineSettings(description, custom, player);
+        if (!settings)
             return;  // the |player| aborted out of the flow
 
         const activity = this.manager_.getPlayerActivity(player);
@@ -152,9 +167,24 @@ export class GameCommands {
 
         // Check if there are any existing games that the |player| might be able to join.
         const pendingRegistrations = this.manager_.getPendingGameRegistrations(description);
+
+        let pendingPublicRegistrations = 0;
         for (const pendingRegistration of pendingRegistrations) {
             if (pendingRegistration.type !== GameRegistration.kTypePublic)
                 continue;  // this is not a game to which everyone can sign up
+            
+            pendingPublicRegistrations++;
+
+            // If the |settings| aren't equal to the pending registration, we allow the sign up if
+            // either (a) no |registrationId| is given, and this isn't a custom game, or (b) the
+            // |registrationId| is given, and it matches the |pendingRegistration|'s ID.
+            if (!mapEquals(settings, pendingRegistration.settings) || registrationId) {
+                if (!registrationId && custom)
+                    continue;  // a new custom game has been created
+
+                if (registrationId && pendingRegistration.id !== registrationId)
+                    continue;  // a registration Id has been given
+            }
             
             // Take the registration fee from the |player|.
             this.finance_().takePlayerCash(player, description.price);
@@ -167,6 +197,12 @@ export class GameCommands {
 
             // Actually register the |player| to participate, and we're done here.
             pendingRegistration.registerPlayer(player, description.price);
+            return;
+        }
+
+        // If a |registrationId| was given, and we reach this point, then it was invalid. Tell 'em.
+        if (registrationId) {
+            player.sendMessage(Message.GAME_REGISTRATION_INVALID_ID);
             return;
         }
 
@@ -184,7 +220,7 @@ export class GameCommands {
         // Create a new registration flow for the |description|, to which all other players are
         // invited to participate. This enables future commands to join the game instead.
         const registration =
-            this.manager_.createGameRegistration(description, gameSettings,
+            this.manager_.createGameRegistration(description, settings,
                                                  GameRegistration.kTypePublic);
 
         if (!registration) {
@@ -220,11 +256,18 @@ export class GameCommands {
         wait(expirationTimeSec * 1000).then(() =>
             this.onCommandRegistrationExpired(registration));
 
+        // Append the registration's ID after the command that the player has to enter in case there
+        // are multiple active sign-ups, so that interested people can join the right game.
+        let command = description.command;
+
+        if (pendingPublicRegistrations > 0)
+            command += ` ${registration.id}`;
+        
         // Send a message to all other unengaged people on the server to see if the want to
         // participate in the game as well. They're welcome to sign up.
         const formattedAnnouncement =
             Message.format(Message.GAME_REGISTRATION_ANNOUNCEMENT, registration.getActivityName(),
-                           description.command, description.price);
+                           command, description.price);
 
         for (const recipient of server.playerManager) {
             if (recipient === player || recipient.isNonPlayerCharacter())

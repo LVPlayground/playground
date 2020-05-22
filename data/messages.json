@@ -95,7 +95,7 @@
   "COMMUNICATION_VIP_NO_ACCESS": "@error Only VIPs are allowed to use this chat. Check out {2196F3}/donate{FFFFFF} for more information!",
   "COMMUNICATION_WORLD_MESSAGE": "{%s}[%d][World: %d] %s:{FFFFFF} %s",
 
-  "DEATH_MATCH_AVAILABLE_ZONES" : "Available DM zones are: /dm %s.",
+  "DEATH_MATCH_AVAILABLE_ZONES" : "Available DM zones are: /deathmatch %s.",
   "DEATH_MATCH_INVALID_ZONE" : "Zone %d is not a valid zone.",
   "DEATH_MATCH_INSTRUCTION_LEAVE": "Use \"/deathmatch leave\" to leave the deathmatch.",
   "DEATH_MATCH_LEAVE_KILLED": "You have been killed to avoid abuse because you %s.",

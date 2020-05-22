@@ -51,6 +51,7 @@ export default class Haystack extends Feature {
                 new Setting('haystack', 'nighttime', Setting.TYPE_BOOLEAN, false, 'Nighttime'),
             ],
 
+            scoreType: 'time',
             tick: 100,
         });
     }

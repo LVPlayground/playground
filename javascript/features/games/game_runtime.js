@@ -235,25 +235,16 @@ export class GameRuntime extends GameActivity {
         const award = this.calculatePrizeMoneyShare();
         const name = this.description_.nameFn(this.settings_);
 
-        // Inform the |player| of their position and score in the game.
-        if (score !== null) {
-            // TODO: Figure out how to format the |score|, as a number doesn't make sense.
-            const formattedScore = format('%d', score);
+        let formattedScore = '';
+        if (score !== null)
+            formattedScore = ', ' + this.description_.formatScore(score);
 
-            player.sendMessage(
-                Message.GAME_RESULT_FINISHED, name, position, positionOrdinal, formattedScore);
+        player.sendMessage(
+            Message.GAME_RESULT_FINISHED, name, position, positionOrdinal, formattedScore);
 
-            this.nuwani_().echo(
-                'notice-minigame-win-score', player.name, player.id, name, position,
-                positionOrdinal, formattedScore);
-
-        } else {
-            player.sendMessage(
-                Message.GAME_RESULT_FINISHED_NO_SCORE, name, position, positionOrdinal);
-            
-            this.nuwani_().echo(
-                'notice-minigame-win', player.name, player.id, name, position, positionOrdinal);
-        }
+        this.nuwani_().echo(
+            'notice-minigame-win', player.name, player.id, name, position,
+            positionOrdinal, formattedScore);
 
         // Inform and award the |player| of their |award|, if any.
         if (award === 0)

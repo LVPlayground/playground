@@ -335,12 +335,13 @@ describe('GameRuntime', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 3);
         assert.equal(
             gunther.messages[2],
-            Message.format(Message.GAME_RESULT_FINISHED_NO_SCORE, 'Bubble', 2, 'nd'));
+            Message.format(Message.GAME_RESULT_FINISHED, 'Bubble', 2, 'nd', ''));
 
         assert.equal(russell.messages.length, 4);
         assert.equal(
             russell.messages[2],
-            Message.format(Message.GAME_RESULT_FINISHED, 'Bubble', 1, 'st', 25));
+            Message.format(Message.GAME_RESULT_FINISHED, 'Bubble', 1, 'st',
+                           ', with a score of 25'));
 
         assert.equal(russell.messages[3], Message.format(Message.GAME_RESULT_FINISHED_AWARD, 500));
 

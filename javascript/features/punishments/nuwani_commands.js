@@ -546,7 +546,27 @@ export class NuwaniCommands {
     // Adds the given |nickname| to the list of exceptions for the |range| ban. The |range| has to
     // be a currently banned range in order for the exception to be added.
     async onRangeExceptionAddCommand(context, range, nickname) {
+        const ban = await this.database_.findActiveBans({ range });
 
+        let identifiedBan = false;
+        for (const info of ban) {
+            if (info.range !== range)
+                continue;
+            
+            identifiedBan = true;
+        }
+
+        // No exact ban could be found, which means that there's absolutely no point in adding a new
+        // range ban exception to it.
+        if (!identifiedBan) {
+            context.respond(`4Error: The exact range ${range} is not currently banned.`);
+            return;
+        }
+
+        await this.database_.addRangeException(range, nickname, context.nickname);
+
+        context.respond(
+            `3Success: An exception has been added for ${nickname} on the ${range} IP range.`);
     }
 
     // !rexception remove [range] [nickname]

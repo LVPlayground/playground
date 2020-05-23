@@ -837,9 +837,24 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         assert.equal(noExceptions.length, 1);
         assert.includes(noExceptions[0], 'No exceptions could be found for 255.255.*.*.');
 
-        // (4) It should complain when a range does not have exceptions.
+        // (4) It should complain when a range ban does not exist.
+        const unknownRange = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!rexception add 8.8.*.* Gunther',
+        });
+
+        assert.equal(unknownRange.length, 1);
+        assert.includes(unknownRange[0], 'The exact range 8.8.*.* is not currently banned.');
 
         // (5) It should be able to add a new range ban.
+        const addedException = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!rexception add 37.48.*.* Gunther',
+        });
+
+        assert.equal(addedException.length, 1);
+        assert.includes(addedException[0], 'An exception has been added for Gunther on');
+        assert.equal(database.addedRangeExceptions, 1);
 
         // (6) It should be able to remove range bans.
         const removeException = await issueCommand(bot, commandManager, {
@@ -851,6 +866,8 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         assert.includes(
             removeException[0],
             'Success: The exception for TrainDriverLV on 127.0.*.* has been removed.');
+        
+        assert.equal(database.removedRangeExceptions, 1);
         
         const unknownException = await issueCommand(bot, commandManager, {
             source: kCommandSource,

@@ -198,7 +198,8 @@ export class MockBanDatabase extends BanDatabase {
                 },
             ];
         } else if (ipRangeStart === 623925002 /* 37.48.87.10 */ ||
-                   ipRangeStart === 623924992 /* 37.48.87.0 */ ) {
+                   ipRangeStart === 623924992 /* 37.48.87.0 */ ||
+                   ipRangeStart === 623902720 /* 37.48.0.0 */) {
             return [
                 {
                     log_id: 12894,

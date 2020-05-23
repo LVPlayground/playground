@@ -221,7 +221,7 @@ const RANGE_EXCEPTION_LIST_QUERY = `
         ip_range_begin >= ? AND
         ip_range_end <= ?
     ORDER BY
-        exception_tally, nickname ASC`;
+        exception_tally DESC, nickname ASC`;
 
 // MySQL query to add an exception for the |range|.
 const RANGE_EXCEPTION_ADD_QUERY = `

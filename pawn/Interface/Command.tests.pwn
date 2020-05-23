@@ -4,7 +4,7 @@
 
 #pragma testcase CommandTestSuite
 
-stock CommandTestSuite() {
+CommandTestSuite() {
     new stringParam[32]; // used as a buffer for string parameters.
 
     // Counting the number of parameters in a string will be determined based on the amount of

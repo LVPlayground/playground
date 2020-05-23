@@ -73,11 +73,11 @@ public OnSerializePlayerState(playerid, serialize, restoreOnSpawn) {
     }
 }
 
-stock bool: IsInvolvedInJavaScriptGame(playerid) {
+bool: IsInvolvedInJavaScriptGame(playerid) {
     return g_involvedInJavaScriptGame[playerid];
 }
 
-stock SetInvolvedInJavaScriptGame(playerid, bool: involved) {
+SetInvolvedInJavaScriptGame(playerid, bool: involved) {
     g_involvedInJavaScriptGame[playerid] = involved;
 }
 

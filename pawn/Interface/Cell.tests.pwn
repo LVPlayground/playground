@@ -4,7 +4,7 @@
 
 #pragma testcase CellTestSuite
 
-stock CellTestSuite() {
+CellTestSuite() {
     new cell; // The cell used for storage.
 
     // Test two-value cells, each being two bytes, sixteen bits. The range should be [0, 65535].

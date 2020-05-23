@@ -35,7 +35,7 @@ native MurmurIIIHashGenerateHash(key[], len, hash[]);
 /**
  * Formats the range ban described by the given |rangeStart| and |rangeEnd| into the |buffer|.
  */
-stock formatRange(rangeStart[], rangeEnd[], buffer[], bufferSize = sizeof(buffer)) {
+formatRange(rangeStart[], rangeEnd[], buffer[], bufferSize = sizeof(buffer)) {
     new index = 0;
     new dots = 0;
 

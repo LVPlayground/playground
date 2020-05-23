@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 // Returns whether the given |modelId| is a remote controllable vehicle.
-stock IsModelRemoteControlVehicle(modelId) {
+IsModelRemoteControlVehicle(modelId) {
     switch (modelId) {
         case 441, 464, 465, 501, 564, 594:
             return true;
@@ -13,7 +13,7 @@ stock IsModelRemoteControlVehicle(modelId) {
 }
 
 // Ejects the given |playerId| from the vehicle they're currently in.
-stock EjectPlayerFromVehicle(playerId, Float: offsetZ = 0.5) {
+EjectPlayerFromVehicle(playerId, Float: offsetZ = 0.5) {
     new Float: position[3];
 
     GetPlayerPos(playerId, position[0], position[1], position[2]);

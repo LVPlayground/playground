@@ -34,7 +34,7 @@ export class PublicChannel extends Channel {
 
         // Fast-path to take in case the |player| is isolated.
         if (player.syncedData.isIsolated()) {
-            player.sendMessage(formattedSameWorldMessage);
+            player.sendMessage(localMessage);
             return;
         }
 

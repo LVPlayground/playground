@@ -800,6 +800,32 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should be able to deal with range bans', async (assert) => {
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
 
+        // (1) It should be able to display command usage.
+        const usage = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!rexception',
+        });
+
+        assert.equal(usage.length, 1);
+        assert.includes(usage[0], '!rexception [list | add | remove]');
+
+        // (2) It should be able to list all ranges with exceptions.
+        const ranges = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!rexception list',
+        });
+
+        assert.equal(ranges.length, 1);
+        assert.includes(ranges[0], 'Ranges with exceptions: 127.0.*.* (2 exceptions), ');
+
+        // (3) It should be able to list all exceptions within a range.
+
+        // (4) It should complain when a range does not have exceptions.
+
+        // (5) It should be able to add a new range ban.
+
+        // (6) It should be able to remove range bans.
     });
 });

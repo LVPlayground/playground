@@ -106,6 +106,7 @@ export class NuwaniCommands {
         // !rexception add [range] [nickname]
         // !rexception remove [range] [nickname]
         this.commandManager_.buildCommand('rexception')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('list')
                 .parameters([{ name: 'range', type: CommandBuilder.WORD_PARAMETER, optional: true }])
                 .build(NuwaniCommands.prototype.onRangeExceptionListCommand.bind(this))
@@ -478,7 +479,7 @@ export class NuwaniCommands {
     //
     // Displays information on how to hold the !rexception command to make it not blow up.
     onRangeExceptionCommand(context) {
-
+        context.respondWithUsage('!rexception [list | add | remove]');
     }
 
     // !rexception list [range]?
@@ -486,7 +487,32 @@ export class NuwaniCommands {
     // Displays either the ranges which have exceptions added to them, or, when given, the list of
     // exceptions that have been created for the given |range|.
     async onRangeExceptionListCommand(context, range) {
+        if (range) {
 
+        } else {
+            const ranges = await this.database_.getRangesWithExceptions();
+            const formattedRanges = ranges.map(({ range, count }) => {
+                return `${range} 14(${format('%d', count)} exception${count != 1 ? 's' : ''})`;
+            });
+
+            if (!formattedRanges.length) {
+                context.respond('4Error: No range ban exceptions have been created.');
+                return;
+            }
+
+            for (let message = 0; message < 2; ++message) {
+                const selection = formattedRanges.splice(0, 10).join(', ');
+                if (!selection.length)
+                    return;
+
+                let suffix = '';
+
+                if (message === 1 && formattedRanges.length > 0)
+                    suffix = ` 15[${formattedRanges.length} omitted...]`;
+
+                context.respond(`5Ranges with exceptions: ${selection}${suffix}`);
+            }
+        }
     }
 
     // !rexception add [range] [nickname]

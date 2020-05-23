@@ -229,6 +229,30 @@ const PLAYER_PAST_NICKNAMES_QUERY = `
     ORDER BY
         date DESC`;
 
+// Query to create a new user account in the database.
+const CREATE_ACCOUNT_QUERY = `
+    INSERT INTO
+        users
+        (username, password, password_salt, validated, level)
+    VALUES
+        (?, ?, ?, 1, "Player")`;
+
+// Query to associate a player's nickname with their new account.
+const CREATE_NICKNAME_ACCOUNT_QUERY = `
+    INSERT INTO
+        users_nickname
+        (user_id, nickname)
+    VALUES
+        (?, ?)`;
+    
+// Query to create the mutable user information in the database.
+const CREATE_MUTABLE_ACCOUNT_QUERY = `
+    INSERT INTO
+        users_mutable
+        (user_id)
+    VALUES
+        (?)`;
+
 // Regular expression to test whether a string is a valid SA-MP nickname.
 const kValidNicknameExpression = /^[0-9a-z\[\]\(\)\$@\._=]{1,24}$/i;
 
@@ -762,5 +786,26 @@ export class AccountDatabase {
             throw new Error(`The player ${nickname} could not be found in the database.`);
 
         return value;
+    }
+
+    //  Registers a new account for |username|, identified by |password|.
+    async createAccount(username, password) {
+        if (!this.canUpdatePasswords())
+            throw new Error('The `passwordSalt` configuration option is required for this.');
+
+        const databaseSalt = this.generateDatabaseSalt();
+        const hashedPassword = sha1(`${databaseSalt}${password}${this.passwordSalt_}`);
+
+        const results = 
+            await server.database.query(CREATE_ACCOUNT_QUERY, username, hashedPassword,
+                                        databaseSalt);
+        
+        if (!results || !results.insertId)
+            throw new Error(`Unable to create an account for ${username} in the database.`);
+        
+        await Promise.all([
+            server.database.query(CREATE_MUTABLE_ACCOUNT_QUERY, results.insertId),
+            server.database.query(CREATE_NICKNAME_ACCOUNT_QUERY, results.insertId, username),    
+        ]);
     }
 }

@@ -12,12 +12,18 @@ import confirm from 'components/dialogs/confirm.js';
 import { formatDate } from 'base/time.js';
 import { format } from 'base/string_formatter.js';
 
+// File in which the registration message has been stored.
+const kRegistrationFile = 'data/commands/register.json';
+
 // Provides access to in-game commands related to account management. Access to the individual
 // abilities is gated through the Playground feature, which manages command access.
 export class AccountCommands {
     announce_ = null;
     playground_ = null;
     settings_ = null;
+
+    // Cache for the contents of the registration dialog, which are stored in //data.
+    registrationDialogCache_ = null;
 
     // The AccountDatabase instance which will execute operations.
     database_ = null;
@@ -40,6 +46,10 @@ export class AccountCommands {
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(AccountCommands.prototype.onAccountCommand.bind(this))
             .build(AccountCommands.prototype.onAccountCommand.bind(this));
+        
+        // /register
+        server.commandManager.buildCommand('register')
+            .build(AccountCommands.prototype.onRegisterCommand.bind(this));
     }
 
     // /account
@@ -542,6 +552,87 @@ export class AccountCommands {
 
         await display.displayForPlayer(currentPlayer);
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the |player| has typed the "/register" command. This will tell them where they
+    // can sign up to create an account. When beta functionality is enabled, a brief registration
+    // flow will be started immediately instead.
+    async onRegisterCommand(player) {
+        if (!this.settings_().getValue('playground/enable_beta_features')) {
+            if (!this.registrationDialogCache_)
+                this.registrationDialogCache_ = JSON.parse(readFile(kRegistrationFile));
+
+            const message = this.registrationDialogCache_.join('\r\n');
+            return alert(player, { message });
+        }
+
+        // Don't let players re-register their own account.
+        if (player.account.isRegistered() || player.account.isIdentified()) {
+            return await alert(player, {
+                title: 'Register your account',
+                message: `You are already logged in to an account. Join as a new user first.`,
+            });
+        }
+
+        // Don't let the |player| register the account if an account with that name already exists.
+        // This shouldn't ever happen unless the database connection was busted when they connected
+        // to the server, but better to guard against it to make sure stuff doesn't mess up.
+        const summary = await this.database_.getPlayerSummaryInfo(player.name);
+        if (summary !== null) {
+            return await alert(player, {
+                title: 'Register your account',
+                message: `An account named "${player.name}" already exists.`,
+            });
+        }
+
+        // Give the |player| multiple attempts to pick a reasonably secure password. We don't set
+        // high requirements, but we do need them to be a little bit sensible with their security.
+        const password = await Question.ask(player, {
+            question: 'Register your account',
+            message: 'Enter the password to use for your account',
+            isPrivate: true,  // display this as a password field
+            constraints: {
+                validation: AccountCommands.prototype.isSufficientlySecurePassword.bind(this),
+                explanation: 'The password must be at least 8 characters long, and contain at ' +
+                             'least one number, symbol or a character of different casing.',
+                abort: 'Sorry, you need to have a reasonably secure password!'
+            }
+        });
+
+        if (!password)
+            return;  // the user aborted out of the flow
+
+        // The |player| must confirm that they indeed picked the right password, so we ask again.
+        const confirmPassword = await Question.ask(player, {
+            question: 'Register your account',
+            message: 'Please enter your password again to verify.',
+            isPrivate: true,  // display this as a password field
+            constraints: {
+                validation: input => input === password,
+                explanation: 'You must enter exactly the same password again to make sure that ' +
+                             'you didn\'t accidentally misspell it.',
+                abort: 'Sorry, you need to confirm your password!'
+            }
+        });
+
+        if (!confirmPassword)
+            return;  // the user aborted out of the flow
+
+        await this.database_.createAccount(player.name, password);
+
+        // Tell other administrators about the new account, giving everyone some opportunity to know
+        // what's going on. Not least of all the people watching through Nuwani.
+        this.announce_().announceToAdministrators(
+            Message.ACCOUNT_ADMIN_CREATED, player.name, player.id);
+
+        return await alert(player, {
+            title: 'Register your account',
+            message: `Your account for "${player.name} has been created. Please reconnect.`,
+        });
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Returns a formatted version of the duration, which is assumed to be no longer than ~hours.
     formatDuration(duration) {

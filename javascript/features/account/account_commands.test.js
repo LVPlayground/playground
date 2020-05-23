@@ -560,6 +560,34 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         ]);
     });
 
+    it('should change /register depending on whether beta features are enabled', async (assert) => {
+        settings.setValue('playground/enable_beta_features', false);
+
+        russell.respondToDialog({ response: 0 /* Dismiss */ });
+
+        assert.isTrue(await russell.issueCommand('/register'));
+        assert.equal(russell.lastDialogTitle, 'Las Venturas Playground');
+        assert.equal(russell.messages.length, 0);
+
+        // Now enable beta features, which will change /register to actually create accounts.
+        settings.setValue('playground/enable_beta_features', true);
+
+        gunther.respondToDialog({ inputtext: '1234' /* insecure */ }).then(
+            () => gunther.respondToDialog({ response: 1 /* Confirm */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'Se$urePazz' })).then(
+            () => gunther.respondToDialog({ inputtext: 'Se444ePazz' /* not repeated */ })).then(
+            () => gunther.respondToDialog({ response: 1 /* Acknowledge */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'Se$urePazz' })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+        
+        assert.isTrue(await gunther.issueCommand('/register'));
+
+        assert.equal(russell.messages.length, 1);
+        assert.includes(
+            russell.messages[0],
+            Message.format(Message.ACCOUNT_ADMIN_CREATED, gunther.name, gunther.id));
+    });
+
     it('should be able to display the recent sessions of a player', async (assert) => {
         await gunther.identify({ userId: 42, vip: 1 });
 

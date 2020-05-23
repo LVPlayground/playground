@@ -28,7 +28,7 @@ export default class Haystack extends Feature {
             name: Haystack.prototype.generateName.bind(this),
             goal: 'Beat all others to the top of the haystack!',
 
-            command: 'newhaystack',
+            command: 'haystack',
             minimumPlayers: 1,
             maximumPlayers: 20,
 

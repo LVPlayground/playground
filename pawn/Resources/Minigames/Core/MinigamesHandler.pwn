@@ -362,9 +362,6 @@ IsPlayerMinigameFree(playerId) {
     if (waterFightIsPlayerSignedUp(playerId))
         return 0;
 
-    if (hayHasPlayerSignedUp(playerId))
-        return 0;
-
     return 1;
 }
 
@@ -382,9 +379,6 @@ IsPlayerInMinigame(playerId) {
         return 1;
 
     if (rwIsPlayerSignedUp(playerId) && rwGetState() > 1)
-        return 1;
-
-    if (hayHasPlayerSignedUp(playerId) && hayGetState() > 1)
         return 1;
 
     if (CLyse__GetPlayerState(playerId) > 1)

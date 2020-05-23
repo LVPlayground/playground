@@ -304,9 +304,6 @@
     <DiskObject>\Resources\Minigames\Core\Brief.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\DeathmatchHandler.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\Derby.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Core\HayStack\</DiskObject>
-    <DiskObject>\Resources\Minigames\Core\HayStack\Core.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Core\HayStack\minigame.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\HideGame.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\Lyse.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\main.pwn</DiskObject>

@@ -28,7 +28,7 @@ describe('HaystackGame', (it, beforeEach) => {
     ]);
 
     it('should have registered the game with the server', assert => {
-        assert.isTrue(server.commandManager.hasCommand('newhaystack'));
+        assert.isTrue(server.commandManager.hasCommand('haystack'));
     });
 
     it('is able to generate different names based on settings', async (assert) => {

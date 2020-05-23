@@ -20,9 +20,9 @@ lvp_Minigames(playerid, params[])
     }
 
 #if Feature::DisableFights == 0
-    ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nDeathmatch\nRace\nRobbery\nBriefcase\nRivershell\nLYSE\nWWTW\nRWTW\nHaystack\nWaterfight", "Play!", "Cancel");
+    ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nDeathmatch\nRace\nRobbery\nBriefcase\nRivershell\nLYSE\nWWTW\nRWTW\nWaterfight", "Play!", "Cancel");
 #else
-    ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nRobbery\nBriefcase\nRivershell\nLYSE\nHaystack", "Play!", "Cancel");
+    ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nRobbery\nBriefcase\nRivershell\nLYSE", "Play!", "Cancel");
 #endif
 
     #pragma unused params
@@ -120,13 +120,6 @@ lvp_minigaming(playerid, params[]) {
             continue;
         }
 #endif
-
-        if (hayHasPlayerSignedUp(subjectId)) {
-            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t-", minigaming,
-                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
-                GetPlayerMinigameName(subjectId));
-            continue;
-        }
 
         if (CLyse__GetPlayerState(subjectId) != LYSE_STATE_NONE) {
             Color->toString(Color::MinigameTransparentBlue, colorBuffer[0], sizeof(colorBuffer[]));

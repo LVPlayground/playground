@@ -21,7 +21,6 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                     case 2: CBrief__MenuActivate(playerid);
                     case 3: CShell__MenuActivate(playerid);
                     case 4: CLyse__MenuActivate(playerid);
-                    case 5: hayMenuActivate(playerid);
                 }
 #else
                 switch (listitem) {
@@ -33,8 +32,7 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                     case 6: CLyse__MenuActivate(playerid);
                     case 7: CWWTW__MenuActivate(playerid);
                     case 8: rwMenuActivate(playerid);
-                    case 9: hayMenuActivate(playerid);
-                    case 10: OnWaterFightCmdText(playerid);
+                    case 9: OnWaterFightCmdText(playerid);
                 }
 #endif
             }
@@ -395,7 +393,7 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 #endif
 
             if (listitem == 6) {
-                ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nDeathmatch\nRace\nRobbery\nBriefcase\nRivershell\nLYSE\nWWTW\nRWTW\nHaystack\nWaterfight", "Play!", "Cancel");
+                ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nDeathmatch\nRace\nRobbery\nBriefcase\nRivershell\nLYSE\nWWTW\nRWTW\nWaterfight", "Play!", "Cancel");
                 return 1;
             }
         }

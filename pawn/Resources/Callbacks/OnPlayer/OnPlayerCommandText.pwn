@@ -733,11 +733,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
 #endif
 
-    if(!strcmp(cmd, "/haystack", true))
-    {
-        return hayOnCommand(playerid);
-    }
-
     if(strcmp(cmd, "/ramping", true) == 0){
 
         if(ramping[playerid] == 0){

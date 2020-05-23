@@ -48,9 +48,6 @@ OriginalOnPlayerSpawn(playerId) {
     if (CRobbery__Spawn(playerId))
         return 1;
 
-    if (hayOnPlayerSpawn(playerId))
-        return 1;
-
     if (CLyse__GetPlayerState(playerId) == LYSE_STATE_RUNNING) {
         CLyse__SpawnPlayer(playerId);
         return 1;

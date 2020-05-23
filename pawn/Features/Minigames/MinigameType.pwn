@@ -28,10 +28,6 @@ enum MinigameType {
     // bullet damage and causes players to fall through these squares. Last man wins.
     WaterFightMinigame,
 
-    // Haystack is a fun and small minigame where players need to reach the top of a pile of
-    // moving blocks of hay.
-    HayStackMinigame,
-
     // Players get to spawn near a bunch of cars, all with the same goal: reach the briefcase and
     // bring it back before anybody else does.
     CaptureBriefcaseMinigame,

@@ -21,10 +21,6 @@ LegacyPlayerKeyStateChange(playerid, newkeys, oldkeys) {
     if (sprayTagOnKeyStateChange(playerid, newkeys, oldkeys))
         return 1;
 
-    // Haystack
-    if (hayOnPlayerPunch(playerid, newkeys, oldkeys))
-        return 1;
-
     // Drinking
     CDrink__OnKey(playerid, newkeys);
 

@@ -101,6 +101,26 @@ export class NuwaniCommands {
                 { name: 'maxAge', type: CommandBuilder.NUMBER_PARAMETER, optional: true }])
             .build(NuwaniCommands.prototype.onIpInfoCommand.bind(this));
 
+        // !rexception
+        // !rexception list [range]?
+        // !rexception add [range] [nickname]
+        // !rexception remove [range] [nickname]
+        this.commandManager_.buildCommand('rexception')
+            .sub('list')
+                .parameters([{ name: 'range', type: CommandBuilder.WORD_PARAMETER, optional: true }])
+                .build(NuwaniCommands.prototype.onRangeExceptionListCommand.bind(this))
+            .sub('add')
+                .parameters([
+                    { name: 'range', type: CommandBuilder.WORD_PARAMETER },
+                    { name: 'nickname', type: CommandBuilder.WORD_PARAMETER }])
+                .build(NuwaniCommands.prototype.onRangeExceptionAddCommand.bind(this))
+            .sub('remove')
+                .parameters([
+                    { name: 'range', type: CommandBuilder.WORD_PARAMETER },
+                    { name: 'nickname', type: CommandBuilder.WORD_PARAMETER }])
+                .build(NuwaniCommands.prototype.onRangeExceptionRemoveCommand.bind(this))
+            .build(NuwaniCommands.prototype.onRangeExceptionCommand.bind(this));
+
         // !serialinfo [nickname | serial] [maxAge = 1095]
         this.commandManager_.buildCommand('serialinfo')
             .restrict(Player.LEVEL_ADMINISTRATOR)
@@ -454,6 +474,36 @@ export class NuwaniCommands {
         context.respond('5Result: ' + this.formatInfoResults(results) + suffix);
     }
 
+    // !rexception
+    //
+    // Displays information on how to hold the !rexception command to make it not blow up.
+    onRangeExceptionCommand(context) {
+
+    }
+
+    // !rexception list [range]?
+    //
+    // Displays either the ranges which have exceptions added to them, or, when given, the list of
+    // exceptions that have been created for the given |range|.
+    async onRangeExceptionListCommand(context, range) {
+
+    }
+
+    // !rexception add [range] [nickname]
+    //
+    // Adds the given |nickname| to the list of exceptions for the |range| ban. The |range| has to
+    // be a currently banned range in order for the exception to be added.
+    async onRangeExceptionAddCommand(context, range, nickname) {
+
+    }
+
+    // !rexception remove [range] [nickname]
+    //
+    // Removes the given |nickname| from the list of exceptions on the given |range| ban.
+    async onRangeExceptionRemoveCommand(context, range, nickname) {
+
+    }
+
     // !serialinfo [nickname | serial] [maxAge = 1095]
     //
     // Displays information about the serial numbers used by the given |nickname|, or the nicknames
@@ -751,6 +801,7 @@ export class NuwaniCommands {
         this.commandManager_.removeCommand('unban');
         this.commandManager_.removeCommand('why');
         this.commandManager_.removeCommand('serialinfo');
+        this.commandManager_.removeCommand('rexception');
         this.commandManager_.removeCommand('ipinfo');
         this.commandManager_.removeCommand('lastbans');
         this.commandManager_.removeCommand('kick');

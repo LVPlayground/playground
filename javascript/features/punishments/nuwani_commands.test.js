@@ -798,4 +798,8 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         assert.includes(ambiguousUnban[1], '[BB]Joe');
         assert.includes(ambiguousUnban[1], '[BB]EvilJoe');
     });
+
+    it('should be able to deal with range bans', async (assert) => {
+
+    });
 });

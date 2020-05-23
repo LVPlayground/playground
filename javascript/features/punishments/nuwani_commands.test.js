@@ -842,5 +842,24 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         // (5) It should be able to add a new range ban.
 
         // (6) It should be able to remove range bans.
+        const removeException = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!rexception remove 127.0.*.* TrainDriverLV',
+        });
+
+        assert.equal(removeException.length, 1);
+        assert.includes(
+            removeException[0],
+            'Success: The exception for TrainDriverLV on 127.0.*.* has been removed.');
+        
+        const unknownException = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!rexception remove 37.48.87.* TrainDriverLV',
+        });
+
+        assert.equal(unknownException.length, 1);
+        assert.includes(
+            unknownException[0],
+            'Error: TrainDriverLV does not have an exception for the 37.48.87.* range.');
     });
 });

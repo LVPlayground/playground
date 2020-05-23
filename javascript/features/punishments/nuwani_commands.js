@@ -553,7 +553,19 @@ export class NuwaniCommands {
     //
     // Removes the given |nickname| from the list of exceptions on the given |range| ban.
     async onRangeExceptionRemoveCommand(context, range, nickname) {
+        const exceptions = await this.database_.getRangeExceptions(range);
+        for (const exception of exceptions) {
+            if (exception.nickname !== nickname)
+                continue;
+            
+            await this.database_.removeRangeException(exception.id);
 
+            context.respond(
+                `3Success: The exception for ${nickname} on ${range} has been removed.`);
+            return;
+        }
+
+        context.respond(`4Error: ${nickname} does not have an exception for the ${range} range.`);
     }
 
     // !serialinfo [nickname | serial] [maxAge = 1095]

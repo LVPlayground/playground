@@ -485,7 +485,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     {
         SendClientMessage(playerid,COLOR_LIGHTBLUE, "Donating to Las Venturas Playground is highly appreciated and offers a lot of");
         SendClientMessage(playerid,COLOR_LIGHTBLUE,"additional and fun features for players; from access to a VIP room, forum board,");
-        SendClientMessage(playerid,COLOR_LIGHTBLUE,"IRC channel, ingame ranks, commands and much more! Please visit http://donate.sa-mp.nl");
+        SendClientMessage(playerid,COLOR_LIGHTBLUE,"IRC channel, ingame ranks, commands and much more! Please visit https://sa-mp.nl/donate");
         return 1;
     }
 

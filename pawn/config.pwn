@@ -19,10 +19,6 @@ class Version {
 // value for the password salt will be used instead.
 #tryinclude "config-release.pwn"
 
-#if !defined PasswordSalt
-    #define PasswordSalt        "^&lvp__@"
-#endif
-
 // Toggling the availability of certain features should be done by changing their values in this
 // class. Please follow existing conventions and add features based on their alphabetical order.
 class Feature {

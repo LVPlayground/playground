@@ -53,7 +53,7 @@ class ModLoginRequest {
     public createForPlayer(playerId, username[], password[]) {
         new queryString[256];
 
-        QueryBuilder(m_queryId)->apply(queryString, sizeof(queryString), username, password, PasswordSalt);
+        QueryBuilder(m_queryId)->apply(queryString, sizeof(queryString), username, password, Database->passwordSaltString());
         if (strlen(queryString))
             Database->query(queryString, "ModLoginResultCallback", playerId);
     }

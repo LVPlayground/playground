@@ -408,4 +408,42 @@ describe('PlayerDatabase', it => {
             assert.isNull(bans[1].serial);
         }
     });
+
+    it('should be able to deal with range ban exceptions', async (assert) => {
+        const instance = new MockBanDatabase();
+
+        let foundRanges = 0;
+        let foundExceptions = 0;
+
+        // (1) Get a list of all ranges that have exceptions.
+        for (const range of await instance.getRangesWithExceptions()) {
+            assert.typeOf(range.range, 'string');
+            assert.typeOf(range.count, 'number');
+
+            ++foundRanges;
+        }
+
+        assert.isAbove(foundRanges, 1);
+
+        // (2) Get all exceptions that exist for a particular range.
+        for (const exception of await instance.getRangeExceptions('127.0.*.*')) {
+            assert.typeOf(exception.id, 'number');
+            assert.instanceOf(exception.date, Date);
+            assert.typeOf(exception.author, 'string');
+            assert.typeOf(exception.tally, 'number');
+            assert.typeOf(exception.nickname, 'string');
+
+            ++foundExceptions;
+        }
+
+        assert.isAbove(foundExceptions, 1);
+
+        // (3) Be able to add a range.
+        await instance.addRangeException('127.0.*.*', 'Joseph', 'Russell');
+        assert.equal(instance.addedRangeExceptions, 1);
+
+        // (4) Be able to remove a range.
+        await instance.removeRangeException(1);
+        assert.equal(instance.removedRangeExceptions, 1);
+    });
 });

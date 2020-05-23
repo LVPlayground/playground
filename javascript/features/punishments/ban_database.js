@@ -193,6 +193,52 @@ const UNBAN_QUERY = `
         ban_expiration_date = NOW()
     WHERE
         log_id = ?`
+    
+// MySQL query to get all the ranges which have one or more exceptions.
+const RANGE_EXCEPTION_LIST_ALL_QUERY = `
+    SELECT
+        ip_range_begin,
+        ip_range_end,
+        COUNT(*) AS exception_count
+    FROM
+        range_exceptions
+    GROUP BY
+        ip_range_begin, ip_range_end
+    ORDER BY
+        exception_count DESC`;
+
+// MySQL query to get the range exceptions for the given |range|.
+const RANGE_EXCEPTION_LIST_QUERY = `
+    SELECT
+        exception_id,
+        exception_date,
+        exception_author,
+        exception_tally,
+        nickname
+    FROM
+        range_exceptions
+    WHERE
+        ip_range_begin >= ? AND
+        ip_range_end <= ?
+    ORDER BY
+        exception_tally, nickname ASC`;
+
+// MySQL query to add an exception for the |range|.
+const RANGE_EXCEPTION_ADD_QUERY = `
+    INSERT INTO
+        range_exceptions
+        (exception_date, exception_author, ip_range_begin, ip_range_end, nickname)
+    VALUES
+        (NOW(), ?, ?, ?, ?)`;
+
+// MySQL query to remove an exception for the |range|.
+const RANGE_EXCEPTION_DELETE_QUERY = `
+    DELETE FROM
+        range_exceptions
+    WHERE
+        exception_id = ?
+    LIMIT
+        1`;
 
 // Responsible for actually executing ban-related operations on the MySQL database.
 export class BanDatabase {
@@ -559,6 +605,71 @@ export class BanDatabase {
     // Unbans the given |logId|. All the necessary checks must already have been done.
     async unban(logId) {
         await server.database.query(UNBAN_QUERY, logId);
+    }
+
+    // Gets an array of { range, count } entries for all ranges that have exceptions.
+    async getRangesWithExceptions() {
+        const results = await this._getRangesWithExceptionsQuery();
+        const ranges = [];
+
+        for (const row of results) {
+            ranges.push({
+                range: rangeToText(long2ip(row.ip_range_begin), long2ip(row.ip_range_end)),
+                count: row.exception_count,
+            }); 
+        }
+
+        return ranges;
+    }
+
+    // Actually runs the query to get IP ranges that have one or more exceptions.
+    async _getRangesWithExceptionsQuery() {
+        const result = await server.database.query(RANGE_EXCEPTION_LIST_ALL_QUERY);
+        return result ? result.rows : [];
+    }
+
+    // Gets an array of { id, date, author, tally, nickname } entries for all exceptions that have
+    // been added for the given |range|. Ordered by the exception's tally.
+    async getRangeExceptions(range) {
+        const ipRangeStart = ip2long(range.replace(/\*/g, '0'));
+        const ipRangeEnd = ip2long(range.replace(/\*/g, '255'));
+
+        const results = await this._getRangeExceptionsQuery(ipRangeStart, ipRangeEnd);
+        const exceptions = [];
+
+        for (const row of results) {
+            exceptions.push({
+                id: row.exception_id,
+                date: new Date(row.exception_date),
+                author: row.exception_author,
+                tally: row.exception_tally,
+                nickname: row.nickname,
+            });
+        }
+
+        return exceptions;
+    }
+
+    // Actually runs the query to get the exceptions that have been added for a particular range.
+    async _getRangeExceptionsQuery(ipRangeStart, ipRangeEnd) {
+        const result = await server.database.query(
+            RANGE_EXCEPTION_LIST_QUERY, ipRangeStart, ipRangeEnd);
+
+        return result ? result.rows : [];
+    }
+
+    // Adds a range exception for the given |nickname|, who's caught by the given |range|.
+    async addRangeException(range, nickname, author) {
+        const ipRangeStart = ip2long(range.replace(/\*/g, '0'));
+        const ipRangeEnd = ip2long(range.replace(/\*/g, '255'));
+
+        await server.database.query(
+            RANGE_EXCEPTION_ADD_QUERY, author, ipRangeStart, ipRangeEnd, nickname);
+    }
+
+    // Removes a range exception identified by the given |rangeId|.
+    async removeRangeException(rangeId) {
+        await server.database.query(RANGE_EXCEPTION_DELETE_QUERY, rangeId);
     }
 
     // Converts the given |row| to a ban information structure, containing the same information in a

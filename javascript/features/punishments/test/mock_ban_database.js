@@ -10,6 +10,9 @@ export class MockBanDatabase extends BanDatabase {
     addedEntry = null;
     unbanLogId = null;
 
+    addedRangeExceptions = 0;
+    removedRangeExceptions = 0;
+
     constructor(...params) {
         super(...params);
     }
@@ -233,5 +236,68 @@ export class MockBanDatabase extends BanDatabase {
     // Overridden.
     async unban(logId) {
         this.unbanLogId = logId;
+    }
+
+    // Overridden.
+    async _getRangesWithExceptionsQuery() {
+        return [
+            {
+                ip_range_begin: 2130706432,  // 127.0.0.0
+                ip_range_end: 2130771967,  // 127.0.255.255
+                exception_count: 2,
+            },
+            {
+                ip_range_begin: 623924992,  // 37.48.87.0
+                ip_range_end: 623925247,  // 37.48.87.255
+                exception_count: 1,
+            },
+        ];
+    }
+
+    // Overridden.
+    async _getRangeExceptionsQuery(ipRangeStart, ipRangeEnd) {
+        switch (ipRangeStart) {
+            case 2130706432:  // 127.0.*.*
+                return [
+                    {
+                        exception_id: 1,
+                        exception_date: '2020-05-23 14:15:16',
+                        exception_author: 'Russell',
+                        exception_tally: 25,
+                        nickname: 'Gunther',
+                    },
+                    {
+                        exception_id: 3,
+                        exception_date: '2020-04-11 12:08:14',
+                        exception_author: '[BB]Ricky92',
+                        exception_tally: 1,
+                        nickname: 'TrainDriverLV',
+                    },
+                ];
+            
+            case 623924992:  // 37.48.87.*
+                return [
+                    {
+                        exception_id: 2,
+                        exception_date: '2020-05-12 18:00:01',
+                        exception_author: 'Holsje',
+                        exception_tally: 24,
+                        nickname: 'Nuwani',
+                    },
+                ];
+            
+            default:
+                return [];
+        }
+    }
+
+    // Overridden.
+    async addRangeException(range, nickname, author) {
+        this.addedRangeExceptions++;
+    }
+
+    // Overridden.
+    async removeRangeException(rangeId) {
+        this.removedRangeExceptions++;
     }
 }

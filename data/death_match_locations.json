@@ -110,7 +110,7 @@
         "id": 5,
         "name": "SF milatary RW",
         "weather": 10,
-        "time": 12,
+        "time": 10,
 
         "player_health" : 100,
         "player_armour" : 100,
@@ -126,7 +126,6 @@
 			{ "position": [ -1479, 413, 32 ], "rotation": 0 },
 			{ "position": [ -1404, 370, 32 ], "rotation": 0 },
 			{ "position": [ -1385, 375, 32 ], "rotation": 0 },
-			{ "position": [ -1480, 354, 32 ], "rotation": 0 },
 			{ "position": [ -1428, 355, 32 ], "rotation": 0 },
 			{ "position": [ -1454, 369, 32 ], "rotation": 0 },
 			{ "position": [ -1405, 359, 32 ], "rotation": 0 },

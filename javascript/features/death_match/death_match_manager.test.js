@@ -125,7 +125,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         
         gunther.identify({ userId: 42 });
         gunther.health = 99;
-
+        gunther.activity = Player.PLAYER_ACTIVITY_JS_DM_ZONE;
         manager.playersInDeathMatch_.set(gunther.id, 1);
         
         manager.onPlayerSpawn({ playerid : gunther.id });

@@ -149,7 +149,7 @@ describe('AccountDatabase', it => {
         assert.strictEqual(result, '#FF00FF');
 
         assert.isTrue(typeof instance.updatedValue === 'number');
-        assert.equal(instance.updatedValue, -16711681);
+        assert.equal(instance.updatedValue, -16711766);
     });
 
     it('should be able to format and update player levels', async (assert) => {

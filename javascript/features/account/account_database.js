@@ -682,13 +682,9 @@ export class AccountDatabase {
                 if (!/^#[0-9a-fA-F]{6}$/.test(value))
                     throw new Error(`"${value}" is not a valid color format (#RRGGBB).`);
                 
-                let color = Color.fromHex(value.substring(1));
-                let colorValue = color.toNumberRGBA();
+                let color = Color.fromHex(value.substring(1), 0xAA);
 
-                if (colorValue > 2147483647)
-                    colorValue = -2147483648 + (colorValue - (2147483647 + 1));
-
-                processedValue = colorValue;
+                processedValue = color.toNumberRGBA();
                 break;
 
             case 'last_ip':

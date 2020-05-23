@@ -821,6 +821,21 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         assert.includes(ranges[0], 'Ranges with exceptions: 127.0.*.* (2 exceptions), ');
 
         // (3) It should be able to list all exceptions within a range.
+        const exceptions = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!rexception list 127.0.*.*',
+        });
+
+        assert.equal(exceptions.length, 1);
+        assert.includes(exceptions[0], 'Gunther (used 25 times, by Russell)');
+
+        const noExceptions = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!rexception list 255.255.*.*',
+        });
+
+        assert.equal(noExceptions.length, 1);
+        assert.includes(noExceptions[0], 'No exceptions could be found for 255.255.*.*.');
 
         // (4) It should complain when a range does not have exceptions.
 

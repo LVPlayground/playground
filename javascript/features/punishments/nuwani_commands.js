@@ -488,6 +488,32 @@ export class NuwaniCommands {
     // exceptions that have been created for the given |range|.
     async onRangeExceptionListCommand(context, range) {
         if (range) {
+            const exceptions = await this.database_.getRangeExceptions(range);
+            const formattedExceptions = exceptions.map(exception => {
+                const attribution = `by ${exception.author}`;
+                const usage =
+                    `used ${format('%d', exception.tally)} time${exception.tally !== 1 ? 's' : ''}`;
+
+                return `${exception.nickname} 14(${usage}, ${attribution})`;
+            });
+
+            if (!formattedExceptions.length) {
+                context.respond(`4Error: No exceptions could be found for ${range}.`);
+                return;
+            }
+
+            for (let message = 0; message < 2; ++message) {
+                const selection = formattedExceptions.splice(0, 10).join(', ');
+                if (!selection.length)
+                    return;
+
+                let suffix = '';
+
+                if (message === 1 && formattedExceptions.length > 0)
+                    suffix = ` 15[${formattedExceptions.length} omitted...]`;
+
+                context.respond(`5Exceptions for ${range}: ${selection}${suffix}`);
+            }
 
         } else {
             const ranges = await this.database_.getRangesWithExceptions();

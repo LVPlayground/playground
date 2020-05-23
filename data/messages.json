@@ -84,6 +84,7 @@
   "COMMUNICATION_PM_RECEIVER": "{FFDC18}* PM from %s (Id:%d): {FFFFFF}%s",
   "COMMUNICATION_PM_SELF": "@error You cannot send messages to yourself.",
   "COMMUNICATION_PM_SENDER": "{FCF545}* PM to %s (Id:%d): {FFFFFF}%s",
+  "COMMUNICATION_PSAY_SENT": "@success The message has been sent, but mind that it's still subject to filters.",
   "COMMUNICATION_REPLY_NONE": "@error You haven't received messages you can respond to yet.",
   "COMMUNICATION_SERVER_MUTE_BLOCKED": "@error Your message has been blocked because all communication has been muted.",
   "COMMUNICATION_SERVER_MUTED": "{DC143C}*** %s has muted all communication on the server.",

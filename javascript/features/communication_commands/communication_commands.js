@@ -82,6 +82,14 @@ export default class CommunicationCommands extends Feature {
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(CommunicationCommands.prototype.onMeCommand.bind(this));
 
+        // /psay [player] [message]
+        server.commandManager.buildCommand('psay')
+            .restrict(Player.LEVEL_MANAGEMENT)
+            .parameters([
+                { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
+                { name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
+            .build(CommunicationCommands.prototype.onPSayCommand.bind(this));
+
         // /show [message] [player]?
         server.commandManager.buildCommand('show')
             .restrict(Player.LEVEL_ADMINISTRATOR)
@@ -170,6 +178,21 @@ export default class CommunicationCommands extends Feature {
         this.nuwani_().echo('status', player.id, player.name, message);
     }
 
+    // /psay [player] [message]
+    //
+    // Fakes as if the |targetPlayer| has said the given |message|. No information will be shared
+    // with administrators, although it will be logged in the server's console.
+    onPSayCommand(player, targetPlayer, message) {
+        dispatchEvent('playertext', {
+            playerid: targetPlayer.id,
+            text: message,
+        });
+
+        console.log(`[psay] ${player.name} impersonated ${targetPlayer.name}: ${message}`);
+
+        player.sendMessage(Message.COMMUNICATION_PSAY_SENT);
+    }
+
     // /show [message] [player]?
     //
     // Shows a particular |message| to the user. The individual messages will be loaded from a JSON
@@ -244,6 +267,7 @@ export default class CommunicationCommands extends Feature {
             commands.dispose();
 
         server.commandManager.removeCommand('show');
+        server.commandManager.removeCommand('psay');
         server.commandManager.removeCommand('me');
         server.commandManager.removeCommand('clear');
         server.commandManager.removeCommand('announce');

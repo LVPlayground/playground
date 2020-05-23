@@ -817,9 +817,11 @@ GodHelp:
             Player(subjectId)->nicknameString(), subjectId);
         SendClientMessage(playerId, Color::Success, g_message);
 
-        format(g_message, sizeof(g_message), "%s (Id:%d) has granted temp. admin rights to %s (Id:%d).",
+        format(g_message, sizeof(g_message), "%s (Id:%d) has granted temporary admin rights to %s (Id:%d).",
             Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId);
         Admin(playerId, g_message);
+
+        EchoMessage("notice-crew", "z", g_message);
 
         return 1;
     }
@@ -844,6 +846,8 @@ GodHelp:
         format(g_message, sizeof(g_message), "%s (Id:%d) has taken admin rights from %s (Id:%d).",
             Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId);
         Admin(playerId, g_message);
+
+        EchoMessage("notice-crew", "z", g_message);
 
         return 1;
     }

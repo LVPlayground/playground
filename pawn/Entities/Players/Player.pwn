@@ -115,6 +115,15 @@ class Player <playerId (MAX_PLAYERS)> {
      * state, to make sure that the rest of the gamemode is aware of this.
      */
     public onDisconnect() {
+        if (m_level > AdministratorLevel && m_levelIsTemporary) {
+            new message[96];
+            format(message, sizeof(message),
+                   "%s (Id:%d), who had temporary admin rights, has left the server", m_nickname,
+                   playerId);
+
+            EchoMessage("notice-crew", "z", message);
+        }
+
         m_flags = 0;
         m_level = PlayerLevel;
         m_levelIsTemporary = false;

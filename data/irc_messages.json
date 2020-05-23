@@ -26,6 +26,7 @@
 
     "notice-admin": "<prefix:%><color:2>*** <color:5>%s",
     "notice-announce": "<color:12>*** Announcement: %s",
+    "notice-crew": "<target:#LVP.Crew><color:7>Notice:<color> %s",
     "notice-minigame": "<color:10>*** %s (Id:%d) has signed up for the %s.",
     "notice-minigame-win": "<color:10>*** %s (Id:%d) has finished the %s game in %d%s position%s.",
     "notice-report": "<prefix:%><color:2>*** <color:7>Report from %s (Id:%d) about %s (Id:%d):<color> %s",

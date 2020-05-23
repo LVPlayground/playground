@@ -256,6 +256,8 @@ class Account <playerId (MAX_PLAYERS)> {
             (level == ManagementLevel ? "manager" : "administrator"));
         Admin(playerId, notice);
 
+        EchoMessage("notice-crew", "z", notice);
+
         // Broadcast an OnPlayerLogin callback that can be intercepted by other scripts.
         CallRemoteFunction("OnPlayerLogin", "iiiii", playerId, originalUserId, Player(playerId)->isVip(), AccountData(playerId)->gangId(), 1 /* undercover */);
 

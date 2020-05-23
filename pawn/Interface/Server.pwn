@@ -118,27 +118,6 @@ stock SetPlayerVirtualWorldHook(playerId, virtualWorldId) {
 #define SetPlayerVirtualWorld SetPlayerVirtualWorldHook
 
 // -------------------------------------------------------------------------------------------------
-// We override the TextDrawCreate method in beta builds because there is quite a bit of code around
-// which tries to destroy TextDraws with Id=0, even though this is perfectly valid. In such cases,
-// crash the current execution path for the sake of getting a stack trace.
-#if BuildGamemodeInReleaseMode == 0
-
-TextDrawDestroyHook(Text: textDrawId) {
-    if (_: textDrawId == 0)
-        return 0;
-
-    return TextDrawDestroy(textDrawId);
-}
-
-#if Feature::EnableServerSideWeaponConfig == 1
-    #undef TextDrawDestroy
-#endif
-
-#define TextDrawDestroy TextDrawDestroyHook
-
-#endif
-
-// -------------------------------------------------------------------------------------------------
 
 SendClientMessagePrivate(playerid, color, const message[]) {
     new textBuffer[256];

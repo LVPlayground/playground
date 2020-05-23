@@ -48,13 +48,5 @@ OnPlayerLVPConnect(playerid) {
     GetPlayerName(playerid, PlayerInfo[playerid][playerName], 32);
     iRconLoginAttempts[playerid] = 0;
 
-#if BuildGamemodeInReleaseMode == 0
-    new ver[32], str[128];
-    GetPlayerVersion(playerid, ver, 32);
-
-    format(str, 128, "Your SA-MP Client Version: %s", ver);
-    SendClientMessage(playerid, Color::Debug, str);
-#endif
-
     return 1;
 }

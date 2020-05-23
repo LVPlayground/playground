@@ -87,45 +87,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     if (Annotation::ProcessCommand(cmd, playerid, cmdtext[idx]) == 1)
         return 1;
 
-#if BuildGamemodeInReleaseMode == 0
-        if(!strcmp(cmdtext, "/vehid", true))
-        {
-            new str[128];
-            format(str, 128, "Vehicle ID: %d. Model: %d. Name: %s.",GetPlayerVehicleID(playerid), GetVehicleModel(GetPlayerVehicleID(playerid)), VehicleModel(GetVehicleModel(GetPlayerVehicleID(playerid)))->nameString());
-            SendClientMessage(playerid, Color::White, str);
-            return 1;
-        }
-
-        if(!strcmp(cmdtext, "/timer1debug", true) ||
-           !strcmp(cmdtext, "/timer2debug", true) ||
-           !strcmp(cmdtext, "/1secdebug", true))
-        {
-            DeprecatedTimerRuntime->onSecondTimerTick();
-            return 1;
-        }
-
-        if(strcmp(cmdtext,"/hax",true) == 0)
-        {
-            GivePlayerMoney ( playerid, 2500000 );  // beta usage
-            SendClientMessage ( playerid, Color::Green, "No problem sir." );
-            return 1;
-        }
-
-        if(!strcmp(cmdtext, "/gta", true))
-        {
-            CTheft__Initalize();
-            ShowBoxForPlayer(playerid, "GTA Initialized.");
-            return 1;
-        }
-
-        if(!strcmp(cmdtext, "/addspawn", true))
-        {
-            SavePlayerSpawnData(playerid);
-            SendClientMessage(playerid, Color::Green, "Spawn data saved to file.");
-            return 1;
-        }
-    #endif
-
     new namex[24];
     GetPlayerName( playerid, namex, 24 );
     param_reset();

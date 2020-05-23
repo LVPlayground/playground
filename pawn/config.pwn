@@ -15,10 +15,6 @@ class Version {
 // whether config-release.pwn tries to define the prod password salt.
 #define BuildGamemodeInReleaseMode 0
 
-// Try to include the private release configuration file. If it can't be loaded, the staging server
-// value for the password salt will be used instead.
-#tryinclude "config-release.pwn"
-
 // Toggling the availability of certain features should be done by changing their values in this
 // class. Please follow existing conventions and add features based on their alphabetical order.
 class Feature {

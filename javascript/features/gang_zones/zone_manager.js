@@ -52,6 +52,7 @@ export class ZoneManager {
     // Implementation for the ZoneAreaManager:
     // ---------------------------------------------------------------------------------------------
 
+    // Called when the |player| has entered the |zone|.
     onPlayerEnterZone(player, zone) {
         player.sendMessage(
             Message.GANG_ZONE_ENTERED, zone.color.toHexRGB(), zone.gangName, zone.gangGoal);
@@ -60,6 +61,7 @@ export class ZoneManager {
             console.log(`[Zone][Enter][${zone.gangName}] : [${player.name}]`);
     }
 
+    // Called when the |player| has left the |zone|.
     onPlayerLeaveZone(player, zone) {
         if (!server.isTest())
             console.log(`[Zone][Leave][${zone.gangName}] : [${player.name}]`);

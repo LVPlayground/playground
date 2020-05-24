@@ -115,7 +115,7 @@ export class ZoneCalculator {
         // Use the mean-shift algorithm to determine clusters within the |houseLocations|, given the
         // maximum distance from the cluster's center as the algorithm's bandwidth.
         const clusters = meanShift(houseLocations, { bandwidth: kZoneAreaMeanShiftBandwidth });
-        const areas = [];
+        const areas = this.getPersistentAreasForGang(zoneGang);
 
         // The minimum number of members that need to have a house in a particular area.
         const kMinimumRepresentationInArea = this.getSettingValue('zones_area_min_members');
@@ -248,6 +248,28 @@ export class ZoneCalculator {
         });
 
         return areas.slice(0, this.getSettingValue('zones_area_limit'));
+    }
+
+    // Returns the persistent areas that have been created for the |zoneGang|, if any. This is a
+    // form of special casing that should be reserved for very special gangs only.
+    getPersistentAreasForGang(zoneGang) {
+        if (zoneGang.id !== 1 /* Las Venturas Playground */)
+            return [];
+
+        const area = new Rect(2092.59, 1585.47, 2115.45, 1618.03);
+
+        // Create exactly the same data structure as would be created for normally computed gangs in
+        // the `computeGangAreas()` function, to make this opaque to the rest of the system.
+        return [{
+            memberCount: 1,  // Russell
+            houseCount: 1,  // Russell's house
+            bonuses: new Set(),
+
+            enclosingArea: area,
+            paddedArea: area,
+            viableArea: area,
+            area
+        }];
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -5,6 +5,10 @@
 import { ZoneGang } from 'features/gang_zones/structures/zone_gang.js';
 import { ZoneMember } from 'features/gang_zones/structures/zone_member.js';
 
+// Set of gang Ids which are persistently granted a zone. The data aggregator will load all their
+// settings and details, pass on information to the calculator, but won't fake anything beyond that.
+const kPersistentGangIds = new Set([ 1 /* LVP */ ]);
+
 // Minimum number of active members required for a gang to be considered "active".
 export const kZoneDominanceActiveMemberRequirement = 5;
 
@@ -77,7 +81,7 @@ export class ZoneDataAggregator {
 
         // Determine which sub-set of the |this.activeGangs_| is considered to be an active gang.
         // This is step (2) of the zone dominance algorithm described in README.md.
-        const activeGangIds = new Set();
+        const activeGangIds = new Set([...kPersistentGangIds]);
 
         for (const zoneGang of this.activeGangs_.values()) {
             if (zoneGang.size < kZoneDominanceActiveMemberRequirement)
@@ -131,7 +135,9 @@ export class ZoneDataAggregator {
         if (!this.delegate_)
             return;  // the delegate is optional for testing
 
-        const isActive = zoneGang.members.size >= kZoneDominanceActiveMemberRequirement;
+        const isActive = zoneGang.members.size >= kZoneDominanceActiveMemberRequirement ||
+                         kPersistentGangIds.has(zoneGang.id);
+
         if (zoneGang.isActive()) {
             if (isActive)
                 this.delegate_.onGangUpdated(zoneGang);  // was active, still active

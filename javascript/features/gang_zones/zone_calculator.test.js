@@ -61,56 +61,17 @@ describe('ZoneCalculator', (it, beforeEach, afterEach) => {
 
     afterEach(() => calculator.dispose());
 
-    it('is able to limit the number of gang areas', async (assert) => {
+    it('is able to limit the number of areas created for an individual gang', async (assert) => {
         const zoneGangBA = aggregator.activeGangs.get(MockZoneDatabase.BA);
         assert.isNotNull(zoneGangBA);
 
         for (let count = 2; count < 8; ++count) {
-            settings.setValue('gangs/zones_cluster_limit', count);
+            settings.setValue('gangs/zones_area_limit', count);
             assert.isBelowOrEqual(calculator.computeGangAreas(zoneGangBA).length, count);
         }
         
-        settings.setValue('gangs/zones_cluster_limit', 8);
+        settings.setValue('gangs/zones_area_limit', 8);
         assert.equal(calculator.computeGangAreas(zoneGangBA).length, 3);
-    });
-
-    it('is able to apply a member bonus factor to area calculations', assert => {
-        const zoneGangBA = aggregator.activeGangs.get(MockZoneDatabase.BA);
-        assert.isNotNull(zoneGangBA);
-
-        const paddingPercentage = 20;
-        const bonusPercentage = 25;
-
-        // Note: padding percentage will be applied on each area edge.
-        settings.setValue('gangs/zones_area_padding_pct', paddingPercentage);
-
-        settings.setValue('gangs/zones_area_bonus_members', 5);
-        settings.setValue('gangs/zones_area_bonus_members_pct', bonusPercentage);
-
-        const bonusAreas = calculator.computeGangAreas(zoneGangBA);
-        assert.equal(bonusAreas.length, 3);
-        assert.isAbove(bonusAreas.filter(info => info.bonuses.includes('member_bonus')).length, 0);
-
-        for (const info of bonusAreas) {
-            assert.closeTo(info.paddedArea.width,
-                           info.enclosingArea.width * (1 + (paddingPercentage / 100) * 2), 0.1);
-            assert.closeTo(info.paddedArea.height,
-                           info.enclosingArea.height * (1 + (paddingPercentage / 100) * 2), 0.1);
-  
-            if (!info.bonuses.includes('member_bonus'))
-                continue;
-            
-            assert.closeTo(info.area.width,
-                           info.paddedArea.width * (1 + (bonusPercentage / 100) * 2), 0.1);
-            assert.closeTo(info.area.height,
-                           info.paddedArea.height * (1 + (bonusPercentage / 100) * 2), 0.1);
-        }
-
-        settings.setValue('gangs/zones_area_bonus_members', Number.MAX_SAFE_INTEGER);
-
-        const regularAreas = calculator.computeGangAreas(zoneGangBA);
-        assert.equal(regularAreas.length, 3);
-        assert.equal(regularAreas.filter(info => info.bonuses.includes('member_bonus')).length, 0);
     });
 
     it('is able to tell the manager which zones should be created and deleted', assert => {
@@ -142,7 +103,7 @@ describe('ZoneCalculator', (it, beforeEach, afterEach) => {
             totalAreaWithPadding += zone.area.area;
 
         // Remove the area padding, which will cause the zone's size to shrink.
-        settings.setValue('gangs/zones_area_padding_pct', 0);
+        settings.setValue('gangs/zones_area_padded_percentage', 0);
 
         calculator.onGangUpdated(zoneGangBA);
         assert.equal(manager.zones.size, zoneCountWithPadding);
@@ -152,5 +113,42 @@ describe('ZoneCalculator', (it, beforeEach, afterEach) => {
             totalAreaWithoutPadding += zone.area.area;
 
         assert.isBelow(totalAreaWithoutPadding, totalAreaWithPadding);
+    });
+
+    it('is able to apply a member bonus factor to area calculations', assert => {
+        const zoneGangBA = aggregator.activeGangs.get(MockZoneDatabase.BA);
+        assert.isNotNull(zoneGangBA);
+
+        const paddingPercentage = 20;
+        const bonusUnits = 25;
+
+        // Note: padding percentage will be applied on each area edge.
+        settings.setValue('gangs/zones_area_padded_percentage', paddingPercentage);
+
+        settings.setValue('gangs/zones_area_bonus_medium_count', 5);
+        settings.setValue('gangs/zones_area_bonus_medium_bonus', bonusUnits);
+
+        const bonusAreas = calculator.computeGangAreas(zoneGangBA);
+        assert.equal(bonusAreas.length, 3);
+        assert.isAbove(bonusAreas.filter(info => info.bonuses.includes('medium-gang')).length, 0);
+
+        for (const info of bonusAreas) {
+            assert.closeTo(info.paddedArea.width,
+                           info.enclosingArea.width * (1 + (paddingPercentage / 100) * 2), 0.1);
+            assert.closeTo(info.paddedArea.height,
+                           info.enclosingArea.height * (1 + (paddingPercentage / 100) * 2), 0.1);
+  
+            if (!info.bonuses.includes('medium-gang'))
+                continue;
+            
+            assert.closeTo(info.area.width, info.paddedArea.width + 2 * bonusUnits, 0.1);
+            assert.closeTo(info.area.height, info.paddedArea.height + 2 * bonusUnits, 0.1);
+        }
+
+        settings.setValue('gangs/zones_area_bonus_medium_count', Number.MAX_SAFE_INTEGER);
+
+        const regularAreas = calculator.computeGangAreas(zoneGangBA);
+        assert.equal(regularAreas.length, 3);
+        assert.equal(regularAreas.filter(info => info.bonuses.includes('medium-gang')).length, 0);
     });
 });

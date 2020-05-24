@@ -62,14 +62,17 @@ export default [
     new Setting('games', 'registration_expiration_sec', Setting.TYPE_NUMBER, 20, 'After how many seconds does a game registration expire?'),
 
     /** Gang-related settings */
-    new Setting('gangs', 'zones_area_bonus_members', Setting.TYPE_NUMBER, 8, 'Starting at how many members will an area bonus be applied?'),
-    new Setting('gangs', 'zones_area_bonus_members_pct', Setting.TYPE_NUMBER, 20, 'Area increase percentage granted for the member bonus.'),
-    new Setting('gangs', 'zones_area_max_distance', Setting.TYPE_NUMBER, 100, 'Maximum distance from the mean for gang areas.'),
-    new Setting('gangs', 'zones_area_min_edge_length', Setting.TYPE_NUMBER, 50, 'Minimum length of each of the areas edges (width/height).'),
-    new Setting('gangs', 'zones_area_min_representation', Setting.TYPE_NUMBER, 50, 'Representation percentage required for gang areas.'),
-    new Setting('gangs', 'zones_area_padding_pct', Setting.TYPE_NUMBER, 20, 'Percentage of padding applied over the strictly enclosing area.'),
-    new Setting('gangs', 'zones_cluter_iterations', Setting.TYPE_NUMBER, 250, 'Number of iterations to apply when running k-means clustering.'),
-    new Setting('gangs', 'zones_cluster_limit', Setting.TYPE_NUMBER, 8, 'Maximum number of clusters when running k-means clustering.'),
+    new Setting('gangs', 'zones_area_bonus_medium_count', Setting.TYPE_NUMBER, 8, 'Number of active members in an area to get the medium-gang bonus.'),
+    new Setting('gangs', 'zones_area_bonus_medium_bonus', Setting.TYPE_NUMBER, 20, 'Area bonus, in map units, applied to medium-sized gang areas.'),
+    new Setting('gangs', 'zones_area_bonus_large_count', Setting.TYPE_NUMBER, 15, 'Number of active members in an area to get the large-gang bonus.'),
+    new Setting('gangs', 'zones_area_bonus_large_bonus', Setting.TYPE_NUMBER, 20, 'Area bonus, in map units, applied to large-sized gang areas.'),
+    new Setting('gangs', 'zones_area_limit', Setting.TYPE_NUMBER, 4, 'Maximum number of areas owned by a gang.'),
+    new Setting('gangs', 'zones_area_mean_shift_bandwidth', Setting.TYPE_NUMBER, 40, 'Bandwidth used for the mean shift algorithm\'s kernel.'),
+    new Setting('gangs', 'zones_area_min_members', Setting.TYPE_NUMBER, 5, 'How many members need to be in a particular area for it to be a zone?'),
+    new Setting('gangs', 'zones_area_padded_percentage', Setting.TYPE_NUMBER, 20, 'Percentage of padding applied over the strictly enclosing area.'),
+    new Setting('gangs', 'zones_area_viable_edge_length', Setting.TYPE_NUMBER, 50, 'Target edge length of each side of a viable area.'),
+    new Setting('gangs', 'zones_area_viable_shape_threshold', Setting.TYPE_NUMBER, 50, 'Ratio threshold (*100) for maintaining an area shape.'),
+    new Setting('gangs', 'zones_area_viable_shape_adjust', Setting.TYPE_NUMBER, 22, 'Percentage of area to shift w/h to maintain area shape.'),
 
     /** Playground related settings */
     new Setting('playground', 'enable_beta_features', Setting.TYPE_BOOLEAN, false, 'Enables beta server functionality.'),

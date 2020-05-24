@@ -6,7 +6,7 @@
 import { Vector } from 'base/vector.js';
 import { Zone } from 'features/gang_zones/structures/zone.js';
 
-import { getClustersForSanAndreas } from 'features/gang_zones/clustering.js';
+import { meanShift } from 'features/gang_zones/mean_shift.js';
 
 // The zone calculator is notified whenever updated information of an active gang is available,
 // which will be used to determine whether display of a zone is appropriate.
@@ -76,43 +76,55 @@ export class ZoneCalculator {
     // ---------------------------------------------------------------------------------------------
 
     // Computes the areas that the |zoneGang| is active in. This maps to Step 3. of the zone
-    // dominance algorithm described in README.md, and uses a specialized k-means clustering routine
-    // for identifying up to 12 areas in the world of San Andreas.
+    // dominance algorithm described in README.md, and uses a mean shift algorithm to determine the
+    // main clusters of houses owned by a particular gang.
+    //
+    // This function computes, and returns, various enclosing boundaries for each of the computed
+    // zones. This might help in debugging the zones later on. In order of increasing size:
+    //
+    //   * `enclosingArea`  The bounding box that strictly encapsulates all of the house locations.
+    //
+    //   * `paddedArea`     The enclosing area, with a percentage of padding applied. This is
+    //                      significant because zones don't end next to somebody's door.
+    //
+    //   * `viableArea`     The viable area: extension on the padded area that increases the area by
+    //                      the configured minimum size, while maintaining the area's shape.
+    //
+    //   * `area`           The gang area after applying the bonuses that this area is eligible for.
+    //
+    // The list of bonuses, as well as other meta information, will be returned for completeness.
     computeGangAreas(zoneGang) {
-        const houseLocations = [];
+        const kZoneAreaMeanShiftBandwidth = this.getSettingValue('zones_area_mean_shift_bandwidth');
 
+        const houseLocations = [];
         for (const member of zoneGang.members.values()) {
             for (const location of member.houses)
                 houseLocations.push([ location.position.x, location.position.y, location ]);
         }
 
+        // Use the mean-shift algorithm to determine clusters within the |houseLocations|, given the
+        // maximum distance from the cluster's center as the algorithm's bandwidth.
+        const clusters = meanShift(houseLocations, { bandwidth: kZoneAreaMeanShiftBandwidth });
         const areas = [];
-        const clusters = getClustersForSanAndreas(houseLocations, {
-            maximumClusters: this.getSettingValue('zones_cluster_limit'),
-            iterations: this.getSettingValue('zones_cluter_iterations'),
-        });
 
-        const kMinimumRepresentationInArea =
-            this.getSettingValue('zones_area_min_representation') / 100;
-        const kMaximumDistanceFromAreaMean = this.getSettingValue('zones_area_max_distance');
+        // The minimum number of members that need to have a house in a particular area.
+        const kMinimumRepresentationInArea = this.getSettingValue('zones_area_min_members');
 
-        for (const { mean } of clusters) {
-            const meanVector = new Vector(mean[0], mean[1], /* z= */ 0);
+        for (const cluster of clusters) {
+            if (cluster.length < kMinimumRepresentationInArea)
+                continue;  // quick bail out: not enough houses in the cluster
 
-            let bounds = {
+            const bounds = {
                 x: { min: Number.MAX_SAFE_INTEGER, max: Number.MIN_SAFE_INTEGER },
                 y: { min: Number.MAX_SAFE_INTEGER, max: Number.MIN_SAFE_INTEGER },
             };
 
-            let locations = new Set();
-            let members = new Set();
+            const locations = new Set();
+            const members = new Set();
 
-            // Find all the locations that are close enough to the cluster's mean. We store both the
-            // location and the owning member to determine the representation factor.
-            for (const [,, location] of houseLocations) {
-                if (!location.position.closeTo(meanVector, kMaximumDistanceFromAreaMean))
-                    continue;
-                
+            // Iterate over all locations in the clusters to record their owner, and capture the
+            // location's boundaries within the calcualted |bounds|.
+            for (const [,, location] of cluster) {
                 locations.add(location);
                 members.add(location.settings.ownerId);
 
@@ -122,69 +134,101 @@ export class ZoneCalculator {
                 bounds.y.max = Math.max(bounds.y.max, location.position.y);
             }
 
-            const representationFraction = members.size / zoneGang.members.size;
-            if (representationFraction < kMinimumRepresentationInArea)
-                continue;
-
-            const kAreaMinimumEdgeLength = this.getSettingValue('zones_area_min_edge_length');
-            const kAreaPaddingFactor = this.getSettingValue('zones_area_padding_pct') / 100;
-
-            // Make sure that both the width and height of the zone meet the minimum length setting,
-            // or extend out from the center when this is not the case.
-            if ((bounds.x.max - bounds.x.min) < kAreaMinimumEdgeLength) {
-                const extension = (kAreaMinimumEdgeLength - (bounds.x.max - bounds.x.min)) / 2;
-                bounds.x.min -= extension;
-                bounds.x.max += extension;
-            }
-
-            if ((bounds.y.max - bounds.y.min) < kAreaMinimumEdgeLength) {
-                const extension = (kAreaMinimumEdgeLength - (bounds.y.max - bounds.y.min)) / 2;
-                bounds.y.min -= extension;
-                bounds.y.max += extension;
-            }
+            if (members.size < kMinimumRepresentationInArea)
+                continue;  // bail out: not enough members are represented in the cluster
 
             const bonuses = [];
-            const enclosingArea = new Rect(bounds.x.min, bounds.y.min, bounds.x.max, bounds.y.max);
 
-            // Apply the |kAreaPaddingFactor| to the enclosing area, because the entrance positions
+            const enclosingArea = new Rect(bounds.x.min, bounds.y.min, bounds.x.max, bounds.y.max);
+            const enclosingRatio = enclosingArea.width / enclosingArea.height;
+
+            // -------------------------------------------------------------------------------------
+            // Apply the |kAreaPaddingFactor| to the boundary area, because the entrance positions
             // of the individual houses are not supposed to be entirely on the boundary.
+            const kAreaPaddingFactor = this.getSettingValue('zones_area_padded_percentage') / 100;
+
             const horizontalPadding = enclosingArea.width * kAreaPaddingFactor;
             const verticalPadding = enclosingArea.height * kAreaPaddingFactor;
             
             const paddedArea = enclosingArea.extend(horizontalPadding, verticalPadding);
-            let area = paddedArea;
 
-            // Apply the area bonuses to the padded area. These have different requirements, and are
-            // documented properly in the README.md file.
-            let bonusFactor = 0;
+            // -------------------------------------------------------------------------------------
+            // Extend the |paddedArea| to make sure that it meets the minimum area size, both on the
+            // horizontal and vertical axes, by measuring the edge. The shape will be maintained.
+            const kAreaMinimumEdgeLength = this.getSettingValue('zones_area_viable_edge_length');
 
-            // (1) Member bonus: increase when the area has a certain number of active members.
-            if (members.size >= this.getSettingValue('zones_area_bonus_members')) {
-                bonusFactor += this.getSettingValue('zones_area_bonus_members_pct') / 100;
-                bonuses.push('member_bonus');
+            let horizontalViableExtension = 0;
+            let verticalViableExtension = 0;
+
+            if (paddedArea.width < kAreaMinimumEdgeLength)
+                horizontalViableExtension = (kAreaMinimumEdgeLength - paddedArea.width) / 2;
+
+            if (paddedArea.height < kAreaMinimumEdgeLength)
+                verticalViableExtension = (kAreaMinimumEdgeLength - paddedArea.height) / 2;
+
+            // -------------------------------------------------------------------------------------
+            // Allow the gang's area to roughly maintain its shape in extreme cases, allowing for
+            // areas to be rectangular in shape where it makes sense.
+            const kShapeThreshold = this.getSettingValue('zones_area_viable_shape_threshold') / 100;
+            const kShapeAdjust = (this.getSettingValue('zones_area_viable_shape_adjust') / 100) + 1;
+
+            if (enclosingRatio < (1 - kShapeThreshold)) {
+                horizontalViableExtension /= kShapeAdjust;
+                verticalViableExtension *= kShapeAdjust;
+
+            } else if (enclosingRatio > (1 + kShapeThreshold)) {
+                horizontalViableExtension *= kShapeAdjust;
+                verticalViableExtension /= kShapeAdjust;
             }
 
-            if (bonusFactor > 0) {
-                const horizontalBonusPadding = paddedArea.width * bonusFactor;
-                const verticalBonusPadding = paddedArea.height * bonusFactor;
+            const viableArea =
+                paddedArea.extend(horizontalViableExtension, verticalViableExtension);
+            
+            // -------------------------------------------------------------------------------------
+            // Gang areas enjoy several bonus units for free, based on absolute data, e.g. the
+            // number of active members in the area. There also are bonuses that they have to pay
+            // for, as a means to equalize the economy by moving money to pixels.
+            let bonusUnits = 0;
 
-                area = paddedArea.extend(horizontalBonusPadding, verticalBonusPadding);
+            // (1) "medium-gang": increase when the area has a certain number of active members.
+            if (members.size >= this.getSettingValue('zones_area_bonus_medium_count')) {
+                bonusUnits += this.getSettingValue('zones_area_bonus_medium_bonus');
+                bonuses.push('medium-gang');
             }
 
+            // (2) "large-gang": increase when the area has a certain number of active members.
+            if (members.size >= this.getSettingValue('zones_area_bonus_large_count')) {
+                bonusUnits += this.getSettingValue('zones_area_bonus_large_bonus');
+                bonuses.push('large-gang');
+            }
+
+            const area = viableArea.extend(bonusUnits, bonusUnits);
+            
+            // -------------------------------------------------------------------------------------
             // Store all relevant information of the area, as other parts of the system might want
             // to visualize and explain why a certain area has a certain size.
             areas.push({
                 memberCount: members.size,
                 houseCount: locations.size,
-                representation: Math.round(representationFraction * 100),
+                bonuses,
+
                 enclosingArea,
                 paddedArea,
-                bonuses,
+                viableArea,
                 area
             });
         }
 
-        return areas;
+        // Sort the areas by their size, and only return the configured number of areas for this
+        // partiular gang, as we don't want to spam the map with too many areas.
+        areas.sort((left, right) => {
+            if (left.area.area === right.area.area)
+                return 1;
+            
+            return left.area.area > right.area.area ? -1 : 1;
+        });
+
+        return areas.slice(0, this.getSettingValue('zones_area_limit'));
     }
 
     // ---------------------------------------------------------------------------------------------

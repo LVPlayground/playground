@@ -890,4 +890,22 @@ describe('GangCommands', (it, beforeEach) => {
         assert.isTrue(player.messages[1].includes('HKO'));
         assert.isTrue(player.messages[1].includes('Hello Kitty Online'));
     });
+
+    it('should be possible for players to interact with their gang bank account', async(assert) => {
+        // (1) Players need to be in a gang in order to deposit money.
+
+        // (2) Players need to be in a gang in order to withdraw money.
+
+        // (3) Players need to be in a gang in order to see the current balance.
+
+        // (4) Players can deposit money into the bank account.
+
+        // (5) This balance is reflected in the `/gbalance` command.
+        
+        // (6) Players cannot deposit more money than gang bank accounts allow.
+
+        // (7) Gang members can be restricted from withdrawing money.
+
+        // (8) Gang leaders are always able to withdraw money.
+    });
 });

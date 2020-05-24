@@ -103,6 +103,24 @@ class GangCommands {
             .sub(CommandBuilder.PLAYER_PARAMETER)
                 .build(GangCommands.prototype.onGangsInfoCommand.bind(this))
             .build(GangCommands.prototype.onGangsCommand.bind(this));
+        
+        // /gbalance
+        server.commandManager.buildCommand('gbalance')
+            .build(GangCommands.prototype.onGangBalanceCommand.bind(this));
+        
+        // /gbank [[amount] | all]
+        server.commandManager.buildCommand('gbank')
+            .sub('all')
+                .build(GangCommands.prototype.onGangBankCommand.bind(this))
+            .parameters([{ name: 'amount', type: CommandBuilder.NUMBER_PARAMETER }])
+            .build(GangCommands.prototype.onGangBankCommand.bind(this));
+
+        // /gwithdraw [[amount] | all]
+        server.commandManager.buildCommand('gwithdraw')
+            .sub('all')
+                .build(GangCommands.prototype.onGangWithdrawCommand.bind(this))
+            .parameters([{ name: 'amount', type: CommandBuilder.NUMBER_PARAMETER }])
+            .build(GangCommands.prototype.onGangWithdrawCommand.bind(this));
     }
 
     // Called when the player uses the `/gang create` command to create a new gang. If the player is
@@ -874,8 +892,34 @@ class GangCommands {
             player.sendMessage(Message.GANGS_NONE_ONLINE);
     }
 
+    // /gbalance
+    //
+    // Displays the current balance of the gang's joint bank account. Transaction logs can be seen
+    // by using the "/gang settings" command, which has an option available for that.
+    async onGangBalanceCommand(player) {
+
+    }
+
+    // /gbank [[amount] | all]
+    //
+    // Deposits either the given amount, or all cash being carried, into the gang's bank account.
+    async onGangBankCommand(player, amount) {
+
+    }
+
+    // /gwithdraw [[amount] | all]
+    //
+    // Withdraws the given amount of money from the gang's bank account. The |player| must have
+    // permission in order to be able to do this, as it's a dangerous functionality.
+    async onGangWithdrawCommand(player, amount) {
+    
+    }
+
     // Cleans up the state created by this class, i.e. unregisters the commands.
     dispose() {
+        server.commandManager.removeCommand('gwithdraw');
+        server.commandManager.removeCommand('gbank');
+        server.commandManager.removeCommand('gbalance');
         server.commandManager.removeCommand('gang');
         server.commandManager.removeCommand('gangs');
     }

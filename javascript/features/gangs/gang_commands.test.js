@@ -898,6 +898,8 @@ describe('GangCommands', (it, beforeEach) => {
 
         finance.givePlayerCash(player, 1000000);
 
+        assert.equal(gang.balance, 0);
+
         // (1) Players need to be in a gang in order to deposit money.
         assert.isTrue(await player.issueCommand('/gbank all'));
         assert.equal(player.messages.length, 1);
@@ -906,49 +908,75 @@ describe('GangCommands', (it, beforeEach) => {
         assert.equal(finance.getPlayerCash(player), 1000000);
 
         // (2) Players need to be in a gang in order to withdraw money.
+        assert.isTrue(await player.issueCommand('/gwithdraw 2500'));
+        assert.equal(player.messages.length, 2);
+        assert.equal(player.messages[1], Message.format(Message.GBANK_NOT_IN_GANG));
 
         // (3) Players need to be in a gang in order to see the current balance.
         assert.isTrue(await player.issueCommand('/gbalance'));
-        assert.equal(player.messages.length, 2);
-        assert.equal(player.messages[1], Message.format(Message.GBANK_NOT_IN_GANG));
+        assert.equal(player.messages.length, 3);
+        assert.equal(player.messages[2], Message.format(Message.GBANK_NOT_IN_GANG));
 
         addPlayerToGang(player, gang, Gang.ROLE_MANAGER);
 
         // (4) When in a gang, they can see the gang's current balance.
         assert.isTrue(await player.issueCommand('/gbalance'));
-        assert.equal(player.messages.length, 3);
+        assert.equal(player.messages.length, 4);
         assert.equal(
-            player.messages[2],
+            player.messages[3],
             Message.format(Message.GBANK_BALANCE, gang.name, gang.balance,
                            GangFinance.kMaximumBankAmount));
 
         // (5) Players can deposit money into the bank account.
         assert.isTrue(await player.issueCommand('/gbank 2500000'));
-        assert.equal(player.messages.length, 4);
-        assert.equal(
-            player.messages[3], Message.format(Message.GBANK_NOT_ENOUGH_CASH, 2500000));
-
-        assert.isTrue(await player.issueCommand('/gbank 250000'));
         assert.equal(player.messages.length, 5);
         assert.equal(
-            player.messages[4],
+            player.messages[4], Message.format(Message.GBANK_NOT_ENOUGH_CASH, 2500000));
+
+        assert.isTrue(await player.issueCommand('/gbank 250000'));
+        assert.equal(player.messages.length, 6);
+        assert.equal(
+            player.messages[5],
             Message.format(Message.GBANK_STORED, 250000, gang.name, gang.balance));
 
         assert.equal(finance.getPlayerCash(player), 750000);
+        assert.equal(gang.balance, 250000);
 
         // (6) Players cannot deposit more money than gang bank accounts allow.
         gang.balance = GangFinance.kMaximumBankAmount;
 
         assert.isTrue(await player.issueCommand('/gbank 10'));
-        assert.equal(player.messages.length, 6);
+        assert.equal(player.messages.length, 7);
         assert.equal(
-            player.messages[5],
+            player.messages[6],
             Message.format(Message.GBANK_NO_AVAILABLE_BALANCE, GangFinance.kMaximumBankAmount));
 
         assert.equal(finance.getPlayerCash(player), 750000);
+        assert.equal(gang.balance, GangFinance.kMaximumBankAmount);
+
+        gang.balance = 250000;  // reset their account to something reasonable
+        gang.balanceAccess = GangDatabase.kAccessLeader;
 
         // (7) Gang members can be restricted from withdrawing money.
+        assert.isTrue(await player.issueCommand('/gwithdraw 2500'));
+        assert.equal(player.messages.length, 8);
+        assert.equal(player.messages[7], Message.format(Message.GBANK_NOT_ALLOWED));
 
-        // (8) Gang leaders are always able to withdraw money.
+        gang.balanceAccess = GangDatabase.kAccessLeaderAndManagers;
+
+        // (8) When allowed, gang members are able to withdraw money from the account.
+        assert.isTrue(await player.issueCommand('/gwithdraw 2500000'));
+        assert.equal(player.messages.length, 9);
+        assert.equal(
+            player.messages[8], Message.format(Message.GBANK_NOT_ENOUGH_FUNDS, gang.name, 2500000));
+        
+        assert.isTrue(await player.issueCommand('/gwithdraw 100000'));
+        assert.equal(player.messages.length, 10);
+        assert.equal(
+            player.messages[9],
+            Message.format(Message.GBANK_WITHDRAWN, 100000, gang.name, gang.balance));
+        
+        assert.equal(finance.getPlayerCash(player), 850000);
+        assert.equal(gang.balance, 150000);
     });
 });

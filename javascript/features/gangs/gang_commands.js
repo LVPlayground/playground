@@ -953,7 +953,49 @@ class GangCommands {
     // Withdraws the given amount of money from the gang's bank account. The |player| must have
     // permission in order to be able to do this, as it's a dangerous functionality.
     async onGangWithdrawCommand(player, amount) {
-    
+        const gang = this.manager_.gangForPlayer(player);
+        if (!gang) {
+            player.sendMessage(Message.GBANK_NOT_IN_GANG);
+            return;
+        }
+
+        const isLeader = gang.getPlayerRole(player) === Gang.ROLE_LEADER;
+        const isManager = isLeader || gang.getPlayerRole(player) === Gang.ROLE_MANAGER;
+
+        // Gang leaders have the ability to restrict who's able to withdraw money from the gang's
+        // shared account. This is enforced by this piece of code.
+        const allowed =
+            (gang.balanceAccess === GangDatabase.kAccessEveryone) ||
+            (gang.balanceAccess === GangDatabase.kAccessLeaderAndManagers && isManager) ||
+            (gang.balanceAccess === GangDatabase.kAccessLeader && isLeader);
+
+        if (!allowed) {
+            player.sendMessage(Message.GBANK_NOT_ALLOWED);
+            return;
+        }
+
+        const balance = await this.manager_.finance.getAccountBalance(gang.id);
+        if (!amount)
+            amount = balance;
+
+        if (amount > balance) {
+            player.sendMessage(Message.GBANK_NOT_ENOUGH_FUNDS, gang.name, amount);
+            return;
+        }
+
+        // Actually give |player| the money they've withdrawn.
+        if (!this.finance_().givePlayerCash(player, amount)) {
+            player.sendMessage(
+                Message.GBANK_NO_AVAILABLE_CASH, FinancialRegulator.kMaximumCashAmount);
+            return;
+        }
+
+        // Take the money from the bank account as a personal withdraw, because all mutations will
+        // be attributed and shown in the account's financial records.
+        await this.manager_.finance.withdrawFromAccount(
+            gang.id, player.account.userId, amount, 'Personal withdraw');
+        
+        player.sendMessage(Message.GBANK_WITHDRAWN, amount, gang.name, gang.balance);
     }
 
     // Cleans up the state created by this class, i.e. unregisters the commands.

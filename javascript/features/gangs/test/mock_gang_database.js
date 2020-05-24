@@ -171,13 +171,13 @@ class MockGangDatabase {
             {
                 date: new Date('2020-05-23 15:38:51'),
                 amount: -1000000,
-                reason: 'Withdrawal',
+                reason: 'Personal withdrawal',
                 username: 'Russell',
             },
             {
                 date: new Date('2020-05-21 11:59:01'),
                 amount: 25000000,
-                reason: 'Contribution',
+                reason: 'Personal contribution',
                 username: 'Russell',
             },
         ];

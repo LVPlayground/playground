@@ -19,8 +19,11 @@ class Gangs extends Feature {
         // Used to interact with the bank accounts owned by individual players.
         const finance = this.defineDependency('finance');
 
+        // Used to customize bits of functionality related to how gangs work.
+        const settings = this.defineDependency('settings');
+
         this.manager_ = new GangManager();
-        this.commands_ = new GangCommands(this.manager_, announce, finance);
+        this.commands_ = new GangCommands(this.manager_, announce, finance, settings);
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -62,6 +62,8 @@ export default [
     new Setting('games', 'registration_expiration_sec', Setting.TYPE_NUMBER, 20, 'After how many seconds does a game registration expire?'),
 
     /** Gang-related settings */
+    new Setting('gangs', 'account_transaction_count', Setting.TYPE_NUMBER, 50, 'Maximum number of transactions to fetch from the database.'),
+    new Setting('gangs', 'account_transaction_page_count', Setting.TYPE_NUMBER, 25, 'Maximum number of transactions to display on a single page.'),
     new Setting('gangs', 'zones_area_bonus_medium_count', Setting.TYPE_NUMBER, 8, 'Number of active members in an area to get the medium-gang bonus.'),
     new Setting('gangs', 'zones_area_bonus_medium_units', Setting.TYPE_NUMBER, 20, 'Area bonus, in map units, applied to medium-sized gang areas.'),
     new Setting('gangs', 'zones_area_bonus_large_count', Setting.TYPE_NUMBER, 15, 'Number of active members in an area to get the large-gang bonus.'),

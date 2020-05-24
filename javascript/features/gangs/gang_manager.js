@@ -27,6 +27,9 @@ class GangManager {
         server.playerManager.addObserver(this, true /* replayHistory */);
     }
 
+    // Gets the database which provides long-term data access for the gang.
+    get database() { return this.database_; }
+
     // Gets an array having the Gang instances for each of the gangs for in-game representation.
     get gangs() { return Array.from(this.gangs_.values()); }
 

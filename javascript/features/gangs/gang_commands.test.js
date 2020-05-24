@@ -992,4 +992,36 @@ describe('GangCommands', (it, beforeEach) => {
             russell.messages[1],
             Message.format(Message.GBANK_ANNOUNCE_WITHDRAWAL, player.name, player.id, 100000));
     });
+
+    it('should enable gang members to see their account transaction logs', async (assert) => {
+        const gang = createGang({ tag: 'CC', name: 'Creative Cows', goal: 'We rule!' });
+
+        addPlayerToGang(player, gang, Gang.ROLE_MEMBER);
+
+        player.respondToDialog({ response: 0 /* Ok */});
+
+        assert.isTrue(await player.issueCommand('/gang transactions'));
+        
+        const data = await player.getLastDialogAsTable(/* hasColumn= */ true);
+        assert.deepEqual(data.rows, [
+            [
+                'May 24, 2020',
+                'LVP',
+                '{F4511E}-$215,000',
+                'Daily maintenance fee',
+            ],
+            [
+                'May 23, 2020',
+                'Russell',
+                '{F4511E}-$1,000,000',
+                'Personal withdrawal',
+            ],
+            [
+                'May 21, 2020',
+                'Russell',
+                '{43A047}$25,000,000',
+                'Personal contribution',
+            ]
+        ]);
+    });
 });

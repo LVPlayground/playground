@@ -16,6 +16,9 @@ import PlayerSetting from 'entities/player_setting.js';
 import Question from 'components/dialogs/question.js';
 import QuestionSequence from 'components/dialogs/question_sequence.js';
 
+import { format } from 'base/string_formatter.js';
+import { formatDate } from 'base/time.js';
+
 // Options for asking the player what the gang's full name should be.
 const NAME_QUESTION = {
     question: 'Choose your gang\'s name',
@@ -71,10 +74,11 @@ const SKIN_QUESTION = {
 // Implements the commands available as part of the persistent gang feature. The primary ones are
 // /gang and /gangs, each of which has a number of sub-options available to them.
 class GangCommands {
-    constructor(manager, announce, finance) {
+    constructor(manager, announce, finance, settings) {
         this.manager_ = manager;
         this.announce_ = announce;
         this.finance_ = finance;
+        this.settings_ = settings;
 
         // Map of players to the gangs they have been invited by.
         this.invitations_ = new WeakMap();
@@ -97,6 +101,8 @@ class GangCommands {
                 .build(GangCommands.prototype.onGangMembersCommand.bind(this))
             .sub('settings')
                 .build(GangCommands.prototype.onGangSettingsCommand.bind(this))
+            .sub('transactions')
+                .build(GangCommands.prototype.onGangTransactionsCommand.bind(this))
             .build(GangCommands.prototype.onGangCommand.bind(this));
 
         // Command: /gangs
@@ -837,6 +843,49 @@ class GangCommands {
         await optionMenu.displayForPlayer(player);
     }
 
+    // Called when the player uses the `/gang transactions` command, which shows them an overview of
+    // the most recent transactions to their gang bank.
+    async onGangTransactionsCommand(player) {
+        const gang = this.manager_.gangForPlayer(player);
+        if (!gang) {
+            player.sendMessage(Message.GBANK_NOT_IN_GANG);
+            return;
+        }
+
+        // Fetch the financial transactions from the database. Each is attributed with information.
+        const transactions = await this.manager_.database.getTransactionLog(gang.id, {
+            limit: this.settings_().getValue('gangs/account_transaction_count')
+        });
+
+        if (!transactions) {
+            return alert(player, {
+                title: 'Financial transactions',
+                message: 'No transactions could be found on this account.',
+            });
+        }
+
+        // Display a dialog with all the relevant information about the transaction(s).
+        const dialog = new Menu('Financial transactions', [
+            'Date',
+            'Nickname',
+            'Amount',
+            'Reason',
+
+        ], { pageSize: this.settings_().getValue('gangs/account_transaction_page_count') });
+
+        for (const transaction of transactions) {
+            const date = formatDate(transaction.date, /* includeTime= */ false);
+            const username = transaction.username ?? 'LVP';
+            const amount = transaction.amount > 0
+                ? format('{43A047}%$', transaction.amount)
+                : format('{F4511E}-%$', Math.abs(transaction.amount));
+            
+            dialog.addItem(date, username, amount, transaction.reason);
+        }
+
+        await dialog.displayForPlayer(player);
+    }
+
     // Called when the player uses the `/gang` command without parameters. It will show information
     // on the available sub commands, as well as the feature itself.
     onGangCommand(player) {
@@ -844,7 +893,8 @@ class GangCommands {
         player.sendMessage(Message.GANG_INFO_1);
         player.sendMessage(Message.GANG_INFO_2);
         player.sendMessage(
-            Message.COMMAND_USAGE, '/gang [create/invite/join/kick/leave/members/settings]');
+            Message.COMMAND_USAGE,
+            '/gang [create/invite/join/kick/leave/members/settings/transactions]');
     }
 
     // Called when the player uses the `/gangs [player]` command. It will display information about
@@ -998,7 +1048,7 @@ class GangCommands {
         // Take the money from the bank account as a personal withdraw, because all mutations will
         // be attributed and shown in the account's financial records.
         await this.manager_.finance.withdrawFromAccount(
-            gang.id, player.account.userId, amount, 'Personal withdraw');
+            gang.id, player.account.userId, amount, 'Personal withdrawal');
         
         // Tell everyone in the gang who happens to be about about this mutation.
         this.manager_.announceToGang(

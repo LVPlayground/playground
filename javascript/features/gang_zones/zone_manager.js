@@ -26,15 +26,15 @@ export class ZoneManager {
         this.areaManager_.createZone(zone);
     }
 
-    // Called when the given |zone| should be updated. The |substantial| argument is true when the
-    // zone's area changed, otherwise it's a change in zone metadata.
-    updateZone(zone, substantial) {
+    // Called when the given |zone| should be updated. The |flags| argument detail exactly what has
+    // changed about the zone, as not all updates need state to be recreated.
+    updateZone(zone, flags) {
         if (!server.isTest())
             console.log(`[Zone][Update][${zone.gangName}] : [${zone.area.toString()}]`);
     
-        // Completely recreate the area if this is a substantial update, as there is no better way
-        // to change the colours or move the zone's data otherwise.
-        if (substantial) {
+        // Completely recreate the area if either the area or colour changed, as these have to be
+        // reflected on maps shown on players' screens.
+        if (flags.areaChanged || flags.colorChanged) {
             this.areaManager_.deleteZone(zone);
             this.areaManager_.createZone(zone);
         }

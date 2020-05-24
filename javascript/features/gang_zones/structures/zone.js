@@ -37,18 +37,23 @@ export class Zone {
     }
 
     // Updates the stored area info with the new |info|, which supersedes the current situation.
-    // Will return a boolean that indicates whether the location or size of the area itself changed,
-    // as opposed to meta-information about the area such as the gang's slogan.
+    // Will return a set of flags that detail what exactly has been updated about the gang zone, as
+    // that will influence how other systems deal with the change.
     update(info) {
-        const substantial = this.areaInfo_.area.minX !== info.area.minX ||
-                            this.areaInfo_.area.minY !== info.area.minY ||
-                            this.areaInfo_.area.maxX !== info.area.maxX ||
-                            this.areaInfo_.area.maxY !== info.area.maxY ||
-                            this.zoneGang_.color != this.color_;
+        const flags = {
+            // Indicates that the area of the gang zone has been updated.
+            areaChanged: this.areaInfo_.area.minX !== info.area.minX ||
+                         this.areaInfo_.area.minY !== info.area.minY ||
+                         this.areaInfo_.area.maxX !== info.area.maxX ||
+                         this.areaInfo_.area.maxY !== info.area.maxY,
+
+            // Indicates that the color of the gang zone has been updated.
+            colorChanged: this.zoneGang_.color != this.color_,
+        };
 
         this.areaInfo_ = info;
         this.color_ = this.zoneGang_.color;
 
-        return substantial;
+        return flags;
     }
 }

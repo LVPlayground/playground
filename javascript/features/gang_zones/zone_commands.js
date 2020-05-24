@@ -139,14 +139,37 @@ export class ZoneCommands {
 
         player.updateStreamerObjects();
 
+        let position = null;
+        let rotation = null;
+
         // Have the |player| edit the object. The result will either be { position, rotation } when
         // the flow succeeded, or NULL when the player edited or disconnected from the server.
         while (player.isConnected()) {
             const result = await object.edit(player);
             if (!result)
+                break;  // the edit was cancelled
+            
+            // Verify that the position contained within the result is part of the gang zone. While
+            // the |player|'s gangs owns the zone, they don't own the area surrounding it.
+            if (!zone.area.contains(result.position)) {
+                const confirmation = await confirm(player, {
+                    title: 'Zone Management',
+                    message: 'The object must be located within the zone. Do you want to try again?'
+                });
+
+                if (!confirmation)
+                    break;
+                
+                // fall-through, and just kick the player back in editing mode
+                
+            } else {
+                position = result.position;
+                rotation = result.rotation;
                 break;
+            }
         }
 
+        // Remove the object that was being edited, the decorator will take over from here.
         object.dispose();
 
         boundingBox.hideForPlayer(player);

@@ -11,6 +11,7 @@ import { Vector } from 'base/vector.js';
 import createHousesTestEnvironment from 'features/houses/test/test_environment.js';
 
 describe('ZoneCommands', (it, beforeEach) => {
+    let commands = null;
     let manager = null;
     let russell = null;
 
@@ -28,6 +29,7 @@ describe('ZoneCommands', (it, beforeEach) => {
 
         await MockZoneDatabase.populateTestHouses(houses);
 
+        commands = feature.commands_;
         manager = feature.manager_;
 
         russell = server.playerManager.getById(/* Russell= */ 1);
@@ -57,6 +59,22 @@ describe('ZoneCommands', (it, beforeEach) => {
         manager.onPlayerEnterZone(player, zone);
 
         return zone;
+    }
+
+    // Returns the first scoped object that's owned by the |commands|.
+    function getFirstScopedObject() {
+        const entities = commands.entities_;
+        if (entities.objects_.size !== 1)
+            throw new Error(`Expected 1 object to be created, got ${entities.objects_.size}.`);
+        
+        return [...entities.objects_][0];
+    }
+
+    // Executes microtasks in a loop until the server's object count has changed.
+    async function runUntilObjectCountChanged() {
+        const initialObjectCount = server.objectManager.count;
+        while (server.objectManager.count === initialObjectCount)
+            await Promise.resolve();
     }
 
     it('should not allow players to use the command unless they are in a zone', async (assert) => {
@@ -106,6 +124,37 @@ describe('ZoneCommands', (it, beforeEach) => {
 
         assert.isTrue(await russell.issueCommand('/zone'));
         assert.isAbove(russell.getLastDialogAsTable(/* hasColumn= */ true).rows.length, 0);
+
+        // (3) Verify that the object will actually be positioned within the zone.
+        russell.respondToDialog({ listitem: kPurchaseDecorationIndex }).then(
+            () => russell.respondToDialog({ listitem: 0 /* First category */ })).then(
+            () => russell.respondToDialog({ listitem: 0 /* First object */ })).then(
+            () => russell.respondToDialog({ response: 0 /* Cancel */ }));
+
+        const commandPromise = russell.issueCommand('/zone');
+        await runUntilObjectCountChanged();
+
+        const object = getFirstScopedObject();
+        assert.isNotNull(object);
+
+        server.objectManager.onObjectEdited({
+            objectid: object.id,
+            playerid: russell.id,
+            response: 1,  // EDIT_RESPONSE_FINAL
+            x: zone.area.minX - 1,
+            y: zone.area.minY + 1,
+            z: 10,
+            rx: 0,
+            ry: 0,
+            rz: 0,
+        });
+
+        await runUntilObjectCountChanged();
+
+        assert.includes(russell.lastDialog, 'The object must be located within the zone.');
+        assert.isFalse(object.isConnected());
+
+        await commandPromise;
     });
 
     it('should enable management members to clear caches', async (assert) => {

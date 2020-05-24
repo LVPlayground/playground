@@ -45,6 +45,13 @@ class Rect {
     // Gets the bottom-right corner of this rectangle.
     get bottomRight() { return [ this.maxX_, this.maxY_ ]; }
 
+    // Returns whether this rectangle contains the given |point|, which should have {x, y}, i.e.
+    // a Vector or a similar data structure.
+    contains(position) {
+        return position.x >= this.minX_ && position.x < this.maxX_ &&
+               position.y >= this.minY_ && position.y < this.maxY_;
+    }
+
     // Returns a new Rect instance that's larger by a certain amount. Possible ways of calling this
     // method are as follows:
     //

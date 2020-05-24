@@ -635,6 +635,34 @@ class GangCommands {
                     message: Message.format(Message.GANG_SETTINGS_NEW_GOAL, answer)
                 });
             });
+
+            const balanceAccessOptions = {
+                [GangDatabase.kAccessLeader]: 'Leader only',
+                [GangDatabase.kAccessLeaderAndManagers]: 'Leader and managers',
+                [GangDatabase.kAccessEveryone]: 'Everyone',
+            }
+
+            let balanceAccessLabel = 'Unknown';
+            if (balanceAccessOptions.hasOwnProperty(gang.balanceAccess))
+                balanceAccessLabel = balanceAccessOptions[gang.balanceAccess];
+
+            menu.addItem('Gang balance withdrawals', balanceAccessLabel, async() => {
+                const optionMenu = new Menu('Who can withdraw money?', ['Option', 'Selected']);
+
+                for (const [value, label] of Object.entries(balanceAccessOptions)) {
+                    const selected = value === gang.balanceAccess ? 'X' : '';
+
+                    optionMenu.addItem(label, selected, async() => {
+                        await this.manager_.updateBalanceAccess(gang, value);
+                        await alert(player, {
+                            title: 'Access setting has been updated',
+                            message: 'Gang bank account withdrawal access has been updated.',
+                        });
+                    });
+                }
+
+                await optionMenu.displayForPlayer(player);
+            });
         }
 
         const usesGangColor = gang.usesGangColor(player);

@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import Gang from 'features/gangs/gang.js';
+import GangDatabase from 'features/gangs/gang_database.js';
 import Gangs from 'features/gangs/gangs.js';
 
 describe('GangCommands', (it, beforeEach) => {
@@ -32,6 +33,8 @@ describe('GangCommands', (it, beforeEach) => {
             name: name,
             goal: goal || 'Testing gang',
             color: color,
+            balance: 0,
+            balanceAccess: GangDatabase.kAccessLeaderAndManagers,
             chatEncryptionExpiry: 0,
             skinId: null,
         }));
@@ -467,6 +470,30 @@ describe('GangCommands', (it, beforeEach) => {
 
         assert.isFalse(player.lastDialog.includes('Gang name'));  // Leader-only option
         assert.isTrue(player.lastDialog.includes('My color'));  // Member option
+    });
+
+    it('should enable leaders to change gang balance access settings', async (assert) => {
+        assert.isTrue(player.issueCommand('/gang settings'));
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.GANG_NOT_IN_GANG);
+
+        player.clearMessages();
+
+        const gang = createGang();
+
+        addPlayerToGang(player, gang, Gang.ROLE_LEADER);
+
+        assert.equal(gang.balanceAccess, GangDatabase.kAccessLeaderAndManagers);
+
+        player.respondToDialog({ listitem: 7 /* Gang balance access */ }).then(() =>
+            player.respondToDialog({ listitem: 0 /* Leader only */ })).then(() =>
+            player.respondToDialog({ response: 0 /* Ok */}));
+        
+        assert.isTrue(await player.issueCommand('/gang settings'));
+
+        assert.equal(player.messages.length, 0);
+        assert.equal(gang.balanceAccess, GangDatabase.kAccessLeader);
     });
 
     it('should not enable leaders to edit their own settings', async(assert) => {

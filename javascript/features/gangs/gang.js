@@ -17,6 +17,8 @@ class Gang {
         this.name_ = info.name;
         this.goal_ = info.goal;
         this.color_ = info.color;
+        this.balance_ = info.balance;
+        this.balanceAccess_ = info.balanceAccess;
         this.skinId_ = info.skinId;
 
         this.chatEncryptionExpiry_ = info.chatEncryptionExpiry;
@@ -38,6 +40,15 @@ class Gang {
     // Gets or sets the goal of this gang, as can be used for presentation.
     get goal() { return this.goal_; }
     set goal(value) { this.goal_ = value; }
+
+    // Gets or sets the gang's balance. Note that this will not persistently change the balance,
+    // only the knowledge that we have in-game.
+    get balance() { return this.balance_; }
+    set balance(value) { this.balance_ = value; }
+
+    // Gets or sets who has access to withdraw from the gang's balance.
+    get balanceAccess() { return this.balanceAccess_; }
+    set balanceAccess(value) { this.balanceAccess_ = value; }
 
     // Gets the color of members of this gang.
     get color() { return this.color_; }

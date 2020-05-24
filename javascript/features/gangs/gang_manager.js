@@ -341,6 +341,13 @@ class GangManager {
         gang.goal = goal;
     }
 
+    // Updates the |gang|'s bank account balance access to the given |balanceAccess| value.
+    async updateBalanceAccess(gang, balanceAccess) {
+        await this.database_.updateBalanceAccess(gang, balanceAccess);
+
+        gang.balanceAccess = balanceAccess;
+    }
+
     // Called when |player| has logged in to their Las Venturas Playground account. Will check with
     // the database to see if they should automatically join a gang.
     onPlayerLogin(player, eventData) {

@@ -519,5 +519,8 @@
 
   "ZONE_NOT_IN_OWNED_ZONE": "@error Your gang does not own this gang zone! It's owned by %s.",
   "ZONE_NOT_IN_ZONE": "@error You can only use this command when you're inside of a gang zone.",
+  "ZONE_PURCHASE_ANNOUNCE": "%s (Id:%d) has purchased a %s for %$ per day.",
+  "ZONE_PURCHASE_NO_FUNDS": "This {FFA500}%s{A9C4E4} costs {FFA500}%${A9C4E4}, but there's only {FFA500}%${A9C4E4}\r\non your gang's balance. Please deposit more money with \"/gbank\" first.",
+  "ZONE_PURCHASED": "You have purchased a {FFA500}%s{A9C4E4} for your gang, costing {FFA500}%${A9C4E4} per day.",
   "ZONE_RELOADED": "@success The gang zone data file caches have been cleared."
 }

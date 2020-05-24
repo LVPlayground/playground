@@ -9,6 +9,7 @@ import ScopedEntities from 'entities/scoped_entities.js';
 import { Vector } from 'base/vector.js';
 import { VisualBoundingBox } from 'features/gang_zones/util/visual_bounding_box.js';
 
+import alert from 'components/dialogs/alert.js';
 import confirm from 'components/dialogs/confirm.js';
 import { format } from 'base/string_formatter.js';
 
@@ -18,14 +19,19 @@ const kZoneDecorationDataFile = 'data/gang_zone_decorations.json';
 // Implements the commands associated with gang zones, which enable gangs to modify their settings,
 // purchase decorations and special effects.
 export class ZoneCommands {
+    announce_ = null;
+    gangs_ = null;
     manager_ = null;
     playground_ = null;
 
     decorationCache_ = null;
     entities_ = null;
 
-    constructor(manager, playground) {
+    constructor(manager, announce, gangs, playground) {
+        this.announce_ = announce;
+        this.gangs_ = gangs;
         this.manager_ = manager;
+
         this.entities_ = new ScopedEntities();
 
         this.playground_ = playground;
@@ -123,6 +129,15 @@ export class ZoneCommands {
     // Handles the part where the objects will be created for the player, with them having the
     // ability to edit it as they please, as long as the object is located in the zone.
     async handlePurchaseDecorationFlow(player, zone, objectInfo) {
+        const balance = await this.gangs_().getGangAccountBalance(zone.gangId);
+        if (balance < objectInfo.price) {
+            return await alert(player, {
+                title: 'Zone Management',
+                message: Message.format(Message.ZONE_PURCHASE_NO_FUNDS, objectInfo.name,
+                                        objectInfo.price, balance),
+            });
+        }
+
         const boundingBox = new VisualBoundingBox(zone);
         boundingBox.displayForPlayer(player);
 
@@ -169,10 +184,42 @@ export class ZoneCommands {
             }
         }
 
-        // Remove the object that was being edited, the decorator will take over from here.
+        // Remove visuals and the object that was being edited, the decorator will take over.
+        boundingBox.hideForPlayer(player);
         object.dispose();
 
-        boundingBox.hideForPlayer(player);
+        if (!position || !rotation)
+            return;  // the |player| has aborted the purchase flow
+
+        // Withdraw the funds from the bank's account, which could fail again.
+        const reason = `Purchase of a ${objectInfo.name}`;
+
+        if (!await this.gangs_().withdrawFromGangAccount(zone.gangId, objectInfo.price, reason)) {
+            return await alert(player, {
+                title: 'Zone Management',
+                message: Message.format(Message.ZONE_PURCHASE_NO_FUNDS, objectInfo.name,
+                                        objectInfo.price, balance),
+            });
+        }
+
+        // Request creation of the object from the decoration manager.
+        await this.manager_.decorations.createObject(zone, objectInfo.model, position, rotation);
+
+        // Announce the purchase to other people within the gang.
+        this.gangs_().announceToGang(
+            zone.gangId, player, Message.ZONE_PURCHASE_ANNOUNCE, player.name, player.id,
+            objectInfo.name, objectInfo.price);
+
+        // Announce the same message to administrators, who should know about this purchase too.
+        this.announce_().announceToAdministrators(
+            Message.ZONE_PURCHASE_ANNOUNCE, player.name, player.id, objectInfo.name,
+            objectInfo.price);
+
+        // And, finally, let the |player| know about the purchase as well.
+        return await alert(player, {
+            title: 'Zone Management',
+            message: Message.format(Message.ZONE_PURCHASED, objectInfo.name, objectInfo.price),
+        });
     }
 
     // Called when a Management member has entered the "/zone reload" command, which can be used to

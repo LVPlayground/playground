@@ -25,6 +25,9 @@ export default class GangZones extends Feature {
         const database = server.isTest() ? new MockZoneDatabase()
                                          : new ZoneDatabase();
 
+        // Depend on the announcement feature to tell admins about purchases and changes.
+        const announce = this.defineDependency('announce');
+
         // The GangZones feature depends on gangs because, well, we work for gangs.
         const gangs = this.defineDependency('gangs');
 
@@ -50,7 +53,7 @@ export default class GangZones extends Feature {
         this.dataAggregator_ = new ZoneDataAggregator(database, gangs, houses, this.calculator_);
 
         // Implements the commands that are exposed to players in order to manage gang zones.
-        this.commands_ = new ZoneCommands(this.manager_, playground);
+        this.commands_ = new ZoneCommands(this.manager_, announce, gangs, playground);
 
         // Begin initializing the data aggregator, which will build our initial state.
         this.dataAggregator_.initialize();

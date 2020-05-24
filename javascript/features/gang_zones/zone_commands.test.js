@@ -12,6 +12,7 @@ import createHousesTestEnvironment from 'features/houses/test/test_environment.j
 
 describe('ZoneCommands', (it, beforeEach) => {
     let commands = null;
+    let gangs = null;
     let manager = null;
     let russell = null;
 
@@ -30,10 +31,17 @@ describe('ZoneCommands', (it, beforeEach) => {
         await MockZoneDatabase.populateTestHouses(houses);
 
         commands = feature.commands_;
+        gangs = server.featureManager.loadFeature('gangs');
         manager = feature.manager_;
 
         russell = server.playerManager.getById(/* Russell= */ 1);
         await russell.identify();
+
+        // Create a fake gang entry for |russell| to deal with the financial side of things.
+        const gang = Object.assign({}, { balance: 0, members: [ russell ] });
+
+        gangs.manager_.gangPlayers_.set(russell, gang);
+        gangs.manager_.gangs_.set(MockZoneDatabase.BA, gang);
 
         // Change the |zone| command's access requirements so that everyone can use it.
         playground.access.setCommandLevel('zone', Player.LEVEL_PLAYER);
@@ -61,13 +69,13 @@ describe('ZoneCommands', (it, beforeEach) => {
         return zone;
     }
 
-    // Returns the first scoped object that's owned by the |commands|.
-    function getFirstScopedObject() {
+    // Returns the most recent scoped object that's owned by the |commands|.
+    function getMostRecentScopedObject() {
         const entities = commands.entities_;
-        if (entities.objects_.size !== 1)
-            throw new Error(`Expected 1 object to be created, got ${entities.objects_.size}.`);
+        if (!entities.objects_.size)
+            throw new Error(`Expected at least a single object to exist.`);
         
-        return [...entities.objects_][0];
+        return [...entities.objects_].pop();
     }
 
     // Executes microtasks in a loop until the server's object count has changed.
@@ -109,6 +117,7 @@ describe('ZoneCommands', (it, beforeEach) => {
     it('should enable players to purchase new decorations for their zone', async (assert) => {
         const zone = positionPlayerForFirstGangZone(russell);
         russell.gangId = zone.gangId;  // make |russell| part of the owning gang
+        russell.level = Player.LEVEL_ADMINISTRATOR;
 
         // (1) Verify that categories with objects can be found.
         russell.respondToDialog({ listitem: kPurchaseDecorationIndex }).then(
@@ -125,20 +134,33 @@ describe('ZoneCommands', (it, beforeEach) => {
         assert.isTrue(await russell.issueCommand('/zone'));
         assert.isAbove(russell.getLastDialogAsTable(/* hasColumn= */ true).rows.length, 0);
 
-        // (3) Verify that the object will actually be positioned within the zone.
+        // (3) Verify that sufficient funds must be available before starting the editor.
+        gangs.getGangForPlayer(russell).balance = 25;
+
         russell.respondToDialog({ listitem: kPurchaseDecorationIndex }).then(
             () => russell.respondToDialog({ listitem: 0 /* First category */ })).then(
             () => russell.respondToDialog({ listitem: 0 /* First object */ })).then(
             () => russell.respondToDialog({ response: 0 /* Cancel */ }));
 
-        const commandPromise = russell.issueCommand('/zone');
+        assert.isTrue(await russell.issueCommand('/zone'));
+        assert.includes(russell.lastDialog, 'Please deposit more money');
+
+        gangs.getGangForPlayer(russell).balance = 25000000;
+
+        // (4) Verify that the object will actually be positioned within the zone.
+        russell.respondToDialog({ listitem: kPurchaseDecorationIndex }).then(
+            () => russell.respondToDialog({ listitem: 0 /* First category */ })).then(
+            () => russell.respondToDialog({ listitem: 0 /* First object */ })).then(
+            () => russell.respondToDialog({ response: 0 /* Cancel */ }));
+
+        const misplacedCommandPromise = russell.issueCommand('/zone');
         await runUntilObjectCountChanged();
 
-        const object = getFirstScopedObject();
-        assert.isNotNull(object);
+        const misplacedObject = getMostRecentScopedObject();
+        assert.isNotNull(misplacedObject);
 
         server.objectManager.onObjectEdited({
-            objectid: object.id,
+            objectid: misplacedObject.id,
             playerid: russell.id,
             response: 1,  // EDIT_RESPONSE_FINAL
             x: zone.area.minX - 1,
@@ -152,9 +174,41 @@ describe('ZoneCommands', (it, beforeEach) => {
         await runUntilObjectCountChanged();
 
         assert.includes(russell.lastDialog, 'The object must be located within the zone.');
-        assert.isFalse(object.isConnected());
+        assert.isFalse(misplacedObject.isConnected());
+
+        await misplacedCommandPromise;
+
+        // (5) Complete the full purchase object flow for an object.
+        russell.respondToDialog({ listitem: kPurchaseDecorationIndex }).then(
+            () => russell.respondToDialog({ listitem: 0 /* First category */ })).then(
+            () => russell.respondToDialog({ listitem: 0 /* First object */ })).then(
+            () => russell.respondToDialog({ response: 0 /* Cancel */ }));
+
+        const commandPromise = russell.issueCommand('/zone');
+        await runUntilObjectCountChanged();
+
+        const object = getMostRecentScopedObject();
+        assert.isNotNull(object);
+
+        server.objectManager.onObjectEdited({
+            objectid: object.id,
+            playerid: russell.id,
+            response: 1,  // EDIT_RESPONSE_FINAL
+            x: zone.area.center[0],
+            y: zone.area.center[1],
+            z: 10,
+            rx: 0,
+            ry: 0,
+            rz: 0,
+        });
 
         await commandPromise;
+
+        assert.includes(russell.lastDialog, 'You have purchased');
+        assert.isFalse(object.isConnected());
+
+        assert.equal(russell.messages.length, 2);
+        assert.includes(russell.messages[1], 'has purchased a');
     });
 
     it('should enable management members to clear caches', async (assert) => {

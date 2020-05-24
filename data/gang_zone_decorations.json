@@ -1,56 +1,56 @@
 {
     "Barriers": [
         {
-            "name": "Wooden barrier",
+            "name": "Wooden Barrier",
             "model": 1427,
             "price": 50000
         },
         {
-            "name": "Steel barrier",
+            "name": "Steel Barrier",
             "model": 1424,
             "price": 100000
         },
         {
-            "name": "Concrete barrier",
+            "name": "Concrete Barrier",
             "model": 1422,
             "price": 150000
         }
     ],
     "Defenses": [
         {
-            "name": "Stationary minigun",
+            "name": "Stationary Minigun",
             "model": 2985,
             "price": 150000
         },
         {
-            "name": "Watch tower",
+            "name": "Watch Tower",
             "model": 3279,
             "price": 2500000
         }
     ],
     "Nature": [
         {
-            "name": "Dead tree (horizontal)",
+            "name": "Dead Tree (horizontal)",
             "model": 846,
             "price": 200000
         },
         {
-            "name": "Flower bench",
+            "name": "Flower Bench",
             "model": 1364,
             "price": 100000
         },
         {
-            "name": "Flower barrier",
+            "name": "Flower Barrier",
             "model": 1360,
             "price": 150000
         },
         {
-            "name": "Pine tree (full)",
+            "name": "Pine Tree (full)",
             "model": 655,
             "price": 50000
         },
         {
-            "name": "Pine tree (long)",
+            "name": "Pine Tree (long)",
             "model": 660,
             "price": 50000
         }

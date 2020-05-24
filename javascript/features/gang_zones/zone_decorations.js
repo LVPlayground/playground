@@ -11,6 +11,11 @@ export class ZoneDecorations {
 
     }
 
+    //
+    async createObject(zone, modelId, position, rotation) {
+
+    }
+
     dispose() {
 
     }

@@ -60,6 +60,18 @@ class Gangs extends Feature {
         return this.manager_.gangForPlayer(player);
     }
 
+    // Attempts to withdraw the given |amount| from the bank account owned by the |gangId|, on
+    // behalf of the server for the given |reason|. Returns whether the bank accepted this
+    // transaction. Banks are allowed to go in the negative for payments, but only once.
+    async withdrawFromGangAccount(gangId, amount, reason) {
+        const balance = await this.manager_.finance.getAccountBalance(gangId);
+        if (!balance || balance < 0)
+            return false;  // they don't have any money available
+        
+        await this.manager_.finance.withdrawFromAccount(gangId, /* userId= */ null, amount, reason);
+        return true;
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     dispose() {

@@ -18,6 +18,7 @@ forward OnResetPlayerWeapons(playerId);
 
 # Streamer callbacks
 [Deferred] forward OnDynamicObjectMoved(objectid);
+[Deferred] forward OnPlayerEditDynamicObject(playerid, objectid, response, Float:x, Float:y, Float:z, Float:rx, Float:ry, Float:rz);
 [Deferred] forward OnPlayerEnterDynamicArea(playerid, areaid);
 [Deferred] forward OnPlayerLeaveDynamicArea(playerid, areaid);
 

@@ -23,6 +23,10 @@ export class DeferredEventManager {
                     case 'OnDynamicObjectMoved':
                         server.objectManager.onObjectMoved(event);
                         break;
+                    
+                    case 'OnPlayerEditDynamicObject':
+                        server.objectManager.onObjectEdited(event);
+                        break;
 
                     case 'OnPlayerEnterDynamicArea':
                         server.areaManager.onPlayerEnterArea(event);

@@ -17,6 +17,7 @@ export class GameObject {
 
     #interiors_ = null;
     #virtualWorlds_ = null;
+    #editResolver_ = null;
     #moveResolver_ = null;
 
     constructor(manager) {
@@ -97,15 +98,38 @@ export class GameObject {
 
     // ---------------------------------------------------------------------------------------------
 
-    async moveTo(position, speed) {
+    async editInternal(player) { pawnInvoke('EditDynamicObject', 'ii', player.id, this.#id_); }
+    async edit(player) {
+        if (this.#editResolver_ !== null)
+            throw new Error('This object is already being edited by another player.');
+            
+        this.#manager_.didRequestEditObject(this, player);
+        this.editInternal(player);
+
+        return new Promise(resolve => this.#editResolver_ = resolve);
+    }
+
+    async moveToInternal(position, speed) {
         pawnInvoke(
             'MoveDynamicObject', 'ifffffff', this.#id_, position.x, position.y, position.z,
             speed, /* rx= */ -1000, /* ry= */ -1000, /* rz= */ -1000);
+    }
+
+    async moveTo(position, speed) {
+        this.moveToInternal(position, speed);
         
         return new Promise(resolve => this.#moveResolver_ = resolve);
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    onEdited(result) {
+        if (!this.#editResolver_)
+            return;
+        
+        this.#editResolver_(result);
+        this.#editResolver_ = null;
+    }
 
     onMoved() {
         if (!this.#moveResolver_)

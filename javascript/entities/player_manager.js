@@ -283,6 +283,9 @@ class PlayerManager {
         // Remove knowledge of the |player| from the player manager.
         this.players_.delete(event.playerid);
 
+        // Tell the object manager, in case the player was editing an object.
+        server.objectManager.onPlayerDisconnect(player);
+
         // Notify observers of the player manager of their disconnecting.
         this.notifyObservers('onPlayerDisconnect', player, reason);
 

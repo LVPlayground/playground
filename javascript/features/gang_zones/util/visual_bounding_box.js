@@ -65,8 +65,6 @@ export class VisualBoundingBox {
             }
         }
 
-        player.updateStreamerObjects();
-
         this.entities_.set(player, entities);
     }
 

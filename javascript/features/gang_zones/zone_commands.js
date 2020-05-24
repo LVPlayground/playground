@@ -5,6 +5,8 @@
 
 import Menu from 'components/menu/menu.js';
 import { Player } from 'entities/player.js';
+import ScopedEntities from 'entities/scoped_entities.js';
+import { Vector } from 'base/vector.js';
 import { VisualBoundingBox } from 'features/gang_zones/util/visual_bounding_box.js';
 
 import confirm from 'components/dialogs/confirm.js';
@@ -20,9 +22,11 @@ export class ZoneCommands {
     playground_ = null;
 
     decorationCache_ = null;
+    entities_ = null;
 
     constructor(manager, playground) {
         this.manager_ = manager;
+        this.entities_ = new ScopedEntities();
 
         this.playground_ = playground;
         this.playground_.addReloadObserver(this, () => this.registerTrackedCommands());
@@ -120,11 +124,30 @@ export class ZoneCommands {
     // ability to edit it as they please, as long as the object is located in the zone.
     async handlePurchaseDecorationFlow(player, zone, objectInfo) {
         const boundingBox = new VisualBoundingBox(zone);
-
-        // Display the |boundingBox| for the player while editing is active.
         boundingBox.displayForPlayer(player);
 
-        await wait(10 * 1000);
+        // The distance, in in-game map units, ahead of the player the object should be shown.
+        const kDistance = 5;
+
+        // Create the object about five units ahead of the |player|, then update the streamer for
+        // them to make sure that it's visible, then immediately move to editing mode.
+        const object = this.entities_.createObject({
+            modelId: objectInfo.model,
+            position: player.position.translateTo2D(kDistance, player.rotation),
+            rotation: new Vector(0, 0, 0),
+        });
+
+        player.updateStreamerObjects();
+
+        // Have the |player| edit the object. The result will either be { position, rotation } when
+        // the flow succeeded, or NULL when the player edited or disconnected from the server.
+        while (player.isConnected()) {
+            const result = await object.edit(player);
+            if (!result)
+                break;
+        }
+
+        object.dispose();
 
         boundingBox.hideForPlayer(player);
     }

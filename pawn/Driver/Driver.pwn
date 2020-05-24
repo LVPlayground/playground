@@ -95,6 +95,7 @@ public OnPlayerLeaveDynamicArea(playerid, STREAMER_TAG_AREA:areaid) {
 
 // Define so that JavaScript can intercept the events.
 public OnPlayerText(playerid, text[]) {}
+public OnPlayerEditDynamicObject(playerid, STREAMER_TAG_OBJECT:objectid, response, Float:x, Float:y, Float:z, Float:rx, Float:ry, Float:rz) {}
 
 #if Feature::EnableServerSideWeaponConfig == 0
 public OnPlayerUpdate(playerid) { return 1; }

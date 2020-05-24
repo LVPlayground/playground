@@ -3,7 +3,9 @@
 // be found in the LICENSE file.
 
 import Feature from 'components/feature_manager/feature.js';
+import { MockZoneDatabase } from 'features/gang_zones/test/mock_zone_database.js';
 import { ZoneCalculator } from 'features/gang_zones/zone_calculator.js';
+import { ZoneCommands } from 'features/gang_zones/zone_commands.js';
 import { ZoneDataAggregator } from 'features/gang_zones/zone_data_aggregator.js';
 import { ZoneDatabase } from 'features/gang_zones/zone_database.js';
 import { ZoneManager } from 'features/gang_zones/zone_manager.js';
@@ -12,18 +14,25 @@ import { ZoneManager } from 'features/gang_zones/zone_manager.js';
 // activity of their members, as well as their houses, to dynamically create gang zones on the map.
 export default class GangZones extends Feature {
     calculator_ = null;
+    commands_ = null;
+    dataAggregator_ = null;
+    manager_ = null;
 
     constructor() {
         super();
 
         // The zone database which handles all our own interactions with the database.
-        const database = new ZoneDatabase();
+        const database = server.isTest() ? new MockZoneDatabase()
+                                         : new ZoneDatabase();
 
         // The GangZones feature depends on gangs because, well, we work for gangs.
         const gangs = this.defineDependency('gangs');
 
         // The GangZones feature depends on houses, as they influence the zone dominance algorithm.
         const houses = this.defineDependency('houses');
+
+        // The Playground feature is able to restrict access to the "/zone" command.
+        const playground = this.defineDependency('playground');
 
         // Various behaviour related to gang zones is configurable through settings.
         const settings = this.defineDependency('settings');
@@ -40,6 +49,9 @@ export default class GangZones extends Feature {
         // pass to the ZoneCalculator for determining applicability of a zone, and at which size.
         this.dataAggregator_ = new ZoneDataAggregator(database, gangs, houses, this.calculator_);
 
+        // Implements the commands that are exposed to players in order to manage gang zones.
+        this.commands_ = new ZoneCommands(this.manager_, playground);
+
         // Begin initializing the data aggregator, which will build our initial state.
         this.dataAggregator_.initialize();
     }
@@ -47,6 +59,9 @@ export default class GangZones extends Feature {
     dispose() {
         this.dataAggregator_.dispose();
         this.dataAggregator_ = null;
+
+        this.commands_.dispose();
+        this.commands_ = null;
 
         this.calculator_.dispose();
         this.calculator_ = null;

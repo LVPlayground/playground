@@ -16,7 +16,7 @@ export class MockZoneDatabase extends ZoneDatabase {
 
     // Populates a series of test houses to |houses| that are significant for the testability of
     // this feature. There could be other houses too, but we'll ignore those.
-    async populateTestHouses(houses) {
+    static async populateTestHouses(houses) {
         const houseManager = houses.manager_;
         const clownHousesForTesting = [
             [ 2564.6738, 1580.9309, 10.8203 ],

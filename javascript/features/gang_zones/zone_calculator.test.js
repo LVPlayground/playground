@@ -53,7 +53,7 @@ describe('ZoneCalculator', (it, beforeEach, afterEach) => {
         const gangs = server.featureManager.createDependencyWrapperForFeature('gangs');
         const houses = server.featureManager.createDependencyWrapperForFeature('houses');
 
-        await database.populateTestHouses(houses());
+        await MockZoneDatabase.populateTestHouses(houses());
 
         aggregator = new ZoneDataAggregator(database, gangs, houses);
         await aggregator.initialize();

@@ -21,7 +21,8 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
         const housesWrapper = server.featureManager.createDependencyWrapperForFeature('houses');
 
         database = new MockZoneDatabase();
-        await database.populateTestHouses(houses);
+
+        await MockZoneDatabase.populateTestHouses(houses);
 
         aggregator = new ZoneDataAggregator(database, gangsWrapper, housesWrapper);
     });
@@ -144,7 +145,7 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
         // Recreate all the houses we populate for testing, which count as mutations.
         const initializedReconsiderationCounter = reconsiderationCounter;
         {
-            await database.populateTestHouses(houses);
+            await MockZoneDatabase.populateTestHouses(houses);
             await server.clock.advance(1);  // asynchronous reconsideration
         }
         assert.isAbove(reconsiderationCounter, initializedReconsiderationCounter);

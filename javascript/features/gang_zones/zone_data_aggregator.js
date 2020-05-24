@@ -123,7 +123,7 @@ export class ZoneDataAggregator {
         // Consider every gang in |this.activeGangs_| for a gang zone now that initial data has been
         // gathered. That function will make the next set of determinations.
         for (const zoneGang of this.activeGangs_.values())
-            await this.reconsiderGangForZone(zoneGang);
+            this.reconsiderGangForZone(zoneGang);
 
         this.initialized_ = true;
     }

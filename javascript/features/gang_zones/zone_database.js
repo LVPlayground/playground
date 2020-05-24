@@ -98,7 +98,7 @@ export class ZoneDatabase {
                     id: row.gang_id,
                     name: row.gang_name,
                     goal: row.gang_goal,
-                    color: row.gang_color ? Color.fromNumberRGB(row.gang_color)
+                    color: row.gang_color ? Color.fromNumberRGBA(row.gang_color)
                                           : null,
                 });
             }

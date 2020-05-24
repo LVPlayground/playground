@@ -515,5 +515,9 @@
   "VEHICLE_UNLOCK_REDUNDANT": "@error No need to unlock your vehicle because it's not locked!",
   "VEHICLE_UNLOCK_UNREGISTERED": "@error Sorry, only registered players can unlock vehicles. Register now on www.sa-mp.nl!",
   "VEHICLE_UNLOCKED": "@success The %s has been unlocked!",
-  "VEHICLE_UNPINNED": "@success %s's %s has been unpinned from the streamer."
+  "VEHICLE_UNPINNED": "@success %s's %s has been unpinned from the streamer.",
+
+  "ZONE_NOT_IN_OWNED_ZONE": "@error Your gang does not own this gang zone! It's owned by %s.",
+  "ZONE_NOT_IN_ZONE": "@error You can only use this command when you're inside of a gang zone.",
+  "ZONE_RELOADED": "@success The gang zone data file caches have been cleared."
 }

@@ -6,14 +6,15 @@
 import GangZones from 'features/gang_zones/gang_zones.js';
 import { MockZoneDatabase } from 'features/gang_zones/test/mock_zone_database.js';
 import { Player } from 'entities/player.js';
+import { Vector } from 'base/vector.js';
 
 import createHousesTestEnvironment from 'features/houses/test/test_environment.js';
 
 describe('ZoneCommands', (it, beforeEach) => {
-    let gunther = null;
     let manager = null;
+    let russell = null;
 
-    beforeEach(async() => { global.xx = 1;
+    beforeEach(async() => {
         await createHousesTestEnvironment();
 
         // Register the |gang_zones| feature since it's not being loaded by default.
@@ -27,11 +28,69 @@ describe('ZoneCommands', (it, beforeEach) => {
 
         await MockZoneDatabase.populateTestHouses(houses);
 
-        gunther = server.playerManager.getById(/* Gunther= */ 0);
         manager = feature.manager_;
+
+        russell = server.playerManager.getById(/* Russell= */ 1);
+        await russell.identify();
 
         // Change the |zone| command's access requirements so that everyone can use it.
         playground.access.setCommandLevel('zone', Player.LEVEL_PLAYER);
+    });
+
+    // Function to position the given |player| in the center of the first created gang zone. The
+    // Zone object that represents this zone will be returned as well.
+    function positionPlayerForFirstGangZone(player) {
+        const zones = Array.from(manager.areaManager_.zones_.keys());
+        if (!zones.length)
+            throw new Error('No gang zones could be found on the server.');
+
+        const zone = zones[0];
+        const [ x, y ] = zone.area.center;
+
+        // Position the |player| to the center of the zone.
+        player.position = new Vector(x, y, 10);
+
+        // Trigger the callback that would've let the system know that the player entered the zone.
+        manager.onPlayerEnterZone(player, zone);
+
+        return zone;
+    }
+
+    it('should not allow players to use the command unless they are in a zone', async (assert) => {
+        // (1) Players should receive an error message when using the command outside a zone.
+        assert.isNull(manager.getZoneForPlayer(russell));
+
+        assert.isTrue(await russell.issueCommand('/zone'));
+        assert.equal(russell.messages.length, 1);
+        assert.equal(russell.messages[0], Message.format(Message.ZONE_NOT_IN_ZONE));
+
+        const zone = positionPlayerForFirstGangZone(russell);
+
+        // (2) Even when in a non-owned zone, players just get an error message straight away.
+        assert.isNotNull(manager.getZoneForPlayer(russell));
+
+        assert.isTrue(await russell.issueCommand('/zone'));
+        assert.equal(russell.messages.length, 3);  // +entered announcement
+        assert.equal(
+            russell.messages[2], Message.format(Message.ZONE_NOT_IN_OWNED_ZONE, zone.gangName));
+
+        russell.level = Player.LEVEL_ADMINISTRATOR;
+
+        // (3) Administrators have to confirm they want to modify a non-owned zone.
+        russell.respondToDialog({ response: 1 /* Confirm interference */ }).then(message => {
+            assert.includes(message, 'should not interfere with their business');
+            return russell.respondToDialog({ response: 0 /* Dismiss */});
+        });
+
+        assert.isTrue(await russell.issueCommand('/zone'));
+    });
+
+    it('should enable management members to clear caches', async (assert) => {
+        russell.level = Player.LEVEL_MANAGEMENT;
+
+        assert.isTrue(await russell.issueCommand('/zone reload'));
+        assert.equal(russell.messages.length, 1);
+        assert.equal(russell.messages[0], Message.format(Message.ZONE_RELOADED));
     });
 
     it('should be able to run tests with all data initialized', async (assert) => {

@@ -14,6 +14,8 @@ export class ZoneManager {
     decorations_ = null;
     finances_ = null;
 
+    currentZone_ = new WeakMap();
+
     // Gets the object responsible for dealing with decorations in gang zones.
     get decorations() { return this.decorations_; }
 
@@ -25,6 +27,9 @@ export class ZoneManager {
         this.decorations_ = new ZoneDecorations();
         this.finances_ = new ZoneFinances();
     }
+
+    // Returns the Zone instance that the |player| is currently in, if any.
+    getZoneForPlayer(player) { return this.currentZone_.get(player) ?? null; }
 
     // ---------------------------------------------------------------------------------------------
     // Implementation for the ZoneCalculator:
@@ -66,6 +71,8 @@ export class ZoneManager {
 
     // Called when the |player| has entered the |zone|.
     onPlayerEnterZone(player, zone) {
+        this.currentZone_.set(player, zone);
+
         player.sendMessage(
             Message.GANG_ZONE_ENTERED, zone.color.toHexRGB(), zone.gangName, zone.gangGoal);
 
@@ -75,6 +82,8 @@ export class ZoneManager {
 
     // Called when the |player| has left the |zone|.
     onPlayerLeaveZone(player, zone) {
+        this.currentZone_.delete(player);
+
         if (!server.isTest())
             console.log(`[Zone][Leave][${zone.gangName}] : [${player.name}]`);
     }

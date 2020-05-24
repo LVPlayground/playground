@@ -230,13 +230,15 @@ export class MockPlayer extends Player {
     // ---------------------------------------------------------------------------------------------
 
     showDialog(dialogId, style, caption, message, leftButton, rightButton) {
+        const oldMessage = this.#lastDialogMessage_;
+
         this.#lastDialogId_ = dialogId;
         this.#lastDialogTitle_ = caption;
         this.#lastDialogStyle_ = style;
         this.#lastDialogLabel_ = rightButton;
         this.#lastDialogMessage_ = message;
 
-        this.#lastDialogPromiseResolve_();
+        this.#lastDialogPromiseResolve_(oldMessage);
     }
 
     // Gets the most recent message that has been displayed in a dialog to the player.

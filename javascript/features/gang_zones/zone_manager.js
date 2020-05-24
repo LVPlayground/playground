@@ -53,6 +53,9 @@ export class ZoneManager {
     // ---------------------------------------------------------------------------------------------
 
     onPlayerEnterZone(player, zone) {
+        player.sendMessage(
+            Message.GANG_ZONE_ENTERED, zone.color.toHexRGB(), zone.gangName, zone.gangGoal);
+
         if (!server.isTest())
             console.log(`[Zone][Enter][${zone.gangName}] : [${player.name}]`);
     }

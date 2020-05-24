@@ -80,7 +80,7 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
         const baGang = aggregator.activeGangs.get(MockZoneDatabase.BA);
         
         assert.equal(baGang.name, 'BA Hooligans');
-        assert.deepEqual(baGang.color, Color.fromRGB(20, 147, 170));
+        assert.deepEqual(baGang.color, Color.fromRGBA(255, 20, 147, 170));
 
         aggregator.onGangSettingUpdated({
             id: MockZoneDatabase.BA,

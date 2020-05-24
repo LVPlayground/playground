@@ -23,6 +23,9 @@ export class Zone {
     // Gets the ID of the gang who owns this gang zone.
     get gangId() { return this.zoneGang_.id; }
 
+    // Gets the goal of the gang who owns this gang zone.
+    get gangGoal() { return this.zoneGang_.goal; }
+
     // Gets the name of the gang who owns this gang zone.
     get gangName() { return this.zoneGang_.name; }
 

@@ -46,8 +46,8 @@ const GOAL_QUESTION = {
     question: 'Choose your gang\'s goal',
     message: 'In one sentence, what is the purpose of your gang?',
     constraints: {
-        validation: /^[a-zA-Z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð\s,\.'\-~_!?]{4,32}$/u,
-        explanation: 'The goal of your gang must be between 4 and 128 characters long and should ' +
+        validation: /^[a-zA-Z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð\s,\.'\-~_!?]{4,50}$/u,
+        explanation: 'The goal of your gang must be between 4 and 50 characters long and should ' +
                      'not contain very exotic characters.',
 
         abort: 'Sorry, a gang must have a valid goal!'

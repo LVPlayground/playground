@@ -19,7 +19,7 @@ in the following mechanism, which gangs can directly influence:
      will be considered active, and is eligible to receive a gang zone.
 
   1. **Identification of gang area(s)**. A tally will be made of all houses owned by the active
-     gang members. Any area where more than 50% active members have a house will be considered
+     gang members. Any area where more than five active members have a house will be considered
      a gang area. This means that gangs can occupy multiple areas, for example one in each city,
      as long as all enough members participate in this.
 
@@ -42,20 +42,15 @@ There are no exceptions for VIP members or administrators. Although they natural
 spent more time on Las Venturas Playground, this isn't per se recently.
 
 ### How exactly are gang areas determined?
-We apply a specialized [k-means clustering](https://en.wikipedia.org/wiki/K-means_clustering)
-algorithm, implemented in [clustering.js](clustering.js), do determine up to five clusters over
-which the gang members' houses are distributed.
+We apply a [mean shift](https://en.wikipedia.org/wiki/Mean_shift) algorithm to determine where the
+gang has located their houses, which has been implemented in [mean_shift.js](mean_shift.js). This
+algorithm doesn't have a set upper limit for the number of clusters returned.
 
-For each of those clusters, we then identify the houses that are within a hundred units from
-the cluster's mean, to ensure that the houses are truly close together. We then make sure that at
-least 50% of the gang's active members are represented in the area. If this is the case, the area
-surrounding the cluster will be considered a _gang area_.
+For each of those clusters, we make sure that at least five members are represented within them. If
+so, the area will be considered a _gang area_. The area is subject a series of calculations to shape
+and size them appropriately, which is done by the [ZoneCalculator](zone_calculator.js).
 
 There are certain _area size bonuses_ available as well:
 
-  1. At least eight active gang members have a house in the area.
-
-### Appendix: future considerations
-
-  * `ZoneCalculator::computeGangAreas()` could consider different distance requirements depending on
-    the member representation factor in the area.
+  1. `medium-gang`, a bonus applied to areas where at least eight members are represented.
+  1. `large-gang`, a bonus applied to areas where at least 15 members are represented.

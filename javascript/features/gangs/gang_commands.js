@@ -945,6 +945,11 @@ class GangCommands {
         // Take the |amount| of money away from the player personally.
         this.finance_().takePlayerCash(player, amount);
         
+        // Tell everyone in the gang who happens to be about about this mutation.
+        this.manager_.announceToGang(
+            gang, /* excludePlayer= */ null, Message.GBANK_ANNOUNCE_DEPOSIT, player.name, player.id,
+            amount);
+
         player.sendMessage(Message.GBANK_STORED, amount, gang.name, gang.balance);
     }
 
@@ -995,6 +1000,11 @@ class GangCommands {
         await this.manager_.finance.withdrawFromAccount(
             gang.id, player.account.userId, amount, 'Personal withdraw');
         
+        // Tell everyone in the gang who happens to be about about this mutation.
+        this.manager_.announceToGang(
+            gang, /* excludePlayer= */ null, Message.GBANK_ANNOUNCE_WITHDRAWAL, player.name,
+            player.id, amount);
+
         player.sendMessage(Message.GBANK_WITHDRAWN, amount, gang.name, gang.balance);
     }
 

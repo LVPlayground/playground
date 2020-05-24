@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 // @ts-check
 
-import { Vector } from 'base/vector.js';
 import { Zone } from 'features/gang_zones/structures/zone.js';
 
 import { meanShift } from 'features/gang_zones/mean_shift.js';
@@ -31,33 +30,39 @@ export class ZoneCalculator {
     // or more gang zones. This is also called when new active gangs are being introduced.
     onGangUpdated(zoneGang) {
         const areas = this.computeGangAreas(zoneGang);
-        if (!areas.length)
-            return;  // this gang does not have any areas
-        
-        let zones = this.zones_.get(zoneGang.id);
-        if (!zones)
-            this.zones_.set(zoneGang.id, zones = new Set());
-        
-        // Iterate over each of the |areas|. Try to match them against the existing zones, because
-        // it's possible that the mean of a zone moves around as members get added and deleted. This
-        // effectively is O(n^2), but because we limit the number of zones per gang to ~8 the actual
-        // number of calculations that we'd hit continued to be reasonable.
+
+        const existingZones = this.zones_.get(zoneGang.id) || new Set();
+        const updatedZones = new Set();
+
+        // (1) Process all new and updated |areas| first. Existing areas will be updated when their
+        //     area overlaps with the area of the new zone, however slightly.
         areas.forEach(info => {
-            for (const existingZone of zones) {
+            for (const existingZone of existingZones) {
                 if (!existingZone.area.overlaps(info.area))
                     continue;
                 
+                existingZones.delete(existingZone);
+                updatedZones.add(existingZone);
+
                 existingZone.update(info);
 
                 this.manager_.updateZone(existingZone);
                 return;
             }
 
-            const zone = new Zone(zoneGang, info);
-            zones.add(zone);
+            const createdZone = new Zone(zoneGang, info);
+            updatedZones.add(createdZone);
 
-            this.manager_.createZone(zone);
+            this.manager_.createZone(createdZone);
         });
+
+        // (2) For each of the remaining zones in the |existingZones|, delete them from the map as
+        //     they have been deactivated as a consequence of changes in the gang.
+        for (const zone of existingZones)
+            this.manager_.deleteZone(zone);
+
+        // (3) Store the latest set of zones, so that we can repeat this over and over again.
+        this.zones_.set(zoneGang.id, updatedZones);
     }
 
     // Called when the |zoneGang| has been deactivated, and no longer deserves a gang zone because

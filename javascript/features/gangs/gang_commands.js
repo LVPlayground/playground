@@ -10,6 +10,7 @@ import CommandBuilder from 'components/command_manager/command_builder.js';
 import Dialog from 'components/dialogs/dialog.js';
 import Gang from 'features/gangs/gang.js';
 import GangDatabase from 'features/gangs/gang_database.js';
+import { GangFinance } from 'features/gangs/gang_finance.js';
 import Menu from 'components/menu/menu.js';
 import PlayerSetting from 'entities/player_setting.js';
 import Question from 'components/dialogs/question.js';
@@ -897,7 +898,14 @@ class GangCommands {
     // Displays the current balance of the gang's joint bank account. Transaction logs can be seen
     // by using the "/gang settings" command, which has an option available for that.
     async onGangBalanceCommand(player) {
+        const gang = this.manager_.gangForPlayer(player);
+        if (!gang) {
+            player.sendMessage(Message.GBANK_NOT_IN_GANG);
+            return;
+        }
 
+        player.sendMessage(
+            Message.GBANK_BALANCE, gang.name, gang.balance, GangFinance.kMaximumBankAmount);
     }
 
     // /gbank [[amount] | all]

@@ -4,6 +4,7 @@
 
 import Gang from 'features/gangs/gang.js';
 import GangDatabase from 'features/gangs/gang_database.js';
+import { GangFinance } from 'features/gangs/gang_finance.js';
 import Gangs from 'features/gangs/gangs.js';
 
 describe('GangCommands', (it, beforeEach) => {
@@ -892,20 +893,35 @@ describe('GangCommands', (it, beforeEach) => {
     });
 
     it('should be possible for players to interact with their gang bank account', async(assert) => {
+        const gang = createGang({ tag: 'CC', name: 'Creative Cows', goal: 'We rule!' });
+
         // (1) Players need to be in a gang in order to deposit money.
 
         // (2) Players need to be in a gang in order to withdraw money.
 
         // (3) Players need to be in a gang in order to see the current balance.
+        assert.isTrue(await player.issueCommand('/gbalance'));
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.format(Message.GBANK_NOT_IN_GANG));
 
-        // (4) Players can deposit money into the bank account.
+        addPlayerToGang(player, gang, Gang.ROLE_MANAGER);
 
-        // (5) This balance is reflected in the `/gbalance` command.
+        // (4) When in a gang, they can see the gang's current balance.
+        assert.isTrue(await player.issueCommand('/gbalance'));
+        assert.equal(player.messages.length, 2);
+        assert.equal(
+            player.messages[1],
+            Message.format(Message.GBANK_BALANCE, gang.name, gang.balance,
+                           GangFinance.kMaximumBankAmount));
+
+        // (5) Players can deposit money into the bank account.
+
+        // (6) This balance is reflected in the `/gbalance` command.
         
-        // (6) Players cannot deposit more money than gang bank accounts allow.
+        // (7) Players cannot deposit more money than gang bank accounts allow.
 
-        // (7) Gang members can be restricted from withdrawing money.
+        // (8) Gang members can be restricted from withdrawing money.
 
-        // (8) Gang leaders are always able to withdraw money.
+        // (9) Gang leaders are always able to withdraw money.
     });
 });

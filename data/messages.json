@@ -33,7 +33,7 @@
   "BANK_NO_AVAILABLE_CASH": "@error You cannot carry more than %$ in cash.",
   "BANK_NO_AVAILABLE_BALANCE": "@error The bank is not willing to store more than %$ for you.",
   "BANK_BALANCE": "{2196F3}* Your current account balance is {BBDEFB}%${2196F3}. Your bank is willing to store up to {BBDEFB}%${2196F3}.",
-  "BANK_STORED": "{2196F3}* The have deposited {BBDEFB}%${2196F3}. Your new account balance is {BBDEFB}%${2196F3}.",
+  "BANK_STORED": "{2196F3}* You have deposited {BBDEFB}%${2196F3}. Your new account balance is {BBDEFB}%${2196F3}.",
   "BANK_WITHDRAWN": "{2196F3}* You have withdrawn {BBDEFB}%${2196F3}. Your new account balance is {BBDEFB}%${2196F3}.",
 
   "COMMAND_ERROR_INSUFFICIENT_RIGHTS": "@error Sorry, this command is only available to %s.",
@@ -223,13 +223,13 @@
   "GANGS_ONLINE": "{%s}[%s]{FFFFFF} - %s ({B1FC17}%d player%s{FFFFFF})",
 
   "_GBANK_NEED_ACCOUNT": "@error You need to register on https://sa-mp.nl/ to get a bank account!",
-  "_GBANK_NOT_ENOUGH_CASH": "@error You aren't carrying enough cash to deposit %$.",
+  "GBANK_NOT_ENOUGH_CASH": "@error You aren't carrying enough cash to deposit %$.",
   "_GBANK_NOT_ENOUGH_FUNDS": "@error There aren't enough funds in your bank account to withdraw %$.",
   "GBANK_NOT_IN_GANG": "@error You need to be in a gang in order to access its bank account.",
   "_GBANK_NO_AVAILABLE_CASH": "@error You cannot carry more than %$ in cash.",
-  "_GBANK_NO_AVAILABLE_BALANCE": "@error The bank is not willing to store more than %$ for you.",
+  "GBANK_NO_AVAILABLE_BALANCE": "@error The bank is not willing to store more than %$ for your gang.",
   "GBANK_BALANCE": "{2196F3}* %s's account balance is {BBDEFB}%${2196F3}. Your bank is willing to store up to {BBDEFB}%${2196F3}.",
-  "_GBANK_STORED": "{2196F3}* The have deposited {BBDEFB}%${2196F3}. Your new account balance is {BBDEFB}%${2196F3}.",
+  "GBANK_STORED": "{2196F3}* You have deposited {BBDEFB}%${2196F3}. %s's new account balance is {BBDEFB}%${2196F3}.",
   "_GBANK_WITHDRAWN": "{2196F3}* You have withdrawn {BBDEFB}%${2196F3}. Your new account balance is {BBDEFB}%${2196F3}.",
 
   "HOUSE_ANNOUNCE_ACCESS_CHANGED": "%s (Id:%d) has changed (%s (Id:%d))'s access to %s.",

@@ -904,15 +904,48 @@ class GangCommands {
             return;
         }
 
+        const balance = this.manager_.finance.getAccountBalance(gang.id);
+
         player.sendMessage(
-            Message.GBANK_BALANCE, gang.name, gang.balance, GangFinance.kMaximumBankAmount);
+            Message.GBANK_BALANCE, gang.name, balance, GangFinance.kMaximumBankAmount);
     }
 
     // /gbank [[amount] | all]
     //
     // Deposits either the given amount, or all cash being carried, into the gang's bank account.
+    // This is subject to the same checks, restrictions and syntax as the "/bank" command.
     async onGangBankCommand(player, amount) {
+        const gang = this.manager_.gangForPlayer(player);
+        if (!gang) {
+            player.sendMessage(Message.GBANK_NOT_IN_GANG);
+            return;
+        }
 
+        const cash = this.finance_().getPlayerCash(player);
+        if (!amount)
+            amount = cash;
+
+        if (amount > cash) {
+            player.sendMessage(Message.GBANK_NOT_ENOUGH_CASH, amount);
+            return;
+        }
+
+        const balance = await this.manager_.finance.getAccountBalance(gang.id);
+        const availableBalance = GangFinance.kMaximumBankAmount - balance;
+
+        if (availableBalance < amount) {
+            player.sendMessage(Message.GBANK_NO_AVAILABLE_BALANCE, GangFinance.kMaximumBankAmount);
+            return;
+        }
+
+        // Actually deposit the |amount| in the gang's bank account, with attribution.
+        await this.manager_.finance.depositToAccount(
+            gang.id, player.account.userId, amount, 'Personal contribution');
+
+        // Take the |amount| of money away from the player personally.
+        this.finance_().takePlayerCash(player, amount);
+        
+        player.sendMessage(Message.GBANK_STORED, amount, gang.name, gang.balance);
     }
 
     // /gwithdraw [[amount] | all]

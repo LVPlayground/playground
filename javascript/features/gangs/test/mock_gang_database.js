@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import Gang from 'features/gangs/gang.js';
+import GangDatabase from 'features/gangs/gang_database.js';
 
 const mockedGangInfo = {
     hko: {
@@ -27,6 +28,8 @@ class MockGangDatabase {
                     role: Gang.ROLE_MEMBER, 
                     useGangColor: false,
                     gang: mockedGangInfo.hko,
+                    balance: 0,
+                    balanceAccess: GangDatabase.kAccessLeaderAndManagers,
                     skinId: 42
                 };
                 break;
@@ -36,6 +39,8 @@ class MockGangDatabase {
                     role: Gang.ROLE_LEADER, 
                     useGangColor: true, 
                     gang: mockedGangInfo.hko,
+                    balance: 0,
+                    balanceAccess: GangDatabase.kAccessEveryone,
                     skinId: 42 
                 };
                 break;
@@ -66,6 +71,8 @@ class MockGangDatabase {
                 tag: tag,
                 name: name,
                 goal: goal,
+                balance: 0,
+                balanceAccess: GangDatabase.kAccessLeaderAndManagers,
                 color: null,
                 chatEncryptionExpiry: 0,
                 skinId: 42
@@ -146,6 +153,8 @@ class MockGangDatabase {
     async updateTag(gang, tag) {}
 
     async updateGoal(gang, goal) {}
+
+    async updateBalanceAccess(gang, access) {}
 
     async getBalance(gangId) {
         return 25000000;

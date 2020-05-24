@@ -215,6 +215,15 @@ const GANG_UPDATE_GOAL_QUERY = `
     WHERE
         gangs.gang_id = ?`;
 
+// Query to update gang bank account balance.
+const GANG_UPDATE_BALANCE_ACCESS_QUERY = `
+    UPDATE
+        gangs
+    SET
+        gangs.gang_balance_access = ?
+    WHERE
+        gangs.gang_id = ?`;
+
 // Query to get the balance a gang has in their bank account.
 const GANG_GET_BALANCE_QUERY = `
     SELECT
@@ -262,6 +271,11 @@ const GANG_ADD_TRANSACTION_LOG_QUERY = `
 // The gang database is responsible for interacting with the MySQL database for queries related to
 // gangs, e.g. loading, storing and updating the gang and player information.
 class GangDatabase {
+    // Options for the `gangs.gang_balance_access` field, which is an enumeration.
+    static kAccessLeader = 0;
+    static kAccessLeaderAndManagers = 1;
+    static kAccessEveryone = 2;
+
     // Loads information for |gangId| from the perspective of |userId| from the database. Returns a
     // promise that will be resolved when the information is available.
     async loadGangForPlayer(userId, gangId) {
@@ -279,6 +293,7 @@ class GangDatabase {
                 name: info.gang_name,
                 goal: info.gang_goal,
                 balance: info.gang_balance,
+                balanceAccess: GangDatabase.toAccessValue(info.gang_balance_access),
                 color: info.gang_color ? Color.fromNumberRGBA(info.gang_color) : null,
                 chatEncryptionExpiry: info.encryption_expire || 0,
                 skinId: info.gang_skin
@@ -338,6 +353,8 @@ class GangDatabase {
             tag: tag,
             name: name,
             goal: goal,
+            balance: 0,
+            balanceAccess: GangDatabase.kLeaderAndManagers,
             color: null,
             chatEncryptionExpiry: 0,
             skinId: null
@@ -448,6 +465,12 @@ class GangDatabase {
         await server.database.query(GANG_UPDATE_GOAL_QUERY, goal, gang.id);
     }
 
+    // Updates who's able to withdraw from the |gang|'s balance. Can only be changed by leaders.
+    async updateBalanceAccess(gang, access) {
+        await server.database.query(
+            GANG_UPDATE_BALANCE_ACCESS_QUERY, GangDatabase.toAccessString(access), gang.id);
+    }
+
     // Returns the balance of the gang identified by |gangId| from the database. This works even
     // when the gang is not connected to the server.
     async getBalance(gangId) {
@@ -512,6 +535,34 @@ class GangDatabase {
                 return 'Member';
             default:
                 throw new Error('Invalid gang role: ' + role);
+        }
+    }
+
+    // Utility function for converting an access string to a Gang.kAccess* value.
+    static toAccessValue(access) {
+        switch (access) {
+            case 'LeaderOnly':
+                return Gang.kAccessLeader;
+            case 'LeaderAndManagers':
+                return Gang.kAccessLeaderAndManagers;
+            case 'Everyone':
+                return Gang.kAccessEveryone;
+            default:
+                throw new Error('Invalid gang balance access: ' + access);
+        }
+    }
+
+    // Utility function for converting an access value to a string.
+    static toAccessString(access) {
+        switch (access) {
+            case Gang.kAccessLeader:
+                return 'LeaderOnly';
+            case Gang.kAccessLeaderAndManagers:
+                return 'LeaderAndManagers';
+            case Gang.kAccessEveryone:
+                return 'Everyone';
+            default:
+                throw new Error('Invalid gang balance access: ' + access);
         }
     }
 }

@@ -482,7 +482,7 @@ class GangDatabase {
     }
 
     // Returns the transaction logs from the given |gangId|. Up to |limit| entries will be returned.
-    async getTransactionLog(gangId, limit) {
+    async getTransactionLog(gangId, { limit = 30 } = {}) {
         const results = await server.database.query(GANG_GET_TRANSACTION_LOG_QUERY, gangId, limit);
         const transactions = [];
 
@@ -505,7 +505,7 @@ class GangDatabase {
     // from their balance, and the transaction will be logged with the given |reason|.
     async processTransaction(gangId, userId, amount, reason) {
         await Promise.all([
-            server.database.query(GANG_UPDATE_BALANCE_QUERY, amount),
+            server.database.query(GANG_UPDATE_BALANCE_QUERY, amount, gangId),
             server.database.query(GANG_ADD_TRANSACTION_LOG_QUERY, gangId, userId, amount, reason),
         ]);
     }
@@ -542,11 +542,11 @@ class GangDatabase {
     static toAccessValue(access) {
         switch (access) {
             case 'LeaderOnly':
-                return Gang.kAccessLeader;
+                return GangDatabase.kAccessLeader;
             case 'LeaderAndManagers':
-                return Gang.kAccessLeaderAndManagers;
+                return GangDatabase.kAccessLeaderAndManagers;
             case 'Everyone':
-                return Gang.kAccessEveryone;
+                return GangDatabase.kAccessEveryone;
             default:
                 throw new Error('Invalid gang balance access: ' + access);
         }
@@ -555,11 +555,11 @@ class GangDatabase {
     // Utility function for converting an access value to a string.
     static toAccessString(access) {
         switch (access) {
-            case Gang.kAccessLeader:
+            case GangDatabase.kAccessLeader:
                 return 'LeaderOnly';
-            case Gang.kAccessLeaderAndManagers:
+            case GangDatabase.kAccessLeaderAndManagers:
                 return 'LeaderAndManagers';
-            case Gang.kAccessEveryone:
+            case GangDatabase.kAccessEveryone:
                 return 'Everyone';
             default:
                 throw new Error('Invalid gang balance access: ' + access);

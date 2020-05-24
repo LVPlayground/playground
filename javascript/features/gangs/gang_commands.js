@@ -661,20 +661,18 @@ class GangCommands {
                 });
             });
 
-            const balanceAccessOptions = {
-                [GangDatabase.kAccessLeader]: 'Leader only',
-                [GangDatabase.kAccessLeaderAndManagers]: 'Leader and managers',
-                [GangDatabase.kAccessEveryone]: 'Everyone',
-            }
+            const balanceAccessOptions = new Map([
+                [ GangDatabase.kAccessLeader, 'Leader only' ],
+                [ GangDatabase.kAccessLeaderAndManagers, 'Leader and managers' ],
+                [ GangDatabase.kAccessEveryone, 'Everyone' ],
+            ]);
 
-            let balanceAccessLabel = 'Unknown';
-            if (balanceAccessOptions.hasOwnProperty(gang.balanceAccess))
-                balanceAccessLabel = balanceAccessOptions[gang.balanceAccess];
+            const balanceAccessLabel = balanceAccessOptions.get(gang.balanceAccess) ?? 'Unknown';
 
             menu.addItem('Gang balance withdrawals', balanceAccessLabel, async() => {
                 const optionMenu = new Menu('Who can withdraw money?', ['Option', 'Selected']);
 
-                for (const [value, label] of Object.entries(balanceAccessOptions)) {
+                for (const [value, label] of balanceAccessOptions) {
                     const selected = value === gang.balanceAccess ? 'X' : '';
 
                     optionMenu.addItem(label, selected, async() => {
@@ -954,7 +952,7 @@ class GangCommands {
             return;
         }
 
-        const balance = this.manager_.finance.getAccountBalance(gang.id);
+        const balance = await this.manager_.finance.getAccountBalance(gang.id);
 
         player.sendMessage(
             Message.GBANK_BALANCE, gang.name, balance, GangFinance.kMaximumBankAmount);
@@ -997,8 +995,7 @@ class GangCommands {
         
         // Tell everyone in the gang who happens to be about about this mutation.
         this.manager_.announceToGang(
-            gang, /* excludePlayer= */ null, Message.GBANK_ANNOUNCE_DEPOSIT, player.name, player.id,
-            amount);
+            gang, player, Message.GBANK_ANNOUNCE_DEPOSIT, player.name, player.id, amount);
 
         player.sendMessage(Message.GBANK_STORED, amount, gang.name, gang.balance);
     }
@@ -1052,8 +1049,7 @@ class GangCommands {
         
         // Tell everyone in the gang who happens to be about about this mutation.
         this.manager_.announceToGang(
-            gang, /* excludePlayer= */ null, Message.GBANK_ANNOUNCE_WITHDRAWAL, player.name,
-            player.id, amount);
+            gang, player, Message.GBANK_ANNOUNCE_WITHDRAWAL, player.name, player.id, amount);
 
         player.sendMessage(Message.GBANK_WITHDRAWN, amount, gang.name, gang.balance);
     }

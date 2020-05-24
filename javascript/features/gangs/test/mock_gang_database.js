@@ -146,6 +146,35 @@ class MockGangDatabase {
     async updateTag(gang, tag) {}
 
     async updateGoal(gang, goal) {}
+
+    async getBalance(gangId) {
+        return 25000000;
+    }
+
+    async getTransactionLog(gangId, limit) {
+        return [
+            {
+                date: new Date('2020-05-24 12:11:51'),
+                amount: -215000,
+                reason: 'Daily maintenance fee',
+                username: null,
+            },
+            {
+                date: new Date('2020-05-23 15:38:51'),
+                amount: -1000000,
+                reason: 'Withdrawal',
+                username: 'Russell',
+            },
+            {
+                date: new Date('2020-05-21 11:59:01'),
+                amount: 25000000,
+                reason: 'Contribution',
+                username: 'Russell',
+            },
+        ];
+    }
+
+    async processTransaction(gangId, userId, amount, reason) {}
 }
 
 // Magic userId values that can be used by the database.

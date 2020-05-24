@@ -215,6 +215,50 @@ const GANG_UPDATE_GOAL_QUERY = `
     WHERE
         gangs.gang_id = ?`;
 
+// Query to get the balance a gang has in their bank account.
+const GANG_GET_BALANCE_QUERY = `
+    SELECT
+        gangs.gang_balance
+    FROM
+        gangs
+    WHERE
+        gangs.gang_id = ?`;
+
+// Query to get the transaction logs for a particular gang.
+const GANG_GET_TRANSACTION_LOG_QUERY = `
+    SELECT
+        gang_transaction_log.transaction_date,
+        gang_transaction_log.transaction_amount,
+        gang_transaction_log.transaction_reason,
+        users.username
+    FROM
+        gang_transaction_log
+    LEFT JOIN
+        users ON users.user_id = gang_transaction_log.user_id
+    WHERE
+        gang_transaction_log.gang_id = ?
+    ORDER BY
+        gang_transaction_log.transaction_date DESC
+    LIMIT
+        ?`;
+
+// Query to update the balance of a gang with the specified mutation.
+const GANG_UPDATE_BALANCE_QUERY = `
+    UPDATE
+        gangs
+    SET
+        gangs.gang_balance = gangs.gang_balance + ?
+    WHERE
+        gangs.gang_id = ?`;
+
+// Query to add a new transaction to the transaction log of a particular gang.
+const GANG_ADD_TRANSACTION_LOG_QUERY = `
+    INSERT INTO
+        gang_transaction_log
+        (gang_id, user_id, transaction_date, transaction_amount, transaction_reason)
+    VALUES
+        (?, ?, NOW(), ?, ?)`;
+
 // The gang database is responsible for interacting with the MySQL database for queries related to
 // gangs, e.g. loading, storing and updating the gang and player information.
 class GangDatabase {
@@ -234,6 +278,7 @@ class GangDatabase {
                 tag: info.gang_tag,
                 name: info.gang_name,
                 goal: info.gang_goal,
+                balance: info.gang_balance,
                 color: info.gang_color ? Color.fromNumberRGBA(info.gang_color) : null,
                 chatEncryptionExpiry: info.encryption_expire || 0,
                 skinId: info.gang_skin
@@ -401,6 +446,45 @@ class GangDatabase {
     // database has been updated with the new information.
     async updateGoal(gang, goal) {
         await server.database.query(GANG_UPDATE_GOAL_QUERY, goal, gang.id);
+    }
+
+    // Returns the balance of the gang identified by |gangId| from the database. This works even
+    // when the gang is not connected to the server.
+    async getBalance(gangId) {
+        const results = await server.database.query(GANG_GET_BALANCE_QUERY, gangId);
+        if (!results || results.rows.length !== 1)
+            return null;  // unable to load the balance
+        
+        return results.rows[0].gang_balance;
+    }
+
+    // Returns the transaction logs from the given |gangId|. Up to |limit| entries will be returned.
+    async getTransactionLog(gangId, limit) {
+        const results = await server.database.query(GANG_GET_TRANSACTION_LOG_QUERY, gangId, limit);
+        const transactions = [];
+
+        if (results) {
+            for (const row of results.rows) {
+                transactions.push({
+                    date: new Date(row.transaction_date),
+                    amount: row.transaction_amount,
+                    reason: row.transaction_reason,
+                    username: row.username,
+                });
+            }
+        }
+
+        return transactions;
+    }
+
+    // Processes a gang bank transaction for the given |gangId|, as initiated by the |userId| which
+    // may be NULL (when it's the server initiating the transation). The |amount| will be withdrawn
+    // from their balance, and the transaction will be logged with the given |reason|.
+    async processTransaction(gangId, userId, amount, reason) {
+        await Promise.all([
+            server.database.query(GANG_UPDATE_BALANCE_QUERY, amount),
+            server.database.query(GANG_ADD_TRANSACTION_LOG_QUERY, gangId, userId, amount, reason),
+        ]);
     }
 
     // Utility function for converting a role string to a Gang.ROLE_* value.

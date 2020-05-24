@@ -92,7 +92,7 @@ function shiftPoint(point, points, bandwidth) {
         scale += weight;
     }
 
-    return [ shiftedX / scale, shiftedY / scale ];
+    return [ shiftedX / scale, shiftedY / scale, ...point.slice(2) ];
 }
 
 // Implements the gaussian kernel as described on Wikipedia:

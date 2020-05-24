@@ -97,7 +97,12 @@ export class ZoneCalculator {
         const kZoneAreaMeanShiftBandwidth = this.getSettingValue('zones_area_mean_shift_bandwidth');
 
         const houseLocations = [];
+        const houseOwnerVip = new Set();
+
         for (const member of zoneGang.members.values()) {
+            if (member.isVip())
+                houseOwnerVip.add(member.userId);
+
             for (const location of member.houses)
                 houseLocations.push([ location.position.x, location.position.y, location ]);
         }
@@ -137,7 +142,7 @@ export class ZoneCalculator {
             if (members.size < kMinimumRepresentationInArea)
                 continue;  // bail out: not enough members are represented in the cluster
 
-            const bonuses = [];
+            const bonuses = new Set();
 
             const enclosingArea = new Rect(bounds.x.min, bounds.y.min, bounds.x.max, bounds.y.max);
             const enclosingRatio = enclosingArea.width / enclosingArea.height;
@@ -192,14 +197,23 @@ export class ZoneCalculator {
 
             // (1) "medium-gang": increase when the area has a certain number of active members.
             if (members.size >= this.getSettingValue('zones_area_bonus_medium_count')) {
-                bonusUnits += this.getSettingValue('zones_area_bonus_medium_bonus');
-                bonuses.push('medium-gang');
+                bonusUnits += this.getSettingValue('zones_area_bonus_medium_units');
+                bonuses.add('medium-gang');
             }
 
             // (2) "large-gang": increase when the area has a certain number of active members.
             if (members.size >= this.getSettingValue('zones_area_bonus_large_count')) {
-                bonusUnits += this.getSettingValue('zones_area_bonus_large_bonus');
-                bonuses.push('large-gang');
+                bonusUnits += this.getSettingValue('zones_area_bonus_large_units');
+                bonuses.add('large-gang');
+            }
+
+            // (3) "vip-member": increase given for each VIP that owns a house in this area.
+            for (const userId of members) {
+                if (!houseOwnerVip.has(userId))
+                    continue;
+                
+                bonusUnits += this.getSettingValue('zones_area_bonus_vip_units');
+                bonuses.add('vip-member');
             }
 
             const area = viableArea.extend(bonusUnits, bonusUnits);

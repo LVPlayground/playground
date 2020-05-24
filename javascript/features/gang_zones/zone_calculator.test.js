@@ -126,11 +126,12 @@ describe('ZoneCalculator', (it, beforeEach, afterEach) => {
         settings.setValue('gangs/zones_area_padded_percentage', paddingPercentage);
 
         settings.setValue('gangs/zones_area_bonus_medium_count', 5);
-        settings.setValue('gangs/zones_area_bonus_medium_bonus', bonusUnits);
+        settings.setValue('gangs/zones_area_bonus_medium_units', bonusUnits);
+        settings.setValue('gangs/zones_area_bonus_vip_units', 0);
 
         const bonusAreas = calculator.computeGangAreas(zoneGangBA);
         assert.equal(bonusAreas.length, 3);
-        assert.isAbove(bonusAreas.filter(info => info.bonuses.includes('medium-gang')).length, 0);
+        assert.isAbove(bonusAreas.filter(info => info.bonuses.has('medium-gang')).length, 0);
 
         for (const info of bonusAreas) {
             assert.closeTo(info.paddedArea.width,
@@ -138,7 +139,7 @@ describe('ZoneCalculator', (it, beforeEach, afterEach) => {
             assert.closeTo(info.paddedArea.height,
                            info.enclosingArea.height * (1 + (paddingPercentage / 100) * 2), 0.1);
   
-            if (!info.bonuses.includes('medium-gang'))
+            if (!info.bonuses.has('medium-gang'))
                 continue;
             
             assert.closeTo(info.area.width, info.paddedArea.width + 2 * bonusUnits, 0.1);
@@ -149,6 +150,6 @@ describe('ZoneCalculator', (it, beforeEach, afterEach) => {
 
         const regularAreas = calculator.computeGangAreas(zoneGangBA);
         assert.equal(regularAreas.length, 3);
-        assert.equal(regularAreas.filter(info => info.bonuses.includes('medium-gang')).length, 0);
+        assert.equal(regularAreas.filter(info => info.bonuses.has('medium-gang')).length, 0);
     });
 });

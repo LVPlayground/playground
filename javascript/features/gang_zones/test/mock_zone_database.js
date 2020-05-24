@@ -67,23 +67,23 @@ export class MockZoneDatabase extends ZoneDatabase {
         if (gangId === kGangNB) {
             return {
                 rows: [
-                    { gang_id: kGangNB, user_id: 3001 },  // [NB]D.R.E
-                    { gang_id: kGangNB, user_id: 3002 },  // [NB]90NINE
-                    { gang_id: kGangNB, user_id: 3003 },  // [NB]Dr.Vibrator
-                    { gang_id: kGangNB, user_id: 3004 },  // [NB]ExPloiTeD
-                    { gang_id: kGangNB, user_id: 3005 },  // [NB]Eminich
+                    { gang_id: kGangNB, user_id: 3001, is_vip: 0 },  // [NB]D.R.E
+                    { gang_id: kGangNB, user_id: 3002, is_vip: 0 },  // [NB]90NINE
+                    { gang_id: kGangNB, user_id: 3003, is_vip: 0 },  // [NB]Dr.Vibrator
+                    { gang_id: kGangNB, user_id: 3004, is_vip: 0 },  // [NB]ExPloiTeD
+                    { gang_id: kGangNB, user_id: 3005, is_vip: 0 },  // [NB]Eminich
                 ]
             };
         }
 
         return {
             rows: [
-                { gang_id: kGangBA, user_id: 9001 },  // [BA]AzKiller
-                { gang_id: kGangBA, user_id: 9002 },  // Agent[BA]
-                { gang_id: kGangBA, user_id: 9003 },  // [BA]Sammo
-                { gang_id: kGangBA, user_id: 9004 },  // [BA]Deer_Hunter
-                { gang_id: kGangBA, user_id: 9005 },  // [BA]Curry
-                { gang_id: kGangBA, user_id: 9006 },  // [BA]Slick
+                { gang_id: kGangBA, user_id: 9001, is_vip: 1 },  // [BA]AzKiller
+                { gang_id: kGangBA, user_id: 9002, is_vip: 0 },  // Agent[BA]
+                { gang_id: kGangBA, user_id: 9003, is_vip: 1 },  // [BA]Sammo
+                { gang_id: kGangBA, user_id: 9004, is_vip: 1 },  // [BA]Deer_Hunter
+                { gang_id: kGangBA, user_id: 9005, is_vip: 0 },  // [BA]Curry
+                { gang_id: kGangBA, user_id: 9006, is_vip: 1 },  // [BA]Slick
             ]
         };
     }

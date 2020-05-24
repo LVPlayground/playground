@@ -63,9 +63,10 @@ export default [
 
     /** Gang-related settings */
     new Setting('gangs', 'zones_area_bonus_medium_count', Setting.TYPE_NUMBER, 8, 'Number of active members in an area to get the medium-gang bonus.'),
-    new Setting('gangs', 'zones_area_bonus_medium_bonus', Setting.TYPE_NUMBER, 20, 'Area bonus, in map units, applied to medium-sized gang areas.'),
+    new Setting('gangs', 'zones_area_bonus_medium_units', Setting.TYPE_NUMBER, 20, 'Area bonus, in map units, applied to medium-sized gang areas.'),
     new Setting('gangs', 'zones_area_bonus_large_count', Setting.TYPE_NUMBER, 15, 'Number of active members in an area to get the large-gang bonus.'),
-    new Setting('gangs', 'zones_area_bonus_large_bonus', Setting.TYPE_NUMBER, 20, 'Area bonus, in map units, applied to large-sized gang areas.'),
+    new Setting('gangs', 'zones_area_bonus_large_units', Setting.TYPE_NUMBER, 20, 'Area bonus, in map units, applied to large-sized gang areas.'),
+    new Setting('gangs', 'zones_area_bonus_vip_units', Setting.TYPE_NUMBER, 1, 'Area bonus, in map units, awarded for each VIP that owns a house.'),
     new Setting('gangs', 'zones_area_limit', Setting.TYPE_NUMBER, 4, 'Maximum number of areas owned by a gang.'),
     new Setting('gangs', 'zones_area_mean_shift_bandwidth', Setting.TYPE_NUMBER, 40, 'Bandwidth used for the mean shift algorithm\'s kernel.'),
     new Setting('gangs', 'zones_area_min_members', Setting.TYPE_NUMBER, 5, 'How many members need to be in a particular area for it to be a zone?'),

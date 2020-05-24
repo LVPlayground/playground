@@ -54,3 +54,4 @@ There are certain _area size bonuses_ available as well:
 
   1. `medium-gang`, a bonus applied to areas where at least eight members are represented.
   1. `large-gang`, a bonus applied to areas where at least 15 members are represented.
+  1. `vip-member`, a bonus applied to areas for each member who's a VIP on the server.

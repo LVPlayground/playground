@@ -7,9 +7,12 @@
 const SEED_ACTIVE_MEMBERS_QUERY = `
     SELECT
         users_gangs.user_id,
-        users_gangs.gang_id
+        users_gangs.gang_id,
+        users.is_vip
     FROM
         users_gangs
+    LEFT JOIN
+        users ON users.user_id = users_gangs.user_id
     LEFT JOIN
         users_mutable ON users_mutable.user_id = users_gangs.user_id
     WHERE
@@ -37,9 +40,12 @@ const SEED_ACTIVE_GANGS_QUERY = `
 const GET_ACTIVE_MEMBERS_FOR_GANG_QUERY = `
     SELECT
         users_gangs.gang_id,
-        users_gangs.user_id
+        users_gangs.user_id,
+        users.is_vip
     FROM
         users_gangs
+    LEFT JOIN
+        users ON users.user_id = users_gangs.user_id
     LEFT JOIN
         users_mutable ON users_mutable.user_id = users_gangs.user_id
     WHERE
@@ -66,6 +72,7 @@ export class ZoneDatabase {
                 players.push({
                     userId: row.user_id,
                     gangId: row.gang_id,
+                    isVip: row.is_vip,
                 });
             }
         }

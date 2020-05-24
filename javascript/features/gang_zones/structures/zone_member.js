@@ -8,10 +8,15 @@ export class ZoneMember {
     zoneGang_ = null;
 
     userId_ = null;
+    vip_ = null;
+
     houses_ = null;
 
     // Gets the ZoneGang object which this member is a part of.
     get zoneGang() { return this.zoneGang_; }
+
+    // Returns whether this zone member is a VIP on the server.
+    isVip() { return !!this.vip_; }
 
     // Gets the `userId` indicating the user account identifier of this gang member.
     get userId() { return this.userId_; }
@@ -24,6 +29,8 @@ export class ZoneMember {
 
         // TODO: Use |member| as is appropriate.
         this.userId_ = member.userId;
+        this.vip_ = member.isVip;
+
         this.houses_ = new Set();
     }
 

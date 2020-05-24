@@ -4,14 +4,26 @@
 // @ts-check
 
 import { ZoneAreaManager } from 'features/gang_zones/zone_area_manager.js';
+import { ZoneDecorations } from 'features/gang_zones/zone_decorations.js';
+import { ZoneFinances } from 'features/gang_zones/zone_finances.js';
 
 // The ZoneManager receives updates from the ZoneCalculator whenever a gang zone has to be created,
 // removed, or amended based on changes in gangs, their members and/or their houses.
 export class ZoneManager {
     areaManager_ = null;
+    decorations_ = null;
+    finances_ = null;
+
+    // Gets the object responsible for dealing with decorations in gang zones.
+    get decorations() { return this.decorations_; }
+
+    // Gets the object responsible for dealing with finances in gang zones.
+    get finances() { return this.finances_; }
 
     constructor() {
         this.areaManager_ = new ZoneAreaManager(this);
+        this.decorations_ = new ZoneDecorations();
+        this.finances_ = new ZoneFinances();
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -72,5 +84,11 @@ export class ZoneManager {
     dispose() {
         this.areaManager_.dispose();
         this.areaManager_ = null;
+
+        this.decorations_.dispose();
+        this.decorations_ = null;
+
+        this.finances_.dispose();
+        this.finances_ = null;
     }
 }

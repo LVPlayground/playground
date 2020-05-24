@@ -5,6 +5,7 @@
 
 import Menu from 'components/menu/menu.js';
 import { Player } from 'entities/player.js';
+import { VisualBoundingBox } from 'features/gang_zones/util/visual_bounding_box.js';
 
 import confirm from 'components/dialogs/confirm.js';
 import { format } from 'base/string_formatter.js';
@@ -118,7 +119,14 @@ export class ZoneCommands {
     // Handles the part where the objects will be created for the player, with them having the
     // ability to edit it as they please, as long as the object is located in the zone.
     async handlePurchaseDecorationFlow(player, zone, objectInfo) {
+        const boundingBox = new VisualBoundingBox(zone);
 
+        // Display the |boundingBox| for the player while editing is active.
+        boundingBox.displayForPlayer(player);
+
+        await wait(10 * 1000);
+
+        boundingBox.hideForPlayer(player);
     }
 
     // Called when a Management member has entered the "/zone reload" command, which can be used to
@@ -132,6 +140,8 @@ export class ZoneCommands {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        server.commandManager.removeCommand('zone');
+
         this.playground_().unregisterCommand('zone');
         this.playground_.removeReloadObserver(this);
     }

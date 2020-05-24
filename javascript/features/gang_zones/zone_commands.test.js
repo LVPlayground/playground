@@ -37,6 +37,9 @@ describe('ZoneCommands', (it, beforeEach) => {
         playground.access.setCommandLevel('zone', Player.LEVEL_PLAYER);
     });
 
+    // List index of the menu option to purchase new decorations.
+    const kPurchaseDecorationIndex = 0;
+
     // Function to position the given |player| in the center of the first created gang zone. The
     // Zone object that represents this zone will be returned as well.
     function positionPlayerForFirstGangZone(player) {
@@ -83,6 +86,26 @@ describe('ZoneCommands', (it, beforeEach) => {
         });
 
         assert.isTrue(await russell.issueCommand('/zone'));
+    });
+
+    it('should enable players to purchase new decorations for their zone', async (assert) => {
+        const zone = positionPlayerForFirstGangZone(russell);
+        russell.gangId = zone.gangId;  // make |russell| part of the owning gang
+
+        // (1) Verify that categories with objects can be found.
+        russell.respondToDialog({ listitem: kPurchaseDecorationIndex }).then(
+            () => russell.respondToDialog({ response: 0 /* Dismiss */}));
+
+        assert.isTrue(await russell.issueCommand('/zone'));
+        assert.isAbove(russell.getLastDialogAsTable(/* hasColumn= */ true).rows.length, 0);
+
+        // (2) Verify that objects can be found.
+        russell.respondToDialog({ listitem: kPurchaseDecorationIndex }).then(
+            () => russell.respondToDialog({ listitem: 0 /* First category */ })).then(
+            () => russell.respondToDialog({ response: 0 /* Dismiss */}));
+
+        assert.isTrue(await russell.issueCommand('/zone'));
+        assert.isAbove(russell.getLastDialogAsTable(/* hasColumn= */ true).rows.length, 0);
     });
 
     it('should enable management members to clear caches', async (assert) => {

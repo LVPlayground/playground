@@ -1,0 +1,58 @@
+{
+    "Barriers": [
+        {
+            "name": "Wooden barrier",
+            "model": 1427,
+            "price": 50000
+        },
+        {
+            "name": "Steel barrier",
+            "model": 1424,
+            "price": 100000
+        },
+        {
+            "name": "Concrete barrier",
+            "model": 1422,
+            "price": 150000
+        }
+    ],
+    "Defenses": [
+        {
+            "name": "Stationary minigun",
+            "model": 2985,
+            "price": 150000
+        },
+        {
+            "name": "Watch tower",
+            "model": 3279,
+            "price": 2500000
+        }
+    ],
+    "Nature": [
+        {
+            "name": "Dead tree (horizontal)",
+            "model": 846,
+            "price": 200000
+        },
+        {
+            "name": "Flower bench",
+            "model": 1364,
+            "price": 100000
+        },
+        {
+            "name": "Flower barrier",
+            "model": 1360,
+            "price": 150000
+        },
+        {
+            "name": "Pine tree (full)",
+            "model": 655,
+            "price": 50000
+        },
+        {
+            "name": "Pine tree (long)",
+            "model": 660,
+            "price": 50000
+        }
+    ]
+}

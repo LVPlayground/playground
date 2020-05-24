@@ -7,6 +7,7 @@ import Menu from 'components/menu/menu.js';
 import { Player } from 'entities/player.js';
 
 import confirm from 'components/dialogs/confirm.js';
+import { format } from 'base/string_formatter.js';
 
 // Data file in which the available gang zone decorations have been stored.
 const kZoneDecorationDataFile = 'data/gang_zone_decorations.json';
@@ -52,6 +53,11 @@ export class ZoneCommands {
             return;
         }
 
+        // If the |decorationCache_| has not been populated yet, do that first to make sure that
+        // the necessary information is available on the server.
+        if (!this.decorationCache_)
+            this.decorationCache_ = JSON.parse(readFile(kZoneDecorationDataFile));
+
         // Verify that the |player| is part of the gang who owns this zone. Administrators have the
         // ability to override this, but will be given a warning when doing so.
         if (player.gangId !== zone.gangId) {
@@ -73,9 +79,46 @@ export class ZoneCommands {
         // Build the menu with options about managing the zone.
         const dialog = new Menu('Zone Management');
 
-        // TODO: Add the actual options for the menu.
+        dialog.addItem(
+            'Purchase decorations',
+            ZoneCommands.prototype.handlePurchaseDecorationOption.bind(this, player, zone));
 
         await dialog.displayForPlayer(player);
+    }
+
+    // Handles the option to purchase a new decoration for the |zone|. The player first has to
+    // select an object of their choice, after which they will be able to position it.
+    async handlePurchaseDecorationOption(player, zone) {
+        const dialog = new Menu('Zone Management', [ 'Category', 'Objects' ]);
+
+        for (const [ category, objects ] of Object.entries(this.decorationCache_)) {
+            const label = `${objects.length} object${objects.length === 1 ? '' : 's'}`;
+
+            // Add the option to the menu, which is proceeded by giving the player the ability to
+            // pick one of the objects within the category itself.
+            dialog.addItem(category, label, async () => {
+                const picker = new Menu('Zone Management', [ 'Object', 'Price ($/day)' ]);
+
+                // Adds options for each of the |objects|, displaying their name and price. Clicking
+                // on one of them will immediately start the object editing flow for the player.
+                for (const objectInfo of objects) {
+                    picker.addItem(
+                        objectInfo.name, format('%$', objectInfo.price),
+                        ZoneCommands.prototype.handlePurchaseDecorationFlow.bind(
+                            this, player, zone, objectInfo));
+                }
+
+                await picker.displayForPlayer(player);
+            });
+        }
+
+        await dialog.displayForPlayer(player);
+    }
+
+    // Handles the part where the objects will be created for the player, with them having the
+    // ability to edit it as they please, as long as the object is located in the zone.
+    async handlePurchaseDecorationFlow(player, zone, objectInfo) {
+
     }
 
     // Called when a Management member has entered the "/zone reload" command, which can be used to

@@ -30,6 +30,7 @@ const SEED_ACTIVE_GANGS_QUERY = `
     SELECT
         gangs.gang_id,
         gangs.gang_name,
+        gangs.gang_goal,
         gangs.gang_color
     FROM
         gangs
@@ -96,6 +97,7 @@ export class ZoneDatabase {
                 gangs.push({
                     id: row.gang_id,
                     name: row.gang_name,
+                    goal: row.gang_goal,
                     color: row.gang_color ? Color.fromNumberRGB(row.gang_color)
                                           : null,
                 });

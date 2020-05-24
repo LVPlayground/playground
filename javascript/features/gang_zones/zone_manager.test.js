@@ -65,9 +65,9 @@ describe('ZoneManager', (it, beforeEach, afterEach) => {
 
         zone.update({
             area: new Rect(20, 30, 150, 150),
-        })
+        });
 
-        manager.updateZone(zone);
+        manager.updateZone(zone, /* substantial= */ true);
         assert.equal(natives.zones.size, 1);
 
         for (const createdZone of natives.zones.values()) {

@@ -102,6 +102,7 @@ export class MockZoneDatabase extends ZoneDatabase {
                     rows.push({
                         gang_id: kGangBA,
                         gang_name: 'BA Hooligans',
+                        gang_goal: 'Cl0wning around',
                         gang_color: -15428694,
                     });
                     break;

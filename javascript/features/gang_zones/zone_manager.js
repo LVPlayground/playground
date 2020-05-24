@@ -45,9 +45,9 @@ export class ZoneManager {
         this.createZoneAssets(zone);
     }
 
-    // Called when the given |zone| should be updated. This generally means that its size of colour
-    // changed, and the visual appearance should be updated to match.
-    updateZone(zone) {
+    // Called when the given |zone| should be updated. The |substantial| argument is true when the
+    // zone's area changed, otherwise it's a change in zone metadata.
+    updateZone(zone, substantial) {
         if (!server.isTest())
             console.log(`[Zone][Update][${zone.gangName}] : [${zone.area.toString()}]`);
         

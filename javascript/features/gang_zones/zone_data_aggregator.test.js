@@ -107,7 +107,12 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
         // A new player joining the gang should reconsider all their information.
         const initializedReconsiderationCounter = reconsiderationCounter;
         {
-            await aggregator.onUserJoinGang(/* [NB]Dr.Vibrator= */ 3003, MockZoneDatabase.NB);
+            await aggregator.onUserJoinGang(/* [NB]Dr.Vibrator= */ 3003, MockZoneDatabase.NB, {
+                id: MockZoneDatabase.NB,
+                name: '99NINE',
+                goal: 'Cause havoc',
+            });
+
             await server.clock.advance(1);  // asynchronous reconsideration
         }
         assert.isAbove(reconsiderationCounter, initializedReconsiderationCounter);

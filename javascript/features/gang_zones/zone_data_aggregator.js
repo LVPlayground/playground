@@ -161,6 +161,10 @@ export class ZoneDataAggregator {
             return;  // the |gang| is not considered to be an active gang
         
         activeGang.initialize(gang);
+
+        // Force an update, as this may indicate that the gang's name, colour or slogan has changed,
+        // which are represented in behaviour of the gang zone.
+        this.scheduleZoneReconsideration(gang.id);
     }
 
     // Called when a member of the |gangId| gang has connected with the server.
@@ -187,6 +191,8 @@ export class ZoneDataAggregator {
 
         const zoneGang = new ZoneGang(gangId);
         const zoneMembers = new Map();
+
+        zoneGang.initialize(gang);
 
         // (2) They have the required number of active members. Excellent. Now clear the cached
         //     gang object and begin building a new one to avoid operating on stale data.

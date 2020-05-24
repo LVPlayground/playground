@@ -44,9 +44,11 @@ export class ZoneCalculator {
                 existingZones.delete(existingZone);
                 updatedZones.add(existingZone);
 
-                existingZone.update(info);
+                // Determine whether this is a substantial update, which means that the size or
+                // position of the zone changed as well as its meta-data.
+                const substantial = existingZone.update(info);
 
-                this.manager_.updateZone(existingZone);
+                this.manager_.updateZone(existingZone, substantial);
                 return;
             }
 

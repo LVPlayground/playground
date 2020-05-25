@@ -21,10 +21,6 @@ export default class GangZones extends Feature {
     constructor() {
         super();
 
-        // The zone database which handles all our own interactions with the database.
-        const database = server.isTest() ? new MockZoneDatabase()
-                                         : new ZoneDatabase();
-
         // Depend on the announcement feature to tell admins about purchases and changes.
         const announce = this.defineDependency('announce');
 
@@ -40,9 +36,13 @@ export default class GangZones extends Feature {
         // Various behaviour related to gang zones is configurable through settings.
         const settings = this.defineDependency('settings');
 
+        // The zone database which handles all our own interactions with the database.
+        const database = server.isTest() ? new MockZoneDatabase()
+                                         : new ZoneDatabase();
+
         // The ZoneManager is responsible for actually creating and destroying the zones on the map,
         // and keepnig track of which players are in them.
-        this.manager_ = new ZoneManager();
+        this.manager_ = new ZoneManager(database);
 
         // Responsible for taking knowledge from the ZoneDataAggregator and using it to determine
         // which and how large the to-be-created gang zones should be.

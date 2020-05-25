@@ -59,6 +59,14 @@ const GET_ACTIVE_MEMBERS_FOR_GANG_QUERY = `
             (users_mutable.last_seen > DATE_SUB(NOW(), INTERVAL 6 MONTH))
         )`;
 
+// Query to store a gang zone decoration in the database.
+const STORE_DECORATION_QUERY = `
+    INSERT INTO
+        gang_decorations
+        (decoration_added, gang_id, model_id, position_x, position_y, position_z, rotation_x, rotation_y, rotation_z)
+    VALUES
+        (NOW(), ?, ?, ?, ?, ?, ?, ?, ?)`;
+
 // Provides database access and mutation abilities for the gang zone feature. Tests should use the
 // MockZoneDatabase class instead, which avoids relying on actual MySQL connections.
 export class ZoneDatabase {
@@ -109,5 +117,18 @@ export class ZoneDatabase {
 
     async _getActiveGangsQuery(activeGangIds) {
         return server.database.query(SEED_ACTIVE_GANGS_QUERY, [...activeGangIds]);
+    }
+
+    // Stores the object having |modelId| with |position| and |rotation| in the database for the
+    // given |gangId|. Will return the new unique Id for the object.
+    async createDecoration(gangId, modelId, position, rotation) {
+        const results = await server.database.query(
+            STORE_DECORATION_QUERY, gangId, modelId, position.x, position.y, position.z, rotation.x,
+            rotation.y, rotation.z);
+        
+        if (!results || !results.insertId)
+            return null;  // the object could not be stored in the database 
+        
+        return results.insertId;
     }
 }

@@ -22,9 +22,9 @@ export class ZoneManager {
     // Gets the object responsible for dealing with finances in gang zones.
     get finances() { return this.finances_; }
 
-    constructor() {
+    constructor(database) {
         this.areaManager_ = new ZoneAreaManager(this);
-        this.decorations_ = new ZoneDecorations();
+        this.decorations_ = new ZoneDecorations(database);
         this.finances_ = new ZoneFinances();
     }
 
@@ -41,6 +41,7 @@ export class ZoneManager {
             console.log(`[Zone][Create][${zone.gangName}] : [${zone.area.toString()}]`);
         
         this.areaManager_.createZone(zone);
+        this.decorations_.initializeZone(zone);
     }
 
     // Called when the given |zone| should be updated. The |flags| argument detail exactly what has
@@ -55,6 +56,10 @@ export class ZoneManager {
             this.areaManager_.deleteZone(zone);
             this.areaManager_.createZone(zone);
         }
+
+        // If the area changed, then the decorations within the zone might have to be updated.
+        if (flags.areaChanged)
+            this.decorations_.updateZone(zone);
     }
 
     // Called when the given |zone| should be deleted from the map.
@@ -63,6 +68,7 @@ export class ZoneManager {
             console.log(`[Zone][Delete][${zone.gangName}] : [${zone.area.toString()}]`);
         
         this.areaManager_.deleteZone(zone);
+        this.decorations_.deleteZone(zone);
     }
 
     // ---------------------------------------------------------------------------------------------

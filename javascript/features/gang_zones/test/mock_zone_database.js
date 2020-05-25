@@ -7,6 +7,8 @@ import { ZoneDatabase } from 'features/gang_zones/zone_database.js';
 const kGangBA = 1086;
 const kGangNB = 871;
 
+let globalDecorationId = 0;
+
 // Mock implementation of the gang zone database class. Mimics identical behaviour, just fakes the
 // actual database operations with mocked data.
 export class MockZoneDatabase extends ZoneDatabase {
@@ -112,5 +114,10 @@ export class MockZoneDatabase extends ZoneDatabase {
         }
 
         return { rows };
+    }
+
+    // Overridden.
+    async createDecoration(gangId, modelId, position, rotation) {
+        return ++globalDecorationId;
     }
 }

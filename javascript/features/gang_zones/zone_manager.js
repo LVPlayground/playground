@@ -7,6 +7,9 @@ import { ZoneAreaManager } from 'features/gang_zones/zone_area_manager.js';
 import { ZoneDecorations } from 'features/gang_zones/zone_decorations.js';
 import { ZoneFinances } from 'features/gang_zones/zone_finances.js';
 
+// Time between zone enter notifications for a player, in milliseconds.
+const kZoneEnterMessageRateMs = 10000;
+
 // The ZoneManager receives updates from the ZoneCalculator whenever a gang zone has to be created,
 // removed, or amended based on changes in gangs, their members and/or their houses.
 export class ZoneManager {
@@ -15,6 +18,7 @@ export class ZoneManager {
     finances_ = null;
 
     currentZone_ = new WeakMap();
+    notification_ = new WeakMap();
 
     // Gets the object responsible for dealing with decorations in gang zones.
     get decorations() { return this.decorations_; }
@@ -79,8 +83,15 @@ export class ZoneManager {
     onPlayerEnterZone(player, zone) {
         this.currentZone_.set(player, zone);
 
-        player.sendMessage(
-            Message.GANG_ZONE_ENTERED, zone.color.toHexRGB(), zone.gangName, zone.gangGoal);
+        const currentTime = server.clock.monotonicallyIncreasingTime();
+        const difference = currentTime - (this.notification_.get(player) ?? 0);
+
+        if (difference > kZoneEnterMessageRateMs) {
+            this.notification_.set(player, currentTime);
+
+            player.sendMessage(
+                Message.GANG_ZONE_ENTERED, zone.color.toHexRGB(), zone.gangName, zone.gangGoal);
+        }
 
         if (!server.isTest())
             console.log(`[Zone][Enter][${zone.gangName}] : [${player.name}]`);

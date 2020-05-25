@@ -108,9 +108,9 @@ describe('ZoneCommands', (it, beforeEach) => {
         assert.isNotNull(manager.getZoneForPlayer(russell));
 
         assert.isTrue(await russell.issueCommand('/zone'));
-        assert.equal(russell.messages.length, 3);  // +entered announcement
+        assert.equal(russell.messages.length, 2);
         assert.equal(
-            russell.messages[2], Message.format(Message.ZONE_NOT_IN_OWNED_ZONE, zone.gangName));
+            russell.messages[1], Message.format(Message.ZONE_NOT_IN_OWNED_ZONE, zone.gangName));
 
         russell.level = Player.LEVEL_ADMINISTRATOR;
 
@@ -216,8 +216,8 @@ describe('ZoneCommands', (it, beforeEach) => {
         assert.includes(russell.lastDialog, 'You have purchased');
         assert.isFalse(object.isConnected());
 
-        assert.equal(russell.messages.length, 2);
-        assert.includes(russell.messages[1], 'has purchased a');
+        assert.equal(russell.messages.length, 1);
+        assert.includes(russell.messages[0], 'has purchased a');
     });
 
     it('should enable players to move around previously created objects', async (assert) => {

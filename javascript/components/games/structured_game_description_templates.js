@@ -128,7 +128,7 @@ export const kRotationVectorProperty = {
 
 // -------------------------------------------------------------------------------------------------
 
-// Structured way of expressing a game's environment settings
+// Structured way of expressing a game's environment settings.
 export const kGameEnvironment = {
     name: 'environment',
     type: StructuredGameDescription.kTypeObject,
@@ -157,4 +157,27 @@ export const kGameEnvironment = {
             defaultValue: 10,  // SUNNY_VEGAS
         }
     ],
+};
+
+// Structured way of expressing the objects that are part of a game's settings.
+export const kGameObjects = {
+    name: 'objects',
+    type: StructuredGameDescription.kTypeArray,
+    elementType: {
+        type: StructuredGameDescription.kTypeObject,
+        structure: [
+            {
+                name: 'modelId',
+                type: StructuredGameDescription.kTypeNumber,
+            },
+            {
+                name: 'position',
+                ...kPositionProperty,
+            },
+            {
+                name: 'rotation',
+                ...kRotationVectorProperty,
+            }
+        ]
+    },
 };

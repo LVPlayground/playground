@@ -7,6 +7,7 @@ import { StructuredGameDescription } from 'components/games/structured_game_desc
 import { Vector } from 'base/vector.js';
 
 import { kGameEnvironment,
+         kGameObjects,
          kPositionProperty,
          kRotationVectorProperty } from 'components/games/structured_game_description_templates.js';
 
@@ -93,5 +94,25 @@ describe('StructuredGameDescriptionTemplates', it => {
         assert.strictEqual(valuedDescription.environment.interiorId, 7);
         assert.deepEqual(valuedDescription.environment.time, [ 18, 35 ]);
         assert.strictEqual(valuedDescription.environment.weather, 12);
+    });
+
+    it('is able to deal with object definitions for a game', assert => {
+        const defaultDescription = new StructuredGameDescription('Game', {}, [ kGameObjects ]);
+        assert.strictEqual(defaultDescription.objects.length, 0);
+
+        const valuedDescription = new StructuredGameDescription('Game', {
+            objects: [
+                { modelId: 1225, position: [  0, 10, 20 ], rotation: [  5, 15, 25 ] },
+                { modelId: 1225, position: [ 30, 40, 50 ], rotation: [ 35, 45, 55 ] },
+            ]
+        }, [ kGameObjects ]);
+
+        assert.strictEqual(valuedDescription.objects.length, 2);
+
+        assert.equal(valuedDescription.objects[0].modelId, 1225);
+        assert.instanceOf(valuedDescription.objects[0].position, Vector);
+        assert.deepEqual(valuedDescription.objects[0].position, new Vector(0, 10, 20));
+        assert.instanceOf(valuedDescription.objects[0].rotation, Vector);
+        assert.deepEqual(valuedDescription.objects[0].rotation, new Vector(5, 15, 25));
     });
 });

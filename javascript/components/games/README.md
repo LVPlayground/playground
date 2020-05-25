@@ -106,6 +106,17 @@ Property     | Default     | Description
 `time`       | `[ 12, 0 ]` | Time to apply in the game, as `[ hour, minute ]`. Defaults to noon.
 `weather`    | `10`        | Weather to apply in the game. Defaults to SUNNY_VEGAS.
 
+### Game objects (`kGameObjects`)
+The `kGameObjects` template can be used to accept a list of objects as part of the game's config,
+which is commonly used across a variety of games. **This is an array**, where each element is a
+structure following this configuration -- nothing is optional:
+
+Property   | Description
+-----------|-------------
+`modelId`  | GTA: San Andreas Model ID for the object to create.
+`position` | Position of the object, as a `[ x, y, z ]` array. Will be stored as a `Vector`.
+`rotation` | Rotation of the object, as a `[ rx, ry, rz ]` array. Will be stored as a `Vector`.
+
 ### Individual property types
 
   * `kPositionProperty` for validation of a `[ x, y, z ]` position array, where the boundaries much

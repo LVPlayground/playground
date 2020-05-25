@@ -626,10 +626,13 @@ export class AccountCommands {
         this.announce_().announceToAdministrators(
             Message.ACCOUNT_ADMIN_CREATED, player.name, player.id);
 
-        return await alert(player, {
+        await alert(player, {
             title: 'Register your account',
-            message: `Your account for "${player.name} has been created. Please reconnect.`,
+            message: `Your account for "${player.name} has been created. You will be forced to ` +
+                     `reconnect after dismissing this dialog.`,
         });
+
+        player.kick();
     }
 
     // ---------------------------------------------------------------------------------------------

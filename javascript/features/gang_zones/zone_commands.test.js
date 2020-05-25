@@ -108,7 +108,7 @@ describe('ZoneCommands', (it, beforeEach) => {
 
         // (3) Administrators have to confirm they want to modify a non-owned zone.
         russell.respondToDialog({ response: 1 /* Confirm interference */ }).then(message => {
-            assert.includes(message, 'should not interfere with their business');
+            assert.includes(message, 'should not interfere');
             return russell.respondToDialog({ response: 0 /* Dismiss */});
         });
 
@@ -238,7 +238,8 @@ describe('ZoneCommands', (it, beforeEach) => {
 
         // (2) Start the deletion flow to remove the created decoration again.
         russell.respondToDialog({ listitem: kRemoveDecorationIndex }).then(
-            () => russell.respondToDialog({ response: 0 /* Cancel */ }));
+            () => russell.respondToDialog({ response: 1 /* Confirm */ })).then(
+            () => russell.respondToDialog({ response: 0 /* Dismiss */ }));
 
         const commandPromise = russell.issueCommand('/zone');
         await runUntilObjectCountChanged();
@@ -253,6 +254,9 @@ describe('ZoneCommands', (it, beforeEach) => {
         });
 
         await commandPromise;
+
+        assert.isFalse(decorations.has(decorationId));
+        assert.isFalse(decoration.isConnected());
     });
 
     it('should enable management members to clear caches', async (assert) => {

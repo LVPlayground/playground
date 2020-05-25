@@ -62,7 +62,7 @@ export class SelectObjectFlow {
             activeToken = Symbol('Object selection');
             wait(kSelectionTimeoutMs).then((storedActiveToken => {
                 if (activeToken === storedActiveToken) {
-                    player.sendMessage(Message.ZONE_SELECT_TIMED_OUT);
+                    player.sendMessage(Message.ZONE_DECORATION_SELECT_TIMED_OUT);
                     player.cancelEdit();
                 }
 

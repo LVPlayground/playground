@@ -14,9 +14,6 @@ import alert from 'components/dialogs/alert.js';
 import confirm from 'components/dialogs/confirm.js';
 import { format } from 'base/string_formatter.js';
 
-// Data file in which the available gang zone decorations have been stored.
-const kZoneDecorationDataFile = 'data/gang_zone_decorations.json';
-
 // Implements the commands associated with gang zones, which enable gangs to modify their settings,
 // purchase decorations and special effects.
 export class ZoneCommands {
@@ -25,7 +22,6 @@ export class ZoneCommands {
     manager_ = null;
     playground_ = null;
 
-    decorationCache_ = null;
     entities_ = null;
 
     constructor(manager, announce, gangs, playground) {
@@ -54,6 +50,12 @@ export class ZoneCommands {
         this.playground_().registerCommand('zone', Player.LEVEL_MANAGEMENT);
     }
 
+    // Gets the ZoneDecorations instance canonically owned by the manager.
+    get decorations() { return this.manager_.decorations; }
+
+    // Gets the ZoneDecorationRegistry instance canonically owned by the manager.
+    get decorationRegistry() { return this.manager_.decorations.registry; }
+
     // ---------------------------------------------------------------------------------------------
 
     // Called when the |player| has entered the "/zone" command. If they're in a zone that's owned
@@ -65,11 +67,6 @@ export class ZoneCommands {
             return;
         }
 
-        // If the |decorationCache_| has not been populated yet, do that first to make sure that
-        // the necessary information is available on the server.
-        if (!this.decorationCache_)
-            this.decorationCache_ = JSON.parse(readFile(kZoneDecorationDataFile));
-
         // Verify that the |player| is part of the gang who owns this zone. Administrators have the
         // ability to override this, but will be given a warning when doing so.
         if (player.gangId !== zone.gangId) {
@@ -80,7 +77,7 @@ export class ZoneCommands {
 
             const confirmed = await confirm(player, {
                 title: 'Zone Management',
-                message: `This zone is owned by ${zone.gangName}, and you should not interfere ` +
+                message: `This zone is owned by ${zone.gangName}, and you should not interfere\n` +
                          `with their business unless you have an administrative need. Continue?`
             });
 
@@ -89,7 +86,7 @@ export class ZoneCommands {
         }
 
         // Build the menu with options about managing the zone.
-        const decorations = this.manager_.decorations.getObjectsForZone(zone)?.size ?? 0;
+        const decorations = this.decorations.getObjectsForZone(zone)?.size ?? 0;
         const dialog = new Menu('Zone Management', [ 'Option', 'Details' ]);
 
         dialog.addItem(
@@ -114,7 +111,7 @@ export class ZoneCommands {
     async handlePurchaseDecorationOption(player, zone) {
         const dialog = new Menu('Zone Management', [ 'Category', 'Objects' ]);
 
-        for (const [ category, objects ] of Object.entries(this.decorationCache_)) {
+        for (const [ category, objects ] of this.decorationRegistry.categories) {
             const label = `${objects.length} object${objects.length === 1 ? '' : 's'}`;
 
             // Add the option to the menu, which is proceeded by giving the player the ability to
@@ -145,7 +142,7 @@ export class ZoneCommands {
         if (balance < objectInfo.price) {
             return await alert(player, {
                 title: 'Zone Management',
-                message: Message.format(Message.ZONE_PURCHASE_NO_FUNDS, objectInfo.name,
+                message: Message.format(Message.ZONE_DECORATION_PURCHASE_NO_FUNDS, objectInfo.name,
                                         objectInfo.price, balance),
             });
         }
@@ -209,28 +206,29 @@ export class ZoneCommands {
         if (!await this.gangs_().withdrawFromGangAccount(zone.gangId, objectInfo.price, reason)) {
             return await alert(player, {
                 title: 'Zone Management',
-                message: Message.format(Message.ZONE_PURCHASE_NO_FUNDS, objectInfo.name,
+                message: Message.format(Message.ZONE_DECORATION_PURCHASE_NO_FUNDS, objectInfo.name,
                                         objectInfo.price, balance),
             });
         }
 
         // Request creation of the object from the decoration manager.
-        await this.manager_.decorations.createObject(zone, objectInfo.model, position, rotation);
+        await this.decorations.createObject(zone, objectInfo.model, position, rotation);
 
         // Announce the purchase to other people within the gang.
         this.gangs_().announceToGang(
-            zone.gangId, player, Message.ZONE_PURCHASE_ANNOUNCE, player.name, player.id,
+            zone.gangId, player, Message.ZONE_DECORATION_PURCHASE_ANNOUNCE, player.name, player.id,
             objectInfo.name, objectInfo.price);
 
         // Announce the same message to administrators, who should know about this purchase too.
         this.announce_().announceToAdministrators(
-            Message.ZONE_PURCHASE_ANNOUNCE, player.name, player.id, objectInfo.name,
+            Message.ZONE_DECORATION_PURCHASE_ANNOUNCE, player.name, player.id, objectInfo.name,
             objectInfo.price);
 
         // And, finally, let the |player| know about the purchase as well.
         return await alert(player, {
             title: 'Zone Management',
-            message: Message.format(Message.ZONE_PURCHASED, objectInfo.name, objectInfo.price),
+            message: Message.format(Message.ZONE_DECORATION_PURCHASED, objectInfo.name,
+                                    objectInfo.price),
         });
     }
 
@@ -238,7 +236,7 @@ export class ZoneCommands {
     // money will be refunded, but the object will disappear forever.
     async handleRemoveDecorationFlow(player, zone) {
         const result = await SelectObjectFlow.runForPlayer(player, {
-            decorations: this.manager_.decorations,
+            decorations: this.decorations,
             entities: this.entities_,
             zone
         });
@@ -248,14 +246,38 @@ export class ZoneCommands {
         if (!result)
             return;
         
+        const { decorationId, object } = result;
 
+        // Get the name of the |object|, to share more sensible messages throughout the server.
+        const objectName = this.decorationRegistry.getNameForModelId(object.modelId);
 
+        // Confirm whether the |player| really wants to remove this object.
+        const confirmation = await confirm(player, {
+            title: 'Zone Management',
+            message: Message.format(Message.ZONE_DECORATION_REMOVE_CONFIRM, objectName),
+        });
+
+        if (!confirmation)
+            return;  // the |player| changed their mind
+        
+        await this.decorations.removeObject(zone, decorationId);
+
+        // Announce the purchase to other people within the gang.
+        this.gangs_().announceToGang(
+            zone.gangId, player, Message.ZONE_DECORATION_REMOVE_ANNOUNCE, player.name, player.id,
+            objectName);
+
+        // Finally, let the |player| know that the object has been deleted as well.
+        return await alert(player, {
+            title: 'Zone Management',
+            message: Message.format(Message.ZONE_DECORATION_REMOVED, objectName),
+        });
     }
 
     // Called when a Management member has entered the "/zone reload" command, which can be used to
     // reload all configuration files without having to restart the server.
     onZoneReloadCommand(player) {
-        this.decorationCache_ = null;
+        this.decorationRegistry.reload();
 
         player.sendMessage(Message.ZONE_RELOADED);
     }

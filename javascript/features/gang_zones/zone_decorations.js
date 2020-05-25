@@ -4,6 +4,7 @@
 // @ts-check
 
 import ScopedEntities from 'entities/scoped_entities.js';
+import { ZoneDecorationRegistry } from 'features/gang_zones/zone_decoration_registry.js';
 
 // Responsible for managing decorations that gangs have added to their zones. They are able to add
 // as many objects are they want (within reasonable boundaries), but each object has to be paid for
@@ -11,10 +12,12 @@ import ScopedEntities from 'entities/scoped_entities.js';
 export class ZoneDecorations {
     database_ = null;
     entities_ = null;
+    registry_ = null;
     zones_ = null;
 
     constructor(database) {
         this.database_ = database;
+        this.registry_ = new ZoneDecorationRegistry();
         this.zones_ = new Map();
 
         this.entities_ = new ScopedEntities({
@@ -22,6 +25,9 @@ export class ZoneDecorations {
             virtualWorld: 0,
         });
     }
+
+    // Gets the registry that contains all the decorations available to gangs.
+    get registry() { return this.registry_; }
 
     // ---------------------------------------------------------------------------------------------
 

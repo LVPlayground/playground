@@ -38,9 +38,9 @@ const STREAM_URL_QUESTION = {
     question: 'Choose the audio stream URL',
     message: 'What is the URL of the MP3 file to play? (Leave empty to disable.)',
     constraints: {
-        validation: /(^$|(^https?:\/\/(.+){8,246}$))/,
+        validation: /(^$|(^https?:\/\/([^%]+){8,246}$))/,
         explanation: 'The audio stream URL of your house must be at most 256 characters long and ' +
-                     'begin with "http://", either to an MP3 file or a radio station.',
+                     'begin with "http(s)://", either to an MP3 file or a radio station.',
 
         abort: 'Sorry, a house must have a valid audio stream URL!'
     }

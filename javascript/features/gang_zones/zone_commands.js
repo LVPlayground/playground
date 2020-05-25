@@ -3,12 +3,12 @@
 // be found in the LICENSE file.
 // @ts-check
 
+import { EditObjectFlow } from 'features/gang_zones/util/edit_object_flow.js';
 import Menu from 'components/menu/menu.js';
 import { Player } from 'entities/player.js';
 import ScopedEntities from 'entities/scoped_entities.js';
 import { SelectObjectFlow } from 'features/gang_zones/util/select_object_flow.js';
 import { Vector } from 'base/vector.js';
-import { VisualBoundingBox } from 'features/gang_zones/util/visual_bounding_box.js';
 
 import alert from 'components/dialogs/alert.js';
 import confirm from 'components/dialogs/confirm.js';
@@ -147,9 +147,6 @@ export class ZoneCommands {
             });
         }
 
-        const boundingBox = new VisualBoundingBox(zone, this.entities_);
-        boundingBox.displayForPlayer(player);
-
         // The distance, in in-game map units, ahead of the player the object should be shown.
         const kDistance = 5;
 
@@ -161,44 +158,18 @@ export class ZoneCommands {
             rotation: new Vector(0, 0, 0),
         });
 
-        player.updateStreamerObjects();
-
-        let position = null;
-        let rotation = null;
-
-        // Have the |player| edit the object. The result will either be { position, rotation } when
-        // the flow succeeded, or NULL when the player edited or disconnected from the server.
-        while (player.isConnected()) {
-            const result = await object.edit(player);
-            if (!result)
-                break;  // the edit was cancelled
-            
-            // Verify that the position contained within the result is part of the gang zone. While
-            // the |player|'s gangs owns the zone, they don't own the area surrounding it.
-            if (!zone.area.contains(result.position)) {
-                const confirmation = await confirm(player, {
-                    title: 'Zone Management',
-                    message: 'The object must be located within the zone. Do you want to try again?'
-                });
-
-                if (!confirmation)
-                    break;
-                
-                // fall-through, and just kick the player back in editing mode
-                
-            } else {
-                position = result.position;
-                rotation = result.rotation;
-                break;
-            }
-        }
-
-        // Remove visuals and the object that was being edited, the decorator will take over.
-        boundingBox.hideForPlayer(player);
+        // Run the object editing flow for the |player|, for the newly created |object|.
+        const result = await EditObjectFlow.runForPlayer(player, {
+            entities: this.entities_,
+            object, zone,
+        });
+        
         object.dispose();
 
-        if (!position || !rotation)
+        if (!result)
             return;  // the |player| has aborted the purchase flow
+
+        const { position, rotation } = result;
 
         // Withdraw the funds from the bank's account, which could fail again.
         const reason = `Purchase of a ${objectInfo.name}`;

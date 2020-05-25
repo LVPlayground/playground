@@ -101,6 +101,7 @@ export class SelectObjectFlow {
         for (const beam of beams)
             beam.dispose();
 
-        return { decorationId, object };
+        return decorationId ? { decorationId, object }
+                            : null;
     }
 }

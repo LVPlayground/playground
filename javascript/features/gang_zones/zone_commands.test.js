@@ -71,12 +71,19 @@ describe('ZoneCommands', (it, beforeEach) => {
     }
 
     // Returns the most recent scoped object that's owned by the |commands|.
-    function getMostRecentScopedObject() {
+    function getMostRecentNonBoundaryObject() {
         const entities = commands.entities_;
         if (!entities.objects_.size)
             throw new Error(`Expected at least a single object to exist.`);
         
-        return [...entities.objects_].pop();
+        for (const object of [...entities.objects_].reverse()) {
+            if (!object.isConnected() || [ 11752, 11753 ].includes(object.modelId))
+                continue;
+            
+            return object;
+        }
+
+        return null;
     }
 
     // Executes microtasks in a loop until the server's object count has changed.
@@ -157,7 +164,7 @@ describe('ZoneCommands', (it, beforeEach) => {
         const misplacedCommandPromise = russell.issueCommand('/zone');
         await runUntilObjectCountChanged();
 
-        const misplacedObject = getMostRecentScopedObject();
+        const misplacedObject = getMostRecentNonBoundaryObject();
         assert.isNotNull(misplacedObject);
 
         server.objectManager.onObjectEdited({
@@ -188,7 +195,7 @@ describe('ZoneCommands', (it, beforeEach) => {
         const commandPromise = russell.issueCommand('/zone');
         await runUntilObjectCountChanged();
 
-        const object = getMostRecentScopedObject();
+        const object = getMostRecentNonBoundaryObject();
         assert.isNotNull(object);
 
         server.objectManager.onObjectEdited({

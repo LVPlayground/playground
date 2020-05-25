@@ -178,7 +178,8 @@ export class ZoneCommands {
         // Withdraw the funds from the bank's account, which could fail again.
         const reason = `Purchase of a ${objectInfo.name}`;
 
-        if (!await this.gangs_().withdrawFromGangAccount(zone.gangId, objectInfo.price, reason)) {
+        if (!await this.gangs_().withdrawFromGangAccount(
+                zone.gangId, player, objectInfo.price, reason)) {
             return await alert(player, {
                 title: 'Zone Management',
                 message: Message.format(Message.ZONE_DECORATION_PURCHASE_NO_FUNDS, objectInfo.name,

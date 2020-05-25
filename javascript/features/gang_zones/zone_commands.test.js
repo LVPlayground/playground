@@ -49,6 +49,7 @@ describe('ZoneCommands', (it, beforeEach) => {
 
     // List index of the menu option to purchase new decorations.
     const kPurchaseDecorationIndex = 0;
+    const kRemoveDecorationIndex = 1;
 
     // Function to position the given |player| in the center of the first created gang zone. The
     // Zone object that represents this zone will be returned as well.
@@ -209,6 +210,49 @@ describe('ZoneCommands', (it, beforeEach) => {
 
         assert.equal(russell.messages.length, 2);
         assert.includes(russell.messages[1], 'has purchased a');
+    });
+
+    it('should enable players to delete previously created objects', async (assert) => {
+        const zone = positionPlayerForFirstGangZone(russell);
+        russell.gangId = zone.gangId;  // make |russell| part of the owning gang
+        russell.level = Player.LEVEL_ADMINISTRATOR;
+
+        const decorations = manager.decorations.getObjectsForZone(zone);
+        const decorationCount = decorations?.size ?? 0;
+        assert.isDefined(decorations);
+
+        // (1) Make sure the overview menu includes the number of live decorations.
+        russell.respondToDialog({ response: 0 /* Cancel */ });
+
+        assert.isTrue(await russell.issueCommand('/zone'));
+        assert.includes(russell.lastDialog, `${decorationCount} decorations`);
+
+        // Create a decoration ourselves so that we can be sure what we're dealing with.
+        const decorationId =
+            await manager.decorations.createObject(zone, 1225, russell.position,
+                                                   new Vector(0, 0, 0));
+
+        const decoration = decorations.get(decorationId);
+        assert.isDefined(decoration);
+        assert.isTrue(decoration.isConnected());
+
+        // (2) Start the deletion flow to remove the created decoration again.
+        russell.respondToDialog({ listitem: kRemoveDecorationIndex }).then(
+            () => russell.respondToDialog({ response: 0 /* Cancel */ }));
+
+        const commandPromise = russell.issueCommand('/zone');
+        await runUntilObjectCountChanged();
+
+        server.playerManager.onPlayerSelectObject({
+            playerid: russell.id,
+            objectid: decoration.id,
+            modelId: decoration.modelId,
+            x: 0,
+            y: 0,
+            z: 0,
+        });
+
+        await commandPromise;
     });
 
     it('should enable management members to clear caches', async (assert) => {

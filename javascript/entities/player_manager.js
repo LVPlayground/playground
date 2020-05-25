@@ -221,16 +221,16 @@ class PlayerManager {
     // Called when a player has selected an object.
     onPlayerSelectObject(event) {
         const player = this.players_.get(event.playerid);
-        if (!player || !this.selectingPlayers_.has(player))
+        if (!player)
             return;  // invalid player, or they're not selecting in JavaScript
-        
-        console.log(event);
+
+        this.selectingPlayers_.delete(player);
 
         const object = server.objectManager.getById(event.objectid);
-        if (!object)
-            return;  // they selected an object, but not a JavaScript one... what?
-        
-        this.selectingPlayers_.delete(player);
+        if (!object) {
+            player.onObjectSelected(null);
+            return;
+        }
 
         player.onObjectSelected(object);
     }

@@ -6,6 +6,7 @@
 import Menu from 'components/menu/menu.js';
 import { Player } from 'entities/player.js';
 import ScopedEntities from 'entities/scoped_entities.js';
+import { SelectObjectFlow } from 'features/gang_zones/util/select_object_flow.js';
 import { Vector } from 'base/vector.js';
 import { VisualBoundingBox } from 'features/gang_zones/util/visual_bounding_box.js';
 
@@ -88,11 +89,22 @@ export class ZoneCommands {
         }
 
         // Build the menu with options about managing the zone.
-        const dialog = new Menu('Zone Management');
+        const decorations = this.manager_.decorations.getObjectsForZone(zone)?.size ?? 0;
+        const dialog = new Menu('Zone Management', [ 'Option', 'Details' ]);
 
         dialog.addItem(
-            'Purchase decorations',
+            'Purchase decorations', '-',
             ZoneCommands.prototype.handlePurchaseDecorationOption.bind(this, player, zone));
+
+        // Only display the ability to edit and remove decorations if any have been added to this
+        // zone, otherwise it's a bit of a silly action to try and do.
+        if (decorations > 0) {
+            const label = `{FFFF00}${decorations} decoration${decorations === 1 ? '' : 's'}`;
+
+            dialog.addItem(
+                'Remove decorations', label,
+                ZoneCommands.prototype.handleRemoveDecorationFlow.bind(this, player, zone));
+        }
 
         await dialog.displayForPlayer(player);
     }
@@ -138,7 +150,7 @@ export class ZoneCommands {
             });
         }
 
-        const boundingBox = new VisualBoundingBox(zone);
+        const boundingBox = new VisualBoundingBox(zone, this.entities_);
         boundingBox.displayForPlayer(player);
 
         // The distance, in in-game map units, ahead of the player the object should be shown.
@@ -222,6 +234,24 @@ export class ZoneCommands {
         });
     }
 
+    // Handles the flow where a player wants to remove an existing object from the gang zone. No
+    // money will be refunded, but the object will disappear forever.
+    async handleRemoveDecorationFlow(player, zone) {
+        const result = await SelectObjectFlow.runForPlayer(player, {
+            decorations: this.manager_.decorations,
+            entities: this.entities_,
+            zone
+        });
+
+        // If there is no |result|, the player either cancelled selection, or, more likely, object
+        // selection timed out. This is a rather buggy feature in SA-MP.
+        if (!result)
+            return;
+        
+
+
+    }
+
     // Called when a Management member has entered the "/zone reload" command, which can be used to
     // reload all configuration files without having to restart the server.
     onZoneReloadCommand(player) {
@@ -233,6 +263,9 @@ export class ZoneCommands {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        this.entities_.dispose();
+        this.entities_ = null;
+
         server.commandManager.removeCommand('zone');
 
         this.playground_().unregisterCommand('zone');

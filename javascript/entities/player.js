@@ -294,11 +294,20 @@ export class Player extends Supplementable {
     // Section: Interaction
     // ---------------------------------------------------------------------------------------------
 
+    async cancelEdit(resolveActive = true) {
+        pawnInvoke('CancelEdit', 'i', this.#id_);
+
+        if (this.#selectObjectResolver_ && resolveActive) {
+            this.#selectObjectResolver_(null);
+            this.#selectObjectResolver_ = null;
+        }
+    }
+
     async selectObjectInternal() { pawnInvoke('SelectObject', 'i', this.#id_); }
     async selectObject() {
         if (this.#selectObjectResolver_)
-            throw new Error(`The player (${this.#name_}) is already selecting an object.`);
-        
+            this.cancelEdit();
+
         this.#manager_.didRequestSelectObject(this);
         this.selectObjectInternal();
 
@@ -306,8 +315,12 @@ export class Player extends Supplementable {
     }
 
     onObjectSelected(object) {
+        // Forcefully cancel the player's editing mode, which includes the ability to select an
+        // object, as we never want them to be able to select multiple objects at once.
+        this.cancelEdit(false);
+
         if (!this.#selectObjectResolver_)
-            return;
+            return;  // the |player| is not selecting an object
 
         this.#selectObjectResolver_(object);
         this.#selectObjectResolver_ = null;

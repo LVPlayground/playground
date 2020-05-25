@@ -44,6 +44,8 @@ export class ZoneDecorations {
 
         this.internalCreateObject(
             this.zones_.get(zone), decorationId, modelId, position, rotation);
+        
+        return decorationId;
     }
 
     // Deletes the object having |decorationId| owned by the |zone| from the database, as well as

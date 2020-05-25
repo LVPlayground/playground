@@ -229,6 +229,8 @@ export class MockPlayer extends Player {
     // Section: Interaction
     // ---------------------------------------------------------------------------------------------
 
+    async cancelEdit() {}
+
     async selectObjectInternal() {}
 
     showDialog(dialogId, style, caption, message, leftButton, rightButton) {

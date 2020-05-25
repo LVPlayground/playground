@@ -26,7 +26,7 @@ export class ZoneDecorations {
     // ---------------------------------------------------------------------------------------------
 
     // Gets an iterator with the objects created for the given |zone|, or undefined.
-    getObjectsForZone(zone) { return this.zones_.get(zone)?.values(); }
+    getObjectsForZone(zone) { return this.zones_.get(zone); }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -41,11 +41,9 @@ export class ZoneDecorations {
 
         if (!decorationId)
             return;  // the decoration could not be stored in the database
-        
-        const objects = this.zones_.get(zone);
-        const object = this.entities_.createObject({ modelId, position, rotation })
 
-        objects.set(decorationId, object);
+        this.internalCreateObject(
+            this.zones_.get(zone), decorationId, modelId, position, rotation);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -60,11 +58,8 @@ export class ZoneDecorations {
                 return;  // the ZoneDecorations or individual zone got disposed of
             
              const objects = this.zones_.get(zone);
-             for (const { decorationId, modelId, position, rotation } of decorations) {
-                const object = this.entities_.createObject({ modelId, position, rotation });
-
-                objects.set(decorationId, object);
-             }
+             for (const { decorationId, modelId, position, rotation } of decorations)
+                this.internalCreateObject(objects, decorationId, modelId, position, rotation);
         });
     }
 
@@ -72,7 +67,36 @@ export class ZoneDecorations {
     // database to see if any missing ones should be added again, and make sure that existing ones
     // that now fall outside of the zone are removed.
     updateZone(zone) {
+        if (!this.zones_.has(zone))
+            return;  // this |zone| does not have state
+        
+        return this.database_.loadDecorationsForZone(zone).then(decorations => {
+            if (!this.zones_ || !this.zones_.has(zone))
+                return;  // the ZoneDecorations or individual zone got disposed of
 
+            const seenDecorationIds = new Set();
+
+            const objects = this.zones_.get(zone);
+
+            // (1) Make sure that everything in |decorations| has been created.
+            for (const { decorationId, modelId, position, rotation } of decorations) {
+                seenDecorationIds.add(decorationId);
+
+                if (objects.has(decorationId))
+                    continue;  // the object already exists
+                
+                this.internalCreateObject(objects, decorationId, modelId, position, rotation);
+            }
+
+            // (2) Make sure that everything that's not in |decorations| has been removed.
+            for (const [ decorationId, object ] of objects) {
+                if (seenDecorationIds.has(decorationId))
+                    continue;  // the object should still exist
+                
+                objects.delete(decorationId);
+                object.dispose();
+            }
+        });
     }
 
     // Called when the |zone| has been deleted. All their objects will be invalidated immediately.
@@ -85,6 +109,15 @@ export class ZoneDecorations {
             object.dispose();
 
         this.zones_.delete(zone);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Creates the actual entity for the described object, and stores it in the |objects| map.
+    internalCreateObject(objects, decorationId, modelId, position, rotation) {
+        const object = this.entities_.createObject({ modelId, position, rotation });
+
+        objects.set(decorationId, object);
     }
 
     // ---------------------------------------------------------------------------------------------

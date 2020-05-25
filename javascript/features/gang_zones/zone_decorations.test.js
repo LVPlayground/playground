@@ -30,7 +30,15 @@ describe('ZoneDecorations', (it, beforeEach) => {
 
         await promise;
 
-        assert.isAbove([...decorations.getObjectsForZone(zone)].length, 0);
+        const existingObjects = [...decorations.getObjectsForZone(zone)].length;
+
+        assert.isAbove(existingObjects, 0);
+
+        zone.area = new Rect(2500, 1507, 2565, 1581);
+
+        await decorations.updateZone(zone);
+
+        assert.isBelow([...decorations.getObjectsForZone(zone)].length, existingObjects);
 
         await decorations.deleteZone(zone);
 
@@ -52,7 +60,7 @@ describe('ZoneDecorations', (it, beforeEach) => {
 
         await decorations.createObject(zone, modelId, position, rotation);
 
-        const objects = [ ...decorations.getObjectsForZone(zone) ];
+        const objects = [ ...decorations.getObjectsForZone(zone).values() ];
 
         assert.equal(objects.length, existingObjects + 1);
         assert.isTrue(objects[0].isConnected());

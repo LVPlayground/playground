@@ -54,6 +54,24 @@ export class ZoneDecorations {
         return decorationId;
     }
 
+    // Updates the given object to the new position and rotation, after it's been moved by one of
+    // the members of the gang owning the |zone|.
+    async updateObject(zone, decorationId, position, rotation) {
+        if (!this.zones_.has(zone))
+            throw new Error(`Requested to update an object for an unknown zone: ${zone}`);
+
+        const objects = this.zones_.get(zone);
+        if (!objects.has(decorationId))
+            throw new Error(`The decoration (Id:${decorationId}) does not exist for this zone.`);
+        
+        const object = objects.get(decorationId);
+
+        object.position = position;
+        object.rotation = rotation;
+
+        await this.database_.updateDecoration(zone.gangId, decorationId, position, rotation);
+    }
+
     // Deletes the object having |decorationId| owned by the |zone| from the database, as well as
     // its in-game representation, with immediate effect.
     async removeObject(zone, decorationId) {

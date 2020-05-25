@@ -88,6 +88,21 @@ const STORE_DECORATION_QUERY = `
     VALUES
         (NOW(), ?, ?, ?, ?, ?, ?, ?, ?)`;
 
+// Query to update a gang zone decoration in the database.
+const UPDATE_DECORATION_QUERY = `
+    UPDATE
+        gang_decorations
+    SET
+        gang_decorations.position_x = ?,
+        gang_decorations.position_y = ?,
+        gang_decorations.position_z = ?,
+        gang_decorations.rotation_x = ?,
+        gang_decorations.rotation_y = ?,
+        gang_decorations.rotation_z = ?
+    WHERE
+        gang_decorations.decoration_id = ? AND
+        gang_decorations.gang_id = ?`;
+
 // Query to remove a particular decoration owned by the given gang from the database.
 const REMOVE_DECORATION_QUERY = `
     DELETE FROM
@@ -187,6 +202,13 @@ export class ZoneDatabase {
             return null;  // the object could not be stored in the database 
         
         return results.insertId;
+    }
+
+    // Updates the decoration with the given |decorationId| to the new |position| with |rotation|.
+    async updateDecoration(gangId, decorationId, position, rotation) {
+        await server.database.query(
+            UPDATE_DECORATION_QUERY, position.x, position.y, position.z, rotation.x, rotation.y,
+            rotation.z, decorationId, gangId);
     }
 
     // Removes the decoration with the given Id from the database.

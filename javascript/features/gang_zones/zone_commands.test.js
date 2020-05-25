@@ -49,7 +49,8 @@ describe('ZoneCommands', (it, beforeEach) => {
 
     // List index of the menu option to purchase new decorations.
     const kPurchaseDecorationIndex = 0;
-    const kRemoveDecorationIndex = 1;
+    const kUpdateDecorationIndex = 1;
+    const kRemoveDecorationIndex = 2;
 
     // Function to position the given |player| in the center of the first created gang zone. The
     // Zone object that represents this zone will be returned as well.
@@ -217,6 +218,65 @@ describe('ZoneCommands', (it, beforeEach) => {
 
         assert.equal(russell.messages.length, 2);
         assert.includes(russell.messages[1], 'has purchased a');
+    });
+
+    it('should enable players to move around previously created objects', async (assert) => {
+        const zone = positionPlayerForFirstGangZone(russell);
+        russell.gangId = zone.gangId;  // make |russell| part of the owning gang
+        russell.level = Player.LEVEL_ADMINISTRATOR;
+
+        const decorations = manager.decorations.getObjectsForZone(zone);
+        const decorationCount = decorations?.size ?? 0;
+        assert.isDefined(decorations);
+
+        // Create a decoration ourselves so that we can be sure what we're dealing with.
+        const decorationId =
+            await manager.decorations.createObject(zone, 1225, russell.position,
+                                                   new Vector(0, 0, 0));
+
+        const decoration = decorations.get(decorationId);
+        assert.isDefined(decoration);
+        assert.isTrue(decoration.isConnected());
+
+        // Start the updating flow for |russell|. This combines all the boundary conditions that the
+        // purchase and remove flows test for as well.
+        russell.respondToDialog({ listitem: kUpdateDecorationIndex }).then(
+            () => russell.respondToDialog({ response: 1 /* Confirm */ })).then(
+            () => russell.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        const commandPromise = russell.issueCommand('/zone');
+        await runUntilObjectCountChanged();
+
+        server.playerManager.onPlayerSelectObject({
+            playerid: russell.id,
+            objectid: decoration.id,
+            modelId: decoration.modelId,
+            x: 0,
+            y: 0,
+            z: 0,
+        });
+
+        await runUntilObjectCountChanged();
+
+        server.objectManager.onObjectEdited({
+            objectid: decoration.id,
+            playerid: russell.id,
+            response: 1,  // EDIT_RESPONSE_FINAL
+            x: zone.area.center[0],
+            y: zone.area.center[1],
+            z: 10,
+            rx: 0,
+            ry: 0,
+            rz: 0,
+        });
+
+        await commandPromise;
+
+        assert.isTrue(decorations.has(decorationId));
+        assert.isTrue(decoration.isConnected());
+
+        assert.equal(decoration.position.x, zone.area.center[0]);
+        assert.equal(decoration.position.y, zone.area.center[1]);
     });
 
     it('should enable players to delete previously created objects', async (assert) => {

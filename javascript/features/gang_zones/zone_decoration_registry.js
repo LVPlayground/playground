@@ -45,8 +45,8 @@ export class ZoneDecorationRegistry {
         this.categories_ = JSON.parse(readFile(kZoneDecorationDataFile));
         for (const objects of Object.values(this.categories_)) {
             for (const object of objects) {
-                this.objects_.set(object.modelId, object.name);
-                this.prices_.set(object.modelId, object.price);
+                this.objects_.set(object.model, object.name);
+                this.prices_.set(object.model, object.price);
             }
         }
     }

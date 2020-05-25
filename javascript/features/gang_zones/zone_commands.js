@@ -99,7 +99,11 @@ export class ZoneCommands {
             const label = `{FFFF00}${decorations} decoration${decorations === 1 ? '' : 's'}`;
 
             dialog.addItem(
-                'Remove decorations', label,
+                'Move an existing decoration', label,
+                ZoneCommands.prototype.handleUpdateDecorationFlow.bind(this, player, zone));
+
+            dialog.addItem(
+                'Remove an existing decoration', label,
                 ZoneCommands.prototype.handleRemoveDecorationFlow.bind(this, player, zone));
         }
 
@@ -200,6 +204,59 @@ export class ZoneCommands {
             title: 'Zone Management',
             message: Message.format(Message.ZONE_DECORATION_PURCHASED, objectInfo.name,
                                     objectInfo.price),
+        });
+    }
+
+    // Handles the flow where the |player| wants to move one of the objects in the |zone| to another
+    // location, or perhaps change its rotation. Combines selection and editing flows.
+    async handleUpdateDecorationFlow(player, zone) {
+        const selectionResult = await SelectObjectFlow.runForPlayer(player, {
+            decorations: this.decorations,
+            entities: this.entities_,
+            zone
+        });
+
+        // If there is no |result|, the player either cancelled selection, or, more likely, object
+        // selection timed out. This is a rather buggy feature in SA-MP.
+        if (!selectionResult)
+            return;
+        
+        const { decorationId, object } = selectionResult;
+
+        const originalPosition = object.position;
+        const originalRotation = object.rotation;
+
+        // Run the object editing flow for the |player|, for the existing |object|.
+        const editingResult = await EditObjectFlow.runForPlayer(player, {
+            entities: this.entities_,
+            object, zone,
+        });
+
+        // Bail out if the user has aborted the flow, but reset the object first to the original
+        // position and rotation to avoid this from having lasting effects.
+        if (!editingResult) {
+            object.position = originalPosition;
+            object.rotation = originalRotation;
+            return;
+        }
+
+        const { position, rotation } = editingResult;
+
+        // Get the name of the |object|, to share more sensible messages throughout the server.
+        const objectName = this.decorationRegistry.getNameForModelId(object.modelId);
+
+        // Request creation of the object from the decoration manager.
+        await this.decorations.updateObject(zone, decorationId, position, rotation);
+
+        // Announce the updated object to other players in the gang.
+        this.gangs_().announceToGang(
+            zone.gangId, player, Message.ZONE_DECORATION_UPDATE_ANNOUNCE, player.name, player.id,
+            objectName);
+
+        // Let the |player| know that the object has been moved.
+        return await alert(player, {
+            title: 'Zone Management',
+            message: Message.format(Message.ZONE_DECORATION_UPDATED, objectName),
         });
     }
 

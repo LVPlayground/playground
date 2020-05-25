@@ -524,6 +524,8 @@
   "ZONE_DECORATION_REMOVE_CONFIRM": "Are you sure that you want to remove this {FFA500}%s{A9C4E4}?",
   "ZONE_DECORATION_REMOVED": "The {FFA500}%s{A9C4E4} has been removed from the zone.",
   "ZONE_DECORATION_SELECT_TIMED_OUT": "@error Decoration selection has timed out, please start again if you weren't done.",
+  "ZONE_DECORATION_UPDATE_ANNOUNCE": "%s (Id:%d) has moved a %s.",
+  "ZONE_DECORATION_UPDATED": "The {FFA500}%s{A9C4E4} has been moved to the new position.",
   "ZONE_NOT_IN_OWNED_ZONE": "@error Your gang does not own this gang zone! It's owned by %s.",
   "ZONE_NOT_IN_ZONE": "@error You can only use this command when you're inside of a gang zone.",
   "ZONE_RELOADED": "@success The gang zone data file caches have been cleared."

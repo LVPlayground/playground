@@ -94,6 +94,8 @@ class ObjectManager {
                 break;
             
             case 2:  // EDIT_RESPONSE_UPDATE
+                object.position = new Vector(event.x, event.y, event.z);
+                object.rotation = new Vector(event.rx, event.ry, event.rz);
                 break;
         }
     }

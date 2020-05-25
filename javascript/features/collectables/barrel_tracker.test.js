@@ -2,13 +2,13 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { BarrelTracker } from 'features/red_barrels/barrel_tracker.js';
+import { BarrelTracker } from 'features/collectables/barrel_tracker.js';
 
 describe('BarrelTracker', (it, beforeEach) => {
     let tracker = null;
 
     beforeEach(() => {
-        const redBarrels = server.featureManager.loadFeature('red_barrels');
+        const redBarrels = server.featureManager.loadFeature('collectables');
         tracker = redBarrels.tracker_;
     });
 

@@ -1,4 +1,6 @@
-# Red Barrels
+# Collectables
+
+## Series: Red Barrels
 Red Barrels have appeared all around San Andreas, and we need _your_ help in removing them to
 avoid any incidents. This is a minigame where players have to find all the explosive barrels
 scattered throughout the world, and shoot them once to get rid of them.
@@ -14,8 +16,8 @@ A player object will be created for each of the barrels that the player has not 
 for shots on these objects using the `OnPlayerShootDynamicObject` callback, and, when received,
 it will be marked as _found_, and stored as such in the database.
 
-_TODO: Detail how players will be able to collect all the barrels again._
-
-_TODO: Detail how this ties in to achievements._
+Collectables can be collected in multiple _rounds_: this enables players to restart again once they
+have found them all, without affecting the benefits granted by locating them in the first place, nor
+the achievements they've earned as part of this.
 
 _TODO: Detail how we're going to change the colour of the barrels._

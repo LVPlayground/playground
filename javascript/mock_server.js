@@ -32,6 +32,7 @@ import Abuse from 'features/abuse/abuse.js';
 import Account from 'features/account/account.js';
 import AccountProvider from 'features/account_provider/account_provider.js';
 import Announce from 'features/announce/announce.js';
+import Collectables from 'features/collectables/collectables.js';
 import Communication from 'features/communication/communication.js';
 import CommunicationCommands from 'features/communication_commands/communication_commands.js';
 import Finance from 'features/finance/finance.js';
@@ -44,7 +45,6 @@ import PlayerSettings from 'features/player_settings/player_settings.js';
 import Punishments from 'features/punishments/punishments.js';
 import Radio from 'features/radio/radio.js';
 import ReactionTests from 'features/reaction_tests/reaction_tests.js';
-import RedBarrels from 'features/red_barrels/red_barrels.js';
 import Settings from 'features/settings/settings.js';
 import Streamer from 'features/streamer/streamer.js';
 
@@ -82,6 +82,7 @@ class MockServer {
             account: Account,
             account_provider: AccountProvider,
             announce: Announce,  // TODO: Move functionality to |communication|. See #309.
+            collectables: Collectables,
             communication: Communication,
             communication_commands: CommunicationCommands,
             finance: Finance,
@@ -94,7 +95,6 @@ class MockServer {
             punishments: Punishments,
             radio: Radio,
             reaction_tests: ReactionTests,
-            red_barrels: RedBarrels,
             settings: Settings,
             streamer: Streamer
         });

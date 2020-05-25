@@ -54,6 +54,18 @@ export class ZoneDecorations {
     // database, and created in-game when found and appropriate.
     initializeZone(zone) {
         this.zones_.set(zone, new Map());
+
+        return this.database_.loadDecorationsForZone(zone).then(decorations => {
+            if (!this.zones_ || !this.zones_.has(zone))
+                return;  // the ZoneDecorations or individual zone got disposed of
+            
+             const objects = this.zones_.get(zone);
+             for (const { decorationId, modelId, position, rotation } of decorations) {
+                const object = this.entities_.createObject({ modelId, position, rotation });
+
+                objects.set(decorationId, object);
+             }
+        });
     }
 
     // Called when the area of the |zone| has been changed. Load their persistent objects from the
@@ -80,5 +92,8 @@ export class ZoneDecorations {
     dispose() {
         this.entities_.dispose();
         this.entities_ = null;
+
+        this.zones_.clear();
+        this.zones_ = null;
     }
 }

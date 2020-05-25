@@ -117,6 +117,44 @@ export class MockZoneDatabase extends ZoneDatabase {
     }
 
     // Overridden.
+    async _loadDecorationsForZoneQuery(zone) {
+        const barrels = [
+            [ 2564.6738, 1580.9309, 10.8203 ],
+            [ 2563.9091, 1571.9478, 10.8203 ],
+            [ 2563.9909, 1551.9309, 10.8203 ],
+            [ 2564.4260, 1541.9356, 10.8203 ],
+            [ 2533.8684, 1507.8079, 11.5713 ],
+            [ 2483.4956, 1526.7932, 11.2776 ],
+        ];
+
+        const results = {
+            rows: [],
+            insertId: 0,
+            affectedRows: 0,
+        };
+        
+        for (const barrel of barrels) {
+            if (barrel[0] < zone.area.minX || barrel[0] >= zone.area.maxX)
+                continue;
+            if (barrel[1] < zone.area.minY || barrel[1] >= zone.area.maxY)
+                continue;
+            
+            results.rows.push({
+                decoration_id: ++globalDecorationId,
+                modelId: 1225,  // exploding barrel
+                position_x: barrel[0],
+                position_y: barrel[1],
+                position_z: barrel[2],
+                rotation_x: 0,
+                rotation_y: 0,
+                rotation_z: 0,
+            });
+        }
+
+        return results;
+    }
+
+    // Overridden.
     async createDecoration(gangId, modelId, position, rotation) {
         return ++globalDecorationId;
     }

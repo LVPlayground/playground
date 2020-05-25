@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Vector } from 'base/vector.js';
+
 // Query to determine the active players on Las Venturas Playground, per the definition documented
 // in README.md. Should only be run on feature initialization.
 const SEED_ACTIVE_MEMBERS_QUERY = `
@@ -58,6 +60,25 @@ const GET_ACTIVE_MEMBERS_FOR_GANG_QUERY = `
             (users_mutable.online_time >= 720000  AND users_mutable.last_seen > DATE_SUB(NOW(), INTERVAL 12 MONTH)) OR
             (users_mutable.last_seen > DATE_SUB(NOW(), INTERVAL 6 MONTH))
         )`;
+
+// Query to load all live decorations for a particular zone from the database.
+const LOAD_DECORATIONS_QUERY = `
+    SELECT
+        gang_decorations.decoration_id,
+        gang_decorations.model_id,
+        gang_decorations.position_x,
+        gang_decorations.position_y,
+        gang_decorations.position_z,
+        gang_decorations.rotation_x,
+        gang_decorations.rotation_y,
+        gang_decorations.rotation_z
+    FROM
+        gang_decorations
+    WHERE
+        gang_decorations.gang_id = ? AND
+        gang_decorations.decoration_removed IS NULL AND
+        gang_decorations.position_x >= ? AND gang_decorations.position_x <= ? AND
+        gang_decorations.position_y >= ? AND gang_decorations.position_y <= ?`;
 
 // Query to store a gang zone decoration in the database.
 const STORE_DECORATION_QUERY = `
@@ -117,6 +138,32 @@ export class ZoneDatabase {
 
     async _getActiveGangsQuery(activeGangIds) {
         return server.database.query(SEED_ACTIVE_GANGS_QUERY, [...activeGangIds]);
+    }
+
+    // Loads the decorations for the given |zone| from the database. Each decoration will be
+    // returned with full positioning information, as well as its model and unique Ids.
+    async loadDecorationsForZone(zone) {
+        const results = await this._loadDecorationsForZoneQuery(zone);
+        const decorations = [];
+
+        if (results && results.rows.length > 0) {
+            for (const row of results.rows) {
+                decorations.push({
+                    decorationId: row.decoration_id,
+                    modelId: row.model_id,
+                    position: new Vector(row.position_x, row.position_y, row.position_z),
+                    rotation: new Vector(row.rotation_x, row.rotation_y, row.rotation_z),
+                });
+            }
+        }
+
+        return decorations;
+    }
+
+    async _loadDecorationsForZoneQuery(zone) {
+        return server.database.query(
+            LOAD_DECORATIONS_QUERY, zone.gangId, zone.area.minX, zone.area.maxX, zone.area.minY,
+            zone.area.maxY);
     }
 
     // Stores the object having |modelId| with |position| and |rotation| in the database for the

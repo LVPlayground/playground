@@ -16,11 +16,25 @@ describe('ZoneDecorations', (it, beforeEach) => {
         decorations = new ZoneDecorations(database);
         zone = Object.assign({}, {
             gangId: MockZoneDatabase.BA,
+            area: new Rect(2480, 1507, 2565, 1581),
         });
     });
 
     it('is able to load the stored decorations when a zone is created', async (assert) => {
+        assert.isUndefined(decorations.getObjectsForZone(zone));
 
+        const promise = decorations.initializeZone(zone);;
+
+        assert.isDefined(decorations.getObjectsForZone(zone));
+        assert.equal([...decorations.getObjectsForZone(zone)].length, 0);
+
+        await promise;
+
+        assert.isAbove([...decorations.getObjectsForZone(zone)].length, 0);
+
+        await decorations.deleteZone(zone);
+
+        assert.isUndefined(decorations.getObjectsForZone(zone));
     });
 
     it('is able to deal with creating and deleting of decorations', async (assert) => {
@@ -33,13 +47,14 @@ describe('ZoneDecorations', (it, beforeEach) => {
         await decorations.initializeZone(zone);
 
         assert.isDefined(decorations.getObjectsForZone(zone));
-        assert.equal([...decorations.getObjectsForZone(zone)].length, 0);
+
+        const existingObjects = [...decorations.getObjectsForZone(zone)].length;
 
         await decorations.createObject(zone, modelId, position, rotation);
 
         const objects = [ ...decorations.getObjectsForZone(zone) ];
 
-        assert.equal(objects.length, 1);
+        assert.equal(objects.length, existingObjects + 1);
         assert.isTrue(objects[0].isConnected());
 
         // TODO: Delete the object again

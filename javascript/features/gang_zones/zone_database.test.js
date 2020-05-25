@@ -44,4 +44,20 @@ describe('ZoneDatabase', it => {
         const activeGangs = await database.getActiveGangs(activeGangIds);
         assert.equal(activeGangs.length, activeGangIds.size);
     });
+
+    it('is able to return different mock decorations based on the area', async (assert) => {
+        const database = new MockZoneDatabase();
+
+        const allObjects = await database.loadDecorationsForZone({
+            gangId: 1,
+            area: new Rect(0, 0, 3000, 3000),
+        });
+
+        const someObjects = await database.loadDecorationsForZone({
+            gangId: 1,
+            area: new Rect(0, 1510, 3000, 3000),
+        });
+
+        assert.notEqual(allObjects.length, someObjects.length);
+    });
 });

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-class Rect {
+export class Rect {
     constructor(minX, minY, maxX, maxY) {
         this.minX_ = minX || 0;
         this.minY_ = minY || 0;

@@ -95,10 +95,23 @@ Various templates for use with the `## StructuredGameDescription` are available 
 are canonical, tested, and, should be preferred over individual games defining their own structures
 where possible.
 
+### Game Environment (`kGameEnvironment`)
+The `kGameEnvironment` template can be used to configure a game's environment settings. All of the
+properties are optional, as is definition of an environment by itself. Properties are:
+
+Property     | Default     | Description
+-------------|-------------|-------------
+`boundaries` | `null`      | World boundaries to apply to the game. Optional.
+`interiorId` | `0`         | Interior Id in which the game will be taking place.
+`time`       | `[ 12, 0 ]` | Time to apply in the game, as `[ hour, minute ]`. Defaults to noon.
+`weather`    | `10`        | Weather to apply in the game. Defaults to SUNNY_VEGAS.
+
+### Individual property types
+
   * `kPositionProperty` for validation of a `[ x, y, z ]` position array, where the boundaries much
     be within [-4500, 4500] on the `x` and `y` axis, and within [-100, 1850] for the `z` axis. Each
     position will be stored as a [Vector](../../base/vector.js) instance instead.
+  * `kRotationAngleProperty` for validating a rotation angle in range of [0, 360].
   * `kRotationVectorProperty` for validation of a `[ rx, ry, rz ]` rotation array, where each of the
     rotations must be within [0, 360]. The rotation will be stored as a
     [Vector](../../base/vector.js) instance.
-  * `kRotationAngleProperty` for validating a rotation angle in range of [0, 360].

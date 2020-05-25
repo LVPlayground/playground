@@ -2,10 +2,13 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Rect } from 'base/rect.js';
 import { StructuredGameDescription } from 'components/games/structured_game_description.js';
 import { Vector } from 'base/vector.js';
 
-import { kPositionProperty, kRotationVectorProperty } from 'components/games/structured_game_description_templates.js';
+import { kGameEnvironment,
+         kPositionProperty,
+         kRotationVectorProperty } from 'components/games/structured_game_description_templates.js';
 
 describe('StructuredGameDescriptionTemplates', it => {
     it('can validate 3D positions in the world', assert => {
@@ -66,5 +69,29 @@ describe('StructuredGameDescriptionTemplates', it => {
         assert.equal(description.rotation.x, 80);
         assert.equal(description.rotation.y, 160);
         assert.equal(description.rotation.z, 240);
+    });
+
+    it('is able to deal with game environment settings', assert => {
+        const defaultDescription = new StructuredGameDescription('Game', {}, [ kGameEnvironment ]);
+
+        assert.strictEqual(defaultDescription.environment.boundaries, null);
+        assert.strictEqual(defaultDescription.environment.interiorId, 0);
+        assert.deepEqual(defaultDescription.environment.time, [ 12, 0 ]);
+        assert.strictEqual(defaultDescription.environment.weather, 10);
+
+        const valuedDescription = new StructuredGameDescription('Game', {
+            environment: {
+                boundaries: [ 0, 100, 50, 150 ],
+                interiorId: 7,
+                time: [ 18, 35 ],
+                weather: 12
+            }
+        }, [ kGameEnvironment ]);
+
+        assert.instanceOf(valuedDescription.environment.boundaries, Rect);
+        assert.deepEqual(valuedDescription.environment.boundaries, new Rect(0, 100, 50, 150));
+        assert.strictEqual(valuedDescription.environment.interiorId, 7);
+        assert.deepEqual(valuedDescription.environment.time, [ 18, 35 ]);
+        assert.strictEqual(valuedDescription.environment.weather, 12);
     });
 });

@@ -88,3 +88,17 @@ to the object. Failures in validation should be indicated by throwing an excepti
     },
 }
 ```
+
+## StructuredGameDescriptionTemplates
+Various templates for use with the `## StructuredGameDescription` are available in the
+[structured_game_descriptions_templates.js](structured_game_descriptions_templates.js) file. They
+are canonical, tested, and, should be preferred over individual games defining their own structures
+where possible.
+
+  * `kPositionProperty` for validation of a `[ x, y, z ]` position array, where the boundaries much
+    be within [-4500, 4500] on the `x` and `y` axis, and within [-100, 1850] for the `z` axis. Each
+    position will be stored as a [Vector](../../base/vector.js) instance instead.
+  * `kRotationVectorProperty` for validation of a `[ rx, ry, rz ]` rotation array, where each of the
+    rotations must be within [0, 360]. The rotation will be stored as a
+    [Vector](../../base/vector.js) instance.
+  * `kRotationAngleProperty` for validating a rotation angle in range of [0, 360].

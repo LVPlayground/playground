@@ -119,7 +119,7 @@ export class StructuredGameDescription {
                                     `is a ${typeof propertyValue}.`);
                 }
 
-                return validator(propertyValue), propertyValue;
+                return validator(propertyValue) ?? propertyValue;
 
             case StructuredGameDescription.kTypeArray:
                 if (value !== undefined && !Array.isArray(value)) {
@@ -138,7 +138,7 @@ export class StructuredGameDescription {
                         childArray.push(this.loadProperty(name, element, property.elementType));
                 }
 
-                return validator(childArray), childArray;
+                return validator(childArray) ?? childArray;
 
             case StructuredGameDescription.kTypeObject:
                 if (value !== undefined && typeof value !== 'object') {
@@ -155,7 +155,7 @@ export class StructuredGameDescription {
                     
                 this.loadStructure(childObject, value ?? {}, property.structure);
 
-                return validator(childObject), childObject;
+                return validator(childObject) ?? childObject;
         }
     }
 

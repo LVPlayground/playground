@@ -337,7 +337,11 @@ export class Player extends Supplementable {
         if (message instanceof Message)
             message = Message.format(message, ...args);
 
-        pawnInvoke('SendClientMessage', 'iis', this.#id_, 0xFFFFFFFF, message.toString());
+        // Escape all percentage signs with double percentage signs, as the |message| parameter of
+        // SendClientMessage is ran through vsprintf within the SA-MP server, which could crash.
+        const escapedMessage = String(message).replace(/%/g, '%%');
+
+        pawnInvoke('SendClientMessage', 'iis', this.#id_, 0xFFFFFFFF, escapedMessage);
     }
 
     // ---------------------------------------------------------------------------------------------

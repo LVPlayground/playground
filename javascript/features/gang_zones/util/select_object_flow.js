@@ -41,6 +41,7 @@ export class SelectObjectFlow {
                 modelId: kAreaBoundary1M,
                 position: object.position.translate({ z: -10 }),
                 rotation: new Vector(0, 0, 0),
+                playerId: player.id,
             });
 
             mappings.set(beam.id, decorationId);

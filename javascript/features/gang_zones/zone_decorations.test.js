@@ -61,15 +61,14 @@ describe('ZoneDecorations', (it, beforeEach) => {
         await decorations.createObject(zone, modelId, position, rotation);
 
         const objects = [ ...decorations.getObjectsForZone(zone).values() ];
+        const decorationIds = [ ...decorations.getObjectsForZone(zone).keys() ];
 
         assert.equal(objects.length, existingObjects + 1);
-        assert.isTrue(objects[0].isConnected());
+        assert.isTrue(objects[existingObjects].isConnected());
 
-        // TODO: Delete the object again
+        await decorations.removeObject(zone, decorationIds.pop());
 
-        await decorations.deleteZone(zone);
-
-        assert.isUndefined(decorations.getObjectsForZone(zone));
-        assert.isFalse(objects[0].isConnected());
+        assert.equal([...decorations.getObjectsForZone(zone)].length, existingObjects);
+        assert.isFalse(objects[existingObjects].isConnected());
     });
 });

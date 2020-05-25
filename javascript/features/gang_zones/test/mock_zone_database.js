@@ -158,4 +158,7 @@ export class MockZoneDatabase extends ZoneDatabase {
     async createDecoration(gangId, modelId, position, rotation) {
         return ++globalDecorationId;
     }
+
+    // Overridden.
+    async removeDecoration(gangId, decorationId) {}
 }

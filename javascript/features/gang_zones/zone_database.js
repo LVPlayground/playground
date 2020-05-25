@@ -88,6 +88,16 @@ const STORE_DECORATION_QUERY = `
     VALUES
         (NOW(), ?, ?, ?, ?, ?, ?, ?, ?)`;
 
+// Query to remove a particular decoration owned by the given gang from the database.
+const REMOVE_DECORATION_QUERY = `
+    DELETE FROM
+        gang_decorations
+    WHERE
+        gang_decorations.decoration_id = ? AND
+        gang_decorations.gang_id = ?
+    LIMIT
+        1`;
+
 // Provides database access and mutation abilities for the gang zone feature. Tests should use the
 // MockZoneDatabase class instead, which avoids relying on actual MySQL connections.
 export class ZoneDatabase {
@@ -177,5 +187,10 @@ export class ZoneDatabase {
             return null;  // the object could not be stored in the database 
         
         return results.insertId;
+    }
+
+    // Removes the decoration with the given Id from the database.
+    async removeDecoration(gangId, decorationId) {
+        await server.database.query(REMOVE_DECORATION_QUERY, decorationId, gangId);
     }
 }

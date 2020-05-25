@@ -37,13 +37,31 @@ export class ZoneDecorations {
             throw new Error(`Requested to create an object for an unknown zone: ${zone}`);
 
         const decorationId =
-            this.database_.createDecoration(zone.gangId, modelId, position, rotation);
+            await this.database_.createDecoration(zone.gangId, modelId, position, rotation);
 
         if (!decorationId)
             return;  // the decoration could not be stored in the database
 
         this.internalCreateObject(
             this.zones_.get(zone), decorationId, modelId, position, rotation);
+    }
+
+    // Deletes the object having |decorationId| owned by the |zone| from the database, as well as
+    // its in-game representation, with immediate effect.
+    async removeObject(zone, decorationId) {
+        if (!this.zones_.has(zone))
+            throw new Error(`Requested to create an object for an unknown zone: ${zone}`);
+        
+        const objects = this.zones_.get(zone);
+        if (!objects.has(decorationId))
+            throw new Error(`The decoration (Id:${decorationId}) does not exist for this zone.`);
+        
+        const object = objects.get(decorationId);
+
+        objects.delete(decorationId);
+        object.dispose();
+
+        await this.database_.removeDecoration(zone.gangId, decorationId);
     }
 
     // ---------------------------------------------------------------------------------------------

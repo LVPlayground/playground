@@ -371,4 +371,35 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         assert.equal([...vehicle.getOccupants()].length, 0);
         assert.equal([...vehicle.getPassengers()].length, 0);
     });
+
+    it('can guide players through an idiomatic object selection flow', async (assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        const object = server.objectManager.createObject({
+            modelId: 1225,  // exploding barrel
+            position: new Vector(0, 0, 0),
+            rotation: new Vector(0, 0, 0),
+        })
+
+        // (1) Scenario where the player completes selection
+        const completePromise = gunther.selectObject();
+
+        server.playerManager.onPlayerSelectObject({
+            playerid: gunther.id,
+            objectid: object.id,
+            modelid: object.modelId,
+            x: 0,
+            y: 0,
+            z: 0,
+        });
+
+        assert.isNotNull(await completePromise);
+
+        // (2) Scenario where the player disconnects from the server
+        const disconnectionPromise = gunther.selectObject();
+
+        gunther.disconnectForTesting();
+
+        assert.isNull(await disconnectionPromise);
+    });
 });

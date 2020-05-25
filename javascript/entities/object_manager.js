@@ -49,6 +49,11 @@ class ObjectManager {
         return object;
     }
 
+    // Returns the object with the given |objectId|, or NULL when it does not exist.
+    getById(objectId) {
+        return this.objects_.get(objectId) ?? null;
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     // Called when the object in |event| has finished moving. If it's one created by JavaScript, let

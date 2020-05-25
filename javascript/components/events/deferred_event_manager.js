@@ -35,6 +35,10 @@ export class DeferredEventManager {
                     case 'OnPlayerLeaveDynamicArea':
                         server.areaManager.onPlayerLeaveArea(event);
                         break;
+                    
+                    case 'OnPlayerSelectDynamicObject':
+                        server.playerManager.onPlayerSelectObject(event);
+                        break;
 
                     case 'OnVehicleStreamIn':
                         server.vehicleManager.onVehicleStreamIn(event);

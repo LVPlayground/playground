@@ -90,6 +90,7 @@ export class Player extends Supplementable {
     // ---------------------------------------------------------------------------------------------
 
     #id_ = null;
+    #manager_ = null;
     #level_ = null;
     #connectionState_ = null;
 
@@ -108,13 +109,16 @@ export class Player extends Supplementable {
     #ipAddress_ = null;
     #isNpc_ = null;
 
+    #selectObjectResolver_ = null;
+
     #vehicle_ = null;
     #vehicleSeat_ = null;
 
-    constructor(id, ...paramsForTesting) {
+    constructor(id, manager, ...paramsForTesting) {
         super();
 
         this.#id_ = id;
+        this.#manager_ = manager;
         this.#level_ = Player.LEVEL_PLAYER;
         this.#connectionState_ = Player.kConnectionEstablished;
 
@@ -289,6 +293,25 @@ export class Player extends Supplementable {
     // ---------------------------------------------------------------------------------------------
     // Section: Interaction
     // ---------------------------------------------------------------------------------------------
+
+    async selectObjectInternal() { pawnInvoke('SelectObject', 'i', this.#id_); }
+    async selectObject() {
+        if (this.#selectObjectResolver_)
+            throw new Error(`The player (${this.#name_}) is already selecting an object.`);
+        
+        this.#manager_.didRequestSelectObject(this);
+        this.selectObjectInternal();
+
+        return new Promise(resolve => this.#selectObjectResolver_ = resolve);
+    }
+
+    onObjectSelected(object) {
+        if (!this.#selectObjectResolver_)
+            return;
+
+        this.#selectObjectResolver_(object);
+        this.#selectObjectResolver_ = null;
+    }
 
     showDialog(dialogId, style, caption, message, leftButton, rightButton) {
         pawnInvoke('ShowPlayerDialog', 'iiissss', this.#id_, dialogId, style, caption, message,

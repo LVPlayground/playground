@@ -229,6 +229,8 @@ export class MockPlayer extends Player {
     // Section: Interaction
     // ---------------------------------------------------------------------------------------------
 
+    async selectObjectInternal() {}
+
     showDialog(dialogId, style, caption, message, leftButton, rightButton) {
         const oldMessage = this.#lastDialogMessage_;
 

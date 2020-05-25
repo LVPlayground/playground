@@ -14,6 +14,8 @@ class PlayerManager {
         this.playerConstructor_ = playerConstructor;
         this.players_ = new Map();
 
+        this.selectingPlayers_ = new WeakSet();
+
         this.observers_ = new Set();
 
         this.callbacks_ = new ScopedCallbacks();
@@ -137,7 +139,7 @@ class PlayerManager {
         }
 
         // Pass the |event| as it may contain additional meta-data when used by tests.
-        const player = new this.playerConstructor_(playerId);
+        const player = new this.playerConstructor_(playerId, this);
         player.initialize(event);
 
         // Associate the |player| instance with the |playerId|.
@@ -216,6 +218,23 @@ class PlayerManager {
         this.notifyObservers('onPlayerLogin', player, event);
     }
 
+    // Called when a player has selected an object.
+    onPlayerSelectObject(event) {
+        const player = this.players_.get(event.playerid);
+        if (!player || !this.selectingPlayers_.has(player))
+            return;  // invalid player, or they're not selecting in JavaScript
+        
+        console.log(event);
+
+        const object = server.objectManager.getById(event.objectid);
+        if (!object)
+            return;  // they selected an object, but not a JavaScript one... what?
+        
+        this.selectingPlayers_.delete(player);
+
+        player.onObjectSelected(object);
+    }
+
     // Called when a player's state changes. Handles players entering and leaving vehicles, and
     // synchronizing this information with both the Player and Vehicle instances.
     onPlayerStateChange(event) {
@@ -286,6 +305,13 @@ class PlayerManager {
         // Tell the object manager, in case the player was editing an object.
         server.objectManager.onPlayerDisconnect(player);
 
+        // If the player was selecting an object, pretend like they've cancelled this.
+        if (this.selectingPlayers_.has(player)) {
+            this.selectingPlayers_.delete(player);
+
+            player.onObjectSelected(null);
+        }
+
         // Notify observers of the player manager of their disconnecting.
         this.notifyObservers('onPlayerDisconnect', player, reason);
 
@@ -320,6 +346,12 @@ class PlayerManager {
 
     // Returns an iterator that can be used to iterate over the connected players.
     [Symbol.iterator]() { return this.players_.values(); }
+
+    // Called when the |player| is in the select object flow. This enables us to make sure that the
+    // promise watching over the flow will be resolved even when they disconnect.
+    didRequestSelectObject(player) {
+        this.selectingPlayers_.add(player);
+    }
 
     // Releases all references and state held by the player manager.
     dispose() {

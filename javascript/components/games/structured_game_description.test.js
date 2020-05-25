@@ -65,12 +65,89 @@ describe('StructuredGameDescription', it => {
         }
     });
 
+    it('is able to deal with nested arrays in the structure', assert => {
+        assert.doesNotThrow(() => {
+            new StructuredGameDescription('game', {
+                // missing `value`, which is implicitly accepted for arrays
+            }, [
+                {
+                    name: 'value',
+                    type: StructuredGameDescription.kTypeArray,
+                    elementType: {
+                        type: StructuredGameDescription.kTypeNumber,
+                    }
+                }
+            ]);
+        });
+
+        assert.throws(() => {
+            new StructuredGameDescription('game', {
+                // missing `value`, which is implicitly accepted for arrays
+            }, [
+                { 
+                    name: 'value',
+                    type: StructuredGameDescription.kTypeArray,
+                    elementType: 3.14,  // invalid
+                }
+            ]);
+        });
+
+        assert.throws(() => {
+            new StructuredGameDescription('game', {
+                value: 'bananas',
+            }, [
+                { name: 'value', type: StructuredGameDescription.kTypeArray }
+            ]);
+        });
+
+        const valuedDescription = new StructuredGameDescription('game', {
+            value: [ 1, 2, 3 ]
+        }, [
+            { 
+                name: 'value',
+                type: StructuredGameDescription.kTypeArray,
+                elementType: {
+                    type: StructuredGameDescription.kTypeNumber,
+                }
+            }
+        ]);
+
+        assert.isTrue(valuedDescription.hasOwnProperty('value'));
+        assert.typeOf(valuedDescription.value, 'object');
+        assert.isTrue(Array.isArray(valuedDescription.value));
+        assert.equal(valuedDescription.value.length, 3);
+        assert.deepEqual(valuedDescription.value, [ 1, 2, 3 ]);
+
+        const defaultDescription = new StructuredGameDescription('game', {
+            // missing `value`, which is implicitly accepted for arrays
+        }, [
+            { 
+                name: 'value',
+                type: StructuredGameDescription.kTypeArray,
+                elementType: {
+                    type: StructuredGameDescription.kTypeNumber,
+                }
+            }
+        ]);
+
+        assert.isTrue(defaultDescription.hasOwnProperty('value'));
+        assert.typeOf(defaultDescription.value, 'object');
+        assert.isTrue(Array.isArray(defaultDescription.value));
+        assert.equal(defaultDescription.value.length, 0);
+    });
+
+    it.fails();
+
     it('is able to deal with nested objects in the structure', assert => {
         assert.doesNotThrow(() => {
             new StructuredGameDescription('game', {
                 // missing `value`, which is implicitly accepted for objects
             }, [
-                { name: 'value', type: StructuredGameDescription.kTypeObject }
+                {
+                    name: 'value',
+                    type: StructuredGameDescription.kTypeObject,
+                    structure: []
+                }
             ]);
         });
 

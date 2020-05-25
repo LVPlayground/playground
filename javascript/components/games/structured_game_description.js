@@ -22,7 +22,8 @@ export class StructuredGameDescription {
     static kTypeNumber = 0;
     static kTypeBoolean = 1;
     static kTypeString = 2;
-    static kTypeObject = 3;
+    static kTypeArray = 3;
+    static kTypeObject = 4;
 
     // ---------------------------------------------------------------------------------------------
 
@@ -56,72 +57,89 @@ export class StructuredGameDescription {
     // Loads the given |structure| from the given |contents|. Will recursively call itself in case
     // a child object should be present in the |structure|.
     loadStructure(object, contents, structure) {
-        const kTypes = new Map([
-            [ StructuredGameDescription.kTypeNumber,   'number'  ],
-            [ StructuredGameDescription.kTypeBoolean,  'boolean' ],
-            [ StructuredGameDescription.kTypeString,   'string'  ],
-            [ StructuredGameDescription.kTypeObject,   'object' ],
-        ]);
-
         for (const property of structure) {
             if (!property.hasOwnProperty('name') || typeof property.name !== 'string')
                 throw new Error(`Found a property in the structure without a required name.`);
             
             const name = property.name;
-
-            if (!property.hasOwnProperty('type') || !kTypes.has(property.type))
-                throw new Error(`Property "${name}" has an undefined or invalid property type.`);
-
-            const type = property.type;
-            const typeName = kTypes.get(property.type);
+            const value = this.loadProperty(name, contents[name], property);
             
-            switch (type) {
-                case StructuredGameDescription.kTypeNumber:
-                case StructuredGameDescription.kTypeBoolean:
-                case StructuredGameDescription.kTypeString:
-                    const optional = property.hasOwnProperty('defaultValue');
-                    if (!optional && !contents.hasOwnProperty(property.name)) {
-                        throw new Error(
-                            `Property "${name}" is required, but not present in the file.`);
-                    }
+            Object.defineProperty(object, name, {
+                writable: false,
+                value
+            });
+        }
+    }
 
-                    const value = contents[property.name] ?? property.defaultValue;
-                    if (typeof value !== typeName) {
-                        throw new Error(`Property "${name}" must be a ${typeName}, but actually ` +
-                                        `is a ${typeof value}.`);
-                    }
+    // Loads and validates the given |value| based on the |property|, which describes what data is
+    // expected to be contained within the |value|.
+    loadProperty(name, value, property) {
+        const kTypes = new Map([
+            [ StructuredGameDescription.kTypeNumber,   'number'  ],
+            [ StructuredGameDescription.kTypeBoolean,  'boolean' ],
+            [ StructuredGameDescription.kTypeString,   'string'  ],
+            [ StructuredGameDescription.kTypeArray,    'array'   ],
+            [ StructuredGameDescription.kTypeObject,   'object'  ],
+        ]);
 
-                    Object.defineProperty(object, name, {
-                        writable: false,
-                        value
-                    });
+        if (!property.hasOwnProperty('type') || !kTypes.has(property.type))
+            throw new Error(`Property "${name}" has an undefined or invalid property type.`);
 
-                    break;
+        const type = property.type;
+        const typeName = kTypes.get(property.type);
+        
+        switch (type) {
+            case StructuredGameDescription.kTypeNumber:
+            case StructuredGameDescription.kTypeBoolean:
+            case StructuredGameDescription.kTypeString:
+                const optional = property.hasOwnProperty('defaultValue');
+                if (!optional && ['null', 'undefined'].includes(typeof value)) {
+                    throw new Error(
+                        `Property "${name}" is required, but not present in the file.`);
+                }
+
+                const propertyValue = value ?? property.defaultValue;
+                if (typeof propertyValue !== typeName) {
+                    throw new Error(`Property "${name}" must be a ${typeName}, but actually ` +
+                                    `is a ${typeof propertyValue}.`);
+                }
+
+                return propertyValue;
+
+            case StructuredGameDescription.kTypeArray:
+                if (value !== undefined && !Array.isArray(value)) {
+                    throw new Error(`Property "${name}" must be an array, but actually is a ` +
+                                    `${typeof value}.`);
+                }
+            
+                const childArray = new Array();
+                if (!property.hasOwnProperty('elementType') ||
+                        typeof property.elementType !== 'object') {
+                    throw new Error(`Array "${name}" must define typing of child elements.`);
+                }
                 
-                case StructuredGameDescription.kTypeObject:
-                    if (contents.hasOwnProperty(property.name)
-                            && typeof contents[property.name] !== typeName) {
-                        throw new Error(`Property "${name}" must be an object, but actually is a ` +
-                                        `${typeof value}.`);
-                    }
+                if (Array.isArray(value)) {
+                    for (const element of value)
+                        childArray.push(this.loadProperty(name, element, property.elementType));
+                }
 
-                    const childObject = new Object;
-                    if (property.hasOwnProperty('structure')) {
-                        if (!Array.isArray(property.structure))
-                            throw new Error(`Structure of "${name}" must be given as an array.`);
-                        
-                        this.loadStructure(
-                            childObject, contents[property.name] ?? {}, property.structure);
-                    }
+                return childArray;
 
-                    Object.defineProperty(object, name, {
-                        writable: false,
-                        value: childObject
-                    });
+            case StructuredGameDescription.kTypeObject:
+                if (value !== undefined && typeof value !== 'object') {
+                    throw new Error(`Property "${name}" must be an object, but actually is a ` +
+                                    `${typeof value}.`);
+                }
 
-                    break;
+                const childObject = new Object;
+                if (!property.hasOwnProperty('structure'))
+                    throw new Error(`Object "${name}" must define structure of properties.`);
+
+                if (!Array.isArray(property.structure))
+                    throw new Error(`Structure of "${name}" must be given as an array.`);
                     
-            }
+                this.loadStructure(childObject, value ?? {}, property.structure);
+                return childObject;
         }
     }
 }

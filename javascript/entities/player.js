@@ -314,6 +314,8 @@ export class Player extends Supplementable {
         return new Promise(resolve => this.#selectObjectResolver_ = resolve);
     }
 
+    isSelectingObject() { return this.#selectObjectResolver_ !== null; }
+
     onObjectSelected(object) {
         // Forcefully cancel the player's editing mode, which includes the ability to select an
         // object, as we never want them to be able to select multiple objects at once.

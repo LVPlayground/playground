@@ -9,6 +9,7 @@ import { Vector } from 'base/vector.js';
 import { kGameEnvironment,
          kGameObjects,
          kGamePickups,
+         kGameSpawnPositions,
          kPositionProperty,
          kRotationVectorProperty } from 'components/games/structured_game_description_templates.js';
 
@@ -137,5 +138,27 @@ describe('StructuredGameDescriptionTemplates', it => {
         assert.deepEqual(valuedDescription.pickups[0].position, new Vector(0, 10, 20));
 
         assert.equal(valuedDescription.pickups[1].respawnTime, 30);
+    });
+
+    it('is able to deal with spawn positions for a game', assert => {
+        assert.throws(() => {
+            new StructuredGameDescription('Game', {}, [ kGameSpawnPositions ]);
+        });
+
+        const valuedDescription = new StructuredGameDescription('Game', {
+            spawnPositions: [
+                { position: [  0, 10, 20 ], facingAngle: 180 },
+                { position: [ 30, 40, 50 ], facingAngle: 270, vehicleModelId: 410 },
+            ]
+        }, [ kGameSpawnPositions ]);
+
+        assert.strictEqual(valuedDescription.spawnPositions.length, 2);
+
+        assert.instanceOf(valuedDescription.spawnPositions[0].position, Vector);
+        assert.deepEqual(valuedDescription.spawnPositions[0].position, new Vector(0, 10, 20));
+        assert.equal(valuedDescription.spawnPositions[0].facingAngle, 180);
+        assert.isNull(valuedDescription.spawnPositions[0].vehicleModelId);
+
+        assert.equal(valuedDescription.spawnPositions[1].vehicleModelId, 410);
     });
 });

@@ -128,6 +128,16 @@ Property      | Description
 `respawnTime` | Respawn time of the pickup. Optional, defaults to `-1` (thus depending on type).
 `position`    | Position of the pickup, as a `[ x, y, z ]` array. Will be stored as a `Vector`.
 
+### Game spawn positions (`kGameSpawnPositions`)
+Each game needs one or more spawn positions, which are defined following the `kGameSpawnPositions`
+template. This is an array, where each element has the following options available:
+
+Property         | Description
+-----------------|-------------
+`facingAngle`    | Direction in which the participant will be facing.
+`position`       | Actual spawn position, as a `[ x, y, z ]` array. Will be stored as a `Vector`.
+`vehicleModelId` | Model Id of the vehicle they should spawn in. Optional, defaults to `null`.
+
 ### Individual property types
 
   * `kPositionProperty` for validation of a `[ x, y, z ]` position array, where the boundaries much

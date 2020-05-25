@@ -78,6 +78,12 @@ function rotationVectorPropertyValidator(rotationArray) {
     return rotation;
 }
 
+// Validator function to make sure that at least a single spawn position is defined.
+function spawnPositionValidator(spawnPositions) {
+    if (!spawnPositions.length)
+        throw new Error('At least a single spawn position must be defined.');
+}
+
 // Validator function to validate configured times.
 function timePropertyValidator(timeArray) {
     if (!timeArray.length)
@@ -92,6 +98,15 @@ function timePropertyValidator(timeArray) {
         throw new Error(`The minutes of a time array must be in range of [0, 59].`);
     
     return timeArray;
+}
+
+// Validator for vehicle model Ids. Will translate "0" to NULL as well.
+function vehicleModelIdValidator(vehicleModelId) {
+    if (!vehicleModelId)
+        return null;
+
+    if (vehicleModelId < 400 || vehicleModelId > 611)
+        throw new Error(`Vehicle model Ids must be between [400, 611].`);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -218,4 +233,31 @@ export const kGamePickups = {
             },
         ]
     },
+};
+
+// Structured way of expressing the spawn positions for a game.
+export const kGameSpawnPositions = {
+    name: 'spawnPositions',
+    type: StructuredGameDescription.kTypeArray,
+    elementType: {
+        type: StructuredGameDescription.kTypeObject,
+        structure: [
+            {
+                name: 'position',
+                ...kPositionProperty,
+            },
+            {
+                name: 'facingAngle',
+                ...kRotationAngleProperty,
+            },
+            {
+                name: 'vehicleModelId',
+                type: StructuredGameDescription.kTypeNumber,
+                validator: vehicleModelIdValidator,
+                defaultValue: 0,
+            }
+        ],
+    },
+
+    validator: spawnPositionValidator,
 };

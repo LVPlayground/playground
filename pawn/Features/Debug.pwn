@@ -6,6 +6,6 @@
  * In order to make testing Las Venturas Playground a little bit easier, most notably for the
  * developers, we have a series of commands which will only be available for beta tests.
  */
-#if BuildGamemodeInReleaseMode == 1
+#if BuildGamemodeInReleaseMode == 0
     #include "Features/Debug/BetaCommands.pwn"
 #endif

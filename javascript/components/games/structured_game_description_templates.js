@@ -6,6 +6,15 @@ import { Rect } from 'base/rect.js';
 import { StructuredGameDescription } from 'components/games/structured_game_description.js';
 import { Vector } from 'base/vector.js';
 
+// Valid SA-MP pickup types, see https://wiki.sa-mp.com/wiki/PickupTypes
+const kValidPickupTypes = new Set([ 0, 1, 2, 3, 4, 8, 11, 12, 13, 14, 15, 18, 19, 20, 22 ]);
+
+// Validator function to check whether a given pickup type is valid.
+function pickupTypePropertyValidator(type) {
+    if (!kValidPickupTypes.has(type))
+        throw new Error(`Invalid SA-MP pickup type specified: ${type}.`);
+}
+
 // Validator function to be used for validating the |position|, including a boundary check.
 function positionPropertyValidator(positionArray) {
     if (positionArray.length !== 3)
@@ -178,6 +187,35 @@ export const kGameObjects = {
                 name: 'rotation',
                 ...kRotationVectorProperty,
             }
+        ]
+    },
+};
+
+// Structured way of expressing the pickups that should be part of the game's settings.
+export const kGamePickups = {
+    name: 'pickups',
+    type: StructuredGameDescription.kTypeArray,
+    elementType: {
+        type: StructuredGameDescription.kTypeObject,
+        structure: [
+            {
+                name: 'modelId',
+                type: StructuredGameDescription.kTypeNumber,
+            },
+            {
+                name: 'type',
+                type: StructuredGameDescription.kTypeNumber,
+                validator: pickupTypePropertyValidator,
+            },
+            {
+                name: 'respawnTime',
+                type: StructuredGameDescription.kTypeNumber,
+                defaultValue: -1,
+            },
+            {
+                name: 'position',
+                ...kPositionProperty,
+            },
         ]
     },
 };

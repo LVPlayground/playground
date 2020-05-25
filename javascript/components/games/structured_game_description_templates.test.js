@@ -8,6 +8,7 @@ import { Vector } from 'base/vector.js';
 
 import { kGameEnvironment,
          kGameObjects,
+         kGamePickups,
          kPositionProperty,
          kRotationVectorProperty } from 'components/games/structured_game_description_templates.js';
 
@@ -114,5 +115,27 @@ describe('StructuredGameDescriptionTemplates', it => {
         assert.deepEqual(valuedDescription.objects[0].position, new Vector(0, 10, 20));
         assert.instanceOf(valuedDescription.objects[0].rotation, Vector);
         assert.deepEqual(valuedDescription.objects[0].rotation, new Vector(5, 15, 25));
+    });
+
+    it('is able to deal with pickup definitions for a game', assert => {
+        const defaultDescription = new StructuredGameDescription('Game', {}, [ kGamePickups ]);
+        assert.strictEqual(defaultDescription.pickups.length, 0);
+
+        const valuedDescription = new StructuredGameDescription('Game', {
+            pickups: [
+                { modelId: 1225, type: 14, position: [  0, 10, 20 ] },
+                { modelId: 1225, type: 14, respawnTime: 30, position: [ 30, 40, 50 ] },
+            ]
+        }, [ kGamePickups ]);
+
+        assert.strictEqual(valuedDescription.pickups.length, 2);
+
+        assert.equal(valuedDescription.pickups[0].modelId, 1225);
+        assert.equal(valuedDescription.pickups[0].type, 14);
+        assert.equal(valuedDescription.pickups[0].respawnTime, -1);
+        assert.instanceOf(valuedDescription.pickups[0].position, Vector);
+        assert.deepEqual(valuedDescription.pickups[0].position, new Vector(0, 10, 20));
+
+        assert.equal(valuedDescription.pickups[1].respawnTime, 30);
     });
 });

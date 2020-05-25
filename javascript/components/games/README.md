@@ -117,6 +117,17 @@ Property   | Description
 `position` | Position of the object, as a `[ x, y, z ]` array. Will be stored as a `Vector`.
 `rotation` | Rotation of the object, as a `[ rx, ry, rz ]` array. Will be stored as a `Vector`.
 
+### Game pickups (`kGamePickups`)
+The `kGamePickups` template can be used to accept a list of pickups as part of the game's config.
+Each pickup is represented by a model, type and position.
+
+Property      | Description
+--------------|-------------
+`modelId`     | GTA: San Andreas Model ID for the pickup to create.
+`type`        | [SA-MP Pickup Type](https://wiki.sa-mp.com/wiki/PickupTypes) for this pickup.
+`respawnTime` | Respawn time of the pickup. Optional, defaults to `-1` (thus depending on type).
+`position`    | Position of the pickup, as a `[ x, y, z ]` array. Will be stored as a `Vector`.
+
 ### Individual property types
 
   * `kPositionProperty` for validation of a `[ x, y, z ]` position array, where the boundaries much

@@ -9,15 +9,13 @@ As of right now, we have placed 100 red barrels on the Las Venturas islands. In 
 to place another 100 in the San Fierro region, and 100 more in the Los Santos region, with different
 colours of barrels to distinguish them as separate games.
 
+Technically, a player object will be created for each of the barrels that the player has not yet
+shot. We listen for shots on these objects using the `OnPlayerShootDynamicObject` callback, and,
+when received, it will be marked as _found_, and stored as such in the database.
+
 This game was originally proposed by [Jay](https://forum.sa-mp.nl/user-180.html).
 
-## Implementation
-A player object will be created for each of the barrels that the player has not yet shot. We listen
-for shots on these objects using the `OnPlayerShootDynamicObject` callback, and, when received,
-it will be marked as _found_, and stored as such in the database.
-
+## Multiple rounds
 Collectables can be collected in multiple _rounds_: this enables players to restart again once they
 have found them all, without affecting the benefits granted by locating them in the first place, nor
 the achievements they've earned as part of this.
-
-_TODO: Detail how we're going to change the colour of the barrels._

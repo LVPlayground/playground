@@ -30,9 +30,15 @@ export class StructuredGameDescription {
     #type_ = null;
     #filename_ = null;
 
+    // Gets the type of description that this is describing.
+    get descriptionType() { return this.#type_; }
+
+    // Gets the filename from which the description is being loaded.
+    get descriptionFilename() { return this.#filename_; }
+
     constructor(type, filename, structure) {
         this.#type_ = type;
-        this.#filename_ = filename;
+        this.#filename_ = String(filename).replace(/^.*[/\\]([^/\\]+)$/, '$1');
 
         if (!Array.isArray(structure))
             throw new Error(`The structure for the given ${type} must be an array.`);
@@ -141,5 +147,10 @@ export class StructuredGameDescription {
                 this.loadStructure(childObject, value ?? {}, property.structure);
                 return childObject;
         }
+    }
+
+    // Called when requesting a string representation of this description.
+    toString() {
+        return `[StructuredGameDescription: ${this.#type_} from "${this.#filename_}"]`;
     }
 }

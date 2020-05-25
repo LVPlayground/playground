@@ -136,8 +136,6 @@ describe('StructuredGameDescription', it => {
         assert.equal(defaultDescription.value.length, 0);
     });
 
-    it.fails();
-
     it('is able to deal with nested objects in the structure', assert => {
         assert.doesNotThrow(() => {
             new StructuredGameDescription('game', {
@@ -218,5 +216,19 @@ describe('StructuredGameDescription', it => {
         assert.deepEqual(Object.getOwnPropertyNames(defaultDescription.object), [ 'value' ]);
         
         assert.strictEqual(defaultDescription.object.value, 1);
+    });
+
+    it('is able to sensibly convey metadata of the game description', assert => {
+        const description = new StructuredGameDescription(
+            'TypeName', 'data/test/test_structured_game_description.json', [
+                { name: 'name', type: StructuredGameDescription.kTypeString }
+            ]);
+        
+        assert.equal(description.descriptionType, 'TypeName');
+        assert.equal(description.descriptionFilename, 'test_structured_game_description.json');
+        
+        assert.equal(
+            String(description),
+            '[StructuredGameDescription: TypeName from "test_structured_game_description.json"]');
     });
 });

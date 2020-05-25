@@ -93,6 +93,15 @@ export class StructuredGameDescription {
 
         const type = property.type;
         const typeName = kTypes.get(property.type);
+
+        let validator = (value) => {};  // validator that does nothing
+
+        if (property.hasOwnProperty('validator')) {
+            if (typeof property.validator !== 'function')
+                throw new Error(`Validator for the property "${name}" must be a function.`);
+            
+            validator = property.validator;
+        }
         
         switch (type) {
             case StructuredGameDescription.kTypeNumber:
@@ -110,7 +119,7 @@ export class StructuredGameDescription {
                                     `is a ${typeof propertyValue}.`);
                 }
 
-                return propertyValue;
+                return validator(propertyValue), propertyValue;
 
             case StructuredGameDescription.kTypeArray:
                 if (value !== undefined && !Array.isArray(value)) {
@@ -129,7 +138,7 @@ export class StructuredGameDescription {
                         childArray.push(this.loadProperty(name, element, property.elementType));
                 }
 
-                return childArray;
+                return validator(childArray), childArray;
 
             case StructuredGameDescription.kTypeObject:
                 if (value !== undefined && typeof value !== 'object') {
@@ -145,7 +154,8 @@ export class StructuredGameDescription {
                     throw new Error(`Structure of "${name}" must be given as an array.`);
                     
                 this.loadStructure(childObject, value ?? {}, property.structure);
-                return childObject;
+
+                return validator(childObject), childObject;
         }
     }
 

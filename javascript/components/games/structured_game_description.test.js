@@ -218,6 +218,37 @@ describe('StructuredGameDescription', it => {
         assert.strictEqual(defaultDescription.object.value, 1);
     });
 
+    it('supports data validators for each of the properties', assert => {
+        let validatorCalledWithValue = null;
+
+        const description = new StructuredGameDescription('game', {
+            value: 9001
+        }, [
+            {
+                name: 'value',
+                type: StructuredGameDescription.kTypeNumber,
+                validator: (value) => validatorCalledWithValue = value,
+            }
+        ]);
+
+        assert.strictEqual(validatorCalledWithValue, 9001);
+        assert.strictEqual(description.value, 9001);
+
+        assert.throws(() => {
+            new StructuredGameDescription('game', {
+                value: 9001
+            }, [
+                {
+                    name: 'value',
+                    type: StructuredGameDescription.kTypeNumber,
+                    validator: (value) => {
+                        throw new Error(`The value ${value} must be lower than 9000.`);
+                    },
+                }
+            ]);
+        })
+    });
+
     it('is able to sensibly convey metadata of the game description', assert => {
         const description = new StructuredGameDescription(
             'TypeName', 'data/test/test_structured_game_description.json', [

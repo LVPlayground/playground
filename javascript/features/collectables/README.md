@@ -1,4 +1,11 @@
 # Collectables
+There are various _things_ that can be collected on Las Venturas Playground, in a variety of ways,
+all of which are implemented through this feature.
+
+## Multiple rounds
+Collectables can be collected in multiple _rounds_: this enables players to restart again once they
+have found them all, without affecting the benefits granted by locating them in the first place, nor
+the achievements they've earned as part of this.
 
 ## Series: Red Barrels
 Red Barrels have appeared all around San Andreas, and we need _your_ help in removing them to
@@ -15,7 +22,16 @@ when received, it will be marked as _found_, and stored as such in the database.
 
 This game was originally proposed by [Jay](https://forum.sa-mp.nl/user-180.html).
 
-## Multiple rounds
-Collectables can be collected in multiple _rounds_: this enables players to restart again once they
-have found them all, without affecting the benefits granted by locating them in the first place, nor
-the achievements they've earned as part of this.
+## Series: Spray Tags
+Spray tags can be found on the walls of Las Venturas, left there by gangs who have moved on from
+our server many years ago. Your help is required in bringing them back up-to-date.
+
+There are a hundred spray tags in total, which can be collected by spraying the Spray Can weapon for
+at least two seconds on one of the tags. Collected tags change colour, making them visually distinct
+to emphasise that you've already collected it.
+
+Technically, we use `sprayTagOnKeyStateChange` to determine whether the player's been firing their
+spray can for at least two seconds. If so, we check if there are any nearby spray tags that they're
+aiming at, and mark them as collected when successful.
+
+This game, also, was originally introduced by [Jay](https://forum.sa-mp.nl/user-180.html).

@@ -1,16 +1,12 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import MockPickup from 'entities/test/mock_pickup.js';
-import PickupManager from 'entities/pickup_manager.js';
-
-// Distance, in units, squared, which is considered to be the range of a pickup.
-const PickupRangeSq = 2 * 2;
+import { PickupManager, PickupPositionValidDistanceSq } from 'entities/pickup_manager.js';
 
 // Class that extends the PickupManager with a utility method enabling pickup pick-ups to be
 // automatically triggered when updating the position of a mocked entity.
-class MockPickupManager extends PickupManager {
+export class MockPickupManager extends PickupManager {
     // Reports that the position of the |player| has changed. Pickup entries will be faked when
     // their new position happens to be within a pickup.
     onPlayerPositionChanged(player) {
@@ -19,7 +15,7 @@ class MockPickupManager extends PickupManager {
 
         for (const pickup of this.pickups_.values()) {
             const squaredDistance = position.squaredDistanceTo(pickup.position);
-            if (squaredDistance > PickupRangeSq)
+            if (squaredDistance > PickupPositionValidDistanceSq)
                 continue;
 
             results.push({ squaredDistance, pickup });
@@ -46,5 +42,3 @@ class MockPickupManager extends PickupManager {
         });
     }
 }
-
-export default MockPickupManager;

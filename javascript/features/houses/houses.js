@@ -46,7 +46,7 @@ class Houses extends Feature {
         this.manager_ = new HouseManager(abuse, announce, economy, friends, gangs, location, streamer);
 
         this.manager_.registerExtension(new PropertySettings(this.manager_));
-        this.manager_.registerExtension(new Pickups(this.manager_, economy, finance, streamer));
+        this.manager_.registerExtension(new Pickups(this.manager_, economy, finance));
         this.manager_.registerExtension(new VisitorLog(this.manager_));
 
         this.manager_.loadHousesFromDatabase();

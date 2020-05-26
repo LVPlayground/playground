@@ -239,10 +239,11 @@ class ScopedEntities {
         if (!this.pickups_)
             throw new Error('Unable to create the pickup, this object has been disposed of.');
 
-        // Note that pickups exist in all interiors simultaneously.
+        if (this.interiorId_)
+            options.interiors = [ this.interiorId_ ];
 
         if (this.virtualWorld_)
-            options.virtualWorld = this.virtualWorld_;
+            options.virtualWorlds = [ this.virtualWorld_ ];
 
         const pickup = server.pickupManager.createPickup(options);
 

@@ -36,6 +36,10 @@ export class DeferredEventManager {
                         server.areaManager.onPlayerLeaveArea(event);
                         break;
                     
+                    case 'OnPlayerPickUpDynamicPickup':
+                        server.pickupManager.onPlayerPickUpPickup(event);
+                        break;
+                    
                     case 'OnPlayerSelectDynamicObject':
                         server.playerManager.onPlayerSelectObject(event);
                         break;

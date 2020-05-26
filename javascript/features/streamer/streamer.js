@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 import Feature from 'components/feature_manager/feature.js';
-import PickupStreamer from 'features/streamer/pickup_streamer.js';
 import Scheduler from 'features/streamer/scheduler.js';
 import VehicleStreamer from 'features/streamer/vehicle_streamer.js';
 
@@ -22,14 +21,8 @@ class Streamer extends Feature {
             streamingDistance
         });
 
-        this.pickupStreamer_ = new PickupStreamer({
-            maxVisible: 500 /* max pickups */,
-            streamingDistance: 150
-        });
-
         this.scheduler_ = new Scheduler(this.vehicleStreamer_);
         this.scheduler_.addStreamer(this.vehicleStreamer_);
-        this.scheduler_.addStreamer(this.pickupStreamer_);
 
         // Starts running the scheduler until this feature gets disposed of.
         this.scheduler_.start();
@@ -45,19 +38,11 @@ class Streamer extends Feature {
         return this.vehicleStreamer_;
     }
 
-    // Returns the pickup streamer for Las Venturas Playground.
-    getPickupStreamer() {
-        return this.pickupStreamer_;
-    }
-
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
         this.scheduler_.dispose();
         this.scheduler_ = null;
-
-        this.pickupStreamer_.dispose();
-        this.pickupStreamer_ = null;
 
         this.vehicleStreamer_.dispose();
         this.vehicleStreamer_ = null;

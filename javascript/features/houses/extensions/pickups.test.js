@@ -135,14 +135,12 @@ describe('Pickups', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.HOUSE_PICKUP_HEALTH_RESTORED_SELF);
 
-        assert.isTrue(healthPickup.isRespawning());
         assert.isTrue(healthPickup.isConnected());
 
         gunther.clearMessages();
 
         await server.clock.advance(3 * 60 * 1000);  // the respawn delay of the pickups
 
-        assert.isFalse(healthPickup.isRespawning());
         assert.isTrue(healthPickup.isConnected());
 
         russell.health = 50;
@@ -157,7 +155,6 @@ describe('Pickups', (it, beforeEach) => {
         assert.equal(gunther.messages[0],
                      Message.format(Message.HOUSE_PICKUP_HEALTH_USED, russell.name, russell.id));
 
-        assert.isTrue(healthPickup.isRespawning());
         assert.isTrue(healthPickup.isConnected());
     });
 
@@ -189,14 +186,12 @@ describe('Pickups', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.HOUSE_PICKUP_ARMOUR_RESTORED_SELF);
 
-        assert.isTrue(armourPickup.isRespawning());
         assert.isTrue(armourPickup.isConnected());
 
         gunther.clearMessages();
 
         await server.clock.advance(3 * 60 * 1000);  // the respawn delay of the pickups
 
-        assert.isFalse(armourPickup.isRespawning());
         assert.isTrue(armourPickup.isConnected());
 
         russell.armour = 50;
@@ -211,25 +206,6 @@ describe('Pickups', (it, beforeEach) => {
         assert.equal(gunther.messages[0],
                      Message.format(Message.HOUSE_PICKUP_ARMOUR_USED, russell.name, russell.id));
 
-        assert.isTrue(armourPickup.isRespawning());
         assert.isTrue(armourPickup.isConnected());
-    });
-
-    it('should recreate all pickups when the streamer reloads', async(assert) => {
-        const originalPickupCount = server.pickupManager.count;
-
-        gunther.respondToDialog({ listitem: SETTINGS_MENU_INDEX }).then(
-            () => gunther.respondToDialog({ listitem: 1 /* Purchase an Armour Pickup */ })).then(
-            () => gunther.respondToDialog({ response: 1 /* Yes pls */ })).then(
-            () => gunther.respondToDialog({ response: 1 /* I got it */ }));
-
-        assert.isTrue(await gunther.issueCommand('/house settings'));
-        assert.isTrue(location.interior.features.has('armour'));
-
-        assert.equal(server.pickupManager.count, originalPickupCount + 1);
-
-        assert.isTrue(await server.featureManager.liveReload('streamer'));
-
-        assert.equal(server.pickupManager.count, originalPickupCount + 1);
     });
 });

@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { BarrelTracker } from 'features/collectables/barrel_tracker.js';
+import { CollectableManager } from 'features/collectables/collectable_manager.js';
 import Feature from 'components/feature_manager/feature.js';
 
 // Implementation of the Red Barrels feature, which scatters a series of barrels throughout San
@@ -13,9 +14,16 @@ export default class Collectables extends Feature {
     constructor() {
         super();
 
+        // The manager is responsible for keeping track which collectables have been collected by
+        // which players, and enables creation of new "rounds" of collectables.
+        this.manager_ = new CollectableManager();
+
         // Loads, and has knowledge of all the individual barrels.
         this.tracker_ = new BarrelTracker();
     }
 
-    dispose() {}
+    dispose() {
+        this.manager_.dispose();
+        this.manager_ = null;
+    }
 }

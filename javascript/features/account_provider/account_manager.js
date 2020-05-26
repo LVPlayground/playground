@@ -32,9 +32,14 @@ export class AccountManager {
     // being able to interact with the server.
     setIsRegistered(playerid, isRegistered) {
         const player = server.playerManager.getById(playerid);
+        const registered = !!isRegistered;
+
         if (player)
-            player.account.isRegistered_ = !!isRegistered;
+            player.account.isRegistered_ = registered;
         
+        if (!registered)
+            wait(0).then(() => dispatchEvent('playerguestsession', { playerid }));
+
         return 0;
     }
 
@@ -71,8 +76,12 @@ export class AccountManager {
     // with a new nickname instead. Invoked as a Pawn event.
     onPlayerGuestLoginEvent(event) {
         const player = server.playerManager.getById(event.playerId);
-        if (player)
-            server.playerManager.onPlayerNameChange(player, /* update= */ true);
+        if (!player)
+            return;  // the |player| does not exist (anymore)
+        
+        server.playerManager.onPlayerNameChange(player, /* update= */ true);
+
+        wait(0).then(() => dispatchEvent('playerguestsession', { playerid: player.id }));
     }
 
     // Called when the |player| has disconnected from the server.

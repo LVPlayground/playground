@@ -63,11 +63,12 @@ class Account <playerId (MAX_PLAYERS)> {
      */
     public onRegisteredRequestComplete(bool: registered, userId, skinId, bool: enableAutomaticIdentification = false) {
         BanManager->verifyPlayerAllowedToPlay(playerId, userId);
+
+        // Let JavaScript know about the player being registered or not.
+        SetIsRegistered(playerId, registered);
+
         if (registered == false)
             return;
-
-        // Let JavaScript know about the player being registered.
-        SetIsRegistered(playerId, true);
 
         Player(playerId)->setIsRegistered(true);
         Player(playerId)->setIsLoggedIn(false);

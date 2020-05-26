@@ -13,9 +13,12 @@ export default class Collectables extends Feature {
     constructor() {
         super();
 
+        // Certain behaviour of the Collectables feature is configurable as settings.
+        const settings = this.defineDependency('settings');
+
         // The manager is responsible for keeping track which collectables have been collected by
         // which players, and enables creation of new "rounds" of collectables.
-        this.manager_ = new CollectableManager();
+        this.manager_ = new CollectableManager(settings);
     }
 
     dispose() {

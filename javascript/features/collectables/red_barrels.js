@@ -59,9 +59,9 @@ export class RedBarrels extends CollectableDelegate {
     // round of collectables and want to collect everything again.
     refreshCollectablesForPlayer(player, collected) {}
 
-    // Called when the map icons for the collectable should either be shown (when |display| is set)
+    // Called when the map icons for the collectable should either be shown (when |visible| is set)
     // or hidden. This is a configuration setting available to Management members.
-    refreshCollectableMapIcons(display) {}
+    refreshCollectableMapIcons(visible) {}
 
     // ---------------------------------------------------------------------------------------------
 

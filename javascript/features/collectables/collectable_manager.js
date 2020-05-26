@@ -5,16 +5,22 @@
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
 import { MockCollectableDatabase } from 'features/collectables/test/mock_collectable_database.js';
 import { RedBarrels } from 'features/collectables/red_barrels.js';
+import ScopedCallbacks from 'base/scoped_callbacks.js';
 import { SprayTags } from 'features/collectables/spray_tags.js';
+
+// Identifier of the setting that controls collectable map icon visibility.
+const kVisibilitySetting = 'playground/enable_collectable_map_icons';
 
 // Manages player state in regards to their collectables: tracking, statistics and maintaining. Will
 // make sure that the appropriate information is available at the appropriate times.
 export class CollectableManager {
+    callbacks_ = null;
     database_ = null;
     delegates_ = null;
+    settings_ = null;
     statistics_ = new WeakMap();
 
-    constructor() {
+    constructor(settings) {
         this.database_ = server.isTest() ? new MockCollectableDatabase()
                                          : new CollectableDatabase();
 
@@ -23,7 +29,24 @@ export class CollectableManager {
             [ CollectableDatabase.kSprayTag, new SprayTags(this) ],
         ]);
 
+        this.callbacks_ = new ScopedCallbacks();
+        this.callbacks_.addEventListener(
+            'playerguestsession', CollectableManager.prototype.onPlayerGuestSession.bind(this));
+
+        this.settings_ = settings;
+        this.settings_.addReloadObserver(
+            this, CollectableManager.prototype.initializeSettingObserver.bind(this));
+        
+        this.onMapIconVisibilityChange(null, settings().getValue(kVisibilitySetting));
+        this.initializeSettingObserver();
+        
         server.playerManager.addObserver(this, /* replayHistory= */ true);
+    }
+
+    initializeSettingObserver() {
+        this.settings_().addSettingObserver(
+            kVisibilitySetting,
+            this, CollectableManager.prototype.onMapIconVisibilityChange.bind(this));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -64,7 +87,30 @@ export class CollectableManager {
             // Ensure that Pawn has the latest metric on the number of collectables available for
             // the given |player|, as a number of benefits are still implemented there.
             player.syncedData.collectables = this.getCollectableCountForPlayer(player);
+
+            // Create all the collectables on the map for the given |player|.
+            for (const delegate of this.delegates_.values())
+                delegate.refreshCollectablesForPlayer(player);
         });
+    }
+
+    // Called when the player in |event| has started a session as a guest, which means that none of
+    // their information will persist beyond this playing session.
+    onPlayerGuestSession(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player)
+            return;  // the |event| was sent for an invalid player
+
+        // Create all the collectables on the map for the given |player|.
+        for (const delegate of this.delegates_.values())
+            delegate.refreshCollectablesForPlayer(player);
+    }
+
+    // Called when visibility of collectables on the mini map has changed. The |setting| may be
+    // NULL when called during feature initialization, so do not depend on it.
+    onMapIconVisibilityChange(setting, visible) {
+        for (const delegate of this.delegates_.values())
+            delegate.refreshCollectableMapIcons(visible);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -72,10 +118,16 @@ export class CollectableManager {
     dispose() {
         server.playerManager.removeObserver(this);
 
+        this.callbacks_.dispose();
+        this.callbacks_ = null;
+
         for (const delegate of this.delegates_.values())
             delegate.dispose();
         
         this.delegates_.clear();
         this.delegates_ = null;
+
+        this.settings_().removeSettingObserver(kVisibilitySetting, this);
+        this.settings_.removeReloadObserver();
     }
 }

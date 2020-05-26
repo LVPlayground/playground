@@ -8,6 +8,7 @@ import { CheckpointManager } from 'components/checkpoints/checkpoint_manager.js'
 import CommandManager from 'components/command_manager/command_manager.js';
 import { DialogManager } from 'components/dialogs/dialog_manager.js';
 import FeatureManager from 'components/feature_manager/feature_manager.js';
+import { MapIconManager } from 'entities/map_icon_manager.js';
 import NpcManager from 'entities/npc_manager.js';
 import ObjectManager from 'entities/object_manager.js';
 import PlayerManager from 'entities/player_manager.js';
@@ -20,6 +21,7 @@ import MockActor from 'entities/test/mock_actor.js';
 import { MockArea } from 'entities/test/mock_area.js';
 import MockClock from 'base/test/mock_clock.js';
 import { MockGameObject } from 'entities/test/mock_game_object.js';
+import { MockMapIcon } from 'entities/test/mock_map_icon.js';
 import MockNpc from 'entities/test/mock_npc.js';
 import MockPawnInvoke from 'base/test/mock_pawn_invoke.js';
 import MockPickup from 'entities/test/mock_pickup.js';
@@ -67,6 +69,7 @@ class MockServer {
 
         this.actorManager_ = new ActorManager(MockActor /* actorConstructor */);
         this.areaManager_ = new AreaManager(MockArea /* areaConstructor */);
+        this.mapIconManager_ = new MapIconManager(MockMapIcon /* mapIconConstructor= */);
         this.objectManager_ = new ObjectManager(MockGameObject /* objectConstructor */);
         this.pickupManager_ = new MockPickupManager(MockPickup /* pickupConstructor */);
         this.playerManager_ = new PlayerManager(MockPlayer /* playerConstructor */);
@@ -152,6 +155,9 @@ class MockServer {
     // Gets the global area manager, responsible for all areas in the game.
     get areaManager() { return this.areaManager_; }
 
+    // Gets the map icon manager, through which icons can be added to the map.
+    get mapIconManager() { return this.mapIconManager_; }
+
     // Gets the global NPC manager, responsible for creating NPCs on the server.
     get npcManager() { return this.npcManager_; }
 
@@ -199,6 +205,7 @@ class MockServer {
         this.playerManager_.dispose();
         this.pickupManager_.dispose();
         this.objectManager_.dispose();
+        this.mapIconManager_.dispose();
         this.areaManager_.dispose();
         this.actorManager_.dispose();
 

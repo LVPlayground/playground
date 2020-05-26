@@ -11,6 +11,7 @@ import Database from 'components/database/database.js';
 import { DeferredEventManager } from 'components/events/deferred_event_manager.js';
 import { DialogManager } from 'components/dialogs/dialog_manager.js';
 import FeatureManager from 'components/feature_manager/feature_manager.js';
+import { MapIconManager } from 'entities/map_icon_manager.js';
 import NpcManager from 'entities/npc_manager.js';
 import ObjectManager from 'entities/object_manager.js';
 import PickupManager from 'entities/pickup_manager.js';
@@ -40,6 +41,7 @@ class Server {
 
         this.actorManager_ = new ActorManager();
         this.areaManager_ = new AreaManager();
+        this.mapIconManager_ = new MapIconManager();
         this.objectManager_ = new ObjectManager();
         this.pickupManager_ = new PickupManager();
         this.playerManager_ = new PlayerManager();
@@ -90,6 +92,9 @@ class Server {
     // Gets the global area manager, responsible for all areas in the game.
     get areaManager() { return this.areaManager_; }
 
+    // Gets the map icon manager, through which icons can be added to the map.
+    get mapIconManager() { return this.mapIconManager_; }
+
     // Gets the global NPC manager, responsible for creating NPCs on the server.
     get npcManager() { return this.npcManager_; }
 
@@ -137,6 +142,7 @@ class Server {
         this.playerManager_.dispose();
         this.pickupManager_.dispose();
         this.objectManager_.dispose();
+        this.mapIconManager_.dispose();
         this.areaManager_.dispose();
         this.actorManager_.dispose();
 

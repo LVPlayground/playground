@@ -9,6 +9,7 @@ class ScopedEntities {
     constructor({ interiorId = 0, virtualWorld = 0 } = {}) {
         this.actors_ = new Set();
         this.areas_ = new Set();
+        this.mapIcons_ = new Set();
         this.npcs_ = new Set();
         this.objects_ = new Set();
         this.pickups_ = new Set();
@@ -167,6 +168,29 @@ class ScopedEntities {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Creates a new map icon that's scoped to the lifetime of this object. The passed options must
+    // match those accepted by the MapIconManager.createMapIcon() method.
+    createMapIcon(options) {
+        if (!this.mapIcons_)
+            throw new Error('Unable to create the map icon, this object has been disposed of.');
+
+        if (this.interiorId_)
+            options.interiors = [ this.interiorId_ ];
+
+        if (this.virtualWorld_)
+            options.virtualWorlds = [ this.virtualWorld_ ];
+
+        const mapIcon = server.mapIconManager.createMapIcon(options);
+
+        this.mapIcons_.add(mapIcon);
+        return mapIcon;
+    }
+
+    // Returns whether the given |mapIcon| is owned by this set of entities.
+    hasMapIcon(mapIcon) { return this.mapIcons_ && this.mapIcons_.has(mapIcon); }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Creates a new NPC scoped to the lifetime of this object. The passed options must match those
     // accepted by NpcManager.createNpc() on the global Server object.
     createNpc(options) {
@@ -291,6 +315,9 @@ class ScopedEntities {
 
         this.areas_.forEach(safeDisposeEntity);
         this.areas_ = null;
+
+        this.mapIcons_.forEach(safeDisposeEntity);
+        this.mapIcons_ = null;
 
         this.npcs_.forEach(npc => npc.disconnect());
         this.npcs_ = null;

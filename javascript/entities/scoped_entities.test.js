@@ -36,6 +36,37 @@ describe('ScopedEntities', it => {
 
     // ---------------------------------------------------------------------------------------------
 
+    it('should be able to create and dispose of scoped map icons', assert => {
+        const entities = new ScopedEntities();
+
+        const mapIcon = entities.createMapIcon({ position: new Vector(1, 2, 3), type: 10 });
+
+        assert.isNotNull(mapIcon);
+        assert.isTrue(mapIcon.isConnected());
+
+        assert.isTrue(entities.hasMapIcon(mapIcon));
+
+        entities.dispose();
+
+        assert.isFalse(mapIcon.isConnected());
+    });
+
+    it('should not identify objects owned by other systems as part of a scoped set', assert => {
+        const entities = new ScopedEntities();
+        const mapIcon =
+            server.mapIconManager.createMapIcon({ position: new Vector(1, 2, 3), type: 10 });
+
+        assert.isTrue(mapIcon.isConnected());
+        assert.isFalse(entities.hasMapIcon(mapIcon));
+
+        entities.dispose();
+
+        assert.isFalse(entities.hasMapIcon(mapIcon));
+        assert.isTrue(mapIcon.isConnected());
+    });
+
+    // ---------------------------------------------------------------------------------------------
+
     it ('should be able to create and dispose of scoped NPCs', assert => {
         const entities = new ScopedEntities();
 

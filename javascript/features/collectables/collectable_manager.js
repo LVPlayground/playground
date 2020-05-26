@@ -4,18 +4,26 @@
 
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
 import { MockCollectableDatabase } from 'features/collectables/test/mock_collectable_database.js';
+import { RedBarrels } from 'features/collectables/red_barrels.js';
+import { SprayTags } from 'features/collectables/spray_tags.js';
 
 // Manages player state in regards to their collectables: tracking, statistics and maintaining. Will
 // make sure that the appropriate information is available at the appropriate times.
 export class CollectableManager {
     database_ = null;
+    delegates_ = null;
     statistics_ = new WeakMap();
 
     constructor() {
         this.database_ = server.isTest() ? new MockCollectableDatabase()
                                          : new CollectableDatabase();
 
-        server.playerManager.addObserver(this);
+        this.delegates_ = new Map([
+            [ CollectableDatabase.kRedBarrel, new RedBarrels(this) ],
+            [ CollectableDatabase.kSprayTag, new SprayTags(this) ],
+        ]);
+
+        server.playerManager.addObserver(this, /* replayHistory= */ true);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -63,5 +71,11 @@ export class CollectableManager {
 
     dispose() {
         server.playerManager.removeObserver(this);
+
+        for (const delegate of this.delegates_.values())
+            delegate.dispose();
+        
+        this.delegates_.clear();
+        this.delegates_ = null;
     }
 }

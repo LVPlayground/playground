@@ -89,8 +89,8 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case BombTypeDetonatorOwnersShare:      return 1000;
         case BombTypeEngine:                    return 6000;
         case BombTypeEngineOwnersShare:         return 2300;
-        case BonusExport:                       return 3000;
-        case BonusKill:                         return 2500;
+        case BonusExport:                       return 5000;
+        case BonusKill:                         return 7500;
         case BonusMinigame:                     return 7500;
         case CarDiveCommand:                    return 1000;
         case ChaseEscaped:                      return 2500;
@@ -98,17 +98,17 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case CustomizationShopOwnerShare:       return 150;
         case DeathDropMoneyPercentage:          return 50;
         case DeathmatchChampion:                return 25000;
-        case DeliveryDistanceReward:            return 170 * inputValue /* distance in units */;
-        case DeliveryTimeReward:                return 40 * inputValue /* seconds left */;
+        case DeliveryDistanceReward:            return 190 * inputValue /* distance in units */;
+        case DeliveryTimeReward:                return 80 * inputValue /* seconds left */;
         case DiveCommand:                       return 500;
         case GiftHuntLargePrize:                return 50000;
         case GiftHuntMediumPrize:               return 25000;
         case GiftHuntSmallPrize:                return 10000;
-        case GrandTheftAutoRandomVehicleValue:  return random(30000 /* max */ - 17500 /* min */) + 17500 /* min */;
+        case GrandTheftAutoRandomVehicleValue:  return random(78000 /* max */ - 45000 /* min */) + 45000 /* min */;
         case MapZoneReward:                     return 2000 - 10 * inputValue /* time taken (seconds) */;
         case MapZoneSpeedBonus:                 return 2 * inputValue /* high-speed streak count */;
         case MinigameParticipation:             return 250;
-        case MinigameVictory:                   return 2500 * (inputValue /* participant count */ + 1);
+        case MinigameVictory:                   return 7500 * (inputValue /* participant count */ + 1);
         case MoneyStatue:                       return 500 * inputValue /* statue kill count */;
         case NitroTwoShot:                      return 200;
         case NitroFiveShot:                     return 500;
@@ -124,10 +124,10 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case TeleportWithoutVehicle:            return 1000;
         case TuneCommand:                       return 1250;
         case VehicleCrusherReward:              return 2000;
-        case VehicleExportReward:               return floatround(inputValue /* vehicle health [371-1000] */ * 15 * 1.216);
-        case VehicleExportRewardOwnerShare:     return floatround(inputValue /* vehicle health [371-1000] */ * 15 * 1.216 * 0.1);
-        case WantedLevelAward:                  return 1000 * inputValue /* wanted level stars */;
-        case WantedLevelOwnerShare:             return 10 * inputValue /* wanted level stars */;
+        case VehicleExportReward:               return floatround(inputValue /* vehicle health [371-1000] */ * 60 * 1.45);
+        case VehicleExportRewardOwnerShare:     return floatround(inputValue /* vehicle health [371-1000] */ * 60 * 1.45 * 0.1);
+        case WantedLevelAward:                  return 4775 * inputValue /* wanted level stars */;
+        case WantedLevelOwnerShare:             return 47.75 * inputValue /* wanted level stars */;
     }
 
     return 0;

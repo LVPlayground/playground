@@ -69,6 +69,67 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         assert.equal(messages[2], 'Hey Geroge');
     });
 
+    it('should allow players to mention other players in public chat', async (assert) => {
+        // (1) Verify that all nicknames can be matched
+        const nicknameTestCasePlayerId = 42;
+        const nicknameTestCases = [
+            'Rissell', 'Deer_Hunter', '[CP]Halsey', 'Death$tar', '=_Captain_=', '[A]Nick[B]==',
+        ];
+
+        for (const testCase of nicknameTestCases) {
+            assert.setContext(testCase);
+
+            server.playerManager.onPlayerConnect({
+                playerid: nicknameTestCasePlayerId,
+                name: testCase,
+            });
+
+            const testPlayer = server.playerManager.getById(nicknameTestCasePlayerId);
+
+            await gunther.issueMessage(`Hey @${testCase}, how are you?`);
+            assert.equal(gunther.messages.length, 1);
+            assert.includes(gunther.messages.pop(), `{FFFFFF}@${testCase}{FFFFFF}`);
+
+            assert.equal(testPlayer.soundIdForTesting, 1058);
+
+            testPlayer.disconnectForTesting();
+
+            await server.clock.advance(10 * 1000);  // get past the spam filter
+        }
+
+        // (2) Verify that mentions can be used in various ways within a message.
+        const grammarTestCases = [
+            'Hey @Russell', 'Yo @Russell, how are you?', '.@Russell?!', 'Mmm @Russell!', '.@Russell'
+        ];
+
+        for (const testCase of grammarTestCases) {
+            assert.setContext(testCase);
+
+            await gunther.issueMessage(testCase);
+            assert.equal(gunther.messages.length, 1);
+            assert.includes(gunther.messages.pop(), `{FFFFFF}@Russell{FFFFFF}`);
+
+            await server.clock.advance(10 * 1000);  // get past the spam filter
+        }
+
+        // (3) Verify that players cannot mention themselves, or invalid players.
+        await gunther.issueMessage('Hey @Gunther, how are you?');
+        assert.equal(gunther.messages.length, 1);
+        assert.doesNotInclude(gunther.messages.pop(), `{FFFFFF}@Gunther{FFFFFF}`);
+
+        // (4) Verify that it doesn't catch cases that aren't mentions.
+        await gunther.issueMessage('info@domain.com');
+        assert.equal(gunther.messages.length, 1);
+        assert.doesNotInclude(gunther.messages.pop(), `{FFFFFF}info@domain.com{FFFFFF}`);
+
+        // (5) Verify that it's got the ability to use the mentioned player's colour.
+        russell.color = Color.fromRGB(50, 150, 250);
+
+        await gunther.issueMessage('Heya @Russell, how are you?');
+        assert.equal(gunther.messages.length, 1);
+        assert.includes(gunther.messages.pop(), `{3296FA}@Russell{FFFFFF}`);
+    });
+
     it('should allow delegates to intercept received messages', async (assert) => {
         let invocationCount = 0;
 

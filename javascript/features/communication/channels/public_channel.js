@@ -4,6 +4,12 @@
 
 import { Channel } from 'features/communication/channel.js';
 
+// Regular expression to grep nicknames from the public chat message.
+const kMentionExpression = /(?<!\w)@([0-9a-z\[\]\(\)\$@_=]{3,24})/gi;
+
+// Id of the sound to play when a player has been mentioned in chat.
+const kMentionSound = 1058;
+
 // The public communication channel. By default players will be divided based on the Virtual World
 // that they're part of, but individual settings are able to override that.
 export class PublicChannel extends Channel {
@@ -21,6 +27,20 @@ export class PublicChannel extends Channel {
     distribute(player, message, nuwani) {
         const playerColor = player.color.toHexRGB();
         const playerVirtualWorld = player.virtualWorld;
+
+        const mentioned = new Set();
+
+        // Enables players to mention each other by using @Nick. This will highlight the mention in
+        // the chat, and play a beep to the other player when they're not ignoring each other.
+        message = message.replace(kMentionExpression, mention => {
+            const mentionedPlayer = server.playerManager.getByName(mention.substring(1), true);
+            if (!mentionedPlayer || mentionedPlayer === player)
+                return mention;  // invalid player, or a self-mention
+
+            mentioned.add(mentionedPlayer);
+
+            return `{${mentionedPlayer.color.toHexRGB()}}${mention}{FFFFFF}`;
+        });
 
         // Message to send to players in another virtual world.
         const remoteMessage =
@@ -43,8 +63,13 @@ export class PublicChannel extends Channel {
                 this.visibilityManager_.selectMessageForPlayer(
                     player, playerVirtualWorld, recipient, { localMessage, remoteMessage });
 
-            if (recipientMessage)
-                recipient.sendMessage(recipientMessage);
+            if (!recipientMessage)
+                continue;
+
+            if (mentioned.has(recipient))
+                recipient.playSound(kMentionSound);
+
+            recipient.sendMessage(recipientMessage);
         }
 
         // Distribute the message to people watching on IRC.

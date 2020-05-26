@@ -89,8 +89,8 @@ export class CollectableManager {
             player.syncedData.collectables = this.getCollectableCountForPlayer(player);
 
             // Create all the collectables on the map for the given |player|.
-            for (const delegate of this.delegates_.values())
-                delegate.refreshCollectablesForPlayer(player);
+            for (const [ type, delegate ] of this.delegates_)
+                delegate.refreshCollectablesForPlayer(player, collectables.get(type).collected);
         });
     }
 
@@ -110,7 +110,7 @@ export class CollectableManager {
     // NULL when called during feature initialization, so do not depend on it.
     onMapIconVisibilityChange(setting, visible) {
         for (const delegate of this.delegates_.values())
-            delegate.refreshCollectableMapIcons(visible);
+            delegate.refreshCollectableMapIcons(visible, new Set());
     }
 
     // ---------------------------------------------------------------------------------------------

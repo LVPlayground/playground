@@ -8,7 +8,7 @@ import { Vector } from 'base/vector.js';
 
 // File (JSON) in which all the individual barrels have been stored. The JSON data will have been
 // categorized per area, which are static properties on the RedBarrels class.
-const kBarrelDataFile = 'data/red_barrels.json';
+const kBarrelDataFile = 'data/collectables/red_barrels.json';
 
 // Implements the Red Barrels functionality, where players have to shoot the red barrels scattered
 // across the map in an effort to clean up all those dangerous explosives.
